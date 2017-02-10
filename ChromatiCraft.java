@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
+import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
@@ -24,6 +25,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.stats.Achievement;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
@@ -67,6 +69,7 @@ import Reika.ChromatiCraft.Auxiliary.Command.PylonCacheCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.RecipeReloadCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.RedecorateCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.ReshufflePylonCommand;
+import Reika.ChromatiCraft.Auxiliary.Command.StructureCacheCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.StructureGenCommand;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaDecorator;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LoadRegistry;
@@ -117,6 +120,7 @@ import Reika.ChromatiCraft.World.ColorTreeGenerator;
 import Reika.ChromatiCraft.World.CrystalGenerator;
 import Reika.ChromatiCraft.World.DecoFlowerGenerator;
 import Reika.ChromatiCraft.World.DungeonGenerator;
+import Reika.ChromatiCraft.World.GlowingCliffsAuxGenerator;
 import Reika.ChromatiCraft.World.LumaGenerator;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.ChromatiCraft.World.TieredWorldGenerator;
@@ -130,6 +134,9 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.CreativeTabSorter;
+import Reika.DragonAPI.Auxiliary.PopupWriter;
+import Reika.DragonAPI.Auxiliary.SpecialBiomePlacementRegistry;
+import Reika.DragonAPI.Auxiliary.SpecialBiomePlacementRegistry.Category;
 import Reika.DragonAPI.Auxiliary.Trackers.BiomeCollisionTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.CommandableUpdateChecker;
 import Reika.DragonAPI.Auxiliary.Trackers.ConfigMatcher;
@@ -208,6 +215,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	static final Random rand = new Random();
 
 	private boolean isLocked = false;
+	private boolean isOfflineMode = false;
 
 	public static final EnhancedFluid chroma = (EnhancedFluid)new EnhancedFluid("chroma").setColor(0x00aaff).setViscosity(300).setTemperature(288).setDensity(300).setLuminosity(15);
 	//public static final EnhancedFluid activechroma = (EnhancedFluid)new EnhancedFluid("activechroma").setColor(0x00aaff).setViscosity(300).setTemperature(500).setDensity(300);
@@ -276,6 +284,10 @@ public class ChromatiCraft extends DragonAPIMod {
 			}
 		}
 		return false;
+	}
+
+	public boolean isOfflineMode() {
+		return isOfflineMode;
 	}
 
 	@Override
@@ -350,6 +362,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		BiomeCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.RAINBOWFOREST.getValue(), BiomeRainbowForest.class);
 		BiomeCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.ENDERFOREST.getValue(), BiomeEnderForest.class);
+		BiomeCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.LUMINOUSCLIFFS.getValue(), BiomeGlowingCliffs.class);
 
 		this.setupClassFiles();
 		//ChromaResearch.loadCache();
@@ -430,13 +443,21 @@ public class ChromatiCraft extends DragonAPIMod {
 		//BiomeManager.addBiome(BiomeType.COOL, new BiomeEntry(glowingcliffs, ChromaOptions.getGlowingCliffsWeight()));
 		//BiomeManager.addBiome(BiomeType.WARM, new BiomeEntry(glowingcliffs, ChromaOptions.getGlowingCliffsWeight()));
 		//BiomeManager.addSpawnBiome(glowingcliffs);
-		BiomeDictionary.registerBiomeType(glowingcliffs, BiomeDictionary.Type.MOUNTAIN, BiomeDictionary.Type.LUSH, BiomeDictionary.Type.MAGICAL);
+
+		//replace 1/8 of jungle and 1/8 of Mega Taiga, for a total of 4/(16-2) = 28% net spawn rate of either Jungle or MT
+		//revised to 1/16th of each for 2/15 = 13% spawn rate
+		SpecialBiomePlacementRegistry.instance.registerID(this, Category.WARM, 2, glowingcliffs.biomeID);
+		//SpecialBiomePlacementRegistry.instance.registerID(this, Category.WARM, 3, glowingcliffs.biomeID);
+		SpecialBiomePlacementRegistry.instance.registerID(this, Category.COOL, 2, glowingcliffs.biomeID);
+		//SpecialBiomePlacementRegistry.instance.registerID(this, Category.COOL, 3, glowingcliffs.biomeID);
+		BiomeDictionary.registerBiomeType(glowingcliffs, BiomeDictionary.Type.MOUNTAIN, BiomeDictionary.Type.LUSH, BiomeDictionary.Type.MAGICAL, BiomeDictionary.Type.BEACH, BiomeDictionary.Type.WET);
 
 		ChromaDimensionManager.initialize();
 
 		RetroGenController.instance.addHybridGenerator(PylonGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
 		RetroGenController.instance.addHybridGenerator(DungeonGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
 		RetroGenController.instance.addHybridGenerator(NetherStructureGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
+		RetroGenController.instance.addHybridGenerator(GlowingCliffsAuxGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
 
 		this.addRerunnableDecorator(CrystalGenerator.instance, 0);
 		this.addRerunnableDecorator(ColorTreeGenerator.instance, -10);
@@ -639,6 +660,9 @@ public class ChromatiCraft extends DragonAPIMod {
 			}
 		}
 
+		//CliffFogRenderer.instance.initialize();
+		GlowingCliffsAuxGenerator.instance.initialize();
+
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			ModInteraction.addThaumCraft();
 
@@ -681,7 +705,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		if (ModList.VOIDMONSTER.isLoaded()) {
 			DimensionAPI.blacklistDimensionForSounds(ExtraChromaIDs.DIMID.getValue());
-			DimensionAPI.blacklistDimensionForSpawning(ExtraChromaIDs.DIMID.getValue());
+			DimensionAPI.setDimensionRuleForSpawning(ExtraChromaIDs.DIMID.getValue(), false);
 		}
 
 		if (ModList.MINEFACTORY.isLoaded()) {
@@ -723,11 +747,22 @@ public class ChromatiCraft extends DragonAPIMod {
 		evt.registerServerCommand(new DimensionGeneratorCommand());
 		evt.registerServerCommand(new RecipeReloadCommand());
 		evt.registerServerCommand(new PylonCacheCommand());
+		evt.registerServerCommand(new StructureCacheCommand());
 		evt.registerServerCommand(new CrystalNetCommand());
 		evt.registerServerCommand(new ReshufflePylonCommand());
 		evt.registerServerCommand(new RedecorateCommand());
 		evt.registerServerCommand(new PlaceStructureCommand());
 
+		if (MinecraftServer.getServer() != null && !MinecraftServer.getServer().isServerInOnlineMode()) {
+			isOfflineMode = true;
+			PopupWriter.instance.addMessage("ChromatiCraft does not properly work in offline mode! Ownership data is not properly read/saved and some things will not work!");
+		}
+		else {
+			isOfflineMode = false;
+		}
+
+		DungeonGenerator.instance.initLevelData(evt.getServer());
+		ProgressionCacher.instance.initLevelData(evt.getServer());
 		ProgressionCacher.instance.load();
 	}
 
@@ -739,7 +774,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	}
 
 	@EventHandler
-	public void registerCommands(FMLServerStoppingEvent evt) {
+	public void serverShutdown(FMLServerStoppingEvent evt) {
 		ProgressionCacher.instance.saveAll();
 	}
 
@@ -884,5 +919,10 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	public static ChromaDecorator getDecorator(String id) {
 		return decorators.get(id);
+	}
+
+	@Override
+	public File getConfigFolder() {
+		return config.getConfigFolder();
 	}
 }

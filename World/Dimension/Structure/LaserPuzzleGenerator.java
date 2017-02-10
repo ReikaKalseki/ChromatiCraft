@@ -197,6 +197,7 @@ public class LaserPuzzleGenerator extends DimensionStructureGenerator {
 					}
 					if (on) {
 						l.laserStatus = false;
+						world.setBlockMetadataWithNotify(x, y-1, z, 1, 3);
 						AxisAlignedBB box = l.puzzle.getBounds().asAABB();
 						List<EntityLaserPulse> li = world.getEntitiesWithinAABB(EntityLaserPulse.class, box);
 						for (EntityLaserPulse e : li) {
@@ -211,6 +212,7 @@ public class LaserPuzzleGenerator extends DimensionStructureGenerator {
 							}
 						}
 						l.laserStatus = true;
+						world.setBlockMetadataWithNotify(x, y-1, z, 3, 3);
 					}
 				}
 			}

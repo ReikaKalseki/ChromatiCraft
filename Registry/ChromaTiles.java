@@ -84,6 +84,7 @@ import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCreativeSource;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalBroadcaster;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityPylonLink;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityWeakRepeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityWirelessSource;
@@ -223,7 +224,8 @@ public enum ChromaTiles implements TileEnum {
 	ALVEARY("chroma.alveary",			ChromaBlocks.TILEENTITY2,	TileEntityLumenAlveary.class,		1, "RenderAlveary", ModList.FORESTRY),
 	ROUTERHUB("chroma.router",			ChromaBlocks.TILEMODELLED3,	TileEntityRouterHub.class,			13, "RenderRouterHub"),
 	FOCUSCRYSTAL("chroma.focuscrystal",	ChromaBlocks.TILEMODELLED3, TileEntityFocusCrystal.class,		14, "RenderFocusCrystal"),
-	DATANODE("chroma.datanode",			ChromaBlocks.TILEMODELLED3,	TileEntityDataNode.class,			15, "RenderDataNode");
+	DATANODE("chroma.datanode",			ChromaBlocks.TILEMODELLED3,	TileEntityDataNode.class,			15, "RenderDataNode"),
+	PYLONLINK("chroma.pylonlink",		ChromaBlocks.TILEENTITY2,	TileEntityPylonLink.class,			2,	"RenderPylonLink");
 
 	private final Class tile;
 	private final String name;
@@ -639,7 +641,7 @@ public enum ChromaTiles implements TileEnum {
 
 	@SideOnly(Side.CLIENT)
 	public boolean hasBlockRender() {
-		return !this.hasRender() || this == TANK || this == TABLE || this == CONSOLE || this == ALVEARY;
+		return !this.hasRender() || this == TANK || this == TABLE || this == CONSOLE || this == ALVEARY || this == PYLONLINK;
 	}
 
 	public boolean isPlant() {
@@ -705,6 +707,7 @@ public enum ChromaTiles implements TileEnum {
 			case WIRELESS:
 			case TELEPORT:
 			case BOOKDECOMP:
+			case GLOWFIRE:
 				return true;
 			default:
 				return false;

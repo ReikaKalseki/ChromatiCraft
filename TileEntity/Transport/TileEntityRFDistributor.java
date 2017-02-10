@@ -180,6 +180,8 @@ public class TileEntityRFDistributor extends TileEntityAreaDistributor implement
 			return false;
 		if (te == null)
 			return false;
+		if (te instanceof TileEntityRift)
+			return false;
 		Class c = te.getClass();
 		if (blacklist.contains(c))
 			return false;

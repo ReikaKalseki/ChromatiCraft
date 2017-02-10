@@ -48,7 +48,7 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
 		new TEDynamoInterface();
 		new RailCraftTurbineInterface();
 		new RailCraftEngineInterface();
-		new ExUGeneratorInterface();
+		//new ExUGeneratorInterface(); Cannot check if on
 		new BCEngineInterface();
 		new ForestryEngineInterface();
 		new IC2GeneratorInterface();
@@ -362,6 +362,7 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
 		private Field energyStorage;
 		private Field config;
 		private Field maxPower;
+		private Field isActive;
 
 		@Override
 		protected void init() throws Exception {
@@ -373,6 +374,9 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
 			Class c2 = Class.forName("cofh.thermalexpansion.block.TileTEBase$EnergyConfig");
 			maxPower = c2.getDeclaredField("maxPower");
 			maxPower.setAccessible(true);
+			Class c3 = Class.forName("cofh.thermalexpansion.block.TileRSControl");
+			isActive = c3.getDeclaredField("isActive");
+			isActive.setAccessible(true);
 		}
 
 		@Override
@@ -393,7 +397,7 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
 
 		@Override
 		protected int getBaseGeneration(TileEntity te) throws Exception {
-			return maxPower.getInt(config.get(te));
+			return isActive.getBoolean(te) ? maxPower.getInt(config.get(te)) : 0;
 		}
 
 	}

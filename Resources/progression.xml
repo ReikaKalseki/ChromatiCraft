@@ -630,39 +630,39 @@
 			The villagers have tried - and abjectly failed - to learn to manipulate crystal energy.
 		</desc>
 	</villagecasting>
-	<name>
+	<anystruct>
 		<title>
-
+			Buried Ruins
 		</title>
 		<hint>
-
+			From cobblestone squares to ancient mines, it appears some have come before you; have they left anything else?
+		</hint>
+		<reveal>
+			Yes, including their attempts to learn the same things you now attempt.
+		</reveal>
+	</anystruct>
+	<focuscrystal>
+		<title>
+			Refractory Gems
+		</title>
+		<hint>
+			You have thought of a way to increase the power of your fabrication constructs, but what to use as a refractor?
+		</hint>
+		<reveal>
+			Who would have thought THEY had found the key...
+		</reveal>
+	</focuscrystal>
+	<artefact>
+		<title>
+			Mysterious Relics
+		</title>
+		<hint>
+			
 		</hint>
 		<reveal>
 
 		</reveal>
-	</name>
-	<name>
-		<title>
-
-		</title>
-		<hint>
-
-		</hint>
-		<reveal>
-
-		</reveal>
-	</name>
-	<name>
-		<title>
-
-		</title>
-		<hint>
-
-		</hint>
-		<reveal>
-
-		</reveal>
-	</name>
+	</artefact>
 	<name>
 		<title>
 

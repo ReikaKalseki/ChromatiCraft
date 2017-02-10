@@ -192,6 +192,8 @@ public class TileEntityFluidDistributor extends TileEntityAreaDistributor implem
 			return false;
 		if (te == null)
 			return false;
+		if (te instanceof TileEntityRift)
+			return false;
 		Class c = te.getClass();
 		if (blacklist.contains(c))
 			return false;

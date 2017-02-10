@@ -54,6 +54,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -151,6 +152,8 @@ public class BlockLootChest extends BlockContainer {
 	}
 
 	public static boolean canOpen(World world, int x, int y, int z, EntityPlayer ep) {
+		if (ep != null && ReikaPlayerAPI.isFake(ep))
+			return false;
 		if (world.getBlockMetadata(x, y, z) >= 8 || world.isSideSolid(x, y+1, z, DOWN))
 			return false;
 		TileEntity te = world.getTileEntity(x, y, z);

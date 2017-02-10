@@ -12,9 +12,10 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class DuplicationWandRecipe extends PylonRecipe {
+public class DuplicationWandRecipe extends PylonCastingRecipe {
 
 	public DuplicationWandRecipe(ItemStack out, ItemStack main) {
 		super(out, main);
@@ -50,6 +51,10 @@ public class DuplicationWandRecipe extends PylonRecipe {
 		this.addAuxItem(Items.diamond, -4, -4);
 		this.addAuxItem(Items.diamond, 4, 4);
 		this.addAuxItem(Items.diamond, 4, -4);
+
+		this.addAuraRequirement(CrystalElement.LIGHTBLUE, 20000);
+		this.addAuraRequirement(CrystalElement.LIME, 10000);
+		this.addAuraRequirement(CrystalElement.BROWN, 15000);
 	}
 
 }

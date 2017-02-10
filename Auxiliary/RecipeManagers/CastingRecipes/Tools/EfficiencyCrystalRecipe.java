@@ -11,11 +11,11 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools;
 
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 
-public class EfficiencyCrystalRecipe extends PylonRecipe {
+public class EfficiencyCrystalRecipe extends PylonCastingRecipe {
 
 	public EfficiencyCrystalRecipe(ItemStack out, ItemStack main) {
 		super(out, main);

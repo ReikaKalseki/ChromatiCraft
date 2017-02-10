@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -23,6 +24,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
+import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux;
+import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux.Flags;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -72,9 +75,12 @@ public class ChromaStructures {
 		TELEGATE(false),
 		RELAY(false),
 		PYLONBROADCAST(true),
-		PYLONTURBO(true);
+		PYLONTURBO(true),
+		DATANODE(false);
 
 		public final boolean requiresColor;
+
+		public static final Structures[] structureList = values();
 
 		private Structures(boolean c) {
 			requiresColor = c;
@@ -138,6 +144,8 @@ public class ChromaStructures {
 					return getPylonBroadcastStructure(world, x, y, z, e);
 				case PYLONTURBO:
 					return getPylonTurboStructure(world, x, y, z, e);
+				case DATANODE:
+					return getDataTowerStructure(world, x, y, z);
 			}
 			return null;
 		}
@@ -202,6 +210,8 @@ public class ChromaStructures {
 					return getPylonBroadcastStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/4000)%16]);
 				case PYLONTURBO:
 					return getPylonTurboStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/4000)%16]);
+				case DATANODE:
+					return getDataTowerStructure(w, 0, 0, 0);
 			}
 			return null;
 		}
@@ -2549,6 +2559,8 @@ public class ChromaStructures {
 			array.addBlock(x, y, z-i, b, StoneTypes.RESORING.ordinal());
 		}
 
+		array.addBlock(x, y, z, ChromaTiles.PYLONLINK.getBlock(), ChromaTiles.PYLONLINK.getBlockMetadata());
+
 		return array;
 	}
 
@@ -3675,6 +3687,37 @@ public class ChromaStructures {
 		}
 
 		array.setBlock(x, y+1, z, ChromaTiles.PYLONTURBO.getBlock(), ChromaTiles.PYLONTURBO.getBlockMetadata());
+
+		return array;
+	}
+
+	public static FilledBlockArray getDataTowerStructure(World world, int x, int y, int z) {
+		FilledBlockArray array = new FilledBlockArray(world);
+		Random r = new Random();
+
+		Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
+
+		for (int i = -1; i <= 1; i++) {
+			for (int k = -1; k <= 1; k++) {
+				array.setBlock(x+i, y, z+k, b, r.nextInt(3) == 0 ? BlockType.MOSS.metadata : BlockType.STONE.metadata);
+			}
+		}
+
+		array.setBlock(x+1, y+1, z, b, r.nextInt(3) == 0 ? BlockType.MOSS.metadata : BlockType.STONE.metadata);
+		array.setBlock(x-1, y+1, z, b, r.nextInt(3) == 0 ? BlockType.MOSS.metadata : BlockType.STONE.metadata);
+		array.setBlock(x, y+1, z+1, b, r.nextInt(3) == 0 ? BlockType.MOSS.metadata : BlockType.STONE.metadata);
+		array.setBlock(x, y+1, z-1, b, r.nextInt(3) == 0 ? BlockType.MOSS.metadata : BlockType.STONE.metadata);
+
+		array.setBlock(x, y+1, z, ChromaTiles.DATANODE.getBlock(), ChromaTiles.DATANODE.getBlockMetadata());
+
+		for (int i = 0; i < 4; i++) {
+			TileEntityDummyAux te = new TileEntityDummyAux();
+			te.setFlag(Flags.HITBOX, true);
+			te.setFlag(Flags.RENDER, false);
+			te.setFlag(Flags.MOUSEOVER, false);
+			te.link(new Coordinate(x, y+1, z));
+			array.setBlock(x, y+2+i, z, ChromaBlocks.DUMMYAUX.getBlockInstance(), 0, te, "loc", "flags");
+		}
 
 		return array;
 	}

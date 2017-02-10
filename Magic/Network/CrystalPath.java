@@ -13,7 +13,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import Reika.ChromatiCraft.Magic.Interfaces.ConnectivityAction;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
@@ -47,11 +49,25 @@ public class CrystalPath implements Comparable<CrystalPath> {
 			WorldLocation loc = nodes.get(i);
 			WorldLocation prev = nodes.get(i-1);
 			CrystalNetworkTile te = PylonFinder.getNetTileAt(loc, true);
-			if (te instanceof CrystalRepeater)
-				loss = Math.max(loss, ((CrystalRepeater)te).getSignalDegradation());
+			if (te instanceof CrystalRepeater) {
+				loss += ((CrystalRepeater)te).getSignalDegradation();
+				if (te instanceof ConnectivityAction) {
+					CrystalNetworkTile teprev = PylonFinder.getNetTileAt(prev, true);
+					WorldLocation next = nodes.get(i+1);
+					CrystalNetworkTile tenext = PylonFinder.getNetTileAt(next, true);
+					ConnectivityAction ca = (ConnectivityAction)te;
+					ca.notifyReceivingFrom(this, (CrystalTransmitter)tenext);
+					ca.notifySendingTo(this, (CrystalReceiver)teprev);
+				}
+			}
 			links.add(network.getLink(prev, loc));
 		}
 		attenuation = loss;
+	}
+
+	public void addBaseAttenuation(int amt) {
+		if (amt > 0)
+			attenuation += amt;
 	}
 
 	public final boolean containsLink(CrystalLink l) {

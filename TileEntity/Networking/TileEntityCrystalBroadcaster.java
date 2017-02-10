@@ -60,7 +60,7 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 
 	@Override
 	public int getSignalDegradation() {
-		return 2500;
+		return this.isTurbocharged() ? 1500 : 2500;
 	}
 
 	@Override
@@ -91,7 +91,7 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 
 	@Override
 	public int maxThroughput() {
-		return 100000;
+		return this.isTurbocharged() ? 250000 : 100000;
 	}
 
 	@Override
@@ -141,7 +141,7 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 
 	@Override
 	public int getThoughputInsurance() {
-		return 500;
+		return this.isTurbocharged() ? 1000 : 500;
 	}
 
 }

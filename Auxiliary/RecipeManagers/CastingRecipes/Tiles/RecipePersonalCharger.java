@@ -12,11 +12,11 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 
-public class RecipePersonalCharger extends PylonRecipe {
+public class RecipePersonalCharger extends PylonCastingRecipe {
 
 	public RecipePersonalCharger(ItemStack out, ItemStack main) {
 		super(out, main);

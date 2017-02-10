@@ -228,14 +228,13 @@ public class BlockLockKey extends Block {
 	}
 
 	@Override
-	public void harvestBlock(World world, EntityPlayer ep, int x, int y, int z, int meta)
-	{
+	public void harvestBlock(World world, EntityPlayer ep, int x, int y, int z, int meta) {
 		if (!this.canHarvest(world, ep, x, y, z))
 			return;
 		if (world.isRemote)
 			return;
 		TileEntityLockKey te = (TileEntityLockKey)world.getTileEntity(x, y, z);
-		if (te == null)
+		if (te == null || te.uid == null)
 			return;
 		ItemStack is = new ItemStack(this, 1, meta);
 		is.stackTagCompound = new NBTTagCompound();

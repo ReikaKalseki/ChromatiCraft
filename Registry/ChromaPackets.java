@@ -41,6 +41,7 @@ public enum ChromaPackets {
 	RERESEARCH(1),
 	BIOMEPAINT(3),
 	LIGHTNINGDIE(1),
+	CLOUDDIE(1),
 	GLUON(2),
 	AURAPOUCH(2),
 	FARMERHARVEST(3),
@@ -145,6 +146,9 @@ public enum ChromaPackets {
 	RELAYFILTER(2),
 	ROUTERFILTERFLAG(1),
 	ROUTERLINK(3),
+	STRUCTFIND(2),
+	DATASCAN(),
+	LORENOTE(1),
 	;
 
 	public final int numInts;

@@ -32,6 +32,7 @@ import Reika.DragonAPI.Instantiable.ParticleController.FlashColorController;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -150,6 +151,8 @@ public class EntityDimensionFlare extends Entity/*Living*/ {
 		double dx = target.posX-posX;
 		double dy = target.posY-posY;
 		double dz = target.posZ-posZ;
+		if (ReikaMathLibrary.py3d(dx, dy, dz) < 16)
+			return;
 		double v = 0.03125;
 		motionX += v*Math.signum(dx);
 		motionY += v*Math.signum(dy);

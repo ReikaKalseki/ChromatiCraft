@@ -97,14 +97,14 @@
 		Amazingly, up until now you have been out of options for attacking a mob whose position you know but which you cannot see. Sure, you could break the barrier, but far better would be to simply attack them through walls. Accuracy, however, is not your strength, and the attack power can suffer for it.
 	</killaura>
 	<floatboots>
-		Much to your chagrin, it seems nearly every build you make requires that you hover at some arbitrary distance off the ground, at neither the ceiling nor the floor, and not even at the right height for a pillar of dirt to help. You could use the flying attachment to your chestplate, but hovering in one place burns an excessive amount of fuel. With that in mind, you recall the floating stone deposits in the world you recently visited. They may be exactly what you need. Attaching some floatstone to your boots - whatever type they may be - will not only grant you the ability to hover, but dampen any fall.
+		Much to your chagrin, it seems nearly every build you make requires that you hover at some arbitrary distance off the ground, at neither the ceiling nor the floor, and not even at the right height for a pillar of dirt to help. You could use the flying attachment to your chestplate, but hovering in one place burns an excessive amount of fuel. With that in mind, you recall the floating stone deposits in the world you recently visited; They may be exactly what you need. Attaching some floatstone to your boots - whatever type they may be - will not only grant you the ability to hover, but dampen any fall.
 	</floatboots>
 	<beeframe>
 		Bee breeding is slow. VERY slow. Sure, you have it easier now that you have a magic bronze box in which you can mash bees or their genes together and avoid the finicky nature of chance, but you still have to wait for the bees' lifecycle, something that often takes hours. Purple void frames are not common enough to be of much help, but maybe you can try making your own frames...
 	</beeframe>
-	<warpcapsule>
+	<telecapsule>
 		You have gotten lost so many times that you probably have more resources sitting in random "when you return" chests than you have back at home, and now you have done it again. Fed up with this, you have created a tablet that will let you instantly warp back to where you inscribed it. However, you appear to have done a rather poor job of it, as the thing is nearly as dangerous as teleporting blindly and hoping you do not end up suffocating in a wall. At least you are free of those damn gas and lava pockets...
-	</warpcapsule>
+	</telecapsule>
 	<name>
 		
 	</name>

@@ -26,6 +26,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
@@ -82,6 +83,7 @@ import Reika.DragonAPI.Auxiliary.ChunkManager;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -107,6 +109,11 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	public int randomOffset = rand.nextInt(360);
 
 	public static final int MAX_ENERGY = 180000;
+
+	private static final Collection<Coordinate> crystalPositions = new HashSet();
+
+	private static Class node;
+	private static HashMap<String, ArrayList<Integer>> nodeCache;
 	public static final int MAX_ENERGY_ENHANCED = 900000;
 
 	private int energy = MAX_ENERGY;
@@ -122,10 +129,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	public boolean enhancing = false;
 
-	private static final Collection<Coordinate> crystalPositions = new HashSet();
-
-	private static Class node;
-	private static HashMap<String, ArrayList<Integer>> nodeCache;
+	private WorldLocation linkTile;
 
 	static {
 		if (ModList.THAUMCRAFT.isLoaded()) {
@@ -152,6 +156,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	public static Collection<Coordinate> getPowerCrystalLocations() {
 		return Collections.unmodifiableCollection(crystalPositions);
+	}
+
+	public void link(TileEntityPylonLink te) {
+		linkTile = te == null ? null : new WorldLocation(te);
 	}
 
 	public void markPlaced() {
@@ -273,6 +281,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 					else if (e instanceof EntityBallLightning) {
 						attack = ((EntityBallLightning)e).getElement() != color;
 					}
+					else if (e.getClass().getName().equals("openblocks.common.entity.EntityLuggage")) {
+						attack = false;
+					}
 					if (attack) {
 						this.attackEntity(e);
 						this.sendClientAttack(this, e);
@@ -297,7 +308,32 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			if (!world.isRemote && ChromaOptions.BALLLIGHTNING.getState() && energy >= this.getCapacity()/2 && rand.nextInt(1000) == 0 && this.isChunkLoaded()) {
 				world.spawnEntityInWorld(new EntityBallLightning(world, color, x+0.5, y+0.5, z+0.5).setPylon().setNoDrops());
 			}
+
+			if (linkTile != null && energy >= this.getCapacity()*0.75) {
+				TileEntity tile = linkTile.getTileEntity();
+				if (tile instanceof TileEntityPylonLink) {
+					TileEntityPylonLink te = (TileEntityPylonLink)tile;
+					Collection<WorldLocation> c = te.getLinkedPylons();
+					for (WorldLocation loc : c) {
+						if (!loc.equals(world, x, y, z)) {
+							TileEntity tile2 = loc.getTileEntity();
+							if (tile2 instanceof TileEntityCrystalPylon) {
+								TileEntityCrystalPylon tp = (TileEntityCrystalPylon)tile2;
+								if (tp.color == color) {
+									int amt = Math.min(this.getDonatedRecharge(), tp.getCapacity()-tp.energy);
+									tp.energy += amt;
+									energy -= amt;
+								}
+							}
+						}
+					}
+				}
+			}
 		}
+	}
+
+	private int getDonatedRecharge() {
+		return Math.min(energy/2, this.isEnhanced() ? 5000 : 1000);
 	}
 
 	private int getAttackRange() {
@@ -689,6 +725,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 		NBT.setBoolean("load", forceLoad);
 		NBT.setBoolean("placed", placedByHand);
+
+		if (linkTile != null)
+			linkTile.writeToNBT("link", NBT);
 	}
 
 	@Override
@@ -697,6 +736,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 		forceLoad = NBT.getBoolean("load");
 		placedByHand = NBT.getBoolean("placed");
+
+		if (NBT.hasKey("link"))
+			linkTile = WorldLocation.readFromNBT("link", NBT);
 	}
 
 	@Override
@@ -711,9 +753,35 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	@Override
 	public int maxThroughput() {
-		int base = this.isEnhanced() ? 15000 : 5000;
+		int base = this.getBaseThroughput();
 		int thresh = this.getCapacity()/4;
-		return energy >= thresh ? base : this.getReducedThroughput(thresh, base);
+		return energy >= thresh ? this.getLinkedThroughput(base) : this.getReducedThroughput(thresh, base);
+	}
+
+	private int getBaseThroughput() {
+		return this.isEnhanced() ? 15000 : 5000;
+	}
+
+	private int getLinkedThroughput(int base) {
+		if (linkTile != null) {
+			TileEntity tile = linkTile.getTileEntity();
+			if (tile instanceof TileEntityPylonLink) {
+				TileEntityPylonLink te = (TileEntityPylonLink)tile;
+				Collection<WorldLocation> c = te.getLinkedPylons();
+				for (WorldLocation loc : c) {
+					if (!loc.equals(worldObj, xCoord, yCoord, zCoord)) {
+						TileEntity tile2 = loc.getTileEntity();
+						if (tile2 instanceof TileEntityCrystalPylon) {
+							TileEntityCrystalPylon tp = (TileEntityCrystalPylon)tile2;
+							if (tp.color == color) {
+								base += tp.getBaseThroughput();
+							}
+						}
+					}
+				}
+			}
+		}
+		return base;
 	}
 
 	private int getReducedThroughput(int thresh, int max) {

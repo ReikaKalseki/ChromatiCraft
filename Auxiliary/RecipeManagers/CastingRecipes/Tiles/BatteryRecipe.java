@@ -14,7 +14,7 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -26,7 +26,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BatteryRecipe extends PylonRecipe {
+public class BatteryRecipe extends PylonCastingRecipe {
 
 	public static final int NOTE_SPEED = 8;
 

@@ -12,11 +12,11 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModInteract.ItemHandlers.AppEngHandler;
 
-public class VoidStorageRecipe extends PylonRecipe {
+public class VoidStorageRecipe extends PylonCastingRecipe {
 
 	public VoidStorageRecipe(ItemStack out, ItemStack main) {
 		super(out, main);

@@ -48,6 +48,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
+import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.ExtractedItem;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.MatchMode;
 import appeng.api.AEApi;
 import appeng.api.networking.IGridBlock;
@@ -218,9 +219,9 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 		}
 
 		if (ModList.APPENG.isLoaded()) {
-			int rem = (int)mode.removeItems(network, is, simulate);
-			if (rem > 0) {
-				return ReikaItemHelper.getSizedItemStack(is, rem);
+			ExtractedItem rem = mode.removeItems(network, is, simulate);
+			if (rem != null) {
+				return ReikaItemHelper.getSizedItemStack(rem.getItem(), (int)rem.amount);
 			}
 			ChromatiCraft.logger.debug(this+" failed to find "+is+" in its ME System.");
 		}

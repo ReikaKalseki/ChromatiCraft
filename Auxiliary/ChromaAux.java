@@ -13,6 +13,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -24,6 +25,7 @@ import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
@@ -36,6 +38,11 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fluids.Fluid;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.nodes.INode;
+import thaumcraft.api.nodes.NodeModifier;
+import thaumcraft.api.nodes.NodeType;
 import Reika.ChromatiCraft.ChromaGuiHandler;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -62,11 +69,15 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Worldgen.GenerationInterceptWorld;
+import Reika.DragonAPI.Instantiable.Worldgen.GenerationInterceptWorld.TileHook;
 import Reika.DragonAPI.Interfaces.Entity.CustomProjectile;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
+import Reika.DragonAPI.ModRegistry.InterfaceCache;
 import WayofTime.alchemicalWizardry.api.soulNetwork.SoulNetworkHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -77,9 +88,52 @@ public class ChromaAux {
 	public static final Color[] sideColors = {Color.CYAN, Color.BLUE, Color.YELLOW, Color.BLACK, new Color(255, 120, 0), Color.MAGENTA};
 	public static final String[] sideColorNames = {"CYAN", "BLUE", "YELLOW", "BLACK", "ORANGE", "MAGENTA"};
 
+	private static final GenerationInterceptWorld relayWorld = new GenerationInterceptWorld();
+
+	static {
+		if (ModList.THAUMCRAFT.isLoaded()) {
+			/*
+			relayWorld.disallowBlock(ThaumItemHelper.BlockEntry.NODE.getBlock());
+			relayWorld.disallowBlock(ThaumItemHelper.BlockEntry.TOTEM.getBlock());
+			relayWorld.disallowBlock(ThaumItemHelper.BlockEntry.TILE.getBlock());
+			relayWorld.disallowBlock(ThaumItemHelper.BlockEntry.TOTEMNODE.getBlock());
+			 */
+			relayWorld.addHook(new NodeHook());
+		}
+	}
+
+	private static class NodeHook implements TileHook {
+
+		@Override
+		public void onTileChanged(TileEntity te) {
+			if (InterfaceCache.NODE.instanceOf(te)) {
+				INode n = (INode)te;
+				n.setNodeType(NodeType.NORMAL);
+				n.setNodeModifier(NodeModifier.BRIGHT);
+				if (te.worldObj.rand.nextInt(4) == 0) {
+					float f = 1+te.worldObj.rand.nextFloat()*2;
+					AspectList al = n.getAspects();
+					for (Aspect a : new HashSet<Aspect>(al.aspects.keySet())) {
+						al.aspects.put(a, (int)(f*al.getAmount(a)));
+					}
+				}
+			}
+		}
+
+		@Override
+		public boolean shouldRun(World world, int x, int y, int z) {
+			return world.getBiomeGenForCoords(x, z) == ChromatiCraft.glowingcliffs;
+		}
+
+	}
+
 	public static void interceptChunkPopulation(int cx, int cz, World world, IChunkProvider generator, IChunkProvider loader) {
 		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
 			((WorldProviderChroma)world.provider).getChunkGenerator().onPopulationHook(generator, loader, cx, cz);
+		}
+		else if (ReikaChunkHelper.chunkContainsBiome(world, cx, cz, ChromatiCraft.glowingcliffs)) {
+			relayWorld.link(world);
+			GameRegistry.generateWorld(cx, cz, relayWorld, generator, loader);
 		}
 		else {
 			GameRegistry.generateWorld(cx, cz, world, generator, loader);

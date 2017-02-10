@@ -16,6 +16,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
+import Reika.ChromatiCraft.Magic.Interfaces.ConnectivityAction;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
+import Reika.ChromatiCraft.Magic.Network.CrystalPath;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -23,9 +27,11 @@ import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
+public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater implements ConnectivityAction {
 
-	private EnumMap<CrystalElement, Integer> depth = new EnumMap(CrystalElement.class);
+	private final EnumMap<CrystalElement, Integer> depth = new EnumMap(CrystalElement.class);
+
+	private boolean connectedToPylon = false;
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -33,6 +39,21 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 		if (world.isRemote && this.canConduct())
 			this.particles(world, x, y, z);
 		//ReikaJavaLibrary.pConsole(colorTimer+":"+this.getSide()+">"+this.getActiveColor());
+	}
+
+
+	@Override
+	protected void onFirstTick(World world, int x, int y, int z) {
+		super.onFirstTick(world, x, y, z);
+		/* Not performant
+		Collection<TileEntityCrystalPylon> c = CrystalNetworker.instance.getAllNearbyPylons(this, this.getReceiveRange());
+		for (TileEntityCrystalPylon te : c) {
+			if (te.canConduct() && PylonFinder.lineOfSight(world, x, y, z, te.xCoord, te.yCoord, te.zCoord)) {
+				connectedToPylon = true;
+				break;
+			}
+		}
+		 */
 	}
 
 	@Override
@@ -176,6 +197,8 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 			if (NBT.hasKey(s))
 				depth.put(e, NBT.getInteger(s));
 		}
+
+		connectedToPylon = NBT.getBoolean("pylon");
 	}
 
 	@Override
@@ -184,6 +207,8 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 
 		for (CrystalElement e : depth.keySet())
 			NBT.setInteger("depth_"+e.ordinal(), depth.get(e));
+
+		NBT.setBoolean("pylon", connectedToPylon);
 	}
 
 	@Override
@@ -194,6 +219,26 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 	@Override
 	public int getPathPriority() {
 		return -10;
+	}
+
+	@Override
+	public void notifySendingTo(CrystalPath p, CrystalReceiver r) {
+
+	}
+
+	@Override
+	public void notifyReceivingFrom(CrystalPath p, CrystalTransmitter t) {
+		if (t instanceof TileEntityCrystalPylon) {
+			p.addBaseAttenuation(1000); //== 50 multis
+			connectedToPylon = true;
+		}
+		else {
+			connectedToPylon = false;
+		}
+	}
+
+	public boolean connectedToPylon() {
+		return connectedToPylon;
 	}
 
 }

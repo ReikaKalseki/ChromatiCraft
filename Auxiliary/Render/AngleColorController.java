@@ -10,7 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary.Render;
 
 import net.minecraft.entity.Entity;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.ColorController;
+import Reika.DragonAPI.Interfaces.ColorController;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 
 

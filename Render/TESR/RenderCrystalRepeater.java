@@ -88,8 +88,10 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 			v5.addVertexWithUV(-1, 1, 0, u, dv);
 			v5.draw();
 
+			this.doAuxRendering(te, par8);
+
 			if (te.canConduct() && te.isTurbocharged()) {
-				this.renderHalo(te);
+				this.renderHalo(te, par8);
 			}
 
 			GL11.glPopMatrix();
@@ -129,13 +131,17 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 
 			if (te.isTurbocharged()) {
 				GL11.glPushMatrix();
-				this.renderHalo(te);
+				this.renderHalo(te, par8);
 				GL11.glPopMatrix();
 			}
 
 			GL11.glPopMatrix();
 			GL11.glPopAttrib();
 		}
+	}
+
+	protected void doAuxRendering(TileEntityCrystalRepeater te, float par8) {
+
 	}
 
 	private void renderConnectivityLines(TileEntityCrystalRepeater te, float par8) {
@@ -208,7 +214,7 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 		}
 	}
 
-	private void renderHalo(TileEntityCrystalRepeater te) {
+	private void renderHalo(TileEntityCrystalRepeater te, float par8) {
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		int c = te.worldObj != null ? this.getHaloRenderColor(te) : 0xffffff;

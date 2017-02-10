@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 import mekanism.api.MekanismAPI;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.EnumChatFormatting;
@@ -24,7 +25,10 @@ import thaumcraft.api.ThaumcraftApi;
 import vazkii.botania.api.BotaniaAPI;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
+import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
+import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.ModInterface.Bees.ApiaryAcceleration;
@@ -39,6 +43,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.TinkerMaterialHelper;
@@ -286,10 +291,35 @@ public class ModInteraction {
 	public static void addRCGPRColors() {
 		for (int i = 0; i < ReikaDyeHelper.dyes.length; i++) {
 			ReikaDyeHelper dye = ReikaDyeHelper.dyes[i];
+			CrystalElement e = CrystalElement.elements[i];
 			BlockColorInterface.addGPRBlockColor(ChromaBlocks.DECAY.getBlockInstance(), i, dye.color);
 			BlockColorInterface.addGPRBlockColor(ChromaBlocks.DYELEAF.getBlockInstance(), i, dye.color);
 			BlockColorInterface.addGPRBlockColor(ChromaBlocks.DYE.getBlockInstance(), i, dye.color);
 			BlockColorInterface.addGPRBlockColor(ChromaBlocks.DYESAPLING.getBlockInstance(), i, dye.color);
+			BlockColorInterface.addGPRBlockColor(ChromaBlocks.CRYSTAL.getBlockInstance(), i, e.getColor());
+			BlockColorInterface.addGPRBlockColor(ChromaBlocks.SUPER.getBlockInstance(), i, e.getColor());
+			BlockColorInterface.addGPRBlockColor(ChromaBlocks.LAMP.getBlockInstance(), i, e.getColor());
+			BlockColorInterface.addGPRBlockColor(ChromaBlocks.GLOW.getBlockInstance(), i, e.getColor());
+			BlockColorInterface.addGPRBlockColor(ChromaBlocks.GLASS.getBlockInstance(), i, e.getColor());
+			BlockColorInterface.addGPRBlockColor(ChromaBlocks.PLANT.getBlockInstance(), i, ReikaColorAPI.mixColors(e.getColor(), 0x00990F, 0.5F));
+			BlockColorInterface.addGPRBlockColor(ChromaBlocks.RUNE.getBlockInstance(), i, ReikaColorAPI.mixColors(e.getColor(), 0x303030, 0.5F));
+		}
+
+		BlockColorInterface.addGPRBlockColor(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 0x3F3F3F);
+		BlockColorInterface.addGPRBlockColor(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 0x303030);
+		BlockColorInterface.addGPRBlockColor(ChromaBlocks.CHROMA.getBlockInstance(), 0xE5C7E5);
+		BlockColorInterface.addGPRBlockColor(ChromaBlocks.LUMA.getBlockInstance(), 0x570091);
+
+		for (int i = 0; i < Flowers.list.length; i++) {
+			BlockColorInterface.addGPRBlockColor(ChromaBlocks.DECOFLOWER.getBlockInstance(), i, Flowers.list[i].getColor());
+		}
+
+		for (int i = 0; i < TieredOres.list.length; i++) {
+			BlockColorInterface.addGPRBlockMimic(ChromaBlocks.TIEREDORE.getBlockInstance(), i, Blocks.stone);
+		}
+
+		for (int i = 0; i < TieredPlants.list.length; i++) {
+			BlockColorInterface.addGPRBlockMimic(ChromaBlocks.TIEREDPLANT.getBlockInstance(), i, Blocks.air);
 		}
 	}
 

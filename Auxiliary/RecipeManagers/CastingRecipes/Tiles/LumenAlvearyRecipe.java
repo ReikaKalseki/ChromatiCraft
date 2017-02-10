@@ -11,13 +11,13 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles;
 
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler;
 
 
-public class LumenAlvearyRecipe extends PylonRecipe {
+public class LumenAlvearyRecipe extends PylonCastingRecipe {
 
 	public LumenAlvearyRecipe(ItemStack out, ItemStack main) {
 		super(out, main);

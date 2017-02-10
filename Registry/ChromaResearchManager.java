@@ -505,7 +505,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		}
 
 		@Override
-		//@SideOnly(Side.CLIENT)
+		@SideOnly(Side.CLIENT)
 		public void renderIcon(RenderItem ri, FontRenderer fr, int x, int y) {
 			ReikaGuiAPI.instance.drawItemStack(ri, fr, ChromaItems.FRAGMENT.getStackOf(), x, y);
 		}

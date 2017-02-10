@@ -13,11 +13,12 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.CrystalTier;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -87,7 +88,7 @@ public class FocusCrystalRecipes {
 			super(defaultCrystal, getDefaultRecipe());
 
 			this.addRune(CrystalElement.BLACK, 3, -1, -3);
-			this.addRune(CrystalElement.WHITE, 1, -1, 3);
+			this.addRune(CrystalElement.WHITE, 2, -1, 4);
 			this.addRune(CrystalElement.LIGHTBLUE, -3, -1, -2);
 		}
 
@@ -140,7 +141,7 @@ public class FocusCrystalRecipes {
 
 	}
 
-	public static class ExquisiteFocusCrystalRecipe extends PylonRecipe {
+	public static class ExquisiteFocusCrystalRecipe extends PylonCastingRecipe {
 
 		public ExquisiteFocusCrystalRecipe(TempleCastingRecipe r) {
 			super(exquisiteCrystal, exponentialCosts ? ChromaStacks.bindingCrystal : refinedCrystal);
@@ -167,6 +168,11 @@ public class FocusCrystalRecipes {
 		@Override
 		public int getTypicalCraftedAmount() {
 			return 2*8;
+		}
+
+		@Override
+		public float getConsecutiveStackingTimeFactor(TileEntityCastingTable te) {
+			return 0.8F;
 		}
 
 		@Override

@@ -506,7 +506,7 @@
 	</essentiarelay>
 	<glowfire>
 		<desc>
-			Some things you never have enough of, in particular diamonds, shards, and iron (the last of which was not helped by your attempts to build a turbine the size of a small house). Other things you have so much of that your biggest problem is storing it somewhere. What would be most convenient would be to be able to decompose the latter into energy with which you could cast the former. Surely nothing could go wrong with this...
+			Some things you never have enough of, in particular diamonds, shards, and iron (the last of which was not helped by your attempts to build a turbine the size of a small house). Other things you have so much of that your biggest problem is storing it somewhere. What would be most convenient would be to be able to decompose the latter into energy with which you could cast the former. Surely nothing could go wrong with this sort of exchange project...
 		</desc>
 		<note>
 
@@ -640,14 +640,15 @@
 
 		</note>
 	</avolaser>
-	<name>
+	<focuscrystal>
 		<desc>
-
+			Crafting things can be painfully slow, and you are not all that keen on starting the process then wandering away to do other things, forgetting about the crafting almost immediately. If you could focus the pulses and bursts of energies used by the constructs into a more coherent...beam, to overcharge them and make them more efficient, you would better distribute the power within them and probably enhance the charge rate as well. No longer will you need to dwell around your construct doing nothing but waiting.
 		</desc>
 		<note>
-
+			More refined crystals yield more powerful effects
+			Up to 8 crystals per construct
 		</note>
-	</name>
+	</focuscrystal>
 	<name>
 		<desc>
 

@@ -242,8 +242,8 @@ OperationInterval, MultiBlockChromaTile {
 	}
 
 	private void giveAbility(EntityPlayer ep) {
-		if (ep == null) {
-			ChromatiCraft.logger.logError("Tried to give ability to null player???");
+		if (ep == null || ReikaPlayerAPI.isFake(ep)) {
+			ChromatiCraft.logger.logError("Tried to give ability to null or fake player???");
 			return;
 		}
 		Chromabilities.give(ep, ability);

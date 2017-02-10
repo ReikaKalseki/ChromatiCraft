@@ -39,6 +39,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
+import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.ExtractedItem;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.MatchMode;
 import appeng.api.AEApi;
 import appeng.api.networking.IGridBlock;
@@ -157,14 +158,15 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 	}
 
 	private void transferItem(ItemStack is, IInventory ii, MatchMode mode) {
-		int rem = (int)mode.removeItems(network, is, true);
-		if (rem > 0) {
-			is.stackSize = Math.min(rem, is.stackSize);
-			if (ReikaInventoryHelper.addToIInv(is, ii)) {
-				mode.removeItems(network, is, false);
+		ExtractedItem rem = mode.removeItems(network, is, true);
+		if (rem != null) {
+			ItemStack add = rem.getItem();
+			add.stackSize = Math.min(add.stackSize, is.stackSize);
+			if (ReikaInventoryHelper.addToIInv(add, ii)) {
+				mode.removeItems(network, add, false);
 			}
-			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.METRANSFER.ordinal(), this, 32, Item.getIdFromItem(is.getItem()), is.getItemDamage());
-			AEPowerCost = Math.min(500, AEPowerCost+Math.max(1, is.stackSize/4));
+			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.METRANSFER.ordinal(), this, 32, Item.getIdFromItem(add.getItem()), add.getItemDamage());
+			AEPowerCost = Math.min(500, AEPowerCost+Math.max(1, add.stackSize/4));
 		}
 	}
 

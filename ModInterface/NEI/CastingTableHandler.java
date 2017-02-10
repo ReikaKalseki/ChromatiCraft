@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiCastingTable;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -162,8 +162,8 @@ public class CastingTableHandler extends TemplateRecipeHandler {
 	public void drawExtras(int recipe)
 	{
 		CastingCrafting r = (CastingCrafting)arecipes.get(recipe);
-		if (r.recipe instanceof PylonRecipe) {
-			PylonRecipe p = (PylonRecipe)r.recipe;
+		if (r.recipe instanceof PylonCastingRecipe) {
+			PylonCastingRecipe p = (PylonCastingRecipe)r.recipe;
 			ElementTagCompound tag = p.getRequiredAura();
 			for (CrystalElement e : tag.elementSet()) {
 				int w = 4;

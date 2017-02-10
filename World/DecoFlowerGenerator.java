@@ -56,8 +56,16 @@ public class DecoFlowerGenerator implements RetroactiveGenerator, ChromaDecorato
 								if (posY <= 0)
 									continue;
 							}
+							if (p == Flowers.GLOWROOT) {
+								posY = ReikaRandomHelper.getRandomBetween(4, 80);
+							}
 							while (!world.getBlock(posX, posY, posZ).isAir(world, posX, posY, posZ) && posY < 255)
 								posY++;
+							if (p == Flowers.GLOWROOT) {
+								while (posY < 255 && !Flowers.GLOWROOT.canPlantAt(world, posX, posY, posZ) && world.getBlock(posX, posY+1, posZ).isAir(world, posX, posY+1, posZ)) {
+									posY++;
+								}
+							}
 							if (world.getBlock(posX, posY, posZ).isAir(world, posX, posY, posZ) && p.canPlantAt(world, posX, posY, posZ)) {
 								if (p == Flowers.FLOWIVY) {
 									while(world.getBlock(posX, posY+1, posZ).isAir(world, posX, posY+1, posZ) && p.canPlantAt(world, posX, posY+1, posZ)) {

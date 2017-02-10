@@ -12,11 +12,11 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class CrystalFurnaceRecipe extends PylonRecipe {
+public class CrystalFurnaceRecipe extends PylonCastingRecipe {
 
 	public CrystalFurnaceRecipe(ItemStack out, ItemStack main) {
 		super(out, main);

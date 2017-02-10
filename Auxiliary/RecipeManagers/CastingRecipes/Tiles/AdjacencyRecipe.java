@@ -17,12 +17,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class AdjacencyRecipe extends PylonRecipe {
+public class AdjacencyRecipe extends PylonCastingRecipe {
 
 	private static final Item[] upgrade = {Items.iron_ingot, Items.iron_ingot, Items.gold_ingot, Items.gold_ingot,
 		Items.diamond, Items.emerald, Items.nether_star};

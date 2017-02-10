@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.BlockTNT;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.EntityLiving;
@@ -65,6 +66,7 @@ import Reika.ChromatiCraft.Auxiliary.RainbowTreeEffects;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
+import Reika.ChromatiCraft.Entity.EntityNukerBall;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
@@ -149,7 +151,8 @@ public enum Chromabilities implements Ability {
 	RECHARGE(null, false),
 	MEINV(null, false, ModList.APPENG),
 	MOBSEEK(null, true),
-	BEEALYZE(null, true);
+	BEEALYZE(null, true),
+	NUKER(Phase.START, false);
 
 	private final boolean tickBased;
 	private final Phase tickPhase;
@@ -269,6 +272,7 @@ public enum Chromabilities implements Ability {
 			case MEINV:
 			case MOBSEEK:
 			case BEEALYZE:
+			case NUKER:
 				return true;
 			default:
 				return false;
@@ -308,6 +312,9 @@ public enum Chromabilities implements Ability {
 			case BEEALYZE:
 				analyzeBees(ep);
 				break;
+			case NUKER:
+				breakSurroundingBlocks(ep);
+				break;
 			default:
 				break;
 		}
@@ -316,7 +323,7 @@ public enum Chromabilities implements Ability {
 	public boolean trigger(EntityPlayer ep, int data) {
 		switch(this) {
 			case REACH:
-				this.setReachDistance(ep, this.enabledOn(ep) ? MAX_REACH : -1); //use data?
+				this.setReachDistance(ep, this.enabledOn(ep) ? AbilityHelper.REACH_SCALE[data] : -1);
 				return true;
 			case SONIC:
 				this.destroyBlocksAround(ep, data);
@@ -671,6 +678,9 @@ public enum Chromabilities implements Ability {
 											EntityItem ei = ReikaItemHelper.dropItem(world, dx, dy, dz, is);
 											ReikaEntityHelper.setInvulnerable(ei, true);
 										}
+									}
+									if (b instanceof BlockTNT) {
+										((BlockTNT)b).func_150114_a(world, dpx, dpy, dpz, 1, ep); //NOT meta
 									}
 									world.setBlock(dpx, dpy, dpz, Blocks.air);
 								}
@@ -1236,6 +1246,14 @@ public enum Chromabilities implements Ability {
 		}
 	}
 
+	private static void breakSurroundingBlocks(EntityPlayer ep) {
+		double ANGLE = 22;
+		double phi = ReikaRandomHelper.getRandomPlusMinus(ep.rotationYawHead+90, ANGLE);
+		double theta = ReikaRandomHelper.getRandomPlusMinus(-ep.rotationPitch, ANGLE);
+		EntityNukerBall enb = new EntityNukerBall(ep.worldObj, ep, 1.5, phi, theta);
+		ep.worldObj.spawnEntityInWorld(enb);
+	}
+
 	@ModDependent(ModList.FORESTRY)
 	private static void analyzeBees(EntityPlayer ep) {
 		int slot = (int)(ep.worldObj.getTotalWorldTime()%ep.inventory.mainInventory.length);
@@ -1382,6 +1400,8 @@ public enum Chromabilities implements Ability {
 				return 1;
 			case BREADCRUMB:
 				return 12;
+			case REACH:
+				return AbilityHelper.REACH_SCALE.length-1;
 			default:
 				return 0;
 		}

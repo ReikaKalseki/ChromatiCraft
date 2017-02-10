@@ -26,6 +26,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
@@ -35,6 +36,7 @@ import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.MultiRecipe;
 import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.RuneRecipe;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.ConfigRecipe;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.RuneShape;
@@ -293,7 +295,7 @@ public class CastingRecipe implements APICastingRecipe {
 		return true;
 	}
 
-	public float getRecipeStackedTimeFactor(TileEntityCastingTable te, int stack) {
+	public final float getRecipeStackedTimeFactor(TileEntityCastingTable te, int stack) {
 		float f = this.getConsecutiveStackingTimeFactor(te);
 		double t = 0;
 		for (int i = 0; i < stack; i++) {
@@ -369,11 +371,16 @@ public class CastingRecipe implements APICastingRecipe {
 			Coordinate c = new Coordinate(x, y, z);
 			CrystalElement e = allRunes.get(c);
 			if (e != null) {
-				if (e != color)
-					throw new RegistrationException(ChromatiCraft.instance, "Rune conflict @ "+x+", "+y+", "+z+": "+color+"("+color.ordinal()+") over "+e+"("+e.ordinal()+"); map:=\n"+this.getRuneMap(y));
+				if (e != color) {
+					if (this instanceof ConfigRecipe.Rune || this instanceof ConfigRecipe.Multi || this instanceof ConfigRecipe.Pylon) {
+						throw new IllegalArgumentException("Rune conflict @ "+x+", "+y+", "+z+": "+color+"("+color.ordinal()+") over "+e+"("+e.ordinal()+");");
+					}
+					else {
+						throw new RegistrationException(ChromatiCraft.instance, "Rune conflict @ "+x+", "+y+", "+z+": "+color+"("+color.ordinal()+") over "+e+"("+e.ordinal()+"); map:=\n"+this.getRuneMap(y));
+					}
+				}
 			}
-			else
-				allRunes.put(c, color);
+			allRunes.put(c, color);
 		}
 
 		private String getRuneMap(int y) {
@@ -472,6 +479,10 @@ public class CastingRecipe implements APICastingRecipe {
 
 		protected final MultiBlockCastingRecipe addAuxItem(ItemStack is, int dx, int dz) {
 			return this.addAuxItem(new ItemMatch(is), dx, dz);
+		}
+
+		protected final MultiBlockCastingRecipe addAuxItem(Fluid f, int dx, int dz) {
+			return this.addAuxItem(new ItemMatch(f), dx, dz);
 		}
 
 		protected final MultiBlockCastingRecipe addAuxItem(String s, int dx, int dz) {
@@ -623,11 +634,11 @@ public class CastingRecipe implements APICastingRecipe {
 		}
 	}
 
-	public static class PylonRecipe extends MultiBlockCastingRecipe implements LumenRecipe {
+	public static class PylonCastingRecipe extends MultiBlockCastingRecipe implements LumenRecipe {
 
 		private final ElementTagCompound elements = new ElementTagCompound();
 
-		public PylonRecipe(ItemStack out, ItemStack main) {
+		public PylonCastingRecipe(ItemStack out, ItemStack main) {
 			super(out, main, RecipeType.PYLON);
 		}
 

@@ -13,10 +13,10 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class AuraCleanerRecipe extends PylonRecipe {
+public class AuraCleanerRecipe extends PylonCastingRecipe {
 
 	public AuraCleanerRecipe(ItemStack out, ItemStack in) {
 		super(out, in);

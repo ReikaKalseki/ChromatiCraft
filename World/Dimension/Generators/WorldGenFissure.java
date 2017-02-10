@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
@@ -149,6 +150,8 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 	public static boolean canCutInto(World world, int x, int y, int z) {
 		Block b = world.getBlock(x, y, z);
 		int meta = world.getBlockMetadata(x, y, z);
+		if (ChromaTiles.getTileFromIDandMetadata(b, meta) == ChromaTiles.DIMENSIONCORE)
+			return false;
 		if (b instanceof BlockStructureShield && meta >= 8)
 			return false;
 		if (b.getBlockHardness(world, x, y, z) < 0)

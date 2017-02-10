@@ -11,11 +11,9 @@ package Reika.ChromatiCraft.Auxiliary.Render;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.TreeMap;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -26,10 +24,8 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -40,42 +36,21 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ColorDiscovery;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.StructureComplete;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval.OperationState;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.ItemWandBase;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Items.Tools.ItemKillAuraGun;
 import Reika.ChromatiCraft.Items.Tools.ItemOrePick;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
-import Reika.ChromatiCraft.Magic.Interfaces.LumenRequestingTile;
-import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
-import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.ConditionalProductBee;
-import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.ConditionalProductProvider;
-import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.ProductCondition;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.PylonGenerator;
-import Reika.DragonAPI.DragonAPICore;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
-import Reika.DragonAPI.Base.TileEntityBase;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderingLoopEvent;
 import Reika.DragonAPI.Interfaces.Registry.OreType;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -84,29 +59,18 @@ import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.ModRegistry.InterfaceCache;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import forestry.api.apiculture.EnumBeeChromosome;
-import forestry.api.apiculture.IAlleleBeeSpecies;
-import forestry.api.apiculture.IBee;
-import forestry.api.apiculture.IBeeHousing;
-import forestry.api.genetics.AlleleManager;
 
 @SideOnly(Side.CLIENT)
 public class ChromaOverlays {
 
 	public static final ChromaOverlays instance = new ChromaOverlays();
 
-	private static final RenderItem itemRender = new RenderItem();
-
 	private boolean holding = false;
 	private int tick = 0;
-
-	private final EnumMap<CrystalElement, Float> factors = new EnumMap(CrystalElement.class);
 
 	private static final int PING_LENGTH = 512;
 	private static final int FADEIN = 16;
@@ -116,22 +80,12 @@ public class ChromaOverlays {
 	private final EnumMap<CrystalElement, Integer> pingAng = new EnumMap(CrystalElement.class);
 	private final EnumMap<CrystalElement, Integer> pingDist = new EnumMap(CrystalElement.class);
 
-	private final TreeMap<ProgressElement, Integer> progressFlags = new TreeMap(new ProgressComparator());
 	private final ArrayList<FlareMessage> flareMessages = new ArrayList();
 
 	private String structureText = null;
 	private long structureTextTick = -1;
 
-	private static final int WASHOUT_LENGTH = 312;
-	private static final int WASHOUT_FACTOR = 2;
-	private static final int FLASH_FADE = 4;
-	private boolean rehideGui;
-	private int washout;
-	private CrystalElement washoutColor;
-
 	static final double FRONT_TRANSLATE = 930;
-
-	private static final int PROGRESS_DURATION = Math.max(100, ChromaOptions.PROGRESSDURATION.getValue());
 
 	private ChromaOverlays() {
 
@@ -166,8 +120,8 @@ public class ChromaOverlays {
 		ItemStack is = ep.getCurrentEquippedItem();
 
 		if (evt.type == ElementType.HELMET) {
-			if (washout > 0) {
-				this.renderWashout(evt);
+			if (FullScreenOverlayRenderer.instance.isWashoutActive()) {
+				FullScreenOverlayRenderer.instance.renderWashout(evt, tick);
 				//evt.setCanceled(true);
 				GL11.glPopAttrib();
 				GL11.glPopMatrix();
@@ -178,7 +132,7 @@ public class ChromaOverlays {
 		int gsc = evt.resolution.getScaleFactor();
 		if (evt.type == ElementType.HELMET) {
 			if (ChromaItems.TOOL.matchWith(is)) {
-				this.renderTileOverlays(ep, gsc);
+				MouseoverOverlayRenderer.instance.renderTileOverlays(ep, gsc);
 			}
 
 			if (this.isEnergyDisplayTool(is)) {
@@ -202,11 +156,11 @@ public class ChromaOverlays {
 			this.renderAbilityStatus(ep, gsc);
 			GL11.glPopMatrix();
 			if (PylonGenerator.instance.canGenerateIn(ep.worldObj))
-				this.renderPylonAura(ep, gsc);
+				FullScreenOverlayRenderer.instance.renderPylonAura(ep, gsc);
 			this.renderPingOverlays(ep, gsc);
 			GL11.glPushMatrix();
 			GL11.glTranslated(0, 0, FRONT_TRANSLATE);
-			this.renderProgressOverlays(ep, gsc);
+			ProgressOverlayRenderer.instance.renderProgressOverlays(ep, gsc);
 			this.renderStructureText(ep, gsc);
 			this.renderFlareMessages(gsc);
 			GL11.glPopMatrix();
@@ -224,51 +178,20 @@ public class ChromaOverlays {
 		GL11.glPopAttrib();
 	}
 
+	public boolean isWashoutActive() {
+		return FullScreenOverlayRenderer.instance.isWashoutActive();
+	}
+
+	public void triggerPylonEffect(CrystalElement color) {
+		FullScreenOverlayRenderer.instance.triggerPylonEffect(color);
+	}
+
+	public void triggerWashout(CrystalElement e) {
+		FullScreenOverlayRenderer.instance.triggerWashout(e);
+	}
+
 	private boolean isEnergyDisplayTool(ItemStack is) {
 		return is != null && (ChromaItems.TOOL.matchWith(is) || is.getItem() instanceof ItemWandBase);
-	}
-
-	public boolean isWashoutActive() {
-		return washout > 0;
-	}
-
-	private void renderWashout(RenderGameOverlayEvent.Pre evt) {
-		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glDisable(GL11.GL_ALPHA_TEST);
-		GL11.glDisable(GL11.GL_CULL_FACE);
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		BlendMode.DEFAULT.apply();
-
-		int mx = Minecraft.getMinecraft().displayWidth/evt.resolution.getScaleFactor();
-		int my = Minecraft.getMinecraft().displayHeight/evt.resolution.getScaleFactor();
-
-		Tessellator v5 = Tessellator.instance;
-		v5.startDrawingQuads();
-		v5.setBrightness(240);
-		int a = (int)(washout > WASHOUT_LENGTH-FLASH_FADE ? (255F*(WASHOUT_LENGTH-washout)/FLASH_FADE) : 255F*Math.min(1, washout/255F));
-		int c1 = ReikaColorAPI.mixColors(washoutColor.getColor(), 0xffffff, 0.5F);
-		int c = ReikaColorAPI.mixColors(0xffffff, c1, Math.min(0.95F, a/255F));
-		//ReikaJavaLibrary.pConsole(washout+" > A="+a+", cfrac = "+(a/255F)+", C="+Integer.toHexString(c));
-		v5.setColorRGBA_I(c, Math.min(255, a));
-		v5.addVertex(0, 0, 0);
-		v5.addVertex(mx, 0, 0);
-		v5.addVertex(mx, my, 0);
-		v5.addVertex(0, my, 0);
-		v5.draw();
-
-		if (!Minecraft.getMinecraft().isGamePaused()) {
-			if (washout >= WASHOUT_LENGTH-FLASH_FADE || tick%WASHOUT_FACTOR == 0)
-				washout -= Math.max(1, 90/Math.max(1, ReikaRenderHelper.getFPS()));
-			if (washout == 0) {
-				if (rehideGui) {
-					Minecraft.getMinecraft().gameSettings.hideGUI = true;
-				}
-			}
-		}
-
-		GL11.glPopAttrib();
 	}
 
 	private void renderStructureText(EntityPlayer ep, int gsc) {
@@ -461,71 +384,6 @@ public class ChromaOverlays {
 		flareMessages.add(new FlareMessage(s));
 	}
 
-	public void triggerWashout(CrystalElement e) {
-		rehideGui = Minecraft.getMinecraft().gameSettings.hideGUI;
-		Minecraft.getMinecraft().gameSettings.hideGUI = false;
-		washout = Math.max(washout, WASHOUT_LENGTH-FLASH_FADE);
-		washoutColor = e;
-	}
-
-	private void renderProgressOverlays(EntityPlayer ep, int gsc) {
-		HashMap<ProgressElement, Integer> map = new HashMap();
-		int dy = 0;
-		//ReikaJavaLibrary.pConsole(progressFlags.keySet());
-		for (ProgressElement p : progressFlags.keySet()) {
-			int tick = progressFlags.get(p);
-			GL11.glColor4f(1, 1, 1, 1);
-			GL11.glDisable(GL11.GL_TEXTURE_2D);
-			GL11.glDisable(GL11.GL_LIGHTING);
-
-			FontRenderer fr = ChromaFontRenderer.FontType.HUD.renderer;
-			int sw = Math.max(40, fr.getStringWidth(p.getTitle()));
-			int sh = 24+(fr.listFormattedStringToWidth(p.getShortDesc(), sw*2).size()-1)*4;//24;
-			int w = sw+28;//144;
-			int h = tick > PROGRESS_DURATION-sh ? PROGRESS_DURATION-tick : tick < sh ? tick : sh;
-
-			int x = Minecraft.getMinecraft().displayWidth/gsc-w-1;
-
-			ReikaGuiAPI.instance.drawRect(x, dy, x+w, dy+h, 0xff444444);
-			ReikaGuiAPI.instance.drawRectFrame(x+1, dy+1, w-2, h-2, 0xcccccc);
-			ReikaGuiAPI.instance.drawRectFrame(x+2, dy+2, w-4, h-4, 0xcccccc);
-
-			GL11.glEnable(GL11.GL_TEXTURE_2D);
-
-			if (h == sh) {
-
-				fr.drawString(p.getTitle(), x+w-4-sw, dy+8-4, 0xffffff);
-				GL11.glPushMatrix();
-				double s = 0.5;
-				GL11.glScaled(s, s, s);
-				GL11.glTranslated(x+16+8, dy+16-1, 0);
-				fr.drawSplitString(p.getShortDesc(), x+w-4-sw, dy+8+4, sw*2, 0xffffff);
-				GL11.glPopMatrix();
-
-				GL11.glEnable(GL11.GL_LIGHTING);
-
-				p.renderIcon(itemRender, fr, x+4, dy+4);
-
-			}
-
-			GL11.glEnable(GL11.GL_LIGHTING);
-
-			if (tick > 1) {
-				map.put(p, tick-(DragonAPICore.debugtest ? 32 : 1));
-			}
-			dy += h+4;
-			if (dy > Minecraft.getMinecraft().displayHeight/gsc-h) {
-				//break;
-				map.put(p, tick);
-			}
-		}
-		//if (map.isEmpty())
-		progressFlags.clear();
-		//else
-		//	progressFlags.keySet().removeAll(map.keySet());
-		progressFlags.putAll(map);
-	}
-
 	private void renderTransitionHUD(EntityPlayer ep, ScaledResolution sr, ItemStack is) {
 		ItemTransitionWand itw = (ItemTransitionWand)is.getItem();
 		ItemStack place = itw.getStoredItem(is);
@@ -570,59 +428,6 @@ public class ChromaOverlays {
 		v5.addVertexWithUV(x+s, y, 0, du, v);
 		v5.addVertexWithUV(x, y, 0, u, v);
 		v5.draw();
-	}
-
-	public void triggerPylonEffect(CrystalElement e) {
-		factors.put(e, 2F);
-	}
-
-	private void renderPylonAura(EntityPlayer ep, int gsc) {
-		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-		String tex = "Textures/aura-bar-half-grid.png";//ChromaOptions.SMALLAURA.getState() ? "Textures/aura-bar-quarter.png" : "Textures/aura-bar-half.png";
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, tex);
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glEnable(GL11.GL_BLEND);
-		BlendMode.ADDITIVEDARK.apply();
-		GL11.glAlphaFunc(GL11.GL_GREATER, 1/255F);
-		Tessellator v5 = Tessellator.instance;
-		double w = Minecraft.getMinecraft().displayWidth/gsc;
-		double h = Minecraft.getMinecraft().displayHeight/gsc;
-		double z = -1000;
-		for (int i = 0; i < 16; i++) {
-			CrystalElement e = CrystalElement.elements[i];
-			Coordinate c = PylonGenerator.instance.getNearestPylonSpawn(ep.worldObj, ep.posX, ep.posY, ep.posZ, e);
-			double dd = c != null ? c.getDistanceTo(ep.posX, ep.posY, ep.posZ) : Double.POSITIVE_INFINITY;
-			if (dd < 32) {
-				int step = 40;
-				int frame = (int)((System.currentTimeMillis()/step)%20+e.ordinal()*1.25F)%20;
-				int imgw = 4;//20;
-				int imgh = 5;//1;
-				double u = frame%imgw/(double)imgw;
-				double du = u+1D/imgw;
-				double v = frame/imgw/(double)imgh;
-				double dv = v+1D/imgh;
-				int alpha = 255;
-				float cache = factors.containsKey(e) ? factors.get(e) : 0;
-				float bright = Math.min(1, (float)(1.5-dd/24));
-				float res = Math.max(cache, bright);
-				factors.put(e, cache*0.9975F);
-				if (res > 0) {
-					int color = ReikaColorAPI.getColorWithBrightnessMultiplier(e.getColor(), Math.min(1, res));
-					v5.startDrawingQuads();
-					v5.setBrightness(240);
-					v5.setColorRGBA_I(color, alpha);
-					v5.addVertexWithUV(0, h, z, u, dv);
-					v5.addVertexWithUV(w, h, z, du, dv);
-					v5.addVertexWithUV(w, 0, z, du, v);
-					v5.addVertexWithUV(0, 0, z, u, v);
-					v5.draw();
-				}
-			}
-		}
-		GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
-		BlendMode.DEFAULT.apply();
-		//GL11.glDisable(GL11.GL_DEPTH_TEST); //turn off depth testing to avoid this occluding other elements
-		GL11.glPopAttrib();
 	}
 
 	private void renderCustomCrosshair(RenderGameOverlayEvent.Pre evt) {
@@ -783,239 +588,6 @@ public class ChromaOverlays {
 		GuiIngameForge.left_height += h+1;
 		ReikaTextureHelper.bindHUDTexture();
 		evt.setCanceled(true);
-	}
-
-	private void renderTileOverlays(EntityPlayer ep, int gsc) {
-		MovingObjectPosition pos = ReikaPlayerAPI.getLookedAtBlock(ep, 4, false);
-		if (pos != null) {
-			TileEntity te = ep.worldObj.getTileEntity(pos.blockX, pos.blockY, pos.blockZ);
-			if (te instanceof LumenTile) {
-				if (te instanceof TileEntityAdjacencyUpgrade && !ChromaOptions.POWEREDACCEL.getState())
-					return;
-				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-				GL11.glPushMatrix();
-				this.renderStorageOverlay(ep, gsc, (LumenTile)te);
-				GL11.glPopMatrix();
-				GL11.glPopAttrib();
-			}
-			if (te instanceof OperationInterval) {
-				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-				GL11.glPushMatrix();
-				this.renderStatusOverlay(ep, gsc, (OperationInterval)te);
-				GL11.glPopMatrix();
-				GL11.glPopAttrib();
-			}
-			if (ModList.FORESTRY.isLoaded() && InterfaceCache.BEEHOUSE.instanceOf(te)) {
-				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-				GL11.glPushMatrix();
-				this.renderConditionalBeeProductOverlay(ep, gsc, (IBeeHousing)te);
-				GL11.glPopMatrix();
-				GL11.glPopAttrib();
-			}
-		}
-	}
-
-	@ModDependent(ModList.FORESTRY)
-	private void renderConditionalBeeProductOverlay(EntityPlayer ep, int gsc, IBeeHousing te) {
-		ItemStack queen = te.getBeeInventory().getQueen();
-		if (queen != null) {
-			IBee bee = (IBee)AlleleManager.alleleRegistry.getIndividual(queen);
-			if (bee != null) {
-				IAlleleBeeSpecies type = (IAlleleBeeSpecies)bee.getGenome().getActiveAllele(EnumBeeChromosome.SPECIES);
-				if (type instanceof ConditionalProductBee) {
-
-					int ox = Minecraft.getMinecraft().displayWidth/(gsc*2)-8;
-					int oy = Minecraft.getMinecraft().displayHeight/(gsc*2)-8;
-
-					ConditionalProductProvider p = ((ConditionalProductBee)type).getProductProvider();
-					ItemHashMap<ProductCondition> map = p.getConditions();
-					for (ItemStack is : map.keySet()) {
-						ProductCondition c = map.get(is);
-
-					}
-				}
-			}
-		}
-	}
-
-	private void renderStatusOverlay(EntityPlayer ep, int gsc, OperationInterval te) {
-		int ar = 12;
-		int ox = Minecraft.getMinecraft().displayWidth/(gsc*2)+ar-8;
-		int oy = Minecraft.getMinecraft().displayHeight/(gsc*2)+ar-8;
-		OperationState state = te.getState();
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/infoicons.png");
-		int idx = state.ordinal();
-		double u = 0.125*idx;
-		double v = 0.25;
-
-		double u2 = 0.125*4;
-		double v2 = 0.25;
-
-		double s = 0.125;
-		double r = 32;
-		Tessellator v5 = Tessellator.instance;
-		v5.startDrawingQuads();
-		int sh = 3;
-
-		v5.addVertexWithUV(ox+0-sh, oy+r+sh, 0, u2, v2+s);
-		v5.addVertexWithUV(ox+r+sh, oy+r+sh, 0, u2+s, v2+s);
-		v5.addVertexWithUV(ox+r+sh, oy+0-sh, 0, u2+s, v2);
-		v5.addVertexWithUV(ox+0-sh, oy+0-sh, 0, u2, v2);
-
-		v5.addVertexWithUV(ox+0, oy+r, 0, u, v+s);
-		v5.addVertexWithUV(ox+r, oy+r, 0, u+s, v+s);
-		v5.addVertexWithUV(ox+r, oy+0, 0, u+s, v);
-		v5.addVertexWithUV(ox+0, oy+0, 0, u, v);
-
-		v5.draw();
-		if (state == OperationState.RUNNING) {
-			idx = state.ordinal()+1;
-			u = 0.125*idx;
-			v = 0.25;
-			v5.startDrawing(GL11.GL_TRIANGLE_FAN);
-			v5.addVertexWithUV(ox+r/2, oy+r/2, 0, u+0.0625, v+0.0625);
-			float f = te.getOperationFraction();
-			double ma = 360*f;
-			double da = 0.25;
-			for (double a = 0; a < ma; a += da) {
-				double dx = Math.sin(Math.toRadians(a+90));
-				double dy = Math.cos(Math.toRadians(a+90));
-				double x = ox+r/2+r/2*dx;
-				double y = oy+r/2+r/2*dy;
-				double du = u+0.0625+dx*s/2;
-				double dv = v+0.0625+dy*s/2;
-				//ReikaJavaLibrary.pConsole(a+">"+x+","+y+" @ "+du+","+dv+" from "+u+","+v);
-				v5.addVertexWithUV(x, y, 0, du, dv);
-			}
-			v5.draw();
-		}
-	}
-
-	private void renderStorageOverlay(EntityPlayer ep, int gsc, LumenTile lt) {
-		ElementTagCompound tag = lt.getEnergy();
-		if (lt instanceof LumenRequestingTile) {
-			LumenRequestingTile lrt = (LumenRequestingTile)lt;
-			tag = lrt.getRequestedTotal();
-			if (tag == null)
-				return;
-		}
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GL11.glEnable(GL11.GL_BLEND);
-
-		Tessellator v5 = Tessellator.instance;
-		int ar = 12;
-		int r = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? ar*2 : ar;
-		int rb = r;
-		int ox = Minecraft.getMinecraft().displayWidth/(gsc*2)-ar-8;
-		int oy = Minecraft.getMinecraft().displayHeight/(gsc*2)-ar-8;
-
-		int hash = System.identityHashCode(lt);
-		double oa = hash+2*((TileEntityBase)lt).getTicksExisted()*(hash%2 == 0 ? 1 : -1);
-
-		int n = tag.tagCount();
-		int i = 0;
-		double angleStep = ReikaMathLibrary.isInteger(360D/n) ? 2 : 1;
-		for (CrystalElement e : tag.elementSet()) {
-			double min = i*360D/n;
-			double max = (i+1)*360D/n;
-			double maxe = lt.getMaxStorage(e);
-			if (lt instanceof LumenRequestingTile) {
-				maxe = ((LumenRequestingTile)lt).getRequestedTotal().getValue(e);
-			}
-
-			v5.startDrawing(GL11.GL_TRIANGLE_STRIP);
-			int color = ReikaColorAPI.mixColors(e.getColor(), 0, 0.25F);
-			v5.setColorOpaque_I(color);
-			v5.setBrightness(240);
-			for (double a = min; a <= max; a += angleStep) {
-				double x = ox+r*Math.cos(Math.toRadians(oa+a));
-				double y = oy+r*Math.sin(Math.toRadians(oa+a));
-				//ReikaJavaLibrary.pConsole(x+", "+y);
-				v5.addVertex(x, y, 0);
-				v5.addVertex(ox, oy, 0);
-			}
-			v5.draw();
-
-			v5.startDrawing(GL11.GL_TRIANGLE_STRIP);
-			color = e.getColor();
-			v5.setColorOpaque_I(color);
-			v5.setBrightness(240);
-			double dr = Math.min(r, r*lt.getEnergy(e)/maxe);
-			for (double a = min; a <= max; a += angleStep) {
-				double x = ox+dr*Math.cos(Math.toRadians(oa+a));
-				double y = oy+dr*Math.sin(Math.toRadians(oa+a));
-				//ReikaJavaLibrary.pConsole(x+", "+y);
-				v5.addVertex(x, y, 0);
-				v5.addVertex(ox, oy, 0);
-			}
-			v5.draw();
-			i++;
-		}
-
-		float wide = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
-		GL11.glLineWidth(1);
-		if (n > 1) {
-			v5.startDrawing(GL11.GL_LINES);
-			v5.setColorOpaque_I(0x000000);
-			v5.setBrightness(240);
-			for (double a = 0; a < 360; a += 360D/n) {
-				double x = ox+rb*Math.cos(Math.toRadians(oa+a));
-				double y = oy+rb*Math.sin(Math.toRadians(oa+a));
-				//ReikaJavaLibrary.pConsole(x+", "+y);
-				v5.addVertex(x, y, 0);
-				v5.addVertex(ox, oy, 0);
-			}
-			v5.draw();
-		}
-
-		v5.startDrawing(GL11.GL_LINE_LOOP);
-		v5.setColorOpaque_I(0x000000);
-		v5.setBrightness(240);
-		for (double a = 0; a <= 360; a += 5) {
-			double x = ox+r*Math.cos(Math.toRadians(oa+a));
-			double y = oy+r*Math.sin(Math.toRadians(oa+a));
-			//ReikaJavaLibrary.pConsole(x+", "+y);
-			v5.addVertex(x, y, 0);
-		}
-		v5.draw();
-
-		GL11.glLineWidth(2);
-		if (n > 1) {
-			v5.startDrawing(GL11.GL_LINES);
-			v5.setColorRGBA_I(0x000000, 180);
-			v5.setBrightness(240);
-			for (double a = 0; a < 360; a += 360D/n) {
-				double x = ox+rb*Math.cos(Math.toRadians(oa+a));
-				double y = oy+rb*Math.sin(Math.toRadians(oa+a));
-				//ReikaJavaLibrary.pConsole(x+", "+y);
-				v5.addVertex(x, y, 0);
-				v5.addVertex(ox, oy, 0);
-			}
-			v5.draw();
-		}
-
-		v5.startDrawing(GL11.GL_LINE_LOOP);
-		v5.setColorRGBA_I(0x000000, 180);
-		v5.setBrightness(240);
-		for (double a = 0; a <= 360; a += 5) {
-			double x = ox+r*Math.cos(Math.toRadians(oa+a));
-			double y = oy+r*Math.sin(Math.toRadians(oa+a));
-			//ReikaJavaLibrary.pConsole(x+", "+y);
-			v5.addVertex(x, y, 0);
-		}
-		v5.draw();
-
-		GL11.glLineWidth(wide);
-
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		//GL11.glDisable(GL11.GL_BLEND);
-		/*
-				CrystalElement e = CrystalElement.elements[(int)(System.currentTimeMillis()/500%16)];
-				int amt = tag.getValue(e);
-				String s = String.format("%.0f%s", ReikaMathLibrary.getThousandBase(amt), ReikaEngLibrary.getSIPrefix(amt));
-				Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(s, ox, oy+r/2, ReikaColorAPI.mixColors(e.getColor(), 0xffffff, 0.5F));
-		 */
-
 	}
 
 	private void syncBuffer(EntityPlayer ep) {
@@ -1241,48 +813,7 @@ public class ChromaOverlays {
 	}
 
 	public void addProgressionNote(ProgressElement p) {
-		progressFlags.put(p, PROGRESS_DURATION);
-		//ReikaJavaLibrary.pConsole("Adding "+p+" to map ("+progressFlags.keySet().contains(p)+"), set is "+progressFlags.keySet());
-	}
-
-	private static final class ProgressComparator implements Comparator<ProgressElement> {
-
-		/** General order:
-			ProgressStage - 0 by ordinal
-			ColorDiscovery - 1 by color ordinal
-			ResearchLevel - 2 by ordinal
-			ChromaResearch - 3 by research level by ordinal
-			CastingRecipe - 4 by ID
-		 */
-
-		@Override
-		public int compare(ProgressElement o1, ProgressElement o2) {
-			return this.getIndex(o1)-this.getIndex(o2);
-		}
-
-		private int getIndex(ProgressElement e) {
-			if (e instanceof ColorDiscovery) {
-				return ((ColorDiscovery)e).color.ordinal();
-			}
-			if (e instanceof StructureComplete) {
-				return 500000+((StructureComplete)e).color.ordinal();
-			}
-			else if (e instanceof ProgressStage) {
-				return 1000000+((ProgressStage)e).ordinal();
-			}
-			else if (e instanceof ResearchLevel) {
-				return 2000000+((ResearchLevel)e).ordinal();
-			}
-			else if (e instanceof ChromaResearch) {
-				return 3000000+1000*((ChromaResearch)e).level.ordinal()+((ChromaResearch)e).ordinal();
-			}
-			else if (e instanceof CastingRecipe) {
-				return 3000000+RecipesCastingTable.instance.getIDForRecipe((CastingRecipe)e);
-			}
-			else
-				return -1;
-		}
-
+		ProgressOverlayRenderer.instance.addProgressionNote(p);
 	}
 
 	private static class FlareMessage {

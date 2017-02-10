@@ -10,11 +10,11 @@
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 
 import net.minecraft.init.Blocks;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class PotionCrystalRecipe extends PylonRecipe {
+public class PotionCrystalRecipe extends PylonCastingRecipe {
 
 	public PotionCrystalRecipe(CrystalElement e) {
 		super(ChromaBlocks.SUPER.getStackOfMetadata(e.ordinal()), ChromaBlocks.CRYSTAL.getStackOfMetadata(e.ordinal()));

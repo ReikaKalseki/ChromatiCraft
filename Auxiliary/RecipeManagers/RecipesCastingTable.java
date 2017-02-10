@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -26,14 +27,16 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Event.CastingRecipesReloadEvent;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.AvoLampRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.ChromaFlowerRecipe;
@@ -83,6 +86,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.Throwab
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.TransformationCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.VoidCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.VoidStorageRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.ConfigRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.DoubleJumpRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.EnchantmentRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.RepeaterTurboRecipe;
@@ -182,10 +186,13 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.RecipeH
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.RecipeItemMover;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.SplashGunRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.StorageCrystalRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.StructureFinderRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.TeleportWandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.TintedLensRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.TransitionRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.VacuumGunRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.WarpCapsuleRecipe;
+import Reika.ChromatiCraft.Base.ItemChromaBasic;
 import Reika.ChromatiCraft.Block.BlockPath;
 import Reika.ChromatiCraft.Block.BlockPath.PathType;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.Bases;
@@ -204,6 +211,9 @@ import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayList;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.IO.CustomRecipeList;
+import Reika.DragonAPI.Instantiable.IO.LuaBlock;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -504,7 +514,7 @@ public class RecipesCastingTable {
 		 */
 
 		if (ChromaOptions.ENDERTNT.getState())
-			this.addRecipe(new RecipeEnderTNT(ChromaBlocks.TNT.getStackOf(), ChromaItems.BUCKET.getStackOfMetadata(1)));
+			this.addRecipe(new RecipeEnderTNT(ChromaBlocks.TNT.getStackOf(), new ItemStack(Items.nether_star)));
 
 		this.addRecipe(new TeleportWandRecipe(ChromaItems.TELEPORT.getStackOf(), ChromaStacks.energyCore));
 
@@ -685,7 +695,7 @@ public class RecipesCastingTable {
 
 		is = ChromaItems.WARPCAPSULE.getStackOf();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, " ig", "aea", "li", 'e', ChromaItems.ELEMENTAL.getStackOf(CrystalElement.LIME), 'g', ChromaStacks.limeShard, 'l', ChromaStacks.lightBlueShard, 'a', ChromaStacks.auraDust, 'i', Items.iron_ingot);
-		this.addRecipe(new FluidRelayRecipe(is, sr));
+		this.addRecipe(new WarpCapsuleRecipe(is, sr));
 
 		if (ModList.MYSTCRAFT.isLoaded()) {
 			is = ChromaTiles.BOOKDECOMP.getCraftedProduct();
@@ -725,6 +735,10 @@ public class RecipesCastingTable {
 		this.addRecipe(fr);
 		this.addRecipe(new FocusCrystalRecipes.RefinedFocusCrystalRecipe(fr));
 		this.addRecipe(new FocusCrystalRecipes.ExquisiteFocusCrystalRecipe(fr));
+
+		is = ChromaItems.STRUCTUREFINDER.getStackOf();
+		sr = new ShapedOreRecipe(is, "IAs", "ASA", "sAO", 'A', ChromaStacks.auraDust, 'I', Items.iron_ingot, 'O', Blocks.obsidian, 'S', "stone", 's', ChromaItems.SHARD.getAnyMetaStack());
+		this.addRecipe(new StructureFinderRecipe(is, sr));
 
 		this.addSpecialRecipes();
 	}
@@ -796,14 +810,19 @@ public class RecipesCastingTable {
 		maxID++;
 		//ChromaResearchManager.instance.register(r);
 
-		if (r instanceof PylonRecipe) {
-			ElementTagCompound tag = ((PylonRecipe)r).getRequiredAura();
+		if (r instanceof PylonCastingRecipe) {
+			ElementTagCompound tag = ((PylonCastingRecipe)r).getRequiredAura();
 			maxEnergyCost = Math.max(maxEnergyCost, tag.getMaximumValue());
 			maxTotalEnergyCost = Math.max(maxTotalEnergyCost, tag.getTotalEnergy());
 		}
 	}
 
 	public void addModdedRecipe(CastingRecipe r) {
+		if (this.verifyOutputItem(r.getOutput(), false))
+			this.addCustomRecipe(r);
+	}
+
+	private void addCustomRecipe(CastingRecipe r) {
 		this.addRecipe(r);
 		APIrecipes.add(r);
 	}
@@ -921,6 +940,8 @@ public class RecipesCastingTable {
 			this.addRecipe(c);
 		}
 
+		//this.loadCustomRecipeFiles();
+
 		ChromaResearch.loadPostCache();
 		MinecraftForge.EVENT_BUS.post(new CastingRecipesReloadEvent());
 
@@ -933,6 +954,122 @@ public class RecipesCastingTable {
 
 	public int getMaxRecipeTotalEnergyCost() {
 		return maxTotalEnergyCost;
+	}
+
+	public final void loadCustomRecipeFiles() {
+		CustomRecipeList crl = new CustomRecipeList(ChromatiCraft.instance, "castingtable");
+		crl.addFieldLookup("chromaticraft_stack", ChromaStacks.class);
+		crl.load();
+		for (LuaBlock lb : crl.getEntries()) {
+			Exception e = null;
+			boolean flag = false;
+			try {
+				flag = this.addCustomRecipe(lb, crl);
+			}
+			catch (Exception ex) {
+				e = ex;
+				flag = false;
+			}
+			if (flag) {
+				ChromatiCraft.logger.log("Loaded custom casting recipe '"+lb.getString("type")+"'");
+			}
+			else {
+				ChromatiCraft.logger.logError("Could not load custom casting recipe '"+lb.getString("type")+"'");
+				if (e != null)
+					e.printStackTrace();
+			}
+		}
+	}
+
+	protected final boolean verifyOutputItem(ItemStack is, boolean throwExc) {
+		if (is.getItem() instanceof ItemChromaBasic || is.getItem().getClass().getName().startsWith("Reika.ChromatiCraft")) {
+			String s = "Invalid Recipe Output: This item is not allowed as an output, as it is a native ChromatiCraft item with its own recipe.";
+			if (throwExc)
+				throw new IllegalArgumentException(s);
+			else
+				ChromatiCraft.logger.logError(s);
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+
+	private boolean addCustomRecipe(LuaBlock lb, CustomRecipeList crl) throws Exception {
+		ItemStack out = crl.parseItemString(lb.getString("output"), lb.getChild("output_nbt"), false);
+		this.verifyOutputItem(out, true);
+		String lvl = lb.getString("level");
+		int duration = lb.containsKey("duration") ? lb.getInt("duration") : -1;
+		int typical = lb.containsKey("typical_crafted_amount") ? lb.getInt("typical_crafted_amount") : 1;
+		ItemStack leftover = lb.containsKey("central_leftover") ? crl.parseItemString(lb.getString("central_leftover"), lb.getChild("central_leftover_nbt"), true) : null;
+		float autocost = lb.containsKey("automation_cost_factor") ? (float)lb.getDouble("automation_cost_factor") : 1;
+		float xp = lb.containsKey("experience_factor") ? MathHelper.clamp_float((float)lb.getDouble("experience_factor"), 0, 1) : 1;
+		boolean stack = true;
+		boolean setStack = false;
+		if (lb.containsKey("can_be_stacked")) {
+			stack = lb.getBoolean("can_be_stacked");
+			setStack = true;
+		}
+		Collection<ProgressStage> progress = new HashSet();
+		if (lb.hasChild("progress")) {
+			for (String s : lb.getChild("progress").getDataValues()) {
+				progress.add(ProgressStage.valueOf(s.toUpperCase(Locale.ENGLISH)));
+			}
+		}
+
+		HashMap<Coordinate, CrystalElement> runes = new HashMap();
+		if (lb.hasChild("runes")) {
+			for (LuaBlock entry : lb.getChild("runes").getChildren()) {
+				Coordinate c = new Coordinate(entry.getInt("x"), entry.getInt("y"), entry.getInt("z"));
+				CrystalElement e = CrystalElement.valueOf(entry.getString("color").toUpperCase(Locale.ENGLISH));
+				runes.put(c, e);
+			}
+		}
+
+		HashMap<CrystalElement, Integer> energy = new HashMap();
+		if (lb.hasChild("energy")) {
+			for (LuaBlock entry : lb.getChild("energy").getChildren()) {
+				CrystalElement e = CrystalElement.valueOf(entry.getString("color").toUpperCase(Locale.ENGLISH));
+				int amt = entry.getInt("amount");
+				energy.put(e, amt);
+			}
+		}
+
+		if (lvl.equals("basic") || lvl.equals("rune")) {
+			IRecipe ir = crl.parseCraftingRecipe(lb.getChild("recipe"), out);
+			if (lvl.equals("rune")) {
+				this.addCustomRecipe(new ConfigRecipe.Rune(ir, duration, typical, leftover, autocost, xp, runes, progress));
+				return true;
+			}
+			else {
+				this.addCustomRecipe(new ConfigRecipe.Basic(ir, duration, typical, leftover, autocost, xp, progress));
+				return true;
+			}
+		}
+		else if (lvl.equals("multi") || lvl.equals("pylon")) {
+			LuaBlock recipe = lb.getChild("recipe");
+			ItemStack center = crl.parseItemString(recipe.getString("center"), null, false);
+			HashMap<Coordinate, Object> items = new HashMap();
+			for (LuaBlock entry : recipe.getChild("items").getChildren()) {
+				Coordinate c = new Coordinate(entry.getInt("x"), 0, entry.getInt("z"));
+				Object item = crl.parseObjectString(entry.getString("item"));
+				items.put(c, item);
+			}
+
+			if (lvl.equals("pylon")) {
+				if (!setStack)
+					stack = false;
+				this.addCustomRecipe(new ConfigRecipe.Pylon(out, center, duration, typical, leftover, autocost, xp, runes, items, energy, progress));
+				return true;
+			}
+			else {
+				this.addCustomRecipe(new ConfigRecipe.Multi(out, center, duration, typical, leftover, autocost, xp, runes, items, progress));
+				return true;
+			}
+		}
+		else {
+			throw new IllegalArgumentException("Invalid recipe tier '"+lvl+"'!");
+		}
 	}
 
 }

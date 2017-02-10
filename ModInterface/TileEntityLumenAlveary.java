@@ -427,7 +427,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 				}
 				if (flag) {
 					EnumBeeType type = ReikaBeeHelper.getBeeRoot().getType(in);
-					IAlleleBeeSpecies sp = ReikaBeeHelper.getSpecies(in);
+					IAlleleBeeSpecies sp = (IAlleleBeeSpecies)ReikaBeeHelper.getSpecies(in);
 					if (type == EnumBeeType.PRINCESS && ibhi.getQueen() == null && sp.getUID().equals(species)) {
 						ibhi.setQueen(in);
 						inv.setInventorySlotContents(i, null);
@@ -600,7 +600,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	@ModDependent(ModList.FORESTRY)
 	private IBeeGenome getBeeGenome() {
 		ItemStack is = this.getQueenItem();
-		return is != null ? ReikaBeeHelper.getGenome(is) : null;
+		return is != null ? (IBeeGenome)ReikaBeeHelper.getGenome(is) : null;
 	}
 
 	public boolean hasQueen() {

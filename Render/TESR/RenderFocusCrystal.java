@@ -191,7 +191,7 @@ public class RenderFocusCrystal extends ChromaRenderBase {
 			double x2 = -c.location.relativeLocation.xCoord+0.5;
 			double y2 = -c.location.relativeLocation.yCoord;//+0.125;
 			double z2 = -c.location.relativeLocation.zCoord+0.5;
-			ChromaFX.renderBeam(0.5, 0.25, 0.5, x2, y2, z2, tick, 255, 0.5F);
+			ChromaFX.renderBeam(0.5, 0.25, 0.5, x2, y2, z2, tick, 255, 0.375F+(float)(0.25*Math.sin(System.identityHashCode(te)+System.currentTimeMillis()/800D)));
 		}
 	}
 

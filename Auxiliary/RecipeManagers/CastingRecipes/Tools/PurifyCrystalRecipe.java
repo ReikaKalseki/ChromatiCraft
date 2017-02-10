@@ -11,14 +11,14 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools;
 
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 
-public class PurifyCrystalRecipe extends PylonRecipe {
+public class PurifyCrystalRecipe extends PylonCastingRecipe {
 
 	public PurifyCrystalRecipe(ItemStack out, ItemStack main) {
 		super(out, main);

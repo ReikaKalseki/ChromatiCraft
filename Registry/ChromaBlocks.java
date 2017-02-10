@@ -42,6 +42,7 @@ import Reika.ChromatiCraft.Block.BlockCrystalTank;
 import Reika.ChromatiCraft.Block.BlockCrystalTile;
 import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
+import Reika.ChromatiCraft.Block.BlockDummyAux;
 import Reika.ChromatiCraft.Block.BlockEnderTNT;
 import Reika.ChromatiCraft.Block.BlockEtherealLight;
 import Reika.ChromatiCraft.Block.BlockHeatLamp;
@@ -109,6 +110,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockSparkle;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant;
+import Reika.ChromatiCraft.Block.Worldgen.BlockUnknownArtefact;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockChromaFlower;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockChromaTiered;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
@@ -222,7 +224,9 @@ public enum ChromaBlocks implements BlockEnum {
 	ROUTERNODE(BlockRouterNode.class,			ItemBlockRouterNode.class,		"chroma.routernode"),
 	EVERFLUID(BlockEverFluid.class,												"chroma.everfluid"),
 	LIGHTPANEL(BlockLightPanel.class,			ItemBlockMultiType.class,		"chroma.lightpanel"),
-	PANELSWITCH(BlockLightSwitch.class,											"chroma.panelswitch");
+	PANELSWITCH(BlockLightSwitch.class,											"chroma.panelswitch"),
+	ARTEFACT(BlockUnknownArtefact.class,										"chroma.artefactblock"),
+	DUMMYAUX(BlockDummyAux.class,												"chroma.dummyaux");
 
 	private Class blockClass;
 	private String blockName;
@@ -487,6 +491,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case EVERFLUID:
 			case PANELSWITCH:
 			case LIGHTPANEL:
+			case DUMMYAUX:
 				return false;
 			default:
 				return true;

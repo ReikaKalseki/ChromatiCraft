@@ -22,6 +22,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemShears;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
@@ -116,6 +117,12 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 	}
 
 	@Override
+	public int getLightValue(IBlockAccess iba, int x, int y, int z) {
+		Flowers f = Flowers.list[iba.getBlockMetadata(x, y, z)];
+		return f.getLightValue();
+	}
+
+	@Override
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block b) {
 		super.onNeighborBlockChange(world, x, y, z, b);
 		this.checkAndDropBlock(world, x, y, z);
@@ -157,6 +164,8 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 				break;
 			case SANOBLOOM:
 				this.setBlockBounds(0, 0, 0, 1, 0.5F, 1);
+			case GLOWDAISY:
+				this.setBlockBounds(0, 0, 0, 1, 0.625F, 1);
 				break;
 			case FLOWIVY:
 				float nx = 1-0.0625F;
@@ -185,6 +194,9 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 				}
 
 				this.setBlockBounds(nx, 0, nz, px, 1, pz);
+				break;
+			case GLOWROOT:
+				this.setBlockBounds(0.25F, 0.25F, 0.25F, 0.75F, 0.75F, 0.75F);
 				break;
 			default:
 				this.setBlockBounds(0, 0, 0, 1, 1, 1);
@@ -275,7 +287,9 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 		RESOCLOVER(),
 		SANOBLOOM(),
 		VOIDREED(),
-		FLOWIVY();
+		FLOWIVY(),
+		GLOWDAISY(),
+		GLOWROOT();
 
 		public static final Flowers[] list = values();
 
@@ -283,6 +297,17 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 
 		private Flowers(/*ItemStack is*/) {
 			//drop = is;
+		}
+
+		public int getLightValue() {
+			switch(this) {
+				case GLOWDAISY:
+					return 10;
+				case GLOWROOT:
+					return 6;
+				default:
+					return 0;
+			}
 		}
 
 		private void registerDrops(BlockDecoFlower b) {
@@ -302,6 +327,9 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 					return b.biomeID == ThaumIDHandler.Biomes.EERIE.getID() || b instanceof BiomeGenSwamp || b.getClass().getName().contains("BiomeGenBOPSwamp");
 				case FLOWIVY:
 					return b instanceof BiomeGenHills || (b.rootHeight >= 1 && b.topBlock == Blocks.grass/* && ReikaBiomeHelper.getBiomeTemp(world, b) < 40*/);
+				case GLOWDAISY:
+				case GLOWROOT:
+					return b == ChromatiCraft.glowingcliffs;
 			}
 			return false;
 		}
@@ -352,10 +380,13 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 					return null;
 				}
 				case LUMALILY:
-				case RESOCLOVER: {
+				case RESOCLOVER:
+				case GLOWDAISY: {
 					int n = this.onActiveGrass(world, x, y, z) ? 5 : 20;
 					if (this == LUMALILY)
 						n *= 4;
+					if (this == GLOWDAISY)
+						n *= 2;
 					int c = 0;
 					for (int i = 2; i < 6; i++) {
 						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
@@ -414,6 +445,14 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 					}
 					return null;
 				}
+				case GLOWROOT: {
+					if (rand.nextInt(12) == 0) {
+						if (world.getBlock(x, y-1, z).isAir(world, x, y-1, z) && this.canPlantAt(world, x, y-1, z) && world.getBlock(x, y-2, z).isAir(world, x, y-2, z)) {
+							return new Coordinate(x, y-1, z);
+						}
+					}
+					return null;
+				}
 			}
 			return null;
 		}
@@ -438,10 +477,16 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 				case ENDERFLOWER:
 				case LUMALILY:
 				case RESOCLOVER:
+				case GLOWDAISY: {
 					Block b = world.getBlock(x, y-1, z);
 					return b == Blocks.dirt || b == Blocks.grass;
+				}
 				case SANOBLOOM:
 					return world.getBlock(x, y-1, z) == Blocks.leaves && world.getBlockMetadata(x, y-1, z)%4 == 3;
+				case GLOWROOT: {
+					Block b = world.getBlock(x, y+1, z);
+					return this.matchAt(world, x, y+1, z) || b == Blocks.stone || ReikaBlockHelper.isDirtType(b, world.getBlockMetadata(x, y+1, z));
+				}
 			}
 			return false;
 		}
@@ -450,7 +495,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 			Block idbelow = world.getBlock(x, y-1, z);
 			int metabelow = world.getBlockMetadata(x, y-1, z);
 			Material matbelow = ReikaWorldHelper.getMaterial(world, x, y-1, z);
-			if (idbelow != Blocks.sand && !ReikaBlockHelper.isDirtType(idbelow, metabelow, matbelow))
+			if (idbelow != Blocks.sand && !ReikaBlockHelper.isDirtType(idbelow, metabelow))
 				return false;
 			ForgeDirection liq = ReikaWorldHelper.checkForAdjBlock(world, x, y-1, z, ChromaBlocks.CHROMA.getBlockInstance(), 0);
 			return liq != null && liq.offsetY == 0;
@@ -577,6 +622,36 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 					break;
 				}
+				case GLOWDAISY: {
+					double dx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.625);
+					double dz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.625);
+					double dy = y+0.125;
+					int c = ReikaColorAPI.mixColors(0x22aaff, 0x0000ff, world.rand.nextFloat());
+					EntityFX fx1 = new EntityFloatingSeedsFX(world, dx, dy, dz, 0, 90).setColor(c).setRapidExpand().setScale(1.5F).setIcon(ChromaIcons.FADE);
+					EntityFX fx2 = new EntityFloatingSeedsFX(world, dx, dy, dz, 0, 90).setScale(0.875F).setRapidExpand().setColor(0xffffff).setIcon(ChromaIcons.FADE).lockTo(fx1);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx1);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
+					break;
+				}
+				case GLOWROOT: {
+					if (r.nextInt(3) == 0) {
+						double dx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.25);
+						double dz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.25);
+						double dy = ReikaRandomHelper.getRandomPlusMinus(y+0.5, 0.5);
+						int c = 0xffffff;
+						int rc = r.nextInt(3);
+						switch(rc) {
+							case 0:
+								c = 0xC89CF4;
+								break;
+							case 1:
+								c = 0xF29BF2;
+								break;
+						}
+						EntityFX fx = new EntityBlurFX(world, dx, dy, dz).setColor(c).setAlphaFading().setRapidExpand().setLife(120).setGravity(0.25F).setColliding();
+						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					}
+				}
 			}
 		}
 
@@ -591,6 +666,10 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 					return 2;
 				case SANOBLOOM:
 					return 6;
+				case GLOWDAISY:
+					return 2;
+				case GLOWROOT:
+					return 1;
 				default:
 					return 1;
 			}
@@ -623,6 +702,12 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 					ReikaRenderHelper.renderCropTypeTex(world, x, y, z, ico, v5, rb, 0.1875, 1);
 					//top of flower ReikaRenderHelper.renderFlatInnerTextureOnSide(world, x, y, z, ico, v5, rb, ForgeDirection.DOWN, 0.75, false);
 					break;
+				case GLOWDAISY:
+					ReikaRenderHelper.renderCropTypeTex(world, x, y, z, ico, v5, rb, 0.25, 1);
+					break;
+				case GLOWROOT:
+					ReikaRenderHelper.renderCropTypeTex(world, x, y, z, ico, v5, rb, 0.1875, 1);
+					break;
 			}
 		}
 
@@ -634,8 +719,24 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 				case SANOBLOOM: return ChromaStacks.etherBerries.copy();
 				case VOIDREED: return ChromaStacks.voidDust.copy();
 				case FLOWIVY: return ChromaStacks.livingEssence.copy();
+				case GLOWDAISY: return new ItemStack(Items.glowstone_dust);
+				case GLOWROOT: return new ItemStack(Items.glowstone_dust);
 			}
 			return null;
+		}
+
+		public int getColor() {
+			switch(this) {
+				case ENDERFLOWER: return 0xFF00DC;
+				case LUMALILY: return 0x84B5D9;
+				case RESOCLOVER: return 0xE67FFF;
+				case SANOBLOOM: return 0xFF3F3F;
+				case VOIDREED: return 0x605366;
+				case FLOWIVY: return 0x66BA6D;
+				case GLOWDAISY: return 0x51B6FF;
+				case GLOWROOT: return 0xC28FF5;
+			}
+			return 0;
 		}
 	}
 }

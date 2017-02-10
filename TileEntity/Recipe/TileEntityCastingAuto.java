@@ -60,6 +60,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
+import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.ExtractedItem;
 import appeng.api.AEApi;
 import appeng.api.config.FuzzyMode;
 import appeng.api.networking.IGridBlock;
@@ -422,9 +423,9 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 		for (ItemStack is : li) {
 			if (ModList.APPENG.isLoaded()) {
 				if (is.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
-					int rem = (int)network.removeItemFuzzy(ReikaItemHelper.getSizedItemStack(is, amt), false, FuzzyMode.IGNORE_ALL, false, is.stackTagCompound != null);
-					if (rem > 0) {
-						ItemStack ret = ReikaItemHelper.getSizedItemStack(is, rem);
+					ExtractedItem rem = network.removeItemFuzzy(ReikaItemHelper.getSizedItemStack(is, amt), false, FuzzyMode.IGNORE_ALL, false, is.stackTagCompound != null);
+					if (rem != null) {
+						ItemStack ret = ReikaItemHelper.getSizedItemStack(rem.getItem(), (int)rem.amount);
 						ret.setItemDamage(0);
 						return ret;
 					}

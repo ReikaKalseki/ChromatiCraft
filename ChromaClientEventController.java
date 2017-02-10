@@ -78,6 +78,8 @@ import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.Tab.FragmentTab;
 import Reika.ChromatiCraft.Auxiliary.Tab.TabChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaBookGui;
+import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux;
+import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux.Flags;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.GUI.GuiAuraPouch;
@@ -100,6 +102,7 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.BiomeFXRenderer;
+import Reika.ChromatiCraft.Render.CliffFogRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.TESR.RenderAlveary;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
@@ -133,6 +136,7 @@ import Reika.DragonAPI.Instantiable.Event.Client.RenderItemInSlotEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.SinglePlayerLogoutEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.SoundVolumeEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.TileEntityRenderEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.WaterColorEvent;
 import Reika.DragonAPI.Instantiable.IO.CustomMusic;
 import Reika.DragonAPI.Instantiable.IO.EnumSound;
 import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
@@ -185,6 +189,35 @@ public class ChromaClientEventController {
 			textureLoadingComplete = true;
 		}
 		 */
+	}
+	/*
+	@SubscribeEvent
+	public void glowingCliffsFog(EntityViewRenderEvent.FogColors evt) {
+		//ReikaJavaLibrary.pConsole(evt.density);
+		Entity e = evt.entity;
+		BiomeGenBase b = e.worldObj.getBiomeGenForCoords(MathHelper.floor_double(e.posX), MathHelper.floor_double(e.posZ));
+		if (b == ChromatiCraft.glowingcliffs)
+			evt.red = evt.green = evt.blue = 1;
+	}
+
+	@SubscribeEvent
+	public void glowingCliffsFog(FogDistanceEvent evt) {
+		//ReikaJavaLibrary.pConsole(evt.density);
+		Entity e = Minecraft.getMinecraft().thePlayer;
+		BiomeGenBase b = e.worldObj.getBiomeGenForCoords(MathHelper.floor_double(e.posX), MathHelper.floor_double(e.posZ));
+		float mind = 10;
+		if (b == ChromatiCraft.glowingcliffs) {
+			float f = ChromatiCraft.glowingcliffs.getFogDensity(e.posX, e.posY, e.posZ);
+			if (f > 0)
+				evt.fogDistance = mind+(evt.originalDistance-mind)*(1-f);
+		}
+	}
+	 */
+	@SubscribeEvent
+	public void cliffWaterColor(WaterColorEvent evt) {
+		if (evt.getBiome() == ChromatiCraft.glowingcliffs) {
+			evt.color = ChromatiCraft.glowingcliffs.getWaterColor(evt.world, evt.x, evt.y, evt.z, evt.getLightLevel());
+		}
 	}
 
 	@SubscribeEvent
@@ -465,6 +498,7 @@ public class ChromaClientEventController {
 	public void biomeFX(EntityRenderingLoopEvent evt) {
 		//if (ChromaOptions.BIOMEFX.getState() && Minecraft.getMinecraft().theWorld.provider.dimensionId != ExtraChromaIDs.DIMID.getValue())
 		BiomeFXRenderer.instance.render();
+		CliffFogRenderer.instance.render();
 	}
 
 	@SubscribeEvent
@@ -1281,6 +1315,22 @@ public class ChromaClientEventController {
 					GL11.glDisable(GL11.GL_BLEND);
 					GL11.glPopMatrix();
 				}
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void stopAuxTileHighlight(DrawBlockHighlightEvent evt) {
+		if (evt.target != null && evt.target.typeOfHit == MovingObjectType.BLOCK) {
+			World world = Minecraft.getMinecraft().theWorld;
+			int x = evt.target.blockX;
+			int y = evt.target.blockY;
+			int z = evt.target.blockZ;
+			TileEntity te = world.getTileEntity(x, y, z);
+			if (te instanceof TileEntityDummyAux) {
+				TileEntityDummyAux aux = (TileEntityDummyAux)te;
+				if (!aux.getFlag(Flags.HITBOX) && !aux.getFlag(Flags.MOUSEOVER))
+					evt.setCanceled(true);
 			}
 		}
 	}

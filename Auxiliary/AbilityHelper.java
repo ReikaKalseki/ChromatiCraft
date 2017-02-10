@@ -153,6 +153,8 @@ import forestry.api.apiculture.IBeeGenome;
 
 public class AbilityHelper {
 
+	public static final int[] REACH_SCALE = {8, 12, 16, 32, 64, 128, 192};
+
 	//Client Side
 	public int playerReach = -1;
 
@@ -1887,7 +1889,7 @@ public class AbilityHelper {
 	@SideOnly(Side.CLIENT)
 	@ModDependent(ModList.FORESTRY)
 	public void showBeeGenes(ItemTooltipEvent evt) {
-		if (ReikaBeeHelper.isBee(evt.itemStack)) {
+		if (ModList.FORESTRY.isLoaded() && ReikaBeeHelper.isBee(evt.itemStack)) {
 			if (Chromabilities.BEEALYZE.enabledOn(evt.entityPlayer)) {
 				Iterator<String> it = evt.toolTip.iterator();
 				boolean primed = false;
@@ -1926,6 +1928,36 @@ public class AbilityHelper {
 					if (type == EnumBeeType.QUEEN) {
 						evt.toolTip.add(evt.toolTip.size(), "Hold "+EnumChatFormatting.GREEN+"LCTRL"+EnumChatFormatting.RESET+" to show mate");
 					}
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	@ModDependent(ModList.FORESTRY)
+	public void showTreeGenes(ItemTooltipEvent evt) {
+		if (ReikaBeeHelper.isTree(evt.itemStack)) {
+			if (Chromabilities.BEEALYZE.enabledOn(evt.entityPlayer)) {
+				Iterator<String> it = evt.toolTip.iterator();
+				boolean primed = false;
+				while (it.hasNext()) {
+					String s = it.next();
+					if (s.contains("Pristine Stock") || s.contains("Ignoble Stock"))
+						primed = true;
+					if (s.contains("<Unknown genome>"))
+						primed = true;
+					if (s.contains("Forestry"))
+						primed = false;
+					if (primed)
+						it.remove();
+				}
+				if (GuiScreen.isShiftKeyDown()) {
+					ArrayList<String> li = ReikaBeeHelper.getGenesAsStringList(evt.itemStack);
+					evt.toolTip.addAll(evt.toolTip.size(), li);
+				}
+				else {
+					evt.toolTip.add(evt.toolTip.size(), "Hold "+EnumChatFormatting.GREEN+"LSHIFT"+EnumChatFormatting.RESET+" to show genes");
 				}
 			}
 		}

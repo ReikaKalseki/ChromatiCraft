@@ -46,6 +46,7 @@ import Reika.ChromatiCraft.GUI.GuiAuraPouch;
 import Reika.ChromatiCraft.GUI.GuiBulkMover;
 import Reika.ChromatiCraft.GUI.GuiFlightWand;
 import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
+import Reika.ChromatiCraft.GUI.GuiLoreKeyAssembly;
 import Reika.ChromatiCraft.GUI.GuiOneSlot;
 import Reika.ChromatiCraft.GUI.GuiTeleportAbility;
 import Reika.ChromatiCraft.GUI.GuiTransitionWand;
@@ -228,6 +229,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 		switch(gui) {
 			case LINK:
 				return new GuiInventoryLinker(player, world);
+			case LOREKEY:
+				return new GuiLoreKeyAssembly(player);
 			case TILE:
 				TileEntity te = world.getTileEntity(x, y, z);
 

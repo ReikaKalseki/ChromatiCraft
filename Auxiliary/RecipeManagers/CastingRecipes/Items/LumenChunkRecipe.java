@@ -12,11 +12,11 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 
-public class LumenChunkRecipe extends PylonRecipe implements CoreRecipe {
+public class LumenChunkRecipe extends PylonCastingRecipe implements CoreRecipe {
 
 	public LumenChunkRecipe(ItemStack out, ItemStack main) {
 		super(out, main);

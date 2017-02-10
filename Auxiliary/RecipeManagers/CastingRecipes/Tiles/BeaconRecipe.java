@@ -12,10 +12,10 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class BeaconRecipe extends PylonRecipe {
+public class BeaconRecipe extends PylonCastingRecipe {
 
 	public BeaconRecipe(ItemStack out, ItemStack main) {
 		super(out, main);

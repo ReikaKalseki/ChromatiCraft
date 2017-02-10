@@ -35,6 +35,7 @@ import Reika.DragonAPI.Instantiable.VillageBuilding.VillagePiece;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import cpw.mods.fml.common.registry.VillagerRegistry;
 
 
@@ -788,7 +789,15 @@ public class VillagersFailChromatiCraft {
 		}
 
 		private Block getStair(World world) {
-			return BiomeDictionary.isBiomeOfType(genBiome, Type.SANDY) ? Blocks.sandstone_stairs : Blocks.oak_stairs;
+			if (BiomeDictionary.isBiomeOfType(genBiome, Type.SANDY))
+				return Blocks.sandstone_stairs;
+			if (genBiome == BiomeGenBase.taiga || genBiome == BiomeGenBase.taigaHills || genBiome == BiomeGenBase.coldTaiga || genBiome == BiomeGenBase.coldTaigaHills)
+				return Blocks.spruce_stairs;
+			if (genBiome == BiomeGenBase.jungle || genBiome == BiomeGenBase.jungleEdge || genBiome == BiomeGenBase.jungleHills)
+				return Blocks.jungle_stairs;
+			if (genBiome == BiomeGenBase.birchForest || genBiome == BiomeGenBase.birchForestHills)
+				return Blocks.birch_stairs;
+			return Blocks.oak_stairs;
 		}
 
 		private Block getBase(World world) {
@@ -796,11 +805,28 @@ public class VillagersFailChromatiCraft {
 		}
 
 		private BlockKey getColumns(World world, int m) {
-			return BiomeDictionary.isBiomeOfType(genBiome, Type.SANDY) ? new BlockKey(Blocks.sandstone, 1) : new BlockKey(Blocks.log, m);
+			if (BiomeDictionary.isBiomeOfType(genBiome, Type.SANDY))
+				return new BlockKey(Blocks.sandstone, 1);
+			if (genBiome == BiomeGenBase.taiga || genBiome == BiomeGenBase.taigaHills || genBiome == BiomeGenBase.coldTaiga || genBiome == BiomeGenBase.coldTaigaHills)
+				m += ReikaTreeHelper.SPRUCE.getBaseLogMeta();
+			if (genBiome == BiomeGenBase.jungle || genBiome == BiomeGenBase.jungleEdge || genBiome == BiomeGenBase.jungleHills)
+				m += ReikaTreeHelper.JUNGLE.getBaseLogMeta();
+			if (genBiome == BiomeGenBase.birchForest || genBiome == BiomeGenBase.birchForestHills)
+				m += ReikaTreeHelper.BIRCH.getBaseLogMeta();
+			return new BlockKey(Blocks.log, m);
 		}
 
 		private BlockKey getFloor(World world) {
-			return BiomeDictionary.isBiomeOfType(genBiome, Type.SANDY) ? new BlockKey(Blocks.sandstone, 2) : new BlockKey(Blocks.planks, 0);
+			if (BiomeDictionary.isBiomeOfType(genBiome, Type.SANDY))
+				return new BlockKey(Blocks.sandstone, 2);
+			int woodmeta = 0;
+			if (genBiome == BiomeGenBase.taiga || genBiome == BiomeGenBase.taigaHills || genBiome == BiomeGenBase.coldTaiga || genBiome == BiomeGenBase.coldTaigaHills)
+				woodmeta = ReikaItemHelper.spruceWood.getItemDamage();
+			if (genBiome == BiomeGenBase.jungle || genBiome == BiomeGenBase.jungleEdge || genBiome == BiomeGenBase.jungleHills)
+				woodmeta = ReikaItemHelper.jungleWood.getItemDamage();
+			if (genBiome == BiomeGenBase.birchForest || genBiome == BiomeGenBase.birchForestHills)
+				woodmeta = ReikaItemHelper.birchWood.getItemDamage();
+			return new BlockKey(Blocks.planks, woodmeta);
 		}
 
 	}
@@ -816,7 +842,7 @@ public class VillagersFailChromatiCraft {
 
 			Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
 
-			//ReikaJavaLibrary.pConsole(boundingBox);
+			//ReikaJavaLibrary.pConsole("Genning "+boundingBox+" @ "+coordBaseMode);
 
 			this.placeBlockAtCurrentPosition(world, 1, 0, 4, b);
 			this.placeBlockAtCurrentPosition(world, 1, 0, 6, b);

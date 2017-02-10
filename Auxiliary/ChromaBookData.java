@@ -23,7 +23,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
@@ -115,7 +115,7 @@ public class ChromaBookData {
 		GL11.glColor4f(1, 1, 1, 1);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		if (subpage == 3) {
-			ElementTagCompound tag = ((PylonRecipe)c).getRequiredAura();
+			ElementTagCompound tag = ((PylonCastingRecipe)c).getRequiredAura();
 			int max = tag.getMaximumValue();
 			for (CrystalElement e : tag.elementSet()) {
 				int color = e.getColor();
@@ -241,8 +241,8 @@ public class ChromaBookData {
 
 		GL11.glColor4f(1, 1, 1, 1);
 		GL11.glDisable(GL11.GL_LIGHTING);
-		if (c instanceof PylonRecipe) {
-			ElementTagCompound tag = ((PylonRecipe)c).getRequiredAura();
+		if (c instanceof PylonCastingRecipe) {
+			ElementTagCompound tag = ((PylonCastingRecipe)c).getRequiredAura();
 			int max = tag.getMaximumValue();
 			for (CrystalElement e : tag.elementSet()) {
 				int color = e.getColor();

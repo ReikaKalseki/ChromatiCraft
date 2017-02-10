@@ -20,7 +20,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.EnergyLinkingRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -35,7 +35,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class RepeaterTurboRecipe extends PylonRecipe implements EnergyLinkingRecipe {
+public class RepeaterTurboRecipe extends PylonCastingRecipe implements EnergyLinkingRecipe {
 
 	public RepeaterTurboRecipe(ChromaTiles rpt, int baseAura) {
 		super(getOutputItem(rpt), rpt.getCraftedProduct());

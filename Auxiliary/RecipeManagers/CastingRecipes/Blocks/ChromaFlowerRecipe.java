@@ -20,6 +20,11 @@ public class ChromaFlowerRecipe extends CastingRecipe {
 	}
 
 	@Override
+	public int getTypicalCraftedAmount() {
+		return 4;
+	}
+
+	@Override
 	public float getPenaltyMultiplier() {
 		return 0.25F;
 	}

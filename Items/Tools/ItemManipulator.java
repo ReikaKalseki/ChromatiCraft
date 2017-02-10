@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Block.BlockCrystalFence.CrystalFenceAuxTile;
+import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.TileEntityCrystalGlow;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree.TileEntityPowerTreeAux;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
@@ -45,6 +46,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
+import Reika.ChromatiCraft.TileEntity.TileEntityDataNode;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAreaBreaker;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
@@ -100,6 +102,11 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 				return true;
 			}
 		}
+
+		if (t == null && tile instanceof TileEntityDummyAux) {
+			return ((TileEntityDummyAux)tile).relayManipulatorClick(is, ep, s, a, b, c);
+		}
+
 		if (t == ChromaTiles.RIFT) {
 			TileEntityRift te = (TileEntityRift)tile;
 			te.setDirection(ForgeDirection.VALID_DIRECTIONS[s]);
@@ -158,6 +165,13 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 				}
 			}
 		}
+
+		if (t == ChromaTiles.DATANODE) {
+			TileEntityDataNode te = (TileEntityDataNode)tile;
+			te.scan(ep);
+			return true;
+		}
+
 		if (t == ChromaTiles.WINDOW) {
 			TileEntityTransportWindow ir = (TileEntityTransportWindow)tile;
 			if (!ir.isUnMineable()) {

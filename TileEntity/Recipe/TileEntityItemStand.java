@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -52,6 +53,7 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 
 	private InertItem item;
 	private Coordinate tile;
+	private boolean locked;
 
 	private static final MultiMap<UUID, WorldLocation> spreadSet = new MultiMap(new HashSetFactory());
 
@@ -147,6 +149,12 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 				item.stackSize--;
 		}
 		  */
+
+		if (locked)
+			return item;
+
+		if (ChromaItems.HELP.matchWith(item))
+			return item;
 
 		UUID uid = ep.getUniqueID();
 
@@ -265,6 +273,8 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 
 		if (NBT.hasKey("table"))
 			tile = Coordinate.readFromNBT("table", NBT);
+
+		locked = NBT.getBoolean("lock");
 	}
 
 	@Override
@@ -273,6 +283,8 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 
 		if (tile != null)
 			tile.writeToNBT("table", NBT);
+
+		NBT.setBoolean("lock", locked);
 	}
 
 	public void setTable(TileEntityCastingTable te) {
@@ -288,6 +300,14 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 	@ModDependent(ModList.BCTRANSPORT)
 	public ConnectOverride overridePipeConnection(PipeType type, ForgeDirection with) {
 		return ConnectOverride.DISCONNECT;
+	}
+
+	public void lock(boolean lock) {
+		locked = lock;
+	}
+
+	public boolean isLocked() {
+		return locked;
 	}
 
 }

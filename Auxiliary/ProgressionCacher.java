@@ -18,10 +18,11 @@ import java.util.UUID;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler.PlayerTracker;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.IO.NBTFile;
@@ -32,12 +33,17 @@ public class ProgressionCacher implements PlayerTracker {
 
 	public static final ProgressionCacher instance = new ProgressionCacher();
 
-	private final String baseFilepath;
+	private String baseFilepath;
 
 	private final HashMap<UUID, ProgressCache> progressCache = new HashMap();
 
 	private ProgressionCacher() {
-		baseFilepath = DragonAPICore.getMinecraftDirectoryString()+"/ChromatiCraft_Data/ProgressionCache/";
+
+	}
+
+	public void initLevelData(MinecraftServer instance) {
+		baseFilepath = DimensionManager.getCurrentSaveRootDirectory()+"/ChromatiCraft_Data/ProgressionCache/";
+		progressCache.clear();
 	}
 
 	private final String getFilepath(EntityPlayer ep) {

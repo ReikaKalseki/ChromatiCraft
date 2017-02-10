@@ -43,6 +43,7 @@ import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.DragonAPI.ModRegistry.ModOreList;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 import Reika.GeoStrata.Registry.RockTypes;
@@ -179,6 +180,9 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 		}
 		else if (ModList.ROTARYCRAFT.isLoaded() && ReikaItemHelper.matchStacks(in, ItemStacks.ironscrap))
 			return 1;
+		else if (ModList.THAUMCRAFT.isLoaded() && in.getItem() == ThaumItemHelper.ItemEntry.NUGGETCLUSTER.getItem().getItem()) {
+			return 4;
+		}
 		else if (ReikaBlockHelper.isOre(in)) {
 			int ret = 4;
 			OreType ore = ReikaOreHelper.getEntryByOreDict(in);

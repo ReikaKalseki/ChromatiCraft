@@ -12,10 +12,10 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class AspectJarRecipe extends PylonRecipe {
+public class AspectJarRecipe extends PylonCastingRecipe {
 
 	public AspectJarRecipe(ItemStack out, ItemStack main) {
 		super(out, main);

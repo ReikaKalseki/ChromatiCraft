@@ -192,13 +192,15 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 	private void findLocation(World world, int x, int y, int z) {
 		for (int i = 0; i < Location.list.length; i++) {
 			Location loc = Location.list[i];
-			Coordinate c = loc.position.negate().offset(x, y, z);
+			Coordinate c = loc.getRelativePylonLocation().offset(x, y, z);//loc.position.negate().offset(x, y, z);
 			TileEntity te = c.getTileEntity(world);
+			if (te instanceof TileEntityCrystalPylon && ((TileEntityCrystalPylon)te).canConduct()) {
+				/*
 			if (te instanceof TileEntityPylonTurboCharger) {
-				if (((TileEntityPylonTurboCharger)te).getPylon(world, te.xCoord, te.yCoord, te.zCoord) != null) {
-					location = loc;
-					return;
-				}
+				if (((TileEntityPylonTurboCharger)te).getPylon(world, te.xCoord, te.yCoord, te.zCoord) != null) {*/
+				location = loc;
+				return;
+				//}
 			}
 		}
 		if (location == null && this.getPylon(world, x, y, z) != null) {

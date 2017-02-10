@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -438,12 +439,15 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 				EntityPlayer ep = (EntityPlayer)e;
 				if (doDrops && !ReikaPlayerAPI.isFakeOrNotInteractable(ep, posX, posY, posZ, 8)) {
 					int looting = EnchantmentHelper.getLootingModifier((EntityPlayer)src.getEntity());
-					ReikaItemHelper.dropItem(this, ReikaItemHelper.getSizedItemStack(ChromaStacks.beaconDust, rand.nextInt(1+looting*2)));
+					if (TieredPlants.DESERT.level.isPlayerAtStage(ep))
+						ReikaItemHelper.dropItem(this, ReikaItemHelper.getSizedItemStack(ChromaStacks.beaconDust, rand.nextInt(1+looting*2)));
 					if (looting > 1) {
 						if (color.isPrimary())
-							ReikaItemHelper.dropItem(this, ChromaStacks.purityDust);
-						else
-							ReikaItemHelper.dropItem(this, ChromaStacks.auraDust);
+							if (TieredPlants.CAVE.level.isPlayerAtStage(ep))
+								ReikaItemHelper.dropItem(this, ChromaStacks.purityDust);
+							else
+								if (TieredPlants.FLOWER.level.isPlayerAtStage(ep))
+									ReikaItemHelper.dropItem(this, ChromaStacks.auraDust);
 					}
 				}
 				ProgressStage.BALLLIGHTNING.stepPlayerTo(ep);
@@ -454,7 +458,7 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 	}
 
 	private void sendDeathParticles() {
-		ReikaPacketHelper.sendPositionPacket(ChromatiCraft.packetChannel, ChromaPackets.LIGHTNINGDIE.ordinal(), this, this.calcRenderColor(), new DimensionTarget(worldObj));
+		ReikaPacketHelper.sendPositionPacket(ChromatiCraft.packetChannel, ChromaPackets.LIGHTNINGDIE.ordinal(), this, new DimensionTarget(worldObj), this.calcRenderColor());
 	}
 
 	@SideOnly(Side.CLIENT)

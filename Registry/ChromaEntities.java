@@ -17,9 +17,11 @@ import Reika.ChromatiCraft.Entity.EntityChainGunShot;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Entity.EntityDimensionFlare;
 import Reika.ChromatiCraft.Entity.EntityFlyingLight;
+import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.ChromatiCraft.Entity.EntityLumaBurst;
 import Reika.ChromatiCraft.Entity.EntityMeteorShot;
+import Reika.ChromatiCraft.Entity.EntityNukerBall;
 import Reika.ChromatiCraft.Entity.EntityParticleCluster;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityTNTPinball;
@@ -43,7 +45,9 @@ public enum ChromaEntities implements EntityEnum {
 	TNTPINBALL(EntityTNTPinball.class, "TNT Pinball"),
 	DIMENSIONFLARE(EntityDimensionFlare.class, "Dimension Flare"),
 	LUMABURST(EntityLumaBurst.class, "Luma Burst"),
-	PARTICLECLUSTER(EntityParticleCluster.class, "Particle Swarm");
+	PARTICLECLUSTER(EntityParticleCluster.class, "Particle Swarm"),
+	NUKERBALL(EntityNukerBall.class, "Cluster Ball"),
+	GLOWCLOUD(EntityGlowCloud.class, "GlowCloud", 0x000040, 0x22aaff);
 
 	public final String entityName;
 	private final Class entityClass;

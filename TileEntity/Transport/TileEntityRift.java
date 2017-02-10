@@ -723,6 +723,15 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 
 	@Override
 	@ModDependent(ModList.COMPUTERCRAFT)
+	public boolean equals(IPeripheral p) {
+		if (this.getOther() != null && this.getSingleDirTile() instanceof IPeripheral) {
+			return ((IPeripheral)this.getSingleDirTile()).equals(p);
+		}
+		return false;
+	}
+
+	@Override
+	@ModDependent(ModList.COMPUTERCRAFT)
 	public String getType() {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IPeripheral) {
 			return ((IPeripheral)this.getSingleDirTile()).getType();

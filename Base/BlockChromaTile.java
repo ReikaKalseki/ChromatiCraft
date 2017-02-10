@@ -130,6 +130,8 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			if (o.onlyAllowOwnersToMine() && !o.isOwnedByPlayer(ep))
 				return -1;
 		}
+		if (te instanceof TileEntityItemStand && ((TileEntityItemStand)te).isLocked())
+			return -1;
 		return super.getPlayerRelativeBlockHardness(ep, world, x, y, z);
 	}
 

@@ -9,19 +9,27 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
+import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntitySilverfish;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
@@ -29,7 +37,10 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.ChestGenHooks;
+import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fluids.BlockFluidBase;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
@@ -48,8 +59,12 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Data.Maps.TileEntityCache;
+import Reika.DragonAPI.Instantiable.IO.NBTFile;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
@@ -57,20 +72,142 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class DungeonGenerator implements RetroactiveGenerator {
 
 	public static final DungeonGenerator instance = new DungeonGenerator();
 
+	private static final int MIN_SEPARATION = 384;
+
 	private final ForgeDirection[] dirs = ForgeDirection.values();
 
-	private final Collection<Structures> structs = new ArrayList();
+	private final ArrayList<Structures> structs = new ArrayList();
+
+	private final EnumMap<Structures, TileEntityCache<Coordinate>> generatedStructures;
+
+	private String baseFilepath;
+
+	private boolean needsSave;
 
 	private DungeonGenerator() {
 		structs.add(Structures.CAVERN);
 		structs.add(Structures.BURROW);
 		structs.add(Structures.OCEAN);
 		structs.add(Structures.DESERT);
+
+		generatedStructures = new EnumMap(Structures.class);
+
+		for (Structures s : structs) {
+			generatedStructures.put(s, new TileEntityCache());
+		}
+
+		MinecraftForge.EVENT_BUS.register(this);
+	}
+
+	public Collection<Structures> getStructureTypes() {
+		return Collections.unmodifiableCollection(structs);
+	}
+
+	public void initLevelData(MinecraftServer instance) {
+		baseFilepath = DimensionManager.getCurrentSaveRootDirectory()+"/ChromatiCraft_Data/StructureCache/";
+		this.loadData();
+	}
+
+	private final String getFilepath(Structures s) {
+		return baseFilepath+s.name().toLowerCase()+".dat";
+	}
+
+	private void loadData() {
+		for (Structures s : structs) {
+			generatedStructures.put(s, new TileEntityCache());
+		}
+
+		for (Structures s : structs) {
+			File f = new File(this.getFilepath(s));
+			StructureFile pf = new StructureFile(f);
+			TileEntityCache<Coordinate> cache = generatedStructures.get(s);
+			try {
+				pf.load();
+				for (WorldLocation loc : pf.entries) {
+					cache.put(loc, new Coordinate(loc));
+				}
+			}
+			catch (Exception e) {
+				ChromatiCraft.logger.logError("Could not load structure cache: "+f.getName());
+				e.printStackTrace();
+			}
+		}
+
+		needsSave = false;
+	}
+
+	private void saveData() {
+		for (Structures s : structs) {
+			File f = new File(this.getFilepath(s));
+			StructureFile pf = new StructureFile(f);
+			for (WorldLocation p : generatedStructures.get(s).keySet()) {
+				pf.entries.add(p);
+			}
+			try {
+				pf.save();
+			}
+			catch (Exception e) {
+				ChromatiCraft.logger.logError("Could not save structure cache: "+f.getName());
+				e.printStackTrace();
+			}
+		}
+
+		needsSave = false;
+	}
+
+	@SubscribeEvent
+	public void saveData(WorldEvent.Save evt) {
+		if (needsSave)
+			this.saveData();
+	}
+
+	public void printCache(ICommandSender ics) {
+		ReikaJavaLibrary.pConsole("["+FMLCommonHandler.instance().getEffectiveSide()+"] Cache Debug: "+generatedStructures);
+	}
+
+	public Collection<WorldLocation> getNearbyStructures(Structures s, World world, double x, double y, double z, double r) {
+		return generatedStructures.get(s).getAllLocationsNear(new WorldLocation(world, (int)Math.round(x), (int)Math.round(y), (int)Math.round(z)), r);
+	}
+
+	public WorldLocation getNearestStructure(Structures s, World world, double x, double y, double z, double r) {
+		Collection<WorldLocation> c = generatedStructures.get(s).getAllLocationsNear(new WorldLocation(world, (int)Math.round(x), (int)Math.round(y), (int)Math.round(z)), r);
+		WorldLocation closest = null;
+		double d = Double.POSITIVE_INFINITY;
+		for (WorldLocation loc : c) {
+			double dist = loc.getDistanceTo(x, y, z);
+			if ((closest == null || dist < d) && dist <= r) {
+				d = dist;
+				closest = loc;
+			}
+		}
+		return closest;
+	}
+
+	public boolean isStructureWithin(Structures s, World world, int x, int y, int z, double r) {
+		return this.getNearestStructure(s, world, x, y, z, r) != null;
+	}
+
+	public void generateStructure(Structures s, TileEntityStructControl te) {
+		WorldLocation loc = new WorldLocation(te);
+		if (!generatedStructures.get(s).containsKey(loc)) {
+			generatedStructures.get(s).put(loc, new Coordinate(te));
+			needsSave = true;
+		}
+	}
+
+	public void deleteStructure(Structures s, TileEntityStructControl te) {
+		WorldLocation loc = new WorldLocation(te);
+		if (generatedStructures.get(s).containsKey(loc)) {
+			generatedStructures.get(s).remove(loc);
+			needsSave = true;
+		}
 	}
 
 	@Override
@@ -120,6 +257,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					world.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
 					TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x, y, z);
 					te.generate(s, CrystalElement.WHITE);
+					this.generateStructure(s, te);
 					this.populateChests(s, struct, r);
 					return true;
 				}
@@ -137,6 +275,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					world.setBlock(x-5, y-8, z-2, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
 					TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x-5, y-8, z-2);
 					te.generate(s, e);
+					this.generateStructure(s, te);
 					this.populateChests(s, arr, r);
 					return true;
 				}
@@ -165,6 +304,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						world.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
 						TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x, y, z);
 						te.generate(s, CrystalElement.WHITE);
+						this.generateStructure(s, te);
 						this.populateChests(s, struct, r);
 						this.programSpawners(s, struct);
 						this.mossify(s, struct, r);
@@ -196,6 +336,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						world.setBlock(x+7, y+3, z+7, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
 						TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x+7, y+3, z+7);
 						te.generate(s, CrystalElement.WHITE);
+						this.generateStructure(s, te);
 						this.populateChests(s, struct, r);
 						this.programSpawners(s, struct);
 						for (int k = 0; k < struct.getSize(); k++) {
@@ -620,15 +761,17 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	private boolean isGennableChunk(World world, int x, int z, Random r, Structures s) {
 		if (this.isVoidWorld(world, x, z))
 			return false;
+		if (this.isStructureWithin(s, world, x, 48, z, MIN_SEPARATION))
+			return false;
 		switch(s) {
 			case OCEAN:
-				return r.nextInt(32) == 0 && ReikaBiomeHelper.isOcean(world.getBiomeGenForCoords(x, z));
+				return r.nextInt(/*32*/4) == 0 && ReikaBiomeHelper.isOcean(world.getBiomeGenForCoords(x, z));
 			case CAVERN:
-				return r.nextInt(48) == 0;
+				return r.nextInt(/*48*/5) == 0;
 			case BURROW:
-				return r.nextInt(64) == 0 && world.getBiomeGenForCoords(x, z).topBlock == Blocks.grass;
+				return r.nextInt(/*64*/8) == 0 && world.getBiomeGenForCoords(x, z).topBlock == Blocks.grass;
 			case DESERT:
-				return r.nextInt(120) == 0 && world.getBiomeGenForCoords(x, z).topBlock == Blocks.sand;
+				return r.nextInt(/*120*/10) == 0 && world.getBiomeGenForCoords(x, z).topBlock == Blocks.sand;
 			default:
 				return false;
 		}
@@ -640,8 +783,9 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				return false;
 			}
 		}
-		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT && !ChromaOptions.FLATGEN.getState())
-			;//return false;
+		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT && !ChromaOptions.FLATGEN.getState()) {
+			return ReikaWorldHelper.getSuperflatHeight(world) > 15;
+		}
 		if (world.provider.dimensionId == 0)
 			return true;
 		if (Math.abs(world.provider.dimensionId) == 1)
@@ -661,6 +805,55 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	@Override
 	public String getIDString() {
 		return "ChromatiCraft Prefab Structures";
+	}
+
+	private static class StructureFile extends NBTFile {
+
+		private final HashSet<WorldLocation> entries = new HashSet();
+
+		private StructureFile(File f) {
+			super(f);
+			encryptData = true;
+		}
+
+		@Override
+		protected void readHeader(NBTTagCompound header) {
+
+		}
+
+		@Override
+		protected void readData(NBTTagList li) {
+			for (Object o : li.tagList) {
+				NBTTagCompound tag = (NBTTagCompound)o;
+				WorldLocation loc = WorldLocation.readFromNBT(tag);
+				if (loc != null)
+					entries.add(loc);
+			}
+		}
+
+		@Override
+		protected void readExtraData(NBTTagCompound extra) {
+
+		}
+
+		@Override
+		protected void writeHeader(NBTTagCompound header) {
+
+		}
+
+		@Override
+		protected void writeData(NBTTagList li) {
+			for (WorldLocation loc : entries) {
+				NBTTagCompound tag = loc.writeToTag();
+				li.appendTag(tag);
+			}
+		}
+
+		@Override
+		protected NBTTagCompound writeExtraData() {
+			return null;
+		}
+
 	}
 
 }

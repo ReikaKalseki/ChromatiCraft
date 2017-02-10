@@ -26,6 +26,7 @@ import thaumcraft.api.crafting.InfusionRecipe;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.LegacyTileAcceleratorRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
@@ -108,6 +109,9 @@ public class ChromaRecipes {
 	public static void addPostLoadRecipes() {
 
 		RecipesCastingTable.instance.addPostLoadRecipes();
+
+		RecipesCastingTable.instance.loadCustomRecipeFiles();
+		PoolRecipes.instance.loadCustomPoolRecipes();
 
 		if (ModList.ROTARYCRAFT.isLoaded()) {
 			for (int i = 0; i < CrystalElement.elements.length; i++) {

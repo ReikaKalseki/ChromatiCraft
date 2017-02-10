@@ -13,10 +13,10 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class EnderCrystalRecipe extends PylonRecipe {
+public class EnderCrystalRecipe extends PylonCastingRecipe {
 
 	public EnderCrystalRecipe(ItemStack out, ItemStack main) {
 		super(out, main);

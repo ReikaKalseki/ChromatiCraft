@@ -345,7 +345,7 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 			for (int k = 0; k < variants[i]; k++) {
 				String suff = k > 0 ? String.valueOf(i+"-"+(k+1)) : String.valueOf(i);
 				if (StoneTypes.list[i].isColumn()) {
-					if (this.loadXmasTextures()) {
+					if (k == 0 && this.loadXmasTextures()) {
 						suff = suff+"_xm";
 					}
 				}

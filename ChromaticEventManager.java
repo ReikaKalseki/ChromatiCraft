@@ -27,11 +27,13 @@ import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityGhast;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -69,6 +71,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import net.minecraftforge.event.entity.player.PlayerPickupXpEvent;
+import net.minecraftforge.event.terraingen.ChunkProviderEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.event.world.ChunkEvent;
@@ -101,6 +104,8 @@ import Reika.ChromatiCraft.Items.Tools.ItemPurifyCrystal;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Magic.Artefact.UABombingEffects;
+import Reika.ChromatiCraft.Magic.Artefact.UATrade;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAggroMask;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentUseRepair;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentWeaponAOE;
@@ -139,6 +144,10 @@ import Reika.DragonAPI.Instantiable.Event.BlockTickEvent;
 import Reika.DragonAPI.Instantiable.Event.EnderAttackTPEvent;
 import Reika.DragonAPI.Instantiable.Event.EntitySpawnerCheckEvent;
 import Reika.DragonAPI.Instantiable.Event.FarmlandTrampleEvent;
+import Reika.DragonAPI.Instantiable.Event.FireSpreadEvent;
+import Reika.DragonAPI.Instantiable.Event.GenLayerBeachEvent;
+import Reika.DragonAPI.Instantiable.Event.GenLayerBeachEvent.BeachTypeEvent;
+import Reika.DragonAPI.Instantiable.Event.GenLayerRiverEvent;
 import Reika.DragonAPI.Instantiable.Event.GetPlayerLookEvent;
 import Reika.DragonAPI.Instantiable.Event.HarvestLevelEvent;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
@@ -194,6 +203,72 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	public void preventCliffFire(FireSpreadEvent evt) {
+		if (evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord) == ChromatiCraft.glowingcliffs) {
+			evt.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent
+	public void preventCliffRivers(BeachTypeEvent evt) {
+		if (evt.sourceBiomeID == ExtraChromaIDs.LUMINOUSCLIFFS.getValue()) {
+			evt.deleteBeach();
+		}
+	}
+
+	@SubscribeEvent
+	public void preventCliffRivers(GenLayerBeachEvent evt) {
+		if (evt.originalBiomeID == ExtraChromaIDs.LUMINOUSCLIFFS.getValue()) {
+			evt.setResult(Result.DENY);
+		}
+	}
+
+	@SubscribeEvent
+	public void preventCliffRivers(GenLayerRiverEvent evt) {
+		if (evt.originalBiomeID == ExtraChromaIDs.LUMINOUSCLIFFS.getValue()) {
+			evt.setResult(Result.DENY);
+		}
+	}
+
+	@SubscribeEvent
+	public void blendCliffEdges(ChunkProviderEvent.ReplaceBiomeBlocks evt) {
+		if (evt.world != null && evt.blockArray != null) {
+			ChromatiCraft.glowingcliffs.blendTerrainEdges(evt.world, evt.chunkX, evt.chunkZ, evt.blockArray, evt.metaArray);
+		}
+	}
+
+	@SubscribeEvent
+	public void preventCliffCreepers(LivingSpawnEvent.CheckSpawn evt) {
+		if (evt.world.getBiomeGenForCoords(MathHelper.floor_double(evt.x), MathHelper.floor_double(evt.z)) == ChromatiCraft.glowingcliffs) {
+			if (evt.entityLiving instanceof EntityCreeper)
+				evt.setResult(Result.DENY);
+		}
+	}
+
+	@SubscribeEvent
+	public void preventCliffCreepers(LivingSpawnEvent evt) {
+		if (evt.world.getBiomeGenForCoords(MathHelper.floor_double(evt.x), MathHelper.floor_double(evt.z)) == ChromatiCraft.glowingcliffs) {
+			if (evt.entityLiving instanceof EntityCreeper)
+				evt.entityLiving.setDead();
+		}
+	}
+
+	@SubscribeEvent
+	public void preventCliffsFreeze(IceFreezeEvent evt) {
+		if (evt.world.getBiomeGenForCoords(evt.x, evt.z) == ChromatiCraft.glowingcliffs) {
+			evt.setResult(Result.DENY);
+		}
+	}
+
+	@SubscribeEvent
+	public void buyUnknownArtefact(VillagerTradeEvent evt) {
+		if (evt.trade instanceof UATrade) {
+			if (ReikaRandomHelper.doWithChance(UABombingEffects.TRADE_BOMBING_CHANCE))
+				UABombingEffects.instance.trigger(evt.villager);
+		}
 	}
 
 	@SubscribeEvent
@@ -302,7 +377,7 @@ public class ChromaticEventManager {
 	@SubscribeEvent
 	@ModDependent(ModList.TINKERER)
 	public void chromastoneTools(ItemStackUpdateEvent evt) {
-		if (evt.held) {
+		if (evt.held && !(evt.holder instanceof EntityPlayerMP && ((EntityPlayerMP)evt.holder).theItemInWorldManager.isDestroyingBlock)) {
 			if (InterfaceCache.TINKERTOOL.instanceOf(evt.item.getItem())) {
 				NBTTagCompound tags = evt.item.getTagCompound().getCompoundTag("InfiTool");
 				boolean allMats = true;
@@ -1094,12 +1169,14 @@ public class ChromaticEventManager {
 			if (evt.source.getEntity() instanceof EntityPlayer) {
 				EntityPlayer ep = (EntityPlayer)evt.source.getEntity();
 				if (!ReikaPlayerAPI.isFake(ep)) {
-					String type = e.getType();
-					Aspect a = Aspect.getAspect(type);
-					if (a != null) {
-						int s = 4+rand.nextInt(8);
-						ElementTagCompound tag = ChromaAspectManager.instance.getElementCost(a, 1+rand.nextInt(2)).scale(s);
-						PlayerElementBuffer.instance.addToPlayer(ep, tag);
+					if (ProgressStage.CHARGE.isPlayerAtStage(ep)) {
+						String type = e.getType();
+						Aspect a = Aspect.getAspect(type);
+						if (a != null) {
+							int s = 4+rand.nextInt(8);
+							ElementTagCompound tag = ChromaAspectManager.instance.getElementCost(a, 1+rand.nextInt(2)).scale(s);
+							PlayerElementBuffer.instance.addToPlayer(ep, tag);
+						}
 					}
 				}
 			}
@@ -1378,7 +1455,7 @@ public class ChromaticEventManager {
 	public void triggerBossProgress(LivingDeathEvent ev) {
 		if (ev.source.getEntity() instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)ev.source.getEntity();
-			if (ev.entityLiving instanceof EntityDragon || ev.entityLiving instanceof CustomEnderDragon) {
+			if (ev.entityLiving instanceof EntityDragon || ev.entityLiving instanceof CustomEnderDragon || ev.entityLiving.getClass().getName().equals("chylex.hee.entity.boss.EntityBossDragon")) {
 				ProgressStage.KILLDRAGON.stepPlayerTo(ep);
 			}
 			else if (ev.entityLiving instanceof EntityWither) {
@@ -1552,7 +1629,6 @@ public class ChromaticEventManager {
 			}
 		}
 	}
-
 
 	@SubscribeEvent(priority=EventPriority.LOWEST, receiveCanceled = true)
 	public void killSpawns(EntityJoinWorldEvent ev) {

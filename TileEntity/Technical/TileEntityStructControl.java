@@ -283,6 +283,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				break;
 		}
 		this.openUpperChests();
+		ProgressStage.ANYSTRUCT.stepPlayerTo(ep);
 		this.getProgressStage().stepPlayerTo(ep);
 		triggered = true;
 	}
@@ -392,6 +393,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		if (struct != null) {
 			this.calcCrystals(world, x, y, z);
 			this.regenerate();
+			DungeonGenerator.instance.generateStructure(struct, this);
 		}
 		LootChestWatcher.instance.cache(this);
 		this.syncAllData(true);
@@ -616,6 +618,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			}
 		}
 		LootChestWatcher.instance.remove(this);
+		DungeonGenerator.instance.deleteStructure(struct, this);
 		if (monument != null && monument.isRunning() && !monument.isComplete()) {
 			monument.endRitual();
 		}

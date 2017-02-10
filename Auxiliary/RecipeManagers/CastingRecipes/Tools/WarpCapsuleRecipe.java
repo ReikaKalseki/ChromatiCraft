@@ -20,7 +20,7 @@ public class WarpCapsuleRecipe extends TempleCastingRecipe {
 	public WarpCapsuleRecipe(ItemStack out, IRecipe recipe) {
 		super(out, recipe);
 
-		this.addRune(CrystalElement.LIME, -2, 0, -4);
+		this.addRune(CrystalElement.LIME, 4, 0, 0);
 	}
 
 }

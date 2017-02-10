@@ -149,6 +149,8 @@ public class GlowFireHandler extends TemplateRecipeHandler {
 	@Override
 	public void drawExtras(int recipe) {
 		GlowFireRecipe fr = (GlowFireRecipe)arecipes.get(recipe);
+		if (fr == null)
+			return;
 		//Minecraft.getMinecraft().fontRenderer.drawString(fr.item.getDisplayName(), 46, 9, 0xffffff);
 		int r = 60-6;
 		int ox = 81;

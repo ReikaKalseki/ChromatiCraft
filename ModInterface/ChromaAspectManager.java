@@ -440,6 +440,10 @@ public class ChromaAspectManager {
 					ReikaThaumHelper.addAspects(is, Aspect.VOID, 4, Aspect.DARKNESS, 1);
 					ReikaThaumHelper.addAspects(is2, Aspect.VOID, 1, Aspect.DARKNESS, 1);
 					break;
+				case GLOWDAISY:
+				case GLOWROOT:
+					ReikaThaumHelper.addAspects(is, Aspect.LIGHT, 4);
+					break;
 			}
 		}
 	}

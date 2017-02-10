@@ -13,12 +13,12 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ShardGroupingRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 
-public abstract class HighCoreRecipe extends PylonRecipe implements ShardGroupingRecipe {
+public abstract class HighCoreRecipe extends PylonCastingRecipe implements ShardGroupingRecipe {
 
 	protected HighCoreRecipe(ItemStack out, CrystalElement primary, CrystalElement secondary, Coordinate rune1, Coordinate rune2, ItemStack dust) {
 		super(out, ChromaStacks.crystalStar);

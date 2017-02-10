@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.API.Event.ProgressionEvent.ResearchType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
+import Reika.ChromatiCraft.Items.ItemUnknownArtefact.ArtefactTypes;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -137,6 +138,8 @@ public class ProgressionManager implements ProgressRegistry {
 		NETHERSTRUCT(Blocks.nether_brick),
 		VILLAGECASTING(Blocks.cobblestone),
 		FOCUSCRYSTAL(Items.emerald),
+		ANYSTRUCT(ChromaTiles.STRUCTCONTROL.getCraftedProduct()),
+		ARTEFACT(ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.FRAGMENT.ordinal())),
 		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
 		;
 

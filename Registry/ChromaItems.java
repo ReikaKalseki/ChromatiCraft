@@ -34,8 +34,10 @@ import Reika.ChromatiCraft.Items.ItemDimGen;
 import Reika.ChromatiCraft.Items.ItemElementalStone;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.ItemLinkedTilePlacer;
+import Reika.ChromatiCraft.Items.ItemMagicBranch;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Items.ItemTieredResource;
+import Reika.ChromatiCraft.Items.ItemUnknownArtefact;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
 import Reika.ChromatiCraft.Items.Tools.ItemBulkMover;
 import Reika.ChromatiCraft.Items.Tools.ItemChainGun;
@@ -59,6 +61,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemPendant;
 import Reika.ChromatiCraft.Items.Tools.ItemPurifyCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemPylonFinder;
 import Reika.ChromatiCraft.Items.Tools.ItemSplashGun;
+import Reika.ChromatiCraft.Items.Tools.ItemStructureFinder;
 import Reika.ChromatiCraft.Items.Tools.ItemThrowableGem;
 import Reika.ChromatiCraft.Items.Tools.ItemVacuumGun;
 import Reika.ChromatiCraft.Items.Tools.ItemWarpCapsule;
@@ -155,6 +158,9 @@ public enum ChromaItems implements ItemEnum {
 	FLOATBOOTS(40, false,	"chroma.floatboots",	ItemFloatstoneBoots.class),
 	WARPCAPSULE(41, false,	"chroma.warpitem",		ItemWarpCapsule.class),
 	BEEFRAME(208, false, 	"chroma.beeframe",		ItemChromaBeeFrame.class, ModList.FORESTRY),
+	STRUCTUREFINDER(43, false, "chroma.structfind",	ItemStructureFinder.class),
+	MAGICBRANCH(0, true, "chroma.branch",			ItemMagicBranch.class),
+	ARTEFACT(112, true,	"chroma.artefact",			ItemUnknownArtefact.class),
 	;
 
 	private final int index;
@@ -302,6 +308,10 @@ public enum ChromaItems implements ItemEnum {
 				return this.getBasicName();
 				//case FADETORCH:
 				//	return this.getBasicName();
+			case MAGICBRANCH:
+				return ItemMagicBranch.BranchTypes.list[meta].name().toLowerCase(Locale.ENGLISH)+" "+this.getBasicName();
+			case ARTEFACT:
+				return StatCollector.translateToLocal("unknownartefact."+ItemUnknownArtefact.ArtefactTypes.list[meta].name().toLowerCase(Locale.ENGLISH));
 			default:
 				break;
 		}
@@ -395,6 +405,10 @@ public enum ChromaItems implements ItemEnum {
 				return ItemPurifyCrystal.CHARGE_STATES;
 				//case FADETORCH:
 				//	return ItemFadingTorch.STATES;
+			case MAGICBRANCH:
+				return ItemMagicBranch.BranchTypes.list.length;
+			case ARTEFACT:
+				return ItemUnknownArtefact.ArtefactTypes.list.length;
 			default:
 				throw new RegistrationException(ChromatiCraft.instance, "Item "+name+" has subtypes but the number was not specified!");
 		}

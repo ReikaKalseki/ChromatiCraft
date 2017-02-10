@@ -83,10 +83,6 @@ public class CastingAPI {
 			return;
 		}
 		ItemStack out = ir.getRecipeOutput();
-		if (!isValid(out)) {
-			System.out.println("You cannot add alternate recipes for native ChromatiCraft items!");
-			return;
-		}
 		try {
 			Object r = instCast.newInstance(out, ir);
 			add.invoke(instance, r);
@@ -104,10 +100,6 @@ public class CastingAPI {
 			return;
 		}
 		ItemStack out = ir.getRecipeOutput();
-		if (!isValid(out)) {
-			System.out.println("You cannot add alternate recipes for native ChromatiCraft items!");
-			return;
-		}
 		try {
 			Object r = instTemple.newInstance(out, ir);
 			for (List<Integer> key : runes.keySet()) {
@@ -125,10 +117,6 @@ public class CastingAPI {
 	public static void addMultiBlockCastingRecipe(ItemStack out, ItemStack ctr, Map<List<Integer>, CrystalElementProxy> runes, Map<List<Integer>, ItemStack> items) {
 		if (!loaded) {
 			System.out.println("Class did not initialize correctly, casting recipes cannot be added!");
-			return;
-		}
-		if (!isValid(out)) {
-			System.out.println("You cannot add alternate recipes for native ChromatiCraft items!");
 			return;
 		}
 		try {
@@ -155,10 +143,6 @@ public class CastingAPI {
 			System.out.println("Class did not initialize correctly, casting recipes cannot be added!");
 			return;
 		}
-		if (!isValid(out)) {
-			System.out.println("You cannot add alternate recipes for native ChromatiCraft items!");
-			return;
-		}
 		try {
 			Object r = instPylon.newInstance(out, ctr);
 			if (runes != null) {
@@ -177,10 +161,6 @@ public class CastingAPI {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	private static boolean isValid(ItemStack out) {
-		return !out.getItem().getClass().getName().startsWith("Reika.ChromatiCraft.Items");
 	}
 
 	static {
@@ -203,7 +183,7 @@ public class CastingAPI {
 			aux = multi.getDeclaredMethod("addAuxItem", ItemStack.class, int.class, int.class);
 			aux.setAccessible(true);
 
-			pylon = Class.forName("Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe$PylonRecipe");
+			pylon = Class.forName("Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe$PylonCastingRecipe");
 			instPylon = pylon.getDeclaredConstructor(ItemStack.class, ItemStack.class);
 			instPylon.setAccessible(true);
 			aura = pylon.getDeclaredMethod("addAuraRequirement", CrystalElementProxy.class, int.class);

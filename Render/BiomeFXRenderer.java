@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Render;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -19,12 +20,12 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumSkyBlock;
-import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -38,6 +39,20 @@ public class BiomeFXRenderer {
 
 	private static final int RAIN_RADIUS = 48;
 	private static final int POINT_COUNT = 28;
+
+	private static final HashMap<Integer, Integer> colorMapA = new HashMap();
+	private static final HashMap<Integer, Integer> colorMapB = new HashMap();
+
+	static {
+		colorMapA.put(ExtraChromaIDs.RAINBOWFOREST.getValue(), 0x22aaff);
+		colorMapB.put(ExtraChromaIDs.RAINBOWFOREST.getValue(), 0x0060ff);
+
+		colorMapA.put(ExtraChromaIDs.ENDERFOREST.getValue(), 0xa060ff);
+		colorMapB.put(ExtraChromaIDs.ENDERFOREST.getValue(), 0xffaaff);
+
+		colorMapA.put(ExtraChromaIDs.LUMINOUSCLIFFS.getValue(), 0xffffff);
+		colorMapB.put(ExtraChromaIDs.LUMINOUSCLIFFS.getValue(), 0xaaaaaa);
+	}
 
 	//private BufferedImage biomeRain;
 	//private final int[] rainTextures;
@@ -122,10 +137,10 @@ public class BiomeFXRenderer {
 		int px = MathHelper.floor_double(x);
 		int py = MathHelper.floor_double(y);
 		int pz = MathHelper.floor_double(z);
-		BiomeGenBase b = ep.worldObj.getBiomeGenForCoords(px, pz);
-		if ((b == ChromatiCraft.rainbowforest || b == ChromatiCraft.enderforest) && ep.worldObj.getSavedLightValue(EnumSkyBlock.Sky, px, py, pz) > 5) {
-			int c1 = b == ChromatiCraft.rainbowforest ? 0x22aaff : 0xa060ff; //0x22aaff & 0xffaaff
-			int c2 = b == ChromatiCraft.rainbowforest ? 0x0060ff : 0xffaaff;
+		int b = ep.worldObj.getBiomeGenForCoords(px, pz).biomeID;
+		if (colorMapA.containsKey(b) && ep.worldObj.getSavedLightValue(EnumSkyBlock.Sky, px, py, pz) > 5) {
+			int c1 = colorMapA.get(b);
+			int c2 = colorMapB.get(b);
 			int c = 0xff000000 | ReikaColorAPI.mixColors(c1, c2, (float)(0.5+0.5*Math.sin(System.currentTimeMillis()/1500D)));
 			biomeRainColor = ReikaColorAPI.mixColors(c, biomeRainColor, 0.05F);
 		}

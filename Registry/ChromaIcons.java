@@ -107,6 +107,7 @@ public enum ChromaIcons {
 	AVOLASER_CORE("avolaser_2"),
 	HIVE("hive"),
 	HIVESPARKS("hivesparks"),
+	FLARE7("flare7"),
 	;
 
 	private IIcon icon;

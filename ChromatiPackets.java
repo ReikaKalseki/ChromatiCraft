@@ -33,6 +33,7 @@ import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
+import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Auxiliary.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -59,6 +60,7 @@ import Reika.ChromatiCraft.Container.ContainerBookPages;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
 import Reika.ChromatiCraft.Entity.EntityDimensionFlare;
+import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Entity.EntityMeteorShot;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityThrownGem;
@@ -67,10 +69,12 @@ import Reika.ChromatiCraft.GUI.Tile.GuiTeleportGate;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
 import Reika.ChromatiCraft.Items.Tools.ItemBulkMover;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
+import Reika.ChromatiCraft.Items.Tools.ItemStructureFinder;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemFlightWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.ModInterface.CrystalWand;
 import Reika.ChromatiCraft.ModInterface.EssentiaNetwork.EssentiaPath;
 import Reika.ChromatiCraft.ModInterface.NodeReceiverWrapper;
@@ -85,6 +89,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
+import Reika.ChromatiCraft.TileEntity.TileEntityDataNode;
 import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCaveLighter;
@@ -428,6 +433,12 @@ public class ChromatiPackets implements PacketHandler {
 				}
 				case LIGHTNINGDIE: {
 					EntityBallLightning.receiveDeathParticles(world, dx, dy, dz, data[0]);
+					break;
+				}
+				case CLOUDDIE: {
+					Entity e = world.getEntityByID(data[0]);
+					if (e instanceof EntityGlowCloud)
+						((EntityGlowCloud)e).doDeathParticles();
 					break;
 				}
 				case GLUON: {
@@ -790,6 +801,16 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case ROUTERLINK:
 					((TileEntityRouterHub)tile).addHighlight(new Coordinate(data[0], data[1], data[2]));
+					break;
+				case STRUCTFIND: {
+					ItemStructureFinder.doHeldFX(ep, dx, dy, dz, Structures.structureList[data[0]], data[1] > 0);
+					break;
+				}
+				case DATASCAN:
+					TileEntityDataNode.doScanFX(world, x, y, z);
+					break;
+				case LORENOTE:
+					LoreManager.instance.addLoreNote(ep, data[0]);
 					break;
 			}
 		}

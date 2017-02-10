@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerCastingTable;
@@ -148,8 +148,8 @@ public class GuiCastingTable extends GuiChromaBase {
 			Tessellator.instance.setColorOpaque_I(0xffffff);
 			Tessellator.instance.setBrightness(240);
 
-			if (r instanceof PylonRecipe) {
-				PylonRecipe p = (PylonRecipe)r;
+			if (r instanceof PylonCastingRecipe) {
+				PylonCastingRecipe p = (PylonCastingRecipe)r;
 				ElementTagCompound tag = p.getRequiredAura();
 				for (CrystalElement e : tag.elementSet()) {
 					int energy = tile.getEnergy(e);

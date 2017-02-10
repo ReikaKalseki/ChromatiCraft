@@ -161,6 +161,8 @@ public class LaserLevel extends StructurePiece implements PlacementCallback, NBT
 
 		parent.generateDataTile(xc, y+4, zp, "level", name);
 
+		world.setBlock(xc, y+3, zp, ChromaBlocks.LIGHTPANEL.getBlockInstance(), 1);
+
 		/*
 		for (int dx = def.minX-w; dx <= def.maxX+w; dx++) {
 			for (int dz = def.minZ-w; dz <= def.maxZ+w; dz++) {

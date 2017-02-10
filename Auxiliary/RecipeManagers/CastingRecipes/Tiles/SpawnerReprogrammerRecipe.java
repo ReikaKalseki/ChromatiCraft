@@ -11,10 +11,10 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles;
 
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class SpawnerReprogrammerRecipe extends PylonRecipe {
+public class SpawnerReprogrammerRecipe extends PylonCastingRecipe {
 
 	public SpawnerReprogrammerRecipe(ItemStack out, ItemStack main) {
 		super(out, main);
