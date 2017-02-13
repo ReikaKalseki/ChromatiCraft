@@ -63,6 +63,7 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.ChromatiCraft.World.Dimension.WorldProviderChroma;
 import Reika.DragonAPI.ModList;
@@ -122,7 +123,7 @@ public class ChromaAux {
 
 		@Override
 		public boolean shouldRun(World world, int x, int y, int z) {
-			return world.getBiomeGenForCoords(x, z) == ChromatiCraft.glowingcliffs;
+			return BiomeGlowingCliffs.isGlowingCliffs(world.getBiomeGenForCoords(x, z));
 		}
 
 	}
@@ -131,9 +132,10 @@ public class ChromaAux {
 		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
 			((WorldProviderChroma)world.provider).getChunkGenerator().onPopulationHook(generator, loader, cx, cz);
 		}
-		else if (ReikaChunkHelper.chunkContainsBiome(world, cx, cz, ChromatiCraft.glowingcliffs)) {
+		else if (ReikaChunkHelper.chunkContainsBiomeType(world, cx, cz, BiomeGlowingCliffs.class)) {
 			relayWorld.link(world);
 			GameRegistry.generateWorld(cx, cz, relayWorld, generator, loader);
+			relayWorld.runHooks();
 		}
 		else {
 			GameRegistry.generateWorld(cx, cz, world, generator, loader);

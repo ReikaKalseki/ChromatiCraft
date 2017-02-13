@@ -135,7 +135,7 @@ public class EntityNukerBall extends EntityFireball {
 	}
 
 	private void breakBlock(MovingObjectPosition mov) {
-		ReikaWorldHelper.dropAndDestroyBlockAt(worldObj, mov.blockX, mov.blockY, mov.blockZ, firingPlayer, false);
+		ReikaWorldHelper.dropAndDestroyBlockAt(worldObj, mov.blockX, mov.blockY, mov.blockZ, firingPlayer, false, true);
 	}
 
 	private void destroy() {

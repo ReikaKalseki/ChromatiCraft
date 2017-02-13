@@ -106,6 +106,7 @@ import Reika.ChromatiCraft.Render.CliffFogRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.TESR.RenderAlveary;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
+import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverManagerClient;
 import Reika.ChromatiCraft.World.Dimension.Rendering.SkyRiverRenderer;
 import Reika.ChromatiCraft.World.Dimension.Structure.AntFarmGenerator;
@@ -196,7 +197,7 @@ public class ChromaClientEventController {
 		//ReikaJavaLibrary.pConsole(evt.density);
 		Entity e = evt.entity;
 		BiomeGenBase b = e.worldObj.getBiomeGenForCoords(MathHelper.floor_double(e.posX), MathHelper.floor_double(e.posZ));
-		if (b == ChromatiCraft.glowingcliffs)
+		if (BiomeGlowingCliffs.isGlowingCliffs(b))
 			evt.red = evt.green = evt.blue = 1;
 	}
 
@@ -206,7 +207,7 @@ public class ChromaClientEventController {
 		Entity e = Minecraft.getMinecraft().thePlayer;
 		BiomeGenBase b = e.worldObj.getBiomeGenForCoords(MathHelper.floor_double(e.posX), MathHelper.floor_double(e.posZ));
 		float mind = 10;
-		if (b == ChromatiCraft.glowingcliffs) {
+		if (BiomeGlowingCliffs.isGlowingCliffs(b)) {
 			float f = ChromatiCraft.glowingcliffs.getFogDensity(e.posX, e.posY, e.posZ);
 			if (f > 0)
 				evt.fogDistance = mind+(evt.originalDistance-mind)*(1-f);
@@ -215,7 +216,7 @@ public class ChromaClientEventController {
 	 */
 	@SubscribeEvent
 	public void cliffWaterColor(WaterColorEvent evt) {
-		if (evt.getBiome() == ChromatiCraft.glowingcliffs) {
+		if (BiomeGlowingCliffs.isGlowingCliffs(evt.getBiome())) {
 			evt.color = ChromatiCraft.glowingcliffs.getWaterColor(evt.world, evt.x, evt.y, evt.z, evt.getLightLevel());
 		}
 	}

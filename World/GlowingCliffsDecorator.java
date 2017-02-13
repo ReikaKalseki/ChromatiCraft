@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2016
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
 import java.util.Random;
@@ -35,25 +44,58 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 	}
 
 	@Override
+	public void decorateChunk(World world, Random rand, BiomeGenBase biome, int chunkX, int chunkZ) {
+		if (currentWorld != null) {
+			//throw new RuntimeException("Already decorating!!"); NO
+
+			World lastWorld = currentWorld;
+			Random lastRand = randomGenerator;
+			int lastX = chunk_X;
+			int lastZ = chunk_Z;
+
+			currentWorld = world;
+			randomGenerator = rand;
+			chunk_X = chunkX;
+			chunk_Z = chunkZ;
+
+			this.genDecorations(biome);
+
+			currentWorld = lastWorld;
+			randomGenerator = lastRand;
+			chunk_X = lastX;
+			chunk_Z = lastZ;
+		}
+		else {
+			currentWorld = world;
+			randomGenerator = rand;
+			chunk_X = chunkX;
+			chunk_Z = chunkZ;
+			this.genDecorations(biome);
+			currentWorld = null;
+			randomGenerator = null;
+		}
+	}
+
+	@Override
 	protected void genDecorations(BiomeGenBase biome) {
 		this.generateOres();
 		int i;
 		int j;
 		int k;
 
-		for (i = 0; i < sandPerChunk2; ++i) {
+		for (i = 0; i < sandPerChunk2; i++) {
 			j = chunk_X + randomGenerator.nextInt(16) + 8;
 			k = chunk_Z + randomGenerator.nextInt(16) + 8;
 			sandGen.generate(currentWorld, randomGenerator, j, currentWorld.getTopSolidOrLiquidBlock(j, k), k);
 		}
 
-		for (i = 0; i < clayPerChunk; ++i) {
+		for (i = 0; i < clayPerChunk; i++) {
 			j = chunk_X + randomGenerator.nextInt(16) + 8;
 			k = chunk_Z + randomGenerator.nextInt(16) + 8;
 			clayGen.generate(currentWorld, randomGenerator, j, currentWorld.getTopSolidOrLiquidBlock(j, k), k);
 		}
 
-		for (i = 0; i < sandPerChunk; ++i) {
+		for (i = 0; i < sandPerChunk; i++) {
 			j = chunk_X + randomGenerator.nextInt(16) + 8;
 			k = chunk_Z + randomGenerator.nextInt(16) + 8;
 			gravelAsSandGen.generate(currentWorld, randomGenerator, j, currentWorld.getTopSolidOrLiquidBlock(j, k), k);
@@ -62,26 +104,25 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 		i = treesPerChunk;
 
 		if (randomGenerator.nextInt(10) == 0) {
-			++i;
+			i++;
 		}
 
 		int l;
 		int i1;
 
-		for (j = 0; j < i; ++j) {
+		for (j = 0; j < i; j++) {
 			k = chunk_X + randomGenerator.nextInt(16) + 8;
 			l = chunk_Z + randomGenerator.nextInt(16) + 8;
 			i1 = currentWorld.getHeightValue(k, l);
-			WorldGenAbstractTree worldgenabstracttree = biome.func_150567_a(randomGenerator);
-			worldgenabstracttree.setScale(1.0D, 1.0D, 1.0D);
+			WorldGenAbstractTree tree = biome.func_150567_a(randomGenerator);
+			tree.setScale(1.0D, 1.0D, 1.0D);
 
-			if (worldgenabstracttree.generate(currentWorld, randomGenerator, k, i1, l))
-			{
-				worldgenabstracttree.func_150524_b(currentWorld, randomGenerator, k, i1, l);
+			if (tree.generate(currentWorld, randomGenerator, k, i1, l)) {
+				tree.func_150524_b(currentWorld, randomGenerator, k, i1, l);
 			}
 		}
 
-		for (j = 0; j < flowersPerChunk; ++j) {
+		for (j = 0; j < flowersPerChunk; j++) {
 			k = chunk_X + randomGenerator.nextInt(16) + 8;
 			l = chunk_Z + randomGenerator.nextInt(16) + 8;
 			i1 = this.nextInt(currentWorld.getHeightValue(k, l) + 32);
@@ -94,7 +135,7 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 			}
 		}
 
-		for (j = 0; j < grassPerChunk; ++j) {
+		for (j = 0; j < grassPerChunk; j++) {
 			k = chunk_X + randomGenerator.nextInt(16) + 8;
 			l = chunk_Z + randomGenerator.nextInt(16) + 8;
 			i1 = this.nextInt(currentWorld.getHeightValue(k, l) * 2);
@@ -102,7 +143,7 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 			worldgenerator.generate(currentWorld, randomGenerator, k, i1, l);
 		}
 
-		for (j = 0; j < waterlilyPerChunk; ++j) {
+		for (j = 0; j < waterlilyPerChunk; j++) {
 			k = chunk_X + randomGenerator.nextInt(16) + 8;
 			l = chunk_Z + randomGenerator.nextInt(16) + 8;
 
@@ -113,7 +154,7 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 			waterlilyGen.generate(currentWorld, randomGenerator, k, i1, l);
 		}
 
-		for (j = 0; j < mushroomsPerChunk; ++j) {
+		for (j = 0; j < mushroomsPerChunk; j++) {
 			if (randomGenerator.nextInt(4) == 0) {
 				k = chunk_X + randomGenerator.nextInt(16) + 8;
 				l = chunk_Z + randomGenerator.nextInt(16) + 8;
@@ -143,14 +184,14 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 			mushroomRedGen.generate(currentWorld, randomGenerator, j, l, k);
 		}
 
-		for (j = 0; j < reedsPerChunk; ++j) {
+		for (j = 0; j < reedsPerChunk; j++) {
 			k = chunk_X + randomGenerator.nextInt(16) + 8;
 			l = chunk_Z + randomGenerator.nextInt(16) + 8;
 			i1 = this.nextInt(currentWorld.getHeightValue(k, l) * 2);
 			reedGen.generate(currentWorld, randomGenerator, k, i1, l);
 		}
 
-		for (j = 0; j < 10; ++j) {
+		for (j = 0; j < 10; j++) {
 			k = chunk_X + randomGenerator.nextInt(16) + 8;
 			l = chunk_Z + randomGenerator.nextInt(16) + 8;
 			i1 = this.nextInt(currentWorld.getHeightValue(k, l) * 2);
@@ -167,14 +208,14 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 		 */
 
 		for (int a = 0; a < flowsPerChunk; a++) {
-			for (j = 0; j < 50; ++j) {
+			for (j = 0; j < 50; j++) {
 				k = chunk_X + randomGenerator.nextInt(16) + 8;
 				l = randomGenerator.nextInt(randomGenerator.nextInt(248) + 8);
 				i1 = chunk_Z + randomGenerator.nextInt(16) + 8;
 				(new WorldGenLiquids(Blocks.flowing_water)).generate(currentWorld, randomGenerator, k, l, i1);
 			}
 
-			for (j = 0; j < 20; ++j) {
+			for (j = 0; j < 20; j++) {
 				k = chunk_X + randomGenerator.nextInt(16) + 8;
 				l = randomGenerator.nextInt(randomGenerator.nextInt(randomGenerator.nextInt(240) + 8) + 8);
 				i1 = chunk_Z + randomGenerator.nextInt(16) + 8;
@@ -192,19 +233,19 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 		int j;
 		int k;
 
-		for (i = 0; i < sandPerChunk2; ++i) {
+		for (i = 0; i < sandPerChunk2; i++) {
 			j = is.getRandomX(islandRandom);
 			k = is.getRandomZ(islandRandom);
 			sandGen.generate(islandWorld, islandRandom, j, is.getTopY(islandWorld, j, k), k);
 		}
 
-		for (i = 0; i < clayPerChunk; ++i) {
+		for (i = 0; i < clayPerChunk; i++) {
 			j = is.getRandomX(islandRandom);
 			k = is.getRandomZ(islandRandom);
 			clayGen.generate(islandWorld, islandRandom, j, is.getTopY(islandWorld, j, k), k);
 		}
 
-		for (i = 0; i < sandPerChunk; ++i) {
+		for (i = 0; i < sandPerChunk; i++) {
 			j = is.getRandomX(islandRandom);
 			k = is.getRandomZ(islandRandom);
 			gravelAsSandGen.generate(islandWorld, islandRandom, j, is.getTopY(islandWorld, j, k), k);
@@ -213,13 +254,13 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 		i = treesPerChunk;
 
 		if (islandRandom.nextInt(10) == 0) {
-			++i;
+			i++;
 		}
 
 		int l;
 		int i1;
 
-		for (j = 0; j < i; ++j) {
+		for (j = 0; j < i; j++) {
 			k = is.getRandomX(islandRandom);
 			l = is.getRandomZ(islandRandom);
 			i1 = is.getTopY(islandWorld, j, k);
@@ -231,7 +272,7 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 			}
 		}
 
-		for (j = 0; j < flowersPerChunk; ++j) {
+		for (j = 0; j < flowersPerChunk; j++) {
 			k = is.getRandomX(islandRandom);
 			l = is.getRandomZ(islandRandom);
 			i1 = is.getTopY(islandWorld, j, k);
@@ -244,7 +285,7 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 			}
 		}
 
-		for (j = 0; j < grassPerChunk; ++j) {
+		for (j = 0; j < grassPerChunk; j++) {
 			k = is.getRandomX(islandRandom);
 			l = is.getRandomZ(islandRandom);
 			i1 = is.getTopY(islandWorld, j, k);
@@ -252,14 +293,14 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 			worldgenerator.generate(islandWorld, islandRandom, k, i1, l);
 		}
 
-		for (j = 0; j < reedsPerChunk; ++j) {
+		for (j = 0; j < reedsPerChunk; j++) {
 			k = is.getRandomX(islandRandom);
 			l = is.getRandomZ(islandRandom);
 			i1 = is.getTopY(islandWorld, j, k);
 			reedGen.generate(islandWorld, islandRandom, k, i1, l);
 		}
 
-		for (j = 0; j < 10; ++j) {
+		for (j = 0; j < 10; j++) {
 			k = is.getRandomX(islandRandom);
 			l = is.getRandomZ(islandRandom);
 			i1 = is.getTopY(islandWorld, j, k);
@@ -276,14 +317,14 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 		 */
 
 		for (int a = 0; a < flowsPerChunk; a++) {
-			for (j = 0; j < 50; ++j) {
+			for (j = 0; j < 50; j++) {
 				k = is.getRandomX(islandRandom);
 				l = is.getTopY(islandWorld, j, k);
 				i1 = is.getRandomZ(islandRandom);
 				(new WorldGenLiquids(Blocks.flowing_water)).generate(islandWorld, islandRandom, k, l, i1);
 			}
 
-			for (j = 0; j < 20; ++j) {
+			for (j = 0; j < 20; j++) {
 				k = is.getRandomX(islandRandom);
 				l = is.getTopY(islandWorld, j, k);
 				i1 = is.getRandomZ(islandRandom);

@@ -25,6 +25,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -60,7 +61,7 @@ public class CliffFogRenderer {
 		int pz = MathHelper.floor_double(z);
 		BiomeGenBase b = ep.worldObj.getBiomeGenForCoords(px, pz);
 
-		if (b == ChromatiCraft.glowingcliffs && clouds.size() < CLOUD_COUNT && rand.nextInt(4) == 0) {
+		if (BiomeGlowingCliffs.isGlowingCliffs(b) && clouds.size() < CLOUD_COUNT && rand.nextInt(4) == 0) {
 			Cloud c = this.createCloud(ep.worldObj, x, y, z);
 			if (c != null)
 				clouds.add(c);
@@ -111,7 +112,7 @@ public class CliffFogRenderer {
 		double dx = ReikaRandomHelper.getRandomPlusMinus(x, 96);
 		double dz = ReikaRandomHelper.getRandomPlusMinus(z, 96);
 
-		if (world.getBiomeGenForCoords(MathHelper.floor_double(dx), MathHelper.floor_double(dz)) != ChromatiCraft.glowingcliffs)
+		if (!BiomeGlowingCliffs.isGlowingCliffs(world.getBiomeGenForCoords(MathHelper.floor_double(dx), MathHelper.floor_double(dz))))
 			return null;
 
 		double dy = ReikaRandomHelper.getRandomBetween(60D, 256D);

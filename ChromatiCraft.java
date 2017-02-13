@@ -121,6 +121,7 @@ import Reika.ChromatiCraft.World.CrystalGenerator;
 import Reika.ChromatiCraft.World.DecoFlowerGenerator;
 import Reika.ChromatiCraft.World.DungeonGenerator;
 import Reika.ChromatiCraft.World.GlowingCliffsAuxGenerator;
+import Reika.ChromatiCraft.World.GlowingCliffsEdge;
 import Reika.ChromatiCraft.World.LumaGenerator;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.ChromatiCraft.World.TieredWorldGenerator;
@@ -252,6 +253,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	public static BiomeRainbowForest rainbowforest;
 	public static BiomeEnderForest enderforest;
 	public static BiomeGlowingCliffs glowingcliffs;
+	public static GlowingCliffsEdge glowingcliffsEdge;
 
 	@SidedProxy(clientSide="Reika.ChromatiCraft.ChromaClient", serverSide="Reika.ChromatiCraft.ChromaCommon")
 	public static ChromaCommon proxy;
@@ -444,6 +446,8 @@ public class ChromatiCraft extends DragonAPIMod {
 		//BiomeManager.addBiome(BiomeType.WARM, new BiomeEntry(glowingcliffs, ChromaOptions.getGlowingCliffsWeight()));
 		//BiomeManager.addSpawnBiome(glowingcliffs);
 
+		glowingcliffsEdge = new GlowingCliffsEdge(ExtraChromaIDs.LUMINOUSEDGE.getValue());
+
 		//replace 1/8 of jungle and 1/8 of Mega Taiga, for a total of 4/(16-2) = 28% net spawn rate of either Jungle or MT
 		//revised to 1/16th of each for 2/15 = 13% spawn rate
 		SpecialBiomePlacementRegistry.instance.registerID(this, Category.WARM, 2, glowingcliffs.biomeID);
@@ -451,6 +455,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		SpecialBiomePlacementRegistry.instance.registerID(this, Category.COOL, 2, glowingcliffs.biomeID);
 		//SpecialBiomePlacementRegistry.instance.registerID(this, Category.COOL, 3, glowingcliffs.biomeID);
 		BiomeDictionary.registerBiomeType(glowingcliffs, BiomeDictionary.Type.MOUNTAIN, BiomeDictionary.Type.LUSH, BiomeDictionary.Type.MAGICAL, BiomeDictionary.Type.BEACH, BiomeDictionary.Type.WET);
+		BiomeDictionary.registerBiomeType(glowingcliffsEdge, BiomeDictionary.Type.MOUNTAIN, BiomeDictionary.Type.LUSH, BiomeDictionary.Type.MAGICAL, BiomeDictionary.Type.BEACH, BiomeDictionary.Type.WET);
 
 		ChromaDimensionManager.initialize();
 
@@ -539,7 +544,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (ModList.ATG.isLoaded()) {
 			ATGBiomes.addBiome(ATGBiomes.BiomeType.LAND, "Forest", rainbowforest, 1.0);
 			ATGBiomes.addBiome(ATGBiomes.BiomeType.LAND, "Forest", enderforest, 1.0);
-			ATGBiomes.addBiome(ATGBiomes.BiomeType.LAND, "Cliffs", glowingcliffs, 0.5);
+			ATGBiomes.addBiome(ATGBiomes.BiomeType.LAND, "Cliffs", glowingcliffs, 0.125);
 		}
 
 		if (ModList.BLUEPOWER.isLoaded()) { //prevent what is nearly an exploit by uncrafting gold apples

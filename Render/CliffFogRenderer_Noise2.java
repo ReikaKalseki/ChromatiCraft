@@ -19,7 +19,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 
-import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.DragonAPI.Instantiable.SimplexNoiseGenerator;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -53,7 +53,7 @@ public class CliffFogRenderer_Noise2 {
 		int pz = MathHelper.floor_double(z);
 		BiomeGenBase b = ep.worldObj.getBiomeGenForCoords(px, pz);
 
-		if (b != ChromatiCraft.glowingcliffs)
+		if (!BiomeGlowingCliffs.isGlowingCliffs(b))
 			return;
 
 		GL11.glPushMatrix();

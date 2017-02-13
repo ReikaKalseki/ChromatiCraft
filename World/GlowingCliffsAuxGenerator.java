@@ -36,6 +36,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
+import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.MystCraftHandler;
 import Reika.DragonAPI.ModRegistry.ModOreList;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
@@ -118,15 +119,20 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 	}
 
 	private void generateMaterialVeins(World world, int chunkX, int chunkZ, Random random) {
-		int n = 1+random.nextInt(6);
-		for (int i = 0; i < n; i++) {
-			int x = chunkX+random.nextInt(16)+8;
-			int z = chunkZ+random.nextInt(16)+8;
-			int y = 64+random.nextInt(192);
-			if (ModList.MYSTCRAFT.isLoaded()) {
-				Block b = MystCraftHandler.getInstance().crystalID;
-				if (b != null) {
-					new ExposedOreVein(b, 64).generate(world, random, x, y, z);
+		if (ReikaChunkHelper.chunkContainsBiomeTypeBlockCoords(world, chunkX, chunkZ, BiomeGlowingCliffs.class)) {
+			int n = 1+random.nextInt(6);
+			for (int i = 0; i < n; i++) {
+				int x = chunkX+random.nextInt(16)+8;
+				int z = chunkZ+random.nextInt(16)+8;
+				if (BiomeGlowingCliffs.isGlowingCliffs(world.getBiomeGenForCoords(x, z))) {
+					int y = 64+random.nextInt(192);
+					if (ModList.MYSTCRAFT.isLoaded()) {
+						Block b = MystCraftHandler.getInstance().crystalID;
+						if (b != null) {
+							int s = 32+random.nextInt(32+1);
+							new ExposedOreVein(b, s).generate(world, random, x, y, z);
+						}
+					}
 				}
 			}
 		}
@@ -139,7 +145,7 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 			int z = chunkZ+random.nextInt(16)+8;
 			int c = world.getBlock(x, world.getTopSolidOrLiquidBlock(x, z)+1, z) == Blocks.water ? 3 : 6;
 			if (random.nextInt(c) == 0) {
-				if (world.getBiomeGenForCoords(x, z) == ChromatiCraft.glowingcliffs) {
+				if (BiomeGlowingCliffs.isGlowingCliffs(world.getBiomeGenForCoords(x, z))) {
 					Island is = this.initializeIsland(world, x, z, random, s);
 					this.generateIsland(world, x, z, random, is);
 				}

@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2016
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
 import java.util.Random;
@@ -8,6 +17,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.common.BiomeManager;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
@@ -70,6 +80,8 @@ public class GlowingCliffsColumnShaper {
 	private static final int MIN_UPPER_TOP_Y = 144;
 	private static final int MAX_UPPER_TOP_Y = 160;
 
+	private static final double HVAL_LIMIT_EDGE = 0.5;
+
 	private static final Interpolation EDGE_BLENDING = new Interpolation(false).addPoint(0, 1).addPoint(0.05, 0.925).addPoint(0.1, 0.85).addPoint(0.3, 0.8).addPoint(0.33, 0.6).addPoint(0.55, 0.5).addPoint(0.7, 0.35).addPoint(0.75, 0.2).addPoint(0.85, 0.075).addPoint(1, 0);
 
 	private static final double ANGLE_SEARCH_STEP = 15;
@@ -108,7 +120,7 @@ public class GlowingCliffsColumnShaper {
 		//ReikaJavaLibrary.pConsole("Genning "+x+", "+z+" with arrays S="+blocks.length);
 
 		int dirt = (int)ReikaMathLibrary.normalizeToBounds(dirtThickness.getValue(x, z), 1, 4);
-		double hval = this.calcHval(world, x, z);
+		double hval = this.calcHval(world, x, z, biome);
 
 		if (hval < SHORELINE_THRESHOLD) {
 			this.generateWater(world, x, z, biome, rand, hval, dirt);
@@ -182,21 +194,29 @@ public class GlowingCliffsColumnShaper {
 		return ReikaMathLibrary.normalizeToBounds(middlePlateauEdge.getValue(x, z), MIDDLE_MIN_THRESHOLD, MIDDLE_MAX_THRESHOLD);
 	}
 
-	private double calcHval(World world, int x, int z) {
-		double hval = ReikaMathLibrary.normalizeToBounds(landmassControl.getValue(x, z), 0, 1);
+	private double calcHval(World world, int x, int z, BiomeGenBase b) {
+		double hval = ReikaMathLibrary.normalizeToBounds(landmassControl.getValue(x, z), 0, this.getHvalLimit(world, x, z, b));
 
-		if (hval > SHORELINE_THRESHOLD) {
-			double f = this.getDistanceFactor(world, x, z, /*48*/24);
-			if (f < 1) {
-				//double dh = SHORELINE_THRESHOLD+0.125*(MIDDLE_MIN_THRESHOLD-SHORELINE_THRESHOLD);
-				//hval = (hval-dh)*f+dh;
-				double dm = SHORELINE_THRESHOLD*0.67;
-				double dh = hval-dm;
-				hval = dm+dh*f;
-			}
+		//if (hval > SHORELINE_THRESHOLD) {
+		BlendPoint f = this.getDistanceFactor(world, x, z, /*48*/24, b);
+		if (f != null) {
+			//double dh = SHORELINE_THRESHOLD+0.125*(MIDDLE_MIN_THRESHOLD-SHORELINE_THRESHOLD);
+			//hval = (hval-dh)*f+dh;
+			double dm = f.biome == ChromatiCraft.glowingcliffsEdge ? /*HVAL_LIMIT_EDGE*/this.calcHval(world, f.xCoord, f.zCoord, f.biome) : this.isBiomeOceanic(f.biome) ? SHORELINE_THRESHOLD*0.25 : SHORELINE_THRESHOLD;
+			double dh = hval-dm;
+			hval = dm+dh*f.distanceFraction;
 		}
+		//}
 
 		return hval;
+	}
+
+	private double getHvalLimit(World world, int x, int z, BiomeGenBase b) {
+		return b == ChromatiCraft.glowingcliffsEdge ? HVAL_LIMIT_EDGE : 1;
+	}
+
+	private boolean isBiomeOceanic(BiomeGenBase b) {
+		return BiomeManager.oceanBiomes.contains(b);
 	}
 
 	private int getBlendedHeight(World world, int x, int y, int z, double f, Coordinate loc) {
@@ -205,7 +225,7 @@ public class GlowingCliffsColumnShaper {
 	}
 
 	private double calcIntendedHeight(World world, int x, int z) {
-		double hval = this.calcHval(world, x, z);
+		double hval = this.calcHval(world, x, z, ChromatiCraft.glowingcliffsEdge);
 		double middle = this.calcMiddleThresh(x, z);
 		double top = this.calcTopThresh(x, z);
 		if (hval < SHORELINE_THRESHOLD) {
@@ -240,7 +260,8 @@ public class GlowingCliffsColumnShaper {
 				//int dx = x+dir.directionX*d;
 				//int dz = z+dir.directionZ*d;
 				BiomeGenBase b = this.getBiome(world, dx, dz);
-				if (b == ChromatiCraft.glowingcliffs) {
+
+				if (BiomeGlowingCliffs.isGlowingCliffs(b)) {
 					//d *= dir.projectionFactor;
 					if (d < mind) {
 						mind = Math.min(mind, d);
@@ -256,8 +277,8 @@ public class GlowingCliffsColumnShaper {
 		return mind == Integer.MAX_VALUE ? null : new Object[]{mind/(double)search, result};
 	}
 
-	private double getDistanceFactor(World world, int x, int z, int search) {
-		int mind = Integer.MAX_VALUE;
+	private BlendPoint getDistanceFactor(World world, int x, int z, int search, BiomeGenBase biome) {
+		BlendPoint ret = null;
 		int look = search;
 		for (int d = 1; d <= look; d++) {
 			//for (int i = 0; i < CubeDirections.list.length; i++) {
@@ -269,18 +290,19 @@ public class GlowingCliffsColumnShaper {
 				//int dx = x+dir.directionX*d;
 				//int dz = z+dir.directionZ*d;
 				BiomeGenBase b = this.getBiome(world, dx, dz);
-				if (b != ChromatiCraft.glowingcliffs) {
+
+				if (b != ChromatiCraft.glowingcliffs && b != biome) { //NOT isGlowingCliffs()
 					//d *= dir.projectionFactor;
-					if (d < mind) {
-						mind = Math.min(mind, d);
-						look = mind-1;
+					if (ret == null || d < ret.distance) {
+						ret = new BlendPoint(d, (double)d/search, dx, dz, b);
+						look = d-1;
 					}
 					break;
 				}
 				//}
 			}
 		}
-		return mind == Integer.MAX_VALUE ? 1 : mind/(double)search;
+		return ret;
 	}
 
 	private BiomeGenBase getBiome(World world, int x, int z) {
@@ -451,6 +473,26 @@ public class GlowingCliffsColumnShaper {
 		int dz = z & 15;
 		int d = 256;//blockColumn.length / 256;
 		return (dx * 16 + dz) * d;
+	}
+
+	private static class BlendPoint {
+
+		private final int distance;
+		private final double distanceFraction;
+		private final BiomeGenBase biome;
+
+		private final int xCoord;
+		private final int zCoord;
+
+		private BlendPoint(int d, double f, int x, int z, BiomeGenBase b) {
+			distance = d;
+			distanceFraction = f;
+			biome = b;
+
+			xCoord = x;
+			zCoord = z;
+		}
+
 	}
 
 }

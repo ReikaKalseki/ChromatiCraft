@@ -295,7 +295,8 @@ public class EntityGlowCloud extends EntityLiving {
 
 		if (worldObj != null) {
 			//spawnedEntities--;
-			this.sendDeathParticles();
+			if (!worldObj.isRemote)
+				this.sendDeathParticles();
 		}
 	}
 

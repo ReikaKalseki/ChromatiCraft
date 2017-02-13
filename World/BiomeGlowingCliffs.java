@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2016
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
 import java.util.Random;
@@ -15,11 +24,13 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
-import Reika.ChromatiCraft.ChromatiCraft;
+import net.minecraft.world.gen.feature.WorldGenAbstractTree;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.SimplexNoiseGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ModSpawnEntry;
+import Reika.DragonAPI.Instantiable.Worldgen.ModifiableBigTree;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
@@ -28,15 +39,17 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class BiomeGlowingCliffs extends BiomeGenBase {
 
-	private final SimplexNoiseGenerator hueShift = new SimplexNoiseGenerator(System.currentTimeMillis()).setFrequency(1/8D);
-	private final SimplexNoiseGenerator lumShift = new SimplexNoiseGenerator(-System.currentTimeMillis()).setFrequency(1/6D);
-	private final SimplexNoiseGenerator waterColorMix = new SimplexNoiseGenerator(~System.currentTimeMillis()).setFrequency(1/10D);
+	private static final SimplexNoiseGenerator hueShift = new SimplexNoiseGenerator(System.currentTimeMillis()).setFrequency(1/8D);
+	private static final SimplexNoiseGenerator lumShift = new SimplexNoiseGenerator(-System.currentTimeMillis()).setFrequency(1/6D);
+	private static final SimplexNoiseGenerator waterColorMix = new SimplexNoiseGenerator(~System.currentTimeMillis()).setFrequency(1/10D);
 	//private final SimplexNoiseGenerator fogDensityXZ = new SimplexNoiseGenerator(2*System.currentTimeMillis()).setFrequency(1/24D);
 	//private final SimplexNoiseGenerator fogDensityXY = new SimplexNoiseGenerator(-4*System.currentTimeMillis()).setFrequency(1/18D);
 	//private final SimplexNoiseGenerator fogDensityYZ = new SimplexNoiseGenerator(5*System.currentTimeMillis()).setFrequency(1/18D);
 
-	private GlowingCliffsColumnShaper terrain;
-	private long worldSeed;
+	private static GlowingCliffsColumnShaper terrain;
+	private static long worldSeed;
+
+	private final GlowingTreeGenerator glowTree = new GlowingTreeGenerator();
 
 	public BiomeGlowingCliffs(int id) {
 		super(id);
@@ -139,27 +152,60 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 		//terrain.generateColumn(world, x, z, rand, arr, m, this);
 	}
 
-	public void blendTerrainEdges(World world, int chunkX, int chunkZ, Block[] blockArray, byte[] metaArray) {
-		this.initTerrain(world);
+	public static void blendTerrainEdges(World world, int chunkX, int chunkZ, Block[] blockArray, byte[] metaArray) {
+		initTerrain(world);
 
 		for (int i = 0; i < 16; i++) {
 			for (int k = 0; k < 16; k++) {
 				int x = chunkX*16+i;
 				int z = chunkZ*16+k;
-				if (world.getWorldChunkManager().getBiomeGenAt(x, z) != ChromatiCraft.glowingcliffs)
+				BiomeGenBase b = world.getWorldChunkManager().getBiomeGenAt(x, z);
+				if (!BiomeGlowingCliffs.isGlowingCliffs(b))
 					terrain.blendEdge(world, x, z, blockArray, metaArray);
 				else
-					terrain.generateColumn(world, x, z, new Random(chunkX*341873128712L+chunkZ*132897987541L), blockArray, metaArray, this);
+					terrain.generateColumn(world, x, z, new Random(chunkX*341873128712L+chunkZ*132897987541L), blockArray, metaArray, b);
 			}
 		}
 	}
 
-	private void initTerrain(World world) {
+	private static void initTerrain(World world) {
 		long seed = world.getSeed();
 		if (seed != worldSeed || terrain == null) {
 			terrain = new GlowingCliffsColumnShaper(seed);
 			worldSeed = seed;
 		}
+	}
+
+	@Override
+	public WorldGenAbstractTree func_150567_a(Random rand) {
+		if (rand.nextInt(20) == 0) {
+			return glowTree;
+		}
+		else {
+			return super.func_150567_a(rand);//rand.nextInt(10) == 0 ? worldGeneratorBigTree : worldGeneratorTrees;
+		}
+	}
+
+	public static boolean isGlowingCliffs(BiomeGenBase b) {
+		return b instanceof BiomeGlowingCliffs;
+	}
+
+	private static class GlowingTreeGenerator extends ModifiableBigTree {
+
+		public GlowingTreeGenerator() {
+			super(false);
+		}
+
+		@Override
+		public Block getLeafBlock(int x, int y, int z) {
+			return rand.nextInt(16) == 0 ? ChromaBlocks.GLOWLEAF.getBlockInstance() : super.getLeafBlock(x, y, z);
+		}
+
+		@Override
+		public int getLeafMetadata(int x, int y, int z) {
+			return super.getLeafMetadata(x, y, z);
+		}
+
 	}
 
 }

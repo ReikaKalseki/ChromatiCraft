@@ -47,6 +47,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -329,7 +330,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 					return b instanceof BiomeGenHills || (b.rootHeight >= 1 && b.topBlock == Blocks.grass/* && ReikaBiomeHelper.getBiomeTemp(world, b) < 40*/);
 				case GLOWDAISY:
 				case GLOWROOT:
-					return b == ChromatiCraft.glowingcliffs;
+					return BiomeGlowingCliffs.isGlowingCliffs(b);
 			}
 			return false;
 		}

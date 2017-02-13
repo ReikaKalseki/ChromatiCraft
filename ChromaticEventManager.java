@@ -129,6 +129,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
+import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionTicker;
@@ -207,28 +208,29 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void preventCliffFire(FireSpreadEvent evt) {
-		if (evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord) == ChromatiCraft.glowingcliffs) {
+		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord))) {
 			evt.setCanceled(true);
 		}
 	}
 
 	@SubscribeEvent
-	public void preventCliffRivers(BeachTypeEvent evt) {
+	public void preventCliffBeaches(BeachTypeEvent evt) {
 		if (evt.sourceBiomeID == ExtraChromaIDs.LUMINOUSCLIFFS.getValue()) {
-			evt.deleteBeach();
+			//evt.deleteBeach();
+			evt.biomeID = ExtraChromaIDs.LUMINOUSEDGE.getValue();
 		}
 	}
 
 	@SubscribeEvent
-	public void preventCliffRivers(GenLayerBeachEvent evt) {
+	public void preventCliffBeaches(GenLayerBeachEvent evt) {
 		if (evt.originalBiomeID == ExtraChromaIDs.LUMINOUSCLIFFS.getValue()) {
-			evt.setResult(Result.DENY);
+			;//evt.setResult(Result.DENY);
 		}
 	}
 
 	@SubscribeEvent
 	public void preventCliffRivers(GenLayerRiverEvent evt) {
-		if (evt.originalBiomeID == ExtraChromaIDs.LUMINOUSCLIFFS.getValue()) {
+		if (evt.originalBiomeID == ExtraChromaIDs.LUMINOUSCLIFFS.getValue() || evt.originalBiomeID == ExtraChromaIDs.LUMINOUSEDGE.getValue()) {
 			evt.setResult(Result.DENY);
 		}
 	}
@@ -236,13 +238,13 @@ public class ChromaticEventManager {
 	@SubscribeEvent
 	public void blendCliffEdges(ChunkProviderEvent.ReplaceBiomeBlocks evt) {
 		if (evt.world != null && evt.blockArray != null) {
-			ChromatiCraft.glowingcliffs.blendTerrainEdges(evt.world, evt.chunkX, evt.chunkZ, evt.blockArray, evt.metaArray);
+			BiomeGlowingCliffs.blendTerrainEdges(evt.world, evt.chunkX, evt.chunkZ, evt.blockArray, evt.metaArray);
 		}
 	}
 
 	@SubscribeEvent
 	public void preventCliffCreepers(LivingSpawnEvent.CheckSpawn evt) {
-		if (evt.world.getBiomeGenForCoords(MathHelper.floor_double(evt.x), MathHelper.floor_double(evt.z)) == ChromatiCraft.glowingcliffs) {
+		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(MathHelper.floor_double(evt.x), MathHelper.floor_double(evt.z)))) {
 			if (evt.entityLiving instanceof EntityCreeper)
 				evt.setResult(Result.DENY);
 		}
@@ -250,7 +252,7 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void preventCliffCreepers(LivingSpawnEvent evt) {
-		if (evt.world.getBiomeGenForCoords(MathHelper.floor_double(evt.x), MathHelper.floor_double(evt.z)) == ChromatiCraft.glowingcliffs) {
+		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(MathHelper.floor_double(evt.x), MathHelper.floor_double(evt.z)))) {
 			if (evt.entityLiving instanceof EntityCreeper)
 				evt.entityLiving.setDead();
 		}
@@ -258,7 +260,7 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void preventCliffsFreeze(IceFreezeEvent evt) {
-		if (evt.world.getBiomeGenForCoords(evt.x, evt.z) == ChromatiCraft.glowingcliffs) {
+		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.x, evt.z))) {
 			evt.setResult(Result.DENY);
 		}
 	}

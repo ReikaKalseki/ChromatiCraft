@@ -26,6 +26,7 @@ public enum ExtraChromaIDs implements IDRegistry {
 	RAINBOWFOREST(	"Biome IDs", 			"Rainbow Forest Biome ID", 		48, 	BiomeGenBase.class),
 	ENDERFOREST(	"Biome IDs", 			"Ender Forest Biome ID", 		47, 	BiomeGenBase.class),
 	LUMINOUSCLIFFS(	"Biome IDs", 			"Luminous Cliffs Biome ID", 	49, 	BiomeGenBase.class),
+	LUMINOUSEDGE(	"Biome IDs", 			"Luminous Cliffs Edge Biome ID",50, 	BiomeGenBase.class),
 	ISLANDS(		"Dimension Biome IDs", 	"Skyland Biome ID", 			100, 	BiomeGenBase.class),
 	SKYLANDS(		"Dimension Biome IDs", 	"Island Biome ID", 				101, 	BiomeGenBase.class),
 	PLAINS(			"Dimension Biome IDs", 	"Crystal Plains Biome ID", 		102, 	BiomeGenBase.class),
