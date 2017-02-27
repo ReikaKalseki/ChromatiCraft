@@ -94,6 +94,7 @@ import Reika.ChromatiCraft.Block.BlockActiveChroma;
 import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
+import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone.Variants;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
@@ -126,6 +127,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCloakingTower;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalBeacon;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalBroadcaster;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
@@ -141,7 +143,10 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.Event.AttackAggroEvent;
 import Reika.DragonAPI.Instantiable.Event.BlockConsumedByFireEvent;
+import Reika.DragonAPI.Instantiable.Event.BlockSpreadEvent;
+import Reika.DragonAPI.Instantiable.Event.BlockSpreadEvent.BlockDeathEvent;
 import Reika.DragonAPI.Instantiable.Event.BlockTickEvent;
+import Reika.DragonAPI.Instantiable.Event.BlockTillEvent;
 import Reika.DragonAPI.Instantiable.Event.EnderAttackTPEvent;
 import Reika.DragonAPI.Instantiable.Event.EntitySpawnerCheckEvent;
 import Reika.DragonAPI.Instantiable.Event.FarmlandTrampleEvent;
@@ -204,6 +209,57 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	public void reloadBroacastAirCache(SetBlockEvent evt) {
+		TileEntityCrystalBroadcaster.updateAirCaches(evt.world, evt.xCoord, evt.yCoord, evt.zCoord);
+	}
+
+	/*
+	@SubscribeEvent
+	public void preventCliffShadows(LightCalculationEvent evt) {
+		//if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.x, evt.z))) {
+		//	evt.setCanceled(true);
+		//}
+		ImmutablePair<Integer, Integer> val = GlowingCliffsAuxGenerator.TEMP_ISLAND_CACHE.get(new Coordinate(evt.x, 0, evt.z));
+		if (val != null) {
+			if (evt.y > /*val.left*//*evt.world.getTopSolidOrLiquidBlock(evt.x, evt.z) && evt.y < val.right) {
+				//evt.setCanceled(true);
+			}
+		}
+	}
+			 */
+
+	@SubscribeEvent
+	public void createCliffFarmland(BlockTillEvent evt) {
+		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.x, evt.z))) {
+			//ReikaJavaLibrary.pConsole(evt.x+","+evt.y+","+evt.z+": "+evt.world.getBlock(evt.x, evt.y+1, evt.z).isOpaqueCube());
+			evt.tilledBlock = ChromaBlocks.CLIFFSTONE.getBlockInstance();
+			evt.tilledMeta = Variants.FARMLAND.getMeta(false, false);
+		}
+	}
+
+	@SubscribeEvent
+	public void preventCliffStackedGrass(BlockDeathEvent evt) {
+		if (evt.getClass() != BlockDeathEvent.class)
+			return;
+		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.x, evt.z))) {
+			//ReikaJavaLibrary.pConsole(evt.x+","+evt.y+","+evt.z+": "+evt.world.getBlock(evt.x, evt.y+1, evt.z).isOpaqueCube());
+			if (evt.world.getBlock(evt.x, evt.y+1, evt.z).isOpaqueCube())
+				evt.setResult(Result.ALLOW);
+		}
+	}
+
+	@SubscribeEvent
+	public void preventCliffStackedGrass(BlockSpreadEvent evt) {
+		if (evt.getClass() != BlockSpreadEvent.class)
+			return;
+		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.x, evt.z))) {
+			//ReikaJavaLibrary.pConsole(evt.x+","+evt.y+","+evt.z+": "+evt.world.getBlock(evt.x, evt.y+1, evt.z).isOpaqueCube());
+			if (evt.world.getBlock(evt.x, evt.y+1, evt.z).isOpaqueCube())
+				evt.setResult(Result.DENY);
+		}
 	}
 
 	@SubscribeEvent
@@ -924,6 +980,20 @@ public class ChromaticEventManager {
 					;
 			if (flag) {
 				evt.setCanceled(true);
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void preventStealingDataCrystals(EntityItemPickupEvent evt) {
+		ItemStack is = evt.item.getEntityItem();
+		if (ChromaItems.DATACRYSTAL.matchWith(is) && is.stackTagCompound != null && is.stackTagCompound.hasKey("owner")) {
+			if (!evt.entityPlayer.getUniqueID().equals(UUID.fromString(is.stackTagCompound.getString("owner")))) {
+				evt.setCanceled(true);
+			}
+			else {
+				is.stackTagCompound = null;
+				evt.item.setEntityItemStack(is);
 			}
 		}
 	}

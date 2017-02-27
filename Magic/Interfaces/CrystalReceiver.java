@@ -26,7 +26,7 @@ public interface CrystalReceiver extends CrystalNetworkTile, EnergyBeamReceiver 
 
 	public boolean canReceiveFrom(CrystalTransmitter r);
 
-	public boolean needsLineOfSightFromTransmitter();
+	public boolean needsLineOfSightFromTransmitter(CrystalTransmitter r);
 
 	//public void markSource(WorldLocation loc);
 

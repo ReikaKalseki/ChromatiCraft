@@ -21,7 +21,7 @@ public class LoreManager {
 
 	public static final LoreManager instance = new LoreManager();
 
-	private final KeyAssemblyPuzzle puzzle = new KeyAssemblyPuzzle();
+	private KeyAssemblyPuzzle puzzle;
 
 	private static final HashMap<ChunkCoordIntPair, LoreEntry> locationMap = new HashMap();
 

@@ -160,7 +160,7 @@ public class TemporaryCrystalReceiver implements CrystalReceiver, WrapperTile {
 	}
 
 	@Override
-	public boolean needsLineOfSightFromTransmitter() {
+	public boolean needsLineOfSightFromTransmitter(CrystalTransmitter r) {
 		return true;
 	}
 

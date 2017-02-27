@@ -140,6 +140,7 @@ public class ProgressionManager implements ProgressRegistry {
 		FOCUSCRYSTAL(Items.emerald),
 		ANYSTRUCT(ChromaTiles.STRUCTCONTROL.getCraftedProduct()),
 		ARTEFACT(ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.FRAGMENT.ordinal())),
+		TOWER(ChromaTiles.DATANODE.getCraftedProduct()),
 		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
 		;
 

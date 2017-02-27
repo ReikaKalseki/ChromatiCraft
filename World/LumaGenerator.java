@@ -42,7 +42,8 @@ public class LumaGenerator implements RetroactiveGenerator, ChromaDecorator {
 
 		if (this.generateIn(world)) {
 			BiomeGenBase b = world.getBiomeGenForCoords(chunkX, chunkZ);
-			if (rand.nextInt(ChromatiCraft.isRainbowForest(b) ? 2 : 4) == 0) {
+			//if (rand.nextInt(ChromatiCraft.isRainbowForest(b) ? 2 : 4) == 0) {
+			if (BiomeGlowingCliffs.isGlowingCliffs(b)) {
 				int n = 1+rand.nextInt(ChromatiCraft.isRainbowForest(b) ? 6 : 2);
 				for (int in = 0; in < n; in++) {
 					int x = chunkX+rand.nextInt(16);

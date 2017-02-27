@@ -9,30 +9,41 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFlower;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityBat;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.feature.WorldGenAbstractTree;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.ResettableRandom;
 import Reika.DragonAPI.Instantiable.SimplexNoiseGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ModSpawnEntry;
 import Reika.DragonAPI.Instantiable.Worldgen.ModifiableBigTree;
+import Reika.DragonAPI.Instantiable.Worldgen.ModifiableSmallTrees;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -42,14 +53,17 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 	private static final SimplexNoiseGenerator hueShift = new SimplexNoiseGenerator(System.currentTimeMillis()).setFrequency(1/8D);
 	private static final SimplexNoiseGenerator lumShift = new SimplexNoiseGenerator(-System.currentTimeMillis()).setFrequency(1/6D);
 	private static final SimplexNoiseGenerator waterColorMix = new SimplexNoiseGenerator(~System.currentTimeMillis()).setFrequency(1/10D);
+	private static final SimplexNoiseGenerator skyColorMix = new SimplexNoiseGenerator(~System.currentTimeMillis()*2).setFrequency(1/20D);
 	//private final SimplexNoiseGenerator fogDensityXZ = new SimplexNoiseGenerator(2*System.currentTimeMillis()).setFrequency(1/24D);
 	//private final SimplexNoiseGenerator fogDensityXY = new SimplexNoiseGenerator(-4*System.currentTimeMillis()).setFrequency(1/18D);
 	//private final SimplexNoiseGenerator fogDensityYZ = new SimplexNoiseGenerator(5*System.currentTimeMillis()).setFrequency(1/18D);
 
 	private static GlowingCliffsColumnShaper terrain;
 	private static long worldSeed;
+	private static HashMap<Class, Boolean> generatorRules = new HashMap();
 
 	private final GlowingTreeGenerator glowTree = new GlowingTreeGenerator();
+	private final GlowingTreeGenerator smallGlowTrees = new GlowingTreeGenerator();
 
 	public BiomeGlowingCliffs(int id) {
 		super(id);
@@ -102,7 +116,8 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public int getSkyColorByTemp(float temp)  {
-		return 0xd0a0ff;
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		return ReikaColorAPI.getShiftedHue(0xd0a0ff, (float)(15*skyColorMix.getValue(ep.posX, ep.posZ)));
 	}
 
 	@Override
@@ -186,11 +201,46 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 		}
 	}
 
+	public WorldGenAbstractTree getUndergroundTreeGen(Random rand, boolean construct) {
+		return rand.nextInt(40) == 0 ? construct ? new GlowingTreeGenerator() : glowTree : construct ? new SmallGlowingTreeGenerator() : smallGlowTrees;
+	}
+
 	public static boolean isGlowingCliffs(BiomeGenBase b) {
 		return b instanceof BiomeGlowingCliffs;
 	}
 
-	private static class GlowingTreeGenerator extends ModifiableBigTree {
+	public static void runIWGs(int cx, int cz, World world, IChunkProvider gen, IChunkProvider loader) {
+		List<IWorldGenerator> iwgs = ReikaWorldHelper.getModdedGenerators();
+		ResettableRandom rand = ReikaWorldHelper.getModdedGeneratorChunkRand(cx, cz, world);
+
+		for (IWorldGenerator generator : iwgs) {
+			if (canRunGenerator(generator)) {
+				rand.resetSeed();
+				generator.generate(rand, cx, cz, world, gen, loader);
+			}
+		}
+	}
+
+	private static boolean canRunGenerator(IWorldGenerator gen) {
+		Class c = gen.getClass();
+		Boolean flag = generatorRules.get(c);
+		if (flag == null) {
+			String s = c.getSimpleName().toLowerCase(Locale.ENGLISH);
+			flag = true;
+			if (s.contains("slimeisland"))
+				flag = false;
+			generatorRules.put(c, flag);
+		}
+		return flag.booleanValue();
+	}
+
+	private static class GlowingTreeGenerator extends ModifiableBigTree implements GlowingTreeGen {
+
+		private static final int DEFAULT_GLOW_CHANCE = 16;
+		private int glowChance = DEFAULT_GLOW_CHANCE;
+
+		private boolean isGenerating;
+		private LinkedList<Integer> glowChanceHistory = new LinkedList();
 
 		public GlowingTreeGenerator() {
 			super(false);
@@ -198,13 +248,85 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 
 		@Override
 		public Block getLeafBlock(int x, int y, int z) {
-			return rand.nextInt(16) == 0 ? ChromaBlocks.GLOWLEAF.getBlockInstance() : super.getLeafBlock(x, y, z);
+			return rand.nextInt(glowChance) == 0 ? ChromaBlocks.GLOWLEAF.getBlockInstance() : super.getLeafBlock(x, y, z);
+		}
+
+		public void setGlowChance(int c) {
+			if (isGenerating) {
+				glowChanceHistory.addLast(glowChance);
+			}
+			glowChance = c;
+		}
+
+		public void resetGlowChance() {
+			glowChance = DEFAULT_GLOW_CHANCE;
 		}
 
 		@Override
 		public int getLeafMetadata(int x, int y, int z) {
 			return super.getLeafMetadata(x, y, z);
 		}
+
+		@Override
+		public boolean generate(World world, Random rand, int x, int y, int z) {
+			boolean wasGenerating = isGenerating;
+			isGenerating = true;
+			boolean flag = super.generate(world, rand, x, y, z);
+			if (!glowChanceHistory.isEmpty()) {
+				glowChance = glowChanceHistory.getLast();
+			}
+			isGenerating = wasGenerating;
+			return flag;
+		}
+
+	}
+
+	private static class SmallGlowingTreeGenerator extends ModifiableSmallTrees implements GlowingTreeGen {
+
+		private static final int DEFAULT_GLOW_CHANCE = 16;
+		private int glowChance = DEFAULT_GLOW_CHANCE;
+
+		private boolean isGenerating;
+		private LinkedList<Integer> glowChanceHistory = new LinkedList();
+
+		public SmallGlowingTreeGenerator() {
+			super(false);
+		}
+
+		public void setGlowChance(int c) {
+			if (isGenerating) {
+				glowChanceHistory.addLast(glowChance);
+			}
+			glowChance = c;
+		}
+
+		public void resetGlowChance() {
+			glowChance = DEFAULT_GLOW_CHANCE;
+		}
+
+		@Override
+		public Block getLeafBlock(int x, int y, int z) {
+			return rand.nextInt(glowChance) == 0 ? ChromaBlocks.GLOWLEAF.getBlockInstance() : super.getLeafBlock(x, y, z);
+		}
+
+		@Override
+		public boolean generate(World world, Random rand, int x, int y, int z) {
+			boolean wasGenerating = isGenerating;
+			isGenerating = true;
+			boolean flag = super.generate(world, rand, x, y, z);
+			if (!glowChanceHistory.isEmpty()) {
+				glowChance = glowChanceHistory.getLast();
+			}
+			isGenerating = wasGenerating;
+			return flag;
+		}
+
+	}
+
+	public static interface GlowingTreeGen {
+
+		public void setGlowChance(int chance);
+		public void resetGlowChance();
 
 	}
 

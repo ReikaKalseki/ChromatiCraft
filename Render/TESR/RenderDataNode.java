@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Render.TESR;
 
 import java.util.ArrayList;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.tileentity.TileEntity;
@@ -54,19 +55,22 @@ public class RenderDataNode extends ChromaRenderBase {
 		}
 		if (MinecraftForgeClient.getRenderPass() == 1 || StructureRenderer.isRenderingTiles() || !te.isInWorld()) {
 
-			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-			GL11.glEnable(GL11.GL_BLEND);
-			BlendMode.ADDITIVEDARK.apply();
-			GL11.glDisable(GL11.GL_LIGHTING);
-			ReikaRenderHelper.disableEntityLighting();
-			GL11.glDepthMask(false);
-			//GL11.glDisable(GL11.GL_TEXTURE_2D);
+			if (!te.hasBeenScanned(Minecraft.getMinecraft().thePlayer)) {
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				GL11.glEnable(GL11.GL_BLEND);
+				BlendMode.ADDITIVEDARK.apply();
+				GL11.glDisable(GL11.GL_LIGHTING);
+				ReikaRenderHelper.disableEntityLighting();
+				GL11.glDepthMask(false);
+				//GL11.glDisable(GL11.GL_TEXTURE_2D);
 
-			this.renderPrism(te, v5);
-			if (te.isInWorld())
-				this.renderFlare(te, v5);
+				this.renderPrism(te, v5);
+				if (te.isInWorld())
+					this.renderFlare(te, v5);
 
-			GL11.glPopAttrib();
+				GL11.glPopAttrib();
+			}
+
 		}
 
 
@@ -490,6 +494,14 @@ public class RenderDataNode extends ChromaRenderBase {
 	}
 
 	private void renderFlare(TileEntityDataNode te, Tessellator v5) {
+		double d = te.getExtension1()+te.getExtension2();
+		d /= te.EXTENSION_LIMIT_1+te.EXTENSION_LIMIT_2;
+		float f = 0.125F+0.875F*(float)d;
+
+		renderFlare(v5, f);
+	}
+
+	public static void renderFlare(Tessellator v5, float colorFactor) {
 		ReikaTextureHelper.bindTerrainTexture();
 		double s = 3;
 		GL11.glPushMatrix();
@@ -509,6 +521,7 @@ public class RenderDataNode extends ChromaRenderBase {
 			GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
 			GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
 		}
+		//GL11.glRotated(-(System.currentTimeMillis()/20D)%360D, 0, 0, 1);
 		float u = ico.getMinU();
 		float v = ico.getMinV();
 		float du = ico.getMaxU();
@@ -516,13 +529,9 @@ public class RenderDataNode extends ChromaRenderBase {
 		v5.startDrawingQuads();
 		v5.setBrightness(240);
 
-		double d = te.getExtension1()+te.getExtension2();
-		d /= te.EXTENSION_LIMIT_1+te.EXTENSION_LIMIT_2;
-		float f = 0.125F+0.875F*(float)d;
-
 		//f *= 0.5;
 
-		v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(0xb0e0ff, f));
+		v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(0xb0e0ff, colorFactor));
 
 		double z = 0;//-0.5;
 
@@ -536,21 +545,24 @@ public class RenderDataNode extends ChromaRenderBase {
 	}
 
 	private void renderPrism(TileEntityDataNode te, Tessellator v5) {
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/datanode.png");
-
-		double s = 0.125*0.875;
-		double h = te.isInWorld() ? 1.5 : 1;
-		double dy = te.isInWorld() ? 0.5+te.getExtension1()+te.getExtension2()+0.0625*Math.sin((te.getTicksExisted()/8D)%(2*Math.PI)) : -0.5;
-
 		double d = te.getExtension0()+te.getExtension1()+te.getExtension2();
 		d /= te.EXTENSION_LIMIT_0+te.EXTENSION_LIMIT_1+te.EXTENSION_LIMIT_2;
 		float f = 0.5F+0.5F*(float)d;
+		double h = te.isInWorld() ? 1.5 : 1;
+		double dy = te.isInWorld() ? 0.5+te.getExtension1()+te.getExtension2()+0.0625*Math.sin((te.getTicksExisted()/8D)%(2*Math.PI)) : -0.5;
+		this.renderPrism(te.isInWorld() ? te.getTicksExisted()*2 : System.currentTimeMillis()/20D, v5, f, h, dy);
+	}
+
+	public static void renderPrism(double tick, Tessellator v5, float colorFactor, double h, double dy) {
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/datanode.png");
+
+		double s = 0.125*0.875;
 
 		int c1 = 0xa0e0ff;
 		int c2 = 0xffffff;
 
-		c1 = ReikaColorAPI.getColorWithBrightnessMultiplier(c1, f);
-		c2 = ReikaColorAPI.getColorWithBrightnessMultiplier(c2, f);
+		c1 = ReikaColorAPI.getColorWithBrightnessMultiplier(c1, colorFactor);
+		c2 = ReikaColorAPI.getColorWithBrightnessMultiplier(c2, colorFactor);
 
 		GL11.glTranslated(0, dy, 0);
 
@@ -560,7 +572,7 @@ public class RenderDataNode extends ChromaRenderBase {
 		double[] da = {90, 15, 15};
 		double[] ra = {r1, r2, r1};
 		int i = 0;
-		double a0 = 45+(te.isInWorld() ? te.getTicksExisted()*2 : System.currentTimeMillis()/20D)%360;
+		double a0 = 45+(tick)%360;
 
 		double u = 50D/64;
 		double v = 17D/96;
@@ -581,30 +593,6 @@ public class RenderDataNode extends ChromaRenderBase {
 			li.add(new DecimalPosition(dx, 0, dz));
 			i = (i+1)%da.length;
 		}
-
-		/*
-		v5.startDrawing(GL11.GL_LINE_LOOP);
-		v5.setColorOpaque_I(c1);
-		for (DecimalPosition p : li) {
-			v5.addVertex(p.xCoord, p.yCoord, p.zCoord);
-		}
-		v5.draw();
-
-		v5.startDrawing(GL11.GL_LINE_LOOP);
-		v5.setColorOpaque_I(c1);
-		for (DecimalPosition p : li) {
-			v5.addVertex(p.xCoord, p.yCoord+h, p.zCoord);
-		}
-		v5.draw();
-
-		v5.startDrawing(GL11.GL_LINES);
-		v5.setColorOpaque_I(c1);
-		for (DecimalPosition p : li) {
-			v5.addVertex(p.xCoord, p.yCoord, p.zCoord);
-			v5.addVertex(p.xCoord, p.yCoord+h, p.zCoord);
-		}
-		v5.draw();
-		 */
 
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glShadeModel(GL11.GL_SMOOTH);
@@ -641,11 +629,6 @@ public class RenderDataNode extends ChromaRenderBase {
 			v = 34D/96;
 			du = 64D/64;
 			dv = 94D/96;
-
-			//v5.addVertex(p1.xCoord, p1.yCoord, p1.zCoord);
-			//v5.addVertex(p1.xCoord, p1.yCoord+h, p1.zCoord);
-			//v5.addVertex(p2.xCoord, p2.yCoord+h, p2.zCoord);
-			//v5.addVertex(p2.xCoord, p2.yCoord, p2.zCoord);
 
 			v5.addVertexWithUV(p1.xCoord, p1.yCoord, p1.zCoord, u, v);
 			v5.addVertexWithUV(p1.xCoord, p1.yCoord+h, p1.zCoord, u, dv);

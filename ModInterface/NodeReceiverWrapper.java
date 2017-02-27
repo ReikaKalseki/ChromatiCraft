@@ -636,7 +636,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	}
 
 	@Override
-	public boolean needsLineOfSightFromTransmitter() {
+	public boolean needsLineOfSightFromTransmitter(CrystalTransmitter r) {
 		return true;
 	}
 

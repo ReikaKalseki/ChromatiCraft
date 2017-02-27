@@ -75,4 +75,8 @@ public class ElementMixer {
 		return data.getMixParents(color);
 	}
 
+	public boolean related(CrystalElement e1, CrystalElement e2) {
+		return this.getMixParents(e1).contains(e2) || this.getMixParents(e2).contains(e1);
+	}
+
 }

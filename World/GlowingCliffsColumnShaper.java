@@ -24,10 +24,10 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Interpolation;
 import Reika.DragonAPI.Instantiable.SimplexNoiseGenerator;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 
 
 public class GlowingCliffsColumnShaper {
@@ -46,6 +46,11 @@ public class GlowingCliffsColumnShaper {
 	private final SimplexNoiseGenerator oceanDepth;
 	private final SimplexNoiseGenerator caveCeilNoise;
 
+	//private final SimplexNoiseGenerator islandLowerNoise;
+	//private final SimplexNoiseGenerator islandUpperNoise;
+	//private final SimplexNoiseGenerator islandWaterNoise;
+	//private final SimplexNoiseGenerator islandRiverNoise;
+
 	private static final double SHORELINE_THRESHOLD = 0.3;//0.25;
 
 	private static final double MIDDLE_MIN_THRESHOLD = 0.35;
@@ -63,7 +68,7 @@ public class GlowingCliffsColumnShaper {
 	private static final int MIN_OCEAN_FLOOR_Y = 24;
 	private static final int MAX_OCEAN_FLOOR_Y = 48;
 
-	private static final int SEA_LEVEL = 62;
+	public static final int SEA_LEVEL = 62;
 
 	private static final int MIN_SHORE_Y = SEA_LEVEL;
 	private static final int MAX_SHORE_Y = 72;
@@ -72,19 +77,27 @@ public class GlowingCliffsColumnShaper {
 	private static final int MAX_MIDDLE_BOTTOM_Y = 96;
 
 	private static final int MIN_MIDDLE_TOP_Y = 100;
-	private static final int MAX_MIDDLE_TOP_Y = 112;
+	public static final int MAX_MIDDLE_TOP_Y = 112;
 
 	private static final int MIN_UPPER_BOTTOM_Y = 128;
 	private static final int MAX_UPPER_BOTTOM_Y = 140;
 
 	private static final int MIN_UPPER_TOP_Y = 144;
-	private static final int MAX_UPPER_TOP_Y = 160;
+	public static final int MAX_UPPER_TOP_Y = 160;
 
 	private static final double HVAL_LIMIT_EDGE = 0.5;
 
 	private static final Interpolation EDGE_BLENDING = new Interpolation(false).addPoint(0, 1).addPoint(0.05, 0.925).addPoint(0.1, 0.85).addPoint(0.3, 0.8).addPoint(0.33, 0.6).addPoint(0.55, 0.5).addPoint(0.7, 0.35).addPoint(0.75, 0.2).addPoint(0.85, 0.075).addPoint(1, 0);
 
 	private static final double ANGLE_SEARCH_STEP = 15;
+
+	private static final BlockKey STONE = new BlockKey(Blocks.stone);
+	private static final BlockKey DIRT = new BlockKey(Blocks.dirt);
+	private static final BlockKey GRASS = new BlockKey(Blocks.grass);
+
+	private static final BlockKey BIOME_STONE = STONE;//new BlockKey(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.STONE.getMeta(false, false));
+	private static final BlockKey BIOME_DIRT = DIRT;//new BlockKey(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.DIRT.getMeta(false, false));
+	private static final BlockKey BIOME_GRASS = GRASS;//new BlockKey(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.GRASS.getMeta(false, false));
 
 	private Block[] blockColumn;
 	private byte[] metaColumn;
@@ -107,6 +120,11 @@ public class GlowingCliffsColumnShaper {
 		middlePlateauBottom = new SimplexNoiseGenerator(-seed*8+65536).setFrequency(1/32D);
 		middlePlateauEdge = new SimplexNoiseGenerator(-seed*2+16384).setFrequency(1/32D);
 		lowerPlateauCaveDepth = new SimplexNoiseGenerator(-seed*16+32).setFrequency(1/32D);
+
+		//islandLowerNoise = new SimplexNoiseGenerator(~seed+800).setFrequency(1/16D);
+		//islandUpperNoise = new SimplexNoiseGenerator(~seed-2000).setFrequency(1/160D);
+		//islandWaterNoise = new SimplexNoiseGenerator(~seed*2).setFrequency(1/32D);
+		//islandRiverNoise = new SimplexNoiseGenerator(~seed*4).setFrequency(1/32D);
 	}
 
 	public void generateColumn(World world, int x, int z, Random rand, Block[] blocks, byte[] metas, BiomeGenBase biome) {
@@ -119,38 +137,80 @@ public class GlowingCliffsColumnShaper {
 
 		//ReikaJavaLibrary.pConsole("Genning "+x+", "+z+" with arrays S="+blocks.length);
 
-		int dirt = (int)ReikaMathLibrary.normalizeToBounds(dirtThickness.getValue(x, z), 1, 4);
+		int dirtt = (int)ReikaMathLibrary.normalizeToBounds(dirtThickness.getValue(x, z), 1, 4);
 		double hval = this.calcHval(world, x, z, biome);
 
 		if (hval < SHORELINE_THRESHOLD) {
-			this.generateWater(world, x, z, biome, rand, hval, dirt);
+			this.generateWater(world, x, z, biome, rand, hval, dirtt);
 			//this.setBlock(x, 64, z, Blocks.wool, ReikaItemHelper.blueWool.getItemDamage());
 		}
 		else {
 			double middlethresh = this.calcMiddleThresh(x, z);
 			double topthresh = this.calcTopThresh(x, z);
 			if (hval < middlethresh) {
-				this.generateLowPlateau(world, x, z, biome, rand, middlethresh, hval, dirt);
+				this.generateLowPlateau(world, x, z, biome, rand, middlethresh, hval, dirtt);
 				//this.setBlock(x, 64, z, Blocks.wool, ReikaItemHelper.limeWool.getItemDamage());
 			}
 			else if (hval < topthresh) {
 				double cave = ReikaMathLibrary.normalizeToBounds(lowerPlateauCaveDepth.getValue(x, z), LOWER_CAVE_MIN_THRESHOLD, LOWER_CAVE_MAX_THRESHOLD);
-				this.generateMidPlateau(world, x, z, biome, rand, hval < cave, middlethresh, cave, hval, dirt);
+				this.generateMidPlateau(world, x, z, biome, rand, hval < cave, middlethresh, cave, hval, dirtt);
 				//this.setBlock(x, 64, z, Blocks.wool, hval < cave ? ReikaItemHelper.whiteWool.getItemDamage() : ReikaItemHelper.yellowWool.getItemDamage());
 			}
 			else {
 				double cave = ReikaMathLibrary.normalizeToBounds(middlePlateauCaveDepth.getValue(x, z), MIDDLE_CAVE_MIN_THRESHOLD, MIDDLE_CAVE_MAX_THRESHOLD);
-				this.generateUpperPlateau(world, x, z, biome, rand, hval < cave, topthresh, cave, hval, dirt);
+				this.generateUpperPlateau(world, x, z, biome, rand, hval < cave, topthresh, cave, hval, dirtt);
 				//this.setBlock(x, 64, z, Blocks.wool, hval < cave ? ReikaItemHelper.orangeWool.getItemDamage() : ReikaItemHelper.redWool.getItemDamage());
 			}
 		}
 
+		//this.generateIslands(world, x, z, rand);
+
+		this.cleanColumn(world, x, z, biome);
+
+		/* not necessary for some reason
 		int bedrock = rand.nextInt(5);
 		for (int i = 0; i <= bedrock; i++) {
 			this.setBlock(x, i, z, Blocks.bedrock);
 		}
+		 */
 	}
 
+	private void cleanColumn(World world, int x, int z, BiomeGenBase biome) {
+		int pos = this.calcPosIndex(x, z);
+		BlockKey stone = this.getStone(biome);
+		BlockKey dirt = this.getDirt(biome);
+		BlockKey grass = this.getGrass(biome);
+		for (int i = 1; i < 256; i++) {
+			int idx = pos+i;
+			if (blockColumn[idx] == dirt.blockID) {
+				if (blockColumn[idx-1] == Blocks.air || blockColumn[idx-1] == null || blockColumn[idx-1] == ChromaBlocks.DECOFLOWER.getBlockInstance() || blockColumn[idx-1] == ChromaBlocks.TIEREDPLANT.getBlockInstance()) {
+					this.setBlock(x, i, z, stone.blockID, stone.metadata);
+					//ReikaJavaLibrary.pConsole("Replaced dirt @ "+x+", "+i+", "+z+" with stone since was unsupported.");
+				}
+			}
+			else if (i < 255 && blockColumn[idx] == grass.blockID) {
+				if (blockColumn[idx+1] != Blocks.air && blockColumn[idx+1] != null && blockColumn[idx+1] != ChromaBlocks.DECOFLOWER.getBlockInstance() && blockColumn[idx+1] != Blocks.sapling) {
+					this.setBlock(x, i, z, dirt.blockID, dirt.metadata);
+					//ReikaJavaLibrary.pConsole("Replaced grass @ "+x+", "+i+", "+z+" with dirt since was shadowed.");
+				}
+			}
+		}
+	}
+
+	/*
+	private void generateIslands(World world, int x, int z, Random rand) {
+		int y = 144;
+		double y1 = islandLowerNoise.getValue(x, z);
+		double y2 = islandUpperNoise.getValue(x, z);
+		if (y2 > y1) {
+			y2 *= 10;
+			y1 *= 10;
+			for (int i = (int)y1; i <= y2; i++) {
+				this.setBlock(x, y+i, z, Blocks.stone);
+			}
+		}
+	}
+	 */
 	public void blendEdge(World world, int x, int z, Block[] blockArray, byte[] metaArray) {
 		Object[] f = this.getInvertedDistanceFactor(world, x, z, /*64*/16);
 		if (f == null)
@@ -197,22 +257,40 @@ public class GlowingCliffsColumnShaper {
 	private double calcHval(World world, int x, int z, BiomeGenBase b) {
 		double hval = ReikaMathLibrary.normalizeToBounds(landmassControl.getValue(x, z), 0, this.getHvalLimit(world, x, z, b));
 
+		/*
+		if (b == ChromatiCraft.glowingcliffs && referenceValue > 0) {
+			return referenceValue;
+		}
+		 */
+
 		//if (hval > SHORELINE_THRESHOLD) {
-		BlendPoint f = this.getDistanceFactor(world, x, z, /*48*/24, b);
+		BlendPoint f = this.getDistanceFactor(world, x, z, 24, b); //was 48
 		if (f != null) {
 			//double dh = SHORELINE_THRESHOLD+0.125*(MIDDLE_MIN_THRESHOLD-SHORELINE_THRESHOLD);
 			//hval = (hval-dh)*f+dh;
-			double dm = f.biome == ChromatiCraft.glowingcliffsEdge ? /*HVAL_LIMIT_EDGE*/this.calcHval(world, f.xCoord, f.zCoord, f.biome) : this.isBiomeOceanic(f.biome) ? SHORELINE_THRESHOLD*0.25 : SHORELINE_THRESHOLD;
+			double dm = f.biome == ChromatiCraft.glowingcliffsEdge ? /*HVAL_LIMIT_EDGE*/this.calcHval(world, f.xCoord, f.zCoord, f.biome/*, hval*/) : this.isBiomeOceanic(f.biome) ? SHORELINE_THRESHOLD*0.25 : SHORELINE_THRESHOLD;
 			double dh = hval-dm;
-			hval = dm+dh*f.distanceFraction;
+			//double ds = 0.5;
+			hval = dm+dh*f.distanceFraction;//(f.distanceFraction*ds+(1-ds));
 		}
 		//}
+
+		/*
+		if (b == ChromatiCraft.glowingcliffsEdge) { //blending up from edge to main biome
+			Object[] fe = this.getInvertedDistanceFactor(world, x, z, 24);
+			if (fe != null) {
+				Coordinate c = (Coordinate)fe[1];
+				double f2 = EDGE_BLENDING.getValue((double)fe[0]);
+				hval = f2*this.calcHval(world, c.xCoord, c.zCoord, ChromatiCraft.glowingcliffs, referenceValue)+(1-f2)*hval;
+			}
+		}
+		 */
 
 		return hval;
 	}
 
 	private double getHvalLimit(World world, int x, int z, BiomeGenBase b) {
-		return b == ChromatiCraft.glowingcliffsEdge ? HVAL_LIMIT_EDGE : 1;
+		return 1;//b == ChromatiCraft.glowingcliffsEdge ? HVAL_LIMIT_EDGE : 1;
 	}
 
 	private boolean isBiomeOceanic(BiomeGenBase b) {
@@ -392,10 +470,12 @@ public class GlowingCliffsColumnShaper {
 		return (int)ReikaMathLibrary.normalizeToBounds(upperPlateauTop.getValue(x, z), MIN_UPPER_TOP_Y, MAX_UPPER_TOP_Y);
 	}
 
-	private void generateWater(World world, int x, int z, BiomeGenBase biome, Random rand, double hval, int dirt) {
+	private void generateWater(World world, int x, int z, BiomeGenBase biome, Random rand, double hval, int dirtt) {
 		int floor = this.getOceanFloor(x, z, hval);
+		BlockKey stone = this.getStone(biome);
+		BlockKey dirt = this.getDirt(biome);
 		for (int i = 0; i < floor; i++) {
-			this.setBlock(x, i, z, Blocks.stone);
+			this.setBlock(x, i, z, stone.blockID, stone.metadata);
 		}
 		for (int i = floor; i <= SEA_LEVEL; i++) {
 			this.setBlock(x, i, z, Blocks.water);
@@ -403,8 +483,9 @@ public class GlowingCliffsColumnShaper {
 		for (int i = SEA_LEVEL+1; i < 256; i++) {
 			this.setBlock(x, i, z, Blocks.air);
 		}
-		for (int h = 1; h <= dirt; h++)
-			this.setBlock(x, floor-h, z, Blocks.dirt);
+		for (int h = 1; h <= dirtt; h++) {
+			this.setBlock(x, floor-h, z, dirt.blockID, dirt.metadata);
+		}
 	}
 
 	/** Is water at y=floor */
@@ -416,31 +497,35 @@ public class GlowingCliffsColumnShaper {
 
 	private void generateLandColumn(World world, int x, int z, BiomeGenBase biome, Random rand, int dirt, int top, int caveFloor, int caveCeil) {
 		for (int i = 0; i < 256; i++) {
-			Block b = Blocks.stone;
+			BlockKey b = this.getStone(biome);
 			if (i > top || (i > caveFloor && i < caveCeil))
-				b = Blocks.air;
+				b = BlockKey.AIR;
 			else if (i == top || (i == caveFloor && i < caveCeil)) {
-				b = biome.topBlock;
+				b = this.getGrass(biome);
 			}
 			else if (i >= top-dirt || (i >= caveFloor-dirt && i < caveCeil)) {
-				b = biome.fillerBlock;
+				b = this.getDirt(biome);
 			}
-			this.setBlock(x, i, z, b);
+			this.setBlock(x, i, z, b.blockID, b.metadata);
 		}
 		if (caveFloor > 0 && caveFloor < 256) {
-			if (ReikaBlockHelper.isDirtType(biome.topBlock, 0)) {
-				if (ReikaRandomHelper.doWithChance(6)) {
-					this.setBlock(x, caveFloor+1, z, ChromaBlocks.DECOFLOWER.getBlockInstance(), Flowers.GLOWDAISY.ordinal());
-				}
-				if (ReikaRandomHelper.doWithChance(0.005)) {
-					this.setBlock(x, caveCeil-1, z, ChromaBlocks.TIEREDPLANT.getBlockInstance(), TieredPlants.CAVE.ordinal());
-				}
-				else if (ReikaRandomHelper.doWithChance(0.008)) {
-					int nt = Math.min(ReikaRandomHelper.getRandomBetween(1, 4), caveCeil-caveFloor-3);
-					for (int i = 1; i <= nt; i++)
-						this.setBlock(x, caveCeil-i, z, ChromaBlocks.DECOFLOWER.getBlockInstance(), Flowers.GLOWROOT.ordinal());
-				}
+			//if (ReikaBlockHelper.isDirtType(biome.topBlock, 0)) {
+			if (ReikaRandomHelper.doWithChance(6)) {
+				this.setBlock(x, caveFloor+1, z, ChromaBlocks.DECOFLOWER.getBlockInstance(), Flowers.GLOWDAISY.ordinal());
 			}
+			else if (ReikaRandomHelper.doWithChance(0.008)) {
+				this.setBlock(x, caveFloor+1, z, Blocks.sapling);
+			}
+
+			if (ReikaRandomHelper.doWithChance(0.005)) {
+				this.setBlock(x, caveCeil-1, z, ChromaBlocks.TIEREDPLANT.getBlockInstance(), TieredPlants.CAVE.ordinal());
+			}
+			else if (ReikaRandomHelper.doWithChance(0.008)) {
+				int nt = Math.min(ReikaRandomHelper.getRandomBetween(1, 4), caveCeil-caveFloor-3);
+				for (int i = 1; i <= nt; i++)
+					this.setBlock(x, caveCeil-i, z, ChromaBlocks.DECOFLOWER.getBlockInstance(), Flowers.GLOWROOT.ordinal());
+			}
+			//}
 		}
 	}
 
@@ -473,6 +558,18 @@ public class GlowingCliffsColumnShaper {
 		int dz = z & 15;
 		int d = 256;//blockColumn.length / 256;
 		return (dx * 16 + dz) * d;
+	}
+
+	private BlockKey getStone(BiomeGenBase biome) {
+		return BiomeGlowingCliffs.isGlowingCliffs(biome) ? BIOME_STONE : STONE;
+	}
+
+	private BlockKey getDirt(BiomeGenBase biome) {
+		return BiomeGlowingCliffs.isGlowingCliffs(biome) ? BIOME_DIRT : DIRT;
+	}
+
+	private BlockKey getGrass(BiomeGenBase biome) {
+		return BiomeGlowingCliffs.isGlowingCliffs(biome) ? BIOME_GRASS : GRASS;
 	}
 
 	private static class BlendPoint {

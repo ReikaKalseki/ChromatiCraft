@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityTNTPinball;
 import Reika.ChromatiCraft.Entity.EntityThrownGem;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
+import Reika.ChromatiCraft.Items.Tools.ItemDataCrystal.EntityDataCrystal;
 import Reika.DragonAPI.Interfaces.Registry.EntityEnum;
 
 public enum ChromaEntities implements EntityEnum {
@@ -47,7 +48,8 @@ public enum ChromaEntities implements EntityEnum {
 	LUMABURST(EntityLumaBurst.class, "Luma Burst"),
 	PARTICLECLUSTER(EntityParticleCluster.class, "Particle Swarm"),
 	NUKERBALL(EntityNukerBall.class, "Cluster Ball"),
-	GLOWCLOUD(EntityGlowCloud.class, "GlowCloud", 0x000040, 0x22aaff);
+	GLOWCLOUD(EntityGlowCloud.class, "GlowCloud", 0x000040, 0x22aaff),
+	DATACRYSTAL(EntityDataCrystal.class, "DataCrystal");
 
 	public final String entityName;
 	private final Class entityClass;

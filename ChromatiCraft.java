@@ -118,6 +118,7 @@ import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.ColorTreeGenerator;
 import Reika.ChromatiCraft.World.CrystalGenerator;
+import Reika.ChromatiCraft.World.DataTowerGenerator;
 import Reika.ChromatiCraft.World.DecoFlowerGenerator;
 import Reika.ChromatiCraft.World.DungeonGenerator;
 import Reika.ChromatiCraft.World.GlowingCliffsAuxGenerator;
@@ -433,12 +434,16 @@ public class ChromatiCraft extends DragonAPIMod {
 		BiomeManager.addBiome(BiomeType.WARM, new BiomeEntry(rainbowforest, ChromaOptions.getRainbowForestWeight()));
 		BiomeManager.addBiome(BiomeType.COOL, new BiomeEntry(rainbowforest, ChromaOptions.getRainbowForestWeight()));
 		BiomeManager.addSpawnBiome(rainbowforest);
+		BiomeManager.addStrongholdBiome(rainbowforest);
+		BiomeManager.addVillageBiome(rainbowforest, true);
 		BiomeDictionary.registerBiomeType(rainbowforest, BiomeDictionary.Type.FOREST, BiomeDictionary.Type.MAGICAL, BiomeDictionary.Type.HILLS);
 
 		enderforest = new BiomeEnderForest(ExtraChromaIDs.ENDERFOREST.getValue());
 		BiomeManager.addBiome(BiomeType.COOL, new BiomeEntry(enderforest, ChromaOptions.getEnderForestWeight()));
 		BiomeManager.addBiome(BiomeType.WARM, new BiomeEntry(enderforest, ChromaOptions.getEnderForestWeight()));
 		BiomeManager.addSpawnBiome(enderforest);
+		BiomeManager.addStrongholdBiome(enderforest);
+		BiomeManager.addVillageBiome(enderforest, true);
 		BiomeDictionary.registerBiomeType(enderforest, BiomeDictionary.Type.FOREST, BiomeDictionary.Type.MAGICAL);
 
 		glowingcliffs = new BiomeGlowingCliffs(ExtraChromaIDs.LUMINOUSCLIFFS.getValue());
@@ -461,6 +466,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		RetroGenController.instance.addHybridGenerator(PylonGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
 		RetroGenController.instance.addHybridGenerator(DungeonGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
+		RetroGenController.instance.addHybridGenerator(DataTowerGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
 		RetroGenController.instance.addHybridGenerator(NetherStructureGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
 		RetroGenController.instance.addHybridGenerator(GlowingCliffsAuxGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
 

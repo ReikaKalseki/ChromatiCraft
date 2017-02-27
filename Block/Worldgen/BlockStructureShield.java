@@ -105,6 +105,11 @@ public class BlockStructureShield extends Block implements SemiUnbreakable, Subm
 	}
 
 	@Override
+	public boolean func_149730_j() { //prevents leaf and TCon berry overwrite
+		return true;
+	}
+
+	@Override
 	public boolean renderAsNormalBlock() {
 		return true;
 	}

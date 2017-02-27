@@ -68,7 +68,7 @@ public class TileEntityAtmosphericRelay extends CrystalTransmitterBase implement
 	}
 
 	@Override
-	public boolean needsLineOfSightToReceiver() {
+	public boolean needsLineOfSightToReceiver(CrystalReceiver r) {
 		return true;
 	}
 
@@ -148,7 +148,7 @@ public class TileEntityAtmosphericRelay extends CrystalTransmitterBase implement
 	}
 
 	@Override
-	public boolean needsLineOfSightFromTransmitter() {
+	public boolean needsLineOfSightFromTransmitter(CrystalTransmitter r) {
 		return false;
 	}
 

@@ -113,7 +113,7 @@ public class ItemChromaPlacer extends Item implements ISize {
 		}
 		if (!this.checkValidBounds(is, ep, world, x, y, z))
 			return false;
-		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x, y, z,	 x+1, y+1, z+1);
+		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x, y, z, x+1, y+1, z+1);
 		List inblock = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
 		if (inblock.size() > 0)
 			return false;

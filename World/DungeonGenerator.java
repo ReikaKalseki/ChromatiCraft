@@ -79,8 +79,6 @@ public class DungeonGenerator implements RetroactiveGenerator {
 
 	public static final DungeonGenerator instance = new DungeonGenerator();
 
-	private static final int MIN_SEPARATION = 384;
-
 	private final ForgeDirection[] dirs = ForgeDirection.values();
 
 	private final ArrayList<Structures> structs = new ArrayList();
@@ -761,7 +759,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	private boolean isGennableChunk(World world, int x, int z, Random r, Structures s) {
 		if (this.isVoidWorld(world, x, z))
 			return false;
-		if (this.isStructureWithin(s, world, x, 48, z, MIN_SEPARATION))
+		if (this.isStructureWithin(s, world, x, 48, z, this.getMinSeparation(s)))
 			return false;
 		switch(s) {
 			case OCEAN:
@@ -774,6 +772,21 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				return r.nextInt(/*120*/10) == 0 && world.getBiomeGenForCoords(x, z).topBlock == Blocks.sand;
 			default:
 				return false;
+		}
+	}
+
+	private double getMinSeparation(Structures s) {
+		switch(s) {
+			case DESERT:
+				return 384;
+			case OCEAN:
+				return 512;
+			case CAVERN:
+				return 128;
+			case BURROW:
+				return 192;
+			default:
+				return 0;
 		}
 	}
 

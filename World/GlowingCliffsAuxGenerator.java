@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.World;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -18,9 +19,20 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.feature.WorldGenAbstractTree;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone.Variants;
+import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower;
+import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
+import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant;
+import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.BiomeGlowingCliffs.GlowingTreeGen;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.LobulatedCurve;
 import Reika.DragonAPI.Instantiable.SimplexNoiseGenerator;
@@ -40,7 +52,6 @@ import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.MystCraftHandler;
 import Reika.DragonAPI.ModRegistry.ModOreList;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
-import cpw.mods.fml.common.Loader;
 
 public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 
@@ -49,7 +60,9 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 	private static final int MAX_CONTOUR_HEIGHT = 6;
 	private static final int SCALE_RANGE = 2;
 
-	private static final BlockKey STONE_BLOCK = Loader.isModLoaded("HarderUnderground") ? new BlockKey(Blocks.stone, 1) : new BlockKey(Blocks.stone);
+	private static final BlockKey STONE = new BlockKey(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.STONE.getMeta(false, true));//Loader.isModLoaded("HarderUnderground") ? new BlockKey(Blocks.stone, 1) : new BlockKey(Blocks.stone);
+	private static final BlockKey DIRT = new BlockKey(Blocks.dirt);//new BlockKey(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.DIRT.getMeta(false, true));
+	private static final BlockKey GRASS = new BlockKey(Blocks.grass);//new BlockKey(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.GRASS.getMeta(false, true));
 
 	private SimplexNoiseGenerator contours;
 	private SimplexNoiseGenerator islandFrequency;
@@ -57,6 +70,8 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 
 	private final WeightedRandom<TreeType> treeRand = new WeightedRandom();
 	private final WeightedRandom<OreType> oreRand = new WeightedRandom();
+
+	public static final HashMap<Coordinate, ImmutablePair<Integer, Integer>> TEMP_ISLAND_CACHE = new HashMap();
 
 	private GlowingCliffsAuxGenerator() {
 
@@ -116,6 +131,83 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 
 		this.generateMaterialVeins(world, chunkX, chunkZ, random);
 		this.generateIslands(world, chunkX, chunkZ, random);
+		this.growSaplings(world, chunkX, chunkZ, random);
+
+		this.cleanupBlocks(world, chunkX, chunkZ);
+	}
+
+	private void growSaplings(World world, int chunkX, int chunkZ, Random rand) {
+		for (int i = 0; i < 16; i++) {
+			for (int k = 0; k < 16; k++) {
+				int x = chunkX+i;
+				int z = chunkZ+k;
+				BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
+				if (BiomeGlowingCliffs.isGlowingCliffs(biome)) {
+					for (int y = GlowingCliffsColumnShaper.SEA_LEVEL; y <= GlowingCliffsColumnShaper.MAX_MIDDLE_TOP_Y+1; y++) {
+						Block b = world.getBlock(x, y, z);
+
+						/*
+						int n = 0;
+						while (b == Blocks.sapling && n <= 8) {
+							((BlockSapling)Blocks.sapling).func_149878_d(world, x, y, z, rand);
+							b = world.getBlock(x, y, z);
+						}
+						if (b == Blocks.sapling) {
+							world.setBlock(x, y, z, Blocks.air);
+						}
+						 */
+
+						if (b == Blocks.sapling) {
+							world.setBlock(x, y, z, Blocks.air);
+							WorldGenAbstractTree tree = ChromatiCraft.glowingcliffs.getUndergroundTreeGen(rand, true);//biome.func_150567_a(rand);
+							((GlowingTreeGen)tree).setGlowChance(10);// no, because if triggers a chunk to gen, will get this on surface
+							tree.setScale(1.0D, 1.0D, 1.0D);
+
+							int n = 8;
+
+							boolean flag = tree.generate(world, rand, x, y, z);
+							while (!flag && n <= 8) {
+								flag = tree.generate(world, rand, x, y, z);
+								n++;
+							}
+							if (flag) {
+								tree.func_150524_b(world, rand, x, y, z);
+							}
+
+							//((GlowingTreeGen)tree).resetGlowChance();
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void cleanupBlocks(World world, int chunkX, int chunkZ) {
+		for (int i = 0; i < 16; i++) {
+			for (int k = 0; k < 16; k++) {
+				int x = chunkX+i;
+				int z = chunkZ+k;
+				if (BiomeGlowingCliffs.isGlowingCliffs(world.getBiomeGenForCoords(x, z))) {
+					for (int y = GlowingCliffsColumnShaper.SEA_LEVEL-4; y <= GlowingCliffsColumnShaper.MAX_UPPER_TOP_Y; y++) {
+						Block b = world.getBlock(x, y, z);
+						int meta = world.getBlockMetadata(x, y, z);
+						Block b2 = b;
+						if (b == Blocks.grass && world.getBlock(x, y+1, z).isOpaqueCube()) {
+							b2 = Blocks.dirt;
+						}
+						if ((b == Blocks.dirt || b == Blocks.grass) && !world.getBlock(x, y-1, z).getMaterial().isSolid() && world.getBlock(x, y+1, z).getMaterial().isSolid()) {
+							b2 = Blocks.stone;
+						}
+						if (((b instanceof BlockTieredPlant && meta == TieredPlants.FLOWER.ordinal()) || (b instanceof BlockDecoFlower && meta == Flowers.GLOWDAISY.ordinal())) && !world.getBlock(x, y-1, z).getMaterial().isSolid()) {
+							b2 = Blocks.air;
+						}
+						if (b2 != b) {
+							world.setBlock(x, y, z, b2, 0, 2);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	private void generateMaterialVeins(World world, int chunkX, int chunkZ, Random random) {
@@ -143,9 +235,9 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 		if (ReikaRandomHelper.doWithChance(33/s)) {
 			int x = chunkX+random.nextInt(16)+8;
 			int z = chunkZ+random.nextInt(16)+8;
-			int c = world.getBlock(x, world.getTopSolidOrLiquidBlock(x, z)+1, z) == Blocks.water ? 3 : 6;
-			if (random.nextInt(c) == 0) {
-				if (BiomeGlowingCliffs.isGlowingCliffs(world.getBiomeGenForCoords(x, z))) {
+			if (BiomeGlowingCliffs.isGlowingCliffs(world.getBiomeGenForCoords(x, z))) {
+				int c = world.getBlock(x, world.getTopSolidOrLiquidBlock(x, z)+1, z) == Blocks.water ? 3 : 6;
+				if (random.nextInt(c) == 0) {
 					Island is = this.initializeIsland(world, x, z, random, s);
 					this.generateIsland(world, x, z, random, is);
 				}
@@ -162,7 +254,7 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 		is.maxThickness = (18+12*rand.nextDouble())*sizeScale;
 		is.originX = x;
 		is.originZ = z;
-		is.originY = Math.max(world.getTopSolidOrLiquidBlock(x, z)+30, 90)+rand.nextInt(80);
+		is.originY = Math.min(250, Math.max(world.getTopSolidOrLiquidBlock(x, z)+10+(int)is.maxThickness, 90)+rand.nextInt(80));
 		is.hasLake = rand.nextInt(2) == 0;
 		is.hasRiver = rand.nextInt(5) == 0;
 		if (rand.nextInt(20) == 0) {
@@ -274,13 +366,13 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 					int ty = originY+oy;
 					for (int i = 0; i <= t; i++) {
 						Coordinate c = new Coordinate(dx, ty-i, dz);
-						BlockKey bk = STONE_BLOCK;
+						BlockKey bk = STONE;
 						double dt = ReikaMathLibrary.linterpolate(dr, 0, outerRadius, 0.5, 3);
 						if (i == 0) {
-							bk = new BlockKey(ChromatiCraft.glowingcliffs.topBlock);
+							bk = GRASS;
 						}
 						else if (i < dt) {
-							bk = new BlockKey(ChromatiCraft.glowingcliffs.fillerBlock);
+							bk = DIRT;
 						}
 						if (bk.blockID != Blocks.stone || !blocks.containsKey(c))
 							blocks.put(c, bk);
@@ -288,10 +380,10 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 					if ((hasRiver || (hasLake && dr < lr)) && cont < 0.125) {
 						BlockKey bk = new BlockKey(Blocks.flowing_water);
 						blocks.put(new Coordinate(dx, ty, dz), bk);
-						blocks.put(new Coordinate(dx, ty-1, dz), new BlockKey(Blocks.grass));
+						blocks.put(new Coordinate(dx, ty-1, dz), GRASS);
 						if (cont < 0.0625) {
 							blocks.put(new Coordinate(dx, ty-1, dz), bk);
-							blocks.put(new Coordinate(dx, ty-2, dz), new BlockKey(Blocks.grass));
+							blocks.put(new Coordinate(dx, ty-2, dz), GRASS);
 						}
 						if (dr >= r-1) {
 							if (allowableChildren > 0) {
@@ -322,6 +414,33 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 		}
 
 		private void generate(World world) {
+			for (Coordinate c : topMap.keySet()) {
+				TEMP_ISLAND_CACHE.put(c, new ImmutablePair(world.getTopSolidOrLiquidBlock(c.xCoord, c.zCoord)+1, topMap.get(c)));
+			}
+
+			HashSet<Coordinate> placedBlocks = new HashSet();
+
+			HashMap<Coordinate, BlockKey> toplace = this.placeBlocks(world, blocks, placedBlocks);
+			while (!toplace.isEmpty()) {
+				toplace = this.placeBlocks(world, toplace, placedBlocks);
+			}
+
+			//this.overrideHeightMap(world); No longer necessary
+		}
+		/*
+		private void overrideHeightMap(World world) {
+			for (Coordinate c : topMap.keySet()) {
+				Chunk ch = world.getChunkFromBlockCoords(c.xCoord, c.zCoord);
+				int ox = ReikaMathLibrary.roundDownToX(16, c.xCoord);
+				int oz = ReikaMathLibrary.roundDownToX(16, c.zCoord);
+				int idx = c.xCoord-ox+(c.zCoord-oz)*16;
+				ch.heightMap[idx] = topMap.get(c);
+			}
+		}
+		 */
+		private HashMap<Coordinate, BlockKey> placeBlocks(World world, HashMap<Coordinate, BlockKey> blocks, HashSet<Coordinate> placedBlocks) {
+			HashMap<Coordinate, BlockKey> deferredBlocks = new HashMap();
+
 			for (Coordinate c : blocks.keySet()) {
 				BlockKey bk = blocks.get(c);
 				boolean water = bk.blockID == Blocks.flowing_water;
@@ -334,28 +453,30 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 						BlockKey e1 = blocks.get(c2);
 						BlockKey e2 = blocks.get(c3);
 						if (e1 == null || e2 == null || (e1.blockID == Blocks.flowing_water && this.getEdgeSide(c2) != null) || (e2.blockID == Blocks.flowing_water && this.getEdgeSide(c3) != null)) {
-							bk = new BlockKey(blocks.containsKey(c.offset(0, 1, 0)) ? Blocks.dirt : Blocks.grass);
+							bk = blocks.containsKey(c.offset(0, 1, 0)) ? DIRT : GRASS;
 						}
 					}
 				}
-				bk.place(world, c.xCoord, c.yCoord, c.zCoord);
-				if (water)
-					c.triggerBlockUpdate(world, false);
-			}
-			/*
-			for (Coordinate c : trees.keySet()) {
-				TreeType tree = trees.get(c);
-				BlockKey log = new BlockKey(tree.getLogID(), tree.getLogMetadatas().get(0));
-				BlockKey leaf = new BlockKey(tree.getBasicLeaf());
-				Integer yt = topMap.get(new Coordinate(c.xCoord, 0, c.zCoord));
-				if (yt != null) {
-					for (int i = 1; i < 5; i++) {
-						log.place(world, c.xCoord, yt+i, c.zCoord);
-					}
-					leaf.place(world, c.xCoord, yt+5, c.zCoord);
+
+				Coordinate ca = c.offset(0, 1, 0);
+				Coordinate cb = c.offset(0, -1, 0);
+
+				if ((bk.blockID == DIRT.blockID || bk.blockID == GRASS.blockID) && !this.blocks.containsKey(cb))
+					bk = STONE;
+				if (bk.blockID == GRASS.blockID && this.blocks.containsKey(ca))
+					bk = DIRT;
+
+				if ((bk.blockID == DIRT.blockID || bk.blockID == GRASS.blockID) && this.blocks.containsKey(cb) && !placedBlocks.contains(cb)) {
+					deferredBlocks.put(c, bk);
+				}
+				else {
+					placedBlocks.add(c);
+					bk.place(world, c.xCoord, c.yCoord, c.zCoord, 10); //+8=10 == no light updates
+					if (water)
+						c.triggerBlockUpdate(world, false);
 				}
 			}
-			 */
+			return deferredBlocks;
 		}
 
 		private ForgeDirection getEdgeSide(Coordinate c) {

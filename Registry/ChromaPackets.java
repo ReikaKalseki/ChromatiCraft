@@ -149,6 +149,7 @@ public enum ChromaPackets {
 	STRUCTFIND(2),
 	DATASCAN(),
 	LORENOTE(1),
+	INSCRIBE(1),
 	;
 
 	public final int numInts;

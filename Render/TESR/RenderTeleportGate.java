@@ -13,7 +13,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.client.MinecraftForgeClient;
@@ -22,11 +21,8 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTeleportGate;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
@@ -35,15 +31,12 @@ import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
-import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
-import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerBlockHandler;
-import Reika.RotaryCraft.Registry.BlockRegistry;
 
 
 public class RenderTeleportGate extends ChromaRenderBase {
 
 	private static final double TRACE_RADIUS = 1.5;
-	private static final RayTracer trace = new RayTracer(0, 0, 0, 0, 0, 0);
+	private static final RayTracer trace = RayTracer.getVisualLOS();
 
 	private static final double[][] RAYTRACES = {
 		{0.5-TRACE_RADIUS, 0, 0.5-TRACE_RADIUS},
@@ -52,36 +45,6 @@ public class RenderTeleportGate extends ChromaRenderBase {
 		{0.5+TRACE_RADIUS, 0, 0.5+TRACE_RADIUS},
 		{0.5, 1.5, 0.5}
 	};
-
-	static {
-		trace.addTransparentBlock(Blocks.glass);
-		trace.addTransparentBlock(Blocks.ice);
-		trace.addTransparentBlock(Blocks.glass_pane);
-		trace.addTransparentBlock(Blocks.iron_bars);
-		trace.addTransparentBlock(Blocks.fence);
-		trace.addTransparentBlock(Blocks.nether_brick_fence);
-		trace.addTransparentBlock(Blocks.mob_spawner);
-		trace.allowFluids = true;
-
-		trace.addTransparentBlock(ChromaBlocks.SELECTIVEGLASS.getBlockInstance());
-		if (ModList.ROTARYCRAFT.isLoaded()) {
-			addRCGlass();
-		}
-		if (ModList.EXTRAUTILS.isLoaded()) {
-			trace.addTransparentBlock(ExtraUtilsHandler.getInstance().deco2ID, 1);
-			trace.addTransparentBlock(ExtraUtilsHandler.getInstance().deco2ID, 2);
-			trace.addTransparentBlock(ExtraUtilsHandler.getInstance().deco2ID, 4);
-		}
-		if (ModList.TINKERER.isLoaded()) {
-			trace.addTransparentBlock(TinkerBlockHandler.getInstance().clearGlassID);
-		}
-	}
-
-	@ModDependent(ModList.ROTARYCRAFT)
-	private static void addRCGlass() {
-		trace.addTransparentBlock(BlockRegistry.BLASTGLASS.getBlockInstance());
-		trace.addTransparentBlock(BlockRegistry.BLASTPANE.getBlockInstance());
-	}
 
 	private static boolean checkRayTrace(TileEntityTeleportGate te) {
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;

@@ -46,6 +46,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemChromaBucket;
 import Reika.ChromatiCraft.Items.Tools.ItemConnector;
 import Reika.ChromatiCraft.Items.Tools.ItemCrystalCard;
 import Reika.ChromatiCraft.Items.Tools.ItemCrystalPotion;
+import Reika.ChromatiCraft.Items.Tools.ItemDataCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemDoorKey;
 import Reika.ChromatiCraft.Items.Tools.ItemEfficiencyCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemEnderCrystal;
@@ -161,6 +162,7 @@ public enum ChromaItems implements ItemEnum {
 	STRUCTUREFINDER(43, false, "chroma.structfind",	ItemStructureFinder.class),
 	MAGICBRANCH(0, true, "chroma.branch",			ItemMagicBranch.class),
 	ARTEFACT(112, true,	"chroma.artefact",			ItemUnknownArtefact.class),
+	DATACRYSTAL(44, false, "chroma.datacrystal",	ItemDataCrystal.class),
 	;
 
 	private final int index;

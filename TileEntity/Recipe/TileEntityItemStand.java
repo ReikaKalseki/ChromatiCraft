@@ -150,7 +150,7 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 		}
 		  */
 
-		if (locked)
+		if (this.isLocked())
 			return item;
 
 		if (ChromaItems.HELP.matchWith(item))

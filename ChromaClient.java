@@ -51,6 +51,7 @@ import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityTNTPinball;
 import Reika.ChromatiCraft.Entity.EntityThrownGem;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
+import Reika.ChromatiCraft.Items.Tools.ItemDataCrystal.EntityDataCrystal;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
 import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -58,15 +59,10 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Render.AltarItemRenderer;
-import Reika.ChromatiCraft.Render.ChromaItemRenderer;
-import Reika.ChromatiCraft.Render.EnderCrystalRenderer;
-import Reika.ChromatiCraft.Render.LootChestRenderer;
-import Reika.ChromatiCraft.Render.PortalItemRenderer;
-import Reika.ChromatiCraft.Render.TESRItemRenderer;
 import Reika.ChromatiCraft.Render.Entity.RenderAurora;
 import Reika.ChromatiCraft.Render.Entity.RenderBallLightning;
 import Reika.ChromatiCraft.Render.Entity.RenderChainGunShot;
+import Reika.ChromatiCraft.Render.Entity.RenderDataCrystal;
 import Reika.ChromatiCraft.Render.Entity.RenderDimensionFlare;
 import Reika.ChromatiCraft.Render.Entity.RenderGlowCloud;
 import Reika.ChromatiCraft.Render.Entity.RenderGluon;
@@ -79,6 +75,7 @@ import Reika.ChromatiCraft.Render.Entity.RenderSplashGunShot;
 import Reika.ChromatiCraft.Render.Entity.RenderTNTPinball;
 import Reika.ChromatiCraft.Render.Entity.RenderThrownGem;
 import Reika.ChromatiCraft.Render.Entity.RenderVacuum;
+import Reika.ChromatiCraft.Render.ISBRH.CliffStoneRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.ColorLockRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.ConsoleRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalFenceRenderer;
@@ -103,6 +100,12 @@ import Reika.ChromatiCraft.Render.ISBRH.TankBlockRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.TieredOreRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.TieredPlantRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.VoidRiftRenderer;
+import Reika.ChromatiCraft.Render.Item.AltarItemRenderer;
+import Reika.ChromatiCraft.Render.Item.ChromaItemRenderer;
+import Reika.ChromatiCraft.Render.Item.DataCrystalRenderer;
+import Reika.ChromatiCraft.Render.Item.EnderCrystalRenderer;
+import Reika.ChromatiCraft.Render.Item.LootChestRenderer;
+import Reika.ChromatiCraft.Render.Item.PortalItemRenderer;
 import Reika.ChromatiCraft.Render.TESR.CrystalPlantRenderer;
 import Reika.ChromatiCraft.Render.TESR.RenderAntKey;
 import Reika.ChromatiCraft.Render.TESR.RenderAvoLamp;
@@ -125,6 +128,7 @@ import Reika.DragonAPI.Instantiable.IO.SoundLoader;
 import Reika.DragonAPI.Instantiable.Rendering.ForcedTextureArmorModel;
 import Reika.DragonAPI.Instantiable.Rendering.ItemSpriteSheetRenderer;
 import Reika.DragonAPI.Instantiable.Rendering.MultiSheetItemRenderer;
+import Reika.DragonAPI.Instantiable.Rendering.TESRItemRenderer;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -168,6 +172,7 @@ public class ChromaClient extends ChromaCommon {
 	public static final DecoFlowerRenderer flower = new DecoFlowerRenderer();
 	public static final SparklingBlockRender sparkle = new SparklingBlockRender();
 	public static final EverFluidRenderer everfluid = new EverFluidRenderer();
+	public static final CliffStoneRenderer cliffstone = new CliffStoneRenderer();
 
 	private static final EnderCrystalRenderer csr = new EnderCrystalRenderer();
 
@@ -208,9 +213,12 @@ public class ChromaClient extends ChromaCommon {
 		RenderingRegistry.registerEntityRenderingHandler(EntityParticleCluster.class, new RenderParticleCluster());
 		RenderingRegistry.registerEntityRenderingHandler(EntityNukerBall.class, new RenderNukerBall());
 		RenderingRegistry.registerEntityRenderingHandler(EntityGlowCloud.class, new RenderGlowCloud());
+		RenderingRegistry.registerEntityRenderingHandler(EntityDataCrystal.class, new RenderDataCrystal());
 
 		this.registerSpriteSheets();
 		this.registerBlockSheets();
+
+		MinecraftForgeClient.registerItemRenderer(ChromaItems.DATACRYSTAL.getItemInstance(), new DataCrystalRenderer());
 
 		RenderSlime slimeRenderer = (RenderSlime)RenderManager.instance.entityRenderMap.get(EntitySlime.class);
 		slimeRenderer.scaleAmount = new ColorizableSlimeModel(0);
@@ -363,6 +371,9 @@ public class ChromaClient extends ChromaCommon {
 
 		everfluidRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(everfluidRender, everfluid);
+
+		cliffstoneRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(cliffstoneRender, cliffstone);
 
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGuardianStone.class, new GuardianStoneRenderer());
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPlant.class, new CrystalPlantRenderer());

@@ -645,7 +645,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		boolean repeat = false;
 		NBTTagCompound NBTin = null;
 		int xpToAdd = 0;
-		while (activeRecipe == recipe && count < activeRecipe.getOutput().getMaxStackSize()) {
+		while (activeRecipe == recipe && count*activeRecipe.getOutput().stackSize < activeRecipe.getOutput().getMaxStackSize()) {
 			if (inv[4] != null)
 				NBTin = recipe.getOutputTag(inv[4].stackTagCompound);
 			xpToAdd += (int)(activeRecipe.getExperience()*this.getXPModifier(activeRecipe));
@@ -695,10 +695,8 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 				}
 			}
 			count += 1;
-			ProgressStage.CASTING.stepPlayerTo(craftingPlayer);
 			if (activeRecipe instanceof PylonCastingRecipe) {
 				energy.subtract(((PylonCastingRecipe)activeRecipe).getRequiredAura());
-				ProgressStage.LINK.stepPlayerTo(craftingPlayer);
 			}
 			activeRecipe.onCrafted(this, craftingPlayer);
 			activeRecipe = recipe;
@@ -708,6 +706,12 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 				ChromaSounds.CAST.playSoundAtBlock(this);
 				repeat = true;
 				break;
+			}
+		}
+		if (count > 0) {
+			ProgressStage.CASTING.stepPlayerTo(craftingPlayer);
+			if (activeRecipe instanceof PylonCastingRecipe) {
+				ProgressStage.LINK.stepPlayerTo(craftingPlayer);
 			}
 		}
 		ItemStack out = activeRecipe.getOutput();

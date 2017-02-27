@@ -37,10 +37,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class TileEntityFocusCrystal extends TileEntityChromaticBase implements NBTTile {
 
 	public static enum CrystalTier {
-		FLAWED(0.1875F),
-		DEFAULT(0.25F),
-		REFINED(0.5F),
-		EXQUISITE(1);
+		FLAWED(0.0625F),
+		DEFAULT(0.125F),
+		REFINED(0.375F),
+		EXQUISITE(0.875F);
 
 		public final float efficiencyFactor;
 
@@ -133,7 +133,7 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 	}
 
 	public static float getSummedFocusFactor(World world, int x, int y, int z) {
-		float sum = 0;
+		float sum = 1;
 		for (int i = 0; i < FocusLocation.list.length; i++) {
 			Coordinate c = FocusLocation.list[i].relativeLocation.offset(x, y, z);
 			if (ChromaTiles.getTile(world, c.xCoord, c.yCoord, c.zCoord) == ChromaTiles.FOCUSCRYSTAL) {

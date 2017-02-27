@@ -18,11 +18,13 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Interfaces.MinerBlock;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Base.CrystalBlock;
@@ -31,6 +33,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class BlockCaveCrystal extends CrystalBlock implements ProgressionTrigger, MinerBlock {
 
@@ -62,6 +65,19 @@ public class BlockCaveCrystal extends CrystalBlock implements ProgressionTrigger
 		for (int i = 0; i < num; i++)
 			li.add(ChromaItems.SHARD.getStackOfMetadata(meta));
 		return li;
+	}
+
+	@Override
+	public boolean canDropFromExplosion(Explosion e) {
+		return false;
+	}
+
+	@Override
+	public void onBlockExploded(World world, int x, int y, int z, Explosion explosion) {
+		int n = 1+rand.nextInt(5);
+		for (int i = 0; i < n; i++)
+			ReikaItemHelper.dropItem(world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble(), ChromaStacks.crystalPowder);
+		super.onBlockExploded(world, x, y, z, explosion);
 	}
 
 	@Override

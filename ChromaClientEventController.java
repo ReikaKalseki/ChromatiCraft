@@ -107,6 +107,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.TESR.RenderAlveary;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
+import Reika.ChromatiCraft.World.GlowingCliffsColumnShaper;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverManagerClient;
 import Reika.ChromatiCraft.World.Dimension.Rendering.SkyRiverRenderer;
 import Reika.ChromatiCraft.World.Dimension.Structure.AntFarmGenerator;
@@ -191,6 +192,19 @@ public class ChromaClientEventController {
 		}
 		 */
 	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void preventCliffAmbience(PlaySoundEvent17 evt) {
+		if (evt.sound.getYPosF() >= GlowingCliffsColumnShaper.SEA_LEVEL) {
+			if (BiomeGlowingCliffs.isGlowingCliffs(Minecraft.getMinecraft().theWorld.getBiomeGenForCoords(MathHelper.floor_float(evt.sound.getXPosF()), MathHelper.floor_float(evt.sound.getZPosF())))) {
+				if (evt.name.contains("ambient.cave.cave")) {
+					ChromaSounds s = rand.nextBoolean() ? ChromaSounds.CLIFFSOUND2 : ChromaSounds.CLIFFSOUND;
+					evt.result = new EnumSound(s, evt.sound);
+				}
+			}
+		}
+	}
+
 	/*
 	@SubscribeEvent
 	public void glowingCliffsFog(EntityViewRenderEvent.FogColors evt) {
@@ -549,7 +563,6 @@ public class ChromaClientEventController {
 		}
 	}
 	 */
-
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void crystalPitchDing(PlaySoundEvent17 evt) {

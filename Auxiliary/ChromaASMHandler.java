@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -85,6 +86,8 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 			RAYTRACEHOOK2("net.minecraft.entity.projectile.EntityThrowable", "zk"),
 			RAYTRACEHOOK3("net.minecraft.entity.projectile.EntityFireball", "ze"),
 			STOPSLOWFALL("net.minecraft.entity.EntityLivingBase", "sv"),
+			TRANSPARENCY1("net.minecraft.block.BlockDirt", "akl"),
+			TRANSPARENCY2("net.minecraft.block.BlockGrass", "alh"),
 			;
 
 			private final String obfName;
@@ -360,6 +363,21 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");
 						break;
 					}
+					case TRANSPARENCY1:
+					case TRANSPARENCY2:
+						InsnList li = new InsnList();
+
+						li.add(new VarInsnNode(Opcodes.ALOAD, 1));
+						li.add(new VarInsnNode(Opcodes.ILOAD, 2));
+						li.add(new VarInsnNode(Opcodes.ILOAD, 3));
+						li.add(new VarInsnNode(Opcodes.ILOAD, 4));
+						li.add(new VarInsnNode(Opcodes.ALOAD, 0));
+						li.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/ChromatiCraft/Auxiliary/ChromaAux", "groundOpacity", "(Lnet/minecraft/world/IBlockAccess;IIILnet/minecraft/block/Block;)I", false));
+						li.add(new InsnNode(Opcodes.IRETURN));
+
+						ReikaASMHelper.addMethod(cn, li, "getLightOpacity", "(Lnet/minecraft/world/IBlockAccess;III)I", Modifier.PUBLIC);
+
+						break;
 				}
 
 				ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS/* | ClassWriter.COMPUTE_FRAMES*/);

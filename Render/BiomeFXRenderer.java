@@ -25,7 +25,9 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -40,89 +42,27 @@ public class BiomeFXRenderer {
 	private static final int RAIN_RADIUS = 48;
 	private static final int POINT_COUNT = 28;
 
-	private static final HashMap<Integer, Integer> colorMapA = new HashMap();
-	private static final HashMap<Integer, Integer> colorMapB = new HashMap();
+	private static final HashMap<Integer, ColorReference> colorMapA = new HashMap();
+	private static final HashMap<Integer, ColorReference> colorMapB = new HashMap();
 
 	static {
-		colorMapA.put(ExtraChromaIDs.RAINBOWFOREST.getValue(), 0x22aaff);
-		colorMapB.put(ExtraChromaIDs.RAINBOWFOREST.getValue(), 0x0060ff);
+		colorMapA.put(ExtraChromaIDs.RAINBOWFOREST.getValue(), new SolidColorReference(0x22aaff));
+		colorMapB.put(ExtraChromaIDs.RAINBOWFOREST.getValue(), new SolidColorReference(0x0060ff));
 
-		colorMapA.put(ExtraChromaIDs.ENDERFOREST.getValue(), 0xa060ff);
-		colorMapB.put(ExtraChromaIDs.ENDERFOREST.getValue(), 0xffaaff);
+		colorMapA.put(ExtraChromaIDs.ENDERFOREST.getValue(), new SolidColorReference(0xa060ff));
+		colorMapB.put(ExtraChromaIDs.ENDERFOREST.getValue(), new SolidColorReference(0xffaaff));
 
-		colorMapA.put(ExtraChromaIDs.LUMINOUSCLIFFS.getValue(), 0xffffff);
-		colorMapB.put(ExtraChromaIDs.LUMINOUSCLIFFS.getValue(), 0xaaaaaa);
+		colorMapA.put(ExtraChromaIDs.LUMINOUSCLIFFS.getValue(), new ColorBlendReference(new ColorBlendList(5, ChromaFX.getChromaColorTiles())));
+		colorMapB.put(ExtraChromaIDs.LUMINOUSCLIFFS.getValue(), colorMapA.get(ExtraChromaIDs.LUMINOUSCLIFFS.getValue()));
 	}
 
-	//private BufferedImage biomeRain;
-	//private final int[] rainTextures;
-	//private final BufferedImage[] rainImages;
-	//private int rainTickRate = 2;
-	//private int rainTickCount;
-	//private int rainTick;
 	private int biomeRainColor = 0x000000;
 	private ArrayList<RainPoint> points = new ArrayList();
 
 	private BiomeFXRenderer() {
-		String file = "biomeFX";
-		//biomeRain = ReikaImageLoader.readImage(ChromatiCraft.class, "/Reika/ChromatiCraft/Textures/"+file+".png", null);
-		//rainTextures = new int[biomeRain.getHeight()];
-		//rainImages = new BufferedImage[rainTextures.length];
-	}
-
-	public void initialize() {
-		//new Thread(new TextureLoader(), "Biome FX Loader").start();
-	}
-	/*
-	private static class TextureLoader implements Runnable {
-
-		private final ArrayList<ArrayList<Integer>> rowData = new ArrayList();
-
-		public void run() {
-			long start = System.currentTimeMillis();
-
-			this.init();
-
-			for (int i = 0; i < instance.rainTextures.length; i++) {
-				BufferedImage img = this.constructBlendedImage(i);
-				//instance.rainTextures[i] = ReikaTextureHelper.binder.allocateAndSetupTexture(img);
-				instance.rainImages[i] = img;
-				ArrayList<Integer> row = rowData.remove(0); //cycle
-				rowData.add(row);
-			}
-			rowData.clear();
-			ChromaClientEventController.instance.textureLoadingComplete = true;
-			long dur = System.currentTimeMillis()-start;
-			ChromatiCraft.logger.log("Constructed biome FX images in "+dur+" ms.");
-		}
-
-		private void init() {
-			for (int k = 0; k < instance.biomeRain.getHeight(); k++) {
-				ArrayList<Integer> row = new ArrayList();
-				for (int i = 0; i < instance.biomeRain.getWidth(); i++) {
-					row.add(instance.biomeRain.getRGB(i, k));
-				}
-				rowData.add(row);
-			}
-		}
-
-		private BufferedImage constructBlendedImage(int step) {
-			BufferedImage buf = ReikaImageLoader.copyImage(instance.biomeRain);
-			for (int k = 0; k < instance.biomeRain.getHeight(); k++) {
-				ArrayList<Integer> row = rowData.get(k);
-				for (int i = 0; i < instance.biomeRain.getWidth(); i++) {
-					buf.setRGB(i, k, this.blend(buf.getRGB(i, k), row.get(i)));
-				}
-			}
-			return buf;
-		}
-
-		private int blend(int c1, int c2) {
-			return 0xff000000 | ReikaColorAPI.GStoHex((int)(ReikaColorAPI.getRed(c1)*ReikaColorAPI.getRed(c2)/255F));
-		}
 
 	}
-	 */
+
 	public void render() {
 		if (MinecraftForgeClient.getRenderPass() != 1)
 			return;
@@ -138,10 +78,11 @@ public class BiomeFXRenderer {
 		int py = MathHelper.floor_double(y);
 		int pz = MathHelper.floor_double(z);
 		int b = ep.worldObj.getBiomeGenForCoords(px, pz).biomeID;
-		if (colorMapA.containsKey(b) && ep.worldObj.getSavedLightValue(EnumSkyBlock.Sky, px, py, pz) > 5) {
-			int c1 = colorMapA.get(b);
-			int c2 = colorMapB.get(b);
-			int c = 0xff000000 | ReikaColorAPI.mixColors(c1, c2, (float)(0.5+0.5*Math.sin(System.currentTimeMillis()/1500D)));
+		ColorReference c1 = colorMapA.get(b);
+		if (c1 != null && ep.worldObj.getSavedLightValue(EnumSkyBlock.Sky, px, py, pz) > 5) {
+			ColorReference c2 = colorMapB.get(b);
+			long tick = ep.worldObj.getTotalWorldTime();
+			int c = 0xff000000 | (c1 == c2 ? c1.getColor(tick) : ReikaColorAPI.mixColors(c1.getColor(tick), c2.getColor(tick), (float)(0.5+0.5*Math.sin(System.currentTimeMillis()/1500D))));
 			biomeRainColor = ReikaColorAPI.mixColors(c, biomeRainColor, 0.05F);
 		}
 		else {
@@ -220,75 +161,6 @@ public class BiomeFXRenderer {
 
 		v5.draw();
 
-		/*
-
-		if (rainTextures[rainTick] == 0) {
-			rainTextures[rainTick] = ReikaTextureHelper.binder.allocateAndSetupTexture(rainImages[rainTick]);
-			rainImages[rainTick] = null;
-		}
-
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, rainTextures[rainTick]);
-
-		if (rainTickCount == 0) {
-			rainTick--;
-			if (rainTick < 0) {
-				rainTick = rainTextures.length-1;
-			}
-			rainTickCount = rainTickRate-1;
-		}
-		else {
-			rainTickCount--;
-		}
-
-		double a = 15;
-		double n = a/360;
-		n = 0.125;
-		double p = 3;
-		int ty =ep.worldObj.getTopSolidOrLiquidBlock(px, pz);
-
-		double dh = 1+(y-ty)/96D;
-		double r = 24*dh;
-		double w = 4*dh;
-
-		Tessellator v5 = Tessellator.instance;
-		v5.startDrawingQuads();
-		v5.setColorOpaque_I(biomeRainColor);
-		v5.setBrightness(240);
-
-		double u = 0;
-		for (double d = 0; d < 360; d += a) {
-			double d2 = d+a;
-			double dr1 = r+w*Math.sin(Math.toRadians((System.currentTimeMillis()/80D)%360D+d*p));
-			double dr2 = r+w*Math.sin(Math.toRadians((System.currentTimeMillis()/80D)%360D+d2*p));
-			double dx1 = x+dr1*Math.cos(Math.toRadians(d));
-			double dz1 = z+dr1*Math.sin(Math.toRadians(d));
-			double dx2 = x+dr2*Math.cos(Math.toRadians(d2));
-			double dz2 = z+dr2*Math.sin(Math.toRadians(d2));
-			double dy1 = Math.min(y-32, ty);
-			double dy2 = y+64;
-			v5.addVertexWithUV(dx1, y, dz1, u, 0);
-			v5.addVertexWithUV(dx2, y, dz2, u+n, 0);
-			v5.addVertexWithUV(x, dy2, z, u+n, 1);
-			v5.addVertexWithUV(x, dy2, z, u, 1);
-
-			v5.addVertexWithUV(x, dy1, z, u, 0);
-			v5.addVertexWithUV(x, dy1, z, u+n, 0);
-			v5.addVertexWithUV(dx2, y, dz2, u+n, 1);
-			v5.addVertexWithUV(dx1, y, dz1, u, 1);
-
-			u += n;
-		}
-
-		v5.draw();
-
-		/*
-		double d = rand.nextDouble()*360;
-		double dx = x+16*Math.cos(Math.toRadians(d));
-		double dz = z+16*Math.sin(Math.toRadians(d));
-		EntityFX fx = new EntityBlurFX(ep.worldObj, dx, y-2, dz).setGravity(-0.0625F).setLife(80).setScale(4).setRapidExpand();
-		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-		 */
-
 		ReikaRenderHelper.enableEntityLighting();
 		BlendMode.DEFAULT.apply();
 		GL11.glPopAttrib();
@@ -301,6 +173,42 @@ public class BiomeFXRenderer {
 		Random r = ep.worldObj.rand;
 		RainPoint p = new RainPoint(dx, dz, 40+r.nextInt(440), 0.0625+0.0625*r.nextDouble(), ReikaRandomHelper.getRandomPlusMinus(9, 3), 0.5F+r.nextFloat()*1.5F);
 		points.add(p);
+	}
+
+	private static abstract class ColorReference {
+
+		protected abstract int getColor(long tick);
+
+	}
+
+	private static class ColorBlendReference extends ColorReference {
+
+		private final ColorBlendList list;
+
+		private ColorBlendReference(ColorBlendList c) {
+			list = c;
+		}
+
+		@Override
+		protected int getColor(long tick) {
+			return list.getColor(tick);
+		}
+
+	}
+
+	private static class SolidColorReference extends ColorReference {
+
+		private final int color;
+
+		private SolidColorReference(int c) {
+			color = c;
+		}
+
+		@Override
+		protected int getColor(long tick) {
+			return color;
+		}
+
 	}
 
 	private static class RainPoint {

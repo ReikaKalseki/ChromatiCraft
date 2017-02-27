@@ -325,6 +325,9 @@ public class EntityGlowCloud extends EntityLiving {
 			else if (worldObj.isRaining() && rand.nextInt(80) == 0) {
 				this.die();
 			}
+			else if (this.isInWater()) {
+				this.die();
+			}
 			else if (this.getDistanceSqToEntity(ep) >= 16384) {
 				this.die();
 			}

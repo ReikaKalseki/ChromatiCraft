@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.World;
 
 import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockFlower;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
@@ -20,14 +21,18 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.feature.WorldGenAbstractTree;
 import net.minecraft.world.gen.feature.WorldGenLiquids;
 import net.minecraft.world.gen.feature.WorldGenerator;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.GlowingCliffsAuxGenerator.Island;
+import Reika.DragonAPI.Instantiable.Worldgen.ControllableOreVein;
 
 
 public class GlowingCliffsDecorator extends BiomeDecorator {
 
 	private int flowsPerChunk = 2;
 	private static final Random islandRandom = new Random();
-	private World islandWorld;
+
+	private World islandWorld;// = new GenerationInterceptWorld();
+	private World decoWorld;// = new GenerationInterceptWorld();
 
 	GlowingCliffsDecorator() {
 		super();
@@ -41,6 +46,24 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 		treesPerChunk = (int)(BiomeGenBase.forest.theBiomeDecorator.treesPerChunk*0.4);
 		waterlilyPerChunk = BiomeGenBase.swampland.theBiomeDecorator.waterlilyPerChunk/2;
 		reedsPerChunk = BiomeGenBase.swampland.theBiomeDecorator.reedsPerChunk;//*3/2;
+
+		gravelGen = new NoFloatingGravelVein(/*((WorldGenMinable)gravelGen).numberOfBlocks*/32);
+
+		/*
+		islandWorld.addGetOverride(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.DIRT.getMeta(false, true), Blocks.dirt);
+		decoWorld.addGetOverride(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.DIRT.getMeta(false, true), Blocks.dirt);
+
+		islandWorld.addGetOverride(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.GRASS.getMeta(false, true), Blocks.grass);
+		decoWorld.addGetOverride(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.GRASS.getMeta(false, true), Blocks.grass);
+
+		islandWorld.addGetOverride(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.STONE.getMeta(false, true), Blocks.stone);
+		decoWorld.addGetOverride(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.STONE.getMeta(false, true), Blocks.stone);
+		 */
+	}
+
+	private void setWorld(World world) {
+		currentWorld = world;
+		decoWorld = currentWorld;//.link(currentWorld);
 	}
 
 	@Override
@@ -53,25 +76,25 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 			int lastX = chunk_X;
 			int lastZ = chunk_Z;
 
-			currentWorld = world;
+			this.setWorld(world);
 			randomGenerator = rand;
 			chunk_X = chunkX;
 			chunk_Z = chunkZ;
 
 			this.genDecorations(biome);
 
-			currentWorld = lastWorld;
+			this.setWorld(lastWorld);
 			randomGenerator = lastRand;
 			chunk_X = lastX;
 			chunk_Z = lastZ;
 		}
 		else {
-			currentWorld = world;
+			this.setWorld(world);
 			randomGenerator = rand;
 			chunk_X = chunkX;
 			chunk_Z = chunkZ;
 			this.genDecorations(biome);
-			currentWorld = null;
+			this.setWorld(null);
 			randomGenerator = null;
 		}
 	}
@@ -86,19 +109,19 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 		for (i = 0; i < sandPerChunk2; i++) {
 			j = chunk_X + randomGenerator.nextInt(16) + 8;
 			k = chunk_Z + randomGenerator.nextInt(16) + 8;
-			sandGen.generate(currentWorld, randomGenerator, j, currentWorld.getTopSolidOrLiquidBlock(j, k), k);
+			sandGen.generate(decoWorld, randomGenerator, j, decoWorld.getTopSolidOrLiquidBlock(j, k), k);
 		}
 
 		for (i = 0; i < clayPerChunk; i++) {
 			j = chunk_X + randomGenerator.nextInt(16) + 8;
 			k = chunk_Z + randomGenerator.nextInt(16) + 8;
-			clayGen.generate(currentWorld, randomGenerator, j, currentWorld.getTopSolidOrLiquidBlock(j, k), k);
+			clayGen.generate(decoWorld, randomGenerator, j, decoWorld.getTopSolidOrLiquidBlock(j, k), k);
 		}
 
 		for (i = 0; i < sandPerChunk; i++) {
 			j = chunk_X + randomGenerator.nextInt(16) + 8;
 			k = chunk_Z + randomGenerator.nextInt(16) + 8;
-			gravelAsSandGen.generate(currentWorld, randomGenerator, j, currentWorld.getTopSolidOrLiquidBlock(j, k), k);
+			gravelAsSandGen.generate(decoWorld, randomGenerator, j, decoWorld.getTopSolidOrLiquidBlock(j, k), k);
 		}
 
 		i = treesPerChunk;
@@ -113,97 +136,97 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 		for (j = 0; j < i; j++) {
 			k = chunk_X + randomGenerator.nextInt(16) + 8;
 			l = chunk_Z + randomGenerator.nextInt(16) + 8;
-			i1 = currentWorld.getHeightValue(k, l);
+			i1 = decoWorld.getHeightValue(k, l);
 			WorldGenAbstractTree tree = biome.func_150567_a(randomGenerator);
 			tree.setScale(1.0D, 1.0D, 1.0D);
 
-			if (tree.generate(currentWorld, randomGenerator, k, i1, l)) {
-				tree.func_150524_b(currentWorld, randomGenerator, k, i1, l);
+			if (tree.generate(decoWorld, randomGenerator, k, i1, l)) {
+				tree.func_150524_b(decoWorld, randomGenerator, k, i1, l);
 			}
 		}
 
 		for (j = 0; j < flowersPerChunk; j++) {
 			k = chunk_X + randomGenerator.nextInt(16) + 8;
 			l = chunk_Z + randomGenerator.nextInt(16) + 8;
-			i1 = this.nextInt(currentWorld.getHeightValue(k, l) + 32);
+			i1 = this.nextInt(decoWorld.getHeightValue(k, l) + 32);
 			String s = biome.func_150572_a(randomGenerator, k, i1, l);
 			BlockFlower blockflower = BlockFlower.func_149857_e(s);
 
 			if (blockflower.getMaterial() != Material.air) {
 				yellowFlowerGen.func_150550_a(blockflower, BlockFlower.func_149856_f(s));
-				yellowFlowerGen.generate(currentWorld, randomGenerator, k, i1, l);
+				yellowFlowerGen.generate(decoWorld, randomGenerator, k, i1, l);
 			}
 		}
 
 		for (j = 0; j < grassPerChunk; j++) {
 			k = chunk_X + randomGenerator.nextInt(16) + 8;
 			l = chunk_Z + randomGenerator.nextInt(16) + 8;
-			i1 = this.nextInt(currentWorld.getHeightValue(k, l) * 2);
+			i1 = this.nextInt(decoWorld.getHeightValue(k, l) * 2);
 			WorldGenerator worldgenerator = biome.getRandomWorldGenForGrass(randomGenerator);
-			worldgenerator.generate(currentWorld, randomGenerator, k, i1, l);
+			worldgenerator.generate(decoWorld, randomGenerator, k, i1, l);
 		}
 
 		for (j = 0; j < waterlilyPerChunk; j++) {
 			k = chunk_X + randomGenerator.nextInt(16) + 8;
 			l = chunk_Z + randomGenerator.nextInt(16) + 8;
 
-			for (i1 = this.nextInt(currentWorld.getHeightValue(k, l) * 2); i1 > 0 && currentWorld.isAirBlock(k, i1 - 1, l); --i1) {
+			for (i1 = this.nextInt(decoWorld.getHeightValue(k, l) * 2); i1 > 0 && decoWorld.isAirBlock(k, i1 - 1, l); --i1) {
 				;
 			}
 
-			waterlilyGen.generate(currentWorld, randomGenerator, k, i1, l);
+			waterlilyGen.generate(decoWorld, randomGenerator, k, i1, l);
 		}
 
 		for (j = 0; j < mushroomsPerChunk; j++) {
 			if (randomGenerator.nextInt(4) == 0) {
 				k = chunk_X + randomGenerator.nextInt(16) + 8;
 				l = chunk_Z + randomGenerator.nextInt(16) + 8;
-				i1 = currentWorld.getHeightValue(k, l);
-				mushroomBrownGen.generate(currentWorld, randomGenerator, k, i1, l);
+				i1 = decoWorld.getHeightValue(k, l);
+				mushroomBrownGen.generate(decoWorld, randomGenerator, k, i1, l);
 			}
 
 			if (randomGenerator.nextInt(8) == 0) {
 				k = chunk_X + randomGenerator.nextInt(16) + 8;
 				l = chunk_Z + randomGenerator.nextInt(16) + 8;
-				i1 = this.nextInt(currentWorld.getHeightValue(k, l) * 2);
-				mushroomRedGen.generate(currentWorld, randomGenerator, k, i1, l);
+				i1 = this.nextInt(decoWorld.getHeightValue(k, l) * 2);
+				mushroomRedGen.generate(decoWorld, randomGenerator, k, i1, l);
 			}
 		}
 
 		if (randomGenerator.nextInt(4) == 0) {
 			j = chunk_X + randomGenerator.nextInt(16) + 8;
 			k = chunk_Z + randomGenerator.nextInt(16) + 8;
-			l = this.nextInt(currentWorld.getHeightValue(j, k) * 2);
-			mushroomBrownGen.generate(currentWorld, randomGenerator, j, l, k);
+			l = this.nextInt(decoWorld.getHeightValue(j, k) * 2);
+			mushroomBrownGen.generate(decoWorld, randomGenerator, j, l, k);
 		}
 
 		if (randomGenerator.nextInt(8) == 0) {
 			j = chunk_X + randomGenerator.nextInt(16) + 8;
 			k = chunk_Z + randomGenerator.nextInt(16) + 8;
-			l = this.nextInt(currentWorld.getHeightValue(j, k) * 2);
-			mushroomRedGen.generate(currentWorld, randomGenerator, j, l, k);
+			l = this.nextInt(decoWorld.getHeightValue(j, k) * 2);
+			mushroomRedGen.generate(decoWorld, randomGenerator, j, l, k);
 		}
 
 		for (j = 0; j < reedsPerChunk; j++) {
 			k = chunk_X + randomGenerator.nextInt(16) + 8;
 			l = chunk_Z + randomGenerator.nextInt(16) + 8;
-			i1 = this.nextInt(currentWorld.getHeightValue(k, l) * 2);
-			reedGen.generate(currentWorld, randomGenerator, k, i1, l);
+			i1 = this.nextInt(decoWorld.getHeightValue(k, l) * 2);
+			reedGen.generate(decoWorld, randomGenerator, k, i1, l);
 		}
 
 		for (j = 0; j < 10; j++) {
 			k = chunk_X + randomGenerator.nextInt(16) + 8;
 			l = chunk_Z + randomGenerator.nextInt(16) + 8;
-			i1 = this.nextInt(currentWorld.getHeightValue(k, l) * 2);
-			reedGen.generate(currentWorld, randomGenerator, k, i1, l);
+			i1 = this.nextInt(decoWorld.getHeightValue(k, l) * 2);
+			reedGen.generate(decoWorld, randomGenerator, k, i1, l);
 		}
 		/*
-		doGen = TerrainGen.decorate(currentWorld, randomGenerator, chunk_X, chunk_Z, PUMPKIN);
+		doGen = TerrainGen.decorate(decoWorld, randomGenerator, chunk_X, chunk_Z, PUMPKIN);
 		if (randomGenerator.nextInt(32) == 0) {
 			j = chunk_X + randomGenerator.nextInt(16) + 8;
 			k = chunk_Z + randomGenerator.nextInt(16) + 8;
-			l = this.nextInt(currentWorld.getHeightValue(j, k) * 2);
-			(new WorldGenPumpkin()).generate(currentWorld, randomGenerator, j, l, k);
+			l = this.nextInt(decoWorld.getHeightValue(j, k) * 2);
+			(new WorldGenPumpkin()).generate(decoWorld, randomGenerator, j, l, k);
 		}
 		 */
 
@@ -212,21 +235,21 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 				k = chunk_X + randomGenerator.nextInt(16) + 8;
 				l = randomGenerator.nextInt(randomGenerator.nextInt(248) + 8);
 				i1 = chunk_Z + randomGenerator.nextInt(16) + 8;
-				(new WorldGenLiquids(Blocks.flowing_water)).generate(currentWorld, randomGenerator, k, l, i1);
+				(new WorldGenLiquids(Blocks.flowing_water)).generate(decoWorld, randomGenerator, k, l, i1);
 			}
 
 			for (j = 0; j < 20; j++) {
 				k = chunk_X + randomGenerator.nextInt(16) + 8;
 				l = randomGenerator.nextInt(randomGenerator.nextInt(randomGenerator.nextInt(240) + 8) + 8);
 				i1 = chunk_Z + randomGenerator.nextInt(16) + 8;
-				(new WorldGenLiquids(Blocks.flowing_lava)).generate(currentWorld, randomGenerator, k, l, i1);
+				(new WorldGenLiquids(Blocks.flowing_lava)).generate(decoWorld, randomGenerator, k, l, i1);
 			}
 		}
 	}
 
 	void genIslandDecorations(World world, BiomeGenBase biome, Island is) {
 
-		islandWorld = world;
+		islandWorld = world;//.link(world);
 		islandRandom.setSeed(world.getSeed());
 
 		int i;
@@ -331,12 +354,30 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 				(new WorldGenLiquids(Blocks.flowing_lava)).generate(islandWorld, islandRandom, k, l, i1);
 			}
 		}
+
+		//islandWorld.link(null);
 	}
 
 	private int nextInt(int i) {
 		if (i <= 1)
 			return 0;
 		return randomGenerator.nextInt(i);
+	}
+
+	private static class NoFloatingGravelVein extends ControllableOreVein {
+
+		public NoFloatingGravelVein(int size) {
+			super(Blocks.gravel, size);
+		}
+
+		@Override
+		public boolean canPlaceBlockHere(World world, int x, int y, int z) {
+			Block b = world.getBlock(x, y, z);
+			if (b == ChromaBlocks.CLIFFSTONE.getBlockInstance())
+				return false;
+			return world.getBlock(x, y-1, z).getMaterial().isSolid();
+		}
+
 	}
 
 }

@@ -103,6 +103,8 @@ import Reika.ChromatiCraft.Block.Dye.BlockRainbowLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
 import Reika.ChromatiCraft.Block.Relay.BlockLumenRelay;
 import Reika.ChromatiCraft.Block.Relay.BlockRelayFilter;
+import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone;
+import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone.Variants;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower;
 import Reika.ChromatiCraft.Block.Worldgen.BlockEtherealLuma;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
@@ -226,7 +228,8 @@ public enum ChromaBlocks implements BlockEnum {
 	LIGHTPANEL(BlockLightPanel.class,			ItemBlockMultiType.class,		"chroma.lightpanel"),
 	PANELSWITCH(BlockLightSwitch.class,											"chroma.panelswitch"),
 	ARTEFACT(BlockUnknownArtefact.class,										"chroma.artefactblock"),
-	DUMMYAUX(BlockDummyAux.class,												"chroma.dummyaux");
+	DUMMYAUX(BlockDummyAux.class,												"chroma.dummyaux"),
+	CLIFFSTONE(BlockCliffStone.class,			ItemBlockMultiType.class,		"chroma.cliffstone");
 
 	private Class blockClass;
 	private String blockName;
@@ -298,6 +301,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case LIGHT:
 				return Material.circuits;
 			case SPARKLE:
+			case CLIFFSTONE:
 				return Material.ground;
 			default:
 				return Material.rock;
@@ -446,6 +450,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return "Sparkling "+new ItemStack(BlockSparkle.BlockTypes.list[meta].getBlockProxy()).getDisplayName();
 			case ROUTERNODE:
 				return StatCollector.translateToLocal("chromablock.routernode."+meta);
+			case CLIFFSTONE:
+				return "Cliff "+Variants.getVariant(meta).getBlockProxy().getLocalizedName();
 			default:
 				return "";
 		}
@@ -541,6 +547,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return BlockSparkle.BlockTypes.list.length;
 			case LIGHTPANEL:
 				return 6;
+			case CLIFFSTONE:
+				return Variants.list.length;
 			default:
 				return 1;
 		}

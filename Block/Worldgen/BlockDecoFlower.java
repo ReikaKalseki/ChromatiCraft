@@ -327,7 +327,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 				case VOIDREED:
 					return b.biomeID == ThaumIDHandler.Biomes.EERIE.getID() || b instanceof BiomeGenSwamp || b.getClass().getName().contains("BiomeGenBOPSwamp");
 				case FLOWIVY:
-					return b instanceof BiomeGenHills || (b.rootHeight >= 1 && b.topBlock == Blocks.grass/* && ReikaBiomeHelper.getBiomeTemp(world, b) < 40*/);
+					return b instanceof BiomeGenHills || (b.rootHeight >= 1 && b.topBlock == Blocks.grass && !BiomeGlowingCliffs.isGlowingCliffs(b)/* && ReikaBiomeHelper.getBiomeTemp(world, b) < 40*/);
 				case GLOWDAISY:
 				case GLOWROOT:
 					return BiomeGlowingCliffs.isGlowingCliffs(b);
@@ -406,6 +406,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 						int dz = z+dir.offsetZ;
 						Block idb = world.getBlock(dx, y-1, dz);
 						if (world.getBlock(dx, y, dz).isAir(world, dx, y, dz) && (idb == Blocks.grass || idb == Blocks.dirt)) {
+							//ReikaJavaLibrary.pConsole("Spreading "+this+" to "+new Coordinate(dx, y, dz));
 							return new Coordinate(dx, y, dz);
 						}
 					}
@@ -459,6 +460,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 		}
 
 		public boolean canPlantAt(World world, int x, int y, int z) {
+			//ReikaJavaLibrary.pConsole("Testing plantability of "+this+" at "+new Coordinate(x, y, z));
 			switch(this) {
 				case FLOWIVY: {
 					for (int i = 2; i < 6; i++) {

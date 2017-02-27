@@ -54,6 +54,11 @@ public class TileEntityPylonLink extends TileEntityChromaticBase implements Loca
 	}
 
 	@Override
+	public int getIconState(int side) {
+		return side == 1 && connection != null ? 1 : 0;
+	}
+
+	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		this.link();
 	}

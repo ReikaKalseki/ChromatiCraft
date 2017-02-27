@@ -564,7 +564,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	}
 
 	@Override
-	public boolean needsLineOfSightToReceiver() {
+	public boolean needsLineOfSightToReceiver(CrystalReceiver r) {
 		return true;
 	}
 

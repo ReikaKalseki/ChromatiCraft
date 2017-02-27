@@ -9,29 +9,38 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
+import java.util.HashSet;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.Lore.LoreEntry;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 
 public class TileEntityDataNode extends TileEntityChromaticBase implements OperationInterval {
@@ -60,6 +69,8 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 
 	private EntityPlayer progressPlayer;
 	private int progressDelay;
+
+	private final HashSet<String> scannedPlayers = new HashSet(); //not uuid since written to NBT
 
 	@Override
 	public ChromaTiles getTile() {
@@ -178,7 +189,16 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 	}
 
 	public void scan(EntityPlayer ep) {
+		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment() && KeyWatcher.instance.isKeyDown(ep, Key.LCTRL)) {
+			scannedPlayers.clear();
+			scanCooldown = 0;
+		}
+
 		if (scanCooldown > 0)
+			return;
+		if (!this.canBeAccessed())
+			return;
+		if (this.hasBeenScanned(ep))
 			return;
 
 		scanTick++;
@@ -199,7 +219,17 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 		scanCooldown = SCAN_COOLDOWN;
 		progressDelay = PROGRESS_DELAY_LENGTH;
 		progressPlayer = ep;
+		ProgressStage.TOWER.stepPlayerTo(ep);
+		scannedPlayers.add(ep.getUniqueID().toString());
 		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.DATASCAN.ordinal(), this, 128);
+		ItemStack is = ChromaItems.DATACRYSTAL.getStackOf();
+		is.stackTagCompound = new NBTTagCompound();
+		is.stackTagCompound.setString("owner", ep.getUniqueID().toString());
+		EntityItem ei = ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+5, zCoord+0.5, is, 3);
+		ei.motionY = Math.max(ei.motionY, 0.75);
+		ei.velocityChanged = true;
+		scannedPlayers.add(ep.getUniqueID().toString());
+		this.syncAllData(true);
 	}
 
 	public static void doScanFX(World world, int x, int y, int z) {
@@ -244,6 +274,11 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 	}
 
 	@Override
+	public double getMaxRenderDistanceSquared() {
+		return super.getMaxRenderDistanceSquared()*16;
+	}
+
+	@Override
 	public float getOperationFraction() {
 		return this.getScanProgress();
 	}
@@ -259,6 +294,8 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 
 		//scanTick = NBT.getInteger("scan");
 		scanCooldown = NBT.getInteger("cooldown");
+
+		ReikaNBTHelper.readCollectionFromNBT(scannedPlayers, NBT, "players");
 	}
 
 	@Override
@@ -267,6 +304,12 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 
 		//NBT.setInteger("scan", scanTick);
 		NBT.setInteger("cooldown", scanCooldown);
+
+		ReikaNBTHelper.writeCollectionToNBT(scannedPlayers, NBT, "players");
+	}
+
+	public boolean hasBeenScanned(EntityPlayer ep) {
+		return scannedPlayers.contains(ep.getUniqueID().toString());
 	}
 
 }

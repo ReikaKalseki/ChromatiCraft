@@ -9,71 +9,211 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic.Lore;
 
+import java.awt.Point;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.UUID;
 
-//http://i.imgur.com/gfR81K3.png
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.EntityPlayer;
+import Reika.ChromatiCraft.Magic.ElementMixer;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.HexGrid;
+import Reika.DragonAPI.Instantiable.HexGrid.MapShape;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+
+
+
 public class KeyAssemblyPuzzle {
-	/*
-	private final HexCell[][] grid = new HexCell[8][10];
-	private final Collection<KeyStar> stars = new ArrayList();
 
-	public KeyAssemblyPuzzle() {
-		for (int i = 0; i < grid.length; i++) {
-			for (int k = 0; k < grid[i].length; k++) {
-				boolean odd = i%2 != 0;
-				if (!odd || k < grid[i].length-1) {
-					grid[i][k] = new HexCell();
-					grid[i][k].isOffset = odd;
+	private static final int SIZE = 9;
+	private static final int EDGE = (SIZE-1)/2;
+
+	public static final int CELL_SIZE = 64;
+
+	private static final double SIN60 = Math.sin(Math.toRadians(60));
+	private static final double COS60 = Math.cos(Math.toRadians(60));
+
+	//private final HexCell[][] grid = new HexCell[SIZE][SIZE];
+	private final HexGrid grid;
+
+	private int activeCells;
+	private final int totalCells;
+
+	private KeyAssemblyPuzzle() {
+		grid = new HexGrid(SIZE, 64, true, MapShape.HEXAGON).flower();
+		totalCells = grid.cellCount();
+	}
+
+	public static KeyAssemblyPuzzle generatePuzzle(long seed, UUID player) {
+		KeyAssemblyPuzzle p = new KeyAssemblyPuzzle();
+		long seed2 = ReikaMathLibrary.cantorCombine(seed, player.getMostSignificantBits(), player.getLeastSignificantBits());
+		p.generate(seed2);
+		return p;
+	}
+
+	private void generate(long seed) {
+		//TODO
+	}
+
+	public boolean isComplete() {
+		return activeCells == totalCells;
+	}
+
+	public boolean isCellInGrid(int i, int k) {
+		return Math.abs(-i+k) < EDGE;
+	}
+
+	public HexCell getCell(int i, int k) {
+		return grid[i][k];
+	}
+
+	private HexCell getCell(HexCell loc) {
+		return this.getCell(-loc.xCoord, loc.zCoord);
+	}
+
+	private void setCellContents(HexCell loc, HexTile h) {
+		this.getCell(loc).occupant = h;
+	}
+
+	public HexCell getNeighbor(HexCell loc, int i, int k) {
+		int dx = -loc.xCoord+i;
+		int dz = loc.zCoord+k;
+		return this.isCellInGrid(dx, dz) ? this.getCell(dx, dz) : null;
+	}
+
+	private Collection<HexCell> getNeighbors(HexCell loc) {
+		Collection<HexCell> c = new HashSet();
+		for (int i = -1; i <= 1; i++) {
+			for (int k = -1; k <= 1; k++) {
+				if (i != k && (i != 0 || k != 0)) {
+					int dx = -loc.xCoord+i;
+					int dz = loc.zCoord+k;
+					if (this.isCellInGrid(dx, dz)) {
+						c.add(this.getCell(dx, dz));
+					}
 				}
 			}
 		}
+		return c;
 	}
 
-	public Diamond get() {
-
-	}
-
-	public static class KeyStar {
-
-		public final Diamond[] diamonds;
-
-		public KeyStar(Diamond c1, Diamond c2, Diamond c3, Diamond c4, Diamond c5, Diamond c6) {
-			diamonds = new Diamond[]{c1, c2, c3, c4, c5, c6};
+	public HexCell getCellFromScreenXY(int x, int y) {
+		//easier than mathematical solution
+		double mind = Double.POSITIVE_INFINITY;
+		HexCell closest = null;
+		for (int i = 0; i < SIZE; i++) {
+			for (int k = 0; k < SIZE; k++) {
+				if (this.isCellInGrid(i, k)) {
+					HexCell c = this.getCell(i, k);
+					double d = c.getScreenDistanceTo(x, y);
+					if (closest == null || d < mind) {
+						mind = d;
+						closest = c;
+					}
+				}
+			}
 		}
-
-	}
-
-	public static class Diamond {
-
-		public final CrystalElement color;
-
-		private Diamond(CrystalElement e) {
-			color = e;
-		}
-
-		private static Diamond empty() {
-			return new Diamond(null);
-		}
-
-		public boolean isNull() {
-			return color == null;
-		}
-
+		return closest;
 	}
 
 	private static class HexCell {
 
-		private final Diamond top;
-		private final Diamond left;
-		private final Diamond bottom;
+		private final int xCoord; //always negative!
+		private final int zCoord;
 
-		private boolean isOffset;
+		private HexTile occupant = null;
 
-		private HexCell(Diamond t, Diamond l, Diamond b) {
-			top = t;
-			left = l;
-			bottom = b;
+		private HexCell(int x, int z) {
+			xCoord = x;
+			zCoord = z;
+		}
+
+		public HexTile getOccupant() {
+			return occupant;
+		}
+
+		public void render(Tessellator v5) {
+			if (occupant != null) {
+				occupant.render(v5);
+			}
+			else {
+				//render void //TODO
+			}
+		}
+
+		public Point getScreenXY() {
+			int x = (int)(zCoord*CELL_SIZE*SIN60);
+			int y = (int)((-xCoord-zCoord*COS60)*CELL_SIZE);
+			return new Point(x, y);
+		}
+
+		public double getScreenDistanceTo(int x, int y) {
+			Point p = this.getScreenXY();
+			return p.distance(x, y);
 		}
 
 	}
-	 */
+
+	private static class HexTile {
+
+
+		private final CrystalElement color;
+
+		private HexCell location;
+		private boolean state;
+
+		private HexTile(CrystalElement e) {
+			color = e;
+		}
+
+		private boolean isValid(KeyAssemblyPuzzle p) {
+			for (HexCell c : p.getNeighbors(location)) {
+				if (c.occupant != null) {
+					if (this.isRelatedTo(c.occupant))
+						return true;
+				}
+			}
+			return false;
+		}
+
+		private boolean isRelatedTo(HexTile h) {
+			return ElementMixer.instance.related(color, h.color);
+		}
+
+		public boolean playerKnows(EntityPlayer ep) {
+			return true;
+		}
+
+		@SideOnly(Side.CLIENT)
+		public void render(Tessellator v5) {
+			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+			if (this.playerKnows(ep)) {
+				//TODO
+			}
+			else {
+				//TODO
+			}
+		}
+
+		public void move(KeyAssemblyPuzzle p, int dx, int dz) {
+			p.setCellContents(location, null);
+			location = p.getNeighbor(location, dx, dz);
+			p.setCellContents(location, this);
+			boolean flag = this.isValid(p);
+			if (flag != state) {
+				if (flag) {
+					p.activeCells++;
+				}
+				else {
+					p.activeCells--;
+				}
+				state = flag;
+			}
+		}
+	}
 }

@@ -10,12 +10,12 @@
 package Reika.ChromatiCraft.ModInterface.Bees;
 
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Fertility;
-import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Flowering;
-import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Life;
-import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Speeds;
-import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Territory;
-import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Tolerance;
+import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Fertility;
+import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Flowering;
+import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Life;
+import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Speeds;
+import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Territory;
+import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Tolerance;
 import Reika.DragonAPI.ModInteract.Bees.BeeTraits;
 import forestry.api.core.EnumHumidity;
 import forestry.api.core.EnumTemperature;

@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityMagicPlant;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
+import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone.Variants;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -410,6 +411,7 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant implements Operati
 		COBBLESTONE(FluidRegistry.WATER, FluidRegistry.LAVA, new ItemStack(Blocks.cobblestone), 10, 20, 0),
 		CRYSTALSTONE("chroma", "lava", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.SMOOTH.ordinal()), 50, 25F, 50F),
 		//ALLOY1("iron.molten", "lava", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.SMOOTH.ordinal()), 10, 10F, 20F),
+		CLIFFSTONE("luma", "lava", ChromaBlocks.CLIFFSTONE.getStackOfMetadata(Variants.STONE.getMeta(false, false)), 120, 0F, 10F),
 		;
 
 		private final ItemStack output;

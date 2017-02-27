@@ -26,6 +26,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
@@ -33,6 +34,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.IChunkProvider;
@@ -47,6 +49,7 @@ import Reika.ChromatiCraft.ChromaGuiHandler;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Block.BlockSelectiveGlass;
+import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
@@ -55,6 +58,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Network.TargetData;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaEntities;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -73,6 +77,7 @@ import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Worldgen.GenerationInterceptWorld;
 import Reika.DragonAPI.Instantiable.Worldgen.GenerationInterceptWorld.TileHook;
 import Reika.DragonAPI.Interfaces.Entity.CustomProjectile;
+import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
@@ -100,7 +105,27 @@ public class ChromaAux {
 			relayWorld.disallowBlock(ThaumItemHelper.BlockEntry.TOTEMNODE.getBlock());
 			 */
 			relayWorld.addHook(new NodeHook());
+			relayWorld.addHook(new WispSpawnerHook());
 		}
+	}
+
+	private static class WispSpawnerHook implements TileHook {
+
+		@Override
+		public void onTileChanged(TileEntity te) {
+			if (te instanceof TileEntityMobSpawner) {
+				TileEntityMobSpawner tm = (TileEntityMobSpawner)te;
+				if (ReikaSpawnerHelper.getMobSpawnerMobName(tm).toLowerCase(Locale.ENGLISH).contains("wisp")) {
+					ReikaSpawnerHelper.setMobSpawnerMob(tm, ChromaEntities.GLOWCLOUD.entityName);
+				}
+			}
+		}
+
+		@Override
+		public boolean shouldRun(World world, int x, int y, int z) {
+			return BiomeGlowingCliffs.isGlowingCliffs(world.getBiomeGenForCoords(x, z));
+		}
+
 	}
 
 	private static class NodeHook implements TileHook {
@@ -134,7 +159,8 @@ public class ChromaAux {
 		}
 		else if (ReikaChunkHelper.chunkContainsBiomeType(world, cx, cz, BiomeGlowingCliffs.class)) {
 			relayWorld.link(world);
-			GameRegistry.generateWorld(cx, cz, relayWorld, generator, loader);
+			//GameRegistry.generateWorld(cx, cz, relayWorld, generator, loader);
+			BiomeGlowingCliffs.runIWGs(cx, cz, relayWorld, generator, loader);
 			relayWorld.runHooks();
 		}
 		else {
@@ -530,5 +556,20 @@ public class ChromaAux {
 		TileEntityLootChest te = (TileEntityLootChest)world.getTileEntity(x, y, z);
 		te.populateChest(s, null, bonus, world.rand);
 		return te;
+	}
+
+	public static int groundOpacity(IBlockAccess iba, int x, int y, int z, Block b) {
+		if (iba instanceof World) {
+			World w = (World)iba;
+			if (!ReikaWorldHelper.isChunkPastNoiseGen(w, x >> 4, z >> 4)) {
+				return 255;
+			}
+		}
+		Block b2 = b;
+		while(y >= 0 && (b2 == b || b2 == Blocks.dirt)) {
+			y--;
+			b2 = iba.getBlock(x, y, z);
+		}
+		return b2 == ChromaBlocks.CLIFFSTONE.getBlockInstance() && BlockCliffStone.isTransparent(iba, x, y, z) ? 0 : 255;
 	}
 }

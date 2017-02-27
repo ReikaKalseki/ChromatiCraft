@@ -295,7 +295,7 @@ public class PylonFinder {
 				CrystalLink l = net.getLink(loc2, loc);
 
 				if (te != target) {
-					if ((te.needsLineOfSightToReceiver() || r.needsLineOfSightFromTransmitter()) && !l.hasLineOfSight()) {
+					if ((te.needsLineOfSightToReceiver(r) || r.needsLineOfSightFromTransmitter(te)) && !l.hasLineOfSight()) {
 						l.recalculateLOS();
 						if (!l.hasLineOfSight())
 							continue;

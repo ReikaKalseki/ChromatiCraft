@@ -52,6 +52,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
+import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone.Variants;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -163,6 +164,8 @@ public class ItemElementCalculator {
 		cache.put(ChromaStacks.rawCrystal, new ElementTagCompound(10, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 20));
 
 		cache.put(ChromaBlocks.RAINBOWSAPLING.getBlockInstance(), new ElementTagCompound(1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1));
+
+		cache.put(ChromaBlocks.CLIFFSTONE.getStackOfMetadata(Variants.STONE.getMeta(false, false)), new ElementTagCompound(1, 2, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 
 		cache.put(Items.bucket, ItemMagicRegistry.instance.getItemValue(new ItemStack(Items.iron_ingot)).scale(3)); //to prevent exploits with Metallurgy
 		cache.put(Items.shears, ItemMagicRegistry.instance.getItemValue(new ItemStack(Items.iron_ingot)).scale(2)); //to prevent exploits with Metallurgy

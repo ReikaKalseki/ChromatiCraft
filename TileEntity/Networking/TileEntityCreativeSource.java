@@ -30,7 +30,7 @@ public class TileEntityCreativeSource extends CrystalTransmitterBase implements 
 	}
 
 	@Override
-	public boolean needsLineOfSightToReceiver() {
+	public boolean needsLineOfSightToReceiver(CrystalReceiver r) {
 		return true;
 	}
 

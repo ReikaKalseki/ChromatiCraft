@@ -177,7 +177,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	}
 
 	@Override
-	public boolean needsLineOfSightToReceiver() {
+	public boolean needsLineOfSightToReceiver(CrystalReceiver r) {
 		return !this.hasBroadcastUpgrade();
 	}
 

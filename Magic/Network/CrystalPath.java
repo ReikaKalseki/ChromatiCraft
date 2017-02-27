@@ -101,8 +101,9 @@ public class CrystalPath implements Comparable<CrystalPath> {
 			if (l == null || tgt.equals(l.loc1) || tgt.equals(l.loc2)) {
 				WorldLocation src = nodes.get(i+1);
 				if (!PylonFinder.lineOfSight(src, tgt)) {
+					CrystalReceiver rec = PylonFinder.getReceiverAt(tgt, true);
 					CrystalTransmitter sr = PylonFinder.getTransmitterAt(src, true);
-					if (sr.needsLineOfSightToReceiver()) {
+					if (sr.needsLineOfSightToReceiver(rec) || rec.needsLineOfSightFromTransmitter(sr)) {
 						return false;
 					}
 				}
@@ -123,10 +124,11 @@ public class CrystalPath implements Comparable<CrystalPath> {
 			WorldLocation tgt = nodes.get(i);
 			WorldLocation src = nodes.get(i+1);
 			CrystalTransmitter sr = PylonFinder.getTransmitterAt(src, false);
+			CrystalReceiver rec = PylonFinder.getReceiverAt(tgt, false);
 			if (sr == null || !sr.canConduct() || !sr.isConductingElement(element)) {
 				return false;
 			}
-			if (sr.needsLineOfSightToReceiver()) {
+			if (sr.needsLineOfSightToReceiver(rec) || rec.needsLineOfSightFromTransmitter(sr)) {
 				CrystalLink l = network.getLink(tgt, src);
 				if (!l.hasLineOfSight()) {
 					l.recalculateLOS();

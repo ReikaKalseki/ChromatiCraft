@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.InscriptionRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.PortalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.RepeaterTurboRecipe;
@@ -811,6 +812,9 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case LORENOTE:
 					LoreManager.instance.addLoreNote(ep, data[0]);
+					break;
+				case INSCRIBE:
+					InscriptionRecipes.instance.getRecipeByID(data[0]).doFX(world, x, y, z);
 					break;
 			}
 		}

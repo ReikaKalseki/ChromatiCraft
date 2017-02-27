@@ -9,26 +9,36 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Networking;
 
+import java.util.Collection;
+
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.NotifiedNetworkTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Network.CrystalPath;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 
 
-public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater implements NotifiedNetworkTile, MultiBlockChromaTile {
+public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater implements NotifiedNetworkTile, MultiBlockChromaTile, BreakAction {
 
-	public static int INTERFERENCE_RANGE = 384;
-	public static int MIN_RANGE = 512;
-	public static int BROADCAST_RANGE = 4096;
+	public static final int INTERFERENCE_RANGE = 384;
+	public static final int MIN_RANGE = 512;
+	public static final int BROADCAST_RANGE = 4096;
 
-	private boolean interfered;
+	private static final int AIR_SEARCH = 32;
+	private static final int AIR_SEARCH_Y = 8;
+
+	private WorldLocation interference;
+	private boolean clearAir;
 
 	@Override
 	public ChromaTiles getTile() {
@@ -45,7 +55,18 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 		super.onFirstTick(world, x, y, z);
 		this.validateStructure();
 		this.checkInterfere();
+		clearAir = this.testAirClear();
 		//this.checkConnectivity();
+	}
+
+	@Override
+	public boolean needsLineOfSightToReceiver(CrystalReceiver r) {
+		return !(r instanceof TileEntityCrystalBroadcaster);
+	}
+
+	@Override
+	public boolean needsLineOfSightFromTransmitter(CrystalTransmitter r) {
+		return !(r instanceof TileEntityCrystalBroadcaster);
 	}
 
 	@Override
@@ -60,7 +81,10 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 
 	@Override
 	public int getSignalDegradation() {
-		return this.isTurbocharged() ? 1500 : 2500;
+		int base = this.isTurbocharged() ? 1500 : 2500;
+		if (worldObj.isRaining())
+			base *= 4;
+		return base;
 	}
 
 	@Override
@@ -72,11 +96,63 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 	public boolean canConduct() {
 		if (!super.canConduct())
 			return false;
-		return !interfered;
+		return interference == null && clearAir;
+	}
+
+	private boolean testAirClear() {
+		/*
+		int r = 32;
+		int dd = 1;
+		int c = 4;
+		for (int i = 2; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			for (int d = 0; d <= r; d += dd) {
+				int dx = xCoord+d*dir.offsetX;
+				int dz = zCoord+d*dir.offsetZ;
+				if (!worldObj.getBlock(dx, yCoord, dz).isAir(worldObj, dx, yCoord, dz)) {
+					c--;
+					break;
+				}
+			}
+		}
+		return c >= 2;
+		 */
+		int r = 32;
+		int ry = 8;
+		int c2 = 0;
+		for (int i = -r; i <= r; i++) {
+			for (int j = -ry; j <= ry; j++) {
+				for (int k = -r; k <= r; k++) {
+					int dx = xCoord+i;
+					int dy = yCoord+j;
+					int dz = zCoord+k;
+					if (worldObj.getBlock(dx, dy, dz).isAir(worldObj, dx, dy, dz))
+						c2++;
+				}
+			}
+		}
+		int c1 = (r*2+1)*(r*2+1)*ry;
+		return (float)c1/c2 > 0.8;
 	}
 
 	private void checkInterfere() {
-		interfered = CrystalNetworker.instance.getNearestTileOfType(this, this.getClass(), INTERFERENCE_RANGE) != null;
+		TileEntityCrystalBroadcaster te = CrystalNetworker.instance.getNearestTileOfType(this, this.getClass(), INTERFERENCE_RANGE);
+		if (te != null) {
+			interference = new WorldLocation(te);
+			te.interference = new WorldLocation(this);
+		}
+		else {
+			interference = null;
+		}
+	}
+
+	public static void updateAirCaches(World world, int x, int y, int z) {
+		Collection<TileEntityCrystalBroadcaster> c = CrystalNetworker.instance.getNearTilesOfType(world, x, y, z, TileEntityCrystalBroadcaster.class, AIR_SEARCH);
+		for (TileEntityCrystalBroadcaster te : c) {
+			if (Math.abs(te.yCoord-y) <= AIR_SEARCH_Y && Math.abs(te.xCoord-x) <= AIR_SEARCH && Math.abs(te.zCoord-z) <= AIR_SEARCH) {
+				te.clearAir = te.testAirClear();
+			}
+		}
 	}
 
 	@Override
@@ -113,14 +189,17 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 
-		interfered = NBT.getBoolean("interf");
+		interference = WorldLocation.readFromNBT("interfere", NBT);
+		clearAir = NBT.getBoolean("air");
 	}
 
 	@Override
 	protected void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
 
-		NBT.setBoolean("interf", interfered);
+		if (interference != null)
+			interference.writeToNBT("interfere", NBT);
+		NBT.setBoolean("air", clearAir);
 	}
 
 	@Override
@@ -142,6 +221,19 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 	@Override
 	public int getThoughputInsurance() {
 		return this.isTurbocharged() ? 1000 : 500;
+	}
+
+	@Override
+	public void breakBlock() {
+		if (interference != null) {
+			TileEntity te = interference.getTileEntity();
+			if (te instanceof TileEntityCrystalBroadcaster) {
+				TileEntityCrystalBroadcaster tb = (TileEntityCrystalBroadcaster)te;
+				if (tb.interference != null && tb.interference.equals(worldObj, xCoord, yCoord, zCoord)) {
+					tb.interference = null;
+				}
+			}
+		}
 	}
 
 }

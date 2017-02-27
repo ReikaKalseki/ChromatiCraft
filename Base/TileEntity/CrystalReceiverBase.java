@@ -209,7 +209,7 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 	}
 
 	@Override
-	public boolean needsLineOfSightFromTransmitter() {
+	public boolean needsLineOfSightFromTransmitter(CrystalTransmitter r) {
 		return true;
 	}
 

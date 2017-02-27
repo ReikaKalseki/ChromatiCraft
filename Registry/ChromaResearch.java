@@ -270,6 +270,7 @@ public enum ChromaResearch implements ProgressElement {
 	FRAGMENT("Fragments",			ChromaItems.FRAGMENT, 									ResearchLevel.ENTRY),
 	AUGMENT("Upgrades",				ChromaStacks.speedUpgrade,								ResearchLevel.PYLONCRAFT,	ProgressStage.STORAGE),
 	ALLOYS("Alloying",				ChromaStacks.chromaIngot,								ResearchLevel.RUNECRAFT,	ProgressionManager.instance.getPrereqsArray(ProgressStage.ALLOY)),
+	INSCRIPTION("Inscription",		ChromaItems.DATACRYSTAL.getStackOf(),					ResearchLevel.RAWEXPLORE,	ProgressStage.TOWER),
 	BEES("Crystal Bees",			new ItemStack(Blocks.dirt),								ResearchLevel.RAWEXPLORE,	ProgressStage.HIVE),
 	TINKERTOOLS("Mix-And-Magic Tools",	new ItemStack(Blocks.dirt),							ResearchLevel.MULTICRAFT),
 	BRANCHES("Magic Branches",		ItemMagicBranch.BranchTypes.CRYSTAL.getStack(),			ResearchLevel.ENERGYEXPLORE),

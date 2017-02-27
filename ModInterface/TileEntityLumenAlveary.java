@@ -43,11 +43,11 @@ import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.BeeGene;
-import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Fertility;
-import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Flowering;
-import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Speeds;
-import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Territory;
+import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.BeeGene;
+import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Fertility;
+import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Flowering;
+import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Speeds;
+import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Territory;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 
 import com.mojang.authlib.GameProfile;

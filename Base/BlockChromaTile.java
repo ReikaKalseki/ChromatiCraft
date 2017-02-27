@@ -207,8 +207,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 	}
 
 	@Override
-	public final boolean canBeReplacedByLeaves(IBlockAccess world, int x, int y, int z)
-	{
+	public final boolean canBeReplacedByLeaves(IBlockAccess world, int x, int y, int z) {
 		return false;
 	}
 

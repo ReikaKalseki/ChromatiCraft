@@ -50,7 +50,7 @@ public class DecoFlowerGenerator implements RetroactiveGenerator, ChromaDecorato
 						BiomeGenBase b = world.getBiomeGenForCoords(posX, posZ);
 						if (p.canGenerateIn(b)) {
 							int posY = ReikaRandomHelper.getRandomPlusMinus(world.getTopSolidOrLiquidBlock(posX, posZ), 25);
-							if (p != Flowers.FLOWIVY) {
+							if (p != Flowers.FLOWIVY && p != Flowers.GLOWROOT) {
 								while (world.getBlock(posX, posY-1, posZ).isAir(world, posX, posY-1, posZ) && posY > 0)
 									posY--;
 								if (posY <= 0)
@@ -74,12 +74,12 @@ public class DecoFlowerGenerator implements RetroactiveGenerator, ChromaDecorato
 								}
 								if (p == Flowers.FLOWIVY && !world.getBlock(posX, posY-1, posZ).isAir(world, posX, posY-1, posZ))
 									continue;
-								world.setBlock(posX, posY, posZ, ChromaBlocks.DECOFLOWER.getBlockInstance(), p.ordinal(), 3);
+								world.setBlock(posX, posY, posZ, ChromaBlocks.DECOFLOWER.getBlockInstance(), p.ordinal(), 2);
 								if (p == Flowers.FLOWIVY) {
 									int g = random.nextInt(12);
 									for (int h = 0; h < g; h++) {
 										if (world.getBlock(posX, posY-h, posZ).isAir(world, posX, posY-h, posZ) && p.canPlantAt(world, posX, posY-h, posZ)) {
-											world.setBlock(posX, posY-h, posZ, ChromaBlocks.DECOFLOWER.getBlockInstance(), p.ordinal(), 3);
+											world.setBlock(posX, posY-h, posZ, ChromaBlocks.DECOFLOWER.getBlockInstance(), p.ordinal(), 2);
 										}
 									}
 								}
@@ -87,7 +87,7 @@ public class DecoFlowerGenerator implements RetroactiveGenerator, ChromaDecorato
 									int g = random.nextInt(4);
 									for (int h = 0; h < g; h++) {
 										if (world.getBlock(posX, posY+h, posZ).isAir(world, posX, posY+h, posZ) && p.canPlantAt(world, posX, posY+h, posZ)) {
-											world.setBlock(posX, posY+h, posZ, ChromaBlocks.DECOFLOWER.getBlockInstance(), p.ordinal(), 3);
+											world.setBlock(posX, posY+h, posZ, ChromaBlocks.DECOFLOWER.getBlockInstance(), p.ordinal(), 2);
 										}
 									}
 								}

@@ -372,6 +372,9 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 			else if (worldObj.isRaining() && rand.nextInt(80) == 0) {
 				this.die();
 			}
+			else if (this.isInWater()) {
+				this.die();
+			}
 			else if (this.getDistanceSqToEntity(ep) >= 65536) {
 				this.die();
 			}
