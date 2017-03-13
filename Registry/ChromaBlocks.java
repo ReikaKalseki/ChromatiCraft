@@ -229,7 +229,8 @@ public enum ChromaBlocks implements BlockEnum {
 	PANELSWITCH(BlockLightSwitch.class,											"chroma.panelswitch"),
 	ARTEFACT(BlockUnknownArtefact.class,										"chroma.artefactblock"),
 	DUMMYAUX(BlockDummyAux.class,												"chroma.dummyaux"),
-	CLIFFSTONE(BlockCliffStone.class,			ItemBlockMultiType.class,		"chroma.cliffstone");
+	CLIFFSTONE(BlockCliffStone.class,			ItemBlockMultiType.class,		"chroma.cliffstone"),
+	;	//LOREREADER(BlockLoreReader.class,											"chroma.lorereader");
 
 	private Class blockClass;
 	private String blockName;
@@ -498,6 +499,8 @@ public enum ChromaBlocks implements BlockEnum {
 			case PANELSWITCH:
 			case LIGHTPANEL:
 			case DUMMYAUX:
+				//case LOREREADER:
+			case ARTEFACT:
 				return false;
 			default:
 				return true;

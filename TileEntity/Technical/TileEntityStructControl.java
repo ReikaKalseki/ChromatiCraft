@@ -432,7 +432,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			case CAVERN:
 				for (int i = -1; i <= 1; i += 2) {
 					if (!crystals.isEmpty()) {
-						CrystalElement e = ReikaJavaLibrary.getRandomListEntry((ArrayList<CrystalElement>)new ArrayList(crystals.keySet()));
+						CrystalElement e = ReikaJavaLibrary.getRandomListEntry(rand, (ArrayList<CrystalElement>)new ArrayList(crystals.keySet()));
 						Coordinate c = crystals.get(e);
 						double dd = ReikaMathLibrary.py3d(c.xCoord, c.yCoord, c.zCoord);
 						double v = 0.2;

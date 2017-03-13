@@ -97,11 +97,15 @@ public class ItemDuplicationWand extends ItemWandBase {
 		if (lock.contains(sg))
 			return false;
 		if (this.sufficientEnergy(ep)) {
-			if (ep.isSneaking())
+			if (ep.isSneaking()) {
+				//ChromaSounds.RIFT.playSound(ep, 0.75F, 1F);
+				ChromaSounds.CAST.playSound(ep, 0.75F, 0.5F);
 				this.addToStructureCache(world, x, y, z, sg);
+			}
 			else {
 				StructuredBlockArray struct = structures.get(sg);
 				if (struct != null && !struct.isEmpty() && this.hasItems(struct, ep)) {
+					//ChromaSounds.CAST.playSound(ep, 0.5F, 0.5F);
 					this.copyStructure(world, x, y, z, s, sg);
 					if (!ep.capabilities.isCreativeMode) {
 						this.drainPlayer(ep, 1+struct.getSize()/16F);
@@ -171,6 +175,7 @@ public class ItemDuplicationWand extends ItemWandBase {
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
 		this.finishPlacement(ep.getCommandSenderName());
 		this.clearStructureCache(ep.getCommandSenderName());
+		ChromaSounds.ERROR.playSound(ep, 1F, 0.5F);
 		return is;
 	}
 
@@ -252,7 +257,8 @@ public class ItemDuplicationWand extends ItemWandBase {
 			int dx = c.xCoord+x+dir.offsetX;
 			int dy = c.yCoord+y+dir.offsetY;
 			int dz = c.zCoord+z+dir.offsetZ;
-			ls.add(new PositionedBlock(dx, dy, dz, struct.getBlockAt(c.xCoord, c.yCoord, c.zCoord), struct.getMetaAt(c.xCoord, c.yCoord, c.zCoord)));
+			if (!struct.getBlockAt(c.xCoord, c.yCoord, c.zCoord).isAir(world, c.xCoord, c.yCoord, c.zCoord))
+				ls.add(new PositionedBlock(dx, dy, dz, struct.getBlockAt(c.xCoord, c.yCoord, c.zCoord), struct.getMetaAt(c.xCoord, c.yCoord, c.zCoord)));
 		}
 
 		ticker.placing.put(s, new OperationList(world, ls));

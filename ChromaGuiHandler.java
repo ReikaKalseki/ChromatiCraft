@@ -212,7 +212,7 @@ public class ChromaGuiHandler implements IGuiHandler {
 			case BULKMOVER:
 				return new ContainerBulkMover(player);
 			default:
-				break;
+				return null;
 		}
 		return null;
 	}
@@ -231,6 +231,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiInventoryLinker(player, world);
 			case LOREKEY:
 				return new GuiLoreKeyAssembly(player);
+				//case LORE:
+				//	return new GuiLore(player);
 			case TILE:
 				TileEntity te = world.getTileEntity(x, y, z);
 
@@ -349,8 +351,6 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiBulkMover(player);
 			case HOVER:
 				return new GuiFlightWand(player);
-			default:
-				break;
 		}
 		return null;
 	}

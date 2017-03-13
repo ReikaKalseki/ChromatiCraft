@@ -29,7 +29,7 @@ public class UABombingEffects {
 	private final WeightedRandom<UABombingEffect.EntityEffect> entityEffects = new WeightedRandom();
 
 	private UABombingEffects() {
-		blockEffects.addEntry(new DropItemsEffect(), 50);
+		blockEffects.addEntry(new DropItemsEffect(), 20);
 		blockEffects.addEntry(new DrainPowerEffect(), 100);
 		blockEffects.addEntry(new ExplodeEffect(), 2);
 

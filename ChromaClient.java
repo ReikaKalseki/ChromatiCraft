@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Auxiliary.Render.DonatorPylonRender;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.BlockAvoLamp.TileEntityAvoLamp;
 import Reika.ChromatiCraft.Block.BlockChromaPortal.TileEntityCrystalPortal;
+import Reika.ChromatiCraft.Block.BlockLoreReader.TileEntityLoreReader;
 import Reika.ChromatiCraft.Block.Crystal.BlockColoredAltar.TileEntityColoredAltar;
 import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift.TileEntityVoidRift;
 import Reika.ChromatiCraft.Block.Dimension.Structure.AntFarm.BlockAntKey.AntKeyTile;
@@ -75,6 +76,7 @@ import Reika.ChromatiCraft.Render.Entity.RenderSplashGunShot;
 import Reika.ChromatiCraft.Render.Entity.RenderTNTPinball;
 import Reika.ChromatiCraft.Render.Entity.RenderThrownGem;
 import Reika.ChromatiCraft.Render.Entity.RenderVacuum;
+import Reika.ChromatiCraft.Render.ISBRH.ArtefactRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CliffStoneRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.ColorLockRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.ConsoleRenderer;
@@ -115,6 +117,7 @@ import Reika.ChromatiCraft.Render.TESR.RenderCrystalPortal;
 import Reika.ChromatiCraft.Render.TESR.RenderGravityTile;
 import Reika.ChromatiCraft.Render.TESR.RenderLaserTarget;
 import Reika.ChromatiCraft.Render.TESR.RenderLootChest;
+import Reika.ChromatiCraft.Render.TESR.RenderLoreReader;
 import Reika.ChromatiCraft.Render.TESR.RenderVoidRift;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.DragonAPI.DragonOptions;
@@ -163,6 +166,7 @@ public class ChromaClient extends ChromaCommon {
 	private static final CrystalFenceRenderer fence = new CrystalFenceRenderer();
 	private static final SelectiveGlassRenderer selective = new SelectiveGlassRenderer();
 	private static final LaserEffectorRenderer lasereffect = new LaserEffectorRenderer();
+	private static final ArtefactRenderer artefact = new ArtefactRenderer();
 
 	//private static FiberRenderer fiber;
 
@@ -291,6 +295,7 @@ public class ChromaClient extends ChromaCommon {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileBouncePad.class, new RenderBouncePad());
 		ClientRegistry.bindTileEntitySpecialRenderer(GravityTile.class, new RenderGravityTile());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAvoLamp.class, new RenderAvoLamp());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityLoreReader.class, new RenderLoreReader());
 
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.PLACER.getItemInstance(), placer);
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.RIFT.getItemInstance(), placer);
@@ -350,6 +355,9 @@ public class ChromaClient extends ChromaCommon {
 
 		lasereffectRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(lasereffectRender, lasereffect);
+
+		artefactRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(artefactRender, artefact);
 
 		//fiberRender = RenderingRegistry.getNextAvailableRenderId();
 		//fiber = new FiberRenderer(fiberRender);

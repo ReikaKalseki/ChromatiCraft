@@ -32,6 +32,7 @@ public class ChromaCommon {
 	public static int fenceRender;
 	public static int selectiveRender;
 	public static int lasereffectRender;
+	public static int artefactRender;
 
 	public static int oreRender;
 	public static int plantRender;

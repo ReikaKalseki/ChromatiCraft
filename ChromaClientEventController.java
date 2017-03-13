@@ -198,7 +198,19 @@ public class ChromaClientEventController {
 		if (evt.sound.getYPosF() >= GlowingCliffsColumnShaper.SEA_LEVEL) {
 			if (BiomeGlowingCliffs.isGlowingCliffs(Minecraft.getMinecraft().theWorld.getBiomeGenForCoords(MathHelper.floor_float(evt.sound.getXPosF()), MathHelper.floor_float(evt.sound.getZPosF())))) {
 				if (evt.name.contains("ambient.cave.cave")) {
-					ChromaSounds s = rand.nextBoolean() ? ChromaSounds.CLIFFSOUND2 : ChromaSounds.CLIFFSOUND;
+					int n = rand.nextInt(3);
+					ChromaSounds s = null;
+					switch(n) {
+						case 0:
+							s = ChromaSounds.CLIFFSOUND;
+							break;
+						case 1:
+							s = ChromaSounds.CLIFFSOUND2;
+							break;
+						case 2:
+							s = ChromaSounds.CLIFFSOUND3;
+							break;
+					}
 					evt.result = new EnumSound(s, evt.sound);
 				}
 			}
@@ -1008,7 +1020,7 @@ public class ChromaClientEventController {
 			if (is.stackTagCompound != null && is.stackTagCompound.getBoolean("boosted") && r.getMachine() != null && r.getMachine().isRepeater()) {
 				r = ChromaResearch.TURBOREPEATER;
 			}
-			if (r != null && r.playerCanSee(ep) && r.isCrafting() && r.isCraftable() && !r.isVanillaRecipe()) {
+			if (r != null && r.playerCanSee(ep) && r.isCrafting() && r.isCraftable() && !r.isVanillaRecipe() && r.playerCanSeeRecipe(is, ep)) {
 				ep.openGui(ChromatiCraft.instance, r.getCraftingType().ordinal(), null, r.ordinal(), r.getRecipeIndex(is), 1);
 				return true;
 			}

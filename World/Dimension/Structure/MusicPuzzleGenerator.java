@@ -98,7 +98,7 @@ public class MusicPuzzleGenerator extends DimensionStructureGenerator {
 			if (pre.notes.size() > maxlen)
 				it.remove();
 		}
-		return validPrefabs.isEmpty() ? null : ReikaJavaLibrary.getRandomCollectionEntry(validPrefabs);
+		return validPrefabs.isEmpty() ? null : ReikaJavaLibrary.getRandomCollectionEntry(rand, validPrefabs);
 	}
 
 	@Override

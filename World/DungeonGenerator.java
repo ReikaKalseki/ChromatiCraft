@@ -132,8 +132,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					cache.put(loc, new Coordinate(loc));
 				}
 			}
-			catch (Exception e) {
-				ChromatiCraft.logger.logError("Could not load structure cache: "+f.getName());
+			catch (Throwable e) {
+				ChromatiCraft.logger.logError("Could not load structure cache: "+f.getName()+"; try deleting the file '"+f.getAbsolutePath()+"'");
 				e.printStackTrace();
 			}
 		}

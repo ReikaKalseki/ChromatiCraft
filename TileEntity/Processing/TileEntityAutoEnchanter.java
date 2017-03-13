@@ -228,6 +228,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	}
 
 	public boolean setEnchantment(Enchantment e, int level) {
+		this.onEnchantChanged(e);
 		level = Math.min(this.getMaxEnchantmentLevel(e), level);
 		if (level <= 0) {
 			this.removeEnchantment(e);
@@ -242,6 +243,11 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			selected.put(e, level);
 			return true;
 		}
+	}
+
+	private void onEnchantChanged(Enchantment e) {
+		progress.reset();
+		progressTimer = 0;
 	}
 
 	public int getMaxEnchantmentLevel(Enchantment e) {
@@ -264,6 +270,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 
 	public void removeEnchantment(Enchantment e) {
 		selected.remove(e);
+		this.onEnchantChanged(e);
 	}
 
 	public boolean incrementEnchantment(Enchantment e) {

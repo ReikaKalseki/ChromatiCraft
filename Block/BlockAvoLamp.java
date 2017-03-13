@@ -118,8 +118,7 @@ public class BlockAvoLamp extends BlockContainer implements SidedBlock {
 		}
 
 		@Override
-		public AxisAlignedBB getRenderBoundingBox()
-		{
+		public AxisAlignedBB getRenderBoundingBox() {
 			return ReikaAABBHelper.getBlockAABB(this);
 		}
 

@@ -9,7 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.Render;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
+import java.util.Iterator;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
@@ -19,10 +22,18 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Magic.Lore.KeyAssemblyPuzzle;
+import Reika.ChromatiCraft.Magic.Lore.KeyAssemblyPuzzle.HexCell;
+import Reika.ChromatiCraft.Magic.Lore.KeyAssemblyPuzzle.TileGroup;
+import Reika.ChromatiCraft.Magic.Lore.LoreManager;
+import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.PylonGenerator;
+import Reika.DragonAPI.Instantiable.HexGrid.Hex;
+import Reika.DragonAPI.Instantiable.HexGrid.Point;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -40,6 +51,9 @@ public class FullScreenOverlayRenderer {
 	private CrystalElement washoutColor;
 
 	private final EnumMap<CrystalElement, Float> factors = new EnumMap(CrystalElement.class);
+
+	private static final int GROUP_LIFESPAN = 100;
+	private final Collection<TileGroupRender> renderingGroups = new ArrayList();
 
 	private FullScreenOverlayRenderer() {
 
@@ -146,6 +160,110 @@ public class FullScreenOverlayRenderer {
 		BlendMode.DEFAULT.apply();
 		//GL11.glDisable(GL11.GL_DEPTH_TEST); //turn off depth testing to avoid this occluding other elements
 		GL11.glPopAttrib();
+	}
+
+	void addLoreNote(EntityPlayer ep, Towers t) {
+		Collection<TileGroup> groups = LoreManager.instance.getGroupsForTower(ep, t);
+		for (TileGroup g : groups) {
+			renderingGroups.add(new TileGroupRender(g));
+		}
+	}
+
+	boolean renderLoreHexes(RenderGameOverlayEvent.Pre evt, int tick) {
+		if (!renderingGroups.isEmpty()) {
+			GL11.glPushMatrix();
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			GL11.glDisable(GL11.GL_ALPHA_TEST);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.DEFAULT.apply();
+
+			float maxa = 0;
+			for (TileGroupRender t : renderingGroups) {
+				maxa = Math.max(maxa, t.getAlpha());
+			}
+
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			maxa = Math.min(maxa*2, 1);
+			double dz = -500;
+			GL11.glTranslated(0, 0, dz);
+			int c1 = -1072689136 & 0xffffffff;
+			int c2 = -804253680 & 0xffffffff;
+			c1 = ((int)((maxa*ReikaColorAPI.getAlpha(c1))) << 24) | (c1 & 0xffffff);
+			c2 = ((int)((maxa*ReikaColorAPI.getAlpha(c2))) << 24) | (c2 & 0xffffff);
+			//ReikaJavaLibrary.pConsole(Integer.toHexString(c1)+" & "+Integer.toHexString(c2));
+			ReikaGuiAPI.instance.drawGradientRect(0, 0, evt.resolution.getScaledWidth(), evt.resolution.getScaledHeight(), c1, c2);
+			GL11.glTranslated(0, 0, -dz);
+			GL11.glPopAttrib();
+
+			GL11.glPushMatrix();
+			//ReikaGuiAPI.instance.drawLine(0, evt.resolution.getScaledHeight()/2, evt.resolution.getScaledWidth(), evt.resolution.getScaledHeight()/2, 0xffffffff);
+			//ReikaGuiAPI.instance.drawLine(evt.resolution.getScaledWidth()/2, 0, evt.resolution.getScaledWidth()/2, evt.resolution.getScaledHeight(), 0xffffffff);
+			int i = -renderingGroups.size()/2;
+			double s = 2;
+			GL11.glTranslated(evt.resolution.getScaledWidth_double()/2, evt.resolution.getScaledHeight_double()/2, 800);
+			GL11.glTranslated(-KeyAssemblyPuzzle.CELL_SIZE/2D*s-0.5, -KeyAssemblyPuzzle.CELL_SIZE/2D*s+2, 0);
+			GL11.glScaled(s, s, s);
+			KeyAssemblyPuzzle p = LoreManager.instance.getPuzzle(Minecraft.getMinecraft().thePlayer);
+			Iterator<TileGroupRender> it = renderingGroups.iterator();
+			while (it.hasNext()) {
+				TileGroupRender t = it.next();
+				GL11.glPushMatrix();
+				GL11.glTranslated(i*60, 0, 0);
+				t.age++;
+				GL11.glColor4f(1, 1, 1, t.getAlpha());
+				//ReikaJavaLibrary.pConsole(t.getHexes());
+				Point pt = t.group.getCenter(p);
+				GL11.glTranslated(-pt.x, -pt.y, 0);
+				for (Hex h : t.group.getHexes()) {
+					GL11.glPushMatrix();
+					HexCell c = p.getCell(h);
+					Point pt2 = p.getHexLocation(h);
+					GL11.glTranslated(pt2.x, pt2.y, 0);
+					c.render(p, Tessellator.instance, false, 1);
+					GL11.glPopMatrix();
+				}
+				GL11.glPopMatrix();
+				i++;
+				if (t.age >= GROUP_LIFESPAN)
+					it.remove();
+			}
+			GL11.glPopMatrix();
+
+			GL11.glPopMatrix();
+			GL11.glPopAttrib();
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isRenderingHexGroups() {
+		return !renderingGroups.isEmpty();
+	}
+
+	private static class TileGroupRender {
+
+		private final TileGroup group;
+		private int age;
+
+		private TileGroupRender(TileGroup g) {
+			group = g;
+		}
+
+		private float getAlpha() {
+			if (age < GROUP_LIFESPAN/8) {
+				return age*8F/GROUP_LIFESPAN;
+			}
+			else if (age > GROUP_LIFESPAN/2) {
+				return 1-((age-GROUP_LIFESPAN/2F)/(GROUP_LIFESPAN/2F));
+			}
+			else {
+				return 1;
+			}
+		}
+
 	}
 
 }

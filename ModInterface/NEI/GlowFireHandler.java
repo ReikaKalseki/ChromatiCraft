@@ -151,6 +151,9 @@ public class GlowFireHandler extends TemplateRecipeHandler {
 		GlowFireRecipe fr = (GlowFireRecipe)arecipes.get(recipe);
 		if (fr == null)
 			return;
+		if (fr.cost == null) {
+			throw new IllegalStateException(this.getRecipeName()+" recipe "+fr.item+" has null cost?!");
+		}
 		//Minecraft.getMinecraft().fontRenderer.drawString(fr.item.getDisplayName(), 46, 9, 0xffffff);
 		int r = 60-6;
 		int ox = 81;

@@ -1,0 +1,15 @@
+GIBBERISH TYPE NAME version three six nine four seven
+
+This is a long paragraph to test the rendering capabilities.
+Lorem ipsum would be a good selection of text, but I cannot remember
+enough of it for it to be of much use; lorem ipsum dolor si amet, I think?
+
+Come to think of it, that paragraph was not very long, was it?
+Whatever, this should work well enough.
+
+And here are a bunch of numbers. 4 6 21 7 1 67  2489 274 69 10 127 1234567890
+
+I suppose I need to test capitals as well. VERY WELL, NOW I AM WRITING IN
+CAPITALS, TO TEST THAT PART OF THE CHARACTER SET. THIS SUBSET OF THE PARAGRAPH
+NEEDS TO BE LONG ENOUGH SO THAT IT USES EVERY COMMON CHARACTER AT LEAST ONCE
+TO ENSURE THAT EVERYTHING RENDERS CORRECTLY.

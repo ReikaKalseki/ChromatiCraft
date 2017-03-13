@@ -163,7 +163,7 @@ public class ProgressionCacher implements PlayerTracker {
 		}
 
 		private boolean hasMoreProgressionThan(EntityPlayer ep) {
-			for (ProgressStage p : cache) {
+			for (ProgressStage p : new HashSet<ProgressStage>(cache)) { //CME protection
 				if (!p.isPlayerAtStage(ep))
 					return true;
 			}

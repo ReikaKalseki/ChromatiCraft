@@ -47,7 +47,7 @@ public class GuiPoolRecipe extends GuiBookSection {
 
 	public GuiPoolRecipe(EntityPlayer ep, int offset, boolean nei) {
 		super(ChromaGuis.ALLOYING, ep, ChromaResearch.ALLOYS, 256, 220, nei);
-		recipes = new ArrayList(PoolRecipes.instance.getAllPoolRecipes());
+		recipes = new ArrayList(PoolRecipes.instance.getAllPoolRecipesForPlayer(ep));
 		index = offset;
 	}
 

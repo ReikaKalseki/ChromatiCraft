@@ -23,8 +23,8 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
-import Reika.ChromatiCraft.Magic.Lore.LoreEntry;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
+import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -40,7 +40,10 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class TileEntityDataNode extends TileEntityChromaticBase implements OperationInterval {
@@ -65,24 +68,17 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 	private int scanSustain;
 	private int scanCooldown;
 
-	private static final int PROGRESS_DELAY_LENGTH = 40;
+	private static final int PROGRESS_DELAY_LENGTH = 50;
 
 	private EntityPlayer progressPlayer;
 	private int progressDelay;
 
+	private Towers tower;
 	private final HashSet<String> scannedPlayers = new HashSet(); //not uuid since written to NBT
 
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.DATANODE;
-	}
-
-	public void setLore() {
-
-	}
-
-	public LoreEntry getLore() {
-		return null;
 	}
 
 	@Override
@@ -134,12 +130,13 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 
 		if (progressDelay > 0) {
 			progressDelay--;
-			if (progressDelay == 0) {
-				LoreManager.instance.triggerLore(progressPlayer, this.getLore());
+			if (progressDelay == 0 && tower != null) {
+				LoreManager.instance.triggerLore(progressPlayer, tower);
 			}
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void doParticles(World world, int x, int y, int z) {
 		if (this.canBeAccessed()) {
 			double px = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 4);
@@ -147,6 +144,44 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 			double py = ReikaRandomHelper.getRandomBetween(y+3.5, y+5);
 			EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(0xa0e0ff).setLife(30).setIcon(ChromaIcons.FADE_RAY).setScale(0.5F);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+
+		if (this.canBeAccessed() && rand.nextInt(5) == 0 && !this.hasBeenScanned(Minecraft.getMinecraft().thePlayer)) {
+			if (tower != null) {
+				if (tower == Towers.ALPHA) {
+
+				}
+				else {
+					Towers t1 = tower.getNeighbor1();
+					Towers t2 = tower.getNeighbor2();
+					if (t1 == null || t1.getRootPosition() == null) { //init
+						LoreManager.instance.hashCode();
+						t1 = tower.getNeighbor1();
+						t2 = tower.getNeighbor2();
+					}
+					double px = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 1);
+					double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 1);
+					double py = ReikaRandomHelper.getRandomBetween(y+3.5, y+5);
+
+					double dx = t1.getRootPosition().chunkXPos-tower.getRootPosition().chunkXPos;
+					double dz = t1.getRootPosition().chunkZPos-tower.getRootPosition().chunkZPos;
+					double a = ReikaPhysicsHelper.cartesianToPolar(dx, 0, dz)[2];
+					float s = rand.nextFloat()+0.25F;
+					EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, px, py, pz, a, 0);
+					fx.freedom *= 0.5;
+					fx.setColor(0xa0e0ff).setLife(120).setIcon(ChromaIcons.FADE).setScale(s);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+
+					dx = t2.getRootPosition().chunkXPos-tower.getRootPosition().chunkXPos;
+					dz = t2.getRootPosition().chunkZPos-tower.getRootPosition().chunkZPos;
+					a = ReikaPhysicsHelper.cartesianToPolar(dx, 0, dz)[2];
+					s = rand.nextFloat()+0.25F;
+					fx = new EntityFloatingSeedsFX(world, px, py, pz, a, 0);
+					fx.freedom *= 0.5;
+					fx.setColor(0xa0e0ff).setLife(120).setIcon(ChromaIcons.FADE).setScale(s);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				}
+			}
 		}
 	}
 
@@ -296,6 +331,8 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 		scanCooldown = NBT.getInteger("cooldown");
 
 		ReikaNBTHelper.readCollectionFromNBT(scannedPlayers, NBT, "players");
+		if (NBT.hasKey("tower"))
+			tower = Towers.towerList[NBT.getInteger("tower")];
 	}
 
 	@Override
@@ -306,10 +343,21 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 		NBT.setInteger("cooldown", scanCooldown);
 
 		ReikaNBTHelper.writeCollectionToNBT(scannedPlayers, NBT, "players");
+		if (tower != null) {
+			NBT.setInteger("tower", tower.ordinal());
+		}
 	}
 
 	public boolean hasBeenScanned(EntityPlayer ep) {
 		return scannedPlayers.contains(ep.getUniqueID().toString());
+	}
+
+	public void setTower(Towers tower) {
+		this.tower = tower;
+	}
+
+	public Towers getTower() {
+		return tower;
 	}
 
 }

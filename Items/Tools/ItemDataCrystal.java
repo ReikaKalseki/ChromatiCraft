@@ -12,6 +12,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.InscriptionRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.InscriptionRecipes.InscriptionRecipe;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -27,6 +28,13 @@ public class ItemDataCrystal extends ItemChromaTool {
 
 	@Override
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float a, float b, float c) {
+		/*
+		if (LoreManager.instance.hasPlayerCompletedBoard(ep) && world.getBlock(x, y, z) == ChromaBlocks.LOREREADER.getBlockInstance() && ChromaStructures.getLoreReaderStructure(world, x, y, z).matchInWorld()) {
+			((TileEntityLoreReader)world.getTileEntity(x, y, z)).addCrystal();
+			ep.setCurrentItemOrArmor(0, null);
+			return true;
+		}
+		 */
 		if (!ProgressStage.TOWER.isPlayerAtStage(ep)) {
 			is.stackTagCompound = null;
 			return true;
@@ -68,6 +76,12 @@ public class ItemDataCrystal extends ItemChromaTool {
 			ChromaSounds.INSCRIBE.playSoundAtBlock(world, x, y, z);
 		}
 		return true;
+	}
+
+	@Override
+	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
+		ep.openGui(ChromatiCraft.instance, ChromaGuis.LOREKEY.ordinal(), world, 0, 0, 0);
+		return super.onItemRightClick(is, world, ep);
 	}
 
 	@Override

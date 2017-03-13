@@ -739,6 +739,8 @@ public enum ChromaResearch implements ProgressElement {
 			return false;
 		if (this == BALLLIGHTNING)
 			return false;
+		if (this.requiresProgress(ProgressStage.TOWER))
+			return false;
 		return struct == null || !struct.isNatural();
 	}
 
@@ -814,6 +816,14 @@ public enum ChromaResearch implements ProgressElement {
 
 	public boolean isTool() {
 		return this.getParent() == TOOLDESC;
+	}
+
+	public boolean requiresProgress(ProgressStage p) {
+		for (int i = 0; i < progress.length; i++) {
+			if (progress[i] == p)
+				return true;
+		}
+		return false;
 	}
 
 	public ArrayList<ItemStack> getItemStacks() {
@@ -1394,6 +1404,12 @@ public enum ChromaResearch implements ProgressElement {
 	@Override
 	public boolean giveToPlayer(EntityPlayer ep, boolean notify) {
 		return ChromaResearchManager.instance.givePlayerFragment(ep, this, notify);
+	}
+
+	public boolean playerCanSeeRecipe(ItemStack is, EntityPlayer ep) {
+		if (this == ALLOYS)
+			return PoolRecipes.instance.getPoolRecipeByOutput(is).playerHasProgress(ep);
+		return true;
 	}
 
 }

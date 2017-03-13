@@ -28,6 +28,8 @@ import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ProgressionCacher;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Magic.Lore.LoreManager;
+import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
@@ -217,6 +219,31 @@ public class ProgressModifyCommand extends DragonCommandBase {
 				this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Structure "+e.displayName+" set to "+set+" for "+ep.getCommandSenderName());
 				break;
 			}
+			case "towers":
+			case "lore": {
+				if (args[1].equalsIgnoreCase("puzzle")) {
+					LoreManager.instance.setBoardCompletion(ep, set);
+					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Puzzle completion set to "+set+" for "+ep.getCommandSenderName());
+				}
+				else {
+					Towers t = null;
+					try {
+						t = Towers.towerList[Integer.parseInt(args[1])];
+					}
+					catch (Exception e) {
+						try {
+							t = Towers.valueOf(args[1].toUpperCase(Locale.ENGLISH));
+						}
+						catch (Exception e2) {
+							this.sendChatToSender(ics, EnumChatFormatting.RED+"Unrecognized tower '"+args[1]+"'");
+							break;
+						}
+					}
+					LoreManager.instance.setPlayerScanned(ep, t, set);
+					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Data Tower "+t.character+" set to "+set+" for "+ep.getCommandSenderName());
+				}
+				break;
+			}
 			case "reset": {
 				if (args[1].equals("all") || args[1].equals("progress") || args[1].equals("progression")) {
 					ProgressionManager.instance.resetPlayerProgression(ep, false);
@@ -243,6 +270,13 @@ public class ProgressModifyCommand extends DragonCommandBase {
 						ProgressionManager.instance.setPlayerDiscoveredColor(ep, CrystalElement.elements[i], false, false);
 					}
 					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Color discovery reset for "+ep.getCommandSenderName());
+				}
+				if (args[1].equals("all") || args[1].equals("lore") || args[1].equals("towers")) {
+					for (int i = 0; i < Towers.towerList.length; i++) {
+						LoreManager.instance.setPlayerScanned(ep, Towers.towerList[i], false);
+					}
+					LoreManager.instance.setBoardCompletion(ep, false);
+					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Tower scanning reset for "+ep.getCommandSenderName());
 				}
 				break;
 			}
@@ -274,6 +308,13 @@ public class ProgressModifyCommand extends DragonCommandBase {
 					}
 					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Color discovery maximized for "+ep.getCommandSenderName());
 				}
+				if (args[1].equals("all") || args[1].equals("lore") || args[1].equals("towers")) {
+					for (int i = 0; i < Towers.towerList.length; i++) {
+						LoreManager.instance.setPlayerScanned(ep, Towers.towerList[i], true);
+					}
+					LoreManager.instance.setBoardCompletion(ep, true);
+					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Tower scanning maximized for "+ep.getCommandSenderName());
+				}
 				break;
 			}
 			case "debug": {
@@ -304,6 +345,13 @@ public class ProgressModifyCommand extends DragonCommandBase {
 				if (args[1].equals("all") || args[1].equals("dimstruct")) {
 					Collection<CrystalElement> c3 = ProgressionManager.instance.getStructuresFor(ep);
 					sendChatToSender(ics, "Structure Flags for "+ep.getCommandSenderName()+":\n"+c3.toString());
+				}
+				if (args[1].equals("all") || args[1].equals("lore") || args[1].equals("towers")) {
+					for (int i = 0; i < Towers.towerList.length; i++) {
+						Towers t = Towers.towerList[i];
+						this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Tower "+t.character+" status for "+ep.getCommandSenderName()+": "+LoreManager.instance.hasPlayerScanned(ep, t));
+					}
+					sendChatToSender(ics, "Puzzle completion for "+ep.getCommandSenderName()+":\n"+LoreManager.instance.hasPlayerCompletedBoard(ep));
 				}
 				break;
 			}

@@ -18,12 +18,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
@@ -55,18 +57,18 @@ public class ItemWarpCapsule extends ItemChromaTool {
 			double dy = pos.yCoord;
 			double dz;
 			WorldServer world = (WorldServer)ep.worldObj;
-			EntityPlayer test = new EntityPlayerMP(ep.mcServer, world, ep.getGameProfile(), ep.theItemInWorldManager);
+			AxisAlignedBB test = ReikaAABBHelper.copyAABB(ep.boundingBox).contract(0.25, 0.25, 0.25);
 			do {
 				dx = ReikaRandomHelper.getRandomPlusMinus(pos.xCoord, r);
 				dz = ReikaRandomHelper.getRandomPlusMinus(pos.zCoord, r);
-				test.setLocationAndAngles(dx, dy, dz, 0, 0);
-			} while(!world.getCollidingBoundingBoxes(ep, ep.boundingBox).isEmpty());
+				test.offset(dx-test.minX, dy-test.minY, dz-test.minZ);
+			} while(!world.getCollidingBoundingBoxes(ep, test).isEmpty());
 
 			do {
 				double maxh = 1+ep.worldObj.rand.nextDouble()*8;
 				dy = pos.yCoord+maxh;
-				test.setLocationAndAngles(dx, dy, dz, 0, 0);
-			} while(!world.getCollidingBoundingBoxes(ep, ep.boundingBox).isEmpty());
+				test.offset(dx-test.minX, dy-test.minY, dz-test.minZ);
+			} while(!world.getCollidingBoundingBoxes(ep, test).isEmpty());
 
 			ep.setPositionAndUpdate(dx, dy, dz);
 

@@ -242,7 +242,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 			tag.addTag(CrystalElement.BLACK, 1);
 		}
 		for (int i = 0; i < 32; i++) {
-			CrystalElement e = tag != null ? ReikaJavaLibrary.getRandomCollectionEntry(tag.elementSet()) : null;
+			CrystalElement e = tag != null ? ReikaJavaLibrary.getRandomCollectionEntry(rand, tag.elementSet()) : null;
 			int color = e != null ? e.getColor() : 0x00aaff;
 			double px = ReikaRandomHelper.getRandomPlusMinus(x, 1);
 			double py = ReikaRandomHelper.getRandomPlusMinus(y, 0.5);

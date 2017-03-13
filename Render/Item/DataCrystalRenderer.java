@@ -51,6 +51,7 @@ public class DataCrystalRenderer extends MultiSheetItemRenderer {
 			GL11.glEnable(GL11.GL_BLEND);
 			BlendMode.ADDITIVEDARK.apply();
 			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glDisable(GL11.GL_ALPHA_TEST);
 			ReikaRenderHelper.disableEntityLighting();
 			GL11.glDepthMask(false);
 

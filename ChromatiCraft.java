@@ -89,6 +89,7 @@ import Reika.ChromatiCraft.Auxiliary.Tab.FragmentTab;
 import Reika.ChromatiCraft.Auxiliary.Tab.TabChromatiCraft;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
+import Reika.ChromatiCraft.Magic.Artefact.ArtefactSpawner;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.ModInteraction;
 import Reika.ChromatiCraft.ModInterface.NodeRecharger;
@@ -200,7 +201,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 
 
-@Mod( modid = "ChromatiCraft", name="ChromatiCraft", certificateFingerprint = "@GET_FINGERPRINT@", dependencies="required-after:DragonAPI")
+@Mod( modid = "ChromatiCraft", name="ChromatiCraft", version = "v@MAJOR_VERSION@@MINOR_VERSION@", certificateFingerprint = "@GET_FINGERPRINT@", dependencies="required-after:DragonAPI")
 
 public class ChromatiCraft extends DragonAPIMod {
 	public static final String packetChannel = "ChromaData";
@@ -467,8 +468,10 @@ public class ChromatiCraft extends DragonAPIMod {
 		RetroGenController.instance.addHybridGenerator(PylonGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
 		RetroGenController.instance.addHybridGenerator(DungeonGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
 		RetroGenController.instance.addHybridGenerator(DataTowerGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
+		RetroGenController.instance.addHybridGenerator(DataTowerGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
 		RetroGenController.instance.addHybridGenerator(NetherStructureGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
 		RetroGenController.instance.addHybridGenerator(GlowingCliffsAuxGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
+		//RetroGenController.instance.addHybridGenerator(UnknownArtefactGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
 
 		this.addRerunnableDecorator(CrystalGenerator.instance, 0);
 		this.addRerunnableDecorator(ColorTreeGenerator.instance, -10);
@@ -512,6 +515,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			TickRegistry.instance.registerTickHandler(ChromaDimensionTicker.instance);
 			//TickRegistry.instance.registerTickHandler(LightingRerenderer.instance);
 			//TickRegistry.instance.registerTickHandler(ChunkResetter.instance);
+			TickRegistry.instance.registerTickHandler(ArtefactSpawner.instance);
 			if (ModList.THAUMCRAFT.isLoaded())
 				TickRegistry.instance.registerTickHandler(NodeRecharger.instance);
 			MinecraftForge.EVENT_BUS.register(AbilityHelper.instance);

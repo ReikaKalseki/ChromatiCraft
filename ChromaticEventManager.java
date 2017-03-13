@@ -331,6 +331,7 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void buyFocusCrystals(VillagerTradeEvent evt) {
+		//ReikaJavaLibrary.pConsole(evt.trade);
 		if (evt.trade instanceof FocusCrystalTrade) {
 			ProgressStage.FOCUSCRYSTAL.stepPlayerTo(evt.entityPlayer);
 		}

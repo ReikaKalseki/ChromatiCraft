@@ -21,6 +21,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemAxe;
+import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemShears;
@@ -99,6 +100,7 @@ public class ItemElementCalculator {
 			cache.put(ChromaItems.DYE.getStackOfMetadata(i), tag1);
 			cache.put(ChromaItems.SEED.getStackOfMetadata(i), tag1);
 			cache.put(new ItemStack(Items.dye, 1, i), tag1);
+			cache.put(ChromaItems.DYE.getStackOfMetadata(i), tag1);
 
 			ElementTagCompound tagc = tag1.copy();
 			tagc.addValueToColor(CrystalElement.GREEN, 1);
@@ -220,6 +222,9 @@ public class ItemElementCalculator {
 		}
 		if (is.getItem() instanceof ItemArmor) {
 			tag.addValueToColor(CrystalElement.RED, Math.round(((ItemArmor)is.getItem()).getArmorMaterial().getDamageReductionAmount(1)/2F));
+		}
+		if (is.getItem() instanceof ItemFood) {
+			tag.addValueToColor(CrystalElement.MAGENTA, Math.round(((ItemFood)is.getItem()).func_150905_g(is)/2F));
 		}
 		FluidStack fs = FluidContainerRegistry.getFluidForFilledItem(is);
 		if (fs != null) {

@@ -91,7 +91,7 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 			float gv = -(float)ReikaRandomHelper.getRandomPlusMinus(0.03125, 0.025);
 			int l = ReikaRandomHelper.getRandomPlusMinus(60, 15);
 			ElementTagCompound tag = ItemElementCalculator.instance.getValueForItem(inv[0]);
-			CrystalElement e = tag != null ? ReikaJavaLibrary.getRandomCollectionEntry(tag.elementSet()) : null;
+			CrystalElement e = tag != null ? ReikaJavaLibrary.getRandomCollectionEntry(rand, tag.elementSet()) : null;
 			int r = e != null ? e.getRed() : 0;
 			int g = e != null ? e.getGreen() : 96;
 			int b = e != null ? e.getBlue() : 255;

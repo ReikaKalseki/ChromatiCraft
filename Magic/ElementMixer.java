@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -77,6 +78,19 @@ public class ElementMixer {
 
 	public boolean related(CrystalElement e1, CrystalElement e2) {
 		return this.getMixParents(e1).contains(e2) || this.getMixParents(e2).contains(e1);
+	}
+
+	public boolean hasMixes(CrystalElement color) {
+		//ReikaJavaLibrary.pConsole(color+" > "+this.getChildrenOf(color)+" & "+this.getMixParents(color));
+		return !this.getRelatedColors(color).isEmpty();//this.getChildrenOf(color) != null || !this.getMixParents(color).isEmpty();
+	}
+
+	public Collection<CrystalElement> getRelatedColors(CrystalElement color) {
+		Collection<CrystalElement> c = new ArrayList(this.getMixParents(color));
+		Collection<CrystalElement> c2 = this.getChildrenOf(color);
+		if (c2 != null)
+			c.addAll(c2);
+		return c;
 	}
 
 }

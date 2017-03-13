@@ -26,9 +26,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Base.ItemChromaMulti;
-import Reika.ChromatiCraft.Block.BlockEtherealLight.Flags;
 import Reika.ChromatiCraft.Magic.Artefact.UABombingEffects;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
@@ -53,7 +51,7 @@ public class ItemUnknownArtefact extends ItemChromaMulti implements AnimatedSpri
 	private static final int RENDER_TEXT_MAX_WORD_LENGTH = 8;
 	private static final int RENDER_TEXT_LENGTH = 24;
 
-	private static final int STEP_SPEED = 100;
+	private static final int STEP_SPEED = 100*2;
 
 	private static final Random rand = new Random();
 
@@ -107,7 +105,8 @@ public class ItemUnknownArtefact extends ItemChromaMulti implements AnimatedSpri
 
 	@Override
 	public boolean onEntityItemUpdate(EntityItem ei) {
-		ei.age = 0;
+		//ei.age = 0;
+		ei.lifespan = Integer.MAX_VALUE;
 		ItemStack is = ei.getEntityItem();
 		if (ei.worldObj.isRemote) {
 			if (ArtefactTypes.list[is.getItemDamage()].doesFX())
@@ -117,13 +116,15 @@ public class ItemUnknownArtefact extends ItemChromaMulti implements AnimatedSpri
 			int x = MathHelper.floor_double(ei.posX);
 			int y = MathHelper.floor_double(ei.posY);
 			int z = MathHelper.floor_double(ei.posZ);
+			/*
 			if (ArtefactTypes.list[is.getItemDamage()].emitsLight()) {
 				if (ei.worldObj.getBlock(x, y, z).isAir(ei.worldObj, x, y, z)) {
 					ei.worldObj.setBlock(x, y, z, ChromaBlocks.LIGHT.getBlockInstance(), Flags.DECAY.getFlag(), 3);
 				}
 			}
+			 */
 			if (ArtefactTypes.list[is.getItemDamage()].triggersUABombing()) {
-				this.UABombing(ei);
+				//this.UABombing(ei);
 			}
 		}
 		//orient to 0,0? or maybe make orient to something special
@@ -141,7 +142,7 @@ public class ItemUnknownArtefact extends ItemChromaMulti implements AnimatedSpri
 
 	@Override
 	public void onUpdate(ItemStack is, World world, Entity e, int slot, boolean held) {
-		if (ArtefactTypes.list[is.getItemDamage()].damagesEntities() && rand.nextInt(100) == 0) {
+		if (ArtefactTypes.list[is.getItemDamage()].damagesEntities() && rand.nextInt(1000) == 0) {
 			if (rand.nextBoolean()) {
 				e.attackEntityFrom(DamageSource.outOfWorld, 1);
 			}
@@ -152,7 +153,7 @@ public class ItemUnknownArtefact extends ItemChromaMulti implements AnimatedSpri
 				}
 			}
 		}
-		if (ArtefactTypes.list[is.getItemDamage()].triggersUABombing() && rand.nextInt(50) == 0) {
+		if (ArtefactTypes.list[is.getItemDamage()].triggersUABombing() && rand.nextInt(200) == 0) {
 			this.UABombing(e);
 		}
 		if (world.isRemote && ArtefactTypes.list[is.getItemDamage()].doesFX()) {
@@ -167,24 +168,33 @@ public class ItemUnknownArtefact extends ItemChromaMulti implements AnimatedSpri
 
 	@SideOnly(Side.CLIENT)
 	private void doItemFX(World world, Entity e, ItemStack is) {
+		doUA_FX(world, e.posX, e.posY, e.posZ);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void doUA_FX(World world, double posX, double posY, double posZ) {
 		if (rand.nextBoolean()) {
-			double px = ReikaRandomHelper.getRandomPlusMinus(e.posX, 0.5);
-			double py = ReikaRandomHelper.getRandomPlusMinus(e.posY+0.25, 0.5);
-			double pz = ReikaRandomHelper.getRandomPlusMinus(e.posZ, 0.5);
+			double px = ReikaRandomHelper.getRandomPlusMinus(posX, 1);
+			double py = ReikaRandomHelper.getRandomPlusMinus(posY+0.25, 1);
+			double pz = ReikaRandomHelper.getRandomPlusMinus(posZ, 1);
 			int l = ReikaRandomHelper.getRandomBetween(10, 40);
-			double s = 2+rand.nextDouble()*6;
-			int c = ReikaColorAPI.mixColors(0x007030, 0x000070, rand.nextFloat());
-			EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(c).setLife(l).setScale((float)s).setAlphaFading().setIcon(ChromaIcons.FADE_CLOUD);
+			double s = 6+rand.nextDouble()*9;
+			int c = ReikaColorAPI.mixColors(0x003010, 0x000030, rand.nextFloat());
+			EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(c).setLife(l).setScale((float)s).setAlphaFading().setIcon(ChromaIcons.FADE_CLOUD);//.setNoDepthTest();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 
 		int n = 1+rand.nextInt(2);
 		for (int i = 0; i < n; i++) {
-			double px = ReikaRandomHelper.getRandomPlusMinus(e.posX, 2D);
-			double py = ReikaRandomHelper.getRandomPlusMinus(e.posY, 2D);
-			double pz = ReikaRandomHelper.getRandomPlusMinus(e.posZ, 2D);
+			double px = ReikaRandomHelper.getRandomPlusMinus(posX, 2D);
+			double py = ReikaRandomHelper.getRandomPlusMinus(posY, 2D);
+			double pz = ReikaRandomHelper.getRandomPlusMinus(posZ, 2D);
 			int l = ReikaRandomHelper.getRandomBetween(3, 8);
-			EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(0xffffff).setLife(l).setRapidExpand().setIcon(ChromaIcons.FADE_STAR);
+			double maxv = 0.125/l;
+			double vx = ReikaRandomHelper.getRandomPlusMinus(0, maxv);
+			double vy = ReikaRandomHelper.getRandomPlusMinus(0, maxv);
+			double vz = ReikaRandomHelper.getRandomPlusMinus(0, maxv);
+			EntityFX fx = new EntityBlurFX(world, px, py, pz, vx, vy, vz).setColor(0xffffff).setLife(l).setRapidExpand().setIcon(ChromaIcons.FADE_STAR);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

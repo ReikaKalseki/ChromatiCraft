@@ -495,7 +495,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	public static void triggerDestroyFX(World world, int x, int y, int z) {
 		NodeReceiverWrapper wrap = new NodeReceiverWrapper((INode)world.getTileEntity(x, y, z));
 		for (int i = 0; i < 512; i++) {
-			Aspect a = ReikaJavaLibrary.getRandomCollectionEntry(wrap.node.getAspects().aspects.keySet());
+			Aspect a = ReikaJavaLibrary.getRandomCollectionEntry(rand, wrap.node.getAspects().aspects.keySet());
 			double v = 0.125+rand.nextDouble()*0.25;
 			double rx = ReikaRandomHelper.getRandomPlusMinus(0, v);
 			double ry = ReikaRandomHelper.getRandomPlusMinus(0, v);
@@ -533,7 +533,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		double dy = y+0.5;
 		double dz = z+0.5;
 		for (int i = 0; i < 8; i++) {
-			Aspect a = ReikaJavaLibrary.getRandomCollectionEntry(wrap.node.getAspects().aspects.keySet());
+			Aspect a = ReikaJavaLibrary.getRandomCollectionEntry(rand, wrap.node.getAspects().aspects.keySet());
 			double px = ReikaRandomHelper.getRandomPlusMinus(dx, 0.125);
 			double py = ReikaRandomHelper.getRandomPlusMinus(dy, 0.125);
 			double pz = ReikaRandomHelper.getRandomPlusMinus(dz, 0.125);
@@ -560,7 +560,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		double dy = y+0.5;
 		double dz = z+0.5;
 		for (double d = -1; d <= 1; d += 0.125) {
-			Aspect a = ReikaJavaLibrary.getRandomCollectionEntry(wrap.node.getAspects().aspects.keySet());
+			Aspect a = ReikaJavaLibrary.getRandomCollectionEntry(rand, wrap.node.getAspects().aspects.keySet());
 			int color = a.getColor();
 			EntityBlurFX fx = new EntityBlurFX(world, dx, dy+d, dz).setColor(color).setScale(2.5F-2*(float)Math.abs(d)).setRapidExpand().setLife(20);
 			fx.noClip = true;

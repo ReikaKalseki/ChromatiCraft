@@ -200,7 +200,7 @@ public enum CrystalElement {
 
 	public static CrystalElement randomElement(int level) {
 		Collection<CrystalElement> li = levelMap.get(level);
-		return li != null ? ReikaJavaLibrary.getRandomCollectionEntry(li) : null;
+		return li != null ? ReikaJavaLibrary.getRandomCollectionEntry(rand, li) : null;
 	}
 
 	public static CrystalElement randomPrimaryElement() {

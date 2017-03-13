@@ -111,6 +111,8 @@ public class TileEntityFluidDistributor extends TileEntityAreaDistributor implem
 		WorldLocation loc = new WorldLocation(worldObj, x, y, z);
 		Spline spl = this.getOrCreateSpline(f, loc);
 		spl.update();
+		if (rand.nextInt(3) > 0)
+			return;
 		//if (this.trySendParticle(loc)) {
 		int l = 90;
 

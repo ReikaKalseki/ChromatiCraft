@@ -76,7 +76,8 @@ public class ChromaStructures {
 		RELAY(false),
 		PYLONBROADCAST(true),
 		PYLONTURBO(true),
-		DATANODE(false);
+		DATANODE(false),
+		;//LOREREADER(false);
 
 		public final boolean requiresColor;
 
@@ -146,6 +147,8 @@ public class ChromaStructures {
 					return getPylonTurboStructure(world, x, y, z, e);
 				case DATANODE:
 					return getDataTowerStructure(world, x, y, z);
+					//case LOREREADER:
+					//	return getLoreReaderStructure(world, x, y, z);
 			}
 			return null;
 		}
@@ -212,6 +215,8 @@ public class ChromaStructures {
 					return getPylonTurboStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/4000)%16]);
 				case DATANODE:
 					return getDataTowerStructure(w, 0, 0, 0);
+					//case LOREREADER:
+					//	return getLoreReaderStructure(w, 0, 0, 0);
 			}
 			return null;
 		}
@@ -3460,7 +3465,7 @@ public class ChromaStructures {
 		for (int i = -3; i <= 3; i++) {
 			for (int j = 0; j <= 3; j++) {
 				for (int k = -3; k <= 3; k++) {
-					array.setBlock(x+i, y+j, z+k, Blocks.air);
+					array.setEmpty(x+i, y+j, z+k, false, false);
 				}
 			}
 		}
@@ -3721,5 +3726,33 @@ public class ChromaStructures {
 
 		return array;
 	}
+
+	/*
+	public static FilledBlockArray getLoreReaderStructure(World world, int x, int y, int z) {
+		FilledBlockArray array = new FilledBlockArray(world);
+		array.setBlock(x, y, z, ChromaBlocks.LOREREADER.getBlockInstance());
+		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
+		for (int i = -1; i <= 1; i++) {
+			for (int k = -1; k <= 1; k++) {
+				StoneTypes s = i == 0 || k == 0 ? StoneTypes.BRICKS : StoneTypes.CORNER;
+				if (i == 0 && k == 0)
+					s = StoneTypes.MULTICHROMIC;
+				array.setBlock(x+i, y-1, z+k, b, s.ordinal());
+
+				s = i == 0 || k == 0 ? StoneTypes.SMOOTH : StoneTypes.COLUMN;
+				array.setBlock(x+i, y-2, z+k, b, s.ordinal());
+			}
+		}
+
+		for (int i = 0; i <= 1; i++) {
+			array.setBlock(x-2, y-2, z-i, b, StoneTypes.BEAM.ordinal());
+			array.setBlock(x+2, y-2, z+i, b, StoneTypes.BEAM.ordinal());
+			array.setBlock(x+i, y-2, z-2, b, StoneTypes.BEAM.ordinal());
+			array.setBlock(x-i, y-2, z+2, b, StoneTypes.BEAM.ordinal());
+		}
+
+		return array;
+	}
+	 */
 
 }

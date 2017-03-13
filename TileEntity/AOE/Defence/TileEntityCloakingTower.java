@@ -40,7 +40,7 @@ public class TileEntityCloakingTower extends TileEntityChromaticBase implements 
 
 	private static final Collection<WorldLocation> cache = new ArrayList();
 
-	public static final int MAXRANGE = 32;
+	public static final int MAXRANGE = 128;
 
 	private boolean active;
 

@@ -57,6 +57,7 @@ import Reika.ChromatiCraft.Block.BlockRouterNode.TileEntityRouterNode;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Music.BlockMusicMemory.TileMusicMemory;
 import Reika.ChromatiCraft.Block.Relay.BlockRelayFilter.TileEntityRelayFilter;
+import Reika.ChromatiCraft.Block.Worldgen.BlockUnknownArtefact;
 import Reika.ChromatiCraft.Container.ContainerBookPages;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
@@ -75,7 +76,9 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemFlightWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Magic.Artefact.ArtefactSpawner;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
+import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.ModInterface.CrystalWand;
 import Reika.ChromatiCraft.ModInterface.EssentiaNetwork.EssentiaPath;
 import Reika.ChromatiCraft.ModInterface.NodeReceiverWrapper;
@@ -811,10 +814,22 @@ public class ChromatiPackets implements PacketHandler {
 					TileEntityDataNode.doScanFX(world, x, y, z);
 					break;
 				case LORENOTE:
-					LoreManager.instance.addLoreNote(ep, data[0]);
+					LoreManager.instance.addLoreNote(ep, Towers.towerList[data[0]]);
+					break;
+				case LOREPUZZLECOMPLETE:
+					LoreManager.instance.completeBoard(ep);
 					break;
 				case INSCRIBE:
 					InscriptionRecipes.instance.getRecipeByID(data[0]).doFX(world, x, y, z);
+					break;
+				case DIGARTEFACT:
+					ArtefactSpawner.instance.checkPlayerBreakClient(world, data[0], data[1], data[2]);
+					break;
+				case ARTEFACTCONFIRM:
+					ArtefactSpawner.instance.confirmUA(world, data[0], data[1], data[2]);
+					break;
+				case ARTEFACTCLICK:
+					BlockUnknownArtefact.doInteractFX(world, x, y, z);
 					break;
 			}
 		}

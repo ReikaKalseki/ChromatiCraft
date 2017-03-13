@@ -262,7 +262,7 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant implements Operati
 			else {
 				fx = new EntityBlurFX(world, x+0.5, y+0.125, z+0.5, vel[0], 0, vel[2]).setNoSlowdown().setIcon(ChromaIcons.SPARKLE);
 			}
-			int c = tag == null || tag.isEmpty() ? 0x22aaff : ReikaJavaLibrary.getRandomCollectionEntry(tag.elementSet()).getColor();
+			int c = tag == null || tag.isEmpty() ? 0x22aaff : ReikaJavaLibrary.getRandomCollectionEntry(rand, tag.elementSet()).getColor();
 			fx.setColor(c).setRapidExpand();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
@@ -302,7 +302,7 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant implements Operati
 			while (dy > 0 && world.getBlock(x, dy, z).isAir(world, x, dy, z))
 				dy--;
 			ElementTagCompound tag = ItemElementCalculator.instance.getValueForItem(activeRecipe.output);
-			CrystalElement e = tag != null && !tag.isEmpty() ? ReikaJavaLibrary.getRandomCollectionEntry(tag.elementSet()) : null;
+			CrystalElement e = tag != null && !tag.isEmpty() ? ReikaJavaLibrary.getRandomCollectionEntry(rand, tag.elementSet()) : null;
 			if (e != null)
 				fx = new EntityRuneFX(world, x+rand.nextDouble(), dy+1, z+rand.nextDouble(), e).setGravity(g).setScale(s);
 		}

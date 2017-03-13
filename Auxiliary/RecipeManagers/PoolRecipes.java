@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,6 +29,7 @@ import Reika.ChromatiCraft.Block.BlockActiveChroma;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayList;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.IO.CustomRecipeList;
@@ -57,6 +59,8 @@ public class PoolRecipes {
 
 		PoolRecipe pr = this.addRecipe(ChromaStacks.complexIngot, ChromaStacks.chromaIngot, ChromaStacks.enderIngot, ChromaStacks.waterIngot, ChromaStacks.spaceIngot, ChromaStacks.fieryIngot, ChromaStacks.auraIngot, ChromaStacks.conductiveIngot, ChromaStacks.iridChunk, new ItemStack(Blocks.obsidian, 4, 0), new ItemStack(Items.emerald, 8, 0));
 		//pr.allowDoubling = false;
+
+		this.addRecipe(ChromaItems.DATACRYSTAL.getCraftedProduct(2), ChromaItems.DATACRYSTAL.getStackOf(), ReikaItemHelper.getSizedItemStack(ChromaStacks.crystalPowder, 18)).addProgress(ProgressStage.TOWER);
 	}
 
 	private PoolRecipe addRecipe(ItemStack out, ItemStack main, ItemStack... ingredients) {
@@ -175,6 +179,8 @@ public class PoolRecipes {
 		private final ItemHashMap<Integer> inputs = new ItemHashMap().setOneWay();
 		private final ItemStack output;
 
+		private final HashSet<ProgressStage> progress = new HashSet();
+
 		private boolean allowDoubling = true;
 		private boolean isCustom = false;
 
@@ -185,6 +191,19 @@ public class PoolRecipes {
 			for (int i = 0; i < input.length; i++) {
 				inputs.put(input[i], input[i].stackSize);
 			}
+		}
+
+		private PoolRecipe addProgress(ProgressStage p) {
+			progress.add(p);
+			return this;
+		}
+
+		public boolean playerHasProgress(EntityPlayer ep) {
+			for (ProgressStage p : progress) {
+				if (!p.isPlayerAtStage(ep))
+					return false;
+			}
+			return true;
 		}
 
 		private void makeFrom(Collection<EntityItem> li) {
@@ -271,6 +290,15 @@ public class PoolRecipes {
 
 	public Collection<PoolRecipe> getAllPoolRecipes() {
 		return Collections.unmodifiableCollection(ReikaJavaLibrary.getCompoundCollection(recipes.values()));
+	}
+
+	public Collection<PoolRecipe> getAllPoolRecipesForPlayer(EntityPlayer ep) {
+		Collection<PoolRecipe> c = new ArrayList();
+		for (PoolRecipe p : this.getAllPoolRecipes()) {
+			if (p.playerHasProgress(ep))
+				c.add(p);
+		}
+		return c;
 	}
 
 	public Collection<ItemStack> getAllOutputItems() {

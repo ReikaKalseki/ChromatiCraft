@@ -118,14 +118,14 @@ public class ItemMagicRegistry {
 		this.addElement(ModOreList.AMETHYST.getProductOreDictName(), CrystalElement.PURPLE, 6);
 		this.addElement(ModOreList.AMETHYST.getProductOreDictName(), CrystalElement.MAGENTA, 3);
 
-		this.addElement(ModOreList.INFUSEDAIR.getProductOreDictName(), CrystalElement.BLACK, 2);
-		this.addElement(ModOreList.INFUSEDAIR.getProductOreDictName(), CrystalElement.WHITE, 4);
+		this.addElement(ModOreList.INFUSEDAIR.getProductOreDictName(), CrystalElement.BLACK, 4);
+		this.addElement(ModOreList.INFUSEDAIR.getProductOreDictName(), CrystalElement.WHITE, 2);
 		this.addElement(ModOreList.INFUSEDEARTH.getProductOreDictName(), CrystalElement.BLACK, 2);
 		this.addElement(ModOreList.INFUSEDEARTH.getProductOreDictName(), CrystalElement.GREEN, 4);
 		this.addElement(ModOreList.INFUSEDWATER.getProductOreDictName(), CrystalElement.BLACK, 2);
 		this.addElement(ModOreList.INFUSEDWATER.getProductOreDictName(), CrystalElement.CYAN, 4);
 		this.addElement(ModOreList.INFUSEDFIRE.getProductOreDictName(), CrystalElement.BLACK, 2);
-		this.addElement(ModOreList.INFUSEDWATER.getProductOreDictName(), CrystalElement.ORANGE, 4);
+		this.addElement(ModOreList.INFUSEDFIRE.getProductOreDictName(), CrystalElement.ORANGE, 4);
 		this.addElement(ModOreList.INFUSEDENTROPY.getProductOreDictName(), CrystalElement.BLACK, 2);
 		this.addElement(ModOreList.INFUSEDENTROPY.getProductOreDictName(), CrystalElement.LIGHTGRAY, 4);
 		this.addElement(ModOreList.INFUSEDORDER.getProductOreDictName(), CrystalElement.BLACK, 2);

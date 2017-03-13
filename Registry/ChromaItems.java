@@ -313,7 +313,7 @@ public enum ChromaItems implements ItemEnum {
 			case MAGICBRANCH:
 				return ItemMagicBranch.BranchTypes.list[meta].name().toLowerCase(Locale.ENGLISH)+" "+this.getBasicName();
 			case ARTEFACT:
-				return StatCollector.translateToLocal("unknownartefact."+ItemUnknownArtefact.ArtefactTypes.list[meta].name().toLowerCase(Locale.ENGLISH));
+				return StatCollector.translateToLocal("chromaunknownartefact."+ItemUnknownArtefact.ArtefactTypes.list[meta].name().toLowerCase(Locale.ENGLISH));
 			default:
 				break;
 		}

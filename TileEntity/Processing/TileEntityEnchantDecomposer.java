@@ -286,6 +286,10 @@ public class TileEntityEnchantDecomposer extends InventoriedRelayPowered impleme
 		return tank.getLevel();
 	}
 
+	public void removeLiquid(int amt) {
+		tank.removeLiquid(amt);
+	}
+
 	@Override
 	public float getOperationFraction() {
 		return !this.canProcess() ? 0 : processTimer/(float)(Math.max(1, this.getProcessTime()));

@@ -80,11 +80,14 @@ public enum ChromaSounds implements SoundEnum {
 	BOUNCE("bounce"),
 	SKYRIVER("lumenstream"),
 	PING("ping"),
-	GAINPROGRESS("progress"),
+	GAINPROGRESS("progress2"),
 	AVOLASER("avolaser2"),
 	CLIFFSOUND("cliffambience"),
 	CLIFFSOUND2("cliffambience2"),
+	CLIFFSOUND3("cliffambience3"),
 	INSCRIBE("inscribe"),
+	LOREHEX("lore"),
+	LORECOMPLETE("lorecomplete"),
 	;
 
 	public static final ChromaSounds[] soundList = values();

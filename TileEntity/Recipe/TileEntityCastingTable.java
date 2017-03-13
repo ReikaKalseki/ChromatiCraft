@@ -163,7 +163,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		//ChromaStructures.getCastingLevelThree(world, x, y-1, z).place();
 
 		if (DragonAPICore.debugtest) {
-			this.addXP(3434);
+			this.addXP(800000);
 
 			for (CastingRecipe cr : RecipesCastingTable.instance.getAllRecipes()) {
 				completedRecipes.add(new KeyedItemStack(cr.getOutput()));
@@ -190,6 +190,25 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		}
 		 */
 
+		/*
+		for (CastingRecipe c : RecipesCastingTable.instance.getAllRecipesMaking(ChromaTiles.REPEATER.getCraftedProduct())) {
+			if (c instanceof RecipeCrystalRepeater) {
+				RecipeCrystalRepeater rc = (RecipeCrystalRepeater)c;
+				Map<List<Integer>, ItemMatch> map = rc.getAuxItems();
+				for (List<Integer> li : map.keySet()) {
+					ItemMatch m = map.get(li);
+					int dx = x+li.get(0);
+					int dz = z+li.get(1);
+					int dy = Math.abs(li.get(0)) <= 2 && Math.abs(li.get(1)) <= 2 ? y : y+1;
+					TileEntityItemStand te = (TileEntityItemStand)world.getTileEntity(dx, dy, dz);
+					ItemStack is = ReikaItemHelper.getSizedItemStack(ReikaJavaLibrary.getRandomCollectionEntry(rand, m.getItemList()).getItemStack(), 64);
+					te.setInventorySlotContents(0, is);
+					te.markDirty();
+				}
+				break;
+			}
+		}
+		 */
 
 		//ReikaJavaLibrary.pConsole(hasStructure, Side.SERVER);
 	}
@@ -364,7 +383,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 
 	public BlockArray getStructureRuneLocations(ElementTagCompound elements) {
 		BlockArray blocks = new BlockArray();
-		ArrayList<BlockKey> li = new ArrayList();
+		HashSet<BlockKey> li = new HashSet();
 		for (CrystalElement e : elements.elementSet()) {
 			li.add(new BlockKey(ChromaBlocks.RUNE.getBlockInstance(), e.ordinal()));
 		}
@@ -667,6 +686,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 						te.syncAllData(true);
 					}
 				}
+				//ReikaJavaLibrary.pConsole("count="+(count+1)+", decr'ing stands");
 			}
 			for (int i = 0; i < 9; i++) {
 				if (i == 4) {
@@ -716,15 +736,22 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		}
 		ItemStack out = activeRecipe.getOutput();
 		while (count > 0) {
+			//ReikaJavaLibrary.pConsole("count="+count+", adding "+activeRecipe.getOutput().stackSize+" output");
+			//ReikaJavaLibrary.pConsole("tags "+(inv[9] != null ? inv[9].stackTagCompound : "null")+", "+out.stackTagCompound);
+			//ReikaJavaLibrary.pConsole("pre "+inv[9]);
 			count--;
-			ReikaInventoryHelper.addOrSetStack(ReikaItemHelper.getSizedItemStack(out, activeRecipe.getOutput().stackSize), inv, 9);
+
+			ItemStack toadd = ReikaItemHelper.getSizedItemStack(out, activeRecipe.getOutput().stackSize);
+			if (NBTin != null) {
+				ReikaNBTHelper.combineNBT(NBTin, toadd.stackTagCompound);
+				toadd.stackTagCompound = (NBTTagCompound)NBTin.copy();
+			}
+			toadd.stackTagCompound = activeRecipe.handleNBTResult(this, craftingPlayer, toadd.stackTagCompound);
+			ReikaInventoryHelper.addOrSetStack(toadd, inv, 9);
+			//ReikaJavaLibrary.pConsole("post "+inv[9]);
+
 			this.addCrafted(out, 1);
 			if (inv[9] != null) {
-				if (NBTin != null) {
-					ReikaNBTHelper.combineNBT(NBTin, inv[9].stackTagCompound);
-					inv[9].stackTagCompound = (NBTTagCompound)NBTin.copy();
-				}
-				inv[9].stackTagCompound = activeRecipe.handleNBTResult(this, craftingPlayer, inv[9].stackTagCompound);
 				MinecraftForge.EVENT_BUS.post(new CastingEvent(this, activeRecipe, craftingPlayer, inv[9].copy()));
 				int push = inv[9].stackSize;
 				for (int i = 0; i < 6; i++) {

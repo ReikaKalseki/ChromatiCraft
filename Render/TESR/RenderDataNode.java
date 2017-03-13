@@ -23,6 +23,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
+import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.TileEntity.TileEntityDataNode;
@@ -60,19 +61,21 @@ public class RenderDataNode extends ChromaRenderBase {
 				GL11.glEnable(GL11.GL_BLEND);
 				BlendMode.ADDITIVEDARK.apply();
 				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glDisable(GL11.GL_ALPHA_TEST);
 				ReikaRenderHelper.disableEntityLighting();
 				GL11.glDepthMask(false);
 				//GL11.glDisable(GL11.GL_TEXTURE_2D);
 
 				this.renderPrism(te, v5);
-				if (te.isInWorld())
+				if (te.isInWorld()) {
+					this.renderSymbol(te, v5);
 					this.renderFlare(te, v5);
+				}
 
 				GL11.glPopAttrib();
 			}
 
 		}
-
 
 		GL11.glPopMatrix();
 	}
@@ -491,6 +494,45 @@ public class RenderDataNode extends ChromaRenderBase {
 		v5.draw();
 
 		GL11.glPopMatrix();
+	}
+
+	private void renderSymbol(TileEntityDataNode te, Tessellator v5) {
+		Towers t = te.getTower();
+		if (t != null) {
+			double d = te.getExtension0()+te.getExtension1()+te.getExtension2();
+			d /= te.EXTENSION_LIMIT_0+te.EXTENSION_LIMIT_1+te.EXTENSION_LIMIT_2;
+			d = Math.pow(d, 6);
+			if (d > 0) {
+				int idx = t.textureIndex;
+				double u = (idx%8)/8D;
+				double v = (idx/8)/8D;
+				double du = u+1/8D;
+				double dv = v+1/8D;
+				double tk = (-te.getTicksExisted()/1.5D)%360D;
+				ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/towersymbols.png");
+				GL11.glPushMatrix();
+				GL11.glDisable(GL11.GL_CULL_FACE);
+				GL11.glTranslated(0, -0.625, 0);
+				double s = 3;
+				GL11.glScaled(s, s, s);
+				for (int i = 0; i < 360; i += 60) {
+					GL11.glPushMatrix();
+					GL11.glRotated(i+tk, 0, 1, 0);
+					GL11.glTranslated(0, 0, 1.75/s);
+					v5.startDrawingQuads();
+					v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(0xffffff, (float)d));
+					//GL11.glRotated(90, 0, 1, 0);
+					v5.addVertexWithUV(-0.5, 0, 0, u, dv);
+					v5.addVertexWithUV(0.5, 0, 0, du, dv);
+					v5.addVertexWithUV(0.5, 1, 0, du, v);
+					v5.addVertexWithUV(-0.5, 1, 0, u, v);
+					v5.draw();
+					GL11.glPopMatrix();
+				}
+				GL11.glEnable(GL11.GL_CULL_FACE);
+				GL11.glPopMatrix();
+			}
+		}
 	}
 
 	private void renderFlare(TileEntityDataNode te, Tessellator v5) {

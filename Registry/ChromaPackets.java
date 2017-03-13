@@ -149,7 +149,11 @@ public enum ChromaPackets {
 	STRUCTFIND(2),
 	DATASCAN(),
 	LORENOTE(1),
+	LOREPUZZLECOMPLETE(),
 	INSCRIBE(1),
+	DIGARTEFACT(3),
+	ARTEFACTCONFIRM(3),
+	ARTEFACTCLICK(),
 	;
 
 	public final int numInts;

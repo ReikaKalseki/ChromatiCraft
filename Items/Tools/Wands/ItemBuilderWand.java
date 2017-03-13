@@ -91,6 +91,7 @@ public class ItemBuilderWand extends ItemWandBase {
 		int edge = KeyWatcher.instance.isKeyDown(ep, Key.END) ? ep.isSneaking() ? 2 : 1 : 0;
 
 		BlockArray base = new BlockArray();
+		base.maxDepth = 2*r;
 		base.recursiveAddWithBoundsMetadata(world, x, y, z, b, m, x-rx, y-ry, z-rz, x+rx, y+ry, z+rz);
 
 		int minX = Integer.MAX_VALUE;

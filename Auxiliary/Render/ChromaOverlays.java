@@ -10,7 +10,9 @@
 package Reika.ChromatiCraft.Auxiliary.Render;
 
 import java.awt.Color;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -44,6 +46,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -119,10 +122,20 @@ public class ChromaOverlays {
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 		ItemStack is = ep.getCurrentEquippedItem();
 
+		boolean renderCursor = true;
+		if (FullScreenOverlayRenderer.instance.isRenderingHexGroups())
+			renderCursor = false;
 		if (evt.type == ElementType.HELMET) {
 			if (FullScreenOverlayRenderer.instance.isWashoutActive()) {
 				FullScreenOverlayRenderer.instance.renderWashout(evt, tick);
 				//evt.setCanceled(true);
+				GL11.glPopAttrib();
+				GL11.glPopMatrix();
+				return;
+			}
+			renderCursor = !FullScreenOverlayRenderer.instance.renderLoreHexes(evt, tick);
+			if (!renderCursor) {
+				evt.setCanceled(true);
 				GL11.glPopAttrib();
 				GL11.glPopMatrix();
 				return;
@@ -165,8 +178,10 @@ public class ChromaOverlays {
 			this.renderFlareMessages(gsc);
 			GL11.glPopMatrix();
 		}
-		else if (evt.type == ElementType.CROSSHAIRS && ChromaItems.TOOL.matchWith(is)) {
-			this.renderCustomCrosshair(evt);
+		else if (evt.type == ElementType.CROSSHAIRS && (ChromaItems.TOOL.matchWith(is) || !renderCursor)) {
+			if (renderCursor)
+				this.renderCustomCrosshair(evt.resolution);
+			evt.setCanceled(true);
 		}
 		else if (evt.type == ElementType.CROSSHAIRS && ChromaItems.KILLAURAGUN.matchWith(is)) {
 			this.renderKillAuraCrosshair(evt, gsc);
@@ -430,14 +445,14 @@ public class ChromaOverlays {
 		v5.draw();
 	}
 
-	private void renderCustomCrosshair(RenderGameOverlayEvent.Pre evt) {
+	private void renderCustomCrosshair(ScaledResolution res) {
 		ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/crosshair.png");
 		GL11.glEnable(GL11.GL_BLEND);
 		BlendMode.ADDITIVEDARK.apply();
 		Tessellator v5 = Tessellator.instance;
 		int w = 16;
-		int x = evt.resolution.getScaledWidth()/2;
-		int y = evt.resolution.getScaledHeight()/2;
+		int x = res.getScaledWidth()/2;
+		int y = res.getScaledHeight()/2;
 		v5.startDrawingQuads();
 		double u = (System.currentTimeMillis()/16%64)/64D;
 		double du = u+1/64D;
@@ -450,7 +465,6 @@ public class ChromaOverlays {
 		v5.draw();
 		BlendMode.DEFAULT.apply();
 		//GL11.glDisable(GL11.GL_BLEND);
-		evt.setCanceled(true);
 	}
 
 	private void renderKillAuraCrosshair(RenderGameOverlayEvent.Pre evt, int gsc) {
@@ -814,6 +828,10 @@ public class ChromaOverlays {
 
 	public void addProgressionNote(ProgressElement p) {
 		ProgressOverlayRenderer.instance.addProgressionNote(p);
+	}
+
+	public void addLoreNote(EntityPlayer ep, Towers t) {
+		FullScreenOverlayRenderer.instance.addLoreNote(ep, t);
 	}
 
 	private static class FlareMessage {

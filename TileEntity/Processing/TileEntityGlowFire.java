@@ -32,6 +32,7 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -228,7 +229,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 			tag.scale(2);
 		}
 		tag.scale(BASE_ITEM_FACTOR);
-		if (is.getItem() == Items.dye)
+		if (is.getItem() == Items.dye || ChromaItems.DYE.matchWith(is))
 			tag.scale(0.25F);
 		if (sc)
 			tag.scale(1.2F);
@@ -236,7 +237,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 	}
 
 	private static ElementTagCompound scaleDecompositionTag(ItemStack is, ElementTagCompound tag) {
-		if (is.getItem() != Items.dye)
+		if (is.getItem() != Items.dye && !ChromaItems.DYE.matchWith(is))
 			tag.scale(BASE_ITEM_FACTOR);
 		return tag;
 	}

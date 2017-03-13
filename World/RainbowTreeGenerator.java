@@ -66,23 +66,23 @@ public class RainbowTreeGenerator {
 			return false;
 
 		switch(wood) {
-		case GLOW:
-		case BLOODWOOD:
-		case NATURADARKWOOD:
-		case FUSEWOOD:
-		case BXLREDWOOD:
-		case BAMBOO:
-		case IC2RUBBER:
-		case MFRRUBBER:
-		case MINEWOOD:
-		case SEQUOIA:
-		case SORTING:
-		case TIMEWOOD:
-		case TRANSFORMATION:
-		case TWILIGHTOAK:
-			return false;
-		default:
-			return true;
+			case GLOW:
+			case BLOODWOOD:
+			case NATURADARKWOOD:
+			case FUSEWOOD:
+			case BXLREDWOOD:
+			case BAMBOO:
+			case IC2RUBBER:
+			case MFRRUBBER:
+			case MINEWOOD:
+			case SEQUOIA:
+			case SORTING:
+			case TIMEWOOD:
+			case TRANSFORMATION:
+			case TWILIGHTOAK:
+				return false;
+			default:
+				return true;
 		}
 	}
 
@@ -1130,7 +1130,7 @@ public class RainbowTreeGenerator {
 		MinecraftForge.EVENT_BUS.post(new RainbowTreeEvent(world, x, y, z, rand));
 
 		Block id = ChromaBlocks.RAINBOWLEAF.getBlockInstance();
-		TreeType wood = this.getLogType();
+		TreeType wood = this.getLogType(rand);
 		Block log = wood.getLogID();
 		int meta = wood.getLogMetadatas().get(0);
 		int meta2 = wood.getLogMetadatas().get(1);
@@ -2196,8 +2196,8 @@ public class RainbowTreeGenerator {
 		world.setBlock(x+9, y+17, z+5, id, 0, 3);
 	}
 
-	private TreeType getLogType() {
-		return ReikaJavaLibrary.getRandomListEntry(validLogs);
+	private TreeType getLogType(Random rand) {
+		return ReikaJavaLibrary.getRandomListEntry(rand, validLogs);
 	}
 
 }
