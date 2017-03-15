@@ -239,7 +239,7 @@ public class WorldProviderChroma extends WorldProvider implements CustomBiomeDis
 
 	@Override
 	public String getDimensionName() {
-		return "Chroma";
+		return "Proxima";
 	}
 
 	@Override

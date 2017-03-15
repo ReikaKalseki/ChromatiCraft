@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Render.InWorldScriptRenderer;
 import Reika.ChromatiCraft.TileEntity.TileEntityDataNode;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
@@ -66,10 +67,18 @@ public class RenderDataNode extends ChromaRenderBase {
 				GL11.glDepthMask(false);
 				//GL11.glDisable(GL11.GL_TEXTURE_2D);
 
+				GL11.glPushMatrix();
 				this.renderPrism(te, v5);
 				if (te.isInWorld()) {
 					this.renderSymbol(te, v5);
 					this.renderFlare(te, v5);
+				}
+				GL11.glPopMatrix();
+
+				if (te.isInWorld() && MinecraftForgeClient.getRenderPass() == 1) {
+					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+					InWorldScriptRenderer.renderTowerScript(te, par8, v5, 0.03125/2);
+					GL11.glPopAttrib();
 				}
 
 				GL11.glPopAttrib();

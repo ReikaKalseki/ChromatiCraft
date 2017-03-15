@@ -796,8 +796,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				return false;
 			}
 		}
-		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT && !ChromaOptions.FLATGEN.getState()) {
-			return ReikaWorldHelper.getSuperflatHeight(world) > 15;
+		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT) {
+			return ChromaOptions.FLATGEN.getState() && ReikaWorldHelper.getSuperflatHeight(world) > 15;
 		}
 		if (world.provider.dimensionId == 0)
 			return true;

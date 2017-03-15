@@ -809,4 +809,14 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		return true;
 	}
 
+	/** Is often null! */
+	public Structures getStructureType() {
+		return struct;
+	}
+
+	@Override
+	public AxisAlignedBB getRenderBoundingBox() {
+		return INFINITE_EXTENT_AABB;
+	}
+
 }

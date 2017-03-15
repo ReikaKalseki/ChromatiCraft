@@ -384,6 +384,8 @@ public class KeyAssemblyPuzzle {
 		boolean flag = LoreManager.instance.hasPlayerCompletedBoard(ep);
 		if (flag) {
 			//this.drawTexturedGrid(v5);
+			GL11.glTranslated(-w2, -h2, 0);
+			new RosettaStone().render(res, w2, h2);
 		}
 		//else {
 		for (HexCell c : cells.values()) {
@@ -400,7 +402,7 @@ public class KeyAssemblyPuzzle {
 			GL11.glPopMatrix();
 			 */
 
-			if (flag && f >= 1) {
+			if (flag/* && f >= 1*/) {
 				Hex h = c.location;
 				/*
 					Point pt = grid.getHexLocation(h);
@@ -411,7 +413,7 @@ public class KeyAssemblyPuzzle {
 					grid.drawTexturedHex(v5, h, u, v, /*CELL_SIZE/1024D*//*0.03125);
 					GL11.glPopMatrix();
 					 */
-				this.drawTexturedHex(v5, h, grid.getGridProperties().sizeX, grid.getGridProperties().sizeY, f);
+				//this.drawTexturedHex(v5, h, grid.getGridProperties().sizeX, grid.getGridProperties().sizeY, f);
 			}
 			else {
 				c.render(this, v5, true, 1-Math.min(1, f*1.0625F));
@@ -637,11 +639,11 @@ public class KeyAssemblyPuzzle {
 			if (solveTick == 0 || this.solveTick() <= 0)
 				return 0;
 			int tick = this.solveTick();
-			return tick <= 10 ? tick/10F : tick <= 20 ? 1+(tick-10)/10F : 2+(tick-20)/10F;
+			return 1-tick/20F;//tick <= 10 ? tick/10F : tick <= 20 ? 1+(tick-10)/10F : 2+(tick-20)/10F;
 		}
 
 		public void tickSolve() {
-			if (solveTick > 0 && solveTick < 30-solveOffset/* && GuiScreen.isCtrlKeyDown()*/) {
+			if (solveTick > 0 && solveTick < /*30*/20-solveOffset/* && GuiScreen.isCtrlKeyDown()*/) {
 				solveTick++;
 			}
 		}

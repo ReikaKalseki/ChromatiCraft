@@ -16,7 +16,7 @@ import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundGui;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
-
+@Deprecated
 public class GuiLore extends GuiScreen implements CustomSoundGui {
 
 	private final EntityPlayer player;

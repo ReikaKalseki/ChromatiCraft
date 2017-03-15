@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.Auxiliary.Potions.PotionVoidGaze.VoidGazeLevels;
 import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.InWorldScriptRenderer;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -56,6 +57,13 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 			GL11.glTranslated(par2, par4, par6);
 
 			Tessellator v5 = Tessellator.instance;
+
+			if (MinecraftForgeClient.getRenderPass() == 1) {
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				InWorldScriptRenderer.renderPylonScript(te, par8, v5, 0.03125/2);
+				GL11.glPopAttrib();
+			}
+
 			GL11.glTranslated(0.5, 0.5, 0.5);
 
 			int count = te.isEnhanced() ? 2 : 1;

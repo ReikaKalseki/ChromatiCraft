@@ -1,8 +1,46 @@
 ﻿<?xml version="1.0"?>
 <lore>
-	<wand>
+	<burrow>
+		<t1>
+			This Is a teST 1 and will hopeFULLY not be ToO lonG.
+		</t1>
+		<t2>
+			And THis is TESt nuMbEr TWo 2 for more tESTiNg?
+		</t2>
+	</burrow>
+	<cavern>
 		
-	</wand>
+	</cavern>
+	<desert>
+		
+	</desert>
+	<ocean>
+		
+	</ocean>
+	<pylon>
+		
+	</pylon>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
 	<name>
 		
 	</name>

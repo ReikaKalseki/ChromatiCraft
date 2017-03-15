@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Locale;
@@ -26,6 +27,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
+import Reika.ChromatiCraft.Magic.Lore.LoreScripts.ScriptLocations;
 import Reika.ChromatiCraft.Magic.Network.RelayNetworker;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
 import Reika.ChromatiCraft.ModInterface.TileEntityLumenAlveary;
@@ -52,6 +54,7 @@ import Reika.ChromatiCraft.TileEntity.Processing.TileEntityCrystalFurnace;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityPowerTree;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
 import Reika.DragonAPI.Instantiable.Event.Client.ResourceReloadEvent;
 import Reika.DragonAPI.Instantiable.IO.XMLInterface;
@@ -87,6 +90,7 @@ public final class ChromaDescriptions {
 	private static final EnumMap<ProgressStage, ProgressNote> progressText = new EnumMap(ProgressStage.class);
 	private static final EnumMap<Chromabilities, String> abilityText = new EnumMap(Chromabilities.class);
 	private static final EnumMap<CrystalElement, String> elementText = new EnumMap(CrystalElement.class);
+	private static final MultiMap<ScriptLocations, String> loreText = new MultiMap();
 
 	private static final boolean mustLoad = !ReikaObfuscationHelper.isDeObfEnvironment();
 	private static final XMLInterface machines = new XMLInterface(ChromatiCraft.class, PARENT+"machines.xml", mustLoad);
@@ -100,6 +104,7 @@ public final class ChromaDescriptions {
 	private static final XMLInterface hover = new XMLInterface(ChromatiCraft.class, PARENT+"hover.xml", mustLoad);
 	private static final XMLInterface progress = new XMLInterface(ChromatiCraft.class, PARENT+"progression.xml", mustLoad);
 	private static final XMLInterface enchants = new XMLInterface(ChromatiCraft.class, PARENT+"enchants.xml", mustLoad);
+	private static final XMLInterface lore = new XMLInterface(ChromatiCraft.class, PARENT+"lore.xml", mustLoad);
 
 	private static String getParent() {
 		return FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? getLocalizedParent() : "Resources/";
@@ -176,6 +181,7 @@ public final class ChromaDescriptions {
 		hover.reread();
 		progress.reread();
 		enchants.reread();
+		lore.reread();
 
 		loadData();
 	}
@@ -332,6 +338,16 @@ public final class ChromaDescriptions {
 		}
 		String desc = enchants.getValueAtNode("enchants:boostedlevel");
 		notes.put(desc, ChromaResearch.ENCHANTS, ChromaEnchants.enchantmentList.length+1);
+
+		for (int i = 0; i < ScriptLocations.list.length; i++) {
+			ScriptLocations l = ScriptLocations.list[i];
+			String pre = "lore:"+l.name().toLowerCase(Locale.ENGLISH);
+			//String s = lore.getValueAtNode(pre);
+			Collection<String> li = lore.getNodesWithin(pre);
+			for (String s : li) {
+				loreText.addValue(l, lore.getValueAtNode(s));
+			}
+		}
 	}
 
 	public static String getAbilityDescription(Chromabilities c) {
@@ -432,6 +448,14 @@ public final class ChromaDescriptions {
 		return progressText.containsKey(p) ? progressText.get(p) : new ProgressNote("#NULL", "#NULL", "#NULL", "#NULL");
 	}
 
+	public static Collection<String> getScriptTexts(ScriptLocations s) {
+		return Collections.unmodifiableCollection(loreText.get(s));
+	}
+
+	public static boolean isUnfilled(String s) {
+		return s == null || s.isEmpty() || s.endsWith(XMLInterface.NULL_VALUE);
+	}
+
 	public static class ProgressNote {
 
 		public final String title;
@@ -446,9 +470,5 @@ public final class ChromaDescriptions {
 			this.desc = desc;
 		}
 
-	}
-
-	public static boolean isUnfilled(String s) {
-		return s == null || s.isEmpty() || s.endsWith(XMLInterface.NULL_VALUE);
 	}
 }
