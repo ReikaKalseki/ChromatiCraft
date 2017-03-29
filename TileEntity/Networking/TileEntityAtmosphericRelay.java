@@ -20,6 +20,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.PylonConnector;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -50,6 +51,11 @@ public class TileEntityAtmosphericRelay extends CrystalTransmitterBase implement
 	@Override
 	public int maxThroughput() {
 		return 40000;
+	}
+
+	@Override
+	public int getSignalDegradation() {
+		return 20000;
 	}
 
 	@Override
@@ -97,11 +103,6 @@ public class TileEntityAtmosphericRelay extends CrystalTransmitterBase implement
 	}
 
 	@Override
-	public int getSignalDegradation() {
-		return 20000;
-	}
-
-	@Override
 	public int getSignalDepth(CrystalElement e) {
 		return depth;
 	}
@@ -117,7 +118,7 @@ public class TileEntityAtmosphericRelay extends CrystalTransmitterBase implement
 	}
 
 	@Override
-	public void onTransfer(CrystalElement element, int amt) {
+	public void onTransfer(CrystalSource src, CrystalReceiver r, CrystalElement element, int amt) {
 
 	}
 

@@ -374,7 +374,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	public void notifyPlayerOfProgression(EntityPlayer ep, ProgressElement p) {
 		if (ep.worldObj.isRemote) {
 			ChromaOverlays.instance.addProgressionNote(p);
-			ReikaSoundHelper.playClientSound(ChromaSounds.GAINPROGRESS, ep, 1, 1);
+			ReikaSoundHelper.playClientSound(ChromaSounds.GAINPROGRESS, ep, 0.5F, 1, false);
 		}
 		else if (ep instanceof EntityPlayerMP) {
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.PROGRESSNOTE.ordinal(), (EntityPlayerMP)ep, this.getID(p));

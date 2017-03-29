@@ -105,10 +105,12 @@ public class TemporaryCrystalReceiver implements CrystalReceiver, WrapperTile {
 		return null;
 	}
 
+	/*
 	@Override
 	public ResearchLevel getResearchTier() {
 		return level;
 	}
+	 */
 
 	@Override
 	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {

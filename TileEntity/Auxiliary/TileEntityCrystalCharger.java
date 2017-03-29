@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -49,6 +50,7 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver impleme
 					if (put > 0) {
 						cry.addEnergy(inv[0], e, put);
 						this.drainEnergy(e, put);
+						ProgressStage.CHARGECRYSTAL.stepPlayerTo(this.getPlacer());
 					}
 				}
 			}

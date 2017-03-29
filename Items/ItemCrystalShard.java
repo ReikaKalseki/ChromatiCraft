@@ -287,7 +287,7 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 
 	@Override
 	public ProgressStage getDiscoveryTier(ItemStack is) {
-		return ProgressStage.CHROMA;
+		return ProgressStage.RUNEUSE;
 	}
 
 	@Override

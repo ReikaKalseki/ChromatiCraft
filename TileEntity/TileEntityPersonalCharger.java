@@ -20,7 +20,6 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -46,10 +45,12 @@ public class TileEntityPersonalCharger extends CrystalReceiverBase implements Ch
 		return 800;
 	}
 
+	/*
 	@Override
 	public ResearchLevel getResearchTier() {
 		return ResearchLevel.ENERGYEXPLORE;
 	}
+	 */
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {

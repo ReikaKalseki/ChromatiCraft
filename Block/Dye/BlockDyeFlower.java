@@ -10,9 +10,13 @@
 package Reika.ChromatiCraft.Block.Dye;
 
 import java.awt.Color;
+import java.util.List;
 
 import net.minecraft.block.BlockFlower;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.EnumPlantType;
@@ -20,6 +24,8 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockDyeFlower extends BlockFlower {
 
@@ -56,6 +62,14 @@ public class BlockDyeFlower extends BlockFlower {
 	public int getRenderColor(int dmg)
 	{
 		return ReikaDyeHelper.dyes[dmg].getColor();
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void getSubBlocks(Item it, CreativeTabs cr, List li) {
+		for (int i = 0; i < ReikaDyeHelper.dyes.length; i++) {
+			li.add(new ItemStack(this, 1, i));
+		}
 	}
 
 	@Override

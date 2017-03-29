@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Magic.Lore;
 import java.util.Collection;
 import java.util.Collections;
 
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -39,6 +40,7 @@ public class LoreManager {
 	private static final String NBT_TAG = "loretowers";
 
 	private KeyAssemblyPuzzle puzzle;
+	private RosettaStone rosetta;
 
 	private final MultiMap<Towers, TileGroup> towerGroups = new MultiMap().setNullEmpty();
 
@@ -165,6 +167,12 @@ public class LoreManager {
 		else {
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 		}
+	}
+
+	public RosettaStone getOrCreateRosetta(EntityPlayer ep) {
+		if (rosetta == null)
+			rosetta = new RosettaStone(ep);
+		return rosetta;
 	}
 
 }

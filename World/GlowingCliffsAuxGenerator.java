@@ -69,7 +69,7 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 	private long noiseSeed;
 
 	private final WeightedRandom<TreeType> treeRand = new WeightedRandom();
-	private final WeightedRandom<OreType> oreRand = new WeightedRandom();
+	public final WeightedRandom<OreType> oreRand = new WeightedRandom();
 
 	public static final HashMap<Coordinate, ImmutablePair<Integer, Integer>> TEMP_ISLAND_CACHE = new HashMap();
 
@@ -222,7 +222,7 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 						Block b = MystCraftHandler.getInstance().crystalID;
 						if (b != null) {
 							int s = 32+random.nextInt(32+1);
-							new ExposedOreVein(b, s).generate(world, random, x, y, z);
+							new CrystalOreVein(b, s).generate(world, random, x, y, z);
 						}
 					}
 				}
@@ -511,6 +511,19 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 			return 1+Math.max(originY, world.getTopSolidOrLiquidBlock(x, z));
 		}
 
+	}
+
+	private static class CrystalOreVein extends ExposedOreVein {
+
+
+		public CrystalOreVein(Block block, int size) {
+			super(block, size);
+		}
+
+		@Override
+		public boolean canPlaceBlockHere(World world, int x, int y, int z) {
+			return super.canPlaceBlockHere(world, x, y, z) && world.getBlock(x, y, z) != ChromaBlocks.CLIFFSTONE.getBlockInstance();
+		}
 	}
 
 }

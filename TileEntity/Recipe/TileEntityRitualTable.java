@@ -30,7 +30,6 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -68,10 +67,12 @@ OperationInterval, MultiBlockChromaTile {
 		//this.killRitual();
 	}
 
+	/*
 	@Override
 	public ResearchLevel getResearchTier() {
 		return ResearchLevel.ENERGYEXPLORE;
 	}
+	 */
 
 	@Override
 	public int getReceiveRange() {

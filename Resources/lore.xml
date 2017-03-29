@@ -2,27 +2,108 @@
 <lore>
 	<burrow>
 		<t1>
-			This Is a teST 1 and will hopeFULLY not be ToO lonG.
+			This Is a teST 1 and
+			will hopeFULLY not be
 		</t1>
 		<t2>
-			And THis is TESt nuMbEr TWo 2 for more tESTiNg?
+			And THis is TESt
+			nuMbEr
 		</t2>
+		<t3>
+			woo i I
+			usually AM HA
+		</t3>
 	</burrow>
-	<cavern>
+	<cavern1>
+		<t1>
 		
-	</cavern>
+		</t1>
+		<t2>
+		
+		</t2>
+	</cavern1>
+	<cavern2>
+		<t1>
+		
+		</t1>
+		<t2>
+		
+		</t2>
+	</cavern2>
+	<cavern3>
+		<t1>
+		
+		</t1>
+		<t2>
+		
+		</t2>
+	</cavern3>
 	<desert>
-		
+		<t1>
+			This Is a teST 1 and
+			will hopeFULLY not be
+		</t1>
+		<t2>
+			And here is a second
+			panel. Woo.
+		</t2>
+		<t3>
+			This third
+			panel IS STUPID LONG
+		</t3>
+		<t4>
+			and a fourth
+			entry FOr
+		</t4>
 	</desert>
 	<ocean>
+		<t1>
 		
+		</t1>
+		<t2>
+		
+		</t2>
 	</ocean>
 	<pylon>
+		<t1>
 		
+		</t1>
+		<t2>
+		
+		</t2>
+		<t3>
+		
+		</t3>
+		<t4>
+		
+		</t4>
+		<t5>
+		
+		</t5>
+		<t6>
+		
+		</t6>
+		<t7>
+		
+		</t7>
+		<t8>
+		
+		</t8>
 	</pylon>
-	<name>
+	<tower>
+		<t1>
 		
-	</name>
+		</t1>
+		<t2>
+		
+		</t2>
+		<t3>
+		
+		</t3>
+		<t4>
+		
+		</t4>
+	</tower>
 	<name>
 		
 	</name>

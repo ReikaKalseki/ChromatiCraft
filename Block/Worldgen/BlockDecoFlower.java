@@ -28,6 +28,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.ColorizerGrass;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -91,7 +92,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 
 	@Override
 	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int meta, int fortune) {
-		return ReikaJavaLibrary.makeListFrom(Flowers.list[meta].getDrop());
+		return world.rand.nextInt(Flowers.list[meta].getDropChance()) == 0 ? ReikaJavaLibrary.makeListFrom(Flowers.list[meta].getDrop()) : new ArrayList();
 	}
 
 	@Override
@@ -387,7 +388,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 					if (this == LUMALILY)
 						n *= 4;
 					if (this == GLOWDAISY)
-						n *= 2;
+						n *= 12;
 					int c = 0;
 					for (int i = 2; i < 6; i++) {
 						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
@@ -406,6 +407,8 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 						int dz = z+dir.offsetZ;
 						Block idb = world.getBlock(dx, y-1, dz);
 						if (world.getBlock(dx, y, dz).isAir(world, dx, y, dz) && (idb == Blocks.grass || idb == Blocks.dirt)) {
+							if (this == GLOWDAISY && world.getSavedLightValue(EnumSkyBlock.Sky, dx, y, dz) > 8)
+								return null;
 							//ReikaJavaLibrary.pConsole("Spreading "+this+" to "+new Coordinate(dx, y, dz));
 							return new Coordinate(dx, y, dz);
 						}
@@ -448,7 +451,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 					return null;
 				}
 				case GLOWROOT: {
-					if (rand.nextInt(12) == 0) {
+					if (rand.nextInt(36) == 0) {
 						if (world.getBlock(x, y-1, z).isAir(world, x, y-1, z) && this.canPlantAt(world, x, y-1, z) && world.getBlock(x, y-2, z).isAir(world, x, y-2, z)) {
 							return new Coordinate(x, y-1, z);
 						}
@@ -638,6 +641,8 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 				}
 				case GLOWROOT: {
 					if (r.nextInt(3) == 0) {
+						if (this.matchAt(world, x, y-1, z) && y%8 != 0)
+							return;
 						double dx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.25);
 						double dz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.25);
 						double dy = ReikaRandomHelper.getRandomPlusMinus(y+0.5, 0.5);
@@ -726,6 +731,21 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 				case GLOWROOT: return new ItemStack(Items.glowstone_dust);
 			}
 			return null;
+		}
+
+		/** 1/N */
+		public int getDropChance() {
+			switch(this) {
+				case ENDERFLOWER:
+				case LUMALILY:
+				case RESOCLOVER:
+				case SANOBLOOM:
+				case VOIDREED:
+				case FLOWIVY: return 1;
+				case GLOWDAISY: return 2;
+				case GLOWROOT: return 4;
+			}
+			return 1;
 		}
 
 		public int getColor() {

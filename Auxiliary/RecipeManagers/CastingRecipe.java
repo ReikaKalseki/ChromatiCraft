@@ -392,7 +392,7 @@ public class CastingRecipe implements APICastingRecipe {
 					if (e == null && runeRing.contains(c))
 						e = CrystalElement.elements[runeRing.indexOf(c)];
 					sb.append("[");
-					sb.append(e != null ? e.ordinal()+(e.ordinal() < 10 ? " " : "") : (i == 0 && k == 0 ? "TB" : "XX"));
+					sb.append(e != null ? e.ordinal()+(e.ordinal() < 10 ? " " : "") : (i == 0 && k == 0 ? (y == 0 ? "TB" : "CT") : "XX"));
 					sb.append("]");
 				}
 				sb.append("\n");

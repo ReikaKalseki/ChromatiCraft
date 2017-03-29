@@ -9,8 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools;
 
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -20,10 +20,10 @@ public class InventoryLinkRecipe extends MultiBlockCastingRecipe {
 	public InventoryLinkRecipe(ItemStack out, ItemStack main) {
 		super(out, main);
 
-		this.addAuxItem(Items.ender_pearl, -2, 0);
-		this.addAuxItem(Items.ender_pearl, 2, 0);
-		this.addAuxItem(Items.ender_pearl, 0, 2);
-		this.addAuxItem(Items.ender_pearl, 0, -2);
+		this.addAuxItem(ChromaStacks.resonanceDust, -2, 0);
+		this.addAuxItem(ChromaStacks.resonanceDust, 2, 0);
+		this.addAuxItem(ChromaStacks.resonanceDust, 0, 2);
+		this.addAuxItem(ChromaStacks.resonanceDust, 0, -2);
 
 		this.addAuxItem(ReikaItemHelper.lapisDye, -4, 0);
 		this.addAuxItem(ReikaItemHelper.lapisDye, 4, 0);

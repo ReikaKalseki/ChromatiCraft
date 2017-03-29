@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+
 import Reika.ChromatiCraft.Magic.Interfaces.ConnectivityAction;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
@@ -29,40 +31,53 @@ public class CrystalPath implements Comparable<CrystalPath> {
 	public final CrystalSource transmitter;
 	public final WorldLocation origin;
 	public final CrystalElement element;
-	private int attenuation;
 	private final HashSet<CrystalLink> links = new HashSet();
 	protected final CrystalNetworker network;
+	protected final boolean hasRealTarget;
 
-	protected CrystalPath(CrystalNetworker net, CrystalElement e, List<WorldLocation> li) {
+	private int attenuation;
+	private int theoreticalRange;
+	private double totalDistance;
+
+	protected CrystalPath(CrystalNetworker net, boolean real, CrystalElement e, List<WorldLocation> li) {
 		nodes = new ArrayList(li);
 		transmitter = PylonFinder.getSourceAt(nodes.get(nodes.size()-1), true);
 		origin = nodes.get(0);
 		element = e;
 		network = net;
+		hasRealTarget = real;
 		this.initialize();
 		//remainingAmount = amt;
 	}
 
 	protected void initialize() {
 		int loss = 0;
-		for (int i = 1; i < nodes.size()-1; i++) {
+		int range = 0;
+		double dist = 0;
+		for (int i = 1; i < nodes.size(); i++) {
 			WorldLocation loc = nodes.get(i);
 			WorldLocation prev = nodes.get(i-1);
-			CrystalNetworkTile te = PylonFinder.getNetTileAt(loc, true);
-			if (te instanceof CrystalRepeater) {
-				loss += ((CrystalRepeater)te).getSignalDegradation();
-				if (te instanceof ConnectivityAction) {
-					CrystalNetworkTile teprev = PylonFinder.getNetTileAt(prev, true);
-					WorldLocation next = nodes.get(i+1);
-					CrystalNetworkTile tenext = PylonFinder.getNetTileAt(next, true);
-					ConnectivityAction ca = (ConnectivityAction)te;
-					ca.notifyReceivingFrom(this, (CrystalTransmitter)tenext);
-					ca.notifySendingTo(this, (CrystalReceiver)teprev);
+			CrystalNetworkTile te = PylonFinder.getNetTileAt(loc, true); //transmitter
+			CrystalNetworkTile teprev = PylonFinder.getNetTileAt(prev, true); //receiver
+			range += Math.min(((CrystalReceiver)teprev).getReceiveRange(), ((CrystalTransmitter)te).getSendRange());
+			dist += Math.sqrt(te.getDistanceSqTo(teprev.getX()+0.5, teprev.getY()+0.5, teprev.getZ()+0.5));
+			if (i < nodes.size()-1) {
+				if (te instanceof CrystalRepeater) {
+					loss += ((CrystalRepeater)te).getSignalDegradation();
+					if (te instanceof ConnectivityAction) {
+						WorldLocation next = nodes.get(i+1);
+						CrystalNetworkTile tenext = PylonFinder.getNetTileAt(next, true);
+						ConnectivityAction ca = (ConnectivityAction)te;
+						ca.notifyReceivingFrom(this, (CrystalTransmitter)tenext);
+						ca.notifySendingTo(this, (CrystalReceiver)teprev);
+					}
 				}
 			}
 			links.add(network.getLink(prev, loc));
 		}
 		attenuation = loss;
+		totalDistance = dist;
+		theoreticalRange = range;
 	}
 
 	public void addBaseAttenuation(int amt) {
@@ -112,15 +127,17 @@ public class CrystalPath implements Comparable<CrystalPath> {
 		return true;
 	}
 
-	boolean stillValid() {
+	public boolean stillValid() {
 		if (!transmitter.canConduct() || !transmitter.isConductingElement(element)) {
 			return false;
 		}
-		CrystalNetworkTile tile = PylonFinder.getNetTileAt(origin, false);
-		if (tile == null || !tile.canConduct() || !tile.isConductingElement(element)) {
-			return false;
+		if (hasRealTarget) {
+			CrystalNetworkTile tile = PylonFinder.getNetTileAt(origin, false);
+			if (tile == null || !tile.canConduct() || !tile.isConductingElement(element)) {
+				return false;
+			}
 		}
-		for (int i = 0; i < nodes.size()-2; i++) {
+		for (int i = hasRealTarget ? 0 : 1; i < nodes.size()-2; i++) {
 			WorldLocation tgt = nodes.get(i);
 			WorldLocation src = nodes.get(i+1);
 			CrystalTransmitter sr = PylonFinder.getTransmitterAt(src, false);
@@ -140,6 +157,39 @@ public class CrystalPath implements Comparable<CrystalPath> {
 		return true;
 	}
 
+	public void blink(int ticks, CrystalReceiver r) {
+		CrystalSource src = PylonFinder.getSourceAt(nodes.get(nodes.size()-1), true);
+		WorldLocation locs = nodes.get(nodes.size()-2);
+		if (r == null)
+			r = PylonFinder.getReceiverAt(locs, true);
+		ImmutableTriple<Double, Double, Double> offset = r.getTargetRenderOffset(element);
+		double sx = offset != null ? offset.left : 0;
+		double sy = offset != null ? offset.middle : 0;
+		double sz = offset != null ? offset.right : 0;
+		src.addSelfTickingTarget(locs, element, sx, sy, sz, r.getIncomingBeamRadius(), ticks);
+		for (int i = 1; i < nodes.size()-1; i++) {
+			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
+			if (te instanceof CrystalTransmitter) {
+				WorldLocation tg = nodes.get(i-1);
+				r = PylonFinder.getReceiverAt(tg, true);
+				offset = r.getTargetRenderOffset(element);
+				double dx = offset != null ? offset.left : 0;
+				double dy = offset != null ? offset.middle : 0;
+				double dz = offset != null ? offset.right : 0;
+				((CrystalTransmitter)te).addSelfTickingTarget(tg, element, dx, dy, dz, r.getIncomingBeamRadius(), ticks);
+			}/*
+			if (te instanceof CrystalReceiver) {
+				WorldLocation src = nodes.get(i+1);
+				te.markSource(src);
+			}*/
+		}
+	}
+
+	/** where 0 = worst possible and 1 == perfect */
+	public float getOptimizationFactor() {
+		return (float)(theoreticalRange/totalDistance);
+	}
+
 	@Override
 	public int compareTo(CrystalPath o) {
 		return o.transmitter.getSourcePriority()-transmitter.getSourcePriority();
@@ -156,7 +206,7 @@ public class CrystalPath implements Comparable<CrystalPath> {
 
 	@Override
 	public final int hashCode() {
-		return nodes.hashCode()^element.ordinal();
+		return nodes.hashCode() ^ element.ordinal();
 	}
 
 }

@@ -16,13 +16,20 @@ import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
+import Reika.ChromatiCraft.Auxiliary.TemporaryCrystalReceiver;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
+import Reika.ChromatiCraft.Magic.Network.CrystalPath;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -31,6 +38,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Instantiable.MusicScore;
 import Reika.DragonAPI.Instantiable.MusicScore.Note;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.IO.MIDIInterface;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Interfaces.TileEntity.TriggerableAction;
@@ -48,6 +56,9 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 	private int playTick;
 
 	private MusicScore track = new MusicScore(16);
+
+	private CrystalReceiver receiver;
+	private final CrystalPath[] networkConnections = new CrystalPath[16];
 
 	private static final MusicScore demoTrack = new MIDIInterface(ChromatiCraft.class, "Resources/music-demo.mid").fillToScore().scaleSpeed(11);
 
@@ -106,6 +117,14 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 				this.play(world, x, y, z);
 			}
 		}
+
+		/*
+		for (CrystalElement e : colorPositions.keySet()) {
+			colorPositions.get(e).offset(x, y, z).setBlock(world, ChromaBlocks.LAMP.getBlockInstance(), e.ordinal());
+		}
+		 */
+
+		//ReikaJavaLibrary.pConsole(networkConnections[CrystalElement.BLACK.ordinal()], Side.SERVER);
 	}
 
 	@Override
@@ -116,6 +135,7 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 	public void triggerPlay() {
 		if (isPlaying)
 			return;
+		this.calcPaths(worldObj, xCoord, yCoord, zCoord);
 		playTick = 0;
 		isPlaying = true;
 	}
@@ -124,7 +144,30 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 	protected void onFirstTick(World world, int x, int y, int z) {
 		if (!world.isRemote) {
 			//this.loadDemo();
+			this.calcPaths(world, x, y, z);
 		}
+	}
+
+	private void calcPaths(World world, int x, int y, int z) {
+		if (!world.isRemote) {
+			if (this.playRepeaters(world, x, y, z)) {
+				receiver = this.createTemporaryReceiver();
+				for (int i = 0; i < 16; i++) {
+					networkConnections[i] = CrystalNetworker.instance.getConnectivity(CrystalElement.elements[i], receiver);
+				}
+			}
+			else {
+				receiver = null;
+				for (int i = 0; i < 16; i++) {
+					networkConnections[i] = null;
+				}
+			}
+		}
+	}
+
+	private boolean playRepeaters(World world, int x, int y, int z) {
+		Block b = world.getBlock(x, y-1, z);
+		return b == Blocks.quartz_block || b == ChromaBlocks.PYLONSTRUCT.getBlockInstance();
 	}
 
 	private void play(World world, int x, int y, int z) {
@@ -167,7 +210,10 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 		}
 
 		if (canPlay) {
-			ChromaSounds.DING.playSoundAtBlock(this, n.volume/100F, (float)CrystalMusicManager.instance.getPitchFactor(n.key));
+			if (this.attentuate(world, x, y, z))
+				ChromaSounds.DING.playSoundAtBlock(this, n.volume/100F, (float)CrystalMusicManager.instance.getPitchFactor(n.key));
+			else
+				ChromaSounds.DING.playSoundAtBlockNoAttenuation(this, n.volume/100F, (float)CrystalMusicManager.instance.getPitchFactor(n.key), 64);
 			return true;
 		}
 		else {
@@ -177,14 +223,26 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 		}
 	}
 
+	private boolean attentuate(World world, int x, int y, int z) {
+		return world.getBlock(x, y-1, z) != Blocks.quartz_block;//world.getBlock(x, y-1, z) != ChromaBlocks.RUNE.getBlockInstance() || world.getBlockMetadata(x, y-1, z) != CrystalElement.YELLOW.ordinal();
+	}
+
 	public boolean playCrystal(World world, int x, int y, int z, CrystalElement e) {
 		Coordinate c = colorPositions.get(e).offset(xCoord, yCoord, zCoord);
 		Block b = c.getBlock(world);
 		if (b instanceof CrystalBlock && c.getBlockMetadata(world) == e.ordinal()) {
 			this.generateParticles(world, c.xCoord, c.yCoord, c.zCoord, e);
+			if (networkConnections[e.ordinal()] != null && networkConnections[e.ordinal()].stillValid()) {
+				//ReikaJavaLibrary.pConsole(networkConnections[e.ordinal()]);
+				networkConnections[e.ordinal()].blink(14, receiver);
+			}
 			return true;
 		}
 		return false;
+	}
+
+	private CrystalReceiver createTemporaryReceiver() {
+		return new TemporaryCrystalReceiver(new WorldLocation(this), 0, 32, 0.35, ResearchLevel.BASICCRAFT);
 	}
 
 	private void generateParticles(World world, int x, int y, int z, CrystalElement e) {

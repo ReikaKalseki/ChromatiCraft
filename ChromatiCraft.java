@@ -83,6 +83,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.TransmutationRecipes;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaHelpHUD;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
+import Reika.ChromatiCraft.Auxiliary.Render.MobSonarRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.OreOverlayRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.PylonFinderOverlay;
 import Reika.ChromatiCraft.Auxiliary.Tab.FragmentTab;
@@ -117,6 +118,7 @@ import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.World.BiomeEnderForest;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
+import Reika.ChromatiCraft.World.CaveIndicatorGenerator;
 import Reika.ChromatiCraft.World.ColorTreeGenerator;
 import Reika.ChromatiCraft.World.CrystalGenerator;
 import Reika.ChromatiCraft.World.DataTowerGenerator;
@@ -428,6 +430,8 @@ public class ChromatiCraft extends DragonAPIMod {
 			MinecraftForge.EVENT_BUS.register(ChromaOverlays.instance);
 			MinecraftForge.EVENT_BUS.register(OreOverlayRenderer.instance);
 			FMLCommonHandler.instance().bus().register(OreOverlayRenderer.instance);
+			FMLCommonHandler.instance().bus().register(MobSonarRenderer.instance);
+			MinecraftForge.EVENT_BUS.register(MobSonarRenderer.instance);
 			ParticleEngine.instance.register();
 		}
 
@@ -478,6 +482,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		this.addRerunnableDecorator(TieredWorldGenerator.instance, Integer.MIN_VALUE);
 		this.addRerunnableDecorator(DecoFlowerGenerator.instance, Integer.MIN_VALUE);
 		this.addRerunnableDecorator(LumaGenerator.instance, Integer.MAX_VALUE);
+		this.addRerunnableDecorator(CaveIndicatorGenerator.instance, Integer.MAX_VALUE);
 
 		//ReikaEntityHelper.overrideEntity(EntityChromaEnderCrystal.class, "EnderCrystal", 0);
 

@@ -667,6 +667,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			int dy = c.yCoord;
 			int dz = c.zCoord;
 			Block b = world.getBlock(dx, dy, dz);
+			if (b == ChromaBlocks.CLIFFSTONE.getBlockInstance())
+				return false;
 			if (world.getTopSolidOrLiquidBlock(dx, dz) < y-2)
 				return false;
 			if (arr.hasBlockAt(dx, dy, dz, Blocks.stone) || arr.hasBlockAt(dx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance())) {
@@ -763,7 +765,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			return false;
 		switch(s) {
 			case OCEAN:
-				return r.nextInt(/*32*/4) == 0 && ReikaBiomeHelper.isOcean(world.getBiomeGenForCoords(x, z));
+				return r.nextInt(/*32*/6) == 0 && ReikaBiomeHelper.isOcean(world.getBiomeGenForCoords(x, z));
 			case CAVERN:
 				return r.nextInt(/*48*/5) == 0;
 			case BURROW:
@@ -778,9 +780,9 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	private double getMinSeparation(Structures s) {
 		switch(s) {
 			case DESERT:
-				return 384;
-			case OCEAN:
 				return 512;
+			case OCEAN:
+				return 1024;
 			case CAVERN:
 				return 128;
 			case BURROW:

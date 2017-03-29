@@ -13,34 +13,62 @@ import java.util.List;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
+import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger;
+import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.LoggingLevel;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
+import Reika.ChromatiCraft.Magic.Interfaces.DynamicRepeater;
+import Reika.ChromatiCraft.Magic.Interfaces.WrapperTile;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 
 public class CrystalFlow extends CrystalPath {
 
-	private int remainingAmount;
-	private final int maxFlow;
+	private static final int MIN_THROUGHPUT = 10;
+
+	public final int maxFlow;
+	public final int totalCost;
 	public final CrystalReceiver receiver;
 
+	private int remainingAmount;
+
+	CrystalFlow(CrystalNetworker net, CrystalPath p, CrystalReceiver r, int amt, int maxthru) {
+		this(net, r, p.element, amt, p.nodes, maxthru);
+	}
+
 	protected CrystalFlow(CrystalNetworker net, CrystalReceiver r, CrystalElement e, int amt, List<WorldLocation> li, int maxthru) {
-		super(net, e, li);
-		remainingAmount = amt+this.getSignalLoss();
+		super(net, !(r instanceof WrapperTile), e, li);
+		totalCost = amt+this.getSignalLoss();
+		remainingAmount = totalCost;
 		receiver = r;
+		CrystalNetworkLogger.logPathCalculation("maxthru", maxthru);
 		maxFlow = this.calcEffectiveThroughput(maxthru);
 	}
 
 	private int calcEffectiveThroughput(int maxthru) {
 		int base = this.getMinMaxFlow();
-		return Math.min(Math.max(this.getInsuredThroughput(), base-this.getSignalLoss()+this.getThoughputBonus()), Math.min(maxthru, base));
+		if (CrystalNetworkLogger.getLogLevel().isAtLeast(LoggingLevel.PATHCALC)) {
+			CrystalNetworkLogger.logPathCalculation("base", base);
+			CrystalNetworkLogger.logPathCalculation("bonus", this.getThoughputBonus());
+			CrystalNetworkLogger.logPathCalculation("insured", this.getInsuredThroughput());
+			CrystalNetworkLogger.logPathCalculation("max-base", Math.min(maxthru, base));
+			CrystalNetworkLogger.logPathCalculation("totalthru", Math.min(Math.max(this.getInsuredThroughput(), base-this.getSignalLoss()+this.getThoughputBonus()), Math.min(maxthru, base)));
+		}
+		int result = Math.min(Math.max(this.getInsuredThroughput(), base-this.getThroughputPenalty(base)+this.getThoughputBonus()), Math.min(maxthru, base));
+		for (int i = 1; i < nodes.size()-1; i++) {
+			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
+			if (te instanceof DynamicRepeater) {
+				result = ((DynamicRepeater)te).getModifiedThoughput(result, transmitter, receiver);
+			}
+		}
+		return result;
 	}
 
 	private int getInsuredThroughput() {
-		int val = 0;
+		int val = MIN_THROUGHPUT;
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
 			if (te instanceof CrystalRepeater) {
@@ -70,12 +98,24 @@ public class CrystalFlow extends CrystalPath {
 		return max;
 	}
 
-	CrystalFlow(CrystalNetworker net, CrystalPath p, CrystalReceiver r, int amt, int maxthru) {
-		this(net, r, p.element, amt, p.nodes, maxthru);
+	private int getThroughputPenalty(int rawthru) {
+		int att = this.getSignalLoss();
+		int amt = (int)Math.pow(att/80, 1.5+0.5*(1-this.getOptimizationFactor())); //raw, directly determined from attenuation & path optimization
+		double x = rawthru/att-1;
+		if (att > rawthru) { //add to base_rem
+			double y = -Math.sqrt(-x)*(rawthru-amt-MIN_THROUGHPUT);
+			amt += Math.round(y);
+		}
+		else if (att < rawthru) { //can combat base_rem
+			x = Math.min(x, 1);
+			double y = Math.sqrt(x)*amt;
+			amt -= Math.round(y);
+		}
+		return Math.max(0, amt);
 	}
 
 	CrystalPath asPath() {
-		return new CrystalPath(network, element, nodes);
+		return new CrystalPath(network, hasRealTarget, element, nodes);
 	}
 
 	@Override
@@ -143,6 +183,10 @@ public class CrystalFlow extends CrystalPath {
 		return remainingAmount <= 0;
 	}
 
+	public int getRemainingLumens() {
+		return remainingAmount;
+	}
+
 	int drain() {
 		int ret = Math.min(transmitter.getEnergy(element), this.getDrainThisTick());
 		if (ret <= 0)
@@ -159,7 +203,7 @@ public class CrystalFlow extends CrystalPath {
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
 			if (te instanceof CrystalRepeater) {
-				((CrystalRepeater)te).onTransfer(element, amt);
+				((CrystalRepeater)te).onTransfer(transmitter, receiver, element, amt);
 			}
 		}
 	}

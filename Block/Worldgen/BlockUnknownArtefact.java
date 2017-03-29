@@ -34,6 +34,8 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class BlockUnknownArtefact extends Block {
@@ -88,6 +90,7 @@ public class BlockUnknownArtefact extends Block {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	public static void doInteractFX(World world, int x, int y, int z) {
 		for (int i = 0; i < 64; i++) {
 			double px = x+world.rand.nextDouble();
@@ -109,6 +112,7 @@ public class BlockUnknownArtefact extends Block {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void randomDisplayTick(World world, int x, int y, int z, Random rand) {
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 		double d = ep.getDistanceSq(x+0.5, y+0.5, z+0.5);

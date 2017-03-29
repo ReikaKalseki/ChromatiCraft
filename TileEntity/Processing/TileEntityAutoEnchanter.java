@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.TileEntity.Processing;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 
 import net.minecraft.enchantment.Enchantment;
@@ -39,6 +40,7 @@ import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler;
+import cpw.mods.fml.common.Loader;
 
 public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implements ChromaPowered, OperationInterval {
 
@@ -72,6 +74,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		tiers.put(ChromaEnchants.RARELOOT.getEnchantment(), EnchantmentTier.RARE);
 		tiers.put(ChromaEnchants.WEAPONAOE.getEnchantment(), EnchantmentTier.RARE);
 		tiers.put(ChromaEnchants.HARVESTLEVEL.getEnchantment(), EnchantmentTier.RARE);
+		tiers.put(ChromaEnchants.PHASING.getEnchantment(), EnchantmentTier.RARE);
 
 		//Enchantment multishot = ReikaEnchantmentHelper.getEnchantmentByName("Multishot");
 		//if (multishot != null)
@@ -163,6 +166,8 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			return true;
 		if (ModList.TINKERER.isLoaded() && (TinkerToolHandler.getInstance().isTool(is) || TinkerToolHandler.getInstance().isWeapon(is)))
 			return true;
+		if (Loader.isModLoaded("Backpack") && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("backpack"))
+			return true;
 		return is.getItem().getItemEnchantability(is) > 0;
 	}
 
@@ -194,6 +199,10 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 
 			if (ChromaItems.BEEFRAME.matchWith(is))
 				if (e != Enchantment.unbreaking)
+					return false;
+
+			if (Loader.isModLoaded("Backpack") && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("backpack"))
+				if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
 					return false;
 
 			if (ReikaEnchantmentHelper.getEnchantmentLevel(e, is) >= selected.get(e))

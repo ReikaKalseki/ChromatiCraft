@@ -21,6 +21,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -72,6 +73,8 @@ public class ArtefactSpawner implements TickHandler {
 	}
 
 	private boolean canSpawnArtefactNearPlayer(EntityPlayer ep) {
+		if (ReikaPlayerAPI.isFake(ep))
+			return false;
 		int cx = ReikaMathLibrary.roundDownToX(16, MathHelper.floor_double(ep.posX));
 		int cz = ReikaMathLibrary.roundDownToX(16, MathHelper.floor_double(ep.posZ));
 		return UnknownArtefactGenerator.instance.isUAChunk(ep.worldObj, cx, cz);
@@ -96,8 +99,12 @@ public class ArtefactSpawner implements TickHandler {
 	@SubscribeEvent
 	public void checkPlayerBreak(BreakEvent evt) {
 		EntityPlayer ep = evt.getPlayer();
-		if (ep instanceof EntityPlayerMP) {
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.DIGARTEFACT.ordinal(), (EntityPlayerMP)ep, evt.x, evt.y, evt.z);
+		if (ep instanceof EntityPlayerMP && !ReikaPlayerAPI.isFake(ep)) {
+			int cx = ReikaMathLibrary.roundDownToX(16, evt.x);
+			int cz = ReikaMathLibrary.roundDownToX(16, evt.z);
+			if (UnknownArtefactGenerator.instance.isUAChunk(evt.world, cx, cz)) {
+				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.DIGARTEFACT.ordinal(), (EntityPlayerMP)ep, evt.x, evt.y, evt.z);
+			}
 		}
 	}
 

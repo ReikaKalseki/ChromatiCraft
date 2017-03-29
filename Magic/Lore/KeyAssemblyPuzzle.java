@@ -382,17 +382,25 @@ public class KeyAssemblyPuzzle {
 		BlendMode.DEFAULT.apply();
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		boolean flag = LoreManager.instance.hasPlayerCompletedBoard(ep);
+		boolean flag2 = flag;
 		if (flag) {
 			//this.drawTexturedGrid(v5);
-			GL11.glTranslated(-w2, -h2, 0);
-			new RosettaStone().render(res, w2, h2);
+			for (HexCell c : cells.values()) {
+				if (c.getSolveFactor() < 1)
+					flag2 = false;
+			}
+			if (flag2) {
+				GL11.glTranslated(-w2, -h2, 0);
+				LoreManager.instance.getOrCreateRosetta(ep).render(res, w2, h2);
+			}
 		}
-		//else {
-		for (HexCell c : cells.values()) {
-			c.tickSolve();
-			float f = flag ? c.getSolveFactor() : 0;
+		if (!flag2) {
+			//else {
+			for (HexCell c : cells.values()) {
+				c.tickSolve();
+				float f = flag ? c.getSolveFactor() : 0;
 
-			/*
+				/*
 			GL11.glPushMatrix();
 			GL11.glTranslated(0, 0, 200);
 			GL11.glScaled(0.5, 0.5, 0.5);
@@ -400,11 +408,11 @@ public class KeyAssemblyPuzzle {
 			int y = (int)grid.getHexLocation(c.location).y;
 			ReikaGuiAPI.instance.drawCenteredStringNoShadow(Minecraft.getMinecraft().fontRenderer, String.valueOf(f), x*2+16, y*2+8, 0xffffff);
 			GL11.glPopMatrix();
-			 */
+				 */
 
-			if (flag/* && f >= 1*/) {
-				Hex h = c.location;
-				/*
+				if (flag && f >= 1) {
+					Hex h = c.location;
+					/*
 					Point pt = grid.getHexLocation(h);
 					double u = 0.5+pt.x*0.03125;//CELL_SIZE/SIZE;
 					double v = 0.5-pt.y*0.03125;//CELL_SIZE/SIZE;
@@ -413,10 +421,11 @@ public class KeyAssemblyPuzzle {
 					grid.drawTexturedHex(v5, h, u, v, /*CELL_SIZE/1024D*//*0.03125);
 					GL11.glPopMatrix();
 					 */
-				//this.drawTexturedHex(v5, h, grid.getGridProperties().sizeX, grid.getGridProperties().sizeY, f);
-			}
-			else {
-				c.render(this, v5, true, 1-Math.min(1, f*1.0625F));
+					//this.drawTexturedHex(v5, h, grid.getGridProperties().sizeX, grid.getGridProperties().sizeY, f);
+				}
+				else {
+					c.render(this, v5, true, 1-Math.min(1, f*1.0625F));
+				}
 			}
 		}
 		//}
@@ -472,7 +481,6 @@ public class KeyAssemblyPuzzle {
 		}
 		 */
 		boolean flag = activeCells == grid.cellCount();//TOTAL_CELLS;
-		flag = true;
 		if (flag) {
 			for (HexCell c : cells.values()) {
 				c.solveTick = 1;
@@ -639,7 +647,7 @@ public class KeyAssemblyPuzzle {
 			if (solveTick == 0 || this.solveTick() <= 0)
 				return 0;
 			int tick = this.solveTick();
-			return 1-tick/20F;//tick <= 10 ? tick/10F : tick <= 20 ? 1+(tick-10)/10F : 2+(tick-20)/10F;
+			return tick/20F;//tick <= 10 ? tick/10F : tick <= 20 ? 1+(tick-10)/10F : 2+(tick-20)/10F;
 		}
 
 		public void tickSolve() {

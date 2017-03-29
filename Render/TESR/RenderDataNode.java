@@ -23,6 +23,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
+import Reika.ChromatiCraft.Magic.Lore.LoreScripts.ScriptLocations;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -75,7 +76,7 @@ public class RenderDataNode extends ChromaRenderBase {
 				}
 				GL11.glPopMatrix();
 
-				if (te.isInWorld() && MinecraftForgeClient.getRenderPass() == 1) {
+				if (te.isInWorld() && ScriptLocations.TOWER.isEnabled() && MinecraftForgeClient.getRenderPass() == 1 && Minecraft.getMinecraft().thePlayer.getDistanceSq(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5) < 576) {
 					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 					InWorldScriptRenderer.renderTowerScript(te, par8, v5, 0.03125/2);
 					GL11.glPopAttrib();

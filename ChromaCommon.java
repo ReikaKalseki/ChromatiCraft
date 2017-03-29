@@ -41,6 +41,7 @@ public class ChromaCommon {
 	public static int sparkleRender;
 	public static int everfluidRender;
 	public static int cliffstoneRender;
+	public static int caveIndicatorRender;
 
 	public static int armor;
 

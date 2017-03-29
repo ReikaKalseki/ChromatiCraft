@@ -119,15 +119,15 @@ public enum ChromaResearch implements ProgressElement {
 	ENCHANTING("Crystal Enchanting",	new ItemStack(Items.enchanted_book),					ResearchLevel.MULTICRAFT,	ProgressStage.MULTIBLOCK),
 
 	MACHINEDESC("Constructs", ""),
-	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING,		ProgressStage.USEENERGY),
+	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING,		ProgressStage.BLOWREPEATER),
 	GUARDIAN(		ChromaTiles.GUARDIAN, 		ResearchLevel.PYLONCRAFT),
 	//LIQUIFIER(		ChromaTiles.LIQUIFIER, 		ResearchLevel.RUNECRAFT),
 	REPROGRAMMER(	ChromaTiles.REPROGRAMMER, 	ResearchLevel.PYLONCRAFT),
 	ACCEL(			ChromaTiles.ADJACENCY, 		ResearchLevel.ENDGAME),
 	RIFT(			ChromaTiles.RIFT, 			ResearchLevel.PYLONCRAFT),
-	TANK(			ChromaTiles.TANK, 			ResearchLevel.PYLONCRAFT),
+	TANK(			ChromaTiles.TANK, 			ResearchLevel.PYLONCRAFT,		ProgressStage.OCEAN),
 	COMPOUND(		ChromaTiles.COMPOUND, 		ResearchLevel.NETWORKING,		ProgressStage.REPEATER),
-	CHARGER(		ChromaTiles.CHARGER, 		ResearchLevel.PYLONCRAFT),
+	CHARGER(		ChromaTiles.CHARGER, 		ResearchLevel.MULTICRAFT,		ProgressStage.STORAGE),
 	LILY(			ChromaTiles.HEATLILY, 		ResearchLevel.RUNECRAFT),
 	TICKER(			ChromaTiles.TICKER, 		ResearchLevel.MULTICRAFT),
 	FENCE(			ChromaTiles.FENCE, 			ResearchLevel.MULTICRAFT),
@@ -255,12 +255,13 @@ public enum ChromaResearch implements ProgressElement {
 	TELECAPSULE(		ChromaItems.WARPCAPSULE,	ResearchLevel.RUNECRAFT),
 	BEEFRAME(			ChromaItems.BEEFRAME,		ResearchLevel.RUNECRAFT,		ProgressStage.HIVE),
 	STRUCTFIND(			ChromaItems.STRUCTUREFINDER,ResearchLevel.RUNECRAFT,		ProgressStage.RUNEUSE, ProgressStage.ANYSTRUCT),
+	MOBSONAR(			ChromaItems.MOBSONAR,		ResearchLevel.RUNECRAFT,		ProgressStage.KILLMOB, ProgressStage.CHARGE),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
 	SHARDS("Shards",				ChromaStacks.redShard, 									ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),
 	DUSTS("Plant Dusts",			ChromaStacks.auraDust, 									ResearchLevel.ENERGYEXPLORE),
-	GROUPS("Groups",				ChromaStacks.crystalCore, 								ResearchLevel.BASICCRAFT),
+	GROUPS("Groups",				ChromaStacks.crystalCore, 								ResearchLevel.RUNECRAFT),
 	CORES("Cores",					ChromaStacks.energyCore,								ResearchLevel.MULTICRAFT),
 	HICORES("Energized Cores",		ChromaStacks.energyCoreHigh,							ResearchLevel.PYLONCRAFT),
 	IRID("Iridescent Crystal",		ChromaStacks.iridCrystal,								ResearchLevel.MULTICRAFT,	ProgressStage.ALLOY),
@@ -290,7 +291,7 @@ public enum ChromaResearch implements ProgressElement {
 	LIFEPOINT(		Chromabilities.LIFEPOINT),
 	DEATHPROOF(		Chromabilities.DEATHPROOF),
 	SHOCKWAVE(		Chromabilities.SHOCKWAVE),
-	WARPLOC(		Chromabilities.TELEPORT,					ResearchLevel.CTM),
+	WARPLOC(		Chromabilities.TELEPORT,					ResearchLevel.ENDGAME),
 	LEECH(			Chromabilities.LEECH),
 	FLOAT(			Chromabilities.FLOAT),
 	SPAWNERSEE(		Chromabilities.SPAWNERSEE,					ResearchLevel.ENDGAME),
@@ -308,17 +309,18 @@ public enum ChromaResearch implements ProgressElement {
 	MEINV(			Chromabilities.MEINV,						ResearchLevel.ENDGAME),
 	MOBSEEK(		Chromabilities.MOBSEEK,						ResearchLevel.CTM),
 	BEEALYZE(		Chromabilities.BEEALYZE),
+	NUKER(			Chromabilities.NUKER,						ResearchLevel.ENDGAME),
 
 	STRUCTUREDESC("Structures", ""),
 	PYLON(			Structures.PYLON,		5,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),
 	CASTING1(		Structures.CASTING1,	0,	ResearchLevel.BASICCRAFT,		ProgressStage.CRYSTALS),
 	CASTING2(		Structures.CASTING2,	1,	ResearchLevel.RUNECRAFT,		ProgressStage.RUNEUSE),
-	CASTING3(		Structures.CASTING3,	2,	ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK),
+	CASTING3(		Structures.CASTING3,	2,	ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK, ProgressStage.BLOWREPEATER),
 	RITUAL	(		Structures.RITUAL,		7,	ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
 	INFUSION(		Structures.INFUSION,	12,	ResearchLevel.MULTICRAFT,		ProgressStage.CHROMA),
 	TREE(			Structures.TREE,		14,	ResearchLevel.ENDGAME,			ProgressStage.POWERCRYSTAL),
 	REPEATERSTRUCT(	Structures.REPEATER,	0,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.RUNEUSE),
-	COMPOUNDSTRUCT(	Structures.COMPOUND,	13,	ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK),
+	COMPOUNDSTRUCT(	Structures.COMPOUND,	13,	ResearchLevel.NETWORKING,		ProgressStage.REPEATER),
 	CAVERN(			Structures.CAVERN,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.CAVERN),
 	BURROW(			Structures.BURROW,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.BURROW),
 	OCEAN(			Structures.OCEAN,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.OCEAN),
@@ -952,6 +954,9 @@ public enum ChromaResearch implements ProgressElement {
 			li.add(ChromaStacks.echoCrystal);
 			li.add(ChromaStacks.fireEssence);
 			li.add(ChromaStacks.thermiticCrystal);
+			li.add(ChromaStacks.lumenGem);
+			li.add(ChromaStacks.avolite);
+			li.add(ChromaStacks.echoCrystal);
 			return li;
 		}
 		if (this == DUSTS) {
@@ -1070,6 +1075,9 @@ public enum ChromaResearch implements ProgressElement {
 			for (CastingRecipe c : RecipesCastingTable.instance.getAllAPIRecipes()) {
 				li.add(c.getOutput());
 			}
+			for (CastingRecipe c : RecipesCastingTable.instance.getAllModdedItemRecipes()) {
+				li.add(c.getOutput());
+			}
 			return li;
 		}
 		return null;
@@ -1100,6 +1108,29 @@ public enum ChromaResearch implements ProgressElement {
 			default:
 				return false;
 		}
+	}
+
+	public boolean crafts(ItemStack is) {
+		if (!this.isCrafting())
+			return false;
+		if (this == ALLOYS) {
+			return ReikaItemHelper.listContainsItemStack(this.getItemStacks(), is, false);
+		}
+		else if (this.isVanillaRecipe()) {
+			for (IRecipe ir : this.getVanillaRecipes()) {
+				if (ReikaItemHelper.matchStacks(is, ir.getRecipeOutput())) {
+					return true;
+				}
+			}
+		}
+		else {
+			for (CastingRecipe c : this.getCraftingRecipes()) {
+				if (ReikaItemHelper.matchStacks(is, c.getOutput())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public ChromaGuis getCraftingType() {

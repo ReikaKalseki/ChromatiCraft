@@ -39,7 +39,7 @@ public class TreeShaper {
 	private final ArrayList<ItemStack> validLogs = new ArrayList();
 
 	public boolean isLogTypeEverAllowed(ModWoodList wood) {
-		return wood != ModWoodList.BAMBOO && wood != ModWoodList.LIGHTED && wood != ModWoodList.SLIME;
+		return wood != ModWoodList.BAMBOO && wood != ModWoodList.LIGHTED && wood != ModWoodList.SLIME && wood != ModWoodList.TAINTED;
 	}
 
 	private TreeShaper() {

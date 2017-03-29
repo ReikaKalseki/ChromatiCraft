@@ -19,8 +19,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.FluidIOInventoryBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -51,7 +51,7 @@ public class TileEntityCollector extends FluidIOInventoryBase implements OwnedTi
 		if (output.canTakeIn(XP_PER_BOTTLE))
 			this.internalizeXP();
 
-		if (!input.isEmpty()) {
+		if (!input.isEmpty() && !this.hasRedstoneSignal()) {
 			FluidStack fs = ReikaXPFluidHelper.getFluid();
 			if (fs != null) {
 				int produce = Math.min(speed, input.getLevel()/fs.amount/XP_PER_CHROMA);

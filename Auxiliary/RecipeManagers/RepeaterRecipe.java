@@ -54,7 +54,7 @@ public abstract class RepeaterRecipe extends MultiBlockCastingRecipe implements 
 
 	@Override
 	public final boolean canRunRecipe(EntityPlayer ep) {
-		return super.canRunRecipe(ep) && ChromaResearchManager.instance.getPlayerResearchLevel(ep).ordinal() >= ResearchLevel.NETWORKING.ordinal() && ProgressStage.USEENERGY.isPlayerAtStage(ep);
+		return super.canRunRecipe(ep) && ChromaResearchManager.instance.getPlayerResearchLevel(ep).ordinal() >= ResearchLevel.NETWORKING.ordinal() && ProgressStage.BLOWREPEATER.isPlayerAtStage(ep);
 	}
 
 	@Override

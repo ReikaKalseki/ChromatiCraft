@@ -175,6 +175,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.GrowthW
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.InventoryLinkRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.KillAuraRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.LinkToolRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.MobSonarRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.MultiToolRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.OrePickRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.OreSilkerRecipe;
@@ -486,7 +487,7 @@ public class RecipesCastingTable {
 			this.addRecipe(new AuraCleanerRecipe(is, new ItemStack(Items.potionitem)));
 		}
 
-		this.addRecipe(new InventoryLinkRecipe(ChromaItems.LINK.getStackOf(), ChromaStacks.resonanceDust));
+		this.addRecipe(new InventoryLinkRecipe(ChromaItems.LINK.getStackOf(), new ItemStack(Items.ender_pearl)));
 
 		this.addRecipe(new LampRecipe(ChromaTiles.LAMP.getCraftedProduct(), new ItemStack(Blocks.glowstone)));
 
@@ -634,6 +635,7 @@ public class RecipesCastingTable {
 		this.addRecipe(new EnchantmentRecipe(ChromaResearch.EXCAVATOR, ChromaItems.EXCAVATOR.getStackOf(), ReikaItemHelper.lapisDye.copy(), ChromaStacks.chargedPurpleShard, ChromaStacks.focusDust, Enchantment.fortune, 5));
 		this.addRecipe(new EnchantmentRecipe(ChromaResearch.EXCAVATOR, ChromaItems.EXCAVATOR.getStackOf(), ChromaStacks.enderDust, ChromaStacks.chargedLimeShard, ChromaStacks.beaconDust, Enchantment.field_151369_A, 1));
 		this.addRecipe(new EnchantmentRecipe(ChromaResearch.EXCAVATOR, ChromaItems.EXCAVATOR.getStackOf(), ChromaStacks.energyPowder, ChromaStacks.chargedBrownShard, new ItemStack(Items.diamond), Enchantment.efficiency, 1));
+		this.addRecipe(new EnchantmentRecipe(ChromaResearch.EXCAVATOR, ChromaItems.EXCAVATOR.getStackOf(), ChromaStacks.teleDust, ChromaStacks.chargedBlueShard, ChromaStacks.lumenGem, Enchantment.flame, 1));
 
 		this.addRecipe(new EnchantmentRecipe(ChromaResearch.TRANSITION, ChromaItems.TRANSITION.getStackOf(), ChromaStacks.bindingCrystal, ChromaStacks.chargedGrayShard, ChromaStacks.resonanceDust, Enchantment.silkTouch, 1));
 
@@ -740,6 +742,10 @@ public class RecipesCastingTable {
 		sr = new ShapedOreRecipe(is, "IAs", "ASA", "sAO", 'A', ChromaStacks.auraDust, 'I', Items.iron_ingot, 'O', Blocks.obsidian, 'S', "stone", 's', ChromaItems.SHARD.getAnyMetaStack());
 		this.addRecipe(new StructureFinderRecipe(is, sr));
 
+		is = ChromaItems.MOBSONAR.getStackOf();
+		sr = new ShapedOreRecipe(is, "sas", "aba", "sas", 'a', ChromaStacks.auraDust, 's', Items.stick, 'b', Items.diamond);
+		this.addRecipe(new MobSonarRecipe(is, sr));
+
 		this.addSpecialRecipes();
 	}
 
@@ -751,7 +757,7 @@ public class RecipesCastingTable {
 
 	public void addPostLoadRecipes() {
 		if (ModList.THAUMCRAFT.isLoaded()) {
-			ItemStack is = ReikaItemHelper.getSizedItemStack(ThaumItemHelper.BlockEntry.ANCIENTROCK.getItem(), 4);
+			ItemStack is = ReikaItemHelper.getSizedItemStack(ThaumItemHelper.BlockEntry.ANCIENTROCK.getItem(), 16);
 			IRecipe sr = new ShapedOreRecipe(is, "SdS", "dOd", "SdS", 'S', "stone", 'd', ChromaStacks.auraDust, 'O', Blocks.obsidian);
 			this.addRecipe(new CastingRecipe(is, sr));
 		}

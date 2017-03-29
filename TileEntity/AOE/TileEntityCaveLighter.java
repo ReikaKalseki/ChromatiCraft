@@ -15,6 +15,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
@@ -27,6 +28,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockSpiral;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -196,7 +198,16 @@ public class TileEntityCaveLighter extends TileEntityChromaticBase implements Ra
 	}
 
 	private boolean placeBlockAt(World world, int x, int y, int z) {
-		return world.getBlock(x, y, z).isAir(world, x, y, z) && world.getBlockLightValue(x, y, z) <= 7 && world.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) < 4 && !world.canBlockSeeTheSky(x, y+1, z);
+		return world.getBlock(x, y, z).isAir(world, x, y, z) && y < getMaxY(world, x, z) && isDark(world, x, y, z);
+	}
+
+	private int getMaxY(World world, int x, int z) {
+		BiomeGenBase b = world.getBiomeGenForCoords(x, z);
+		return BiomeGlowingCliffs.isGlowingCliffs(b) ? 60 : this.MAXY;
+	}
+
+	private boolean isDark(World world, int x, int y, int z) {
+		return !world.canBlockSeeTheSky(x, y+1, z) && world.getBlockLightValue(x, y, z) <= 7 && world.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) < 4;
 	}
 
 	@Override

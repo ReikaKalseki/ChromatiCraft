@@ -86,4 +86,26 @@ public class CrystalTarget {
 		return color.name()+": "+location.getTileEntity()+" {"+offsetX+","+offsetY+","+offsetZ+"}";
 	}
 
+	public static class TickingCrystalTarget extends CrystalTarget {
+
+		private final int lifespan;
+		private int tick;
+
+		public TickingCrystalTarget(WorldLocation target, CrystalElement color, double w, int l) {
+			super(target, color, w);
+			lifespan = l;
+		}
+
+		public TickingCrystalTarget(WorldLocation target, CrystalElement color, double dx, double dy, double dz, double w, int l) {
+			super(target, color, dx, dy, dz, w);
+			lifespan = l;
+		}
+
+		public boolean tick() {
+			tick++;
+			return tick >= lifespan;
+		}
+
+	}
+
 }

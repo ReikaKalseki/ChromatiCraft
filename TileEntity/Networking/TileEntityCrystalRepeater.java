@@ -41,11 +41,11 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
+import Reika.ChromatiCraft.Magic.Network.CrystalPath;
 import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -179,11 +179,6 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	}
 
 	@Override
-	public int getSignalDegradation() {
-		return this.isTurbocharged() ? 0 : 5;
-	}
-
-	@Override
 	public boolean canConduct() {
 		return hasMultiblock && !redstoneCache;
 	}
@@ -289,6 +284,11 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	}
 
 	@Override
+	public int getSignalDegradation() {
+		return this.isTurbocharged() ? 0 : 10;
+	}
+
+	@Override
 	public boolean isConductingElement(CrystalElement e) {
 		return e != null && e == this.getActiveColor();
 	}
@@ -317,7 +317,8 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	public CrystalSource getEnergySource() {
 		CrystalElement e = this.getActiveColor();
-		return e != null ? CrystalNetworker.instance.getConnectivity(e, this) : null;
+		CrystalPath p = e != null ? CrystalNetworker.instance.getConnectivity(e, this) : null;
+		return p != null ? p.transmitter : null;
 	}
 
 	/*
@@ -366,10 +367,12 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	}
 
+	/*
 	@Override
 	public ResearchLevel getResearchTier() {
 		return ResearchLevel.NETWORKING;
 	}
+	 */
 
 	@Override
 	public final void drop() {
@@ -545,7 +548,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		ReikaSoundHelper.playBreakSound(world, x, y, z, Blocks.glass);
 	}
 
-	public void onTransfer(CrystalElement e, int amt) {
+	public void onTransfer(CrystalSource src, CrystalReceiver r, CrystalElement e, int amt) {
 
 	}
 

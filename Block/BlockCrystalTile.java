@@ -30,7 +30,6 @@ import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.TileEntity.Networking.TileEntityWeakRepeater;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -140,8 +139,10 @@ public class BlockCrystalTile extends BlockChromaTile {
 			boolean silk = EnchantmentHelper.getSilkTouchModifier(ep);
 			TileEntityChromaticBase te = (TileEntityChromaticBase)world.getTileEntity(x, y, z);
 			if (!te.isUnHarvestable()) {
+				/*
 				if (te instanceof TileEntityWeakRepeater && !((TileEntityWeakRepeater)te).hasRemainingLife())
 					return;
+				 */
 				if (silk || !c.needsSilkTouch()) {
 					ItemStack is = this.getHarvestedItemStack(world, x, y, z, meta, c);
 					if (c.hasNBTVariants()) {

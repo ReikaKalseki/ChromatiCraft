@@ -60,6 +60,7 @@ public enum ChromaSounds implements SoundEnum {
 	PYLONBOOSTSTART("pylonbooststart"),
 	DASH("dash"),
 	REPEATERSURGE("repeatersurge"),
+	REPEATERSURGE_WEAK("repeatersurge_weak"),
 	FIRE("fire"),
 	LASER("laser"),
 	MONUMENT("monument"),
@@ -87,7 +88,7 @@ public enum ChromaSounds implements SoundEnum {
 	CLIFFSOUND3("cliffambience3"),
 	INSCRIBE("inscribe"),
 	LOREHEX("lore"),
-	LORECOMPLETE("lorecomplete"),
+	LORECOMPLETE("lorecomplete2"),
 	;
 
 	public static final ChromaSounds[] soundList = values();
@@ -209,7 +210,7 @@ public enum ChromaSounds implements SoundEnum {
 
 	@Override
 	public boolean attenuate() {
-		return this != GOTODIM && this != PYLONTURBO && this != PYLONFLASH && this != PYLONBOOSTRITUAL && this != PYLONBOOSTSTART && this != REPEATERSURGE && this != MONUMENT && this != MONUMENTRAY;
+		return this != GOTODIM && this != PYLONTURBO && this != PYLONFLASH && this != PYLONBOOSTRITUAL && this != PYLONBOOSTSTART && this != REPEATERSURGE && this != MONUMENT && this != MONUMENTRAY && this != GAINPROGRESS;
 	}
 
 	public boolean hasWiderPitchRange() {

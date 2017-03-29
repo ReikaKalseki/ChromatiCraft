@@ -113,7 +113,7 @@ public class PylonFinder {
 		this.findFrom(target, thresh);
 		//ReikaJavaLibrary.pConsole(this.toString());
 		if (this.isComplete()) {
-			CrystalPath path = new CrystalPath(net, element, nodes);
+			CrystalPath path = new CrystalPath(net, !(target instanceof WrapperTile), element, nodes);
 			if (!(target instanceof WrapperTile))
 				this.addValidPath(path);
 			return path;

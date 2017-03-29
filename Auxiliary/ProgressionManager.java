@@ -106,7 +106,7 @@ public class ProgressionManager implements ProgressRegistry {
 		SHARDCHARGE(ChromaStacks.chargedRedShard),
 		ALLOY(ChromaStacks.chromaIngot),
 		CHROMA(ChromaBlocks.CHROMA.getBlockInstance()), //step in liquid chroma
-		STONES(ChromaStacks.elementUnit), //craft all elemental stones together
+		//STONES(ChromaStacks.elementUnit), //craft all elemental stones together
 		SHOCK(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(5)), //get hit by a pylon
 		HIVE(ChromaBlocks.HIVE.getBlockInstance(), ModList.FORESTRY.isLoaded()),
 		NETHER(Blocks.portal), //go to the nether
@@ -124,6 +124,7 @@ public class ProgressionManager implements ProgressRegistry {
 		DIMENSION(ChromaBlocks.PORTAL.getBlockInstance()),
 		CTM(ChromaTiles.AURAPOINT.getCraftedProduct()),
 		STORAGE(ChromaItems.STORAGE.getStackOf()),
+		CHARGECRYSTAL(ChromaTiles.CHARGER.getCraftedProduct()),
 		BALLLIGHTNING(ChromaStacks.auraDust),
 		POWERCRYSTAL(ChromaTiles.CRYSTAL.getCraftedProduct()),
 		TURBOCHARGE(ChromaTiles.PYLONTURBO.getCraftedProduct()),
@@ -133,6 +134,7 @@ public class ProgressionManager implements ProgressRegistry {
 		KILLMOB(new ItemStack(Items.skull, 1, 4)),
 		ALLCORES(ChromaTiles.DIMENSIONCORE.getCraftedNBTProduct("color", CrystalElement.RED.ordinal())),
 		USEENERGY(ChromaTiles.WEAKREPEATER.getCraftedProduct()),
+		BLOWREPEATER(ChromaStacks.crystalPowder),
 		STRUCTCOMPLETE(ChromaBlocks.DIMDATA.getStackOf()),
 		NETHERROOF(Blocks.netherrack),
 		NETHERSTRUCT(Blocks.nether_brick),
@@ -277,7 +279,7 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.ABILITY, 	ProgressStage.CHARGE);
 		progressMap.addParent(ProgressStage.ABILITY, 	ProgressStage.LINK);
 
-		progressMap.addParent(ProgressStage.STONES, 	ProgressStage.MULTIBLOCK);
+		//progressMap.addParent(ProgressStage.STONES, 	ProgressStage.MULTIBLOCK);
 
 		progressMap.addParent(ProgressStage.SHOCK, 		ProgressStage.PYLON);
 
@@ -301,11 +303,15 @@ public class ProgressionManager implements ProgressRegistry {
 
 		progressMap.addParent(ProgressStage.END, 		ProgressStage.NETHER);
 
+		progressMap.addParent(ProgressStage.BLOWREPEATER, 	ProgressStage.USEENERGY);
+
 		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.MULTIBLOCK);
-		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.USEENERGY);
+		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.BLOWREPEATER);
 		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.VILLAGECASTING);
 
 		progressMap.addParent(ProgressStage.STORAGE, 	ProgressStage.MULTIBLOCK);
+
+		progressMap.addParent(ProgressStage.CHARGECRYSTAL, 	ProgressStage.STORAGE);
 
 		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.LINK);
 		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.STORAGE);
@@ -380,7 +386,8 @@ public class ProgressionManager implements ProgressRegistry {
 				c.add(ProgressStage.valueOf(val));
 			}
 			catch (IllegalArgumentException e) {
-				ChromatiCraft.logger.logError("Could not load progress stage from NBT String "+val);
+				ChromatiCraft.logger.logError("Could not load progress stage from NBT String "+val+"; was it removed?");
+				it.remove();
 			}
 		}
 		playerMap.put(ep.getCommandSenderName(), c);

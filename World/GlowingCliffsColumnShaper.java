@@ -91,9 +91,9 @@ public class GlowingCliffsColumnShaper {
 
 	private static final double ANGLE_SEARCH_STEP = 15;
 
-	private static final BlockKey STONE = new BlockKey(Blocks.stone);
-	private static final BlockKey DIRT = new BlockKey(Blocks.dirt);
-	private static final BlockKey GRASS = new BlockKey(Blocks.grass);
+	private static final BlockKey STONE = new BlockKey(Blocks.stone, 0);
+	private static final BlockKey DIRT = new BlockKey(Blocks.dirt, 0);
+	private static final BlockKey GRASS = new BlockKey(Blocks.grass, 0);
 
 	private static final BlockKey BIOME_STONE = STONE;//new BlockKey(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.STONE.getMeta(false, false));
 	private static final BlockKey BIOME_DIRT = DIRT;//new BlockKey(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.DIRT.getMeta(false, false));
@@ -475,7 +475,7 @@ public class GlowingCliffsColumnShaper {
 		BlockKey stone = this.getStone(biome);
 		BlockKey dirt = this.getDirt(biome);
 		for (int i = 0; i < floor; i++) {
-			this.setBlock(x, i, z, stone.blockID, stone.metadata);
+			this.setBlock(x, i, z, stone.blockID, stone.hasMetadata() ? stone.metadata : 0);
 		}
 		for (int i = floor; i <= SEA_LEVEL; i++) {
 			this.setBlock(x, i, z, Blocks.water);
@@ -484,7 +484,7 @@ public class GlowingCliffsColumnShaper {
 			this.setBlock(x, i, z, Blocks.air);
 		}
 		for (int h = 1; h <= dirtt; h++) {
-			this.setBlock(x, floor-h, z, dirt.blockID, dirt.metadata);
+			this.setBlock(x, floor-h, z, dirt.blockID, dirt.hasMetadata() ? dirt.metadata : 0);
 		}
 	}
 
@@ -506,7 +506,7 @@ public class GlowingCliffsColumnShaper {
 			else if (i >= top-dirt || (i >= caveFloor-dirt && i < caveCeil)) {
 				b = this.getDirt(biome);
 			}
-			this.setBlock(x, i, z, b.blockID, b.metadata);
+			this.setBlock(x, i, z, b.blockID, b.hasMetadata() ? b.metadata : 0);
 		}
 		if (caveFloor > 0 && caveFloor < 256) {
 			//if (ReikaBlockHelper.isDirtType(biome.topBlock, 0)) {
@@ -534,6 +534,8 @@ public class GlowingCliffsColumnShaper {
 	}
 
 	private void setBlock(int x, int y, int z, Block b, int meta) {
+		if (meta < 0)
+			throw new IllegalArgumentException("Negative metadata @ "+x+", "+y+", "+z+"!");
 		//int cx = x-x%16;
 		//if (cx < 0)
 		//	cx -= 16;

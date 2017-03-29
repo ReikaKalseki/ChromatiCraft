@@ -132,6 +132,8 @@ public class RenderCaveLighter extends ChromaRenderBase {
 
 		Tessellator v5 = Tessellator.instance;
 		GL11.glPushMatrix();
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		GL11.glDepthMask(false);
 		GL11.glDisable(GL11.GL_CULL_FACE);
 
 		double s = te.isInWorld() ? 0.4375 : 0.33;
@@ -170,9 +172,7 @@ public class RenderCaveLighter extends ChromaRenderBase {
 			GL11.glPopMatrix();
 		}
 
-		GL11.glEnable(GL11.GL_CULL_FACE);
-		BlendMode.DEFAULT.apply();
-
+		GL11.glPopAttrib();
 		GL11.glPopMatrix();
 	}
 

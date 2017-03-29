@@ -20,13 +20,15 @@ public class LoreScriptRenderer {
 
 	public static final LoreScriptRenderer instance = new LoreScriptRenderer();
 
-	static final int CHAR_WIDTH = 10;
-	static final int CHAR_SPACING = -2;
+	public static final int CHAR_WIDTH = 10;
+	public static final int CHAR_SPACING = -2;
 
 	private final String texture = "Textures/precursorscript.png";
 	private final HashMap<Character, Integer> characters = new HashMap();
 
-	private int currentColor;
+	private int textColor;
+	private int spaceColor;
+	private int lineColor;
 
 	private LoreScriptRenderer() {
 		int k = 0;
@@ -61,9 +63,15 @@ public class LoreScriptRenderer {
 			BlendMode.DEFAULT.apply();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
+		GL11.glAlphaFunc(GL11.GL_GREATER, 1/255F);
+		int alpha = ReikaColorAPI.getAlpha(color);
+		if (alpha == 0)
+			alpha = 255;
 		Tessellator.instance.startDrawingQuads();
-		Tessellator.instance.setColorOpaque_I(color);
-		currentColor = color;
+		Tessellator.instance.setColorRGBA_I(color, alpha);
+		textColor = color;
+		spaceColor = additive ? ((alpha << 24) | ReikaColorAPI.getColorWithBrightnessMultiplier(color, 0.375F)) : ReikaColorAPI.getColorWithAlpha(color, 0.375F*alpha);
+		lineColor = additive ? ((alpha << 24) | ReikaColorAPI.getColorWithBrightnessMultiplier(color, 0.5F)) : ReikaColorAPI.getColorWithAlpha(color, 0.5F*alpha);
 		Tessellator.instance.setBrightness(240);
 	}
 
@@ -114,7 +122,7 @@ public class LoreScriptRenderer {
 				dx -= sp;
 				if (i != parts.length-1) {
 					float f = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
-					GL11.glLineWidth(5*4/5/*12*/);
+					GL11.glLineWidth(4/*5*4/5*//*12*/);
 					//ReikaGuiAPI.instance.drawRectFrame((int)dx+CHAR_WIDTH+1, (int)y+2, (int)sp-1, CHAR_WIDTH-3, 0xff000000);
 					double dx2 = dx+CHAR_WIDTH+0.5;
 					double dy2 = y+4;
@@ -125,20 +133,18 @@ public class LoreScriptRenderer {
 						ReikaGuiAPI.instance.drawLine(dx2+dw, dy2, dx2+dw, dy2+h, 0xff000000);
 					}
 					 */
-					int c = 0xff000000 | ReikaColorAPI.getColorWithBrightnessMultiplier(currentColor, 0.25F);//0xff2a2a2a;
-					ReikaGuiAPI.instance.drawLine_Double(dx2, dy2-1, dx2+sp-2, dy2-1, c);
-					ReikaGuiAPI.instance.drawLine_Double(dx2, dy2+h/2+1+0.225, dx2+sp-2, dy2+h/2+1+0.225, c);
+					ReikaGuiAPI.instance.drawLine_Double(dx2, dy2-1, dx2+sp-2, dy2-1, spaceColor);
+					ReikaGuiAPI.instance.drawLine_Double(dx2, dy2+h/2+1+0.225, dx2+sp-2, dy2+h/2+1+0.225, spaceColor);
 					//ReikaGuiAPI.instance.drawLine_Double(dx2, dy2+h/4+0.5, dx2+sp-2, dy2+h/4+0.5, c);
 					GL11.glPopAttrib();
 					GL11.glLineWidth(f);
 				}
 			}
 		}
-		int c = 0xff000000 | ReikaColorAPI.getColorWithBrightnessMultiplier(currentColor, 0.375F);//0xff7a7a7a;
 		float f = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
 		GL11.glLineWidth(2);
-		ReikaGuiAPI.instance.drawLine_Double(x+CHAR_WIDTH, y+1.5, x-width+CHAR_WIDTH-0.5, y+1.5, c);
-		ReikaGuiAPI.instance.drawLine_Double(x+CHAR_WIDTH, y-0.5+CHAR_WIDTH, x-width+CHAR_WIDTH-0.5, y-0.5+CHAR_WIDTH, c);
+		ReikaGuiAPI.instance.drawLine_Double(x+CHAR_WIDTH, y+1.5, x-width+CHAR_WIDTH-0.5, y+1.5, lineColor);
+		ReikaGuiAPI.instance.drawLine_Double(x+CHAR_WIDTH, y-0.5+CHAR_WIDTH, x-width+CHAR_WIDTH-0.5, y-0.5+CHAR_WIDTH, lineColor);
 		GL11.glLineWidth(f);
 	}
 

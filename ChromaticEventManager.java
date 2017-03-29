@@ -108,6 +108,7 @@ import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Artefact.UABombingEffects;
 import Reika.ChromatiCraft.Magic.Artefact.UATrade;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAggroMask;
+import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentPhasingSequence;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentUseRepair;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentWeaponAOE;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
@@ -159,6 +160,7 @@ import Reika.DragonAPI.Instantiable.Event.HarvestLevelEvent;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Instantiable.Event.ItemStackUpdateEvent;
 import Reika.DragonAPI.Instantiable.Event.ItemUpdateEvent;
+import Reika.DragonAPI.Instantiable.Event.LavaSpawnFireEvent;
 import Reika.DragonAPI.Instantiable.Event.MobTargetingEvent;
 import Reika.DragonAPI.Instantiable.Event.PigZombieAggroSpreadEvent;
 import Reika.DragonAPI.Instantiable.Event.PlayerKeepInventoryEvent;
@@ -206,6 +208,7 @@ public class ChromaticEventManager {
 	private final Random rand = new Random();
 
 	private boolean applyingAOE;
+	private boolean applyingPhasing;
 
 	private ChromaticEventManager() {
 
@@ -259,6 +262,13 @@ public class ChromaticEventManager {
 			//ReikaJavaLibrary.pConsole(evt.x+","+evt.y+","+evt.z+": "+evt.world.getBlock(evt.x, evt.y+1, evt.z).isOpaqueCube());
 			if (evt.world.getBlock(evt.x, evt.y+1, evt.z).isOpaqueCube())
 				evt.setResult(Result.DENY);
+		}
+	}
+
+	@SubscribeEvent
+	public void preventCliffFire(LavaSpawnFireEvent evt) {
+		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.x, evt.z))) {
+			evt.setCanceled(true);
 		}
 	}
 
@@ -1156,6 +1166,31 @@ public class ChromaticEventManager {
 							PoolRecipes.instance.makePoolRecipe(ei, out, ether, x, y, z);
 						}
 					}
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void applyDamagePhasing(LivingAttackEvent evt) {
+		DamageSource src = evt.source;
+		if (applyingPhasing)
+			return;
+		if (!src.isDamageAbsolute()) {
+			Entity e = src.getEntity();
+			if (e instanceof EntityLivingBase) {
+				EntityLivingBase elb = (EntityLivingBase)e;
+				ItemStack is = elb.getHeldItem();
+				if (is != null && ReikaEnchantmentHelper.hasEnchantment(ChromaEnchants.PHASING.getEnchantment(), is)) {
+					applyingPhasing = true;
+					int lvl = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.PHASING.getEnchantment(), is);
+					float pierce = EnchantmentPhasingSequence.getPenetratingDamage(evt.ammount, lvl);
+					float leftover = EnchantmentPhasingSequence.getSpilloverDamage(evt.ammount, lvl);
+					evt.entityLiving.attackEntityFrom(src, leftover);
+					DamageSource src2 = elb instanceof EntityPlayer ? DamageSource.causePlayerDamage((EntityPlayer)elb) : DamageSource.causeMobDamage(elb);
+					src2.setDamageIsAbsolute().setDamageBypassesArmor();
+					evt.entityLiving.attackEntityFrom(src2, pierce);
+					applyingPhasing = false;
 				}
 			}
 		}

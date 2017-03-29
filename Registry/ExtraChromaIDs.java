@@ -46,6 +46,7 @@ public enum ExtraChromaIDs implements IDRegistry {
 	FASTSINKID(		"Enchantment IDs", 		"Rapid Descent ID", 			95, 	Enchantment.class),
 	HARVESTLEVELID(	"Enchantment IDs", 		"Harvest Boost ID", 			96, 	Enchantment.class),
 	AIRMINERID(		"Enchantment IDs", 		"Air Miner ID", 				97, 	Enchantment.class),
+	PHASINGID(		"Enchantment IDs", 		"Armor Breach ID",				98, 	Enchantment.class),
 	DIMID(			"Other IDs",			"Dimension ID",					60,		WorldProvider.class),
 	CHROMAMATID(	"Other IDs",			"Chromastone Material ID",		90,		null),
 	;

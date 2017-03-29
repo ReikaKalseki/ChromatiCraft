@@ -106,7 +106,7 @@
 	</reprogrammer>
 	<repeater>
 		<desc>
-			Your initial foray into transmitting lumen energy was a disaster. The basic wooden repeaters you created only marginally served their purpose, and were prone to often violent failure as they were used. In hindsight, wood was a monumentally foolish material to choose. Clearly the crystal you have used so much of would be a better choice. A rune to focus the color would improve them even better, though that would mean restricting it to only one color of transmission. You may find a way around that too...later.
+			Your initial foray into transmitting lumen energy was a disaster. The basic wooden repeaters you created only marginally served their purpose, proved vulnerable to violent failure. In hindsight, wood was a monumentally foolish material to choose. Perhaps the crystal you have used so much of would be a better choice, being able to better focus and relay the energy rather than leaking and absorbing it. A rune to focus a specific color would improve them even better, though that would mean restricting it to only that color of transmission. You may find a way around that too...later.
 		</desc>
 		<note>
 			
@@ -412,7 +412,9 @@
 			How many times have you banged out a tune on the different colors of crystals? With your new device, you should be able to attain even greater musical fidelity, complete with greater range, chord capability, and even - somehow - an oddly familiar melody that came pre-etched into the crystal matrix.
 		</desc>
 		<note>
-
+			Can be connected to a repeater network to play the repeaters with the music; place on top of Nether Quartz or Crystalline Stone
+			
+			Place on top of Nether Quartz to broadcast the sound
 		</note>
 	</music>
 	<turret>

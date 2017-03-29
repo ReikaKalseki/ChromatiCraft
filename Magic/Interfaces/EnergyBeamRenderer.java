@@ -21,6 +21,8 @@ public interface EnergyBeamRenderer {
 
 	public void addTarget(WorldLocation loc, CrystalElement e, double dx, double dy, double dz, double w);
 
+	public void addSelfTickingTarget(WorldLocation loc, CrystalElement e, double dx, double dy, double dz, double w, int ticks);
+
 	public void removeTarget(WorldLocation loc, CrystalElement e);
 
 	public void clearTargets(boolean unload);

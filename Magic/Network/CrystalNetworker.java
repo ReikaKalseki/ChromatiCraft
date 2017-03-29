@@ -231,11 +231,11 @@ public class CrystalNetworker implements TickHandler {
 		}
 	}
 
-	public CrystalSource getConnectivity(CrystalElement e, CrystalReceiver r) {
+	public CrystalPath getConnectivity(CrystalElement e, CrystalReceiver r) {
 		EntityPlayer ep = r.getPlacerUUID() != null ? r.getWorld().func_152378_a(r.getPlacerUUID()) : null;
 		try {
 			CrystalPath p = new PylonFinder(e, r, ep).findPylon();
-			return p != null && p.canTransmit() ? p.transmitter : null;
+			return p != null && p.canTransmit() ? p : null;
 		}
 		catch (ConcurrentModificationException ex) {
 			ex.printStackTrace();
@@ -303,23 +303,29 @@ public class CrystalNetworker implements TickHandler {
 				}
 				else {
 					if (p.transmitter.canConduct() && p.canTransmit()) {
-						int amt = p.drain();
-						if (amt > 0) {
-							int add = p.receiver.receiveElement(p.element, amt);
-							p.transmitter.drain(p.element, amt);
-							if (add > 0)
-								p.tickRepeaters(add);
-							if (p.isComplete()) {
-								p.resetTiles();
-								it.remove();
-								CrystalNetworkLogger.logFlowSatisfy(p);
-								p.receiver.onPathCompleted(p);
-							}
-							else if (add <= 0) {
-								CrystalNetworkLogger.logFlowBreak(p, FlowFail.FULL);
-								//p.receiver.onPathBroken(p.element);
-								p.resetTiles();
-								it.remove();
+						if (p.maxFlow == 0) {
+							p.tickRepeaters(0);
+						}
+						else {
+							int amt = p.drain();
+							CrystalNetworkLogger.logFlowTick(p, amt);
+							if (amt > 0) {
+								int add = p.receiver.receiveElement(p.element, amt);
+								p.transmitter.drain(p.element, amt);
+								if (add > 0)
+									p.tickRepeaters(add);
+								if (p.isComplete()) {
+									p.resetTiles();
+									it.remove();
+									CrystalNetworkLogger.logFlowSatisfy(p);
+									p.receiver.onPathCompleted(p);
+								}
+								else if (add <= 0) {
+									CrystalNetworkLogger.logFlowBreak(p, FlowFail.FULL);
+									//p.receiver.onPathBroken(p.element);
+									p.resetTiles();
+									it.remove();
+								}
 							}
 						}
 					}
@@ -376,6 +382,8 @@ public class CrystalNetworker implements TickHandler {
 			if (te instanceof TileEntityCrystalPylon) {
 				PylonLocationData.initNetworkData(te.getWorld()).setDirty(true);
 			}
+
+			CrystalNetworkLogger.logTileAdd(te);
 		}
 	}
 
@@ -516,6 +524,8 @@ public class CrystalNetworker implements TickHandler {
 		if (te instanceof TileEntityCrystalPylon) {
 			PylonLocationData.initNetworkData(te.getWorld()).setDirty(true);
 		}
+
+		CrystalNetworkLogger.logTileRemove(te);
 	}
 
 	public void breakPaths(CrystalNetworkTile te) {
@@ -582,6 +592,7 @@ public class CrystalNetworker implements TickHandler {
 				CrystalNetworkTile tile = tiles.get(c);
 				if (tile instanceof CrystalReceiver && r != tile) {
 					CrystalReceiver te = (CrystalReceiver)tile;
+					//ReikaJavaLibrary.pConsole(te, !(te instanceof TileEntityCrystalRepeater));
 					if (te.canConduct() && r.canTransmitTo(te)) {
 						if (e == null || te.isConductingElement(e)) {
 							double d = te.getDistanceSqTo(r.getX(), r.getY(), r.getZ());

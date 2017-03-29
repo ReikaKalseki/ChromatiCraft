@@ -18,13 +18,15 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
+import Reika.ChromatiCraft.Magic.Interfaces.DynamicRepeater;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBallLightningFX;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -36,13 +38,13 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class TileEntityWeakRepeater extends TileEntityCrystalRepeater {
+public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements DynamicRepeater {
 
-	public static final int MAX_LUMENS_MIN = 30000;
-	public static final int MAX_LUMENS_MAX = 80000;
+	//public static final int MAX_LUMENS_MIN = 30000;
+	//public static final int MAX_LUMENS_MAX = 80000;
 
-	private int originalUse;
-	private int remainingUse;
+	//private int originalUse;
+	//private int remainingUse;
 
 	private CrystalElement overloadColor;
 	private int eolTicks;
@@ -51,8 +53,8 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater {
 	public static final int WEAK_RECEIVE_RANGE = 24;
 
 	public TileEntityWeakRepeater() {
-		originalUse = ReikaRandomHelper.getRandomBetween(MAX_LUMENS_MIN, MAX_LUMENS_MAX);
-		remainingUse = originalUse;
+		//originalUse = ReikaRandomHelper.getRandomBetween(MAX_LUMENS_MIN, MAX_LUMENS_MAX);
+		//remainingUse = originalUse;
 	}
 
 	@Override
@@ -68,7 +70,7 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater {
 			this.doLifespanParticles(world, x, y, z);
 		}
 
-		if (remainingUse <= 0) {
+		if (eolTicks > 0) {
 			eolTicks++;
 			world.setBlock(x, y+1, z, Blocks.fire);
 			this.doDestroyFX(world, x, y, z);
@@ -137,8 +139,8 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater {
 
 	@SideOnly(Side.CLIENT)
 	private void doLifespanParticles(World world, int x, int y, int z) {
-		if (remainingUse < originalUse) {
-			double frac = (double)remainingUse/originalUse;
+		if (eolTicks > 0) {
+			double frac = eolTicks/320D;
 			double f = 0.8*(1-Math.pow(frac, 1/6D));
 			CrystalElement e = CrystalElement.elements[(this.getTicksExisted()/16)%16];
 			if (eolTicks == 0 && ReikaRandomHelper.doWithChance(f)) {
@@ -175,21 +177,21 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater {
 		}
 	}
 
-	private void endOfLife(CrystalElement e) {
+	private void destroy(CrystalElement e) {
+		if (eolTicks > 0)
+			return;
 		overloadColor = e;
+		eolTicks = 1+rand.nextInt(40);
 		worldObj.setBlock(xCoord, yCoord+1, zCoord, Blocks.fire);
+		ChromaSounds.REPEATERSURGE_WEAK.playSoundAtBlock(this, 1, 1.1035F);
 		this.syncAllData(false);
-	}
-
-	public boolean hasRemainingLife() {
-		return remainingUse > 0;
 	}
 
 	@Override
 	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 
-		remainingUse = NBT.getInteger("remaining");
+		//remainingUse = NBT.getInteger("remaining");
 
 		eolTicks = NBT.getInteger("eol");
 		overloadColor = CrystalElement.elements[NBT.getInteger("overload")];
@@ -199,7 +201,7 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater {
 	protected void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
 
-		NBT.setInteger("remaining", remainingUse);
+		//NBT.setInteger("remaining", remainingUse);
 
 		NBT.setInteger("eol", eolTicks);
 		if (overloadColor != null) {
@@ -211,24 +213,32 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater {
 	public void readFromNBT(NBTTagCompound NBT) {
 		super.readFromNBT(NBT);
 
-		originalUse = NBT.getInteger("lifespan");
+		//originalUse = NBT.getInteger("lifespan");
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound NBT) {
 		super.writeToNBT(NBT);
 
-		NBT.setInteger("lifespan", originalUse);
+		//NBT.setInteger("lifespan", originalUse);
 	}
 
 	@Override
-	public void onTransfer(CrystalElement e, int amt) {
+	public void onTransfer(CrystalSource src, CrystalReceiver r, CrystalElement e, int amt) {
+		/*
 		if (remainingUse > 0) {
 			remainingUse -= amt;
 			if (remainingUse <= 0) {
 				this.endOfLife(e);
 			}
 		}
+		 */
+		if (!this.canSafelySupply(r) && rand.nextInt(8) == 0)
+			this.destroy(e);
+	}
+
+	private boolean canSafelySupply(CrystalReceiver r) {
+		return r instanceof TileEntityRelaySource || r instanceof TileEntityRitualTable;
 	}
 
 	@Override
@@ -239,11 +249,6 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater {
 	@Override
 	public int getReceiveRange() {
 		return WEAK_RECEIVE_RANGE;
-	}
-
-	@Override
-	public int getSignalDegradation() {
-		return 25;
 	}
 
 	@Override
@@ -265,26 +270,31 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater {
 	public void getTagsToWriteToStack(NBTTagCompound NBT) {
 		super.getTagsToWriteToStack(NBT);
 
-		NBT.setInteger("total", originalUse);
-		NBT.setInteger("remain", remainingUse);
+		//NBT.setInteger("total", originalUse);
+		//NBT.setInteger("remain", remainingUse);
 	}
 
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
 		super.setDataFromItemStackTag(is);
 
-		remainingUse = is.stackTagCompound != null && is.stackTagCompound.hasKey("remain") ? is.stackTagCompound.getInteger("remain") : remainingUse;
-		originalUse = is.stackTagCompound != null && is.stackTagCompound.hasKey("total") ? is.stackTagCompound.getInteger("total") : originalUse;
+		//remainingUse = is.stackTagCompound != null && is.stackTagCompound.hasKey("remain") ? is.stackTagCompound.getInteger("remain") : remainingUse;
+		//originalUse = is.stackTagCompound != null && is.stackTagCompound.hasKey("total") ? is.stackTagCompound.getInteger("total") : originalUse;
 	}
 
 	@Override
 	protected boolean shouldDrop() {
-		return this.hasRemainingLife();
+		return eolTicks == 0;//this.hasRemainingLife();
 	}
 
 	@Override
 	public int maxThroughput() {
-		return Math.min(remainingUse, 120);
+		return 120;//Math.min(remainingUse, 120);
+	}
+
+	@Override
+	public int getSignalDegradation() {
+		return 250;
 	}
 
 	@Override
@@ -299,17 +309,24 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater {
 
 	@Override
 	public boolean canTransmitTo(CrystalReceiver r) {
-		return super.canTransmitTo(r) && r.getResearchTier().ordinal() <= this.getResearchTier().ordinal();
+		return super.canTransmitTo(r);// && r.getResearchTier().ordinal() <= this.getResearchTier().ordinal();
 	}
 
+	/*
 	@Override
 	public ResearchLevel getResearchTier() {
 		return ResearchLevel.ENERGYEXPLORE;
 	}
+	 */
 
 	@Override
 	public float getFailureWeight(CrystalElement e) {
 		return 30;
+	}
+
+	@Override
+	public int getModifiedThoughput(int basethru, CrystalSource src, CrystalReceiver r) {
+		return !this.canSafelySupply(r) ? 0 : basethru;
 	}
 
 }

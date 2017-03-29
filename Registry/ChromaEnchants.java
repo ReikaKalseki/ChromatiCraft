@@ -19,6 +19,7 @@ import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAirMiner;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentEnderLock;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentFastSinking;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentHarvestLevel;
+import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentPhasingSequence;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentRareLoot;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentUseRepair;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentWeaponAOE;
@@ -34,7 +35,8 @@ public enum ChromaEnchants implements EnchantmentEnum {
 	RARELOOT(EnchantmentRareLoot.class, ExtraChromaIDs.RARELOOTID),
 	FASTSINK(EnchantmentFastSinking.class, ExtraChromaIDs.FASTSINKID),
 	HARVESTLEVEL(EnchantmentHarvestLevel.class, ExtraChromaIDs.HARVESTLEVELID),
-	AIRMINER(EnchantmentAirMiner.class, ExtraChromaIDs.AIRMINERID);
+	AIRMINER(EnchantmentAirMiner.class, ExtraChromaIDs.AIRMINERID),
+	PHASING(EnchantmentPhasingSequence.class, ExtraChromaIDs.PHASINGID);
 
 	private final Class enchantmentClass;
 	private final ExtraChromaIDs enchantmentID;

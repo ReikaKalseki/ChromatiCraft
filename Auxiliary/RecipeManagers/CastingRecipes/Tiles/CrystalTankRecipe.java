@@ -23,14 +23,15 @@ public class CrystalTankRecipe extends PylonCastingRecipe {
 		this.addAuraRequirement(CrystalElement.BLACK, 6000);
 		this.addAuraRequirement(CrystalElement.CYAN, 9000);
 
-		this.addAuxItem(this.getChargedShard(CrystalElement.CYAN), 0, 2);
-		this.addAuxItem(this.getChargedShard(CrystalElement.CYAN), 0, -2);
-		this.addAuxItem(this.getChargedShard(CrystalElement.CYAN), 2, 0);
-		this.addAuxItem(this.getChargedShard(CrystalElement.CYAN), -2, 0);
 		this.addAuxItem(this.getChargedShard(CrystalElement.CYAN), 2, 2);
 		this.addAuxItem(this.getChargedShard(CrystalElement.CYAN), -2, 2);
 		this.addAuxItem(this.getChargedShard(CrystalElement.CYAN), 2, -2);
 		this.addAuxItem(this.getChargedShard(CrystalElement.CYAN), -2, -2);
+
+		this.addAuxItem(ChromaStacks.waterDust, 0, -2);
+		this.addAuxItem(ChromaStacks.waterDust, -2, 0);
+		this.addAuxItem(ChromaStacks.waterDust, 0, 2);
+		this.addAuxItem(ChromaStacks.waterDust, 2, 0);
 
 		this.addAuxItem(Blocks.glass, -2, -4);
 		this.addAuxItem(Blocks.glass, 2, -4);
@@ -46,10 +47,10 @@ public class CrystalTankRecipe extends PylonCastingRecipe {
 		this.addAuxItem(Blocks.obsidian, 0, -4);
 		this.addAuxItem(Blocks.obsidian, 4, 0);
 
-		this.addAuxItem(ChromaStacks.chromaIngot, -4, -4);
-		this.addAuxItem(ChromaStacks.chromaIngot, -4, 4);
-		this.addAuxItem(ChromaStacks.chromaIngot, 4, 4);
-		this.addAuxItem(ChromaStacks.chromaIngot, 4, -4);
+		this.addAuxItem(ChromaStacks.waterIngot, -4, -4);
+		this.addAuxItem(ChromaStacks.waterIngot, -4, 4);
+		this.addAuxItem(ChromaStacks.waterIngot, 4, 4);
+		this.addAuxItem(ChromaStacks.waterIngot, 4, -4);
 	}
 
 	@Override

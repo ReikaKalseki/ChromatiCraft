@@ -16,6 +16,7 @@ import net.minecraft.world.biome.BiomeGenBase;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityBiomeReverter;
+import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
@@ -156,8 +157,7 @@ public class RainbowTreeEffects {
 					int dz = rz+k;
 					if (!TileEntityBiomeReverter.stopConversion(world, dx, dz)) {
 						BiomeGenBase biome = world.getBiomeGenForCoords(dx, dz);
-						int id = biome.biomeID;
-						if (id != ChromatiCraft.rainbowforest.biomeID) {
+						if (biome != ChromatiCraft.rainbowforest && !BiomeGlowingCliffs.isGlowingCliffs(biome)) {
 							ReikaWorldHelper.setBiomeForXZ(world, dx, dz, ChromatiCraft.rainbowforest);
 						}
 					}

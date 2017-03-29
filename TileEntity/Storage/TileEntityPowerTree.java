@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -35,6 +36,7 @@ import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityWirelessPowered;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree.TileEntityPowerTreeAux;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
+import Reika.ChromatiCraft.Magic.CrystalTarget.TickingCrystalTarget;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalBattery;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
@@ -72,6 +74,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	private final EnumMap<CrystalElement, Integer> boost = new EnumMap(CrystalElement.class);
 
 	private ArrayList<CrystalTarget> targets = new ArrayList(); //need to reset some way
+	private ArrayList<TickingCrystalTarget> tickingTargets = new ArrayList();
 
 	private boolean hasMultiblock = false;
 
@@ -293,6 +296,22 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 							}
 						}
 					}
+				}
+			}
+		}
+
+		this.tickTargets();
+	}
+
+	private void tickTargets() {
+		if (!tickingTargets.isEmpty()) {
+			Iterator<TickingCrystalTarget> it = tickingTargets.iterator();
+			while (it.hasNext()) {
+				TickingCrystalTarget t = it.next();
+				if (t.tick()) {
+					it.remove();
+					targets.remove(t);
+					this.syncAllData(true);
 				}
 			}
 		}
@@ -538,6 +557,18 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		if (!worldObj.isRemote) {
 			if (!targets.contains(tg))
 				targets.add(tg);
+			this.onTargetChanged();
+		}
+	}
+
+	@Override
+	public final void addSelfTickingTarget(WorldLocation loc, CrystalElement e, double dx, double dy, double dz, double w, int duration) {
+		TickingCrystalTarget tg = new TickingCrystalTarget(loc, e, dx, dy, dz, w, duration);
+		if (!worldObj.isRemote) {
+			if (!targets.contains(tg)) {
+				targets.add(tg);
+				tickingTargets.add(tg);
+			}
 			this.onTargetChanged();
 		}
 	}

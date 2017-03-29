@@ -77,6 +77,7 @@ import Reika.ChromatiCraft.Render.Entity.RenderTNTPinball;
 import Reika.ChromatiCraft.Render.Entity.RenderThrownGem;
 import Reika.ChromatiCraft.Render.Entity.RenderVacuum;
 import Reika.ChromatiCraft.Render.ISBRH.ArtefactRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.CaveIndicatorRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CliffStoneRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.ColorLockRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.ConsoleRenderer;
@@ -177,6 +178,7 @@ public class ChromaClient extends ChromaCommon {
 	public static final SparklingBlockRender sparkle = new SparklingBlockRender();
 	public static final EverFluidRenderer everfluid = new EverFluidRenderer();
 	public static final CliffStoneRenderer cliffstone = new CliffStoneRenderer();
+	public static final CaveIndicatorRenderer indicator = new CaveIndicatorRenderer();
 
 	private static final EnderCrystalRenderer csr = new EnderCrystalRenderer();
 
@@ -382,6 +384,9 @@ public class ChromaClient extends ChromaCommon {
 
 		cliffstoneRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(cliffstoneRender, cliffstone);
+
+		caveIndicatorRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(caveIndicatorRender, indicator);
 
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGuardianStone.class, new GuardianStoneRenderer());
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPlant.class, new CrystalPlantRenderer());

@@ -170,6 +170,11 @@ public class BlockCliffStone extends Block implements RockProofStone {
 	}
 
 	@Override
+	public boolean canSilkHarvest(World world, EntityPlayer player, int x, int y, int z, int metadata) {
+		return false;
+	}
+
+	@Override
 	public void onFallenUpon(World world, int x, int y, int z, Entity e, float dist) {
 		if (Variants.getVariant(world.getBlockMetadata(x, y, z)) == Variants.FARMLAND) {
 			Blocks.farmland.onFallenUpon(world, x, y, z, e, dist);

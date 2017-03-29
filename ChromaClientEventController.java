@@ -52,6 +52,7 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
 import net.minecraftforge.client.event.RenderBlockOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -91,6 +92,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavationWand;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -214,6 +216,24 @@ public class ChromaClientEventController {
 					evt.result = new EnumSound(s, evt.sound);
 				}
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public void noLumaWaterFog(EntityViewRenderEvent.FogDensity evt) {
+		//ReikaJavaLibrary.pConsole(evt.density);
+		if (evt.block == ChromaBlocks.LUMA.getBlockInstance()) {
+			evt.density = 0;
+			evt.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent
+	public void noLumaWaterFog(EntityViewRenderEvent.FogColors evt) {
+		//ReikaJavaLibrary.pConsole(evt.density);
+		if (evt.block == ChromaBlocks.LUMA.getBlockInstance()) {
+			evt.red = evt.green = evt.blue = 1;
+			evt.setCanceled(true);
 		}
 	}
 
@@ -670,6 +690,7 @@ public class ChromaClientEventController {
 			if (AbilityHelper.instance.canRenderEntityXRay(evt.entity)) {
 				Entity te = evt.entity;
 				GL11.glPushMatrix();
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
 				GL11.glDisable(GL11.GL_LIGHTING);
 				ReikaRenderHelper.disableEntityLighting();
@@ -738,12 +759,7 @@ public class ChromaClientEventController {
 
 				 */
 
-				ReikaRenderHelper.enableEntityLighting();
-				GL11.glEnable(GL11.GL_DEPTH_TEST);
-				GL11.glEnable(GL11.GL_TEXTURE_2D);
-				GL11.glEnable(GL11.GL_LIGHTING);
-				GL11.glDisable(GL11.GL_BLEND);
-				GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
+				GL11.glPopAttrib();
 				GL11.glPopMatrix();
 			}
 		}
@@ -1020,7 +1036,7 @@ public class ChromaClientEventController {
 			if (is.stackTagCompound != null && is.stackTagCompound.getBoolean("boosted") && r.getMachine() != null && r.getMachine().isRepeater()) {
 				r = ChromaResearch.TURBOREPEATER;
 			}
-			if (r != null && r.playerCanSee(ep) && r.isCrafting() && r.isCraftable() && !r.isVanillaRecipe() && r.playerCanSeeRecipe(is, ep)) {
+			if (r != null && r.playerCanSee(ep) && r.isCrafting() && r.isCraftable() && !r.isVanillaRecipe() && r.playerCanSeeRecipe(is, ep) && r.crafts(is)) {
 				ep.openGui(ChromatiCraft.instance, r.getCraftingType().ordinal(), null, r.ordinal(), r.getRecipeIndex(is), 1);
 				return true;
 			}

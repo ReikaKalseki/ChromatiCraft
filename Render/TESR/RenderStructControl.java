@@ -19,6 +19,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
+import Reika.ChromatiCraft.Magic.Lore.LoreScripts.ScriptLocations;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Render.InWorldScriptRenderer;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
@@ -69,16 +70,20 @@ public class RenderStructControl extends ChromaRenderBase {
 		if (te.getStructureType() != null) {
 			switch(te.getStructureType()) {
 				case BURROW:
-					InWorldScriptRenderer.renderBurrowScript(te, par8, v5, sc);
+					if (ScriptLocations.BURROW.isEnabled())
+						InWorldScriptRenderer.renderBurrowScript(te, par8, v5, sc);
 					break;
 				case CAVERN:
-					InWorldScriptRenderer.renderCavernScript(te, par8, v5, sc);
+					if (ScriptLocations.CAVERN1.isEnabled())
+						InWorldScriptRenderer.renderCavernScript(te, par8, v5, sc);
 					break;
 				case DESERT:
-					InWorldScriptRenderer.renderDesertScript(te, par8, v5, sc);
+					if (ScriptLocations.DESERT.isEnabled())
+						InWorldScriptRenderer.renderDesertScript(te, par8, v5, sc);
 					break;
 				case OCEAN:
-					InWorldScriptRenderer.renderOceanScript(te, par8, v5, sc);
+					if (ScriptLocations.OCEAN.isEnabled())
+						InWorldScriptRenderer.renderOceanScript(te, par8, v5, sc);
 					break;
 				default:
 					break;

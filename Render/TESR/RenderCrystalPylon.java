@@ -20,6 +20,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionVoidGaze.VoidGazeLevels;
 import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
+import Reika.ChromatiCraft.Magic.Lore.LoreScripts.ScriptLocations;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.InWorldScriptRenderer;
@@ -58,7 +59,7 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 
 			Tessellator v5 = Tessellator.instance;
 
-			if (MinecraftForgeClient.getRenderPass() == 1) {
+			if (MinecraftForgeClient.getRenderPass() == 1 && ScriptLocations.PYLON.isEnabled() && Minecraft.getMinecraft().thePlayer.getDistanceSq(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5) < 576) {
 				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 				InWorldScriptRenderer.renderPylonScript(te, par8, v5, 0.03125/2);
 				GL11.glPopAttrib();

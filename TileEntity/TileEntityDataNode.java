@@ -155,7 +155,7 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 					Towers t1 = tower.getNeighbor1();
 					Towers t2 = tower.getNeighbor2();
 					if (t1 == null || t1.getRootPosition() == null) { //init
-						LoreManager.instance.hashCode();
+						LoreManager.instance.initTowers(world);
 						t1 = tower.getNeighbor1();
 						t2 = tower.getNeighbor2();
 					}
@@ -267,6 +267,7 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 		this.syncAllData(true);
 	}
 
+	@SideOnly(Side.CLIENT)
 	public static void doScanFX(World world, int x, int y, int z) {
 		//ReikaSoundHelper.playClientSound(ChromaSounds.BOUNCE, x+0.5, y+0.5, z+0.5, 2, 2, false);
 		ReikaSoundHelper.playClientSound(ChromaSounds.BOUNCE, x+0.5, y+0.5, z+0.5, 2, 1, false);

@@ -80,6 +80,7 @@ public class RainbowTreeGenerator {
 			case TIMEWOOD:
 			case TRANSFORMATION:
 			case TWILIGHTOAK:
+			case TAINTED:
 				return false;
 			default:
 				return true;

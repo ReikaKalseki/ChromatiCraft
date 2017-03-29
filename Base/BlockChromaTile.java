@@ -60,6 +60,7 @@ import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityDataNode;
@@ -71,6 +72,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityWeakRepeater;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityEnchantDecomposer;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
@@ -78,6 +80,8 @@ import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
+import Reika.DragonAPI.APIPacketHandler.PacketIDs;
+import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
@@ -94,6 +98,7 @@ import Reika.DragonAPI.Interfaces.TileEntity.RedstoneTile;
 import Reika.DragonAPI.Interfaces.TileEntity.SidePlacedTile;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -378,6 +383,25 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 				if (!ep.capabilities.isCreativeMode)
 					is.stackSize--;
 			}
+		}
+
+		if (ChromaItems.SHARD.matchWith(is) && m == ChromaTiles.WEAKREPEATER) {
+			TileEntityWeakRepeater tw = (TileEntityWeakRepeater)te;
+			if (!world.isRemote) {
+				CrystalElement e = CrystalElement.elements[is.getItemDamage()%16];
+				if (CrystalNetworker.instance.checkConnectivity(e, tw)) {
+					ChromaSounds.CAST.playSoundAtBlock(world, x, y, z);
+					int rd = e.getRed();
+					int gn = e.getGreen();
+					int bl = e.getBlue();
+					ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), te, rd, gn, bl, 32, 8);
+					ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.NUMBERPARTICLE.ordinal(), te, tw.getSignalDepth(e));
+				}
+				else {
+					ChromaSounds.ERROR.playSoundAtBlock(world, x, y, z);
+				}
+			}
+			return true;
 		}
 
 		/*

@@ -12,11 +12,11 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 
-public class RecipePersonalCharger extends PylonCastingRecipe {
+public class RecipePersonalCharger extends MultiBlockCastingRecipe {
 
 	public RecipePersonalCharger(ItemStack out, ItemStack main) {
 		super(out, main);
@@ -46,10 +46,12 @@ public class RecipePersonalCharger extends PylonCastingRecipe {
 		this.addAuxItem(Items.diamond, -4, 4);
 		this.addAuxItem(Items.diamond, 4, 4);
 
+		/*
 		this.addAuraRequirement(CrystalElement.BLACK, 25000);
 		this.addAuraRequirement(CrystalElement.PURPLE, 5000);
 		this.addAuraRequirement(CrystalElement.WHITE, 10000);
 		this.addAuraRequirement(CrystalElement.YELLOW, 16000);
+		 */
 	}
 
 	@Override

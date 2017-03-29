@@ -73,6 +73,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavationWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemFlightWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemGrowthWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemLightWand;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemMobSonar;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemMobilityWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemResetWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemShooWand;
@@ -160,9 +161,10 @@ public enum ChromaItems implements ItemEnum {
 	WARPCAPSULE(41, false,	"chroma.warpitem",		ItemWarpCapsule.class),
 	BEEFRAME(208, false, 	"chroma.beeframe",		ItemChromaBeeFrame.class, ModList.FORESTRY),
 	STRUCTUREFINDER(43, false, "chroma.structfind",	ItemStructureFinder.class),
-	MAGICBRANCH(0, true, "chroma.branch",			ItemMagicBranch.class),
-	ARTEFACT(112, true,	"chroma.artefact",			ItemUnknownArtefact.class),
-	DATACRYSTAL(44, false, "chroma.datacrystal",	ItemDataCrystal.class),
+	MAGICBRANCH(0, true, 	"chroma.branch",		ItemMagicBranch.class),
+	ARTEFACT(112, true,		"chroma.artefact",		ItemUnknownArtefact.class),
+	DATACRYSTAL(44, false, 	"chroma.datacrystal",	ItemDataCrystal.class),
+	MOBSONAR(92, false,		"chroma.mobsonar",		ItemMobSonar.class),
 	;
 
 	private final int index;

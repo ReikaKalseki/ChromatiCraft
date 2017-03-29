@@ -40,6 +40,8 @@ import Reika.DragonAPI.Instantiable.IO.LuaBlock;
 import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class InscriptionRecipes {
 
@@ -165,6 +167,7 @@ public class InscriptionRecipes {
 			return isCustom;
 		}
 
+		@SideOnly(Side.CLIENT)
 		public void doFX(World world, int x, int y, int z) {
 			ColorBlendList cbl = new ColorBlendList(2, ChromaFX.getChromaColorTiles());
 			for (int i = 0; i < 32; i++) {

@@ -21,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import Reika.ChromatiCraft.Base.ItemWandBase;
+import Reika.ChromatiCraft.Block.BlockEtherealLight.Flags;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -28,6 +29,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
+import Reika.DragonAPI.Instantiable.PlayerReference;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -39,7 +41,7 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 	private static final int MAX_DEPTH = 12;
 	private static final int MAX_DEPTH_BOOST = 18;
 
-	private static final HashMap<Integer, EntityPlayer> breakers = new HashMap();
+	private static final HashMap<Integer, PlayerReference> breakers = new HashMap();
 
 	public ItemExcavationWand(int index) {
 		super(index);
@@ -94,7 +96,7 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 			for (BlockKey bk : set) {
 				b.addBlock(bk);
 			}
-			breakers.put(b.hashCode(), ep);
+			breakers.put(b.hashCode(), new PlayerReference(ep));
 		}
 		return true;
 	}
@@ -140,10 +142,12 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 
 	@Override
 	public void onPostBreak(ProgressiveBreaker b, World world, int x, int y, int z, Block id, int meta) {
-		EntityPlayer ep = breakers.get(b.hashCode());
-		if (ep != null) {
-			boolean exists = world.getPlayerEntityByName(ep.getCommandSenderName()) != null;
-			if (exists) {
+		PlayerReference p = breakers.get(b.hashCode());
+		if (p != null) {
+			EntityPlayer ep = p.getPlayer(world);
+			if (ReikaEnchantmentHelper.hasEnchantment(Enchantment.flame, p.getHeldItem()))
+				this.placeSomeLight(world, x, y, z);
+			if (ep != null) {
 				this.drainPlayer(ep);
 			}
 			else {
@@ -152,12 +156,18 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 		}
 	}
 
+	private void placeSomeLight(World world, int x, int y, int z) {
+		if ((x+y+z)%18 == 0) {
+			world.setBlock(x, y, z, ChromaBlocks.LIGHT.getBlockInstance(), Flags.PARTICLES.getFlag(), 3);
+		}
+	}
+
 	@Override
 	public boolean canBreak(ProgressiveBreaker b, World world, int x, int y, int z, Block id, int meta) {
-		EntityPlayer ep = breakers.get(b.hashCode());
-		if (ep != null) {
-			boolean exists = world.getPlayerEntityByName(ep.getCommandSenderName()) != null;
-			if (exists) {
+		PlayerReference p = breakers.get(b.hashCode());
+		if (p != null) {
+			EntityPlayer ep = p.getPlayer(world);
+			if (ep != null) {
 				return this.sufficientEnergy(ep) && this.canBreakBlock(world, x, y, z, id, meta, ep);
 			}
 		}

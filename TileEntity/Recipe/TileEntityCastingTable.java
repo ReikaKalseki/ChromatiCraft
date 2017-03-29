@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
@@ -43,6 +44,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRe
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CrystalTankRecipe;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -78,6 +80,7 @@ import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -191,9 +194,9 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		 */
 
 		/*
-		for (CastingRecipe c : RecipesCastingTable.instance.getAllRecipesMaking(ChromaTiles.REPEATER.getCraftedProduct())) {
-			if (c instanceof RecipeCrystalRepeater) {
-				RecipeCrystalRepeater rc = (RecipeCrystalRepeater)c;
+		for (CastingRecipe c : RecipesCastingTable.instance.getAllRecipesMaking(ChromaTiles.TANK.getCraftedProduct())) {
+			if (c instanceof CrystalTankRecipe) {
+				CrystalTankRecipe rc = (CrystalTankRecipe)c;
 				Map<List<Integer>, ItemMatch> map = rc.getAuxItems();
 				for (List<Integer> li : map.keySet()) {
 					ItemMatch m = map.get(li);
@@ -205,6 +208,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 					te.setInventorySlotContents(0, is);
 					te.markDirty();
 				}
+				inv[4] = rc.getMainInput();
 				break;
 			}
 		}
@@ -239,6 +243,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 	 */
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
+		super.onFirstTick(world, x, y, z);
 		this.validateStructure();
 		craftingTick = 0;
 	}

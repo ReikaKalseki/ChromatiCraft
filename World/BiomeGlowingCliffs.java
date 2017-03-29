@@ -62,6 +62,7 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 	private static long worldSeed;
 	private static HashMap<Class, Boolean> generatorRules = new HashMap();
 
+	private final WorldGenAbstractTree bigTreeGen = new ModifiableBigTree(false); //defaults to oak
 	private final GlowingTreeGenerator glowTree = new GlowingTreeGenerator();
 	private final GlowingTreeGenerator smallGlowTrees = new GlowingTreeGenerator();
 
@@ -197,7 +198,8 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 			return glowTree;
 		}
 		else {
-			return super.func_150567_a(rand);//rand.nextInt(10) == 0 ? worldGeneratorBigTree : worldGeneratorTrees;
+			//return super.func_150567_a(rand);//rand.nextInt(10) == 0 ? worldGeneratorBigTree : worldGeneratorTrees;
+			return rand.nextInt(10) == 0 ? bigTreeGen : worldGeneratorTrees;
 		}
 	}
 

@@ -103,6 +103,7 @@ import Reika.ChromatiCraft.Block.Dye.BlockRainbowLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
 import Reika.ChromatiCraft.Block.Relay.BlockLumenRelay;
 import Reika.ChromatiCraft.Block.Relay.BlockRelayFilter;
+import Reika.ChromatiCraft.Block.Worldgen.BlockCaveIndicator;
 import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone;
 import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone.Variants;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower;
@@ -230,7 +231,8 @@ public enum ChromaBlocks implements BlockEnum {
 	ARTEFACT(BlockUnknownArtefact.class,										"chroma.artefactblock"),
 	DUMMYAUX(BlockDummyAux.class,												"chroma.dummyaux"),
 	CLIFFSTONE(BlockCliffStone.class,			ItemBlockMultiType.class,		"chroma.cliffstone"),
-	;	//LOREREADER(BlockLoreReader.class,											"chroma.lorereader");
+	//LOREREADER(BlockLoreReader.class,											"chroma.lorereader");
+	CAVEINDICATOR(BlockCaveIndicator.class,										"chroma.caveindicator");
 
 	private Class blockClass;
 	private String blockName;
@@ -501,6 +503,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case DUMMYAUX:
 				//case LOREREADER:
 			case ARTEFACT:
+			case CAVEINDICATOR:
 				return false;
 			default:
 				return true;

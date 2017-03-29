@@ -12,12 +12,14 @@ package Reika.ChromatiCraft.Base.TileEntity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
+import Reika.ChromatiCraft.Magic.CrystalTarget.TickingCrystalTarget;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -25,6 +27,8 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 public abstract class CrystalTransmitterBase extends TileEntityCrystalBase implements CrystalTransmitter {
 
 	private ArrayList<CrystalTarget> targets = new ArrayList(); //need to reset some way
+	private ArrayList<TickingCrystalTarget> tickingTargets = new ArrayList();
+
 	public int renderAlpha;
 
 	@Override
@@ -46,10 +50,38 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 	}
 
 	@Override
+	public final void addSelfTickingTarget(WorldLocation loc, CrystalElement e, double dx, double dy, double dz, double w, int duration) {
+		TickingCrystalTarget tg = new TickingCrystalTarget(loc, e, dx, dy, dz, w, duration);
+		if (!worldObj.isRemote) {
+			if (!targets.contains(tg)) {
+				targets.add(tg);
+				tickingTargets.add(tg);
+			}
+			this.onTargetChanged();
+		}
+	}
+
+	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (!targets.isEmpty() && world.isRemote) {
 			//this.spawnBeamParticles(world, x, y, z);
 			ChromaFX.drawLeyLineParticles(world, x, y, z, this.getOutgoingBeamRadius(), targets);
+		}
+		this.tickTargets();
+	}
+
+	private void tickTargets() {
+		if (!worldObj.isRemote && !tickingTargets.isEmpty()) {
+			Iterator<TickingCrystalTarget> it = tickingTargets.iterator();
+			while (it.hasNext()) {
+				TickingCrystalTarget t = it.next();
+				if (t.tick()) {
+					it.remove();
+					targets.remove(t);
+					//ReikaJavaLibrary.pConsole("Removing "+t);
+					this.syncAllData(true);
+				}
+			}
 		}
 	}
 

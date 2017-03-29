@@ -80,14 +80,6 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 	}
 
 	@Override
-	public int getSignalDegradation() {
-		int base = this.isTurbocharged() ? 1500 : 2500;
-		if (worldObj.isRaining())
-			base *= 4;
-		return base;
-	}
-
-	@Override
 	protected boolean checkForStructure() {
 		return ChromaStructures.getBroadcastStructure(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 	}
@@ -168,6 +160,14 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 	@Override
 	public int maxThroughput() {
 		return this.isTurbocharged() ? 250000 : 100000;
+	}
+
+	@Override
+	public int getSignalDegradation() {
+		int base = this.isTurbocharged() ? 1500 : 3000;
+		if (worldObj.isRaining())
+			base *= 4;
+		return base;
 	}
 
 	@Override

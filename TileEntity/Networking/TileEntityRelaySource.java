@@ -23,7 +23,6 @@ import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
@@ -53,10 +52,12 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 		return cooldown;
 	}
 
+	/*
 	@Override
 	public ResearchLevel getResearchTier() {
 		return ResearchLevel.ENERGYEXPLORE;
 	}
+	 */
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {

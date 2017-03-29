@@ -25,6 +25,7 @@ import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.AxisAlignedBB;
@@ -68,6 +69,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
+import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.ChromatiCraft.World.Dimension.WorldProviderChroma;
 import Reika.DragonAPI.ModList;
@@ -83,6 +85,8 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ChiselBlockHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
 import WayofTime.alchemicalWizardry.api.soulNetwork.SoulNetworkHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -94,7 +98,8 @@ public class ChromaAux {
 	public static final Color[] sideColors = {Color.CYAN, Color.BLUE, Color.YELLOW, Color.BLACK, new Color(255, 120, 0), Color.MAGENTA};
 	public static final String[] sideColorNames = {"CYAN", "BLUE", "YELLOW", "BLACK", "ORANGE", "MAGENTA"};
 
-	private static final GenerationInterceptWorld relayWorld = new GenerationInterceptWorld();
+	private static final GenerationInterceptWorld cliffRelayWorld = new GenerationInterceptWorld();
+	private static final GenerationInterceptWorld rainbowRelayWorld = new GenerationInterceptWorld();
 
 	static {
 		if (ModList.THAUMCRAFT.isLoaded()) {
@@ -104,8 +109,21 @@ public class ChromaAux {
 			relayWorld.disallowBlock(ThaumItemHelper.BlockEntry.TILE.getBlock());
 			relayWorld.disallowBlock(ThaumItemHelper.BlockEntry.TOTEMNODE.getBlock());
 			 */
-			relayWorld.addHook(new NodeHook());
-			relayWorld.addHook(new WispSpawnerHook());
+			cliffRelayWorld.addHook(new NodeHook());
+			cliffRelayWorld.addHook(new WispSpawnerHook());
+
+			rainbowRelayWorld.addHook(new NodeHook2());
+			rainbowRelayWorld.disallowBlock(ThaumItemHelper.BlockEntry.TOTEM.getBlock());
+		}
+		rainbowRelayWorld.addHook(new WeakSpawnerHook());
+
+		if (ModList.CHISEL.isLoaded()) {
+			cliffRelayWorld.disallowBlockChange(ChromaBlocks.CLIFFSTONE.getBlockInstance(), ChiselBlockHandler.BlockEntry.DIORITE.getBlock());
+			cliffRelayWorld.disallowBlockChange(ChromaBlocks.CLIFFSTONE.getBlockInstance(), ChiselBlockHandler.BlockEntry.ANDESITE.getBlock());
+			cliffRelayWorld.disallowBlockChange(ChromaBlocks.CLIFFSTONE.getBlockInstance(), ChiselBlockHandler.BlockEntry.GRANITE.getBlock());
+			cliffRelayWorld.disallowBlockChange(ChromaBlocks.CLIFFSTONE.getBlockInstance(), ChiselBlockHandler.BlockEntry.MARBLE.getBlock());
+			cliffRelayWorld.disallowBlockChange(ChromaBlocks.CLIFFSTONE.getBlockInstance(), ChiselBlockHandler.BlockEntry.SANDSTONE.getBlock());
+			cliffRelayWorld.disallowBlockChange(ChromaBlocks.CLIFFSTONE.getBlockInstance(), ChiselBlockHandler.BlockEntry.LIMESTONE.getBlock());
 		}
 	}
 
@@ -153,15 +171,65 @@ public class ChromaAux {
 
 	}
 
+	private static class NodeHook2 implements TileHook {
+
+		@Override
+		public void onTileChanged(TileEntity te) {
+			if (InterfaceCache.NODE.instanceOf(te)) {
+				INode n = (INode)te;
+				n.setNodeType(NodeType.NORMAL);
+				n.setNodeModifier(NodeModifier.BRIGHT);
+				if (te.worldObj.rand.nextInt(4) == 0) {
+					float f = 2+te.worldObj.rand.nextFloat()*4;
+					AspectList al = n.getAspects();
+					for (Aspect a : new HashSet<Aspect>(al.aspects.keySet())) {
+						al.aspects.put(a, (int)(f*al.getAmount(a)));
+					}
+				}
+			}
+		}
+
+		@Override
+		public boolean shouldRun(World world, int x, int y, int z) {
+			return ChromatiCraft.isRainbowForest(world.getBiomeGenForCoords(x, z));
+		}
+
+	}
+
+	private static class WeakSpawnerHook implements TileHook {
+
+		@Override
+		public void onTileChanged(TileEntity te) {
+			if (te instanceof TileEntityMobSpawner) {
+				TileEntityMobSpawner tm = (TileEntityMobSpawner)te;
+				MobSpawnerBaseLogic lgc = tm.func_145881_a();
+				lgc.activatingRangeFromPlayer = 6;
+				lgc.minSpawnDelay *= 2;
+				lgc.maxSpawnDelay *= 4;
+			}
+		}
+
+		@Override
+		public boolean shouldRun(World world, int x, int y, int z) {
+			return ChromatiCraft.isRainbowForest(world.getBiomeGenForCoords(x, z));
+		}
+
+	}
+
 	public static void interceptChunkPopulation(int cx, int cz, World world, IChunkProvider generator, IChunkProvider loader) {
 		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
 			((WorldProviderChroma)world.provider).getChunkGenerator().onPopulationHook(generator, loader, cx, cz);
 		}
 		else if (ReikaChunkHelper.chunkContainsBiomeType(world, cx, cz, BiomeGlowingCliffs.class)) {
-			relayWorld.link(world);
+			cliffRelayWorld.link(world);
 			//GameRegistry.generateWorld(cx, cz, relayWorld, generator, loader);
-			BiomeGlowingCliffs.runIWGs(cx, cz, relayWorld, generator, loader);
-			relayWorld.runHooks();
+			BiomeGlowingCliffs.runIWGs(cx, cz, cliffRelayWorld, generator, loader);
+			cliffRelayWorld.runHooks();
+		}
+		else if (ReikaChunkHelper.chunkContainsBiomeType(world, cx, cz, BiomeRainbowForest.class)) {
+			rainbowRelayWorld.link(world);
+			GameRegistry.generateWorld(cx, cz, rainbowRelayWorld, generator, loader);
+			rainbowRelayWorld.runHooks();
 		}
 		else {
 			GameRegistry.generateWorld(cx, cz, world, generator, loader);
