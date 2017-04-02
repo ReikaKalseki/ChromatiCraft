@@ -48,7 +48,7 @@ import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCompoundRepeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalBroadcaster;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
-import Reika.ChromatiCraft.World.PylonGenerator;
+import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
 import Reika.DragonAPI.Auxiliary.Trackers.CrashNotifications;
 import Reika.DragonAPI.Auxiliary.Trackers.CrashNotifications.CrashNotification;
@@ -630,11 +630,21 @@ public class CrystalNetworker implements TickHandler {
 		return li;
 	}
 
-	public <T extends CrystalNetworkTile> T getNearestTileOfType(CrystalNetworkTile te, Class<T> type, int range) {
+
+
+	public <T extends CrystalNetworkTile> T getNearestTileOfType(World world, int x, int y, int z, Class<T> type, double range) {
+		return this.getNearestTileOfType(null, new WorldLocation(world, x, y, z), type, range);
+	}
+
+	public <T extends CrystalNetworkTile> T getNearestTileOfType(CrystalNetworkTile te, Class<T> type, double range) {
+		WorldLocation loc = PylonFinder.getLocation(te);
+		return this.getNearestTileOfType(te, loc, type, range);
+	}
+
+	private <T extends CrystalNetworkTile> T getNearestTileOfType(CrystalNetworkTile te, WorldLocation loc, Class<T> type, double range) {
 		T ret = null;
 		double dist = Double.POSITIVE_INFINITY;
 		HashSet<WorldLocation> rem = new HashSet();
-		WorldLocation loc = PylonFinder.getLocation(te);
 		for (WorldLocation c : tiles.getAllLocationsNear(loc, range)) {
 			CrystalNetworkTile tile = tiles.get(c);
 			if (tile == null) {
@@ -642,12 +652,12 @@ public class CrystalNetworker implements TickHandler {
 				//c.setBlock(Blocks.brick_block);
 				rem.add(c);
 			}
-			else if (tile == te) {
+			else if (te != null && tile == te) {
 
 			}
-			else if (te.getWorld().provider.dimensionId == c.dimensionID) {
+			else if (loc.dimensionID == c.dimensionID) {
 				if (type.isAssignableFrom(tile.getClass())) {
-					double d = tile.getDistanceSqTo(te.getX(), te.getY(), te.getZ());
+					double d = tile.getDistanceSqTo(loc.xCoord, loc.yCoord, loc.zCoord);
 					if (d <= range*range && d < dist) {
 						dist = d;
 						ret = (T)tile;

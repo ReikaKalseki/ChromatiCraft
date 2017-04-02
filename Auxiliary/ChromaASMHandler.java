@@ -10,7 +10,6 @@
 package Reika.ChromatiCraft.Auxiliary;
 
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -131,8 +130,8 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 					case REACHDIST: {
 						MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_78757_d", "getBlockReachDistance", "()F");
 						m.instructions.insert(new InsnNode(Opcodes.I2F));
-						m.instructions.insert(new FieldInsnNode(Opcodes.GETFIELD, "Reika/ChromatiCraft/Auxiliary/AbilityHelper", "playerReach", "I"));
-						m.instructions.insert(new FieldInsnNode(Opcodes.GETSTATIC, "Reika/ChromatiCraft/Auxiliary/AbilityHelper", "instance", "LReika/ChromatiCraft/Auxiliary/AbilityHelper;"));
+						m.instructions.insert(new FieldInsnNode(Opcodes.GETFIELD, "Reika/ChromatiCraft/Auxiliary/Ability/AbilityHelper", "playerReach", "I"));
+						m.instructions.insert(new FieldInsnNode(Opcodes.GETSTATIC, "Reika/ChromatiCraft/Auxiliary/Ability/AbilityHelper", "instance", "LReika/ChromatiCraft/Auxiliary/Ability/AbilityHelper;"));
 						AbstractInsnNode index = null;
 						for (int i = 0; i < m.instructions.size(); i++) {
 							AbstractInsnNode ain = m.instructions.get(i);
@@ -316,9 +315,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 									//m.instructions.remove(pre);
 									pre.var = 0;
 									min.owner = "Reika/ChromatiCraft/Auxiliary/ChromaAux";
-									ArrayList<String> li = ReikaASMHelper.parseMethodSignature(min);
-									li.add(0, "Lnet/minecraft/entity/Entity;");
-									min.desc = ReikaASMHelper.compileSignature(li);
+									ReikaASMHelper.addLeadingArgument(min, "Lnet/minecraft/entity/Entity;");
 									min.name = "getInterceptedCollisionBox";
 									ReikaASMHelper.changeOpcode(min, Opcodes.INVOKESTATIC);
 								}
@@ -326,9 +323,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 									AbstractInsnNode pre = ReikaASMHelper.getLastFieldRefBefore(m.instructions, i, world);
 									m.instructions.remove(pre);
 									min.owner = "Reika/ChromatiCraft/Auxiliary/ChromaAux";
-									ArrayList<String> li = ReikaASMHelper.parseMethodSignature(min);
-									li.add(0, "Lnet/minecraft/entity/Entity;");
-									min.desc = ReikaASMHelper.compileSignature(li);
+									ReikaASMHelper.addLeadingArgument(min, "Lnet/minecraft/entity/Entity;");
 									min.name = "getInterceptedRaytrace";
 									ReikaASMHelper.changeOpcode(min, Opcodes.INVOKESTATIC);
 								}
@@ -336,9 +331,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 									AbstractInsnNode pre = ReikaASMHelper.getLastFieldRefBefore(m.instructions, i, world);
 									m.instructions.remove(pre);
 									min.owner = "Reika/ChromatiCraft/Auxiliary/ChromaAux";
-									ArrayList<String> li = ReikaASMHelper.parseMethodSignature(min);
-									li.add(0, "Lnet/minecraft/entity/Entity;");
-									min.desc = ReikaASMHelper.compileSignature(li);
+									ReikaASMHelper.addLeadingArgument(min, "Lnet/minecraft/entity/Entity;");
 									min.name = "getInterceptedRaytrace";
 									ReikaASMHelper.changeOpcode(min, Opcodes.INVOKESTATIC);
 								}

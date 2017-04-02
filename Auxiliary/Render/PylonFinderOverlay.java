@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.World.PylonGenerator;
+import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;

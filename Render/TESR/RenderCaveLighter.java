@@ -50,7 +50,7 @@ public class RenderCaveLighter extends ChromaRenderBase {
 
 		this.drawInner(te);
 
-		IIcon ico = ChromaIcons.GLOWFRAME_TRANS.getIcon();
+		IIcon ico = ChromaIcons.GLOWFRAME.getIcon();
 		float u = ico.getMinU();
 		float v = ico.getMinV();
 		float du = ico.getMaxU();
@@ -106,7 +106,6 @@ public class RenderCaveLighter extends ChromaRenderBase {
 			GL11.glPopMatrix();
 		}*/
 
-		GL11.glDisable(GL11.GL_BLEND);
 		if (te.hasWorldObj())
 			GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 		GL11.glPopMatrix();

@@ -32,6 +32,7 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -55,6 +56,7 @@ import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
 import net.minecraftforge.client.event.RenderBlockOverlayEvent;
+import net.minecraftforge.client.event.RenderBlockOverlayEvent.OverlayType;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderLivingEvent;
@@ -69,10 +71,10 @@ import org.lwjgl.opengl.GL12;
 import pneumaticCraft.api.client.pneumaticHelmet.BlockTrackEvent;
 import pneumaticCraft.api.client.pneumaticHelmet.InventoryTrackEvent;
 import thaumcraft.api.research.ResearchItem;
-import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
-import Reika.ChromatiCraft.Auxiliary.AbilityHelper.AbilityXRays;
 import Reika.ChromatiCraft.Auxiliary.MusicLoader;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
+import Reika.ChromatiCraft.Auxiliary.Ability.AbilityXRays;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionVoidGaze.VoidGazeLevels;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
@@ -109,7 +111,6 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.TESR.RenderAlveary;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
-import Reika.ChromatiCraft.World.GlowingCliffsColumnShaper;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverManagerClient;
 import Reika.ChromatiCraft.World.Dimension.Rendering.SkyRiverRenderer;
 import Reika.ChromatiCraft.World.Dimension.Structure.AntFarmGenerator;
@@ -145,6 +146,7 @@ import Reika.DragonAPI.Instantiable.IO.CustomMusic;
 import Reika.DragonAPI.Instantiable.IO.EnumSound;
 import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
+import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -196,26 +198,56 @@ public class ChromaClientEventController {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void preventCliffAmbience(PlaySoundEvent17 evt) {
-		if (evt.sound.getYPosF() >= GlowingCliffsColumnShaper.SEA_LEVEL) {
-			if (BiomeGlowingCliffs.isGlowingCliffs(Minecraft.getMinecraft().theWorld.getBiomeGenForCoords(MathHelper.floor_float(evt.sound.getXPosF()), MathHelper.floor_float(evt.sound.getZPosF())))) {
-				if (evt.name.contains("ambient.cave.cave")) {
-					int n = rand.nextInt(3);
-					ChromaSounds s = null;
-					switch(n) {
-						case 0:
-							s = ChromaSounds.CLIFFSOUND;
-							break;
-						case 1:
-							s = ChromaSounds.CLIFFSOUND2;
-							break;
-						case 2:
-							s = ChromaSounds.CLIFFSOUND3;
-							break;
-					}
-					evt.result = new EnumSound(s, evt.sound);
-				}
+	public void preventCliffThunder(PlaySoundEvent17 evt) {
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		if (ep != null && BiomeGlowingCliffs.isGlowingCliffs(ep.worldObj.getBiomeGenForCoords(MathHelper.floor_double(ep.posX), MathHelper.floor_double(ep.posZ)))) {
+			if (evt.name.contains("ambient.weather.thunder")) {
+				evt.result = null;
 			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void preventCliffAmbience(PlaySoundEvent17 evt) {
+		//if (evt.sound.getYPosF() >= GlowingCliffsColumnShaper.SEA_LEVEL) {
+		if (BiomeGlowingCliffs.isGlowingCliffs(Minecraft.getMinecraft().theWorld.getBiomeGenForCoords(MathHelper.floor_float(evt.sound.getXPosF()), MathHelper.floor_float(evt.sound.getZPosF())))) {
+			if (evt.name.contains("ambient.cave.cave")) {
+				int n = rand.nextInt(3);
+				ChromaSounds s = null;
+				switch(n) {
+					case 0:
+						s = ChromaSounds.CLIFFSOUND;
+						break;
+					case 1:
+						s = ChromaSounds.CLIFFSOUND2;
+						break;
+					case 2:
+						s = ChromaSounds.CLIFFSOUND3;
+						break;
+				}
+				evt.result = new EnumSound(s, evt.sound, false);
+			}
+		}
+		//}
+	}
+
+	@SubscribeEvent
+	public void fixRespirationFourPlusFog(EntityViewRenderEvent.FogDensity evt) {
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		if (ep.isPotionActive(Potion.blindness))
+			return;
+		ItemStack helm = ep.getCurrentArmor(3);
+		if (helm != null && ReikaEnchantmentHelper.getEnchantmentLevel(Enchantment.respiration, helm) > 3) {
+			evt.density = 0;
+			evt.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent
+	public void noLumaWaterFog(RenderBlockOverlayEvent evt) {
+		//ReikaJavaLibrary.pConsole(evt.density);
+		if (evt.overlayType == OverlayType.WATER && (evt.player.worldObj.getBlock(evt.blockX, evt.blockY, evt.blockZ) == ChromaBlocks.LUMA.getBlockInstance() || evt.player.worldObj.getBlock(evt.blockX, evt.blockY+1, evt.blockZ) == ChromaBlocks.LUMA.getBlockInstance())) {
+			evt.setCanceled(true);
 		}
 	}
 
@@ -233,7 +265,6 @@ public class ChromaClientEventController {
 		//ReikaJavaLibrary.pConsole(evt.density);
 		if (evt.block == ChromaBlocks.LUMA.getBlockInstance()) {
 			evt.red = evt.green = evt.blue = 1;
-			evt.setCanceled(true);
 		}
 	}
 
@@ -1384,7 +1415,7 @@ public class ChromaClientEventController {
 			int x = evt.target.blockX;
 			int y = evt.target.blockY;
 			int z = evt.target.blockZ;
-			if (ChromaTiles.getTile(world, x, y, z) == ChromaTiles.PYLON)
+			if (ChromaTiles.getTile(world, x, y, z) == ChromaTiles.PYLON || ChromaTiles.getTile(world, x, y, z) == ChromaTiles.SKYPEATER)
 				evt.setCanceled(true);
 		}
 	}

@@ -19,9 +19,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraftforge.common.MinecraftForge;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Event.ChunkGenerationEvent;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
@@ -90,6 +92,7 @@ public class ChunkResetter implements TickHandler {
 
 			generator = world.theChunkProviderServer.currentChunkProvider;
 			regen = generator.provideChunk(c.xPosition, c.zPosition);
+			MinecraftForge.EVENT_BUS.post(new ChunkGenerationEvent(c));
 		}
 
 		private void step(WorldServer world) {

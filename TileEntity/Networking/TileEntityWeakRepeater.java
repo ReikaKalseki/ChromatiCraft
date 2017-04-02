@@ -17,6 +17,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.DynamicRepeater;
@@ -84,6 +85,7 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 				ReikaWorldHelper.ignite(world, x+dirs[i].offsetX, y+dirs[i].offsetY, z+dirs[i].offsetZ);
 			}
 			world.newExplosion(null, x+0.5, y+0.5, z+0.5, 2, true, true);
+			ProgressStage.BLOWREPEATER.stepPlayerTo(this.getPlacer());
 			if (world.isRemote) {
 				this.doDestroyFXClient(world, x, y, z);
 			}

@@ -100,6 +100,8 @@ public class CrystalFlow extends CrystalPath {
 
 	private int getThroughputPenalty(int rawthru) {
 		int att = this.getSignalLoss();
+		if (att <= 1)
+			return 0;
 		int amt = (int)Math.pow(att/80, 1.5+0.5*(1-this.getOptimizationFactor())); //raw, directly determined from attenuation & path optimization
 		double x = rawthru/att-1;
 		if (att > rawthru) { //add to base_rem

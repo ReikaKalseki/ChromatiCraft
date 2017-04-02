@@ -10,35 +10,47 @@
 package Reika.ChromatiCraft.Entity;
 
 import java.awt.Color;
+import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
+import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.SphericalVector;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.ParticleController.CollectingPositionController;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -67,6 +79,9 @@ public class EntityGlowCloud extends EntityLiving {
 
 	private boolean init;
 
+	private boolean isAngry;
+	private int attackCooldown = 20;
+
 	public EntityGlowCloud(World world, double x, double y, double z) {
 		super(world);
 		color = this.generateRandomColor();
@@ -74,6 +89,12 @@ public class EntityGlowCloud extends EntityLiving {
 		this.setPosition(x, y, z);
 		height = 0.25F;
 		width = 0.25F;
+	}
+
+	@Override
+	protected void applyEntityAttributes() {
+		super.applyEntityAttributes();
+		this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(50);
 	}
 
 	private int generateRandomColor() {
@@ -261,6 +282,8 @@ public class EntityGlowCloud extends EntityLiving {
 
 		if (nbt.getBoolean("isdead"))
 			this.setDead();
+
+		isAngry = nbt.getBoolean("angry");
 	}
 
 	@Override
@@ -268,6 +291,7 @@ public class EntityGlowCloud extends EntityLiving {
 		super.writeEntityToNBT(nbt);
 
 		nbt.setBoolean("isdead", isDead);
+		nbt.setBoolean("angry", isAngry);
 	}
 
 	private void die() {
@@ -280,6 +304,14 @@ public class EntityGlowCloud extends EntityLiving {
 		}
 		this.deleteOldLight();
 		this.setDead();
+
+		if (isAngry) {
+			ReikaItemHelper.dropItem(this, new ItemStack(Items.glowstone_dust, 1+rand.nextInt(16), 0));
+			if (rand.nextInt(10) == 0)
+				ReikaItemHelper.dropItem(this, new ItemStack(Items.ghast_tear));
+			if (rand.nextInt(3) == 0)
+				ReikaItemHelper.dropItem(this, ReikaItemHelper.getSizedItemStack(ChromaStacks.energyPowder, 1+rand.nextInt(4)));
+		}
 	}
 
 	private void sendDeathParticles() {
@@ -319,21 +351,79 @@ public class EntityGlowCloud extends EntityLiving {
 			if (ep == null || worldObj.playerEntities.isEmpty()) {
 				this.die();
 			}
-			else if (ticksExisted >= 12000 || rand.nextInt(12000-ticksExisted) == 0) {
-				this.die();
-			}
-			else if (worldObj.isRaining() && rand.nextInt(80) == 0) {
+			else if (ticksExisted >= 80000 || rand.nextInt(80000-ticksExisted) == 0) {
 				this.die();
 			}
 			else if (this.isInWater()) {
 				this.die();
 			}
-			else if (this.getDistanceSqToEntity(ep) >= 16384) {
+			else if (this.getDistanceSqToEntity(ep) >= 65536) {
 				this.die();
 			}
-			else if (this.getDistanceSqToEntity(ep) >= 1024 && rand.nextInt(200) == 0) {
+			else if (this.getDistanceSqToEntity(ep) >= 16384 && rand.nextInt(200) == 0) {
 				this.die();
 			}
+
+			if (isAngry) {
+				if (attackCooldown > 0)
+					attackCooldown--;
+				else if (this.getDistanceSqToEntity(ep) <= 64) {
+					if (rand.nextInt(40) == 0) {
+						this.attack();
+					}
+				}
+				if (velocity != null) {
+					velocity.aimFrom(posX, posY, posZ, ep.posX, ep.posY+1.62, ep.posZ);
+					velocity.magnitude = 0.375;
+					velocityChanged = true;
+				}
+			}
+		}
+	}
+
+	private void attack() {
+		if (worldObj.isRemote) {
+			this.doAttackFX();
+		}
+		else {
+			this.doAttack();
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.CLOUDATTACK.ordinal(), new PacketTarget.RadiusTarget(this, 32), this.getEntityId());
+		}
+	}
+
+	private void doAttack() {
+		attackCooldown = 15;
+		AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(this, 8);
+		List<EntityLivingBase> li = worldObj.getEntitiesWithinAABB(EntityLivingBase.class, box);
+		for (EntityLivingBase e : li) {
+			if (!(e instanceof EntityGlowCloud)) {
+				e.attackEntityFrom(DamageSource.magic, 4);
+				if (e instanceof EntityPlayer && e.getHealth() <= 0)
+					isAngry = false;
+			}
+		}
+		this.attackEntityFrom(ChromatiCraft.pylonDamage[0], 2);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void doAttackFX() {
+		ReikaSoundHelper.playClientSound(ChromaSounds.FLAREATTACK, this, 2, 2*CrystalMusicManager.instance.getRandomScaledDing(CrystalElement.BLACK));
+
+		int c = this.getRenderColor();
+		for (int i = 0; i < 180; i++) {
+			double a1 = rand.nextDouble()*360;
+			double a2 = rand.nextDouble()*360;
+			double[] xyz = ReikaPhysicsHelper.polarToCartesian(0.5, a1, a2);
+			double px = posX+xyz[0];//ReikaRandomHelper.getRandomPlusMinus(posX, 1);
+			double py = posY+xyz[1];//ReikaRandomHelper.getRandomPlusMinus(posY, 1);
+			double pz = posZ+xyz[2];//ReikaRandomHelper.getRandomPlusMinus(posZ, 1);
+			double v = 0.375;
+			EntityBlurFX fx = new EntityBlurFX(worldObj, px, py, pz, xyz[0]*v, xyz[1]*v, xyz[2]*v);
+			int t = ReikaRandomHelper.getRandomBetween(20, 60);
+			int t2 = (int)(t*(0.5+rand.nextDouble()));
+			float s = 1+2*rand.nextFloat();
+			fx.setColor(color).setAlphaFading().setRapidExpand().setLife(t2).setScale(s);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
 
@@ -417,14 +507,25 @@ public class EntityGlowCloud extends EntityLiving {
 	@Override
 	public boolean attackEntityFrom(DamageSource src, float dmg) {
 		Entity e = src.getEntity();
-		if (e instanceof EntityPlayer) {
+		if (src.getClass().getName().equals("tconstruct.smeltery.SmelteryDamageSource")) {
+			return false;
+		}
+		else if (e instanceof EntityPlayer) {
 			if (!ReikaPlayerAPI.isFake((EntityPlayer)e)) {
 				boolean flag = super.attackEntityFrom(src, dmg);
 				if (flag && this.getHealth() <= 0) {
 					this.die();
 				}
+				isAngry = true;
 				return flag;
 			}
+		}
+		else if (src instanceof PylonDamage) {
+			boolean flag = super.attackEntityFrom(src, dmg);
+			if (flag && this.getHealth() <= 0) {
+				this.die();
+			}
+			return flag;
 		}
 		return false;
 	}

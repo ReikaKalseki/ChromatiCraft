@@ -164,13 +164,16 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 		if (meta == DimDecoTypes.CRYSTALLEAF.ordinal()) {
 			return 0;
 		}
+		if (meta == DimDecoTypes.CLIFFGLASS.ordinal()) {
+			return 12;
+		}
 		return 0;
 	}
 
 	@Override
 	public int getMixedBrightnessForBlock(IBlockAccess iba, int x, int y, int z) {
 		int meta = iba.getBlockMetadata(x, y, z);
-		if (meta == DimDecoTypes.GEMSTONE.ordinal()) {
+		if (meta == DimDecoTypes.GEMSTONE.ordinal() || meta == DimDecoTypes.OCEANSTONE.ordinal()) {
 			return iba.getLightBrightnessForSkyBlocks(x, y, z, 15);
 		}
 		return super.getMixedBrightnessForBlock(iba, x, y, z);
@@ -178,7 +181,7 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
-		return icons[meta].get(0);
+		return meta == DimDecoTypes.CLIFFGLASS.ordinal() ? icons[meta].get(1) : icons[meta].get(0);
 	}
 
 	@Override

@@ -9,7 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic.Interfaces;
 
-public interface NaturalCrystalSource extends CrystalSource {
+public interface NaturalCrystalSource extends CrystalSource, NaturalNetworkTile {
 
 	public boolean regeneratesEnergy();
 

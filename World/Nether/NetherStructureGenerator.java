@@ -146,7 +146,7 @@ public class NetherStructureGenerator implements RetroactiveGenerator {
 	}
 
 	@Override
-	public boolean canGenerateAt(Random rand, World world, int chunkX, int chunkZ) {
+	public boolean canGenerateAt(World world, int chunkX, int chunkZ) {
 		return true;
 	}
 

@@ -28,7 +28,7 @@ import Reika.ChromatiCraft.Magic.Lore.KeyAssemblyPuzzle.TileGroup;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.World.PylonGenerator;
+import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.Instantiable.HexGrid.Hex;
 import Reika.DragonAPI.Instantiable.HexGrid.Point;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -115,7 +115,7 @@ public class FullScreenOverlayRenderer {
 
 	void renderPylonAura(EntityPlayer ep, int gsc) {
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-		String tex = "Textures/aura-bar-half-grid.png";//ChromaOptions.SMALLAURA.getState() ? "Textures/aura-bar-quarter.png" : "Textures/aura-bar-half.png";
+		String tex = "Textures/aura-bar-half-grid.png";
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, tex);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -127,9 +127,10 @@ public class FullScreenOverlayRenderer {
 		double z = -1000;
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];
-			Coordinate c = PylonGenerator.instance.getNearestPylonSpawn(ep.worldObj, ep.posX, ep.posY, ep.posZ, e);
-			double dd = c != null ? c.getDistanceTo(ep.posX, ep.posY, ep.posZ) : Double.POSITIVE_INFINITY;
-			if (dd < 32) {
+			boolean containsColor = factors.containsKey(e);
+			Coordinate c = containsColor ? null : PylonGenerator.instance.getNearestPylonSpawn(ep.worldObj, ep.posX, ep.posY, ep.posZ, e);
+			double dd = containsColor ? 0 : c != null ? c.getDistanceTo(ep.posX, ep.posY, ep.posZ) : Double.POSITIVE_INFINITY;
+			if (containsColor || dd < 32) {
 				int step = 40;
 				int frame = (int)((System.currentTimeMillis()/step)%20+e.ordinal()*1.25F)%20;
 				int imgw = 4;//20;
@@ -139,10 +140,15 @@ public class FullScreenOverlayRenderer {
 				double v = frame/imgw/(double)imgh;
 				double dv = v+1D/imgh;
 				int alpha = 255;
-				float cache = factors.containsKey(e) ? factors.get(e) : 0;
+				float cache = containsColor ? factors.get(e) : 0;
 				float bright = Math.min(1, (float)(1.5-dd/24));
 				float res = Math.max(cache, bright);
-				factors.put(e, cache*0.9975F);
+				if (containsColor) {
+					if (cache > 0.01)
+						factors.put(e, cache*0.975F);
+					else
+						factors.remove(e);
+				}
 				if (res > 0) {
 					int color = ReikaColorAPI.getColorWithBrightnessMultiplier(e.getColor(), Math.min(1, res));
 					v5.startDrawingQuads();
@@ -160,6 +166,10 @@ public class FullScreenOverlayRenderer {
 		BlendMode.DEFAULT.apply();
 		//GL11.glDisable(GL11.GL_DEPTH_TEST); //turn off depth testing to avoid this occluding other elements
 		GL11.glPopAttrib();
+	}
+
+	boolean isPylonOverlayForced() {
+		return !factors.isEmpty();
 	}
 
 	void addLoreNote(EntityPlayer ep, Towers t) {

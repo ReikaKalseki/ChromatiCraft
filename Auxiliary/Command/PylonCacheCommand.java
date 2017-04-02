@@ -10,7 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary.Command;
 
 import net.minecraft.command.ICommandSender;
-import Reika.ChromatiCraft.World.PylonGenerator;
+import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.Command.DragonCommandBase;
 
 

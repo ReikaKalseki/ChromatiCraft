@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.World;
+package Reika.ChromatiCraft.World.IWG;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,7 +32,10 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs.GlowingTreeGen;
+import Reika.ChromatiCraft.World.GlowingCliffsColumnShaper;
+import Reika.ChromatiCraft.World.GlowingCliffsDecorator;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.LobulatedCurve;
 import Reika.DragonAPI.Instantiable.SimplexNoiseGenerator;
@@ -301,7 +304,7 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 	}
 
 	@Override
-	public boolean canGenerateAt(Random rand, World world, int chunkX, int chunkZ) {
+	public boolean canGenerateAt(World world, int chunkX, int chunkZ) {
 		return true;
 	}
 
@@ -310,7 +313,7 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 		return "Glowing Cliffs Floating Islands";
 	}
 
-	static class Island {
+	public static class Island {
 
 		private final HashMap<Coordinate, BlockKey> blocks = new HashMap();
 		private final HashMap<Coordinate, Integer> topMap = new HashMap();

@@ -10,7 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary.Command;
 
 import net.minecraft.command.ICommandSender;
-import Reika.ChromatiCraft.World.DungeonGenerator;
+import Reika.ChromatiCraft.World.IWG.DungeonGenerator;
 import Reika.DragonAPI.Command.DragonCommandBase;
 
 

@@ -17,6 +17,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityMagicPlant;
+import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone.Variants;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
@@ -104,7 +105,7 @@ public class TileEntityCropSpeedPlant extends TileEntityMagicPlant {
 
 	@Override
 	public boolean isPlantable(World world, int x, int y, int z) {
-		return world.getBlock(x, y-1, z) == Blocks.farmland || ChromaTiles.getTile(world, x, y-1, z) == ChromaTiles.PLANTACCEL;
+		return world.getBlock(x, y-1, z) == Blocks.farmland || ChromaTiles.getTile(world, x, y-1, z) == ChromaTiles.PLANTACCEL || (world.getBlock(x, y-1, z) == ChromaBlocks.CLIFFSTONE.getBlockInstance() && Variants.getVariant(world.getBlockMetadata(x, y-1, z)) == Variants.FARMLAND);
 	}
 
 }

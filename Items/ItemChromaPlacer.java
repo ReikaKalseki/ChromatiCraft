@@ -250,7 +250,7 @@ public class ItemChromaPlacer extends Item implements ISize {
 						par3List.add(item2);
 					}
 				}
-				else if (c.isRepeater() && c != ChromaTiles.WEAKREPEATER) {
+				else if (c.isTurbochargeableRepeater()) {
 					par3List.add(item);
 					ItemStack item2 = item.copy();
 					item2.stackTagCompound = new NBTTagCompound();

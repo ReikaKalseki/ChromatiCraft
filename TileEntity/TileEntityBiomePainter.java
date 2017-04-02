@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
+import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.CubeRotation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
@@ -183,6 +184,8 @@ public class TileEntityBiomePainter extends TileEntityChromaticBase implements G
 			if (in == ChromatiCraft.rainbowforest)
 				;//return false;
 			if (in instanceof ChromaDimensionBiome)
+				return false;
+			if (in instanceof BiomeGlowingCliffs)
 				return false;
 			return true;
 		}

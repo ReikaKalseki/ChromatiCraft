@@ -10,9 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary.Render;
 
 import java.awt.Color;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -53,7 +51,7 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.World.PylonGenerator;
+import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderingLoopEvent;
 import Reika.DragonAPI.Interfaces.Registry.OreType;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -168,7 +166,7 @@ public class ChromaOverlays {
 			GL11.glTranslated(0, 0, FRONT_TRANSLATE);
 			this.renderAbilityStatus(ep, gsc);
 			GL11.glPopMatrix();
-			if (PylonGenerator.instance.canGenerateIn(ep.worldObj))
+			if (PylonGenerator.instance.canGenerateIn(ep.worldObj) || FullScreenOverlayRenderer.instance.isPylonOverlayForced())
 				FullScreenOverlayRenderer.instance.renderPylonAura(ep, gsc);
 			this.renderPingOverlays(ep, gsc);
 			GL11.glPushMatrix();

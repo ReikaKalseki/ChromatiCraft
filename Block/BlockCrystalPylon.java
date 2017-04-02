@@ -18,12 +18,13 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.ChromatiCraft.Magic.Interfaces.NaturalCrystalSource;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
+import Reika.ChromatiCraft.Magic.Interfaces.NaturalNetworkTile;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntitySkypeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
@@ -51,6 +52,7 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 		color = te instanceof TileEntityDimensionCore ? ((TileEntityDimensionCore)te).getColor().getColor() : color;
 		color = te instanceof TileEntityPersonalCharger ? ((TileEntityPersonalCharger)te).getColor().getColor() : color;
 		int b = te instanceof TileEntityStructControl ? ((TileEntityStructControl)te).getBrightness() : 15;
+		b = te instanceof TileEntitySkypeater ? 0 : b;
 		return ModList.COLORLIGHT.isLoaded() ? ReikaColorAPI.getPackedIntForColoredLight(color, b) : b;
 	}
 
@@ -65,6 +67,7 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 			case AURAPOINT:
 			case DIMENSIONCORE:
 			case PERSONAL:
+			case SKYPEATER:
 				return null;
 			default:
 				return this.getBlockAABB(x, y, z);
@@ -74,7 +77,7 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 	@Override
 	public float getPlayerRelativeBlockHardness(EntityPlayer ep, World world, int x, int y, int z) {
 		TileEntityBase te = (TileEntityBase)world.getTileEntity(x, y, z);
-		if (te instanceof NaturalCrystalSource)
+		if (te instanceof NaturalNetworkTile)
 			return -1;
 		else if (te instanceof TileEntityStructControl) {
 			return ((TileEntityStructControl)te).isBreakable() ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z)*32 : -1;
@@ -114,6 +117,8 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 				return ChromaIcons.BROADCAST.getIcon();
 			case 9:
 				return ChromaIcons.WEAKREPEATER.getIcon();
+			case 11:
+				return ChromaIcons.TRANSPARENT.getIcon();
 		}
 		return Blocks.stone.getIcon(0, 0);
 	}
@@ -134,7 +139,7 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 	@Override
 	public boolean isUnbreakable(World world, int x, int y, int z, int meta) {
 		TileEntityBase te = (TileEntityBase)world.getTileEntity(x, y, z);
-		if (te instanceof NaturalCrystalSource)
+		if (te instanceof NaturalNetworkTile)
 			return true;
 		else if (te instanceof TileEntityStructControl) {
 			return !((TileEntityStructControl)te).isBreakable();

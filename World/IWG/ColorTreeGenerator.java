@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.World;
+package Reika.ChromatiCraft.World.IWG;
 
 import java.util.Random;
 
@@ -23,6 +23,8 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaDecorator;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.World.RainbowTreeGenerator;
+import Reika.ChromatiCraft.World.TreeShaper;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
@@ -159,7 +161,7 @@ public class ColorTreeGenerator implements RetroactiveGenerator, ChromaDecorator
 	}
 
 	@Override
-	public boolean canGenerateAt(Random rand, World world, int chunkX, int chunkZ) {
+	public boolean canGenerateAt(World world, int chunkX, int chunkZ) {
 		return true;
 	}
 

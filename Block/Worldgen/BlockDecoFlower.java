@@ -491,10 +491,32 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 					return world.getBlock(x, y-1, z) == Blocks.leaves && world.getBlockMetadata(x, y-1, z)%4 == 3;
 				case GLOWROOT: {
 					Block b = world.getBlock(x, y+1, z);
-					return this.matchAt(world, x, y+1, z) || b == Blocks.stone || ReikaBlockHelper.isDirtType(b, world.getBlockMetadata(x, y+1, z));
+					return (this.matchAt(world, x, y+1, z) || b == Blocks.stone || ReikaBlockHelper.isDirtType(b, world.getBlockMetadata(x, y+1, z))) && !this.isRootTooLong(world, x, y, z);
 				}
 			}
 			return false;
+		}
+
+		private boolean isRootTooLong(World world, int x, int y, int z) {
+			while (this.matchAt(world, x, y-1, z)) {
+				y--;
+			}
+			int l = 1;
+			int dy = y;
+			while (this.matchAt(world, x, dy+1, z)) {
+				dy++;
+				l++;
+			}
+			if (l < 4)
+				return false;
+			dy = y;
+			int sp = l;
+			while (world.getBlock(x, dy-1, z).isAir(world, x, dy-1, z)) {
+				dy--;
+				sp++;
+			}
+			//ReikaJavaLibrary.pConsole(y+">"+l+">"+sp+">"+sp*0.33, Side.SERVER);
+			return l > sp*0.33;
 		}
 
 		private boolean isChromaPool(World world, int x, int y, int z) {

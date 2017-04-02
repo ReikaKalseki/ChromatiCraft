@@ -86,6 +86,7 @@ import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityPylonLink;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntitySkypeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityWeakRepeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityWirelessSource;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityAccelerationPlant;
@@ -225,7 +226,8 @@ public enum ChromaTiles implements TileEnum {
 	ROUTERHUB("chroma.router",			ChromaBlocks.TILEMODELLED3,	TileEntityRouterHub.class,			13, "RenderRouterHub"),
 	FOCUSCRYSTAL("chroma.focuscrystal",	ChromaBlocks.TILEMODELLED3, TileEntityFocusCrystal.class,		14, "RenderFocusCrystal"),
 	DATANODE("chroma.datanode",			ChromaBlocks.TILEMODELLED3,	TileEntityDataNode.class,			15, "RenderDataNode"),
-	PYLONLINK("chroma.pylonlink",		ChromaBlocks.TILEENTITY2,	TileEntityPylonLink.class,			2,	"RenderPylonLink");
+	PYLONLINK("chroma.pylonlink",		ChromaBlocks.TILEENTITY2,	TileEntityPylonLink.class,			2,	"RenderPylonLink"),
+	SKYPEATER("chroma.skypeater",		ChromaBlocks.PYLON,			TileEntitySkypeater.class,			11, "RenderSkypeater");
 
 	private final Class tile;
 	private final String name;
@@ -326,6 +328,7 @@ public enum ChromaTiles implements TileEnum {
 			case ROUTERHUB:
 			case FOCUSCRYSTAL:
 			case DATANODE:
+			case SKYPEATER:
 				return true;
 			default:
 				return false;
@@ -732,6 +735,7 @@ public enum ChromaTiles implements TileEnum {
 			case PARTICLES:
 			case WIRELESS:
 			case TELEPORT:
+			case SKYPEATER:
 				return true;
 			default:
 				return false;
@@ -769,7 +773,7 @@ public enum ChromaTiles implements TileEnum {
 	}
 
 	public boolean isTurbochargeableRepeater() {
-		return this.isRepeater() && this != BROADCAST && this != WEAKREPEATER && this != IONOSPHERIC;
+		return this.isRepeater() && this != WEAKREPEATER && this != IONOSPHERIC && this != SKYPEATER;
 	}
 
 }

@@ -139,27 +139,26 @@ public class GlowingCliffsColumnShaper {
 
 		int dirtt = (int)ReikaMathLibrary.normalizeToBounds(dirtThickness.getValue(x, z), 1, 4);
 		double hval = this.calcHval(world, x, z, biome);
+		GlowCliffRegion r = this.getRegion(world, x, z, biome);
+		double middlethresh = r == GlowCliffRegion.WATER ? 0 : this.calcMiddleThresh(x, z);
+		double topthresh = r == GlowCliffRegion.WATER ? 0 : this.calcTopThresh(x, z);
 
-		if (hval < SHORELINE_THRESHOLD) {
-			this.generateWater(world, x, z, biome, rand, hval, dirtt);
-			//this.setBlock(x, 64, z, Blocks.wool, ReikaItemHelper.blueWool.getItemDamage());
-		}
-		else {
-			double middlethresh = this.calcMiddleThresh(x, z);
-			double topthresh = this.calcTopThresh(x, z);
-			if (hval < middlethresh) {
+		switch(r) {
+			case WATER:
+				this.generateWater(world, x, z, biome, rand, hval, dirtt);
+				break;
+			case SHORES:
 				this.generateLowPlateau(world, x, z, biome, rand, middlethresh, hval, dirtt);
-				//this.setBlock(x, 64, z, Blocks.wool, ReikaItemHelper.limeWool.getItemDamage());
-			}
-			else if (hval < topthresh) {
+				break;
+			case PLATEAU: {
 				double cave = ReikaMathLibrary.normalizeToBounds(lowerPlateauCaveDepth.getValue(x, z), LOWER_CAVE_MIN_THRESHOLD, LOWER_CAVE_MAX_THRESHOLD);
 				this.generateMidPlateau(world, x, z, biome, rand, hval < cave, middlethresh, cave, hval, dirtt);
-				//this.setBlock(x, 64, z, Blocks.wool, hval < cave ? ReikaItemHelper.whiteWool.getItemDamage() : ReikaItemHelper.yellowWool.getItemDamage());
+				break;
 			}
-			else {
+			case HIGH_PLATEAU: {
 				double cave = ReikaMathLibrary.normalizeToBounds(middlePlateauCaveDepth.getValue(x, z), MIDDLE_CAVE_MIN_THRESHOLD, MIDDLE_CAVE_MAX_THRESHOLD);
 				this.generateUpperPlateau(world, x, z, biome, rand, hval < cave, topthresh, cave, hval, dirtt);
-				//this.setBlock(x, 64, z, Blocks.wool, hval < cave ? ReikaItemHelper.orangeWool.getItemDamage() : ReikaItemHelper.redWool.getItemDamage());
+				break;
 			}
 		}
 
@@ -517,7 +516,7 @@ public class GlowingCliffsColumnShaper {
 				this.setBlock(x, caveFloor+1, z, Blocks.sapling);
 			}
 
-			if (ReikaRandomHelper.doWithChance(0.005)) {
+			if (ReikaRandomHelper.doWithChance(0.003)) {
 				this.setBlock(x, caveCeil-1, z, ChromaBlocks.TIEREDPLANT.getBlockInstance(), TieredPlants.CAVE.ordinal());
 			}
 			else if (ReikaRandomHelper.doWithChance(0.008)) {
@@ -574,6 +573,26 @@ public class GlowingCliffsColumnShaper {
 		return BiomeGlowingCliffs.isGlowingCliffs(biome) ? BIOME_GRASS : GRASS;
 	}
 
+	public GlowCliffRegion getRegion(World world, int x, int z, BiomeGenBase b) {
+		double hval = this.calcHval(world, x, z, b);
+		if (hval < SHORELINE_THRESHOLD) {
+			return GlowCliffRegion.WATER;
+		}
+		else {
+			double middlethresh = this.calcMiddleThresh(x, z);
+			double topthresh = this.calcTopThresh(x, z);
+			if (hval < middlethresh) {
+				return GlowCliffRegion.SHORES;
+			}
+			else if (hval < topthresh) {
+				return GlowCliffRegion.PLATEAU;
+			}
+			else {
+				return GlowCliffRegion.HIGH_PLATEAU;
+			}
+		}
+	}
+
 	private static class BlendPoint {
 
 		private final int distance;
@@ -592,6 +611,13 @@ public class GlowingCliffsColumnShaper {
 			zCoord = z;
 		}
 
+	}
+
+	public static enum GlowCliffRegion {
+		WATER(),
+		SHORES(),
+		PLATEAU(),
+		HIGH_PLATEAU();
 	}
 
 }

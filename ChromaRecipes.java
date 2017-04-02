@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
+import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.ModInterface.ItemColoredModInteract;
 import Reika.ChromatiCraft.ModInterface.TieredOreCap;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -159,13 +160,14 @@ public class ChromaRecipes {
 				ItemStack out = ChromaItems.WARP.getStackOfMetadata(1);
 				String desc = "Pitting one kind of magic against another";
 				AspectList al = new AspectList();
-				al.add(Aspect.ELDRITCH, 50);
-				al.add(Aspect.TAINT, 50);
-				al.add(Aspect.MAGIC, 50);
-				al.add(Aspect.EXCHANGE, 50);
-				al.add(Aspect.CRYSTAL, 20);
-				al.add(Aspect.HEAL, 100);
-				al.add(Aspect.SENSES, 20);
+				al.add(Aspect.ELDRITCH, 120);
+				al.add(Aspect.TAINT, 240);
+				al.add(Aspect.MAGIC, 120);
+				al.add(Aspect.EXCHANGE, 60);
+				al.add(Aspect.CRYSTAL, 90);
+				al.add(Aspect.HEAL, 240);
+				al.add(Aspect.SENSES, 60);
+				al.add(ChromaAspectManager.instance.PUZZLE, 90);
 				ItemStack[] recipe = {
 						ThaumItemHelper.ItemEntry.GOO.getItem(),
 						ThaumItemHelper.ItemEntry.FABRIC.getItem(),
@@ -177,16 +179,19 @@ public class ChromaRecipes {
 						new ItemStack(Items.string),
 						new ItemStack(ThaumItemHelper.BlockEntry.CRYSTAL.getBlock(), 1, 6),
 				};
-				InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("ELDRITCHMINOR", out, 16, al, in, recipe);
-				ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("WARPPROOF", desc, "chromaticraft", ir, costFactor, -3, -2, root, ref);
+				InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("ELDRITCHMINOR", out, 32, al, in, recipe);
+				ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("WARPPROOF", desc, "chromaticraft", ir, costFactor, -2, 0, root, ref);
 			}
 
 			{
 				AspectList al = new AspectList();
-				al.add(Aspect.MAGIC, 10);
-				al.add(Aspect.ORDER, 20);
-				al.add(Aspect.AURA, 20);
-				al.add(Aspect.CRYSTAL, 40);
+				al.add(Aspect.MAGIC, 80);
+				al.add(Aspect.ORDER, 40);
+				al.add(Aspect.AURA, 120);
+				al.add(Aspect.ENERGY, 200);
+				al.add(Aspect.EXCHANGE, 50);
+				al.add(ChromaAspectManager.instance.SIGNAL, 360);
+				al.add(Aspect.CRYSTAL, 200);
 				ItemStack[] recipe = {
 						ThaumItemHelper.ItemEntry.BALANCED.getItem(),
 						ThaumItemHelper.ItemEntry.THAUMIUM.getItem(),
@@ -195,8 +200,8 @@ public class ChromaRecipes {
 						ThaumItemHelper.ItemEntry.THAUMIUM.getItem(),
 						ThaumItemHelper.ItemEntry.VISFITLER.getItem(),
 				};
-				InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("", ChromaStacks.crystalWand, 6, al, ChromaStacks.iridChunk, recipe);
-				ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("ROD_CRYSTALWAND", "Fashioning a wand from crystals", "chromaticraft", ir, costFactor, 3, 2, root, ref);
+				InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("", ChromaStacks.crystalWand, 24, al, ChromaStacks.iridChunk, recipe);
+				ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("ROD_CRYSTALWAND", "Fashioning a wand from crystals", "chromaticraft", ir, costFactor, 2, 0, root, ref);
 			}
 
 			TieredOreCap.addRecipes();

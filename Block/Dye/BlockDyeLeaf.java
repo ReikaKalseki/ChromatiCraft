@@ -102,6 +102,11 @@ public class BlockDyeLeaf extends BlockCustomLeaf {
 		rainbowChance *= (1+fortune)*(1+fortune);
 
 		float berryChance = 0.1F*ReikaMathLibrary.intpow2(2, fortune);
+		int berryNum = 1;
+		while (berryChance > 1) {
+			berryChance = Math.max(1, berryChance-0.5F);
+			berryNum++;
+		}
 
 		if (ReikaRandomHelper.doWithChance(saplingChance))
 			li.add(new ItemStack(ChromaBlocks.DYESAPLING.getBlockInstance(), 1, meta));
@@ -112,7 +117,7 @@ public class BlockDyeLeaf extends BlockCustomLeaf {
 		if (ReikaRandomHelper.doWithChance(rainbowChance))
 			li.add(new ItemStack(ChromaBlocks.RAINBOWSAPLING.getBlockInstance(), 1, 0));
 		if (ReikaRandomHelper.doWithChance(berryChance))
-			li.add(ChromaItems.BERRY.getCraftedMetadataProduct(1+(int)berryChance, meta));
+			li.add(ChromaItems.BERRY.getCraftedMetadataProduct(berryNum+(int)berryChance, meta));
 		return li;
 	}
 

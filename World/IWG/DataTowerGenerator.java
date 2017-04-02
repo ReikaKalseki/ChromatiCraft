@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.World;
+package Reika.ChromatiCraft.World.IWG;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -223,7 +223,7 @@ public class DataTowerGenerator implements RetroactiveGenerator {
 	}
 
 	@Override
-	public boolean canGenerateAt(Random rand, World world, int chunkX, int chunkZ) {
+	public boolean canGenerateAt(World world, int chunkX, int chunkZ) {
 		return true;
 	}
 

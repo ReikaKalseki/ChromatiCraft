@@ -5,4 +5,17 @@
 			You are starting to lose your mind. Between nightmares of eldritch creatures that prove too real for comfort to the fact your very presence brings an evil aura, the consequences of dabbling in the darker aspects of magic have driven you to the edge. In a last-ditch effort to regain your sanity, you hope to harness another, brighter and altogether more benevolent set of magic forces to drive away your demons. However, the final step will still need to use that infernal altar that gave you these problems in the first place. One can only hope this works, as it is your last chance...
 		</page1>
 	</warpproof>
+	<tieredorecap>
+		<page0>
+			Two long-running themes in your pursuits are the quest for ever greater levels of power and your increasingly severe unwillingness to expend your resources to attain that power. So what better than a new capstone material for your wand, one that cuts the cost of usage by an enormous factor? Differently-tuned materials will yield different discounts, and if you can manage to unify all of them, something truly special would be possible.
+		</page0>
+		<page1>
+			You should at this point be familiar enough with the various materials to guess which aspects will be improved by what material, and you can probably expect to fully halve the cost of the use of those aspects. Other aspects might see a smaller benefit as well, probably on the order of a one-fifth reduction.
+		</page1>
+	</tieredorecap>
+	<rod_crystalwand>
+		<page1>
+			Be it your material reserves, your power storage, your food supply, or, as now, your wand capacity, it is never enough. The once-seemingly-vast hundred or two vis you managed to pack into a white wooden stick now show how small they truly are. Recalling your experiences with iridescent crystal and its amplification power on the Crystal Pylons, you wonder if you can find another use. It might even gain other special powers from doing so. Besides, what is the worst that could happen?
+		</page1>
+	</rod_crystalwand>
 </researches>

@@ -22,7 +22,7 @@ import net.minecraft.world.gen.feature.WorldGenAbstractTree;
 import net.minecraft.world.gen.feature.WorldGenLiquids;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.World.GlowingCliffsAuxGenerator.Island;
+import Reika.ChromatiCraft.World.IWG.GlowingCliffsAuxGenerator.Island;
 import Reika.DragonAPI.Instantiable.Worldgen.ControllableOreVein;
 
 
@@ -247,7 +247,7 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 		}
 	}
 
-	void genIslandDecorations(World world, BiomeGenBase biome, Island is) {
+	public void genIslandDecorations(World world, BiomeGenBase biome, Island is) {
 
 		islandWorld = world;//.link(world);
 		islandRandom.setSeed(world.getSeed());

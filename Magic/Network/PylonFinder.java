@@ -38,7 +38,9 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
-import Reika.ChromatiCraft.World.PylonGenerator;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntitySkypeater;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntitySkypeater.NodeClass;
+import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
@@ -69,11 +71,15 @@ public class PylonFinder {
 	private final CrystalElement element;
 	private final EntityPlayer user;
 
+	private int maxSteps = Integer.MAX_VALUE;
 	private int steps = 0;
 	private int stepsThisTick = 0;
 	private boolean suspended = false;
 	public static final int MAX_STEPS_PER_TICK = 1000;
 	private final boolean isValidWorld;
+
+	private NodeClass skypeaterEntry;
+	private NodeClass lastSkypeaterType;
 
 	private static boolean invalid = false;
 
@@ -138,6 +144,35 @@ public class PylonFinder {
 		this.findFrom(target, thresh);
 		//ReikaJavaLibrary.pConsole(this.toString());
 		if (this.isComplete()) {
+			if (lastSkypeaterType != null) {
+				ArrayList<WorldLocation> li = new ArrayList(nodes);
+				boolean flag = true;
+				while (flag) {
+					flag = false;
+					for (int i = 0; i < li.size() && !flag; i++) {
+						for (int k = i; k < li.size() && !flag; k++) {
+							if (i < k && Math.abs(i-k) > 1) {
+								WorldLocation loc = li.get(i);
+								WorldLocation loc2 = li.get(k);
+								CrystalNetworkTile te1 = this.getNetTileAt(loc, true);
+								CrystalNetworkTile te2 = this.getNetTileAt(loc2, true);
+								if (te1 instanceof TileEntitySkypeater && te2 instanceof TileEntitySkypeater) {
+									double d = ((TileEntitySkypeater)te1).getReceiveRange();
+									if (te1.getDistanceSqTo(te2.getX(), te2.getY(), te2.getZ()) <= d*d && this.lineOfSight(te1, te2)) {
+										while (k > i+1) {
+											li.remove(k-1);
+											k--;
+										}
+										flag = true;
+									}
+								}
+							}
+						}
+					}
+				}
+				nodes.clear();
+				nodes.addAll(li);
+			}
 			CrystalFlow flow = new CrystalFlow(net, target, element, amount, nodes, maxthru);
 			//ReikaJavaLibrary.pConsole(flow.checkLineOfSight()+":"+flow);
 			if (!(target instanceof WrapperTile))
@@ -269,7 +304,7 @@ public class PylonFinder {
 		}
 		steps++;
 		stepsThisTick++;
-		if (steps > 200) {
+		if (steps > maxSteps) {
 			//return;
 		}
 		/*
@@ -282,7 +317,7 @@ public class PylonFinder {
 		//ReikaJavaLibrary.pConsole("Stepped in, Receiver="+r);
 		nodes.add(loc);
 		ArrayList<CrystalTransmitter> li = net.getTransmittersTo(r, element);
-		if (ChromaOptions.SHORTPATH.getState()) {
+		if (ChromaOptions.SHORTPATH.getState() || skypeaterEntry != null) {
 			Collections.sort(li, new TransmitterSorter(r)); //basic "start with closest and work outwards" logic; A* too complex and expensive
 		}
 		Collections.sort(li, prioritizer);
@@ -322,6 +357,21 @@ public class PylonFinder {
 						Collection<WorldLocation> others = new ArrayList(li);
 						others.remove(te);
 						duplicates.put(loc2, others);
+						if (te instanceof TileEntitySkypeater) {
+							NodeClass c = ((TileEntitySkypeater)te).getNodeType();
+							if (skypeaterEntry == null) {
+								skypeaterEntry = c;
+							}
+							else {
+								if (c.isAbove(skypeaterEntry))
+									continue;
+							}
+							lastSkypeaterType = c;
+						}
+						else {
+							if (lastSkypeaterType != null && skypeaterEntry != null && skypeaterEntry != lastSkypeaterType)
+								continue;
+						}
 						this.findFrom((CrystalRepeater)te, thresh);
 					}
 				}

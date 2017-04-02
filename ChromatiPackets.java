@@ -31,12 +31,12 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.fluids.FluidRegistry;
 import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
-import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Auxiliary.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.InscriptionRecipes;
@@ -127,11 +127,11 @@ import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidRelay;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRFDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRouterHub;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTeleportGate;
-import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.ChromatiCraft.World.Dimension.BiomeDistributor;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.OuterRegionsEvents;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverManagerClient;
+import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -324,6 +324,9 @@ public class ChromatiPackets implements PacketHandler {
 					if (tile instanceof TileEntityCrystalPylon)
 						((TileEntityCrystalPylon)tile).particleAttack(data[0], data[1], data[2], data[3], data[4], data[5]);
 					break;
+				case PYLONATTACKRECEIVE:
+					ChromaOverlays.instance.triggerPylonEffect(CrystalElement.elements[data[0]]);
+					break;
 				case ABILITYCHOOSE:
 					((TileEntityRitualTable)tile).setChosenAbility(Chromabilities.getAbilityByInt(data[0]));
 					break;
@@ -443,6 +446,12 @@ public class ChromatiPackets implements PacketHandler {
 					Entity e = world.getEntityByID(data[0]);
 					if (e instanceof EntityGlowCloud)
 						((EntityGlowCloud)e).doDeathParticles();
+					break;
+				}
+				case CLOUDATTACK: {
+					Entity e = world.getEntityByID(data[0]);
+					if (e instanceof EntityGlowCloud)
+						((EntityGlowCloud)e).doAttackFX();
 					break;
 				}
 				case GLUON: {

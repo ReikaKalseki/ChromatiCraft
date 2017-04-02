@@ -22,6 +22,7 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -48,7 +49,6 @@ import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PlayerChargedFromPylonEve
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonDrainedEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonFullyChargedEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonRechargedEvent;
-import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
@@ -74,7 +74,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityChromaCrystal;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger;
-import Reika.ChromatiCraft.World.PylonGenerator;
+import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
@@ -598,8 +598,6 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			EntityFlareFX f = new EntityFlareFX(color, worldObj, rx, ry, rz, vx, vy, vz).setNoGravity();
 			Minecraft.getMinecraft().effectRenderer.addEffect(f);
 		}
-
-		ChromaOverlays.instance.triggerPylonEffect(color);
 	}
 
 	void attackEntityByProxy(EntityPlayer player, CrystalRepeater te) {
@@ -626,6 +624,8 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		int y = MathHelper.floor_double(e.posY)+1;
 		int z = MathHelper.floor_double(e.posZ);
 		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.PYLONATTACK.ordinal(), this, tx, ty, tz, x, y, z);
+		if (e instanceof EntityPlayerMP)
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.PYLONATTACKRECEIVE.ordinal(), this, (EntityPlayerMP)e, this.getColor().ordinal());
 	}
 
 	public void invalidateMultiblock() {

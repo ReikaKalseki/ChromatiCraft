@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.World;
+package Reika.ChromatiCraft.World.IWG;
 
 import java.util.Random;
 
@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaDecorator;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -101,7 +102,7 @@ public class LumaGenerator implements RetroactiveGenerator, ChromaDecorator {
 	}
 
 	@Override
-	public boolean canGenerateAt(Random rand, World world, int chunkX, int chunkZ) {
+	public boolean canGenerateAt(World world, int chunkX, int chunkZ) {
 		return true;
 	}
 

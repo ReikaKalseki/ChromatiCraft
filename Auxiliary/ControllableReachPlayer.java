@@ -11,6 +11,8 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.lang.reflect.Field;
 
+import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.network.NetHandlerPlayClient;

@@ -157,7 +157,7 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 	}
 
 	private void placeSomeLight(World world, int x, int y, int z) {
-		if ((x+y+z)%18 == 0) {
+		if (world.getBlockLightValue(x, y, z) < 8) {
 			world.setBlock(x, y, z, ChromaBlocks.LIGHT.getBlockInstance(), Flags.PARTICLES.getFlag(), 3);
 		}
 	}

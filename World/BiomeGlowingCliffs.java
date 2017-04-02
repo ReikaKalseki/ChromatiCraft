@@ -34,10 +34,8 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.feature.WorldGenAbstractTree;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.ResettableRandom;
 import Reika.DragonAPI.Instantiable.SimplexNoiseGenerator;
-import Reika.DragonAPI.Instantiable.Worldgen.ModSpawnEntry;
 import Reika.DragonAPI.Instantiable.Worldgen.ModifiableBigTree;
 import Reika.DragonAPI.Instantiable.Worldgen.ModifiableSmallTrees;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -100,8 +98,8 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 		spawnableCaveCreatureList.add(new BiomeGenBase.SpawnListEntry(EntityBat.class, 10, 8, 8));
 		spawnableCaveCreatureList.add(new BiomeGenBase.SpawnListEntry(EntityGlowCloud.class, 30, 1, 1));
 
-		if (ModList.THAUMCRAFT.isLoaded())
-			spawnableMonsterList.add(new ModSpawnEntry(ModList.THAUMCRAFT, "thaumcraft.common.entities.monster.EntityWisp", 5, 1, 1).getEntry());
+		//if (ModList.THAUMCRAFT.isLoaded())
+		//	spawnableMonsterList.add(new ModSpawnEntry(ModList.THAUMCRAFT, "thaumcraft.common.entities.monster.EntityWisp", 5, 1, 1).getEntry());
 	}
 	/*
 	public float getFogDensity(double x, double y, double z) {
@@ -190,6 +188,11 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 			terrain = new GlowingCliffsColumnShaper(seed);
 			worldSeed = seed;
 		}
+	}
+
+	public static GlowingCliffsColumnShaper getTerrain(World world) {
+		initTerrain(world);
+		return terrain;
 	}
 
 	@Override

@@ -45,6 +45,7 @@ import Reika.ChromatiCraft.World.Dimension.Biome.StructureBiome;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.BiomeCollisionTracker;
+import Reika.DragonAPI.Auxiliary.Trackers.RetroGenController;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
@@ -233,6 +234,7 @@ public class ChromaDimensionManager {
 		int id = ExtraChromaIDs.DIMID.getValue();
 		DimensionManager.registerProviderType(id, WorldProviderChroma.class, false);
 		DimensionManager.registerDimension(id, id);
+		RetroGenController.instance.excludeWorld(id);
 
 		for (int i = 0; i < Biomes.biomeList.length; i++) {
 			Biomes b = Biomes.biomeList[i];

@@ -89,6 +89,7 @@ public enum ChromaSounds implements SoundEnum {
 	INSCRIBE("inscribe"),
 	LOREHEX("lore"),
 	LORECOMPLETE("lorecomplete2"),
+	LIGHTCAST("lightcast"),
 	;
 
 	public static final ChromaSounds[] soundList = values();

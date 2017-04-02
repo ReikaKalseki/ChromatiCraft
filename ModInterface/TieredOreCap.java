@@ -10,6 +10,8 @@
 package Reika.ChromatiCraft.ModInterface;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -25,6 +27,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
 import Reika.DragonAPI.IO.DirectResourceManager;
 import Reika.DragonAPI.Instantiable.Formula.MathExpression;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -81,6 +84,7 @@ public class TieredOreCap extends WandCap {
 	public static void addRecipes() {
 		int i = -2;
 		String ref = FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? ChromaDescriptions.getParentPage()+"thaum.xml" : "";
+		ArrayList<ShapedArcaneRecipe> li = new ArrayList();
 		for (TieredOres t : items.keySet()) {
 			WandType wt = items.get(t);
 			AspectList al = new AspectList();
@@ -112,9 +116,31 @@ public class TieredOreCap extends WandCap {
 				}
 			};
 
-			ReikaThaumHelper.addArcaneRecipeBookEntryViaXML(id, desc, "chromaticraft", ir, cost, 2, i, ChromatiCraft.class, ref);
+			li.add(ir);
+			//ReikaThaumHelper.addArcaneRecipeBookEntryViaXML(id.toLowerCase(Locale.ENGLISH), desc, "chromaticraft", ir, cost, 2, i, ChromatiCraft.class, ref);
 			i++;
 		}
+		Collections.sort(li, new RecipeComparator());
+		ShapedArcaneRecipe[] recipes = li.toArray(new ShapedArcaneRecipe[li.size()]);
+		ReikaThaumHelper.addResearchForMultipleRecipesViaXML("Elemental Caps", ChromaStacks.chromaCap, "tieredorecap", "Novel Caps", "chromaticraft", ChromatiCraft.class, ref, 0, 0, recipes, 1, 2);
+	}
+
+	private static class RecipeComparator implements Comparator<ShapedArcaneRecipe> {
+
+		@Override
+		public int compare(ShapedArcaneRecipe o1, ShapedArcaneRecipe o2) {
+			ItemStack i1 = o1.output;
+			ItemStack i2 = o2.output;
+			if (ReikaItemHelper.matchStacks(i1, i2))
+				return 0;
+			else if (ReikaItemHelper.matchStacks(i1, ChromaStacks.chromaCap))
+				return Integer.MAX_VALUE;
+			else if (ReikaItemHelper.matchStacks(i2, ChromaStacks.chromaCap))
+				return Integer.MIN_VALUE;
+			else
+				return Integer.compare(i1.getItemDamage(), i2.getItemDamage());
+		}
+
 	}
 
 }

@@ -58,11 +58,12 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fluids.BlockFluidBase;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
-import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RainbowTreeEffects;
+import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
+import Reika.ChromatiCraft.Auxiliary.Ability.LightCast;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
@@ -77,6 +78,8 @@ import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
+import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.Base.BlockTieredResource;
 import Reika.DragonAPI.Instantiable.EntityTumblingBlock;
@@ -85,6 +88,7 @@ import Reika.DragonAPI.Instantiable.FlyingBlocksExplosion.TumbleCreator;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.ScaledDirection;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
@@ -152,7 +156,8 @@ public enum Chromabilities implements Ability {
 	MEINV(null, false, ModList.APPENG),
 	MOBSEEK(null, true),
 	BEEALYZE(null, true),
-	NUKER(Phase.START, false);
+	NUKER(Phase.START, false),
+	LIGHTCAST(null, false);
 
 	private final boolean tickBased;
 	private final Phase tickPhase;
@@ -369,6 +374,8 @@ public enum Chromabilities implements Ability {
 				return true;
 			case LASER:
 				return doLaserPulse(ep);
+			case LIGHTCAST:
+				return doLightCast(ep);
 			default:
 				return false;
 		}
@@ -398,6 +405,8 @@ public enum Chromabilities implements Ability {
 			use.scale(125);
 		if (a == LASER)
 			use.scale(800);
+		if (a == LIGHTCAST)
+			use.scale(20);
 
 		boolean flag = enabledOn(ep, a) || a.isPureEventDriven();
 		setToPlayer(ep, !flag, a);
@@ -429,6 +438,7 @@ public enum Chromabilities implements Ability {
 			case TELEPORT:
 			case DIMPING:
 			case LASER:
+			case LIGHTCAST:
 				return true;
 			default:
 				return false;
@@ -618,6 +628,18 @@ public enum Chromabilities implements Ability {
 				((EntityFireFX)fx).setExploding();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
+	}
+
+	private static boolean doLightCast(EntityPlayer ep) {
+		Coordinate c = new Coordinate(ep).offset(0, 1, 0);
+		ProgressiveBreaker b = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(ep.worldObj, c.xCoord, c.yCoord, c.zCoord, 200);
+		b.call = new LightCast(ep);
+		b.player = ep;
+		b.hungerFactor = 0;
+		b.causeUpdates = false;
+		b.breakAir = true;
+		ChromaSounds.LIGHTCAST.playSound(ep);
+		return true;
 	}
 
 	private static boolean doLaserPulse(EntityPlayer ep) {
