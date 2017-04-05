@@ -94,7 +94,7 @@ public class CrystalPath implements Comparable<CrystalPath> {
 	}
 
 	public boolean canTransmit() {
-		return transmitter.getTransmissionStrength() > attenuation;
+		return true;//transmitter.getTransmissionStrength() > attenuation;
 	}
 
 	@Override

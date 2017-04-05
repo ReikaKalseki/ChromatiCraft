@@ -527,10 +527,12 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	}
 
+	/*
 	@Override
 	public int getTransmissionStrength() {
 		return this.isEnhanced() ? 1000 : 100;
 	}
+	 */
 
 	public boolean isEnhanced() {
 		return enhanced;

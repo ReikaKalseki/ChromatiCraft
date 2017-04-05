@@ -32,15 +32,15 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
-import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
-import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
-import Reika.ChromatiCraft.ModInterface.TileEntityEssentiaRelay;
-import Reika.ChromatiCraft.ModInterface.TileEntityFluxGooCreator;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
-import Reika.ChromatiCraft.ModInterface.TileEntityLumenAlveary;
-import Reika.ChromatiCraft.ModInterface.TileEntityMEDistributor;
 import Reika.ChromatiCraft.ModInterface.TileEntityPageExtractor;
-import Reika.ChromatiCraft.ModInterface.TileEntityPatternCache;
+import Reika.ChromatiCraft.ModInterface.AE.TileEntityMEDistributor;
+import Reika.ChromatiCraft.ModInterface.AE.TileEntityPatternCache;
+import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectFormer;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectJar;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityEssentiaRelay;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityFluxMaker;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
 import Reika.ChromatiCraft.TileEntity.TileEntityDataNode;
@@ -213,7 +213,7 @@ public enum ChromaTiles implements TileEnum {
 	HOVERPAD("chroma.hoverpad",			ChromaBlocks.TILEMODELLED3,	TileEntityHoverPad.class,			4/*, "RenderHoverPad"*/),
 	METEOR("chroma.meteor",				ChromaBlocks.TILEMODELLED3,	TileEntityMeteorTower.class,		5, "RenderMeteorTower"),
 	FLUIDDISTRIBUTOR("chroma.fluiddistrib",ChromaBlocks.TILEMODELLED3,TileEntityFluidDistributor.class,	6, "RenderFluidDistributor"),
-	FLUXMAKER("chroma.taintmaker",		ChromaBlocks.TILEMODELLED3,	TileEntityFluxGooCreator.class,		7),
+	FLUXMAKER("chroma.taintmaker",		ChromaBlocks.TILEMODELLED3,	TileEntityFluxMaker.class,		7, "RenderFluxMaker"),
 	AREABREAKER("chroma.areabreaker",	ChromaBlocks.TILEMODELLED3, TileEntityAreaBreaker.class,		8, "RenderAreaBreaker"),
 	TELEPORT("chroma.gate",				ChromaBlocks.TILEMODELLED3,	TileEntityTeleportGate.class,		9, "RenderTeleportGate"),
 	FLUIDRELAY("chroma.fluidrelay",		ChromaBlocks.TILEMODELLED3,	TileEntityFluidRelay.class,			10, "RenderFluidRelay"),
@@ -329,6 +329,7 @@ public enum ChromaTiles implements TileEnum {
 			case FOCUSCRYSTAL:
 			case DATANODE:
 			case SKYPEATER:
+			case FLUXMAKER:
 				return true;
 			default:
 				return false;
@@ -711,6 +712,7 @@ public enum ChromaTiles implements TileEnum {
 			case TELEPORT:
 			case BOOKDECOMP:
 			case GLOWFIRE:
+			case FLUXMAKER:
 				return true;
 			default:
 				return false;
@@ -736,6 +738,7 @@ public enum ChromaTiles implements TileEnum {
 			case WIRELESS:
 			case TELEPORT:
 			case SKYPEATER:
+			case FLUXMAKER:
 				return true;
 			default:
 				return false;

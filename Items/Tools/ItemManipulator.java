@@ -36,8 +36,8 @@ import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree.TileEntityPowerTreeAux;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
-import Reika.ChromatiCraft.ModInterface.NodeRecharger;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeRecharger;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -324,7 +324,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			}
 		}
 
-		if (t != null && t.isRepeater()) {
+		if (t != null && t.isRepeater() && t != ChromaTiles.SKYPEATER) {
 			TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)tile;
 			te.triggerConnectionRender();
 			if (ep.isSneaking()) {

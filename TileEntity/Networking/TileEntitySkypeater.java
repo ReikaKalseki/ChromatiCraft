@@ -75,7 +75,7 @@ public class TileEntitySkypeater extends CrystalTransmitterBase implements Cryst
 
 	@Override
 	public int getPathPriority() {
-		return 800000;
+		return -800000;
 	}
 
 	@Override
@@ -142,12 +142,18 @@ public class TileEntitySkypeater extends CrystalTransmitterBase implements Cryst
 	}
 
 	public static enum NodeClass {
-		WATER(),
-		SHORE(),
-		//PLATEAU(),
+		WATER(0x22aaff),
+		SHORE(0xff00ff),
+		//PLATEAU(0xff0000),
 		;
 
+		public final int color;
+
 		private static final NodeClass[] list = values();
+
+		private NodeClass(int c) {
+			color = c;
+		}
 
 		public boolean isAbove(NodeClass c) {
 			return c.ordinal() > this.ordinal();

@@ -191,6 +191,7 @@ public enum ChromaResearch implements ProgressElement {
 	ALVEARY(		ChromaTiles.ALVEARY,		ResearchLevel.PYLONCRAFT,		ProgressStage.HIVE),
 	ROUTER(			ChromaTiles.ROUTERHUB,		ResearchLevel.MULTICRAFT),
 	FOCUSCRYSTALS(	ChromaTiles.FOCUSCRYSTAL,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.FOCUSCRYSTAL),
+	FLUXMAKER(		ChromaTiles.FLUXMAKER,		ResearchLevel.ENERGYEXPLORE),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),

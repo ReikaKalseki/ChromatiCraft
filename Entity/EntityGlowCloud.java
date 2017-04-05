@@ -19,6 +19,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -28,6 +29,8 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
@@ -35,6 +38,7 @@ import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.SphericalVector;
@@ -43,6 +47,7 @@ import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.ParticleController.CollectingPositionController;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -304,13 +309,30 @@ public class EntityGlowCloud extends EntityLiving {
 		}
 		this.deleteOldLight();
 		this.setDead();
+	}
 
-		if (isAngry) {
-			ReikaItemHelper.dropItem(this, new ItemStack(Items.glowstone_dust, 1+rand.nextInt(16), 0));
-			if (rand.nextInt(10) == 0)
-				ReikaItemHelper.dropItem(this, new ItemStack(Items.ghast_tear));
-			if (rand.nextInt(3) == 0)
-				ReikaItemHelper.dropItem(this, ReikaItemHelper.getSizedItemStack(ChromaStacks.energyPowder, 1+rand.nextInt(4)));
+	private void doDrops(EntityPlayer ep) {
+		this.drop(ep, new ItemStack(Items.glowstone_dust, 1+rand.nextInt(16), 0));
+		if (rand.nextInt(10) == 0)
+			this.drop(ep, new ItemStack(Items.ghast_tear));
+		if (rand.nextInt(3) == 0)
+			this.drop(ep, ReikaItemHelper.getSizedItemStack(ChromaStacks.energyPowder, 1+rand.nextInt(4)));
+	}
+
+	private void drop(EntityPlayer ep, ItemStack is) {
+		if (Chromabilities.RANGEDBOOST.enabledOn(ep)) {
+			EntityItem ei = new EntityItem(ep.worldObj, posX, posY, posZ, is);
+			if (!MinecraftForge.EVENT_BUS.post(new EntityItemPickupEvent(ep, ei))) {
+				if (ReikaInventoryHelper.addToIInv(is, ep.inventory)) {
+
+				}
+				else {
+					ReikaItemHelper.dropItem(this, is);
+				}
+			}
+		}
+		else {
+			ReikaItemHelper.dropItem(this, is);
 		}
 	}
 
@@ -515,6 +537,7 @@ public class EntityGlowCloud extends EntityLiving {
 				boolean flag = super.attackEntityFrom(src, dmg);
 				if (flag && this.getHealth() <= 0) {
 					this.die();
+					this.doDrops((EntityPlayer)e);
 				}
 				isAngry = true;
 				return flag;

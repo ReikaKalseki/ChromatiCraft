@@ -623,8 +623,12 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		if (flag) {
 			for (int k = 0; k < arr.getSize(); k++) {
 				Coordinate c = arr.getNthBlock(k);
+				Coordinate c2 = c.offset(0, 1, 0);
 				Block b = c.getBlock(world);
+				Block b2 = c2.getBlock(world);
 				if (b.isAir(world, c.xCoord, c.yCoord, c.zCoord) || ReikaBlockHelper.isLiquid(b))
+					return false;
+				if (b.isAir(world, c2.xCoord, c2.yCoord, c2.zCoord) || ReikaBlockHelper.isLiquid(b2))
 					return false;
 			}
 			return true;

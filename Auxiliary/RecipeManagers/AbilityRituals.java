@@ -340,7 +340,7 @@ public final class AbilityRituals {
 
 		private AbilityRitual(Ability c) {
 			ability = c;
-			duration = 950;
+			duration = 980;
 		}
 
 		private void addAura(CrystalElement e, int amt) {

@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.Magic.Network;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,8 +31,9 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.WrapperTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker.CrystalLink;
-import Reika.ChromatiCraft.ModInterface.NodeReceiverWrapper;
-import Reika.ChromatiCraft.ModInterface.NodeRecharger;
+import Reika.ChromatiCraft.Magic.Network.NetworkSorters.TransmitterDistanceSorter;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeReceiverWrapper;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeRecharger;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -64,7 +64,6 @@ public class PylonFinder {
 	private final CrystalNetworker net;
 
 	private static final RayTracer tracer;
-	private static final SourcePrioritizer prioritizer = new SourcePrioritizer();
 
 	//private final int stepRange;
 	private final CrystalReceiver target;
@@ -318,9 +317,9 @@ public class PylonFinder {
 		nodes.add(loc);
 		ArrayList<CrystalTransmitter> li = net.getTransmittersTo(r, element);
 		if (ChromaOptions.SHORTPATH.getState() || skypeaterEntry != null) {
-			Collections.sort(li, new TransmitterSorter(r)); //basic "start with closest and work outwards" logic; A* too complex and expensive
+			Collections.sort(li, new TransmitterDistanceSorter(r)); //basic "start with closest and work outwards" logic; A* too complex and expensive
 		}
-		Collections.sort(li, prioritizer);
+		Collections.sort(li, NetworkSorters.prioritizer);
 		//ReikaJavaLibrary.pConsole("Found "+li.size()+" for "+r+": "+li);
 		for (CrystalTransmitter te : li) {
 			if (this.isComplete())
@@ -364,13 +363,13 @@ public class PylonFinder {
 							}
 							else {
 								if (c.isAbove(skypeaterEntry))
-									continue;
+									;//continue;
 							}
 							lastSkypeaterType = c;
 						}
 						else {
 							if (lastSkypeaterType != null && skypeaterEntry != null && skypeaterEntry != lastSkypeaterType)
-								continue;
+								;//continue;
 						}
 						this.findFrom((CrystalRepeater)te, thresh);
 					}
@@ -624,24 +623,4 @@ static class ChunkRequest {
 
 }
 	  */
-
-	private static class SourcePrioritizer implements Comparator<CrystalTransmitter> {
-
-		@Override
-		public int compare(CrystalTransmitter o1, CrystalTransmitter o2) {
-			if (o1 instanceof CrystalSource && o2 instanceof CrystalSource) {
-				return -Integer.compare(((CrystalSource)o1).getSourcePriority(), ((CrystalSource)o2).getSourcePriority());
-			}
-			else if (o1 instanceof CrystalSource) {
-				return Integer.MIN_VALUE;
-			}
-			else if (o2 instanceof CrystalSource) {
-				return Integer.MAX_VALUE;
-			}
-			else {
-				return -Integer.compare(o1.getPathPriority(), o2.getPathPriority());
-			}
-		}
-
-	}
 }

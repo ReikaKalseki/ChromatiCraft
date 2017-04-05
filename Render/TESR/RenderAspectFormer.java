@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL11;
 
 import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
-import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectFormer;
 import Reika.ChromatiCraft.Models.ModelAspectFormer;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;

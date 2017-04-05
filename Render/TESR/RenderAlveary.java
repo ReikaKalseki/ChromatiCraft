@@ -27,7 +27,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
-import Reika.ChromatiCraft.ModInterface.TileEntityLumenAlveary;
+import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;

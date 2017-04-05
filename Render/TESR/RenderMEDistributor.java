@@ -16,7 +16,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
-import Reika.ChromatiCraft.ModInterface.TileEntityMEDistributor;
+import Reika.ChromatiCraft.ModInterface.AE.TileEntityMEDistributor;
 import Reika.ChromatiCraft.Models.ModelMEDistributor;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 

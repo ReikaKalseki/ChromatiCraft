@@ -23,7 +23,7 @@ import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
-import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.ChromaAspectManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ItemMagicRegistry;

@@ -115,9 +115,9 @@ public class CrystalPotionController {
 			if (e instanceof EntityCreature) {
 				flag = ((EntityCreature)e).getCreatureAttribute() == EnumCreatureAttribute.UNDEAD;
 			}
-			return e.worldObj.provider.isHellWorld ? ReikaPotionHelper.isBadEffect(pot) == flag : true;
+			return shouldBeHostile(e, e.worldObj) ? ReikaPotionHelper.isBadEffect(pot) == flag : true;
 		}
-		if (e.worldObj.provider.isHellWorld)
+		if (shouldBeHostile(e, e.worldObj))
 			return eff.getPotionID() == Potion.nightVision.id || ReikaPotionHelper.isBadEffect(pot);
 		if (e.worldObj.provider.dimensionId == 1)
 			return true;

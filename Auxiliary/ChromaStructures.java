@@ -2480,14 +2480,29 @@ public class ChromaStructures {
 				for (int k = 0; k <= 3; k++) {
 					int dx = x+dir.offsetX*k;
 					int dz = z+dir.offsetZ*k;
-					array.setBlock(dx, dy, dz, b2, 0);
+					if (b2 == Blocks.air)
+						array.setEmpty(dx, dy, dz, false, false);
+					else
+						array.setBlock(dx, dy, dz, b2, 0);
 					if (dir.offsetX == 0) {
-						array.setBlock(dx+dir.offsetZ, dy, dz, b2, 0);
-						array.setBlock(dx-dir.offsetZ, dy, dz, b2, 0);
+						if (b2 == Blocks.air) {
+							array.setEmpty(dx+dir.offsetZ, dy, dz, false, false);
+							array.setEmpty(dx-dir.offsetZ, dy, dz, false, false);
+						}
+						else {
+							array.setBlock(dx+dir.offsetZ, dy, dz, b2, 0);
+							array.setBlock(dx-dir.offsetZ, dy, dz, b2, 0);
+						}
 					}
 					else if (dir.offsetZ == 0) {
-						array.setBlock(dx, dy, dz+dir.offsetX, b2, 0);
-						array.setBlock(dx, dy, dz-dir.offsetX, b2, 0);
+						if (b2 == Blocks.air) {
+							array.setEmpty(dx, dy, dz+dir.offsetX, false, false);
+							array.setEmpty(dx, dy, dz-dir.offsetX, false, false);
+						}
+						else {
+							array.setBlock(dx, dy, dz+dir.offsetX, b2, 0);
+							array.setBlock(dx, dy, dz-dir.offsetX, b2, 0);
+						}
 					}
 				}
 			}

@@ -55,7 +55,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone.Variants;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
-import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.ChromaAspectManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;

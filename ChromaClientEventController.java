@@ -210,7 +210,7 @@ public class ChromaClientEventController {
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void preventCliffAmbience(PlaySoundEvent17 evt) {
 		//if (evt.sound.getYPosF() >= GlowingCliffsColumnShaper.SEA_LEVEL) {
-		if (BiomeGlowingCliffs.isGlowingCliffs(Minecraft.getMinecraft().theWorld.getBiomeGenForCoords(MathHelper.floor_float(evt.sound.getXPosF()), MathHelper.floor_float(evt.sound.getZPosF())))) {
+		if (Minecraft.getMinecraft().theWorld != null && BiomeGlowingCliffs.isGlowingCliffs(Minecraft.getMinecraft().theWorld.getBiomeGenForCoords(MathHelper.floor_float(evt.sound.getXPosF()), MathHelper.floor_float(evt.sound.getZPosF())))) {
 			if (evt.name.contains("ambient.cave.cave")) {
 				int n = rand.nextInt(3);
 				ChromaSounds s = null;

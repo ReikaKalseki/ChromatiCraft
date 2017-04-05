@@ -19,7 +19,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
-import Reika.ChromatiCraft.ModInterface.TileEntityEssentiaRelay;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityEssentiaRelay;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;

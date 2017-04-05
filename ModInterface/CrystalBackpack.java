@@ -11,6 +11,8 @@ package Reika.ChromatiCraft.ModInterface;
 
 import java.util.List;
 
+import Reika.ChromatiCraft.ModInterface.AE.ItemCrystalCell;
+
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import cpw.mods.fml.common.registry.GameRegistry;

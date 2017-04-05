@@ -64,10 +64,12 @@ public class TileEntityCreativeSource extends CrystalTransmitterBase implements 
 		return 1000000;
 	}
 
+	/*
 	@Override
 	public int getTransmissionStrength() {
 		return 500;
 	}
+	 */
 
 	@Override
 	public boolean drain(CrystalElement e, int amt) {

@@ -55,8 +55,9 @@ import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
-import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectJar;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -72,7 +73,6 @@ import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
-import Reika.ChromatiCraft.TileEntity.Networking.TileEntityWeakRepeater;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityEnchantDecomposer;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
@@ -385,8 +385,8 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			}
 		}
 
-		if (ChromaItems.SHARD.matchWith(is) && m == ChromaTiles.WEAKREPEATER) {
-			TileEntityWeakRepeater tw = (TileEntityWeakRepeater)te;
+		if (ChromaItems.SHARD.matchWith(is) && (m == ChromaTiles.WEAKREPEATER || m == ChromaTiles.SKYPEATER)) {
+			CrystalRepeater tw = (CrystalRepeater)te;
 			if (!world.isRemote) {
 				CrystalElement e = CrystalElement.elements[is.getItemDamage()%16];
 				if (CrystalNetworker.instance.checkConnectivity(e, tw)) {
@@ -395,7 +395,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 					int gn = e.getGreen();
 					int bl = e.getBlue();
 					ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), te, rd, gn, bl, 32, 8);
-					ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.NUMBERPARTICLE.ordinal(), te, tw.getSignalDepth(e));
+					//shows -1? ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.NUMBERPARTICLE.ordinal(), te, tw.getSignalDepth(e));
 				}
 				else {
 					ChromaSounds.ERROR.playSoundAtBlock(world, x, y, z);

@@ -93,16 +93,19 @@ import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiItemInserter;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiMiner;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiSpawnerProgrammer;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiTelePump;
-import Reika.ChromatiCraft.ModInterface.ContainerMEDistributor;
-import Reika.ChromatiCraft.ModInterface.ContainerPatternCache;
-import Reika.ChromatiCraft.ModInterface.ContainerRemoteTerminal;
-import Reika.ChromatiCraft.ModInterface.GuiAspectFormer;
-import Reika.ChromatiCraft.ModInterface.GuiMEDistributor;
-import Reika.ChromatiCraft.ModInterface.GuiPatternCache;
-import Reika.ChromatiCraft.ModInterface.GuiRemoteTerminal;
-import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
-import Reika.ChromatiCraft.ModInterface.TileEntityMEDistributor;
-import Reika.ChromatiCraft.ModInterface.TileEntityPatternCache;
+import Reika.ChromatiCraft.ModInterface.AE.ContainerMEDistributor;
+import Reika.ChromatiCraft.ModInterface.AE.ContainerPatternCache;
+import Reika.ChromatiCraft.ModInterface.AE.ContainerRemoteTerminal;
+import Reika.ChromatiCraft.ModInterface.AE.GuiMEDistributor;
+import Reika.ChromatiCraft.ModInterface.AE.GuiPatternCache;
+import Reika.ChromatiCraft.ModInterface.AE.GuiRemoteTerminal;
+import Reika.ChromatiCraft.ModInterface.AE.TileEntityMEDistributor;
+import Reika.ChromatiCraft.ModInterface.AE.TileEntityPatternCache;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.ContainerFluxMaker;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.GuiAspectFormer;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.GuiFluxMaker;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectFormer;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityFluxMaker;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
@@ -192,6 +195,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 					return new ContainerFluidRelay(player, (TileEntityFluidRelay)te);
 				if (te instanceof RouterFilter)
 					return new ContainerRouterFilter(player, (RouterFilter)te);
+				if (te instanceof TileEntityFluxMaker)
+					return new ContainerFluxMaker(player, (TileEntityFluxMaker)te);
 
 				if (te instanceof ItemOnRightClick)
 					return null;
@@ -298,6 +303,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 					return new GuiRelayFilter(player, (TileEntityRelayFilter)te);
 				if (te instanceof RouterFilter)
 					return new GuiRouterFilter(player, (RouterFilter)te);
+				if (te instanceof TileEntityFluxMaker)
+					return new GuiFluxMaker(player, (TileEntityFluxMaker)te);
 
 				if (te instanceof OneSlotMachine) {
 					return new GuiOneSlot(player, (TileEntityChromaticBase)te);

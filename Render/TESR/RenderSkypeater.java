@@ -71,8 +71,11 @@ public class RenderSkypeater extends CrystalTransmitterRender {
 			}
 				 */
 				f = Math.max(f, 4*(float)Math.sin(1*t)-3F);
-				f = MathHelper.clamp_float(f, 0, 1);
 			}
+			//if (ChromaItems.TOOL.matchWith(Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem())) {
+			//	f += 0.25;
+			//}
+			f = MathHelper.clamp_float(f, 0, 1);
 			double s = 0.125+0.5*f+0.125*Math.sin(t);
 			if (flag)
 				s = 1.5;
@@ -95,6 +98,23 @@ public class RenderSkypeater extends CrystalTransmitterRender {
 			v5.addVertexWithUV(1, 1, 0, du, dv);
 			v5.addVertexWithUV(-1, 1, 0, u, dv);
 			v5.draw();
+
+			c = ReikaColorAPI.getColorWithBrightnessMultiplier(te.getNodeType().color, f);
+			double sz = 2*f;
+			IIcon ico = ChromaIcons.STARFLARE.getIcon();
+			ReikaTextureHelper.bindTerrainTexture();
+			u = ico.getMinU();
+			v = ico.getMinV();
+			du = ico.getMaxU();
+			dv = ico.getMaxV();
+			v5.startDrawingQuads();
+			v5.setColorOpaque_I(c);
+			v5.addVertexWithUV(-sz, -sz, 0, u, v);
+			v5.addVertexWithUV(sz, -sz, 0, du, v);
+			v5.addVertexWithUV(sz, sz, 0, du, dv);
+			v5.addVertexWithUV(-sz, sz, 0, u, dv);
+			v5.draw();
+
 			GL11.glPopMatrix();
 
 			GL11.glPopMatrix();

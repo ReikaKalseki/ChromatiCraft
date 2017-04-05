@@ -118,6 +118,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.Fabrica
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FarmerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FluidDistributorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FluidRelayRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FluxMakerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FocusCrystalRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FocusCrystalRecipes.DefaultFocusCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.GlowFireRecipe;
@@ -745,6 +746,12 @@ public class RecipesCastingTable {
 		is = ChromaItems.MOBSONAR.getStackOf();
 		sr = new ShapedOreRecipe(is, "sas", "aba", "sas", 'a', ChromaStacks.auraDust, 's', Items.stick, 'b', Items.diamond);
 		this.addRecipe(new MobSonarRecipe(is, sr));
+
+		if (ModList.THAUMCRAFT.isLoaded()) {
+			is = ChromaTiles.FLUXMAKER.getCraftedProduct();
+			sr = new ShapedOreRecipe(is, " g ", "asa", " g ", 'g', ChromaStacks.voidDust, 'a', ChromaStacks.auraDust, 's', ThaumItemHelper.ItemEntry.VOIDSEED.getItem());
+			this.addRecipe(new FluxMakerRecipe(is, sr));
+		}
 
 		this.addSpecialRecipes();
 	}

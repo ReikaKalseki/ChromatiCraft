@@ -58,8 +58,8 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.NaturalCrystalSource;
-import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.ModInterface.MystPages;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.ChromaAspectManager;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -792,10 +792,12 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		return Math.max(1, Math.min(energy-1, sig-10));
 	}
 
+	/*
 	@Override
 	public int getTransmissionStrength() {
 		return this.isEnhanced() ? 50000 : 10000;
 	}
+	 */
 
 	public void generateColor(CrystalElement e) {
 		color = e;

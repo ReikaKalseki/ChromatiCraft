@@ -168,6 +168,8 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			return true;
 		if (Loader.isModLoaded("Backpack") && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("backpack"))
 			return true;
+		if (Loader.isModLoaded("EnderStorage") && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("enderpouch"))
+			return true;
 		return is.getItem().getItemEnchantability(is) > 0;
 	}
 
@@ -202,6 +204,10 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 					return false;
 
 			if (Loader.isModLoaded("Backpack") && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("backpack"))
+				if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
+					return false;
+
+			if (Loader.isModLoaded("EnderStorage") && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("enderpouch"))
 				if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
 					return false;
 

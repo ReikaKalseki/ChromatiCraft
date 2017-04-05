@@ -35,7 +35,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityMagicPlant;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
-import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectJar;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
