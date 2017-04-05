@@ -89,8 +89,6 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ChiselBlockHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
-import Reika.GeoStrata.Registry.RockShapes;
-import Reika.GeoStrata.Registry.RockTypes;
 import WayofTime.alchemicalWizardry.api.soulNetwork.SoulNetworkHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -128,14 +126,6 @@ public class ChromaAux {
 			cliffRelayWorld.disallowBlockChange(ChromaBlocks.CLIFFSTONE.getBlockInstance(), ChiselBlockHandler.BlockEntry.SANDSTONE.getBlock());
 			cliffRelayWorld.disallowBlockChange(ChromaBlocks.CLIFFSTONE.getBlockInstance(), ChiselBlockHandler.BlockEntry.LIMESTONE.getBlock());
 		}
-		if (ModList.GEOSTRATA.isLoaded()) {
-			addGeoBlacklist();
-		}
-	}
-
-	private static void addGeoBlacklist() {
-		for (int i = 0; i < RockTypes.rockList.length; i++)
-			cliffRelayWorld.disallowBlockChange(ChromaBlocks.CLIFFSTONE.getBlockInstance(), RockTypes.rockList[i].getID(RockShapes.SMOOTH));
 	}
 
 	private static class WispSpawnerHook implements TileHook {
