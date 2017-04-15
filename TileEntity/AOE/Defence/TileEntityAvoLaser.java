@@ -90,7 +90,7 @@ public class TileEntityAvoLaser extends TileEntityRelayPowered implements SidePl
 	@SideOnly(Side.CLIENT)
 	private void spawnParticles(World world, int x, int y, int z, AxisAlignedBB box) {
 		ForgeDirection dir = this.getFacing();
-		box = box.expand(0.5, 0.5, 0.5).offset(dir.offsetX*0.5, dir.offsetY*0.5, dir.offsetZ*0.5);
+		box = box.expand(0.125, 0.125, 0.125).offset(dir.offsetX*0.5, dir.offsetY*0.5, dir.offsetZ*0.5);
 		for (int i = 0; i < 2; i++) {
 			double px = ReikaRandomHelper.getRandomBetween(box.minX, box.maxX);
 			double py = ReikaRandomHelper.getRandomBetween(box.minY, box.maxY);
@@ -122,7 +122,8 @@ public class TileEntityAvoLaser extends TileEntityRelayPowered implements SidePl
 			}
 			startDist = Math.max(startDist-1, 0);
 			//ReikaJavaLibrary.pConsole("startDist--, ="+startDist, Side.SERVER);
-			ChromaSounds.AVOLASER.playSoundAtBlock(this, 0.5F, 1);
+			if (this.getTicksExisted()%3 == 0)
+				ChromaSounds.AVOLASER.playSoundAtBlock(this, 0.5F, 1);
 		}
 		else {
 			if (endDist > 0) {
@@ -150,10 +151,11 @@ public class TileEntityAvoLaser extends TileEntityRelayPowered implements SidePl
 		return MAXDIST;
 	}
 
-	private AxisAlignedBB getScanBox(World world, int x, int y, int z) {
+	public AxisAlignedBB getScanBox(World world, int x, int y, int z) {
 		ForgeDirection dir = this.getFacing();
 		if (endDist > 0) {
-			return ReikaAABBHelper.getBeamBox(x, y, z, dir, startDist, endDist).contract(0.25, 0.25, 0.25);
+			AxisAlignedBB box = ReikaAABBHelper.getBeamBox(x, y, z, dir, startDist, endDist);
+			return box;
 		}
 		else {
 			return null;
@@ -177,7 +179,7 @@ public class TileEntityAvoLaser extends TileEntityRelayPowered implements SidePl
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
-		return 5000;
+		return 6000;
 	}
 
 	@Override

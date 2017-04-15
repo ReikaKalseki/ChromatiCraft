@@ -121,7 +121,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 	@Override
 	public int getLightValue(IBlockAccess iba, int x, int y, int z) {
 		Flowers f = Flowers.list[iba.getBlockMetadata(x, y, z)];
-		return f.getLightValue();
+		return f.getLightValue(iba, x, y, z);
 	}
 
 	@Override
@@ -301,10 +301,10 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 			//drop = is;
 		}
 
-		public int getLightValue() {
+		public int getLightValue(IBlockAccess iba, int x, int y, int z) {
 			switch(this) {
 				case GLOWDAISY:
-					return 10;
+					return ReikaWorldHelper.isAdjacentToCrop(iba, x, y, z) ? 12 : 10;
 				case GLOWROOT:
 					return 6;
 				default:

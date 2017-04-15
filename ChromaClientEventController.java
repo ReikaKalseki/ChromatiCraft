@@ -32,7 +32,6 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -54,6 +53,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
+import net.minecraftforge.client.event.EntityViewRenderEvent.FogColors;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
 import net.minecraftforge.client.event.RenderBlockOverlayEvent;
 import net.minecraftforge.client.event.RenderBlockOverlayEvent.OverlayType;
@@ -142,11 +142,11 @@ import Reika.DragonAPI.Instantiable.Event.Client.SinglePlayerLogoutEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.SoundVolumeEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.TileEntityRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.WaterColorEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.WeatherSkyStrengthEvent;
 import Reika.DragonAPI.Instantiable.IO.CustomMusic;
 import Reika.DragonAPI.Instantiable.IO.EnumSound;
 import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
-import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -159,6 +159,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -198,6 +199,38 @@ public class ChromaClientEventController {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void updateGlowCliffRendering(ClientTickEvent evt) {
+		BiomeGlowingCliffs.updateRenderFactor(Minecraft.getMinecraft().thePlayer);
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void preventCliffWeatherSky(WeatherSkyStrengthEvent evt) {
+		/*
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		if (ep != null) {
+			//ReikaJavaLibrary.pConsole(ep.worldObj.getWorldInfo().isRaining());
+			if (BiomeGlowingCliffs.isGlowingCliffs(ep.worldObj.getBiomeGenForCoords(MathHelper.floor_double(ep.posX), MathHelper.floor_double(ep.posZ)))) {
+		 */evt.returnValue *= 1-BiomeGlowingCliffs.renderFactor;/*
+			}
+		}
+		  */
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void preventCliffWeatherSky(FogColors evt) {
+		if (Minecraft.getMinecraft().thePlayer == null || Minecraft.getMinecraft().theWorld == null)
+			return;
+		if (Minecraft.getMinecraft().thePlayer.isInsideOfMaterial(Material.lava) || Minecraft.getMinecraft().thePlayer.isInsideOfMaterial(Material.water))
+			return;
+		float f = BiomeGlowingCliffs.renderFactor*(float)ReikaMathLibrary.normalizeToBounds(ReikaWorldHelper.getSunIntensity(Minecraft.getMinecraft().theWorld, false, (float)evt.renderPartialTicks), 0, 1, 0.2, 0.8);
+		if (f > 0) {
+			evt.red = evt.red*(1-f)+f*0.9F;
+			evt.green = evt.green*(1-f)+f*0.7F;
+			evt.blue = evt.blue*(1-f)+f*1F;
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void preventCliffThunder(PlaySoundEvent17 evt) {
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 		if (ep != null && BiomeGlowingCliffs.isGlowingCliffs(ep.worldObj.getBiomeGenForCoords(MathHelper.floor_double(ep.posX), MathHelper.floor_double(ep.posZ)))) {
@@ -229,18 +262,6 @@ public class ChromaClientEventController {
 			}
 		}
 		//}
-	}
-
-	@SubscribeEvent
-	public void fixRespirationFourPlusFog(EntityViewRenderEvent.FogDensity evt) {
-		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-		if (ep.isPotionActive(Potion.blindness))
-			return;
-		ItemStack helm = ep.getCurrentArmor(3);
-		if (helm != null && ReikaEnchantmentHelper.getEnchantmentLevel(Enchantment.respiration, helm) > 3) {
-			evt.density = 0;
-			evt.setCanceled(true);
-		}
 	}
 
 	@SubscribeEvent

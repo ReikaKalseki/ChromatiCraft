@@ -19,10 +19,14 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 
 import org.lwjgl.opengl.GL11;
 
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
+import Reika.ChromatiCraft.World.IWG.PylonGenerator.PylonEntry;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -33,6 +37,8 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 public class PylonFinderOverlay {
 
 	public static final PylonFinderOverlay instance = new PylonFinderOverlay();
+
+	private ColorBlendList powerCrystalDiamondColor = new ColorBlendList(200).addAll(ChromaFX.getChromaColorTiles());
 
 	private PylonFinderOverlay() {
 
@@ -65,17 +71,22 @@ public class PylonFinderOverlay {
 					GL11.glDisable(GL11.GL_TEXTURE_2D);
 					for (int i = 0; i < CrystalElement.elements.length; i++) {
 						CrystalElement e = CrystalElement.elements[i];
-						Coordinate c = PylonGenerator.instance.getNearestPylonSpawn(ep.worldObj, ep.posX, ep.posY+ep.getEyeHeight(), ep.posZ, e);
+						PylonEntry c = PylonGenerator.instance.getNearestPylonSpawn(ep.worldObj, ep.posX, ep.posY+ep.getEyeHeight(), ep.posZ, e);
 						if (c != null) {
 							//ReikaJavaLibrary.pConsole(e+": "+c);
-							double dx = c.xCoord+0.5-ep.posX;
-							double dy = c.yCoord+0.5-ep.posY;
-							double dz = c.zCoord+0.5-ep.posZ;
+							double dx = c.location.xCoord+0.5-ep.posX;
+							double dy = c.location.yCoord+0.5-ep.posY;
+							double dz = c.location.zCoord+0.5-ep.posZ;
 
 							float u = e.getFaceRune().getMinU();
 							float v = e.getFaceRune().getMinV();
 							float du = e.getFaceRune().getMaxU();
 							float dv = e.getFaceRune().getMaxV();
+
+							float u2 = ChromaIcons.DIAMOND.getIcon().getMinU();
+							float v2 = ChromaIcons.DIAMOND.getIcon().getMinV();
+							float du2 = ChromaIcons.DIAMOND.getIcon().getMaxU();
+							float dv2 = ChromaIcons.DIAMOND.getIcon().getMaxV();
 
 							double dl = ReikaMathLibrary.py3d(dx, 0, dz);
 							double arel = -Math.toDegrees(Math.atan2(dx, dz));
@@ -185,6 +196,19 @@ public class PylonFinderOverlay {
 								v5.addVertexWithUV(cx+8, cy-8, 0, du, v);
 								v5.addVertexWithUV(cx-8, cy-8, 0, u, v);
 								v5.draw();
+
+								for (Coordinate c2 : c.getCrystals()) {
+									int px = (c2.xCoord-c.location.xCoord)*4;
+									int pz = (c2.zCoord-c.location.zCoord)*4;
+									v5.startDrawingQuads();
+									v5.setColorOpaque_I(powerCrystalDiamondColor.getColor(System.currentTimeMillis()+c2.hashCode()/2));
+									v5.setBrightness(240);
+									v5.addVertexWithUV(cx+px-4, cy+pz+4, 0, u2, dv2);
+									v5.addVertexWithUV(cx+px+4, cy+pz+4, 0, du2, dv2);
+									v5.addVertexWithUV(cx+px+4, cy+pz-4, 0, du2, v2);
+									v5.addVertexWithUV(cx+px-4, cy+pz-4, 0, u2, v2);
+									v5.draw();
+								}
 
 								FontRenderer fr = ChromaFontRenderer.FontType.HUD.renderer;
 								int base = ReikaMathLibrary.intpow2(10, (int)ReikaMathLibrary.logbase(dl, 10));

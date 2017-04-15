@@ -18,6 +18,7 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFlower;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntitySlime;
@@ -35,7 +36,7 @@ import net.minecraft.world.gen.feature.WorldGenAbstractTree;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.ResettableRandom;
-import Reika.DragonAPI.Instantiable.SimplexNoiseGenerator;
+import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ModifiableBigTree;
 import Reika.DragonAPI.Instantiable.Worldgen.ModifiableSmallTrees;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -59,6 +60,10 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 	private static GlowingCliffsColumnShaper terrain;
 	private static long worldSeed;
 	private static HashMap<Class, Boolean> generatorRules = new HashMap();
+
+	/** Fades between zero and one as the biome is entered or left */
+	@SideOnly(Side.CLIENT)
+	public static float renderFactor;
 
 	private final WorldGenAbstractTree bigTreeGen = new ModifiableBigTree(false); //defaults to oak
 	private final GlowingTreeGenerator glowTree = new GlowingTreeGenerator();
@@ -112,6 +117,19 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 		return (float)f;
 	}
 	 */
+	@SideOnly(Side.CLIENT)
+	public static void updateRenderFactor(AbstractClientPlayer ep) {
+		if (ep == null || ep.worldObj == null) {
+			renderFactor = Math.max(0, renderFactor-0.1F);
+		}
+		else if (BiomeGlowingCliffs.isGlowingCliffs(ep.worldObj.getBiomeGenForCoords(MathHelper.floor_double(ep.posX), MathHelper.floor_double(ep.posZ)))) {
+			renderFactor = Math.min(1, renderFactor+0.025F);
+		}
+		else {
+			renderFactor = Math.max(0, renderFactor-0.0125F);
+		}
+	}
+
 	@Override
 	@SideOnly(Side.CLIENT)
 	public int getSkyColorByTemp(float temp)  {

@@ -146,8 +146,8 @@ public class GuiMEDistributor extends GuiChromaBase
 			if (i >= 5)
 				dx += w2;
 			int dy = 7+(i%5)*20+9;
-			api.drawItemStack(itemRender, fontRendererObj, med.getMapping(i), dx, dy);
-			api.drawItemStack(itemRender, fontRendererObj, med.getMapping(i+med.NSLOTS), dx+w, dy);
+			api.drawItemStack(itemRender, fontRendererObj, med.getMapping(i), dx+w, dy);
+			api.drawItemStack(itemRender, fontRendererObj, med.getMapping(i+med.NSLOTS), dx, dy);
 			if (api.isMouseInBox(j+dx-1, j+dx+w+18-1, k+dy-1, k+dy+18-1)) {
 				String s = med.getMode(i).desc;
 				api.drawTooltipAt(fontRendererObj, s, api.getMouseRealX()+fontRendererObj.getStringWidth(s)-80, api.getMouseRealY()+12);

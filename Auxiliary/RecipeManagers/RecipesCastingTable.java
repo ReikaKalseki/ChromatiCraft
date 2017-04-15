@@ -121,6 +121,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FluidRe
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FluxMakerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FocusCrystalRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FocusCrystalRecipes.DefaultFocusCrystalRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FunctionRelayRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.GlowFireRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.GuardianStoneRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.HarvestPlantRecipe;
@@ -752,6 +753,10 @@ public class RecipesCastingTable {
 			sr = new ShapedOreRecipe(is, " g ", "asa", " g ", 'g', ChromaStacks.voidDust, 'a', ChromaStacks.auraDust, 's', ThaumItemHelper.ItemEntry.VOIDSEED.getItem());
 			this.addRecipe(new FluxMakerRecipe(is, sr));
 		}
+
+		is = ChromaTiles.FUNCTIONRELAY.getCraftedProduct();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, " D ", "ACA", " D ", 'D', ChromaStacks.beaconDust, 'A', ChromaStacks.auraDust, 'C', Blocks.glowstone);
+		this.addRecipe(new FunctionRelayRecipe(is, sr));
 
 		this.addSpecialRecipes();
 	}

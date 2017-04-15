@@ -24,6 +24,8 @@ import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger;
+import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.LoggingLevel;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
@@ -316,6 +318,8 @@ public class PylonFinder {
 		//ReikaJavaLibrary.pConsole("Stepped in, Receiver="+r);
 		nodes.add(loc);
 		ArrayList<CrystalTransmitter> li = net.getTransmittersTo(r, element);
+		if (CrystalNetworkLogger.getLogLevel().isAtLeast(LoggingLevel.PATHFIND))
+			CrystalNetworkLogger.logPathFind(target, element, r, li.toString(), nodes.toString());
 		if (ChromaOptions.SHORTPATH.getState() || skypeaterEntry != null) {
 			Collections.sort(li, new TransmitterDistanceSorter(r)); //basic "start with closest and work outwards" logic; A* too complex and expensive
 		}

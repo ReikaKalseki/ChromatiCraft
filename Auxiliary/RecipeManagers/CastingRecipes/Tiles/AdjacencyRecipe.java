@@ -47,6 +47,8 @@ public class AdjacencyRecipe extends PylonCastingRecipe {
 
 		this.addAuraRequirement(e, 20000*(tier*2+1));
 		this.addAuraRequirement(CrystalElement.YELLOW, 500*(tier+1));
+
+		this.addRuneRingRune(e);
 	}
 
 	private static ItemStack getMainItem(CrystalElement e, int tier) {

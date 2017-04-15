@@ -58,6 +58,7 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.CarpenterBlockHandler;
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -154,7 +155,7 @@ public class BlockLootChest extends BlockContainer {
 	public static boolean canOpen(World world, int x, int y, int z, EntityPlayer ep) {
 		if (ep != null && ReikaPlayerAPI.isFake(ep))
 			return false;
-		if (world.getBlockMetadata(x, y, z) >= 8 || world.isSideSolid(x, y+1, z, DOWN))
+		if (world.getBlockMetadata(x, y, z) >= 8 || (world.isSideSolid(x, y+1, z, DOWN) && !CarpenterBlockHandler.getInstance().isCarpenterBlock(world.getBlock(x, y+1, z))))
 			return false;
 		TileEntity te = world.getTileEntity(x, y, z);
 		return te instanceof TileEntityLootChest && (ep == null || ((TileEntityLootChest)te).isUseableByPlayer(ep));

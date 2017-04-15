@@ -74,6 +74,7 @@ import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityChromaCrystal;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.CrystalTier;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFunctionRelay;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityAreaHologram;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
@@ -227,7 +228,8 @@ public enum ChromaTiles implements TileEnum {
 	FOCUSCRYSTAL("chroma.focuscrystal",	ChromaBlocks.TILEMODELLED3, TileEntityFocusCrystal.class,		14, "RenderFocusCrystal"),
 	DATANODE("chroma.datanode",			ChromaBlocks.TILEMODELLED3,	TileEntityDataNode.class,			15, "RenderDataNode"),
 	PYLONLINK("chroma.pylonlink",		ChromaBlocks.TILEENTITY2,	TileEntityPylonLink.class,			2,	"RenderPylonLink"),
-	SKYPEATER("chroma.skypeater",		ChromaBlocks.PYLON,			TileEntitySkypeater.class,			11, "RenderSkypeater");
+	SKYPEATER("chroma.skypeater",		ChromaBlocks.PYLON,			TileEntitySkypeater.class,			11, "RenderSkypeater"),
+	FUNCTIONRELAY("chroma.funcrelay",	ChromaBlocks.TILEMODELLED4,	TileEntityFunctionRelay.class,		0, "RenderFunctionRelay");
 
 	private final Class tile;
 	private final String name;
@@ -330,6 +332,7 @@ public enum ChromaTiles implements TileEnum {
 			case DATANODE:
 			case SKYPEATER:
 			case FLUXMAKER:
+			case FUNCTIONRELAY:
 				return true;
 			default:
 				return false;
@@ -713,6 +716,7 @@ public enum ChromaTiles implements TileEnum {
 			case BOOKDECOMP:
 			case GLOWFIRE:
 			case FLUXMAKER:
+			case FUNCTIONRELAY:
 				return true;
 			default:
 				return false;
@@ -739,6 +743,7 @@ public enum ChromaTiles implements TileEnum {
 			case TELEPORT:
 			case SKYPEATER:
 			case FLUXMAKER:
+			case FUNCTIONRELAY:
 				return true;
 			default:
 				return false;

@@ -232,7 +232,8 @@ public enum ChromaBlocks implements BlockEnum {
 	DUMMYAUX(BlockDummyAux.class,												"chroma.dummyaux"),
 	CLIFFSTONE(BlockCliffStone.class,			ItemBlockMultiType.class,		"chroma.cliffstone"),
 	//LOREREADER(BlockLoreReader.class,											"chroma.lorereader");
-	CAVEINDICATOR(BlockCaveIndicator.class,										"chroma.caveindicator");
+	CAVEINDICATOR(BlockCaveIndicator.class,										"chroma.caveindicator"),
+	TILEMODELLED4(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile 4");
 
 	private Class blockClass;
 	private String blockName;

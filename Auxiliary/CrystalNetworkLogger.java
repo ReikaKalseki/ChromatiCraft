@@ -35,6 +35,16 @@ public class CrystalNetworkLogger {
 		}
 	}
 
+	public static void logPathFind(CrystalReceiver target, CrystalElement e, CrystalReceiver r, String transmitters, String steps) {
+		if (level.isAtLeast(LoggingLevel.PATHFIND)) {
+			String s = "Pathfinding "+e+" to "+target+", at "+r;
+			s += "  Potential next hops:"+transmitters;
+			s += "  Current path: "+steps;
+			ChromatiCraft.logger.log(s);
+			dumpStack();
+		}
+	}
+
 	public static void logPathCalculation(String name, Object val) {
 		if (level.isAtLeast(LoggingLevel.PATHCALC)) {
 			String s = "Path calculation; key="+name+", value="+val;
@@ -134,6 +144,7 @@ public class CrystalNetworkLogger {
 		NONE(),
 		CORE(),
 		PATHCALC(),
+		PATHFIND(),
 		STATE(),
 		ALL(),
 		STACK();

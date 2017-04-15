@@ -11,7 +11,7 @@ package Reika.ChromatiCraft.World.Dimension;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ThreadedGenerator;
-import Reika.DragonAPI.Instantiable.LobulatedCurve;
+import Reika.DragonAPI.Instantiable.Math.LobulatedCurve;
 
 
 public class RegionMapper extends ThreadedGenerator {

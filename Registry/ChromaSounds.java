@@ -44,7 +44,7 @@ public enum ChromaSounds implements SoundEnum {
 	SHOCKWAVE("shockwave3"),
 	BALLLIGHTNING("balllightning"),
 	ITEMSTAND("stand"),
-	POWERCRYS("powercrystal"),
+	GLOWCLOUD("powercrystal"),
 	GUICLICK("gui2"),
 	GUISEL("gui4"),
 	DRONE("drone2"),
@@ -201,6 +201,8 @@ public enum ChromaSounds implements SoundEnum {
 
 	@Override
 	public SoundCategory getCategory() {
+		if (this == GLOWCLOUD || this == BALLLIGHTNING)
+			return SoundCategory.MOBS;
 		return SoundCategory.MASTER;
 	}
 

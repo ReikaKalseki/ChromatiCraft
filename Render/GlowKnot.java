@@ -18,9 +18,9 @@ import net.minecraft.util.IIcon;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.DragonAPI.Instantiable.Spline;
-import Reika.DragonAPI.Instantiable.Spline.SplineAnchor;
-import Reika.DragonAPI.Instantiable.Spline.SplineType;
+import Reika.DragonAPI.Instantiable.Math.Spline;
+import Reika.DragonAPI.Instantiable.Math.Spline.SplineAnchor;
+import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;

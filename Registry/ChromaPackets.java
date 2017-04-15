@@ -47,7 +47,7 @@ public enum ChromaPackets {
 	GLUON(2),
 	AURAPOUCH(2),
 	FARMERHARVEST(3),
-	PYLONCACHE(4),
+	PYLONCACHE(-1),
 	PYLONCACHECLEAR(1),
 	TRANSITIONWAND(1),
 	TELEPORT(),
@@ -181,7 +181,11 @@ public enum ChromaPackets {
 	}
 
 	public boolean hasData() {
-		return numInts > 0;
+		return numInts != 0;
+	}
+
+	public boolean variableData() {
+		return numInts < 0;
 	}
 
 }

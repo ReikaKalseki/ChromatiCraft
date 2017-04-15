@@ -81,9 +81,9 @@ import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.ModInterface.AE.TileEntityMEDistributor;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.CrystalWand;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.EssentiaNetwork.EssentiaPath;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeReceiverWrapper;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectFormer;
-import Reika.ChromatiCraft.ModInterface.ThaumCraft.EssentiaNetwork.EssentiaPath;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -142,6 +142,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.DataPacket;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.PacketObj;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -193,9 +194,18 @@ public class ChromatiPackets implements PacketHandler {
 					pack = ChromaPackets.getPacket(control);
 					len = pack.numInts;
 					if (pack.hasData()) {
-						data = new int[len];
-						for (int i = 0; i < len; i++)
-							data[i] = inputStream.readInt();
+						if (pack.variableData()) {
+							ArrayList<Integer> li = new ArrayList();
+							while (inputStream.available() >= 4+4*3) {
+								li.add(inputStream.readInt());
+							}
+							data = ReikaArrayHelper.intListToArray(li);
+						}
+						else {
+							data = new int[len];
+							for (int i = 0; i < len; i++)
+								data[i] = inputStream.readInt();
+						}
 					}
 					break;
 				case POS:
@@ -471,7 +481,15 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				}
 				case PYLONCACHE: {
-					PylonGenerator.instance.cachePylonLocation(world, data[0], data[1], data[2], CrystalElement.elements[data[3]]);
+					ArrayList<Coordinate> li = new ArrayList();
+					for (int i = 4; i < data.length; i += 3) {
+						int cx = data[i];
+						int cy = data[i+1];
+						int cz = data[i+2];
+						Coordinate c = new Coordinate(cx, cy, cz);
+						li.add(c);
+					}
+					PylonGenerator.instance.cachePylonLocation(world, data[0], data[1], data[2], CrystalElement.elements[data[3]], li);
 					break;
 				}
 				case PYLONCACHECLEAR: {

@@ -29,9 +29,9 @@ import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
-import Reika.DragonAPI.Instantiable.HexGrid.Hex;
-import Reika.DragonAPI.Instantiable.HexGrid.Point;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.ChromatiCraft.World.IWG.PylonGenerator.PylonEntry;
+import Reika.DragonAPI.Instantiable.Math.HexGrid.Hex;
+import Reika.DragonAPI.Instantiable.Math.HexGrid.Point;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -128,8 +128,8 @@ public class FullScreenOverlayRenderer {
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];
 			boolean containsColor = factors.containsKey(e);
-			Coordinate c = containsColor ? null : PylonGenerator.instance.getNearestPylonSpawn(ep.worldObj, ep.posX, ep.posY, ep.posZ, e);
-			double dd = containsColor ? 0 : c != null ? c.getDistanceTo(ep.posX, ep.posY, ep.posZ) : Double.POSITIVE_INFINITY;
+			PylonEntry c = containsColor ? null : PylonGenerator.instance.getNearestPylonSpawn(ep.worldObj, ep.posX, ep.posY, ep.posZ, e);
+			double dd = containsColor ? 0 : c != null ? c.location.getDistanceTo(ep.posX, ep.posY, ep.posZ) : Double.POSITIVE_INFINITY;
 			if (containsColor || dd < 32) {
 				int step = 40;
 				int frame = (int)((System.currentTimeMillis()/step)%20+e.ordinal()*1.25F)%20;

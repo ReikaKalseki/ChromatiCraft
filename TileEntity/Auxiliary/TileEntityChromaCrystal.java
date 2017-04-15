@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -67,6 +68,7 @@ public class TileEntityChromaCrystal extends TileEntityChromaticBase implements 
 		Collection<TileEntityCrystalPylon> c = CrystalNetworker.instance.getNearbyPylons(world, x, y, z, e, 8, false);
 		for (TileEntityCrystalPylon te : c) {
 			if (te.isValidPowerCrystal(this)) {
+				PylonGenerator.instance.cachePylon(te);
 				return new Coordinate(te);
 			}
 		}

@@ -177,6 +177,8 @@ public class ItemBuilderWand extends ItemWandBase {
 		if (!ReikaPlayerAPI.playerHasOrIsCreative(ep, b, m)) {
 			return false;
 		}
+		if (!this.sufficientEnergy(ep))
+			return false;
 		world.setBlock(x, y, z, b, m, 3);
 		if (!ep.capabilities.isCreativeMode) {
 			this.drainPlayer(ep);

@@ -108,6 +108,7 @@ public enum ChromaIcons {
 	HIVE("hive"),
 	HIVESPARKS("hivesparks"),
 	FLARE7("flare7"),
+	CELLFLARE("cellflare"),
 	;
 
 	private IIcon icon;

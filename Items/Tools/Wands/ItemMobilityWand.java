@@ -41,16 +41,19 @@ public class ItemMobilityWand extends ItemWandBase {
 			int y = mov.blockY+dir.offsetY;
 			int z = mov.blockZ+dir.offsetZ;
 			if (Chromabilities.ORECLIP.enabledOn(ep) || this.isValidTarget(world, x, y, z)) {
-				if (!world.isRemote) {
-					this.drainPlayer(ep, this.getUsageFactor(ep.posX, ep.posY, ep.posZ, x, y, z));
-				}
-				ep.setPositionAndUpdate(x+0.5, y+0.25, z+0.5);
-				ep.playSound("mob.endermen.portal", 1, 1);
-				for (int i = 0; i < 128; i++) {
-					double rx = ReikaRandomHelper.getRandomPlusMinus(ep.posX, 0.75);
-					double ry = ReikaRandomHelper.getRandomPlusMinus(ep.posY-1, 0.5);
-					double rz = ReikaRandomHelper.getRandomPlusMinus(ep.posZ, 0.75);
-					ReikaParticleHelper.PORTAL.spawnAt(world, rx, ry, rz);
+				float f = this.getUsageFactor(ep.posX, ep.posY, ep.posZ, x, y, z);
+				if (this.sufficientEnergy(ep, f)) {
+					if (!world.isRemote) {
+						this.drainPlayer(ep, f);
+					}
+					ep.setPositionAndUpdate(x+0.5, y+0.25, z+0.5);
+					ep.playSound("mob.endermen.portal", 1, 1);
+					for (int i = 0; i < 128; i++) {
+						double rx = ReikaRandomHelper.getRandomPlusMinus(ep.posX, 0.75);
+						double ry = ReikaRandomHelper.getRandomPlusMinus(ep.posY-1, 0.5);
+						double rz = ReikaRandomHelper.getRandomPlusMinus(ep.posZ, 0.75);
+						ReikaParticleHelper.PORTAL.spawnAt(world, rx, ry, rz);
+					}
 				}
 			}
 		}

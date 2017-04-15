@@ -49,7 +49,7 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
-		return e == this.getColor() ? 8000 : 0;
+		return e == this.getColor() ? 6000+(1+tier)*(1+tier)*1000 : 0;
 	}
 
 	@Override

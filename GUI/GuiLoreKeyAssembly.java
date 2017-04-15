@@ -21,8 +21,8 @@ import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundGui;
 import Reika.ChromatiCraft.Magic.Lore.KeyAssemblyPuzzle;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.DragonAPI.Instantiable.HexGrid.Hex;
-import Reika.DragonAPI.Instantiable.HexGrid.Point;
+import Reika.DragonAPI.Instantiable.Math.HexGrid.Hex;
+import Reika.DragonAPI.Instantiable.Math.HexGrid.Point;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
 

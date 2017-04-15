@@ -35,6 +35,7 @@ import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
+//Can change both the mob type and the params in MobSpawnerBaseLogic
 public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered implements OperationInterval {
 
 	private String selectedMob;

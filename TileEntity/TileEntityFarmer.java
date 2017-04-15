@@ -24,6 +24,8 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFunctionRelay;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFunctionRelay.RelayFunctions;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.Registry.CropType;
 import Reika.DragonAPI.Interfaces.Registry.CropType.CropMethods;
@@ -48,23 +50,38 @@ public class TileEntityFarmer extends TileEntityRelayPowered {
 			int n = this.getNumberAttempts();
 			for (int i = 0; i < n; i++) {
 				Coordinate c = this.getRandomPosition(world, x, y, z);
-				CropType crop = this.getCropAt(world, c);
-				if (crop != null && crop.isRipe(world, c.xCoord, c.yCoord, c.zCoord)) {
-					int fortune = this.getFortune();
-					ArrayList<ItemStack> li = crop.getDrops(world, c.xCoord, c.yCoord, c.zCoord, fortune);
-					if (fortune < 3) {
-						CropMethods.removeOneSeed(crop, li);
-					}
-					ReikaItemHelper.dropItems(world, c.xCoord+0.5, c.yCoord+0.5, c.zCoord+0.5, li);
-					crop.setHarvested(world, c.xCoord, c.yCoord, c.zCoord);
-					ReikaSoundHelper.playBreakSound(world, x, y, z, c.getBlock(world));
-					this.drainEnergy(CrystalElement.GREEN, 200);
-					this.drainEnergy(CrystalElement.PURPLE, 50);
+				if (c != null && this.operateAt(world, c, true)) {
 					this.sendParticles(c);
 					break;
 				}
 			}
 		}
+	}
+
+	private boolean operateAt(World world, Coordinate c, boolean allowRelays) {
+		if (c == null)
+			return false;
+		Object o = this.getCropOrRelayAt(world, c);
+		if (allowRelays && o instanceof TileEntityFunctionRelay) {
+			return this.operateAt(world, ((TileEntityFunctionRelay)o).getRandomCoordinate(), false);
+		}
+		else if (o instanceof CropType) {
+			CropType crop = (CropType)o;
+			if (crop.isRipe(world, c.xCoord, c.yCoord, c.zCoord)) {
+				int fortune = this.getFortune();
+				ArrayList<ItemStack> li = crop.getDrops(world, c.xCoord, c.yCoord, c.zCoord, fortune);
+				if (fortune < 3) {
+					CropMethods.removeOneSeed(crop, li);
+				}
+				ReikaItemHelper.dropItems(world, c.xCoord+0.5, c.yCoord+0.5, c.zCoord+0.5, li);
+				crop.setHarvested(world, c.xCoord, c.yCoord, c.zCoord);
+				ReikaSoundHelper.playBreakSound(world, c.xCoord, c.yCoord, c.zCoord, c.getBlock(world));
+				this.drainEnergy(CrystalElement.GREEN, 200);
+				this.drainEnergy(CrystalElement.PURPLE, 50);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private int getNumberAttempts() {
@@ -89,9 +106,13 @@ public class TileEntityFarmer extends TileEntityRelayPowered {
 		return this.getEnergy(CrystalElement.PURPLE)/1000;
 	}
 
-	private CropType getCropAt(World world, Coordinate c) {
+	private Object getCropOrRelayAt(World world, Coordinate c) {
 		Block b = c.getBlock(world);
 		int meta = c.getBlockMetadata(world);
+		if (ChromaTiles.getTileFromIDandMetadata(b, meta) == ChromaTiles.FUNCTIONRELAY) {
+			TileEntityFunctionRelay te = (TileEntityFunctionRelay)c.getTileEntity(world);
+			return te.getFunctionType() == RelayFunctions.HARVEST ? te : null;
+		}
 		CropType type = ReikaCropHelper.getCrop(b);
 		if (type == null)
 			type = ModCropList.getModCrop(b, meta);
@@ -137,12 +158,12 @@ public class TileEntityFarmer extends TileEntityRelayPowered {
 	@Override
 	public int getMaxStorage(CrystalElement e) {
 		switch(e) {
-		case GREEN:
-			return 10000;
-		case PURPLE:
-			return 5000;
-		default:
-			return 0;
+			case GREEN:
+				return 10000;
+			case PURPLE:
+				return 5000;
+			default:
+				return 0;
 		}
 	}
 
@@ -196,16 +217,16 @@ public class TileEntityFarmer extends TileEntityRelayPowered {
 
 	public ForgeDirection getFacing() {
 		switch(this.getBlockMetadata()) {
-		case 0:
-			return ForgeDirection.WEST;
-		case 1:
-			return ForgeDirection.EAST;
-		case 2:
-			return ForgeDirection.NORTH;
-		case 3:
-			return ForgeDirection.SOUTH;
-		default:
-			return ForgeDirection.UNKNOWN;
+			case 0:
+				return ForgeDirection.WEST;
+			case 1:
+				return ForgeDirection.EAST;
+			case 2:
+				return ForgeDirection.NORTH;
+			case 3:
+				return ForgeDirection.SOUTH;
+			default:
+				return ForgeDirection.UNKNOWN;
 		}
 	}
 

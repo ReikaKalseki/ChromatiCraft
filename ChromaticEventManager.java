@@ -29,7 +29,10 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityGhast;
+import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.monster.EntitySpider;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.player.EntityPlayer;
@@ -47,6 +50,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.DimensionManager;
@@ -84,9 +88,9 @@ import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ChromaTeleporter;
 import Reika.ChromatiCraft.Auxiliary.FocusCrystalTrade;
 import Reika.ChromatiCraft.Auxiliary.LumenTurretDamage;
-import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
+import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalBase;
@@ -156,6 +160,7 @@ import Reika.DragonAPI.Instantiable.Event.GenLayerBeachEvent;
 import Reika.DragonAPI.Instantiable.Event.GenLayerBeachEvent.BeachTypeEvent;
 import Reika.DragonAPI.Instantiable.Event.GenLayerRiverEvent;
 import Reika.DragonAPI.Instantiable.Event.GetPlayerLookEvent;
+import Reika.DragonAPI.Instantiable.Event.GrassSustainCropEvent;
 import Reika.DragonAPI.Instantiable.Event.HarvestLevelEvent;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Instantiable.Event.ItemStackUpdateEvent;
@@ -235,6 +240,13 @@ public class ChromaticEventManager {
 			 */
 
 	@SubscribeEvent
+	public void allowCliffGrassCrops(GrassSustainCropEvent evt) {
+		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord))) {
+			evt.setResult(Result.ALLOW);
+		}
+	}
+
+	@SubscribeEvent
 	public void createCliffFarmland(BlockTillEvent evt) {
 		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.x, evt.z))) {
 			//ReikaJavaLibrary.pConsole(evt.x+","+evt.y+","+evt.z+": "+evt.world.getBlock(evt.x, evt.y+1, evt.z).isOpaqueCube());
@@ -310,9 +322,21 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void preventCliffCreepers(LivingSpawnEvent.CheckSpawn evt) {
-		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(MathHelper.floor_double(evt.x), MathHelper.floor_double(evt.z)))) {
+		int x = MathHelper.floor_double(evt.x);
+		int z = MathHelper.floor_double(evt.z);
+		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(x, z))) {
 			if (evt.entityLiving instanceof EntityCreeper)
 				evt.setResult(Result.DENY);
+			else if (evt.entityLiving instanceof EntitySkeleton || evt.entityLiving instanceof EntitySpider || evt.entityLiving instanceof EntityZombie) {
+				int y = MathHelper.floor_double(evt.entityLiving.boundingBox.minY);
+				float block = evt.world.getSavedLightValue(EnumSkyBlock.Block, x, y, z);
+				float sky = evt.world.getSavedLightValue(EnumSkyBlock.Sky, x, y, z)*Math.max(0, 1-Math.min(evt.world.skylightSubtracted, 8)/8F);
+				if (sky > 4)
+					evt.setResult(Result.DENY);
+				float c = block*1.25F+sky*2F;
+				if (c >= 7 || rand.nextInt(7) < c)
+					evt.setResult(Result.DENY);
+			}
 		}
 	}
 
@@ -1721,7 +1745,7 @@ public class ChromaticEventManager {
 		//ReikaJavaLibrary.pConsole(b.biomeName+":"+e.getCommandSenderName()+":"+ReikaEntityHelper.isHostile(e)+":"+ev.getResult());
 	}
 
-	@SubscribeEvent(priority=EventPriority.LOWEST, receiveCanceled = true)
+	@SubscribeEvent(priority=EventPriority.LOWEST)
 	public void killSpawns(LivingSpawnEvent ev) {
 		World world = ev.world;
 		if (world.isRemote)

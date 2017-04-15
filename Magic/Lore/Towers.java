@@ -6,10 +6,10 @@ import java.util.Random;
 
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
-import Reika.DragonAPI.Instantiable.HexGrid;
-import Reika.DragonAPI.Instantiable.HexGrid.Hex;
-import Reika.DragonAPI.Instantiable.HexGrid.MapShape;
-import Reika.DragonAPI.Instantiable.HexGrid.Point;
+import Reika.DragonAPI.Instantiable.Math.HexGrid;
+import Reika.DragonAPI.Instantiable.Math.HexGrid.Hex;
+import Reika.DragonAPI.Instantiable.Math.HexGrid.MapShape;
+import Reika.DragonAPI.Instantiable.Math.HexGrid.Point;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 

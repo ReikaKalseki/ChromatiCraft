@@ -32,8 +32,8 @@ public class ContainerMEDistributor extends CoreContainer {
 			if (i >= 5)
 				dx += w2;
 			int dy = 7+(i%5)*20+9;
-			this.addSlotToContainer(new GhostSlot(i, dx, dy));
-			this.addSlotToContainer(new GhostSlot(i+tile.NSLOTS, dx+w, dy));
+			this.addSlotToContainer(new GhostSlot(i, dx+w, dy));
+			this.addSlotToContainer(new GhostSlot(i+tile.NSLOTS, dx, dy));
 		}
 
 		this.addPlayerInventoryWithOffset(player, 19, 49);

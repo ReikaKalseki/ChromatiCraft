@@ -41,6 +41,7 @@ public class RenderAvoLaser extends ChromaRenderBase {
 		TileEntityAvoLaser te = (TileEntityAvoLaser)tile;
 		if (te.hasWorldObj()) {
 			GL11.glPushMatrix();
+			//ReikaAABBHelper.renderAABB(te.getScanBox(te.worldObj, te.xCoord, te.yCoord, te.zCoord), par2, par4, par6, te.xCoord, te.yCoord, te.zCoord, 255, 255, 255, 255, true);
 			GL11.glTranslated(par2, par4, par6);
 
 			int rot = 0;

@@ -597,6 +597,7 @@ public class BlockGravityTile extends BlockDimensionStructureTile {
 
 			firePower = tag.getInteger("pwr");
 			fireDuration = tag.getInteger("dur");
+			fireTimer = tag.getInteger("timer");
 		}
 
 		@Override
@@ -605,6 +606,7 @@ public class BlockGravityTile extends BlockDimensionStructureTile {
 
 			tag.setInteger("pwr", firePower);
 			tag.setInteger("dur", fireDuration);
+			tag.setInteger("timer", fireTimer);
 		}
 	}
 

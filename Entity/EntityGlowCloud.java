@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Entity;
 
+import ic2.api.energy.tile.IEnergySink;
+
 import java.awt.Color;
 import java.util.List;
 
@@ -26,10 +28,13 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
@@ -41,6 +46,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.SphericalVector;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
@@ -56,6 +62,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import cofh.api.energy.IEnergyHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -86,6 +93,8 @@ public class EntityGlowCloud extends EntityLiving {
 
 	private boolean isAngry;
 	private int attackCooldown = 20;
+
+	private Coordinate cachedTile;
 
 	public EntityGlowCloud(World world, double x, double y, double z) {
 		super(world);
@@ -219,6 +228,44 @@ public class EntityGlowCloud extends EntityLiving {
 			motionX = v[0];
 			motionY = v[1];
 			motionZ = v[2];
+
+			int tx = 0;
+			int ty = 0;
+			int tz = 0;
+			if (cachedTile != null && cachedTile.getDistanceTo(this) < 8) {
+				tx = cachedTile.xCoord;
+				ty = cachedTile.yCoord;
+				tz = cachedTile.zCoord;
+			}
+			else {
+				cachedTile = null;
+				tx = MathHelper.floor_double(ReikaRandomHelper.getRandomPlusMinus(posX, 3));
+				ty = MathHelper.floor_double(ReikaRandomHelper.getRandomPlusMinus(posY, 3));
+				tz = MathHelper.floor_double(ReikaRandomHelper.getRandomPlusMinus(posZ, 3));
+			}
+			TileEntity te = worldObj.getTileEntity(tx, ty, tz);
+			int amtToSpawn = isAngry ? 120 : 40;
+			if (te instanceof IEnergyHandler) {
+				if (((IEnergyHandler)te).receiveEnergy(ForgeDirection.VALID_DIRECTIONS[rand.nextInt(6)], amtToSpawn, false) > 0) {
+					if (cachedTile == null)
+						cachedTile = new Coordinate(te);
+				}
+				else {
+					cachedTile = null;
+				}
+			}
+			else if (ModList.IC2.isLoaded() && te instanceof IEnergySink) {
+				if (((IEnergySink)te).injectEnergy(ForgeDirection.VALID_DIRECTIONS[rand.nextInt(6)], amtToSpawn, 32) < 50) {
+					if (cachedTile == null)
+						cachedTile = new Coordinate(te);
+				}
+				else {
+					cachedTile = null;
+				}
+			}
+			else {
+				cachedTile = null;
+			}
 		}
 
 		colorTransitionTick++;
@@ -364,7 +411,7 @@ public class EntityGlowCloud extends EntityLiving {
 		super.onLivingUpdate();
 
 		if (ticksExisted%80 == 0)
-			ChromaSounds.POWERCRYS.playSound(this, 0.5F, 1.5F);
+			ChromaSounds.GLOWCLOUD.playSound(this, 0.5F, 1.5F);
 		if (rand.nextInt(40) == 0)
 			ChromaSounds.BUFFERWARNING_LOW.playSound(this, 1F, 0.5F);
 

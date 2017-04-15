@@ -94,11 +94,22 @@ public class BlockCaveIndicator extends Block {
 			world.setBlockMetadataWithNotify(x, y, z, 1, 3);
 			world.markBlockForUpdate(x, y, z);
 			world.func_147451_t(x, y, z);
+			ReikaWorldHelper.causeAdjacentUpdates(world, x, y, z);
 		}
 		else if (world instanceof WorldServer) {
 			ReikaWorldHelper.cancelScheduledTick((WorldServer)world, x, y, z, this);
 		}
 		world.scheduleBlockUpdate(x, y, z, this, 100+world.rand.nextInt(200));
+	}
+
+	@Override
+	public boolean canProvidePower() {
+		return true;
+	}
+
+	@Override
+	public int isProvidingWeakPower(IBlockAccess iba, int x, int y, int z, int side) {
+		return iba.getBlockMetadata(x, y, z) > 0 ? 15 : 0;
 	}
 
 	@Override

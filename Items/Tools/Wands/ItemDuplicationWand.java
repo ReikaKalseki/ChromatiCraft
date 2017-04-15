@@ -106,10 +106,12 @@ public class ItemDuplicationWand extends ItemWandBase {
 				StructuredBlockArray struct = structures.get(sg);
 				if (struct != null && !struct.isEmpty() && this.hasItems(struct, ep)) {
 					//ChromaSounds.CAST.playSound(ep, 0.5F, 0.5F);
-					this.copyStructure(world, x, y, z, s, sg);
-					if (!ep.capabilities.isCreativeMode) {
-						this.drainPlayer(ep, 1+struct.getSize()/16F);
-						this.removeFromInventory(ep, struct);
+					if (this.sufficientEnergy(ep, 1+struct.getSize()/16F)) {
+						this.copyStructure(world, x, y, z, s, sg);
+						if (!ep.capabilities.isCreativeMode) {
+							this.drainPlayer(ep, 1+struct.getSize()/16F);
+							this.removeFromInventory(ep, struct);
+						}
 					}
 				}
 			}

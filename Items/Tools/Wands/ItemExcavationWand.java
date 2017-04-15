@@ -18,6 +18,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import Reika.ChromatiCraft.Base.ItemWandBase;
@@ -25,6 +26,7 @@ import Reika.ChromatiCraft.Block.BlockEtherealLight.Flags;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
@@ -71,7 +73,8 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 			return false;
 		if (world.provider.dimensionId == 1 && b == Blocks.end_stone)
 			return false;
-		return !(world.getTileEntity(x, y, z) instanceof CrystalNetworkTile);
+		TileEntity te = world.getTileEntity(x, y, z);
+		return !(te instanceof CrystalNetworkTile) && !(te instanceof TileEntityStructControl);
 	}
 
 	@Override

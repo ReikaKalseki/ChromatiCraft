@@ -22,6 +22,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectContainer;
 import thaumcraft.api.aspects.IEssentiaTransport;
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -75,14 +76,20 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 		for (Coordinate c : labelledJars.keySet()) {
 			if (!activeTargets.contains(c)) {
 				Aspect a = labelledJars.get(c);
-				IAspectContainer ia = (IAspectContainer)c.getTileEntity(world);
-				int amt = Math.min(THROUGHPUT, 64-ia.getAspects().getAmount(a));
-				if (amt > 0) {
-					int found = this.collectEssentiaToTarget(a, amt, new WorldLocation(world, c));
-					//ReikaJavaLibrary.pConsole(a.getName()+">"+amt+">"+found);
-					if (found > 0) {
-						//ReikaJavaLibrary.pConsole(a.getName()+">"+amt+">"+found);
-						int ret = ia.addToContainer(a, found);
+				TileEntity te = c.getTileEntity(world);
+				if (te instanceof IAspectContainer) {
+					IAspectContainer ia = (IAspectContainer)te;
+					AspectList al = ia.getAspects();
+					if (al != null) {
+						int amt = Math.min(THROUGHPUT, 64-al.getAmount(a));
+						if (amt > 0) {
+							int found = this.collectEssentiaToTarget(a, amt, new WorldLocation(world, c));
+							//ReikaJavaLibrary.pConsole(a.getName()+">"+amt+">"+found);
+							if (found > 0) {
+								//ReikaJavaLibrary.pConsole(a.getName()+">"+amt+">"+found);
+								int ret = ia.addToContainer(a, found);
+							}
+						}
 					}
 				}
 			}
