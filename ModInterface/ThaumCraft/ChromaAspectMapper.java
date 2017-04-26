@@ -289,6 +289,11 @@ public class ChromaAspectMapper {
 		this.addAspect(ChromaTiles.ROUTERHUB, Aspect.TRAVEL, 8);
 		this.addAspect(ChromaTiles.ROUTERHUB, Aspect.MECHANISM, 6);
 		this.addAspect(ChromaTiles.ROUTERHUB, Aspect.HARVEST, 2);
+
+		if (Aspect.getAspect("tempus") != null)
+			this.addAspect(ChromaTiles.FOCUSCRYSTAL, Aspect.getAspect("tempus"), 6);
+		this.addAspect(ChromaTiles.FOCUSCRYSTAL, ChromaAspectManager.instance.SIGNAL, 12);
+		this.addAspect(ChromaTiles.FOCUSCRYSTAL, Aspect.MAGIC, 4);
 	}
 
 	private void addAspect(ChromaTiles m, Aspect a, int amt) {

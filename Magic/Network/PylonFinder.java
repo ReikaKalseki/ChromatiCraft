@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeRecharger;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntitySkypeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntitySkypeater.NodeClass;
@@ -402,6 +403,9 @@ public class PylonFinder {
 		if (te instanceof CrystalReceiver) {
 			return (CrystalReceiver)te;
 		}
+		if (te instanceof TileEntityCrystalMusic) {
+			return ((TileEntityCrystalMusic)te).createTemporaryReceiver();
+		}
 		if (ModList.THAUMCRAFT.isLoaded() && InterfaceCache.NODE.instanceOf(te)) {
 			NodeReceiverWrapper wrap = NodeRecharger.instance.getWrapper(loc);
 			if (wrap != null) {
@@ -440,6 +444,9 @@ public class PylonFinder {
 		TileEntity te = loc.getTileEntity();
 		if (te instanceof CrystalNetworkTile) {
 			return (CrystalNetworkTile)te;
+		}
+		if (te instanceof TileEntityCrystalMusic) {
+			return ((TileEntityCrystalMusic)te).createTemporaryReceiver();
 		}
 		if (ModList.THAUMCRAFT.isLoaded() && InterfaceCache.NODE.instanceOf(te)) {
 			NodeReceiverWrapper wrap = NodeRecharger.instance.getWrapper(loc);

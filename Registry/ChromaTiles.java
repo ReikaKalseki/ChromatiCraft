@@ -205,7 +205,7 @@ public enum ChromaTiles implements TileEnum {
 	COBBLEGEN("chroma.cobblegen",		ChromaBlocks.DECOPLANT,		TileEntityCobbleGen.class,			2),
 	PLANTACCEL("chroma.plantaccel",		ChromaBlocks.DECOPLANT,		TileEntityAccelerationPlant.class,	3),
 	CROPSPEED("chroma.cropspeed",		ChromaBlocks.DECOPLANT,		TileEntityCropSpeedPlant.class,		4),
-	CHROMACRAFTER("chroma.chcrafter",	ChromaBlocks.TILEMODELLED2,	TileEntityChromaCrafter.class,		15),
+	CHROMACRAFTER("chroma.chcrafter",	ChromaBlocks.TILEMODELLED2,	TileEntityChromaCrafter.class,		15, "RenderChromaCrafter"),
 	WEAKREPEATER("chroma.weakrepeater",	ChromaBlocks.PYLON,			TileEntityWeakRepeater.class,		9, "RenderWeakRepeater"),
 	ENCHANTDECOMP("chroma.enchantdecomp",ChromaBlocks.TILEMODELLED3,TileEntityEnchantDecomposer.class,	0, "RenderEnchantDecomposer"),
 	LUMENWIRE("chroma.lumenwire",		ChromaBlocks.TILEMODELLED3,	TileEntityLumenWire.class,			1, "RenderLumenWire"),
@@ -333,6 +333,8 @@ public enum ChromaTiles implements TileEnum {
 			case SKYPEATER:
 			case FLUXMAKER:
 			case FUNCTIONRELAY:
+			case WIRELESS:
+			case CHROMACRAFTER:
 				return true;
 			default:
 				return false;
@@ -603,6 +605,8 @@ public enum ChromaTiles implements TileEnum {
 				return 0.875;
 			case FOCUSCRYSTAL:
 				return 0.375;
+			case REPROGRAMMER:
+				return 0.25;
 			default:
 				return 1;
 		}

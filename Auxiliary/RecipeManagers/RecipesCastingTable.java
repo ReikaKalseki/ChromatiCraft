@@ -31,7 +31,6 @@ import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import net.minecraftforge.oredict.ShapelessOreRecipe;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -49,17 +48,18 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.Crysta
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CrystalStoneRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.DoorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.FenceAuxRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.FloatingRelayRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.HeatLampRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.LumenLampRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.MusicTriggerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.PathRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.PortalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.PotionCrystalRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RecipeCaveTrail;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RecipeEnderTNT;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RecipeTankBlock;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RelayFilterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RelayRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RepeaterLampRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RouterNodeRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RuneRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.SelectiveGlassRecipe;
@@ -101,6 +101,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.BeaconR
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.BiomePainterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CaveLighterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ChromaCollectorRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ChromaCrafterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CloakTowerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CobbleGenRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CompoundRepeaterRecipe;
@@ -167,6 +168,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.BeeFram
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.BreakerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.BuilderWandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.CaptureWandRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.CavePatherRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.ChainGunRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.DuplicationWandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.EfficiencyCrystalRecipe;
@@ -199,6 +201,7 @@ import Reika.ChromatiCraft.Base.ItemChromaBasic;
 import Reika.ChromatiCraft.Block.BlockPath;
 import Reika.ChromatiCraft.Block.BlockPath.PathType;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.Bases;
+import Reika.ChromatiCraft.Block.Decoration.BlockRepeaterLight;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.ModInterface.CrystalBackpack;
@@ -321,6 +324,8 @@ public class RecipesCastingTable {
 			this.addRecipe(new CrystalGlassRecipe(e));
 		}
 		this.addRecipe(new CompoundRelayRecipe(ChromaBlocks.RELAY.getStackOfMetadata(16), new ItemStack(Items.diamond)));
+
+		this.addRecipe(new FloatingRelayRecipe(ChromaBlocks.FLOATINGRELAY.getStackOf(), ChromaBlocks.RELAY.getStackOfMetadata(16)));
 
 		Block block = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
 		IRecipe sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 2, 2), "S", "S", 'S', new ItemStack(block, 1, 0));
@@ -677,10 +682,6 @@ public class RecipesCastingTable {
 		for (int i = 0; i < 3; i++)
 			this.addRecipe(new MeteorTowerRecipe(i));
 
-		is = ChromaBlocks.TRAIL.getStackOf();
-		sr = new ShapelessOreRecipe(is, Items.redstone, Items.glowstone_dust, Items.glowstone_dust, ChromaStacks.auraDust);
-		this.addRecipe(new RecipeCaveTrail(is, sr));
-
 		this.addRecipe(new RecipeAreaBreaker(ChromaTiles.AREABREAKER.getCraftedProduct(), ChromaStacks.crystalFocus));
 
 		this.addRecipe(new WirelessTransmitterRecipe(ChromaTiles.WIRELESS.getCraftedProduct(), ChromaStacks.elementUnit));
@@ -757,6 +758,16 @@ public class RecipesCastingTable {
 		is = ChromaTiles.FUNCTIONRELAY.getCraftedProduct();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, " D ", "ACA", " D ", 'D', ChromaStacks.beaconDust, 'A', ChromaStacks.auraDust, 'C', Blocks.glowstone);
 		this.addRecipe(new FunctionRelayRecipe(is, sr));
+
+		this.addRecipe(new ChromaCrafterRecipe(ChromaTiles.CHROMACRAFTER.getCraftedProduct(), ChromaStacks.transformCoreHigh));
+
+		for (int i = 0; i < BlockRepeaterLight.MODELS.length; i++) {
+			this.addRecipe(new RepeaterLampRecipe(BlockRepeaterLight.MODELS[i]));
+		}
+
+		is = ChromaItems.CAVEPATHER.getStackOf();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "RAC", "BCA", "SBE", 'R', Items.redstone, 'E', Items.emerald, 'B', ChromaStacks.beaconDust, 'A', ChromaStacks.auraDust, 'S', Items.stick, 'C', Items.quartz);
+		this.addRecipe(new CavePatherRecipe(is, sr));
 
 		this.addSpecialRecipes();
 	}

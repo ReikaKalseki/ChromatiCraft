@@ -2,6 +2,7 @@ package Reika.ChromatiCraft.Auxiliary.Ability;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
@@ -40,7 +41,10 @@ public class WarpPoint {
 	}
 
 	void teleportPlayerTo(EntityPlayer ep) {
-		ReikaEntityHelper.transferEntityToDimension(ep, location.dimensionID);
+		if (ep.worldObj.provider.dimensionId != location.dimensionID) {
+			DimensionManager.getWorld(location.dimensionID).getBlock(location.xCoord, location.yCoord, location.zCoord); //force load
+			ReikaEntityHelper.transferEntityToDimension(ep, location.dimensionID);
+		}
 		ep.setPositionAndUpdate(location.xCoord+0.5, location.yCoord+0.25, location.zCoord+0.5);
 		ep.playSound("mob.endermen.portal", 1, 1);
 	}

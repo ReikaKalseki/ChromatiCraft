@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.Magic.Lore;
 import java.util.Collection;
 import java.util.Collections;
 
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -70,8 +69,8 @@ public class LoreManager {
 	}
 
 	public void initTowers(World world) {
-		if (!Towers.initialized())
-			Towers.loadPositions(world, 64*16);
+		if (!Towers.initialized(world))
+			Towers.loadPositions(world, 64*16*2);
 	}
 
 	/** In block coords */
@@ -162,7 +161,7 @@ public class LoreManager {
 		this.setBoardCompletion(ep, true);
 		if (ep.worldObj.isRemote) {
 			ReikaSoundHelper.playClientSound(ChromaSounds.LORECOMPLETE, ep, 1, 1, false);
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.LOREPUZZLECOMPLETE.ordinal(), new PacketTarget.ServerTarget());
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.LOREPUZZLECOMPLETE.ordinal(), PacketTarget.server);
 		}
 		else {
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);

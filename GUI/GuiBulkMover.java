@@ -79,7 +79,7 @@ public class GuiBulkMover extends GuiContainer {
 		super.updateScreen();
 		if (number.isFocused()) {
 			int num = ReikaJavaLibrary.safeIntParse(number.getText());
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BULKNUMBER.ordinal(), new PacketTarget.ServerTarget(), num);
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BULKNUMBER.ordinal(), PacketTarget.server, num);
 		}
 	}
 

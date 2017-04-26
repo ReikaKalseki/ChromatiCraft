@@ -123,7 +123,7 @@ public class TileEntityFluidDistributor extends TileEntityAreaDistributor implem
 		double py = yCoord+0.5;
 		double pz = zCoord+0.5;
 		float s = (float)(0.5+ReikaMathLibrary.logbase(amt, 10)/4D);
-		PositionController p = new SplineMotionController(px, py, pz, x+0.5, y+0.5, z+0.5, l, spl);
+		PositionController p = new SplineMotionController(l, spl);
 		//MotionController p = TargetMotionController(x+0.5, y+0.5, z+0.5, 0.0625/16);
 		double[] angs = ReikaPhysicsHelper.cartesianToPolar(x-xCoord, y-yCoord, z-zCoord);
 		double theta = -angs[1]+60*Math.sin(this.getTicksExisted()/64D);

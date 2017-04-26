@@ -408,6 +408,7 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 		protected ColorData color = new ColorData(true);
 
 		private boolean rotateable = true;
+		private boolean fixed = false;
 
 		protected String level = "none";
 
@@ -426,6 +427,7 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 			facing = CubeDirections.list[tag.getInteger("dir")];
 
 			rotateable = tag.getBoolean("free");
+			fixed = tag.getBoolean("fixed");
 
 			level = tag.getString("level");
 		}
@@ -437,6 +439,7 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 			tag.setInteger("dir", facing.ordinal());
 
 			tag.setBoolean("free", rotateable);
+			tag.setBoolean("fixed", fixed);
 
 			tag.setString("level", level);
 		}
@@ -470,7 +473,7 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 		}
 
 		public boolean isRotateable() {
-			return PARTIAL_ROTATEABILITY ? rotateable : !(this instanceof TargetTile) && this.getBlockMetadata() != LaserEffectType.EMITTER.ordinal();
+			return PARTIAL_ROTATEABILITY ? rotateable : !(this instanceof TargetTile) && this.getBlockMetadata() != LaserEffectType.EMITTER.ordinal() && !fixed;
 		}
 
 		public void fire() {

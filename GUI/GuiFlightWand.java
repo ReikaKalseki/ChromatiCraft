@@ -69,7 +69,7 @@ public class GuiFlightWand extends GuiScreen implements CustomSoundGui {
 	@Override
 	protected void actionPerformed(GuiButton b) {
 		ItemFlightWand.setMode(player.getCurrentEquippedItem(), HoverType.list[b.id]);
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.HOVERWAND.ordinal(), new PacketTarget.ServerTarget(), b.id);
+		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.HOVERWAND.ordinal(), PacketTarget.server, b.id);
 		this.initGui();
 	}
 

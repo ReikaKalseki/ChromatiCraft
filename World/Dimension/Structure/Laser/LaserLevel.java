@@ -54,10 +54,14 @@ public class LaserLevel extends StructurePiece implements PlacementCallback, NBT
 		this.name = name;
 		try {
 			data.encryptData = true;
+			//data.encryptData = false; //for saving edited
 			data.load();
 			BlockBox box = data.getBounds();
 			Coordinate origin = new Coordinate(box.minX, box.minY, box.minZ).negate();
 			data.offset(origin);
+			//data.encryptData = false; //for editing (need save too)
+			//data.encryptData = true; //saving edited
+			//data.save();
 		}
 		catch (IOException e) {
 			throw new RuntimeException("Could not load structure data for laser level '"+name+"'", e);
@@ -279,7 +283,7 @@ public class LaserLevel extends StructurePiece implements PlacementCallback, NBT
 
 	public NBTBase getOverriddenValue(Coordinate c, BlockKey bk, String key, NBTBase original, NBTTagCompound data) {
 		if (key.equals("dir")) {
-			if (!LaserEffectType.list[bk.metadata].isOmniDirectional() && (BlockLaserEffector.LaserEffectTile.PARTIAL_ROTATEABILITY ? data.getBoolean("free") : bk.metadata != LaserEffectType.EMITTER.ordinal() && bk.metadata != LaserEffectType.TARGET.ordinal() && bk.metadata != LaserEffectType.TARGET_THRU.ordinal())) {
+			if (!data.getBoolean("fixed") && !LaserEffectType.list[bk.metadata].isOmniDirectional() && (BlockLaserEffector.LaserEffectTile.PARTIAL_ROTATEABILITY ? data.getBoolean("free") : bk.metadata != LaserEffectType.EMITTER.ordinal() && bk.metadata != LaserEffectType.TARGET.ordinal() && bk.metadata != LaserEffectType.TARGET_THRU.ordinal())) {
 				int dir = ReikaRandomHelper.getSafeRandomInt(CubeDirections.list.length);
 				return new NBTTagInt(dir);
 			}

@@ -15,7 +15,7 @@ import net.minecraft.tileentity.TileEntity;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
-import Reika.ChromatiCraft.Block.BlockAvoLamp.TileEntityAvoLamp;
+import Reika.ChromatiCraft.Block.Decoration.BlockAvoLamp.TileEntityAvoLamp;
 import Reika.ChromatiCraft.Models.ModelAvoLamp;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;

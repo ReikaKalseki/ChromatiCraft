@@ -133,6 +133,9 @@ public class FocusCrystalRecipes {
 			this.addAuxItem(refinedSlab, -2, 4);
 			this.addAuxItem(refinedSlab, 0, 4);
 			this.addAuxItem(refinedSlab, 2, 4);
+
+			this.addAuxItem(ChromaStacks.avolite, 2, -2);
+			this.addAuxItem(ChromaStacks.avolite, -2, -2); //to gate explicitly as well as internally
 		}
 
 		@Override
@@ -146,6 +149,7 @@ public class FocusCrystalRecipes {
 			c.add(ProgressStage.FOCUSCRYSTAL);
 			c.add(ProgressStage.RUNEUSE);
 			c.add(ProgressStage.LINK);
+			c.add(ProgressStage.POWERCRYSTAL); //to justify avolite
 		}
 
 	}
@@ -182,6 +186,11 @@ public class FocusCrystalRecipes {
 		@Override
 		public float getConsecutiveStackingTimeFactor(TileEntityCastingTable te) {
 			return 0.8F;
+		}
+
+		@Override
+		public boolean canBeStacked() {
+			return true;
 		}
 
 		@Override

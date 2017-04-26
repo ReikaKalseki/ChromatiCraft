@@ -24,13 +24,14 @@ import Reika.ChromatiCraft.Magic.Interfaces.NaturalNetworkTile;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
-import Reika.ChromatiCraft.TileEntity.Networking.TileEntitySkypeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntitySkypeater;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
+import Reika.DragonAPI.Interfaces.TileEntity.PlayerBreakHook;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 
 public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTrigger, SemiUnbreakable {
@@ -79,8 +80,12 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 		TileEntityBase te = (TileEntityBase)world.getTileEntity(x, y, z);
 		if (te instanceof NaturalNetworkTile)
 			return -1;
-		else if (te instanceof TileEntityStructControl) {
-			return ((TileEntityStructControl)te).isBreakable() ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z)*32 : -1;
+		else if (te instanceof PlayerBreakHook) {
+			if (!((PlayerBreakHook)te).isBreakable(ep))
+				return -1;
+		}
+		if (te instanceof TileEntityStructControl) {
+			return super.getPlayerRelativeBlockHardness(ep, world, x, y, z)*32;
 		}
 		else if (te instanceof TileEntityDimensionCore) {
 			return super.getPlayerRelativeBlockHardness(ep, world, x, y, z)*8;
@@ -141,8 +146,8 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 		TileEntityBase te = (TileEntityBase)world.getTileEntity(x, y, z);
 		if (te instanceof NaturalNetworkTile)
 			return true;
-		else if (te instanceof TileEntityStructControl) {
-			return !((TileEntityStructControl)te).isBreakable();
+		else if (te instanceof PlayerBreakHook) {
+			return !((PlayerBreakHook)te).isBreakable(null);
 		}
 		return false;
 	}

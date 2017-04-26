@@ -41,7 +41,7 @@ public class TileEntityCreativeSource extends CrystalTransmitterBase implements 
 
 	@Override
 	public int maxThroughput() {
-		return 10000;
+		return 400000;
 	}
 
 	@Override

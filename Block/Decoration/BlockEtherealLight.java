@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Block;
+package Reika.ChromatiCraft.Block.Decoration;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -16,6 +16,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -25,6 +26,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.Interfaces.ColorController;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -33,6 +35,20 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class BlockEtherealLight extends Block {
+
+	public static final ColorController colorController = new ColorController() {
+
+		@Override
+		public void update(Entity e) {
+
+		}
+
+		@Override
+		public int getColor(Entity e) {
+			return getParticleColor(e.worldObj, (int)e.posY);
+		}
+
+	};
 
 	public BlockEtherealLight(Material mat) {
 		super(mat);

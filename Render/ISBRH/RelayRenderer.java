@@ -9,13 +9,17 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.ISBRH;
 
+import java.util.Random;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.Block.Relay.BlockLumenRelay.TileEntityLumenRelay;
+import Reika.ChromatiCraft.Block.Relay.BlockFloatingRelay;
+import Reika.ChromatiCraft.Block.Relay.BlockLumenRelay;
+import Reika.ChromatiCraft.Block.Relay.BlockRelayBase.TileRelayBase;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
@@ -41,42 +45,55 @@ public class RelayRenderer implements ISBRH {
 		double w = 0;
 		double h = 0;
 
-		v5.addTranslation(x, y, z);
-		v5.setColorRGBA_I(0xffffff, renderPass > 0 ? 212 : 255);
-		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[world.getBlockMetadata(x, y, z)];
-		switch(dir) {
-			case UP:
-				w = 0.5-b.getBlockBoundsMinX();
-				h = (0.625-b.getBlockBoundsMinY())/2;
-				break;
-			case DOWN:
-				w = 0.5-b.getBlockBoundsMinX();
-				h = (0.625-b.getBlockBoundsMinY())/2;
-				break;
-			case EAST:
-				w = 0.5-b.getBlockBoundsMinY();
-				h = (0.625-b.getBlockBoundsMinX())/2;
-				break;
-			case WEST:
-				w = 0.5-b.getBlockBoundsMinY();
-				h = (0.625-b.getBlockBoundsMinX())/2;
-				break;
-			case NORTH:
-				w = 0.5-b.getBlockBoundsMinY();
-				h = (0.625-b.getBlockBoundsMinZ())/2;
-				break;
-			case SOUTH:
-				w = 0.5-b.getBlockBoundsMinY();
-				h = (0.625-b.getBlockBoundsMinZ())/2;
-				break;
-			default:
-				return false;
+		ForgeDirection dir = ForgeDirection.UNKNOWN;
+		if (b instanceof BlockLumenRelay) {
+			v5.addTranslation(x, y, z);
+			v5.setColorRGBA_I(0xffffff, renderPass > 0 ? 212 : 255);
+			dir = ForgeDirection.VALID_DIRECTIONS[world.getBlockMetadata(x, y, z)];
+			switch(dir) {
+				case UP:
+					w = 0.5-b.getBlockBoundsMinX();
+					h = (0.625-b.getBlockBoundsMinY())/2;
+					break;
+				case DOWN:
+					w = 0.5-b.getBlockBoundsMinX();
+					h = (0.625-b.getBlockBoundsMinY())/2;
+					break;
+				case EAST:
+					w = 0.5-b.getBlockBoundsMinY();
+					h = (0.625-b.getBlockBoundsMinX())/2;
+					break;
+				case WEST:
+					w = 0.5-b.getBlockBoundsMinY();
+					h = (0.625-b.getBlockBoundsMinX())/2;
+					break;
+				case NORTH:
+					w = 0.5-b.getBlockBoundsMinY();
+					h = (0.625-b.getBlockBoundsMinZ())/2;
+					break;
+				case SOUTH:
+					w = 0.5-b.getBlockBoundsMinY();
+					h = (0.625-b.getBlockBoundsMinZ())/2;
+					break;
+				default:
+					return false;
+			}
+			this.renderDir(v5, dir, 0, 0, 0, w, h);
 		}
-		this.renderDir(v5, dir, 0, 0, 0, w, h);
+		else if (b instanceof BlockFloatingRelay) {
+			double d = 0.0625+0.03125;
+			renderer.setRenderBounds(0.5-d, 0.5-d, 0.5-d, 0.5+d, 0.5+d, 0.5+d);
+			Random rand = new Random(x+y+z);
+			renderer.renderStandardBlockWithColorMultiplier(ChromaBlocks.CRYSTAL.getBlockInstance(), x, y, z, 0.2F+rand.nextFloat()*0.5F, 0.7F+rand.nextFloat()*0.15F, 1F);
+			v5.addTranslation(x, y, z);
+		}
+		else {
+			v5.addTranslation(x, y, z);
+		}
 		if (renderPass == 1) {
 			v5.setColorRGBA_I(0xffffff, 255);
 			v5.setBrightness(240);
-			this.renderConnectivity(v5, ((TileEntityLumenRelay)world.getTileEntity(x, y, z)).getInput(), dir);
+			this.renderConnectivity(v5, ((TileRelayBase)world.getTileEntity(x, y, z)).getInput(), dir);
 		}
 
 		v5.addTranslation(-x, -y, -z);

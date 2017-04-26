@@ -18,12 +18,18 @@ import java.util.Set;
 
 import mekanism.api.MekanismAPI;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.ResourceLocation;
 import thaumcraft.api.ThaumcraftApi;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.crafting.InfusionRecipe;
 import vazkii.botania.api.BotaniaAPI;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
@@ -46,22 +52,27 @@ import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.SubBiomes;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
+import Reika.DragonAPI.Instantiable.Formula.MathExpression;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.TinkerMaterialHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.TinkerMaterialHelper.CustomTinkerMaterial;
 import Reika.DragonAPI.ModInteract.DeepInteract.TwilightForestLootHooks;
 import Reika.DragonAPI.ModInteract.DeepInteract.TwilightForestLootHooks.LootLevels;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler.Potions;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.RotaryCraft.API.BlockColorInterface;
 
 import com.chocolate.chocolateQuest.API.RegisterChestItem;
 import com.chocolate.chocolateQuest.API.WeightedItemStack;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInterModComms;
+import cpw.mods.fml.relauncher.Side;
 
 
 public class ModInteraction {
@@ -392,5 +403,84 @@ public class ModInteraction {
 	@ModDependent(ModList.FORESTRY)
 	public static void addCrystalBackpack() {
 		CrystalBackpack.instance.register();
+	}
+
+	@ModDependent(ModList.THAUMCRAFT)
+	public static void addThaumRecipes() {
+		Class root = ChromatiCraft.class;
+		String ref = FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? ChromaDescriptions.getParentPage()+"thaum.xml" : "";
+
+		ReikaThaumHelper.addBookCategory(new ResourceLocation("chromaticraft", "textures/blocks/tile/table_top.png"), "chromaticraft");
+
+		MathExpression costFactor = new MathExpression() {
+			@Override
+			public double evaluate(double arg) throws ArithmeticException {
+				return 1.5*Math.sqrt(arg);
+			}
+
+			@Override
+			public double getBaseValue() {
+				return 0;
+			}
+
+			@Override
+			public String toString() {
+				return "1.5*sqrt()";
+			}
+		};
+
+		{
+			ItemStack in = ChromaItems.WARP.getStackOfMetadata(0);
+			ItemStack out = ChromaItems.WARP.getStackOfMetadata(1);
+			String desc = "Pitting one kind of magic against another";
+			AspectList al = new AspectList();
+			al.add(Aspect.ELDRITCH, 120);
+			al.add(Aspect.TAINT, 240);
+			al.add(Aspect.MAGIC, 120);
+			al.add(Aspect.EXCHANGE, 60);
+			al.add(Aspect.CRYSTAL, 90);
+			al.add(Aspect.HEAL, 240);
+			al.add(Aspect.SENSES, 60);
+			al.add(ChromaAspectManager.instance.PUZZLE, 90);
+			ItemStack[] recipe = {
+					ThaumItemHelper.ItemEntry.GOO.getItem(),
+					ThaumItemHelper.ItemEntry.FABRIC.getItem(),
+					ThaumItemHelper.ItemEntry.SALTS.getItem(),
+					new ItemStack(Items.string),
+					ThaumItemHelper.ItemEntry.PRIMALFOCUS.getItem(),
+					ThaumItemHelper.ItemEntry.FABRIC.getItem(),
+					ThaumItemHelper.ItemEntry.SALTS.getItem(),
+					new ItemStack(Items.string),
+					new ItemStack(ThaumItemHelper.BlockEntry.CRYSTAL.getBlock(), 1, 6),
+			};
+			InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("WARPPROOF", out, 32, al, in, recipe);
+			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("WARPPROOF", desc, "chromaticraft", ir, costFactor, -2, 0, root, ref).setParents("ELDRITCHMAJOR").setSpecial();
+			ThaumcraftApi.addWarpToResearch("WARPPROOF", 6); //Taboo is 5
+		}
+
+		{
+			AspectList al = new AspectList();
+			al.add(Aspect.MAGIC, 80);
+			al.add(Aspect.ORDER, 40);
+			al.add(Aspect.AURA, 120);
+			al.add(Aspect.ENERGY, 200);
+			al.add(Aspect.EXCHANGE, 50);
+			al.add(ChromaAspectManager.instance.SIGNAL, 360);
+			al.add(Aspect.CRYSTAL, 200);
+			ItemStack[] recipe = {
+					ThaumItemHelper.ItemEntry.BALANCED.getItem(),
+					ThaumItemHelper.ItemEntry.THAUMIUM.getItem(),
+					ThaumItemHelper.ItemEntry.VISFITLER.getItem(),
+					ThaumItemHelper.ItemEntry.BALANCED.getItem(),
+					ThaumItemHelper.ItemEntry.THAUMIUM.getItem(),
+					ThaumItemHelper.ItemEntry.VISFITLER.getItem(),
+			};
+			InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("ROD_CRYSTALWAND", ChromaStacks.crystalWand, 24, al, ChromaStacks.iridChunk, recipe);
+			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("ROD_CRYSTALWAND", "Fashioning a wand from crystals", "chromaticraft", ir, costFactor, 2, 0, root, ref).setSpecial().setParents("ROD_silverwood", "CAP_thaumium", "SCEPTRE");
+		}
+
+		TieredOreCap.addRecipes();
+
+		ThaumcraftApi.addWarpToResearch("ROD_CRYSTALWAND", 2);
 	}
 }

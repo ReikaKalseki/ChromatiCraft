@@ -94,7 +94,7 @@ public class GuiTeleportGate extends GuiChromaBase {
 		LinkNode l = pointLocs.getRegion(-j+x, -k+y);
 		if (l != null) {
 			if (!l.location.equals(gate.worldObj, gate.xCoord, gate.yCoord, gate.zCoord)) {
-				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.TRIGGERTELEPORT.ordinal(), new PacketTarget.ServerTarget(), gate.worldObj.provider.dimensionId, gate.xCoord, gate.yCoord, gate.zCoord, l.location.dimensionID, l.location.xCoord, l.location.yCoord, l.location.zCoord);
+				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.TRIGGERTELEPORT.ordinal(), PacketTarget.server, gate.worldObj.provider.dimensionId, gate.xCoord, gate.yCoord, gate.zCoord, l.location.dimensionID, l.location.xCoord, l.location.yCoord, l.location.zCoord);
 			}
 			else
 				ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 1, 1);

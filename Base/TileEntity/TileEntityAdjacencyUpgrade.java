@@ -83,7 +83,7 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 		if (soundtick%l == 0)
 			ChromaSounds.DRONE.playSoundAtBlock(world, x, y, z, 0.25F, f);
 
-		if (ChromaOptions.POWEREDACCEL.getState()) {
+		if (ChromaOptions.POWEREDACCEL.getState() && this.getTicksExisted()%8 == 0) {
 			CrystalElement e = this.getColor();
 			if (energy.getValue(e) < this.getMaxStorage(e))
 				this.requestEnergy(this.getColor(), this.getMaxStorage(e)-energy.getValue(e));
@@ -153,7 +153,8 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 	public abstract CrystalElement getColor();
 
 	@Override
-	public void setDataFromItemStackTag(ItemStack is) {
+	public final void setDataFromItemStackTag(ItemStack is) {
+		super.setDataFromItemStackTag(is);
 		if (ChromaItems.ADJACENCY.matchWith(is)) {
 			if (is.stackTagCompound != null) {
 				tier = is.stackTagCompound.getInteger("tier");
@@ -162,33 +163,36 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 	}
 
 	@Override
-	public void getTagsToWriteToStack(NBTTagCompound NBT) {
+	public final void getTagsToWriteToStack(NBTTagCompound NBT) {
+		super.getTagsToWriteToStack(NBT);
 		NBT.setInteger("tier", this.getTier());
 	}
 
 	@Override
-	protected void readSyncTag(NBTTagCompound NBT) {
+	protected final void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 
 		tier = NBT.getInteger("tier");
+
+		energy.readFromNBT("energy", NBT);
 	}
 
 	@Override
-	protected void writeSyncTag(NBTTagCompound NBT) {
+	protected final void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
 
 		NBT.setInteger("tier", tier);
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound NBT) {
+	public final void writeToNBT(NBTTagCompound NBT) {
 		super.writeToNBT(NBT);
 
 		NBT.setBoolean("particle", particles);
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound NBT) {
+	public final void readFromNBT(NBTTagCompound NBT) {
 		super.readFromNBT(NBT);
 
 		particles = NBT.getBoolean("particle");

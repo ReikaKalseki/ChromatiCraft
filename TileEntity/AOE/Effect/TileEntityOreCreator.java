@@ -138,7 +138,7 @@ public class TileEntityOreCreator extends TileEntityAdjacencyUpgrade {
 			return;
 		world.setBlock(x, y, z, b.blockID, b.metadata, 3);
 		ReikaSoundHelper.playPlaceSound(world, x, y, z, b.blockID);
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ORECREATE.ordinal(), world, x, y, z, Block.getIdFromBlock(b.blockID), b.metadata);
+		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ORECREATE.ordinal(), world, x, y, z, b.getBlockID(), b.metadata);
 	}
 
 	public static void doOreCreationFX(World world, int x, int y, int z, int id, int meta) {

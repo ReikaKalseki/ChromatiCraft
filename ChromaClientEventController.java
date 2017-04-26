@@ -87,6 +87,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.GUI.GuiAuraPouch;
 import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
+import Reika.ChromatiCraft.Items.Tools.ItemFloatstoneBoots;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
@@ -164,6 +165,7 @@ import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
@@ -196,6 +198,15 @@ public class ChromaClientEventController {
 			textureLoadingComplete = true;
 		}
 		 */
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void updateGlowCliffRendering(PlayerTickEvent evt) {
+		if (evt.side == Side.CLIENT && evt.player != Minecraft.getMinecraft().thePlayer) {
+			if (ChromaItems.FLOATBOOTS.matchWith(evt.player.getCurrentArmor(0))) {
+				ItemFloatstoneBoots.addParticles(evt.player.worldObj, evt.player);
+			}
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)

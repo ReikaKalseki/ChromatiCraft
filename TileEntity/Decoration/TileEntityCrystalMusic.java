@@ -9,8 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Decoration;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
+import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.block.Block;
@@ -18,6 +21,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
@@ -40,6 +44,7 @@ import Reika.DragonAPI.Instantiable.MusicScore.Note;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.IO.MIDIInterface;
+import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Interfaces.TileEntity.TriggerableAction;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -50,7 +55,9 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBase implements GuiController, TriggerableAction {
+public class TileEntityCrystalMusic extends TileEntityChromaticBase implements GuiController, TriggerableAction, BreakAction {
+
+	private static final int BROADCAST_RANGE = 96;
 
 	private boolean isPlaying;
 	private int playTick;
@@ -60,10 +67,20 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 	private CrystalReceiver receiver;
 	private final CrystalPath[] networkConnections = new CrystalPath[16];
 
-	private static final MusicScore demoTrack = new MIDIInterface(ChromatiCraft.class, "Resources/music-demo.mid").fillToScore().scaleSpeed(11);
+	private static final MusicScore demoTrack;
 
 	static {
-		ChromatiCraft.logger.log("Loaded demo track "+demoTrack);
+		MusicScore mus = null;
+		try {
+			mus = new MIDIInterface(ChromatiCraft.class, "Resources/music-demo.mid").fillToScore().scaleSpeed(11);
+			ChromatiCraft.logger.log("Loaded demo track "+mus);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			ChromatiCraft.logger.logError("Could not load demo track!");
+			mus = new MusicScore(16);
+		}
+		demoTrack = mus;
 	}
 
 	private static final EnumMap<CrystalElement, Coordinate> colorPositions = new EnumMap(CrystalElement.class);
@@ -88,13 +105,17 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 	}
 
 	public void addNote(int channel, MusicKey key, int length, boolean rest) {
-		track.addNote(this.getTime(channel), channel, key, rest ? -1 : 0, 100, length);
+		this.addNote(this.getTime(channel), channel, key, length, rest);
+	}
+
+	public void addNote(int time, int channel, MusicKey key, int length, boolean rest) {
+		track.addNote(time, channel, key, rest ? -1 : 0, 100, length);
 	}
 
 	private int getTime(int channel) {
 		int pos = track.getLatestPos(channel);
-		Note n = track.getNote(channel, pos);
-		return pos+(n != null ? n.length : 0);
+		Collection<Note> n = track.getNotes(channel, pos);
+		return pos+(n != null && !n.isEmpty() ? n.iterator().next().length : 0); //only used for manual entry, which does not allow chords
 	}
 
 	public void clearChannel(int channel) {
@@ -103,6 +124,12 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 
 	public void clearMusic() {
 		track = new MusicScore(16);
+		isPlaying = false;
+		playTick = 0;
+		for (int i = 0; i < networkConnections.length; i++) {
+			if (networkConnections[i] != null)
+				networkConnections[i].endBlink();
+		}
 	}
 
 	@Override
@@ -123,8 +150,6 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 			colorPositions.get(e).offset(x, y, z).setBlock(world, ChromaBlocks.LAMP.getBlockInstance(), e.ordinal());
 		}
 		 */
-
-		//ReikaJavaLibrary.pConsole(networkConnections[CrystalElement.BLACK.ordinal()], Side.SERVER);
 	}
 
 	@Override
@@ -172,6 +197,7 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 
 	private void play(World world, int x, int y, int z) {
 		ArrayList<Note> li = track.getNotes(playTick);
+		//ReikaJavaLibrary.pConsole(li, !li.isEmpty());
 
 		//int maxplay = 3;
 		//HashMap<Note, Integer> plays = new HashMap();
@@ -195,11 +221,23 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 
 	private boolean playNote(World world, int x, int y, int z, Note n) {
 		Set<CrystalElement> set = CrystalMusicManager.instance.getColorsWithKey(n.key);
+		if (set.isEmpty()) {
+			set = CrystalMusicManager.instance.getColorsWithKey(n.key.getOctave());
+		}
+		if (set.isEmpty()) {
+			set = CrystalMusicManager.instance.getColorsWithKey(n.key.getInterval(-12));
+		}
+		if (set.isEmpty()) {
+			set = CrystalMusicManager.instance.getColorsWithKey(n.key.getInterval(-24));
+		}
+		if (set.isEmpty()) {
+			set = CrystalMusicManager.instance.getColorsWithKey(n.key.getInterval(-36));
+		}
 		boolean canPlay = false;
 
 		if (!set.isEmpty()) {
 			for (CrystalElement e : set) {
-				canPlay |= this.playCrystal(world, x, y, z, e);
+				canPlay |= this.playCrystal(world, x, y, z, e, n.length);
 			}
 			if (canPlay)
 				;//this.generateParticles(world, x, y, z, ReikaJavaLibrary.getRandomCollectionEntry(set));
@@ -213,12 +251,12 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 			if (this.attentuate(world, x, y, z))
 				ChromaSounds.DING.playSoundAtBlock(this, n.volume/100F, (float)CrystalMusicManager.instance.getPitchFactor(n.key));
 			else
-				ChromaSounds.DING.playSoundAtBlockNoAttenuation(this, n.volume/100F, (float)CrystalMusicManager.instance.getPitchFactor(n.key), 64);
+				ChromaSounds.DING.playSoundAtBlockNoAttenuation(this, n.volume/100F, (float)CrystalMusicManager.instance.getPitchFactor(n.key), BROADCAST_RANGE);
 			return true;
 		}
 		else {
 			ChromaSounds.ERROR.playSoundAtBlock(this);
-			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALMUSERROR.ordinal(), this, 24);
+			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALMUSERROR.ordinal(), this, BROADCAST_RANGE);
 			return false;
 		}
 	}
@@ -227,21 +265,21 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 		return world.getBlock(x, y-1, z) != Blocks.quartz_block;//world.getBlock(x, y-1, z) != ChromaBlocks.RUNE.getBlockInstance() || world.getBlockMetadata(x, y-1, z) != CrystalElement.YELLOW.ordinal();
 	}
 
-	public boolean playCrystal(World world, int x, int y, int z, CrystalElement e) {
+	public boolean playCrystal(World world, int x, int y, int z, CrystalElement e, int length) {
 		Coordinate c = colorPositions.get(e).offset(xCoord, yCoord, zCoord);
 		Block b = c.getBlock(world);
 		if (b instanceof CrystalBlock && c.getBlockMetadata(world) == e.ordinal()) {
 			this.generateParticles(world, c.xCoord, c.yCoord, c.zCoord, e);
 			if (networkConnections[e.ordinal()] != null && networkConnections[e.ordinal()].stillValid()) {
 				//ReikaJavaLibrary.pConsole(networkConnections[e.ordinal()]);
-				networkConnections[e.ordinal()].blink(14, receiver);
+				networkConnections[e.ordinal()].blink(MathHelper.clamp_int(length, 1, 40), receiver);
 			}
 			return true;
 		}
 		return false;
 	}
 
-	private CrystalReceiver createTemporaryReceiver() {
+	public CrystalReceiver createTemporaryReceiver() {
 		return new TemporaryCrystalReceiver(new WorldLocation(this), 0, 32, 0.35, ResearchLevel.BASICCRAFT);
 	}
 
@@ -250,7 +288,7 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 			this.doParticles(world, x, y, z, e);
 		}
 		else {
-			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALMUS.ordinal(), this, 24, x, y, z, e.ordinal());
+			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALMUS.ordinal(), this, BROADCAST_RANGE, x, y, z, e.ordinal());
 		}
 	}
 
@@ -313,8 +351,45 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 	}
 
 	public void loadDemo() {
-		this.setTrack(demoTrack.copy());
+		if (demoTrack != null && demoTrack.getLatestPos() > 0)
+			this.setTrack(demoTrack.copy());
 		this.triggerPlay();
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void loadLocalMIDI(String file) {
+		File f = new File(file);
+		if (!f.exists() || f.isDirectory()) {
+			ChromatiCraft.logger.logError("Could not load local MIDI: file is not a MIDI file!");
+			return;
+		}
+		try {
+			MusicScore mus = new MIDIInterface(f).fillToScore().scaleSpeed(11);
+			this.dispatchTrack(mus);
+		}
+		catch (Exception e) {
+			ChromatiCraft.logger.logError(e.toString());
+			e.printStackTrace();
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void dispatchDemo() {
+		this.dispatchTrack(demoTrack);
+	}
+
+	private void dispatchTrack(MusicScore mus) {
+		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.MUSICCLEAR.ordinal(), this);
+		for (int i = 0; i < mus.countTracks(); i++) {
+			Map<Integer, Collection<Note>> track = mus.getTrack(i);
+			for (int time : track.keySet()) {
+				Collection<Note> c = track.get(time);
+				for (Note n : c) {
+					if (n != null && n.key != null)
+						ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.FIXEDMUSICNOTE.ordinal(), this, i, n.key.ordinal(), n.length, n.voice == -1 ? 1 : 0, time);
+				}
+			}
+		}
 	}
 
 	public void setTrack(MusicScore music) {
@@ -349,6 +424,18 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 			return false;
 		this.triggerPlay();
 		return true;
+	}
+
+	@Override
+	public void breakBlock() {
+		if (receiver != null) {
+			CrystalNetworker.instance.breakPaths(receiver);
+			CrystalNetworker.instance.removeTile(receiver);
+		}
+		for (int i = 0; i < networkConnections.length; i++) {
+			if (networkConnections[i] != null)
+				networkConnections[i].endBlink();
+		}
 	}
 
 	/*

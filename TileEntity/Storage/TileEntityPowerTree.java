@@ -774,13 +774,14 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	}
 
 	@Override
-	public boolean request(CrystalElement e, int amt, int x, int y, int z) {
+	public int request(CrystalElement e, int amt, int x, int y, int z) {
 		int has = energy.getValue(e);
-		if (has >= amt) {
+		amt = Math.min(amt, has);
+		if (amt > 0) {
 			this.drain(e, amt);
-			return true;
+			return amt;
 		}
-		return false;
+		return 0;
 	}
 
 	@Override

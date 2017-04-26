@@ -21,7 +21,8 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Block.Relay.BlockLumenRelay.TileEntityLumenRelay;
+import Reika.ChromatiCraft.Block.Relay.BlockRelayBase;
+import Reika.ChromatiCraft.Block.Relay.BlockRelayBase.TileRelayBase;
 import Reika.ChromatiCraft.Block.Relay.BlockRelayFilter.TileEntityRelayFilter;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -163,9 +164,9 @@ public final class RelayNetworker {
 					path.addLast(c);
 					return new RelayPath((TileEntityRelaySource)c.getTileEntity(world), target, color, path);
 				}
-				else if (b == ChromaBlocks.RELAY.getBlockInstance()) {
+				else if (b instanceof BlockRelayBase) {
 					path.addLast(c);
-					TileEntityLumenRelay te = (TileEntityLumenRelay)c.getTileEntity(world);
+					TileRelayBase te = (TileRelayBase)c.getTileEntity(world);
 					if (te.canTransmit(color)) {
 						look = te.getInput();
 						return this.findFrom(world, c, depth+1);
@@ -216,7 +217,7 @@ public final class RelayNetworker {
 			int meta = world.getBlockMetadata(x, y, z);
 			if (b == ChromaBlocks.ROUTERNODE.getBlockInstance())
 				return true;
-			if (b == ChromaBlocks.DECOFLOWER.getBlockInstance() && meta == Flowers.FLOWIVY.ordinal())
+			if (b == ChromaBlocks.DECOFLOWER.getBlockInstance() && (meta == Flowers.FLOWIVY.ordinal() || meta == Flowers.GLOWDAISY.ordinal()))
 				return true;
 			if (b == Blocks.yellow_flower || b == Blocks.red_flower)
 				return true;

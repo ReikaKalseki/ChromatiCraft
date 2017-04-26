@@ -121,7 +121,8 @@ public class RepeaterTurboRecipe extends PylonCastingRecipe implements EnergyLin
 	}
 
 	@Override
-	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {
+	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep, int amount) {
+		super.onCrafted(te, ep, amount);
 		if (te.worldObj.isRemote) {
 			for (int i = 0; i < 16; i++) {
 				int x = ReikaRandomHelper.getRandomPlusMinus(te.xCoord, 8);

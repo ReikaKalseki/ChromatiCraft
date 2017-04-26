@@ -16,7 +16,7 @@ import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
 
-import Reika.ChromatiCraft.Block.Crystal.BlockColoredAltar.TileEntityColoredAltar;
+import Reika.ChromatiCraft.Block.Decoration.BlockColoredAltar.TileEntityColoredAltar;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class AltarItemRenderer implements IItemRenderer {

@@ -9,25 +9,37 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Block.Decoration.BlockEtherealLight;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
+import Reika.DragonAPI.Instantiable.Math.Spline;
+import Reika.DragonAPI.Instantiable.Math.Spline.BasicVariablePoint;
+import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
+import Reika.DragonAPI.Instantiable.ParticleController.ListOfPositionsController;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -59,7 +71,7 @@ public class BlockChromaTrail extends BlockContainer {
 
 	@Override
 	public Item getItemDropped(int meta, Random rand, int fortune) {
-		return super.getItemDropped(meta, rand, fortune);
+		return null;
 	}
 
 	@Override
@@ -79,17 +91,25 @@ public class BlockChromaTrail extends BlockContainer {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase e, ItemStack is) {
-		TileChromaTrail te = (TileChromaTrail)world.getTileEntity(x, y, z);
-		te.facingPhi = e.rotationYaw+180+90;
-		te.facingTheta = Math.signum(e.rotationPitch)*Math.max(0, (Math.abs(e.rotationPitch)-45));
-		world.markBlockForUpdate(x, y, z);
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
+		ItemStack is = ep.getCurrentEquippedItem();
+		if (ChromaItems.TOOL.matchWith(is)) {
+			for (Coordinate loc : ((TileChromaTrail)world.getTileEntity(x, y, z)).getFullPath()) {
+				TileEntity te = loc.getTileEntity(world);
+				loc.setBlock(world, Blocks.air);
+			}
+			return true;
+		}
+		return false;
 	}
 
 	public static class TileChromaTrail extends TileEntity {
 
-		private double facingPhi;
-		private double facingTheta;
+		private Coordinate nextLocation;
+		private Coordinate prevLocation;
+
+		private int pathIndex;
+		private List<DecimalPosition> overallPath;
 
 		@Override
 		public void updateEntity() {
@@ -98,37 +118,109 @@ public class BlockChromaTrail extends BlockContainer {
 			}
 		}
 
+		public void setData(Coordinate prev, Coordinate next) {
+			prevLocation = prev;
+			nextLocation = next;
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		}
+
 		@SideOnly(Side.CLIENT)
 		private void doParticles(World world, int x, int y, int z) {
-			double d = Minecraft.getMinecraft().thePlayer.getDistanceSq(x+0.5, y+0.5, z+0.5);
-			if (d <= 576) {
-				if (d <= 256 || world.rand.nextBoolean()) {
-					double v = ReikaRandomHelper.getRandomBetween(0.03125, 0.125);
-					double t = ReikaRandomHelper.getRandomPlusMinus(facingTheta, 5);
-					double p = ReikaRandomHelper.getRandomPlusMinus(facingPhi, 5);
-					double[] vel = ReikaPhysicsHelper.polarToCartesian(v, t, p);
-					int c = BlockEtherealLight.getParticleColor(world, y);
-					float s = (float)ReikaRandomHelper.getRandomBetween(1, 2.5);
-					int l = ReikaRandomHelper.getRandomBetween(10, 40);
-					EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.5, z+0.5, vel[0], vel[1], vel[2]);
-					fx.setColor(c).setScale(s).setLife(l).setRapidExpand();//.setNoDepthTest();
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			int t = (int)(world.getTotalWorldTime()%12);
+			if (t < 6) {
+				if (overallPath == null)
+					overallPath = this.calcSpline();
+				//overallPath.update();
+				int l = 13;//20;
+				//int l2 = l*64;
+				//SplineMotionController s = new SplineMotionController(l2, overallPath).setTick(pathIndex*l2/l);
+				ListOfPositionsController s = new ListOfPositionsController(l, overallPath);
+				float f = 1.5F*((6-t)/6F);
+				EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.5, z+0.5).setLife(l*3/2).setScale(f).setColliding();
+				fx.setAlphaFading().setRapidExpand().setPositionController(s).setColorController(BlockEtherealLight.colorController);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
+		}
+
+		private List<DecimalPosition> calcSpline() {
+			ArrayList<Coordinate> path = this.getFullPath();
+			pathIndex = path.indexOf(new Coordinate(this));
+			Spline s = new Spline(SplineType.CENTRIPETAL);
+			for (Coordinate c : path) {
+				s.addPoint(new BasicVariablePoint(new DecimalPosition(c), 0.75, 0.0625));
+			}
+			List<DecimalPosition> all = s.get(128, false);
+			int size = all.size()/path.size();
+			int idx = pathIndex*size;
+			return all.subList(idx, idx+size);
+		}
+
+		private ArrayList<Coordinate> getFullPath() {
+			ArrayList<Coordinate> path = new ArrayList();
+			path.add(new Coordinate(this));
+			if (prevLocation != null) {
+				Coordinate c = prevLocation;
+				TileEntity te = c.getTileEntity(worldObj);
+				while (te instanceof TileChromaTrail) {
+					path.add(0, c);
+					TileChromaTrail tt = (TileChromaTrail)te;
+					if (tt.prevLocation != null) {
+						c = tt.prevLocation;
+						te = c.getTileEntity(worldObj);
+					}
+					else {
+						te = null;
+					}
 				}
 			}
+			if (nextLocation != null) {
+				Coordinate c = nextLocation;
+				TileEntity te = c.getTileEntity(worldObj);
+				while (te instanceof TileChromaTrail) {
+					path.add(c);
+					TileChromaTrail tt = (TileChromaTrail)te;
+					if (tt.nextLocation != null) {
+						c = tt.nextLocation;
+						te = c.getTileEntity(worldObj);
+					}
+					else {
+						te = null;
+					}
+				}
+			}
+			return path;
 		}
 
 		@Override
 		public void writeToNBT(NBTTagCompound tag) {
 			super.writeToNBT(tag);
-			tag.setDouble("phi", facingPhi);
-			tag.setDouble("theta", facingTheta);
+
+			if (nextLocation != null)
+				nextLocation.writeToNBT("next", tag);
+			if (prevLocation != null)
+				prevLocation.writeToNBT("prev", tag);
 		}
 
 		@Override
 		public void readFromNBT(NBTTagCompound tag) {
 			super.readFromNBT(tag);
-			facingPhi = tag.getDouble("phi");
-			facingTheta = tag.getDouble("theta");
+
+			nextLocation = Coordinate.readFromNBT("next", tag);
+			prevLocation = Coordinate.readFromNBT("prev", tag);
+		}
+
+		@Override
+		public final Packet getDescriptionPacket() {
+			NBTTagCompound NBT = new NBTTagCompound();
+			this.writeToNBT(NBT);
+			S35PacketUpdateTileEntity pack = new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, NBT);
+			return pack;
+		}
+
+		@Override
+		public final void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity p)  {
+			this.readFromNBT(p.field_148860_e);
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
 	}

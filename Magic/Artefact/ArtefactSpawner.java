@@ -111,7 +111,7 @@ public class ArtefactSpawner implements TickHandler {
 	//client
 	public void checkPlayerBreakClient(World world, int x, int y, int z) {
 		if (this.isOnTopOfArtefact(world, x, y, z)) {
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ARTEFACTCONFIRM.ordinal(), new PacketTarget.ServerTarget(), x, y, z);
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ARTEFACTCONFIRM.ordinal(), PacketTarget.server, x, y, z);
 		}
 	}
 

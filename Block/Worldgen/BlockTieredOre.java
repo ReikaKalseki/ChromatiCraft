@@ -28,7 +28,6 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
@@ -37,6 +36,9 @@ import Reika.ChromatiCraft.Base.BlockChromaTiered;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Worldgen.ControllableOreVein;
+import Reika.DragonAPI.Instantiable.Worldgen.ControllableOreVein.BlockExcludingOreVein;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.RotaryCraft.API.ItemFetcher;
 import cpw.mods.fml.relauncher.Side;
@@ -97,7 +99,9 @@ public class BlockTieredOre extends BlockChromaTiered {
 			int y = this.ordinal() >= FIRESTONE.ordinal() ? r.nextInt(128) : r.nextBoolean() ? r.nextInt(32) : r.nextInt(64);
 			if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
 				y = r.nextInt(200);
-			return new WorldGenMinable(ChromaBlocks.TIEREDORE.getBlockInstance(), this.ordinal(), veinSize, genBlock).generate(world, r, x, y, z);
+			ControllableOreVein ore = new BlockExcludingOreVein(ChromaBlocks.TIEREDORE.getBlockInstance(), this.ordinal(), veinSize, new BlockKey(ChromaBlocks.CLIFFSTONE.getBlockInstance()));
+			ore.target = genBlock;
+			return ore.generate(world, r, x, y, z);
 		}
 
 		public boolean renderAsGeode() {

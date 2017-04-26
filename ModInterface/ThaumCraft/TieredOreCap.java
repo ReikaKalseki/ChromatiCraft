@@ -37,6 +37,8 @@ public class TieredOreCap extends WandCap {
 
 	private static final HashMap<TieredOres, WandType> items = new HashMap();
 
+	public static final String RESEARCH_ID = "tieredorecap";
+
 	public static void registerAll() {
 		for (TieredOres t : items.keySet()) {
 			WandCap cap = new TieredOreCap(t);
@@ -52,6 +54,11 @@ public class TieredOreCap extends WandCap {
 
 	private TieredOreCap(TieredOres t) {
 		super("TIEREDCAP_"+t.name(), 0.8F, items.get(t).aspects, 0.5F, items.get(t).item, 10);
+	}
+
+	@Override
+	public String getResearch() {
+		return RESEARCH_ID;
 	}
 
 	private static class WandType {
@@ -124,7 +131,8 @@ public class TieredOreCap extends WandCap {
 		}
 		Collections.sort(li, new RecipeComparator());
 		ShapedArcaneRecipe[] recipes = li.toArray(new ShapedArcaneRecipe[li.size()]);
-		ReikaThaumHelper.addResearchForMultipleRecipesViaXML("Elemental Caps", ChromaStacks.chromaCap, "tieredorecap", "Novel Caps", "chromaticraft", ChromatiCraft.class, ref, 0, 0, recipes, 1, 2, total);
+		ReikaThaumHelper.addResearchForMultipleRecipesViaXML("Elemental Caps", ChromaStacks.chromaCap, RESEARCH_ID, "Novel Caps", "chromaticraft", ChromatiCraft.class, ref, 0, 0, recipes, 1, 2, total).setParents("ROD_silverwood", "CAP_thaumium", "SCEPTRE");
+		ThaumcraftApi.addWarpToResearch(RESEARCH_ID, 3);
 	}
 
 	private static class RecipeComparator implements Comparator<ShapedArcaneRecipe> {

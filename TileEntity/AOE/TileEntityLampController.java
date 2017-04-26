@@ -16,7 +16,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
-import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
+import Reika.ChromatiCraft.Block.Decoration.BlockRangeLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;

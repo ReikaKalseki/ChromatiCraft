@@ -80,7 +80,7 @@ public class GuiNotes extends ChromaBookGui {
 
 	@Override
 	public void onGuiClosed() {
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BOOKNOTESRESET.ordinal(), new PacketTarget.ServerTarget());
+		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BOOKNOTESRESET.ordinal(), PacketTarget.server);
 		for (String s : data) {
 			ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.BOOKNOTE.ordinal(), s);
 			//ReikaJavaLibrary.pConsole("Sending "+s+" of "+data);

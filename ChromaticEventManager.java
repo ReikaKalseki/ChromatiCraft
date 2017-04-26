@@ -102,6 +102,8 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone.Variants;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
+import Reika.ChromatiCraft.Entity.EntityGlowCloud;
+import Reika.ChromatiCraft.Items.ItemFertilitySeed;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemFloatstoneBoots;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
@@ -217,6 +219,21 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void keepLumaFogsNatural(LivingSpawnEvent.SpecialSpawn evt) {
+		if (evt.entityLiving instanceof EntityGlowCloud) {
+			evt.setCanceled(true); //prevent onSpawnWithEgg call
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void preventFertilitySeedReuse(EntityItemPickupEvent evt) {
+		if (evt.item.getEntityItem().getItem() == ChromaItems.FERTILITYSEED.getItemInstance()) {
+			if (evt.item.age >= ItemFertilitySeed.INITIAL_DELAY)
+				evt.setCanceled(true);
+		}
 	}
 
 	@SubscribeEvent

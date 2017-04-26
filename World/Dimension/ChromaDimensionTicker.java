@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.World.Dimension;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Random;
 
@@ -53,6 +54,7 @@ public class ChromaDimensionTicker implements TickHandler {
 	public final int dimID = ExtraChromaIDs.DIMID.getValue();
 	private final Collection<Ticket> tickets = new ArrayList();
 	private final ArrayList<DimensionMusic> music = new ArrayList();
+	private final ArrayList<DimensionMusic> freshTracks = new ArrayList();
 
 	private int musicCooldown;
 
@@ -138,16 +140,27 @@ public class ChromaDimensionTicker implements TickHandler {
 					return;
 				}
 
-				DimensionMusic s = music.get(rand.nextInt(music.size()));
-				while (!s.canPlay(Minecraft.getMinecraft().thePlayer)) {
-					s = music.get(rand.nextInt(music.size()));
-				}
-				s.play(sh);
+				DimensionMusic s = this.selectTrack(Minecraft.getMinecraft().thePlayer);
+				if (s != null)
+					s.play(sh);
 
 				currentMusic = s;
 				musicCooldown = 300+rand.nextInt(900);
 			}
 		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private DimensionMusic selectTrack(EntityPlayer ep) {
+		if (freshTracks.isEmpty()) {
+			freshTracks.addAll(music);
+			Collections.shuffle(freshTracks);
+		}
+		DimensionMusic s = freshTracks.remove(0);
+		while (!s.canPlay(ep) && !freshTracks.isEmpty()) {
+			s = freshTracks.remove(0);
+		}
+		return s.canPlay(ep) ? s : null;
 	}
 
 	private void unloadChunks() {

@@ -92,7 +92,7 @@ public class ChromaItemRenderer implements IItemRenderer {
 		}
 		Minecraft mc = Minecraft.getMinecraft();
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)/* && (mc.currentScreen == null || mc.currentScreen instanceof GuiContainerCreative)*/ && ProgressStage.USEENERGY.isPlayerAtStage(ep) && machine.isLumenTile() && (item.stackTagCompound == null || !item.stackTagCompound.getBoolean("tooltip"))) {
+		if (!entity && Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)/* && (mc.currentScreen == null || mc.currentScreen instanceof GuiContainerCreative)*/ && ProgressStage.USEENERGY.isPlayerAtStage(ep) && machine.isLumenTile() && (item.stackTagCompound == null || !item.stackTagCompound.getBoolean("tooltip"))) {
 			int idx = -1;
 			if (machine.isPylonPowered()) {
 				idx = 1;

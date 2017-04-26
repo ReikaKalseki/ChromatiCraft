@@ -23,7 +23,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityChromaCrafter;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
@@ -78,6 +81,9 @@ public class BlockStructureShield extends Block implements SemiUnbreakable, Subm
 	}
 
 	protected final IIcon[] icons = new IIcon[BlockType.list.length];
+	public static IIcon upperConnectedIcon;
+	public static IIcon centerConnectedIcon;
+	public static IIcon lowerConnectedIcon;
 
 	public BlockStructureShield(Material mat) {
 		super(mat);
@@ -169,6 +175,20 @@ public class BlockStructureShield extends Block implements SemiUnbreakable, Subm
 	}
 
 	@Override
+	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int s) {
+		int meta = iba.getBlockMetadata(x, y, z);
+		if (meta%8 == BlockType.GLASS.ordinal() && s > 1) {
+			if (ChromaTiles.getTile(iba, x, y-2, z) == ChromaTiles.CHROMACRAFTER && ((TileEntityChromaCrafter)iba.getTileEntity(x, y-2, z)).hasStructure()) {
+				return ChromaIcons.TRANSPARENT.getIcon();//upperConnectedIcon;
+			}
+			else if (ChromaTiles.getTile(iba, x, y-1, z) == ChromaTiles.CHROMACRAFTER && ((TileEntityChromaCrafter)iba.getTileEntity(x, y-1, z)).hasStructure()) {
+				return ChromaIcons.TRANSPARENT.getIcon();//centerConnectedIcon;
+			}
+		}
+		return this.getIcon(s, meta);
+	}
+
+	@Override
 	public int damageDropped(int meta) {
 		return meta%8;
 	}
@@ -183,6 +203,9 @@ public class BlockStructureShield extends Block implements SemiUnbreakable, Subm
 		for (int i = 0; i < BlockType.list.length; i++) {
 			icons[i] = ico.registerIcon("chromaticraft:basic/shield_"+i);
 		}
+		upperConnectedIcon = ico.registerIcon("chromaticraft:basic/shield_5b");
+		centerConnectedIcon = ico.registerIcon("chromaticraft:basic/shield_5c");
+		lowerConnectedIcon = ico.registerIcon("chromaticraft:basic/shield_5a");
 	}
 
 	@Override
@@ -204,6 +227,8 @@ public class BlockStructureShield extends Block implements SemiUnbreakable, Subm
 		if (b.isOpaqueCube())
 			return false;
 		if (b == this && world.getBlockMetadata(dx, dy, dz) == meta)
+			return false;
+		if (ChromaTiles.getTile(world, dx, dy, dz) == ChromaTiles.CHROMACRAFTER)
 			return false;
 		switch(dir) {
 			case EAST:

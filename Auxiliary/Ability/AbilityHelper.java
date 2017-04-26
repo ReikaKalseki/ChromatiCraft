@@ -183,7 +183,7 @@ public class AbilityHelper {
 		progressMap.addValue(Chromabilities.FIREBALL, ProgressStage.NETHER);
 		progressMap.addValue(Chromabilities.PYLON, ProgressStage.SHOCK);
 		progressMap.addValue(Chromabilities.DEATHPROOF, ProgressStage.DIE);
-		progressMap.addValue(Chromabilities.TELEPORT, ProgressStage.CTM);
+		progressMap.addValue(Chromabilities.TELEPORT, ProgressStage.STRUCTCOMPLETE);
 		progressMap.addValue(Chromabilities.SPAWNERSEE, ProgressStage.DIMENSION);
 		progressMap.addValue(Chromabilities.SPAWNERSEE, ProgressStage.BREAKSPAWNER);
 		progressMap.addValue(Chromabilities.DIMPING, ProgressStage.DIMENSION);
@@ -199,7 +199,7 @@ public class AbilityHelper {
 		progressMap.addValue(Chromabilities.RECHARGE, ProgressStage.STRUCTCOMPLETE);
 		progressMap.addValue(Chromabilities.GROWAURA, ProgressStage.RAINBOWLEAF);
 		progressMap.addValue(Chromabilities.MEINV, ProgressStage.DIMENSION);
-		progressMap.addValue(Chromabilities.MOBSEEK, ProgressStage.CTM);
+		progressMap.addValue(Chromabilities.MOBSEEK, ProgressStage.STRUCTCOMPLETE);
 		progressMap.addValue(Chromabilities.BEEALYZE, ProgressStage.HIVE);
 		progressMap.addValue(Chromabilities.BEEALYZE, ProgressStage.LINK);
 
@@ -359,31 +359,44 @@ public class AbilityHelper {
 	}
 
 	public Collection<WarpPoint> getTeleportLocations(EntityPlayer ep) {
+		WarpPointData.readFromNBT(ep);
 		HashMap<String, WarpPoint> c = teleports.get(ep);
 		return c != null ? Collections.unmodifiableCollection(c.values()) : new HashSet();
 	}
 
 	public void addWarpPoint(String s, EntityPlayer ep) {
+		this.addWarpPoint(s, ep, new WorldLocation(ep));
+	}
+
+	public void addWarpPoint(String s, EntityPlayer ep, WorldLocation loc) {
+		WarpPointData.readFromNBT(ep);
 		HashMap<String, WarpPoint> c = teleports.get(ep);
 		if (c == null) {
 			c = new HashMap();
 			teleports.put(ep, c);
 		}
-		c.put(s, new WarpPoint(s, ep));
-		WarpPointData.initWarpData(ep.worldObj).setDirty(true);
+		c.put(s, new WarpPoint(s, loc));
+		WarpPointData.writeToNBT(ep);
+		//WarpPointData.initWarpData(ep.worldObj).setDirty(true);
 	}
 
 	public void gotoWarpPoint(String s, EntityPlayer ep) {
+		WarpPointData.readFromNBT(ep);
 		HashMap<String, WarpPoint> c = teleports.get(ep);
 		if (c != null) {
 			WarpPoint wp = c.get(s);
-			if (wp != null && wp.canTeleportPlayer(ep)) {
-				wp.teleportPlayerTo(ep);
-			}
+			this.gotoWarpPoint(wp, ep);
+		}
+	}
+
+	public void gotoWarpPoint(WarpPoint wp, EntityPlayer ep) {
+		if (wp != null && wp.canTeleportPlayer(ep)) {
+			wp.teleportPlayerTo(ep);
 		}
 	}
 
 	public void removeWarpPoint(String s, EntityPlayer ep) {
+		WarpPointData.readFromNBT(ep);
 		HashMap<String, WarpPoint> c = teleports.get(ep);
 		if (c != null) {
 			c.remove(s);
@@ -391,12 +404,21 @@ public class AbilityHelper {
 
 			}
 		}
-		WarpPointData.initWarpData(ep.worldObj).setDirty(true);
+		WarpPointData.writeToNBT(ep);
+		//WarpPointData.initWarpData(ep.worldObj).setDirty(true);
 	}
 
 	public boolean playerCanWarpTo(EntityPlayer ep, WorldLocation loc) {
 		HashMap<String, WarpPoint> c = teleports.get(ep);
 		return c != null && c.values().contains(new WarpPoint("", ep));
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void copyVoxelMapWaypoints() {
+		for (WarpPoint p : WarpPointData.loadMiniMaps()) {
+			this.addWarpPoint(p.label, Minecraft.getMinecraft().thePlayer, p.location);
+			ReikaPacketHelper.sendStringIntPacket(ChromatiCraft.packetChannel, ChromaPackets.SENDTELEPORT.ordinal(), PacketTarget.server, p.label, p.location.dimensionID, p.location.xCoord, p.location.yCoord, p.location.zCoord);
+		}
 	}
 
 	public ElementTagCompound getElementsFor(Ability a) {

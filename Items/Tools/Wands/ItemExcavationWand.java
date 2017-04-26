@@ -22,7 +22,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import Reika.ChromatiCraft.Base.ItemWandBase;
-import Reika.ChromatiCraft.Block.BlockEtherealLight.Flags;
+import Reika.ChromatiCraft.Block.Decoration.BlockEtherealLight.Flags;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;

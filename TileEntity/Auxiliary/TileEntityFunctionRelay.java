@@ -41,9 +41,9 @@ public class TileEntityFunctionRelay extends TileEntityChromaticBase {
 
 	private void doScan(World world, int x, int y, int z) {
 		activeCoords.clear();
-		for (int i = -4; i <= 4; i++) {
-			for (int k = -4; k <= 4; k++) {
-				if (Math.abs(i)+Math.abs(k) <= 6) {
+		for (int i = -6; i <= 6; i++) {
+			for (int k = -6; k <= 6; k++) {
+				if (Math.abs(i)+Math.abs(k) <= 9) {
 					int dx = x+i;
 					int dz = z+k;
 					for (int j = -6; j <= 2; j++) {

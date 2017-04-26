@@ -201,9 +201,10 @@ public class CastingRecipe implements APICastingRecipe {
 		return true;
 	}
 
-	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {
+	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep, int amount) {
 		ChromaResearchManager.instance.givePlayerRecipe(ep, this);
 		te.giveRecipe(ep, this);
+		ep.addExperience(this.getExperience()*amount/4);
 	}
 
 	@Override

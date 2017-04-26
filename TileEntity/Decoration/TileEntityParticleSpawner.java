@@ -162,7 +162,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 			NBTTagCompound nbt = new NBTTagCompound();
 			this.writeToNBT(nbt);
 			location.writeToNBT("loc", nbt);
-			ReikaPacketHelper.sendNBTPacket(ChromatiCraft.packetChannel, ChromaPackets.PARTICLESPAWNER.ordinal(), nbt, new PacketTarget.ServerTarget());
+			ReikaPacketHelper.sendNBTPacket(ChromatiCraft.packetChannel, ChromaPackets.PARTICLESPAWNER.ordinal(), nbt, PacketTarget.server);
 		}
 
 		public void writeToNBT(NBTTagCompound NBT) {

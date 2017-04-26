@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import net.minecraft.block.Block;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -42,6 +43,7 @@ import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Collections.ItemCollection;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.ModInteract.BasicAEInterface;
+import Reika.DragonAPI.Interfaces.TileEntity.AdjacentUpdateWatcher;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -63,7 +65,7 @@ import forestry.api.apiculture.IBeeHousingInventory;
 
 
 @Strippable(value={"appeng.api.networking.IActionHost"})
-public class TileEntityRouterHub extends TileEntityChromaticBase implements IActionHost, RouterFilter {
+public class TileEntityRouterHub extends TileEntityChromaticBase implements IActionHost, RouterFilter, AdjacentUpdateWatcher {
 
 	private final ItemCollection ingredients = new ItemCollection();
 	@ModDependent(ModList.APPENG)
@@ -249,6 +251,7 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
+		this.buildCache();
 	}
 
 	@Override
@@ -574,6 +577,11 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 			lifespan = l;
 		}
 
+	}
+
+	@Override
+	public void onAdjacentUpdate(World world, int x, int y, int z, Block b) {
+		this.buildCache();
 	}
 
 }

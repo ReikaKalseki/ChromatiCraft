@@ -280,7 +280,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	@Override
 	public int maxThroughput() {
-		return this.isTurbocharged() ? (this.isEnhancedStructure() ? 12000 :  8000) : 1000;
+		return this.isTurbocharged() ? (this.isEnhancedStructure() ? 18000 :  9000) : 1000;
 	}
 
 	@Override

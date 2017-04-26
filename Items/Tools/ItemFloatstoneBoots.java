@@ -97,7 +97,7 @@ public class ItemFloatstoneBoots extends ItemArmor implements MultisheetItem, IS
 	}
 
 	@SideOnly(Side.CLIENT)
-	private static void addParticles(World world, EntityPlayer ep) {
+	public static void addParticles(World world, EntityPlayer ep) {
 		if (ep.capabilities.isFlying) {
 			int c = 0xE02739;
 			int n = 4;

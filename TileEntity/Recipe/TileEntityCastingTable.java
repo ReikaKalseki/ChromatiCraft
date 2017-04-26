@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
@@ -44,7 +43,6 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRe
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CrystalTankRecipe;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -80,7 +78,6 @@ import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -194,22 +191,35 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		 */
 
 		/*
-		for (CastingRecipe c : RecipesCastingTable.instance.getAllRecipesMaking(ChromaTiles.TANK.getCraftedProduct())) {
-			if (c instanceof CrystalTankRecipe) {
-				CrystalTankRecipe rc = (CrystalTankRecipe)c;
-				Map<List<Integer>, ItemMatch> map = rc.getAuxItems();
-				for (List<Integer> li : map.keySet()) {
-					ItemMatch m = map.get(li);
-					int dx = x+li.get(0);
-					int dz = z+li.get(1);
-					int dy = Math.abs(li.get(0)) <= 2 && Math.abs(li.get(1)) <= 2 ? y : y+1;
-					TileEntityItemStand te = (TileEntityItemStand)world.getTileEntity(dx, dy, dz);
-					ItemStack is = ReikaItemHelper.getSizedItemStack(ReikaJavaLibrary.getRandomCollectionEntry(rand, m.getItemList()).getItemStack(), 64);
-					te.setInventorySlotContents(0, is);
-					te.markDirty();
+		if (DragonAPICore.debugtest) {
+			for (CastingRecipe c : RecipesCastingTable.instance.getAllRecipesMaking(ChromaStacks.crystalCore)) {
+				if (c instanceof MultiBlockCastingRecipe) {
+					MultiBlockCastingRecipe rc = (MultiBlockCastingRecipe)c;
+					Map<List<Integer>, ItemMatch> map = rc.getAuxItems();
+					for (int dx = x-4; dx <= x+4; dx += 2) {
+						for (int dz = z-4; dz <= z+4; dz += 2) {
+							int dy = Math.abs(dx) <= 2 && Math.abs(dz) <= 2 ? y : y+1;
+							TileEntityItemStand te = (TileEntityItemStand)world.getTileEntity(dx, dy, dz);
+							if (te != null) {
+								te.setInventorySlotContents(0, null);
+								te.syncAllData(true);
+							}
+						}
+					}
+					for (List<Integer> li : map.keySet()) {
+						ItemMatch m = map.get(li);
+						int dx = x+li.get(0);
+						int dz = z+li.get(1);
+						int dy = Math.abs(li.get(0)) <= 2 && Math.abs(li.get(1)) <= 2 ? y : y+1;
+						TileEntityItemStand te = (TileEntityItemStand)world.getTileEntity(dx, dy, dz);
+						ItemStack is = ReikaItemHelper.getSizedItemStack(ReikaJavaLibrary.getRandomCollectionEntry(rand, m.getItemList()).getItemStack(), 64);
+						te.setInventorySlotContents(0, is);
+						te.markDirty();
+						te.syncAllData(true);
+					}
+					inv[4] = rc.getMainInput();
+					break;
 				}
-				inv[4] = rc.getMainInput();
-				break;
 			}
 		}
 		 */
@@ -293,7 +303,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		craftingTick--;
 		if (craftingTick <= 0) {
 			if (world.isRemote) {
-				activeRecipe.onCrafted(this, craftingPlayer);
+				activeRecipe.onCrafted(this, craftingPlayer, 1);
 			}
 			else {
 				this.craft();
@@ -723,7 +733,6 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 			if (activeRecipe instanceof PylonCastingRecipe) {
 				energy.subtract(((PylonCastingRecipe)activeRecipe).getRequiredAura());
 			}
-			activeRecipe.onCrafted(this, craftingPlayer);
 			activeRecipe = recipe;
 			recipe = this.getValidRecipe();
 			if (!activeRecipe.canBeStacked() && recipe == activeRecipe) {
@@ -734,6 +743,9 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 			}
 		}
 		if (count > 0) {
+			CastingRecipe temp = activeRecipe;
+			activeRecipe.onCrafted(this, craftingPlayer, count); //this resets the recipe
+			activeRecipe = temp;
 			ProgressStage.CASTING.stepPlayerTo(craftingPlayer);
 			if (activeRecipe instanceof PylonCastingRecipe) {
 				ProgressStage.LINK.stepPlayerTo(craftingPlayer);
@@ -1114,6 +1126,9 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 			denom /= activeRecipe.getRecipeStackedTimeFactor(this, craftingAmount);
 		if (isEnhanced)
 			denom /= activeRecipe.getEnhancedTableAccelerationFactor();
+		if (denom > 20 && activeRecipe instanceof MultiBlockCastingRecipe) {
+			denom = Math.max(20, denom/TileEntityFocusCrystal.getSummedFocusFactor(this));
+		}
 		float f = 1F-craftingTick/denom;
 		return f;
 	}

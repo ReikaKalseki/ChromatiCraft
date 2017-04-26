@@ -29,7 +29,7 @@ import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Block.BlockChromaDoor.TileEntityChromaDoor;
-import Reika.ChromatiCraft.Block.BlockMusicTrigger;
+import Reika.ChromatiCraft.Block.Decoration.BlockMusicTrigger;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;

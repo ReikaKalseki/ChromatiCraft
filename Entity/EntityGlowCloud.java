@@ -17,9 +17,11 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -89,10 +91,21 @@ public class EntityGlowCloud extends EntityLiving {
 	private static int spawnedEntities;
 	private static final int SPAWN_LIMIT = 80;
 
+	private static final IEntitySelector naturalSpawnedSelector = new IEntitySelector() {
+
+		@Override
+		public boolean isEntityApplicable(Entity e) {
+			return e instanceof EntityGlowCloud && ((EntityGlowCloud)e).isNaturalSpawn;
+		}
+
+	};
+
 	private boolean init;
 
 	private boolean isAngry;
 	private int attackCooldown = 20;
+
+	private boolean isNaturalSpawn = true;
 
 	private Coordinate cachedTile;
 
@@ -336,6 +349,7 @@ public class EntityGlowCloud extends EntityLiving {
 			this.setDead();
 
 		isAngry = nbt.getBoolean("angry");
+		isNaturalSpawn = nbt.getBoolean("natural");
 	}
 
 	@Override
@@ -344,6 +358,7 @@ public class EntityGlowCloud extends EntityLiving {
 
 		nbt.setBoolean("isdead", isDead);
 		nbt.setBoolean("angry", isAngry);
+		nbt.setBoolean("natural", isNaturalSpawn);
 	}
 
 	private void die() {
@@ -498,7 +513,7 @@ public class EntityGlowCloud extends EntityLiving {
 
 	@Override
 	public boolean getCanSpawnHere() {
-		return rand.nextInt(5) == 0/* && spawnedEntities < SPAWN_LIMIT*/ && !ReikaEntityHelper.existsAnotherEntityWithin(this, 32);// && worldObj.getClosestPlayer(posX, posY, posZ, 64) != null;
+		return rand.nextInt(5) == 0/* && spawnedEntities < SPAWN_LIMIT*/ && !ReikaEntityHelper.existsAnotherValidEntityWithin(this, 32, naturalSpawnedSelector);// && worldObj.getClosestPlayer(posX, posY, posZ, 64) != null;
 	}
 
 	@Override
@@ -611,6 +626,12 @@ public class EntityGlowCloud extends EntityLiving {
 		if (recentHit) {
 
 		}
+	}
+
+	@Override //spawner
+	public IEntityLivingData onSpawnWithEgg(IEntityLivingData dat) {
+		isNaturalSpawn = false;
+		return dat;
 	}
 
 }

@@ -44,7 +44,16 @@ public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered imple
 	private StepTimer progress = new StepTimer(180);
 	public int progressTimer;
 
+	private int minDelay = 200;
+	private int maxDelay = 800;
+	private int maxNear = 6;
+	private int spawnCount = 4;
+	private int spawnRange = 4;
+	private int activeRange = 16;
+
 	private static final ElementTagCompound required = new ElementTagCompound();
+
+	public static final int MIN_MINDELAY = 100;
 
 	static {
 		required.addTag(CrystalElement.PINK, 2000);
@@ -129,6 +138,10 @@ public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered imple
 		return selectedMob;
 	}
 
+	public int[] getData() {
+		return new int[]{minDelay, maxDelay, maxNear, spawnCount, spawnRange, activeRange};
+	}
+
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
@@ -162,10 +175,12 @@ public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered imple
 			}
 		}
 		else if (is.getItem() instanceof ItemSpawner) {
+			ReikaSpawnerHelper.setSpawnerItemNBT(is, minDelay, maxDelay, maxNear, spawnCount, spawnRange, activeRange, true);
 			ReikaSpawnerHelper.setSpawnerItemNBT(is, selectedMob, true);
 		}
 		else if (is.getItem() instanceof ProgrammableSpawner) {
 			((ProgrammableSpawner)is.getItem()).setSpawnerType(is, this.getMobClass(selectedMob));
+			((ProgrammableSpawner)is.getItem()).setSpawnerData(is, minDelay, maxDelay, maxNear, spawnCount, spawnRange, activeRange);
 		}
 		inv[1] = is;
 		this.drainEnergy(required);
@@ -177,6 +192,15 @@ public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered imple
 
 	public void setMobType(String type) {
 		selectedMob = type;
+	}
+
+	public void setData(int min, int max, int near, int count, int range, int active) {
+		minDelay = min;
+		maxDelay = max;
+		maxNear = near;
+		spawnCount = count;
+		spawnRange = range;
+		activeRange = active;
 	}
 
 	@Override
@@ -220,6 +244,13 @@ public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered imple
 		super.readSyncTag(NBT);
 
 		selectedMob = NBT.getString("mob");
+
+		minDelay = NBT.getInteger("min");
+		maxDelay = NBT.getInteger("max");
+		maxNear = NBT.getInteger("near");
+		spawnCount = NBT.getInteger("count");
+		spawnRange = NBT.getInteger("range");
+		activeRange = NBT.getInteger("active");
 	}
 
 	@Override
@@ -229,6 +260,13 @@ public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered imple
 		if (selectedMob != null && !selectedMob.isEmpty()) {
 			NBT.setString("mob", selectedMob);
 		}
+
+		NBT.setInteger("min", minDelay);
+		NBT.setInteger("max", maxDelay);
+		NBT.setInteger("near", maxNear);
+		NBT.setInteger("count", spawnCount);
+		NBT.setInteger("range", spawnRange);
+		NBT.setInteger("active", activeRange);
 	}
 
 	public boolean hasSpawner() {

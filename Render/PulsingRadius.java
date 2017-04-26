@@ -15,10 +15,11 @@ import net.minecraft.client.renderer.Tessellator;
 
 import org.lwjgl.opengl.GL11;
 
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineAnchor;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
-import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 public class PulsingRadius {
@@ -45,7 +46,7 @@ public class PulsingRadius {
 	public void render(double x, double y, double z, int color) {
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		Tessellator v5 = Tessellator.instance;
-		spline.render(v5, x, y, z, color, true, true, 6);
+		spline.render(v5, x, y, z, color, true, true, 6, 1, BlendMode.DEFAULT);
 		GL11.glPopAttrib();
 	}
 

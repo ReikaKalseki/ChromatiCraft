@@ -27,7 +27,6 @@ import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Block.BlockActiveChroma;
 import Reika.ChromatiCraft.Block.BlockAdjacencyUpgrade;
-import Reika.ChromatiCraft.Block.BlockAvoLamp;
 import Reika.ChromatiCraft.Block.BlockChromaDoor;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
 import Reika.ChromatiCraft.Block.BlockChromaPortal;
@@ -44,22 +43,18 @@ import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
 import Reika.ChromatiCraft.Block.BlockDummyAux;
 import Reika.ChromatiCraft.Block.BlockEnderTNT;
-import Reika.ChromatiCraft.Block.BlockEtherealLight;
 import Reika.ChromatiCraft.Block.BlockHeatLamp;
 import Reika.ChromatiCraft.Block.BlockHoverBlock;
 import Reika.ChromatiCraft.Block.BlockHoverPad;
 import Reika.ChromatiCraft.Block.BlockLiquidEnder;
 import Reika.ChromatiCraft.Block.BlockMultiStorage;
-import Reika.ChromatiCraft.Block.BlockMusicTrigger;
 import Reika.ChromatiCraft.Block.BlockPath;
 import Reika.ChromatiCraft.Block.BlockPath.PathType;
 import Reika.ChromatiCraft.Block.BlockPylonStructure;
-import Reika.ChromatiCraft.Block.BlockRangeLamp;
 import Reika.ChromatiCraft.Block.BlockRift;
 import Reika.ChromatiCraft.Block.BlockRouterNode;
 import Reika.ChromatiCraft.Block.BlockSelectiveGlass;
 import Reika.ChromatiCraft.Block.Crystal.BlockCaveCrystal;
-import Reika.ChromatiCraft.Block.Crystal.BlockColoredAltar;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlass;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.Bases;
@@ -67,6 +62,12 @@ import Reika.ChromatiCraft.Block.Crystal.BlockCrystalLamp;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree;
 import Reika.ChromatiCraft.Block.Crystal.BlockRainbowCrystal;
 import Reika.ChromatiCraft.Block.Crystal.BlockSuperCrystal;
+import Reika.ChromatiCraft.Block.Decoration.BlockAvoLamp;
+import Reika.ChromatiCraft.Block.Decoration.BlockColoredAltar;
+import Reika.ChromatiCraft.Block.Decoration.BlockEtherealLight;
+import Reika.ChromatiCraft.Block.Decoration.BlockMusicTrigger;
+import Reika.ChromatiCraft.Block.Decoration.BlockRangeLamp;
+import Reika.ChromatiCraft.Block.Decoration.BlockRepeaterLight;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDecoTile;
 import Reika.ChromatiCraft.Block.Dimension.BlockLightedLeaf;
@@ -101,6 +102,7 @@ import Reika.ChromatiCraft.Block.Dye.BlockDyeLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
+import Reika.ChromatiCraft.Block.Relay.BlockFloatingRelay;
 import Reika.ChromatiCraft.Block.Relay.BlockLumenRelay;
 import Reika.ChromatiCraft.Block.Relay.BlockRelayFilter;
 import Reika.ChromatiCraft.Block.Worldgen.BlockCaveIndicator;
@@ -233,7 +235,9 @@ public enum ChromaBlocks implements BlockEnum {
 	CLIFFSTONE(BlockCliffStone.class,			ItemBlockMultiType.class,		"chroma.cliffstone"),
 	//LOREREADER(BlockLoreReader.class,											"chroma.lorereader");
 	CAVEINDICATOR(BlockCaveIndicator.class,										"chroma.caveindicator"),
-	TILEMODELLED4(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile 4");
+	TILEMODELLED4(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile 4"),
+	FLOATINGRELAY(BlockFloatingRelay.class,										"Ethereal Relay"),
+	REPEATERLAMP(BlockRepeaterLight.class,		ItemBlockMultiType.class,		"Repeater Lamp");
 
 	private Class blockClass;
 	private String blockName;
@@ -288,6 +292,8 @@ public enum ChromaBlocks implements BlockEnum {
 			case RELAY:
 			case ADJACENCY:
 			case RELAYFILTER:
+			case FLOATINGRELAY:
+			case REPEATERLAMP:
 				return ChromatiCraft.crystalMat;
 			case AVOLAMP:
 				return Material.iron;
@@ -456,6 +462,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return StatCollector.translateToLocal("chromablock.routernode."+meta);
 			case CLIFFSTONE:
 				return "Cliff "+Variants.getVariant(meta).getBlockProxy().getLocalizedName();
+			case REPEATERLAMP:
+				return BlockRepeaterLight.MODELS[meta].getName()+" Lamp";
 			default:
 				return "";
 		}
@@ -505,6 +513,7 @@ public enum ChromaBlocks implements BlockEnum {
 				//case LOREREADER:
 			case ARTEFACT:
 			case CAVEINDICATOR:
+			case FLOATINGRELAY:
 				return false;
 			default:
 				return true;
@@ -556,6 +565,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return 6;
 			case CLIFFSTONE:
 				return Variants.list.length;
+			case REPEATERLAMP:
+				return BlockRepeaterLight.MODELS.length;
 			default:
 				return 1;
 		}

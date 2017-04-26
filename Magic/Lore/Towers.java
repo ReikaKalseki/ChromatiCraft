@@ -6,11 +6,11 @@ import java.util.Random;
 
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Math.HexGrid;
 import Reika.DragonAPI.Instantiable.Math.HexGrid.Hex;
 import Reika.DragonAPI.Instantiable.Math.HexGrid.MapShape;
 import Reika.DragonAPI.Instantiable.Math.HexGrid.Point;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 
@@ -39,6 +39,7 @@ public enum Towers {
 
 	private static final HashMap<ChunkCoordIntPair, Towers> towerChunkCache = new HashMap();
 	private static final EnumMap<Towers, Coordinate> towerCache = new EnumMap(Towers.class);
+	private static long lastWorldSeed;
 
 	private Towers(String s, int idx, int x, int y, int z) {
 		character = s;
@@ -51,6 +52,9 @@ public enum Towers {
 	}
 
 	public static void loadPositions(World world, double radius) { //radius is in chunks, and is the size of a hex in "chunks as pixels"
+		towerChunkCache.clear();
+		towerCache.clear();
+
 		HexGrid grid = new HexGrid(9, radius, true, MapShape.HEXAGON).flower();
 
 		Random rand = new Random(world.getSeed());
@@ -69,6 +73,8 @@ public enum Towers {
 			t.position = new ChunkCoordIntPair(x, y);
 			towerChunkCache.put(t.position, t);
 		}
+
+		lastWorldSeed = world.getSeed();
 	}
 
 	/** In block coords */
@@ -100,8 +106,8 @@ public enum Towers {
 		return towerList[this.ordinal()-1];
 	}
 
-	public static boolean initialized() {
-		return !towerChunkCache.isEmpty();
+	public static boolean initialized(World world) {
+		return !towerChunkCache.isEmpty() && lastWorldSeed == world.getSeed();
 	}
 
 

@@ -46,6 +46,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.LoadRegistry;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PlantDropManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
@@ -221,13 +222,17 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 	public void updateTick(World world, int x, int y, int z, Random rand) {
 		if (!this.checkAndDropBlock(world, x, y, z)) {
 			int meta = world.getBlockMetadata(x, y, z);
-			Coordinate c = Flowers.list[meta].grow(world, x, y, z, this, rand);
+			Flowers f = Flowers.list[meta];
+			Coordinate c = f.grow(world, x, y, z, this, rand);
 			if (c != null) {
 				c.setBlock(world, this, meta);
 				ReikaSoundHelper.playBreakSound(world, x, y, z, this, 1, 1);
 				ReikaSoundHelper.playBreakSound(world, c.xCoord, c.yCoord, c.zCoord, this, 1, 1);
 				ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, x, y, z, Block.getIdFromBlock(this), meta);
 				ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, c.xCoord, c.yCoord, c.zCoord, Block.getIdFromBlock(this), meta);
+			}
+			else {
+				f.tick(world, x, y, z, rand);
 			}
 		}
 	}
@@ -351,6 +356,57 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 					return true;
 				default:
 					return false;
+			}
+		}
+
+		public void tick(World world, int x, int y, int z, Random rand) {
+			switch(this) {
+				case ENDERFLOWER:
+					break;
+				case FLOWIVY:
+					break;
+				case GLOWDAISY:
+					break;
+				case GLOWROOT:
+					if (rand.nextInt(4) == 0) {
+						if (world.checkChunksExist(x-16, y, z-16, x+16, y, z+16)) {
+							int meta = 0;
+							switch(rand.nextInt(20)) {
+								case 20:
+									meta = 5;
+									break;
+								case 19:
+								case 18:
+									meta = 4;
+									break;
+								case 17:
+								case 16:
+								case 15:
+									meta = 3;
+									break;
+								case 14:
+								case 13:
+								case 12:
+									meta = 2;
+									break;
+								case 11:
+								case 10:
+								case 9:
+									meta = 1;
+									break;
+							}
+							ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, ChromaItems.FERTILITYSEED.getStackOfMetadata(meta));
+						}
+						break;
+					}
+				case LUMALILY:
+					break;
+				case RESOCLOVER:
+					break;
+				case SANOBLOOM:
+					break;
+				case VOIDREED:
+					break;
 			}
 		}
 
@@ -490,8 +546,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 				case SANOBLOOM:
 					return world.getBlock(x, y-1, z) == Blocks.leaves && world.getBlockMetadata(x, y-1, z)%4 == 3;
 				case GLOWROOT: {
-					Block b = world.getBlock(x, y+1, z);
-					return (this.matchAt(world, x, y+1, z) || b == Blocks.stone || ReikaBlockHelper.isDirtType(b, world.getBlockMetadata(x, y+1, z))) && !this.isRootTooLong(world, x, y, z);
+					return (this.matchAt(world, x, y+1, z) || ReikaBlockHelper.isNaturalStone(world, x, y+1, z) || ReikaBlockHelper.isDirtType(world.getBlock(x, y+1, z), world.getBlockMetadata(x, y+1, z))) && !this.isRootTooLong(world, x, y, z);
 				}
 			}
 			return false;

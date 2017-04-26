@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Proportionality;
+import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
@@ -64,7 +65,7 @@ public class GuiRitual extends GuiBookSection {
 
 
 		ElementTagCompound tag = AbilityHelper.instance.getElementsFor(ability);
-		Proportionality p = tag.getProportionality();
+		Proportionality<CrystalElement> p = tag.getProportionality();
 		/*
 		int i = 0;
 		for (CrystalElement e : tag.elementSet()) {
@@ -89,7 +90,22 @@ public class GuiRitual extends GuiBookSection {
 		double r = 57.5;
 		int dx = leftX+descX+184;
 		int dy = topY+descY+52;
-		p.renderAsPie(dx, dy, r, System.identityHashCode(ability), CrystalElement.getColorMap());
+		double zang = System.identityHashCode(ability);
+		p.renderAsPie(dx, dy, r, zang, CrystalElement.getColorMap());
+
+		ReikaTextureHelper.bindTerrainTexture();
+		double ba = zang;
+		double ir = r*0.625;
+		int si = 8;
+		for (CrystalElement e : p.getElements()) {
+			double ang = 360D*p.getFraction(e);
+			double a = ba+ang/2D;
+			int ix = (int)Math.round(dx+ir*Math.cos(Math.toRadians(a)));
+			int iy = (int)Math.round(dy+ir*Math.sin(Math.toRadians(a)));
+			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(ix-si/2, iy-si/2, e.getOutlineRune(), si, si);
+			ba += ang;
+		}
+
 		//ReikaGuiAPI.instance.drawCircle(dx, dy, r+0.25, 0x000000);
 		int tot = tag.getTotalEnergy();
 		int h = fontRendererObj.FONT_HEIGHT*3/2;

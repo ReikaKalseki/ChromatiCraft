@@ -28,7 +28,7 @@ import Reika.DragonAPI.Instantiable.StepTimer;
 
 public abstract class CrystalReceiverBase extends TileEntityCrystalBase implements CrystalReceiver, LumenRequestingTile, NBTTile {
 
-	protected ElementTagCompound energy = new ElementTagCompound();
+	protected final ElementTagCompound energy = new ElementTagCompound();
 	private int receiveCooldown = this.getCooldownLength();
 	protected StepTimer checkTimer = new StepTimer(this.getCooldownLength());
 

@@ -67,7 +67,7 @@ public class GuiTransitionWand extends GuiScreen implements CustomSoundGui {
 	@Override
 	protected void actionPerformed(GuiButton b) {
 		this.getItem().setMode(player.getCurrentEquippedItem(), TransitionMode.list[b.id]);
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.TRANSITIONWAND.ordinal(), new PacketTarget.ServerTarget(), b.id);
+		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.TRANSITIONWAND.ordinal(), PacketTarget.server, b.id);
 		this.initGui();
 	}
 

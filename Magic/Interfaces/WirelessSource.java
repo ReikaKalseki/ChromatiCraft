@@ -17,6 +17,6 @@ public interface WirelessSource extends CrystalReceiver, LumenTile {
 
 	boolean canTransmitTo(TileEntityWirelessPowered te);
 
-	boolean request(CrystalElement e, int amt, int x, int y, int z);
+	int request(CrystalElement e, int amt, int x, int y, int z);
 
 }

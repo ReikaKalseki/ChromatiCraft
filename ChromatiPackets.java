@@ -52,9 +52,9 @@ import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
 import Reika.ChromatiCraft.Block.BlockHeatLamp.TileEntityHeatLamp;
 import Reika.ChromatiCraft.Block.BlockHoverBlock.HoverType;
-import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Block.BlockRouterNode.TileEntityRouterNode;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree;
+import Reika.ChromatiCraft.Block.Decoration.BlockRangeLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Music.BlockMusicMemory.TileMusicMemory;
 import Reika.ChromatiCraft.Block.Relay.BlockRelayFilter.TileEntityRelayFilter;
 import Reika.ChromatiCraft.Block.Worldgen.BlockUnknownArtefact;
@@ -68,6 +68,7 @@ import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityThrownGem;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
 import Reika.ChromatiCraft.GUI.Tile.GuiTeleportGate;
+import Reika.ChromatiCraft.Items.ItemFertilitySeed;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
 import Reika.ChromatiCraft.Items.Tools.ItemBulkMover;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
@@ -309,10 +310,16 @@ public class ChromatiPackets implements PacketHandler {
 					ench.clearEnchantments();
 					break;
 				}
-				case SPAWNERPROGRAM:
+				case SPAWNERPROGRAM: {
 					TileEntitySpawnerReprogrammer prog = (TileEntitySpawnerReprogrammer)tile;
 					prog.setMobType(stringdata);
 					break;
+				}
+				case SPAWNERDATA: {
+					TileEntitySpawnerReprogrammer prog = (TileEntitySpawnerReprogrammer)tile;
+					prog.setData(data[0], data[1], data[2], data[3], data[4], data[5]);
+					break;
+				}
 				case CRYSTALEFFECT: {
 					Block b = world.getBlock(x, y, z);
 					if (b instanceof CrystalBlock) {
@@ -509,6 +516,9 @@ public class ChromatiPackets implements PacketHandler {
 				case DELTELEPORT:
 					AbilityHelper.instance.removeWarpPoint(stringdata, ep);
 					break;
+				case SENDTELEPORT:
+					AbilityHelper.instance.addWarpPoint(stringdata, ep, new WorldLocation(data[0], data[1], data[2], data[3]));
+					break;
 				case GROWTH:
 					ChromaFX.doGrowthWandParticles(world, data[0], data[1], data[2]);
 					break;
@@ -623,9 +633,20 @@ public class ChromatiPackets implements PacketHandler {
 				case MUSICNOTE:
 					((TileEntityCrystalMusic)tile).addNote(data[0], MusicKey.getByIndex(data[1]), data[2], data[3] > 0);
 					break;
+				case FIXEDMUSICNOTE:
+					((TileEntityCrystalMusic)tile).addNote(data[4], data[0], MusicKey.getByIndex(data[1]), data[2], data[3] > 0);
+					break;
 				case MUSICDEMO:
 					((TileEntityCrystalMusic)tile).loadDemo();
 					break;
+					/*
+				case MUSICDISC: {
+					ItemStack is = ep.getCurrentEquippedItem();
+					is.stackTagCompound = new NBTTagCompound();
+					is.stackTagCompound.setString("file", stringdata);
+					break;
+				}
+					 */
 				case PYLONTURBOSTART:
 					((TileEntityPylonTurboCharger)tile).doStartFXClient(world, x, y, z);
 					break;
@@ -827,7 +848,7 @@ public class ChromatiPackets implements PacketHandler {
 					((TileEntityRelayFilter)tile).setFlag(CrystalElement.elements[data[0]], data[1] > 0);
 					break;
 				case ROUTERFILTERFLAG:
-					((TileEntityRouterNode)tile).isBlacklist = data[1] > 0;
+					((TileEntityRouterNode)tile).isBlacklist = data[0] > 0;
 					((TileEntityRouterNode)tile).update();
 					break;
 				case ROUTERLINK:
@@ -857,6 +878,9 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case ARTEFACTCLICK:
 					BlockUnknownArtefact.doInteractFX(world, x, y, z);
+					break;
+				case FERTILITYSEED:
+					ItemFertilitySeed.doFertilizeFX(world, x, y, z);
 					break;
 			}
 		}

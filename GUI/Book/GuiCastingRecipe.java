@@ -27,9 +27,11 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
 import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer.FontType;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.IO.DelegateFontRenderer;
@@ -39,6 +41,8 @@ import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import codechicken.nei.NEIClientConfig;
 
 public class GuiCastingRecipe extends GuiBookSection {
@@ -213,6 +217,16 @@ public class GuiCastingRecipe extends GuiBookSection {
 			}
 			 */
 		}
+		if (!this.getActiveRecipe().canRunRecipe(player)) {
+			ReikaTextureHelper.bindTerrainTexture();
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.DEFAULT.apply();
+			GL11.glColor4f(1, 1, 1, 0.5F);
+			api.drawTexturedModelRectFromIcon(posX+9, posY+13, ChromaIcons.NOENTER.getIcon(), 16, 16);
+			GL11.glPopAttrib();
+		}
 	}
 
 	@Override
@@ -233,7 +247,8 @@ public class GuiCastingRecipe extends GuiBookSection {
 
 	@Override
 	public String getPageTitle() {
-		return this.getActiveRecipe().getOutput().getDisplayName();//+" Casting";
+		String s = this.getActiveRecipe().canRunRecipe(player) ? "" : ChromaFontRenderer.FontType.OBFUSCATED.id;
+		return s+this.getActiveRecipe().getOutput().getDisplayName();//+" Casting";
 	}
 
 	@Override

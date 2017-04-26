@@ -165,7 +165,7 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 
 					double dx = t1.getRootPosition().chunkXPos-tower.getRootPosition().chunkXPos;
 					double dz = t1.getRootPosition().chunkZPos-tower.getRootPosition().chunkZPos;
-					double a = ReikaPhysicsHelper.cartesianToPolar(dx, 0, dz)[2];
+					double a = -ReikaPhysicsHelper.cartesianToPolar(dx, 0, dz)[2]-90;
 					float s = rand.nextFloat()+0.25F;
 					EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, px, py, pz, a, 0);
 					fx.freedom *= 0.5;
@@ -174,7 +174,7 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 
 					dx = t2.getRootPosition().chunkXPos-tower.getRootPosition().chunkXPos;
 					dz = t2.getRootPosition().chunkZPos-tower.getRootPosition().chunkZPos;
-					a = ReikaPhysicsHelper.cartesianToPolar(dx, 0, dz)[2];
+					a = -ReikaPhysicsHelper.cartesianToPolar(dx, 0, dz)[2]-90;
 					s = rand.nextFloat()+0.25F;
 					fx = new EntityFloatingSeedsFX(world, px, py, pz, a, 0);
 					fx.freedom *= 0.5;
@@ -306,7 +306,7 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 
 	@Override
 	public AxisAlignedBB getRenderBoundingBox() {
-		return AxisAlignedBB.getBoundingBox(xCoord-0.5, yCoord, zCoord-0.5, xCoord+0.5, yCoord+EXTENSION_LIMIT_0+EXTENSION_LIMIT_1+EXTENSION_LIMIT_2+2, zCoord+0.5);
+		return AxisAlignedBB.getBoundingBox(xCoord-0.5, yCoord, zCoord-0.5, xCoord+0.5, yCoord+EXTENSION_LIMIT_0+EXTENSION_LIMIT_1+EXTENSION_LIMIT_2+2, zCoord+0.5).expand(3, 6, 3);
 	}
 
 	@Override

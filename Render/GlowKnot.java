@@ -18,10 +18,10 @@ import net.minecraft.util.IIcon;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineAnchor;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
-import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -53,7 +53,7 @@ public class GlowKnot {
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glEnable(GL11.GL_BLEND);
 		Tessellator v5 = Tessellator.instance;
-		spline.render(v5, 0.5, 0.5, 0.5, color, inworld, true, 32);
+		spline.render(v5, 0.5, 0.5, 0.5, color, inworld, true, 32, 1, BlendMode.DEFAULT);
 
 		IIcon ico = ChromaIcons.FADE.getIcon();
 		float u = ico.getMinU();

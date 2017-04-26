@@ -155,10 +155,12 @@ public class BlockLootChest extends BlockContainer {
 	public static boolean canOpen(World world, int x, int y, int z, EntityPlayer ep) {
 		if (ep != null && ReikaPlayerAPI.isFake(ep))
 			return false;
-		if (world.getBlockMetadata(x, y, z) >= 8 || (world.isSideSolid(x, y+1, z, DOWN) && !CarpenterBlockHandler.getInstance().isCarpenterBlock(world.getBlock(x, y+1, z))))
-			return false;
 		TileEntity te = world.getTileEntity(x, y, z);
-		return te instanceof TileEntityLootChest && (ep == null || ((TileEntityLootChest)te).isUseableByPlayer(ep));
+		if (!(te instanceof TileEntityLootChest))
+			return false;
+		if (world.getBlockMetadata(x, y, z) >= 8 || (world.isSideSolid(x, y+1, z, DOWN) && !CarpenterBlockHandler.getInstance().isCarpenterBlock(world.getBlock(x, y+1, z))))
+			return ep == null || ep.getUniqueID().equals(((TileEntityLootChest)te).placer);
+		return ep == null || ((TileEntityLootChest)te).isUseableByPlayer(ep);
 	}
 
 	public TileEntity createNewTileEntity(World world, int meta)
@@ -209,7 +211,7 @@ public class BlockLootChest extends BlockContainer {
 		((TileEntityLootChest)world.getTileEntity(x, y, z)).placer = e.getUniqueID();
 	}
 
-	public static void setMaxReach(World world, int x, int y, int z, int max) {
+	public static void setMaxReach(World world, int x, int y, int z, double max) {
 		TileEntity te = world.getTileEntity(x, y, z);
 		if (te instanceof TileEntityLootChest) {
 			((TileEntityLootChest)te).maxReachAccess = max;
@@ -262,7 +264,7 @@ public class BlockLootChest extends BlockContainer {
 
 		private int ticksSinceSync;
 
-		private int maxReachAccess = 8;
+		private double maxReachAccess = 8;
 
 		private UUID placer;
 		private boolean opened;
@@ -424,7 +426,7 @@ public class BlockLootChest extends BlockContainer {
 
 			//NBT.setInteger("using", numPlayersUsing);
 
-			NBT.setInteger("maxreach", maxReachAccess);
+			NBT.setDouble("maxreach", maxReachAccess);
 
 			li = new NBTTagList();
 			for (ProgressElement e : triggers) {
@@ -458,7 +460,7 @@ public class BlockLootChest extends BlockContainer {
 
 			//numPlayersUsing = NBT.getInteger("using");
 
-			maxReachAccess = NBT.getInteger("maxreach");
+			maxReachAccess = NBT.getDouble("maxreach");
 
 			triggers.clear();
 			li = NBT.getTagList("flags", NBTTypes.INT.ID);

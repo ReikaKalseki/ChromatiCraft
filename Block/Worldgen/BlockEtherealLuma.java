@@ -53,7 +53,7 @@ public class BlockEtherealLuma extends BlockFluidClassic {
 	@Override
 	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int s) {
 		if (iba.getBlockMetadata(x, y, z) != 0 || this.getFlowVector(iba, x, y, z).lengthVector() > 0)
-			return blockIcon;
+			return ChromatiCraft.luma.getFlowingIcon();//blockIcon;
 		int dx = (x%4+4)%4;
 		int dz = (z%4+4)%4;
 		int idx = dz*4+dx;

@@ -573,6 +573,17 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 		color = is.stackTagCompound != null ? CrystalElement.elements[is.stackTagCompound.getInteger("color")] : CrystalElement.WHITE;
 	}
 
+	public boolean isBreakable(EntityPlayer ep) {
+		if (ep == null)
+			return false;
+		if (!worldObj.isRemote && !ep.capabilities.isCreativeMode && this.hasStructure()) {
+			if (!this.getStructure().hasBeenSolved(worldObj)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	@Override
 	public boolean breakByPlayer(EntityPlayer ep) {
 		if (worldObj.isRemote) {

@@ -109,7 +109,7 @@ public class AdjacencyUpgradeRenderer extends ChromaRenderBase {
 		boolean dis = te.worldObj != null && !te.canRun(te.worldObj, te.xCoord, te.yCoord, te.zCoord);
 
 		Tessellator v5 = Tessellator.instance;
-		double time = System.currentTimeMillis();
+		double time = System.currentTimeMillis()+(te.xCoord+te.yCoord*4+te.zCoord*2)*48D;
 		if (dis) {
 			time = time/6D;
 		}

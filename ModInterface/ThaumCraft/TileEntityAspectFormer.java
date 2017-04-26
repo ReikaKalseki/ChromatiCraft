@@ -55,6 +55,7 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 			for (Aspect a : Aspect.aspects.values()) {
 				ElementTagCompound cost = getAspectCost(a);
 				max = Math.max(max, cost.getMaximumValue());
+				//ReikaJavaLibrary.pConsole(a.getName()+" > "+cost);
 			}
 		}
 		CAPACITY = max*3/2;
@@ -154,7 +155,7 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 	}
 
 	public static ElementTagCompound getAspectCost(Aspect a) {
-		return ChromaAspectManager.instance.getElementCost(a, 2).square().scale(20);
+		return ChromaAspectManager.instance.getElementCost(a, 2).power(1.67).scale(20);
 	}
 
 	private void checkAndRequest(Aspect a) {

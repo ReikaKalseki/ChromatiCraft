@@ -14,6 +14,7 @@ import net.minecraft.util.StatCollector;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityBlockShuffler;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityBlockTicker;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityDamageBoost;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityEfficiencyUpgrade;
@@ -22,6 +23,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityHealingCore;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityHeatRelay;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityOreCreator;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityPerformanceBoost;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityPlayerDelegate;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityProtectionUpgrade;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityRangeBoost;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityStabilityCore;
@@ -41,8 +43,8 @@ public enum AdjacencyUpgrades {
 	BLUE(0x0000FF, 0x0065FF),
 	PURPLE(0xBE00EA, 0x7400EA, TileEntityPerformanceBoost.class),
 	CYAN(0x009F8C, 0x009FF0, TileEntityTankCapacityUpgrade.class),
-	LIGHTGRAY(0x808080, 0xC0C0C0),
-	GRAY(0x404040, 0x808080),
+	LIGHTGRAY(0x808080, 0xC0C0C0, TileEntityPlayerDelegate.class),
+	GRAY(0x404040, 0x808080, TileEntityBlockShuffler.class),
 	PINK(0xff4040, 0xffcfcf, TileEntityDamageBoost.class),
 	LIME(0x00ff00, 0x00ffff, TileEntityRangeBoost.class),
 	YELLOW(0xffff00, 0xffffff, TileEntityEnergyIncrease.class),
@@ -118,9 +120,9 @@ public enum AdjacencyUpgrades {
 			case CYAN:
 				return String.format("Increases fluid capacity %sx", ReikaStringParser.getAutoDecimal(this.getFactor(tier)));
 			case GRAY:
-				break;
+				return String.format("Shuffles blocks around it %s times a second", ReikaStringParser.getAutoDecimal(this.getFactor(tier)));
 			case LIGHTGRAY:
-				break;
+				return "Fakes player interaction";
 			case PINK:
 				break;
 			case LIME:
@@ -156,7 +158,7 @@ public enum AdjacencyUpgrades {
 			case CYAN:
 				return TileEntityTankCapacityUpgrade.getCapacityFactor(tier);
 			case GRAY:
-				break;
+				return TileEntityBlockShuffler.getOperationsPerSecond(tier);
 			case LIGHTGRAY:
 				break;
 			case PINK:

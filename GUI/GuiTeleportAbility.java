@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton;
 import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundGui;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Ability.WarpPoint;
+import Reika.ChromatiCraft.Auxiliary.Ability.WarpPointData;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -42,6 +43,9 @@ public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
 	private final EntityPlayer player;
 
 	private final ArrayList<WarpPoint> points = new ArrayList();
+
+	private static final int MAX_LINES = 14;
+	private int listOffset = 0;
 
 	private Screen screen = Screen.SELECT;
 	private GuiTextField newLabel;
@@ -70,10 +74,14 @@ public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
 
 		if (screen == Screen.SET) {
 			buttonList.add(new CustomSoundGuiButton(0, j+28, k+ySize-28, 120, 20, ChromaFontRenderer.FontType.GUI.id+"   Add Point", this));
+			//buttonList.add(new CustomSoundGuiButton(3, j+88, k+ySize-28, 60, 20, ChromaFontRenderer.FontType.GUI.id+"   Minimap", this));
 		}
-		else if (screen == Screen.SELECT) {
-			buttonList.add(new CustomSoundGuiButton(1, j+28, k+ySize-28, 60, 20, ChromaFontRenderer.FontType.GUI.id+"   Go To", this));
-			buttonList.add(new CustomSoundGuiButton(2, j+88, k+ySize-28, 60, 20, ChromaFontRenderer.FontType.GUI.id+"   Remove", this));
+		else if (screen == Screen.SELECT || screen == Screen.MINIMAP) {
+			buttonList.add(new CustomSoundGuiButton(1, j+28, k+ySize-28, screen == Screen.SELECT ? 60 : 120, 20, ChromaFontRenderer.FontType.GUI.id+"   Go To", this));
+			if (screen == Screen.SELECT)
+				buttonList.add(new CustomSoundGuiButton(2, j+88, k+ySize-28, 60, 20, ChromaFontRenderer.FontType.GUI.id+"   Remove", this));
+			buttonList.add(new CustomSoundGuiButton(4, j+4, k+4, 10, 10, ChromaFontRenderer.FontType.GUI.id+"   -", this));
+			buttonList.add(new CustomSoundGuiButton(5, j+14, k+4, 10, 10, ChromaFontRenderer.FontType.GUI.id+"   +", this));
 		}
 
 		buttonList.add(new CustomSoundGuiButton(10, j+8, k+ySize-28, 20, 20, ChromaFontRenderer.FontType.GUI.id+"   <", this));
@@ -85,7 +93,12 @@ public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
 			newLabel.setMaxStringLength(24);
 		}
 		points.clear();
-		points.addAll(AbilityHelper.instance.getTeleportLocations(player));
+		if (screen == Screen.SELECT) {
+			points.addAll(AbilityHelper.instance.getTeleportLocations(player));
+		}
+		else if (screen == Screen.MINIMAP) {
+			points.addAll(WarpPointData.loadMiniMaps());
+		}
 	}
 
 	@Override
@@ -101,7 +114,7 @@ public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
 		if (screen == Screen.SET)
 			newLabel.mouseClicked(x, y, b);
 
-		if (screen == Screen.SELECT) {
+		if (screen == Screen.SELECT || screen == Screen.MINIMAP) {
 			WarpPoint p = locations.getItemAt(x, y);
 			if (p != null) {
 				selection = points.indexOf(p);
@@ -133,13 +146,25 @@ public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
 			ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.NEWTELEPORT.ordinal(), newLabel.getText());
 		}
 		else if (b.id == 1 && this.getCurrentSelected() != null) {
-			AbilityHelper.instance.gotoWarpPoint(this.getCurrentSelected().label, player);
+			if (screen == Screen.MINIMAP)
+				AbilityHelper.instance.gotoWarpPoint(this.getCurrentSelected(), player);
+			else
+				AbilityHelper.instance.gotoWarpPoint(this.getCurrentSelected().label, player);
 			ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.TELEPORT.ordinal(), this.getCurrentSelected().label);
 			player.closeScreen();
 		}
 		else if (b.id == 2 && this.getCurrentSelected() != null) {
 			AbilityHelper.instance.removeWarpPoint(this.getCurrentSelected().label, player);
 			ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.DELTELEPORT.ordinal(), this.getCurrentSelected().label);
+		}/*
+		else if (b.id == 3) {
+			AbilityHelper.instance.copyVoxelMapWaypoints();
+		}*/
+		else if (b.id == 4) {
+			listOffset = Math.max(0, listOffset-1);
+		}
+		else if (b.id == 5) {
+			listOffset = Math.min(this.maxListOffset(), listOffset+1);
 		}
 		this.initGui();
 	}
@@ -169,15 +194,16 @@ public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
 		String s = screen.title;
 		ReikaGuiAPI.instance.drawCenteredStringNoShadow(fr, s, tx, ty, 0xffffff);
 
-		if (screen == Screen.SELECT) {
+		if (screen == Screen.SELECT || screen == Screen.MINIMAP) {
 			int h = 12;
-			for (int i = 0; i < points.size(); i++) {
-				WarpPoint p = points.get(i);
+			int sz = Math.min(MAX_LINES, points.size());
+			for (int i = 0; i < sz; i++) {
+				WarpPoint p = points.get(i+listOffset);
 				int dx = j+8;
-				int w = 40;
+				int w = xSize-16;
 				int dy = k+18+i*h;
 				locations.addItem(p, dx, dy, w, h);
-				fr.drawString(p.toString(), dx, dy, i == selection ? 0x00ff00 : 0xffffff);
+				fr.drawString(p.toString(), dx, dy, (i+listOffset) == selection ? 0x00ff00 : 0xffffff);
 			}
 		}
 
@@ -194,8 +220,13 @@ public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
 		GL11.glPopMatrix();
 	}
 
+	private int maxListOffset() {
+		return points.size()-MAX_LINES;
+	}
+
 	private static enum Screen {
 		SELECT("Warp Locations"),
+		MINIMAP("Minimap Waypoints"),
 		SET("Add Location");
 
 		private final String title;

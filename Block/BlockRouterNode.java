@@ -199,6 +199,14 @@ public class BlockRouterNode extends Block implements SidedBlock {
 		world.setBlock(x, y, z, Blocks.air);
 	}
 
+	@Override
+	public void breakBlock(World world, int x, int y, int z, Block old, int oldmeta) {
+		TileEntity te = world.getTileEntity(x, y, z);
+		if (te instanceof TileEntityRouterNode) {
+			((TileEntityRouterNode)te).onBreak();
+		}
+	}
+
 	public static interface RouterFilter {
 
 		public void setFilterMode(int slot, MatchMode mode);
@@ -222,6 +230,15 @@ public class BlockRouterNode extends Block implements SidedBlock {
 
 		public final ForgeDirection getSide() {
 			return side != null ? side : ForgeDirection.UP;
+		}
+
+		public final void onBreak() {
+			if (hub != null) {
+				TileEntity te = hub.getTileEntity(worldObj);
+				if (te instanceof TileEntityRouterHub) {
+					((TileEntityRouterHub)te).removeConnection(this);
+				}
+			}
 		}
 
 		public final void setHub(Coordinate c) {

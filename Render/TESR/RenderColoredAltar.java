@@ -21,7 +21,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
-import Reika.ChromatiCraft.Block.Crystal.BlockColoredAltar.TileEntityColoredAltar;
+import Reika.ChromatiCraft.Block.Decoration.BlockColoredAltar.TileEntityColoredAltar;
 import Reika.ChromatiCraft.Models.ModelColoredAltar;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.CubeRotation;

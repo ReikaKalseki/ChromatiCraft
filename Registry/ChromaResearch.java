@@ -193,6 +193,7 @@ public enum ChromaResearch implements ProgressElement {
 	FOCUSCRYSTALS(	ChromaTiles.FOCUSCRYSTAL,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.FOCUSCRYSTAL),
 	FLUXMAKER(		ChromaTiles.FLUXMAKER,		ResearchLevel.ENERGYEXPLORE),
 	FUNCRELAY(		ChromaTiles.FUNCTIONRELAY,	ResearchLevel.RUNECRAFT),
+	CHROMACRAFTER(	ChromaTiles.CHROMACRAFTER,	ResearchLevel.PYLONCRAFT,		ProgressStage.ALLOY),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),
@@ -216,8 +217,8 @@ public enum ChromaResearch implements ProgressElement {
 	GLASS(			ChromaBlocks.GLASS,			CrystalElement.BLUE.ordinal(),		ResearchLevel.BASICCRAFT),
 	MUSICTRIGGER(	ChromaBlocks.MUSICTRIGGER,										ResearchLevel.BASICCRAFT,	ProgressStage.ANYSTRUCT),
 	SELECTIVEGLASS(	ChromaBlocks.SELECTIVEGLASS,									ResearchLevel.BASICCRAFT),
-	TRAIL(			ChromaBlocks.TRAIL,												ResearchLevel.BASICCRAFT),
 	AVOLAMP(		ChromaBlocks.AVOLAMP,											ResearchLevel.ENDGAME,		TieredOres.AVOLITE.level),
+	REPEATERLAMP(	ChromaBlocks.REPEATERLAMP,										ResearchLevel.ENERGYEXPLORE),
 
 	TOOLDESC("Tools", ""),
 	WAND(				ChromaItems.TOOL,			ResearchLevel.ENTRY),
@@ -258,6 +259,7 @@ public enum ChromaResearch implements ProgressElement {
 	BEEFRAME(			ChromaItems.BEEFRAME,		ResearchLevel.RUNECRAFT,		ProgressStage.HIVE),
 	STRUCTFIND(			ChromaItems.STRUCTUREFINDER,ResearchLevel.RUNECRAFT,		ProgressStage.RUNEUSE, ProgressStage.ANYSTRUCT),
 	MOBSONAR(			ChromaItems.MOBSONAR,		ResearchLevel.RUNECRAFT,		ProgressStage.KILLMOB, ProgressStage.CHARGE),
+	CAVEEXIT(			ChromaItems.CAVEPATHER,		ResearchLevel.BASICCRAFT),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
@@ -343,6 +345,7 @@ public enum ChromaResearch implements ProgressElement {
 	RELAYSTRUCT(	Structures.RELAY,		9,	ResearchLevel.ENDGAME,			ProgressStage.POWERCRYSTAL),
 	PYLONBROADCAST(	Structures.PYLONBROADCAST,5,ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
 	PYLONTURBORING(	Structures.PYLONTURBO,	5,	ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.TURBOCHARGE)),
+	WIRELESSPED(	Structures.WIRELESSPEDESTAL, 13, ResearchLevel.ENDGAME),
 	;
 
 	private final ItemStack iconItem;
@@ -816,6 +819,8 @@ public enum ChromaResearch implements ProgressElement {
 			return true;
 		if (this == AVOLAMP)
 			return true;
+		if (this == REPEATERLAMP)
+			return true;
 		return false;
 	}
 
@@ -891,6 +896,7 @@ public enum ChromaResearch implements ProgressElement {
 				li.add(ChromaBlocks.RELAY.getStackOfMetadata(i));
 			}
 			li.add(ChromaBlocks.RELAY.getStackOfMetadata(16));
+			li.add(ChromaBlocks.FLOATINGRELAY.getStackOf());
 			return li;
 		}
 		if (this == PENDANT) {
@@ -1007,6 +1013,13 @@ public enum ChromaResearch implements ProgressElement {
 			ArrayList<ItemStack> li = new ArrayList();
 			for (int i = 0; i < ChromaBlocks.PATH.getNumberMetadatas(); i++) {
 				li.add(new ItemStack(ChromaBlocks.PATH.getBlockInstance(), 1, i));
+			}
+			return li;
+		}
+		if (this == REPEATERLAMP) {
+			ArrayList<ItemStack> li = new ArrayList();
+			for (int i = 0; i < ChromaBlocks.REPEATERLAMP.getNumberMetadatas(); i++) {
+				li.add(new ItemStack(ChromaBlocks.REPEATERLAMP.getBlockInstance(), 1, i));
 			}
 			return li;
 		}

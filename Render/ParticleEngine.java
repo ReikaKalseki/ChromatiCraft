@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Render;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -195,11 +196,16 @@ public class ParticleEngine extends EffectRenderer {
 			Collection<EntityFX> parts = particles.get(rm);
 			Iterator<EntityFX> it = parts.iterator();
 			while (it.hasNext()) {
-				EntityFX fx = it.next();
-				if (fx != null)
-					fx.onUpdate();
-				if (fx == null || fx.isDead)
-					it.remove();
+				try {
+					EntityFX fx = it.next();
+					if (fx != null)
+						fx.onUpdate();
+					if (fx == null || fx.isDead)
+						it.remove();
+				}
+				catch (ConcurrentModificationException e) {
+
+				}
 			}
 		}
 		isTicking = false;

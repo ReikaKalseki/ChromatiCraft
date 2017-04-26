@@ -101,6 +101,8 @@ public class BatteryRecipe extends PylonCastingRecipe {
 	@SideOnly(Side.CLIENT)
 	private void doFX(TileEntityCastingTable te, int tick) {
 		int t = this.getDuration()-tick; //goes up
+		if (t == 0) //stays at zero before has energy
+			return;
 		if (t%NOTE_SPEED == 0) {
 			MusicKey m = melody[t/NOTE_SPEED%melody.length];
 			this.playKey(te, m, ChromaSounds.DING);

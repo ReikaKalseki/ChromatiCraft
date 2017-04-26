@@ -9,8 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE.Defence;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import net.machinemuse.api.electricity.MuseElectricItem;
 import net.minecraft.client.Minecraft;
@@ -38,7 +38,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 //Some sort of indicator? Cloaking?
 public class TileEntityCloakingTower extends TileEntityChromaticBase implements LocationCached, MultiBlockChromaTile {
 
-	private static final Collection<WorldLocation> cache = new ArrayList();
+	private static final Collection<WorldLocation> cache = new HashSet();
 
 	public static final int MAXRANGE = 128;
 

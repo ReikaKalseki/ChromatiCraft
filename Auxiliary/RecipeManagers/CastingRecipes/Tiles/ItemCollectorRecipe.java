@@ -60,7 +60,12 @@ public class ItemCollectorRecipe extends PylonCastingRecipe {
 
 	@Override
 	public int getTypicalCraftedAmount() {
-		return 8;
+		return 4;
+	}
+
+	@Override
+	public int getNumberProduced() {
+		return 2;
 	}
 
 }

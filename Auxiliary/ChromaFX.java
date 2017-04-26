@@ -568,7 +568,17 @@ public class ChromaFX {
 		v5.draw();
 	}
 
+	/*
+	public static void renderBeam(double x1, double y1, double z1, double x2, double y2, double z2, float par8, double h, int argb) {
+		renderBeam(x1, y1, z1, x2, y2, z2, par8, ReikaColorAPI.getAlpha(argb), h, argb & 0xffffff);
+	}
+	 */
+
 	public static void renderBeam(double x1, double y1, double z1, double x2, double y2, double z2, float par8, int a, double h) {
+		renderBeam(x1, y1, z1, x2, y2, z2, par8, a, h, 0xffffff);
+	}
+
+	public static void renderBeam(double x1, double y1, double z1, double x2, double y2, double z2, float par8, int a, double h, int baseColor) {
 		Tessellator v5 = Tessellator.instance;
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -577,7 +587,7 @@ public class ChromaFX {
 		GL11.glDepthMask(false);
 		v5.startDrawing(GL11.GL_LINES);
 		v5.setBrightness(240);
-		v5.setColorRGBA_I(0xffffff, 255);
+		v5.setColorRGBA_I(baseColor, 255);
 
 		v5.addVertex(x1, y1, z1);
 		v5.addVertex(x2, y2, z2);
@@ -600,7 +610,7 @@ public class ChromaFX {
 		//GL11.glRotated(ang, 0, 0, 0);
 		v5.startDrawingQuads();
 		v5.setBrightness(240);
-		v5.setColorRGBA_I(ReikaColorAPI.GStoHex(a), a);
+		v5.setColorRGBA_I(ReikaColorAPI.getColorWithBrightnessMultiplier(baseColor, a/255F), a);
 		for (double d = 0; d < n; d++) {
 			double nx = x1+(x2-x1)*d/dd;
 			double ny = y1+(y2-y1)*d/dd;

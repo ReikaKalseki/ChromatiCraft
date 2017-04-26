@@ -68,8 +68,8 @@ public abstract class RepeaterRecipe extends MultiBlockCastingRecipe implements 
 	}
 
 	@Override
-	public final void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {
-		super.onCrafted(te, ep);
+	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep, int amount) {
+		super.onCrafted(te, ep, amount);
 
 		ProgressStage.REPEATER.stepPlayerTo(ep);
 	}

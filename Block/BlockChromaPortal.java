@@ -159,7 +159,7 @@ public class BlockChromaPortal extends Block {
 						else {
 							ChromaSounds.GOTODIM.playSoundAtBlockNoAttenuation(te, 1, 1, 32);
 							ReikaSoundHelper.playSound(ChromaSounds.GOTODIM, ChromatiCraft.packetChannel, ep.worldObj, 0, 1024, 0, 1, 1, false);
-							ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.DIMSOUND.ordinal(), new PacketTarget.AllPlayersTarget());
+							ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.DIMSOUND.ordinal(), PacketTarget.allPlayers);
 						}
 					}
 					else {

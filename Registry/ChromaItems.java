@@ -32,6 +32,7 @@ import Reika.ChromatiCraft.Items.ItemCrystalSeeds;
 import Reika.ChromatiCraft.Items.ItemCrystalShard;
 import Reika.ChromatiCraft.Items.ItemDimGen;
 import Reika.ChromatiCraft.Items.ItemElementalStone;
+import Reika.ChromatiCraft.Items.ItemFertilitySeed;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.ItemLinkedTilePlacer;
 import Reika.ChromatiCraft.Items.ItemMagicBranch;
@@ -40,6 +41,7 @@ import Reika.ChromatiCraft.Items.ItemTieredResource;
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
 import Reika.ChromatiCraft.Items.Tools.ItemBulkMover;
+import Reika.ChromatiCraft.Items.Tools.ItemCaveExitFinder;
 import Reika.ChromatiCraft.Items.Tools.ItemChainGun;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBucket;
@@ -165,6 +167,8 @@ public enum ChromaItems implements ItemEnum {
 	ARTEFACT(112, true,		"chroma.artefact",		ItemUnknownArtefact.class),
 	DATACRYSTAL(44, false, 	"chroma.datacrystal",	ItemDataCrystal.class),
 	MOBSONAR(92, false,		"chroma.mobsonar",		ItemMobSonar.class),
+	FERTILITYSEED(209, true,"chroma.fertileseed",	ItemFertilitySeed.class),
+	CAVEPATHER(45, false,	"chroma.cavepather",	ItemCaveExitFinder.class),
 	;
 
 	private final int index;
@@ -316,6 +320,8 @@ public enum ChromaItems implements ItemEnum {
 				return ItemMagicBranch.BranchTypes.list[meta].name().toLowerCase(Locale.ENGLISH)+" "+this.getBasicName();
 			case ARTEFACT:
 				return StatCollector.translateToLocal("chromaunknownartefact."+ItemUnknownArtefact.ArtefactTypes.list[meta].name().toLowerCase(Locale.ENGLISH));
+			case FERTILITYSEED:
+				return this.getBasicName();
 			default:
 				break;
 		}
@@ -413,6 +419,8 @@ public enum ChromaItems implements ItemEnum {
 				return ItemMagicBranch.BranchTypes.list.length;
 			case ARTEFACT:
 				return ItemUnknownArtefact.ArtefactTypes.list.length;
+			case FERTILITYSEED:
+				return 7;
 			default:
 				throw new RegistrationException(ChromatiCraft.instance, "Item "+name+" has subtypes but the number was not specified!");
 		}

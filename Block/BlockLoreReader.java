@@ -14,7 +14,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
-
+@Deprecated
 public class BlockLoreReader extends BlockContainer {
 
 	public BlockLoreReader(Material mat) {

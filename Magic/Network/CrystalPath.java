@@ -185,6 +185,19 @@ public class CrystalPath implements Comparable<CrystalPath> {
 		}
 	}
 
+	public void endBlink() {
+		CrystalSource src = PylonFinder.getSourceAt(nodes.get(nodes.size()-1), true);
+		WorldLocation locs = nodes.get(nodes.size()-2);
+		src.removeTarget(locs, element);
+		for (int i = 1; i < nodes.size()-1; i++) {
+			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
+			if (te instanceof CrystalTransmitter) {
+				WorldLocation tg = nodes.get(i-1);
+				((CrystalTransmitter)te).removeTarget(tg, element);
+			}
+		}
+	}
+
 	/** where 0 = worst possible and 1 == perfect */
 	public float getOptimizationFactor() {
 		return (float)(theoreticalRange/totalDistance);

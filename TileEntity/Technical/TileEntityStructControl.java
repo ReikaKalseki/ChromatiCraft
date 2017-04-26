@@ -413,8 +413,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			copy.placeExcept(new Coordinate(this));
 			DungeonGenerator.populateChests(struct, copy, rand);
 			if (struct == Structures.OCEAN) {
-				BlockLootChest.setMaxReach(worldObj, xCoord-2, yCoord-1, zCoord, 2);
-				BlockLootChest.setMaxReach(worldObj, xCoord, yCoord-1, zCoord-1, 2);
+				BlockLootChest.setMaxReach(worldObj, xCoord-2, yCoord-1, zCoord, 2.5);
+				BlockLootChest.setMaxReach(worldObj, xCoord, yCoord-1, zCoord-1, 2.5);
 			}
 		}
 		regenned = true;
@@ -699,8 +699,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		return true;//ProgressionManager.instance.isPlayerAtStage(Minecraft.getMinecraft().thePlayer, this.getProgressStage());
 	}
 
-	public boolean isBreakable() {
-		return !isMonument;
+	public boolean isBreakable(EntityPlayer ep) {
+		return !isMonument && this.breakByPlayer(ep);
 	}
 
 	private ProgressStage getProgressStage() {
@@ -804,7 +804,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	@Override
 	public boolean breakByPlayer(EntityPlayer ep) {
 		if (struct == Structures.OCEAN) {
-			return ep.getDistance(xCoord+0.5, yCoord+0.5, zCoord+0.5) <= 2.5;
+			return ep != null && ep.getDistance(xCoord+0.5, yCoord+0.5, zCoord+0.5) <= 2.5;
 		}
 		return true;
 	}

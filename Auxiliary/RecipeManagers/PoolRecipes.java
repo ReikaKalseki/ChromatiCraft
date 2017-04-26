@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import net.minecraft.entity.item.EntityItem;
@@ -46,6 +47,7 @@ public class PoolRecipes {
 	public static final PoolRecipes instance = new PoolRecipes();
 
 	private final ItemHashMap<Collection<PoolRecipe>> recipes = new ItemHashMap().setOneWay();
+	private final HashMap<String, PoolRecipe> recipesByID = new HashMap();
 
 	private PoolRecipes() {
 
@@ -69,9 +71,15 @@ public class PoolRecipes {
 			c = new OneWayList();
 			recipes.put(main, c);
 		}
-		PoolRecipe r = new PoolRecipe(out, main, ingredients);
+		String id = "#"+recipes.size()+"="+main+">"+out+"+"+ingredients.length;
+		PoolRecipe r = new PoolRecipe(id, out, main, ingredients);
 		c.add(r);
+		recipesByID.put(id, r);
 		return r;
+	}
+
+	public PoolRecipe getByID(String id) {
+		return recipesByID.get(id);
 	}
 
 	public PoolRecipe getPoolRecipe(EntityItem ei) {
@@ -98,6 +106,30 @@ public class PoolRecipes {
 		return null;
 	}
 
+	public PoolRecipe getPoolRecipe(ArrayList<ItemStack> li) {
+		for (int i = 0; i < li.size(); i++) {
+			ItemStack is = li.get(i);
+			ArrayList<ItemStack> li2 = new ArrayList(li);
+			li2.remove(i);
+			PoolRecipe pr = this.getPoolRecipe(is, li2);
+			if (pr != null)
+				return pr;
+		}
+		return null;
+	}
+
+	public PoolRecipe getPoolRecipe(ItemStack main, Collection<ItemStack> li) {
+		Collection<PoolRecipe> prs = recipes.get(main);
+		if (prs != null) {
+			for (PoolRecipe pr : prs) {
+				if (pr.canBeMadeFromItems(li)) {
+					return pr;
+				}
+			}
+		}
+		return null;
+	}
+
 	public PoolRecipe getPoolRecipeByOutput(ItemStack is) {
 		for (PoolRecipe p : this.getAllPoolRecipes()) {
 			if (ReikaItemHelper.matchStacks(p.output, is))
@@ -118,6 +150,7 @@ public class PoolRecipes {
 		if (flag) {
 			ei.worldObj.setBlock(x, y, z, Blocks.air);
 		}
+		//newitem.getEntityData().setBoolean("ccalloy", true);
 		ReikaWorldHelper.causeAdjacentUpdates(ei.worldObj, x, y, z);
 		ProgressStage.ALLOY.stepPlayerTo(ReikaItemHelper.getDropper(ei));
 	}
@@ -175,6 +208,8 @@ public class PoolRecipes {
 
 	public static class PoolRecipe {
 
+		public final String ID;
+
 		private final ItemStack main;
 		private final ItemHashMap<Integer> inputs = new ItemHashMap().setOneWay();
 		private final ItemStack output;
@@ -184,7 +219,8 @@ public class PoolRecipes {
 		private boolean allowDoubling = true;
 		private boolean isCustom = false;
 
-		private PoolRecipe(ItemStack out, ItemStack m, ItemStack... input) {
+		private PoolRecipe(String id, ItemStack out, ItemStack m, ItemStack... input) {
+			ID = id;
 			output = out.copy();
 			main = m;
 
@@ -228,6 +264,23 @@ public class PoolRecipes {
 			ItemHashMap<Integer> map = inputs.clone();
 			for (EntityItem ei : li) {
 				ItemStack is = ei.getEntityItem();
+				Integer get = map.get(is);
+				if (get != null && get > 0) {
+					int rem = Math.min(is.stackSize, get);
+					get -= rem;
+					if (get <= 0) {
+						map.remove(is);
+						if (map.isEmpty())
+							return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		private boolean canBeMadeFromItems(Collection<ItemStack> li) {
+			ItemHashMap<Integer> map = inputs.clone();
+			for (ItemStack is : li) {
 				Integer get = map.get(is);
 				if (get != null && get > 0) {
 					int rem = Math.min(is.stackSize, get);

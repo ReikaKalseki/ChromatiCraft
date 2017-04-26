@@ -59,8 +59,8 @@ public class IridescentCrystalRecipe extends PylonCastingRecipe {
 	}
 
 	@Override
-	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {
-		super.onCrafted(te, ep);
+	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep, int amount) {
+		super.onCrafted(te, ep, amount);
 		//ProgressStage.POWERCRYSTAL.stepPlayerTo(ep);
 	}
 

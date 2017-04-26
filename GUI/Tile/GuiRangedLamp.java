@@ -17,7 +17,7 @@ import net.minecraft.util.StatCollector;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
+import Reika.ChromatiCraft.Block.Decoration.BlockRangeLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;

@@ -25,7 +25,7 @@ public class ContainerSpawnerProgrammer extends CoreContainer {
 		this.addSlot(0, 26, 21);
 		this.addSlotNoClick(1, 134, 21);
 
-		this.addPlayerInventory(player);
+		this.addPlayerInventoryWithOffset(player, 0, 24);
 	}
 
 	@Override

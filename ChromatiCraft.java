@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft;
 
 import java.io.File;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
@@ -95,10 +96,11 @@ import Reika.ChromatiCraft.ModInterface.ModInteraction;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.ChromaPrepHandler;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.PoolRecipeHandler;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.ShardBoostingHandler;
-import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeRecharger;
-import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectFormer;
 import Reika.ChromatiCraft.ModInterface.TreeCapitatorHandler;
 import Reika.ChromatiCraft.ModInterface.Lua.ChromaLuaMethods;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.ChromaAspectManager;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeRecharger;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectFormer;
 import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaEnchants;
@@ -123,7 +125,6 @@ import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionTicker;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.ChromatiCraft.World.Dimension.DimensionJoinHandler;
-import Reika.ChromatiCraft.World.IWG.SkypeaterGenerator;
 import Reika.ChromatiCraft.World.IWG.CaveIndicatorGenerator;
 import Reika.ChromatiCraft.World.IWG.ColorTreeGenerator;
 import Reika.ChromatiCraft.World.IWG.CrystalGenerator;
@@ -133,6 +134,7 @@ import Reika.ChromatiCraft.World.IWG.DungeonGenerator;
 import Reika.ChromatiCraft.World.IWG.GlowingCliffsAuxGenerator;
 import Reika.ChromatiCraft.World.IWG.LumaGenerator;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
+import Reika.ChromatiCraft.World.IWG.SkypeaterGenerator;
 import Reika.ChromatiCraft.World.IWG.TieredWorldGenerator;
 import Reika.ChromatiCraft.World.Nether.NetherStructureGenerator;
 import Reika.DragonAPI.DragonAPICore;
@@ -589,6 +591,10 @@ public class ChromatiCraft extends DragonAPIMod {
 			ModInteraction.addMystCraft();
 		}
 
+		if (ModList.THAUMCRAFT.isLoaded()) {
+			ChromaAspectManager.instance.PUZZLE.getName(); //init to register the two aspects
+		}
+
 		for (int i = 0; i < ChromaItems.itemList.length; i++) {
 			ChromaItems ir = ChromaItems.itemList[i];
 			if (!ir.isDummiedOut() && ir != ChromaItems.TOOL) {
@@ -853,7 +859,7 @@ public class ChromatiCraft extends DragonAPIMod {
 				ender.setFlowingIcon(ico.registerIcon("ChromatiCraft:fluid/flowingender"));
 				ender.setBlock(ChromaBlocks.ENDER.getBlockInstance());
 
-				luma.setIcons(ico.registerIcon("ChromatiCraft:fluid/aether_full"));
+				luma.setIcons(ico.registerIcon("ChromatiCraft:fluid/aether_full"), ico.registerIcon("ChromatiCraft:fluid/aether_flow2"));
 				//aether.setFlowingIcon(ico.registerIcon("ChromatiCraft:fluid/flowingender"));
 				luma.setBlock(ChromaBlocks.LUMA.getBlockInstance());
 
@@ -898,7 +904,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			if (cs != null) {
 				for (int k = 0; k < cs.length; k++) {
 					Class in = cs[k];
-					if (TileEntity.class.isAssignableFrom(in)) {
+					if (TileEntity.class.isAssignableFrom(in) && (in.getModifiers() & Modifier.ABSTRACT) == 0) {
 						String s = "CC"+in.getSimpleName();
 						GameRegistry.registerTileEntity(in, s);
 					}

@@ -35,9 +35,10 @@ public abstract class TileEntityWirelessPowered extends TileEntityChromaticBase 
 		Collection<WirelessSource> c = CrystalNetworker.instance.getNearTilesOfType(worldObj, xCoord, yCoord, zCoord, WirelessSource.class, this.getReceiveRange(e));
 		for (WirelessSource s : c) {
 			if (s.canConduct() && s.canTransmitTo(this)) {
-				if (s.request(e, amt, xCoord, yCoord, zCoord)) {
-					energy.addValueToColor(e, amt);
-					ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.WIRELESS.ordinal(), this, 64, s.getX(), s.getY(), s.getZ(), e.ordinal(), amt);
+				int ret = s.request(e, amt, xCoord, yCoord, zCoord);
+				if (ret > 0) {
+					energy.addValueToColor(e, ret);
+					ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.WIRELESS.ordinal(), this, 64, s.getX(), s.getY(), s.getZ(), e.ordinal(), ret);
 					return true;
 				}
 			}
@@ -47,7 +48,7 @@ public abstract class TileEntityWirelessPowered extends TileEntityChromaticBase 
 
 	@SideOnly(Side.CLIENT)
 	public final void doEnergyRequestClient(World world, int x, int y, int z, int dx, int dy, int dz, CrystalElement e, int amt) {
-
+		//particle bezier
 	}
 
 	public final int getEnergy(CrystalElement e) {

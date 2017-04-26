@@ -98,24 +98,24 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 	private int calcSizeX(Random rand) {
 		switch (ChromaOptions.getStructureDifficulty()) {
 			case 1:
-				return rand.nextInt(4) * 2 + 21;
+				return rand.nextInt(4) * 2 + 18;
 			case 2:
-				return rand.nextInt(5) * 2 + 25;
+				return rand.nextInt(5) * 2 + 22;
 			case 3:
 			default:
-				return rand.nextInt(7) * 2 + 29; //Have fun lol....
+				return rand.nextInt(6) * 2 + 24; //Have fun lol....
 		}
 	}
 
 	private int calcSizeZ(Random rand) {
 		switch (ChromaOptions.getStructureDifficulty()) {
 			case 1:
-				return rand.nextInt(4) * 2 + 19;
+				return rand.nextInt(4) * 2 + 18;
 			case 2:
-				return rand.nextInt(5) * 2 + 23;
+				return rand.nextInt(5) * 2 + 22;
 			case 3:
 			default:
-				return rand.nextInt(6) * 2 + 29; //ENJOY!
+				return rand.nextInt(6) * 2 + 24; //ENJOY!
 		}
 	}
 
