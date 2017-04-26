@@ -18,6 +18,7 @@ import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -165,6 +166,7 @@ import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -201,8 +203,8 @@ public class ChromaClientEventController {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void updateGlowCliffRendering(PlayerTickEvent evt) {
-		if (evt.side == Side.CLIENT && evt.player != Minecraft.getMinecraft().thePlayer) {
+	public void floatBootParticlesForOthers(PlayerTickEvent evt) {
+		if (evt.side == Side.CLIENT && evt.phase == Phase.START && evt.player instanceof EntityOtherPlayerMP) { //other players only
 			if (ChromaItems.FLOATBOOTS.matchWith(evt.player.getCurrentArmor(0))) {
 				ItemFloatstoneBoots.addParticles(evt.player.worldObj, evt.player);
 			}

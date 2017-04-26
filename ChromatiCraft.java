@@ -25,6 +25,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemStack;
+import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.potion.Potion;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.stats.Achievement;
@@ -44,6 +45,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import ttftcuts.atg.api.ATGBiomes;
+import Reika.ChromatiCraft.Auxiliary.ChromaASMHandler;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookSpawner;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaLock;
@@ -951,5 +953,10 @@ public class ChromatiCraft extends DragonAPIMod {
 	@Override
 	public File getConfigFolder() {
 		return config.getConfigFolder();
+	}
+
+	@Override
+	protected Class<? extends IClassTransformer> getASMClass() {
+		return ChromaASMHandler.ASMExecutor.class;
 	}
 }

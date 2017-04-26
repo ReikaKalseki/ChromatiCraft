@@ -337,6 +337,14 @@ public class ChromatiPackets implements PacketHandler {
 						Chromabilities.triggerAbility(ep, c, data[1]);
 					break;
 				}
+				case ABILITYSEND: {
+					Entity player = world.getEntityByID(data[0]);
+					if (player instanceof EntityPlayer && !player.getUniqueID().equals(ep.getUniqueID())) { //do not send to firing player
+						Ability c = Chromabilities.getAbilityByInt(data[1]);
+						Chromabilities.triggerAbility((EntityPlayer)player, c, data[2]);
+					}
+					break;
+				}
 				case PYLONATTACK:
 					if (tile instanceof TileEntityCrystalPylon)
 						((TileEntityCrystalPylon)tile).particleAttack(data[0], data[1], data[2], data[3], data[4], data[5]);

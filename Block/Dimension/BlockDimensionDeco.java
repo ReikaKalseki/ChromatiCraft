@@ -181,7 +181,7 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
-		return meta == DimDecoTypes.CLIFFGLASS.ordinal() ? icons[meta].get(1) : icons[meta].get(0);
+		return icons[meta].get(0);
 	}
 
 	@Override

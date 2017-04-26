@@ -388,6 +388,9 @@ public enum Chromabilities implements Ability {
 			if (!a.actOnClient())
 				return;
 		}
+		else if (a.actOnClient()) { //notify other players
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ABILITYSEND.ordinal(), ep.worldObj, 0, 0, 0, ep.getEntityId(), getAbilityInt(a), data);
+		}
 
 		ProgressStage.ABILITY.stepPlayerTo(ep);
 		ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(a, ep);
