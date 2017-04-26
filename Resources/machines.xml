@@ -651,14 +651,14 @@
 			Up to 8 crystals per construct
 		</note>
 	</focuscrystal>
-	<name>
+	<chcrafter>
 		<desc>
-
+			As powerful as some of your constructs have proven, crafting them has been at times painful enough that you have mentally prepended the ingredient's names with some variant of an expletive. In particular has been the various alloy ingots, which are not exactly expensive but whose particularly finicky and easy-to-disrupt nature of crafting has made you dread their production, to say nothing of their unified compound. If only you could mix them all together in a shielded glass tank or something...
 		</desc>
 		<note>
 
 		</note>
-	</name>
+	</chcrafter>
 	<name>
 		<desc>
 

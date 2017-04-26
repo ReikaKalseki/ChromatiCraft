@@ -279,6 +279,8 @@ public enum ChromaResearch implements ProgressElement {
 	BEES("Crystal Bees",			new ItemStack(Blocks.dirt),								ResearchLevel.RAWEXPLORE,	ProgressStage.HIVE),
 	TINKERTOOLS("Mix-And-Magic Tools",	new ItemStack(Blocks.dirt),							ResearchLevel.MULTICRAFT),
 	BRANCHES("Magic Branches",		ItemMagicBranch.BranchTypes.CRYSTAL.getStack(),			ResearchLevel.ENERGYEXPLORE),
+	FERTILITYSEED("Fertility Seeds",ChromaItems.FERTILITYSEED.getStackOf(),					ResearchLevel.RAWEXPLORE),
+	ARTEFACT("Mysterious Artifacts",ChromaItems.ARTEFACT.getStackOf(),						ResearchLevel.RAWEXPLORE, ProgressStage.ARTEFACT),
 
 	ABILITYDESC("Abilities", ""),
 	REACH(			Chromabilities.REACH),
@@ -747,7 +749,7 @@ public enum ChromaResearch implements ProgressElement {
 			return false;
 		if (this == BALLLIGHTNING)
 			return false;
-		if (this.requiresProgress(ProgressStage.TOWER))
+		if (this.requiresProgress(ProgressStage.TOWER) || this.requiresProgress(ProgressStage.ARTEFACT))
 			return false;
 		return struct == null || !struct.isNatural();
 	}
