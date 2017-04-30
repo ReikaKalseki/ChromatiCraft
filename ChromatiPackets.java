@@ -890,6 +890,11 @@ public class ChromatiPackets implements PacketHandler {
 				case FERTILITYSEED:
 					ItemFertilitySeed.doFertilizeFX(world, x, y, z);
 					break;
+				case NUKERLOC:
+					Entity e = world.getEntityByID(data[3]);
+					if (e instanceof EntityPlayer)
+						Chromabilities.doNukerFX(world, data[0], data[1], data[2], (EntityPlayer)e);
+					break;
 			}
 		}
 		catch (NullPointerException e) {

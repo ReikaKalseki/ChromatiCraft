@@ -162,6 +162,7 @@ public enum ChromaPackets {
 	ARTEFACTCONFIRM(3),
 	ARTEFACTCLICK(),
 	FERTILITYSEED(),
+	NUKERLOC(4),
 	;
 
 	public final int numInts;

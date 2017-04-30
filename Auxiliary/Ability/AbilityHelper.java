@@ -202,6 +202,7 @@ public class AbilityHelper {
 		progressMap.addValue(Chromabilities.MOBSEEK, ProgressStage.STRUCTCOMPLETE);
 		progressMap.addValue(Chromabilities.BEEALYZE, ProgressStage.HIVE);
 		progressMap.addValue(Chromabilities.BEEALYZE, ProgressStage.LINK);
+		progressMap.addValue(Chromabilities.NUKER, ProgressStage.STRUCTCOMPLETE);
 
 		for (AbilityXRays x : AbilityXRays.values()) {
 			xRayMap.put(x.objectClass, x);

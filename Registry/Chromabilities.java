@@ -67,7 +67,9 @@ import Reika.ChromatiCraft.Auxiliary.Ability.LightCast;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
+import Reika.ChromatiCraft.Entity.EntityNukerBall;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
@@ -87,6 +89,7 @@ import Reika.DragonAPI.Instantiable.FlyingBlocksExplosion.TumbleCreator;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.ScaledDirection;
@@ -95,6 +98,7 @@ import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledSoundEvent;
+import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
@@ -1273,27 +1277,49 @@ public enum Chromabilities implements Ability {
 
 	private static void breakSurroundingBlocks(EntityPlayer ep) {
 		if (!ep.worldObj.isRemote) {
-			double ANGLE = 35;//22;
-			double phi = ReikaRandomHelper.getRandomPlusMinus(ep.rotationYawHead+90, ANGLE);
-			double theta = ReikaRandomHelper.getRandomPlusMinus(-ep.rotationPitch, ANGLE);
-			double[] xyz = ReikaPhysicsHelper.polarToCartesian(1, theta, phi);
-			Coordinate c = null;
-			for (double d = 0; d <= 8; d += 0.125) {
-				double dx = ep.posX+xyz[0]*d;
-				double dy = ep.posY+1.62+xyz[1]*d;
-				double dz = ep.posZ+xyz[2]*d;
-				int x = MathHelper.floor_double(dx);
-				int y = MathHelper.floor_double(dy);
-				int z = MathHelper.floor_double(dz);
-				if (!ep.worldObj.getBlock(x, y, z).isAir(ep.worldObj, x, y, z)) {
-					c = new Coordinate(x, y, z);
-					break;
+			for (int i = 0; i < 6; i++) {
+				double ANGLE = 35;//22;
+				double phi = ReikaRandomHelper.getRandomPlusMinus(ep.rotationYawHead+90, ANGLE);
+				double theta = ReikaRandomHelper.getRandomPlusMinus(-ep.rotationPitch, ANGLE);
+				double[] xyz = ReikaPhysicsHelper.polarToCartesian(1, theta, phi);
+				Coordinate c = null;
+				for (double d = 0; d <= 8; d += 0.125) {
+					double dx = ep.posX+xyz[0]*d;
+					double dy = ep.posY+1.62+xyz[1]*d;
+					double dz = ep.posZ+xyz[2]*d;
+					int x = MathHelper.floor_double(dx);
+					int y = MathHelper.floor_double(dy);
+					int z = MathHelper.floor_double(dz);
+					Block b = ep.worldObj.getBlock(x, y, z);
+					if (!b.isAir(ep.worldObj, x, y, z) && !ReikaBlockHelper.isLiquid(b) && b != Blocks.mob_spawner && !ReikaBlockHelper.isUnbreakable(ep.worldObj, x, y, z, b, ep.worldObj.getBlockMetadata(x, y, z), ep)) {
+						if (ep.worldObj.getEntitiesWithinAABB(EntityNukerBall.class, ReikaAABBHelper.getBlockAABB(x, y, z)).isEmpty()) {
+							c = new Coordinate(x, y, z);
+							break;
+						}
+					}
+				}
+				if (c != null) {
+					EntityNukerBall enb = new EntityNukerBall(ep.worldObj, ep, c);
+					ep.worldObj.spawnEntityInWorld(enb);
+					ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.NUKERLOC.ordinal(), new PacketTarget.RadiusTarget(ep, 64), c.xCoord, c.yCoord, c.zCoord, ep.getEntityId());
 				}
 			}
-			if (c != null) {
-				//EntityNukerBall enb = new EntityNukerBall(ep.worldObj, ep, 0.5, c);
-				//ep.worldObj.spawnEntityInWorld(enb);
-			}
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void doNukerFX(World world, int x, int y, int z, EntityPlayer ep) {
+		double lx = x+0.5-ep.posX;
+		double ly = y+0.5-ep.posY;
+		double lz = z+0.5-ep.posZ;
+		ElementTagCompound tag = ItemElementCalculator.instance.getValueForItem(BlockKey.getAt(world, x, y, z).asItemStack());
+		int c = tag == null || tag.isEmpty() ? 0x22aaff : tag.asWeightedRandom().getRandomEntry().getColor();
+		for (double d = 0.125; d <= 1; d += 0.03125/2) {
+			double dx = ep.posX+d*lx;
+			double dy = ep.posY+d*ly;
+			double dz = ep.posZ+d*lz;
+			EntityBlurFX fx = new EntityBlurFX(world, dx, dy, dz).setLife(5).setAlphaFading().setScale(0.5F).setColor(c);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
 
