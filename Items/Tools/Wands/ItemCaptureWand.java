@@ -11,7 +11,6 @@ package Reika.ChromatiCraft.Items.Tools.Wands;
 
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
@@ -28,11 +27,12 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Interfaces.Item.EntityCapturingItem;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemCaptureWand extends ItemWandBase {
+public class ItemCaptureWand extends ItemWandBase implements EntityCapturingItem {
 
 	private final ElementTagCompound perTick;
 	private static final String NBT_TAG = "mob";
@@ -48,7 +48,7 @@ public class ItemCaptureWand extends ItemWandBase {
 
 	@Override
 	public void onUpdate(ItemStack is, World world, Entity e, int slot, boolean held) {
-		if (held && hasMob(is, world)) {
+		if (held && hasMob(is)) {
 			EntityPlayer ep = (EntityPlayer)e;
 			if (!ep.capabilities.isCreativeMode) {
 				if (PlayerElementBuffer.instance.playerHas(ep, perTick))
@@ -63,7 +63,7 @@ public class ItemCaptureWand extends ItemWandBase {
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
-		if (this.hasMob(is, world)) {
+		if (this.hasMob(is)) {
 			double x = ep.posX;
 			double y = ep.posY;
 			double z = ep.posZ;
@@ -81,7 +81,7 @@ public class ItemCaptureWand extends ItemWandBase {
 
 	@Override
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float a, float b, float c) {
-		if (this.hasMob(is, world)) {
+		if (this.hasMob(is)) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[s];
 			int dx = x+dir.offsetX;
 			int dy = y+dir.offsetY;
@@ -95,12 +95,12 @@ public class ItemCaptureWand extends ItemWandBase {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean hasEffect(ItemStack is) {
-		return this.hasMob(is, Minecraft.getMinecraft().theWorld);
+		return this.hasMob(is);
 	}
 
 	@Override
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
-		if (this.hasMob(is, ep.worldObj)) {
+		if (this.hasMob(is)) {
 			EntityLiving e = this.getMob(is, ep.worldObj);
 			li.add(String.format("Contains a %s.", EntityList.getEntityString(e)));
 			li.add(String.format("Health: %.0f hearts", e.getHealth()/2));
@@ -112,7 +112,7 @@ public class ItemCaptureWand extends ItemWandBase {
 
 	@Override
 	public boolean itemInteractionForEntity(ItemStack is, EntityPlayer ep, EntityLivingBase elb) {
-		if (!hasMob(is, ep.worldObj) && elb instanceof EntityLiving && isEntityCapturable((EntityLiving)elb) && this.sufficientEnergy(ep)) {
+		if (!hasMob(is) && elb instanceof EntityLiving && isEntityCapturable((EntityLiving)elb) && this.sufficientEnergy(ep)) {
 			this.captureMob(is, ep, (EntityLiving)elb);
 			ep.setCurrentItemOrArmor(0, is);
 			return true;
@@ -157,19 +157,24 @@ public class ItemCaptureWand extends ItemWandBase {
 	}
 
 	public static EntityLiving getMob(ItemStack is, World world) {
-		if (is.stackTagCompound == null || !is.stackTagCompound.hasKey(NBT_TAG))
-			return null;
-		NBTTagCompound mob = is.stackTagCompound.getCompoundTag(NBT_TAG);
-		String n = mob.getString("name");
+		String n = getEntityName(is);
 		EntityLiving e = (EntityLiving)EntityList.createEntityByName(n, world);
 		if (e == null)
 			return null;
+		NBTTagCompound mob = is.stackTagCompound.getCompoundTag(NBT_TAG);
 		NBTTagCompound dat = mob.getCompoundTag("data");
 		e.readFromNBT(dat);
 		return e;
 	}
 
-	private static boolean hasMob(ItemStack is, World world) {
+	private static String getEntityName(ItemStack is) {
+		if (is.stackTagCompound == null || !is.stackTagCompound.hasKey(NBT_TAG))
+			return null;
+		NBTTagCompound mob = is.stackTagCompound.getCompoundTag(NBT_TAG);
+		return mob.getString("name");
+	}
+
+	private static boolean hasMob(ItemStack is) {
 		return is.stackTagCompound != null && is.stackTagCompound.hasKey(NBT_TAG);
 	}
 	/*
@@ -203,4 +208,14 @@ public class ItemCaptureWand extends ItemWandBase {
 		return false;
 	}
 	 */
+
+	@Override
+	public boolean hasEntity(ItemStack is) {
+		return this.hasMob(is);
+	}
+
+	@Override
+	public String currentEntityName(ItemStack is) {
+		return this.getEntityName(is);
+	}
 }

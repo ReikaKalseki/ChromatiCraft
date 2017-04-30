@@ -246,4 +246,8 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 		return range;
 	}
 
+	public static void clearCache() {
+		cache.clear();
+	}
+
 }

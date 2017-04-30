@@ -53,6 +53,7 @@ import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerBlockHandler;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
+import Reika.GeoStrata.Registry.GeoBlocks;
 import Reika.RotaryCraft.Registry.BlockRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -489,6 +490,9 @@ public class PylonFinder {
 		if (ModList.ROTARYCRAFT.isLoaded()) {
 			addRCGlass();
 		}
+		if (ModList.GEOSTRATA.isLoaded()) {
+			addGeoVines();
+		}
 		if (ModList.EXTRAUTILS.isLoaded() && ExtraUtilsHandler.getInstance().initializedProperly()) {
 			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().deco2ID, 1);
 			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().deco2ID, 2);
@@ -537,6 +541,11 @@ public class PylonFinder {
 	private static void addRCGlass() {
 		tracer.addTransparentBlock(BlockRegistry.BLASTGLASS.getBlockInstance());
 		tracer.addTransparentBlock(BlockRegistry.BLASTPANE.getBlockInstance());
+	}
+
+	@ModDependent(ModList.GEOSTRATA)
+	private static void addGeoVines() {
+		tracer.addTransparentBlock(GeoBlocks.GLOWVINE.getBlockInstance());
 	}
 
 	static final WorldLocation getLocation(CrystalNetworkTile te) {

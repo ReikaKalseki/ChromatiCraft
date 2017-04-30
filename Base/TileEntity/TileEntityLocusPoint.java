@@ -99,4 +99,8 @@ public abstract class TileEntityLocusPoint extends TileEntityChromaticBase imple
 		return 65536D;
 	}
 
+	public static void clearCache() {
+		cache.clear();
+	}
+
 }

@@ -294,6 +294,30 @@ public class ChromaAspectMapper {
 			this.addAspect(ChromaTiles.FOCUSCRYSTAL, Aspect.getAspect("tempus"), 6);
 		this.addAspect(ChromaTiles.FOCUSCRYSTAL, ChromaAspectManager.instance.SIGNAL, 12);
 		this.addAspect(ChromaTiles.FOCUSCRYSTAL, Aspect.MAGIC, 4);
+
+		this.addAspect(ChromaTiles.DATANODE, Aspect.CRYSTAL, 20);
+		this.addAspect(ChromaTiles.DATANODE, ChromaAspectManager.instance.SIGNAL, 40);
+		this.addAspect(ChromaTiles.DATANODE, Aspect.ELDRITCH, 10);
+		this.addAspect(ChromaTiles.DATANODE, Aspect.MECHANISM, 20);
+
+		this.addAspect(ChromaTiles.FUNCTIONRELAY, Aspect.EXCHANGE, 6);
+		this.addAspect(ChromaTiles.FUNCTIONRELAY, Aspect.AURA, 4);
+
+		this.addAspect(ChromaTiles.PYLONLINK, Aspect.EXCHANGE, 12);
+		this.addAspect(ChromaTiles.PYLONLINK, ChromaAspectManager.instance.SIGNAL, 12);
+
+		this.addAspect(ChromaTiles.SKYPEATER, Aspect.EXCHANGE, 12);
+		this.addAspect(ChromaTiles.SKYPEATER, Aspect.EARTH, 12);
+		this.addAspect(ChromaTiles.SKYPEATER, ChromaAspectManager.instance.SIGNAL, 24);
+
+		this.addAspect(ChromaTiles.FLUXMAKER, Aspect.TAINT, 8);
+		this.addAspect(ChromaTiles.FLUXMAKER, Aspect.EXCHANGE, 4);
+		this.addAspect(ChromaTiles.FLUXMAKER, Aspect.GREED, 2);
+
+		this.addAspect(ChromaTiles.CHROMACRAFTER, Aspect.CRAFT, 10);
+		this.addAspect(ChromaTiles.CHROMACRAFTER, Aspect.WATER, 4);
+		this.addAspect(ChromaTiles.CHROMACRAFTER, Aspect.METAL, 6);
+		this.addAspect(ChromaTiles.CHROMACRAFTER, Aspect.MAGIC, 8);
 	}
 
 	private void addAspect(ChromaTiles m, Aspect a, int amt) {

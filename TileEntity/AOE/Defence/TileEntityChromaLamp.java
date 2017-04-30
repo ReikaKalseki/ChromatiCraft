@@ -98,4 +98,8 @@ public class TileEntityChromaLamp extends TileEntityChromaticBase implements Loc
 		return true;
 	}
 
+	public static void clearCache() {
+		cache.clear();
+	}
+
 }

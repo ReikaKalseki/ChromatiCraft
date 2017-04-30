@@ -266,14 +266,6 @@ public class LaserLevel extends StructurePiece implements PlacementCallback, NBT
 			else if (bk.metadata == LaserEffectType.TARGET.ordinal() || bk.metadata == LaserEffectType.TARGET_THRU.ordinal()) {
 				((LaserPuzzleGenerator)parent).addTarget(name, c);
 			}
-			/*
-			else if (!LaserEffectType.list[bk.metadata].isOmniDirectional()) {
-				if (data != null && data.getBoolean("free")) {
-					int dir = ReikaRandomHelper.getSafeRandomInt(CubeDirections.list.length);
-
-				}
-			}
-			 */
 		}
 	}
 

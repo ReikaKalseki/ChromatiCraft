@@ -94,6 +94,12 @@ public class ModInteraction {
 				add.add(ChromaBlocks.DOOR);
 				add.add(ChromaBlocks.TELEPORT);
 
+				for (int i = 0; i < ChromaBlocks.blockList.length; i++) {
+					ChromaBlocks cb = ChromaBlocks.blockList[i];
+					if (cb.isDimensionStructureBlock())
+						add.add(cb);
+				}
+
 				String[] arr = (String[])f.get(null);
 				String[] next = new String[arr.length+add.size()];
 				System.arraycopy(arr, 0, next, 0, arr.length);

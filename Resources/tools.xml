@@ -105,15 +105,15 @@
 	<telecapsule>
 		You have gotten lost so many times that you probably have more resources sitting in random "when you return" chests than you have back at home, and now you have done it again. Fed up with this, you have created a tablet that will let you instantly warp back to where you inscribed it. However, you appear to have done a rather poor job of it, as the thing is nearly as dangerous as teleporting blindly and hoping you do not end up suffocating in a wall. At least you are free of those damn gas and lava pockets...
 	</telecapsule>
-	<cavepather>
+	<caveexit>
 		The first days of building a base are inevitably bottlenecked by the acquisition of ores, even with the help of your various machines to grind, pulverize, mill, or otherwise process them to increase the yield. And that means mining. Lots of mining. Branch mining is boring and unproductive, so you recently took up cave mining...something which is now a clear mistake, given your tendency to get lost in the deepest layers. You may not know the way back out, but perhaps you can create something that can...
-	</cavepather>
+	</caveexit>
 	<mobsonar>
 		The problem with caving, aside from the occasional pitfall into a ravine - and those should be avoidable by not being an idiot - is that no matter what you do, you are always forced to turn blind corners that more often than not hide one or more monsters who wish to kill you. You did have a radar you tried a while back, but its range was limited and your attempt at a moving version saw you exiled to another part of the world entirely. Perhaps you can try something more like sonar instead, this time without being accused of trying to gain unfair advantages by seeing that which you should not.
 	</mobsonar>
-	<structurefinder>
+	<structfind>
 		You already know about the buried - slightly and deeply - structures in various biomes, from which you have learned the bulk of your knowledge of manipulating crystal energy. However, when it comes time to look for a new one, you thus far have had to rely on sheer luck, which is neither enjoyable nor productive. If you could tap into the ambient energy field the structures seem to focus on, you might help expedite that search.
-	</structurefinder>
+	</structfind>
 	<name>
 		
 	</name>

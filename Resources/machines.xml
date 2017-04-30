@@ -651,30 +651,30 @@
 			Up to 8 crystals per construct
 		</note>
 	</focuscrystal>
-	<chcrafter>
+	<chromacrafter>
 		<desc>
 			As powerful as some of your constructs have proven, crafting them has been at times painful enough that you have mentally prepended the ingredient's names with some variant of an expletive. In particular has been the various alloy ingots, which are not exactly expensive but whose particularly finicky and easy-to-disrupt nature of crafting has made you dread their production, to say nothing of their unified compound. If only you could mix them all together in a shielded glass tank or something...
 		</desc>
 		<note>
 
 		</note>
-	</chcrafter>
-	<name>
+	</chromacrafter>
+	<fluxmaker>
 		<desc>
-
+			This purple goo you get when you @#!$ up is supposed to be a problem, as if you were being punished, but in truth a vibrant purple liquid or gas could be nothing else than a pretty reward. To the shock and horror of your acquaintances, you have embarked on a quest to obtain more of it. Some stacks of cobblestone into a vat later, you have a purple mess that spawns similarly-colored slimes, but this is not going to help you decorate with it. You need a more organized solution.
 		</desc>
 		<note>
 
 		</note>
-	</name>
-	<name>
+	</fluxmaker>
+	<functionrelay>
 		<desc>
-
+			Certain constructs have areas of effect that is difficult to work with, making you now somewhat regret your decision to build a terrace farm whose contours make the placement of any such device rather awkward. One solution would be to create some sort of relay, that would be placed in the primary construct's area of effect and which would delegate said effect to its own more workable region.
 		</desc>
 		<note>
 
 		</note>
-	</name>
+	</functionrelay>
 	<name>
 		<desc>
 

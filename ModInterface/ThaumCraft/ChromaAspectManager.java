@@ -373,9 +373,13 @@ public class ChromaAspectManager {
 
 		ReikaThaumHelper.addAspects(ChromaBlocks.LOOTCHEST.getStackOf(), Aspect.MAGIC, 2, Aspect.GREED, 2, Aspect.TRAP, 1, Aspect.VOID, 20);
 		ReikaThaumHelper.addAspects(ChromaBlocks.SELECTIVEGLASS.getStackOf(), Aspect.MAGIC, 5, Aspect.CRYSTAL, 4, Aspect.AURA, 2, Aspect.ARMOR, 8, Aspect.MIND, 1);
+		ReikaThaumHelper.addAspects(ChromaBlocks.PORTAL.getStackOf(), Aspect.MAGIC, 40, Aspect.VOID, 20, Aspect.TRAVEL, 80, PUZZLE, 120, SIGNAL, 120, Aspect.CRYSTAL, 10);
+		ReikaThaumHelper.addAspects(ChromaBlocks.REPEATERLAMP.getStackOf(), Aspect.LIGHT, 8, Aspect.CRYSTAL, 8);
+		ReikaThaumHelper.addAspects(ChromaBlocks.CAVEINDICATOR.getStackOf(), Aspect.LIGHT, 4, Aspect.TRAP, 2);
 
-		ReikaThaumHelper.addAspects(ChromaBlocks.ENDER.getStackOf(), Aspect.MAGIC, 10, Aspect.WATER, 5, Aspect.AURA, 3, Aspect.TRAVEL, 5, Aspect.ENTROPY, 10, Aspect.EXCHANGE, 5, Aspect.ELDRITCH, 3, Aspect.VOID, 2);
-		ReikaThaumHelper.addAspects(ChromaBlocks.CHROMA.getStackOf(), Aspect.MAGIC, 10, Aspect.WATER, 5, Aspect.AURA, 3, Aspect.CRAFT, 5, Aspect.ORDER, 10, Aspect.EXCHANGE, 5, Aspect.HEAL, 3, Aspect.VOID, 1);
+		ReikaThaumHelper.addAspects(ChromaBlocks.ENDER.getStackOf(), Aspect.MAGIC, 10, Aspect.WATER, 5, Aspect.AURA, 3, Aspect.TRAVEL, 5, Aspect.ENTROPY, 10, Aspect.EXCHANGE, 5, Aspect.ELDRITCH, 3);
+		ReikaThaumHelper.addAspects(ChromaBlocks.CHROMA.getStackOf(), Aspect.MAGIC, 10, Aspect.WATER, 5, Aspect.AURA, 3, Aspect.CRAFT, 5, Aspect.ORDER, 10, Aspect.EXCHANGE, 5, Aspect.HEAL, 3);
+		ReikaThaumHelper.addAspects(ChromaBlocks.LUMA.getStackOf(), Aspect.MAGIC, 4, Aspect.AURA, 5, Aspect.VOID, 10);
 
 		ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.SMOOTH.ordinal()), Aspect.EARTH, 4, Aspect.CRYSTAL, 4, Aspect.MAGIC, 2);
 		ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.BEAM.ordinal()), Aspect.EARTH, 4, Aspect.CRYSTAL, 4, Aspect.MAGIC, 2);

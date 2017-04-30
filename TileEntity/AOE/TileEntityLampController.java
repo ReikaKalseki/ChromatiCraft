@@ -273,4 +273,9 @@ public class TileEntityLampController extends TileEntityChromaticBase implements
 		return true;
 	}
 
+	public static void clearCache() {
+		map.clear();
+		lights.clear();
+	}
+
 }

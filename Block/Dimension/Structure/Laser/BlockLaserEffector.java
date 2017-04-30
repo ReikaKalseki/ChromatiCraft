@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureTy
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.LaserEffectorRenderer;
@@ -409,6 +410,7 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 
 		private boolean rotateable = true;
 		private boolean fixed = false;
+		private int rotateableDifficulty = 0;
 
 		protected String level = "none";
 
@@ -428,6 +430,7 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 
 			rotateable = tag.getBoolean("free");
 			fixed = tag.getBoolean("fixed");
+			rotateableDifficulty = tag.getInteger("mindiff");
 
 			level = tag.getString("level");
 		}
@@ -440,6 +443,7 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 
 			tag.setBoolean("free", rotateable);
 			tag.setBoolean("fixed", fixed);
+			tag.setInteger("mindiff", rotateableDifficulty);
 
 			tag.setString("level", level);
 		}
@@ -473,6 +477,10 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 		}
 
 		public boolean isRotateable() {
+			if (rotateableDifficulty > 0) {
+				if (ChromaOptions.getStructureDifficulty() < rotateableDifficulty)
+					return false;
+			}
 			return PARTIAL_ROTATEABILITY ? rotateable : !(this instanceof TargetTile) && this.getBlockMetadata() != LaserEffectType.EMITTER.ordinal() && !fixed;
 		}
 

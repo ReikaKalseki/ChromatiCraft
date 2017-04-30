@@ -28,7 +28,7 @@ class LoginApplier implements PlayerTracker {
 	@Override
 	public void onPlayerLogin(EntityPlayer ep) {
 		if (Chromabilities.REACH.enabledOn(ep)) {
-			Chromabilities.triggerAbility(ep, Chromabilities.REACH, 0);
+			Chromabilities.triggerAbility(ep, Chromabilities.REACH, 0, true);
 		}
 		WarpPointData.readFromNBT(ep);
 		//WarpPointData.initWarpData(ep.worldObj).setDirty(true);

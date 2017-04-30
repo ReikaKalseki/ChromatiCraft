@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.TileEntity.AOE;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.entity.Entity;
@@ -139,13 +140,16 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	}
 
 	public static boolean absorbItem(Entity e) {
-		for (WorldLocation loc : cache) {
+		Iterator<WorldLocation> it = cache.iterator();
+		while (it.hasNext()) {
+			WorldLocation loc = it.next();
 			TileEntity te = loc.getTileEntity();
 			if (te instanceof TileEntityItemCollector) {
 				if (((TileEntityItemCollector)te).checkAbsorb(e))
 					return true;
 			}
 			else {
+				it.remove();
 				ChromatiCraft.logger.logError("Incorrect tile ("+te+") @ "+loc+" in Item Collector cache!?");
 			}
 		}
@@ -424,6 +428,10 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 
 	public int getRange() {
 		return range;
+	}
+
+	public static void clearCache() {
+		cache.clear();
 	}
 
 }

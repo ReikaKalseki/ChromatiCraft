@@ -380,7 +380,7 @@ public class AbilityHelper {
 		//WarpPointData.initWarpData(ep.worldObj).setDirty(true);
 	}
 
-	public void gotoWarpPoint(String s, EntityPlayer ep) {
+	public void gotoWarpPoint(String s, EntityPlayerMP ep) {
 		WarpPointData.readFromNBT(ep);
 		HashMap<String, WarpPoint> c = teleports.get(ep);
 		if (c != null) {
@@ -389,7 +389,7 @@ public class AbilityHelper {
 		}
 	}
 
-	public void gotoWarpPoint(WarpPoint wp, EntityPlayer ep) {
+	public void gotoWarpPoint(WarpPoint wp, EntityPlayerMP ep) {
 		if (wp != null && wp.canTeleportPlayer(ep)) {
 			wp.teleportPlayerTo(ep);
 		}

@@ -36,6 +36,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntitySilverfish;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -119,6 +120,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.AntFarmGenerator;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.KeybindHandler.KeyPressEvent;
+import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
@@ -181,6 +183,8 @@ public class ChromaClientEventController {
 
 	protected static final Random rand = new Random();
 	protected static final RenderItem itemRender = new RenderItem();
+
+	private static RayTracer visualLOS;
 
 	private boolean editedSlimeModel = false;
 
@@ -751,7 +755,8 @@ public class ChromaClientEventController {
 
 	@SubscribeEvent
 	public void renderMobsThroughWalls(EntityRenderEvent evt) {
-		if (evt.entity.worldObj != null && Chromabilities.MOBSEEK.enabledOn(Minecraft.getMinecraft().thePlayer)) {
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		if (evt.entity.worldObj != null && Chromabilities.MOBSEEK.enabledOn(ep)) {
 			if (AbilityHelper.instance.canRenderEntityXRay(evt.entity)) {
 				Entity te = evt.entity;
 				GL11.glPushMatrix();
@@ -768,12 +773,24 @@ public class ChromaClientEventController {
 
 				RenderManager.instance.getEntityRenderObject(te).doRender(te, 0, 0, 0, evt.partialTickTime, 0);
 
-				/*
 				GL11.glDisable(GL11.GL_TEXTURE_2D);
-				int a = (int)(192+64*Math.sin(System.currentTimeMillis()/400D));
-				int c = ReikaEntityHelper.mobToColor((EntityLivingBase)evt.entity);
+				GL11.glDisable(GL11.GL_LIGHTING);
+				ReikaRenderHelper.disableEntityLighting();
+				GL11.glEnable(GL11.GL_BLEND);
+				BlendMode.DEFAULT.apply();
+				int a = (int)(96+64*Math.sin(System.currentTimeMillis()/400D+te.getEntityId()));
 
-				AxisAlignedBB box = AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1).expand(te.width/4, te.height/4, te.width/4).offset(-te.width/2, -te.height/2, -te.width/2);
+				if (visualLOS == null) //lazyload
+					visualLOS = RayTracer.getVisualLOS();
+				visualLOS.setOrigins(ep.posX, ep.posY, ep.posZ, te.posX, te.posY+te.height/2, te.posZ);
+				int c = visualLOS.isClearLineOfSight(ep.worldObj) ? 0x00ff00 : 0xff0000;//ReikaEntityHelper.mobToColor((EntityLivingBase)evt.entity);
+
+				AxisAlignedBB box = te.boundingBox.copy().offset(-te.posX, -te.posY, -te.posZ);//AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1).expand(te.width/4, te.height/4, te.width/4).offset(-te.width/2, -te.height/2, -te.width/2);
+				box.maxY = Math.min(box.maxY, box.minY+te.height);
+				if (te instanceof EntitySilverfish) {
+					box = box.expand(te.width/2, 0, te.width/2);
+					box.maxY = box.minY+(box.maxY-box.minY)/2;
+				}
 
 				double mx = box.minX;
 				double px = box.maxX;
@@ -821,8 +838,6 @@ public class ChromaClientEventController {
 				v5.addVertex(mx, my, pz);
 				v5.addVertex(mx, py, pz);
 				v5.draw();
-
-				 */
 
 				GL11.glPopAttrib();
 				GL11.glPopMatrix();

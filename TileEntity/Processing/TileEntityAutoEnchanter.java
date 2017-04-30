@@ -76,9 +76,12 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		tiers.put(ChromaEnchants.HARVESTLEVEL.getEnchantment(), EnchantmentTier.RARE);
 		tiers.put(ChromaEnchants.PHASING.getEnchantment(), EnchantmentTier.RARE);
 
-		//Enchantment multishot = ReikaEnchantmentHelper.getEnchantmentByName("Multishot");
-		//if (multishot != null)
-		//	tiers.put(multishot, EnchantmentTier.RARE);
+		Enchantment multishot = ReikaEnchantmentHelper.getEnchantmentByName("Multishot");
+		if (multishot != null)
+			tiers.put(multishot, EnchantmentTier.RARE);
+		Enchantment soulbound = ReikaEnchantmentHelper.getEnchantmentByName("Soulbound");
+		if (soulbound != null)
+			tiers.put(soulbound, EnchantmentTier.RARE);
 
 		boostedLevels.put(Enchantment.fortune, 5);
 		boostedLevels.put(Enchantment.looting, 5);
@@ -170,6 +173,10 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			return true;
 		if (Loader.isModLoaded("EnderStorage") && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("enderpouch"))
 			return true;
+		if (ModList.THAUMICTINKER.isLoaded() && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("ichorpouch"))
+			return true;
+		if (ModList.THAUMCRAFT.isLoaded() && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("focuspouch"))
+			return true;
 		return is.getItem().getItemEnchantability(is) > 0;
 	}
 
@@ -208,6 +215,14 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 					return false;
 
 			if (Loader.isModLoaded("EnderStorage") && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("enderpouch"))
+				if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
+					return false;
+
+			if (ModList.THAUMCRAFT.isLoaded() && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("focuspouch"))
+				if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
+					return false;
+
+			if (ModList.THAUMICTINKER.isLoaded() && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("ichorpouch"))
 				if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
 					return false;
 

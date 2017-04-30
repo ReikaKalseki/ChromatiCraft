@@ -10,9 +10,12 @@
 package Reika.ChromatiCraft.Auxiliary.Ability;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 
@@ -49,13 +52,16 @@ public class WarpPoint {
 		return label+" ("+location.toString()+")";
 	}
 
-	void teleportPlayerTo(EntityPlayer ep) {
+	void teleportPlayerTo(EntityPlayerMP ep) {
+		ChromatiCraft.logger.log("Warping player "+ep.getCommandSenderName()+" to warppoint "+this);
 		if (ep.worldObj.provider.dimensionId != location.dimensionID) {
 			DimensionManager.getWorld(location.dimensionID).getBlock(location.xCoord, location.yCoord, location.zCoord); //force load
 			ReikaEntityHelper.transferEntityToDimension(ep, location.dimensionID);
 		}
-		ep.setPositionAndUpdate(location.xCoord+0.5, location.yCoord+0.25, location.zCoord+0.5);
+		//ep.setPositionAndUpdate(location.xCoord+0.5, location.yCoord+0.25, location.zCoord+0.5);
+		ep.playerNetServerHandler.setPlayerLocation(location.xCoord+0.5, location.yCoord+0.5, location.zCoord+0.5, ep.rotationYaw, ep.rotationPitch);
 		ep.playSound("mob.endermen.portal", 1, 1);
+		ChromatiCraft.logger.log("Player position: "+new DecimalPosition(ep));
 	}
 
 	public boolean canTeleportPlayer(EntityPlayer ep) {

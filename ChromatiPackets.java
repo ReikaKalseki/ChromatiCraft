@@ -334,14 +334,14 @@ public class ChromatiPackets implements PacketHandler {
 				case ABILITY: {
 					Ability c = Chromabilities.getAbilityByInt(data[0]);
 					if (Chromabilities.playerHasAbility(ep, c))
-						Chromabilities.triggerAbility(ep, c, data[1]);
+						Chromabilities.triggerAbility(ep, c, data[1], true);
 					break;
 				}
 				case ABILITYSEND: {
 					Entity player = world.getEntityByID(data[0]);
-					if (player instanceof EntityPlayer && !player.getUniqueID().equals(ep.getUniqueID())) { //do not send to firing player
+					if (player instanceof EntityPlayer) {
 						Ability c = Chromabilities.getAbilityByInt(data[1]);
-						Chromabilities.triggerAbility((EntityPlayer)player, c, data[2]);
+						Chromabilities.triggerAbility((EntityPlayer)player, c, data[2], false);
 					}
 					break;
 				}
@@ -519,7 +519,7 @@ public class ChromatiPackets implements PacketHandler {
 					AbilityHelper.instance.addWarpPoint(stringdata, ep);
 					break;
 				case TELEPORT:
-					AbilityHelper.instance.gotoWarpPoint(stringdata, ep);
+					AbilityHelper.instance.gotoWarpPoint(stringdata, (EntityPlayerMP)ep);
 					break;
 				case DELTELEPORT:
 					AbilityHelper.instance.removeWarpPoint(stringdata, ep);

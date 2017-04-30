@@ -146,10 +146,12 @@ public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
 			ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.NEWTELEPORT.ordinal(), newLabel.getText());
 		}
 		else if (b.id == 1 && this.getCurrentSelected() != null) {
+			/*
 			if (screen == Screen.MINIMAP)
 				AbilityHelper.instance.gotoWarpPoint(this.getCurrentSelected(), player);
 			else
 				AbilityHelper.instance.gotoWarpPoint(this.getCurrentSelected().label, player);
+			 */
 			ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.TELEPORT.ordinal(), this.getCurrentSelected().label);
 			player.closeScreen();
 		}
@@ -183,6 +185,7 @@ public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
 		GL11.glColor4f(1, 1, 1, 1);
 		locations.clear();
 
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		FontRenderer fr = ChromaFontRenderer.FontType.GUI.renderer;
 
 		int j = (width - xSize) / 2;
@@ -213,6 +216,7 @@ public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
 			ReikaGuiAPI.instance.drawCenteredStringNoShadow(fr, newLabel.getText(), tx, k+60, 0xffffff);
 			ReikaGuiAPI.instance.drawCenteredStringNoShadow(fr, "["+new WorldLocation(player).toString()+"]", tx, k+60+fr.FONT_HEIGHT+2, 0xffffff);
 		}
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 
 		GL11.glPushMatrix();
 		GL11.glTranslated(0, 0, 1000);

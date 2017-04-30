@@ -31,7 +31,7 @@ public class ManipulatorDispenserAction implements IBehaviorDispenseItem {
 		if (te instanceof TileEntityAuraInfuser) {
 			((TileEntityAuraInfuser)te).onRightClickWith(null, ReikaDispenserHelper.getDispenserPlayer(ibs, is));
 		}
-		return null;
+		return is;
 	}
 
 }

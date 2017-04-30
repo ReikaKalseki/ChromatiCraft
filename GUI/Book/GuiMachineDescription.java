@@ -158,6 +158,10 @@ public class GuiMachineDescription extends GuiDescription {
 			if (m == ChromaTiles.FLUIDRELAY) {
 				a = b = -1.5;
 			}
+			if (m == ChromaTiles.CHROMACRAFTER) {
+				a = b = -0.03125;
+				GL11.glTranslated(0, 0.3125, 0);
+			}
 			if (m == ChromaTiles.PERSONAL) {
 				double s = 0.75;
 				GL11.glScaled(s, s, s);

@@ -570,7 +570,7 @@ public class CastingRecipe implements APICastingRecipe {
 
 		@Override
 		public boolean usesItem(ItemStack is) {
-			if (ReikaItemHelper.matchStacks(is, main) && (main.stackTagCompound == null || ItemStack.areItemStackTagsEqual(is, main)))
+			if (ReikaItemHelper.matchStacks(is, main) && this.isValidCentralNBT(is))
 				return true;
 			for (List<Integer> key : inputs.keySet()) {
 				ItemMatch item = inputs.get(key);

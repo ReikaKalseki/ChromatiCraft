@@ -214,7 +214,7 @@ public enum ChromaTiles implements TileEnum {
 	HOVERPAD("chroma.hoverpad",			ChromaBlocks.TILEMODELLED3,	TileEntityHoverPad.class,			4/*, "RenderHoverPad"*/),
 	METEOR("chroma.meteor",				ChromaBlocks.TILEMODELLED3,	TileEntityMeteorTower.class,		5, "RenderMeteorTower"),
 	FLUIDDISTRIBUTOR("chroma.fluiddistrib",ChromaBlocks.TILEMODELLED3,TileEntityFluidDistributor.class,	6, "RenderFluidDistributor"),
-	FLUXMAKER("chroma.taintmaker",		ChromaBlocks.TILEMODELLED3,	TileEntityFluxMaker.class,		7, "RenderFluxMaker"),
+	FLUXMAKER("chroma.taintmaker",		ChromaBlocks.TILEMODELLED3,	TileEntityFluxMaker.class,			7, "RenderFluxMaker"),
 	AREABREAKER("chroma.areabreaker",	ChromaBlocks.TILEMODELLED3, TileEntityAreaBreaker.class,		8, "RenderAreaBreaker"),
 	TELEPORT("chroma.gate",				ChromaBlocks.TILEMODELLED3,	TileEntityTeleportGate.class,		9, "RenderTeleportGate"),
 	FLUIDRELAY("chroma.fluidrelay",		ChromaBlocks.TILEMODELLED3,	TileEntityFluidRelay.class,			10, "RenderFluidRelay"),

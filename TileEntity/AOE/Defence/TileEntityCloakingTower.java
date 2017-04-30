@@ -220,4 +220,8 @@ public class TileEntityCloakingTower extends TileEntityChromaticBase implements 
 		return false;
 	}
 
+	public static void clearCache() {
+		cache.clear();
+	}
+
 }

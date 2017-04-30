@@ -67,7 +67,6 @@ import Reika.ChromatiCraft.Auxiliary.Ability.LightCast;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
-import Reika.ChromatiCraft.Entity.EntityNukerBall;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
@@ -107,6 +106,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
@@ -381,15 +381,15 @@ public enum Chromabilities implements Ability {
 		}
 	}
 
-	public static void triggerAbility(EntityPlayer ep, Ability a, int data) {
+	public static void triggerAbility(EntityPlayer ep, Ability a, int data, boolean dispatchPacket) {
 		if (ep.worldObj.isRemote) {
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ABILITY.ordinal(), ep.worldObj, 0, 0, 0, getAbilityInt(a), data);
 
 			if (!a.actOnClient())
 				return;
 		}
-		else if (a.actOnClient()) { //notify other players
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ABILITYSEND.ordinal(), ep.worldObj, 0, 0, 0, ep.getEntityId(), getAbilityInt(a), data);
+		else if (a.actOnClient() && dispatchPacket) { //notify other players
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ABILITYSEND.ordinal(), ep.worldObj, 0, 0, 0, getAbilityInt(a), data);
 		}
 
 		ProgressStage.ABILITY.stepPlayerTo(ep);
@@ -1272,11 +1272,29 @@ public enum Chromabilities implements Ability {
 	}
 
 	private static void breakSurroundingBlocks(EntityPlayer ep) {
-		double ANGLE = 22;
-		double phi = ReikaRandomHelper.getRandomPlusMinus(ep.rotationYawHead+90, ANGLE);
-		double theta = ReikaRandomHelper.getRandomPlusMinus(-ep.rotationPitch, ANGLE);
-		EntityNukerBall enb = new EntityNukerBall(ep.worldObj, ep, 1.5, phi, theta);
-		ep.worldObj.spawnEntityInWorld(enb);
+		if (!ep.worldObj.isRemote) {
+			double ANGLE = 35;//22;
+			double phi = ReikaRandomHelper.getRandomPlusMinus(ep.rotationYawHead+90, ANGLE);
+			double theta = ReikaRandomHelper.getRandomPlusMinus(-ep.rotationPitch, ANGLE);
+			double[] xyz = ReikaPhysicsHelper.polarToCartesian(1, theta, phi);
+			Coordinate c = null;
+			for (double d = 0; d <= 8; d += 0.125) {
+				double dx = ep.posX+xyz[0]*d;
+				double dy = ep.posY+1.62+xyz[1]*d;
+				double dz = ep.posZ+xyz[2]*d;
+				int x = MathHelper.floor_double(dx);
+				int y = MathHelper.floor_double(dy);
+				int z = MathHelper.floor_double(dz);
+				if (!ep.worldObj.getBlock(x, y, z).isAir(ep.worldObj, x, y, z)) {
+					c = new Coordinate(x, y, z);
+					break;
+				}
+			}
+			if (c != null) {
+				//EntityNukerBall enb = new EntityNukerBall(ep.worldObj, ep, 0.5, c);
+				//ep.worldObj.spawnEntityInWorld(enb);
+			}
+		}
 	}
 
 	@ModDependent(ModList.FORESTRY)

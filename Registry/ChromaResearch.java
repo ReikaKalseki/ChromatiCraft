@@ -313,7 +313,7 @@ public enum ChromaResearch implements ProgressElement {
 	GROWAURA(		Chromabilities.GROWAURA,					ResearchLevel.ENDGAME),
 	RECHARGE(		Chromabilities.RECHARGE,					ResearchLevel.ENDGAME),
 	MEINV(			Chromabilities.MEINV,						ResearchLevel.ENDGAME),
-	MOBSEEK(		Chromabilities.MOBSEEK,						ResearchLevel.CTM),
+	MOBSEEK(		Chromabilities.MOBSEEK,						ResearchLevel.ENDGAME),
 	BEEALYZE(		Chromabilities.BEEALYZE),
 	NUKER(			Chromabilities.NUKER,						ResearchLevel.ENDGAME),
 	LIGHTCAST(		Chromabilities.LIGHTCAST),

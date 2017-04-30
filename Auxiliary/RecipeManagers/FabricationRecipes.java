@@ -173,6 +173,44 @@ public class FabricationRecipes {
 			}
 		}
 
+		if (ModList.FORBIDDENMAGIC.isLoaded()) {
+			ItemStack item = ReikaItemHelper.lookupItem("ForbiddenMagic:NetherShard:1");
+			if (item != null) {
+				tag = new ElementTagCompound();
+				tag.addValueToColor(CrystalElement.PINK, 500);
+				tag.addValueToColor(CrystalElement.ORANGE, 1000);
+				tag.addValueToColor(CrystalElement.LIGHTGRAY, 100);
+				this.addRecipe(item, tag);
+			}
+		}
+
+		if (ModList.TWILIGHT.isLoaded()) {
+			ItemStack item = ReikaItemHelper.lookupItem("TwilightForest:item.charmOfLife1");
+			if (item != null) {
+				tag = new ElementTagCompound();
+				tag.addValueToColor(CrystalElement.MAGENTA, 2500);
+				tag.addValueToColor(CrystalElement.BLACK, 1000);
+				this.addRecipe(item, tag);
+			}
+
+			item = ReikaItemHelper.lookupItem("TwilightForest:tile.TFFirefly");
+			if (item != null) {
+				tag = new ElementTagCompound();
+				tag.addValueToColor(CrystalElement.BLUE, 300);
+				tag.addValueToColor(CrystalElement.GREEN, 60);
+				this.addRecipe(item, tag);
+			}
+
+			item = ReikaItemHelper.lookupItem(/*"TwilightForest:item.carminite"*/"TwilightForest:item.borerEssence");
+			if (item != null) {
+				tag = new ElementTagCompound();
+				tag.addValueToColor(CrystalElement.PINK, 500);
+				tag.addValueToColor(CrystalElement.BROWN, 100);
+				tag.addValueToColor(CrystalElement.LIGHTGRAY, 50);
+				this.addRecipe(item, tag);
+			}
+		}
+
 	}
 
 	private void addOreDictRecipe(String ore, ElementTagCompound tag) {
