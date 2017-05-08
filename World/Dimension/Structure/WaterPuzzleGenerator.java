@@ -40,6 +40,10 @@ public class WaterPuzzleGenerator extends DimensionStructureGenerator {
 			r = this.getRadius(i);
 			int endx = ReikaRandomHelper.getRandomPlusMinus(0, r);
 			int endz = ReikaRandomHelper.getRandomPlusMinus(0, r);
+			while (endx == startx && endz == startz) {
+				endx = ReikaRandomHelper.getRandomPlusMinus(0, r);
+				endz = ReikaRandomHelper.getRandomPlusMinus(0, r);
+			}
 			WaterPath path = new WaterPath(startx, startz, endx, endz, r);
 			path.genPath(rand);
 			WaterFloor w = new WaterFloor(this, i, r, path);
@@ -52,7 +56,7 @@ public class WaterPuzzleGenerator extends DimensionStructureGenerator {
 
 		for (WaterFloor l : levels) {
 			l.generate(world, posX, y, posZ);
-			y -= l.HEIGHT;
+			y -= l.HEIGHT+4;
 		}
 	}
 
@@ -102,7 +106,7 @@ public class WaterPuzzleGenerator extends DimensionStructureGenerator {
 	}
 
 	public WaterFloor getLevel(int i) {
-		return levels.get(i);
+		return levels.isEmpty() ? null : levels.get(i);
 	}
 
 	public int levelCount() {

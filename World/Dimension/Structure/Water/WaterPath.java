@@ -17,6 +17,7 @@ import java.util.Random;
 
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 
@@ -27,9 +28,6 @@ public class WaterPath {
 	private final int gridSize;
 
 	private final HashSet<Point> visitedCells = new HashSet();
-	private final HashSet<Point> pointsToGo = new HashSet();
-
-	final HashSet<Point> additionalKeys = new HashSet();
 	final LinkedList<Point> solution = new LinkedList();
 
 	final HashSet<ForgeDirection>[][] lockSides;
@@ -43,75 +41,100 @@ public class WaterPath {
 		for (int i = 0; i < lockSides.length; i++) {
 			for (int k = 0; k < lockSides[i].length; k++) {
 				lockSides[i][k] = new HashSet();
-				pointsToGo.add(new Point(i-size, k-size));
 			}
 		}
-		pointsToGo.remove(startLoc);
+		visitedCells.add(startLoc);
+		visitedCells.add(endLoc);
 		solution.add(startLoc);
 	}
 
 	public void genPath(Random rand) {
-		Point p = startLoc;
+		ArrayList<Point> li = this.generateShortestPath();
 		boolean flag = true;
 		while (flag) {
 			flag = false;
-			ArrayList<ForgeDirection> li = ReikaDirectionHelper.getRandomOrderedDirections(false);
-			ForgeDirection dir = li.remove(0);
-			while (!this.canStepTo(p, dir, false) && !li.isEmpty()) {
-				dir = li.remove(0);
-			}
-			if (this.canStepTo(p, dir, false)) {
-				p = this.stepTo(p, dir);
-				solution.add(p);
-				if (p.equals(endLoc)) {
-
-				}
-				else {
-					flag = true;
+			ArrayList<Integer> indicesToTry = ReikaJavaLibrary.makeIntListFromArray(ReikaArrayHelper.getLinearArray(li.size()-1)); //-1 since cannot do from last point
+			while (!indicesToTry.isEmpty() && !flag) {
+				int idx = indicesToTry.remove(rand.nextInt(indicesToTry.size()));
+				Point p1 = li.get(idx);
+				Point p2 = li.get(idx+1);
+				ForgeDirection dir = ReikaDirectionHelper.getDirectionBetween(p1, p2);
+				dir = ReikaDirectionHelper.getLeftBy90(dir);
+				flag = this.tryExtendPath(p1, p2, idx, li, dir);
+				if (!flag) {
+					dir = dir.getOpposite();
+					flag = this.tryExtendPath(p1, p2, idx, li, dir);
 				}
 			}
 		}
-		while (!pointsToGo.isEmpty()) {
-			p = ReikaJavaLibrary.getRandomCollectionEntry(rand, pointsToGo);
-			pointsToGo.remove(p);
-			additionalKeys.add(p);
-			flag = true;
-			while (flag) {
-				flag = false;
-				ArrayList<ForgeDirection> li = ReikaDirectionHelper.getRandomOrderedDirections(false);
-				ForgeDirection dir = li.remove(0);
-				while (!this.canStepTo(p, dir, true) && !li.isEmpty()) {
-					dir = li.remove(0);
-				}
-				if (this.canStepTo(p, dir, true)) {
-					p = this.stepTo(p, dir);
-					if (solution.contains(p)) {
-						//joined the path
-					}
-					else {
-						flag = true;
-					}
-				}
-			}
+		for (int i = 0; i < li.size()-1; i++) {
+			Point p1 = li.get(i);
+			Point p2 = li.get(i+1);
+			this.stepTo(p1, p2);
 		}
 	}
 
-	private boolean canStepTo(Point from, ForgeDirection dir, boolean allowRevisit) {
-		Point to = new Point(from.x+dir.offsetX, from.y+dir.offsetZ);
+	private boolean tryExtendPath(Point p1, Point p2, int idx, ArrayList<Point> li, ForgeDirection dir) {
+		if (this.canStepTo(p1, dir, 1, false) && this.canStepTo(p2, dir, 1, false)) {
+			int dist = 0;
+			boolean flag2 = true;
+			while (flag2) {
+				flag2 = false;
+				dist++;
+				if (this.canStepTo(p1, dir, dist, false) && this.canStepTo(p2, dir, dist, false)) {
+					flag2 = true;
+				}
+			}
+			ArrayList<Point> inject = new ArrayList();
+			for (int i = dist-1; i > 0; i--) {
+				inject.add(0, new Point(p1.x+dir.offsetX*i, p1.y+dir.offsetZ*i));
+				inject.add(new Point(p2.x+dir.offsetX*i, p2.y+dir.offsetZ*i));
+			}
+			visitedCells.addAll(inject);
+			li.addAll(idx+1, inject);
+			return true;
+		}
+		return false;
+	}
+
+	private ArrayList<Point> generateShortestPath() {
+		int dx = endLoc.x-startLoc.x;
+		int dz = endLoc.y-startLoc.y;
+		Point p = startLoc;
+		ArrayList<Point> li = new ArrayList();
+		li.add(p);
+		while (dx != 0) {
+			p = this.stepTo(p, dx > 0 ? ForgeDirection.EAST : ForgeDirection.WEST);
+			li.add(p);
+			dx = (int)Math.signum(dx)*(Math.abs(dx)-1);
+		}
+		while (dz != 0) {
+			p = this.stepTo(p, dz > 0 ? ForgeDirection.SOUTH : ForgeDirection.NORTH);
+			li.add(p);
+			dz = (int)Math.signum(dz)*(Math.abs(dz)-1);
+		}
+		return li;
+	}
+
+	private boolean canStepTo(Point from, ForgeDirection dir, int dist, boolean allowRevisit) {
+		Point to = new Point(from.x+dir.offsetX*dist, from.y+dir.offsetZ*dist);
 		return Math.abs(to.x) <= gridSize && Math.abs(to.y) <= gridSize && (allowRevisit || !visitedCells.contains(to));
 	}
 
 	private Point stepTo(Point from, ForgeDirection dir) {
 		Point to = new Point(from.x+dir.offsetX, from.y+dir.offsetZ);
+		visitedCells.add(to);
+		return to;
+	}
+
+	private void stepTo(Point from, Point to) {
+		ForgeDirection dir = ReikaDirectionHelper.getDirectionBetween(from, to);
 		int idx1a = from.x+gridSize;
 		int idx1b = from.y+gridSize;
 		int idx2a = to.x+gridSize;
 		int idx2b = to.y+gridSize;
 		lockSides[idx1a][idx1b].add(dir);
 		lockSides[idx2a][idx2b].add(dir.getOpposite());
-		visitedCells.add(to);
-		pointsToGo.remove(to);
-		return to;
 	}
 
 	public LinkedList<Point> getSolution() {

@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Block.Dimension.Structure.Water;
 
 import java.util.Random;
+import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
@@ -286,7 +287,8 @@ public class BlockEverFluid extends BlockContainer {
 			return false;
 		}
 
-		public void setData(int lvl) {
+		public void setData(UUID id, int lvl) {
+			uid = id;
 			level = lvl;
 		}
 
