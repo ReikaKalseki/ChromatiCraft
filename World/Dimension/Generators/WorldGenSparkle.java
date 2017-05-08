@@ -23,7 +23,7 @@ import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
-
+@Deprecated
 public class WorldGenSparkle extends ChromaWorldGenerator {
 
 	public WorldGenSparkle(DimensionGenerators g, Random r, long s) {
@@ -42,9 +42,9 @@ public class WorldGenSparkle extends ChromaWorldGenerator {
 			int z = az-az%16+rand.nextInt(16);
 			y = 4+rand.nextInt(64+ChunkProviderChroma.VERTICAL_OFFSET+32);
 			BlockTypes type = BlockTypes.list[rand.nextInt(BlockSparkle.BlockTypes.list.length)];
-			double r1 = 1D+rand.nextDouble()*5;
-			double r2 = 1D+rand.nextDouble()*5;
-			double r3 = 1D+rand.nextDouble()*5;
+			double r1 = 8D+rand.nextDouble()*24;
+			double r2 = 8D+rand.nextDouble()*24;
+			double r3 = 8D+rand.nextDouble()*24;
 			for (int i = -(int)r1-1; i <= r1+1; i++) {
 				for (int j = -(int)r2-1; j <= r2+1; j++) {
 					for (int k = -(int)r3-1; k <= r3+1; k++) {

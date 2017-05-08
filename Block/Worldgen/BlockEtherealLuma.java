@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionVoidGaze;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionVoidGaze.VoidGazeLevels;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -37,6 +38,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class BlockEtherealLuma extends BlockFluidClassic {
 
 	private final IIcon[] icons = new IIcon[16];
+	private final IIcon[] dimensionIcons = new IIcon[16];
 
 	public BlockEtherealLuma(Fluid fluid, Material material) {
 		super(fluid, material);
@@ -45,19 +47,27 @@ public class BlockEtherealLuma extends BlockFluidClassic {
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
 		for (int i = 0; i < 16; i++) {
-			icons[i] = ico.registerIcon("chromaticraft:fluid/aether_still_"+i);
+			icons[i] = ico.registerIcon("chromaticraft:fluid/aether/aether_still_"+i);
+			dimensionIcons[i] = ico.registerIcon("chromaticraft:fluid/aether/aether_still_dim_"+i);
 		}
-		blockIcon = ico.registerIcon("chromaticraft:fluid/aether_full");
+		blockIcon = ico.registerIcon("chromaticraft:fluid/aether/aether_full");
 	}
 
 	@Override
 	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int s) {
 		if (iba.getBlockMetadata(x, y, z) != 0 || this.getFlowVector(iba, x, y, z).lengthVector() > 0)
 			return ChromatiCraft.luma.getFlowingIcon();//blockIcon;
+		IIcon[] arr = icons;
 		int dx = (x%4+4)%4;
 		int dz = (z%4+4)%4;
+		if (Minecraft.getMinecraft().theWorld != null && Minecraft.getMinecraft().theWorld.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			arr = dimensionIcons;
+			int sc = dx;
+			dx = dz;
+			dz = sc;
+		}
 		int idx = dz*4+dx;
-		return icons[idx];
+		return arr[idx];
 	}
 
 	@Override

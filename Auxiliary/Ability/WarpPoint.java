@@ -18,8 +18,9 @@ import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
-public class WarpPoint {
+public class WarpPoint implements Comparable<WarpPoint> {
 
 	public final String label;
 	public final WorldLocation location;
@@ -69,6 +70,22 @@ public class WarpPoint {
 		if (location.dimensionID == ExtraChromaIDs.DIMID.getValue() || dim == ExtraChromaIDs.DIMID.getValue())
 			return dim == location.dimensionID;
 		return true;
+	}
+
+	@Override
+	public int compareTo(WarpPoint o) {
+		if (label.startsWith("[") && o.label.startsWith("[") && label.length() > 1 && o.label.length() > 1) { //minimap ordering
+			String s1 = label.substring(1);
+			String s2 = o.label.substring(1);
+			if (Character.isDigit(s1.charAt(0)) && Character.isDigit(s2.charAt(0))) {
+				s1 = s1.substring(0, s1.indexOf(']'));
+				s2 = s2.substring(0, s2.indexOf(']'));
+				if (ReikaJavaLibrary.isValidInteger(s1) && ReikaJavaLibrary.isValidInteger(s2)) {
+					return Integer.compare(Integer.parseInt(s1), Integer.parseInt(s2));
+				}
+			}
+		}
+		return label.compareToIgnoreCase(o.label);
 	}
 
 }

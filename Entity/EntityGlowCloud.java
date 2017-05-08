@@ -217,7 +217,7 @@ public class EntityGlowCloud extends EntityLiving {
 					velocity.rotation--;
 			}
 
-			if (ReikaMathLibrary.approxr(velocity.rotation, targetPhi, 0.05)) {
+			if (ReikaMathLibrary.approxr(velocity.magnitude, targetVelocity, 0.05)) {
 				targetVelocity = ReikaRandomHelper.getRandomPlusMinus(0.1, 0.1);
 			}
 			else {

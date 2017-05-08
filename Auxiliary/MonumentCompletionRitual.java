@@ -236,6 +236,7 @@ public class MonumentCompletionRitual {
 			}
 			this.scheduleNextCheck();
 			count++;
+			//ReikaJavaLibrary.pConsole(count+":"+FMLCommonHandler.instance().getEffectiveSide());
 			if (count >= RITUAL_STEPS) {
 				this.completeRitual();
 			}

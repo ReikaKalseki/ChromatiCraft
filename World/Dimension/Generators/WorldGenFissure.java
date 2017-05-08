@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
@@ -171,7 +172,7 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 
 	@Override
 	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
-		return 0.01F;
+		return biome.getExactType() == Biomes.PLAINS ? 0.05F : 0.01F;
 	}
 
 }

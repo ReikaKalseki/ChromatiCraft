@@ -861,7 +861,7 @@ public class ChromatiCraft extends DragonAPIMod {
 				ender.setFlowingIcon(ico.registerIcon("ChromatiCraft:fluid/flowingender"));
 				ender.setBlock(ChromaBlocks.ENDER.getBlockInstance());
 
-				luma.setIcons(ico.registerIcon("ChromatiCraft:fluid/aether_full"), ico.registerIcon("ChromatiCraft:fluid/aether_flow2"));
+				luma.setIcons(ico.registerIcon("ChromatiCraft:fluid/aether/aether_full"), ico.registerIcon("ChromatiCraft:fluid/aether/aether_flow2"));
 				//aether.setFlowingIcon(ico.registerIcon("ChromatiCraft:fluid/flowingender"));
 				luma.setBlock(ChromaBlocks.LUMA.getBlockInstance());
 

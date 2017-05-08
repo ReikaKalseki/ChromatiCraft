@@ -107,12 +107,6 @@ public class WarpPointData {
 	}
 
 	@SideOnly(Side.CLIENT)
-	private static Collection<WarpPoint> readMapwriter() {
-		HashSet<WarpPoint> map = new HashSet();
-		return map;
-	}
-
-	@SideOnly(Side.CLIENT)
 	private static Collection<WarpPoint> readVoxelMap() {
 		HashSet<WarpPoint> map = new HashSet();
 		File f = new File(DragonAPICore.getMinecraftDirectory(), "mods/VoxelMods/voxelMap"); //just read all files for now
@@ -126,6 +120,7 @@ public class WarpPointData {
 
 	@SideOnly(Side.CLIENT)
 	private static void readMapWriterFile(File f, HashSet<WarpPoint> map) {
+		int idx = 0;
 		for (String s : ReikaFileReader.getFileAsLines(f, true)) {
 			if (s.startsWith("S:marker")) {
 				s = s.substring(s.indexOf('=')+1);
@@ -135,8 +130,9 @@ public class WarpPointData {
 				String y = parts[2];
 				String z = parts[3];
 				String dim = parts[4];
-				WarpPoint p = new WarpPoint(label, new WorldLocation(Integer.parseInt(dim), Integer.parseInt(x), Integer.parseInt(y), Integer.parseInt(z)));
+				WarpPoint p = new WarpPoint("["+idx+"] "+label, new WorldLocation(Integer.parseInt(dim), Integer.parseInt(x), Integer.parseInt(y), Integer.parseInt(z)));
 				map.add(p);
+				idx++;
 			}
 		}
 	}
@@ -158,6 +154,7 @@ public class WarpPointData {
 
 	@SideOnly(Side.CLIENT)
 	private static void readVoxelMapFile(File f, HashSet<WarpPoint> map) {
+		int idx = 0;
 		for (String s : ReikaFileReader.getFileAsLines(f, true)) {
 			if (s.startsWith("name")) {
 				String[] parts = s.split(",");
@@ -175,8 +172,9 @@ public class WarpPointData {
 				String label = dat.get("name");
 				label = label.replaceAll("~comma~", ",");
 				label = label.replaceAll("~colon~", ":");
-				WarpPoint p = new WarpPoint(label, new WorldLocation(Integer.parseInt(dat.get("dimensions")), Integer.parseInt(dat.get("x")), Integer.parseInt(dat.get("y")), Integer.parseInt(dat.get("z"))));
+				WarpPoint p = new WarpPoint("["+idx+"] "+label, new WorldLocation(Integer.parseInt(dat.get("dimensions")), Integer.parseInt(dat.get("x")), Integer.parseInt(dat.get("y")), Integer.parseInt(dat.get("z"))));
 				map.add(p);
+				idx++;
 			}
 		}
 	}

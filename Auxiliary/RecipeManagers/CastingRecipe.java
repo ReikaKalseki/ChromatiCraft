@@ -148,6 +148,10 @@ public class CastingRecipe implements APICastingRecipe {
 	public boolean usesItem(ItemStack is) {
 		return ReikaItemHelper.listContainsItemStack(ReikaRecipeHelper.getAllItemsInRecipe(recipe), is, true);
 	}
+
+	public boolean crafts(ItemStack is) {
+		return ReikaItemHelper.matchStacks(is, out) && ItemStack.areItemStackTagsEqual(is, out);
+	}
 	/*
 	@Override
 	@SideOnly(Side.CLIENT)

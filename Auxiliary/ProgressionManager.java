@@ -34,6 +34,9 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.MinecraftForge;
+
+import org.lwjgl.opengl.GL11;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.API.ResearchFetcher;
@@ -45,6 +48,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact.ArtefactTypes;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -65,6 +69,8 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -214,6 +220,17 @@ public class ProgressionManager implements ProgressRegistry {
 
 		@SideOnly(Side.CLIENT)
 		public void renderIcon(RenderItem ri, FontRenderer fr, int x, int y) {
+			if (this == ANYSTRUCT) { //item render does not work
+				ReikaTextureHelper.bindTerrainTexture();
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				GL11.glColor4f(1, 1, 1, 1);
+				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glEnable(GL11.GL_BLEND);
+				BlendMode.ADDITIVEDARK.apply();
+				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y, ChromaIcons.SPINFLARE.getIcon(), 16, 16); //render directly
+				GL11.glPopAttrib();
+				return;
+			}
 			ReikaGuiAPI.instance.drawItemStack(ri, fr, icon, x, y);
 		}
 

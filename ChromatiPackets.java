@@ -287,6 +287,7 @@ public class ChromatiPackets implements PacketHandler {
 			}
 		}
 		catch (IOException e) {
+			ChromatiCraft.logger.logError("Error handling "+pack+" packet:");
 			e.printStackTrace();
 			return;
 		}
@@ -520,6 +521,9 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case TELEPORT:
 					AbilityHelper.instance.gotoWarpPoint(stringdata, (EntityPlayerMP)ep);
+					break;
+				case MAPTELEPORT:
+					AbilityHelper.instance.gotoMapWarpPoint(new WorldLocation(data[0], data[1], data[2], data[3]), (EntityPlayerMP)ep);
 					break;
 				case DELTELEPORT:
 					AbilityHelper.instance.removeWarpPoint(stringdata, ep);

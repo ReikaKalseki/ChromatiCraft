@@ -25,14 +25,18 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.GeoStrata.API.RockProofStone;
+
+import com.carpentersblocks.api.IWrappableBlock;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class BlockCliffStone extends Block implements RockProofStone {
+@Strippable(value={"com.carpentersblocks.api.IWrappableBlock"})
+public class BlockCliffStone extends Block implements RockProofStone, IWrappableBlock {
 
 	private IIcon grassTop;
 
@@ -44,6 +48,8 @@ public class BlockCliffStone extends Block implements RockProofStone {
 	private IIcon stoneBlendUp_Clay;
 
 	private IIcon farmlandTop;
+
+	private final IIcon[][] stoneTextures = new IIcon[2][2];
 
 	public BlockCliffStone(Material m) {
 		super(m);
@@ -113,6 +119,7 @@ public class BlockCliffStone extends Block implements RockProofStone {
 				}
 			}
 		}
+		/*
 		if (v == Variants.STONE && s > 1) {
 			Block b = iba.getBlock(x, y+1, z);
 			if (b == Blocks.dirt || b == Blocks.grass) {
@@ -131,6 +138,42 @@ public class BlockCliffStone extends Block implements RockProofStone {
 			if (b == Blocks.stone || ReikaBlockHelper.isOre(b, iba.getBlockMetadata(x, y-1, z)))
 				return stoneBlendDown;
 		}
+		 */
+		else if (v == Variants.STONE) {
+			int a = 0;
+			int b = 0;
+			switch(ForgeDirection.VALID_DIRECTIONS[s]) {
+				case UP:
+					a = x%2;
+					b = z%2;
+					break;
+				case DOWN:
+					a = x%2;
+					b = z%2;
+					break;
+				case EAST:
+					a = z%2;
+					b = y%2;
+					break;
+				case WEST:
+					a = z%2;
+					b = y%2;
+					break;
+				case NORTH:
+					a = x%2;
+					b = y%2;
+					break;
+				case SOUTH:
+					a = x%2;
+					b = y%2;
+					break;
+				default:
+					break;
+			}
+			a = (a+2)%2;
+			b = (b+2)%2;
+			return stoneTextures[b][a];
+		}
 		return super.getIcon(iba, x, y, z, s);
 	}
 
@@ -148,6 +191,11 @@ public class BlockCliffStone extends Block implements RockProofStone {
 		stoneBlendUp_Dirt = ico.registerIcon("chromaticraft:cliffstone/stone_vblend_up");
 		stoneBlendUp_Clay = ico.registerIcon("chromaticraft:cliffstone/stone_vblend_up_clay");
 		stoneBlendUp_Sand = ico.registerIcon("chromaticraft:cliffstone/stone_vblend_up_sand");
+
+		stoneTextures[0][0] = ico.registerIcon("chromaticraft:cliffstone/stone_base_0");
+		stoneTextures[0][1] = ico.registerIcon("chromaticraft:cliffstone/stone_base_1");
+		stoneTextures[1][0] = ico.registerIcon("chromaticraft:cliffstone/stone_base_2");
+		stoneTextures[1][1] = ico.registerIcon("chromaticraft:cliffstone/stone_base_3");
 	}
 
 	@Override
@@ -240,6 +288,63 @@ public class BlockCliffStone extends Block implements RockProofStone {
 	@Override
 	public boolean blockRockGeneration(World world, int x, int y, int z, Block b, int meta) {
 		return true;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public int getColorMultiplier(IBlockAccess iba, int x, int y, int z, Block b, int meta) {
+		return this.colorMultiplier(iba, x, y, z);
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int side, Block b, int meta) {
+		return this.getIcon(iba, x, y, z, side);
+	}
+
+	@Override
+	public int getWeakRedstone(World world, int x, int y, int z, Block b, int meta) {
+		return 0;
+	}
+
+	@Override
+	public int getStrongRedstone(World world, int x, int y, int z, Block b, int meta) {
+		return 0;
+	}
+
+	@Override
+	public float getHardness(World world, int x, int y, int z, Block b, int meta) {
+		return this.getBlockHardness(world, x, y, z);
+	}
+
+	@Override
+	public float getBlastResistance(Entity entity, World world, int x, int y, int z, double explosionX, double explosionY, double explosionZ, Block b, int meta) {
+		return this.getExplosionResistance(entity, world, x, y, z, explosionX, explosionY, explosionZ);
+	}
+
+	@Override
+	public int getFlammability(IBlockAccess iba, int x, int y, int z, ForgeDirection side, Block b, int meta) {
+		return 0;
+	}
+
+	@Override
+	public int getFireSpread(IBlockAccess iba, int x, int y, int z, ForgeDirection side, Block b, int meta) {
+		return 0;
+	}
+
+	@Override
+	public boolean sustainsFire(IBlockAccess iba, int x, int y, int z, ForgeDirection side, Block b, int meta) {
+		return false;
+	}
+
+	@Override
+	public boolean isLog(IBlockAccess iba, int x, int y, int z, Block b, int meta) {
+		return false;
+	}
+
+	@Override
+	public boolean canEntityDestroy(IBlockAccess iba, int x, int y, int z, Entity e, Block b, int meta) {
+		return this.canEntityDestroy(iba, x, y, z, e);
 	}
 
 	public static enum Variants {

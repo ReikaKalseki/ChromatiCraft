@@ -568,16 +568,18 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void noTargeting(LivingSetAttackTargetEvent evt) {
-		if (evt.target instanceof EntityPlayer) {
-			EntityPlayer ep = (EntityPlayer)evt.target;
-			if (evt.entityLiving instanceof EntityLiving) {
-				if (Chromabilities.COMMUNICATE.enabledOn(ep)) {
-					//evt.setCanceled(true);
-					((EntityLiving)evt.entityLiving).setAttackTarget(null);
-				}
-				else if (TileEntityCloakingTower.isPlayerCloaked(ep)) {
-					//evt.setCanceled(true);
-					((EntityLiving)evt.entityLiving).setAttackTarget(null);
+		if (!ReikaEntityHelper.tameMobTargeting) {
+			if (evt.target instanceof EntityPlayer) {
+				EntityPlayer ep = (EntityPlayer)evt.target;
+				if (evt.entityLiving instanceof EntityLiving) {
+					if (Chromabilities.COMMUNICATE.enabledOn(ep)) {
+						//evt.setCanceled(true);
+						((EntityLiving)evt.entityLiving).setAttackTarget(null);
+					}
+					else if (TileEntityCloakingTower.isPlayerCloaked(ep)) {
+						//evt.setCanceled(true);
+						((EntityLiving)evt.entityLiving).setAttackTarget(null);
+					}
 				}
 			}
 		}

@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.World.Dimension.OuterRegionsEvents;
 import Reika.DragonAPI.Instantiable.Formula.MathExpression;
 import Reika.DragonAPI.Instantiable.Formula.PeriodicExpression;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
+import Reika.DragonAPI.Instantiable.ParticleController.EntityLockMotionController;
 import Reika.DragonAPI.Instantiable.ParticleController.FlashColorController;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -53,7 +54,7 @@ public class EntityDimensionFlare extends Entity/*Living*/ {
 
 	public EntityDimensionFlare(World world) {
 		super(world);
-		if (world.isRemote) {
+		if (world.isRemote && identity == null) {
 			identity = FlareIdentity.getRandomFlare(this);
 			for (int i = 0; i < 16; i++) {
 				double a1 = ReikaRandomHelper.getRandomPlusMinus(0D, 10D);
@@ -107,6 +108,8 @@ public class EntityDimensionFlare extends Entity/*Living*/ {
 
 		this.moveEntity(motionX, motionY, motionZ);
 
+		this.func_145771_j(posX, posY-2, posZ);
+
 		if (worldObj.isRemote) {
 			this.spawnParticles();
 		}
@@ -131,6 +134,26 @@ public class EntityDimensionFlare extends Entity/*Living*/ {
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 		//}
+
+		for (int i = 0; i < 1; i++) {
+			int idx = rand.nextInt(trailColors.size());
+			ColorDirection dir = trailColors.get(idx);
+			double[] xyz = ReikaPhysicsHelper.polarToCartesian(1.25, rand.nextDouble()*360, rand.nextDouble()*360);
+			EntityBlurFX fx = new EntityBlurFX(worldObj, posX+xyz[0], posY+xyz[1], posZ+xyz[2]).setColor(dir.color).setScale(0.75F+rand.nextFloat()*0.5F);
+			double d = rand.nextDouble()*360;
+			fx.setMotionController(new EntityLockMotionController(this, 0.03125/4, 0.125*8, 0.875));
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+
+		for (int i = 0; i < 1; i++) {
+			int idx = rand.nextInt(trailColors.size());
+			ColorDirection dir = trailColors.get(idx);
+			double[] xyz = ReikaPhysicsHelper.polarToCartesian(0.625, rand.nextDouble()*360, rand.nextDouble()*360);
+			EntityBlurFX fx = new EntityBlurFX(worldObj, posX+xyz[0]-motionX, posY+xyz[1]-motionY, posZ+xyz[2]-motionZ, motionX, motionY, motionZ).setColor(dir.color);
+			fx.setScale(2.5F+rand.nextFloat()*1F).setLife(20).setRapidExpand();
+			double d = rand.nextDouble()*360;
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
 	}
 
 	private void doAggro() {
@@ -157,6 +180,8 @@ public class EntityDimensionFlare extends Entity/*Living*/ {
 		motionX += v*Math.signum(dx);
 		motionY += v*Math.signum(dy);
 		motionZ += v*Math.signum(dz);
+		//motionX = motionY = motionZ = 0;
+		//motionX = 0.25*Math.sin(ticksExisted/64D);
 		velocityChanged = true;
 	}
 
@@ -243,6 +268,21 @@ public class EntityDimensionFlare extends Entity/*Living*/ {
 		state = RelationState.ATTACKED;
 	}
 
+	@Override
+	public float getShadowSize() {
+		return 0;
+	}
+
+	@Override
+	public boolean isInRangeToRenderDist(double distsq) {
+		return true;
+	}
+
+	@Override
+	public boolean shouldRenderInPass(int pass) {
+		return pass == 1;
+	}
+
 	private static class ColorDirection {
 
 		private final double angle1;
@@ -272,12 +312,16 @@ public class EntityDimensionFlare extends Entity/*Living*/ {
 			switch(e.rand.nextInt(4)) {
 				case 0:
 					c = 0xffffff;
+					break;
 				case 1:
 					c = 0x22aaff;
+					break;
 				case 2:
 					c = 0xDA8CFF;
+					break;
 				case 3:
 					c = 0xFFF1AD;
+					break;
 			}
 			return new FlareIdentity(c, e.rand.nextFloat()+0.5F);
 		}

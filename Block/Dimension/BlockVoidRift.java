@@ -17,12 +17,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
@@ -39,8 +41,14 @@ public class BlockVoidRift extends Block {
 	public BlockVoidRift(Material mat) {
 		super(mat);
 		this.setResistance(900000);
-		this.setBlockUnbreakable();
+		//this.setBlockUnbreakable();
+		this.setHardness(10);
 		this.setCreativeTab(ChromatiCraft.tabChromaGen);
+	}
+
+	@Override
+	public float getPlayerRelativeBlockHardness(EntityPlayer ep, World world, int x, int y, int z) {
+		return ProgressStage.CTM.isPlayerAtStage(ep) ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z) : -1;
 	}
 
 	@Override

@@ -89,9 +89,8 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 			case 2:
 				return 5;
 			case 3:
-				return 6;
 			default:
-				return 4;
+				return 6;
 		}
 	}
 

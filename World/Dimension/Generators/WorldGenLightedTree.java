@@ -35,6 +35,8 @@ public class WorldGenLightedTree extends ChromaWorldGenerator {
 				return 0.8F;
 			case CENTER:
 				return 0.5F;
+			case SPARKLE:
+				return 0.1F;
 			default:
 				return 0.5F;
 		}

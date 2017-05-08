@@ -15,8 +15,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -24,8 +26,13 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
+import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.Dimension.Structure.WaterPuzzleGenerator;
+import Reika.ChromatiCraft.World.Dimension.Structure.Water.WaterFloor;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 
@@ -56,27 +63,35 @@ public class BlockEverFluid extends BlockContainer {
 
 	@Override
 	public void updateTick(World world, int x, int y, int z, Random rand) {
-		if (this.isSourceBlock(world, x, y, z)) {
-			this.trySpread(world, x, y, z, rand);
-		}
-		else {
-			TileEntityEverFluid te = (TileEntityEverFluid)world.getTileEntity(x, y, z);
-			if (te != null && te.sourceLocation != null && this.isSourceBlock(world, te.sourceLocation)) {
-				this.trySpread(world, x, y, z, rand);
+		TileEntityEverFluid te = (TileEntityEverFluid)world.getTileEntity(x, y, z);
+		if (te != null && te.sourceLocation != null) {
+			BlockArray b = new BlockArray();
+			//b.recursiveMultiAddWithBounds(world, x, y, z, x-100, y-100, z-100, x+100, y+100, z+100, this, ChromaBlocks.WATERLOCK.getBlockInstance());
+			b.recursiveAdd(world, x, y, z, this);
+			if (!b.hasBlock(te.sourceLocation.xCoord, te.sourceLocation.yCoord, te.sourceLocation.zCoord)) {
+				world.setBlock(x, y, z, Blocks.air);
+				if (world.getBlock(x, y-1, z) == ChromaBlocks.WATERLOCK.getBlockInstance() && world.getBlock(x, y-2, z) == this)
+					world.setBlock(x, y-2, z, Blocks.air);
 			}
-			else {
+			else if (this.isSourceBlock(world, x, y, z) || this.isSourceBlock(world, te.sourceLocation)) {
+				this.trySpread(world, x, y, z, te, rand);
+			}
+			else if (te.sourceLocation.getBlock(world) != this) {
 				world.setBlock(x, y, z, Blocks.air);
 			}
 		}
+		else {
+			world.setBlock(x, y, z, Blocks.air);
+		}
 	}
 
-	private void trySpread(World world, int x, int y, int z, Random rand) {
-		if (this.flowIntoBlock(world, x, y, z, ForgeDirection.DOWN)) {
+	private void trySpread(World world, int x, int y, int z, TileEntityEverFluid te, Random rand) {
+		if (this.flowIntoBlock(world, x, y, z, te, ForgeDirection.DOWN)) {
 			//do not flow outwards
 		}
 		else if (world.getBlock(x, y-1, z) != this) {
 			for (int i = 2; i < 6; i++) {
-				this.flowIntoBlock(world, x, y, z, ForgeDirection.VALID_DIRECTIONS[i]);
+				this.flowIntoBlock(world, x, y, z, te, ForgeDirection.VALID_DIRECTIONS[i]);
 			}
 		}
 	}
@@ -89,23 +104,52 @@ public class BlockEverFluid extends BlockContainer {
 		return world.getBlock(x, y, z) == this && world.getBlockMetadata(x, y, z) == 0;
 	}
 
-	private boolean flowIntoBlock(World world, int x, int y, int z, ForgeDirection dir) {
+	private boolean flowIntoBlock(World world, int x, int y, int z, TileEntityEverFluid src, ForgeDirection dir) {
 		int dx = x+dir.offsetX;
 		int dy = y+dir.offsetY;
 		int dz = z+dir.offsetZ;
 		tickRate = 3;
-		if (this.canFlowInto(world, dx, dy, dz)) {
-			world.setBlock(dx, dy, dz, this, 1, 3);
+		boolean placeSource = false;
+		if (dy > 0 && y > 0 && dir == ForgeDirection.DOWN && world.getBlock(x, y-1, z) == ChromaBlocks.WATERLOCK.getBlockInstance()) {
+			dy--;
+			placeSource = true;
+		}
+		if (this.canFlowInto(world, dx, dy, dz, src)) {
+			if (placeSource) {
+				placeSource(world, dx, dy, dz);
+			}
+			else {
+				world.setBlock(dx, dy, dz, this, 1, 3);
+				this.onBlockAdded(world, dx, dy, dz);
+			}
 			TileEntityEverFluid te = (TileEntityEverFluid)world.getTileEntity(dx, dy, dz);
+			if (!placeSource) {
+				te.sourceLocation = src.sourceLocation;
+			}
 
-			Coordinate c = this.isSourceBlock(world, x, y, z) ? new Coordinate(x, y, z) : ((TileEntityEverFluid)world.getTileEntity(x, y, z)).sourceLocation.copy();
-			te.sourceLocation = c;
+			te.uid = src.uid;
+			te.level = src.level;
 			return true;
 		}
 		return false;
 	}
 
-	private boolean canFlowInto(IBlockAccess world, int x, int y, int z) {
+	private boolean canFlowInto(IBlockAccess world, int x, int y, int z, TileEntityEverFluid te) {
+		if (y < 0)
+			return false;
+
+		if (te != null) {
+			WaterPuzzleGenerator w = te.getGenerator();
+			if (w != null) {
+				WaterFloor f = w.getLevel(te.level);
+				if (f != null) {
+					if (f.isSlotOccluded(x, y, z)) {
+						return false;
+					}
+				}
+			}
+		}
+
 		if (world.getBlock(x, y, z).isAir(world, x, y, z))
 			return true;
 
@@ -125,6 +169,8 @@ public class BlockEverFluid extends BlockContainer {
 	@Override
 	public void onBlockAdded(World world, int x, int y, int z) {
 		world.scheduleBlockUpdate(x, y, z, this, tickRate);
+		if (!(world.getTileEntity(x, y, z) instanceof TileEntityEverFluid))
+			world.setTileEntity(x, y, z, new TileEntityEverFluid());
 	}
 
 	@Override
@@ -134,7 +180,7 @@ public class BlockEverFluid extends BlockContainer {
 
 	@Override
 	public boolean canPlaceBlockAt(World world, int x, int y, int z) {
-		return this.canFlowInto(world, x, y, z);
+		return this.canFlowInto(world, x, y, z, null);
 	}
 
 	@Override
@@ -216,18 +262,32 @@ public class BlockEverFluid extends BlockContainer {
 		return ChromatiCraft.proxy.everfluidRender;
 	}
 
+	@Override
+	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase e, ItemStack is) {
+		super.onBlockPlacedBy(world, x, y, z, e, is);
+		placeSource(world, x, y, z);
+	}
+
 	public static void placeSource(World world, int x, int y, int z) {
-		world.setBlock(x, y, z, ChromaBlocks.EVERFLUID.getBlockInstance());
+		Block b = ChromaBlocks.EVERFLUID.getBlockInstance();
+		if (world.getBlock(x, y, z) != b)
+			world.setBlock(x, y, z, b);
+		b.onBlockAdded(world, x, y, z);
 		((TileEntityEverFluid)world.getTileEntity(x, y, z)).sourceLocation = new Coordinate(x, y, z);
 	}
 
-	public static class TileEntityEverFluid extends TileEntity {
+	public static class TileEntityEverFluid extends StructureBlockTile<WaterPuzzleGenerator> {
 
 		private Coordinate sourceLocation;
+		private int level;
 
 		@Override
 		public boolean canUpdate() {
 			return false;
+		}
+
+		public void setData(int lvl) {
+			level = lvl;
 		}
 
 		@Override
@@ -236,12 +296,20 @@ public class BlockEverFluid extends BlockContainer {
 
 			if (sourceLocation != null)
 				sourceLocation.writeToNBT("loc", NBT);
+
+			NBT.setInteger("lvl", level);
 		}
 
 		@Override
 		public void readFromNBT(NBTTagCompound NBT) {
 			super.readFromNBT(NBT);
 			sourceLocation = Coordinate.readFromNBT("loc", NBT);
+			level = NBT.getInteger("lvl");
+		}
+
+		@Override
+		public DimensionStructureType getType() {
+			return DimensionStructureType.WATER;
 		}
 
 	}

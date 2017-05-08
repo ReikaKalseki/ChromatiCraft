@@ -50,9 +50,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class BiomeDistributor extends ThreadedGenerator {
 
-	private static final int SIZE = 2048;//4096;
+	private static final int SIZE = 4096;//2048;//4096;
 
-	public static final int SCALE_FACTOR = 1;
+	public static final int SCALE_FACTOR = 2;//1;
 
 	private static final double MIN_STRUCTURE_RADIUS = 96;//64;
 	private static final double MAX_STRUCTURE_RADIUS = 384;//128;

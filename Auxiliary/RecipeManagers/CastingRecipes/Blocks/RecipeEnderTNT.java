@@ -9,13 +9,17 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 
+import java.util.Collection;
+
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class RecipeEnderTNT extends PylonCastingRecipe {
@@ -34,10 +38,19 @@ public class RecipeEnderTNT extends PylonCastingRecipe {
 		this.addAuxItem(ReikaItemHelper.stoneBricks, -2, -2);
 
 		Fluid f = FluidRegistry.getFluid("ender");
-		this.addAuxItem(f, 0, 4);
-		this.addAuxItem(f, 4, 0);
-		this.addAuxItem(f, -4, 0);
-		this.addAuxItem(f, 0, -4);
+		Collection<ItemStack> li = ReikaFluidHelper.getAllContainersFor(f);
+		if (li.isEmpty()) {
+			this.addAuxItem(ChromaItems.BUCKET.getStackOfMetadata(1), 0, 4);
+			this.addAuxItem(ChromaItems.BUCKET.getStackOfMetadata(1), 4, 0);
+			this.addAuxItem(ChromaItems.BUCKET.getStackOfMetadata(1), -4, 0);
+			this.addAuxItem(ChromaItems.BUCKET.getStackOfMetadata(1), 0, -4);
+		}
+		else {
+			this.addAuxItem(f, 0, 4);
+			this.addAuxItem(f, 4, 0);
+			this.addAuxItem(f, -4, 0);
+			this.addAuxItem(f, 0, -4);
+		}
 
 		this.addAuxItem(ChromaStacks.enderIngot, 4, 4);
 		this.addAuxItem(ChromaStacks.enderIngot, 2, 4);

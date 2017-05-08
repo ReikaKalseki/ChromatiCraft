@@ -81,8 +81,7 @@ public class ContainerCastingAuto extends CoreContainer {
 	public boolean isRecipeValid(CastingRecipe cr) {
 		if (recipeFilter == null)
 			return true;
-		ItemStack out = cr.getOutput();
-		return ReikaItemHelper.matchStacks(recipeFilter, out) && ItemStack.areItemStackTagsEqual(recipeFilter, out);
+		return cr.crafts(recipeFilter);
 	}
 
 	@Override

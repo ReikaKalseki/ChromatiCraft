@@ -657,45 +657,45 @@
 			Mysterious Relics
 		</title>
 		<hint>
-			
+			All around the world linger remnants of...something.
 		</hint>
 		<reveal>
-
+			Including particularly mysterious - and dangerous - ones found in certain regions.
 		</reveal>
 	</artefact>
-	<name>
+	<tower>
 		<title>
-
+			Glowing Towers
 		</title>
 		<hint>
-
+			The pylons are not the only luminous constructs you find around the world.
 		</hint>
 		<reveal>
-
+			The purpose these obelisks serve is a entirely unknown, but they must be key to something.
 		</reveal>
-	</name>
-	<name>
+	</tower>
+	<blowrepeater>
 		<title>
-
+			Lumen Overload
 		</title>
 		<hint>
-
+			These wooden lumen foci seem to work quite well...
 		</hint>
 		<reveal>
-
+			...Except when they explode trying.
 		</reveal>
-	</name>
-	<name>
+	</blowrepeater>
+	<chargecrystal>
 		<title>
-
+			Lumen Storage II
 		</title>
 		<hint>
-
+			A storage crystal is little more than a pretty rock without a way to put the energy into it.
 		</hint>
 		<reveal>
-
+			As is usual, a simple problem has a simple - and spinny - solution.
 		</reveal>
-	</name>
+	</chargecrystal>
 	<name>
 		<title>
 

@@ -11,7 +11,6 @@ package Reika.ChromatiCraft;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
 
@@ -73,7 +72,6 @@ import org.lwjgl.opengl.GL12;
 import pneumaticCraft.api.client.pneumaticHelmet.BlockTrackEvent;
 import pneumaticCraft.api.client.pneumaticHelmet.InventoryTrackEvent;
 import thaumcraft.api.research.ResearchItem;
-import Reika.ChromatiCraft.Auxiliary.MusicLoader;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityXRays;
@@ -87,6 +85,7 @@ import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux;
 import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux.Flags;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
+import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.GUI.GuiAuraPouch;
 import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
 import Reika.ChromatiCraft.Items.Tools.ItemFloatstoneBoots;
@@ -143,11 +142,9 @@ import Reika.DragonAPI.Instantiable.Event.Client.RenderBlockAtPosEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.RenderFirstPersonItemEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.RenderItemInSlotEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.SinglePlayerLogoutEvent;
-import Reika.DragonAPI.Instantiable.Event.Client.SoundVolumeEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.TileEntityRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.WaterColorEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.WeatherSkyStrengthEvent;
-import Reika.DragonAPI.Instantiable.IO.CustomMusic;
 import Reika.DragonAPI.Instantiable.IO.EnumSound;
 import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
@@ -643,6 +640,7 @@ public class ChromaClientEventController {
 		}
 	}
 
+	/*
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void ensureMusic(SoundVolumeEvent evt) {
 		if (evt.sound instanceof CustomMusic) {
@@ -652,6 +650,7 @@ public class ChromaClientEventController {
 			}
 		}
 	}
+	 */
 
 	/* Does not work (Sound Engine cannot handle values outside [0, 2.0])
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -780,64 +779,69 @@ public class ChromaClientEventController {
 				BlendMode.DEFAULT.apply();
 				int a = (int)(96+64*Math.sin(System.currentTimeMillis()/400D+te.getEntityId()));
 
-				if (visualLOS == null) //lazyload
-					visualLOS = RayTracer.getVisualLOS();
-				visualLOS.setOrigins(ep.posX, ep.posY, ep.posZ, te.posX, te.posY+te.height/2, te.posZ);
-				int c = visualLOS.isClearLineOfSight(ep.worldObj) ? 0x00ff00 : 0xff0000;//ReikaEntityHelper.mobToColor((EntityLivingBase)evt.entity);
+				if (ReikaEntityHelper.isInWorld(te)) {
+					if (visualLOS == null) //lazyload
+						visualLOS = RayTracer.getVisualLOS();
+					visualLOS.setOrigins(ep.posX, ep.posY, ep.posZ, te.posX, te.posY+te.height/2, te.posZ);
+					int c = visualLOS.isClearLineOfSight(ep.worldObj) ? 0x00ff00 : 0xff0000;//ReikaEntityHelper.mobToColor((EntityLivingBase)evt.entity);
 
-				AxisAlignedBB box = te.boundingBox.copy().offset(-te.posX, -te.posY, -te.posZ);//AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1).expand(te.width/4, te.height/4, te.width/4).offset(-te.width/2, -te.height/2, -te.width/2);
-				box.maxY = Math.min(box.maxY, box.minY+te.height);
-				if (te instanceof EntitySilverfish) {
-					box = box.expand(te.width/2, 0, te.width/2);
-					box.maxY = box.minY+(box.maxY-box.minY)/2;
+					AxisAlignedBB box = te.boundingBox.copy().offset(-te.posX, -te.posY, -te.posZ);//AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1).expand(te.width/4, te.height/4, te.width/4).offset(-te.width/2, -te.height/2, -te.width/2);
+					box.maxY = Math.min(box.maxY, box.minY+te.height);
+					if (te instanceof EntityGlowCloud) {
+						box = AxisAlignedBB.getBoundingBox(0, 0, 0, 0, 0, 0).expand(0.75, 0.75, 0.75);
+					}
+					else if (te instanceof EntitySilverfish) {
+						box = box.expand(te.width/2, 0, te.width/2);
+						box.maxY = box.minY+(box.maxY-box.minY)/2;
+					}
+
+					double mx = box.minX;
+					double px = box.maxX;
+					double my = box.minY;
+					double py = box.maxY;
+					double mz = box.minZ;
+					double pz = box.maxZ;
+
+					v5.startDrawing(GL11.GL_LINE_LOOP);
+					v5.setColorRGBA_I(c, a);
+					v5.addVertex(mx, my, mz);
+					v5.addVertex(px, my, mz);
+					v5.addVertex(px, my, pz);
+					v5.addVertex(mx, my, pz);
+					v5.draw();
+
+					v5.startDrawing(GL11.GL_LINE_LOOP);
+					v5.setColorRGBA_I(c, a);
+					v5.addVertex(mx, py, mz);
+					v5.addVertex(px, py, mz);
+					v5.addVertex(px, py, pz);
+					v5.addVertex(mx, py, pz);
+					v5.draw();
+
+					v5.startDrawing(GL11.GL_LINES);
+					v5.setColorRGBA_I(c, a);
+					v5.addVertex(mx, my, mz);
+					v5.addVertex(mx, py, mz);
+					v5.draw();
+
+					v5.startDrawing(GL11.GL_LINES);
+					v5.setColorRGBA_I(c, a);
+					v5.addVertex(px, my, mz);
+					v5.addVertex(px, py, mz);
+					v5.draw();
+
+					v5.startDrawing(GL11.GL_LINES);
+					v5.setColorRGBA_I(c, a);
+					v5.addVertex(px, my, pz);
+					v5.addVertex(px, py, pz);
+					v5.draw();
+
+					v5.startDrawing(GL11.GL_LINES);
+					v5.setColorRGBA_I(c, a);
+					v5.addVertex(mx, my, pz);
+					v5.addVertex(mx, py, pz);
+					v5.draw();
 				}
-
-				double mx = box.minX;
-				double px = box.maxX;
-				double my = box.minY;
-				double py = box.maxY;
-				double mz = box.minZ;
-				double pz = box.maxZ;
-
-				v5.startDrawing(GL11.GL_LINE_LOOP);
-				v5.setColorRGBA_I(c, a);
-				v5.addVertex(mx, my, mz);
-				v5.addVertex(px, my, mz);
-				v5.addVertex(px, my, pz);
-				v5.addVertex(mx, my, pz);
-				v5.draw();
-
-				v5.startDrawing(GL11.GL_LINE_LOOP);
-				v5.setColorRGBA_I(c, a);
-				v5.addVertex(mx, py, mz);
-				v5.addVertex(px, py, mz);
-				v5.addVertex(px, py, pz);
-				v5.addVertex(mx, py, pz);
-				v5.draw();
-
-				v5.startDrawing(GL11.GL_LINES);
-				v5.setColorRGBA_I(c, a);
-				v5.addVertex(mx, my, mz);
-				v5.addVertex(mx, py, mz);
-				v5.draw();
-
-				v5.startDrawing(GL11.GL_LINES);
-				v5.setColorRGBA_I(c, a);
-				v5.addVertex(px, my, mz);
-				v5.addVertex(px, py, mz);
-				v5.draw();
-
-				v5.startDrawing(GL11.GL_LINES);
-				v5.setColorRGBA_I(c, a);
-				v5.addVertex(px, my, pz);
-				v5.addVertex(px, py, pz);
-				v5.draw();
-
-				v5.startDrawing(GL11.GL_LINES);
-				v5.setColorRGBA_I(c, a);
-				v5.addVertex(mx, my, pz);
-				v5.addVertex(mx, py, pz);
-				v5.draw();
 
 				GL11.glPopAttrib();
 				GL11.glPopMatrix();

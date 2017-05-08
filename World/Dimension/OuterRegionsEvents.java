@@ -65,6 +65,7 @@ public class OuterRegionsEvents {
 	}
 
 	public boolean doRejectAttack(EntityDimensionFlare e, EntityPlayer ep) {
+		this.doFlareAggro(ep);
 		return this.doRejectAttack(e, ep, Math.max(3, ep.getHealth()/2F));
 	}
 

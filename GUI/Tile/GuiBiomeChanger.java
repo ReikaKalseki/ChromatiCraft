@@ -37,6 +37,7 @@ import Reika.DragonAPI.Instantiable.GUI.GuiPainter.Brush;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter.PaintElement;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 
@@ -179,16 +180,17 @@ public class GuiBiomeChanger extends GuiChromaBase {
 		super.mouseClicked(x, y, b);
 		if (page == GuiPages.BIOME) {
 			search.mouseClicked(x, y, b);
+			ReikaJavaLibrary.pConsole(x+":"+y);
 
-			if (y < 190) {
-				int j = (width - xSize) / 2;
-				int k = (height - ySize) / 2;
-				BiomeGenBase biome = biomeRegions.getRegion(x-j, y-k);
-				if (biome != null || painter.activeElement != null)
-					//Minecraft.getMinecraft().thePlayer.playSound("random.click", 2, 1);
-					ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
-				painter.activeElement = erase ? fallback : biome != null ? biomeEntries.get(biome) : null;
-			}
+			//if (y < 190) {
+			int j = (width - xSize) / 2;
+			int k = (height - ySize) / 2;
+			BiomeGenBase biome = biomeRegions.getRegion(x-j, y-k);
+			if (biome != null || painter.activeElement != null)
+				//Minecraft.getMinecraft().thePlayer.playSound("random.click", 2, 1);
+				ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+			painter.activeElement = erase ? fallback : biome != null ? biomeEntries.get(biome) : null;
+			//}
 		}
 	}
 

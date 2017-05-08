@@ -33,7 +33,7 @@ public class WorldGenAurorae extends ChromaWorldGenerator {
 
 	@Override
 	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
-		return 0.03125F/8;
+		return 0.03125F/4;
 	}
 
 	@Override

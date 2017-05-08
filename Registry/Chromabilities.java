@@ -393,7 +393,7 @@ public enum Chromabilities implements Ability {
 				return;
 		}
 		else if (a.actOnClient() && dispatchPacket) { //notify other players
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ABILITYSEND.ordinal(), ep.worldObj, 0, 0, 0, getAbilityInt(a), data);
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ABILITYSEND.ordinal(), ep.worldObj, 0, 0, 0, getAbilityInt(a), data, ep.getEntityId());
 		}
 
 		ProgressStage.ABILITY.stepPlayerTo(ep);

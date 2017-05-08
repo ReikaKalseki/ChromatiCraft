@@ -29,7 +29,7 @@ public class WorldGenLightedShrub extends ChromaWorldGenerator {
 
 	@Override
 	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
-		return biome.biomeType == Biomes.FOREST ? 4 : 2;
+		return biome.biomeType == Biomes.SPARKLE ? 0.25F : biome.biomeType == Biomes.FOREST ? 4 : 2;
 	}
 
 	@Override

@@ -654,4 +654,8 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 		return locations.get(e);
 	}
 
+	void setColor(CrystalElement e) {
+		color = e;
+	}
+
 }

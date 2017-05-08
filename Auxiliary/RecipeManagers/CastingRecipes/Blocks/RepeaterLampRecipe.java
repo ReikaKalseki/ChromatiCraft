@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Block.Decoration.BlockRepeaterLight;
@@ -20,7 +21,11 @@ import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 public class RepeaterLampRecipe extends CastingRecipe {
 
 	public RepeaterLampRecipe(ChromaTiles c) {
-		super(calcOutput(c), ReikaRecipeHelper.getShapelessRecipeFor(calcOutput(c), c.getCraftedProduct()));
+		super(calcOutput(c), ReikaRecipeHelper.getShapedRecipeFor(calcOutput(c), getRecipe(c)));
+	}
+
+	private static Object[] getRecipe(ChromaTiles c) {
+		return new Object[]{"ggg", "grg", "ggg", 'r', c.getCraftedProduct(), 'g', Items.glowstone_dust};
 	}
 
 	private static ItemStack calcOutput(ChromaTiles c) {

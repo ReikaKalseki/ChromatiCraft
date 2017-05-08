@@ -291,6 +291,7 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		WATER(WaterPuzzleGenerator.class, "Channeled Flow"),
 		TESSELLATION(TessellationGenerator.class, "Spatial Satisfaction"),
 		LIGHTPANEL(LightPanelGenerator.class, "Glowing Logic");
+		//TRACES();//http://www.cross-plus-a.com/data/arukone.gif
 
 		private final Class generatorClass;
 		//private DimensionStructureGenerator generator;

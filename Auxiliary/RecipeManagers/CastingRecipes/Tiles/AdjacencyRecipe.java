@@ -90,6 +90,11 @@ public class AdjacencyRecipe extends PylonCastingRecipe {
 		return super.isValidCentralNBT(this.stripUncaredTags(is));
 	}
 
+	@Override
+	public boolean crafts(ItemStack is) {
+		return super.crafts(this.stripUncaredTags(is));
+	}
+
 	private ItemStack stripUncaredTags(ItemStack is) {
 		if (is.stackTagCompound == null)
 			return is;

@@ -35,7 +35,6 @@ import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenLightedTree;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMiasma;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMiniAltar;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMoonPool;
-import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenSparkle;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenTerrainBlob;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenTerrainCrystal;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenTreeCluster;
@@ -65,7 +64,8 @@ public enum DimensionGenerators {
 	ARCH(WorldGenIslandArch.class,					GeneratorType.TERRAIN,		GeneratorTheme.OCEANIC,			Integer.MIN_VALUE),
 	BLOBS(WorldGenTerrainBlob.class,				GeneratorType.TERRAIN,		GeneratorTheme.OCEANIC,			Integer.MIN_VALUE),
 	GLASSCLIFFS(WorldGenGlassCliffs.class,			GeneratorType.FEATURE,		GeneratorTheme.GEOHISTORICAL,	Integer.MIN_VALUE),
-	SPARKLE(WorldGenSparkle.class,					GeneratorType.FEATURE,		GeneratorTheme.ENERGY,			Integer.MAX_VALUE);
+	//SPARKLE(WorldGenSparkle.class,					GeneratorType.FEATURE,		GeneratorTheme.ENERGY,			Integer.MAX_VALUE),
+	;
 
 	private final Class genClass;
 	public final GeneratorType type;
@@ -109,7 +109,7 @@ public enum DimensionGenerators {
 		if (this == FORESTS)
 			return b.biomeType == Biomes.FOREST;
 		if (this == TREES || this == GLOWBUSH)
-			return b.biomeType == Biomes.FOREST || b.biomeType == Biomes.PLAINS || b.getExactType() == Biomes.ISLANDS;
+			return b.biomeType == Biomes.FOREST || b.biomeType == Biomes.PLAINS || b.getExactType() == Biomes.ISLANDS || b.biomeType == Biomes.SPARKLE;
 		switch(this) {
 			case ALTAR:
 				return b.getExactType().isReasonablyFlat();
@@ -136,8 +136,8 @@ public enum DimensionGenerators {
 				return b == SubBiomes.DEEPOCEAN.getBiome();
 			case GLASSCLIFFS:
 				return b == Biomes.PLAINS.getBiome();
-			case SPARKLE:
-				return b == Biomes.SPARKLE.getBiome();
+				//case SPARKLE:
+				//	return b == Biomes.SPARKLE.getBiome();
 			default:
 				return true;
 		}
@@ -156,7 +156,7 @@ public enum DimensionGenerators {
 			case BLOBS:
 			case MIASMA:
 			case GLASSCLIFFS:
-			case SPARKLE:
+				//case SPARKLE:
 				return true;
 			default:
 				return false;

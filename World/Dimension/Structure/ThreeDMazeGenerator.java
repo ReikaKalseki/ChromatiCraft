@@ -158,12 +158,12 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 					for (ForgeDirection dir : dirs) {
 						p.connect(dir);
 					}
-					int ndl = 2;//4;
+					int ndl = 3;//4;
 					if (i%ndl == 0 && j%(ndl/2) == 0 && k%ndl == 0)
 						p.setLighted();
-					if (i != 0 && j != 0 && k != 0 && i != MAX_SIZE_X-1 && j != MAX_SIZE_Y-1 && k != MAX_SIZE_Z-1 && rand.nextInt(20) == 0) {
+					if (i != 0 && j != 0 && k != 0 && i != MAX_SIZE_X-1 && j != MAX_SIZE_Y-1 && k != MAX_SIZE_Z-1 && rand.nextInt(10) == 0) {
 						p.addWindow(ForgeDirection.VALID_DIRECTIONS[rand.nextInt(6)]);
-						if (rand.nextInt(20) == 0) {
+						while (rand.nextInt(10) == 0) {
 							p.addWindow(ForgeDirection.VALID_DIRECTIONS[rand.nextInt(6)]);
 						}
 					}

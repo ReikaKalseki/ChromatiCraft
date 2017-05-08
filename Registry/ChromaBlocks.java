@@ -95,6 +95,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.Pinball.BlockPinballTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftKey;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Water.BlockEverFluid;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Water.BlockRotatingLock;
 import Reika.ChromatiCraft.Block.Dye.BlockDye;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeFlower;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeGrass;
@@ -237,7 +238,8 @@ public enum ChromaBlocks implements BlockEnum {
 	CAVEINDICATOR(BlockCaveIndicator.class,										"chroma.caveindicator"),
 	TILEMODELLED4(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile 4"),
 	FLOATINGRELAY(BlockFloatingRelay.class,										"Ethereal Relay"),
-	REPEATERLAMP(BlockRepeaterLight.class,		ItemBlockMultiType.class,		"Repeater Lamp");
+	REPEATERLAMP(BlockRepeaterLight.class,		ItemBlockMultiType.class,		"Repeater Lamp"),
+	WATERLOCK(BlockRotatingLock.class,											"chroma.lock");
 
 	private Class blockClass;
 	private String blockName;
@@ -507,6 +509,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case AVOLAMP:
 			case RELAYFILTER:
 			case EVERFLUID:
+			case WATERLOCK:
 			case PANELSWITCH:
 			case LIGHTPANEL:
 			case DUMMYAUX:

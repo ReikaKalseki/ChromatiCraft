@@ -12,8 +12,10 @@ package Reika.ChromatiCraft.TileEntity.Technical;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -44,7 +46,10 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
+import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
+import Reika.ChromatiCraft.World.Dimension.Structure.MonumentGenerator;
 import Reika.ChromatiCraft.World.IWG.DungeonGenerator;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -94,6 +99,21 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 		if (isMonument && triggeredMonument && monument != null) {
 			monument.tick();
+		}
+		if (isMonument && DragonAPICore.debugtest) {
+			for (int i = 0; i < 16; i++) {
+				Coordinate c = TileEntityDimensionCore.getLocation(CrystalElement.elements[i]);
+				c = c.offset(x, y, z);
+				c.setBlock(world, ChromaTiles.DIMENSIONCORE.getBlock(), ChromaTiles.DIMENSIONCORE.getBlockMetadata());
+				((TileEntityDimensionCore)c.getTileEntity(world)).setPlacer(world.getClosestPlayer(x, y, z, -1));
+				((TileEntityDimensionCore)c.getTileEntity(world)).prime(true);
+				((TileEntityDimensionCore)c.getTileEntity(world)).setColor(CrystalElement.elements[i]);
+			}
+			MonumentGenerator gen = ChunkProviderChroma.getMonumentGenerator();
+			Map<Coordinate, Block> map = gen.getMineralBlocks();
+			for (Coordinate c : map.keySet()) {
+				c.setBlock(world, map.get(c));
+			}
 		}
 
 		if (!triggered && struct != null && this.getTicksExisted()%4 == 0) {
@@ -618,7 +638,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			}
 		}
 		LootChestWatcher.instance.remove(this);
-		DungeonGenerator.instance.deleteStructure(struct, this);
+		if (struct != null)
+			DungeonGenerator.instance.deleteStructure(struct, this);
 		if (monument != null && monument.isRunning() && !monument.isComplete()) {
 			monument.endRitual();
 		}

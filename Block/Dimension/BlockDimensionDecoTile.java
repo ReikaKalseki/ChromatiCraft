@@ -18,6 +18,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -27,6 +28,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.DecoType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -85,7 +87,13 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 	public BlockDimensionDecoTile(Material mat) {
 		super(mat);
 		this.setResistance(50000);
-		this.setBlockUnbreakable();
+		//this.setBlockUnbreakable();
+		this.setHardness(10);
+	}
+
+	@Override
+	public float getPlayerRelativeBlockHardness(EntityPlayer ep, World world, int x, int y, int z) {
+		return ProgressStage.CTM.isPlayerAtStage(ep) ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z) : -1;
 	}
 
 	@Override

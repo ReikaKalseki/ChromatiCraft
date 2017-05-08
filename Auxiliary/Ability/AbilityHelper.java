@@ -56,6 +56,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
 import Reika.ChromatiCraft.Items.Tools.ItemEfficiencyCrystal;
@@ -69,6 +70,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
@@ -146,6 +148,7 @@ public class AbilityHelper {
 	final PlayerMap<HashMap<String, WarpPoint>> teleports = new PlayerMap();
 
 	private final MultiMap<Ability, ProgressStage> progressMap = new MultiMap(new HashSetFactory());
+	private final MultiMap<Ability, CrystalElement> structureMap = new MultiMap(new HashSetFactory());
 
 	private final HashMap<Ability, ElementTagCompound> tagMap = new HashMap();
 
@@ -203,6 +206,13 @@ public class AbilityHelper {
 		progressMap.addValue(Chromabilities.BEEALYZE, ProgressStage.HIVE);
 		progressMap.addValue(Chromabilities.BEEALYZE, ProgressStage.LINK);
 		progressMap.addValue(Chromabilities.NUKER, ProgressStage.STRUCTCOMPLETE);
+
+		for (Ability a : progressMap.keySet()) {
+			if (progressMap.get(a).contains(ProgressStage.STRUCTCOMPLETE)) {
+				for (CrystalElement e : AbilityRituals.instance.getAura(a).elementSet())
+					structureMap.addValue(a, e);
+			}
+		}
 
 		for (AbilityXRays x : AbilityXRays.values()) {
 			xRayMap.put(x.objectClass, x);
@@ -390,6 +400,10 @@ public class AbilityHelper {
 		}
 	}
 
+	public void gotoMapWarpPoint(WorldLocation loc, EntityPlayerMP ep) {
+		new WarpPoint("", loc).teleportPlayerTo(ep);
+	}
+
 	public void gotoWarpPoint(WarpPoint wp, EntityPlayerMP ep) {
 		if (wp != null && wp.canTeleportPlayer(ep)) {
 			wp.teleportPlayerTo(ep);
@@ -451,11 +465,20 @@ public class AbilityHelper {
 			if (!p.isPlayerAtStage(ep))
 				return false;
 		}
+		Collection<CrystalElement> li2 = structureMap.get(c);
+		for (CrystalElement e : li2) {
+			if (!ProgressionManager.instance.hasPlayerCompletedStructureColor(ep, e))
+				return false;
+		}
 		return true;
 	}
 
 	public Collection<ProgressStage> getProgressFor(Ability c) {
 		return Collections.unmodifiableCollection(progressMap.get(c));
+	}
+
+	public Collection<CrystalElement> getRequiredStructuresFor(Ability c) {
+		return Collections.unmodifiableCollection(structureMap.get(c));
 	}
 
 	@SubscribeEvent
@@ -733,6 +756,8 @@ public class AbilityHelper {
 		if (RailcraftHandler.Blocks.QUARRIED.match(b, meta) || RailcraftHandler.Blocks.ABYSSAL.match(b, meta))
 			return false;
 		if (ChiselBlockHandler.isWorldgenBlock(b, meta))
+			return false;
+		if (b == ChromaBlocks.CLIFFSTONE.getBlockInstance())
 			return false;
 		return !b.isReplaceableOreGen(world, x, y, z, Blocks.stone);
 	}
@@ -1507,7 +1532,7 @@ public class AbilityHelper {
 					for (EntityLivingBase e : li) {
 						if (e != mob && e instanceof EntityCreature && ((EntityCreature)e).getEntityToAttack() != ep) {
 							Class<? extends EntityLivingBase> cat2 = ReikaEntityHelper.getEntityCategoryClass(e);
-							if (cat2 == cat && rand.nextInt(8) == 0) {
+							if (cat2 == cat && rand.nextInt(3) == 0) {
 								long time = ep.worldObj.getTotalWorldTime();
 								ep.getEntityData().setLong("ignoreNoAggro", time);
 							}

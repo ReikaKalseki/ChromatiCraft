@@ -9,7 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.Random;
 
 import net.minecraft.world.World;
@@ -23,7 +23,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 public class WaterPuzzleGenerator extends DimensionStructureGenerator {
 
-	private final LinkedList<WaterFloor> levels = new LinkedList();
+	private final ArrayList<WaterFloor> levels = new ArrayList();
 
 	@Override
 	protected void calculate(int chunkX, int chunkZ, Random rand) {
@@ -33,15 +33,16 @@ public class WaterPuzzleGenerator extends DimensionStructureGenerator {
 		posY = 10+rand.nextInt(10);
 
 		int n = this.getSize();
-		int startx = ReikaRandomHelper.getRandomPlusMinus(0, 2);
-		int startz = ReikaRandomHelper.getRandomPlusMinus(0, 2);
+		int r = this.getRadius(0);
+		int startx = ReikaRandomHelper.getRandomPlusMinus(0, r);
+		int startz = ReikaRandomHelper.getRandomPlusMinus(0, r);
 		for (int i = 0; i < n; i++) {
-			int r = 2+i;
+			r = this.getRadius(i);
 			int endx = ReikaRandomHelper.getRandomPlusMinus(0, r);
 			int endz = ReikaRandomHelper.getRandomPlusMinus(0, r);
-			WaterPath path = new WaterPath(startx, startz, endx, endz);
-			path.genPath();
-			WaterFloor w = new WaterFloor(this, r, path);
+			WaterPath path = new WaterPath(startx, startz, endx, endz, r);
+			path.genPath(rand);
+			WaterFloor w = new WaterFloor(this, i, r, path);
 			levels.add(w);
 			startx = endx;
 			startz = endx;
@@ -53,6 +54,10 @@ public class WaterPuzzleGenerator extends DimensionStructureGenerator {
 			l.generate(world, posX, y, posZ);
 			y -= l.HEIGHT;
 		}
+	}
+
+	private int getRadius(int i) {
+		return 2+i;
 	}
 
 	private static int getSize() {
@@ -94,6 +99,14 @@ public class WaterPuzzleGenerator extends DimensionStructureGenerator {
 	@Override
 	protected void clearCaches() {
 		levels.clear();
+	}
+
+	public WaterFloor getLevel(int i) {
+		return levels.get(i);
+	}
+
+	public int levelCount() {
+		return levels.size();
 	}
 
 }
