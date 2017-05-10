@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.AntFarm.BlockAntKey.AntKeyT
 import Reika.ChromatiCraft.Block.Dimension.Structure.Gravity.BlockGravityTile.GravityTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.TargetTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Pinball.BlockPinballTile.TileBouncePad;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Water.BlockRotatingLock.TileEntityRotatingLock;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Entity.EntityAurora;
@@ -110,16 +111,17 @@ import Reika.ChromatiCraft.Render.Item.EnderCrystalRenderer;
 import Reika.ChromatiCraft.Render.Item.LootChestRenderer;
 import Reika.ChromatiCraft.Render.Item.PortalItemRenderer;
 import Reika.ChromatiCraft.Render.TESR.CrystalPlantRenderer;
-import Reika.ChromatiCraft.Render.TESR.RenderAntKey;
 import Reika.ChromatiCraft.Render.TESR.RenderAvoLamp;
-import Reika.ChromatiCraft.Render.TESR.RenderBouncePad;
 import Reika.ChromatiCraft.Render.TESR.RenderColoredAltar;
 import Reika.ChromatiCraft.Render.TESR.RenderCrystalPortal;
-import Reika.ChromatiCraft.Render.TESR.RenderGravityTile;
-import Reika.ChromatiCraft.Render.TESR.RenderLaserTarget;
 import Reika.ChromatiCraft.Render.TESR.RenderLootChest;
 import Reika.ChromatiCraft.Render.TESR.RenderLoreReader;
-import Reika.ChromatiCraft.Render.TESR.RenderVoidRift;
+import Reika.ChromatiCraft.Render.TESR.Dimension.RenderAntKey;
+import Reika.ChromatiCraft.Render.TESR.Dimension.RenderBouncePad;
+import Reika.ChromatiCraft.Render.TESR.Dimension.RenderGravityTile;
+import Reika.ChromatiCraft.Render.TESR.Dimension.RenderLaserTarget;
+import Reika.ChromatiCraft.Render.TESR.Dimension.RenderVoidRift;
+import Reika.ChromatiCraft.Render.TESR.Dimension.RenderWaterLock;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.Auxiliary.PopupWriter;
@@ -298,6 +300,7 @@ public class ChromaClient extends ChromaCommon {
 		ClientRegistry.bindTileEntitySpecialRenderer(GravityTile.class, new RenderGravityTile());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAvoLamp.class, new RenderAvoLamp());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityLoreReader.class, new RenderLoreReader());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRotatingLock.class, new RenderWaterLock());
 
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.PLACER.getItemInstance(), placer);
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.RIFT.getItemInstance(), placer);

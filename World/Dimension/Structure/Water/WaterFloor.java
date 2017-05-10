@@ -10,7 +10,9 @@
 package Reika.ChromatiCraft.World.Dimension.Structure.Water;
 
 import java.awt.Point;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.UUID;
 
 import net.minecraft.init.Blocks;
@@ -28,6 +30,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.WaterPuzzleGenerator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 
 public class WaterFloor extends StructurePiece {
@@ -40,11 +43,13 @@ public class WaterFloor extends StructurePiece {
 	private final Lock[][] flowGrid;
 	private final WaterPath path;
 
-	private final HashSet<Coordinate> blockedChannels = new HashSet();
+	//private final HashSet<Coordinate> blockedChannels = new HashSet();
+	//private final HashSet<Coordinate> padCoordinates = new HashSet();
+	private final HashSet<Coordinate> doorCoordinates = new HashSet();
 
 	private Coordinate origin;
 
-	public WaterFloor(WaterPuzzleGenerator s, int lvl, int r, WaterPath path) {
+	public WaterFloor(WaterPuzzleGenerator s, int lvl, int r, WaterPath path, Random rand) {
 		super(s);
 		level = lvl;
 		gridSize = r*2+1;
@@ -54,6 +59,8 @@ public class WaterFloor extends StructurePiece {
 				flowGrid[i][k] = new Lock(this, i-r, k-r);
 				for (ForgeDirection dir : path.lockSides[i][k]) {
 					flowGrid[i][k].openEnds.add(dir);
+					while (rand.nextInt(4) > 0) //randomize
+						flowGrid[i][k].rotate(false);
 				}
 			}
 		}
@@ -86,8 +93,10 @@ public class WaterFloor extends StructurePiece {
 								world.setBlock(x+i, y+h, z+k, Blocks.air);
 						else {
 							if (h == 2)
-								if (Math.abs(i) > r-4 && Math.abs(k) > r-4)
+								if (Math.abs(i) > r-4 && Math.abs(k) > r-4) {
 									world.setBlock(x+i, y+h, z+k, ChromaBlocks.DOOR.getBlockInstance());
+									doorCoordinates.add(new Coordinate(x+i, y+h, z+k));
+								}
 								else
 									world.setBlock(x+i, y+h, z+k, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.metadata);
 							else
@@ -100,9 +109,11 @@ public class WaterFloor extends StructurePiece {
 						world.setBlock(x+i, y+h, z+k, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata);
 					else if (h == 2)
 						if (Math.abs(i)%(2*Lock.SIZE+2) == Lock.SIZE+1 || Math.abs(k)%(2*Lock.SIZE+2) == Lock.SIZE+1)
-							world.setBlock(x+i, y+h, z+k, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.MOSS.metadata);
-						else
-							world.setBlock(x+i, y+h, z+k, Blocks.brick_block);
+							world.setBlock(x+i, y+h, z+k, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), ReikaRandomHelper.doWithChance(40) ? BlockType.MOSS.metadata : BlockType.STONE.metadata);
+						else {
+							world.setBlock(x+i, y+h, z+k, ChromaBlocks.WATERLOCK.getBlockInstance(), 1); //this is the "pads"
+							//padCoordinates.add(new Coordinate(x+i, y+h, z+k));
+						}
 					else if (h >= 0 || (Math.abs(i) < r-4 && Math.abs(k) < r-4))
 						if (h > 0)
 							world.setBlock(x+i, y+h, z+k, Blocks.air);
@@ -213,14 +224,16 @@ public class WaterFloor extends StructurePiece {
 		for (int i = 0; i < flowGrid.length; i++) {
 			for (int k = 0; k < flowGrid[i].length; k++) {
 				Lock l = flowGrid[i][k];
-				for (ForgeDirection dir : l.openEnds) {
+				world.setTileEntity(l.centerLocation.xCoord, l.centerLocation.yCoord, l.centerLocation.zCoord, ChromaBlocks.WATERLOCK.getBlockInstance(), 0, new LockCallback(parent.id, level, i-r0, k-r0, l.facing, l.openEnds));
+				for (int n = 2; n < 6; n++) {
+					ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[n];
 					for (int d = 0; d <= Lock.SIZE; d++) {
-						world.setBlock(l.centerLocation.xCoord+d*dir.offsetX, y+2, l.centerLocation.zCoord+d*dir.offsetZ, Blocks.air);
-						world.setTileEntity(l.centerLocation.xCoord, l.centerLocation.yCoord, l.centerLocation.zCoord, ChromaBlocks.WATERLOCK.getBlockInstance(), 0, new LockCallback(parent.id, level, i-r0, k-r0, ForgeDirection.EAST));
+						int dx = l.centerLocation.xCoord+d*dir.offsetX;
+						int dz = l.centerLocation.zCoord+d*dir.offsetZ;
+						if (l.isDirectionOpen(dir))
+							world.setBlock(dx, y+2, dz, Blocks.air);
+						//padCoordinates.remove(new Coordinate(dx, y+2, dz));
 					}
-				}
-				for (int d = 2; d < 6; d++) {
-					ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[d];
 					world.setBlock(l.centerLocation.xCoord+(Lock.SIZE+1)*dir.offsetX, y+2, l.centerLocation.zCoord+(Lock.SIZE+1)*dir.offsetZ, Blocks.air);
 				}
 			}
@@ -243,14 +256,22 @@ public class WaterFloor extends StructurePiece {
 			world.setTileEntity(x+p.x*(Lock.SIZE*2+1+1), y+HEIGHT, z+p.y*(Lock.SIZE*2+1+1), ChromaBlocks.EVERFLUID.getBlockInstance(), 0, new EverFluidCallback(parent.id, level));
 			world.setBlock(x+p.x*(Lock.SIZE*2+1+1), y+HEIGHT+1, z+p.y*(Lock.SIZE*2+1+1), ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata);
 		}
+
+		//this.updateChannels();
+
+		/*
+		for (Coordinate c : blockedChannels) {
+			world.setBlock(c.xCoord, c.yCoord, c.zCoord, Blocks.gold_block);
+		}*/
 	}
 
 	public boolean hasBeenSolved() {
 		return false;
 	}
-
+	/*
 	public boolean isSlotOccluded(int x, int y, int z) {
-		return blockedChannels.contains(new Coordinate(x, y, z));
+		Coordinate c = new Coordinate(x, y, z);
+		return padCoordinates.contains(c) || blockedChannels.contains(c);
 	}
 
 	public void updateChannels() {
@@ -260,18 +281,23 @@ public class WaterFloor extends StructurePiece {
 				for (int d = 2; d < 6; d++) {
 					ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[d];
 					if (!flowGrid[i][k].isDirectionOpen(dir)) {
-						for (int l = 1; l <= 3; l++) {
-							blockedChannels.add(flowGrid[i][k].centerLocation.offset(dir, l));
+						for (int l = 1; l <= Lock.SIZE; l++) {
+							blockedChannels.add(flowGrid[i][k].centerLocation.offset(dir, l).offset(0, 1, 0));
 						}
 					}
 				}
 			}
 		}
 	}
+	 */
 
 	public void rotateLock(int i, int k) {
+		this.getLock(i, k).rotate(true);
+	}
+
+	public Lock getLock(int i, int k) {
 		int r0 = (gridSize-1)/2;
-		flowGrid[i+r0][k+r0].rotate();
+		return flowGrid[i+r0][k+r0];
 	}
 
 	private static class EverFluidCallback implements TileCallback {
@@ -301,19 +327,21 @@ public class WaterFloor extends StructurePiece {
 		private final ForgeDirection direction;
 		private final int lockX;
 		private final int lockY;
+		private final Collection<ForgeDirection> ends;
 
-		private LockCallback(UUID id, int lvl, int lx, int ly, ForgeDirection dir) {
+		private LockCallback(UUID id, int lvl, int lx, int ly, ForgeDirection dir, Collection<ForgeDirection> c) {
 			uid = id;
 			level = lvl;
 			lockX = lx;
 			lockY = ly;
 			direction = dir;
+			ends = c;
 		}
 
 		@Override
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			if (te instanceof TileEntityRotatingLock) {
-				((TileEntityRotatingLock)te).setData(direction, level, lockX, lockY);
+				((TileEntityRotatingLock)te).setData(direction, level, lockX, lockY, ends);
 				((TileEntityRotatingLock)te).uid = uid;
 				//while (world.rand.nextInt(4) > 0) cannot do this since gens chunk by chunk
 				//	((TileEntityRotatingLock)te).rotate();

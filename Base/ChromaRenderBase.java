@@ -37,10 +37,7 @@ public abstract class ChromaRenderBase extends TileEntityRenderBase implements T
 	}
 
 	protected final void renderModel(TileEntity tile, ChromaModelBase model, Object... args) {
-		GL11.glPushMatrix();
-		GL11.glScalef(1.0F, -1.0F, -1.0F);
-		GL11.glTranslatef(0.5F, -1.5F, -0.5F);
-		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+		this.preRenderModel();
 		if (args.length > 0) {
 			ArrayList li = new ArrayList();
 			for (int i = 0; i < args.length; i++)
@@ -50,9 +47,20 @@ public abstract class ChromaRenderBase extends TileEntityRenderBase implements T
 		else {
 			model.renderAll(tile, null);
 		}
+		this.postRenderModel(tile);
+	}
+
+	protected void postRenderModel(TileEntity tile) {
 		if (tile.hasWorldObj())
 			GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 		GL11.glPopMatrix();
+	}
+
+	protected void preRenderModel() {
+		GL11.glPushMatrix();
+		GL11.glScalef(1.0F, -1.0F, -1.0F);
+		GL11.glTranslatef(0.5F, -1.5F, -0.5F);
+		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 	}
 
 	protected final void renderModel(TileEntityChromaticBase tile, ChromaModelBase model, Object... args) {

@@ -18,6 +18,7 @@ import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.World.Dimension.Structure.Water.WaterFloor;
 import Reika.ChromatiCraft.World.Dimension.Structure.Water.WaterPath;
+import Reika.ChromatiCraft.World.Dimension.Structure.Water.WaterStructureEntrance;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 
@@ -46,7 +47,7 @@ public class WaterPuzzleGenerator extends DimensionStructureGenerator {
 			}
 			WaterPath path = new WaterPath(startx, startz, endx, endz, r);
 			path.genPath(rand);
-			WaterFloor w = new WaterFloor(this, i, r, path);
+			WaterFloor w = new WaterFloor(this, i, r, path, rand);
 			levels.add(w);
 			startx = endx;
 			startz = endx;
@@ -58,6 +59,8 @@ public class WaterPuzzleGenerator extends DimensionStructureGenerator {
 			l.generate(world, posX, y, posZ);
 			y -= l.HEIGHT+4;
 		}
+
+		this.addDynamicStructure(new WaterStructureEntrance(this), posX, posZ);
 	}
 
 	private int getRadius(int i) {

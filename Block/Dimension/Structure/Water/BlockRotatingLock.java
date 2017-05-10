@@ -1,26 +1,41 @@
 package Reika.ChromatiCraft.Block.Dimension.Structure.Water;
 
-import net.minecraft.block.BlockContainer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagInt;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.World.Dimension.Structure.WaterPuzzleGenerator;
+import Reika.ChromatiCraft.World.Dimension.Structure.Water.Lock;
 import Reika.ChromatiCraft.World.Dimension.Structure.Water.WaterFloor;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class BlockRotatingLock extends BlockContainer {
+public class BlockRotatingLock extends Block {
 
 	public BlockRotatingLock(Material mat) {
 		super(mat);
@@ -31,14 +46,42 @@ public class BlockRotatingLock extends BlockContainer {
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World world, int meta) {
+	public boolean hasTileEntity(int meta) {
+		return meta == 0;
+	}
+
+	@Override
+	public TileEntity createTileEntity(World world, int meta) {
 		return new TileEntityRotatingLock();
 	}
 
 	@Override
+	public IIcon getIcon(int s, int meta) {
+		return meta == 0 ? blockIcon : ChromaIcons.TRANSPARENT.getIcon();
+	}
+
+	@Override
+	public boolean isOpaqueCube() {
+		return false;
+	}
+
+	@Override
+	public boolean renderAsNormalBlock() {
+		return false;
+	}
+
+	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
-		((TileEntityRotatingLock)world.getTileEntity(x, y, z)).rotate();
+		if (this.hasTileEntity(world.getBlockMetadata(x, y, z)))
+			((TileEntityRotatingLock)world.getTileEntity(x, y, z)).startRotating();
 		return true;
+	}
+
+	@Override
+	public void onNeighborBlockChange(World world, int x, int y, int z, Block other) {
+		super.onNeighborBlockChange(world, x, y, z, other);
+		if (this.hasTileEntity(world.getBlockMetadata(x, y, z)))
+			((TileEntityRotatingLock)world.getTileEntity(x, y, z)).updateHasFluidState();
 	}
 
 	public static class TileEntityRotatingLock extends StructureBlockTile<WaterPuzzleGenerator> {
@@ -48,21 +91,87 @@ public class BlockRotatingLock extends BlockContainer {
 		private int lockX;
 		private int lockY;
 
+		private Collection<ForgeDirection> openEndsAtZero = new HashSet();
+		private FilledBlockArray lockState;
+
+		private int rotatingAmount;
+
+		@Override
+		public void updateEntity() {
+			if (rotatingAmount > 0) {
+				rotatingAmount = Math.min(rotatingAmount+3, 90);
+				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+				if (rotatingAmount == 90) {
+					rotatingAmount = 0;
+					this.finishRotating();
+				}
+			}
+		}
+
+		private void updateHasFluidState() {
+			WaterPuzzleGenerator gen = this.getGenerator();
+			if (gen != null) {
+				WaterFloor f = gen.getLevel(level);
+				if (f != null) {
+
+				}
+			}
+		}
+
 		public ForgeDirection getDirection() {
 			return direction != null ? direction : ForgeDirection.EAST;
 		}
 
-		public void setData(ForgeDirection dir, int lvl, int x, int y) {
+		public void setData(ForgeDirection dir, int lvl, int x, int y, Collection<ForgeDirection> c) {
 			direction = dir;
 			level = lvl;
 			lockX = x;
 			lockY = y;
+			openEndsAtZero = c;
 		}
 
-		public void rotate() {
+		public int getRotationProgress() {
+			return rotatingAmount;
+		}
+
+		private void startRotating() {
+			if (rotatingAmount > 0)
+				return;
+			rotatingAmount = 1;
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			ChromaSounds.WATERLOCK.playSoundAtBlock(this, 2, 1);
+			lockState = new FilledBlockArray(worldObj);
+			for (int i = -2; i <= 2; i++) {
+				for (int k = -2; k <= 2; k++) {
+					if (worldObj.getBlock(xCoord+i, yCoord+1, zCoord+k) == ChromaBlocks.EVERFLUID.getBlockInstance()) {
+						worldObj.setBlock(xCoord+i, yCoord+1, zCoord+k, Blocks.air);
+					}
+					if (i != 0 || k != 0) {
+						//f.addBlockCoordinate(xCoord+i, yCoord, zCoord+k);
+						lockState.addBlockCoordinate(xCoord+i, yCoord+1, zCoord+k);
+					}
+				}
+			}
+
+			for (int i = -2; i <= 2; i++) {
+				for (int k = -2; k <= 2; k++) {
+					if (i != 0 || k != 0) {
+						Block b = worldObj.getBlock(xCoord+i, yCoord+1, zCoord+k);
+						if (b == Blocks.air || b == ChromaBlocks.EVERFLUID.getBlockInstance()) {
+							worldObj.setBlock(xCoord+i, yCoord+1, zCoord+k, this.getBlockType(), 1, 3);
+						}
+						//f.addBlockCoordinate(xCoord+i, yCoord, zCoord+k);
+						lockState.addBlockCoordinate(xCoord+i, yCoord+1, zCoord+k);
+					}
+				}
+			}
+			ReikaWorldHelper.causeAdjacentUpdates(worldObj, xCoord, yCoord, zCoord);
+		}
+
+		private void finishRotating() {
 			direction = ReikaDirectionHelper.getRightBy90(direction);
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-			ReikaSoundHelper.playBreakSound(worldObj, xCoord, yCoord, zCoord, Blocks.stone);
+			ReikaSoundHelper.playBreakSound(worldObj, xCoord, yCoord, zCoord, Blocks.stone, 2, 0);
 			WaterPuzzleGenerator gen = this.getGenerator();
 			if (gen != null) {
 				WaterFloor f = gen.getLevel(level);
@@ -70,23 +179,44 @@ public class BlockRotatingLock extends BlockContainer {
 					f.rotateLock(lockX, lockY);
 				}
 			}
-			if (gen == null || worldObj.provider.dimensionId == 0) { //debug testing
-				FilledBlockArray f = new FilledBlockArray(worldObj);
-				for (int i = -2; i <= 2; i++) {
-					for (int k = -2; k <= 2; k++) {
-						if (worldObj.getBlock(xCoord+i, yCoord+1, zCoord+k) == ChromaBlocks.EVERFLUID.getBlockInstance()) {
-							worldObj.setBlock(xCoord+i, yCoord+1, zCoord+k, Blocks.air);
-						}
-						if (i != 0 || k != 0) {
-							//f.addBlockCoordinate(xCoord+i, yCoord, zCoord+k);
-							f.addBlockCoordinate(xCoord+i, yCoord+1, zCoord+k);
+			//if (gen == null || worldObj.provider.dimensionId == 0) { //debug testing
+			lockState = (FilledBlockArray)lockState.rotate90Degrees(xCoord, zCoord, false);
+			lockState.place();
+			//}
+			ReikaWorldHelper.causeAdjacentUpdates(worldObj, xCoord, yCoord, zCoord);
+		}
+
+		public HashSet<ForgeDirection> getSidesOfState(boolean open) {
+			HashSet<ForgeDirection> set = new HashSet();
+			WaterPuzzleGenerator gen = this.getGenerator();
+			if (gen != null) {
+				WaterFloor f = gen.getLevel(level);
+				if (f != null) {
+					Lock l = f.getLock(lockX, lockY);
+					for (int i = 2; i < 6; i++) {
+						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+						if (l.isDirectionOpen(dir) == open) {
+							set.add(dir);
 						}
 					}
 				}
-				f = (FilledBlockArray)f.rotate90Degrees(xCoord, zCoord, false);
-				f.place();
 			}
-			ReikaWorldHelper.causeAdjacentUpdates(worldObj, xCoord, yCoord, zCoord);
+			return set;
+		}
+
+		@SideOnly(Side.CLIENT)
+		public Collection<ForgeDirection> getOpenEndsForRender() {
+			Collection<ForgeDirection> ret = new ArrayList();
+			for (ForgeDirection dir : openEndsAtZero) {
+				ForgeDirection ref = direction;
+				while (ref != ForgeDirection.EAST) {
+					dir = ReikaDirectionHelper.getLeftBy90(dir);
+					ref = ReikaDirectionHelper.getRightBy90(ref);
+				}
+				ret.add(dir);
+			}
+			//ReikaJavaLibrary.pConsole(openEndsAtZero+" > "+ret, xCoord == -5035 && zCoord == -2992 && level == 0);
+			return ret;
 		}
 
 		@Override
@@ -102,6 +232,12 @@ public class BlockRotatingLock extends BlockContainer {
 			NBT.setInteger("lvl", level);
 			NBT.setInteger("lockX", lockX);
 			NBT.setInteger("lockY", lockY);
+
+			NBTTagList li = new NBTTagList();
+			for (ForgeDirection dir : openEndsAtZero) {
+				li.appendTag(new NBTTagInt(dir.ordinal()));
+			}
+			NBT.setTag("ends", li);
 		}
 
 		@Override
@@ -111,6 +247,22 @@ public class BlockRotatingLock extends BlockContainer {
 			level = NBT.getInteger("lvl");
 			lockX = NBT.getInteger("lockX");
 			lockY = NBT.getInteger("lockY");
+
+			openEndsAtZero.clear();
+			NBTTagList li = NBT.getTagList("ends", NBTTypes.INT.ID);
+			for (Object o : li.tagList) {
+				openEndsAtZero.add(ForgeDirection.VALID_DIRECTIONS[((NBTTagInt)o).func_150287_d()]);
+			}
+		}
+
+		@Override
+		public double getMaxRenderDistanceSquared() {
+			return super.getMaxRenderDistanceSquared()*4;
+		}
+
+		@Override
+		public AxisAlignedBB getRenderBoundingBox() {
+			return ReikaAABBHelper.getBlockAABB(this).expand(Lock.SIZE, 0, Lock.SIZE);
 		}
 
 	}

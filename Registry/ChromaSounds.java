@@ -90,6 +90,7 @@ public enum ChromaSounds implements SoundEnum {
 	LOREHEX("lore"),
 	LORECOMPLETE("lorecomplete2"),
 	LIGHTCAST("lightcast"),
+	WATERLOCK("waterlock"),
 	;
 
 	public static final ChromaSounds[] soundList = values();

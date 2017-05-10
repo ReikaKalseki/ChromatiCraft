@@ -31,7 +31,6 @@ import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureTy
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.WaterPuzzleGenerator;
-import Reika.ChromatiCraft.World.Dimension.Structure.Water.WaterFloor;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -129,7 +128,7 @@ public class BlockEverFluid extends BlockContainer {
 			}
 
 			te.uid = src.uid;
-			te.level = src.level;
+			te.level = placeSource ? src.level+1 : src.level;
 			return true;
 		}
 		return false;
@@ -139,6 +138,7 @@ public class BlockEverFluid extends BlockContainer {
 		if (y < 0)
 			return false;
 
+		/*
 		if (te != null) {
 			WaterPuzzleGenerator w = te.getGenerator();
 			if (w != null) {
@@ -150,6 +150,7 @@ public class BlockEverFluid extends BlockContainer {
 				}
 			}
 		}
+		 */
 
 		if (world.getBlock(x, y, z).isAir(world, x, y, z))
 			return true;

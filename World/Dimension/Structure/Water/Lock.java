@@ -32,6 +32,8 @@ public class Lock {
 
 	Coordinate centerLocation;
 
+	ForgeDirection facing = ForgeDirection.EAST;
+
 	Lock(WaterFloor f, int i, int k) {
 		level = f;
 
@@ -39,9 +41,11 @@ public class Lock {
 	}
 
 	//see if can make animated, slow, heavy-sounding
-	public void rotate() { //CLOCKWISE
+	void rotate(boolean updateParent) { //CLOCKWISE
 		rotation += ROTATION_STEP;
-		level.updateChannels();
+		facing = ReikaDirectionHelper.getRightBy90(facing);
+		if (updateParent)
+			;//level.updateChannels();
 	}
 
 	public int getRotation() {
