@@ -14,12 +14,12 @@ import java.util.ArrayList;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 
 public abstract class GuiDescription extends GuiBookSection {

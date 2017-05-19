@@ -81,7 +81,7 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 				ProgressiveBreaker br = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, depth);
 				br.call = this;
 				br.drops = false;
-				br.extraSpread = mode == TransitionMode.VOLUMETRIC;
+				br.extraSpread = false; //DO NOT USE
 				//br.tickRate = 2;
 				br.player = ep;
 				br.silkTouch = EnchantmentHelper.getSilkTouchModifier(ep);

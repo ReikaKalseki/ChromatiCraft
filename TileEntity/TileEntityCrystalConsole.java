@@ -61,7 +61,8 @@ public class TileEntityCrystalConsole extends InventoriedChromaticBase implement
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (valid) {
-
+			if (this.getTicksExisted()%20 == 0)
+				world.markBlockForUpdate(x, y, z);
 		}
 	}
 

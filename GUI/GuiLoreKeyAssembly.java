@@ -17,10 +17,10 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.opengl.GL11;
 
-import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundGui;
 import Reika.ChromatiCraft.Magic.Lore.KeyAssemblyPuzzle;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundGui;
 import Reika.DragonAPI.Instantiable.Math.HexGrid.Hex;
 import Reika.DragonAPI.Instantiable.Math.HexGrid.Point;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -83,7 +83,7 @@ public class GuiLoreKeyAssembly extends GuiScreen implements CustomSoundGui {
 	protected void mouseClicked(int x, int y, int button) {
 		super.mouseClicked(x, y, button);
 
-		if (button == 0 && !LoreManager.instance.hasPlayerCompletedBoard(player)) {
+		if (button == 0 && (!LoreManager.instance.hasPlayerCompletedBoard(player) || !puzzle.isComplete())) {
 			ScaledResolution sr = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
 
 			Hex h = puzzle.getHexAt(x-sr.getScaledWidth()/2-puzzle.CELL_SIZE/2, y-sr.getScaledHeight()/2-puzzle.CELL_SIZE/2);

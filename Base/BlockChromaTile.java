@@ -68,6 +68,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityDataNode;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityHoverPad;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityMultiBuilder;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
@@ -362,6 +363,24 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 		if (m == ChromaTiles.MUSIC && is != null && is.getItem() instanceof MusicDataItem) {
 			TileEntityCrystalMusic mus = (TileEntityCrystalMusic)te;
 			mus.setTrack(((MusicDataItem)is.getItem()).getMusic(is));
+			return true;
+		}
+
+		if (m == ChromaTiles.MULTIBUILDER) {
+			TileEntityMultiBuilder tm = (TileEntityMultiBuilder)te;
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[side];
+			if (dir.offsetY != 0) {
+				tm.cycleShape();
+			}
+			else {
+				dir = dir.getOpposite();
+				if (ep.isSneaking()) {
+					tm.contractArea(dir);
+				}
+				else {
+					tm.expandArea(dir);
+				}
+			}
 			return true;
 		}
 

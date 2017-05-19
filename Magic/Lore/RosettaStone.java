@@ -26,7 +26,6 @@ import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 public class RosettaStone {
 
 	private static final HashSet<Character> decodableCharacters = new HashSet();
-	private static final String PATH = "Resources/rosetta.txt";
 
 	private final long seed;
 	private final Random rand;
@@ -45,14 +44,28 @@ public class RosettaStone {
 
 	public RosettaStone(EntityPlayer ep) {
 		text = new ArrayList();
-		for (String s : ReikaFileReader.getFileAsLines(ChromatiCraft.class.getResourceAsStream(PATH), true)) {
+		this.loadText();
+
+		seed = ep.getUniqueID().hashCode();
+		rand = new Random(seed);
+	}
+
+	public void loadText() {
+		text.clear();
+		for (String s : this.getData()) {
 			if (s.isEmpty() || s.equals(System.lineSeparator()))
 				continue;
 			text.add(s);
 		}
+	}
 
-		seed = ep.getUniqueID().hashCode();
-		rand = new Random(seed);
+	private ArrayList<String> getData() {
+		if (LoreScripts.instance.hasReroutePath()) {
+			return ReikaFileReader.getFileAsLines(LoreScripts.instance.getReroutedRosettaFile(), true);
+		}
+		else {
+			return ReikaFileReader.getFileAsLines(ChromatiCraft.class.getResourceAsStream("Resources/rosetta.txt"), true);
+		}
 	}
 
 	public void render(ScaledResolution res, double w2, double h2) {

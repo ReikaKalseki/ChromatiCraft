@@ -12,11 +12,11 @@ package Reika.ChromatiCraft.GUI.Tile.Inventory;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerInventoryTicker;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityInventoryTicker;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 
 public class GuiInventoryTicker extends GuiChromaBase {

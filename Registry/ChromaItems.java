@@ -64,6 +64,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemPendant;
 import Reika.ChromatiCraft.Items.Tools.ItemPurifyCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemPylonFinder;
 import Reika.ChromatiCraft.Items.Tools.ItemSplashGun;
+import Reika.ChromatiCraft.Items.Tools.ItemSplineAttack;
 import Reika.ChromatiCraft.Items.Tools.ItemStructureFinder;
 import Reika.ChromatiCraft.Items.Tools.ItemThrowableGem;
 import Reika.ChromatiCraft.Items.Tools.ItemVacuumGun;
@@ -169,6 +170,7 @@ public enum ChromaItems implements ItemEnum {
 	MOBSONAR(92, false,		"chroma.mobsonar",		ItemMobSonar.class),
 	FERTILITYSEED(209, true,"chroma.fertileseed",	ItemFertilitySeed.class),
 	CAVEPATHER(45, false,	"chroma.cavepather",	ItemCaveExitFinder.class),
+	SPLINEATTACK(46, false,	"chroma.splineattack",	ItemSplineAttack.class),
 	;
 
 	private final int index;

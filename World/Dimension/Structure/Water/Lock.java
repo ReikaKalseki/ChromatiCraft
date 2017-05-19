@@ -33,6 +33,7 @@ public class Lock {
 	Coordinate centerLocation;
 
 	ForgeDirection facing = ForgeDirection.EAST;
+	boolean hasFluid;
 
 	Lock(WaterFloor f, int i, int k) {
 		level = f;

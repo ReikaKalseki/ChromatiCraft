@@ -69,9 +69,9 @@
 	<repeaterlamp>
 		Repeaters, in their various forms, make for good light sources, and some would look quite nice integrated into the structure of your base. However, you would rather avoid the issue of routing energy randomly throughout, so you should probably find a way to neutralize their energy-carrying capabilities first.
 	</repeaterlamp>
-	<name>
-		
-	</name>
+	<redstonepod>
+		You had a roomful of machines, producing, processing, and refining your resources. Emphasis on HAD, past tense, because your coolant ran out and now you have a roomful of craters instead. Said machines can be redstone-controlled, but you lack the ability to send such a signal through a mess of fluid and energy pipes. Some sort of point-to-point air-based conduction would solve that problem.
+	</redstonepod>
 	<name>
 		
 	</name>

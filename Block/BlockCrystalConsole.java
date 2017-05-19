@@ -96,7 +96,10 @@ public class BlockCrystalConsole extends BlockContainer implements ConnectedText
 		}
 		if (dir == ForgeDirection.NORTH)
 			d = 1-d;
-		ReikaJavaLibrary.pConsole(d);
+		if (dir.offsetX+dir.offsetZ == 1) {
+			ReikaJavaLibrary.pConsole(d);
+		}
+		//ReikaJavaLibrary.pConsole(d);
 		if (ReikaMathLibrary.isValueInsideBoundsIncl(0.15625, 0.34375, d)) {
 			return 0;
 		}

@@ -27,13 +27,25 @@ public class LoreScripts {
 
 	public static final LoreScripts instance = new LoreScripts();
 
-	public final File reroutePath;
+	private final File reroutePath;
 
 	private final Collection<LorePanel> data = new ArrayList();
 
 	private LoreScripts() {
-		File f = new File("C:/ChromatiCraftLoreDev/lore.xml");
-		reroutePath = f.exists() ? f : null;
+		File f = new File("C:/ChromatiCraftLoreDev");
+		reroutePath = f.exists() && f.isDirectory() && f.listFiles().length == 2 ? f : null;
+	}
+
+	public boolean hasReroutePath() {
+		return reroutePath != null;
+	}
+
+	public File getReroutedLoreFile() {
+		return new File(reroutePath, "lore.xml");
+	}
+
+	public File getReroutedRosettaFile() {
+		return new File(reroutePath, "rosetta.txt");
 	}
 
 	public Collection<LorePanel> getData() {

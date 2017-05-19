@@ -24,7 +24,6 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements Accelerator {
@@ -128,12 +127,14 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 			return blacklistKey;
 		if (te instanceof TileEntityAdjacencyUpgrade)
 			return blacklistKey;
-		if (!te.canUpdate() || te.isInvalid())
+		if (te.isInvalid())
 			return blacklistKey;
 		Class c = te.getClass();
 		Acceleration a = actions.get(c);
 		if (a != null)
 			return a;
+		if (!te.canUpdate())
+			return blacklistKey;
 		String s = c.getSimpleName().toLowerCase(Locale.ENGLISH);
 		if (s.contains("conduit") || s.contains("wire") || s.contains("cable")) { //almost always part of a network object
 			actions.put(c, blacklistKey);

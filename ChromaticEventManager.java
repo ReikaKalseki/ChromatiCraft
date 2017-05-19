@@ -133,6 +133,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAIShutdown;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityMultiBuilder;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCloakingTower;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalBeacon;
@@ -173,6 +174,7 @@ import Reika.DragonAPI.Instantiable.Event.LavaSpawnFireEvent;
 import Reika.DragonAPI.Instantiable.Event.MobTargetingEvent;
 import Reika.DragonAPI.Instantiable.Event.PigZombieAggroSpreadEvent;
 import Reika.DragonAPI.Instantiable.Event.PlayerKeepInventoryEvent;
+import Reika.DragonAPI.Instantiable.Event.PlayerPlaceBlockEvent;
 import Reika.DragonAPI.Instantiable.Event.PlayerSprintEvent;
 import Reika.DragonAPI.Instantiable.Event.SetBlockEvent;
 import Reika.DragonAPI.Instantiable.Event.SlotEvent.AddToSlotEvent;
@@ -225,6 +227,16 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void multiBuild(PlayerPlaceBlockEvent evt) {
+		TileEntityMultiBuilder.placeBlock(evt.world, evt.x, evt.y, evt.z, evt.block, evt.metadata, evt.player, evt.player.getCurrentEquippedItem());
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void multiBuild(BlockEvent.BreakEvent evt) {
+		TileEntityMultiBuilder.breakBlock(evt.world, evt.x, evt.y, evt.z, evt.block, evt.blockMetadata, evt.getPlayer());
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void clearCachedTiles(SinglePlayerLogoutEvent evt) {
 		TileEntityItemCollector.clearCache();
 		TileEntityLocusPoint.clearCache();
@@ -232,6 +244,7 @@ public class ChromaticEventManager {
 		TileEntityChromaLamp.clearCache();
 		TileEntityCloakingTower.clearCache();
 		TileEntityCrystalBeacon.clearCache();
+		TileEntityMultiBuilder.clearCache();
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -1339,7 +1352,7 @@ public class ChromaticEventManager {
 						if (a != null) {
 							int s = 4+rand.nextInt(8);
 							ElementTagCompound tag = ChromaAspectManager.instance.getElementCost(a, 1+rand.nextInt(2)).scale(s);
-							PlayerElementBuffer.instance.addToPlayer(ep, tag);
+							PlayerElementBuffer.instance.addToPlayer(ep, tag, true);
 						}
 					}
 				}

@@ -51,6 +51,7 @@ import Reika.ChromatiCraft.Block.BlockMultiStorage;
 import Reika.ChromatiCraft.Block.BlockPath;
 import Reika.ChromatiCraft.Block.BlockPath.PathType;
 import Reika.ChromatiCraft.Block.BlockPylonStructure;
+import Reika.ChromatiCraft.Block.BlockRedstonePod;
 import Reika.ChromatiCraft.Block.BlockRift;
 import Reika.ChromatiCraft.Block.BlockRouterNode;
 import Reika.ChromatiCraft.Block.BlockSelectiveGlass;
@@ -117,6 +118,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant;
 import Reika.ChromatiCraft.Block.Worldgen.BlockUnknownArtefact;
+import Reika.ChromatiCraft.Items.ItemRedstonePodPlacer;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockChromaFlower;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockChromaTiered;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
@@ -239,7 +241,8 @@ public enum ChromaBlocks implements BlockEnum {
 	TILEMODELLED4(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile 4"),
 	FLOATINGRELAY(BlockFloatingRelay.class,										"Ethereal Relay"),
 	REPEATERLAMP(BlockRepeaterLight.class,		ItemBlockMultiType.class,		"Repeater Lamp"),
-	WATERLOCK(BlockRotatingLock.class,											"chroma.lock");
+	WATERLOCK(BlockRotatingLock.class,											"chroma.lock"),
+	REDSTONEPOD(BlockRedstonePod.class,			ItemRedstonePodPlacer.class,	"chroma.redstonepod");
 
 	private Class blockClass;
 	private String blockName;
@@ -517,6 +520,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case ARTEFACT:
 			case CAVEINDICATOR:
 			case FLOATINGRELAY:
+			case REDSTONEPOD:
 				return false;
 			default:
 				return true;
@@ -548,6 +552,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return BlockStructureShield.BlockType.list.length;
 			case DIMGEN:
 				return BlockDimensionDeco.DimDecoTypes.list.length;
+			case DIMGENTILE:
+				return BlockDimensionDecoTile.DimDecoTileTypes.list.length;
 			case LOCKKEY:
 				return BlockLockKey.LockChannel.lockList.length;
 			case HOVER:

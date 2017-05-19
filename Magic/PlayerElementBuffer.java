@@ -78,13 +78,13 @@ public class PlayerElementBuffer {
 		return true;
 	}
 
-	public boolean addToPlayer(EntityPlayer ep, CrystalElement e, int amt) {
+	public boolean addToPlayer(EntityPlayer ep, CrystalElement e, int amt, boolean notify) {
 		NBTTagCompound tag = this.getTag(ep);
 		int has = tag.getInteger(e.name());
 		int val = Math.min(has+amt, this.getElementCap(ep));
 		tag.setInteger(e.name(), val);
 		//this.checkUpgrade(ep, true);
-		this.setElementCap(ep, this.calcElementCap(ep), true);
+		this.setElementCap(ep, this.calcElementCap(ep), notify);
 		return val > has;
 	}
 
@@ -93,10 +93,10 @@ public class PlayerElementBuffer {
 		tag.setInteger(e.name(), amt);
 	}
 
-	public boolean addToPlayer(EntityPlayer ep, ElementTagCompound tag) {
+	public boolean addToPlayer(EntityPlayer ep, ElementTagCompound tag, boolean notify) {
 		boolean flag = false;
 		for (CrystalElement e : tag.elementSet()) {
-			flag |= this.addToPlayer(ep, e, tag.getValue(e));
+			flag |= this.addToPlayer(ep, e, tag.getValue(e), notify);
 		}
 		return flag;
 	}
@@ -196,14 +196,16 @@ public class PlayerElementBuffer {
 		tag.setInteger("cap", val);
 		boolean flag = val > prev;
 		if (flag) {
-			if (cap%2 == 0)
-				ChromaSounds.CRAFTDONE.playSound(ep.worldObj, ep.posX, ep.posY, ep.posZ, 0.1F, 0.5F);
-			recentUpgrades.set(ep.getUniqueID(), 2000);
-			//if (ep instanceof EntityPlayerMP)
-			//	this.sendUpgradePacket((EntityPlayerMP)ep);
+			if (notify) {
+				if (cap%2 == 0)
+					ChromaSounds.CRAFTDONE.playSound(ep.worldObj, ep.posX, ep.posY, ep.posZ, 0.1F, 0.5F);
+				recentUpgrades.set(ep.getUniqueID(), 2000);
+				//if (ep instanceof EntityPlayerMP)
+				//	this.sendUpgradePacket((EntityPlayerMP)ep);
+			}
 		}
 		if (ep instanceof EntityPlayerMP) {
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BUFFERSET.ordinal(), (EntityPlayerMP)ep, val);
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BUFFERSET.ordinal(), (EntityPlayerMP)ep, val, notify ? 1 : 0);
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 		}
 		return flag;
@@ -236,8 +238,8 @@ public class PlayerElementBuffer {
 	}
 	 */
 	@SideOnly(Side.CLIENT)
-	public void setPlayerCapOnClient(EntityPlayer ep, int cap) {
-		this.setElementCap(ep, cap, false);
+	public void setPlayerCapOnClient(EntityPlayer ep, int cap, boolean notify) {
+		this.setElementCap(ep, cap, notify);
 	}
 	/*
 	@SideOnly(Side.CLIENT)

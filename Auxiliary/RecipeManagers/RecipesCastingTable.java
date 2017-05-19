@@ -57,6 +57,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.Portal
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.PotionCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RecipeEnderTNT;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RecipeTankBlock;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RedstonePodRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RelayFilterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RelayRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RepeaterLampRecipe;
@@ -141,6 +142,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LumenWi
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MEDistributorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MeteorTowerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MinerRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MultiBuilderRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MusicRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.PageExtractorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ParticleSpawnerRecipe;
@@ -190,6 +192,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.PylonFi
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.RecipeHoverWand;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.RecipeItemMover;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.SplashGunRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.SplineAttackRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.StorageCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.StructureFinderRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.TeleportWandRecipe;
@@ -564,6 +567,10 @@ public class RecipesCastingTable {
 			is = ReikaItemHelper.getSizedItemStack(ChromaBlocks.HEATLAMP.getStackOf(), (int)metal[i+1]);
 			sr = new ShapedOreRecipe(is, "fff", "faf", "fff", 'f', ChromaStacks.firaxite, 'a', metal[i]);
 			this.addRecipe(new HeatLampRecipe(is, sr, hr));
+
+			is = ReikaItemHelper.getSizedItemStack(ChromaBlocks.REDSTONEPOD.getStackOf(), (int)metal[i+1]);
+			sr = new ShapedOreRecipe(is, "fbf", "dad", "fbf", 'f', Items.redstone, 'a', metal[i], 'd', ChromaStacks.auraDust, 'b', ChromaStacks.beaconDust);
+			this.addRecipe(new RedstonePodRecipe(is, sr));
 		}
 
 		this.addRecipe(new EnderCrystalRecipe(ChromaItems.ENDERCRYSTAL.getStackOf(), ChromaStacks.crystalStar));
@@ -768,6 +775,12 @@ public class RecipesCastingTable {
 		is = ChromaItems.CAVEPATHER.getStackOf();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "RAC", "BCA", "SBE", 'R', Items.redstone, 'E', Items.emerald, 'B', ChromaStacks.beaconDust, 'A', ChromaStacks.auraDust, 'S', Items.stick, 'C', Items.quartz);
 		this.addRecipe(new CavePatherRecipe(is, sr));
+
+		is = ChromaItems.SPLINEATTACK.getStackOf();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, " sa", "sis", "bs ", 'i', Items.iron_ingot, 's', ChromaStacks.whiteShard, 'a', ChromaStacks.blueShard, 'b', ChromaStacks.pinkShard);
+		this.addRecipe(new SplineAttackRecipe(is, sr));
+
+		this.addRecipe(new MultiBuilderRecipe(ChromaTiles.MULTIBUILDER.getCraftedProduct(), ChromaStacks.elementUnit));
 
 		this.addSpecialRecipes();
 	}

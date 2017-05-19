@@ -194,6 +194,7 @@ public enum ChromaResearch implements ProgressElement {
 	FLUXMAKER(		ChromaTiles.FLUXMAKER,		ResearchLevel.ENERGYEXPLORE),
 	FUNCRELAY(		ChromaTiles.FUNCTIONRELAY,	ResearchLevel.RUNECRAFT),
 	CHROMACRAFTER(	ChromaTiles.CHROMACRAFTER,	ResearchLevel.PYLONCRAFT,		ProgressStage.ALLOY),
+	MULTIBUILDER(	ChromaTiles.MULTIBUILDER,	ResearchLevel.MULTICRAFT),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),
@@ -219,6 +220,7 @@ public enum ChromaResearch implements ProgressElement {
 	SELECTIVEGLASS(	ChromaBlocks.SELECTIVEGLASS,									ResearchLevel.BASICCRAFT),
 	AVOLAMP(		ChromaBlocks.AVOLAMP,											ResearchLevel.ENDGAME,		TieredOres.AVOLITE.level),
 	REPEATERLAMP(	ChromaBlocks.REPEATERLAMP,										ResearchLevel.ENERGYEXPLORE),
+	REDSTONEPOD(	ChromaBlocks.REDSTONEPOD,										ResearchLevel.RUNECRAFT),
 
 	TOOLDESC("Tools", ""),
 	WAND(				ChromaItems.TOOL,			ResearchLevel.ENTRY),
@@ -260,6 +262,7 @@ public enum ChromaResearch implements ProgressElement {
 	STRUCTFIND(			ChromaItems.STRUCTUREFINDER,ResearchLevel.RUNECRAFT,		ProgressStage.RUNEUSE, ProgressStage.ANYSTRUCT),
 	MOBSONAR(			ChromaItems.MOBSONAR,		ResearchLevel.RUNECRAFT,		ProgressStage.KILLMOB, ProgressStage.CHARGE),
 	CAVEEXIT(			ChromaItems.CAVEPATHER,		ResearchLevel.BASICCRAFT),
+	SPLINEATTACK(		ChromaItems.SPLINEATTACK,	ResearchLevel.RUNECRAFT,		ProgressStage.KILLMOB),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),

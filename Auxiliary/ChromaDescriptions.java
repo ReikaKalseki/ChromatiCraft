@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
+import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.LoreScripts;
 import Reika.ChromatiCraft.Magic.Lore.LoreScripts.ScriptLocations;
 import Reika.ChromatiCraft.Magic.Network.RelayNetworker;
@@ -103,7 +104,7 @@ public final class ChromaDescriptions {
 	private static final XMLInterface hover = new XMLInterface(ChromatiCraft.class, PARENT+"hover.xml", mustLoad);
 	private static final XMLInterface progress = new XMLInterface(ChromatiCraft.class, PARENT+"progression.xml", mustLoad);
 	private static final XMLInterface enchants = new XMLInterface(ChromatiCraft.class, PARENT+"enchants.xml", mustLoad);
-	private static final XMLInterface lore = LoreScripts.instance.reroutePath != null ? new XMLInterface(LoreScripts.instance.reroutePath, true) : new XMLInterface(ChromatiCraft.class, PARENT+"lore.xml", mustLoad);
+	private static final XMLInterface lore = LoreScripts.instance.hasReroutePath() ? new XMLInterface(LoreScripts.instance.getReroutedLoreFile(), true) : new XMLInterface(ChromatiCraft.class, PARENT+"lore.xml", mustLoad);
 
 	private static String getParent() {
 		return FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? getLocalizedParent() : "Resources/";
@@ -182,7 +183,15 @@ public final class ChromaDescriptions {
 		enchants.reread();
 		lore.reread();
 
+		loadRosetta();
+
 		loadData();
+	}
+
+	@SideOnly(Side.CLIENT)
+	private static void loadRosetta() {
+		if (Minecraft.getMinecraft().thePlayer != null)
+			LoreManager.instance.getOrCreateRosetta(Minecraft.getMinecraft().thePlayer).loadText();
 	}
 
 	private static void addEntry(ChromaResearch h, String sg) {

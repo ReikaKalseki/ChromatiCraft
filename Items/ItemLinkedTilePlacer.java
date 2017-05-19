@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Items;
 
 import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -24,7 +25,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.TileEntity.LinkedTile;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.LinkedTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -71,40 +72,48 @@ public class ItemLinkedTilePlacer extends Item {
 		{
 			if (!ep.capabilities.isCreativeMode)
 				--is.stackSize;
-			world.setBlock(x, y, z, ChromaBlocks.RIFT.getBlockInstance(), is.getItemDamage(), 3);
+			world.setBlock(x, y, z, this.getBlock(), this.getMetadata(is.getItemDamage()), 3);
 		}
+		this.linkTile(world, x, y, z, is, ep);
+		return true;
+	}
+
+	static void linkTile(World world, int x, int y, int z, ItemStack is, EntityPlayer ep) {
 		ReikaSoundHelper.playPlaceSound(world, x, y, z, Blocks.wool);
 		LinkedTile te = (LinkedTile)world.getTileEntity(x, y, z);
 		te.setPlacer(ep);
 		if (is.stackTagCompound == null) {
-			this.saveRiftLocation(world, x, y, z, is);
+			saveRiftLocation(world, x, y, z, is);
 		}
 		else {
-			WorldLocation loc = this.getRiftLocation(is);
+			WorldLocation loc = getRiftLocation(is);
 			if (loc != null && !loc.equals(world, x, y, z)) {
 				TileEntity tile2 = loc.getTileEntity();
 				if (tile2 instanceof LinkedTile) {
 					LinkedTile te2 = (LinkedTile)tile2;
 					te.linkTo(loc);
-					te2.setPrimary();
+					te2.setPrimary(true);
 					is.stackTagCompound = null;
 				}
 				else {
-					this.saveRiftLocation(world, x, y, z, is);
+					saveRiftLocation(world, x, y, z, is);
 				}
 			}
 			else {
-				this.saveRiftLocation(world, x, y, z, is);
+				saveRiftLocation(world, x, y, z, is);
 			}
 		}
-		return true;
 	}
 
-	private WorldLocation getRiftLocation(ItemStack is) {
+	protected Block getBlock() {
+		return ChromaBlocks.RIFT.getBlockInstance();
+	}
+
+	static WorldLocation getRiftLocation(ItemStack is) {
 		return is.stackTagCompound != null ? WorldLocation.readFromNBT("loc", is.stackTagCompound) : null;
 	}
 
-	private void saveRiftLocation(World world, int x, int y, int z, ItemStack is) {
+	private static void saveRiftLocation(World world, int x, int y, int z, ItemStack is) {
 		is.stackTagCompound = new NBTTagCompound();
 		WorldLocation loc = new WorldLocation(world, x, y, z);
 		loc.writeToNBT("loc", is.stackTagCompound);
@@ -115,7 +124,7 @@ public class ItemLinkedTilePlacer extends Item {
 		if (is.stackTagCompound != null) {
 			WorldLocation loc = this.getRiftLocation(is);
 			if (loc != null)
-				li.add("Tying to "+loc.toString());
+				li.add("Linking to "+loc.toString());
 		}
 	}
 

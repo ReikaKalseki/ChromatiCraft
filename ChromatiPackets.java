@@ -85,6 +85,7 @@ import Reika.ChromatiCraft.ModInterface.ThaumCraft.CrystalWand;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.EssentiaNetwork.EssentiaPath;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeReceiverWrapper;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectFormer;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -357,7 +358,7 @@ public class ChromatiPackets implements PacketHandler {
 					((TileEntityRitualTable)tile).setChosenAbility(Chromabilities.getAbilityByInt(data[0]));
 					break;
 				case BUFFERSET:
-					PlayerElementBuffer.instance.setPlayerCapOnClient(ep, data[0]);
+					PlayerElementBuffer.instance.setPlayerCapOnClient(ep, data[0], data[1] > 0);
 					break;
 					/*
 				case BUFFERINC:
@@ -898,6 +899,16 @@ public class ChromatiPackets implements PacketHandler {
 					Entity e = world.getEntityByID(data[3]);
 					if (e instanceof EntityPlayer)
 						Chromabilities.doNukerFX(world, data[0], data[1], data[2], (EntityPlayer)e);
+					break;
+				case BURNERINV:
+					if (data[0] > 0) {
+						ep.closeScreen();
+						ep.openGui(ChromatiCraft.instance, ChromaGuis.BURNERINV.ordinal(), world, x, y, z);
+					}
+					else {
+						ep.openContainer.onContainerClosed(ep);
+						ep.openContainer = ep.inventoryContainer;
+					}
 					break;
 			}
 		}

@@ -48,7 +48,7 @@ public class ChromaCheck implements TileEntityCheck {
 	}
 
 	@Override
-	public void place(World world, int x, int y, int z) {
+	public void place(World world, int x, int y, int z, int flags) {
 		world.setBlock(x, y, z, ChromaBlocks.CHROMA.getBlockInstance());
 		TileEntityChroma te = (TileEntityChroma)world.getTileEntity(x, y, z);
 		te.activate(color, TileEntityChroma.BERRY_SATURATION);

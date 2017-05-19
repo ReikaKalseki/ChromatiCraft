@@ -21,6 +21,7 @@ import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -55,6 +56,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.EntityViewRenderEvent.FogColors;
+import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
 import net.minecraftforge.client.event.RenderBlockOverlayEvent;
 import net.minecraftforge.client.event.RenderBlockOverlayEvent.OverlayType;
@@ -88,6 +90,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.GUI.GuiAuraPouch;
 import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
+import Reika.ChromatiCraft.GUI.GuiItemBurner.ButtonItemBurner;
 import Reika.ChromatiCraft.Items.Tools.ItemFloatstoneBoots;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
@@ -101,6 +104,7 @@ import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -146,6 +150,7 @@ import Reika.DragonAPI.Instantiable.Event.Client.TileEntityRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.WaterColorEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.WeatherSkyStrengthEvent;
 import Reika.DragonAPI.Instantiable.IO.EnumSound;
+import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
@@ -153,6 +158,7 @@ import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -201,6 +207,21 @@ public class ChromaClientEventController {
 			textureLoadingComplete = true;
 		}
 		 */
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void addLumenBurnButton(GuiScreenEvent.InitGuiEvent.Post evt) {
+		if (evt.gui instanceof GuiInventory && ProgressStage.ALLCOLORS.isPlayerAtStage(Minecraft.getMinecraft().thePlayer) && ProgressStage.CHARGE.isPlayerAtStage(Minecraft.getMinecraft().thePlayer)) {
+			GuiContainer gui = (GuiContainer)evt.gui;
+			evt.buttonList.add(new ButtonItemBurner(gui, gui.guiLeft+142, gui.guiTop+56));
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void handleLumenBurnButton(GuiScreenEvent.ActionPerformedEvent.Post evt) {
+		if (evt.button.id == ButtonItemBurner.BUTTON_ID && evt.gui instanceof GuiInventory) {
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BURNERINV.ordinal(), PacketTarget.server, 1);
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)

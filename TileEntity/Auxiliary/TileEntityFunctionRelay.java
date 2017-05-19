@@ -12,14 +12,20 @@ package Reika.ChromatiCraft.TileEntity.Auxiliary;
 import java.util.ArrayList;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaCropHelper;
 import Reika.DragonAPI.ModRegistry.ModCropList;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class TileEntityFunctionRelay extends TileEntityChromaticBase {
@@ -40,6 +46,32 @@ public class TileEntityFunctionRelay extends TileEntityChromaticBase {
 		scanTimer.update();
 		if (scanTimer.checkCap()) {
 			this.doScan(world, x, y, z);
+		}
+		if (world.isRemote) {
+			//this.doParticles(world, x, y, z);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void doParticles(World world, int x, int y, int z) {
+		int l = 3;//360;
+		double theta = 0;//this.getTicksExisted()%360;
+		double phi = 0;//rand.nextDouble()*360;
+		double a = (this.getTicksExisted()*0.73)%360D;
+		double a2 = (0.135*this.getTicksExisted())%360D;
+		for (double d = a; d < 360+a; d += 15) {
+			for (double d2 = -90+a2; d2 <= 90+a2; d2 += 15) {
+				double r = 1.125+0.125*Math.sin(this.getTicksExisted()/8D+d/(3*Math.PI-0.01)+d2/(4*Math.PI-0.01));
+				double[] xyz = ReikaPhysicsHelper.polarToCartesian(r, theta+d2, phi+d);
+				double px = x+0.5+xyz[0];
+				double py = y+0.5+xyz[1];
+				double pz = z+0.5+xyz[2];
+				EntityBlurFX fx = new EntityBlurFX(world, px, py, pz).setLife(l).setAlphaFading();
+				ColorBlendList cbl = new ColorBlendList(l*4/*/4F*/, 0xff00ff, 0xffff00, 0xff00ff, 0x00ffff);
+				fx.setColor(cbl.getColor(this.getTicksExisted()+Math.abs((int)(d*d2/512D))));
+				//fx.setPositionController(new PulsingSpherePositionController(l*4, x+0.5, y+0.5, z+0.5, 1, 1.25, theta, phi)).setColorController(new BlendListColorController(cbl));
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
 		}
 	}
 

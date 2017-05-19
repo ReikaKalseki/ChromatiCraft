@@ -18,7 +18,6 @@ import org.lwjgl.input.Keyboard;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
-import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.GUI.GuiChromability;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -28,6 +27,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 
 public class GuiRitualTable extends GuiChromability {

@@ -6,6 +6,7 @@ import java.util.HashSet;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
@@ -61,6 +62,11 @@ public class BlockRotatingLock extends Block {
 	}
 
 	@Override
+	public void registerBlockIcons(IIconRegister ico) {
+		blockIcon = ico.registerIcon("chromaticraft:dimstruct/waterlock");
+	}
+
+	@Override
 	public boolean isOpaqueCube() {
 		return false;
 	}
@@ -90,6 +96,7 @@ public class BlockRotatingLock extends Block {
 		private int level;
 		private int lockX;
 		private int lockY;
+		private boolean isCheckpoint;
 
 		private Collection<ForgeDirection> openEndsAtZero = new HashSet();
 		private FilledBlockArray lockState;
@@ -113,7 +120,15 @@ public class BlockRotatingLock extends Block {
 			if (gen != null) {
 				WaterFloor f = gen.getLevel(level);
 				if (f != null) {
-
+					boolean fluid = worldObj.getBlock(xCoord, yCoord+1, zCoord) == ChromaBlocks.EVERFLUID.getBlockInstance();
+					/*
+					if (fluid) {
+						TileEntityEverFluid te = (TileEntityEverFluid)worldObj.getTileEntity(xCoord, yCoord+1, zCoord);
+						fluid = te.uid == uid && te.getLevel() == level;
+					}
+					 */
+					//ReikaJavaLibrary.pConsole(level+">"+fluid);
+					f.updateFluid(worldObj, lockX, lockY, fluid);
 				}
 			}
 		}
@@ -122,16 +137,21 @@ public class BlockRotatingLock extends Block {
 			return direction != null ? direction : ForgeDirection.EAST;
 		}
 
-		public void setData(ForgeDirection dir, int lvl, int x, int y, Collection<ForgeDirection> c) {
+		public void setData(ForgeDirection dir, int lvl, int x, int y, boolean check, Collection<ForgeDirection> c) {
 			direction = dir;
 			level = lvl;
 			lockX = x;
 			lockY = y;
 			openEndsAtZero = c;
+			isCheckpoint = check;
 		}
 
 		public int getRotationProgress() {
 			return rotatingAmount;
+		}
+
+		public boolean isCheckpoint() {
+			return isCheckpoint;
 		}
 
 		private void startRotating() {
@@ -232,6 +252,7 @@ public class BlockRotatingLock extends Block {
 			NBT.setInteger("lvl", level);
 			NBT.setInteger("lockX", lockX);
 			NBT.setInteger("lockY", lockY);
+			NBT.setBoolean("check", isCheckpoint);
 
 			NBTTagList li = new NBTTagList();
 			for (ForgeDirection dir : openEndsAtZero) {
@@ -247,6 +268,7 @@ public class BlockRotatingLock extends Block {
 			level = NBT.getInteger("lvl");
 			lockX = NBT.getInteger("lockX");
 			lockY = NBT.getInteger("lockY");
+			isCheckpoint = NBT.getBoolean("check");
 
 			openEndsAtZero.clear();
 			NBTTagList li = NBT.getTagList("ends", NBTTypes.INT.ID);
@@ -262,7 +284,12 @@ public class BlockRotatingLock extends Block {
 
 		@Override
 		public AxisAlignedBB getRenderBoundingBox() {
-			return ReikaAABBHelper.getBlockAABB(this).expand(Lock.SIZE, 0, Lock.SIZE);
+			return ReikaAABBHelper.getBlockAABB(this).expand(Lock.SIZE, 3, Lock.SIZE);
+		}
+
+		@Override
+		public boolean shouldRenderInPass(int pass) {
+			return true;
 		}
 
 	}

@@ -163,7 +163,7 @@ public class ConsoleRenderer implements ISBRH {
 				ConnectedTextureGlass b = (ConnectedTextureGlass)block;
 				v5.addTranslation(x, y, z);
 
-				double o = 0.005;
+				double o = 0.0025;
 
 				ArrayList<Integer> li = b.getEdgesForFace(world, x, y, z, ForgeDirection.UP);
 				this.setFaceBrightness(v5, ForgeDirection.UP);

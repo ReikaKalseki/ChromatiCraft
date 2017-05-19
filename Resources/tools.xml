@@ -114,9 +114,9 @@
 	<structfind>
 		You already know about the buried - slightly and deeply - structures in various biomes, from which you have learned the bulk of your knowledge of manipulating crystal energy. However, when it comes time to look for a new one, you thus far have had to rely on sheer luck, which is neither enjoyable nor productive. If you could tap into the ambient energy field the structures seem to focus on, you might help expedite that search.
 	</structfind>
-	<name>
-		
-	</name>
+	<splineattack>
+		As noted before, clusters of enemies are the most difficult arrangement to deal with, as focusing your attacks on one often mean being attacked by another with impunity. What you need is some sort of attack that can bridge the gap and jump between mobs, attacking them in rapid succession. And now you have it, though for some insane reason you keep getting asked if you need to whistle to use it.
+	</splineattack>
 	<name>
 		
 	</name>

@@ -22,7 +22,6 @@ import org.lwjgl.opengl.GL11;
 
 import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectFormer.AspectMode;
@@ -31,6 +30,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Instantiable.Data.Proportionality;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;

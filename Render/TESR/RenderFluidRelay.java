@@ -119,16 +119,19 @@ public class RenderFluidRelay extends ChromaRenderBase {
 			Collection<Coordinate> set = te.getConnections();
 			for (Coordinate c : set) {
 				TileEntity o = c.getTileEntity(te.worldObj);
-				if (o != null && o instanceof TileEntityFluidRelay && o.hashCode() > te.hashCode()) {
-					double d = 0.1875;
-					TileEntityFluidRelay te2 = (TileEntityFluidRelay)o;
-					double x = 0.5+d*te.getFacing().offsetX;
-					double y = 0.5+d*te.getFacing().offsetY;
-					double z = 0.5+d*te.getFacing().offsetZ;
-					double x2 = 0.5+d*te2.getFacing().offsetX;
-					double y2 = 0.5+d*te2.getFacing().offsetY;
-					double z2 = 0.5+d*te2.getFacing().offsetZ;
-					ChromaFX.renderBeam(x, y, z, c.xCoord-te.xCoord+x2, c.yCoord-te.yCoord+y2, c.zCoord-te.zCoord+z2, par8, 240, 0.1875);
+				if (o != null && o instanceof TileEntityFluidRelay && o.hashCode() > te.hashCode()) { //ensure only one renders of the two
+					int a = ((int)(240*Math.sin(te.getTicksExisted()/32D+te.hashCode()+System.identityHashCode(o)))-230)*24;
+					if (a > 0) {
+						double d = 0.1875;
+						TileEntityFluidRelay te2 = (TileEntityFluidRelay)o;
+						double x = 0.5+d*te.getFacing().offsetX;
+						double y = 0.5+d*te.getFacing().offsetY;
+						double z = 0.5+d*te.getFacing().offsetZ;
+						double x2 = 0.5+d*te2.getFacing().offsetX;
+						double y2 = 0.5+d*te2.getFacing().offsetY;
+						double z2 = 0.5+d*te2.getFacing().offsetZ;
+						ChromaFX.renderBeam(x, y, z, c.xCoord-te.xCoord+x2, c.yCoord-te.yCoord+y2, c.zCoord-te.zCoord+z2, par8, a, 0.1875);
+					}
 				}
 			}
 		}

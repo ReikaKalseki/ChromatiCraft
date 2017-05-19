@@ -12,8 +12,8 @@ package Reika.ChromatiCraft.GUI;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
-import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundGui;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundGui;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
 @Deprecated

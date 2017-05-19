@@ -79,7 +79,7 @@ class LossCache {
 	void applyToPlayer(EntityPlayer player) {
 		PlayerElementBuffer.instance.setElementCap(player, cap, false);
 		for (CrystalElement e : savedEnergy.elementSet()) {
-			PlayerElementBuffer.instance.addToPlayer(player, e, savedEnergy.getValue(e));
+			PlayerElementBuffer.instance.addToPlayer(player, e, savedEnergy.getValue(e), false);
 		}
 		for (Ability a : savedAbilities) {
 			Chromabilities.give(player, a);

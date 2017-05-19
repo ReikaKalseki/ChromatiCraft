@@ -38,6 +38,7 @@ public enum ChromaGuis {
 	BULKMOVER(),
 	HOVER(),
 	LOREKEY(),
+	BURNERINV(),
 	//LORE();
 	;
 

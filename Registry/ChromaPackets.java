@@ -24,7 +24,7 @@ public enum ChromaPackets {
 	PYLONATTACK(6),
 	PYLONATTACKRECEIVE(1),
 	ABILITYCHOOSE(1),
-	BUFFERSET(1),
+	BUFFERSET(2),
 	//BUFFERINC(1),
 	TELEPUMP(1),
 	//TRANSMIT(3),
@@ -164,6 +164,7 @@ public enum ChromaPackets {
 	ARTEFACTCLICK(),
 	FERTILITYSEED(),
 	NUKERLOC(4),
+	BURNERINV(1),
 	;
 
 	public final int numInts;

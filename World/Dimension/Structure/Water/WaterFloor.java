@@ -21,8 +21,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.StructurePiece;
-import Reika.ChromatiCraft.Block.Dimension.Structure.Water.BlockEverFluid;
-import Reika.ChromatiCraft.Block.Dimension.Structure.Water.BlockEverFluid.TileEntityEverFluid;
+import Reika.ChromatiCraft.Block.BlockChromaDoor.TileEntityChromaDoor;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Water.BlockRotatingLock.TileEntityRotatingLock;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -35,7 +34,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 public class WaterFloor extends StructurePiece {
 
-	public static final int HEIGHT = 8;
+	public static final int HEIGHT = 7;
 
 	public final int level;
 	public final int gridSize;
@@ -46,6 +45,7 @@ public class WaterFloor extends StructurePiece {
 	//private final HashSet<Coordinate> blockedChannels = new HashSet();
 	//private final HashSet<Coordinate> padCoordinates = new HashSet();
 	private final HashSet<Coordinate> doorCoordinates = new HashSet();
+	private final HashSet<Lock> checkpoints = new HashSet();
 
 	private Coordinate origin;
 
@@ -65,6 +65,16 @@ public class WaterFloor extends StructurePiece {
 			}
 		}
 		this.path = path;
+
+		int c = 0;
+		for (Point p : path.solution) {
+			Lock l = this.getLock(p.x, p.y);
+			c++;
+			if (c > 2 && rand.nextInt(Math.max(2, 6-c)) == 0 && !p.equals(path.startLoc) && !p.equals(path.endLoc)) {
+				c = 0;
+				checkpoints.add(l);
+			}
+		}
 	}
 
 	public int getWidth() {
@@ -75,6 +85,7 @@ public class WaterFloor extends StructurePiece {
 	@Override
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
 		origin = new Coordinate(x, y, z);
+		boolean bottom = level == ((WaterPuzzleGenerator)parent).levelCount()-1;
 		int r0 = (gridSize-1)/2;
 		for (int i = 0; i < flowGrid.length; i++) {
 			for (int k = 0; k < flowGrid[i].length; k++) {
@@ -98,12 +109,12 @@ public class WaterFloor extends StructurePiece {
 									doorCoordinates.add(new Coordinate(x+i, y+h, z+k));
 								}
 								else
-									world.setBlock(x+i, y+h, z+k, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.metadata);
+									world.setBlock(x+i, y+h, z+k, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), bottom ? BlockType.STONE.metadata : BlockType.GLASS.metadata);
 							else
 								world.setBlock(x+i, y+h, z+k, Blocks.air);
 						}
 					}
-					else if ((h >= 0 || Math.abs(i) < r-4 || Math.abs(k) < r-4) && (Math.abs(i) == r || Math.abs(k) == r || (h == 0 && level == ((WaterPuzzleGenerator)parent).levelCount()-1) || h == HEIGHT))
+					else if ((h >= 0 || Math.abs(i) < r-4 || Math.abs(k) < r-4) && (Math.abs(i) == r || Math.abs(k) == r || (h == 0 && bottom) || h == HEIGHT))
 						world.setBlock(x+i, y+h, z+k, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), (Math.abs(i)+Math.abs(k))%6 == 0 ? BlockType.LIGHT.metadata : BlockType.STONE.metadata);
 					else if (h == 1)
 						world.setBlock(x+i, y+h, z+k, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata);
@@ -224,7 +235,7 @@ public class WaterFloor extends StructurePiece {
 		for (int i = 0; i < flowGrid.length; i++) {
 			for (int k = 0; k < flowGrid[i].length; k++) {
 				Lock l = flowGrid[i][k];
-				world.setTileEntity(l.centerLocation.xCoord, l.centerLocation.yCoord, l.centerLocation.zCoord, ChromaBlocks.WATERLOCK.getBlockInstance(), 0, new LockCallback(parent.id, level, i-r0, k-r0, l.facing, l.openEnds));
+				world.setTileEntity(l.centerLocation.xCoord, l.centerLocation.yCoord, l.centerLocation.zCoord, ChromaBlocks.WATERLOCK.getBlockInstance(), 0, new LockCallback(parent.id, level, i-r0, k-r0, l.facing, checkpoints.contains(l), l.openEnds));
 				for (int n = 2; n < 6; n++) {
 					ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[n];
 					for (int d = 0; d <= Lock.SIZE; d++) {
@@ -245,17 +256,14 @@ public class WaterFloor extends StructurePiece {
 		world.setBlock(x+path.startLoc.x*(Lock.SIZE*2+1+1), y+4, z+path.startLoc.y*(Lock.SIZE*2+1+1), Blocks.redstone_block);
 		world.setBlock(x+path.endLoc.x*(Lock.SIZE*2+1+1), y+4, z+path.endLoc.y*(Lock.SIZE*2+1+1), Blocks.gold_block);
 		 */
-		if (level > 0) {
-			WaterFloor f = ((WaterPuzzleGenerator)parent).getLevel(level-1);
-			Point p = f.path.endLoc;
-			for (int i = 0; i <= 4; i++)
-				world.setBlock(x+p.x*(Lock.SIZE*2+1+1), y+HEIGHT+i, z+p.y*(Lock.SIZE*2+1+1), Blocks.air);
-		}
-		else {
-			Point p = path.startLoc;
-			world.setTileEntity(x+p.x*(Lock.SIZE*2+1+1), y+HEIGHT, z+p.y*(Lock.SIZE*2+1+1), ChromaBlocks.EVERFLUID.getBlockInstance(), 0, new EverFluidCallback(parent.id, level));
-			world.setBlock(x+p.x*(Lock.SIZE*2+1+1), y+HEIGHT+1, z+p.y*(Lock.SIZE*2+1+1), ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata);
-		}
+
+		int lx = x+path.startLoc.x*(Lock.SIZE*2+1+1);
+		int lz = z+path.startLoc.y*(Lock.SIZE*2+1+1);
+		for (int i = 0; i <= 4; i++)
+			world.setBlock(lx, y+HEIGHT+i, lz, Blocks.air);
+
+		//ReikaJavaLibrary.pConsole("Level "+level+": Path from "+path.startLoc+" to "+path.endLoc+", end at "+lx+","+lz);
+
 
 		//this.updateChannels();
 
@@ -266,7 +274,11 @@ public class WaterFloor extends StructurePiece {
 	}
 
 	public boolean hasBeenSolved() {
-		return false;
+		for (Lock l : checkpoints) {
+			if (!l.hasFluid)
+				return false;
+		}
+		return true;
 	}
 	/*
 	public boolean isSlotOccluded(int x, int y, int z) {
@@ -300,24 +312,22 @@ public class WaterFloor extends StructurePiece {
 		return flowGrid[i+r0][k+r0];
 	}
 
-	private static class EverFluidCallback implements TileCallback {
-
-		private final UUID uid;
-		private final int level;
-
-		private EverFluidCallback(UUID id, int lvl) {
-			uid = id;
-			level = lvl;
-		}
-
-		@Override
-		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
-			if (te instanceof TileEntityEverFluid) {
-				BlockEverFluid.placeSource(world, x, y, z);
-				((TileEntityEverFluid)te).setData(uid, level);
+	public void updateFluid(World world, int i, int k, boolean fluid) {
+		boolean flag = this.hasBeenSolved();
+		this.getLock(i, k).hasFluid = fluid;
+		boolean flag2 = this.hasBeenSolved();
+		if (flag != flag2) {
+			for (Coordinate c : doorCoordinates) {
+				if (flag2)
+					((TileEntityChromaDoor)c.getTileEntity(world)).open(-1);
+				else
+					((TileEntityChromaDoor)c.getTileEntity(world)).close();
 			}
 		}
+	}
 
+	public Point getStartLocation() {
+		return path.startLoc;
 	}
 
 	private static class LockCallback implements TileCallback {
@@ -328,20 +338,22 @@ public class WaterFloor extends StructurePiece {
 		private final int lockX;
 		private final int lockY;
 		private final Collection<ForgeDirection> ends;
+		private final boolean isCheckpoint;
 
-		private LockCallback(UUID id, int lvl, int lx, int ly, ForgeDirection dir, Collection<ForgeDirection> c) {
+		private LockCallback(UUID id, int lvl, int lx, int ly, ForgeDirection dir, boolean check, Collection<ForgeDirection> c) {
 			uid = id;
 			level = lvl;
 			lockX = lx;
 			lockY = ly;
 			direction = dir;
 			ends = c;
+			isCheckpoint = check;
 		}
 
 		@Override
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			if (te instanceof TileEntityRotatingLock) {
-				((TileEntityRotatingLock)te).setData(direction, level, lockX, lockY, ends);
+				((TileEntityRotatingLock)te).setData(direction, level, lockX, lockY, isCheckpoint, ends);
 				((TileEntityRotatingLock)te).uid = uid;
 				//while (world.rand.nextInt(4) > 0) cannot do this since gens chunk by chunk
 				//	((TileEntityRotatingLock)te).rotate();

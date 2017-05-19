@@ -64,6 +64,9 @@ public class BlockModelledChromaTile extends BlockChromaTile {
 		if (m != null) {
 			TileEntityChromaticBase te = (TileEntityChromaticBase)world.getTileEntity(x, y, z);
 			box = AxisAlignedBB.getBoundingBox(x+m.getMinX(te), y+m.getMinY(te), z+m.getMinZ(te), x+m.getMaxX(te), y+m.getMaxY(te), z+m.getMaxZ(te));
+			if (m.providesCustomHitbox()) {
+				box = ((CustomHitbox)world.getTileEntity(x, y, z)).getHitbox();
+			}
 		}
 		this.setBounds(box, x, y, z);
 	}

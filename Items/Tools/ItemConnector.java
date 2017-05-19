@@ -19,9 +19,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.Linkable;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.LinkedTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LinkerCallback;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
-import Reika.ChromatiCraft.Base.TileEntity.LinkedTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.NonEuclid.BlockTeleport.TileEntityTeleport;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
 import Reika.DragonAPI.DragonAPICore;
@@ -181,7 +181,7 @@ public class ItemConnector extends ItemChromaTool {
 				boolean flag = rf1.linkTo(w2, x2, y2, z2);
 				if (flag) {
 					ReikaChatHelper.sendChatToPlayer(ep, "Linked "+rf1+" and "+rf2);
-					rf1.setPrimary();
+					rf1.setPrimary(true);
 				}
 				else
 					ReikaChatHelper.sendChatToPlayer(ep, "Link failed.");

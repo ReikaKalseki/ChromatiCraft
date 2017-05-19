@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Container.ContainerEnchantDecomposer;
 import Reika.ChromatiCraft.Container.ContainerFluidRelay;
 import Reika.ChromatiCraft.Container.ContainerInventoryLinker;
 import Reika.ChromatiCraft.Container.ContainerInventoryTicker;
+import Reika.ChromatiCraft.Container.ContainerItemBurner;
 import Reika.ChromatiCraft.Container.ContainerItemCollector;
 import Reika.ChromatiCraft.Container.ContainerItemFabricator;
 import Reika.ChromatiCraft.Container.ContainerItemInserter;
@@ -46,6 +47,7 @@ import Reika.ChromatiCraft.GUI.GuiAuraPouch;
 import Reika.ChromatiCraft.GUI.GuiBulkMover;
 import Reika.ChromatiCraft.GUI.GuiFlightWand;
 import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
+import Reika.ChromatiCraft.GUI.GuiItemBurner;
 import Reika.ChromatiCraft.GUI.GuiLoreKeyAssembly;
 import Reika.ChromatiCraft.GUI.GuiOneSlot;
 import Reika.ChromatiCraft.GUI.GuiTeleportAbility;
@@ -216,6 +218,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new ContainerRemoteTerminal(player);
 			case BULKMOVER:
 				return new ContainerBulkMover(player);
+			case BURNERINV:
+				return new ContainerItemBurner(player);
 			default:
 				return null;
 		}
@@ -358,6 +362,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiBulkMover(player);
 			case HOVER:
 				return new GuiFlightWand(player);
+			case BURNERINV:
+				return new GuiItemBurner(player);
 		}
 		return null;
 	}

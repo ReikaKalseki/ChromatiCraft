@@ -106,6 +106,7 @@ public class LoreScriptRenderer {
 		}
 		double y1 = flipVertical ? y+CHAR_WIDTH : y;
 		double y2 = flipVertical ? y : y+CHAR_WIDTH;
+
 		Tessellator.instance.addVertexWithUV(x,				y2,	0, u, dv);
 		Tessellator.instance.addVertexWithUV(x+CHAR_WIDTH,	y2,	0, du, dv);
 		Tessellator.instance.addVertexWithUV(x+CHAR_WIDTH,	y1,	0, du, v);

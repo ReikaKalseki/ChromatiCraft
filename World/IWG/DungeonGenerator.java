@@ -236,7 +236,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				}
 				FilledBlockArray struct = ChromaStructures.getCavernStructure(world, x, y, z);
 				if (this.isValidCavernLocation(world, x, y, z, struct)) {
-					struct.place();
+					struct.place(2);
 					//generate tunnel
 					for (int i = 7; i < 18; i++) {
 						int dx = x+i;
@@ -266,7 +266,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				CrystalElement e = CrystalElement.randomElement();
 				FilledBlockArray arr = ChromaStructures.getBurrowStructure(world, x, y, z, e);
 				if (this.isValidBurrowLocation(world, x, y, z, arr)) {
-					arr.place();
+					arr.place(2);
 					this.convertDirtToGrass(arr);
 					//world.setBlockMetadataWithNotify(x-7, y-5, z-2, 5, 3); //that chest that never points right
 					//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+x+","+y+","+z);
@@ -298,7 +298,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					//}
 					FilledBlockArray struct = ChromaStructures.getOceanStructure(world, x, y, z);
 					if (y > 0 && this.isValidOceanLocation(world, x, y, z, struct)) {
-						struct.place();
+						struct.place(2);
 						world.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
 						TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x, y, z);
 						te.generate(s, CrystalElement.WHITE);
@@ -329,7 +329,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					FilledBlockArray struct = ChromaStructures.getDesertStructure(world, x, y, z);
 					DesertStructure.getTerrain(struct, x, y, z);
 					if (this.isValidDesertLocation(world, x, y, z, struct)) {
-						struct.place();
+						struct.place(2);
 
 						world.setBlock(x+7, y+3, z+7, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
 						TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x+7, y+3, z+7);
@@ -513,7 +513,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					int dy = c.yCoord-arr.getMinY();
 					int ct = Math.max(1, dy*2-2);
 					if (r.nextInt(ct) == 0) {
-						arr.world.setBlockMetadataWithNotify(c.xCoord, c.yCoord, c.zCoord, BlockType.MOSS.metadata, 3);
+						arr.world.setBlockMetadataWithNotify(c.xCoord, c.yCoord, c.zCoord, BlockType.MOSS.metadata, 2);
 					}
 				}
 			}

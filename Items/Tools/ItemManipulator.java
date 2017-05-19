@@ -51,6 +51,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAreaBreaker;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemInserter;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityMultiBuilder;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalFence;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger;
@@ -170,6 +171,20 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			TileEntityDataNode te = (TileEntityDataNode)tile;
 			te.scan(ep);
 			return true;
+		}
+
+		if (t == ChromaTiles.MULTIBUILDER) {
+			TileEntityMultiBuilder te = (TileEntityMultiBuilder)tile;
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[s].getOpposite();
+			if (dir.offsetY == 0) {
+				if (ep.isSneaking()) {
+					te.contract(dir);
+				}
+				else {
+					te.expand(dir);
+				}
+				return true;
+			}
 		}
 
 		if (t == ChromaTiles.WINDOW) {
@@ -411,7 +426,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			if (player.isSneaking())
 				player.getEntityData().removeTag("CrystalBuffer");
 			else {
-				PlayerElementBuffer.instance.addToPlayer(player, CrystalElement.elements[count%16], PlayerElementBuffer.instance.getElementCap(player));
+				PlayerElementBuffer.instance.addToPlayer(player, CrystalElement.elements[count%16], PlayerElementBuffer.instance.getElementCap(player), false);
 			}
 		}
 

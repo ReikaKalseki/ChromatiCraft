@@ -9,16 +9,27 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.UUID;
 
+import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Water.BlockEverFluid;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Water.BlockEverFluid.TileEntityEverFluid;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.World.Dimension.Structure.Water.Lock;
 import Reika.ChromatiCraft.World.Dimension.Structure.Water.WaterFloor;
+import Reika.ChromatiCraft.World.Dimension.Structure.Water.WaterLoot;
 import Reika.ChromatiCraft.World.Dimension.Structure.Water.WaterPath;
 import Reika.ChromatiCraft.World.Dimension.Structure.Water.WaterStructureEntrance;
+import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 
@@ -45,20 +56,73 @@ public class WaterPuzzleGenerator extends DimensionStructureGenerator {
 				endx = ReikaRandomHelper.getRandomPlusMinus(0, r);
 				endz = ReikaRandomHelper.getRandomPlusMinus(0, r);
 			}
+			//ReikaJavaLibrary.pConsole("Pathing "+i+" from "+startx+","+startz+" to "+endx+","+endz+", R="+r);
 			WaterPath path = new WaterPath(startx, startz, endx, endz, r);
 			path.genPath(rand);
 			WaterFloor w = new WaterFloor(this, i, r, path, rand);
 			levels.add(w);
 			startx = endx;
-			startz = endx;
+			startz = endz;
 		}
 
-		int y = posY+levels.size()*WaterFloor.HEIGHT;
+		int ty = WaterFloor.HEIGHT+4;
+
+		int y = posY+levels.size()*ty;
+		int topY = y;
 
 		for (WaterFloor l : levels) {
 			l.generate(world, posX, y, posZ);
-			y -= l.HEIGHT+4;
+			y -= ty;
 		}
+		y += ty;
+
+		WaterFloor f = levels.get(levels.size()-1);
+		r = f.getWidth()-2;
+		boolean flag = true;
+		for (int i = 0; i < 4; i++) {
+			boolean flag2 = i == 3 || rand.nextInt(4) == 0;
+			int dx = posX+(i%2)*r*2-r;
+			int dz = posZ+(i/2)*r*2-r;
+			new WaterLoot(this, flag && flag2).generate(world, dx, y, dz);
+			if (flag2)
+				flag = false;
+		}
+
+		y = topY;
+		posY = y;
+
+		f = levels.get(0);
+
+		r = f.getWidth();
+		for (int i = -r; i <= r; i++) {
+			for (int k = -r; k <= r; k++) {
+				for (int h = 1; h <= 5; h++) {
+					int dx = posX+i;
+					int dz = posZ+k;
+					int dy = y+WaterFloor.HEIGHT+h;
+					if (Math.abs(i) == r || Math.abs(k) == r || h == 5) {
+						world.setBlock(dx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), (Math.abs(i)+Math.abs(k))%6 == 0 ? BlockType.LIGHT.metadata : BlockType.STONE.metadata);
+					}
+					else {
+						world.setBlock(dx, dy, dz, Blocks.air);
+					}
+				}
+			}
+		}
+
+		Point p = f.getStartLocation();
+		int dx = posX+p.x*(Lock.SIZE*2+1+1);
+		int dz = posZ+p.y*(Lock.SIZE*2+1+1);
+		for (int i = 0; i <= 4; i++) {
+			world.setBlock(dx, y+WaterFloor.HEIGHT+i, dz, Blocks.air);
+			if (i > 0) {
+				world.setBlock(dx+1, y+WaterFloor.HEIGHT+i, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.ordinal());
+				world.setBlock(dx-1, y+WaterFloor.HEIGHT+i, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.ordinal());
+				world.setBlock(dx, y+WaterFloor.HEIGHT+i, dz+1, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.ordinal());
+				world.setBlock(dx, y+WaterFloor.HEIGHT+i, dz-1, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.ordinal());
+			}
+		}
+		world.setTileEntity(dx, y+WaterFloor.HEIGHT+4, dz, ChromaBlocks.EVERFLUID.getBlockInstance(), 0, new EverFluidCallback(id, 0));
 
 		this.addDynamicStructure(new WaterStructureEntrance(this), posX, posZ);
 	}
@@ -70,12 +134,12 @@ public class WaterPuzzleGenerator extends DimensionStructureGenerator {
 	private static int getSize() {
 		switch(ChromaOptions.getStructureDifficulty()) {
 			case 1:
-				return 6;
+				return 5;
 			case 2:
-				return 8;
+				return 6;
 			case 3:
 			default:
-				return 12;
+				return 8; //12 was too big, overran space -> 6,8,12 to 5,6,8
 		}
 	}
 
@@ -114,6 +178,26 @@ public class WaterPuzzleGenerator extends DimensionStructureGenerator {
 
 	public int levelCount() {
 		return levels.size();
+	}
+
+	private static class EverFluidCallback implements TileCallback {
+
+		private final UUID uid;
+		private final int level;
+
+		private EverFluidCallback(UUID id, int lvl) {
+			uid = id;
+			level = lvl;
+		}
+
+		@Override
+		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
+			if (te instanceof TileEntityEverFluid) {
+				BlockEverFluid.placeSource(world, x, y, z);
+				((TileEntityEverFluid)te).setData(uid, level);
+			}
+		}
+
 	}
 
 }

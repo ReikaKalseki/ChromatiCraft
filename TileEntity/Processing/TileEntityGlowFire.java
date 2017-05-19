@@ -144,7 +144,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 		return true;
 	}
 
-	private static ElementTagCompound getCompositionCost(CrystalElement e, int amt) {
+	public static ElementTagCompound getCompositionCost(CrystalElement e, int amt) {
 		ElementTagCompound tag = new ElementTagCompound();
 		Collection<CrystalElement> parents = ElementMixer.instance.getMixParents(e);
 		if (parents == null)

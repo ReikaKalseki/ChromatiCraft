@@ -45,7 +45,6 @@ public class WaterPath {
 		}
 		visitedCells.add(startLoc);
 		visitedCells.add(endLoc);
-		solution.add(startLoc);
 	}
 
 	public void genPath(Random rand) {
@@ -72,6 +71,7 @@ public class WaterPath {
 			Point p2 = li.get(i+1);
 			this.stepTo(p1, p2);
 		}
+		solution.addAll(li);
 	}
 
 	private boolean tryExtendPath(Point p1, Point p2, int idx, ArrayList<Point> li, ForgeDirection dir) {

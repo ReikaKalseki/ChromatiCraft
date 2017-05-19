@@ -24,7 +24,6 @@ import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer.FontType;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
@@ -34,6 +33,7 @@ import Reika.DragonAPI.IO.DelegateFontRenderer;
 import Reika.DragonAPI.Instantiable.AlphabeticItemComparator;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;

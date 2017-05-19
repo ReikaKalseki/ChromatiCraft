@@ -232,7 +232,10 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 
 	@Override
 	public void onUpdate() {
-
+		ticksExisted = particleAge;
+		if (particleAge < 0) {
+			return;
+		}
 		if (colliding) {
 			if (isCollidedVertically) {
 				double v = rand.nextDouble()*0.0625;

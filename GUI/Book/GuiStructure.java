@@ -26,7 +26,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton;
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
@@ -39,6 +38,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer.BlockChoiceHook;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer.BlockRenderHook;

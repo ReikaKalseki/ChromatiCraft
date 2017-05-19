@@ -293,6 +293,10 @@ public class BlockEverFluid extends BlockContainer {
 			level = lvl;
 		}
 
+		public int getLevel() {
+			return level;
+		}
+
 		@Override
 		public void writeToNBT(NBTTagCompound NBT) {
 			super.writeToNBT(NBT);

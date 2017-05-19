@@ -78,7 +78,7 @@ public class BlockTieredOre extends BlockChromaTiered {
 		AVOLITE(Blocks.stone, ProgressStage.POWERCRYSTAL,		2, 1, 18);
 
 		public final ProgressStage level;
-		private final Block genBlock;
+		public final Block genBlock;
 
 		public final int veinSize;
 		public final int veinCount;

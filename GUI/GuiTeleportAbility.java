@@ -21,8 +21,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton;
-import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundGui;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Ability.WarpPoint;
 import Reika.ChromatiCraft.Auxiliary.Ability.WarpPointData;
@@ -31,6 +29,8 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.RectangleMap;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundGui;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;

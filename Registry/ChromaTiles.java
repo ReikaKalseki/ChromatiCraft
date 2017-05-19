@@ -57,6 +57,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityHoverPad;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemInserter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityMultiBuilder;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityVillageRepair;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityAvoLaser;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityChromaLamp;
@@ -229,7 +230,8 @@ public enum ChromaTiles implements TileEnum {
 	DATANODE("chroma.datanode",			ChromaBlocks.TILEMODELLED3,	TileEntityDataNode.class,			15, "RenderDataNode"),
 	PYLONLINK("chroma.pylonlink",		ChromaBlocks.TILEENTITY2,	TileEntityPylonLink.class,			2,	"RenderPylonLink"),
 	SKYPEATER("chroma.skypeater",		ChromaBlocks.PYLON,			TileEntitySkypeater.class,			11, "RenderSkypeater"),
-	FUNCTIONRELAY("chroma.funcrelay",	ChromaBlocks.TILEMODELLED4,	TileEntityFunctionRelay.class,		0, "RenderFunctionRelay");
+	FUNCTIONRELAY("chroma.funcrelay",	ChromaBlocks.TILEMODELLED4,	TileEntityFunctionRelay.class,		0, "RenderFunctionRelay"),
+	MULTIBUILDER("chroma.multibuilder",	ChromaBlocks.TILEMODELLED4,	TileEntityMultiBuilder.class,		1, "RenderMultiBuilder");
 
 	private final Class tile;
 	private final String name;
@@ -335,6 +337,7 @@ public enum ChromaTiles implements TileEnum {
 			case FUNCTIONRELAY:
 			case WIRELESS:
 			case CHROMACRAFTER:
+			case MULTIBUILDER:
 				return true;
 			default:
 				return false;
@@ -437,6 +440,8 @@ public enum ChromaTiles implements TileEnum {
 		if (this == STAND)
 			return true;
 		if (this == BOOKDECOMP)
+			return true;
+		if (this == MULTIBUILDER)
 			return true;
 		return false;
 	}
@@ -607,6 +612,8 @@ public enum ChromaTiles implements TileEnum {
 				return 0.375;
 			case REPROGRAMMER:
 				return 0.25;
+			case MULTIBUILDER:
+				return 0.75;
 			default:
 				return 1;
 		}

@@ -27,13 +27,16 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.DecoType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBounds;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -47,7 +50,8 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 	private static final IIcon[][] icons = new IIcon[2][16];
 
 	public static enum DimDecoTileTypes implements DecoType {
-		FIREJET("aurajet");
+		FIREJET("aurajet"),
+		GLOWCRACKS("glowcracks");
 
 		public static DimDecoTileTypes[] list = values();
 
@@ -66,6 +70,15 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 			return false;
 		}
 
+		public boolean needsRandomTick() {
+			switch(this) {
+				case FIREJET:
+					return true;
+				default:
+					return false;
+			}
+		}
+
 		public boolean isCollideable() {
 			switch(this) {
 				case FIREJET:
@@ -81,6 +94,15 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 
 		public List<IIcon> getIcons(int pass) {
 			return pass == 0 ? ReikaJavaLibrary.makeListFrom(icons[1][this.ordinal()]) : new ArrayList();
+		}
+
+		public BlockBounds getBounds() {
+			switch(this) {
+				case GLOWCRACKS:
+					return BlockBounds.block().cut(ForgeDirection.UP, 0.999);
+				default:
+					return BlockBounds.block();
+			}
 		}
 	}
 
@@ -98,7 +120,7 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 
 	@Override
 	public TileEntity createTileEntity(World world, int meta) {
-		return new DimensionDecoTile();
+		return meta == DimDecoTileTypes.GLOWCRACKS.ordinal() ? new TileGlowingCracks() : new DimensionDecoTile();
 	}
 
 	@Override
@@ -108,9 +130,11 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 
 	@Override
 	public void updateTick(World world, int x, int y, int z, Random rand) {
-		DimensionDecoTile te = (DimensionDecoTile)world.getTileEntity(x, y, z);
-		te.activate();
-		world.scheduleBlockUpdate(x, y, z, this, this.tickRate(world)+rand.nextInt(1+this.tickRate(world)));
+		if (DimDecoTileTypes.list[world.getBlockMetadata(x, y, z)].needsRandomTick()) {
+			DimensionDecoTile te = (DimensionDecoTile)world.getTileEntity(x, y, z);
+			te.activate();
+			world.scheduleBlockUpdate(x, y, z, this, this.tickRate(world)+rand.nextInt(1+this.tickRate(world)));
+		}
 	}
 
 	@Override
@@ -143,9 +167,44 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 	}
 
 	@Override
+	public void setBlockBoundsBasedOnState(IBlockAccess world, int x, int y, int z) {
+		int meta = world.getBlockMetadata(x, y, z);
+		if (DimDecoTileTypes.list[meta].isCollideable()) {
+			this.setBlockBounds(0, 0, 0, 1, 1, 1);
+		}
+		else {
+			DimDecoTileTypes.list[meta].getBounds().copyToBlock(this);
+		}
+	}
+
+	@Override
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		int meta = world.getBlockMetadata(x, y, z);
 		return DimDecoTileTypes.list[meta].isCollideable() ? ReikaAABBHelper.getBlockAABB(x, y, z) : null;
+	}
+
+	public static class TileGlowingCracks extends DimensionDecoTile {
+
+		@Override
+		public boolean canUpdate() {
+			return false;
+		}
+
+		@Override
+		public boolean shouldRenderInPass(int pass) {
+			return pass <= 1;
+		}
+
+		@Override
+		public AxisAlignedBB getRenderBoundingBox() {
+			return ReikaAABBHelper.getBlockAABB(this).expand(4, 0, 4);
+		}
+
+		@Override
+		public double getMaxRenderDistanceSquared() {
+			return 65536;
+		}
+
 	}
 
 	public static class DimensionDecoTile extends TileEntity {
@@ -171,6 +230,8 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 
 				switch(DimDecoTileTypes.list[meta]) {
 					case FIREJET:
+						break;
+					case GLOWCRACKS:
 						break;
 				}
 
@@ -214,6 +275,8 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 					}
 					break;
 				}
+				case GLOWCRACKS:
+					break;
 			}
 		}
 

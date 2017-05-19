@@ -47,7 +47,7 @@ public class ContainerFluidRelay extends CoreContainer {
 
 	@Override
 	public ItemStack slotClick(int slot, int mouse, int action, EntityPlayer ep) {
-		if (slot >= 0 && slot <= 7) {
+		if (slot >= 0 && slot < 7) {
 			ItemStack held = ep.inventory.getItemStack();
 			if (mouse == 0) {
 				FluidStack fs = held != null ? FluidContainerRegistry.getFluidForFilledItem(held) : null;

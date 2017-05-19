@@ -148,6 +148,12 @@ public enum ChromaSounds implements SoundEnum {
 		ReikaSoundHelper.playSound(this, ChromatiCraft.packetChannel, world, x, y, z, vol/* *this.getModulatedVolume()*/, pitch);
 	}
 
+	public void playSound(World world, double x, double y, double z, float vol, float pitch, boolean attenuate) {
+		if (world.isRemote)
+			return;
+		ReikaSoundHelper.playSound(this, ChromatiCraft.packetChannel, world, x, y, z, vol/* *this.getModulatedVolume()*/, pitch, attenuate);
+	}
+
 	public void playSoundAtBlock(World world, int x, int y, int z, float vol, float pitch) {
 		this.playSound(world, x+0.5, y+0.5, z+0.5, vol, pitch);
 	}
@@ -209,7 +215,7 @@ public enum ChromaSounds implements SoundEnum {
 
 	@Override
 	public boolean canOverlap() {
-		return this == RIFT || this == CAST || this == USE || this == ERROR || this == INFUSE || this == DING || this == DRONE || this == ITEMSTAND || this == KILLAURA_CHARGE;
+		return this == RIFT || this == CAST || this == USE || this == ERROR || this == INFUSE || this == DING || this == DRONE || this == ITEMSTAND || this == KILLAURA_CHARGE || this == DASH || this == ORB_LO;
 	}
 
 	@Override

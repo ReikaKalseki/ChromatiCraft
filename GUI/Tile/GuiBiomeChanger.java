@@ -25,13 +25,13 @@ import net.minecraftforge.common.BiomeDictionary;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Instantiable.Data.Maps.RegionMap;
 import Reika.DragonAPI.Instantiable.GUI.ColorDistributor;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter.Brush;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter.PaintElement;

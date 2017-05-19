@@ -430,7 +430,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			if (struct == Structures.DESERT) {
 				copy.offset(-7, -3, -7);
 			}
-			copy.placeExcept(new Coordinate(this));
+			copy.placeExcept(new Coordinate(this), 3);
 			DungeonGenerator.populateChests(struct, copy, rand);
 			if (struct == Structures.OCEAN) {
 				BlockLootChest.setMaxReach(worldObj, xCoord-2, yCoord-1, zCoord, 2.5);

@@ -42,7 +42,8 @@ import vazkii.botania.api.internal.IManaBurst;
 import vazkii.botania.api.mana.IManaCollisionGhost;
 import vazkii.botania.api.mana.IManaReceiver;
 import Reika.ChromatiCraft.API.Interfaces.WorldRift;
-import Reika.ChromatiCraft.Base.TileEntity.LinkedTile;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.LinkedTile;
+import Reika.ChromatiCraft.Base.TileEntity.LinkedTileBase;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.ModList;
@@ -68,7 +69,7 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 		"thaumcraft.api.aspects.IAspectContainer", "vazkii.botania.api.mana.IManaCollisionGhost", "vazkii.botania.api.mana.IManaReceiver"})
 @Injectable(value = {"dan200.computercraft.api.peripheral.IPeripheral", "li.cil.oc.api.network.Environment",
 		"li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.SidedEnvironment"})
-public class TileEntityRift extends LinkedTile implements WorldRift, IFluidHandler, IEnergyHandler,
+public class TileEntityRift extends LinkedTileBase implements WorldRift, IFluidHandler, IEnergyHandler,
 IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCollisionGhost, IManaReceiver {
 
 	private int color = 0xffffff;
@@ -208,7 +209,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 	}
 
 	@Override
-	protected void assignLinkID(LinkedTile other) {
+	public void assignLinkID(LinkedTile other) {
 		TileEntityRift te = (TileEntityRift)other;
 		color = te.color;
 	}

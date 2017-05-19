@@ -518,7 +518,7 @@ public class ChromaAux {
 		}
 		if (te.canConduct() && te.allowCharging(player, e) && add > 0 && PlayerElementBuffer.instance.canPlayerAccept(player, e, add)) {
 			te.onUsedBy(player, e);
-			if (PlayerElementBuffer.instance.addToPlayer(player, e, add))
+			if (PlayerElementBuffer.instance.addToPlayer(player, e, add, true))
 				te.drain(e, drain);
 			ProgressStage.CHARGE.stepPlayerTo(player);
 			if (te instanceof TileEntityCrystalPylon)

@@ -109,7 +109,7 @@ public class ItemChromaBerry extends ItemCrystalBasic {
 		CrystalElement e = CrystalElement.elements[is.getItemDamage()%16];
 		if (ReikaRandomHelper.doWithChance(20)) {
 			if (PlayerElementBuffer.instance.hasElement(ep, e) && PlayerElementBuffer.instance.getPlayerFraction(ep, e) < 0.25) {
-				PlayerElementBuffer.instance.addToPlayer(ep, e, 1);
+				PlayerElementBuffer.instance.addToPlayer(ep, e, 1, true);
 			}
 		}
 		if (!ep.worldObj.isRemote) {

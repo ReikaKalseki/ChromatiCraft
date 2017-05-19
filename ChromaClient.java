@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Block.BlockChromaPortal.TileEntityCrystalPortal;
 import Reika.ChromatiCraft.Block.BlockLoreReader.TileEntityLoreReader;
 import Reika.ChromatiCraft.Block.Decoration.BlockAvoLamp.TileEntityAvoLamp;
 import Reika.ChromatiCraft.Block.Decoration.BlockColoredAltar.TileEntityColoredAltar;
+import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDecoTile.TileGlowingCracks;
 import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift.TileEntityVoidRift;
 import Reika.ChromatiCraft.Block.Dimension.Structure.AntFarm.BlockAntKey.AntKeyTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Gravity.BlockGravityTile.GravityTile;
@@ -118,6 +119,7 @@ import Reika.ChromatiCraft.Render.TESR.RenderLootChest;
 import Reika.ChromatiCraft.Render.TESR.RenderLoreReader;
 import Reika.ChromatiCraft.Render.TESR.Dimension.RenderAntKey;
 import Reika.ChromatiCraft.Render.TESR.Dimension.RenderBouncePad;
+import Reika.ChromatiCraft.Render.TESR.Dimension.RenderGlowingCracks;
 import Reika.ChromatiCraft.Render.TESR.Dimension.RenderGravityTile;
 import Reika.ChromatiCraft.Render.TESR.Dimension.RenderLaserTarget;
 import Reika.ChromatiCraft.Render.TESR.Dimension.RenderVoidRift;
@@ -301,6 +303,7 @@ public class ChromaClient extends ChromaCommon {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAvoLamp.class, new RenderAvoLamp());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityLoreReader.class, new RenderLoreReader());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRotatingLock.class, new RenderWaterLock());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileGlowingCracks.class, new RenderGlowingCracks());
 
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.PLACER.getItemInstance(), placer);
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.RIFT.getItemInstance(), placer);

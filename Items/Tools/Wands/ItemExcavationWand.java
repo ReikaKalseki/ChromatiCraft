@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockStairs;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -111,6 +112,11 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 			set.add(new BlockKey(Blocks.redstone_ore));
 		else if (bk == Blocks.redstone_ore)
 			set.add(new BlockKey(Blocks.lit_redstone_ore));
+		else if (bk instanceof BlockStairs) {
+			for (int i = 0; i < 16; i++) {
+				set.add(new BlockKey(bk, i));
+			}
+		}
 		else if (bk == ChromaBlocks.GLOWLEAF.getBlockInstance()) {
 			for (int i = 0; i < 16; i++) {
 				set.add(new BlockKey(bk, i));

@@ -23,7 +23,6 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundGui;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
@@ -31,6 +30,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Instantiable.Data.Maps.RegionMap;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundGui;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;

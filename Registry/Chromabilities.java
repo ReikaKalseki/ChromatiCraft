@@ -39,12 +39,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
@@ -56,6 +58,11 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fluids.BlockFluidBase;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.nodes.INode;
+import thaumcraft.api.nodes.NodeModifier;
+import thaumcraft.api.nodes.NodeType;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
@@ -107,6 +114,7 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -116,6 +124,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 import Reika.ReactorCraft.Entities.EntityRadiation;
 
@@ -786,10 +795,48 @@ public enum Chromabilities implements Ability {
 				int dz = ReikaRandomHelper.getRandomPlusMinus(z, 8);
 				int dy = ReikaRandomHelper.getRandomPlusMinus(y, 2);
 				ReikaWorldHelper.fertilizeAndHealBlock(ep.worldObj, dx, dy, dz);
-				ep.worldObj.getBlock(dx, dy, dz).updateTick(ep.worldObj, dx, dy, dz, ep.worldObj.rand);
+				Block b = ep.worldObj.getBlock(dx, dy, dz);
+				if (ModList.THAUMCRAFT.isLoaded() && b == ThaumItemHelper.BlockEntry.NODE.getBlock()) {
+					healNodes(ep.worldObj, dx, dy, dz);
+				}
+				else {
+					//if (b.canSustainPlant(ep.worldObj, dx, dy, dz, ForgeDirection.UP, Blocks.red_flower) && ep.worldObj.getBlock(dx, dy+1, dz).isAir(ep.worldObj, dx, dy+1, dz))
+					if (ep.worldObj.rand.nextInt(b == Blocks.grass ? 18 : 6) == 0)
+						ItemDye.applyBonemeal(ReikaItemHelper.bonemeal.copy(), ep.worldObj, dx, dy, dz, ep);
+					else
+						b.updateTick(ep.worldObj, dx, dy, dz, ep.worldObj.rand);
+				}
 			}
 			if (ModList.REACTORCRAFT.isLoaded() && ep.worldObj.rand.nextInt(40) == 0) {
 				cleanRadiation(ep);
+			}
+		}
+	}
+
+	@ModDependent(ModList.THAUMCRAFT)
+	private static void healNodes(World world, int x, int y, int z) {
+		TileEntity te = world.getTileEntity(x, y, z);
+		if (te instanceof INode) {
+			INode n = (INode)te;
+			AspectList al = n.getAspects();
+			Aspect a = ReikaJavaLibrary.getRandomCollectionEntry(world.rand, al.aspects.keySet());
+			if (a != null) {
+				if (n.getNodeVisBase(a) > al.getAmount(a)) {
+					n.addToContainer(a, 1);
+				}
+			}
+			if (world.rand.nextInt(8) == 0) {
+				if (world.rand.nextInt(4) == 0) {
+					NodeModifier m = n.getNodeModifier();
+					if (m != NodeModifier.BRIGHT)
+						n.setNodeModifier(m == NodeModifier.FADING ? NodeModifier.PALE : NodeModifier.BRIGHT);
+				}
+				else {
+					NodeType t = n.getNodeType();
+					if (t != NodeType.PURE && t != NodeType.NORMAL) {
+						n.setNodeType(t == NodeType.HUNGRY || t == NodeType.TAINTED ? NodeType.DARK : t == NodeType.DARK ? NodeType.UNSTABLE : NodeType.NORMAL);
+					}
+				}
 			}
 		}
 	}

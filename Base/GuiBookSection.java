@@ -25,8 +25,6 @@ import org.lwjgl.opengl.GL12;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
-import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton;
-import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer.FontType;
 import Reika.ChromatiCraft.Block.BlockChromaPortal;
@@ -38,6 +36,8 @@ import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.IO.DelegateFontRenderer;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
