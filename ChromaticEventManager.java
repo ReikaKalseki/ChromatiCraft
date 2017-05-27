@@ -226,6 +226,15 @@ public class ChromaticEventManager {
 
 	}
 
+	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
+	public void preventSomeGrassBreakInDimension(BreakSpeed evt) {
+		if (evt.entityPlayer.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			if ((evt.block == Blocks.grass || evt.block == Blocks.stone) && evt.metadata == 1) {
+				evt.setCanceled(true);
+			}
+		}
+	}
+
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void multiBuild(PlayerPlaceBlockEvent evt) {
 		TileEntityMultiBuilder.placeBlock(evt.world, evt.x, evt.y, evt.z, evt.block, evt.metadata, evt.player, evt.player.getCurrentEquippedItem());

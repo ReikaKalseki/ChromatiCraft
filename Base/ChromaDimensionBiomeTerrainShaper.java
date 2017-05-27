@@ -43,11 +43,13 @@ public abstract class ChromaDimensionBiomeTerrainShaper {
 		return biomeSet.contains(b.getExactType());
 	}
 
-	protected final void cutBlock(World world, int x, int y, int z) {
+	protected final boolean cutBlock(World world, int x, int y, int z) {
 		Block b = world.getBlock(x, y, z);
-		if ((b == Blocks.bedrock || WorldGenFissure.canCutInto(world, x, y, z)) && !(b instanceof BlockDimensionDeco)) {
+		if (b != Blocks.air && (b == Blocks.bedrock || WorldGenFissure.canCutInto(world, x, y, z)) && !(b instanceof BlockDimensionDeco)) {
 			world.setBlock(x, y, z, Blocks.air, 0, 2);
+			return true;
 		}
+		return false;
 	}
 
 	public abstract double getBiomeSearchDistance();

@@ -163,6 +163,8 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 		}
 		if (b == ChromaBlocks.RUNE.getBlockInstance())
 			return false;
+		if (b == ChromaBlocks.MOLTENLUMEN.getBlockInstance())
+			return false;
 		ChromaBlocks cb = ChromaBlocks.getEntryByID(b);
 		if (cb != null && cb.isDimensionStructureBlock()) {
 			return false;

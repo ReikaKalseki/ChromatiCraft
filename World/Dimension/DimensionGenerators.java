@@ -110,7 +110,7 @@ public enum DimensionGenerators {
 		if (this == FORESTS)
 			return b.biomeType == Biomes.FOREST;
 		if (this == TREES || this == GLOWBUSH)
-			return b.biomeType == Biomes.FOREST || b.biomeType == Biomes.PLAINS || b.getExactType() == Biomes.ISLANDS || b.biomeType == Biomes.SPARKLE;
+			return b.biomeType == Biomes.FOREST || b.biomeType == Biomes.PLAINS || b.getExactType() == Biomes.ISLANDS || b.biomeType == Biomes.SPARKLE || b.biomeType == Biomes.GLOWCRACKS;
 		switch(this) {
 			case ALTAR:
 				return b.getExactType().isReasonablyFlat();
@@ -122,7 +122,7 @@ public enum DimensionGenerators {
 			case JETS:
 				return true;
 			case METEOR:
-				return !b.getExactType().isWaterBiome() && b.getExactType().isReasonablyFlat();
+				return !b.getExactType().isWaterBiome() && b.getExactType().isReasonablyFlat() && b.biomeType != Biomes.GLOWCRACKS;
 			case MIASMA:
 				return b.biomeType == Biomes.PLAINS;
 			case MOONPOOL:
@@ -130,7 +130,7 @@ public enum DimensionGenerators {
 				//case MOUNTAIN:
 				//	return b == SubBiomes.MOUNTAINS.getBiome();
 			case RIFT:
-				return b == Biomes.PLAINS.getBiome();
+				return b == Biomes.PLAINS.getBiome() || b.biomeType == Biomes.GLOWCRACKS;
 			case ARCH:
 				return  b == Biomes.ISLANDS.getBiome();
 			case BLOBS:
@@ -139,6 +139,8 @@ public enum DimensionGenerators {
 				return b == Biomes.PLAINS.getBiome();
 				//case SPARKLE:
 				//	return b == Biomes.SPARKLE.getBiome();
+			case CRACKS:
+				return b.getExactType().isReasonablyFlat() && !b.getExactType().isWaterBiome();
 			default:
 				return true;
 		}

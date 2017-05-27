@@ -14,15 +14,15 @@ import java.util.Random;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntitySheep;
-import net.minecraft.potion.Potion;
 import net.minecraft.util.StatCollector;
+import Reika.ChromatiCraft.Base.ChromaPotion;
 
-public class PotionGrowthHormone extends Potion {
+public class PotionGrowthHormone extends ChromaPotion {
 
 	private static final Random rand = new Random();
 
 	public PotionGrowthHormone(int par1) {
-		super(par1, false, 0x00aaff);
+		super(par1, false, 0x00aaff, 1);
 	}
 
 	@Override
@@ -40,14 +40,12 @@ public class PotionGrowthHormone extends Potion {
 	}
 
 	@Override
-	public String getName()
-	{
+	public String getName() {
 		return StatCollector.translateToLocal("chromapotion.growth");
 	}
 
 	@Override
-	public boolean isReady(int time, int amp)
-	{
+	public boolean isReady(int time, int amp) {
 		return true;
 	}
 

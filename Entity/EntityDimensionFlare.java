@@ -283,6 +283,11 @@ public class EntityDimensionFlare extends Entity/*Living*/ {
 		return pass == 1;
 	}
 
+	@Override
+	public boolean canRenderOnFire() {
+		return false;
+	}
+
 	private static class ColorDirection {
 
 		private final double angle1;

@@ -63,7 +63,7 @@ public class GuiItemBurner extends GuiContainer {
 		String s = "Lumen Incineration";
 		ChromaFontRenderer.FontType.GUI.renderer.drawString(s, xSize/2-ChromaFontRenderer.FontType.GUI.renderer.getStringWidth(s)/2, 4, 0xffffff);
 
-		String var4 = "/Reika/ChromatiCraft/Textures/GUIs/itemburner.png";
+		String var4 = "Textures/GUIs/itemburner.png";
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, var4);
 
 		ContainerItemBurner c = (ContainerItemBurner)player.openContainer;
@@ -80,7 +80,7 @@ public class GuiItemBurner extends GuiContainer {
 	protected void drawGuiContainerBackgroundLayer(float ptick, int mx, int my) {
 		GL11.glEnable(GL11.GL_BLEND);
 		BlendMode.ALPHA.apply();
-		String var4 = "/Reika/ChromatiCraft/Textures/GUIs/itemburner.png";
+		String var4 = "Textures/GUIs/itemburner.png";
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, var4);
 		int var5 = (width - xSize) / 2;
@@ -94,7 +94,7 @@ public class GuiItemBurner extends GuiContainer {
 	public static class ButtonItemBurner extends ImagedGuiButton {
 
 		public static final int BUTTON_ID = 240;
-		private static final String TEXTURE = "Reika/ChromatiCraft/Textures/GUIs/itemburner.png";
+		private static final String TEXTURE = "Textures/GUIs/itemburner.png";
 
 		public ButtonItemBurner(GuiContainer gui, int x, int y) {
 			super(BUTTON_ID, x, y, 20, 20, gui instanceof GuiInventory ? 200 : 220, 36, TEXTURE, ChromatiCraft.class);

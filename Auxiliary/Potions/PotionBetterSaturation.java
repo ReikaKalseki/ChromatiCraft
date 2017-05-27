@@ -9,16 +9,21 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.Potions;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
+import Reika.ChromatiCraft.Base.ChromaPotion;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ModInteract.ItemHandlers.HungerOverhaulHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
-public class PotionBetterSaturation extends Potion {
+public class PotionBetterSaturation extends ChromaPotion {
 
 	public PotionBetterSaturation(int par1) {
-		super(par1, false, 0xA55926);
+		super(par1, false, 0xA55926, 0);
 	}
 
 	@Override
@@ -35,15 +40,29 @@ public class PotionBetterSaturation extends Potion {
 	}
 
 	@Override
-	public String getName()
-	{
+	public String getName() {
 		return Potion.field_76443_y.getName();//StatCollector.translateToLocal("chromapotion.sat");
 	}
 
 	@Override
-	public boolean isReady(int time, int amp)
-	{
+	public boolean isReady(int time, int amp) {
 		return amp > 0 || time == 5;
+	}
+
+	@Override
+	public int getStatusIconIndex() {
+		return Potion.field_76443_y.getStatusIconIndex();
+	}
+
+	@Override
+	public boolean hasStatusIcon() {
+		return Potion.field_76443_y.hasStatusIcon();
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void renderInventoryEffect(int x, int y, PotionEffect effect, Minecraft mc) {
+		Potion.field_76443_y.renderInventoryEffect(x, y, effect, mc);
 	}
 
 }

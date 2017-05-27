@@ -9,16 +9,20 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import java.awt.Color;
+
+import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.ChromaDimensionBiomeType;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.SubBiomes;
 import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
+import Reika.DragonAPI.Interfaces.CustomMapColorBiome;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
-public abstract class ChromaDimensionBiome extends BiomeGenBase {
+public abstract class ChromaDimensionBiome extends BiomeGenBase implements CustomMapColorBiome {
 
 	public final Biomes biomeType;
 
@@ -34,6 +38,16 @@ public abstract class ChromaDimensionBiome extends BiomeGenBase {
 	}
 
 	//public abstract boolean allowsGenerator(DimensionGenerators gen);
+
+	@Override
+	public final int getMapColor(World world, int x, int z) {
+		int color = biomeType != null ? 0xff000000 | Color.HSBtoRGB(biomeType.ordinal()/(float)Biomes.biomeList.length, 1, 1) : 0xffffffff;
+		if (this.getExactType() instanceof SubBiomes)
+			color = ReikaColorAPI.getColorWithBrightnessMultiplier(color, 0.67F);
+		if (this.getExactType() == Biomes.STRUCTURE)
+			color = 0x606060;
+		return color;
+	}
 
 	@Override
 	public int getBiomeGrassColor(int x, int y, int z) {

@@ -115,14 +115,15 @@ public final class ElementTagCompound {
 		}
 	}
 
-	public void maximizeWith(ElementTagCompound tag) {
+	public ElementTagCompound maximizeWith(ElementTagCompound tag) {
 		if (tag == null || tag.data.isEmpty())
-			return;
+			return this;
 		for (CrystalElement e : tag.data.keySet()) {
 			int amt = tag.getValue(e);
 			int value = this.getValue(e);
 			this.setTag(e, Math.max(amt, value));
 		}
+		return this;
 	}
 
 	public void minimizeWith(ElementTagCompound tag) {

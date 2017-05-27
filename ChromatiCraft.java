@@ -79,6 +79,7 @@ import Reika.ChromatiCraft.Auxiliary.Potions.PotionBetterSaturation;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionCustomRegen;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionGrowthHormone;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionLumarhea;
+import Reika.ChromatiCraft.Auxiliary.Potions.PotionLumenRegen;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionVoidGaze;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.TransmutationRecipes;
@@ -229,9 +230,10 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	public static final EnhancedFluid chroma = (EnhancedFluid)new EnhancedFluid("chroma").setColor(0x00aaff).setViscosity(300).setTemperature(288).setDensity(300).setLuminosity(15);
 	//public static final EnhancedFluid activechroma = (EnhancedFluid)new EnhancedFluid("activechroma").setColor(0x00aaff).setViscosity(300).setTemperature(500).setDensity(300);
-	public static EnhancedFluid crystal = (EnhancedFluid)new EnhancedFluid("potion crystal").setColor(0x66aaff).setLuminosity(15).setTemperature(500).setUnlocalizedName("potioncrystal");
+	public static EnhancedFluid crystal = (EnhancedFluid)new EnhancedFluid("potion crystal").setColor(0x66aaff).setLuminosity(15).setTemperature(500).setUnlocalizedName("potioncrystal").setViscosity(1500);
 	public static final Fluid ender = new Fluid("ender").setViscosity(2000).setDensity(1500).setTemperature(270).setUnlocalizedName("endere").setLuminosity(4);
 	public static final Fluid luma = new Fluid("luma").setViscosity(50).setDensity(1).setTemperature(250);
+	public static final Fluid lumen = new Fluid("lumen").setViscosity(500).setDensity(300).setTemperature(300).setLuminosity(15);
 
 	public static final Block[] blocks = new Block[ChromaBlocks.blockList.length];
 	public static final Item[] items = new Item[ChromaItems.itemList.length];
@@ -249,6 +251,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	public static PotionCustomRegen betterRegen;
 	public static PotionLumarhea lumarhea;
 	public static PotionVoidGaze voidGaze;
+	public static PotionLumenRegen lumenRegen;
 
 	public static final PylonDamage[] pylonDamage = new PylonDamage[16];
 
@@ -370,6 +373,10 @@ public class ChromatiCraft extends DragonAPIMod {
 		id = ExtraChromaIDs.VOIDGAZEID.getValue();
 		PotionCollisionTracker.instance.addPotionID(instance, id, PotionVoidGaze.class);
 		voidGaze = new PotionVoidGaze(id);
+
+		id = ExtraChromaIDs.LUMENREGENID.getValue();
+		PotionCollisionTracker.instance.addPotionID(instance, id, PotionLumenRegen.class);
+		lumenRegen = new PotionLumenRegen(id);
 
 		BiomeCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.RAINBOWFOREST.getValue(), BiomeRainbowForest.class);
 		BiomeCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.ENDERFOREST.getValue(), BiomeEnderForest.class);
@@ -592,6 +599,10 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		if (ModList.MYSTCRAFT.isLoaded()) {
 			ModInteraction.addMystCraft();
+		}
+
+		if (ModList.RFTOOLS.isLoaded()) {
+			ModInteraction.modifyRFToolsPages();
 		}
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
@@ -836,6 +847,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		FluidRegistry.registerFluid(crystal);
 		FluidRegistry.registerFluid(ender);
 		FluidRegistry.registerFluid(luma);
+		FluidRegistry.registerFluid(lumen);
 	}
 
 	private static void setupLiquidContainers() {
@@ -845,6 +857,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (!ModList.THERMALFOUNDATION.isLoaded())
 			FluidContainerRegistry.registerFluidContainer(new FluidStack(ender, FluidContainerRegistry.BUCKET_VOLUME), ChromaItems.BUCKET.getStackOfMetadata(1), new ItemStack(Items.bucket));
 		FluidContainerRegistry.registerFluidContainer(new FluidStack(crystal, FluidContainerRegistry.BUCKET_VOLUME), ChromaItems.BUCKET.getStackOfMetadata(2), new ItemStack(Items.bucket));
+		FluidContainerRegistry.registerFluidContainer(new FluidStack(lumen, FluidContainerRegistry.BUCKET_VOLUME), ChromaItems.BUCKET.getStackOfMetadata(3), new ItemStack(Items.bucket));
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -860,6 +873,10 @@ public class ChromatiCraft extends DragonAPIMod {
 
 				IIcon cry = event.map.registerIcon("ChromatiCraft:fluid/liqcrystal3");
 				crystal.setIcons(cry);
+
+				IIcon lum = event.map.registerIcon("ChromatiCraft:fluid/lumen");
+				lumen.setIcons(lum);
+				lumen.setBlock(ChromaBlocks.MOLTENLUMEN.getBlockInstance());
 
 				IIconRegister ico = event.map;
 				ender.setStillIcon(ico.registerIcon("ChromatiCraft:fluid/ender"));

@@ -104,6 +104,10 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 					return BlockBounds.block();
 			}
 		}
+
+		public boolean isMineable() {
+			return this == FIREJET;
+		}
 	}
 
 	public BlockDimensionDecoTile(Material mat) {
@@ -115,7 +119,7 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 
 	@Override
 	public float getPlayerRelativeBlockHardness(EntityPlayer ep, World world, int x, int y, int z) {
-		return ProgressStage.CTM.isPlayerAtStage(ep) ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z) : -1;
+		return ProgressStage.CTM.isPlayerAtStage(ep) && DimDecoTileTypes.list[world.getBlockMetadata(x, y, z)].isMineable() ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z) : -1;
 	}
 
 	@Override

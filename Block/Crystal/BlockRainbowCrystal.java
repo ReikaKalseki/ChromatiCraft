@@ -50,7 +50,7 @@ public class BlockRainbowCrystal extends BlockCrystalTileNonCube implements Crys
 
 	@Override
 	public final int getRenderType() {
-		return ChromatiCraft.proxy.crystalRender; //6 was crops
+		return ChromatiCraft.proxy.crystalRender;
 	}
 
 	@Override

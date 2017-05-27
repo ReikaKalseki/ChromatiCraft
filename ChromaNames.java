@@ -18,7 +18,7 @@ public class ChromaNames {
 	};
 
 	public static final String[] fluidNames = {
-		"fluid.chroma", "fluid.endere", "fluid.potioncrystal", "fluid.luma"
+		"fluid.chroma", "fluid.endere", "fluid.potioncrystal", "fluid.luma", "fluid.lumen"
 	};
 
 	public static final String[] clusterNames = {

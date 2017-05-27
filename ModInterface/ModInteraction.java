@@ -489,4 +489,18 @@ public class ModInteraction {
 
 		ThaumcraftApi.addWarpToResearch("ROD_CRYSTALWAND", 2);
 	}
+
+	public static void modifyRFToolsPages() {
+		for (int i = 0; i < Biomes.biomeList.length; i++) {
+			FMLInterModComms.sendMessage(ModList.RFTOOLS.modLabel, "dimlet_blacklist", "Biome."+Biomes.biomeList[i].getBiome().biomeName);
+		}
+		for (int i = 0; i < SubBiomes.biomeList.length; i++) {
+			FMLInterModComms.sendMessage(ModList.RFTOOLS.modLabel, "dimlet_blacklist", "Biome."+SubBiomes.biomeList[i].getBiome().biomeName);
+		}
+		FMLInterModComms.sendMessage(ModList.RFTOOLS.modLabel, "dimlet_blacklist", "Biome."+ChromatiCraft.glowingcliffsEdge.biomeName);
+
+		FMLInterModComms.sendMessage(ModList.RFTOOLS.modLabel, "dimlet_configure", "Biome."+ChromatiCraft.rainbowforest.biomeName+"=600000,12000,600,3");
+		FMLInterModComms.sendMessage(ModList.RFTOOLS.modLabel, "dimlet_configure", "Biome."+ChromatiCraft.glowingcliffs.biomeName+"=400000,9000,300,2");
+		FMLInterModComms.sendMessage(ModList.RFTOOLS.modLabel, "dimlet_configure", "Biome."+ChromatiCraft.enderforest.biomeName+"=500000,9000,400,3");
+	}
 }

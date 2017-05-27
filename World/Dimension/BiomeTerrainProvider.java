@@ -20,6 +20,7 @@ import Reika.ChromatiCraft.Base.ChromaDimensionBiomeTerrainShaper;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.ChromaDimensionBiomeType;
 import Reika.ChromatiCraft.World.Dimension.Terrain.TerrainGenChromaIslands;
 import Reika.ChromatiCraft.World.Dimension.Terrain.TerrainGenCrystalMountain;
+import Reika.ChromatiCraft.World.Dimension.Terrain.TerrainGenGlowingCracks;
 import Reika.ChromatiCraft.World.Dimension.Terrain.TerrainGenSkylandCanyons;
 import Reika.ChromatiCraft.World.Dimension.Terrain.TerrainGenSparklingSands;
 
@@ -33,6 +34,7 @@ public class BiomeTerrainProvider {
 		this.registerTerrain(new TerrainGenCrystalMountain(seed));
 		this.registerTerrain(new TerrainGenChromaIslands(seed));
 		this.registerTerrain(new TerrainGenSparklingSands(seed));
+		this.registerTerrain(new TerrainGenGlowingCracks(seed));
 	}
 
 	public void registerTerrain(ChromaDimensionBiomeTerrainShaper b) {

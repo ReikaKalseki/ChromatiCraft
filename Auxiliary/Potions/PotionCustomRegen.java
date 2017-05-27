@@ -9,14 +9,19 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.Potions;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
+import Reika.ChromatiCraft.Base.ChromaPotion;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
-public class PotionCustomRegen extends Potion {
+public class PotionCustomRegen extends ChromaPotion {
 
 	public PotionCustomRegen(int id) {
-		super(id, false, Potion.regeneration.getLiquidColor());
+		super(id, false, Potion.regeneration.getLiquidColor(), 0);
 	}
 
 	@Override
@@ -28,13 +33,29 @@ public class PotionCustomRegen extends Potion {
 
 	@Override
 	public String getName() {
-		return Potion.regeneration.getName();//StatCollector.translateToLocal("chromapotion.sat");
+		return Potion.regeneration.getName();
 	}
 
 	@Override
 	public boolean isReady(int dura, int level) {
 		int d = level > 0 ? 1+(120 >> (6*level)) : 50;
 		return dura%d == 0 && (level > 0 || ReikaRandomHelper.doWithChance(25));
+	}
+
+	@Override
+	public int getStatusIconIndex() {
+		return Potion.regeneration.getStatusIconIndex();
+	}
+
+	@Override
+	public boolean hasStatusIcon() {
+		return Potion.regeneration.hasStatusIcon();
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void renderInventoryEffect(int x, int y, PotionEffect effect, Minecraft mc) {
+		Potion.regeneration.renderInventoryEffect(x, y, effect, mc);
 	}
 
 }

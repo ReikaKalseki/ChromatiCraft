@@ -12,27 +12,26 @@ package Reika.ChromatiCraft.Auxiliary.Potions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.StatCollector;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Base.ChromaPotion;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 
 
-public class PotionVoidGaze extends Potion {
+public class PotionVoidGaze extends ChromaPotion {
 
 	public PotionVoidGaze(int id) {
-		super(id, false, 0x61008E);
+		super(id, false, 0x61008E, 2);
 	}
 
 	@Override
-	public String getName()
-	{
+	public String getName() {
 		return StatCollector.translateToLocal("chromapotion.voidgaze");
 	}
 

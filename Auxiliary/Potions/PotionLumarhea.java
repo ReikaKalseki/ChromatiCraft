@@ -14,8 +14,8 @@ import java.util.Random;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.potion.Potion;
 import net.minecraft.util.StatCollector;
+import Reika.ChromatiCraft.Base.ChromaPotion;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -27,7 +27,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class PotionLumarhea extends Potion {
+public class PotionLumarhea extends ChromaPotion {
 
 	private static final Random rand = new Random();
 
@@ -35,12 +35,11 @@ public class PotionLumarhea extends Potion {
 	private static final long BLOWOUT_CHARGE = 100; //5s
 
 	public PotionLumarhea(int id) {
-		super(id, true, /*0x4A7CD3*/0x2391FF);
+		super(id, true, /*0x4A7CD3*/0x2391FF, 0);
 	}
 
 	@Override
-	public String getName()
-	{
+	public String getName() {
 		return StatCollector.translateToLocal("chromapotion.lumarhea");
 	}
 

@@ -50,6 +50,7 @@ import Reika.ChromatiCraft.Block.BlockLiquidEnder;
 import Reika.ChromatiCraft.Block.BlockMultiStorage;
 import Reika.ChromatiCraft.Block.BlockPath;
 import Reika.ChromatiCraft.Block.BlockPath.PathType;
+import Reika.ChromatiCraft.Block.BlockPolyCrystal;
 import Reika.ChromatiCraft.Block.BlockPylonStructure;
 import Reika.ChromatiCraft.Block.BlockRedstonePod;
 import Reika.ChromatiCraft.Block.BlockRift;
@@ -74,6 +75,7 @@ import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDecoTile;
 import Reika.ChromatiCraft.Block.Dimension.BlockLightedLeaf;
 import Reika.ChromatiCraft.Block.Dimension.BlockLightedLog;
 import Reika.ChromatiCraft.Block.Dimension.BlockLightedSapling;
+import Reika.ChromatiCraft.Block.Dimension.BlockLiquidLumen;
 import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockSpecialShield;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage;
@@ -242,7 +244,9 @@ public enum ChromaBlocks implements BlockEnum {
 	FLOATINGRELAY(BlockFloatingRelay.class,										"Ethereal Relay"),
 	REPEATERLAMP(BlockRepeaterLight.class,		ItemBlockMultiType.class,		"Repeater Lamp"),
 	WATERLOCK(BlockRotatingLock.class,											"chroma.lock"),
-	REDSTONEPOD(BlockRedstonePod.class,			ItemRedstonePodPlacer.class,	"chroma.redstonepod");
+	REDSTONEPOD(BlockRedstonePod.class,			ItemRedstonePodPlacer.class,	"chroma.redstonepod"),
+	POLYCRYSTAL(BlockPolyCrystal.class,											"chroma.polycrystal"),
+	MOLTENLUMEN(BlockLiquidLumen.class, 		ChromatiCraft.lumen,			"Molten Lumen");
 
 	private Class blockClass;
 	private String blockName;
@@ -289,6 +293,8 @@ public enum ChromaBlocks implements BlockEnum {
 			case LUMA:
 			case EVERFLUID:
 				return Material.water;
+			case MOLTENLUMEN:
+				return Material.lava;
 			case TILECRYSTAL:
 			case TILECRYSTALNONCUBE:
 			case PYLON:
@@ -299,6 +305,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case RELAYFILTER:
 			case FLOATINGRELAY:
 			case REPEATERLAMP:
+			case POLYCRYSTAL:
 				return ChromatiCraft.crystalMat;
 			case AVOLAMP:
 				return Material.iron;
@@ -521,6 +528,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case CAVEINDICATOR:
 			case FLOATINGRELAY:
 			case REDSTONEPOD:
+			case POLYCRYSTAL:
 				return false;
 			default:
 				return true;
