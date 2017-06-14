@@ -64,8 +64,12 @@ public class EntityAurora extends InertEntity implements IEntityAdditionalSpawnD
 	public void onUpdate() {
 		super.onUpdate();
 
-		if (worldObj.isRemote)
+		if (worldObj.isRemote) {
 			aurora.update();
+
+			//EntityFX fx = new EntityBlurFX(worldObj, posX, posY, posZ).setScale(4);
+			//Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
 	}
 
 	@Override

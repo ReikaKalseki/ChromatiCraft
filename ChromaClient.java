@@ -96,6 +96,7 @@ import Reika.ChromatiCraft.Render.ISBRH.EverFluidRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.GlowTreeRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.LampRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.LaserEffectorRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.MetaAlloyRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.PowerTreeRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.RelayRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.RuneRenderer;
@@ -174,6 +175,7 @@ public class ChromaClient extends ChromaCommon {
 	private static final SelectiveGlassRenderer selective = new SelectiveGlassRenderer();
 	private static final LaserEffectorRenderer lasereffect = new LaserEffectorRenderer();
 	private static final ArtefactRenderer artefact = new ArtefactRenderer();
+	private static final MetaAlloyRenderer metaalloy = new MetaAlloyRenderer();
 
 	//private static FiberRenderer fiber;
 
@@ -369,6 +371,9 @@ public class ChromaClient extends ChromaCommon {
 
 		artefactRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(artefactRender, artefact);
+
+		metaAlloyRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(metaAlloyRender, metaalloy);
 
 		//fiberRender = RenderingRegistry.getNextAvailableRenderId();
 		//fiber = new FiberRenderer(fiberRender);

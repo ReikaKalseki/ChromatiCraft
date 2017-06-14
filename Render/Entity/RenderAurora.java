@@ -16,6 +16,8 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Entity.EntityAurora;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.Rendering.Aurora;
 
 
@@ -24,6 +26,9 @@ public class RenderAurora extends Render {
 	@Override
 	public void doRender(Entity e, double par2, double par4, double par6, float par8, float ptick) {
 		EntityAurora ea = (EntityAurora)e;
+		ChromaDimensionManager.addAurora(ea);
+		if (e.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) //has better renderer
+			return;
 		Aurora a = ea.getAurora();
 		if (a != null) {
 			GL11.glPushMatrix();

@@ -285,8 +285,8 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 						attack = false;
 					}
 					if (attack) {
-						this.attackEntity(e);
-						this.sendClientAttack(this, e);
+						//this.attackEntity(e);
+						//this.sendClientAttack(this, e);
 					}
 				}
 			}
@@ -297,7 +297,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				f *= CrystalMusicManager.instance.getDingPitchScale(color);
 
 			if (this.getTicksExisted()%(int)(72/f) == 0) {
-				ChromaSounds.POWER.playSoundAtBlock(this, 1, f);
+				//ChromaSounds.POWER.playSoundAtBlock(this, 1, f);
 			}
 
 			int n = this.isEnhanced() ? 24 : 36;
@@ -306,7 +306,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			}
 
 			if (!world.isRemote && ChromaOptions.BALLLIGHTNING.getState() && energy >= this.getCapacity()/2 && rand.nextInt(1000) == 0 && this.isChunkLoaded()) {
-				world.spawnEntityInWorld(new EntityBallLightning(world, color, x+0.5, y+0.5, z+0.5).setPylon().setNoDrops());
+				//world.spawnEntityInWorld(new EntityBallLightning(world, color, x+0.5, y+0.5, z+0.5).setPylon().setNoDrops());
 			}
 
 			if (linkTile != null && energy >= this.getCapacity()*0.75) {

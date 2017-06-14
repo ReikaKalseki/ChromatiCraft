@@ -67,6 +67,7 @@ import Reika.ChromatiCraft.Block.Crystal.BlockSuperCrystal;
 import Reika.ChromatiCraft.Block.Decoration.BlockAvoLamp;
 import Reika.ChromatiCraft.Block.Decoration.BlockColoredAltar;
 import Reika.ChromatiCraft.Block.Decoration.BlockEtherealLight;
+import Reika.ChromatiCraft.Block.Decoration.BlockMetaAlloyLamp;
 import Reika.ChromatiCraft.Block.Decoration.BlockMusicTrigger;
 import Reika.ChromatiCraft.Block.Decoration.BlockRangeLamp;
 import Reika.ChromatiCraft.Block.Decoration.BlockRepeaterLight;
@@ -246,7 +247,8 @@ public enum ChromaBlocks implements BlockEnum {
 	WATERLOCK(BlockRotatingLock.class,											"chroma.lock"),
 	REDSTONEPOD(BlockRedstonePod.class,			ItemRedstonePodPlacer.class,	"chroma.redstonepod"),
 	POLYCRYSTAL(BlockPolyCrystal.class,											"chroma.polycrystal"),
-	MOLTENLUMEN(BlockLiquidLumen.class, 		ChromatiCraft.lumen,			"Molten Lumen");
+	MOLTENLUMEN(BlockLiquidLumen.class, 		ChromatiCraft.lumen,			"Molten Lumen"),
+	METAALLOYLAMP(BlockMetaAlloyLamp.class,		ItemBlockSidePlaced.class,		"chroma.metaalloy");
 
 	private Class blockClass;
 	private String blockName;
@@ -286,6 +288,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case DECOPLANT:
 			case DECOFLOWER:
 			case PLANT:
+			case METAALLOYLAMP:
 				return Material.plants;
 			case CHROMA:
 				//case ACTIVECHROMA:
@@ -529,6 +532,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case FLOATINGRELAY:
 			case REDSTONEPOD:
 			case POLYCRYSTAL:
+			case METAALLOYLAMP:
 				return false;
 			default:
 				return true;

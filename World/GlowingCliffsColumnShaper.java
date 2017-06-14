@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.Instantiable.Interpolation;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -267,7 +268,7 @@ public class GlowingCliffsColumnShaper {
 		if (f != null) {
 			//double dh = SHORELINE_THRESHOLD+0.125*(MIDDLE_MIN_THRESHOLD-SHORELINE_THRESHOLD);
 			//hval = (hval-dh)*f+dh;
-			double dm = f.biome == ChromatiCraft.glowingcliffsEdge ? /*HVAL_LIMIT_EDGE*/this.calcHval(world, f.xCoord, f.zCoord, f.biome/*, hval*/) : this.isBiomeOceanic(f.biome) ? SHORELINE_THRESHOLD*0.25 : SHORELINE_THRESHOLD;
+			double dm = f.biome == ChromatiCraft.glowingcliffsEdge ? /*HVAL_LIMIT_EDGE*/this.calcHval(world, f.xCoord, f.zCoord, f.biome/*, hval*/) : (ChromaOptions.BIOMEBLEND.getState() ? (this.isBiomeOceanic(f.biome) ? SHORELINE_THRESHOLD*0.25 : SHORELINE_THRESHOLD) : SHORELINE_THRESHOLD*0.75);
 			double dh = hval-dm;
 			//double ds = 0.5;
 			hval = dm+dh*f.distanceFraction;//(f.distanceFraction*ds+(1-ds));

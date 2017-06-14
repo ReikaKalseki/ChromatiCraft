@@ -42,11 +42,11 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockCrystalPlant extends Block {
 
-	private IIcon colorIcon;
-	private IIcon colorIcon2;
-	private IIcon fastIcon;
-	private IIcon fastIcon2;
-	private IIcon center;
+	public static IIcon colorIcon;
+	public static IIcon colorIcon2;
+	public static IIcon fastIcon;
+	public static IIcon fastIcon2;
+	public static IIcon center;
 
 	private static final Random rand = new Random();
 
@@ -62,14 +62,12 @@ public class BlockCrystalPlant extends Block {
 	}
 
 	@Override
-	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z)
-	{
+	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		return null;
 	}
 
 	@Override
-	public boolean canPlaceBlockAt(World world, int x, int y, int z)
-	{
+	public boolean canPlaceBlockAt(World world, int x, int y, int z) {
 		return ReikaPlantHelper.SAPLING.canPlantAt(world, x, y, z) && super.canPlaceBlockAt(world, x, y, z);
 	}
 

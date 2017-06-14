@@ -16,10 +16,11 @@ import net.minecraft.client.renderer.Tessellator;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
-import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -31,7 +32,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class Aurora {
 
-	private static final int HEIGHT = 8;
+	private static final int HEIGHT = 24;
 
 	private final DecimalPosition point1;
 	private final DecimalPosition point2;
@@ -65,19 +66,20 @@ public class Aurora {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glShadeModel(GL11.GL_SMOOTH);
 		BlendMode.ADDITIVEDARK.apply();
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glShadeModel(GL11.GL_SMOOTH);
 		ReikaRenderHelper.disableEntityLighting();
 
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/aurora2.png");
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/aurora4.png");
 
 		Tessellator v5 = Tessellator.instance;
 		v5.startDrawingQuads();
 		v5.setBrightness(240);
 
-		double t = System.currentTimeMillis()/200D;
+		double t = System.currentTimeMillis()/150D;
 		int f = (int)(t%32);
 		double u = (f%4)*0.125;
 		double v = (f/4)*0.25;
@@ -100,14 +102,24 @@ public class Aurora {
 			double v1 = dv;
 			double v2 = v;
 
-			v5.setColorOpaque_I(color1);
+			float n = 32;
+			float fa = i < n ? i/n : li.size()-i < n ? (li.size()-i-1)/n : 1;
+			float fb = (i+1) < n ? (i+1)/n : li.size()-(i+1) < n ? (li.size()-(i+1)-1)/n : 1;
+			int c1a = ReikaColorAPI.getColorWithBrightnessMultiplier(color1, fa);
+			int c1b = ReikaColorAPI.getColorWithBrightnessMultiplier(color1, fb);
+			int c2a = ReikaColorAPI.getColorWithBrightnessMultiplier(color2, fa);
+			int c2b = ReikaColorAPI.getColorWithBrightnessMultiplier(color2, fb);
+
+			v5.setColorOpaque_I(c1a);
 			v5.addVertexWithUV(pos1.xCoord, y1, pos1.zCoord, u1, v1);
 
-			v5.setColorOpaque_I(color2);
+			v5.setColorOpaque_I(c2a);
 			v5.addVertexWithUV(pos1.xCoord, y1+HEIGHT, pos1.zCoord, u1, v2);
+
+			v5.setColorOpaque_I(c2b);
 			v5.addVertexWithUV(pos2.xCoord, y2+HEIGHT, pos2.zCoord, u2, v2);
 
-			v5.setColorOpaque_I(color1);
+			v5.setColorOpaque_I(c1b);
 			v5.addVertexWithUV(pos2.xCoord, y2, pos2.zCoord, u2, v1);
 		}
 

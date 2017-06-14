@@ -306,6 +306,7 @@ OperationInterval, MultiBlockChromaTile {
 			abilityTick = AbilityRituals.instance.getDuration(ability);
 			playerSteppedIn = false;
 			ChromaSounds.USE.playSoundAtBlock(this);
+			this.syncAllData(true);
 			return true;
 		}
 		ChromaSounds.ERROR.playSoundAtBlock(this);

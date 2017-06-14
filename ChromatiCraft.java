@@ -714,6 +714,10 @@ public class ChromatiCraft extends DragonAPIMod {
 			CrystalPotionController.addIgnoredPotion(Potion.potionTypes[BloodMagicHandler.getInstance().soulFrayID]);
 		}
 
+		if (Loader.isModLoaded("TardisMod")) {
+			ModInteraction.blacklistTardisFromDimension();
+		}
+
 		if (ModList.MEKANISM.isLoaded()) {
 			ModInteraction.blacklistMekBoxes();
 		}

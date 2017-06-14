@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import Reika.ChromatiCraft.Items.ItemUnknownArtefact.ArtefactTypes;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -143,6 +144,10 @@ public class ChromaStacks {
 	public static final ItemStack silkUpgrade 		= ChromaItems.MISC.getStackOfMetadata(0);
 	public static final ItemStack speedUpgrade 		= ChromaItems.MISC.getStackOfMetadata(1);
 	public static final ItemStack efficiencyUpgrade = ChromaItems.MISC.getStackOfMetadata(2);
+
+	public static final ItemStack unknownArtefact = ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.ARTIFACT.ordinal());
+	public static final ItemStack unknownFragments = ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.FRAGMENT.ordinal());
+	//public static final ItemStack unknownProbe = ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.PROBE.ordinal());
 
 	public static final ItemStack crystalWand	= ChromaItems.MODINTERACT.getStackOfMetadata(0);
 	public static final ItemStack firaxiteCap	= ChromaItems.MODINTERACT.getStackOfMetadata(1);

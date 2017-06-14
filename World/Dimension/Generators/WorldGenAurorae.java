@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Generators;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 import net.minecraft.world.World;
@@ -38,6 +40,15 @@ public class WorldGenAurorae extends ChromaWorldGenerator {
 
 	@Override
 	public boolean generate(World world, Random rand, int x, int y, int z) {
+		for (EntityAurora e : generateAurorae(world, rand, x+0.5, y+0.5, z+0.5)) {
+			world.spawnEntityInWorld(e);
+		}
+		return true;
+	}
+
+	public static Collection<EntityAurora> generateAurorae(World world, Random rand, double x, double y, double z) {
+		Collection<EntityAurora> ret = new ArrayList();
+		int num = 1+rand.nextInt(12);
 		double ang = Math.toRadians(rand.nextDouble()*360);
 		double sep = 8+rand.nextDouble()*24;
 		double len = 60+rand.nextDouble()*120;
@@ -47,7 +58,6 @@ public class WorldGenAurorae extends ChromaWorldGenerator {
 		AuroraColor c2 = auroraColors.getRandomEntry();
 		while (disallowedCombinations.contains(c1, c2))
 			c2 = auroraColors.getRandomEntry();
-		int num = 1+rand.nextInt(12);
 		for (int i = 0; i < num; i++) {
 			double x1 = x+0.5+len/2*Math.cos(ang)+dx*(i-num/2D);
 			double z1 = z+0.5+len/2*Math.sin(ang)+dz*(i-num/2D);
@@ -56,14 +66,14 @@ public class WorldGenAurorae extends ChromaWorldGenerator {
 			double y1 = Math.max(ReikaWorldHelper.getTopSolidOrLiquidBlockForDouble(world, x1, z1)+40, 120+rand.nextDouble()*100);
 			double y2 = Math.max(ReikaWorldHelper.getTopSolidOrLiquidBlockForDouble(world, x2, z2)+40, 120+rand.nextDouble()*100);
 			double ymax = Math.max(y1, y2);
-			y1 = ymax+rand.nextDouble()*20-10;
-			y2 = ymax+rand.nextDouble()*20-10;
+			y1 = ymax+rand.nextDouble()*10-5;
+			y2 = ymax+rand.nextDouble()*10-5;
 			double speed = 0.125+rand.nextDouble()*2.375;
 			AuroraData dat = new AuroraData(x1, y1, z1, x2, y2, z2, c1.color, c2.color, speed);
 			EntityAurora e = new EntityAurora(world, dat);
-			world.spawnEntityInWorld(e);
+			ret.add(e);
 		}
-		return true;
+		return ret;
 	}
 
 	private static enum AuroraColor {

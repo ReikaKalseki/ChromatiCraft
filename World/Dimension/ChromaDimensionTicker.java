@@ -85,7 +85,7 @@ public class ChromaDimensionTicker implements TickHandler {
 	@Override
 	public void tick(TickType type, Object... tickData) {
 		switch(type) {
-			case WORLD:
+			case WORLD: {
 				World world = (World)tickData[0];
 				if (world.provider.dimensionId == dimID) {
 					world.ambientTickCountdown = Integer.MAX_VALUE;
@@ -99,6 +99,7 @@ public class ChromaDimensionTicker implements TickHandler {
 					world.setAllowedSpawnTypes(false, false);
 				}
 				break;
+			}
 			case CLIENT:
 				if (!music.isEmpty())
 					this.playMusic();
@@ -109,6 +110,14 @@ public class ChromaDimensionTicker implements TickHandler {
 				if (ep.worldObj.provider.dimensionId == dimID) {
 					if (!RegionMapper.isPointInCentralRegion(ep.posX, ep.posZ)) {
 						OuterRegionsEvents.instance.tickPlayerInOuterRegion(ep);
+						/*
+						if (rand.nextInt(3200) == 0) {
+							ChromaDimensionBiome b = BiomeDistributor.getBiome(MathHelper.floor_double(ep.posX), MathHelper.floor_double(ep.posZ));
+							if (b == Biomes.SKYLANDS.getBiome() || b == SubBiomes.VOIDLANDS.getBiome()) {
+								for (EntityAurora e : WorldGenAurorae.generateAurorae(ep.worldObj, rand, ep.posX, ep.posY, ep.posZ))
+									ChromaDimensionManager.addAurora(e);
+							}
+						}*/
 					}
 				}
 				break;

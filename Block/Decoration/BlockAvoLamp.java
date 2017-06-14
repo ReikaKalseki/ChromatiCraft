@@ -64,6 +64,11 @@ public class BlockAvoLamp extends BlockContainer implements SidedBlock {
 		world.markBlockForUpdate(x, y, z);
 	}
 
+	public ForgeDirection getSide(IBlockAccess world, int x, int y, int z) {
+		TileEntityAvoLamp te = (TileEntityAvoLamp)world.getTileEntity(x, y, z);
+		return te.direction;
+	}
+
 	@Override
 	public boolean canPlaceOn(World world, int x, int y, int z, int side) {
 		return true;

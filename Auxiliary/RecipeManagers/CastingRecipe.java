@@ -37,6 +37,7 @@ import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.RuneRecipe;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.ConfigRecipe;
+import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.RuneShape;
@@ -311,6 +312,12 @@ public class CastingRecipe implements APICastingRecipe {
 
 	protected float getConsecutiveStackingTimeFactor(TileEntityCastingTable te) {
 		return 0.9375F;
+	}
+
+	public final void setOwner(ItemStack crafted, EntityPlayer ep) {
+		if (crafted.getItem() instanceof ItemChromaTool) {
+			((ItemChromaTool)crafted.getItem()).setOwner(crafted, ep);
+		}
 	}
 
 	public static class TempleCastingRecipe extends CastingRecipe implements RuneRecipe {

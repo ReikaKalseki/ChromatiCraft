@@ -52,6 +52,7 @@ import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.SubBiomes;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
+import Reika.DragonAPI.Instantiable.BasicModEntry;
 import Reika.DragonAPI.Instantiable.Formula.MathExpression;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -357,6 +358,7 @@ public class ModInteraction {
 		}
 		catch (Exception e) {
 			ChromatiCraft.logger.logError("Unable to blacklist golden apple recycling");
+			ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.BLUEPOWER, e);
 			e.printStackTrace();
 		}
 	}
@@ -502,5 +504,20 @@ public class ModInteraction {
 		FMLInterModComms.sendMessage(ModList.RFTOOLS.modLabel, "dimlet_configure", "Biome."+ChromatiCraft.rainbowforest.biomeName+"=600000,12000,600,3");
 		FMLInterModComms.sendMessage(ModList.RFTOOLS.modLabel, "dimlet_configure", "Biome."+ChromatiCraft.glowingcliffs.biomeName+"=400000,9000,300,2");
 		FMLInterModComms.sendMessage(ModList.RFTOOLS.modLabel, "dimlet_configure", "Biome."+ChromatiCraft.enderforest.biomeName+"=500000,9000,400,3");
+	}
+
+	public static void blacklistTardisFromDimension() {
+		try {
+			Class c = Class.forName("tardis.common.dimension.TardisDimensionHandler");
+			Field f = c.getDeclaredField("blacklistedIDs");
+			f.setAccessible(true);
+			ArrayList<Integer> li = (ArrayList<Integer>)f.get(null);
+			li.add(ExtraChromaIDs.DIMID.getValue());
+		}
+		catch (Exception e) {
+			ChromatiCraft.logger.logError("Unable to blacklist Tardis Mod from dimension");
+			ReflectiveFailureTracker.instance.logModReflectiveFailure(new BasicModEntry("TardisMod"), e);
+			e.printStackTrace();
+		}
 	}
 }

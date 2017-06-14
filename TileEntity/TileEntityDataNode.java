@@ -11,12 +11,16 @@ package Reika.ChromatiCraft.TileEntity;
 
 import java.util.HashSet;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -25,6 +29,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -35,13 +40,16 @@ import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -75,6 +83,7 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 
 	private Towers tower;
 	private final HashSet<String> scannedPlayers = new HashSet(); //not uuid since written to NBT
+	private final HashSet<Coordinate> metaAlloyPlants = new HashSet();
 
 	@Override
 	public ChromaTiles getTile() {
@@ -133,6 +142,26 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 			if (progressDelay == 0 && tower != null) {
 				LoreManager.instance.triggerLore(progressPlayer, tower);
 			}
+		}
+
+		if (tower != null && rand.nextInt(800) == 0 && metaAlloyPlants.size() < 4) {
+			this.spawnMetaAlloy(world, x, y, z);
+		}
+	}
+
+	private void spawnMetaAlloy(World world, int x, int y, int z) {
+		int dx = ReikaRandomHelper.getRandomPlusMinus(x, 256);
+		int dz = ReikaRandomHelper.getRandomPlusMinus(z, 256);
+		int dy = world.getTopSolidOrLiquidBlock(x, z)+1;
+		Block b = world.getBlock(dx, dy, dz);
+		while (dy >= 0 && (b.isAir(world, dx, dy, dz) || ReikaBlockHelper.isLeaf(world, dx, dy, dz))) {
+			dy--;
+			b = world.getBlock(dx, dy, dz);
+		}
+		if (b == Blocks.grass && world.getBlock(dx, dy+1, dz).isAir(world, dx, dy, dz)) {
+			world.setBlock(dx, dy+1, dz, ChromaBlocks.METAALLOYLAMP.getBlockInstance());
+			metaAlloyPlants.add(new Coordinate(dx, dy+1, dz));
+			//ReikaJavaLibrary.spamConsole(dx+":"+dz);
 		}
 	}
 
@@ -349,6 +378,30 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 		}
 	}
 
+	@Override
+	public void writeToNBT(NBTTagCompound NBT) {
+		super.writeToNBT(NBT);
+
+		NBTTagList li = new NBTTagList();
+		for (Coordinate c : metaAlloyPlants) {
+			li.appendTag(c.writeToTag());
+		}
+		NBT.setTag("plants", li);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound NBT) {
+		super.readFromNBT(NBT);
+
+		metaAlloyPlants.clear();
+		NBTTagList li = NBT.getTagList("plants", NBTTypes.COMPOUND.ID);
+		for (Object o : li.tagList) {
+			NBTTagCompound b = (NBTTagCompound)o;
+			Coordinate c = Coordinate.readTag(b);
+			metaAlloyPlants.add(c);
+		}
+	}
+
 	public boolean hasBeenScanned(EntityPlayer ep) {
 		return scannedPlayers.contains(ep.getUniqueID().toString());
 	}
@@ -359,6 +412,22 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 
 	public Towers getTower() {
 		return tower;
+	}
+
+	public static void removeMetaAlloy(World world, int x, int y, int z) {
+		Coordinate c = new Coordinate(x, y, z);
+		for (int i = 0; i < Towers.towerList.length; i++) {
+			Towers t = Towers.towerList[i];
+			Coordinate loc = t.getGeneratedLocation();
+			if (loc != null) {
+				loc = loc.offset(0, 1, 0);
+				TileEntity te = loc.getTileEntity(world);
+				if (te instanceof TileEntityDataNode) {
+					if (((TileEntityDataNode)te).metaAlloyPlants.remove(c))
+						((TileEntityDataNode)te).syncAllData(true);
+				}
+			}
+		}
 	}
 
 }

@@ -117,6 +117,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.TESR.RenderAlveary;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverManagerClient;
 import Reika.ChromatiCraft.World.Dimension.Rendering.SkyRiverRenderer;
 import Reika.ChromatiCraft.World.Dimension.Structure.AntFarmGenerator;
@@ -432,8 +433,10 @@ public class ChromaClientEventController {
 
 	@SubscribeEvent
 	public void renderDimensionSkyriver(EntityRenderingLoopEvent evt) {
-		if (MinecraftForgeClient.getRenderPass() == 1 && Minecraft.getMinecraft().theWorld.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
+		if (MinecraftForgeClient.getRenderPass() == 1 && Minecraft.getMinecraft().theWorld.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
 			SkyRiverRenderer.instance.render();
+			ChromaDimensionManager.renderAurorae();
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)

@@ -35,6 +35,7 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.feature.WorldGenAbstractTree;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.Instantiable.ResettableRandom;
 import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ModifiableBigTree;
@@ -86,7 +87,10 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 			flowers.add(new FlowerEntry(Blocks.yellow_flower, i, 20));
 		}
 
-		this.setHeight(new Height(BiomeGenBase.extremeHillsPlus.rootHeight, BiomeGenBase.extremeHillsPlus.heightVariation));
+		if (ChromaOptions.BIOMEBLEND.getState())
+			this.setHeight(new Height(BiomeGenBase.extremeHillsPlus.rootHeight, BiomeGenBase.extremeHillsPlus.heightVariation));
+		else
+			this.setHeight(new Height(-0.375F, 0));
 
 		spawnableMonsterList.clear();
 		spawnableCaveCreatureList.clear();
@@ -192,8 +196,10 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 				int x = chunkX*16+i;
 				int z = chunkZ*16+k;
 				BiomeGenBase b = world.getWorldChunkManager().getBiomeGenAt(x, z);
-				if (!BiomeGlowingCliffs.isGlowingCliffs(b))
-					terrain.blendEdge(world, x, z, blockArray, metaArray);
+				if (!BiomeGlowingCliffs.isGlowingCliffs(b)) {
+					if (ChromaOptions.BIOMEBLEND.getState())
+						terrain.blendEdge(world, x, z, blockArray, metaArray);
+				}
 				else
 					terrain.generateColumn(world, x, z, new Random(chunkX*341873128712L+chunkZ*132897987541L), blockArray, metaArray, b);
 			}

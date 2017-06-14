@@ -73,7 +73,8 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	CONNECTEDCRYSTALSTONE("Connected Crystalline Stone Textures", false),
 	POWEREDACCEL("Adjacency Upgrades Require Energy", false),
 	PROGRESSDURATION("Progression Notification Duration", 800),
-	RECEIVEDIMSOUND("Play Dimension Join Sound For Others", true);
+	RECEIVEDIMSOUND("Play Dimension Join Sound For Others", true),
+	BIOMEBLEND("Blend CC Biome Edges", true);
 
 	private String label;
 	private boolean defaultState;
@@ -244,6 +245,7 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 			case CONNECTEDCRYSTALSTONE:
 			case RECEIVEDIMSOUND:
 			case PROGRESSDURATION:
+			case PROGRESSNOTIFY_SELF:
 				return true;
 			default:
 				return false;

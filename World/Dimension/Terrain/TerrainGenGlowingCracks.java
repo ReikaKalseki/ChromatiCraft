@@ -9,7 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Terrain;
 
+import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashSet;
 import java.util.Random;
+
+import javax.imageio.ImageIO;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -27,9 +34,9 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class TerrainGenGlowingCracks extends ChromaDimensionBiomeTerrainShaper {
 
-	private final SimplexNoiseGenerator crackShapeA;
-	private final SimplexNoiseGenerator crackShapeB;
-	private final SimplexNoiseGenerator crackShapeC;
+	//private final SimplexNoiseGenerator crackShapeA;
+	//private final SimplexNoiseGenerator crackShapeB;
+	//private final SimplexNoiseGenerator crackShapeC;
 
 	private final SimplexNoiseGenerator shieldingThickness;
 	private final SimplexNoiseGenerator shieldingDarkThickness;
@@ -40,15 +47,34 @@ public class TerrainGenGlowingCracks extends ChromaDimensionBiomeTerrainShaper {
 
 	public static final int BIOME_SEARCH = 24;
 
+	private final HashSet<Point> crackShape = new HashSet();
+
 	public TerrainGenGlowingCracks(long seed) {
 		super(seed, Biomes.GLOWCRACKS);
 
-		crackShapeA = new SimplexNoiseGenerator(seed).setFrequency(1/7D);
-		crackShapeB = new SimplexNoiseGenerator(-seed).setFrequency(1/7D);
-		crackShapeC = new SimplexNoiseGenerator(~seed).setFrequency(1/7D);
+		//crackShapeA = new SimplexNoiseGenerator(seed).setFrequency(1/7D);
+		//crackShapeB = new SimplexNoiseGenerator(-seed).setFrequency(1/7D);
+		//crackShapeC = new SimplexNoiseGenerator(~seed).setFrequency(1/7D);
 
 		shieldingThickness = new SimplexNoiseGenerator(seed*2).setFrequency(4D);
 		shieldingDarkThickness = new SimplexNoiseGenerator(-seed*2).setFrequency(4D);
+
+		try {
+			InputStream in = ChromatiCraft.class.getResourceAsStream("Textures/cracks.png");
+			BufferedImage img = ImageIO.read(in);
+
+			for (int x = 0; x < 1500; x++) {
+				for (int z = 0; z < 1500; z++) {
+					int rgb = img.getRGB(x, z) & 0xffffff;
+					if (rgb == 0) {
+						crackShape.add(new Point(x, z));
+					}
+				}
+			}
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -60,7 +86,8 @@ public class TerrainGenGlowingCracks extends ChromaDimensionBiomeTerrainShaper {
 		int dt = 1;
 		double rx = this.calcR(chunkX, i, innerScale, mainScale);
 		double rz = this.calcR(chunkZ, k, innerScale, mainScale);
-		if (Math.abs(crackShapeA.getValue(rx, rz)) <= 0.05 || Math.abs(crackShapeB.getValue(rx, rz)) <= 0.05 || Math.abs(crackShapeC.getValue(rx, rz)) <= 0.05) {
+		//if (Math.abs(crackShapeA.getValue(rx, rz)) <= 0.05 || Math.abs(crackShapeB.getValue(rx, rz)) <= 0.05 || Math.abs(crackShapeC.getValue(rx, rz)) <= 0.05) {
+		if (crackShape.contains(new Point((dx%1500+1500)%1500, (dz%1500+1500)%1500))) {
 			int space = 30;
 			int y = 64+ChunkProviderChroma.VERTICAL_OFFSET+space;
 			int m = CRACK_DEPTH+space;

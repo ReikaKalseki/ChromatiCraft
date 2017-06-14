@@ -103,6 +103,10 @@ public class BlockRouterNode extends Block implements SidedBlock {
 		((TileEntityRouterNode)world.getTileEntity(x, y, z)).place(world, x, y, z, side);
 	}
 
+	public ForgeDirection getSide(IBlockAccess world, int x, int y, int z) {
+		return ((TileEntityRouterNode)world.getTileEntity(x, y, z)).getSide();
+	}
+
 	public void setConnection(World world, int x, int y, int z, Coordinate hub) {
 		((TileEntityRouterNode)world.getTileEntity(x, y, z)).setHub(hub);
 	}

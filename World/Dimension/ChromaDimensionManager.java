@@ -11,11 +11,13 @@ package Reika.ChromatiCraft.World.Dimension;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -25,11 +27,15 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeDictionary.Type;
 import net.minecraftforge.common.DimensionManager;
+
+import org.lwjgl.opengl.GL11;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome.ChromaDimensionSubBiome;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
+import Reika.ChromatiCraft.Entity.EntityAurora;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenCentral;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenChromaMountains;
@@ -43,6 +49,7 @@ import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenSkylands;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenSparkle;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenVoidlands;
 import Reika.ChromatiCraft.World.Dimension.Biome.StructureBiome;
+import Reika.ChromatiCraft.World.Dimension.Rendering.Aurora;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.BiomeCollisionTracker;
@@ -66,6 +73,8 @@ public class ChromaDimensionManager {
 
 	private static final PlayerMap<DimensionStructureGenerator> playersInStructures = new PlayerMap();
 	private static final HashMap<Integer, ChromaDimensionBiomeType> IDMap = new HashMap();
+
+	private static final Collection<EntityAurora> aurorae = new HashSet();
 
 	public static enum Biomes implements ChromaDimensionBiomeType {
 		PLAINS(BiomeGenCrystalPlains.class,	"Crystal Plains",			8, 0,	ExtraChromaIDs.PLAINS, 		SubBiomes.MOUNTAINS, 	Type.MAGICAL, Type.PLAINS),
@@ -249,6 +258,7 @@ public class ChromaDimensionManager {
 
 	public static void resetDimension(World world) {
 		playersInStructures.clear();
+		aurorae.clear();
 		if (world instanceof WorldServer)
 			((WorldServer)world).flush(); //Hopefully kill all I/O
 		getChunkProvider(world).clearCaches();
@@ -353,6 +363,29 @@ public class ChromaDimensionManager {
 			if (b != null)
 				bannedBlocks.add(new BlockKey(b));
 		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void addAurora(EntityAurora e) {
+		aurorae.add(e);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void renderAurorae() {
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		GL11.glDisable(GL11.GL_FOG);
+		for (EntityAurora e : aurorae) {
+			Aurora a = e.getAurora();
+			if (a != null) {
+				GL11.glPushMatrix();
+				//GL11.glTranslated(-e.posX, -e.posY, -e.posZ);
+				GL11.glTranslated(-RenderManager.renderPosX, -RenderManager.renderPosY, -RenderManager.renderPosZ);
+				//GL11.glTranslated(RenderManager.renderPosX-e.posX, RenderManager.renderPosY-e.posY, RenderManager.renderPosZ-e.posZ);
+				a.render();
+				GL11.glPopMatrix();
+			}
+		}
+		GL11.glPopAttrib();
 	}
 
 }

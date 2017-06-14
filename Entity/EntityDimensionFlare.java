@@ -81,6 +81,11 @@ public class EntityDimensionFlare extends Entity/*Living*/ {
 	}
 
 	@Override
+	public void playSound(String snd, float vol, float p) {
+
+	}
+
+	@Override
 	public void onUpdate() {
 		super.onUpdate();
 		if (target != null) {

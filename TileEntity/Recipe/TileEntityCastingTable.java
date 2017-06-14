@@ -764,6 +764,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 				toadd.stackTagCompound = (NBTTagCompound)NBTin.copy();
 			}
 			toadd.stackTagCompound = activeRecipe.handleNBTResult(this, craftingPlayer, toadd.stackTagCompound);
+			activeRecipe.setOwner(toadd, craftingPlayer);
 			ReikaInventoryHelper.addOrSetStack(toadd, inv, 9);
 			//ReikaJavaLibrary.pConsole("post "+inv[9]);
 

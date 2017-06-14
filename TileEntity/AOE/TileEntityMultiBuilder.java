@@ -155,7 +155,7 @@ public class TileEntityMultiBuilder extends TileEntityChromaticBase implements L
 	private void checkAndBuild(World world, int x, int y, int z, Block b, int meta, EntityPlayer ep, ItemStack is) {
 		if (world.isRemote)
 			return;
-		if (world.provider.dimensionId == worldObj.provider.dimensionId && bounds.isBlockInside(x, y, z)) {
+		if (world.provider.dimensionId == worldObj.provider.dimensionId && bounds.isBlockInsideExclusive(x, y, z)) {
 			for (Point p : region.getRegions(xCoord, zCoord, bounds)) {
 				if (p.x != 0 || p.y != 0) {
 					int dx = x+(bounds.getSizeX()-1)*p.x;
@@ -171,7 +171,7 @@ public class TileEntityMultiBuilder extends TileEntityChromaticBase implements L
 	private void checkAndBreak(World world, int x, int y, int z, Block b, int meta, EntityPlayer ep) {
 		if (world.isRemote)
 			return;
-		if (world.provider.dimensionId == worldObj.provider.dimensionId && bounds.isBlockInside(x, y, z)) {
+		if (world.provider.dimensionId == worldObj.provider.dimensionId && bounds.isBlockInsideExclusive(x, y, z)) {
 			for (Point p : region.getRegions(xCoord, zCoord, bounds)) {
 				if (p.x != 0 || p.y != 0) {
 					int dx = x+(bounds.getSizeX()-1)*p.x;

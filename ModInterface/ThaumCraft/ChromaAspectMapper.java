@@ -164,9 +164,11 @@ public class ChromaAspectMapper {
 		this.addAspect(ChromaTiles.AURAPOINT, Aspect.ENERGY, 12);
 		this.addAspect(ChromaTiles.AURAPOINT, Aspect.CRYSTAL, 12);
 		this.addAspect(ChromaTiles.AURAPOINT, Aspect.CROP, 12);
+		this.addAspect(ChromaTiles.AURAPOINT, ChromaAspectManager.instance.PRECURSOR, 12);
 
 		this.addAspect(ChromaTiles.DIMENSIONCORE, Aspect.CRYSTAL, 8);
 		this.addAspect(ChromaTiles.DIMENSIONCORE, Aspect.MAGIC, 8);
+		this.addAspect(ChromaTiles.DIMENSIONCORE, ChromaAspectManager.instance.PRECURSOR, 8);
 
 		this.addAspect(ChromaTiles.LASER, Aspect.CRYSTAL, 8);
 		this.addAspect(ChromaTiles.LASER, Aspect.AURA, 8);
@@ -187,6 +189,7 @@ public class ChromaAspectMapper {
 		this.addAspect(ChromaTiles.STRUCTCONTROL, Aspect.MAGIC, 8);
 		this.addAspect(ChromaTiles.STRUCTCONTROL, Aspect.TRAP, 8);
 		this.addAspect(ChromaTiles.STRUCTCONTROL, Aspect.MIND, 8);
+		this.addAspect(ChromaTiles.STRUCTCONTROL, ChromaAspectManager.instance.PRECURSOR, 8);
 
 		this.addAspect(ChromaTiles.LIGHTER, Aspect.LIGHT, 8);
 		this.addAspect(ChromaTiles.LIGHTER, Aspect.MINE, 4);
@@ -295,10 +298,9 @@ public class ChromaAspectMapper {
 		this.addAspect(ChromaTiles.FOCUSCRYSTAL, ChromaAspectManager.instance.SIGNAL, 12);
 		this.addAspect(ChromaTiles.FOCUSCRYSTAL, Aspect.MAGIC, 4);
 
-		this.addAspect(ChromaTiles.DATANODE, Aspect.CRYSTAL, 20);
 		this.addAspect(ChromaTiles.DATANODE, ChromaAspectManager.instance.SIGNAL, 40);
-		this.addAspect(ChromaTiles.DATANODE, Aspect.ELDRITCH, 10);
 		this.addAspect(ChromaTiles.DATANODE, Aspect.MECHANISM, 20);
+		this.addAspect(ChromaTiles.DATANODE, ChromaAspectManager.instance.PRECURSOR, 100);
 
 		this.addAspect(ChromaTiles.FUNCTIONRELAY, Aspect.EXCHANGE, 6);
 		this.addAspect(ChromaTiles.FUNCTIONRELAY, Aspect.AURA, 4);

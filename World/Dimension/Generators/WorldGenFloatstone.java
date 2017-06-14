@@ -18,6 +18,8 @@ import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.SubBiomes;
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
@@ -48,7 +50,7 @@ public class WorldGenFloatstone extends ChromaWorldGenerator {
 
 	@Override
 	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
-		return 0.02F;
+		return biome == Biomes.SKYLANDS.getBiome() || biome == SubBiomes.VOIDLANDS.getBiome() ? 0.1F : 0.02F;
 	}
 
 }

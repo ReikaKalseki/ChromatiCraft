@@ -43,6 +43,7 @@ public class ChromaAspectManager {
 
 	public final Aspect PUZZLE = new Aspect("perplexus", 0x90ffb0, new Aspect[]{Aspect.MIND, Aspect.TRAP}, new ResourceLocation("chromaticraft", "textures/aspects/puzzle.png"), 1);
 	public final Aspect SIGNAL = new Aspect("signum", 0xffff00, new Aspect[]{Aspect.ENERGY, Aspect.AURA}, new ResourceLocation("chromaticraft", "textures/aspects/signal.png"), 1);
+	public final Aspect PRECURSOR = new Aspect("principia", 0x75DAFF, new Aspect[]{Aspect.ELDRITCH, Aspect.MIND}, new ResourceLocation("chromaticraft", "textures/aspects/precursor.png"), 1);
 
 	//private final HashMap<Aspect, ElementTagCompound> costs = new HashMap();
 
@@ -376,10 +377,16 @@ public class ChromaAspectManager {
 		ReikaThaumHelper.addAspects(ChromaBlocks.PORTAL.getStackOf(), Aspect.MAGIC, 40, Aspect.VOID, 20, Aspect.TRAVEL, 80, PUZZLE, 120, SIGNAL, 120, Aspect.CRYSTAL, 10);
 		ReikaThaumHelper.addAspects(ChromaBlocks.REPEATERLAMP.getStackOf(), Aspect.LIGHT, 8, Aspect.CRYSTAL, 8);
 		ReikaThaumHelper.addAspects(ChromaBlocks.CAVEINDICATOR.getStackOf(), Aspect.LIGHT, 4, Aspect.TRAP, 2);
+		ReikaThaumHelper.addAspects(ChromaBlocks.METAALLOYLAMP.getStackOf(), PRECURSOR, 6, Aspect.LIGHT, 4, Aspect.LIFE, 4);
 
 		ReikaThaumHelper.addAspects(ChromaBlocks.ENDER.getStackOf(), Aspect.MAGIC, 10, Aspect.WATER, 5, Aspect.AURA, 3, Aspect.TRAVEL, 5, Aspect.ENTROPY, 10, Aspect.EXCHANGE, 5, Aspect.ELDRITCH, 3);
 		ReikaThaumHelper.addAspects(ChromaBlocks.CHROMA.getStackOf(), Aspect.MAGIC, 10, Aspect.WATER, 5, Aspect.AURA, 3, Aspect.CRAFT, 5, Aspect.ORDER, 10, Aspect.EXCHANGE, 5, Aspect.HEAL, 3);
 		ReikaThaumHelper.addAspects(ChromaBlocks.LUMA.getStackOf(), Aspect.MAGIC, 4, Aspect.AURA, 5, Aspect.VOID, 10);
+
+		ReikaThaumHelper.addAspects(ChromaBlocks.ARTEFACT.getStackOf(), PRECURSOR, 20);
+		ReikaThaumHelper.addAspects(ChromaItems.DATACRYSTAL.getStackOf(), PRECURSOR, 10, Aspect.MIND, 5);
+		ReikaThaumHelper.addAspects(ChromaStacks.unknownArtefact, PRECURSOR, 20);
+		ReikaThaumHelper.addAspects(ChromaStacks.unknownFragments, PRECURSOR, 4, Aspect.ENTROPY, 2);
 
 		ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.SMOOTH.ordinal()), Aspect.EARTH, 4, Aspect.CRYSTAL, 4, Aspect.MAGIC, 2);
 		ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.BEAM.ordinal()), Aspect.EARTH, 4, Aspect.CRYSTAL, 4, Aspect.MAGIC, 2);
@@ -404,14 +411,14 @@ public class ChromaAspectManager {
 		}
 
 		for (int i = 0; i <= 8; i += 8) {
-			ReikaThaumHelper.addAspects(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CLOAK.ordinal()+i), Aspect.DARKNESS, 4, Aspect.EARTH, 4, Aspect.MAGIC, 2, Aspect.ARMOR, 4, PUZZLE, 4);
-			ReikaThaumHelper.addAspects(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.STONE.ordinal()+i), Aspect.EARTH, 4, Aspect.MAGIC, 2, Aspect.ARMOR, 4, PUZZLE, 4);
-			ReikaThaumHelper.addAspects(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.COBBLE.ordinal()+i), Aspect.EARTH, 4, Aspect.MAGIC, 2, Aspect.ARMOR, 4, PUZZLE, 4);
-			ReikaThaumHelper.addAspects(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CRACK.ordinal()+i), Aspect.EARTH, 4, Aspect.MAGIC, 2, Aspect.ARMOR, 4, PUZZLE, 4);
-			ReikaThaumHelper.addAspects(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.MOSS.ordinal()+i), Aspect.EARTH, 4, Aspect.MAGIC, 2, Aspect.ARMOR, 4, PUZZLE, 4, Aspect.PLANT, 1);
-			ReikaThaumHelper.addAspects(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.GLASS.ordinal()+i), Aspect.EARTH, 4, Aspect.MAGIC, 2, Aspect.ARMOR, 4, PUZZLE, 4);
-			ReikaThaumHelper.addAspects(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.LIGHT.ordinal()+i), Aspect.LIGHT, 4, Aspect.EARTH, 4, Aspect.MAGIC, 2, Aspect.ARMOR, 4, PUZZLE, 4);
-			ReikaThaumHelper.addAspects(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CRACKS.ordinal()+i), Aspect.EARTH, 4, Aspect.MAGIC, 2, Aspect.ARMOR, 4, PUZZLE, 4);
+			ReikaThaumHelper.addAspects(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CLOAK.ordinal()+i), Aspect.DARKNESS, 4, Aspect.EARTH, 4, Aspect.MAGIC, 2, Aspect.ARMOR, 4, PUZZLE, 4, PRECURSOR, 2);
+			ReikaThaumHelper.addAspects(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.STONE.ordinal()+i), Aspect.EARTH, 4, Aspect.MAGIC, 2, Aspect.ARMOR, 4, PUZZLE, 4, PRECURSOR, 2);
+			ReikaThaumHelper.addAspects(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.COBBLE.ordinal()+i), Aspect.EARTH, 4, Aspect.MAGIC, 2, Aspect.ARMOR, 4, PUZZLE, 4, PRECURSOR, 2);
+			ReikaThaumHelper.addAspects(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CRACK.ordinal()+i), Aspect.EARTH, 4, Aspect.MAGIC, 2, Aspect.ARMOR, 4, PUZZLE, 4, PRECURSOR, 2);
+			ReikaThaumHelper.addAspects(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.MOSS.ordinal()+i), Aspect.EARTH, 4, Aspect.MAGIC, 2, Aspect.ARMOR, 4, PUZZLE, 4, Aspect.PLANT, 1, PRECURSOR, 2);
+			ReikaThaumHelper.addAspects(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.GLASS.ordinal()+i), Aspect.EARTH, 4, Aspect.MAGIC, 2, Aspect.ARMOR, 4, PUZZLE, 4, PRECURSOR, 2);
+			ReikaThaumHelper.addAspects(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.LIGHT.ordinal()+i), Aspect.LIGHT, 4, Aspect.EARTH, 4, Aspect.MAGIC, 2, Aspect.ARMOR, 4, PUZZLE, 4, PRECURSOR, 2);
+			ReikaThaumHelper.addAspects(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CRACKS.ordinal()+i), Aspect.EARTH, 4, Aspect.MAGIC, 2, Aspect.ARMOR, 4, PUZZLE, 4, PRECURSOR, 2);
 		}
 
 		for (int i = 0; i < Flowers.list.length; i++) {

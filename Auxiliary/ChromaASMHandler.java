@@ -28,6 +28,7 @@ import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
 import Reika.DragonAPI.ModList;
@@ -87,6 +88,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 			STOPSLOWFALL("net.minecraft.entity.EntityLivingBase", "sv"),
 			TRANSPARENCY1("net.minecraft.block.BlockDirt", "akl"),
 			TRANSPARENCY2("net.minecraft.block.BlockGrass", "alh"),
+			UPDATEDCLIMATE("climateControl.biomeSettings.ReikasPackage"),
 			;
 
 			private final String obfName;
@@ -357,7 +359,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						break;
 					}
 					case TRANSPARENCY1:
-					case TRANSPARENCY2:
+					case TRANSPARENCY2: {
 						InsnList li = new InsnList();
 
 						li.add(new VarInsnNode(Opcodes.ALOAD, 1));
@@ -371,6 +373,24 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						ReikaASMHelper.addMethod(cn, li, "getLightOpacity", "(Lnet/minecraft/world/IBlockAccess;III)I", Modifier.PUBLIC);
 
 						break;
+					}
+					case UPDATEDCLIMATE: {
+						MethodNode m = ReikaASMHelper.getMethodByName(cn, "freshBiomeSetting", "()LclimateControl/api/BiomeSettings;");
+						for (int i = 0; i < m.instructions.size(); i++) {
+							AbstractInsnNode ain = m.instructions.get(i);
+							if (ain.getOpcode() == Opcodes.NEW) {
+								TypeInsnNode tin = (TypeInsnNode)ain;
+								tin.desc = "Reika/ChromatiCraft/ModInterface/ChromaClimateControl";
+								ReikaASMHelper.log("Successfully applied "+this+" ASM handler 1!");
+							}
+							else if (ain.getOpcode() == Opcodes.INVOKESPECIAL) {
+								MethodInsnNode min = (MethodInsnNode)ain;
+								min.owner = "Reika/ChromatiCraft/ModInterface/ChromaClimateControl";
+								ReikaASMHelper.log("Successfully applied "+this+" ASM handler 2!");
+							}
+						}
+						break;
+					}
 				}
 
 				ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS/* | ClassWriter.COMPUTE_FRAMES*/);

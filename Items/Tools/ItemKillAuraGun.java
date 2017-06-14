@@ -25,7 +25,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Base.ItemProgressGatedTool;
 import Reika.ChromatiCraft.Registry.ChromaEnchants;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -43,7 +43,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class ItemKillAuraGun extends ItemChromaTool {
+public class ItemKillAuraGun extends ItemProgressGatedTool {
 
 	public static final int CHARGE_TIME = 100;
 
@@ -59,7 +59,7 @@ public class ItemKillAuraGun extends ItemChromaTool {
 	private static int useTickUnbounded;
 
 	public ItemKillAuraGun(int index) {
-		super(index);
+		super(index, UseResult.PUNISH);
 	}
 
 	private static boolean fire(ItemStack is, EntityPlayer ep, int power) {
@@ -181,7 +181,8 @@ public class ItemKillAuraGun extends ItemChromaTool {
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep)
 	{
-		ep.setItemInUse(is, this.getMaxItemUseDuration(is));
+		if (!this.handleUseAllowance(ep))
+			ep.setItemInUse(is, this.getMaxItemUseDuration(is));
 		return is;
 	}
 

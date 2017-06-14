@@ -94,7 +94,7 @@ public enum ChromaEntities implements EntityEnum {
 
 	@Override
 	public int getTrackingDistance() {
-		return 64;
+		return this == AURORA ? 90000 : 128;
 	}
 
 	@Override

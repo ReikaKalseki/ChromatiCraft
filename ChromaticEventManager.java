@@ -129,6 +129,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.ChromatiCraft.TileEntity.TileEntityDataNode;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAIShutdown;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
@@ -224,6 +225,13 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void removeMetaAlloy(BlockEvent.BreakEvent evt) {
+		if (!evt.world.isRemote && evt.world.provider.dimensionId == 0 && evt.block == ChromaBlocks.METAALLOYLAMP.getBlockInstance()) {
+			TileEntityDataNode.removeMetaAlloy(evt.world, evt.x, evt.y, evt.z);
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)

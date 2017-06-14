@@ -14,6 +14,7 @@ import java.util.Collection;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
@@ -34,8 +35,8 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 	public static final int MIN_RANGE = 512;
 	public static final int BROADCAST_RANGE = 4096;
 
-	private static final int AIR_SEARCH = 32;
-	private static final int AIR_SEARCH_Y = 8;
+	private static final int AIR_SEARCH = 24;
+	private static final int AIR_SEARCH_Y = 4;
 
 	private WorldLocation interference;
 	private boolean clearAir;
@@ -55,7 +56,7 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 		super.onFirstTick(world, x, y, z);
 		this.validateStructure();
 		this.checkInterfere();
-		clearAir = this.testAirClear();
+		clearAir = !world.isRemote && this.testAirClear();
 		//this.checkConnectivity();
 	}
 
@@ -92,13 +93,12 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 	}
 
 	private boolean testAirClear() {
-		/*
-		int r = 32;
+		int r = 8;
 		int dd = 1;
 		int c = 4;
 		for (int i = 2; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-			for (int d = 0; d <= r; d += dd) {
+			for (int d = 1; d <= r; d += dd) {
 				int dx = xCoord+d*dir.offsetX;
 				int dz = zCoord+d*dir.offsetZ;
 				if (!worldObj.getBlock(dx, yCoord, dz).isAir(worldObj, dx, yCoord, dz)) {
@@ -107,23 +107,28 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 				}
 			}
 		}
-		return c >= 2;
-		 */
-		int r = 32;
-		int ry = 8;
+		if (c < 2)
+			return false;
+
+		r = AIR_SEARCH;
+		int ry = AIR_SEARCH_Y;
+		int c1 = 0;
 		int c2 = 0;
 		for (int i = -r; i <= r; i++) {
 			for (int j = -ry; j <= ry; j++) {
 				for (int k = -r; k <= r; k++) {
-					int dx = xCoord+i;
-					int dy = yCoord+j;
-					int dz = zCoord+k;
-					if (worldObj.getBlock(dx, dy, dz).isAir(worldObj, dx, dy, dz))
+					if (Math.abs(i) > 1 || Math.abs(k) > 1) {
+						int dx = xCoord+i;
+						int dy = yCoord+j;
+						int dz = zCoord+k;
 						c2++;
+						if (worldObj.getBlock(dx, dy, dz).isAir(worldObj, dx, dy, dz))
+							c1++;
+					}
 				}
 			}
 		}
-		int c1 = (r*2+1)*(r*2+1)*ry;
+		//ReikaJavaLibrary.pConsole(c1+"/"+c2);
 		return (float)c1/c2 > 0.8;
 	}
 
@@ -143,6 +148,7 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 		for (TileEntityCrystalBroadcaster te : c) {
 			if (Math.abs(te.yCoord-y) <= AIR_SEARCH_Y && Math.abs(te.xCoord-x) <= AIR_SEARCH && Math.abs(te.zCoord-z) <= AIR_SEARCH) {
 				te.clearAir = te.testAirClear();
+				te.syncAllData(true);
 			}
 		}
 	}
