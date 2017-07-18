@@ -54,7 +54,14 @@ public class ItemSplineAttack extends ItemChromaTool {
 
 		@Override
 		public boolean isEntityApplicable(Entity e) {
-			return e instanceof EntityLivingBase && !(e instanceof EntityPlayer && (((EntityPlayer)e).capabilities.isCreativeMode || !MinecraftServer.getServer().isPVPEnabled()));
+			if (e instanceof EntityPlayer) {
+				EntityPlayer ep = (EntityPlayer)e;
+				if (ep.capabilities.isCreativeMode)
+					return false;
+				if (MinecraftServer.getServer() != null && !MinecraftServer.getServer().isPVPEnabled())
+					return false;
+			}
+			return e instanceof EntityLivingBase;
 		}
 
 	};

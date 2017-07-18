@@ -484,8 +484,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 	}
 
 	private void calcSilkTouch() {
-		Integer get = TileEntityAdjacencyUpgrade.getAdjacentUpgrades(this).get(CrystalElement.PURPLE);
-		silkTouch = get != null && get.intValue() > 2;
+		silkTouch = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.PURPLE) > 2;
 	}
 
 	@Override
@@ -703,8 +702,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 	private void updateRange() {
 		int oldrange = range;
 		double r = 1;
-		Integer get = TileEntityAdjacencyUpgrade.getAdjacentUpgrades(this).get(CrystalElement.LIME);
-		int val = get != null ? get.intValue() : 0;
+		int val = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.LIME);
 		if (val > 0)
 			r = TileEntityRangeBoost.getFactor(val-1);
 		range = (int)(MAXRANGE*r);

@@ -89,6 +89,7 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 		super.readSyncTag(NBT);
 
 		hasStructure = NBT.getBoolean("struct");
+		range = NBT.getInteger("range");
 	}
 
 	@Override
@@ -96,6 +97,7 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 		super.writeSyncTag(NBT);
 
 		NBT.setBoolean("struct", hasStructure);
+		NBT.setInteger("range", range);
 	}
 
 	private void checkAndRequest() {

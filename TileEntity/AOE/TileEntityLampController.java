@@ -15,14 +15,18 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
-import Reika.ChromatiCraft.Block.Decoration.BlockRangeLamp.TileEntityRangedLamp;
+import Reika.ChromatiCraft.Block.Decoration.BlockRangedLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityRangeBoost;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.ModRegistry.PowerTypes;
 import Reika.RotaryCraft.API.Power.PowerTransferHelper;
 import Reika.RotaryCraft.API.Power.SimpleShaftPowerReceiver;
@@ -67,14 +71,12 @@ public class TileEntityLampController extends TileEntityChromaticBase implements
 	private static class LightSource {
 
 		public final WorldLocation location;
+		public final int range;
 		private boolean isActive;
 
-		private LightSource(WorldLocation loc) {
-			location = loc;
-		}
-
 		public LightSource(TileEntityLampController te) {
-			this(new WorldLocation(te));
+			location = new WorldLocation(te);
+			range = te.getRange();
 			isActive = te.isActive();
 		}
 
@@ -253,14 +255,20 @@ public class TileEntityLampController extends TileEntityChromaticBase implements
 		Collection<LightSource> c = map.get(te.getChannel());
 		WorldLocation loc = new WorldLocation(te);
 		for (LightSource l : c) {
-			if (l.isActive && l.location.getDistanceTo(loc) <= getRange())
+			if (l.isActive && l.location.getDistanceTo(loc) <= l.range)
 				return true;
 		}
 		return false;
 	}
 
-	private static int getRange() {
-		return MAXRANGE;
+	private int getRange() {
+		int base = MAXRANGE;
+		int lvl = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.LIME);
+		double fac = lvl > 0 ? TileEntityRangeBoost.getFactor(lvl-1) : 1;
+		if (fac > 1) {
+			base = ReikaMathLibrary.ceilPseudo2Exp((int)(base*fac));
+		}
+		return base;
 	}
 
 	@Override

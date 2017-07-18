@@ -75,6 +75,7 @@ public class TileEntityCaveLighter extends TileEntityChromaticBase implements Ra
 
 		//NBT.setBoolean("finished", complete);
 		NBT.setInteger("idle", idleTicks);
+		NBT.setInteger("range", range);
 	}
 
 	@Override
@@ -84,6 +85,7 @@ public class TileEntityCaveLighter extends TileEntityChromaticBase implements Ra
 
 		//complete = NBT.getBoolean("finished");
 		idleTicks = NBT.getInteger("idle");
+		range = NBT.getInteger("range");
 	}
 
 	private void placeLights(World world, int x, int y, int z) {
@@ -198,12 +200,12 @@ public class TileEntityCaveLighter extends TileEntityChromaticBase implements Ra
 	}
 
 	private boolean placeBlockAt(World world, int x, int y, int z) {
-		return world.getBlock(x, y, z).isAir(world, x, y, z) && y < getMaxY(world, x, z) && isDark(world, x, y, z);
+		return world.getBlock(x, y, z).isAir(world, x, y, z) && y < this.getMaxY(world, x, z) && this.isDark(world, x, y, z);
 	}
 
 	private int getMaxY(World world, int x, int z) {
 		BiomeGenBase b = world.getBiomeGenForCoords(x, z);
-		return BiomeGlowingCliffs.isGlowingCliffs(b) ? 60 : this.MAXY;
+		return BiomeGlowingCliffs.isGlowingCliffs(b) ? 60 : MAXY;
 	}
 
 	private boolean isDark(World world, int x, int y, int z) {

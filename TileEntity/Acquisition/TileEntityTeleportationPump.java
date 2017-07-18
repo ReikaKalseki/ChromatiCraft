@@ -230,12 +230,14 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 				ArrayList<FluidSource> li = fluids.get(selected);
 				if (li != null && !li.isEmpty()) {
 					FluidSource src = li.get(0);
-					if (this.canAddFluid(src.fluid.amount, selected) && this.hasEnergy(required)) {
-						tank.addLiquid(src.fluid.amount, selected);
-						src.location.setBlock(world, Blocks.air);
-						this.useEnergy(required.copy().scale(this.getEnergyCostScale()));
-						li.remove(0);
-						this.decrFluid(src.fluid.amount, selected);
+					if (src.matchInWorld(world)) {
+						if (this.canAddFluid(src.fluid.amount, selected) && this.hasEnergy(required)) {
+							tank.addLiquid(src.fluid.amount, selected);
+							src.location.setBlock(world, Blocks.air);
+							this.useEnergy(required.copy().scale(this.getEnergyCostScale()));
+							li.remove(0);
+							this.decrFluid(src.fluid.amount, selected);
+						}
 					}
 				}
 
@@ -392,13 +394,16 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 			fluid = fs;
 		}
 
+		public boolean matchInWorld(World world) {
+			return FluidRegistry.lookupFluidForBlock(location.getBlock(world)) == fluid.getFluid();
+		}
+
 	}
 
 	private void updateRange() {
 		int oldrange = range;
 		double r = 1;
-		Integer get = TileEntityAdjacencyUpgrade.getAdjacentUpgrades(this).get(CrystalElement.LIME);
-		int val = get != null ? get.intValue() : 0;
+		int val = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.LIME);
 		if (val > 0)
 			r = TileEntityRangeBoost.getFactor(val-1);
 		range = (int)(MAXRANGE*r);

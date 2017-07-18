@@ -887,6 +887,7 @@ public enum Chromabilities implements Ability {
 					double factor = Math.pow(dist, 1.6);
 					factor = factor/20000D;
 					int delay = Math.max(1, (int)factor);
+					//ReikaJavaLibrary.pConsole(s.color+": DD="+dist+", ang="+ang+", factor="+factor+", delay="+delay);
 					ScheduledSoundEvent evt = new DimensionPingEvent(s.color, ep, dist, ang);
 					TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(evt), delay);
 				}

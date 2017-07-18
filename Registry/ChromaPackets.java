@@ -31,6 +31,7 @@ public enum ChromaPackets {
 	ASPECT(),
 	LAMPCHANNEL(1),
 	LAMPCONTROL(2),
+	LAMPINVERT(),
 	TNT(4),
 	BOOKINVSCROLL(1),
 	TICKER(1),

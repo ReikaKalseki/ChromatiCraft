@@ -456,8 +456,10 @@ public class BlockGravityTile extends BlockDimensionStructureTile {
 			collectedBursts = tag.getInteger("num");
 			requiredBursts = tag.getInteger("req");
 			isDormant = tag.getBoolean("dormant");
-			if (timer != null)
+			if (tag.hasKey("timer")) {
+				timer = new Recharger(8, 16, this);
 				timer.readFromNBT(tag.getCompoundTag("timer"), this);
+			}
 		}
 
 		@Override

@@ -227,6 +227,10 @@ public class ModInteraction {
 				RegisterChestItem.mineralList.add(new WeightedItemStack(is, wt));
 			}
 		}
+		catch (IllegalAccessError e) {
+			e.printStackTrace();
+			ChromatiCraft.logger.logError("Could not add ChocolateQuest integration, as his API is not accessible (Java code visiblity). Contact that developer.");
+		}
 		catch (IncompatibleClassChangeError e) {
 			e.printStackTrace();
 			ChromatiCraft.logger.logError("Could not add ChocolateQuest integration. Check your versions; if you are up-to-date with both mods, notify Reika.");
@@ -461,7 +465,7 @@ public class ModInteraction {
 					new ItemStack(Items.string),
 					new ItemStack(ThaumItemHelper.BlockEntry.CRYSTAL.getBlock(), 1, 6),
 			};
-			InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("WARPPROOF", out, 32, al, in, recipe);
+			InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("WARPPROOF", out, 24, al, in, recipe);
 			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("WARPPROOF", desc, "chromaticraft", ir, costFactor, -2, 0, root, ref).setParents("ELDRITCHMAJOR").setSpecial();
 			ThaumcraftApi.addWarpToResearch("WARPPROOF", 6); //Taboo is 5
 		}
@@ -483,7 +487,7 @@ public class ModInteraction {
 					ThaumItemHelper.ItemEntry.THAUMIUM.getItem(),
 					ThaumItemHelper.ItemEntry.VISFITLER.getItem(),
 			};
-			InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("ROD_CRYSTALWAND", ChromaStacks.crystalWand, 24, al, ChromaStacks.iridChunk, recipe);
+			InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("ROD_CRYSTALWAND", ChromaStacks.crystalWand, 18, al, ChromaStacks.iridChunk, recipe);
 			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("ROD_CRYSTALWAND", "Fashioning a wand from crystals", "chromaticraft", ir, costFactor, 2, 0, root, ref).setSpecial().setParents("ROD_silverwood", "CAP_thaumium", "SCEPTRE");
 		}
 

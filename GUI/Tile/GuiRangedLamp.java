@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Tile;
 
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,7 +18,7 @@ import net.minecraft.util.StatCollector;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Block.Decoration.BlockRangeLamp.TileEntityRangedLamp;
+import Reika.ChromatiCraft.Block.Decoration.BlockRangedLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
@@ -31,6 +32,8 @@ public class GuiRangedLamp extends GuiContainer {
 
 	private TileEntityRangedLamp lamp;
 
+	private long lastInvertTime = -1;
+
 	public GuiRangedLamp(EntityPlayer ep, TileEntityRangedLamp te) {
 		super(new CoreContainer(ep, te));
 
@@ -43,11 +46,25 @@ public class GuiRangedLamp extends GuiContainer {
 	@Override
 	public void initGui() {
 		super.initGui();
+		buttonList.clear();
 		int j = (width - xSize) / 2+8;
 		int k = (height - ySize) / 2 - 12;
-		input = new GuiTextField(fontRendererObj, j+xSize/2-6, k+33, 26, 16);
+		input = new GuiTextField(fontRendererObj, j+xSize/2-26, k+33, 26, 16);
 		input.setFocused(false);
 		input.setMaxStringLength(3);
+
+		buttonList.add(new GuiButton(0, j+105, k+31, 45, 20, "Invert"));
+	}
+
+	@Override
+	protected void actionPerformed(GuiButton b) {
+		super.actionPerformed(b);
+
+		if (b.id == 0) {
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.LAMPINVERT.ordinal(), lamp);
+			//lastInvertTime = lamp.worldObj.getTotalWorldTime();
+		}
+		this.initGui();
 	}
 
 	@Override
@@ -90,7 +107,7 @@ public class GuiRangedLamp extends GuiContainer {
 
 		fontRendererObj.drawString("Channel:", xSize/2-72, 25, 0xffffff);
 		if (!input.isFocused()) {
-			fontRendererObj.drawString(String.format("%d", lamp.getChannel()), xSize/2+6, 25, 0xffffff);
+			fontRendererObj.drawString(String.format("%d", lamp.getChannel()), xSize/2+6-20, 25, 0xffffff);
 		}
 	}
 

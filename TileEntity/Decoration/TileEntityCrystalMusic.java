@@ -363,6 +363,10 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 			ChromatiCraft.logger.logError("Could not load local MIDI: file is not a MIDI file!");
 			return;
 		}
+		if (f.length() > 60000) {
+			ChromatiCraft.logger.logError("Could not load local MIDI: file is too large ("+f.length()+" bytes) and cannot be safely used!");
+			return;
+		}
 		try {
 			MusicScore mus = new MIDIInterface(f).fillToScore().scaleSpeed(11);
 			this.dispatchTrack(mus);

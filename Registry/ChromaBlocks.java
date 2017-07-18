@@ -69,7 +69,7 @@ import Reika.ChromatiCraft.Block.Decoration.BlockColoredAltar;
 import Reika.ChromatiCraft.Block.Decoration.BlockEtherealLight;
 import Reika.ChromatiCraft.Block.Decoration.BlockMetaAlloyLamp;
 import Reika.ChromatiCraft.Block.Decoration.BlockMusicTrigger;
-import Reika.ChromatiCraft.Block.Decoration.BlockRangeLamp;
+import Reika.ChromatiCraft.Block.Decoration.BlockRangedLamp;
 import Reika.ChromatiCraft.Block.Decoration.BlockRepeaterLight;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDecoTile;
@@ -180,7 +180,7 @@ public enum ChromaBlocks implements BlockEnum {
 	DECOPLANT(BlockDecoPlant.class, 			ItemBlockChromaFlower.class, 	"Chromatic Plant 2"),
 	POWERTREE(BlockPowerTree.class,				ItemBlockDyeTypes.class,		"chroma.powerleaf"),
 	TILEMODELLED2(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile 2"),
-	LAMPBLOCK(BlockRangeLamp.class,				ItemBlockDyeTypes.class,		"chroma.lampblock"),
+	LAMPBLOCK(BlockRangedLamp.class,				ItemBlockDyeTypes.class,		"chroma.lampblock"),
 	TNT(BlockEnderTNT.class,													"chroma.endertnt"),
 	PATH(BlockPath.class,						ItemBlockPath.class,			"chroma.path"),
 	STRUCTSHIELD(BlockStructureShield.class,	ItemBlockStructShield.class,	"chroma.shield"),

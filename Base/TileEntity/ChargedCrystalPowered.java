@@ -60,8 +60,7 @@ public abstract class ChargedCrystalPowered extends InventoriedChromaticBase imp
 	public abstract float getCostModifier();
 
 	private void calcEfficiency() {
-		Integer get = TileEntityAdjacencyUpgrade.getAdjacentUpgrades(this).get(CrystalElement.BLACK);
-		efficiencyBoost = get != null ? get.intValue() : 0;
+		efficiencyBoost = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.BLACK);
 	}
 
 	public final int getEnergy(CrystalElement e) {

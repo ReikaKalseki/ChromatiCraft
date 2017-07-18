@@ -33,12 +33,12 @@ import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 
-public class BlockRangeLamp extends Block {
+public class BlockRangedLamp extends Block {
 
 	private IIcon dark;
 	private IIcon light;
 
-	public BlockRangeLamp(Material mat) {
+	public BlockRangedLamp(Material mat) {
 		super(mat);
 		blockHardness = 5;
 		blockResistance = 10;
@@ -164,6 +164,7 @@ public class BlockRangeLamp extends Block {
 	public static class TileEntityRangedLamp extends TileEntity implements GuiController {
 
 		private boolean lit;
+		private boolean inverted;
 		private int channel;
 
 		public boolean isLit() {
@@ -181,8 +182,13 @@ public class BlockRangeLamp extends Block {
 			this.setLit(TileEntityLampController.activeSourceInRange(this));
 		}
 
+		public void invert() {
+			inverted = !inverted;
+			this.setLit(lit);
+		}
+
 		public void setLit(boolean on) {
-			lit = on;
+			lit = on != inverted;
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 

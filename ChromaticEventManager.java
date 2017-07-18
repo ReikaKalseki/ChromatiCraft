@@ -530,9 +530,11 @@ public class ChromaticEventManager {
 	@SubscribeEvent
 	@ModDependent(ModList.TINKERER)
 	public void chromastoneTools(ItemStackUpdateEvent evt) {
-		if (evt.held && !(evt.holder instanceof EntityPlayerMP && ((EntityPlayerMP)evt.holder).theItemInWorldManager.isDestroyingBlock)) {
+		if (evt.held && !(evt.holder instanceof EntityPlayerMP && (ReikaPlayerAPI.isFake((EntityPlayer)evt.holder) || ((EntityPlayerMP)evt.holder).theItemInWorldManager.isDestroyingBlock))) {
 			if (InterfaceCache.TINKERTOOL.instanceOf(evt.item.getItem())) {
 				NBTTagCompound tags = evt.item.getTagCompound().getCompoundTag("InfiTool");
+				if (tags == null)
+					return;
 				boolean allMats = true;
 				if (!tags.getBoolean("Broken")) {
 					for (int i = 0; i < ToolPartType.types.length; i++) {
@@ -1614,6 +1616,9 @@ public class ChromaticEventManager {
 			event.result = ChromaItems.BUCKET.getStackOfMetadata(3);
 			//event.entityPlayer.setCurrentItemOrArmor(0, event.result);
 		}
+		else if (b == ChromaBlocks.EVERFLUID.getBlockInstance()) { //Not bucketable
+			event.setCanceled(true);
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -1649,15 +1654,17 @@ public class ChromaticEventManager {
 	public void triggerBossProgress(LivingDeathEvent ev) {
 		if (ev.source.getEntity() instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)ev.source.getEntity();
-			if (ev.entityLiving instanceof EntityDragon || ev.entityLiving instanceof CustomEnderDragon || ev.entityLiving.getClass().getName().equals("chylex.hee.entity.boss.EntityBossDragon")) {
-				ProgressStage.KILLDRAGON.stepPlayerTo(ep);
-			}
-			else if (ev.entityLiving instanceof EntityWither) {
-				ProgressStage.KILLWITHER.stepPlayerTo(ep);
-			}
+			if (ep != null && ep.worldObj.provider.dimensionId == ev.entityLiving.worldObj.provider.dimensionId && ep.getDistanceSqToEntity(ev.entityLiving) <= 384*384) {
+				if (ev.entityLiving instanceof EntityDragon || ev.entityLiving instanceof CustomEnderDragon || ev.entityLiving.getClass().getName().equals("chylex.hee.entity.boss.EntityBossDragon")) {
+					ProgressStage.KILLDRAGON.stepPlayerTo(ep);
+				}
+				else if (ev.entityLiving instanceof EntityWither) {
+					ProgressStage.KILLWITHER.stepPlayerTo(ep);
+				}
 
-			if (ReikaEntityHelper.isHostile(ev.entityLiving)) {
-				ProgressStage.KILLMOB.stepPlayerTo(ep);
+				if (ReikaEntityHelper.isHostile(ev.entityLiving)) {
+					ProgressStage.KILLMOB.stepPlayerTo(ep);
+				}
 			}
 		}
 	}

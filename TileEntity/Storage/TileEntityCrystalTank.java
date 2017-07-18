@@ -244,8 +244,8 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 	}
 
 	private void updateBoostFactor() {
-		Integer get = TileEntityAdjacencyUpgrade.getAdjacentUpgrades(this).get(CrystalElement.CYAN);
-		capacityIncreaseFactor = get == null || get.intValue() == 0 ? 0 : TileEntityTankCapacityUpgrade.getCapacityFactor(get-1);
+		int lvl = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.CYAN);
+		capacityIncreaseFactor = lvl <= 0 ? 0 : TileEntityTankCapacityUpgrade.getCapacityFactor(lvl-1);
 	}
 
 	@Override

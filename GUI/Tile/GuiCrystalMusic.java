@@ -25,8 +25,8 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
 import Reika.DragonAPI.Base.CoreContainer;
-import Reika.DragonAPI.Instantiable.GUI.PianoWheel;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
+import Reika.DragonAPI.Instantiable.GUI.PianoWheel;
 import Reika.DragonAPI.Instantiable.GUI.PianoWheel.PianoGui;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -200,7 +200,8 @@ public class GuiCrystalMusic extends GuiChromaBase implements PianoGui {
 
 	@Override
 	protected void keyTyped(char c, int i){
-		super.keyTyped(c, i);
+		if (i != mc.gameSettings.keyBindInventory.getKeyCode())
+			super.keyTyped(c, i);
 
 		if (page == Pages.MIDI)
 			input.textboxKeyTyped(c, i);

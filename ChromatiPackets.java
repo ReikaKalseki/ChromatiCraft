@@ -54,7 +54,7 @@ import Reika.ChromatiCraft.Block.BlockHeatLamp.TileEntityHeatLamp;
 import Reika.ChromatiCraft.Block.BlockHoverBlock.HoverType;
 import Reika.ChromatiCraft.Block.BlockRouterNode.TileEntityRouterNode;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree;
-import Reika.ChromatiCraft.Block.Decoration.BlockRangeLamp.TileEntityRangedLamp;
+import Reika.ChromatiCraft.Block.Decoration.BlockRangedLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Music.BlockMusicMemory.TileMusicMemory;
 import Reika.ChromatiCraft.Block.Relay.BlockRelayFilter.TileEntityRelayFilter;
 import Reika.ChromatiCraft.Block.Worldgen.BlockUnknownArtefact;
@@ -389,6 +389,9 @@ public class ChromatiPackets implements PacketHandler {
 							((TileEntityLampController)tile).toggleState();
 							break;
 					}
+					break;
+				case LAMPINVERT:
+					((TileEntityRangedLamp)tile).invert();
 					break;
 				case TNT:
 					((TileEntityEnderTNT)tile).setTarget(ep, data[0], data[1], data[2], data[3]);

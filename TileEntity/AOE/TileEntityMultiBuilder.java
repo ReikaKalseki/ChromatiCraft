@@ -72,7 +72,7 @@ public class TileEntityMultiBuilder extends TileEntityChromaticBase implements L
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		if (bounds == null)
-			bounds = BlockBox.block(this).expand(ForgeDirection.UP, 8);
+			bounds = BlockBox.block(this).expand(ForgeDirection.UP, 8).expand(ForgeDirection.DOWN, 1);
 		WorldLocation loc = new WorldLocation(this);
 		if (!cache.contains(loc))
 			cache.add(loc);

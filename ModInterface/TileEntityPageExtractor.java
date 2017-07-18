@@ -112,8 +112,7 @@ public class TileEntityPageExtractor extends InventoriedRelayPowered implements 
 	private double getConsumptionChance(IAgeSymbol ia) {
 		int rank = ReikaMystcraftHelper.getSymbolRank(ia);
 		//ReikaJavaLibrary.pConsole(ia.identifier()+" > "+rank+" > "+(100-98*Math.exp(-rank/1.75)));
-		Integer bonus = TileEntityAdjacencyUpgrade.getAdjacentUpgrades(this).get(CrystalElement.PURPLE);
-		boolean boost = bonus != null && bonus > 1;
+		boolean boost = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.PURPLE) > 1;
 		double f = boost ? 99.5 : 98;
 		double p = boost ? 5 : 3;
 		return 100-f*Math.exp(-rank/p);

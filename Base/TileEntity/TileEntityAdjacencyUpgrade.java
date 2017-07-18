@@ -83,13 +83,17 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 		if (soundtick%l == 0)
 			ChromaSounds.DRONE.playSoundAtBlock(world, x, y, z, 0.25F, f);
 
-		if (ChromaOptions.POWEREDACCEL.getState() && this.getTicksExisted()%8 == 0) {
+		if (ChromaOptions.POWEREDACCEL.getState()) {
 			CrystalElement e = this.getColor();
-			if (energy.getValue(e) < this.getMaxStorage(e))
-				this.requestEnergy(this.getColor(), this.getMaxStorage(e)-energy.getValue(e));
+			if (this.getTicksExisted()%8 == 0) {
+				if (energy.getValue(e) < this.getMaxStorage(e))
+					this.requestEnergy(this.getColor(), this.getMaxStorage(e)-energy.getValue(e));
+			}
 
-			if (this.hasSufficientEnergy())
-				energy.subtract(e, this.getConsumedEnergy());
+			if (this.hasSufficientEnergy()) {
+				if (this.getTicksExisted()%8 == 0)
+					energy.subtract(e, this.getConsumedEnergy());
+			}
 			else
 				return;
 		}
@@ -216,15 +220,22 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 		return ChromaTiles.ADJACENCY;
 	}
 
+	public static int getAdjacentUpgrade(TileEntityBase core, CrystalElement color) {
+		Integer ret = getAdjacentUpgrades(core).get(color);
+		return ret != null ? ret.intValue() : 0;
+	}
+
 	public static HashMap<CrystalElement, Integer> getAdjacentUpgrades(TileEntityBase core) {
 		HashMap<CrystalElement, Integer> set = new HashMap();
 		for (int i = 0; i < 6; i++) {
 			TileEntity te = core.getAdjacentTileEntity(ForgeDirection.VALID_DIRECTIONS[i]);
 			if (te instanceof TileEntityAdjacencyUpgrade) {
 				TileEntityAdjacencyUpgrade ta = (TileEntityAdjacencyUpgrade)te;
-				Integer get = set.get(ta.getColor());
-				int has = get != null ? get.intValue() : 0;
-				set.put(ta.getColor(), Math.max(1+ta.getTier(), has));
+				if (ta.energy.containsAtLeast(ta.getColor(), 100)) {
+					Integer get = set.get(ta.getColor());
+					int has = get != null ? get.intValue() : 0;
+					set.put(ta.getColor(), Math.max(1+ta.getTier(), has));
+				}
 			}
 		}
 		return set;
@@ -240,9 +251,11 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 			TileEntity te = world.getTileEntity(dx, dy, dz);
 			if (te instanceof TileEntityAdjacencyUpgrade) {
 				TileEntityAdjacencyUpgrade ta = (TileEntityAdjacencyUpgrade)te;
-				Integer get = set.get(ta.getColor());
-				int has = get != null ? get.intValue() : 0;
-				set.put(ta.getColor(), Math.max(1+ta.getTier(), has));
+				if (ta.energy.containsAtLeast(ta.getColor(), 100)) {
+					Integer get = set.get(ta.getColor());
+					int has = get != null ? get.intValue() : 0;
+					set.put(ta.getColor(), Math.max(1+ta.getTier(), has));
+				}
 			}
 		}
 		return set;
