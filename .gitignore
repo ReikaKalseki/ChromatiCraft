@@ -66,6 +66,8 @@ build/
 *.rsp
 *.pdn
 *.rar
+Resources/lore.xml
+Resources/rosetta.txt
 *.sbr
 *.tlb
 *.tli

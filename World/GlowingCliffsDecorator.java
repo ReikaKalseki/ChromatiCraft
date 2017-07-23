@@ -121,7 +121,7 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 		for (i = 0; i < sandPerChunk; i++) {
 			j = chunk_X + randomGenerator.nextInt(16) + 8;
 			k = chunk_Z + randomGenerator.nextInt(16) + 8;
-			gravelAsSandGen.generate(decoWorld, randomGenerator, j, decoWorld.getTopSolidOrLiquidBlock(j, k), k);
+			gravelGen.generate(decoWorld, randomGenerator, j, decoWorld.getTopSolidOrLiquidBlock(j, k), k);
 		}
 
 		i = treesPerChunk;

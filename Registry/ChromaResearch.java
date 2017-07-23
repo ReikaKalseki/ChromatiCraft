@@ -812,6 +812,8 @@ public enum ChromaResearch implements ProgressElement {
 			return true;
 		if (this == HEATLAMP)
 			return true;
+		if (this == REDSTONEPOD)
+			return true;
 		if (this == COLORALTAR)
 			return true;
 		if (this == DOOR)
