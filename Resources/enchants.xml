@@ -24,12 +24,12 @@
 	<airminer>
 		Though you long ago achieved the ability to fly - either by strapping rockets to your back or via more magical means - the fact that your ability to mine blocks is greatly impeded while in flight is an endless annoyance. Stabilizing your tool should help fix that.
 	</airminer>
+	<phasing>
+		Combat becomes somewhat pointless when both you and your opponent have nigh-impenetrable armor or magic energy shields upon which you can unload every weapon you have and never make a scratch. You may not have the means to disable said protection outright (nor would that go over well with those relying on such protection), but if you could focus a portion of your damage so it can punch through...
+	</phasing>
 	<boostedlevel>
 		%s is the best you have been able to achieve thus far, but you want more. With the power of liquid chroma, %s is within your reach.
 	</boostedlevel>
-	<name>
-		
-	</name>
 	<name>
 		
 	</name>

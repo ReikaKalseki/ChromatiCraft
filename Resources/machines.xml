@@ -171,8 +171,8 @@
 			You spent quite a lot of effort making the perfect set of tools; some are made of a blend of different materials, including some exotic alloys (a hard purple one seems particularly useful). Fortunately for you, you can put moss all over the tool and this (somehow) makes it regenerate its durability. The only problem is, the moss seems to be triggered by your body heat, so sticking the tools in a chest to let them repair does you little good. If you could somehow concentrate life energy, along with some amount of time, you may be able to construct something to achieve the same effect, and possibly faster as well.
 		</desc>
 		<note>
-			Requires:
-			%s
+
+			
 		</note>
 	</ticker>
 	<fence>

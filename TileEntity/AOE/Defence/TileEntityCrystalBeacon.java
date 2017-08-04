@@ -85,28 +85,8 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 	}
 
 	@Override
-	protected void readSyncTag(NBTTagCompound NBT) {
-		super.readSyncTag(NBT);
+	protected void animateWithTick(World world, int x, int y, int z) {
 
-		hasStructure = NBT.getBoolean("struct");
-		range = NBT.getInteger("range");
-	}
-
-	@Override
-	protected void writeSyncTag(NBTTagCompound NBT) {
-		super.writeSyncTag(NBT);
-
-		NBT.setBoolean("struct", hasStructure);
-		NBT.setInteger("range", range);
-	}
-
-	private void checkAndRequest() {
-		CrystalElement e = CrystalElement.RED;
-		int capacity = this.getMaxStorage(e);
-		int space = capacity-this.getEnergy(e);
-		if (space > 0) {
-			this.requestEnergy(e, space);
-		}
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -171,8 +151,28 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 	}
 
 	@Override
-	protected void animateWithTick(World world, int x, int y, int z) {
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
 
+		hasStructure = NBT.getBoolean("struct");
+		range = NBT.getInteger("range");
+	}
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		NBT.setBoolean("struct", hasStructure);
+		NBT.setInteger("range", range);
+	}
+
+	private void checkAndRequest() {
+		CrystalElement e = CrystalElement.RED;
+		int capacity = this.getMaxStorage(e);
+		int space = capacity-this.getEnergy(e);
+		if (space > 0) {
+			this.requestEnergy(e, space);
+		}
 	}
 
 	public static boolean isPlayerInvincible(EntityPlayer ep, float dmg) {

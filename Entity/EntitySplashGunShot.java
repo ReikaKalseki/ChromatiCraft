@@ -18,6 +18,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.potion.Potion;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MovingObjectPosition;
@@ -123,6 +124,8 @@ public class EntitySplashGunShot extends EntityFireball {
 	}
 
 	private boolean shouldAttack(EntityLivingBase e) {
+		if (e instanceof EntityPlayer && !MinecraftServer.getServer().isPVPEnabled())
+			return false;
 		return e != firingPlayer ? rand.nextBoolean() : true;
 	}
 
