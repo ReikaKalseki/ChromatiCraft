@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -34,6 +33,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
+import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -180,12 +180,7 @@ public class TankRender extends ChromaRenderBase {
 		GL11.glEnable(GL11.GL_BLEND);
 		BlendMode.DEFAULT.apply();
 		GL11.glDisable(GL11.GL_LIGHTING);
-		IIcon ico = f.getStillIcon();
-		if (ico == null) {
-			ChromatiCraft.logger.logError("Fluid "+f.getID()+" ("+f.getLocalizedName()+") exists (block ID "+f.getBlock()+") but has no icon! Registering bedrock texture as a placeholder!");
-			f.setIcons(Blocks.bedrock.getIcon(0, 0));
-			ico = Blocks.bedrock.getIcon(0, 0);
-		}
+		IIcon ico = ReikaLiquidRenderer.getFluidIconSafe(f);
 		float u = ico.getMinU();
 		float v = ico.getMinV();
 		float du = ico.getMaxU();

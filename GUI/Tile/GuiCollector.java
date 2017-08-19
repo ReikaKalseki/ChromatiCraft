@@ -41,7 +41,7 @@ public class GuiCollector extends GuiChromaBase {
 		int level = coll.getInputLevel();
 		if (level > 0) {
 			Fluid f = coll.getFluidInInput();
-			IIcon ico = f.getStillIcon();
+			IIcon ico = ReikaLiquidRenderer.getFluidIconSafe(f);
 			ReikaLiquidRenderer.bindFluidTexture(f);
 			GL11.glColor3f(1, 1, 1);
 			int h = 54 * level / coll.getCapacity();
@@ -51,7 +51,7 @@ public class GuiCollector extends GuiChromaBase {
 		level = coll.getOutputLevel();
 		if (level > 0) {
 			Fluid f = FluidRegistry.getFluid("chroma");
-			IIcon ico = f.getStillIcon();
+			IIcon ico = ReikaLiquidRenderer.getFluidIconSafe(f);
 			ReikaLiquidRenderer.bindFluidTexture(f);
 			GL11.glColor3f(1, 1, 1);
 			int h = 54 * level / coll.getCapacity();

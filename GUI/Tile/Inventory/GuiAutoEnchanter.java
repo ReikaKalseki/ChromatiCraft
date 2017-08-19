@@ -150,7 +150,7 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 		int level = ench.getLevel();
 		if (level > 0) {
 			Fluid f = FluidRegistry.getFluid("chroma");
-			IIcon ico = f.getStillIcon();
+			IIcon ico = ReikaLiquidRenderer.getFluidIconSafe(f);
 			ReikaLiquidRenderer.bindFluidTexture(f);
 			GL11.glColor3f(1, 1, 1);
 			int h = 54 * level / ench.getCapacity();

@@ -20,6 +20,7 @@ import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerCrystalTank;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
+import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaEngLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -87,9 +88,9 @@ public class GuiCrystalTank extends GuiChromaBase {
 			GL11.glColor4f(1, 1, 1, 1);
 			for (int i = 0; i < 8; i++) {
 				for (int m = 0; m < num; m++) {
-					this.drawTexturedModelRectFromIcon(j+24+i*16, k+16+100-(m+1)*16, f.getStillIcon(), 16, 16);
+					this.drawTexturedModelRectFromIcon(j+24+i*16, k+16+100-(m+1)*16, ReikaLiquidRenderer.getFluidIconSafe(f), 16, 16);
 				}
-				this.drawTexturedModelRectFromIcon(j+24+i*16, k+16+100-num*16-rem, f.getStillIcon(), 16, rem);
+				this.drawTexturedModelRectFromIcon(j+24+i*16, k+16+100-num*16-rem, ReikaLiquidRenderer.getFluidIconSafe(f), 16, rem);
 			}
 		}
 	}

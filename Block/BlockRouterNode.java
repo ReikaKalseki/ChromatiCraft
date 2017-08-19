@@ -49,6 +49,7 @@ public class BlockRouterNode extends Block implements SidedBlock {
 		this.setCreativeTab(ChromatiCraft.tabChroma);
 		this.setHardness(0);
 		this.setResistance(6000);
+		this.setBounds(ForgeDirection.EAST);
 	}
 
 	@Override
@@ -118,66 +119,77 @@ public class BlockRouterNode extends Block implements SidedBlock {
 	}
 
 	@Override
+	public void setBlockBoundsForItemRender() {
+		this.setBounds(ForgeDirection.EAST);
+	}
+
+	@Override
 	public void setBlockBoundsBasedOnState(IBlockAccess iba, int x, int y, int z) {
+		TileEntity te = iba.getTileEntity(x, y, z);
+		if (te instanceof TileEntityRouterNode) {
+			ForgeDirection dir = ((TileEntityRouterNode)te).getSide();
+			this.setBounds(dir);
+		}
+	}
+
+	private void setBounds(ForgeDirection dir) {
 		float xmin = 0;
 		float ymin = 0;
 		float zmin = 0;
 		float xmax = 1;
 		float ymax = 1;
 		float zmax = 1;
+
 		float h = 0.125F;
 		float w = 0.1875F;
-		TileEntity te = iba.getTileEntity(x, y, z);
-		if (te instanceof TileEntityRouterNode) {
-			ForgeDirection dir = ((TileEntityRouterNode)te).getSide();
-			switch(dir) {
-				case WEST:
-					zmin = 0.5F-w;
-					zmax = 0.5F+w;
-					ymin = 0.5F-w;
-					ymax = 0.5F+w;
-					xmin = 1-h;
-					break;
-				case EAST:
-					zmin = 0.5F-w;
-					zmax = 0.5F+w;
-					ymin = 0.5F-w;
-					ymax = 0.5F+w;
-					xmax = h;
-					break;
-				case NORTH:
-					xmin = 0.5F-w;
-					xmax = 0.5F+w;
-					ymin = 0.5F-w;
-					ymax = 0.5F+w;
-					zmin = 1-h;
-					break;
-				case SOUTH:
-					xmin = 0.5F-w;
-					xmax = 0.5F+w;
-					ymin = 0.5F-w;
-					ymax = 0.5F+w;
-					zmax = h;
-					break;
-				case UP:
-					xmin = 0.5F-w;
-					xmax = 0.5F+w;
-					zmin = 0.5F-w;
-					zmax = 0.5F+w;
-					ymax = h;
-					break;
-				case DOWN:
-					xmin = 0.5F-w;
-					xmax = 0.5F+w;
-					zmin = 0.5F-w;
-					zmax = 0.5F+w;
-					ymin = 1-h;
-					break;
-				default:
-					break;
-			}
-			this.setBlockBounds(xmin, ymin, zmin, xmax, ymax, zmax);
+
+		switch(dir) {
+			case WEST:
+				zmin = 0.5F-w;
+				zmax = 0.5F+w;
+				ymin = 0.5F-w;
+				ymax = 0.5F+w;
+				xmin = 1-h;
+				break;
+			case EAST:
+				zmin = 0.5F-w;
+				zmax = 0.5F+w;
+				ymin = 0.5F-w;
+				ymax = 0.5F+w;
+				xmax = h;
+				break;
+			case NORTH:
+				xmin = 0.5F-w;
+				xmax = 0.5F+w;
+				ymin = 0.5F-w;
+				ymax = 0.5F+w;
+				zmin = 1-h;
+				break;
+			case SOUTH:
+				xmin = 0.5F-w;
+				xmax = 0.5F+w;
+				ymin = 0.5F-w;
+				ymax = 0.5F+w;
+				zmax = h;
+				break;
+			case UP:
+				xmin = 0.5F-w;
+				xmax = 0.5F+w;
+				zmin = 0.5F-w;
+				zmax = 0.5F+w;
+				ymax = h;
+				break;
+			case DOWN:
+				xmin = 0.5F-w;
+				xmax = 0.5F+w;
+				zmin = 0.5F-w;
+				zmax = 0.5F+w;
+				ymin = 1-h;
+				break;
+			default:
+				break;
 		}
+		this.setBlockBounds(xmin, ymin, zmin, xmax, ymax, zmax);
 	}
 
 	@Override

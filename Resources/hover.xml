@@ -96,6 +96,12 @@
 	<flower_flowivy>
 		Growing like a weed, this fast-spreading ivy is almost nature incarnate.
 	</flower_flowivy>
+	<flower_glowdaisy>
+		Lighting the floor underneath the cliffs, these glowing flowers sparkle, and may serve as more than mere decoration.
+	</flower_glowdaisy>
+	<flower_glowroot>
+		Hanging down from the rock above, these vines both light the darkness and occasionally drop seeds which have...interesting effects on nearby plant life.
+	</flower_glowroot>
 	<dyeleaf>
 		Brightly hued leaves cover this tree, and it appears that berries sprout from the twigs.
 	</dyeleaf>

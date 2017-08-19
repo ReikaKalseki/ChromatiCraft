@@ -41,6 +41,7 @@ public abstract class BlockAttachableMini extends Block implements SidedBlock {
 		this.setResistance(0);
 		this.setCreativeTab(ChromatiCraft.tabChroma);
 		stepSound = new SoundType("stone", 1.0F, 0.5F);
+		this.setBounds(ForgeDirection.EAST);
 	}
 
 	@Override
@@ -97,16 +98,27 @@ public abstract class BlockAttachableMini extends Block implements SidedBlock {
 	}
 
 	@Override
+	public final void setBlockBoundsForItemRender() {
+		this.setBounds(ForgeDirection.EAST);
+	}
+
+	@Override
 	public final void setBlockBoundsBasedOnState(IBlockAccess iba, int x, int y, int z) {
+		this.setBounds(this.getSide(iba, x, y, z));
+	}
+
+	private void setBounds(ForgeDirection dir) {
 		float xmin = 0;
 		float ymin = 0;
 		float zmin = 0;
 		float xmax = 1;
 		float ymax = 1;
 		float zmax = 1;
+
 		float h = 0.25F;
 		float w = 0.25F;
-		switch(this.getSide(iba, x, y, z)) {
+
+		switch(dir) {
 			case WEST:
 				zmin = 0.5F-w;
 				zmax = 0.5F+w;

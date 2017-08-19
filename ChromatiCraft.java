@@ -378,6 +378,10 @@ public class ChromatiCraft extends DragonAPIMod {
 		PotionCollisionTracker.instance.addPotionID(instance, id, PotionLumenRegen.class);
 		lumenRegen = new PotionLumenRegen(id);
 
+		lumen.setBlock(ChromaBlocks.MOLTENLUMEN.getBlockInstance());
+		ender.setBlock(ChromaBlocks.ENDER.getBlockInstance());
+		luma.setBlock(ChromaBlocks.LUMA.getBlockInstance());
+
 		BiomeCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.RAINBOWFOREST.getValue(), BiomeRainbowForest.class);
 		BiomeCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.ENDERFOREST.getValue(), BiomeEnderForest.class);
 		BiomeCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.LUMINOUSCLIFFS.getValue(), BiomeGlowingCliffs.class);
@@ -880,16 +884,13 @@ public class ChromatiCraft extends DragonAPIMod {
 
 				IIcon lum = event.map.registerIcon("ChromatiCraft:fluid/lumen");
 				lumen.setIcons(lum);
-				lumen.setBlock(ChromaBlocks.MOLTENLUMEN.getBlockInstance());
 
 				IIconRegister ico = event.map;
 				ender.setStillIcon(ico.registerIcon("ChromatiCraft:fluid/ender"));
 				ender.setFlowingIcon(ico.registerIcon("ChromatiCraft:fluid/flowingender"));
-				ender.setBlock(ChromaBlocks.ENDER.getBlockInstance());
 
 				luma.setIcons(ico.registerIcon("ChromatiCraft:fluid/aether/aether_full"), ico.registerIcon("ChromatiCraft:fluid/aether/aether_flow2"));
 				//aether.setFlowingIcon(ico.registerIcon("ChromatiCraft:fluid/flowingender"));
-				luma.setBlock(ChromaBlocks.LUMA.getBlockInstance());
 
 				for (int i = 0; i < CrystalElement.elements.length; i++) {
 					CrystalElement.elements[i].setIcons(event.map);

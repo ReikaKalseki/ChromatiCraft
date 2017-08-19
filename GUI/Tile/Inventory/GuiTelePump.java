@@ -111,7 +111,7 @@ public class GuiTelePump extends GuiChromaBase {
 		int h = pump.getLiquidScaled(16);
 		Fluid f = pump.getTankFluid();
 		if (f != null) {
-			IIcon ico = f.getStillIcon();
+			IIcon ico = ReikaLiquidRenderer.getFluidIconSafe(f);
 			ReikaLiquidRenderer.bindFluidTexture(f);
 			GL11.glColor3f(1, 1, 1);
 			this.drawTexturedModelRectFromIcon(152, 16+16-h, ico, 16, h);
@@ -123,7 +123,7 @@ public class GuiTelePump extends GuiChromaBase {
 		for (int i = min; i <= max; i++) {
 			f = list.get(i);
 			//ReikaJavaLibrary.pConsole(f.getName());
-			IIcon ico = f.getStillIcon();
+			IIcon ico = ReikaLiquidRenderer.getFluidIconSafe(f);
 			GL11.glColor3f(1, 1, 1);
 			int dy = 24*(i-active);
 			ReikaLiquidRenderer.bindFluidTexture(f);

@@ -14,8 +14,6 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.StatCollector;
-import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
 
 import org.lwjgl.opengl.GL11;
 
@@ -174,9 +172,9 @@ public class GuiEnderTNT extends GuiContainer {
 		if (!input4.isFocused()) {
 			fontRendererObj.drawString(String.format("%d", tz), xSize/2-34, 85, 0xffffffff);
 		}
-		World world = DimensionManager.getWorld(dim);
-		String sn = world != null ? world.provider.getDimensionName() : "NO SUCH WORLD";
-		int c = world != null ? 0xffffff : 0xff0000;
+		//World world = DimensionManager.getWorld(dim); //cannot get clientside
+		String sn = "Dimension "+dim;//world != null ? world.provider.getDimensionName() : "NO SUCH WORLD";
+		int c = 0xffffff;//world != null ? 0xffffff : 0xff0000;
 		ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, String.format("[%s]", sn), xSize/2+46, 25, c);
 	}
 

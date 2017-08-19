@@ -19,6 +19,7 @@ import Reika.ChromatiCraft.Container.ContainerFluidRelay;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidRelay;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
+import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
@@ -86,7 +87,7 @@ public class GuiFluidRelay extends GuiChromaBase {
 			if (types[i] != null) {
 				int x = j+14+i*22;
 				int y = k+17;
-				api.drawTexturedModelRectFromIcon(x, y, types[i].getIcon(), 16, 16);
+				api.drawTexturedModelRectFromIcon(x, y, ReikaLiquidRenderer.getFluidIconSafe(types[i]), 16, 16);
 			}
 		}
 

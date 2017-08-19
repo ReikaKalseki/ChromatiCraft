@@ -204,7 +204,8 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 			if (aeGridNode == null) {
 				aeGridNode = FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER ? AEApi.instance().createGridNode((IGridBlock)aeGridBlock) : null;
 			}
-			((IGridNode)aeGridNode).updateState();
+			if (aeGridNode != null)
+				((IGridNode)aeGridNode).updateState();
 			network = aeGridNode != null ? new MESystemReader((IGridNode)aeGridNode, this) : null;
 		}
 	}
