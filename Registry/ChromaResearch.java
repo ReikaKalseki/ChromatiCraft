@@ -277,7 +277,7 @@ public enum ChromaResearch implements ProgressElement {
 	SEED("Crystal Seeds",			ChromaItems.SEED.getStackOf(CrystalElement.MAGENTA),	ResearchLevel.RUNECRAFT),
 	FRAGMENT("Fragments",			ChromaItems.FRAGMENT, 									ResearchLevel.ENTRY),
 	AUGMENT("Upgrades",				ChromaStacks.speedUpgrade,								ResearchLevel.PYLONCRAFT,	ProgressStage.STORAGE),
-	ALLOYS("Alloying",				ChromaStacks.chromaIngot,								ResearchLevel.RUNECRAFT,	ProgressionManager.instance.getPrereqsArray(ProgressStage.ALLOY)),
+	ALLOYS("Alloying",				ChromaStacks.chromaIngot,								ResearchLevel.MULTICRAFT,	ProgressionManager.instance.getPrereqsArray(ProgressStage.ALLOY)),
 	INSCRIPTION("Inscription",		ChromaItems.DATACRYSTAL.getStackOf(),					ResearchLevel.RAWEXPLORE,	ProgressStage.TOWER),
 	BEES("Crystal Bees",			new ItemStack(Blocks.dirt),								ResearchLevel.RAWEXPLORE,	ProgressStage.HIVE),
 	TINKERTOOLS("Mix-And-Magic Tools",	new ItemStack(Blocks.dirt),							ResearchLevel.MULTICRAFT),
@@ -1272,7 +1272,7 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == PACKCHANGES && !PackModificationTracker.instance.modificationsExist(ChromatiCraft.instance))
 			return true;
 		if (this == AUGMENT)
-			return false;
+			return true;
 		Dependency dep = this.getDependency();
 		if (dep != null && !dep.isLoaded())
 			return true;

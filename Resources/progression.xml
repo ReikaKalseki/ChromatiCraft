@@ -640,6 +640,9 @@
 		<reveal>
 			Yes, including their attempts to learn the same things you now attempt.
 		</reveal>
+		<desc>
+			Buried structures, clearly of artificial origin
+		</desc>
 	</anystruct>
 	<focuscrystal>
 		<title>
@@ -651,6 +654,9 @@
 		<reveal>
 			Who would have thought THEY had found the key...
 		</reveal>
+		<desc>
+			Crude 'refining' of emeralds into a useful construct
+		</desc>
 	</focuscrystal>
 	<artefact>
 		<title>
@@ -662,6 +668,9 @@
 		<reveal>
 			Including particularly mysterious - and dangerous - ones found in certain regions.
 		</reveal>
+		<desc>
+			A strange buried artifact, surely possessing secrets
+		</desc>
 	</artefact>
 	<tower>
 		<title>
@@ -673,6 +682,9 @@
 		<reveal>
 			The purpose these obelisks serve is a entirely unknown, but they must be key to something.
 		</reveal>
+		<desc>
+			An ancient structure, topped with a luminescent...something.
+		</desc>
 	</tower>
 	<blowrepeater>
 		<title>
@@ -684,6 +696,9 @@
 		<reveal>
 			...Except when they explode trying.
 		</reveal>
+		<desc>
+			Wooden repeaters might have been a mistake
+		</desc>
 	</blowrepeater>
 	<chargecrystal>
 		<title>
@@ -695,18 +710,24 @@
 		<reveal>
 			As is usual, a simple problem has a simple - and spinny - solution.
 		</reveal>
+		<desc>
+			Putting energy into a storage crystal
+		</desc>
 	</chargecrystal>
-	<name>
+	<structcheat>
 		<title>
-
+			Finding a shortcut
 		</title>
 		<hint>
-
+			You may have the means to attempt to bypass the strange structures you find.
 		</hint>
 		<reveal>
-
+			With disastrous results. Whoever designed those structures is clearly more resourceful than you are.
 		</reveal>
-	</name>
+		<desc>
+			Or not.
+		</desc>
+	</structcheat>
 	<name>
 		<title>
 

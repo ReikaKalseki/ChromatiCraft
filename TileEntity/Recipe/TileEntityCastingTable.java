@@ -521,7 +521,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 						MultiBlockCastingRecipe mult = (MultiBlockCastingRecipe)activeRecipe;
 						HashMap<WorldLocation, ItemMatch> map = mult.getOtherInputs(worldObj, xCoord, yCoord, zCoord);
 						for (WorldLocation loc : map.keySet()) {
-							TileEntityItemStand te = (TileEntityItemStand)worldObj.getTileEntity(loc.xCoord, loc.yCoord, loc.zCoord);//loc.getTileEntity();
+							TileEntityItemStand te = (TileEntityItemStand)loc.getTileEntity(worldObj);//loc.getTileEntity();
 							if (te != null) {
 								craftingAmount = Math.min(craftingAmount, te.getStackInSlot(0).stackSize);
 							}
@@ -687,7 +687,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 				MultiBlockCastingRecipe mult = (MultiBlockCastingRecipe)activeRecipe;
 				HashMap<WorldLocation, ItemMatch> map = mult.getOtherInputs(worldObj, xCoord, yCoord, zCoord);
 				for (WorldLocation loc : map.keySet()) {
-					TileEntityItemStand te = (TileEntityItemStand)worldObj.getTileEntity(loc.xCoord, loc.yCoord, loc.zCoord);//loc.getTileEntity();
+					TileEntityItemStand te = (TileEntityItemStand)loc.getTileEntity(worldObj);
 					//ReikaJavaLibrary.pConsole(te+":"+te.getStackInSlot(0), Side.SERVER);
 					if (te != null) {
 						//ReikaJavaLibrary.pConsole(loc+" @ "+te.getStackInSlot(0), Side.SERVER);

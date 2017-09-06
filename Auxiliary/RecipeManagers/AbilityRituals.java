@@ -305,7 +305,7 @@ public final class AbilityRituals {
 
 	public static boolean isPlayerUndergoingRitual(EntityPlayer ep) {
 		for (WorldLocation loc : tables) {
-			TileEntity te = ep.worldObj.getTileEntity(loc.xCoord, loc.yCoord, loc.zCoord);
+			TileEntity te = loc.getTileEntity(ep.worldObj);
 			if (te instanceof TileEntityRitualTable) {
 				TileEntityRitualTable rit = (TileEntityRitualTable)te;
 				if (rit.isActive() && rit.isPlayerUsing(ep))

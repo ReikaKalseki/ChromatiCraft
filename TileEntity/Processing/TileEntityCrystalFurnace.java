@@ -174,6 +174,8 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 			return 1;
 		else if (in.getDisplayName() != null && in.getDisplayName().toLowerCase(Locale.ENGLISH).contains("cobblestone"))
 			return 1;
+		else if (ModList.GENDUSTRY.isLoaded() && in.getDisplayName() != null && in.getDisplayName().toLowerCase(Locale.ENGLISH).contains("gene"))
+			return 1;
 		else if (ModList.GEOSTRATA.isLoaded() && RockTypes.getTypeFromID(Block.getBlockFromItem(in.getItem())) != null) {
 			//ReikaItemHelper.matchStacks(out, RockTypes.getTypeFromID(Block.getBlockFromItem(in.getItem())).getItem(RockShapes.SMOOTH)))
 			return 1;

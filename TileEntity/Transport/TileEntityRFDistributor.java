@@ -51,15 +51,15 @@ public class TileEntityRFDistributor extends TileEntityAreaDistributor implement
 		if (this.hasRedstoneSignal())
 			return 0;
 		this.addInput(new WorldLocation(this).move(from, 1));
-		return this.tryDistributeEnergy(maxReceive, simulate);
+		return this.tryDistributeEnergy(worldObj, maxReceive, simulate);
 	}
 
-	private int tryDistributeEnergy(int maxReceive, boolean simulate) {
+	private int tryDistributeEnergy(World world, int maxReceive, boolean simulate) {
 		int add = 0;
 		Iterator<WorldLocation> it = this.getTargets();
 		while (it.hasNext()) {
 			WorldLocation loc = it.next();
-			TileEntity te = loc.getTileEntity();
+			TileEntity te = loc.getTileEntity(world);
 			if (te instanceof IEnergyReceiver || te instanceof IEnergyHandler) {
 				int give = this.tryGiveEnergy(maxReceive, simulate, (IEnergyReceiver)te);
 				if (give > 0) {

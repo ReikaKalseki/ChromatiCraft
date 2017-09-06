@@ -223,7 +223,6 @@ import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayLis
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.IO.CustomRecipeList;
 import Reika.DragonAPI.Instantiable.IO.LuaBlock;
-import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler;
@@ -937,13 +936,13 @@ public class RecipesCastingTable {
 	}
 
 	public static boolean playerHasCrafted(EntityPlayer ep, RecipeType type) {
-		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		NBTTagCompound nbt = ChromaResearchManager.instance.getRootNBTTag(ep);
 		NBTTagCompound cast = nbt.getCompoundTag("castingprog");
 		return cast.getBoolean(type.name().toLowerCase(Locale.ENGLISH));
 	}
 
 	public static void setPlayerHasCrafted(EntityPlayer ep, RecipeType type) {
-		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		NBTTagCompound nbt = ChromaResearchManager.instance.getRootNBTTag(ep);
 		NBTTagCompound cast = nbt.getCompoundTag("castingprog");
 		cast.setBoolean(type.name().toLowerCase(Locale.ENGLISH), true);
 		nbt.setTag("castingprog", cast);

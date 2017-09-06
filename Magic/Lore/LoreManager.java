@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
 import Reika.ChromatiCraft.Magic.Lore.KeyAssemblyPuzzle.TileGroup;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
@@ -119,7 +120,7 @@ public class LoreManager {
 	}
 
 	public void setPlayerScanned(EntityPlayer ep, Towers t, boolean set) {
-		NBTTagCompound NBT = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		NBTTagCompound NBT = ChromaResearchManager.instance.getRootNBTTag(ep);
 		NBTTagCompound tag = NBT.getCompoundTag(NBT_TAG);
 		tag.setBoolean(t.name(), set);
 		NBT.setTag(NBT_TAG, tag);
@@ -128,7 +129,7 @@ public class LoreManager {
 	}
 
 	public boolean hasPlayerScanned(EntityPlayer ep, Towers t) {
-		NBTTagCompound NBT = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		NBTTagCompound NBT = ChromaResearchManager.instance.getRootNBTTag(ep);
 		NBTTagCompound tag = NBT.getCompoundTag(NBT_TAG);
 		return tag.getBoolean(t.name());
 	}
@@ -143,13 +144,13 @@ public class LoreManager {
 	}
 
 	public boolean hasPlayerCompletedBoard(EntityPlayer ep) {
-		NBTTagCompound NBT = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		NBTTagCompound NBT = ChromaResearchManager.instance.getRootNBTTag(ep);
 		NBTTagCompound tag = NBT.getCompoundTag(NBT_TAG);
 		return tag.getBoolean("complete");
 	}
 
 	public void setBoardCompletion(EntityPlayer ep, boolean set) {
-		NBTTagCompound NBT = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		NBTTagCompound NBT = ChromaResearchManager.instance.getRootNBTTag(ep);
 		NBTTagCompound tag = NBT.getCompoundTag(NBT_TAG);
 		tag.setBoolean("complete", set);
 		NBT.setTag(NBT_TAG, tag);

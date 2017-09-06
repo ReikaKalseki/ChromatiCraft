@@ -139,11 +139,11 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 		cache.remove(loc);
 	}
 
-	public static boolean absorbItem(Entity e) {
+	public static boolean absorbItem(World world, Entity e) {
 		Iterator<WorldLocation> it = cache.iterator();
 		while (it.hasNext()) {
 			WorldLocation loc = it.next();
-			TileEntity te = loc.getTileEntity();
+			TileEntity te = loc.getTileEntity(world);
 			if (te instanceof TileEntityItemCollector) {
 				if (((TileEntityItemCollector)te).checkAbsorb(e))
 					return true;

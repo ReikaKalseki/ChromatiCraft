@@ -35,6 +35,8 @@ public class BlockLightPanel extends BlockDimensionStructure {
 		icons[4] = ico.registerIcon("chromaticraft:dimstruct/lightpanel_red_1");
 		icons[5] = ico.registerIcon("chromaticraft:dimstruct/lightpanel_blue_0");
 		icons[6] = ico.registerIcon("chromaticraft:dimstruct/lightpanel_blue_1");
+		//icons[7] = ico.registerIcon("chromaticraft:dimstruct/lightpanel_yellow_0");
+		//icons[8] = ico.registerIcon("chromaticraft:dimstruct/lightpanel_yellow_1");
 	}
 
 	@Override

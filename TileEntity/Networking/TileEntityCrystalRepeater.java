@@ -26,6 +26,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
@@ -487,6 +488,9 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	private void doSurge() {
 		if (!worldObj.isRemote)
 			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.REPEATERSURGE.ordinal(), this, 64, surgeColor.ordinal());
+		int n = rand.nextInt(12);
+		for (int i = 0; i < n; i++)
+			ReikaItemHelper.dropItem(worldObj, xCoord+rand.nextDouble(), yCoord, zCoord+rand.nextDouble(), ChromaStacks.crystalPowder);
 		int y = yCoord-1;
 		Block b = worldObj.getBlock(xCoord, y, zCoord);
 		while (y > 0 && b == ChromaBlocks.PYLONSTRUCT.getBlockInstance() || b == ChromaBlocks.RUNE.getBlockInstance()) {

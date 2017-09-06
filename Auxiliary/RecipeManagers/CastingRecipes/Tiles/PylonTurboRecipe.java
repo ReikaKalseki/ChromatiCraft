@@ -60,8 +60,8 @@ public class PylonTurboRecipe extends PylonCastingRecipe {
 		this.addAuxItem(ChromaStacks.chargedWhiteShard, 2, -2);
 		this.addAuxItem(ChromaStacks.chargedWhiteShard, -2, -2);
 
-		this.addAuxItem(ChromaStacks.focusDust, 2, -4);
-		this.addAuxItem(ChromaStacks.focusDust, -2, -4);
+		this.addAuxItem(ChromaStacks.lumenGem, 2, -4);
+		this.addAuxItem(ChromaStacks.lumenGem, -2, -4);
 
 		this.addAuxItem(ChromaBlocks.PYLONSTRUCT.getStackOf(), -2, 2);
 		this.addAuxItem(ChromaBlocks.PYLONSTRUCT.getStackOf(), 0, 2);

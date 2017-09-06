@@ -806,7 +806,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 					int dz = z+i*16;
 					WorldChunk wc = new WorldChunk(evt.world, evt.world.getChunkFromBlockCoords(dx, dz));
 					for (WorldLocation loc : cache.get(wc)) {
-						TileEntity tile = evt.world.getTileEntity(loc.xCoord, loc.yCoord, loc.zCoord);
+						TileEntity tile = loc.getTileEntity(evt.world);
 						if (tile instanceof TileEntityStructControl) {
 							TileEntityStructControl te = (TileEntityStructControl)tile;
 							te.trigger(evt.x, evt.y, evt.z, evt.player);

@@ -15,7 +15,9 @@ import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 
@@ -23,38 +25,37 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes.FabricationRecipe;
 import Reika.ChromatiCraft.Container.ContainerItemFabricator;
-import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.recipe.TemplateRecipeHandler;
 
 public class FabricatorHandler extends TemplateRecipeHandler {
 
-	private class FabricationRecipe extends CachedRecipe {
+	private static final RenderItem itemRender = new RenderItem();
 
-		private final ItemStack item;
-		private final ElementTagCompound cost;
+	private class FabricationRecipeDisplay extends CachedRecipe {
 
-		public FabricationRecipe(ItemStack out, ElementTagCompound tag) {
-			item = ReikaItemHelper.getSizedItemStack(out, 1);
-			cost = tag;
+		private final FabricationRecipe recipe;
+
+		public FabricationRecipeDisplay(FabricationRecipe r) {
+			recipe = r;
 		}
 
 		@Override
 		public PositionedStack getResult() {
-			return new PositionedStack(item, 22, 5);
+			return new PositionedStack(recipe.getDisplay(), 22, 5);
 		}
 
 		@Override
 		public PositionedStack getIngredient()
 		{
-			return null;//new PositionedStack(this.getInputShard(), 74, 6);
+			return null;
 		}
 
 		@Override
@@ -103,8 +104,11 @@ public class FabricatorHandler extends TemplateRecipeHandler {
 	public void loadCraftingRecipes(String outputId, Object... results) {
 		if (outputId != null && outputId.equals("ccfabric")) {
 			Collection<KeyedItemStack> li = FabricationRecipes.recipes().getFabricableItems();
-			for (KeyedItemStack is : li)
-				arecipes.add(new FabricationRecipe(is.getItemStack(), FabricationRecipes.recipes().getItemCost(is.getItemStack())));
+			for (KeyedItemStack is : li) {
+				FabricationRecipe f = FabricationRecipes.recipes().getItemRecipe(is.getItemStack());
+				if (f.hasProgress(Minecraft.getMinecraft().thePlayer))
+					arecipes.add(new FabricationRecipeDisplay(f));
+			}
 		}
 		super.loadCraftingRecipes(outputId, results);
 	}
@@ -119,9 +123,9 @@ public class FabricatorHandler extends TemplateRecipeHandler {
 
 	@Override
 	public void loadCraftingRecipes(ItemStack result) {
-		ElementTagCompound tag = FabricationRecipes.recipes().getItemCost(result);
-		if (tag != null) {
-			arecipes.add(new FabricationRecipe(result, tag));
+		FabricationRecipe tag = FabricationRecipes.recipes().getItemRecipe(result);
+		if (tag != null && tag.hasProgress(Minecraft.getMinecraft().thePlayer)) {
+			arecipes.add(new FabricationRecipeDisplay(tag));
 		}
 	}
 
@@ -143,8 +147,9 @@ public class FabricatorHandler extends TemplateRecipeHandler {
 
 	@Override
 	public void drawExtras(int recipe) {
-		FabricationRecipe fr = (FabricationRecipe)arecipes.get(recipe);
-		Minecraft.getMinecraft().fontRenderer.drawString(fr.item.getDisplayName(), 46, 9, 0xffffff);
+		FontRenderer f = Minecraft.getMinecraft().fontRenderer;
+		FabricationRecipeDisplay fr = (FabricationRecipeDisplay)arecipes.get(recipe);
+		f.drawString(fr.recipe.getDisplay().getDisplayName(), 46, 9, 0xffffff);
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];
 			int dx = 3+(i/8)*84;
@@ -154,8 +159,16 @@ public class FabricatorHandler extends TemplateRecipeHandler {
 			ReikaTextureHelper.bindTerrainTexture();
 			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(dx, dy, ico, 16, 16);
 			int c = ReikaColorAPI.mixColors(e.getColor(), 0xffffff, 0.75F);
-			Minecraft.getMinecraft().fontRenderer.drawString(String.valueOf(fr.cost.getValue(e)), dx+24, dy+4, c);
+			f.drawString(String.valueOf(fr.recipe.getCost().getValue(e)), dx+24, dy+4, c);
 		}
+		/*
+		int dy = -2;
+		String s = "Progress:";
+		f.drawString(s, -f.getStringWidth(s)-8, dy+18, 0xffffff);
+		for (ProgressStage p : fr.recipe.getProgress()) {
+			dy += 30;
+			p.renderIcon(itemRender, Minecraft.getMinecraft().fontRenderer, -25, dy);
+		}*/
 
 	}
 

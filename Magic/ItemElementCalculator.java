@@ -544,6 +544,11 @@ public class ItemElementCalculator {
 			return tag; //Basic registry overrides anything else
 
 		tag = new ElementTagCompound();
+
+		if (is.getItem().getUnlocalizedName().contains("gt.metatool")) { //hopefully avoid deep recursion
+			return tag;
+		}
+
 		currentCalculation.add(new KeyedItemStack(is).setIgnoreNBT(true).setSimpleHash(true));
 
 		tag.addButMinimizeWith(this.getFromVanillaCrafting(is, step));

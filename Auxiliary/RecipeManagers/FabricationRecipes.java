@@ -16,28 +16,39 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.oredict.OreDictionary;
 import thaumcraft.api.aspects.Aspect;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
+import Reika.ChromatiCraft.Items.ItemTieredResource;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.ChromaAspectManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class FabricationRecipes {
 
 	private static final FabricationRecipes instance = new FabricationRecipes();
 
-	private final HashMap<KeyedItemStack, ElementTagCompound> data = new HashMap();
+	private final HashMap<KeyedItemStack, FabricationRecipe> data = new HashMap();
+	private final HashMap<String, FabricationRecipe> fluidRecipes = new HashMap();
+
 	public static final float SCALE = 0.8F;
 
 	public static final float INITFACTOR = 0.5F;
@@ -56,35 +67,55 @@ public class FabricationRecipes {
 			ElementTagCompound tag = ItemMagicRegistry.instance.getItemValue(k);
 			tag = this.processTag(tag);
 			k.setSimpleHash(true);
-			data.put(k, tag);
+			data.put(k, new FabricationRecipe(k.getItemStack(), tag));
 			max = Math.max(max, tag.getMaximumValue());
+		}
+
+		for (int i = 0; i < ChromaItems.TIERED.getNumberMetadatas(); i++) {
+			ItemStack is = ChromaItems.TIERED.getStackOfMetadata(i);
+			ElementTagCompound tag = ItemElementCalculator.instance.getValueForItem(is);
+			if (tag != null && !tag.isEmpty()) {
+				tag = this.processTag(tag);
+				ProgressStage level = ((ItemTieredResource)is.getItem()).getDiscoveryTier(is);
+				float scale = 5;
+				if (level.isGatedAfter(ProgressStage.CTM))
+					scale = 50;
+				else if (level.isGatedAfter(ProgressStage.STRUCTCOMPLETE))
+					scale = 30;
+				else if (level.isGatedAfter(ProgressStage.DIMENSION))
+					scale = 20;
+				else if (level.isGatedAfter(ProgressStage.PYLON) || level.isGatedAfter(ProgressStage.ABILITY))
+					scale = 10;
+				tag.scale(scale);
+				this.addRecipe(is, tag, ProgressStage.CTM);
+			}
 		}
 
 		ElementTagCompound tag = new ElementTagCompound();
 		tag.addTag(CrystalElement.RED, 5000);
 		tag.addTag(CrystalElement.BROWN, 500);
 		tag.addTag(CrystalElement.BLACK, 500);
-		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.STONE.ordinal()), tag);
-		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.COBBLE.ordinal()), tag);
-		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.CRACK.ordinal()), tag);
-		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.CRACKS.ordinal()), tag);
+		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.STONE.ordinal()), tag, ProgressStage.ANYSTRUCT);
+		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.COBBLE.ordinal()), tag, ProgressStage.ANYSTRUCT);
+		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.CRACK.ordinal()), tag, ProgressStage.ANYSTRUCT);
+		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.CRACKS.ordinal()), tag, ProgressStage.ANYSTRUCT);
 
 		ElementTagCompound tag2 = tag.copy();
 		tag2.addTag(CrystalElement.WHITE, 500);
-		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.GLASS.ordinal()), tag2);
+		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.GLASS.ordinal()), tag2, ProgressStage.ANYSTRUCT);
 
 		tag2 = tag.copy();
 		tag2.addTag(CrystalElement.WHITE, 500);
 		tag2.addTag(CrystalElement.BLUE, 500);
-		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.LIGHT.ordinal()), tag2);
+		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.LIGHT.ordinal()), tag2, ProgressStage.ANYSTRUCT);
 
 		tag2 = tag.copy();
 		tag2.addTag(CrystalElement.GREEN, 500);
-		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.MOSS.ordinal()), tag2);
+		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.MOSS.ordinal()), tag2, ProgressStage.ANYSTRUCT);
 
 		tag2 = tag.copy();
 		tag2.addTag(CrystalElement.BLUE, 500);
-		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.CLOAK.ordinal()), tag2);
+		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.CLOAK.ordinal()), tag2, ProgressStage.ANYSTRUCT);
 
 		tag = new ElementTagCompound();
 		tag.addTag(CrystalElement.BROWN, 500);
@@ -190,7 +221,7 @@ public class FabricationRecipes {
 				tag = new ElementTagCompound();
 				tag.addValueToColor(CrystalElement.MAGENTA, 2500);
 				tag.addValueToColor(CrystalElement.BLACK, 1000);
-				this.addRecipe(item, tag);
+				this.addRecipe(item, tag, ProgressStage.TWILIGHT);
 			}
 
 			item = ReikaItemHelper.lookupItem("TwilightForest:tile.TFFirefly");
@@ -198,7 +229,7 @@ public class FabricationRecipes {
 				tag = new ElementTagCompound();
 				tag.addValueToColor(CrystalElement.BLUE, 300);
 				tag.addValueToColor(CrystalElement.GREEN, 60);
-				this.addRecipe(item, tag);
+				this.addRecipe(item, tag, ProgressStage.TWILIGHT);
 			}
 
 			item = ReikaItemHelper.lookupItem(/*"TwilightForest:item.carminite"*/"TwilightForest:item.borerEssence");
@@ -207,7 +238,7 @@ public class FabricationRecipes {
 				tag.addValueToColor(CrystalElement.PINK, 500);
 				tag.addValueToColor(CrystalElement.BROWN, 100);
 				tag.addValueToColor(CrystalElement.LIGHTGRAY, 50);
-				this.addRecipe(item, tag);
+				this.addRecipe(item, tag, ProgressStage.TWILIGHT);
 			}
 		}
 
@@ -228,15 +259,30 @@ public class FabricationRecipes {
 		return tag;
 	}
 
-	private void addRecipe(ItemStack is, ElementTagCompound tag) {
-		data.put(new KeyedItemStack(is).setSimpleHash(true), tag);
+	private FabricationRecipe addRecipe(ItemStack is, ElementTagCompound tag, ProgressStage... progress) {
+		FabricationRecipe f = new FabricationRecipe(is, tag);
+		for (ProgressStage p : progress)
+			f.addProgress(p);
+		data.put(new KeyedItemStack(is).setSimpleHash(true), f);
 		max = Math.max(max, tag.getMaximumValue());
+		return f;
+	}
+
+	private FabricationRecipe addFluidRecipe(ItemStack is, Fluid fluid, ElementTagCompound tag, ProgressStage... progress) {
+		FabricationRecipe f = new FabricationRecipe(is, tag);
+		for (ProgressStage p : progress)
+			f.addProgress(p);
+		fluidRecipes.put(fluid.getName(), f);
+		if (fluid.getBlock() != null)
+			f.displayItem = new ItemStack(fluid.getBlock());
+		max = Math.max(max, tag.getMaximumValue());
+		return f;
 	}
 
 	public Collection<ItemStack> getItemsFabricableWith(ElementTagCompound tag) {
 		Collection<ItemStack> items = new ArrayList();
 		for (KeyedItemStack ks : data.keySet()) {
-			ElementTagCompound val = data.get(ks).copy().scale(SCALE);
+			ElementTagCompound val = data.get(ks).getCost().scale(SCALE);
 			if (tag.containsAtLeast(val))
 				items.add(ks.getItemStack());
 		}
@@ -253,13 +299,13 @@ public class FabricationRecipes {
 		return data.containsKey(ks) && tag.containsAtLeast(this.getItemCost(ks));
 	}
 
-	public ElementTagCompound getItemCost(ItemStack is) {
-		return this.getItemCost(new KeyedItemStack(is).setSimpleHash(true));
+	public FabricationRecipe getItemRecipe(ItemStack is) {
+		return data.get(new KeyedItemStack(is).setSimpleHash(true));
 	}
 
 	private ElementTagCompound getItemCost(KeyedItemStack is) {
-		ElementTagCompound tag = data.get(is);
-		return tag != null ? tag.copy().scale(1/SCALE) : null;
+		FabricationRecipe tag = data.get(is);
+		return tag != null ? tag.getCost().scale(1/SCALE) : null;
 	}
 
 	public int getMaximumCost() {
@@ -268,6 +314,72 @@ public class FabricationRecipes {
 
 	public Collection<KeyedItemStack> getFabricableItems() {
 		return Collections.unmodifiableCollection(data.keySet());
+	}
+
+	public static class FabricationRecipe {
+
+		private final ItemStack item;
+		private final ElementTagCompound energy;
+		private Collection<ProgressStage> progress;
+
+		private ItemStack displayItem;
+
+		/*
+		private FabricationRecipe(ItemStack is) {
+			this(is, tag);
+		}*/
+
+		private FabricationRecipe(ItemStack is, ElementTagCompound tag) {
+			item = is;
+			energy = tag;
+			displayItem = item;
+		}
+
+		private FabricationRecipe addProgress(ProgressStage p) {
+			if (progress == null)
+				progress = new HashSet();
+			progress.add(p);
+			return this;
+		}
+
+		@SideOnly(Side.CLIENT)
+		public ItemStack getDisplay() {
+			return displayItem.copy();
+		}
+
+		public ItemStack getItem() {
+			return item.copy();
+		}
+
+		public ElementTagCompound getCost() {
+			return energy.copy();
+		}
+
+		public Collection<ProgressStage> getProgress() {
+			return progress != null ? Collections.unmodifiableCollection(progress) : new ArrayList();
+		}
+
+		public boolean hasProgress(EntityPlayer ep) {
+			if (progress == null || progress.isEmpty())
+				return true;
+			if (ep == null || ReikaPlayerAPI.isFake(ep))
+				return false;
+			for (ProgressStage p : progress)
+				if (!p.isPlayerAtStage(ep))
+					return false;
+			return true;
+		}
+
+	}
+
+	public FabricationRecipe getOrCreateFluidRecipe(ItemStack is, Fluid f) {
+		if (fluidRecipes.containsKey(f.getName()))
+			return fluidRecipes.get(f.getName());
+		ElementTagCompound ftag = ItemMagicRegistry.instance.getFluidValue(f);
+		if (ftag == null)
+			return null;
+		ElementTagCompound tag = FabricationRecipes.recipes().processTag(ftag).scale(1/FabricationRecipes.SCALE);
+		return this.addFluidRecipe(is, f, tag);
 	}
 
 }

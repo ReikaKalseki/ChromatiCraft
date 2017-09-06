@@ -19,6 +19,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.DoorKeyCopyingRecipe;
 import Reika.ChromatiCraft.Auxiliary.LegacyTileAcceleratorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
@@ -76,6 +77,7 @@ public class ChromaRecipes {
 		}
 
 		GameRegistry.addRecipe(new LegacyTileAcceleratorRecipe());
+		GameRegistry.addRecipe(new DoorKeyCopyingRecipe());
 
 		loadSmelting();
 	}

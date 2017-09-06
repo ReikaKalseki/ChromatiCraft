@@ -102,7 +102,7 @@ public class ItemRemoteTerminal extends ItemChromaTool /*implements IWirelessTer
 		WorldLocation loc = WorldLocation.readFromNBT("loc", is.stackTagCompound);
 		if (loc == null)
 			return null;
-		TileEntity te = world.getTileEntity(loc.xCoord, loc.yCoord, loc.zCoord);
+		TileEntity te = loc.getTileEntity(world);
 		if (te instanceof IGridHost) {
 			IGridHost igh = (IGridHost)te;
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[is.stackTagCompound.getInteger("dir")];

@@ -134,12 +134,12 @@ public class WaterPuzzleGenerator extends DimensionStructureGenerator {
 	private static int getSize() {
 		switch(ChromaOptions.getStructureDifficulty()) {
 			case 1:
-				return 5;
+				return 3;
 			case 2:
-				return 6;
+				return 4;
 			case 3:
 			default:
-				return 8; //12 was too big, overran space -> 6,8,12 to 5,6,8
+				return 6; //12 was too big, overran space -> 6,8,12 to 5,6,8, then 3, 4, 6
 		}
 	}
 

@@ -169,7 +169,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 
 			ImmutablePair<java.awt.Point, java.awt.Point> ps = ReikaVectorHelper.clipLine(x1, x2, y1, y2, posX+8, posY+26, posX+xSize-8, posY+ySize/2+6);
 			if (ps != null) {
-				int clr = p == active || par == active ? 0x00ff00 : 0xffffff;
+				int clr = p == active || par == active ? (par.isPlayerAtStage(player) ? 0x00ff00 : 0xff4040) : 0xffffff;
 				api.drawLine(ps.left.x, ps.left.y, ps.right.x, ps.right.y, clr);
 			}
 		}

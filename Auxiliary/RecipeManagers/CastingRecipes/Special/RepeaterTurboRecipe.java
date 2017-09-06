@@ -62,10 +62,10 @@ public class RepeaterTurboRecipe extends PylonCastingRecipe implements EnergyLin
 		this.addAuxItem(ChromaStacks.beaconDust, -4, 4);
 		this.addAuxItem(ChromaStacks.beaconDust, 4, -4);
 
-		this.addAuxItem(ChromaStacks.focusDust, 0, -4);
-		this.addAuxItem(ChromaStacks.focusDust, 4, 0);
-		this.addAuxItem(ChromaStacks.focusDust, 0, 4);
-		this.addAuxItem(ChromaStacks.focusDust, -4, 0);
+		this.addAuxItem(ChromaStacks.lumenGem, 0, -4);
+		this.addAuxItem(ChromaStacks.lumenGem, 4, 0);
+		this.addAuxItem(ChromaStacks.lumenGem, 0, 4);
+		this.addAuxItem(ChromaStacks.lumenGem, -4, 0);
 
 		this.addAuxItem(Items.glowstone_dust, -2, -4);
 		this.addAuxItem(Items.glowstone_dust, 2, -4);

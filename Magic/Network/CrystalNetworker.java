@@ -167,8 +167,10 @@ public class CrystalNetworker implements TickHandler {
 
 	@SubscribeEvent
 	public void clearOnUnload(WorldEvent.Unload evt) {
-		PylonFinder.stopAllSearches();
+		if (evt.world.isRemote)
+			return;
 		int dim = evt.world.provider.dimensionId;
+		PylonFinder.stopAllSearches();
 		ChromatiCraft.logger.debug("Unloading dimension "+dim+", clearing crystal network.");
 		try {
 			this.clear(dim);
@@ -432,7 +434,7 @@ public class CrystalNetworker implements TickHandler {
 						if (te == null) {
 							ChromatiCraft.logger.logError("Null tile returned for location "+loc+"; "+loc.getBlockKey().getLocalized());
 							//remove.add(loc);
-							te = (TileEntityCrystalPylon)loc.getTileEntity();
+							te = (TileEntityCrystalPylon)loc.getTileEntity(world);
 							c.put(loc, te);
 						}
 						//else
@@ -469,7 +471,7 @@ public class CrystalNetworker implements TickHandler {
 						if (te == null) {
 							ChromatiCraft.logger.logError("Null tile returned for location "+loc+"; "+loc.getBlockKey().getLocalized());
 							//remove.addValue(e, loc);
-							te = (TileEntityCrystalPylon)loc.getTileEntity();
+							te = (TileEntityCrystalPylon)loc.getTileEntity(world);
 							c.put(loc, te);
 						}
 						//else

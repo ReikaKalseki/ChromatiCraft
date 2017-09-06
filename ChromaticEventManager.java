@@ -584,16 +584,32 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
+	public void banDimensionBlocks(PlayerPlaceBlockEvent evt) {
+		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			Block b = evt.block;
+			int meta = evt.metadata;
+			if (ChromaDimensionManager.isBannedDimensionBlock(b, meta)) {
+				evt.setCanceled(true);
+				ChromaDimensionManager.punishCheatingPlayer(evt.player);
+			}
+		}
+	}
+
+	@SubscribeEvent //fallback
 	public void banDimensionBlocks(SetBlockEvent evt) {
 		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
 			Block b = evt.getBlock();
 			int meta = evt.getMetadata();
 			if (ChromaDimensionManager.isBannedDimensionBlock(b, meta)) {
-				ArrayList<ItemStack> li = b.getDrops(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, meta, 0);
+				//ArrayList<ItemStack> li = b.getDrops(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, meta, 0);
 				evt.world.setBlock(evt.xCoord, evt.yCoord, evt.zCoord, Blocks.air);
-				ReikaItemHelper.dropItems(evt.world, evt.xCoord+0.5, evt.yCoord+0.5, evt.zCoord+0.5, li);
+				//ReikaItemHelper.dropItems(evt.world, evt.xCoord+0.5, evt.yCoord+0.5, evt.zCoord+0.5, li);
 				ReikaSoundHelper.playSoundAtBlock(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, "random.explode");
 				ReikaParticleHelper.EXPLODE.spawnAroundBlock(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, 2);
+				List<EntityPlayer> li = evt.world.getEntitiesWithinAABB(EntityPlayer.class, ReikaAABBHelper.getBlockAABB(evt.xCoord, evt.yCoord, evt.zCoord).expand(6, 4.5, 6));
+				for (EntityPlayer ep : li) {
+					ChromaDimensionManager.punishCheatingPlayer(ep);
+				}
 			}
 		}
 	}
@@ -1516,7 +1532,7 @@ public class ChromaticEventManager {
 		if (!evt.world.isRemote) {
 			Entity e = evt.entity;
 			if (e instanceof EntityItem || e instanceof EntityXPOrb) {
-				if (TileEntityItemCollector.absorbItem(e)) {
+				if (TileEntityItemCollector.absorbItem(evt.world, e)) {
 					evt.setCanceled(true);
 					return;
 				}

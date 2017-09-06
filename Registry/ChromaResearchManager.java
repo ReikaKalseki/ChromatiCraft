@@ -38,6 +38,7 @@ import Reika.ChromatiCraft.API.Event.ProgressionEvent;
 import Reika.ChromatiCraft.API.Event.ProgressionEvent.ResearchType;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ProgressionCacher;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
@@ -47,6 +48,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
@@ -184,6 +186,15 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		return c != null ? Collections.unmodifiableCollection(c) : new ArrayList();
 	}
 
+	public void removeAllDummiedFragments(Collection<ChromaResearch> li) {
+		Iterator<ChromaResearch> it = li.iterator();
+		while (it.hasNext()) {
+			ChromaResearch r = it.next();
+			if (r.isDummiedOut())
+				it.remove();
+		}
+	}
+
 	/** Is this research one of the next ones available to the player, but without the player already having it */
 	public boolean canPlayerStepTo(EntityPlayer ep, ChromaResearch r) {
 		return !r.isDummiedOut() && this.getNextResearchesFor(ep).contains(r);
@@ -205,6 +216,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 			if (ep instanceof EntityPlayerMP)
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 			ProgressionCacher.instance.updateProgressCache(ep);
+			ProgressionCacher.instance.updateBackup(ep);
 			return true;
 		}
 		return false;
@@ -219,6 +231,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 			if (notify)
 				this.notifyPlayerOfProgression(ep, r);
 			ProgressionCacher.instance.updateProgressCache(ep);
+			ProgressionCacher.instance.updateBackup(ep);
 			MinecraftForge.EVENT_BUS.post(new ProgressionEvent(ep, r.name(), ResearchType.FRAGMENT));
 			return true;
 		}
@@ -277,6 +290,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 			if (notify)
 				this.notifyPlayerOfProgression(ep, r);
 			ProgressionCacher.instance.updateProgressCache(ep);
+			ProgressionCacher.instance.updateBackup(ep);
 			return true;
 		}
 		return false;
@@ -299,7 +313,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	}
 
 	public void resetPlayerResearch(EntityPlayer ep, boolean notify) {
-		ReikaPlayerAPI.getDeathPersistentNBT(ep).removeTag(NBT_TAG);
+		this.getRootNBTTag(ep).removeTag(NBT_TAG);
 		if (ep instanceof EntityPlayerMP)
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 	}
@@ -364,11 +378,24 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	}
 
 	private NBTTagCompound getNBT(EntityPlayer ep) {
-		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		NBTTagCompound nbt = this.getRootNBTTag(ep);
 		if (!nbt.hasKey(NBT_TAG))
 			nbt.setTag(NBT_TAG, new NBTTagCompound());
 		NBTTagCompound li = nbt.getCompoundTag(NBT_TAG);
 		return li;
+	}
+
+	public NBTTagCompound getRootNBTTag(EntityPlayer ep) {
+		NBTTagCompound tag = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		if (tag == null || tag.hasNoTags() || !tag.hasKey(NBT_TAG) || !tag.hasKey(ProgressionManager.MAIN_NBT_TAG)) {
+			NBTTagCompound repl = ProgressionCacher.instance.attemptToLoadBackup(ep);
+			if (repl != null) {
+				if (tag == null)
+					tag = new NBTTagCompound();
+				ReikaNBTHelper.copyNBT(repl, tag);
+			}
+		}
+		return tag;
 	}
 
 	public void notifyPlayerOfProgression(EntityPlayer ep, ProgressElement p) {

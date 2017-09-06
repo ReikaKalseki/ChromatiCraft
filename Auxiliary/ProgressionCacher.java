@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +27,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler.PlayerTracker;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.IO.NBTFile;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import cpw.mods.fml.common.FMLLog;
 
 
@@ -143,6 +145,41 @@ public class ProgressionCacher implements PlayerTracker {
 			progressCache.remove(uid);
 		}
 		return pc;
+	}
+
+	public NBTTagCompound attemptToLoadBackup(EntityPlayer ep) {
+		ChromatiCraft.logger.log("Attempting to load backup progression for "+ep);
+		File f = this.getBackupFile(ep);
+		if (!f.exists() || f.length() == 0)
+			return null;
+		try {
+			return ReikaFileReader.readUncompressedNBT(f);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			ChromatiCraft.logger.logError("Could not read progression data backup for "+ep.getCommandSenderName()+"!");
+			return null;
+		}
+	}
+
+	public void updateBackup(EntityPlayer ep) {
+		File f = this.getBackupFile(ep);
+		if (!f.exists())
+			f.getParentFile().mkdirs();
+		if (f.exists())
+			f.delete();
+		try {
+			f.createNewFile();
+			ReikaFileReader.writeUncompressedNBT(ReikaPlayerAPI.getDeathPersistentNBT(ep), f);
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			ChromatiCraft.logger.logError("Could not save progression data backup for "+ep.getCommandSenderName()+"!");
+		}
+	}
+
+	private File getBackupFile(EntityPlayer ep) {
+		return new File(DimensionManager.getCurrentSaveRootDirectory()+"/ChromatiCraft_Data/ProgressionBackup", ep.getUniqueID().toString()+".dat");
 	}
 
 	public static class ProgressCache {

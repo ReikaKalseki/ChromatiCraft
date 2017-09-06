@@ -80,7 +80,7 @@ public class ProgressionManager implements ProgressRegistry {
 
 	public static final ProgressionManager instance = new ProgressionManager();
 
-	private static final String MAIN_NBT_TAG = "Chroma_Progression";
+	public static final String MAIN_NBT_TAG = "Chroma_Progression";
 	private static final String COLOR_NBT_TAG = "Chroma_Element_Discovery";
 	private static final String STRUCTURE_NBT_TAG = "Structure_Color_Completion";
 	private static final String COOPERATE_NBT_TAG = "Chroma_Cooperation";
@@ -149,6 +149,7 @@ public class ProgressionManager implements ProgressRegistry {
 		ANYSTRUCT(ChromaTiles.STRUCTCONTROL.getCraftedProduct()),
 		ARTEFACT(ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.FRAGMENT.ordinal())),
 		TOWER(ChromaTiles.DATANODE.getCraftedProduct()),
+		STRUCTCHEAT(Blocks.tnt), //optional, just to rub it in
 		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
 		;
 
@@ -354,11 +355,13 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.OCEAN);
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.DESERTSTRUCT);
 
-		progressMap.addParent(ProgressStage.TURBOCHARGE, ProgressStage.DIMENSION);
-		progressMap.addParent(ProgressStage.TURBOCHARGE, ProgressStage.STRUCTCOMPLETE);
+		progressMap.addParent(ProgressStage.TURBOCHARGE,	ProgressStage.DIMENSION);
+		progressMap.addParent(ProgressStage.TURBOCHARGE,	ProgressStage.STRUCTCOMPLETE);
 
 		progressMap.addParent(ProgressStage.STRUCTCOMPLETE,	ProgressStage.ABILITY);
 		progressMap.addParent(ProgressStage.STRUCTCOMPLETE,	ProgressStage.DIMENSION);
+
+		progressMap.addParent(ProgressStage.STRUCTCHEAT,	ProgressStage.DIMENSION);
 
 		progressMap.addParent(ProgressStage.ALLCORES,	ProgressStage.STRUCTCOMPLETE);
 
@@ -430,7 +433,7 @@ public class ProgressionManager implements ProgressRegistry {
 	}
 
 	private NBTTagList getNBTList(EntityPlayer ep) {
-		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		NBTTagCompound nbt = ChromaResearchManager.instance.getRootNBTTag(ep);
 		if (!nbt.hasKey(MAIN_NBT_TAG))
 			nbt.setTag(MAIN_NBT_TAG, new NBTTagList());
 		NBTTagList li = nbt.getTagList(MAIN_NBT_TAG, NBTTypes.STRING.ID);
@@ -479,8 +482,8 @@ public class ProgressionManager implements ProgressRegistry {
 			li1.tagList.remove(s1);
 			li2.tagList.remove(s2);
 		}
-		ReikaPlayerAPI.getDeathPersistentNBT(ep1).setTag(COOPERATE_NBT_TAG, li1);
-		ReikaPlayerAPI.getDeathPersistentNBT(ep2).setTag(COOPERATE_NBT_TAG, li2);
+		ChromaResearchManager.instance.getRootNBTTag(ep1).setTag(COOPERATE_NBT_TAG, li1);
+		ChromaResearchManager.instance.getRootNBTTag(ep2).setTag(COOPERATE_NBT_TAG, li2);
 		return true;
 	}
 
@@ -501,7 +504,7 @@ public class ProgressionManager implements ProgressRegistry {
 	}
 
 	private NBTTagList getCooperatorList(EntityPlayer ep) {
-		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		NBTTagCompound nbt = ChromaResearchManager.instance.getRootNBTTag(ep);
 		if (!nbt.hasKey(COOPERATE_NBT_TAG))
 			nbt.setTag(COOPERATE_NBT_TAG, new NBTTagList());
 		NBTTagList li = nbt.getTagList(COOPERATE_NBT_TAG, NBTTypes.STRING.ID);
@@ -592,7 +595,7 @@ public class ProgressionManager implements ProgressRegistry {
 	private void setPlayerStage(EntityPlayer ep, ProgressStage s, boolean set, boolean allowClient, boolean notify) {
 		//ReikaJavaLibrary.pConsole("Giving "+ep.getCommandSenderName()+" progress '"+s+"': "+set+"/"+allowClient+"/"+notify);
 		//ReikaJavaLibrary.pConsole("NBT PRE: ");
-		//for (String sg : ReikaNBTHelper.parseNBTAsLines(ReikaPlayerAPI.getDeathPersistentNBT(ep)))
+		//for (String sg : ReikaNBTHelper.parseNBTAsLines(ChromaResearchManager.instance.getRootNBTTag(ep)))
 		//	ReikaJavaLibrary.pConsole(sg);
 		if (ReikaPlayerAPI.isFake(ep))
 			return;
@@ -619,13 +622,15 @@ public class ProgressionManager implements ProgressRegistry {
 		NBTBase tag = new NBTTagString(s.name());
 		boolean flag = false;
 		if (set) {
+			//ReikaJavaLibrary.pConsole(ReikaStringParser.padToLength(tag.toString(), 24, " ")+" out of "+li+",\t=\t"+li.tagList.contains(tag));
 			if (!li.tagList.contains(tag)) {
 				flag = true;
 				li.appendTag(tag);
 				Collection<ProgressStage> c = progressMap.getRecursiveParents(s);
 				for (ProgressStage s2 : c) {
 					NBTBase tag2 = new NBTTagString(s2.name());
-					li.tagList.add(tag2);
+					if (!li.tagList.contains(tag2))
+						li.tagList.add(tag2);
 				}
 			}
 		}
@@ -641,7 +646,7 @@ public class ProgressionManager implements ProgressRegistry {
 			}
 		}
 		if (flag) {
-			ReikaPlayerAPI.getDeathPersistentNBT(ep).setTag(MAIN_NBT_TAG, li);
+			ChromaResearchManager.instance.getRootNBTTag(ep).setTag(MAIN_NBT_TAG, li);
 			if (ep instanceof EntityPlayerMP)
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 			if (set) {
@@ -657,9 +662,10 @@ public class ProgressionManager implements ProgressRegistry {
 			if (notify)
 				this.updateChunks(ep);
 			ProgressionCacher.instance.updateProgressCache(ep);
+			ProgressionCacher.instance.updateBackup(ep);
 		}
 		//ReikaJavaLibrary.pConsole("NBT POST: ");
-		//for (String sg : ReikaNBTHelper.parseNBTAsLines(ReikaPlayerAPI.getDeathPersistentNBT(ep)))
+		//for (String sg : ReikaNBTHelper.parseNBTAsLines(ChromaResearchManager.instance.getRootNBTTag(ep)))
 		//	ReikaJavaLibrary.pConsole(sg);
 	}
 
@@ -675,7 +681,7 @@ public class ProgressionManager implements ProgressRegistry {
 				}
 			}
 		}
-		ReikaPlayerAPI.getDeathPersistentNBT(ep).setTag(MAIN_NBT_TAG, li);
+		ChromaResearchManager.instance.getRootNBTTag(ep).setTag(MAIN_NBT_TAG, li);
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			this.setPlayerDiscoveredColor(ep, CrystalElement.elements[i], false, notify);
 			this.markPlayerCompletedStructureColor(ep, CrystalElement.elements[i], false, notify);
@@ -685,6 +691,7 @@ public class ProgressionManager implements ProgressRegistry {
 		if (notify)
 			this.updateChunks(ep);
 		ProgressionCacher.instance.updateProgressCache(ep);
+		ProgressionCacher.instance.updateBackup(ep);
 	}
 
 	public void maxPlayerProgression(EntityPlayer ep, boolean notify) {
@@ -704,7 +711,7 @@ public class ProgressionManager implements ProgressRegistry {
 
 	public boolean setPlayerDiscoveredColor(EntityPlayer ep, CrystalElement e, boolean disc, boolean notify) {
 		//ReikaJavaLibrary.pConsole(this.getPlayerData(ep));
-		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		NBTTagCompound nbt = ChromaResearchManager.instance.getRootNBTTag(ep);
 		NBTTagCompound tag = nbt.getCompoundTag(COLOR_NBT_TAG);
 		boolean had = tag.getBoolean(e.name());
 		tag.setBoolean(e.name(), disc);
@@ -721,6 +728,7 @@ public class ProgressionManager implements ProgressRegistry {
 			if (disc)
 				MinecraftForge.EVENT_BUS.post(new ProgressionEvent(ep, e.name(), ResearchType.COLOR));
 			ProgressionCacher.instance.updateProgressCache(ep);
+			ProgressionCacher.instance.updateBackup(ep);
 			return true;
 		}
 		return false;
@@ -742,12 +750,12 @@ public class ProgressionManager implements ProgressRegistry {
 	}
 
 	public boolean hasPlayerDiscoveredColor(EntityPlayer ep, CrystalElement e) {
-		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep).getCompoundTag(COLOR_NBT_TAG);
+		NBTTagCompound nbt = ChromaResearchManager.instance.getRootNBTTag(ep).getCompoundTag(COLOR_NBT_TAG);
 		return nbt.getBoolean(e.name());
 	}
 
 	public Collection<CrystalElement> getColorsFor(EntityPlayer ep) {
-		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep).getCompoundTag(COLOR_NBT_TAG);
+		NBTTagCompound nbt = ChromaResearchManager.instance.getRootNBTTag(ep).getCompoundTag(COLOR_NBT_TAG);
 		Collection<CrystalElement> c = new ArrayList();
 		for (Object o : nbt.func_150296_c()) {
 			String tag = (String)o;
@@ -937,13 +945,13 @@ public class ProgressionManager implements ProgressRegistry {
 	}
 
 	public boolean hasPlayerCompletedStructureColor(EntityPlayer ep, CrystalElement e) {
-		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep).getCompoundTag(STRUCTURE_NBT_TAG);
+		NBTTagCompound nbt = ChromaResearchManager.instance.getRootNBTTag(ep).getCompoundTag(STRUCTURE_NBT_TAG);
 		return nbt.getBoolean(e.name());
 	}
 
 	public boolean markPlayerCompletedStructureColor(EntityPlayer ep, CrystalElement e, boolean set, boolean notify) {
 		//ReikaJavaLibrary.pConsole(this.getPlayerData(ep));
-		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		NBTTagCompound nbt = ChromaResearchManager.instance.getRootNBTTag(ep);
 		NBTTagCompound tag = nbt.getCompoundTag(STRUCTURE_NBT_TAG);
 		boolean had = tag.getBoolean(e.name());
 		tag.setBoolean(e.name(), set);
@@ -965,6 +973,7 @@ public class ProgressionManager implements ProgressRegistry {
 			if (set)
 				MinecraftForge.EVENT_BUS.post(new ProgressionEvent(ep, e.name(), ResearchType.DIMSTRUCT));
 			ProgressionCacher.instance.updateProgressCache(ep);
+			ProgressionCacher.instance.updateBackup(ep);
 			return true;
 		}
 		return false;
@@ -980,7 +989,7 @@ public class ProgressionManager implements ProgressRegistry {
 	}
 
 	public Collection<CrystalElement> getStructuresFor(EntityPlayer ep) {
-		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep).getCompoundTag(STRUCTURE_NBT_TAG);
+		NBTTagCompound nbt = ChromaResearchManager.instance.getRootNBTTag(ep).getCompoundTag(STRUCTURE_NBT_TAG);
 		Collection<CrystalElement> c = new ArrayList();
 		for (Object o : nbt.func_150296_c()) {
 			String tag = (String)o;

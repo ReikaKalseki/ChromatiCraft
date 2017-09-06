@@ -211,7 +211,7 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 		int n = spreadSet.get(uid).size();
 		int amt = is.stackSize;
 		for (WorldLocation loc : spreadSet.get(uid)) {
-			TileEntityItemStand te = (TileEntityItemStand)loc.getTileEntity();
+			TileEntityItemStand te = (TileEntityItemStand)loc.getTileEntity(ep.worldObj);
 			if (te.inv[0] != null)
 				amt += te.inv[0].stackSize;
 		}

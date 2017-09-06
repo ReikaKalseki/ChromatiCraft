@@ -14,7 +14,9 @@ public enum LightType {
 
 	TARGET(0x00ff00),
 	BLOCK(0xff0000),
-	CANCEL(0x0000ff);
+	CANCEL(0x0000ff),
+	//SKIP(0xffff00),
+	;
 
 	public final int renderColor;
 

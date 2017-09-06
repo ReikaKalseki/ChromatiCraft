@@ -254,13 +254,15 @@ public class TileEntityMultiBuilder extends TileEntityChromaticBase implements L
 		Iterator<WorldLocation> it = cache.iterator();
 		while (it.hasNext()) {
 			WorldLocation loc = it.next();
-			TileEntity te = loc.getTileEntity();
-			if (te instanceof TileEntityMultiBuilder) {
-				((TileEntityMultiBuilder)te).checkAndBuild(world, x, y, z, b, meta, ep, is);
-			}
-			else {
-				it.remove();
-				ChromatiCraft.logger.logError("Incorrect tile ("+te+") @ "+loc+" in Multi Builder cache!?");
+			if (world.provider.dimensionId == loc.dimensionID) {
+				TileEntity te = loc.getTileEntity(world);
+				if (te instanceof TileEntityMultiBuilder) {
+					((TileEntityMultiBuilder)te).checkAndBuild(world, x, y, z, b, meta, ep, is);
+				}
+				else {
+					it.remove();
+					ChromatiCraft.logger.logError("Incorrect tile ("+te+") @ "+loc+" in Multi Builder cache!?");
+				}
 			}
 		}
 	}
@@ -269,14 +271,16 @@ public class TileEntityMultiBuilder extends TileEntityChromaticBase implements L
 		Iterator<WorldLocation> it = cache.iterator();
 		while (it.hasNext()) {
 			WorldLocation loc = it.next();
-			TileEntity te = loc.getTileEntity();
-			if (te instanceof TileEntityMultiBuilder) {
-				if (x != te.xCoord || y != te.yCoord || z != te.zCoord)
-					((TileEntityMultiBuilder)te).checkAndBreak(world, x, y, z, b, meta, ep);
-			}
-			else {
-				it.remove();
-				ChromatiCraft.logger.logError("Incorrect tile ("+te+") @ "+loc+" in Multi Builder cache!?");
+			if (world.provider.dimensionId == loc.dimensionID) {
+				TileEntity te = loc.getTileEntity(world);
+				if (te instanceof TileEntityMultiBuilder) {
+					if (x != te.xCoord || y != te.yCoord || z != te.zCoord)
+						((TileEntityMultiBuilder)te).checkAndBreak(world, x, y, z, b, meta, ep);
+				}
+				else {
+					it.remove();
+					ChromatiCraft.logger.logError("Incorrect tile ("+te+") @ "+loc+" in Multi Builder cache!?");
+				}
 			}
 		}
 	}

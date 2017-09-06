@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Maps.BlockMap;
@@ -122,7 +123,7 @@ public class ChromaHelpData {
 	}
 
 	public void markDiscovered(EntityPlayer ep, Block b, int meta) {
-		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		NBTTagCompound nbt = ChromaResearchManager.instance.getRootNBTTag(ep);
 		NBTTagCompound tag = nbt.getCompoundTag(NBT_TAG);
 		String sg = String.format("%d:%d", Block.getIdFromBlock(b), meta);
 		boolean has = tag.getBoolean(sg);
@@ -134,7 +135,7 @@ public class ChromaHelpData {
 	}
 
 	public boolean hasDiscovered(EntityPlayer ep, Block b, int meta) {
-		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		NBTTagCompound nbt = ChromaResearchManager.instance.getRootNBTTag(ep);
 		NBTTagCompound tag = nbt.getCompoundTag(NBT_TAG);
 		String sg = String.format("%d:%d", Block.getIdFromBlock(b), meta);
 		return tag.getBoolean(sg);

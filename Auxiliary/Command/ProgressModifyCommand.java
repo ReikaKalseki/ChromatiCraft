@@ -332,6 +332,7 @@ public class ProgressModifyCommand extends DragonCommandBase {
 					Collection<ChromaResearch> missing = new ArrayList(ChromaResearchManager.instance.getResearchForLevel(pl));
 					//ReikaJavaLibrary.pConsole(missing+" - "+cp+" = ");
 					missing.removeAll(cp);
+					ChromaResearchManager.instance.removeAllDummiedFragments(missing);
 					//ReikaJavaLibrary.pConsole(missing);
 					sendChatToSender(ics, "Can step to "+pl.post()+": "+pl.post().canProgressTo(ep)+" && "+missing.isEmpty());
 					sendChatToSender(ics, "Missing research for "+pl+": "+missing);

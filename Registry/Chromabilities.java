@@ -1371,7 +1371,7 @@ public enum Chromabilities implements Ability {
 		}
 	}
 
-	@ModDependent(ModList.FORESTRY)
+	//@ModDependent(ModList.FORESTRY)
 	private static void analyzeBees(EntityPlayer ep) {
 		int slot = (int)(ep.worldObj.getTotalWorldTime()%ep.inventory.mainInventory.length);
 		ItemStack is = ep.inventory.mainInventory[slot];

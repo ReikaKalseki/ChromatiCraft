@@ -208,11 +208,13 @@ public class TileEntityCloakingTower extends TileEntityChromaticBase implements 
 
 	public static boolean isPlayerCloaked(EntityPlayer ep) {
 		for (WorldLocation loc : cache) {
-			if (loc.getDistanceTo(ep) <= MAXRANGE) {
-				TileEntityCloakingTower te = (TileEntityCloakingTower)loc.getTileEntity();
-				if (te != null) {
-					if (te.isOwnedByPlayer(ep) && te.isActive()) {
-						return true;
+			if (loc.dimensionID == ep.worldObj.provider.dimensionId) {
+				if (loc.getDistanceTo(ep) <= MAXRANGE) {
+					TileEntityCloakingTower te = (TileEntityCloakingTower)loc.getTileEntity(ep.worldObj);
+					if (te != null) {
+						if (te.isOwnedByPlayer(ep) && te.isActive()) {
+							return true;
+						}
 					}
 				}
 			}

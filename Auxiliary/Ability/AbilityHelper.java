@@ -203,7 +203,8 @@ public class AbilityHelper {
 		progressMap.addValue(Chromabilities.GROWAURA, ProgressStage.RAINBOWLEAF);
 		progressMap.addValue(Chromabilities.MEINV, ProgressStage.DIMENSION);
 		progressMap.addValue(Chromabilities.MOBSEEK, ProgressStage.STRUCTCOMPLETE);
-		progressMap.addValue(Chromabilities.BEEALYZE, ProgressStage.HIVE);
+		if (ModList.FORESTRY.isLoaded())
+			progressMap.addValue(Chromabilities.BEEALYZE, ProgressStage.HIVE);
 		progressMap.addValue(Chromabilities.BEEALYZE, ProgressStage.LINK);
 		progressMap.addValue(Chromabilities.NUKER, ProgressStage.STRUCTCOMPLETE);
 

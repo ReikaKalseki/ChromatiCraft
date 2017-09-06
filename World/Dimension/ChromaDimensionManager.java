@@ -22,6 +22,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.BiomeDictionary;
@@ -31,6 +32,7 @@ import net.minecraftforge.common.DimensionManager;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome.ChromaDimensionSubBiome;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
@@ -59,8 +61,9 @@ import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -317,13 +320,27 @@ public class ChromaDimensionManager {
 			}
 			if (!flag) {
 			 */
-			ReikaItemHelper.dropItem(ep, held);
-			ReikaSoundHelper.playSoundAtEntity(ep.worldObj, ep, "random.explode");
-			ReikaParticleHelper.EXPLODE.spawnAt(ep);
-			ep.attackEntityFrom(DamageSource.generic, 1);
-			//}
-			ep.setCurrentItemOrArmor(0, null);
+
+			//ReikaItemHelper.dropItem(ep, held);
+
+			punishCheatingPlayer(ep);
 		}
+	}
+
+	//Make this HURT
+	public static void punishCheatingPlayer(EntityPlayer ep) {
+		ReikaSoundHelper.playSoundAtEntity(ep.worldObj, ep, "random.explode", 1, 1);
+		ReikaSoundHelper.playSoundAtEntity(ep.worldObj, ep, "random.explode", 1, 0.5F);
+		ReikaParticleHelper.EXPLODE.spawnAt(ep);
+		ep.attackEntityFrom(DamageSource.generic, ReikaRandomHelper.getRandomBetween(5, 10));
+		Vec3 v = ep.getLookVec();
+		ReikaEntityHelper.knockbackEntityFromPos(ep.posX+v.xCoord, ep.posY+v.yCoord-1.5, ep.posZ+v.zCoord, ep, 2.5);
+		ep.velocityChanged = true;
+		ep.fallDistance += 10;
+		//}
+		ep.setCurrentItemOrArmor(0, null); //destroy item
+
+		ProgressStage.STRUCTCHEAT.stepPlayerTo(ep);
 	}
 
 	public static DimensionStructureGenerator getStructurePlayerIsIn(EntityPlayer ep) {
@@ -343,25 +360,36 @@ public class ChromaDimensionManager {
 		playersInStructures.remove(ep);
 	}
 
+	private static void banBlock(Block b) {
+		if (b == null)
+			return;
+		BlockKey bk = new BlockKey(b);
+		bannedBlocks.add(bk);
+		Item i = Item.getItemFromBlock(b);
+		if (i != null)
+			bannedItems.add(new KeyedItemStack(i).setIgnoreMetadata(!bk.hasMetadata()).setSimpleHash(true));
+	}
+
 	static {
 		if (ModList.ENDERIO.isLoaded()) {
 			Block b = GameRegistry.findBlock(ModList.ENDERIO.modLabel, "blockTravelAnchor");
-			if (b != null)
-				bannedBlocks.add(new BlockKey(b));
+			banBlock(b);
 
 			b = GameRegistry.findBlock(ModList.ENDERIO.modLabel, "blockTelePad");
-			if (b != null)
-				bannedBlocks.add(new BlockKey(b));
+			banBlock(b);
 
 			Item i = GameRegistry.findItem(ModList.ENDERIO.modLabel, "itemTravelStaff");
 			if (i != null)
-				bannedItems.add(new KeyedItemStack(i));
+				bannedItems.add(new KeyedItemStack(i).setIgnoreNBT(true).setSimpleHash(true));
 		}
+
+		Item i = GameRegistry.findItem("GraviSuite", "vajra");
+		if (i != null)
+			bannedItems.add(new KeyedItemStack(i).setIgnoreNBT(true).setSimpleHash(true));
 
 		if (ModList.THAUMICTINKER.isLoaded()) {
 			Block b = GameRegistry.findBlock(ModList.THAUMICTINKER.modLabel, "warpGate");
-			if (b != null)
-				bannedBlocks.add(new BlockKey(b));
+			banBlock(b);
 		}
 	}
 

@@ -25,11 +25,11 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes.FabricationRecipe;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -78,17 +78,17 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 			this.onRecipeChanged();
 		}
 		else if (recipe == null || !ReikaItemHelper.matchStacks(recipe.output, out) || craftingTick == 0) {
-			ElementTagCompound tag = FabricationRecipes.recipes().getItemCost(out);
+			FabricationRecipe rec = FabricationRecipes.recipes().getItemRecipe(out);
 			FluidStack fs = FluidContainerRegistry.getFluidForFilledItem(out);
 			Fluid f = fs != null ? fs.getFluid() : null;
 			if (f != null) {
-				ElementTagCompound ftag = ItemMagicRegistry.instance.getFluidValue(f);
-				if (ftag != null)
-					tag = FabricationRecipes.recipes().processTag(ftag).scale(1/FabricationRecipes.SCALE);
+				rec = FabricationRecipes.recipes().getOrCreateFluidRecipe(out, f);
 			}
-			if (tag != null) {
-				recipe = f != null ? new FluidRecipe(tag, out, f) : new Recipe(tag, out);
-				this.onRecipeChanged();
+			if (rec != null) {
+				if (rec.hasProgress(this.getPlacer())) {
+					recipe = f != null ? new FluidRecipe(rec.getCost(), out, f) : new Recipe(rec.getCost(), out);
+					this.onRecipeChanged();
+				}
 			}
 		}
 		entity = recipe != null ? new InertItem(worldObj, recipe.output) : null;

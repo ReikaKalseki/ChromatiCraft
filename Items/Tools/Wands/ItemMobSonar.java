@@ -35,6 +35,8 @@ public class ItemMobSonar extends ItemWandBase {
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
 		if (world.isRemote)
 			this.doPing(world, ep);
+		else
+			this.drainPlayer(ep);
 		return is;
 	}
 

@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage.T
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
@@ -54,7 +55,6 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
-import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 
 public abstract class DimensionStructureGenerator implements TileCallback {
 
@@ -351,14 +351,14 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		}
 
 		public void markPlayerCompleted(EntityPlayer ep) {
-			NBTTagCompound tag = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+			NBTTagCompound tag = ChromaResearchManager.instance.getRootNBTTag(ep);
 			NBTTagCompound dat = tag.getCompoundTag(NBT_TAG);
 			dat.setBoolean("struct_"+this.ordinal(), true);
 			tag.setTag(NBT_TAG, dat);
 		}
 
 		public boolean hasPlayerCompleted(EntityPlayer ep) {
-			NBTTagCompound tag = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+			NBTTagCompound tag = ChromaResearchManager.instance.getRootNBTTag(ep);
 			NBTTagCompound dat = tag.getCompoundTag(NBT_TAG);
 			return dat.getBoolean("struct_"+this.ordinal());
 		}

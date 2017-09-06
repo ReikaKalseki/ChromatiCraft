@@ -57,15 +57,15 @@ public class TileEntityFluidDistributor extends TileEntityAreaDistributor implem
 		if (this.hasRedstoneSignal())
 			return 0;
 		this.addInput(new WorldLocation(this).move(from, 1));
-		return this.tryDistributeFluid(fs, simulate);
+		return this.tryDistributeFluid(worldObj, fs, simulate);
 	}
 
-	private int tryDistributeFluid(FluidStack fs, boolean simulate) {
+	private int tryDistributeFluid(World world, FluidStack fs, boolean simulate) {
 		int add = 0;
 		Iterator<WorldLocation> it = this.getTargets();
 		while (it.hasNext()) {
 			WorldLocation loc = it.next();
-			TileEntity te = loc.getTileEntity();
+			TileEntity te = loc.getTileEntity(world);
 			if (te instanceof IFluidHandler) {
 				int give = this.tryGiveFluid(fs, simulate, (IFluidHandler)te);
 				if (give > 0) {
