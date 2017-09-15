@@ -9,13 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Networking;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
@@ -34,7 +35,9 @@ import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModRegistry.ModWoodList;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -255,7 +258,16 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 
 	@Override
 	protected boolean checkForStructure() {
-		return ChromaStructures.getWeakRepeaterStructure(worldObj, xCoord, yCoord, zCoord).matchInWorld();
+		ForgeDirection dir = facing;
+		World world = worldObj;
+		int x = xCoord;
+		int y = yCoord;
+		int z = zCoord;
+		Block b = world.getBlock(x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ);
+		int meta = world.getBlockMetadata(x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ);
+		ReikaTreeHelper tree = ReikaTreeHelper.getTree(b, meta);
+		ModWoodList mod = ModWoodList.getModWood(b, meta);
+		return tree != null || (mod != null && (mod.canBePlacedSideways() || dir.offsetY != 0));
 	}
 
 	@Override

@@ -788,7 +788,7 @@ public enum ChromaTiles implements TileEnum {
 	}
 
 	public boolean isRotateableRepeater() {
-		return this.isRepeater() && TileEntityCrystalRepeater.class.isAssignableFrom(tile) && this != BROADCAST && this != WEAKREPEATER;
+		return this.isRepeater() && TileEntityCrystalRepeater.class.isAssignableFrom(tile) && this != BROADCAST;
 	}
 
 	public boolean isTurbochargeableRepeater() {

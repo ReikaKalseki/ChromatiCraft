@@ -97,6 +97,11 @@ public class BridgeGenerator extends DimensionStructureGenerator {
 		return false;
 	}
 
+	@Override
+	public void openStructure(World world) {
+
+	}
+
 	public boolean isKeyActive(UUID uid) {
 		return modes.get(uid).compare(activeSwitches.get(uid), totalSwitches.get(uid));
 	}

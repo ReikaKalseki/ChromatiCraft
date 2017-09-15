@@ -575,7 +575,7 @@
 			You are already very familiar with the fact that certain constructs require energy. Most draw that energy directly off the repeater network, and some use the relay system. However, others seem to need to be in proximity to a node of sorts, which weakly radiates energy around it. It even appears to be capable of passing through solid barriers, though it unsuprisingly is rather less efficient when it does.
 		</desc>
 		<note>
-
+			Can be built on a %s to broadcast power to other %ss
 		</note>
 	</wireless>
 	<areabreaker>

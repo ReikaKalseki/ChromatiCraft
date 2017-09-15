@@ -168,6 +168,13 @@ public class WaterPuzzleGenerator extends DimensionStructureGenerator {
 	}
 
 	@Override
+	public void openStructure(World world) {
+		for (WaterFloor f : levels) {
+			f.setDoorStates(world, true);
+		}
+	}
+
+	@Override
 	protected void clearCaches() {
 		levels.clear();
 	}

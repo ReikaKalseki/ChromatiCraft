@@ -299,7 +299,7 @@ public class MonumentCompletionRitual {
 		if (running)
 			runningRituals--;
 		((TileEntityStructControl)world.getTileEntity(x, y, z)).endMonumentRitual();
-		ChromaSounds.ERROR.playSoundAtBlockNoAttenuation(world, x, y, z, 1, 0.75F, Integer.MAX_VALUE);
+		ChromaSounds.ERROR.playSoundNoAttenuation(world, x, y, z, 1, 0.75F, Integer.MAX_VALUE);
 		if (!world.isRemote)
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.RESETMONUMENT.ordinal(), packetTarget, x, y, z);
 	}

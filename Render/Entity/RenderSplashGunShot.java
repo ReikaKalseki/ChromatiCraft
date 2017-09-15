@@ -20,6 +20,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
@@ -36,10 +37,23 @@ public class RenderSplashGunShot extends Render {
 		float v = icon.getMinV();
 		float du = icon.getMaxU();
 		float dv = icon.getMaxV();
+		IIcon icon2 = ChromaIcons.ECLIPSEFLARE.getIcon();
+		float u2 = icon2.getMinU();
+		float v2 = icon2.getMinV();
+		float du2 = icon2.getMaxU();
+		float dv2 = icon2.getMaxV();
+		IIcon icon3 = ChromaIcons.FLARE7.getIcon();
+		float u3 = icon3.getMinU();
+		float v3 = icon3.getMinV();
+		float du3 = icon3.getMaxU();
+		float dv3 = icon3.getMaxV();
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		GL11.glPushMatrix();
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		BlendMode.ADDITIVEDARK.apply();
+		GL11.glShadeModel(GL11.GL_SMOOTH);
+		GL11.glDepthMask(false);
 		GL11.glTranslated(par2, par4, par6);
 		if (!e.isDead) {
 			RenderManager rm = RenderManager.instance;
@@ -53,7 +67,9 @@ public class RenderSplashGunShot extends Render {
 		//GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
 		v5.startDrawingQuads();
 		v5.setBrightness(240);
-		double s1 = 0.5;
+		double s1 = 0.75;
+		double s2 = 1.25;
+		double s3 = 0.75;
 		double d = 0.001;
 		int c1 = 0xffffff;//eb.getRenderColor();
 		v5.setColorOpaque_I(c1);
@@ -61,10 +77,28 @@ public class RenderSplashGunShot extends Render {
 		v5.addVertexWithUV(s1, -s1, 0, du, v);
 		v5.addVertexWithUV(s1, s1, 0, du, dv);
 		v5.addVertexWithUV(-s1, s1, 0, u, dv);
+
+		v5.setColorOpaque_I(0xffffff);
+		v5.addVertexWithUV(-s3, -s3, 0, u3, v3);
+		v5.addVertexWithUV(s3, -s3, 0, du3, v3);
+		v5.addVertexWithUV(s3, s3, 0, du3, dv3);
+		v5.addVertexWithUV(-s3, s3, 0, u3, dv3);
+
+		double mod = 75+(e.getEntityId())%75;
+		double f1 = 0.625+0.375*Math.sin((System.currentTimeMillis()/mod)%360);
+		double f2 = 0.625+0.375*Math.sin((System.currentTimeMillis()/mod*1.8)%360);
+		double f3 = 0.625+0.375*Math.sin((System.currentTimeMillis()/mod*2.3)%360);
+		double f4 = 0.625+0.375*Math.sin((System.currentTimeMillis()/mod*0.7)%360);
+		v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(0xffffff, (float)f1));
+		v5.addVertexWithUV(-s2, -s2, -0.05, u2, v2);
+		v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(0xffffff, (float)f2));
+		v5.addVertexWithUV(s2, -s2, -0.05, du2, v2);
+		v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(0xffffff, (float)f3));
+		v5.addVertexWithUV(s2, s2, -0.05, du2, dv2);
+		v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(0xffffff, (float)f4));
+		v5.addVertexWithUV(-s2, s2, -0.05, u2, dv2);
 		v5.draw();
-		GL11.glEnable(GL11.GL_LIGHTING);
-		GL11.glDisable(GL11.GL_BLEND);
-		BlendMode.DEFAULT.apply();
+		GL11.glPopAttrib();
 		GL11.glPopMatrix();
 	}
 

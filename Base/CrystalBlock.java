@@ -199,7 +199,7 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 		}
 	}
 
-	public void updateEffects(World world, int x, int y, int z) {
+	public final void updateEffects(World world, int x, int y, int z) {
 		if (!world.isRemote) {
 			CrystalElement color = CrystalElement.elements[world.getBlockMetadata(x, y, z)];
 			if (this.shouldMakeNoise()) {
@@ -216,7 +216,7 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 		}
 	}
 
-	private void applyEffect(CrystalElement color, List<EntityLivingBase> li, int x, int y, int z, int r) {
+	public final void applyEffect(CrystalElement color, List<EntityLivingBase> li, int x, int y, int z, int r) {
 		int level = this.getPotionLevel(color);
 		int dura = this.getDuration(color);
 		boolean boost = level > 0;

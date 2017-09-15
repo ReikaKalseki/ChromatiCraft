@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Registry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -25,6 +26,8 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
+import Reika.DragonAPI.Interfaces.Registry.OreType;
+import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
 import Reika.DragonAPI.ModRegistry.ModOreList;
 
 import com.google.common.collect.HashBiMap;
@@ -36,6 +39,7 @@ public class ItemMagicRegistry {
 
 	private final HashBiMap<KeyedItemStack, ElementTagCompound> data = HashBiMap.create();
 	private final HashBiMap<Fluid, ElementTagCompound> fluidData = HashBiMap.create();
+	private final HashMap<OreType, ElementTagCompound> cachedOreNames = new HashMap();
 
 	private ItemMagicRegistry() {
 		this.addElement("stone", CrystalElement.RED, 1);
@@ -61,78 +65,75 @@ public class ItemMagicRegistry {
 		this.addElement(new ItemStack(Blocks.dirt, 1, 2), CrystalElement.BROWN, 1);
 		this.addElement(new ItemStack(Blocks.dirt, 1, 2), CrystalElement.GREEN, 1);
 
-		this.addElement("gemDiamond", CrystalElement.BROWN, 6);
-		this.addElement("gemDiamond", CrystalElement.PURPLE, 4);
-		this.addElement("gemDiamond", CrystalElement.WHITE, 1);
-		this.addElement("gemEmerald", CrystalElement.BROWN, 6);
-		this.addElement("gemEmerald", CrystalElement.PURPLE, 4);
-		this.addElement("gemEmerald", CrystalElement.WHITE, 1);
-		this.addElement("gemQuartz", CrystalElement.BROWN, 4);
-		this.addElement("gemQuartz", CrystalElement.YELLOW, 2);
-		this.addElement("ingotIron", CrystalElement.BROWN, 3);
-		this.addElement("ingotGold", CrystalElement.BROWN, 4);
-		this.addElement("ingotGold", CrystalElement.PURPLE, 2);
-		this.addElement(Items.coal, CrystalElement.YELLOW, 3);
-		this.addElement(Items.coal, CrystalElement.ORANGE, 3);
-		this.addElement("redstone", CrystalElement.YELLOW, 2);
-		this.addElement("redstone", CrystalElement.LIME, 2);
-		this.addElement("dustRedstone", CrystalElement.YELLOW, 2);
-		this.addElement("dustRedstone", CrystalElement.LIME, 2);
-		this.addElement("dustGlowstone", CrystalElement.BLUE, 4);
-		this.addElement(ModOreList.CERTUSQUARTZ.getProductOreDictName(), CrystalElement.BROWN, 3);
-		this.addElement(ModOreList.CERTUSQUARTZ.getProductOreDictName(), CrystalElement.WHITE, 2);
-		this.addElement(ModOreList.APATITE.getProductOreDictName(), CrystalElement.BROWN, 2);
-		this.addElement(ModOreList.APATITE.getProductOreDictName(), CrystalElement.WHITE, 1);
-		this.addElement(ModOreList.SULFUR.getProductOreDictName(), CrystalElement.BROWN, 2);
-		this.addElement(ModOreList.SULFUR.getProductOreDictName(), CrystalElement.ORANGE, 2);
-		this.addElement(ModOreList.NIKOLITE.getProductOreDictName(), CrystalElement.BROWN, 2);
-		this.addElement(ModOreList.NIKOLITE.getProductOreDictName(), CrystalElement.YELLOW, 2);
+		this.addOreElement(ReikaOreHelper.DIAMOND, CrystalElement.BROWN, 6);
+		this.addOreElement(ReikaOreHelper.DIAMOND, CrystalElement.PURPLE, 4);
+		this.addOreElement(ReikaOreHelper.DIAMOND, CrystalElement.WHITE, 1);
+		this.addOreElement(ReikaOreHelper.EMERALD, CrystalElement.BROWN, 6);
+		this.addOreElement(ReikaOreHelper.EMERALD, CrystalElement.PURPLE, 4);
+		this.addOreElement(ReikaOreHelper.EMERALD, CrystalElement.WHITE, 1);
+		this.addOreElement(ReikaOreHelper.QUARTZ, CrystalElement.BROWN, 4);
+		this.addOreElement(ReikaOreHelper.QUARTZ, CrystalElement.YELLOW, 2);
+		this.addOreElement(ReikaOreHelper.IRON, CrystalElement.BROWN, 3);
+		this.addOreElement(ReikaOreHelper.GOLD, CrystalElement.BROWN, 4);
+		this.addOreElement(ReikaOreHelper.GOLD, CrystalElement.PURPLE, 2);
+		this.addOreElement(ReikaOreHelper.COAL, CrystalElement.YELLOW, 3);
+		this.addOreElement(ReikaOreHelper.COAL, CrystalElement.ORANGE, 3);
+		this.addOreElement(ReikaOreHelper.REDSTONE, CrystalElement.YELLOW, 2);
+		this.addOreElement(ReikaOreHelper.REDSTONE, CrystalElement.LIME, 2);
+		this.addOreElement(ModOreList.CERTUSQUARTZ, CrystalElement.BROWN, 3);
+		this.addOreElement(ModOreList.CERTUSQUARTZ, CrystalElement.WHITE, 2);
+		this.addOreElement(ModOreList.APATITE, CrystalElement.BROWN, 2);
+		this.addOreElement(ModOreList.APATITE, CrystalElement.WHITE, 1);
+		this.addOreElement(ModOreList.SULFUR, CrystalElement.BROWN, 2);
+		this.addOreElement(ModOreList.SULFUR, CrystalElement.ORANGE, 2);
+		this.addOreElement(ModOreList.NIKOLITE, CrystalElement.BROWN, 2);
+		this.addOreElement(ModOreList.NIKOLITE, CrystalElement.YELLOW, 2);
 
-		this.addElement("ingotCopper", CrystalElement.BROWN, 2);
-		this.addElement("ingotTin", CrystalElement.BROWN, 2);
-		this.addElement("ingotSilver", CrystalElement.BROWN, 3);
-		this.addElement("ingotLead", CrystalElement.BROWN, 3);
-		this.addElement("ingotLead", CrystalElement.RED, 1);
-		this.addElement("ingotNickel", CrystalElement.BROWN, 2);
-		this.addElement("ingotTitanium", CrystalElement.BROWN, 3);
-		this.addElement("ingotTitanium", CrystalElement.RED, 1);
-		this.addElement("ingotAluminum", CrystalElement.BROWN, 2);
-		this.addElement("ingotZinc", CrystalElement.BROWN, 2);
-		this.addElement("ingotUranium", CrystalElement.BROWN, 4);
-		this.addElement("ingotUranium", CrystalElement.GRAY, 3);
-		this.addElement("ingotUranium", CrystalElement.YELLOW, 3);
-		this.addElement("ingotIridium", CrystalElement.BROWN, 8);
-		this.addElement("ingotIridium", CrystalElement.WHITE, 2);
-		this.addElement("ingotIridium", CrystalElement.PURPLE, 8);
-		this.addElement("ingotPlatinum", CrystalElement.BROWN, 6);
-		this.addElement("ingotPlatinum", CrystalElement.WHITE, 1);
-		this.addElement("ingotPlatinum", CrystalElement.PURPLE, 6);
-		this.addElement("gemRuby", CrystalElement.BROWN, 6);
-		this.addElement("gemRuby", CrystalElement.PURPLE, 5);
-		this.addElement("gemRuby", CrystalElement.WHITE, 2);
-		this.addElement(ModOreList.DRACONIUM.getProductOreDictName(), CrystalElement.BROWN, 6);
-		this.addElement(ModOreList.DRACONIUM.getProductOreDictName(), CrystalElement.WHITE, 1);
-		this.addElement(ModOreList.DRACONIUM.getProductOreDictName(), CrystalElement.PURPLE, 6);
-		this.addElement(ModOreList.AMETHYST.getProductOreDictName(), CrystalElement.BROWN, 6);
-		this.addElement(ModOreList.AMETHYST.getProductOreDictName(), CrystalElement.WHITE, 2);
-		this.addElement(ModOreList.AMETHYST.getProductOreDictName(), CrystalElement.PURPLE, 6);
-		this.addElement(ModOreList.AMETHYST.getProductOreDictName(), CrystalElement.MAGENTA, 3);
+		this.addOreElement(ModOreList.COPPER, CrystalElement.BROWN, 2);
+		this.addOreElement(ModOreList.TIN, CrystalElement.BROWN, 2);
+		this.addOreElement(ModOreList.SILVER, CrystalElement.BROWN, 3);
+		this.addOreElement(ModOreList.LEAD, CrystalElement.BROWN, 3);
+		this.addOreElement(ModOreList.LEAD, CrystalElement.RED, 1);
+		this.addOreElement(ModOreList.NICKEL, CrystalElement.BROWN, 2);
+		this.addOreElement(ModOreList.TITANIUM, CrystalElement.BROWN, 3);
+		this.addOreElement(ModOreList.TITANIUM, CrystalElement.RED, 1);
+		this.addOreElement(ModOreList.ALUMINUM, CrystalElement.BROWN, 2);
+		this.addOreElement(ModOreList.ZINC, CrystalElement.BROWN, 2);
+		this.addOreElement(ModOreList.URANIUM, CrystalElement.BROWN, 4);
+		this.addOreElement(ModOreList.URANIUM, CrystalElement.GRAY, 3);
+		this.addOreElement(ModOreList.URANIUM, CrystalElement.YELLOW, 3);
+		this.addOreElement(ModOreList.IRIDIUM, CrystalElement.BROWN, 8);
+		this.addOreElement(ModOreList.IRIDIUM, CrystalElement.WHITE, 2);
+		this.addOreElement(ModOreList.IRIDIUM, CrystalElement.PURPLE, 8);
+		this.addOreElement(ModOreList.PLATINUM, CrystalElement.BROWN, 6);
+		this.addOreElement(ModOreList.PLATINUM, CrystalElement.WHITE, 1);
+		this.addOreElement(ModOreList.PLATINUM, CrystalElement.PURPLE, 6);
+		this.addOreElement(ModOreList.RUBY, CrystalElement.BROWN, 6);
+		this.addOreElement(ModOreList.RUBY, CrystalElement.PURPLE, 5);
+		this.addOreElement(ModOreList.RUBY, CrystalElement.WHITE, 2);
+		this.addOreElement(ModOreList.DRACONIUM, CrystalElement.BROWN, 6);
+		this.addOreElement(ModOreList.DRACONIUM, CrystalElement.WHITE, 1);
+		this.addOreElement(ModOreList.DRACONIUM, CrystalElement.PURPLE, 6);
+		this.addOreElement(ModOreList.AMETHYST, CrystalElement.BROWN, 6);
+		this.addOreElement(ModOreList.AMETHYST, CrystalElement.WHITE, 2);
+		this.addOreElement(ModOreList.AMETHYST, CrystalElement.PURPLE, 6);
+		this.addOreElement(ModOreList.AMETHYST, CrystalElement.MAGENTA, 3);
 
-		this.addElement(ModOreList.INFUSEDAIR.getProductOreDictName(), CrystalElement.BLACK, 4);
-		this.addElement(ModOreList.INFUSEDAIR.getProductOreDictName(), CrystalElement.WHITE, 2);
-		this.addElement(ModOreList.INFUSEDEARTH.getProductOreDictName(), CrystalElement.BLACK, 2);
-		this.addElement(ModOreList.INFUSEDEARTH.getProductOreDictName(), CrystalElement.GREEN, 4);
-		this.addElement(ModOreList.INFUSEDWATER.getProductOreDictName(), CrystalElement.BLACK, 2);
-		this.addElement(ModOreList.INFUSEDWATER.getProductOreDictName(), CrystalElement.CYAN, 4);
-		this.addElement(ModOreList.INFUSEDFIRE.getProductOreDictName(), CrystalElement.BLACK, 2);
-		this.addElement(ModOreList.INFUSEDFIRE.getProductOreDictName(), CrystalElement.ORANGE, 4);
-		this.addElement(ModOreList.INFUSEDENTROPY.getProductOreDictName(), CrystalElement.BLACK, 2);
-		this.addElement(ModOreList.INFUSEDENTROPY.getProductOreDictName(), CrystalElement.LIGHTGRAY, 4);
-		this.addElement(ModOreList.INFUSEDORDER.getProductOreDictName(), CrystalElement.BLACK, 2);
-		this.addElement(ModOreList.INFUSEDORDER.getProductOreDictName(), CrystalElement.WHITE, 4);
+		this.addOreElement(ModOreList.INFUSEDAIR, CrystalElement.BLACK, 4);
+		this.addOreElement(ModOreList.INFUSEDAIR, CrystalElement.WHITE, 2);
+		this.addOreElement(ModOreList.INFUSEDEARTH, CrystalElement.BLACK, 2);
+		this.addOreElement(ModOreList.INFUSEDEARTH, CrystalElement.GREEN, 4);
+		this.addOreElement(ModOreList.INFUSEDWATER, CrystalElement.BLACK, 2);
+		this.addOreElement(ModOreList.INFUSEDWATER, CrystalElement.CYAN, 4);
+		this.addOreElement(ModOreList.INFUSEDFIRE, CrystalElement.BLACK, 2);
+		this.addOreElement(ModOreList.INFUSEDFIRE, CrystalElement.ORANGE, 4);
+		this.addOreElement(ModOreList.INFUSEDENTROPY, CrystalElement.BLACK, 2);
+		this.addOreElement(ModOreList.INFUSEDENTROPY, CrystalElement.LIGHTGRAY, 4);
+		this.addOreElement(ModOreList.INFUSEDORDER, CrystalElement.BLACK, 2);
+		this.addOreElement(ModOreList.INFUSEDORDER, CrystalElement.WHITE, 4);
 
-		this.addElement(ModOreList.FLUORITE.getProductOreDictName(), CrystalElement.WHITE, 2);
-		this.addElement(ModOreList.CALCITE.getProductOreDictName(), CrystalElement.WHITE, 2);
+		this.addOreElement(ModOreList.FLUORITE, CrystalElement.WHITE, 2);
+		this.addOreElement(ModOreList.CALCITE, CrystalElement.WHITE, 2);
 
 		this.addElement(Blocks.sand, CrystalElement.BROWN, 1);
 		this.addElement(Blocks.grass, CrystalElement.GREEN, 1);
@@ -154,6 +155,7 @@ public class ItemMagicRegistry {
 		this.addElement(Blocks.obsidian, CrystalElement.BROWN, 5);
 		this.addElement(Blocks.obsidian, CrystalElement.RED, 5);
 		this.addElement(Blocks.sandstone, CrystalElement.BROWN, 2);
+		this.addElement("glowstone", CrystalElement.BLUE, 4);
 
 		this.addElement(Blocks.tallgrass, CrystalElement.GREEN, 2);
 		this.addElement(Blocks.waterlily, CrystalElement.GREEN, 3);
@@ -189,6 +191,7 @@ public class ItemMagicRegistry {
 		this.addElement(Blocks.web, CrystalElement.LIGHTGRAY, 1);
 		this.addElement(Blocks.web, CrystalElement.LIME, 1);
 		this.addElement(Items.flint, CrystalElement.BROWN, 1);
+
 		this.addElement(Items.string, CrystalElement.GREEN, 1);
 		this.addElement(Items.magma_cream, CrystalElement.ORANGE, 3);
 		this.addElement(Items.magma_cream, CrystalElement.RED, 4);
@@ -232,33 +235,12 @@ public class ItemMagicRegistry {
 		this.addElement("rodBasalz", CrystalElement.BROWN, 4);
 		this.addElement("rodBasalz", CrystalElement.GREEN, 1);
 		this.addElement("rodBasalz", CrystalElement.PINK, 2);
-		/*
-		this.addElement(Items.record_11, new AspectList().add(Aspect.SENSES, 4).add(Aspect.AIR, 4).add(Aspect.GREED, 4));
-		this.addElement(Items.record_13, new AspectList().add(Aspect.SENSES, 4).add(Aspect.AIR, 4).add(Aspect.WATER, 4).add(Aspect.GREED, 4));
-		this.addElement(Items.record_cat, new AspectList().add(Aspect.SENSES, 4).add(Aspect.AIR, 4).add(Aspect.BEAST, 4).add(Aspect.GREED, 4));
-		this.addElement(Items.record_chirp, new AspectList().add(Aspect.SENSES, 4).add(Aspect.AIR, 4).add(Aspect.EARTH, 4).add(Aspect.GREED, 4));
-		this.addElement(Items.record_far, new AspectList().add(Aspect.SENSES, 4).add(Aspect.AIR, 4).add(Aspect.ELDRITCH, 4).add(Aspect.GREED, 4));
-		this.addElement(Items.record_mall, new AspectList().add(Aspect.SENSES, 4).add(Aspect.AIR, 4).add(Aspect.MAN, 4).add(Aspect.GREED, 4));
-		this.addElement(Items.record_mellohi, new AspectList().add(Aspect.SENSES, 4).add(Aspect.AIR, 4).add(Aspect.CRAFT, 4).add(Aspect.GREED, 4));
-		this.addElement(Items.record_stal, new AspectList().add(Aspect.SENSES, 4).add(Aspect.AIR, 4).add(Aspect.DARKNESS, 4).add(Aspect.GREED, 4));
-		this.addElement(Items.record_strad, new AspectList().add(Aspect.SENSES, 4).add(Aspect.AIR, 4).add(Aspect.MECHANISM, 4).add(Aspect.GREED, 4));
-		this.addElement(Items.record_ward, new AspectList().add(Aspect.SENSES, 4).add(Aspect.AIR, 4).add(Aspect.MAGIC, 4).add(Aspect.GREED, 4));
-		this.addElement(Items.record_blocks, new AspectList().add(Aspect.SENSES, 4).add(Aspect.AIR, 4).add(Aspect.TOOL, 4).add(Aspect.GREED, 4));
-		this.addElement(Items.record_wait, new AspectList().add(Aspect.SENSES, 4).add(Aspect.AIR, 4).add(Aspect.TRAP, 4).add(Aspect.GREED, 4));
-		 */
+
 		this.addElement(Items.nether_star, CrystalElement.PINK, 8);
 		this.addElement(Items.nether_star, CrystalElement.BLACK, 4);
 
-		//this.addElement(Blocks.dragon_egg, new AspectList().add(Aspect.ELDRITCH, 8).add(Aspect.BEAST, 8).add(Aspect.MAGIC, 8));
-		//this.addElement(Blocks.end_portal_frame, new AspectList().add(Aspect.ELDRITCH, 4).add(Aspect.MECHANISM, 4).add(Aspect.TRAVEL, 4));
-		//this.addElement(Blocks.mob_spawner, new AspectList().add(Aspect.BEAST, 4).add(Aspect.TRAVEL, 4).add(Aspect.UNDEAD, 4).add(Aspect.MAGIC, 4));
-
 		this.addElement(Items.golden_apple, CrystalElement.MAGENTA, 8);
 		this.addElement(Items.golden_apple, CrystalElement.BROWN, 2);
-
-		//this.addElement(Blocks.piston, new AspectList().add(Aspect.MECHANISM, 2).add(Aspect.MOTION, 4));
-
-		//this.addElement(Blocks.beacon, new AspectList().add(Aspect.AURA, 2).add(Aspect.MAGIC, 2).add(Aspect.EXCHANGE, 2));
 
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement e = CrystalElement.elements[i];
@@ -296,6 +278,11 @@ public class ItemMagicRegistry {
 		this.addElement(ChromatiCraft.luma, CrystalElement.WHITE, 4);
 		this.addElement(ChromatiCraft.luma, CrystalElement.BLACK, 4);
 
+		this.addElement(ChromatiCraft.lumen, CrystalElement.CYAN, 2);
+		this.addElement(ChromatiCraft.lumen, CrystalElement.WHITE, 2);
+		this.addElement(ChromatiCraft.lumen, CrystalElement.BLACK, 4);
+		this.addElement(ChromatiCraft.lumen, CrystalElement.MAGENTA, 3);
+
 		this.addElement(FluidRegistry.getFluid("ender"), CrystalElement.CYAN, 1);
 		this.addElement(FluidRegistry.getFluid("ender"), CrystalElement.PINK, 1);
 		this.addElement(FluidRegistry.getFluid("ender"), CrystalElement.LIME, 5);
@@ -313,6 +300,24 @@ public class ItemMagicRegistry {
 
 		this.addElement(FluidRegistry.getFluid("milk"), CrystalElement.CYAN, 2);
 		this.addElement(FluidRegistry.getFluid("milk"), CrystalElement.GREEN, 3);
+	}
+
+	private void addOreElement(OreType ore, CrystalElement e, int amt) {
+		for (String s : ore.getOreDictNames()) {
+			this.addElement(s, e, amt);
+		}
+		this.addElement(ore.getProductOreDictName(), e, amt);
+		ElementTagCompound tag = cachedOreNames.get(ore);
+		if (tag == null) {
+			tag = new ElementTagCompound();
+			cachedOreNames.put(ore, tag);
+		}
+		tag.setTag(e, amt);
+	}
+
+	public ElementTagCompound getValueForOreType(OreType ore) {
+		ElementTagCompound tag = cachedOreNames.get(ore);
+		return tag != null ? tag.copy() : null;
 	}
 
 	private void addElement(String s, CrystalElement e, int amt) {

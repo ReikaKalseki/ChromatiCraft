@@ -144,7 +144,7 @@ public enum ChromaResearch implements ProgressElement {
 	CHROMAFLOWER(	ChromaTiles.CHROMAFLOWER, 	ResearchLevel.BASICCRAFT),
 	COLLECTOR(		ChromaTiles.COLLECTOR, 		ResearchLevel.BASICCRAFT),
 	BREWER(			ChromaTiles.BREWER, 		ResearchLevel.BASICCRAFT),
-	RITUALTABLE(	ChromaTiles.RITUAL, 		ResearchLevel.ENERGYEXPLORE),
+	RITUALTABLE(	ChromaTiles.RITUAL, 		ResearchLevel.CHARGESELF),
 	CASTTABLE(		ChromaTiles.TABLE, 			ResearchLevel.ENTRY),
 	BEACON(			ChromaTiles.BEACON, 		ResearchLevel.ENDGAME),
 	ITEMCOLLECTOR(	ChromaTiles.ITEMCOLLECTOR, 	ResearchLevel.PYLONCRAFT),

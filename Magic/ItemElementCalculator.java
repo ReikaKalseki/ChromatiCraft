@@ -37,6 +37,7 @@ import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import thaumcraft.api.ThaumcraftApi;
@@ -64,6 +65,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
+import Reika.DragonAPI.Interfaces.Registry.OreType;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.RotaryCraft.Auxiliary.RecipeManagers.WorktableRecipes;
@@ -545,7 +547,18 @@ public class ItemElementCalculator {
 
 		tag = new ElementTagCompound();
 
-		if (is.getItem().getUnlocalizedName().contains("gt.metatool")) { //hopefully avoid deep recursion
+		int[] ids = OreDictionary.getOreIDs(is);
+		for (int i = 0; i < ids.length; i++) {
+			String name = OreDictionary.getOreName(ids[i]);
+			OreType ore = ReikaItemHelper.parseOreTypeName(name);
+			if (ore != null) {
+				ElementTagCompound tag2 = ItemMagicRegistry.instance.getValueForOreType(ore);
+				if (tag2 != null)
+					tag.addButMinimizeWith(tag2);
+			}
+		}
+
+		if (!tag.isEmpty() || is.getItem().getUnlocalizedName().contains("gt.metatool")) { //hopefully avoid deep recursion
 			return tag;
 		}
 

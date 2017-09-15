@@ -249,15 +249,15 @@ public class LocksGenerator extends DimensionStructureGenerator {
 	}
 
 	public int getWhiteLock(int channel) {
-		return whiteLock[channel];
+		return forcedOpen() ? 1 : whiteLock[channel];
 	}
 
 	public int getColorCode(int channel, CrystalElement e) {
-		return keyCodes[channel][e.ordinal()];
+		return forcedOpen() ? 1 : keyCodes[channel][e.ordinal()];
 	}
 
 	public int getGateCode(int channel) {
-		return gateCodes[channel];
+		return forcedOpen() ? 0 : gateCodes[channel];
 	}
 
 	public void freezeLocks(World world, int structIndex, int time) {
@@ -293,5 +293,10 @@ public class LocksGenerator extends DimensionStructureGenerator {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public void openStructure(World world) {
+		this.updateTiles(world, -1);
 	}
 }

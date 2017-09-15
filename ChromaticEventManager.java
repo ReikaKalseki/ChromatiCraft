@@ -115,6 +115,7 @@ import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Artefact.UABombingEffects;
 import Reika.ChromatiCraft.Magic.Artefact.UATrade;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAggroMask;
+import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentBossKill;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentPhasingSequence;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentUseRepair;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentWeaponAOE;
@@ -124,6 +125,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaEnchants;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -182,6 +184,7 @@ import Reika.DragonAPI.Instantiable.Event.SlotEvent.AddToSlotEvent;
 import Reika.DragonAPI.Instantiable.Event.SlotEvent.RemoveFromSlotEvent;
 import Reika.DragonAPI.Instantiable.Event.VillagerTradeEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.SinglePlayerLogoutEvent;
+import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -189,6 +192,7 @@ import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -419,7 +423,7 @@ public class ChromaticEventManager {
 	public void buyUnknownArtefact(VillagerTradeEvent evt) {
 		if (evt.trade instanceof UATrade) {
 			if (ReikaRandomHelper.doWithChance(UABombingEffects.TRADE_BOMBING_CHANCE))
-				UABombingEffects.instance.trigger(evt.villager);
+				UABombingEffects.instance.trigger((Entity)evt.villager);
 		}
 	}
 
@@ -580,6 +584,19 @@ public class ChromaticEventManager {
 		if (evt.entityLiving instanceof EntityGhast && evt.logic.getSpawnerY() > 129) {
 			if (evt.entityLiving.worldObj.getCollidingBoundingBoxes(evt.entityLiving, evt.entityLiving.boundingBox).isEmpty())
 				evt.setResult(Result.ALLOW);
+		}
+	}
+
+	@SubscribeEvent
+	public void banDimensionSpells(EntityJoinWorldEvent evt) {
+		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			Entity e = evt.entity;
+			String n = e.getClass().getName();
+			if (n.equals("am2.entities.EntitySpellProjectile") || n.equals("am2.entities.EntitySpellEffect")) {
+				ChromaSounds.FAIL.playSound(e, 1, 1);
+				ReikaPacketHelper.sendPositionPacket(ChromatiCraft.packetChannel, ChromaPackets.SPELLFAIL.ordinal(), e, new PacketTarget.RadiusTarget(e, 32));
+				evt.setCanceled(true);
+			}
 		}
 	}
 
@@ -782,6 +799,33 @@ public class ChromaticEventManager {
 					int rep = EnchantmentUseRepair.getRepairedDurability(weapon, level, evt.ammount);
 					weapon.setItemDamage(weapon.getItemDamage()-rep);
 					evt.ammount *= Math.pow(0.9875, rep);
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void applyBossKill(LivingAttackEvent evt) {
+		DamageSource src = evt.source;
+		if (src.getEntity() instanceof EntityPlayer) {
+			EntityPlayer ep = (EntityPlayer)src.getEntity();
+			EntityLivingBase mob = evt.entityLiving;
+			ItemStack weapon = ep.getCurrentEquippedItem();
+			if (weapon != null) {
+				int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.BOSSKILL.getEnchantment(), weapon);
+				if (level > 0) {
+					float dmg = EnchantmentBossKill.getDamageDealt(mob, level);
+					if (dmg > 0) {
+						ChromaAux.doPylonAttack(CrystalElement.PINK, mob, dmg, false);
+					}
+					else {
+						weapon.damageItem(4, ep);
+						ReikaSoundHelper.playSoundAtEntity(ep.worldObj, ep, "random.break");
+						if (mob instanceof EntityCreeper) {
+							ReikaEntityHelper.chargeCreeper((EntityCreeper)mob);
+						}
+					}
+					evt.setCanceled(true);
 				}
 			}
 		}

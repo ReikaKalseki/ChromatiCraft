@@ -50,6 +50,7 @@ import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.ChromatiCraft.Entity.EntityLumaBurst;
 import Reika.ChromatiCraft.Entity.EntityMeteorShot;
 import Reika.ChromatiCraft.Entity.EntityNukerBall;
+import Reika.ChromatiCraft.Entity.EntityOverloadingPylonShock;
 import Reika.ChromatiCraft.Entity.EntityParticleCluster;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityTNTPinball;
@@ -74,6 +75,7 @@ import Reika.ChromatiCraft.Render.Entity.RenderLaserPulse;
 import Reika.ChromatiCraft.Render.Entity.RenderLumaBurst;
 import Reika.ChromatiCraft.Render.Entity.RenderMeteorShot;
 import Reika.ChromatiCraft.Render.Entity.RenderNukerBall;
+import Reika.ChromatiCraft.Render.Entity.RenderOverloadingPylonShock;
 import Reika.ChromatiCraft.Render.Entity.RenderParticleCluster;
 import Reika.ChromatiCraft.Render.Entity.RenderSplashGunShot;
 import Reika.ChromatiCraft.Render.Entity.RenderTNTPinball;
@@ -228,6 +230,7 @@ public class ChromaClient extends ChromaCommon {
 		RenderingRegistry.registerEntityRenderingHandler(EntityNukerBall.class, new RenderNukerBall());
 		RenderingRegistry.registerEntityRenderingHandler(EntityGlowCloud.class, new RenderGlowCloud());
 		RenderingRegistry.registerEntityRenderingHandler(EntityDataCrystal.class, new RenderDataCrystal());
+		RenderingRegistry.registerEntityRenderingHandler(EntityOverloadingPylonShock.class, new RenderOverloadingPylonShock());
 
 		this.registerSpriteSheets();
 		this.registerBlockSheets();

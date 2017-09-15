@@ -44,6 +44,11 @@ public class PinballGenerator extends DimensionStructureGenerator {
 		return false;
 	}
 
+	@Override
+	public void openStructure(World world) {
+
+	}
+
 	public boolean areBallsInPlay(String level) {
 		return false;
 	}

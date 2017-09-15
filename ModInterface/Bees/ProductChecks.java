@@ -10,11 +10,11 @@
 package Reika.ChromatiCraft.ModInterface.Bees;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Auxiliary.ProgressionCacher.ProgressCache;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -60,13 +60,13 @@ public class ProductChecks {
 			int tr = (int)(ibg.getTerritory()[0]*3F*beeModifier.getTerritoryModifier(ibg, 1.0F)); //x, should == z; code from HasFlowersCache
 			int r = tr >= 64 ? 128 : MathHelper.clamp_int(16*ReikaMathLibrary.intpow2(2, (tr-9)/2), 16, 96);
 			int r2 = r >= 64 ? 24 : r >= 32 ? 16 : r >= 16 ? 12 : 8;
-			EntityPlayer ep = world.func_152378_a(ibh.getOwner().getId());
-			if (ep == null)
+			UUID id = ibh.getOwner().getId();
+			if (id == null)
 				return false;
-			if (!ProgressStage.ALLOY.isPlayerAtStage(ep))
+			if (!ProgressStage.ALLOY.isPlayerAtStage(world, id))
 				return false;
 			TileEntityAuraInfuser te = this.check(world, x, y, z, r2, r2);
-			return te != null && te.hasStructure() && te.isOwnedByPlayer(ep);
+			return te != null && te.hasStructure() && te.isOwnedByPlayer(id);
 		}
 
 		private TileEntityAuraInfuser check(World world, int x, int y, int z, int r, int vr) {
@@ -220,12 +220,7 @@ public class ProductChecks {
 
 		@Override
 		public boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
-			EntityPlayer ep = world.func_152378_a(ibh.getOwner().getId());
-			if (ep != null) {
-				return progress.isPlayerAtStage(ep);
-			}
-			ProgressCache c = ChromaBeeHelpers.getProgressCache(ibh);
-			return c != null && c.containsProgress(progress);
+			return progress.isPlayerAtStage(world, ibh.getOwner().getId());
 		}
 
 		@Override

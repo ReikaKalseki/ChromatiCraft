@@ -121,6 +121,14 @@ public class LaserPuzzleGenerator extends DimensionStructureGenerator {
 	}
 
 	@Override
+	public void openStructure(World world) {
+		for (LaserPuzzleStatus l : rooms.values()) {
+			l.puzzle.isSolved = true;
+			l.puzzle.applyDoorState(world);
+		}
+	}
+
+	@Override
 	public StructureData createDataStorage() {
 		return new LaserPuzzleData(this);
 	}

@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
+import Reika.ChromatiCraft.Block.BlockChromaDoor.TileEntityChromaDoor;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.DataStorage.MusicStructureData;
@@ -132,6 +133,18 @@ public class MusicPuzzleGenerator extends DimensionStructureGenerator {
 		return true;
 	}
 
+	public void completePuzzle(int structureIndex) {
+		puzzles.get(structureIndex).isSolved = true;
+	}
+
+	@Override
+	public void openStructure(World world) {
+		for (int i = 0; i < puzzles.size(); i++) {
+			((TileEntityChromaDoor)puzzles.get(i).controllerLocation.offset(0, 0, 13).getTileEntity(world)).open(-1);
+			this.completePuzzle(i);
+		}
+	}
+
 	static {
 		addPrefabMelody(MusicKey.C5, MusicKey.G4, MusicKey.A4, MusicKey.E4, MusicKey.F4, MusicKey.C4, MusicKey.F4, MusicKey.G4);
 		addPrefabMelody(MusicKey.G5, MusicKey.A5, MusicKey.B5, MusicKey.D6, MusicKey.C6, MusicKey.C6, MusicKey.E6, MusicKey.D6, MusicKey.D6, MusicKey.G6, MusicKey.Fs6, MusicKey.G6, MusicKey.D6, MusicKey.B5, MusicKey.G5, MusicKey.A5, MusicKey.B5, MusicKey.C6, MusicKey.D6, MusicKey.E6, MusicKey.D6, MusicKey.C6, MusicKey.B5, MusicKey.A5, MusicKey.B5, MusicKey.G5, MusicKey.Fs5, MusicKey.G5, MusicKey.A5, MusicKey.D5);
@@ -211,10 +224,6 @@ public class MusicPuzzleGenerator extends DimensionStructureGenerator {
 			return o instanceof MelodyPrefab && ((MelodyPrefab)o).notes.equals(notes);
 		}
 
-	}
-
-	public void completePuzzle(int structureIndex) {
-		puzzles.get(structureIndex).isSolved = true;
 	}
 
 }

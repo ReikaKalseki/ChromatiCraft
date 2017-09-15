@@ -38,7 +38,6 @@ import Reika.ChromatiCraft.API.Event.ProgressionEvent;
 import Reika.ChromatiCraft.API.Event.ProgressionEvent.ResearchType;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ProgressionCacher;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
@@ -386,8 +385,8 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	}
 
 	public NBTTagCompound getRootNBTTag(EntityPlayer ep) {
-		NBTTagCompound tag = ReikaPlayerAPI.getDeathPersistentNBT(ep);
-		if (tag == null || tag.hasNoTags() || !tag.hasKey(NBT_TAG) || !tag.hasKey(ProgressionManager.MAIN_NBT_TAG)) {
+		NBTTagCompound tag = ReikaPlayerAPI.isFake(ep) ? null : ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		if (tag == null || tag.hasNoTags()/* || !tag.hasKey(NBT_TAG) || !tag.hasKey(ProgressionManager.MAIN_NBT_TAG)*/) {
 			NBTTagCompound repl = ProgressionCacher.instance.attemptToLoadBackup(ep);
 			if (repl != null) {
 				if (tag == null)

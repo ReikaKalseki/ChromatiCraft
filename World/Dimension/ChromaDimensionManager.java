@@ -32,6 +32,7 @@ import net.minecraftforge.common.DimensionManager;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome.ChromaDimensionSubBiome;
@@ -349,6 +350,9 @@ public class ChromaDimensionManager {
 
 	public static void addPlayerToStructure(EntityPlayer ep, DimensionStructureGenerator structure) {
 		playersInStructures.put(ep, structure);
+		if (ProgressionManager.instance.hasPlayerCompletedStructureColor(ep, structure.getCoreColor(ep.worldObj))) {
+			structure.forceOpen(ep.worldObj);
+		}
 	}
 
 	@SideOnly(Side.CLIENT)

@@ -442,6 +442,11 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 		return true; //No idea how to check this
 	}
 
+	@Override
+	public void openStructure(World world) {
+		//Or do this
+	}
+
 	/** Takes the coordinate within the maze, not actual block coords! */
 	public int getDistanceToGoal(Coordinate loc) {
 		return distances.get(loc);

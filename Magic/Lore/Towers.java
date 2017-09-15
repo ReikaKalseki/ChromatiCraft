@@ -66,7 +66,7 @@ public enum Towers {
 
 		HexGrid grid = new HexGrid(9, radius, true, MapShape.HEXAGON).flower();
 
-		Random rand = new Random(world.getSeed());
+		Random rand = new Random(world.getSeed()); // ^ world.getSaveHandler().getWorldDirectory().getAbsolutePath().toString().hashCode()
 
 		double a = rand.nextDouble()*360;
 		double dx = -2500+rand.nextDouble()*5000;

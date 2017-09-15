@@ -305,6 +305,14 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 		return BlockChromaDoor.isOpen(world, doorLoc.xCoord, doorLoc.yCoord, doorLoc.zCoord);
 	}
 
+	@Override
+	public void openStructure(World world) {
+		TileEntity te = doorLoc.getTileEntity(world);
+		if (te instanceof TileEntityChromaDoor) {
+			((TileEntityChromaDoor)te).open(-1);
+		}
+	}
+
 	private static class WindowPlace implements TileCallback {
 
 		private final ForgeDirection direction;

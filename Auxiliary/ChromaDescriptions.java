@@ -150,6 +150,10 @@ public final class ChromaDescriptions {
 		elementData.put(e, data);
 	}
 
+	private static void addData(Chromabilities a, Object... data) {
+		abilityData.put(a, data);
+	}
+
 	private static void addData(String s, Object... data) {
 		hoverData.put(s, data);
 	}
@@ -285,7 +289,7 @@ public final class ChromaDescriptions {
 
 		for (ChromaResearch h : tooltabs) {
 			String desc = tools.getValueAtNode("tools:"+h.name().toLowerCase(Locale.ENGLISH));
-			desc = String.format(desc, itemData.get(h));
+			desc = String.format(desc, itemData.get(h.getItem()));
 			if (h.getItem().getItemInstance() instanceof ItemWandBase) {
 				notes.put(((ItemWandBase)h.getItem().getItemInstance()).generateUsageData(), h, 0);
 			}
@@ -429,6 +433,7 @@ public final class ChromaDescriptions {
 		addNotes(ChromaTiles.POWERTREE, TileEntityPowerTree.BASE, TileEntityPowerTree.RATIO, TileEntityPowerTree.POWER);
 		addNotes(ChromaTiles.LAMPCONTROL, TileEntityLampController.MAXRANGE, TileEntityLampController.MAXCHANNEL);
 		addNotes(ChromaTiles.ASPECTJAR, TileEntityAspectJar.CAPACITY_PRIMAL, TileEntityAspectJar.CAPACITY);
+		addNotes(ChromaTiles.WIRELESS, ChromaStructures.Structures.WIRELESSPEDESTAL.getDisplayName(), ChromaTiles.WIRELESS.getName());
 		if (ModList.FORESTRY.isLoaded())
 			addNotes(ChromaTiles.ALVEARY, TileEntityLumenAlveary.getEffectsAsString());
 
@@ -444,8 +449,8 @@ public final class ChromaDescriptions {
 
 		addData(ChromaItems.SHARE, ChromaTiles.TABLE.getName(), ChromaTiles.RITUAL.getName());
 
-		abilityData.put(Chromabilities.REACH, new Object[]{Chromabilities.MAX_REACH});
-		abilityData.put(Chromabilities.LIFEPOINT, new Object[]{CrystalElement.MAGENTA.displayName});
+		addData(Chromabilities.REACH, new Object[]{Chromabilities.MAX_REACH});
+		addData(Chromabilities.LIFEPOINT, new Object[]{CrystalElement.MAGENTA.displayName});
 
 		miscData.put(ChromaResearch.ENCHANTS, new Object[]{ChromaTiles.ENCHANTER.getName()});
 	}

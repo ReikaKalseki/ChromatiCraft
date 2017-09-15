@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -51,13 +52,18 @@ import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonFullyChargedEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonRechargedEvent;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
+import Reika.ChromatiCraft.Entity.EntityOverloadingPylonShock;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.NaturalCrystalSource;
+import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
+import Reika.ChromatiCraft.Magic.Network.CrystalPath;
+import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.ChromaAspectManager;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -89,6 +95,7 @@ import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
@@ -128,6 +135,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	public static boolean TUNED_PYLONS = true;
 
 	public boolean enhancing = false;
+	private boolean destabilized = false;
 
 	private WorldLocation linkTile;
 
@@ -156,6 +164,14 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	public static Collection<Coordinate> getPowerCrystalLocations() {
 		return Collections.unmodifiableCollection(crystalPositions);
+	}
+
+	public void destabilize() {
+		destabilized = true;
+	}
+
+	public boolean isUnstable() {
+		return destabilized;
 	}
 
 	public void link(TileEntityPylonLink te) {
@@ -252,6 +268,15 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			//ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.PYLONJAR.ordinal(), this, 128);
 		}
 
+		if (this.isUnstable()) {
+			if (world.isRemote) {
+
+			}
+			else {
+				this.doDestabilizedTick(world, x, y, z);
+			}
+		}
+
 		long diff = 1;//world.getTotalWorldTime()-lastWorldTick;
 		lastWorldTick = world.getTotalWorldTime();
 
@@ -300,7 +325,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				ChromaSounds.POWER.playSoundAtBlock(this, 1, f);
 			}
 
-			int n = this.isEnhanced() ? 24 : 36;
+			int n = this.isUnstable() ? 12 : this.isEnhanced() ? 24 : 36;
 			if (world.isRemote && rand.nextInt(n) == 0) {
 				this.spawnLightning(world, x, y, z);
 			}
@@ -328,6 +353,59 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 						}
 					}
 				}
+			}
+		}
+	}
+
+	private void doDestabilizedTick(World world, int x, int y, int z) {
+		if (rand.nextInt(40) == 0) {
+			this.sendRandomShock(world, true, 8);
+		}
+		if (rand.nextInt(120) == 0) {
+			ArrayList<TileEntityCrystalPylon> li = CrystalNetworker.instance.getAllNearbyPylons(this, 128, true);
+			while (!li.isEmpty()) {
+				int idx = rand.nextInt(li.size());
+				TileEntityCrystalPylon te = li.remove(idx);
+				if (te.hasStructure() && !te.isUnstable()) {
+					this.shortCircuitWith(world, x, y, z, te);
+					break;
+				}
+			}
+		}
+		if (rand.nextInt(1000) == 0) {
+			destabilized = false;
+			this.destroyPowerCrystals(1+rand.nextInt(8));
+			world.newExplosion(null, x+0.5-1+rand.nextInt(3), y+0.5-1, z+0.5-1+rand.nextInt(3), 4, true, true);
+		}
+	}
+
+	public void sendRandomShock(World world, boolean canJumpColors, int dmg) {
+		LinkedList<CrystalNetworkTile> li = CrystalNetworker.instance.findPathToRandomReceiverFromSource(this, canJumpColors && rand.nextInt(2) == 0 ? null : color);
+		if (li.size() > 1) {
+			ArrayList<Coordinate> li2 = new ArrayList();
+			for (CrystalNetworkTile te : li) {
+				li2.add(new Coordinate(te.getX(), te.getY(), te.getZ()));
+			}
+			CrystalReceiver r = (CrystalReceiver)li.getLast();
+			Collections.reverse(li);
+			CrystalPath p = PylonFinder.convertTileListToPath(li, color);
+			double sp = EntityOverloadingPylonShock.getRandomSpeed();
+			int l = (int)(sp*li.size());
+			p.blink(l, r);
+			world.spawnEntityInWorld(new EntityOverloadingPylonShock(world, this, li2, sp, dmg));
+		}
+	}
+
+	private void shortCircuitWith(World world, int x, int y, int z, TileEntityCrystalPylon te) {
+		double sp = EntityOverloadingPylonShock.getRandomSpeed();
+		int l = (int)sp;
+		this.addSelfTickingTarget(new WorldLocation(te), color, 0, 0, 0, this.getOutgoingBeamRadius()*2.5, l);
+		ArrayList<Coordinate> li = ReikaJavaLibrary.makeListFrom(new Coordinate(this), new Coordinate(te));
+		world.spawnEntityInWorld(new EntityOverloadingPylonShock(world, this, li, sp, 1));
+		if (te.getColor() != color) {
+			this.addSelfTickingTarget(new WorldLocation(te), te.getColor(), 0, 0, 0, te.getOutgoingBeamRadius()*2.5, l);
+			if (rand.nextInt(8) == 0) {
+				te.destabilize();
 			}
 		}
 	}
@@ -706,6 +784,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		energy = NBT.getInteger("energy");
 		enhanced = NBT.getBoolean("enhance");
 		broadcast = NBT.getBoolean("broadcast");
+		destabilized = NBT.getBoolean("unstable");
 	}
 
 	@Override
@@ -717,6 +796,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		NBT.setInteger("energy", energy);
 		NBT.setBoolean("enhance", enhanced);
 		NBT.setBoolean("broadcast", broadcast);
+		NBT.setBoolean("unstable", destabilized);
 	}
 
 	@Override
@@ -1021,9 +1101,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	@ModDependent(ModList.ROTARYCRAFT)
 	public void onEMP(TileEntityEMP te) {
-		energy = rand.nextBoolean() ? 0 : this.getCapacity();
-		worldObj.createExplosion(null, xCoord+0.5, yCoord+0.5, zCoord+0.5, 16, false);
-		ChromaSounds.DISCHARGE.playSoundAtBlock(this);
+		//energy = rand.nextBoolean() ? 0 : this.getCapacity();
+		//worldObj.createExplosion(null, xCoord+0.5, yCoord+0.5, zCoord+0.5, 16, false);
+		//ChromaSounds.DISCHARGE.playSoundAtBlock(this);
+		this.destabilize();
 	}
 
 	@Override

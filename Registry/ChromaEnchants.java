@@ -16,6 +16,7 @@ import net.minecraft.util.StatCollector;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAggroMask;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAirMiner;
+import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentBossKill;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentEnderLock;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentFastSinking;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentHarvestLevel;
@@ -36,7 +37,8 @@ public enum ChromaEnchants implements EnchantmentEnum {
 	FASTSINK(EnchantmentFastSinking.class, ExtraChromaIDs.FASTSINKID),
 	HARVESTLEVEL(EnchantmentHarvestLevel.class, ExtraChromaIDs.HARVESTLEVELID),
 	AIRMINER(EnchantmentAirMiner.class, ExtraChromaIDs.AIRMINERID),
-	PHASING(EnchantmentPhasingSequence.class, ExtraChromaIDs.PHASINGID);
+	PHASING(EnchantmentPhasingSequence.class, ExtraChromaIDs.PHASINGID),
+	BOSSKILL(EnchantmentBossKill.class, ExtraChromaIDs.BOSSKILLID);
 
 	private final Class enchantmentClass;
 	private final ExtraChromaIDs enchantmentID;

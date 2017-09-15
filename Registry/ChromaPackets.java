@@ -85,6 +85,7 @@ public enum ChromaPackets {
 	NEWASPECTNODE(17),
 	HEALNODE(),
 	SPLASHGUNEND(1),
+	SPLASHGUNATTACK(2),
 	VACUUMGUNEND(1),
 	RFSEND(4),
 	DIMPING(3),
@@ -166,6 +167,8 @@ public enum ChromaPackets {
 	FERTILITYSEED(),
 	NUKERLOC(4),
 	BURNERINV(1),
+	BROADCASTLINK(1),
+	SPELLFAIL(),
 	;
 
 	public final int numInts;

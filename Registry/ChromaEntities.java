@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.ChromatiCraft.Entity.EntityLumaBurst;
 import Reika.ChromatiCraft.Entity.EntityMeteorShot;
 import Reika.ChromatiCraft.Entity.EntityNukerBall;
+import Reika.ChromatiCraft.Entity.EntityOverloadingPylonShock;
 import Reika.ChromatiCraft.Entity.EntityParticleCluster;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityTNTPinball;
@@ -49,7 +50,8 @@ public enum ChromaEntities implements EntityEnum {
 	PARTICLECLUSTER(EntityParticleCluster.class, "Particle Swarm"),
 	NUKERBALL(EntityNukerBall.class, "Cluster Ball"),
 	GLOWCLOUD(EntityGlowCloud.class, "GlowCloud", 0x000040, 0x22aaff),
-	DATACRYSTAL(EntityDataCrystal.class, "DataCrystal");
+	DATACRYSTAL(EntityDataCrystal.class, "DataCrystal"),
+	PYLONOVERLOAD(EntityOverloadingPylonShock.class, "Pylon Overload");
 
 	public final String entityName;
 	private final Class entityClass;
@@ -94,7 +96,7 @@ public enum ChromaEntities implements EntityEnum {
 
 	@Override
 	public int getTrackingDistance() {
-		return this == AURORA ? 90000 : 128;
+		return this == AURORA || this == PYLONOVERLOAD ? 90000 : 128;
 	}
 
 	@Override

@@ -265,7 +265,7 @@ public class LightPanelRoom extends StructurePiece {
 		lastState = flag;
 	}
 
-	private void updateDoor(World world, boolean open) {
+	public void updateDoor(World world, boolean open) {
 		if (doorLocation != null) {
 			TileEntity te = doorLocation.getTileEntity(world);
 			TileEntityChromaDoor td = (TileEntityChromaDoor)te;

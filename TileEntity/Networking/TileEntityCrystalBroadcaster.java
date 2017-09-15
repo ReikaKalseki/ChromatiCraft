@@ -11,25 +11,39 @@ package Reika.ChromatiCraft.TileEntity.Networking;
 
 import java.util.Collection;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
+import Reika.ChromatiCraft.Magic.Interfaces.ConnectivityAction;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.NotifiedNetworkTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Network.CrystalPath;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater implements NotifiedNetworkTile, MultiBlockChromaTile, BreakAction {
+public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater implements NotifiedNetworkTile, ConnectivityAction, MultiBlockChromaTile, BreakAction {
 
 	public static final int INTERFERENCE_RANGE = 384;
 	public static final int MIN_RANGE = 512;
@@ -49,6 +63,9 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
+
+		//if (this.getTicksExisted()%200 == 0 && Keyboard.isKeyDown(Keyboard.KEY_INSERT) && world.isRemote)
+		//	this.onConnected(CrystalElement.randomElement());
 	}
 
 	@Override
@@ -239,6 +256,68 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 					tb.interference = null;
 				}
 			}
+		}
+	}
+
+	@Override
+	public void notifySendingTo(CrystalPath p, CrystalReceiver r) {
+		this.onConnected(p.element);
+	}
+
+	@Override
+	public void notifyReceivingFrom(CrystalPath p, CrystalTransmitter t) {
+		this.onConnected(p.element);
+	}
+
+	private void onConnected(CrystalElement e) {
+		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.BROADCASTLINK.ordinal(), this, 512, e.ordinal());
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void onConnectedParticles(CrystalElement e) {
+		ReikaSoundHelper.playClientSound(ChromaSounds.REPEATERRING, xCoord+0.5, yCoord+0.5, zCoord+0.5, 1, (float)CrystalMusicManager.instance.getDingPitchScale(e), false);
+		for (int i = 0; i < 128; i++) {
+			double r = ReikaRandomHelper.getRandomBetween(4D, 8D);
+			double v = ReikaRandomHelper.getRandomBetween(0.03125, 0.75);
+			double ang = rand.nextDouble()*360;
+			double px = xCoord+0.5*r*Math.cos(Math.toRadians(ang));
+			double py = yCoord+rand.nextDouble();
+			double pz = zCoord+0.5*r*Math.sin(Math.toRadians(ang));
+			double vx = v*Math.cos(Math.toRadians(ang));
+			double vz = v*Math.sin(Math.toRadians(ang));
+			float g = (float)ReikaRandomHelper.getRandomBetween(0.125, 0.5);
+			int l = ReikaRandomHelper.getRandomBetween(100, 400);
+			float s = 2+rand.nextFloat()*2;
+			int c = ReikaColorAPI.mixColors(e.getColor(), 0xffffff, 0.5F+rand.nextFloat()*0.5F);
+			EntityBlurFX fx = new EntityBlurFX(worldObj, px, py, pz, vx, 0, vz).setColor(c).setScale(s).setLife(l);
+			switch(rand.nextInt(8)) {
+				case 0:
+					fx.setIcon(ChromaIcons.BIGFLARE);
+					break;
+				case 1:
+					fx.setIcon(ChromaIcons.CENTER);
+					break;
+				case 2:
+					fx.setIcon(ChromaIcons.SPINFLARE);
+					break;
+				case 3:
+					fx.setIcon(ChromaIcons.FLARE);
+					break;
+				case 4:
+					fx.setIcon(ChromaIcons.FLARE7);
+					break;
+				case 5:
+					fx.setIcon(ChromaIcons.RINGFLARE);
+					break;
+				case 6:
+					fx.setIcon(ChromaIcons.STARFLARE);
+					break;
+				case 7:
+					fx.setIcon(ChromaIcons.BLURFLARE);
+					break;
+			}
+			fx.setGravity(g).setAlphaFading().setColliding().setRapidExpand();
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
 

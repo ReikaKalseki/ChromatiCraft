@@ -51,9 +51,9 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Flowering;
 import Reika.DragonAPI.ModInteract.Bees.BasicFlowerProvider;
 import Reika.DragonAPI.ModInteract.Bees.BasicGene;
+import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Flowering;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.EnumBeeChromosome;
@@ -332,13 +332,7 @@ public class SpecialAlleles {
 			if (!ChromaBeeHelpers.isBestPossibleBee(ibg) && CrystalBees.rand.nextInt(2) > 0)
 				return false;
 
-			if (CrystalBees.rand.nextInt(3) > 0)
-				return true;
-			EntityPlayer ep = world.func_152378_a(ibh.getOwner().getId());
-			if (ep != null) {
-				return ProgressStage.DIMENSION.isPlayerAtStage(ep);
-			}
-			return false;
+			return CrystalBees.rand.nextInt(3) > 0 || ProgressStage.DIMENSION.isPlayerAtStage(world, ibh.getOwner().getId());
 		}
 
 		private boolean matchFlowerGene(IBeeGenome ibg) {
@@ -370,8 +364,7 @@ public class SpecialAlleles {
 			log.addStatus("Temperature", ReikaMathLibrary.isValueInsideBoundsIncl(8, 32, ReikaWorldHelper.getAmbientTemperatureAt(world, x, y, z)));
 			log.addStatus("Rainbow Forest", ChromatiCraft.isRainbowForest(world.getBiomeGenForCoords(x, z)));
 			log.addStatus("Gene Superiority", ChromaBeeHelpers.isBestPossibleBee(ibg));
-			EntityPlayer ep = world.func_152378_a(ibh.getOwner().getId());
-			log.addStatus("Dimension Progression", ep != null && ProgressStage.DIMENSION.isPlayerAtStage(ep));
+			log.addStatus("Dimension Progression", ProgressStage.DIMENSION.isPlayerAtStage(world, ibh.getOwner().getId()));
 			for (ProductCondition p : this.getConditions().values()) {
 				log.addStatus(p.getDescription(), p.check(world, x, y, z, ibg, ibh));
 			}
@@ -461,13 +454,7 @@ public class SpecialAlleles {
 			if (!ChromaBeeHelpers.isBestPossibleBee(ibg) && CrystalBees.rand.nextInt(2) > 0)
 				return false;
 
-			if (CrystalBees.rand.nextInt(3) > 0)
-				return true;
-			EntityPlayer ep = world.func_152378_a(ibh.getOwner().getId());
-			if (ep != null) {
-				return ProgressStage.SHARDCHARGE.isPlayerAtStage(ep);
-			}
-			return false;
+			return CrystalBees.rand.nextInt(3) > 0 || ProgressStage.SHARDCHARGE.isPlayerAtStage(world, ibh.getOwner().getId());
 		}
 
 		private boolean matchFlowerGene(IBeeGenome ibg) {
@@ -499,8 +486,7 @@ public class SpecialAlleles {
 			log.addStatus("Temperature", ReikaMathLibrary.isValueInsideBoundsIncl(8, 32, ReikaWorldHelper.getAmbientTemperatureAt(world, x, y, z)));
 			log.addStatus("Rainbow Forest", ChromatiCraft.isRainbowForest(world.getBiomeGenForCoords(x, z)));
 			log.addStatus("Gene Superiority", ChromaBeeHelpers.isBestPossibleBee(ibg));
-			EntityPlayer ep = world.func_152378_a(ibh.getOwner().getId());
-			log.addStatus("Boosted Shard Progression", ep != null && ProgressStage.SHARDCHARGE.isPlayerAtStage(ep));
+			log.addStatus("Boosted Shard Progression", ProgressStage.SHARDCHARGE.isPlayerAtStage(world, ibh.getOwner().getId()));
 			for (ProductCondition p : this.getConditions().values()) {
 				log.addStatus(p.getDescription(), p.check(world, x, y, z, ibg, ibh));
 			}

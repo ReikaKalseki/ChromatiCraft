@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.Music.BlockMusicMemory.Tile
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator.MelodyPrefab;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.KeySignature;
@@ -47,6 +48,8 @@ public class MusicPuzzle extends StructurePiece implements TileCallback {
 	private final int index;
 
 	public boolean isSolved = false;
+
+	public Coordinate controllerLocation;
 
 	public MusicPuzzle(DimensionStructureGenerator s, int len, int idx) {
 		super(s);
@@ -153,6 +156,7 @@ public class MusicPuzzle extends StructurePiece implements TileCallback {
 		if (te instanceof TileMusicMemory) {
 			((TileMusicMemory)te).program(this, index);
 			((TileMusicMemory)te).uid = parent.id;
+			controllerLocation = new Coordinate(te);
 		}
 	}
 

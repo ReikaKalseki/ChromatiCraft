@@ -25,6 +25,7 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage.TileEntityStructureDataStorage;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
@@ -79,6 +80,8 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 	private final MultiMap<ChunkCoordIntPair, DynamicPieceLocation> dynamicParts = new MultiMap().setNullEmpty();
 
 	public final UUID id = UUID.randomUUID();
+
+	private boolean forcedOpen;
 
 	protected DimensionStructureGenerator() {
 
@@ -236,7 +239,22 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		return this.hasCore();
 	}
 
-	public abstract boolean hasBeenSolved(World world);
+	public final boolean shouldAllowCoreMining(World world, EntityPlayer ep) {
+		return (forcedOpen && ProgressionManager.instance.hasPlayerCompletedStructureColor(ep, this.getCoreColor(world))) || this.hasBeenSolved(world);
+	}
+
+	protected abstract boolean hasBeenSolved(World world);
+
+	public final void forceOpen(World world) {
+		forcedOpen = true;
+		this.openStructure(world);
+	}
+
+	public boolean forcedOpen() {
+		return forcedOpen;
+	}
+
+	protected abstract void openStructure(World world);
 
 	@Override
 	public final String toString() {

@@ -77,7 +77,7 @@ public class BlockUnknownArtefact extends Block {
 
 	private void onInteracted(World world, int x, int y, int z, EntityPlayer ep) {
 		if (world.rand.nextInt(8) == 0 && !world.isRemote) {
-			ChromaSounds.MONUMENTRAY.playSoundAtBlockNoAttenuation(world, x+0.5, y+0.5, z+0.5, 1, 0.625F, 64);
+			ChromaSounds.MONUMENTRAY.playSoundNoAttenuation(world, x+0.5, y+0.5, z+0.5, 1, 0.625F, 64);
 			//ChromaSounds.MONUMENTRAY.playSoundAtBlockNoAttenuation(world, x+0.5, y+0.5, z+0.5, 1, 0.5F, 64);
 			double[] angs = ReikaPhysicsHelper.cartesianToPolar(ep.posX-x-0.5, ep.posY-y-0.5, ep.posZ-z-0.5);
 			double[] v = ReikaPhysicsHelper.polarToCartesian(6, angs[1]-90, -angs[2]-90);

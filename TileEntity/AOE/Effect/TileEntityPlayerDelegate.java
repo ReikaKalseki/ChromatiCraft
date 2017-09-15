@@ -12,16 +12,19 @@ package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 
 
@@ -45,6 +48,20 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 				catch (Exception ex) {
 					ChromatiCraft.logger.logError("Could not tick Delegate interface "+s+" for "+te+" @ "+this);
 					this.writeError(ex);
+				}
+			}
+		}
+		else {
+			int dx = x+dir.offsetX;
+			int dy = y+dir.offsetY;
+			int dz = z+dir.offsetZ;
+			Block b = world.getBlock(dx, dy, dz);
+			if (b instanceof CrystalBlock && rand.nextInt(70/this.getTier()) == 0) {
+				CrystalBlock c = (CrystalBlock)b;
+				CrystalElement e = CrystalElement.elements[world.getBlockMetadata(dx, dy, dz)];
+				ReikaJavaLibrary.pConsole(e);
+				if (c.shouldGiveEffects(e) && c.performEffect(e)) {
+					c.updateEffects(world, dx, dy, dz);
 				}
 			}
 		}

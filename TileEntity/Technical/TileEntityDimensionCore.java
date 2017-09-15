@@ -577,7 +577,7 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 		if (ep == null)
 			return false;
 		if (!worldObj.isRemote && !ep.capabilities.isCreativeMode && this.hasStructure()) {
-			if (!this.getStructure().hasBeenSolved(worldObj)) {
+			if (!this.getStructure().shouldAllowCoreMining(worldObj, ep)) {
 				return false;
 			}
 		}
@@ -613,7 +613,7 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 			}
 			 */
 
-			if (!ep.capabilities.isCreativeMode && !this.getStructure().hasBeenSolved(worldObj)) {
+			if (!ep.capabilities.isCreativeMode && !this.getStructure().shouldAllowCoreMining(worldObj, ep)) {
 				return false;
 			}
 

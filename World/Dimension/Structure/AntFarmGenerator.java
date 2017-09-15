@@ -157,6 +157,11 @@ public class AntFarmGenerator extends DimensionStructureGenerator {
 	}
 
 	@Override
+	public void openStructure(World world) {
+
+	}
+
+	@Override
 	protected void clearCaches() {
 		levels.clear();
 		tunnels.clear();

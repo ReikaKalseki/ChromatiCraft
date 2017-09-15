@@ -33,6 +33,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 
 import org.lwjgl.opengl.GL11;
@@ -183,6 +185,14 @@ public class ProgressionManager implements ProgressRegistry {
 			return instance.isPlayerAtStage(ep, this);
 		}
 
+		public boolean isPlayerAtStage(World world, UUID id) {
+			EntityPlayer ep = world.func_152378_a(id);
+			if (ep == null && world instanceof WorldServer) {
+				ep = ReikaPlayerAPI.getFakePlayerByNameAndUUID((WorldServer)world, "Progress Backup", id);
+			}
+			return ep != null && instance.isPlayerAtStage(ep, this);
+		}
+
 		public boolean playerHasPrerequisites(EntityPlayer ep) {
 			return instance.playerHasPrerequisites(ep, this);
 		}
@@ -293,6 +303,8 @@ public class ProgressionManager implements ProgressRegistry {
 
 		progressMap.addParent(ProgressStage.CHARGE, 	ProgressStage.PYLON);
 		progressMap.addParent(ProgressStage.CHARGE, 	ProgressStage.CRYSTALS);
+
+		progressMap.addParent(ProgressStage.FOCUSCRYSTAL, 	ProgressStage.CRYSTALS);
 
 		progressMap.addParent(ProgressStage.ABILITY, 	ProgressStage.CHARGE);
 		progressMap.addParent(ProgressStage.ABILITY, 	ProgressStage.LINK);

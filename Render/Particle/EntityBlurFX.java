@@ -55,6 +55,8 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 	private float defaultGreen;
 	private float defaultBlue;
 
+	private double drag;
+
 	private Coordinate destination;
 
 	private EntityFX lock;
@@ -130,6 +132,11 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 
 	public final EntityBlurFX setGravity(float g) {
 		particleGravity = g;
+		return this;
+	}
+
+	public final EntityBlurFX setDrag(double d) {
+		drag = d;
 		return this;
 	}
 
@@ -269,6 +276,11 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 			motionZ = mz;
 		}
 		else {
+			if (drag != 0) {
+				motionX *= drag;
+				motionY *= drag;
+				motionZ *= drag;
+			}
 			super.onUpdate();
 		}
 

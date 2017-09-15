@@ -229,6 +229,13 @@ public class LightPanelGenerator extends DimensionStructureGenerator {
 		return true;
 	}
 
+	@Override
+	public void openStructure(World world) {
+		for (int i = 0; i < levels.length; i++) {
+			levels[i].updateDoor(world, true);
+		}
+	}
+
 	public void toggleSwitch(World world, int x, int y, int z, int level, int channel, boolean active) {
 		levels[level].toggleSwitch(world, x, y, z, channel, active);
 	}

@@ -43,4 +43,9 @@ public class GravityPuzzleGenerator extends DimensionStructureGenerator {
 		return false;
 	}
 
+	@Override
+	public void openStructure(World world) {
+
+	}
+
 }

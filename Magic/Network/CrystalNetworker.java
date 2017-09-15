@@ -18,6 +18,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.UUID;
 
@@ -454,28 +455,30 @@ public class CrystalNetworker implements TickHandler {
 		return li;
 	}
 
-	public Collection<TileEntityCrystalPylon> getAllNearbyPylons(CrystalNetworkTile te, double range) {
-		return this.getAllNearbyPylons(te.getWorld(), te.getX(), te.getY(), te.getZ(), range);
+	public ArrayList<TileEntityCrystalPylon> getAllNearbyPylons(CrystalNetworkTile te, double range, boolean excludeSelf) {
+		return this.getAllNearbyPylons(te.getWorld(), te.getX(), te.getY(), te.getZ(), range, excludeSelf);
 	}
 
-	public Collection<TileEntityCrystalPylon> getAllNearbyPylons(World world, int x, int y, int z, double range) {
-		Collection<TileEntityCrystalPylon> li = new ArrayList();
+	public ArrayList<TileEntityCrystalPylon> getAllNearbyPylons(World world, int x, int y, int z, double range, boolean excludeSelf) {
+		ArrayList<TileEntityCrystalPylon> li = new ArrayList();
 		//MultiMap<CrystalElement, WorldLocation> remove = new MultiMap(new HashSetFactory());
 		for (CrystalElement e : pylons.keySet()) {
 			TileEntityCache<TileEntityCrystalPylon> c = pylons.get(e);
 			if (c != null) {
 				WorldLocation p = new WorldLocation(world, x, y, z);
 				for (WorldLocation loc : c.getAllLocationsNear(p, range)) {
-					if (range == Double.POSITIVE_INFINITY || loc.getDistanceTo(x, y, z) <= range) {
-						TileEntityCrystalPylon te = c.get(loc);
-						if (te == null) {
-							ChromatiCraft.logger.logError("Null tile returned for location "+loc+"; "+loc.getBlockKey().getLocalized());
-							//remove.addValue(e, loc);
-							te = (TileEntityCrystalPylon)loc.getTileEntity(world);
-							c.put(loc, te);
+					if (!excludeSelf || !loc.equals(world, x, y, z)) {
+						if (range == Double.POSITIVE_INFINITY || loc.getDistanceTo(x, y, z) <= range) {
+							TileEntityCrystalPylon te = c.get(loc);
+							if (te == null) {
+								ChromatiCraft.logger.logError("Null tile returned for location "+loc+"; "+loc.getBlockKey().getLocalized());
+								//remove.addValue(e, loc);
+								te = (TileEntityCrystalPylon)loc.getTileEntity(world);
+								c.put(loc, te);
+							}
+							//else
+							li.add(te);
 						}
-						//else
-						li.add(te);
 					}
 				}
 			}
@@ -549,7 +552,7 @@ public class CrystalNetworker implements TickHandler {
 		WorldLocation loc = PylonFinder.getLocation(r);
 		Collection<WorldLocation> locs;
 		if (r instanceof PylonConnector) {
-			Collection<TileEntityCrystalPylon> c = this.getAllNearbyPylons(r, ((PylonConnector)r).getPylonRange());
+			Collection<TileEntityCrystalPylon> c = this.getAllNearbyPylons(r, ((PylonConnector)r).getPylonRange(), false);
 			locs = new ArrayList();
 			for (TileEntityCrystalPylon te : c) {
 				if (r.canReceiveFrom(te)) {
@@ -890,6 +893,32 @@ public class CrystalNetworker implements TickHandler {
 			}
 		}
 		return li;
+	}
+
+	public LinkedList<CrystalNetworkTile> findPathToRandomReceiverFromSource(CrystalSource src, CrystalElement e) {
+		LinkedList li = new LinkedList();
+		this.findRandomTransmitterPath(src, e, li, new HashSet());
+		return li;
+	}
+
+	private void findRandomTransmitterPath(CrystalTransmitter src, CrystalElement e, LinkedList<CrystalNetworkTile> path, HashSet<WorldLocation> locs) {
+		path.add(src);
+		ArrayList<CrystalReceiver> li = this.getNearbyReceivers(src, e);
+		while (!li.isEmpty()) {
+			int idx = rand.nextInt(li.size());
+			CrystalReceiver r = li.remove(idx);
+			WorldLocation loc = new WorldLocation(r.getWorld(), r.getX(), r.getY(), r.getZ());
+			if (!locs.contains(loc)) {
+				if (r instanceof CrystalTransmitter && (rand.nextInt(12) > 0 || path.size() <= 1)) {
+					locs.add(loc);
+					this.findRandomTransmitterPath((CrystalTransmitter)r, e, path, locs);
+				}
+				else {
+					path.add(r);
+				}
+				break;
+			}
+		}
 	}
 
 	public void printCrystalNetwork(World world, int chunkX, int chunkZ) {

@@ -461,6 +461,14 @@ public class PylonFinder {
 			return null;
 	}
 
+	public static CrystalPath convertTileListToPath(LinkedList<CrystalNetworkTile> li, CrystalElement e) {
+		LinkedList<WorldLocation> li2 = new LinkedList();
+		for (CrystalNetworkTile te : li) {
+			li2.add(new WorldLocation(te.getWorld(), te.getX(), te.getY(), te.getZ()));
+		}
+		return new CrystalPath(CrystalNetworker.instance, false, e, li2);
+	}
+
 	static boolean lineOfSight(WorldLocation l1, WorldLocation l2) {
 		return lineOfSight(l1.getWorld(), l1.xCoord, l1.yCoord, l1.zCoord, l2.xCoord, l2.yCoord, l2.zCoord);
 	}

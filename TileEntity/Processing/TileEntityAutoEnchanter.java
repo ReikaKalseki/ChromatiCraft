@@ -75,6 +75,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		tiers.put(ChromaEnchants.WEAPONAOE.getEnchantment(), EnchantmentTier.RARE);
 		tiers.put(ChromaEnchants.HARVESTLEVEL.getEnchantment(), EnchantmentTier.RARE);
 		tiers.put(ChromaEnchants.PHASING.getEnchantment(), EnchantmentTier.RARE);
+		tiers.put(ChromaEnchants.BOSSKILL.getEnchantment(), EnchantmentTier.RARE);
 
 		Enchantment multishot = ReikaEnchantmentHelper.getEnchantmentByName("Multishot");
 		if (multishot != null)

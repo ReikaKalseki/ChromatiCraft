@@ -58,6 +58,7 @@ import Reika.DragonAPI.Instantiable.Data.Maps.BlockMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaCropHelper;
@@ -111,6 +112,7 @@ public class ItemDuplicationWand extends ItemWandBase {
 						if (!ep.capabilities.isCreativeMode) {
 							this.drainPlayer(ep, 1+struct.getSize()/16F);
 							this.removeFromInventory(ep, struct);
+							ReikaPlayerAPI.syncInventory(ep);
 						}
 					}
 				}

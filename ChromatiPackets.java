@@ -112,6 +112,7 @@ import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityParticleSpawner;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalBroadcaster;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCobbleGen;
@@ -617,8 +618,11 @@ public class ChromatiPackets implements PacketHandler {
 				case NEWASPECTNODE:
 					NodeReceiverWrapper.triggerNewAspectFX(world, x, y, z, Aspect.getAspect(stringdata));
 					break;
+				case SPLASHGUNATTACK:
+					EntitySplashGunShot.doAttackParticles(data[0], data[1]);
+					break;
 				case SPLASHGUNEND:
-					EntitySplashGunShot.doDamagingParticles(data[0]);
+					EntitySplashGunShot.doDestroyParticles(data[0]);
 					break;
 				case VACUUMGUNEND:
 					EntityVacuum.doDestroyParticles(data[0]);
@@ -912,6 +916,12 @@ public class ChromatiPackets implements PacketHandler {
 						ep.openContainer.onContainerClosed(ep);
 						ep.openContainer = ep.inventoryContainer;
 					}
+					break;
+				case BROADCASTLINK:
+					((TileEntityCrystalBroadcaster)tile).onConnectedParticles(CrystalElement.elements[data[0]]);
+					break;
+				case SPELLFAIL:
+					ChromaClientEventController.doDimensionSpellFailParticles(world, dx, dy, dz);
 					break;
 			}
 		}

@@ -165,6 +165,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -1886,6 +1887,25 @@ public class ChromaClientEventController {
 					}
 				}
 			}
+		}
+	}
+
+	public static void doDimensionSpellFailParticles(World world, double x, double y, double z) {
+		int n = 32+world.rand.nextInt(32);
+		for (int i = 0; i < n; i++) {
+			double rx = ReikaRandomHelper.getRandomPlusMinus(x, 0.25);
+			double ry = ReikaRandomHelper.getRandomPlusMinus(y, 0.25);
+			double rz = ReikaRandomHelper.getRandomPlusMinus(z, 0.25);
+			double v = 0.25+world.rand.nextDouble()*0.25;
+			double[] vp = ReikaPhysicsHelper.polarToCartesian(v, world.rand.nextDouble()*360, world.rand.nextDouble()*360);
+			float s = 5F+world.rand.nextFloat()*10;
+			int l = 20+world.rand.nextInt(20);
+			CrystalElement c = CrystalElement.randomElement();
+			int clr = ReikaColorAPI.getModifiedSat(ReikaColorAPI.getColorWithBrightnessMultiplier(c.getColor(), 0.4F), 2);
+			EntityBlurFX fx = new EntityBlurFX(world, rx, ry, rz, vp[0], vp[1], vp[2]);
+			fx.setRapidExpand().setAlphaFading().setScale(s).setLife(l).setColor(clr).setColliding().setDrag(0.875);
+			fx.noClip = false;
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
 }

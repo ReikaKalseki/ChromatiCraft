@@ -21,6 +21,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.Block.BlockChromaDoor;
+import Reika.ChromatiCraft.Block.BlockChromaDoor.TileEntityChromaDoor;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.World.Dimension.Structure.DataStorage.ShiftMazeData;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.MazeBuilder;
@@ -191,6 +192,16 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 				return false;
 		}
 		return true;
+	}
+
+	@Override
+	public void openStructure(World world) {
+		for (Coordinate c : endDoorCoords) {
+			((TileEntityChromaDoor)c.getTileEntity(world)).open(-1);
+		}
+		for (Coordinate c : toggleDoors) {
+			((TileEntityChromaDoor)c.getTileEntity(world)).open(-1);
+		}
 	}
 
 }

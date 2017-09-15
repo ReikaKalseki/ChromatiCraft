@@ -227,6 +227,8 @@ public class DimensionDecoRenderer implements ISBRH {
 
 	private void render(Tessellator v5, IBlockAccess world, int x, int y, int z, DimDecoTileTypes type, Block b, RenderBlocks rb) {
 		switch(type) {
+			case GLOWCRACKS:
+				break;
 			case FIREJET:
 				IIcon ico = ChromaBlocks.STRUCTSHIELD.getBlockInstance().getIcon(1, 0);
 				float u = ico.getMinU();
@@ -299,6 +301,8 @@ public class DimensionDecoRenderer implements ISBRH {
 	private void renderEffect(Tessellator v5, IBlockAccess world, int x, int y, int z, DimDecoTileTypes type, Block b, RenderBlocks rb) {
 		switch(type) {
 			case FIREJET:
+				break;
+			case GLOWCRACKS:
 				break;
 		}
 	}

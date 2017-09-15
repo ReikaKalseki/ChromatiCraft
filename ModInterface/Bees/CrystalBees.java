@@ -473,15 +473,11 @@ public class CrystalBees {
 			int x = ibh.getCoordinates().posX;
 			int y = ibh.getCoordinates().posY;
 			int z = ibh.getCoordinates().posZ;
-			EntityPlayer ep = world.func_152378_a(ibh.getOwner().getId());
 			for (ProductCondition p : otherChecks) {
 				if (!p.check(world, x, y, z, ibg, ibh))
 					return false;
 			}
-			if (ep != null) {
-				return progress.check(world, x, y, z, ibg, ibh);
-			}
-			return false;
+			return progress.check(world, x, y, z, ibg, ibh);
 		}
 
 		@Override
@@ -741,13 +737,7 @@ public class CrystalBees {
 			if (!ReikaMathLibrary.isValueInsideBoundsIncl(8, 32, ReikaWorldHelper.getAmbientTemperatureAt(world, x, y, z)))
 				return false;
 
-			if (rand.nextInt(3) > 0)
-				return true;
-			EntityPlayer ep = world.func_152378_a(ibh.getOwner().getId());
-			if (ep != null) {
-				return ProgressStage.SHARDCHARGE.isPlayerAtStage(ep);
-			}
-			return false;
+			return rand.nextInt(3) > 0 || ProgressStage.SHARDCHARGE.isPlayerAtStage(world, ibh.getOwner().getId());
 		}
 
 		@Override

@@ -193,10 +193,7 @@ public class GOLGenerator extends DimensionStructureGenerator {
 		}
 		int min = (int)((SIZE*2+1)*(SIZE*2+1)*f);
 		if (num >= min) {
-			TileEntity te = door.getTileEntity(world);
-			if (te instanceof TileEntityChromaDoor) {
-				((TileEntityChromaDoor)te).open(-1);
-			}
+			this.openStructure(world);
 			ChromaSounds.CAST.playSoundAtBlock(world, door.xCoord-SIZE*2-3, door.yCoord, door.zCoord, 2, 1);
 			solved = true;
 		}
@@ -208,6 +205,14 @@ public class GOLGenerator extends DimensionStructureGenerator {
 	@Override
 	public boolean hasBeenSolved(World world) {
 		return solved;
+	}
+
+	@Override
+	public void openStructure(World world) {
+		TileEntity te = door.getTileEntity(world);
+		if (te instanceof TileEntityChromaDoor) {
+			((TileEntityChromaDoor)te).open(-1);
+		}
 	}
 
 }

@@ -317,12 +317,16 @@ public class WaterFloor extends StructurePiece {
 		this.getLock(i, k).hasFluid = fluid;
 		boolean flag2 = this.hasBeenSolved();
 		if (flag != flag2) {
-			for (Coordinate c : doorCoordinates) {
-				if (flag2)
-					((TileEntityChromaDoor)c.getTileEntity(world)).open(-1);
-				else
-					((TileEntityChromaDoor)c.getTileEntity(world)).close();
-			}
+			this.setDoorStates(world, flag2);
+		}
+	}
+
+	public void setDoorStates(World world, boolean open) {
+		for (Coordinate c : doorCoordinates) {
+			if (open)
+				((TileEntityChromaDoor)c.getTileEntity(world)).open(-1);
+			else
+				((TileEntityChromaDoor)c.getTileEntity(world)).close();
 		}
 	}
 

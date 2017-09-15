@@ -43,4 +43,9 @@ public class TessellationGenerator extends DimensionStructureGenerator {
 		return false;
 	}
 
+	@Override
+	public void openStructure(World world) {
+
+	}
+
 }

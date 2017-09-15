@@ -91,6 +91,8 @@ public enum ChromaSounds implements SoundEnum {
 	LORECOMPLETE("lorecomplete2"),
 	LIGHTCAST("lightcast"),
 	WATERLOCK("waterlock"),
+	REPEATERRING("repeaterring"),
+	FAIL("fail"),
 	;
 
 	public static final ChromaSounds[] soundList = values();
@@ -167,10 +169,10 @@ public enum ChromaSounds implements SoundEnum {
 	}
 
 	public void playSoundAtBlockNoAttenuation(TileEntity te, float vol, float pitch, int broadcast) {
-		this.playSoundAtBlockNoAttenuation(te.worldObj, te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5, vol, pitch, broadcast);
+		this.playSoundNoAttenuation(te.worldObj, te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5, vol, pitch, broadcast);
 	}
 
-	public void playSoundAtBlockNoAttenuation(World world, double x, double y, double z, float vol, float pitch, int broadcast) {
+	public void playSoundNoAttenuation(World world, double x, double y, double z, float vol, float pitch, int broadcast) {
 		if (world.isRemote)
 			return;
 		//ReikaSoundHelper.playSound(this, ChromatiCraft.packetChannel, te.worldObj, x, y, z, vol/* *this.getModulatedVolume()*/, pitch, false);

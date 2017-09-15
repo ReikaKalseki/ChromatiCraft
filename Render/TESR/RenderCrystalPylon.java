@@ -39,12 +39,17 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 		TileEntityCrystalPylon te = (TileEntityCrystalPylon)tile;
 
 		if (tile.hasWorldObj() && (MinecraftForgeClient.getRenderPass() == 1 || StructureRenderer.isRenderingTiles())) {
-			IIcon ico = ChromaIcons.ROUNDFLARE.getIcon();
 			ReikaTextureHelper.bindTerrainTexture();
+			IIcon ico = ChromaIcons.ROUNDFLARE.getIcon();
 			float u = ico.getMinU();
 			float v = ico.getMinV();
 			float du = ico.getMaxU();
 			float dv = ico.getMaxV();
+			ico = ChromaIcons.SUNFLARE.getIcon();
+			float u2 = ico.getMinU();
+			float v2 = ico.getMinV();
+			float du2 = ico.getMaxU();
+			float dv2 = ico.getMaxV();
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_ALPHA_TEST);
@@ -68,10 +73,25 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 			GL11.glTranslated(0.5, 0.5, 0.5);
 
 			int count = te.isEnhanced() ? 2 : 1;
-			for (int i = 0; i < count; i++) {
+			if (te.isUnstable())
+				count++;
+			for (int di = 0; di < count; di++) {
+				int i = di;
+				boolean flag = false;
 				GL11.glPushMatrix();
+				double s0 = 0;
+				if (te.isUnstable()) {
+					if (i == 0) {
+						flag = true;
+						s0 = 0.25;
+					}
+					else {
+						i--;
+						s0 = -0.125+0.25*te.getRandom().nextDouble();
+					}
+				}
 				double t = (i*60+te.randomOffset+System.currentTimeMillis()/2000D*(1+3*i))%360;
-				double s = i*0.5+2.5+0.5*Math.sin(t);
+				double s = s0+i*0.5+2.5+0.5*Math.sin(t);
 				if (!te.getTargets().isEmpty()) {
 					s += 1;
 				}
@@ -100,10 +120,10 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 
 				v5.startDrawingQuads();
 				v5.setColorRGBA_I(color, alpha);
-				v5.addVertexWithUV(-1, -1, 0, u, v);
-				v5.addVertexWithUV(1, -1, 0, du, v);
-				v5.addVertexWithUV(1, 1, 0, du, dv);
-				v5.addVertexWithUV(-1, 1, 0, u, dv);
+				v5.addVertexWithUV(-1, -1, 0, flag ? u2 : u, flag ? v2 : v);
+				v5.addVertexWithUV(1, -1, 0, flag ? du2 : du, flag ? v2 : v);
+				v5.addVertexWithUV(1, 1, 0, flag ? du2 : du, flag ? dv2 : dv);
+				v5.addVertexWithUV(-1, 1, 0, flag ? u2 : u, flag ? dv2 : dv);
 				v5.draw();
 				GL11.glPopMatrix();
 			}

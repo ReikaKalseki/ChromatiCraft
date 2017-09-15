@@ -37,7 +37,7 @@ public class ReshufflePylonCommand extends DragonCommandBase {
 		int y = MathHelper.floor_double(ep.posY);
 		int z = MathHelper.floor_double(ep.posZ);
 		int r = Math.max(1024, Integer.parseInt(args[0]));
-		Collection<TileEntityCrystalPylon> c = CrystalNetworker.instance.getAllNearbyPylons(world, x, y, z, r);
+		Collection<TileEntityCrystalPylon> c = CrystalNetworker.instance.getAllNearbyPylons(world, x, y, z, r, false);
 		EnumMap<CrystalElement, Integer> map = new EnumMap(CrystalElement.class);
 		ArrayList<CrystalElement> unused = new ArrayList(map.keySet());
 		int num = 0;

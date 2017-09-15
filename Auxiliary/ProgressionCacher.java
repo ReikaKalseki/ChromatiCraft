@@ -131,6 +131,7 @@ public class ProgressionCacher implements PlayerTracker {
 		this.savePlayer(ep);
 	}
 
+	@Deprecated
 	public ProgressCache getProgressCache(World world, UUID uid) {
 		ProgressCache pc = progressCache.get(uid);
 		if (pc == null) {

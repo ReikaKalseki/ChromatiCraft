@@ -376,7 +376,10 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 				//this.rockScreen(40);
 				dat = te.getColor().ordinal();
 				//ChromaSounds.PYLONFLASH.playSoundAtBlock(this);
-				CrystalNetworker.instance.overloadColorConnectedTo(te, te.getColor(), 1+rand.nextInt(1), true);
+				if (rand.nextBoolean())
+					CrystalNetworker.instance.overloadColorConnectedTo(te, te.getColor(), 1+rand.nextInt(1), true);
+				else
+					te.sendRandomShock(world, false, 1);
 				break;
 			case BEAM:
 				break;

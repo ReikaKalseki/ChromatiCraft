@@ -37,7 +37,7 @@ public class RenderSkypeater extends CrystalTransmitterRender {
 		TileEntitySkypeater te = (TileEntitySkypeater)tile;
 
 		if (tile.hasWorldObj() && (MinecraftForgeClient.getRenderPass() == 1 || StructureRenderer.isRenderingTiles())) {
-			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/airpeater.png");
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/airpeater_small.png");
 			int idx = (int)(System.currentTimeMillis()/20%128);
 			double u = idx%16/16D;
 			double v = idx/16/8D;
