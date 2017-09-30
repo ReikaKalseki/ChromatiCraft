@@ -67,7 +67,7 @@ public class UnknownArtefactGenerator implements RetroactiveGenerator {
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
 		if (this.canGenerateIn(world)) {
-			if (cachedSeed != world.getSeed())
+			if (UAChunks.isEmpty() || cachedSeed != world.getSeed())
 				this.calculateUAChunks(world);
 			if (this.isGennableChunk(world, chunkX*16, chunkZ*16, random)) {
 				if (this.generate(world, chunkX*16, chunkZ*16, random)) {
@@ -105,6 +105,8 @@ public class UnknownArtefactGenerator implements RetroactiveGenerator {
 			return false;
 		return true;
 		 */
+		if (UAChunks.isEmpty() || cachedSeed != world.getSeed())
+			this.calculateUAChunks(world);
 		return this.canGenerateIn(world) && UAChunks.contains(new ChunkCoordIntPair(cx, cz));
 	}
 

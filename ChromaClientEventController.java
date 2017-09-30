@@ -215,7 +215,8 @@ public class ChromaClientEventController {
 	public void addLumenBurnButton(GuiScreenEvent.InitGuiEvent.Post evt) {
 		if (evt.gui instanceof GuiInventory && ProgressStage.ALLCOLORS.isPlayerAtStage(Minecraft.getMinecraft().thePlayer) && ProgressStage.CHARGE.isPlayerAtStage(Minecraft.getMinecraft().thePlayer)) {
 			GuiContainer gui = (GuiContainer)evt.gui;
-			evt.buttonList.add(new ButtonItemBurner(gui, gui.guiLeft+142, gui.guiTop+56));
+			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+			evt.buttonList.add(new ButtonItemBurner(gui, gui.guiLeft+(ep.getActivePotionEffects().isEmpty() ? 142 : 82), gui.guiTop+56));
 		}
 	}
 

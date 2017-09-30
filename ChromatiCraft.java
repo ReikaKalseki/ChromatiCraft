@@ -55,11 +55,12 @@ import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.NetworkLoggerCommand;
 import Reika.ChromatiCraft.Auxiliary.CrystalPlantHandler;
 import Reika.ChromatiCraft.Auxiliary.ExplorationMonitor;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
-import Reika.ChromatiCraft.Auxiliary.ManipulatorDispenserAction;
 import Reika.ChromatiCraft.Auxiliary.MusicLoader;
 import Reika.ChromatiCraft.Auxiliary.ProgressionCacher;
 import Reika.ChromatiCraft.Auxiliary.PylonCacheLoader;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
+import Reika.ChromatiCraft.Auxiliary.ToolDispenserHandlers.ManipulatorDispenserAction;
+import Reika.ChromatiCraft.Auxiliary.ToolDispenserHandlers.ProjectileToolDispenserAction;
 import Reika.ChromatiCraft.Auxiliary.VillageTradeHandler;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Command.CrystalNetCommand;
@@ -698,6 +699,10 @@ public class ChromatiCraft extends DragonAPIMod {
 		ChunkProviderChroma.regenerateGenerators();
 
 		ReikaDispenserHelper.addDispenserAction(ChromaItems.TOOL.getStackOf(), new ManipulatorDispenserAction());
+		ProjectileToolDispenserAction proj = new ProjectileToolDispenserAction();
+		ReikaDispenserHelper.addDispenserAction(ChromaItems.SPLASHGUN.getStackOf(), proj);
+		ReikaDispenserHelper.addDispenserAction(ChromaItems.VACUUMGUN.getStackOf(), proj);
+		ReikaDispenserHelper.addDispenserAction(ChromaItems.CHAINGUN.getStackOf(), proj);
 
 		for (int i = 0; i < blocks.length; i++) {
 			if (blocks[i] instanceof LoadRegistry) {

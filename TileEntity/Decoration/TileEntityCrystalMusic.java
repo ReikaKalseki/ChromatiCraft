@@ -32,6 +32,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Network.CrystalPath;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -72,7 +73,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 	static {
 		MusicScore mus = null;
 		try {
-			mus = new MIDIInterface(ChromatiCraft.class, "Resources/music-demo.mid").fillToScore().scaleSpeed(11);
+			mus = new MIDIInterface(ChromatiCraft.class, "Resources/music-demo.mid").fillToScore(false).scaleSpeed(11);
 			ChromatiCraft.logger.log("Loaded demo track "+mus);
 		}
 		catch (Exception e) {
@@ -109,7 +110,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 	}
 
 	public void addNote(int time, int channel, MusicKey key, int length, boolean rest) {
-		track.addNote(time, channel, key, rest ? -1 : 0, 100, length);
+		track.addNote(time, channel, key, rest ? -1 : 0, 100, length, false);
 	}
 
 	private int getTime(int channel) {
@@ -363,12 +364,12 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 			ChromatiCraft.logger.logError("Could not load local MIDI: file is not a MIDI file!");
 			return;
 		}
-		if (f.length() > 60000) {
+		if (f.length() > 1024*ChromaOptions.MIDISIZE.getValue()) {
 			ChromatiCraft.logger.logError("Could not load local MIDI: file is too large ("+f.length()+" bytes) and cannot be safely used!");
 			return;
 		}
 		try {
-			MusicScore mus = new MIDIInterface(f).fillToScore().scaleSpeed(11);
+			MusicScore mus = new MIDIInterface(f).fillToScore(false).scaleSpeed(11);
 			this.dispatchTrack(mus);
 		}
 		catch (Exception e) {

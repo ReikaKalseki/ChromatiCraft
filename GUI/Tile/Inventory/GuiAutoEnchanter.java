@@ -37,9 +37,12 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 
 public class GuiAutoEnchanter extends GuiChromaBase {
 
-	private TileEntityAutoEnchanter ench;
+	private final TileEntityAutoEnchanter ench;
 	private int selectedEnchant = 0;
-	private static ArrayList<Enchantment> validEnchants = new ArrayList();
+	private final ArrayList<Enchantment> visibleEnchants = new ArrayList();
+
+	private static final ArrayList<Enchantment> validEnchants = new ArrayList();
+
 	static {
 		for (int i = 0; i < Enchantment.enchantmentsList.length; i++) {
 			Enchantment e = Enchantment.enchantmentsList[i];
@@ -58,6 +61,11 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 		player = ep;
 		ench = tile;
 		ySize = 181;
+
+		for (Enchantment e : validEnchants) {
+			if (TileEntityAutoEnchanter.canPlayerGetEnchantment(e, ep))
+				visibleEnchants.add(e);
+		}
 	}
 
 	@Override
@@ -103,10 +111,10 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 
 	private void incrementEnchant(boolean newType) {
 		Enchantment pre = this.getHighlightedEnchantment();
-		if (selectedEnchant < validEnchants.size()-1) {
+		if (selectedEnchant < visibleEnchants.size()-1) {
 			do {
 				selectedEnchant++;
-			} while(newType && selectedEnchant < validEnchants.size()-1 && this.getHighlightedEnchantment().type != pre.type);
+			} while(newType && selectedEnchant < visibleEnchants.size()-1 && this.getHighlightedEnchantment().type != pre.type);
 		}
 	}
 
@@ -120,7 +128,7 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 	}
 
 	private Enchantment getHighlightedEnchantment() {
-		return validEnchants.get(selectedEnchant);
+		return visibleEnchants.get(selectedEnchant);
 	}
 
 	private String getEnchantDisplayString() {

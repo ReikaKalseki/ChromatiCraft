@@ -122,7 +122,8 @@ public class PylonFinder {
 		this.findFrom(target, thresh);
 		//ReikaJavaLibrary.pConsole(this.toString());
 		if (this.isComplete()) {
-			CrystalPath path = new CrystalPath(net, !(target instanceof WrapperTile), element, nodes);
+			ArrayList<WorldLocation> li = new ArrayList(nodes);
+			CrystalPath path = new CrystalPath(net, !(target instanceof WrapperTile), element, CrystalPath.optimizeRoute(net, element, li));
 			if (!(target instanceof WrapperTile))
 				this.addValidPath(path);
 			return path;
@@ -147,36 +148,11 @@ public class PylonFinder {
 		this.findFrom(target, thresh);
 		//ReikaJavaLibrary.pConsole(this.toString());
 		if (this.isComplete()) {
+			ArrayList<WorldLocation> li = new ArrayList(nodes);
 			if (lastSkypeaterType != null) {
-				ArrayList<WorldLocation> li = new ArrayList(nodes);
-				boolean flag = true;
-				while (flag) {
-					flag = false;
-					for (int i = 0; i < li.size() && !flag; i++) {
-						for (int k = i; k < li.size() && !flag; k++) {
-							if (i < k && Math.abs(i-k) > 1) {
-								WorldLocation loc = li.get(i);
-								WorldLocation loc2 = li.get(k);
-								CrystalNetworkTile te1 = this.getNetTileAt(loc, true);
-								CrystalNetworkTile te2 = this.getNetTileAt(loc2, true);
-								if (te1 instanceof TileEntitySkypeater && te2 instanceof TileEntitySkypeater) {
-									double d = ((TileEntitySkypeater)te1).getReceiveRange();
-									if (te1.getDistanceSqTo(te2.getX(), te2.getY(), te2.getZ()) <= d*d && this.lineOfSight(te1, te2)) {
-										while (k > i+1) {
-											li.remove(k-1);
-											k--;
-										}
-										flag = true;
-									}
-								}
-							}
-						}
-					}
-				}
-				nodes.clear();
-				nodes.addAll(li);
+				this.optimizeSkypeaterRoute(li);
 			}
-			CrystalFlow flow = new CrystalFlow(net, target, element, amount, nodes, maxthru);
+			CrystalFlow flow = new CrystalFlow(net, target, element, amount, CrystalPath.optimizeRoute(net, element, li), maxthru);
 			//ReikaJavaLibrary.pConsole(flow.checkLineOfSight()+":"+flow);
 			if (!(target instanceof WrapperTile))
 				this.addValidPath(flow.asPath());
@@ -185,7 +161,44 @@ public class PylonFinder {
 		return null;
 	}
 
+	private void optimizeSkypeaterRoute(ArrayList<WorldLocation> path) {
+		ArrayList<WorldLocation> li = new ArrayList(path);
+		boolean flag = true;
+		while (flag) {
+			flag = false;
+			for (int i = 0; i < li.size() && !flag; i++) {
+				for (int k = i; k < li.size() && !flag; k++) {
+					if (i < k && Math.abs(i-k) > 1) {
+						WorldLocation loc = li.get(i);
+						WorldLocation loc2 = li.get(k);
+						CrystalNetworkTile te1 = this.getNetTileAt(loc, true);
+						CrystalNetworkTile te2 = this.getNetTileAt(loc2, true);
+						if (te1 instanceof TileEntitySkypeater && te2 instanceof TileEntitySkypeater) {
+							double d = ((TileEntitySkypeater)te1).getReceiveRange();
+							if (te1.getDistanceSqTo(te2.getX(), te2.getY(), te2.getZ()) <= d*d && this.lineOfSight(te1, te2)) {
+								while (k > i+1) {
+									li.remove(k-1);
+									k--;
+								}
+								flag = true;
+							}
+						}
+					}
+				}
+			}
+		}
+		path.clear();
+		path.addAll(li);
+	}
+	/*
 	private boolean anyConnectedSources() {
+		return net.activeSourceCount(element) != 0;
+	}*/
+
+
+	private boolean anyConnectedSources() {
+		if (net.size() > 100) //slower than just pathfinding
+			return true;
 		ArrayList<CrystalSource> li = net.getAllSourcesFor(element, true);
 		if (ModularLogger.instance.isEnabled(LOGGER_ID))
 			ModularLogger.instance.log(LOGGER_ID, "Found "+li.size()+" sources for "+element+": "+li);
@@ -195,6 +208,7 @@ public class PylonFinder {
 		}
 		return false;
 	}
+
 
 	private boolean isSourceConnected(CrystalSource s) {
 		return target instanceof WrapperTile || !net.getNearbyReceivers(s, element).isEmpty();

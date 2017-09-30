@@ -222,7 +222,14 @@ public class ItemMagicRegistry {
 		this.addElement(Items.ender_pearl, CrystalElement.BLACK, 4);
 		this.addElement(Items.ghast_tear, CrystalElement.BLACK, 1);
 		this.addElement(Items.ghast_tear, CrystalElement.GREEN, 1);
-		this.addElement(Items.skull, CrystalElement.PINK, 4);
+
+		this.addElement(new ItemStack(Items.skull, 1, 0), CrystalElement.PINK, 4);
+		this.addElement(new ItemStack(Items.skull, 1, 1), CrystalElement.PINK, 4);
+		this.addElement(new ItemStack(Items.skull, 1, 1), CrystalElement.ORANGE, 2);
+		this.addElement(new ItemStack(Items.skull, 1, 2), CrystalElement.PINK, 4);
+		this.addElement(new ItemStack(Items.skull, 1, 3), CrystalElement.GREEN, 3);
+		this.addElement(new ItemStack(Items.skull, 1, 4), CrystalElement.PINK, 4);
+		this.addElement(new ItemStack(Items.skull, 1, 4), CrystalElement.YELLOW, 2);
 
 		this.addElement("rodBlizz", CrystalElement.WHITE, 4);
 		this.addElement("rodBlizz", CrystalElement.GREEN, 1);
@@ -251,6 +258,7 @@ public class ItemMagicRegistry {
 			ItemStack seed = ChromaItems.SEED.getStackOfMetadata(i);
 			ItemStack dye = ChromaItems.DYE.getStackOfMetadata(i);
 			ItemStack vdye = new ItemStack(Items.dye, 1, i);
+			ItemStack leaf = ChromaBlocks.DYELEAF.getStackOfMetadata(i);
 			this.addElement(seed, e, 1);
 			this.addElement(crystal, e, 10);
 			this.addElement(berry, e, 1);
@@ -258,6 +266,7 @@ public class ItemMagicRegistry {
 			this.addElement(shard2, e, 6);
 			this.addElement(vdye, e, 1);
 			this.addElement(dye, e, 1);
+			this.addElement(leaf, e, 1);
 		}
 
 		this.addElement(ChromaStacks.crystalPowder, CrystalElement.BLACK, 1);
@@ -304,7 +313,7 @@ public class ItemMagicRegistry {
 
 	private void addOreElement(OreType ore, CrystalElement e, int amt) {
 		for (String s : ore.getOreDictNames()) {
-			this.addElement(s, e, amt);
+			this.addElement(s, e, amt*2);
 		}
 		this.addElement(ore.getProductOreDictName(), e, amt);
 		ElementTagCompound tag = cachedOreNames.get(ore);

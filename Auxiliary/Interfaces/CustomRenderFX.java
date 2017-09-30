@@ -19,4 +19,6 @@ public interface CustomRenderFX {
 
 	TextureMode getTexture();
 
+	public boolean rendersOverLimit();
+
 }

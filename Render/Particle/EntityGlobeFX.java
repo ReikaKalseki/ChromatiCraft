@@ -115,4 +115,9 @@ public class EntityGlobeFX extends EntityFX implements CustomRenderFX {
 		return texture;
 	}
 
+	@Override
+	public boolean rendersOverLimit() {
+		return false;
+	}
+
 }

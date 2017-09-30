@@ -46,28 +46,24 @@ public class BlockDyeLeaf extends BlockCustomLeaf {
 	}
 
 	@Override
-	public final int getRenderColor(int dmg)
-	{
+	public final int getRenderColor(int dmg) {
 		return ReikaDyeHelper.dyes[dmg].getColor();
 	}
 
 	@Override
-	public final int colorMultiplier(IBlockAccess iba, int x, int y, int z)
-	{
+	public final int colorMultiplier(IBlockAccess iba, int x, int y, int z) {
 		int dmg = iba.getBlockMetadata(x, y, z);
 		Color c = ReikaDyeHelper.dyes[dmg].getJavaColor();
 		return BiomeRainbowForest.isDamaged(iba, x, z) ? ReikaColorAPI.mixColors(0xa0a0a0, ReikaColorAPI.getColorWithBrightnessMultiplier(c.getRGB(), 0.85F), 0.4F) : c.brighter().getRGB();
 	}
 
 	@Override
-	public final Item getItemDropped(int id, Random r, int fortune)
-	{
+	public final Item getItemDropped(int id, Random r, int fortune) {
 		return Item.getItemFromBlock(ChromaBlocks.DYESAPLING.getBlockInstance());
 	}
 
 	@Override
-	public int damageDropped(int dmg)
-	{
+	public int damageDropped(int dmg) {
 		return dmg;
 	}
 
@@ -122,8 +118,7 @@ public class BlockDyeLeaf extends BlockCustomLeaf {
 	}
 
 	@Override
-	public final void dropBlockAsItemWithChance(World world, int x, int y, int z, int metadata, float chance, int fortune)
-	{
+	public final void dropBlockAsItemWithChance(World world, int x, int y, int z, int metadata, float chance, int fortune) {
 		if (!world.isRemote) {
 			ArrayList<ItemStack> li = this.getDrops(world, x, y, z, metadata, fortune);
 			for (int i = 0; i < li.size(); i++) {
@@ -143,16 +138,14 @@ public class BlockDyeLeaf extends BlockCustomLeaf {
 	}
 
 	@Override
-	public final ArrayList<ItemStack> onSheared(ItemStack item, IBlockAccess world, int x, int y, int z, int fortune)
-	{
+	public final ArrayList<ItemStack> onSheared(ItemStack item, IBlockAccess world, int x, int y, int z, int fortune) {
 		ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
 		ret.add(new ItemStack(ChromaBlocks.DYELEAF.getBlockInstance(), 1, world.getBlockMetadata(x, y, z)));
 		return ret;
 	}
 
 	@Override
-	protected final ItemStack createStackedBlock(int par1)
-	{
+	protected final ItemStack createStackedBlock(int par1) {
 		return new ItemStack(ChromaBlocks.DYELEAF.getBlockInstance(), 1, par1);
 	}
 
@@ -171,8 +164,7 @@ public class BlockDyeLeaf extends BlockCustomLeaf {
 	}
 
 	@Override
-	public final Item getItem(World par1World, int par2, int par3, int par4)
-	{
+	public final Item getItem(World par1World, int par2, int par3, int par4) {
 		return Item.getItemFromBlock(ChromaBlocks.DYELEAF.getBlockInstance());
 	}
 

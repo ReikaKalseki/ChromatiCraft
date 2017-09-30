@@ -28,18 +28,24 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.RainbowTreeEffects;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.RainbowTreeEffects;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityRainbowBeacon;
+import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -73,8 +79,7 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public final int getRenderColor(int dmg)
-	{
+	public final int getRenderColor(int dmg) {
 		if (dmg == 3) {
 			return Color.HSBtoRGB((System.currentTimeMillis()%7200)/7200F, 0.7F, 1F);
 		}
@@ -88,8 +93,7 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 	}
 
 	@Override
-	public final int colorMultiplier(IBlockAccess iba, int x, int y, int z)
-	{
+	public final int colorMultiplier(IBlockAccess iba, int x, int y, int z) {
 		int sc = 32;
 		int meta = iba.getBlockMetadata(x, y, z);
 		float hue = meta == 3 ? (System.currentTimeMillis()%7200)/7200F : (float)(ReikaMathLibrary.py3d(x, y*3, z+x)%sc)/sc;
@@ -98,14 +102,12 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 	}
 
 	@Override
-	public final Item getItemDropped(int id, Random r, int fortune)
-	{
+	public final Item getItemDropped(int id, Random r, int fortune) {
 		return Item.getItemFromBlock(ChromaBlocks.RAINBOWSAPLING.getBlockInstance());
 	}
 
 	@Override
-	public int damageDropped(int dmg)
-	{
+	public int damageDropped(int dmg) {
 		return 0;
 	}
 
@@ -142,8 +144,7 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 	}
 
 	@Override
-	public final void dropBlockAsItemWithChance(World world, int x, int y, int z, int metadata, float chance, int fortune)
-	{
+	public final void dropBlockAsItemWithChance(World world, int x, int y, int z, int metadata, float chance, int fortune) {
 		if (!world.isRemote) {
 			ArrayList<ItemStack> li = this.getDrops(world, x, y, z, metadata, fortune);
 			for (int i = 0; i < li.size(); i++) {
@@ -188,32 +189,46 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 	}
 
 	@Override
-	public final ArrayList<ItemStack> onSheared(ItemStack item, IBlockAccess world, int x, int y, int z, int fortune)
-	{
+	public final ArrayList<ItemStack> onSheared(ItemStack item, IBlockAccess world, int x, int y, int z, int fortune) {
 		ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
 		ret.add(new ItemStack(ChromaBlocks.RAINBOWLEAF.getBlockInstance()));
 		return ret;
 	}
 
 	@Override
-	protected final ItemStack createStackedBlock(int par1)
-	{
+	protected final ItemStack createStackedBlock(int par1) {
 		return new ItemStack(ChromaBlocks.RAINBOWLEAF.getBlockInstance());
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public final void randomDisplayTick(World world, int x, int y, int z, Random rand) {
 		int color = this.colorMultiplier(world, x, y, z);
-		Color c = new Color(color);
-		float r = c.getRed()/255F;
-		float g = c.getGreen()/255F;
-		float b = c.getBlue()/255F;
+		float r = ReikaColorAPI.getRed(color)/255F;
+		float g = ReikaColorAPI.getGreen(color)/255F;
+		float b = ReikaColorAPI.getBlue(color)/255F;
 		world.spawnParticle("reddust", x+rand.nextDouble(), y, z+rand.nextDouble(), r, g, b);
+		if (BiomeGlowingCliffs.isGlowingCliffs(world.getBiomeGenForCoords(x, z)) || (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world))) {
+			if (world.getBlock(x, y+1, z) != this) {
+				color = ReikaColorAPI.getModifiedSat(color, 10F);
+				float s = 0.75F+rand.nextFloat()*0.5F;
+				EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble(), 0, 90);
+				fx.freedom *= 4;
+				fx.angleVelocity *= 4;
+				fx.setColor(color).setIcon(ChromaIcons.FADE_GENTLE).setScale(s);
+				EntityFloatingSeedsFX fx2 = new EntityFloatingSeedsFX(world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble(), 0, 90);
+				fx2.setColor(ReikaColorAPI.mixColors(color, 0xffffff, 0.5F)).setIcon(ChromaIcons.FADE_GENTLE).setScale(s*0.66F).lockTo(fx);
+				EntityFloatingSeedsFX fx3 = new EntityFloatingSeedsFX(world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble(), 0, 90);
+				fx3.setColor(0xffffff).setIcon(ChromaIcons.FADE_GENTLE).setScale(s*0.33F).lockTo(fx);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx3);
+			}
+		}
 	}
 
 	@Override
-	public final Item getItem(World par1World, int par2, int par3, int par4)
-	{
+	public final Item getItem(World par1World, int par2, int par3, int par4) {
 		return Item.getItemFromBlock(ChromaBlocks.RAINBOWLEAF.getBlockInstance());
 	}
 

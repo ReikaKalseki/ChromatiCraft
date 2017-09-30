@@ -453,8 +453,8 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		RAWEXPLORE(),
 		BASICCRAFT(),
 		RUNECRAFT(),
-		ENERGYEXPLORE(),
 		CHARGESELF(), //?
+		ENERGYEXPLORE(),
 		MULTICRAFT(),
 		NETWORKING(),
 		PYLONCRAFT(),

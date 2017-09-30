@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,6 +26,8 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
+import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
@@ -40,15 +43,25 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
+import Reika.DragonAPI.Instantiable.Data.RunningAverage;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
+import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
+import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
+import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledEvent;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -61,6 +74,10 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 	public static final String DROP_TAG = "GlowFire";
 
 	private final ElementTagCompound energy = new ElementTagCompound();
+
+	private RunningAverage averageIngredientValue = new RunningAverage();
+	private RunningAverage averageOutputValue = new RunningAverage();
+	private boolean smothered;
 
 	//private ItemStack output;
 
@@ -83,11 +100,28 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (world.isRemote) {
-			this.doParticles(world, x, y, z);
+			if (!this.isSmothered() || rand.nextInt(4) == 0)
+				this.doParticles(world, x, y, z);
 		}
 		else {
 			this.consumeItems(world, x, y, z);
 		}
+
+		CrystalElement e = energy.asWeightedRandom().getRandomEntry();
+		if (energy.getValue(e) >= this.getMaxStorage(e)) {
+			float f = 0.03125F*0.75F*energy.getValue(e)/this.getMaxStorage(e);
+			if (ReikaRandomHelper.doWithChance(f)) {
+				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(this).expand(6, 3, 6);
+				List<EntityPlayer> li = worldObj.getEntitiesWithinAABB(EntityPlayer.class, box);
+				for (EntityPlayer ep : li) {
+					this.dischargeIntoPlayer(this, ep, e, 1);
+				}
+			}
+		}
+	}
+
+	public boolean isSmothered() {
+		return smothered;
 	}
 
 	public boolean craft() {
@@ -103,6 +137,12 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 			this.dropItem(in);
 			flag = this.craftAndDrop(in);
 			flag2 |= flag;
+		}
+		double over = averageOutputValue.getAverage()/averageIngredientValue.getAverage();
+		if (averageIngredientValue.getAverage() > 0 && over >= 1) {
+			if (ReikaRandomHelper.doWithChance(Math.min(0.25, over/16D))) {
+				smothered = true;
+			}
 		}
 		return flag2;
 	}
@@ -140,6 +180,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 				return false;
 		}
 		//ReikaJavaLibrary.pConsole(in+" costs "+cost+", rem "+remove);
+		averageOutputValue.addValue(remove.getTotalEnergy());
 		energy.subtract(remove);
 		return true;
 	}
@@ -178,7 +219,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 		AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).contract(0.2, 0.2, 0.2);
 		List<EntityItem> li = world.getEntitiesWithinAABB(EntityItem.class, box);
 		for (EntityItem ei : li) {
-			if (!ei.getEntityData().getBoolean(DROP_TAG)) {
+			if (this.isConsumableItem(ei)) {
 				ItemStack is = ei.getEntityItem();
 				ElementTagCompound tag = this.consumeItem(is);
 				if (tag != null) {
@@ -186,10 +227,20 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 					if (is.stackSize <= 0)
 						ei.setDead();
 					energy.addTag(tag);
+					averageIngredientValue.addValue(tag.getTotalEnergy());
 					ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.FIRECONSUMEITEM.ordinal(), this, 32, tag.keySetAsBits());
 				}
 			}
 		}
+	}
+
+	private boolean isConsumableItem(EntityItem ei) {
+		if (ei.getEntityData().getBoolean(DROP_TAG))
+			return false;
+		EntityPlayer ep = ReikaItemHelper.getDropper(ei);
+		if (ep == null || ReikaPlayerAPI.isFake(ep) || ep.getDistanceSqToEntity(ei) >= 64)
+			return false;
+		return true;
 	}
 
 	private ElementTagCompound consumeItem(ItemStack is) {
@@ -207,8 +258,13 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 	public static ElementTagCompound getCost(ItemStack is) {
 		if (!FabricationRecipes.recipes().isItemFabricable(is))
 			return null;
+		if (ReikaBlockHelper.isOre(is))
+			return null;
 		ElementTagCompound tag = ItemElementCalculator.instance.getValueForItem(is).copy();
-		tag = scaleCostTag(is, tag);
+		//if (tag == null)
+		//	tag = FabricationRecipes.recipes().getItemRecipe(is).getCost().copy().scale(1F/FabricationRecipes.FACTOR).power(1F/FabricationRecipes.POWER).scale(1F/FabricationRecipes.INITFACTOR);
+		if (tag != null)
+			tag = scaleCostTag(is, tag);
 		return tag != null && !tag.isEmpty() ? tag : null;
 	}
 
@@ -265,10 +321,19 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 		if (!worldObj.isRemote) {
 			ChromaSounds.RIFT.playSoundAtBlock(this);
 			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.FIREDUMP.ordinal(), this, 64, energy.keySetAsBits());
-			energy.clear();
 			if (inv[0] != null)
 				this.dropItem(inv[0]);
 			inv[0] = null;
+			AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(this).expand(6, 3, 6);
+			List<EntityPlayer> li = worldObj.getEntitiesWithinAABB(EntityPlayer.class, box);
+			for (EntityPlayer ep : li) {
+				int tick = 1+rand.nextInt(3);
+				for (CrystalElement e : energy.elementSet()) {
+					TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new GlowFireDischarge(this, ep, e, energy.getValue(e)/(float)this.getMaxStorage(e))), tick);
+					tick += 1+rand.nextInt(10);
+				}
+			}
+			energy.clear();
 		}
 	}
 
@@ -333,11 +398,17 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 		float s = primary ? 2.2F : 1.25F;
 		double[] v = ReikaPhysicsHelper.polarToCartesian(0.125/l*6D, theta, phi);
 		int c = ReikaColorAPI.getModifiedHue(0x1070ff, (int)(215+70*Math.sin(timer/40D)));
+		if (this.isSmothered()) {
+			c = ReikaColorAPI.getModifiedHue(c, rand.nextInt(60));
+			c = ReikaColorAPI.getModifiedSat(c, 0.5F);
+			c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, 0.5F+0.25F*rand.nextFloat());
+		}
 		EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.5, z+0.5, v[0], v[1], v[2]).setColor(c).setScale(s).setLife(l);
 		if (rand.nextBoolean())
 			fx.setColliding();
 		if (primary)
 			fx.setRapidExpand();
+		fx.forceIgnoreLimits();
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
@@ -411,6 +482,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 		super.readSyncTag(NBT);
 
 		energy.readFromNBT("energy", NBT);
+		smothered = NBT.getBoolean("smother");
 	}
 
 	@Override
@@ -418,11 +490,84 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 		super.writeSyncTag(NBT);
 
 		energy.writeToNBT("energy", NBT);
+		NBT.setBoolean("smother", smothered);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound NBT) {
+		super.readFromNBT(NBT);
+
+		averageIngredientValue.readFromNBT("inputval", NBT);
+		averageOutputValue.readFromNBT("outputval", NBT);
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound NBT) {
+		super.writeToNBT(NBT);
+
+		averageIngredientValue.writeToNBT("inputval", NBT);
+		averageOutputValue.writeToNBT("outputval", NBT);
 	}
 
 	@Override
 	public void breakBlock() {
 		this.empty();
+	}
+
+	private static void dischargeIntoPlayer(TileEntityGlowFire tile, EntityPlayer player, CrystalElement color, float power) {
+		ChromaAux.doPylonAttack(color, player, player.getHealth()/4F*Math.min(1, 2*power), false);
+		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.FIREDUMPSHOCK.ordinal(), tile, 64, color.ordinal(), player.getEntityId());
+		ReikaEntityHelper.knockbackEntityFromPos(tile.xCoord+0.5, /*tile.yCoord+0.125*/player.posY, tile.zCoord+0.5, player, 1.5*Math.min(power*4, 1));
+		player.motionY += 0.125+rand.nextDouble()*0.0625;
+	}
+
+	/** In the words of {@link SoundHandler} line 171, "IN YOU FACE!" */
+	@SideOnly(Side.CLIENT)
+	public static void dischargeIntoPlayerFX(World world, int x, int y, int z, CrystalElement e, EntityPlayer ep) {
+		ReikaSoundHelper.playClientSound(ChromaSounds.MONUMENTRAY, ep, 1, (float)CrystalMusicManager.instance.getDingPitchScale(e), false);
+		int n = 4+rand.nextInt(4);
+		LightningBolt b = new LightningBolt(new DecimalPosition(x+0.5, y+0.5, z+0.5), new DecimalPosition(ep).offset(0, -0.25, 0), n);
+		b.variance *= 2;
+		b.update();
+		for (int i = 0; i < b.nsteps; i++) {
+			DecimalPosition pos1 = b.getPosition(i);
+			DecimalPosition pos2 = b.getPosition(i+1);
+			for (double r = 0; r <= 1; r += 0.03125) {
+				double f = i+r;
+				float s = 1.75F;//(float)(1.25+1.75*f/(2D*b.nsteps));
+				int l = 20;
+				int a = (int)(2*f);
+				DecimalPosition dd = DecimalPosition.interpolate(pos1, pos2, r);
+				EntityFX fx = new EntityBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s).setColor(e.getColor()).setLife(l).setRapidExpand().freezeLife(a);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
+		}
+	}
+
+	private static class GlowFireDischarge implements ScheduledEvent {
+
+		private final TileEntityGlowFire tile;
+		private final EntityPlayer player;
+		private final CrystalElement color;
+		private final float fraction;
+
+		public GlowFireDischarge(TileEntityGlowFire te, EntityPlayer ep, CrystalElement e, float amt) {
+			tile = te;
+			player = ep;
+			color = e;
+			fraction = amt;
+		}
+
+		@Override
+		public void fire() {
+			dischargeIntoPlayer(tile, player, color, fraction);
+		}
+
+		@Override
+		public boolean runOnSide(Side s) {
+			return s == Side.SERVER;
+		}
+
 	}
 
 }

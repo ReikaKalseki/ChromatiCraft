@@ -131,8 +131,8 @@ public final class AbilityRituals {
 		this.addRitual(rit);
 
 		rit = new AbilityRitual(Chromabilities.LEECH);
-		rit.addAura(CrystalElement.PINK, 20000);
-		rit.addAura(CrystalElement.MAGENTA, 25000);
+		rit.addAura(CrystalElement.PINK, 10000);
+		rit.addAura(CrystalElement.MAGENTA, 15000);
 		this.addRitual(rit);
 
 		rit = new AbilityRitual(Chromabilities.TELEPORT);
@@ -143,8 +143,8 @@ public final class AbilityRituals {
 		this.addRitual(rit);
 
 		rit = new AbilityRitual(Chromabilities.FLOAT);
-		rit.addAura(CrystalElement.LIME, 50000);
-		rit.addAura(CrystalElement.BLACK, 10000);
+		rit.addAura(CrystalElement.LIME, 5000);
+		rit.addAura(CrystalElement.BLACK, 2000);
 		rit.addAura(CrystalElement.CYAN, 25000);
 		this.addRitual(rit);
 
@@ -274,6 +274,11 @@ public final class AbilityRituals {
 		rit.addAura(CrystalElement.GRAY, 60000);
 		rit.addAura(CrystalElement.YELLOW, 120000);
 		rit.addAura(CrystalElement.BLACK, 40000);
+		this.addRitual(rit);
+
+		rit = new AbilityRitual(Chromabilities.JUMP);
+		rit.addAura(CrystalElement.LIME, 20000);
+		rit.addAura(CrystalElement.LIGHTBLUE, 5000);
 		this.addRitual(rit);
 	}
 

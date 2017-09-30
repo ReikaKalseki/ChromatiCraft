@@ -105,8 +105,11 @@ public class GlowFireHandler extends TemplateRecipeHandler {
 	public void loadCraftingRecipes(String outputId, Object... results) {
 		if (outputId != null && outputId.equals("ccglowfire")) {
 			Collection<KeyedItemStack> li = FabricationRecipes.recipes().getFabricableItems();
-			for (KeyedItemStack is : li)
-				arecipes.add(new GlowFireRecipe(is.getItemStack(), TileEntityGlowFire.getCost(is.getItemStack()), true));
+			for (KeyedItemStack is : li) {
+				ElementTagCompound tag = TileEntityGlowFire.getCost(is.getItemStack());
+				if (tag != null)
+					arecipes.add(new GlowFireRecipe(is.getItemStack(), tag, true));
+			}
 		}
 		super.loadCraftingRecipes(outputId, results);
 	}

@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler.PlayerTracker;
 import Reika.DragonAPI.IO.ReikaFileReader;
+import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
 import Reika.DragonAPI.Instantiable.IO.NBTFile;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import cpw.mods.fml.common.FMLLog;
@@ -38,6 +39,8 @@ public class ProgressionCacher implements PlayerTracker {
 	private String baseFilepath;
 
 	private final HashMap<UUID, ProgressCache> progressCache = new HashMap();
+
+	private final PlayerMap<NBTTagCompound> cachedBackup = new PlayerMap();
 
 	private ProgressionCacher() {
 
@@ -150,17 +153,21 @@ public class ProgressionCacher implements PlayerTracker {
 
 	public NBTTagCompound attemptToLoadBackup(EntityPlayer ep) {
 		ChromatiCraft.logger.log("Attempting to load backup progression for "+ep);
-		File f = this.getBackupFile(ep);
-		if (!f.exists() || f.length() == 0)
-			return null;
-		try {
-			return ReikaFileReader.readUncompressedNBT(f);
+		NBTTagCompound tag = cachedBackup.get(ep);
+		if (tag == null) {
+			File f = this.getBackupFile(ep);
+			if (f.exists() && f.length() > 0) {
+				try {
+					tag = ReikaFileReader.readUncompressedNBT(f);
+					cachedBackup.put(ep, tag);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					ChromatiCraft.logger.logError("Could not read progression data backup for "+ep.getCommandSenderName()+"!");
+				}
+			}
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-			ChromatiCraft.logger.logError("Could not read progression data backup for "+ep.getCommandSenderName()+"!");
-			return null;
-		}
+		return tag;
 	}
 
 	public void updateBackup(EntityPlayer ep) {
@@ -171,6 +178,7 @@ public class ProgressionCacher implements PlayerTracker {
 			f.delete();
 		try {
 			f.createNewFile();
+			cachedBackup.put(ep, ReikaPlayerAPI.getDeathPersistentNBT(ep));
 			ReikaFileReader.writeUncompressedNBT(ReikaPlayerAPI.getDeathPersistentNBT(ep), f);
 		}
 		catch (IOException e) {

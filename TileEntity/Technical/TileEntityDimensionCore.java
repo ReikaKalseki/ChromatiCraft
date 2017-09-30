@@ -25,6 +25,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -56,6 +58,7 @@ import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.TileEntity.PlayerBreakHook;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -75,7 +78,8 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 	private DimensionStructureType structure = null;
 	private boolean triggered = false;
 
-	private HashSet<UUID> sentPlayers = new HashSet();
+	private final HashSet<UUID> sentPlayers = new HashSet();
+	private final HashSet<UUID> playerWhitelist = new HashSet();
 
 	private static final EnumMap<CrystalElement, Coordinate> locations = new EnumMap(CrystalElement.class);
 	private static final EnumMap<CrystalElement, HashSet<CrystalElement>> beams = new EnumMap(CrystalElement.class);
@@ -534,6 +538,13 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 
 		if (NBT.hasKey("uid"))
 			uid = UUID.fromString(NBT.getString("uid"));
+
+		playerWhitelist .clear();
+		NBTTagList li = NBT.getTagList("whitelist", NBTTypes.STRING.ID);
+		for (Object o : li.tagList) {
+			String sg = ((NBTTagString)o).func_150285_a_();
+			playerWhitelist.add(UUID.fromString(sg));
+		}
 	}
 
 	@Override
@@ -543,6 +554,12 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 		NBT.setInteger("struct", structure != null ? structure.ordinal() : -1);
 		if (uid != null)
 			NBT.setString("uid", uid.toString());
+
+		NBTTagList li = new NBTTagList();
+		for (UUID id : playerWhitelist) {
+			li.appendTag(new NBTTagString(id.toString()));
+		}
+		NBT.setTag("whitelist", li);
 	}
 
 	@Override
@@ -576,11 +593,15 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 	public boolean isBreakable(EntityPlayer ep) {
 		if (ep == null)
 			return false;
+		if (ReikaPlayerAPI.isFake(ep))
+			return false;
 		if (!worldObj.isRemote && !ep.capabilities.isCreativeMode && this.hasStructure()) {
 			if (!this.getStructure().shouldAllowCoreMining(worldObj, ep)) {
 				return false;
 			}
 		}
+		if (!playerWhitelist.isEmpty() && !playerWhitelist.contains(ep.getUniqueID()))
+			return false;
 		return true;
 	}
 
@@ -597,8 +618,6 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 				this.openStructure();
 			return true;
 		}
-		if (ReikaPlayerAPI.isFake(ep))
-			return false;
 		if (ep.getDistance(xCoord+0.5, yCoord+0.5, zCoord+0.5) > 5)
 			return false;
 		if (this.hasStructure()) {
@@ -656,6 +675,10 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 
 	void setColor(CrystalElement e) {
 		color = e;
+	}
+
+	public void whitelistPlayer(EntityPlayer ep) {
+		playerWhitelist.add(ep.getUniqueID());
 	}
 
 }

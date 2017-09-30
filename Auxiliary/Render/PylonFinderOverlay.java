@@ -13,7 +13,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 
@@ -50,8 +49,7 @@ public class PylonFinderOverlay {
 		if (evt.type == ElementType.HELMET) {
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 			if (PylonGenerator.instance.canGenerateIn(ep.worldObj)) {
-				ItemStack is = ep.getCurrentEquippedItem();
-				if (is != null && ChromaItems.FINDER.matchWith(is)) {
+				if ((ep.getEntityData().hasKey("pylonoverlay") && ep.getEntityData().getLong("pylonoverlay") >= ep.worldObj.getTotalWorldTime()-20) || ChromaItems.FINDER.matchWith(ep.getCurrentEquippedItem())) {
 					Tessellator v5 = Tessellator.instance;
 
 					//ArrayList<CrystalElement> left = new ArrayList();

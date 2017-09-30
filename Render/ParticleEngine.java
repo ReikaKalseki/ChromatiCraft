@@ -170,9 +170,15 @@ public class ParticleEngine extends EffectRenderer {
 			rm = this.getOrCreateKey(((CustomRenderFX)fx).getTexture(), ((CustomRenderFX)fx).getRenderMode());
 		}
 		particles.addValue(rm, fx, true);
-		Collection<EntityFX> parts = particles.get(rm);
+		List<EntityFX> parts = (List<EntityFX>)particles.get(rm);
 		if (parts.size() >= MAX_PARTICLES) {
-			((List)parts).remove(0);
+			int i = 0;
+			EntityFX rfx = parts.get(i);
+			while (rfx instanceof CustomRenderFX && ((CustomRenderFX)rfx).rendersOverLimit() && i < parts.size()-1) {
+				i++;
+				rfx = parts.get(i);
+			}
+			parts.remove(i);
 		}
 	}
 

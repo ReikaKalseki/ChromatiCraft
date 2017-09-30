@@ -93,6 +93,8 @@ public class TileEntityRFDistributor extends TileEntityAreaDistributor implement
 	}
 
 	private void sendEnergy(int rf, WorldLocation loc, IEnergyReceiver ie) {
+		if (worldObj.isRemote)
+			return;
 		int x = loc.xCoord;
 		int y = loc.yCoord;
 		int z = loc.zCoord;

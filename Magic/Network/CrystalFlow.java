@@ -30,8 +30,10 @@ public class CrystalFlow extends CrystalPath {
 	private static final int MIN_THROUGHPUT = 10;
 
 	public final int maxFlow;
+	private final int requestedAmount;
 	public final int totalCost;
 	public final CrystalReceiver receiver;
+	private final int throughputLimit;
 
 	private int remainingAmount;
 
@@ -41,10 +43,12 @@ public class CrystalFlow extends CrystalPath {
 
 	protected CrystalFlow(CrystalNetworker net, CrystalReceiver r, CrystalElement e, int amt, List<WorldLocation> li, int maxthru) {
 		super(net, !(r instanceof WrapperTile), e, li);
-		totalCost = amt+this.getSignalLoss();
+		requestedAmount = amt;
+		totalCost = requestedAmount+this.getSignalLoss();
 		remainingAmount = totalCost;
 		receiver = r;
 		CrystalNetworkLogger.logPathCalculation("maxthru", maxthru);
+		throughputLimit = maxthru;
 		maxFlow = this.calcEffectiveThroughput(maxthru);
 	}
 
@@ -208,6 +212,11 @@ public class CrystalFlow extends CrystalPath {
 				((CrystalRepeater)te).onTransfer(transmitter, receiver, element, amt);
 			}
 		}
+	}
+
+	@Override
+	public CrystalPath optimize() {
+		return new CrystalFlow(network, super.optimize(), receiver, requestedAmount, throughputLimit);
 	}
 
 }

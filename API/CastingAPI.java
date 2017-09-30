@@ -10,12 +10,16 @@
 package Reika.ChromatiCraft.API;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.tileentity.TileEntity;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /** Use this class to add custom casting recipes. Note that each tier of recipes encompasses the last in terms of required actions/content,
  * and the various methods' arguments reflect that.
@@ -72,32 +76,37 @@ public class CastingAPI {
 	private static Class recipes;
 	private static Object instance;
 	private static Method add;
+	private static Field effect;
 
 	private static boolean loaded;
 
 	/** Use this to add a level one "crafting type" casting recipe.
-	 * Args: Recipe object */
-	public static void addCastingRecipe(IRecipe ir) {
+	 * Args: Recipe object
+	 * Returns the casting recipe object. */
+	public static Object addCastingRecipe(IRecipe ir) {
 		if (!loaded) {
 			System.out.println("Class did not initialize correctly, casting recipes cannot be added!");
-			return;
+			return null;
 		}
 		ItemStack out = ir.getRecipeOutput();
 		try {
 			Object r = instCast.newInstance(out, ir);
 			add.invoke(instance, r);
+			return r;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
 	}
 
 	/** Use this to add a level two "temple/rune type" casting recipe.
-	 * Args: Recipe object, rune map (may NOT be null) */
-	public static void addTempleCastingRecipe(IRecipe ir, Map<List<Integer>, CrystalElementProxy> runes) {
+	 * Args: Recipe object, rune map (may NOT be null)
+	 * Returns the casting recipe object. */
+	public static Object addTempleCastingRecipe(IRecipe ir, Map<List<Integer>, CrystalElementProxy> runes) {
 		if (!loaded) {
 			System.out.println("Class did not initialize correctly, casting recipes cannot be added!");
-			return;
+			return null;
 		}
 		ItemStack out = ir.getRecipeOutput();
 		try {
@@ -106,18 +115,21 @@ public class CastingAPI {
 				rune.invoke(r, runes.get(key), key.get(0).intValue(), key.get(1).intValue(), key.get(2).intValue());
 			}
 			add.invoke(instance, r);
+			return r;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
 	}
 
 	/** Use this to add a level three "multiblock" casting recipe.
-	 * Args: Output item, central item, rune map (may be null), itemstack map (may NOT be null) */
-	public static void addMultiBlockCastingRecipe(ItemStack out, ItemStack ctr, Map<List<Integer>, CrystalElementProxy> runes, Map<List<Integer>, ItemStack> items) {
+	 * Args: Output item, central item, rune map (may be null), itemstack map (may NOT be null)
+	 * Returns the casting recipe object. */
+	public static Object addMultiBlockCastingRecipe(ItemStack out, ItemStack ctr, Map<List<Integer>, CrystalElementProxy> runes, Map<List<Integer>, ItemStack> items) {
 		if (!loaded) {
 			System.out.println("Class did not initialize correctly, casting recipes cannot be added!");
-			return;
+			return null;
 		}
 		try {
 			Object r = instMulti.newInstance(out, ctr);
@@ -130,18 +142,21 @@ public class CastingAPI {
 				aux.invoke(r, items.get(key), key.get(0).intValue(), key.get(1).intValue());
 			}
 			add.invoke(instance, r);
+			return r;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
 	}
 
 	/** Use this to add a level four "pylon" casting recipe.
-	 * Args: Output item, central item, rune map (may be null), itemstack map (may NOT be null), energy map (may NOT be null) */
-	public static void addPylonCastingRecipe(ItemStack out, ItemStack ctr, Map<List<Integer>, CrystalElementProxy> runes, Map<List<Integer>, ItemStack> items, Map<CrystalElementProxy, Integer> energy) {
+	 * Args: Output item, central item, rune map (may be null), itemstack map (may NOT be null), energy map (may NOT be null)
+	 * Returns the casting recipe object. */
+	public static Object addPylonCastingRecipe(ItemStack out, ItemStack ctr, Map<List<Integer>, CrystalElementProxy> runes, Map<List<Integer>, ItemStack> items, Map<CrystalElementProxy, Integer> energy) {
 		if (!loaded) {
 			System.out.println("Class did not initialize correctly, casting recipes cannot be added!");
-			return;
+			return null;
 		}
 		try {
 			Object r = instPylon.newInstance(out, ctr);
@@ -157,10 +172,29 @@ public class CastingAPI {
 				aura.invoke(r, e, energy.get(e).intValue());
 			}
 			add.invoke(instance, r);
+			return r;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public static void addEffectCallback(Object recipe, FXCallback callback) {
+		try {
+			effect.set(recipe, callback);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static interface FXCallback {
+
+		@SideOnly(Side.CLIENT)
+		/** Spawn particles, play sounds, etc. */
+		public void onEffectTick(TileEntity te, Object recipe, ItemStack output);
+
 	}
 
 	static {
@@ -170,6 +204,7 @@ public class CastingAPI {
 			cast = Class.forName("Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe");
 			instCast = cast.getDeclaredConstructor(ItemStack.class, IRecipe.class);
 			instCast.setAccessible(true);
+			effect = cast.getField("effectCallback");
 
 			temple = Class.forName("Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe$TempleCastingRecipe");
 			instTemple = temple.getDeclaredConstructor(ItemStack.class, IRecipe.class);

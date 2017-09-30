@@ -66,6 +66,8 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 	private boolean depthTest = true;
 	private boolean alphaTest = false;
 
+	private boolean renderOverLimit = false;
+
 	private MotionController motionController;
 	private PositionController positionController;
 	private ColorController colorController;
@@ -91,7 +93,7 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 		particleIcon = ChromaIcons.FADE.getIcon();
 	}
 
-	public EntityBlurFX setIcon(ChromaIcons c) {
+	public final EntityBlurFX setIcon(ChromaIcons c) {
 		particleIcon = c.getIcon();
 		if (!c.isTransparent()) {
 			alphaTest = false;
@@ -100,12 +102,12 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 		return this;
 	}
 
-	public EntityBlurFX setIcon(IIcon ii) {
+	public final EntityBlurFX setIcon(IIcon ii) {
 		particleIcon = ii;
 		return this;
 	}
 
-	public EntityBlurFX setScale(float f) {
+	public final EntityBlurFX setScale(float f) {
 		scale = f;
 		return this;
 	}
@@ -120,12 +122,12 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 		return this;
 	}
 
-	public EntityBlurFX setRapidExpand() {
+	public final EntityBlurFX setRapidExpand() {
 		rapidExpand = true;
 		return this;
 	}
 
-	public EntityBlurFX setAlphaFading() {
+	public final EntityBlurFX setAlphaFading() {
 		alphaFade = true;
 		return this;
 	}
@@ -176,18 +178,22 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 		return this;
 	}
 
-	public EntityBlurFX setCyclingColor(float scale) {
+	public final EntityBlurFX setCyclingColor(float scale) {
 		cyclescale = scale;
 		return this;
 	}
 
-	public EntityBlurFX markDestination(int x, int y, int z) {
+	public final EntityBlurFX markDestination(int x, int y, int z) {
 		destination = new Coordinate(x, y, z);
 		return this;
 	}
 
-	public EntityBlurFX lockTo(EntityFX fx) {
+	public final EntityBlurFX lockTo(EntityFX fx) {
 		lock = fx;
+		if (this == fx) {
+			ChromatiCraft.logger.logError("Cannot lock a particle to itself!");
+			return this;
+		}
 		if (fx instanceof EntityBlurFX) {
 			EntityBlurFX bfx = (EntityBlurFX)fx;
 			if (!bfx.getRenderMode().equals(this.getRenderMode()))
@@ -197,42 +203,47 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 		return this;
 	}
 
-	public EntityBlurFX setBasicBlend() {
+	public final EntityBlurFX setBasicBlend() {
 		additiveBlend = false;
 		return this;
 	}
 
-	public EntityBlurFX setNoDepthTest() {
+	public final EntityBlurFX setNoDepthTest() {
 		depthTest = false;
 		return this;
 	}
 
-	public EntityBlurFX enableAlphaTest() {
+	public final EntityBlurFX enableAlphaTest() {
 		alphaTest = true;
 		return this;
 	}
 
-	public EntityBlurFX setAge(int age) {
+	public final EntityBlurFX forceIgnoreLimits() {
+		renderOverLimit = true;
+		return this;
+	}
+
+	public final EntityBlurFX setAge(int age) {
 		particleAge = age;
 		return this;
 	}
 
-	public EntityBlurFX freezeLife(int ticks) {
+	public final EntityBlurFX freezeLife(int ticks) {
 		lifeFreeze = ticks;
 		return this;
 	}
 
-	public EntityBlurFX setMotionController(MotionController m) {
+	public final EntityBlurFX setMotionController(MotionController m) {
 		motionController = m;
 		return this;
 	}
 
-	public EntityBlurFX setPositionController(PositionController m) {
+	public final EntityBlurFX setPositionController(PositionController m) {
 		positionController = m;
 		return this;
 	}
 
-	public EntityBlurFX setColorController(ColorController m) {
+	public final EntityBlurFX setColorController(ColorController m) {
 		colorController = m;
 		return this;
 	}
@@ -406,25 +417,27 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 	}
 	 */
 	@Override
-	public int getBrightnessForRender(float par1)
-	{
+	public final int getBrightnessForRender(float par1) {
 		return 240;
 	}
 
 	@Override
-	public int getFXLayer()
-	{
+	public final int getFXLayer() {
 		return 2;
 	}
 
 	@Override
-	public RenderMode getRenderMode() {
+	public final RenderMode getRenderMode() {
 		return new RenderMode().setFlag(RenderModeFlags.ADDITIVE, additiveBlend).setFlag(RenderModeFlags.DEPTH, depthTest).setFlag(RenderModeFlags.LIGHT, false).setFlag(RenderModeFlags.ALPHACLIP, alphaTest && additiveBlend);//additiveBlend ? RenderMode.ADDITIVEDARK : RenderMode.LIT;
 	}
 
 	@Override
-	public TextureMode getTexture() {
+	public final TextureMode getTexture() {
 		return ParticleEngine.instance.blockTex;
+	}
+
+	public boolean rendersOverLimit() {
+		return renderOverLimit;
 	}
 
 }

@@ -129,4 +129,9 @@ public class EntityRuneFX extends EntityFX implements CustomRenderFX {
 		return ParticleEngine.instance.blockTex;
 	}
 
+	@Override
+	public boolean rendersOverLimit() {
+		return false;
+	}
+
 }

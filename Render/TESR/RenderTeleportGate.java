@@ -210,7 +210,7 @@ public class RenderTeleportGate extends ChromaRenderBase {
 
 			if (te.isInWorld() || StructureRenderer.isRenderingTiles()) {
 
-				if (this.checkRayTrace(te)) {
+				if (StructureRenderer.isRenderingTiles() || this.checkRayTrace(te)) {
 					GL11.glPushMatrix();
 					GL11.glTranslated(0, 1.5, 0);
 					GL11.glDisable(GL11.GL_DEPTH_TEST);

@@ -80,6 +80,7 @@ public class CrystalNetworker implements TickHandler {
 
 	private final TileEntityCache<CrystalNetworkTile> tiles = new TileEntityCache();
 	private final EnumMap<CrystalElement, TileEntityCache<TileEntityCrystalPylon>> pylons = new EnumMap(CrystalElement.class);
+	//private final MultiMap<CrystalElement, WorldLocation> sourceCounts = new MultiMap(new MultiMap.HashSetFactory());
 	private final MultiMap<Integer, CrystalFlow> flows = new MultiMap(new MultiMap.HashSetFactory());
 	private final HashMap<UUID, WorldLocation> verifier = new HashMap();
 	private final MultiMap<WorldChunk, CrystalLink> losCache = new MultiMap(new MultiMap.HashSetFactory()).setNullEmpty();
@@ -368,9 +369,18 @@ public class CrystalNetworker implements TickHandler {
 				this.removeTile(old);
 			}
 			tiles.put(loc, te);
+
+			/*
+			if (te instanceof CrystalSource) {
+				CrystalSource src = (CrystalSource)te;
+				EnumSet<CrystalElement> set = src.getTransmissibleColors();
+				for (CrystalElement e : set) {
+					this.addPotentialActiveSource(te, e);
+				}*/
 			if (te instanceof TileEntityCrystalPylon) {
 				this.addPylon((TileEntityCrystalPylon)te);
 			}
+			//}
 			this.verifyTileAt(te, loc);
 
 			for (NotifiedNetworkTile tile : notifyCache) {
@@ -507,12 +517,21 @@ public class CrystalNetworker implements TickHandler {
 			tile.onTileNetworkTopologyChange(te, true);
 		}
 
+		/*
+		if (te instanceof CrystalSource) {
+			CrystalSource src = (CrystalSource)te;
+			EnumSet<CrystalElement> set = src.getTransmissibleColors();
+			for (CrystalElement e : set) {
+				this.removeActiveSource(te, e);
+			} */
 		if (te instanceof TileEntityCrystalPylon) {
 			TileEntityCrystalPylon tile = (TileEntityCrystalPylon)te;
 			TileEntityCache<TileEntityCrystalPylon> c = pylons.get(tile.getColor());
 			if (c != null)
 				c.remove(tile);
 		}
+		//}
+
 		Collection<CrystalFlow> li = flows.get(te.getWorld().provider.dimensionId);
 		Iterator<CrystalFlow> it = li.iterator();
 		while (it.hasNext()) {
@@ -584,6 +603,10 @@ public class CrystalNetworker implements TickHandler {
 			}
 		}
 		return li;
+	}
+
+	public boolean canMakeConnection(CrystalTransmitter src, CrystalReceiver tgt, CrystalElement e) {
+		return src.canConduct() && src.canTransmitTo(tgt) && (e == null || src.isConductingElement(e)) && tgt.getDistanceSqTo(src.getX(), src.getY(), src.getZ()) <= Math.min(tgt.getReceiveRange()*tgt.getReceiveRange(), src.getSendRange()*src.getSendRange()) && (!(src.needsLineOfSightToReceiver(tgt) || tgt.needsLineOfSightFromTransmitter(src)) || PylonFinder.lineOfSight(PylonFinder.getLocation(src), PylonFinder.getLocation(tgt)));
 	}
 
 	ArrayList<CrystalReceiver> getNearbyReceivers(CrystalTransmitter r, CrystalElement e) {
@@ -969,5 +992,15 @@ public class CrystalNetworker implements TickHandler {
 			return net.toString()+" : "+net.canConduct()+", E="+Arrays.toString(conn);
 		}
 	}
+
+	public int size() {
+		return tiles.size();
+	}
+
+	/** Returns -1 for "never tested, assume yes and pathfind" *//*
+	public int activeSourceCount(CrystalElement e) {
+		Collection<WorldLocation> get = sourceCounts.get(e);
+		return get != null ? get.size() : -1;
+	}*/
 
 }

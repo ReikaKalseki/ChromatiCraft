@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityMagicPlant;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
@@ -34,6 +35,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.BotaniaBlockHandler;
 
 
 public class TileEntityHarvesterPlant extends TileEntityMagicPlant {
@@ -125,13 +127,15 @@ public class TileEntityHarvesterPlant extends TileEntityMagicPlant {
 		for (int i = 2; i < 6; i++) {
 			ForgeDirection dir = dirs[i];
 			BlockKey bk = BlockKey.getAt(world, x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ);
-			if (bk.blockID.getMaterial() == Material.plants) {
+			if (bk.blockID.getMaterial() == Material.plants || bk.blockID.getMaterial() == Material.leaves) {
 				flowerCache.add(bk);
 			}
 		}
 	}
 
 	private boolean canHarvest(Block b, int meta, World world, int x, int y, int z) {
+		if (ModList.BOTANIA.isLoaded() && BotaniaBlockHandler.getInstance().flowerID == b)
+			return true;
 		return flowerCache.contains(new BlockKey(b, meta)) && ReikaWorldHelper.checkForAdjBlock(world, x, y, z, b, meta) != null && ReikaWorldHelper.checkForAdjBlock(world, x, y, z, this.getTile().getBlock(), this.getTile().getBlockMetadata()) == null;
 	}
 

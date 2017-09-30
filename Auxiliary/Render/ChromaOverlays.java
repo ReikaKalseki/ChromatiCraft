@@ -11,8 +11,10 @@ package Reika.ChromatiCraft.Auxiliary.Render;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import net.minecraft.block.Block;
@@ -21,9 +23,11 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.client.GuiIngameForge;
@@ -52,6 +56,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderingLoopEvent;
 import Reika.DragonAPI.Interfaces.Registry.OreType;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -153,6 +158,10 @@ public class ChromaOverlays {
 				this.renderElementPie(ep, gsc);
 			}
 			else {
+				Collection<Ability> li = Chromabilities.getFrom(ep);
+				if (!li.isEmpty()) {
+					this.renderElementWarnings(ep, gsc, li);
+				}
 				holding = false;
 			}
 
@@ -537,47 +546,66 @@ public class ChromaOverlays {
 		int left = evt.resolution.getScaledWidth()/2 - 91;
 		int top = evt.resolution.getScaledHeight()-GuiIngameForge.left_height;
 
-		int regen = -1;
-		if (ep.isPotionActive(Potion.regeneration)) {
-			int rl = ep.getActivePotionEffect(Potion.regeneration).getAmplifier();
-			regen = (int)(tick/300D*(1+0.33*rl)%30);
+		int regen = -100;
+		if (ep.isPotionActive(Potion.regeneration) || ep.isPotionActive(ChromatiCraft.betterRegen)) {
+			PotionEffect eff1 = ep.getActivePotionEffect(Potion.regeneration);
+			PotionEffect eff2 = ep.getActivePotionEffect(ChromatiCraft.betterRegen);
+			int r1 = eff1 != null ? eff1.getAmplifier() : 0;
+			int r2 = eff2 != null ? eff2.getAmplifier() : 0;
+			int rl = Math.max(r1, r2);
+			regen = (int)(tick/100D*(1+0.33*rl)%34)-2;
 		}
 
 		v5.startDrawingQuads();
+		double boost = ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).getModifier(Chromabilities.HEALTH_UUID).getAmount();
 		boolean highlight = ep.hurtResistantTime >= 10 && ep.hurtResistantTime / 3 % 2 == 1;
+		int health = Math.round(ep.getHealth()/2F);
+		int maxhealth = Math.round(ep.getMaxHealth()/2F);
 		for (int i = 29; i >= 0; i--) {
 			double u = 16/128D+(i*3)/128D;
 			double du = u+w/128D;
 			double v = 9/128D;
-			if (ep.getMaxHealth()-1 < i*2) {
+			float f1 = (i/29F);
+			float f2 = (float)(boost/5D);
+			if (f1 > f2) {
 				v = 27/128D;
 			}
+			int roff = 0;
+			if (i == regen+2)
+				roff = -1;
+			else if (i == regen+1)
+				roff = -2;
+			else if (i == regen-1)
+				roff = 2;
+			else if (i == regen-2)
+				roff = 1;
 			double dv = v+h/128D;
 			if (highlight)
 				v += 18/128D;
 			int x = left+i*3;
 			int dx = x+w;
-			int y = top+0;
-			if (i == regen)
-				y -= 2;
+			int y = top+0+roff;
 			int dy = y+h;
 			v5.addVertexWithUV(x, dy, 0, u, dv);
 			v5.addVertexWithUV(dx, dy, 0, du, dv);
 			v5.addVertexWithUV(dx, y, 0, du, v);
 			v5.addVertexWithUV(x, y, 0, u, v);
 
-			boolean heart = ep.getHealth()-1 >= i*2;
+			int bars = health*60/maxhealth;
+
+			boolean heart = bars >= i*2+1;
 			if (heart) {
-				boolean half = ep.getHealth()-1 == i*2;
+				boolean half = bars == i*2+1;
 				x = left+i*3+1;
 				dx = x+w-2;
-				y = top+1;
-				if (i == regen)
-					y -= 2;
+				y = top+1+roff;
 				dy = y+h-2;
 				u = 17/128D+(i*3)/128D;
 				du = u+(w-2)/128D;
 				v = 1/128D;
+				if (f1 > f2) {
+					v = 28/128D;
+				}
 				if (ep.isPotionActive(Potion.poison)) {
 					v = 37/128D;
 				}
@@ -598,6 +626,8 @@ public class ChromaOverlays {
 		v5.draw();
 
 		GuiIngameForge.left_height += h+1;
+		FontRenderer f = ChromaFontRenderer.FontType.HUD.renderer;
+		f.drawString(String.format("Health: %d/%d", health, maxhealth), left, top-f.FONT_HEIGHT, 0xffffff);
 		ReikaTextureHelper.bindHUDTexture();
 		evt.setCanceled(true);
 	}
@@ -673,6 +703,69 @@ public class ChromaOverlays {
 
 	private int getPieY(int r, int space, int gsc) {
 		return ChromaOptions.PIELOC.getValue()%2 == 0 ? r+space : Minecraft.getMinecraft().displayHeight/gsc-r-space-16;
+	}
+
+	private void renderElementWarnings(EntityPlayer ep, int gsc, Collection<Ability> c) {
+		HashSet<CrystalElement> li = new HashSet();
+		for (Ability a : c) {
+			ElementTagCompound tag = Chromabilities.getTickCost(a, ep);
+			if (tag != null) {
+				for (CrystalElement e : tag.elementSet()) {
+					li.add(e);
+				}
+			}
+		}
+		GL11.glEnable(GL11.GL_BLEND);
+		BlendMode.ADDITIVEDARK.apply();
+
+		Tessellator v5 = Tessellator.instance;
+		int w = 4;
+		int r = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 48 : 32;
+		int rb = r;
+		int sp = 4;
+		int ox = this.getPieX(r, sp, gsc)-r;
+		int oy = this.getPieY(r, sp, gsc)-r;
+
+		int i = 0;
+		ReikaTextureHelper.bindTerrainTexture();
+		int cap = PlayerElementBuffer.instance.getElementCap(ep);
+		v5.startDrawingQuads();
+		int s = 16;
+		for (CrystalElement e : li) {
+			int amt = PlayerElementBuffer.instance.getPlayerContent(ep, e);
+			if ((float)amt/cap < 0.125) {
+				IIcon ico = e.getGlowRune();
+				float u = ico.getMinU();
+				float v = ico.getMinV();
+				float du = ico.getMaxU();
+				float dv = ico.getMaxV();
+				double dx = ox+(i%4)*(s);
+				double dy = oy+(i/4)*(s);
+				v5.addVertexWithUV(dx+0, dy+s, 0, u, dv);
+				v5.addVertexWithUV(dx+s, dy+s, 0, du, dv);
+				v5.addVertexWithUV(dx+s, dy+0, 0, du, v);
+				v5.addVertexWithUV(dx+0, dy+0, 0, u, v);
+				i++;
+			}
+		}
+		v5.draw();
+		BlendMode.DEFAULT.apply();
+		if (i > 0) {
+			double dx = ox+(i%4)*(s);
+			double dy = oy+(i/4)*(s);
+			ReikaTextureHelper.bindFinalTexture(DragonAPICore.class, "Resources/warning.png");
+			GL11.glEnable(GL11.GL_BLEND);
+			v5.startDrawingQuads();
+			v5.setColorRGBA_I(0xffffff, 255);
+			v5.addVertexWithUV(dx-2, dy+24-3, 0, 0, 1);
+			v5.addVertexWithUV(dx+24-2, dy+24-3, 0, 1, 1);
+			v5.addVertexWithUV(dx+24-2, dy-3, 0, 1, 0);
+			v5.addVertexWithUV(dx-2, dy-3, 0, 0, 0);
+			v5.draw();
+			GL11.glDisable(GL11.GL_BLEND);
+		}
+
+		//GL11.glDisable(GL11.GL_BLEND);
 	}
 
 	private void renderElementPie(EntityPlayer ep, int gsc) {

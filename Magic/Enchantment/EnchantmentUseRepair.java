@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Magic.Enchantment;
 
 import net.minecraft.enchantment.EnumEnchantmentType;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Base.ChromaticEnchantment;
 
@@ -23,6 +24,11 @@ public class EnchantmentUseRepair extends ChromaticEnchantment {
 	@Override
 	public int getMaxLevel() {
 		return 3;
+	}
+
+	@Override
+	public boolean isVisibleToPlayer(EntityPlayer ep) {
+		return true;
 	}
 
 	public static int getRepairedDurability(ItemStack item, int level, float damage/*, UseType type*/) {

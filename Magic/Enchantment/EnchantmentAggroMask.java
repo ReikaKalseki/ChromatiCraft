@@ -10,7 +10,9 @@
 package Reika.ChromatiCraft.Magic.Enchantment;
 
 import net.minecraft.enchantment.EnumEnchantmentType;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ChromaticEnchantment;
 
 
@@ -36,6 +38,11 @@ public class EnchantmentAggroMask extends ChromaticEnchantment {
 
 	public static boolean hideDirectDamage(int level) {
 		return level >= 2;
+	}
+
+	@Override
+	public boolean isVisibleToPlayer(EntityPlayer ep) {
+		return ProgressStage.KILLMOB.isPlayerAtStage(ep);
 	}
 
 }

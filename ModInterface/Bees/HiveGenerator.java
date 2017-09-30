@@ -43,9 +43,9 @@ public class HiveGenerator implements IWorldGenerator {
 		if (dim != -1 && dim != 1) {
 			if (evt.color == CrystalElement.WHITE.getAPIProxy()) {
 				if (evt.getRandomInt(4) == 0) {
-					Block idb = evt.world.getBlock(evt.x, evt.y-1, evt.z);
-					if (idb.isReplaceableOreGen(evt.world, evt.x, evt.y-1, evt.z, Blocks.stone)) {
-						evt.world.setBlock(evt.x, evt.y-1, evt.z, ChromaBlocks.HIVE.getBlockInstance(), 1, 3);
+					Block idb = evt.world.getBlock(evt.xCoord, evt.yCoord-1, evt.zCoord);
+					if (idb.isReplaceableOreGen(evt.world, evt.xCoord, evt.yCoord-1, evt.zCoord, Blocks.stone)) {
+						evt.world.setBlock(evt.xCoord, evt.yCoord-1, evt.zCoord, ChromaBlocks.HIVE.getBlockInstance(), 1, 3);
 					}
 				}
 			}

@@ -21,10 +21,10 @@ import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 
 
@@ -51,7 +51,7 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 				}
 			}
 		}
-		else {
+		else if (!world.isRemote) {
 			int dx = x+dir.offsetX;
 			int dy = y+dir.offsetY;
 			int dz = z+dir.offsetZ;
@@ -59,8 +59,10 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 			if (b instanceof CrystalBlock && rand.nextInt(70/this.getTier()) == 0) {
 				CrystalBlock c = (CrystalBlock)b;
 				CrystalElement e = CrystalElement.elements[world.getBlockMetadata(dx, dy, dz)];
-				ReikaJavaLibrary.pConsole(e);
-				if (c.shouldGiveEffects(e) && c.performEffect(e)) {
+				if (e == CrystalElement.PURPLE) {
+					CrystalPotionController.applyEffectFromColor(c.getDuration(e), c.getPotionLevel(e), this.getPlacer(), e, true);
+				}
+				else if (c.shouldGiveEffects(e) && c.performEffect(e)) {
 					c.updateEffects(world, dx, dy, dz);
 				}
 			}

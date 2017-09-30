@@ -10,9 +10,11 @@
 package Reika.ChromatiCraft.Magic.Enchantment;
 
 import net.minecraft.enchantment.EnumEnchantmentType;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemSword;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ChromaticEnchantment;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
@@ -44,6 +46,11 @@ public class EnchantmentPhasingSequence extends ChromaticEnchantment {
 
 	public static float getSpilloverDamage(float baseDmg, int level) {
 		return getActualDamage(baseDmg, level)-getPenetratingDamage(baseDmg, level);
+	}
+
+	@Override
+	public boolean isVisibleToPlayer(EntityPlayer ep) {
+		return ProgressStage.KILLMOB.isPlayerAtStage(ep);
 	}
 
 }

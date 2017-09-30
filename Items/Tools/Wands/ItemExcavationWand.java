@@ -36,7 +36,9 @@ import Reika.DragonAPI.Instantiable.PlayerReference;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
+import Reika.DragonAPI.ModRegistry.ModWoodList;
 import Reika.GeoStrata.Registry.GeoBlocks;
 
 public class ItemExcavationWand extends ItemWandBase implements BreakerCallback {
@@ -135,6 +137,30 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 		else if (bk == TwilightForestHandler.BlockEntry.AURORA.getBlock()) {
 			for (int i = 0; i < 16; i++) {
 				set.add(new BlockKey(bk, i));
+			}
+		}
+		ReikaTreeHelper tree = ReikaTreeHelper.getTree(bk, world.getBlockMetadata(x, y, z));
+		if (tree != null) {
+			for (int meta : tree.getLogMetadatas()) {
+				set.add(new BlockKey(bk, meta));
+			}
+		}
+		tree = ReikaTreeHelper.getTreeFromLeaf(bk, world.getBlockMetadata(x, y, z));
+		if (tree != null) {
+			for (int meta : tree.getLeafMetadatas()) {
+				set.add(new BlockKey(bk, meta));
+			}
+		}
+		ModWoodList mod = ModWoodList.getModWood(bk, world.getBlockMetadata(x, y, z));
+		if (mod != null) {
+			for (int meta : mod.getLogMetadatas()) {
+				set.add(new BlockKey(bk, meta));
+			}
+		}
+		mod = ModWoodList.getModWoodFromLeaf(bk, world.getBlockMetadata(x, y, z));
+		if (mod != null) {
+			for (int meta : mod.getLeafMetadatas()) {
+				set.add(new BlockKey(bk, meta));
 			}
 		}
 		return set;

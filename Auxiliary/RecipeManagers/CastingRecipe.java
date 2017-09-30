@@ -29,6 +29,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.CastingAPI.FXCallback;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.APICastingRecipe;
 import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.LumenRecipe;
@@ -70,6 +71,8 @@ public class CastingRecipe implements APICastingRecipe {
 	private IRecipe recipe;
 	private ChromaResearch fragment;
 
+	public FXCallback effectCallback;
+
 	protected CastingRecipe(ItemStack out, IRecipe recipe) {
 		this(out, RecipeType.CRAFTING, recipe);
 	}
@@ -106,7 +109,9 @@ public class CastingRecipe implements APICastingRecipe {
 	}
 
 	public void onRecipeTick(TileEntityCastingTable te) {
-
+		if (effectCallback != null && te.worldObj.isRemote) {
+			effectCallback.onEffectTick(te, this, this.getOutput());
+		}
 	}
 
 	public ChromaSounds getSoundOverride(TileEntityCastingTable te, int craftSoundTimer) {

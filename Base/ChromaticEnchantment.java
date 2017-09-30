@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Base;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnumEnchantmentType;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
 
@@ -24,5 +25,7 @@ public abstract class ChromaticEnchantment extends Enchantment {
 	public final boolean canApplyAtEnchantingTable(ItemStack stack) {
 		return false;
 	}
+
+	public abstract boolean isVisibleToPlayer(EntityPlayer ep);
 
 }

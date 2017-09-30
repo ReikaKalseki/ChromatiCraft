@@ -175,7 +175,7 @@ public enum ChromaResearch implements ProgressElement {
 	PLANTACCEL(		ChromaTiles.PLANTACCEL,		ResearchLevel.RUNECRAFT),
 	CROPSPEED(		ChromaTiles.CROPSPEED,		ResearchLevel.RUNECRAFT),
 	WEAKREPEATER(	ChromaTiles.WEAKREPEATER,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON, ProgressStage.MAKECHROMA),
-	ENCHANTDECOMP(	ChromaTiles.ENCHANTDECOMP,	ResearchLevel.RUNECRAFT,		ProgressStage.MAKECHROMA),
+	ENCHANTDECOMP(	ChromaTiles.ENCHANTDECOMP,	ResearchLevel.ENERGYEXPLORE,		ProgressStage.MAKECHROMA),
 	LUMENWIRE(		ChromaTiles.LUMENWIRE,		ResearchLevel.BASICCRAFT),
 	PARTICLES(		ChromaTiles.PARTICLES,		ResearchLevel.BASICCRAFT),
 	METEOR(			ChromaTiles.METEOR,			ResearchLevel.PYLONCRAFT),
@@ -185,7 +185,7 @@ public enum ChromaResearch implements ProgressElement {
 	WIRELESS(		ChromaTiles.WIRELESS,		ResearchLevel.MULTICRAFT,		ProgressStage.USEENERGY),
 	GATE(			ChromaTiles.TELEPORT,		ResearchLevel.ENDGAME,			ProgressStage.END),
 	FLUIDRELAY(		ChromaTiles.FLUIDRELAY,		ResearchLevel.RUNECRAFT),
-	BOOKDECOMP(		ChromaTiles.BOOKDECOMP,		ResearchLevel.RUNECRAFT),
+	BOOKDECOMP(		ChromaTiles.BOOKDECOMP,		ResearchLevel.ENERGYEXPLORE),
 	PLANTHARVEST(	ChromaTiles.HARVESTPLANT,	ResearchLevel.RUNECRAFT),
 	AVOLASER(		ChromaTiles.AVOLASER,		ResearchLevel.ENDGAME, 			TieredOres.AVOLITE.level),
 	ALVEARY(		ChromaTiles.ALVEARY,		ResearchLevel.PYLONCRAFT,		ProgressStage.HIVE),
@@ -197,7 +197,7 @@ public enum ChromaResearch implements ProgressElement {
 	MULTIBUILDER(	ChromaTiles.MULTIBUILDER,	ResearchLevel.MULTICRAFT),
 
 	BLOCKS("Other Blocks", ""),
-	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),
+	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT,	ProgressStage.ALLCOLORS),
 	CHROMA(			ChromaBlocks.CHROMA,											ResearchLevel.RAWEXPLORE),
 	HEATLAMP(		ChromaBlocks.HEATLAMP,											ResearchLevel.RUNECRAFT,	ProgressStage.NETHER),
 	TNT(			ChromaBlocks.TNT,												ResearchLevel.PYLONCRAFT),
@@ -221,6 +221,7 @@ public enum ChromaResearch implements ProgressElement {
 	AVOLAMP(		ChromaBlocks.AVOLAMP,											ResearchLevel.ENDGAME,		TieredOres.AVOLITE.level),
 	REPEATERLAMP(	ChromaBlocks.REPEATERLAMP,										ResearchLevel.ENERGYEXPLORE),
 	REDSTONEPOD(	ChromaBlocks.REDSTONEPOD,										ResearchLevel.RUNECRAFT),
+	FAKESKY(		ChromaBlocks.FAKESKY,											ResearchLevel.RUNECRAFT),
 
 	TOOLDESC("Tools", ""),
 	WAND(				ChromaItems.TOOL,			ResearchLevel.ENTRY),
@@ -230,7 +231,7 @@ public enum ChromaResearch implements ProgressElement {
 	INVLINK(			ChromaItems.LINK, 			ResearchLevel.ENERGYEXPLORE),
 	PENDANT(			ChromaItems.PENDANT, 		ResearchLevel.ENERGYEXPLORE),
 	LENS(				ChromaItems.LENS, 			ResearchLevel.ENERGYEXPLORE),
-	STORAGE(			ChromaItems.STORAGE, 		ResearchLevel.ENERGYEXPLORE),
+	STORAGE(			ChromaItems.STORAGE, 		ResearchLevel.ENERGYEXPLORE,	ProgressStage.USEENERGY),
 	LINKTOOL(			ChromaItems.LINKTOOL, 		ResearchLevel.RUNECRAFT),
 	WARP(				ChromaItems.WARP, 			ResearchLevel.PYLONCRAFT),
 	TELEPORT(			ChromaItems.TELEPORT, 		ResearchLevel.MULTICRAFT),
@@ -301,8 +302,8 @@ public enum ChromaResearch implements ProgressElement {
 	DEATHPROOF(		Chromabilities.DEATHPROOF),
 	SHOCKWAVE(		Chromabilities.SHOCKWAVE),
 	WARPLOC(		Chromabilities.TELEPORT,					ResearchLevel.ENDGAME),
-	LEECH(			Chromabilities.LEECH),
-	FLOAT(			Chromabilities.FLOAT),
+	LEECH(			Chromabilities.LEECH, 						ResearchLevel.ENERGYEXPLORE),
+	FLOAT(			Chromabilities.FLOAT, 						ResearchLevel.ENERGYEXPLORE),
 	SPAWNERSEE(		Chromabilities.SPAWNERSEE,					ResearchLevel.ENDGAME),
 	BREADCRUMB(		Chromabilities.BREADCRUMB),
 	RANGEBOOST(		Chromabilities.RANGEDBOOST),
@@ -320,6 +321,7 @@ public enum ChromaResearch implements ProgressElement {
 	BEEALYZE(		Chromabilities.BEEALYZE),
 	NUKER(			Chromabilities.NUKER,						ResearchLevel.ENDGAME),
 	LIGHTCAST(		Chromabilities.LIGHTCAST),
+	JUMPABILITY(	Chromabilities.JUMP, 						ResearchLevel.ENERGYEXPLORE),
 
 	STRUCTUREDESC("Structures", ""),
 	PYLON(			Structures.PYLON,		5,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),
@@ -329,7 +331,7 @@ public enum ChromaResearch implements ProgressElement {
 	RITUAL	(		Structures.RITUAL,		7,	ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
 	INFUSION(		Structures.INFUSION,	12,	ResearchLevel.MULTICRAFT,		ProgressStage.CHROMA),
 	TREE(			Structures.TREE,		14,	ResearchLevel.ENDGAME,			ProgressStage.POWERCRYSTAL),
-	REPEATERSTRUCT(	Structures.REPEATER,	0,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.RUNEUSE),
+	REPEATERSTRUCT(	Structures.REPEATER,	0,	ResearchLevel.NETWORKING,		ProgressStage.RUNEUSE, ProgressStage.BLOWREPEATER),
 	COMPOUNDSTRUCT(	Structures.COMPOUND,	13,	ResearchLevel.NETWORKING,		ProgressStage.REPEATER),
 	CAVERN(			Structures.CAVERN,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.CAVERN),
 	BURROW(			Structures.BURROW,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.BURROW),
@@ -337,7 +339,7 @@ public enum ChromaResearch implements ProgressElement {
 	DESERT(			Structures.DESERT,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.DESERTSTRUCT),
 	PORTALSTRUCT(	Structures.PORTAL,		0,	ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
 	MINIPYLON(		Structures.PERSONAL,	9,	ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
-	BROADCASTER(	Structures.BROADCAST,	15,	ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK),
+	BROADCASTER(	Structures.BROADCAST,	15,	ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK, ProgressStage.REPEATER),
 	CLOAKTOWER(		Structures.CLOAKTOWER,	3,	ResearchLevel.MULTICRAFT,		ProgressStage.KILLMOB),
 	BOOSTTREE(		Structures.TREE_BOOSTED,14,	ResearchLevel.CTM,				ProgressStage.TURBOCHARGE),
 	BEACONSTRUCT(	Structures.PROTECT,		6,	ResearchLevel.ENDGAME),
@@ -383,6 +385,9 @@ public enum ChromaResearch implements ProgressElement {
 	private ChromaResearch(ChromaTiles r, ResearchLevel rl, ProgressStage... p) {
 		this(r.getName(), r.getCraftedProduct(), rl, p);
 		machine = r;
+		if (rl.ordinal() < ResearchLevel.ENERGYEXPLORE.ordinal() && r.isRelayPowered()) {
+			throw new RegistrationException(ChromatiCraft.instance, "Machine fragment "+r+" relay powered but available before relays!");
+		}
 	}
 
 	private ChromaResearch(ChromaBlocks r, ResearchLevel rl, ProgressStage... p) {
@@ -827,6 +832,8 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == AVOLAMP)
 			return true;
 		if (this == REPEATERLAMP)
+			return true;
+		if (this == FAKESKY)
 			return true;
 		return false;
 	}

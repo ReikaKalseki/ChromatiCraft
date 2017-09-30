@@ -729,6 +729,12 @@ public class ChromatiPackets implements PacketHandler {
 					TileEntityGlowFire.emptyClientFX(world, x, y, z, data[0]);
 					break;
 				}
+				case FIREDUMPSHOCK: {
+					Entity e = world.getEntityByID(data[1]);
+					if (e instanceof EntityPlayer)
+						TileEntityGlowFire.dischargeIntoPlayerFX(world, x, y, z, CrystalElement.elements[data[0]], (EntityPlayer)e);
+					break;
+				}
 				case FIRECONSUMEITEM: {
 					TileEntityGlowFire.consumeItemFX(world, x, y, z, data[0]);
 					break;

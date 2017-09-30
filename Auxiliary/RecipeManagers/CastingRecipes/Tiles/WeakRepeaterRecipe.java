@@ -53,6 +53,11 @@ public class WeakRepeaterRecipe extends TempleCastingRecipe implements CoreRecip
 	}
 
 	@Override
+	public boolean match(TileEntityCastingTable table) {
+		return super.match(table) && table.getStackInSlot(4).stackSize == 1;
+	}
+
+	@Override
 	public NBTTagCompound handleNBTResult(TileEntityCastingTable te, EntityPlayer ep, NBTTagCompound tag) {
 		if (tag == null)
 			tag = new NBTTagCompound();

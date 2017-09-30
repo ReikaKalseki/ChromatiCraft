@@ -100,7 +100,7 @@ public class RenderGlowFire extends ChromaRenderBase {
 
 		//v5.startDrawingQuads();
 		v5.startDrawing(GL11.GL_TRIANGLE_STRIP);
-		v5.setColorOpaque_I(0xffffff);
+		v5.setColorOpaque_I(te.isSmothered() ? 0xff7020 : 0xffffff);
 
 		/*
 		v5.addVertexWithUV(-1, -1, 0, u, v);

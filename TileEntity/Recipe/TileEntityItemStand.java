@@ -310,4 +310,9 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 		return locked;
 	}
 
+	@Override
+	public int getUpdatePacketRadius() {
+		return 96;
+	}
+
 }

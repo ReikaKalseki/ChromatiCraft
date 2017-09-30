@@ -89,7 +89,18 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 	}
 
 	protected final boolean requestEnergy(ElementTagCompound tag) {
+		return this.requestEnergy(tag, false);
+	}
+
+	protected final boolean requestEnergy(ElementTagCompound tag, boolean requireAll) {
 		boolean flag = false;
+		if (requireAll) {
+			for (CrystalElement e : tag.elementSet()) {
+				if (!CrystalNetworker.instance.checkConnectivity(e, this)) {
+					return false;
+				}
+			}
+		}
 		for (CrystalElement e : tag.elementSet()) {
 			flag &= this.requestEnergy(e, tag.getValue(e));
 		}
@@ -97,8 +108,12 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 	}
 
 	protected final boolean requestEnergyDifference(ElementTagCompound tag) {
+		return this.requestEnergyDifference(tag, false);
+	}
+
+	protected final boolean requestEnergyDifference(ElementTagCompound tag, boolean requireAll) {
 		tag.subtract(energy);
-		return this.requestEnergy(tag);
+		return this.requestEnergy(tag, requireAll);
 	}
 
 	public final int getRemainingSpace(CrystalElement e) {

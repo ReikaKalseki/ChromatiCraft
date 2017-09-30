@@ -152,6 +152,7 @@ public class ProgressionManager implements ProgressRegistry {
 		ARTEFACT(ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.FRAGMENT.ordinal())),
 		TOWER(ChromaTiles.DATANODE.getCraftedProduct()),
 		STRUCTCHEAT(Blocks.tnt), //optional, just to rub it in
+		VOIDMONSTER((ItemStack)null, ModList.VOIDMONSTER.isLoaded()),
 		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
 		;
 
@@ -242,6 +243,14 @@ public class ProgressionManager implements ProgressRegistry {
 				GL11.glPopAttrib();
 				return;
 			}
+			if (this == VOIDMONSTER) {
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				GL11.glColor4f(1, 1, 1, 1);
+				GL11.glDisable(GL11.GL_LIGHTING);
+				ReikaGuiAPI.instance.renderStatic(x-1, y-1, x+16, y+16);
+				GL11.glPopAttrib();
+				return;
+			}
 			ReikaGuiAPI.instance.drawItemStack(ri, fr, icon, x, y);
 		}
 
@@ -309,8 +318,6 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.ABILITY, 	ProgressStage.CHARGE);
 		progressMap.addParent(ProgressStage.ABILITY, 	ProgressStage.LINK);
 
-		//progressMap.addParent(ProgressStage.STONES, 	ProgressStage.MULTIBLOCK);
-
 		progressMap.addParent(ProgressStage.SHOCK, 		ProgressStage.PYLON);
 
 		progressMap.addParent(ProgressStage.MAKECHROMA, ProgressStage.CASTING);
@@ -326,6 +333,8 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.ALLOY, 		ProgressStage.SHARDCHARGE);
 		progressMap.addParent(ProgressStage.ALLOY, 		ProgressStage.MULTIBLOCK);
 		progressMap.addParent(ProgressStage.ALLOY, 		ProgressStage.CHROMA);
+
+		progressMap.addParent(ProgressStage.VOIDMONSTER,	ProgressStage.BEDROCK);
 
 		progressMap.addParent(ProgressStage.NETHER, 	ProgressStage.BEDROCK);
 		progressMap.addParent(ProgressStage.NETHERROOF, ProgressStage.NETHER);

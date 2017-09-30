@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLeaves;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -60,7 +61,7 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float a, float b, float c) {
 		if (!world.isRemote) {
 			if (ep.isSneaking()) {
-				this.setStoredItem(is, ReikaBlockHelper.getWorldBlockAsItemStack(world, x, y, z));
+				this.setStoredItem(is, this.parseItemStack(world, x, y, z));
 			}
 			else {
 				ItemStack store = this.getStoredItem(is);
@@ -98,6 +99,14 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 			}
 		}
 		return true;
+	}
+
+	private ItemStack parseItemStack(World world, int x, int y, int z) {
+		Block b = world.getBlock(x, y, z);
+		int meta = world.getBlockMetadata(x, y, z);
+		if (b instanceof BlockLeaves)
+			meta = meta&3;
+		return new ItemStack(b, 1, meta);
 	}
 
 	public static int getDepth(EntityPlayer ep) {

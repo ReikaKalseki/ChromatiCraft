@@ -41,7 +41,7 @@ public class ItemPendant extends ItemCrystalBasic {
 	}
 
 	@Override
-	public void onUpdate(ItemStack is, World world, Entity e, int par4, boolean par5) {
+	public void onUpdate(ItemStack is, World world, Entity e, int slot, boolean selected) {
 		int level = this.isEnhanced() ? 2 : 0;
 		if (e instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer) e;

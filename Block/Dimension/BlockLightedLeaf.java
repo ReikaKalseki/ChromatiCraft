@@ -17,6 +17,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -45,15 +46,13 @@ public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBloc
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(Item item, CreativeTabs cr, List li)
-	{
+	public void getSubBlocks(Item item, CreativeTabs cr, List li) {
 		for (int i = 0; i < overlay.length; i++)
 			li.add(new ItemStack(this, 1, i));
 	}
 
 	@Override
-	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune)
-	{
+	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
 		ArrayList<ItemStack> li = new ArrayList();
 		if (rand.nextInt(Math.max(1, 50-fortune*5)) == 0) {
 			li.add(ChromaBlocks.GLOWSAPLING.getStackOf());
@@ -62,6 +61,11 @@ public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBloc
 			li.add(new ItemStack(Items.glowstone_dust, 1+rand.nextInt(1+fortune), 0));
 		}
 		return li;
+	}
+
+	@Override
+	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase e, ItemStack is) {
+		world.setBlockMetadataWithNotify(x, y, z, rand.nextInt(overlay.length), 3);
 	}
 
 	@Override
@@ -132,8 +136,7 @@ public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBloc
 	}
 
 	@Override
-	public void registerBlockIcons(IIconRegister ico)
-	{
+	public void registerBlockIcons(IIconRegister ico) {
 		blockIcon = Blocks.leaves.getIcon(0, 0);
 		for (int i = 0; i < overlay.length; i++) {
 			overlay[i] = ico.registerIcon("chromaticraft:dimgen/glowleaf-light_"+i);

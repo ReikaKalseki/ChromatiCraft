@@ -351,7 +351,7 @@ public class ChromaDimensionManager {
 	public static void addPlayerToStructure(EntityPlayer ep, DimensionStructureGenerator structure) {
 		playersInStructures.put(ep, structure);
 		if (ProgressionManager.instance.hasPlayerCompletedStructureColor(ep, structure.getCoreColor(ep.worldObj))) {
-			structure.forceOpen(ep.worldObj);
+			structure.forceOpen(ep.worldObj, ep);
 		}
 	}
 

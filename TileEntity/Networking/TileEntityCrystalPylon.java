@@ -100,6 +100,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.RotaryCraft.TileEntities.Weaponry.TileEntityEMP;
 import cpw.mods.fml.relauncher.Side;
@@ -293,7 +294,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				this.spawnParticle(world, x, y, z);
 			}
 
-			if (!world.isRemote && rand.nextInt(80) == 0) {
+			if (!world.isRemote && ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world) && MystPages.Pages.UNSTABLEPYLONS.existsInWorld(world) && rand.nextInt(2000) == 0)
+				this.destabilize();
+
+			if (!world.isRemote && rand.nextInt(this.getAttackRate(world)) == 0) {
 				int r = this.getAttackRange();
 				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).expand(r, r, r);
 				List<EntityLivingBase> li = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
@@ -355,6 +359,15 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				}
 			}
 		}
+	}
+
+	private int getAttackRate(World world) {
+		int base = 80;
+		if (this.isUnstable())
+			base /= 8;
+		if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world) && MystPages.Pages.VIOLENTPYLONS.existsInWorld(world))
+			base /= 4;
+		return base;
 	}
 
 	private void doDestabilizedTick(World world, int x, int y, int z) {

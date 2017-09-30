@@ -174,4 +174,9 @@ public class EntityCenterBlurFX extends EntityFX implements CustomRenderFX {
 		return texture;
 	}
 
+	@Override
+	public boolean rendersOverLimit() {
+		return false;
+	}
+
 }

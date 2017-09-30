@@ -13,6 +13,7 @@ import java.awt.image.BufferedImage;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -143,7 +144,7 @@ public class GuiTeleportGate extends GuiChromaBase {
 	public void drawScreen(int mx, int my, float ptick) {
 		super.drawScreen(mx, my, ptick);
 
-		double d = Math.max(-40, -6*scaleFactor);
+		double d = GuiScreen.isCtrlKeyDown() ? -5 : Math.max(-40, -6*scaleFactor);
 		if (Keyboard.isKeyDown(Keyboard.KEY_PRIOR)) {
 			scaleFactor *= 0.95;
 		}

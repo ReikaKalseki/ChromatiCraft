@@ -74,7 +74,8 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	POWEREDACCEL("Adjacency Upgrades Require Energy", false),
 	PROGRESSDURATION("Progression Notification Duration", 800),
 	RECEIVEDIMSOUND("Play Dimension Join Sound For Others", true),
-	BIOMEBLEND("Blend CC Biome Edges", true);
+	BIOMEBLEND("Blend CC Biome Edges", true),
+	MIDISIZE("Orchestra MIDI Size Limit (KB)", 80);
 
 	private String label;
 	private boolean defaultState;
@@ -215,6 +216,7 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 			case BIOMEPAINTER:
 			case ENDERTNT:
 			case HARDTHAUM:
+			case MIDISIZE:
 				return true;
 			default:
 				return false;

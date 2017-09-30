@@ -17,6 +17,7 @@ import java.util.Map;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnumEnchantmentType;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemShears;
@@ -168,6 +169,8 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			return true;
 		if (ChromaItems.BEEFRAME.matchWith(is))
 			return true;
+		if (ChromaItems.HELP.matchWith(is))
+			return true;
 		if (ModList.TINKERER.isLoaded() && (TinkerToolHandler.getInstance().isTool(is) || TinkerToolHandler.getInstance().isWeapon(is)))
 			return true;
 		if (Loader.isModLoaded("Backpack") && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("backpack"))
@@ -209,6 +212,10 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 
 			if (ChromaItems.BEEFRAME.matchWith(is))
 				if (e != Enchantment.unbreaking)
+					return false;
+
+			if (ChromaItems.HELP.matchWith(is))
+				if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
 					return false;
 
 			if (Loader.isModLoaded("Backpack") && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("backpack"))
@@ -434,6 +441,10 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			blacklist.add(e);
 			ChromatiCraft.logger.log("Received request to blacklist enchantment "+e.getName()+" from "+ReikaRegistryHelper.getActiveLoadingMod());
 		}
+	}
+
+	public static boolean canPlayerGetEnchantment(Enchantment e, EntityPlayer ep) {
+		return e instanceof ChromaticEnchantment ? ((ChromaticEnchantment)e).isVisibleToPlayer(ep) : true;
 	}
 
 }

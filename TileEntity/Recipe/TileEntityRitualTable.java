@@ -20,9 +20,9 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
-import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
@@ -30,6 +30,8 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -39,8 +41,11 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.TriggerableAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -103,7 +108,7 @@ OperationInterval, MultiBlockChromaTile {
 
 		ElementTagCompound tag = AbilityRituals.instance.getAura(ability);
 		if (this.getCooldown() == 0 && checkTimer.checkCap()) {
-			this.requestEnergyDifference(tag);
+			this.requestEnergyDifference(tag, true); //make request all 3
 		}
 
 		EntityPlayer ep = ritualPlayer;
@@ -247,7 +252,15 @@ OperationInterval, MultiBlockChromaTile {
 			ChromatiCraft.logger.logError("Tried to give ability to null or fake player???");
 			return;
 		}
-		Chromabilities.give(ep, ability);
+		if (ability instanceof Chromabilities && !ChromaResearchManager.instance.playerHasFragment(ep, ChromaResearch.getPageFor((Chromabilities)ability))) {
+			ReikaParticleHelper.EXPLODE.spawnAroundBlock(worldObj, xCoord, yCoord, zCoord, 6);
+			ReikaSoundHelper.playSoundAtBlock(worldObj, xCoord, yCoord, zCoord, "random.explode");
+			ReikaEntityHelper.knockbackEntityFromPos(xCoord+0.5, yCoord-0.5, zCoord+0.5, ep, 4);
+			ep.fallDistance += 12;
+		}
+		else {
+			Chromabilities.give(ep, ability);
+		}
 		abilitySoundTick = 2000;
 		ability = null;
 		if (ep instanceof EntityPlayerMP)
@@ -302,7 +315,7 @@ OperationInterval, MultiBlockChromaTile {
 			if (worldObj.isRemote)
 				return true;
 			ElementTagCompound tag = AbilityRituals.instance.getAura(ability);
-			this.requestEnergyDifference(tag);
+			this.requestEnergyDifference(tag, true);
 			abilityTick = AbilityRituals.instance.getDuration(ability);
 			playerSteppedIn = false;
 			ChromaSounds.USE.playSoundAtBlock(this);

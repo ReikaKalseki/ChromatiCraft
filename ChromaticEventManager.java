@@ -97,6 +97,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
 import Reika.ChromatiCraft.Block.BlockActiveChroma;
 import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
+import Reika.ChromatiCraft.Block.BlockFakeSky;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
 import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone.Variants;
@@ -160,6 +161,7 @@ import Reika.DragonAPI.Instantiable.Event.BlockSpreadEvent;
 import Reika.DragonAPI.Instantiable.Event.BlockSpreadEvent.BlockDeathEvent;
 import Reika.DragonAPI.Instantiable.Event.BlockTickEvent;
 import Reika.DragonAPI.Instantiable.Event.BlockTillEvent;
+import Reika.DragonAPI.Instantiable.Event.CanSeeSkyEvent;
 import Reika.DragonAPI.Instantiable.Event.EnderAttackTPEvent;
 import Reika.DragonAPI.Instantiable.Event.EntitySpawnerCheckEvent;
 import Reika.DragonAPI.Instantiable.Event.FarmlandTrampleEvent;
@@ -208,6 +210,7 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler.ToolPartType;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
+import Reika.VoidMonster.Entity.EntityVoidMonster;
 import WayofTime.alchemicalWizardry.api.event.TeleposeEvent;
 
 import com.xcompwiz.mystcraft.api.event.LinkEvent;
@@ -232,6 +235,17 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void updateFakeSkyBlocks(SetBlockEvent evt) {
+		BlockFakeSky.updateColumn(evt.world, evt.xCoord, evt.yCoord, evt.zCoord);
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void applyFakeSkyBlocks(CanSeeSkyEvent evt) {
+		if (BlockFakeSky.isForcedSky(evt.world, evt.xCoord, evt.yCoord, evt.zCoord))
+			evt.setResult(Result.ALLOW);
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void removeMetaAlloy(BlockEvent.BreakEvent evt) {
 		if (!evt.world.isRemote && evt.world.provider.dimensionId == 0 && evt.block == ChromaBlocks.METAALLOYLAMP.getBlockInstance()) {
 			TileEntityDataNode.removeMetaAlloy(evt.world, evt.x, evt.y, evt.z);
@@ -249,7 +263,7 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void multiBuild(PlayerPlaceBlockEvent evt) {
-		TileEntityMultiBuilder.placeBlock(evt.world, evt.x, evt.y, evt.z, evt.block, evt.metadata, evt.player, evt.player.getCurrentEquippedItem());
+		TileEntityMultiBuilder.placeBlock(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, evt.block, evt.metadata, evt.player, evt.player.getCurrentEquippedItem());
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -266,6 +280,7 @@ public class ChromaticEventManager {
 		TileEntityCloakingTower.clearCache();
 		TileEntityCrystalBeacon.clearCache();
 		TileEntityMultiBuilder.clearCache();
+		BlockFakeSky.clearCache();
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -323,9 +338,9 @@ public class ChromaticEventManager {
 	public void preventCliffStackedGrass(BlockDeathEvent evt) {
 		if (evt.getClass() != BlockDeathEvent.class)
 			return;
-		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.x, evt.z))) {
+		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord))) {
 			//ReikaJavaLibrary.pConsole(evt.x+","+evt.y+","+evt.z+": "+evt.world.getBlock(evt.x, evt.y+1, evt.z).isOpaqueCube());
-			if (evt.world.getBlock(evt.x, evt.y+1, evt.z).isOpaqueCube())
+			if (evt.world.getBlock(evt.xCoord, evt.yCoord+1, evt.zCoord).isOpaqueCube())
 				evt.setResult(Result.ALLOW);
 		}
 	}
@@ -334,9 +349,9 @@ public class ChromaticEventManager {
 	public void preventCliffStackedGrass(BlockSpreadEvent evt) {
 		if (evt.getClass() != BlockSpreadEvent.class)
 			return;
-		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.x, evt.z))) {
+		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord))) {
 			//ReikaJavaLibrary.pConsole(evt.x+","+evt.y+","+evt.z+": "+evt.world.getBlock(evt.x, evt.y+1, evt.z).isOpaqueCube());
-			if (evt.world.getBlock(evt.x, evt.y+1, evt.z).isOpaqueCube())
+			if (evt.world.getBlock(evt.xCoord, evt.yCoord+1, evt.zCoord).isOpaqueCube())
 				evt.setResult(Result.DENY);
 		}
 	}
@@ -414,7 +429,7 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void preventCliffsFreeze(IceFreezeEvent evt) {
-		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.x, evt.z))) {
+		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord))) {
 			evt.setResult(Result.DENY);
 		}
 	}
@@ -816,7 +831,13 @@ public class ChromaticEventManager {
 				if (level > 0) {
 					float dmg = EnchantmentBossKill.getDamageDealt(mob, level);
 					if (dmg > 0) {
-						ChromaAux.doPylonAttack(CrystalElement.PINK, mob, dmg, false);
+						if (dmg >= mob.getHealth()) {
+							mob.setHealth(0);
+							mob.onDeath(src);
+						}
+						else {
+							ChromaAux.doPylonAttack(CrystalElement.PINK, mob, dmg, false);
+						}
 					}
 					else {
 						weapon.damageItem(4, ep);
@@ -879,6 +900,16 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
+	@ModDependent(ModList.VOIDMONSTER)
+	public void voidMonsterDeathProgress(LivingDeathEvent evt) {
+		if (evt.entityLiving instanceof EntityPlayer) {
+			if (evt.source.getEntity() instanceof EntityVoidMonster) {
+				ProgressStage.VOIDMONSTER.stepPlayerTo((EntityPlayer)evt.entityLiving);
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void reopenStructureOnDeath(LivingDeathEvent evt) {
 		if (evt.entityLiving instanceof EntityPlayer) {
 			int x = MathHelper.floor_double(evt.entityLiving.posX);
@@ -934,9 +965,11 @@ public class ChromaticEventManager {
 	}
 	 */
 	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void dropLumenTurretDrops(LivingDropsEvent evt) {
+	public void clearLumenTurretDrops(LivingDropsEvent evt) {
 		if (!(evt.entityLiving instanceof EntityPlayer)) {
 			if (evt.source instanceof LumenTurretDamage) {
+				if (evt.entityLiving instanceof EntityLiving)
+					((EntityLiving)evt.entityLiving).experienceValue = 0;
 				evt.setCanceled(true);
 			}
 		}
@@ -1179,7 +1212,7 @@ public class ChromaticEventManager {
 	@SubscribeEvent
 	@ModDependent(ModList.MYSTCRAFT)
 	public void burnRainbowLeaves(BlockConsumedByFireEvent evt) {
-		if (evt.world.getBlock(evt.x, evt.y, evt.z) == ChromaBlocks.RAINBOWLEAF.getBlockInstance()) {
+		if (evt.world.getBlock(evt.xCoord, evt.yCoord, evt.zCoord) == ChromaBlocks.RAINBOWLEAF.getBlockInstance()) {
 			ReikaMystcraftHelper.addInstabilityForAge(evt.world, (short)4);
 		}
 	}
@@ -1586,7 +1619,7 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void preventLilyFreeze(IceFreezeEvent evt) {
-		if (TileEntityHeatLily.stopFreeze(evt.world, evt.x, evt.y, evt.z)) {
+		if (TileEntityHeatLily.stopFreeze(evt.world, evt.xCoord, evt.yCoord, evt.zCoord)) {
 			evt.setResult(Result.DENY);
 		}
 	}
@@ -1674,6 +1707,12 @@ public class ChromaticEventManager {
 			world.setBlockToAir(x, y, z);
 			event.setResult(Result.ALLOW);
 			event.result = ChromaItems.BUCKET.getStackOfMetadata(3);
+			//event.entityPlayer.setCurrentItemOrArmor(0, event.result);
+		}
+		else if (b == ChromaBlocks.MOLTENLUMEN.getBlockInstance()) {
+			world.setBlockToAir(x, y, z);
+			event.setResult(Result.ALLOW);
+			event.result = ChromaItems.BUCKET.getStackOfMetadata(4);
 			//event.entityPlayer.setCurrentItemOrArmor(0, event.result);
 		}
 		else if (b == ChromaBlocks.EVERFLUID.getBlockInstance()) { //Not bucketable

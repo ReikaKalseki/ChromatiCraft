@@ -20,6 +20,9 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
+import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer.FontType;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.DragonAPI.DragonAPICore;
@@ -176,16 +179,16 @@ public class GuiChromability extends GuiScreen implements CustomSoundGui {
 
 		this.drawPreview(c, j, k);
 
-		fontRendererObj.drawString(c.getDisplayName(), j+63+dx, k+9, 0x000000);
+		fontRendererObj.drawString(c.getDisplayName(), j+63+dx, k+9, 0xffffff);
 		if (dx != 0) { //performance boost
 			if (index > 0) {
 				c = abilities.get(index-1);
-				fontRendererObj.drawString(c.getDisplayName(), j+63+dx-width, k+9, 0x000000);
+				fontRendererObj.drawString(c.getDisplayName(), j+63+dx-width, k+9, 0xffffff);
 			}
 
 			if (index < abilities.size()-1) {
 				c = abilities.get(index+1);
-				fontRendererObj.drawString(c.getDisplayName(), j+63+dx+width, k+9, 0x000000);
+				fontRendererObj.drawString(c.getDisplayName(), j+63+dx+width, k+9, 0xffffff);
 			}
 		}
 
@@ -194,21 +197,31 @@ public class GuiChromability extends GuiScreen implements CustomSoundGui {
 		if (!has)
 			;//return;
 		String desc = c.getDescription();
+		if (!this.hasFragment(c))
+			desc = FontType.OBFUSCATED.id+desc;
 		fontRendererObj.drawSplitString(desc, j+dx+fx, k+fy, xSize-fx*2, 0xffffff);
 
 		if (dx != 0) { //performance boost
 			if (index > 0) {
 				c = abilities.get(index-1);
 				desc = c.getDescription();
+				if (!this.hasFragment(c))
+					desc = FontType.OBFUSCATED.id+desc;
 				fontRendererObj.drawSplitString(desc, j+dx+fx-width, k+fy, xSize-fx*2, 0xffffff);
 			}
 
 			if (index < abilities.size()-1) {
 				c = abilities.get(index+1);
 				desc = c.getDescription();
+				if (!this.hasFragment(c))
+					desc = FontType.OBFUSCATED.id+desc;
 				fontRendererObj.drawSplitString(desc, j+dx+fx+width, k+fy, xSize-fx*2, 0xffffff);
 			}
 		}
+	}
+
+	private boolean hasFragment(Ability c) {
+		return !(c instanceof Chromabilities) || ChromaResearchManager.instance.playerHasFragment(player, ChromaResearch.getPageFor((Chromabilities)c));
 	}
 
 	protected String getBackTexture(Ability a) {
@@ -243,7 +256,7 @@ public class GuiChromability extends GuiScreen implements CustomSoundGui {
 	}
 
 	private String getTextureName(Ability c) {
-		return c.getTexturePath(!Chromabilities.playerHasAbility(player, c));
+		return this.hasFragment(c) ? c.getTexturePath(!Chromabilities.playerHasAbility(player, c)) : "Textures/Ability/unknown.png";
 	}
 
 	@Override

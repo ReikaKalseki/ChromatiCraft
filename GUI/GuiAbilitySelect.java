@@ -22,6 +22,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
+import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer.FontType;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -118,6 +119,7 @@ public class GuiAbilitySelect extends GuiScreen {
 		if (ability != null && ability.getMaxPower() > 0) {
 			int sc = data*64/ability.getMaxPower();
 			this.drawTexturedModalRect(width/2-12, height/2+5-sc, 116, 76-sc, 24, sc);
+			ReikaGuiAPI.instance.drawCenteredStringNoShadow(FontType.GUI.renderer, String.format("%d/%d", data, ability.getMaxPower()), width/2, height/2-72, 0xffffff);
 		}
 
 		int sep = 22;

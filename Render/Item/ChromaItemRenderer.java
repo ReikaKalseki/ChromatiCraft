@@ -88,7 +88,10 @@ public class ChromaItemRenderer implements IItemRenderer {
 		else {
 			ReikaTextureHelper.bindTerrainTexture();
 			if (entity && machine == ChromaTiles.CRYSTAL) {
-				GL11.glTranslated(-0.5, -0.5, -0.5);
+				if (type == type.EQUIPPED || type == type.EQUIPPED_FIRST_PERSON)
+					GL11.glTranslated(0.25, 0.25, 0.25);
+				else
+					GL11.glTranslated(-0.5, -0.5, -0.5);
 				CrystalRenderer.renderAllArmsInInventory = true;
 			}
 			rb.renderBlockAsItem(machine.getBlock(), machine.getBlockMetadata(), 1);

@@ -72,6 +72,7 @@ import Reika.ChromatiCraft.Auxiliary.RainbowTreeEffects;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Ability.LightCast;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
+import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer.FontType;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Entity.EntityNukerBall;
@@ -130,6 +131,7 @@ import Reika.ReactorCraft.Entities.EntityRadiation;
 
 import com.google.common.collect.HashBiMap;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -170,14 +172,16 @@ public enum Chromabilities implements Ability {
 	MOBSEEK(null, true),
 	BEEALYZE(null, true),
 	NUKER(Phase.START, false),
-	LIGHTCAST(null, false);
+	LIGHTCAST(null, false),
+	JUMP(null, false);
+
 
 	private final boolean tickBased;
 	private final Phase tickPhase;
 	private final boolean actOnClient;
 	private ModList dependency;
 
-	private static final UUID uid_health = UUID.randomUUID();
+	public static final UUID HEALTH_UUID = UUID.fromString("71d6a916-a54b-11e7-abc4-cec278b6b50a");
 	public static final int MAX_REACH = 128;
 
 	private Chromabilities(Phase tick, boolean client) {
@@ -228,7 +232,19 @@ public enum Chromabilities implements Ability {
 	}
 
 	public String getDisplayName() {
-		return StatCollector.translateToLocal("chromability."+this.name().toLowerCase(Locale.ENGLISH));
+		String s = StatCollector.translateToLocal("chromability."+this.name().toLowerCase(Locale.ENGLISH));
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT && DragonAPICore.hasGameLoaded()) {
+			s = this.deobfuscateIf(s);
+		}
+		return s;
+	}
+
+	@SideOnly(Side.CLIENT)
+	private String deobfuscateIf(String s) {
+		if (!ChromaResearchManager.instance.playerHasFragment(Minecraft.getMinecraft().thePlayer, ChromaResearch.getPageFor(this))) {
+			s = FontType.OBFUSCATED.id+s;
+		}
+		return s;
 	}
 
 	public String getDescription() {
@@ -267,7 +283,6 @@ public enum Chromabilities implements Ability {
 		if (c.isTickBased() || c.costsPerTick()) {
 			return AbilityHelper.instance.getUsageElementsFor(c, ep);
 		}
-
 		return null;
 	}
 
@@ -389,6 +404,8 @@ public enum Chromabilities implements Ability {
 				return doLaserPulse(ep);
 			case LIGHTCAST:
 				return doLightCast(ep);
+			case JUMP:
+				return doJump(ep, data);
 			default:
 				return false;
 		}
@@ -408,7 +425,7 @@ public enum Chromabilities implements Ability {
 		ProgressStage.ABILITY.stepPlayerTo(ep);
 		ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(a, ep);
 		if (a == HEALTH)
-			use.scale(10);
+			use.scale(10*(1+data));
 		if (a == SHIFT)
 			use.scale(10);
 		if (a == LIGHTNING)
@@ -423,6 +440,8 @@ public enum Chromabilities implements Ability {
 			use.scale(800);
 		if (a == LIGHTCAST)
 			use.scale(20);
+		if (a == JUMP)
+			use.scale(1+data);
 
 		boolean flag = enabledOn(ep, a) || a.isPureEventDriven();
 		setToPlayer(ep, !flag, a);
@@ -455,6 +474,7 @@ public enum Chromabilities implements Ability {
 			case DIMPING:
 			case LASER:
 			case LIGHTCAST:
+			case JUMP:
 				return true;
 			default:
 				return false;
@@ -655,6 +675,14 @@ public enum Chromabilities implements Ability {
 		b.causeUpdates = false;
 		b.breakAir = true;
 		ChromaSounds.LIGHTCAST.playSound(ep);
+		return true;
+	}
+
+	private static boolean doJump(EntityPlayer ep, int power) {
+		ep.motionY += power/2D*(1+ep.worldObj.rand.nextDouble());
+		ep.velocityChanged = true;
+		ep.fallDistance -= 100;
+		ChromaSounds.RIFT.playSound(ep, 1, 2);
 		return true;
 	}
 
@@ -1025,15 +1053,13 @@ public enum Chromabilities implements Ability {
 	}
 
 	private static void setPlayerMaxHealth(EntityPlayer ep, int value) {
-		float added = value+20-ep.getMaxHealth();
+		float factor = value/10F;
 		//ReikaJavaLibrary.pConsole(added+":"+add+":"+ep.getMaxHealth());
-		if (ep.worldObj.isRemote)
-			ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).removeAllModifiers();
-		ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).removeModifier(new AttributeModifier(uid_health, "Chroma", value/20D, 2));
+		ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).removeModifier(new AttributeModifier(HEALTH_UUID, "Chroma", 0, 2));
 		if (value > 0) {
-			ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier(uid_health, "Chroma", value/20D, 2));
-			if (added > 0)
-				ep.heal(added);
+			ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier(HEALTH_UUID, "Chroma", factor, 2));
+			//if (added > 0)
+			//	ep.heal(added);
 		}
 		ep.setHealth(Math.min(ep.getHealth(), ep.getMaxHealth()));
 		AbilityHelper.instance.boostHealth(ep, value);
@@ -1510,7 +1536,7 @@ public enum Chromabilities implements Ability {
 			case FIREBALL:
 				return 8;
 			case HEALTH:
-				return 40;
+				return 50;
 			case LIGHTNING:
 				return 2;
 			case MAGNET:
@@ -1519,6 +1545,8 @@ public enum Chromabilities implements Ability {
 				return 12;
 			case REACH:
 				return AbilityHelper.REACH_SCALE.length-1;
+			case JUMP:
+				return 8;
 			default:
 				return 0;
 		}

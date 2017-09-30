@@ -245,9 +245,14 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 	protected abstract boolean hasBeenSolved(World world);
 
-	public final void forceOpen(World world) {
+	public final void forceOpen(World world, EntityPlayer ep) {
 		forcedOpen = true;
 		this.openStructure(world);
+		this.getCoreTile(world).whitelistPlayer(ep);
+	}
+
+	public final TileEntityDimensionCore getCoreTile(World world) {
+		return (TileEntityDimensionCore)coreLocation.getTileEntity(world);
 	}
 
 	public boolean forcedOpen() {

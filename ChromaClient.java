@@ -38,6 +38,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.Ta
 import Reika.ChromatiCraft.Block.Dimension.Structure.Pinball.BlockPinballTile.TileBouncePad;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Water.BlockRotatingLock.TileEntityRotatingLock;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
+import Reika.ChromatiCraft.Block.Worldgen.BlockWarpNode.TileEntityWarpNode;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Entity.EntityAurora;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
@@ -122,6 +123,7 @@ import Reika.ChromatiCraft.Render.TESR.RenderCrystalPortal;
 import Reika.ChromatiCraft.Render.TESR.RenderLootChest;
 import Reika.ChromatiCraft.Render.TESR.RenderLoreReader;
 import Reika.ChromatiCraft.Render.TESR.RenderPolyCrystal;
+import Reika.ChromatiCraft.Render.TESR.RenderWarpNode;
 import Reika.ChromatiCraft.Render.TESR.Dimension.RenderAntKey;
 import Reika.ChromatiCraft.Render.TESR.Dimension.RenderBouncePad;
 import Reika.ChromatiCraft.Render.TESR.Dimension.RenderGlowingCracks;
@@ -312,6 +314,7 @@ public class ChromaClient extends ChromaCommon {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRotatingLock.class, new RenderWaterLock());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileGlowingCracks.class, new RenderGlowingCracks());
 		ClientRegistry.bindTileEntitySpecialRenderer(TilePolyCrystal.class, new RenderPolyCrystal());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityWarpNode.class, new RenderWarpNode());
 
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.PLACER.getItemInstance(), placer);
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.RIFT.getItemInstance(), placer);

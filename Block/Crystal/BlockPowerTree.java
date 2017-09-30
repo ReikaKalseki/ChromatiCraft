@@ -183,7 +183,7 @@ public class BlockPowerTree extends Block implements IWailaDataProvider {
 	@Override
 	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int meta, int fortune) {
 		ArrayList<ItemStack> li = new ArrayList();
-		int n = ReikaMathLibrary.intpow2(5+rand.nextInt(10), 2);
+		int n = ReikaMathLibrary.intpow2(4+rand.nextInt(5), 2);
 		CrystalElement e = CrystalElement.elements[meta];
 		while (n > 0) {
 			int rem = Math.min(n, ChromaItems.SHARD.getItemInstance().getItemStackLimit());

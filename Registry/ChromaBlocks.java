@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
 import Reika.ChromatiCraft.Block.BlockDummyAux;
 import Reika.ChromatiCraft.Block.BlockEnderTNT;
+import Reika.ChromatiCraft.Block.BlockFakeSky;
 import Reika.ChromatiCraft.Block.BlockHeatLamp;
 import Reika.ChromatiCraft.Block.BlockHoverBlock;
 import Reika.ChromatiCraft.Block.BlockHoverPad;
@@ -121,6 +122,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant;
 import Reika.ChromatiCraft.Block.Worldgen.BlockUnknownArtefact;
+import Reika.ChromatiCraft.Block.Worldgen.BlockWarpNode;
 import Reika.ChromatiCraft.Items.ItemRedstonePodPlacer;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockChromaFlower;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockChromaTiered;
@@ -248,7 +250,9 @@ public enum ChromaBlocks implements BlockEnum {
 	REDSTONEPOD(BlockRedstonePod.class,			ItemRedstonePodPlacer.class,	"chroma.redstonepod"),
 	POLYCRYSTAL(BlockPolyCrystal.class,											"chroma.polycrystal"),
 	MOLTENLUMEN(BlockLiquidLumen.class, 		ChromatiCraft.lumen,			"Molten Lumen"),
-	METAALLOYLAMP(BlockMetaAlloyLamp.class,		ItemBlockSidePlaced.class,		"chroma.metaalloy");
+	METAALLOYLAMP(BlockMetaAlloyLamp.class,		ItemBlockSidePlaced.class,		"chroma.metaalloy"),
+	WARPNODE(BlockWarpNode.class,												"chroma.warpnode"),
+	FAKESKY(BlockFakeSky.class,													"chroma.fakesky");
 
 	private Class blockClass;
 	private String blockName;
@@ -533,6 +537,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case REDSTONEPOD:
 			case POLYCRYSTAL:
 			case METAALLOYLAMP:
+			case FAKESKY:
 				return false;
 			default:
 				return true;

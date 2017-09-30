@@ -135,7 +135,7 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 		ElementTagCompound tag = getSmeltingCost(inv[0], is);
 		is.stackSize *= this.getMultiplyRate(inv[0], is);
 		ReikaInventoryHelper.addOrSetStack(is, inv, 1);
-		xp += FurnaceRecipes.smelting().func_151398_b(inv[1])*6;
+		xp += FurnaceRecipes.smelting().func_151398_b(inv[1])*6*getXPModifier(inv[0]);
 		if (xp >= TileEntityCollector.XP_PER_CHROMA) {
 			int amt = (int)(xp/TileEntityCollector.XP_PER_CHROMA);
 			tank.addLiquid(amt, FluidRegistry.getFluid("chroma"));
@@ -144,6 +144,29 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 		ReikaInventoryHelper.decrStack(0, inv);
 		this.drainEnergy(tag);
 		energy.subtract(CrystalElement.LIGHTBLUE, 250);
+	}
+
+	public static float getXPModifier(ItemStack in) {
+		if (ReikaBlockHelper.isOre(in))
+			return 2;
+		else if (ModList.ROTARYCRAFT.isLoaded() && ExtractorModOres.isOreFlake(in)) {
+			return 2;
+		}
+		else if (in.getItem() instanceof ItemFood) {
+			return 0.125F;
+		}
+		else if (ReikaItemHelper.matchStackWithBlock(in, Blocks.log) || ReikaItemHelper.matchStackWithBlock(in, Blocks.log2)) {
+			return 1.125F;
+		}
+		else if (ModWoodList.isModWood(in)) {
+			return 1.125F;
+		}
+		else if (ModList.THAUMCRAFT.isLoaded() && in.getItem() == ThaumItemHelper.ItemEntry.NUGGETCLUSTER.getItem().getItem()) {
+			return 4;
+		}
+		else if (in.getDisplayName() != null && in.getDisplayName().toLowerCase(Locale.ENGLISH).contains("cobblestone"))
+			return 0;
+		return 1;
 	}
 
 	public static ElementTagCompound getSmeltingCost(ItemStack in, ItemStack out) {

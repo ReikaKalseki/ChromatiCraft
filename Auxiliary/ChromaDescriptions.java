@@ -268,7 +268,7 @@ public final class ChromaDescriptions {
 				}
 				if (m.hasPrerequisite()) {
 					String sg = m.getPrerequisite().getModLabel().replaceAll("[|]", "");
-					aux += "\nDependencies: "+ReikaStringParser.splitCamelCase(sg).replaceAll(" Craft", "Craft");
+					aux += "\nDependencies: "+ReikaStringParser.capitalizeWords(ReikaStringParser.splitCamelCase(sg).replaceAll(" Craft", "Craft"));
 				}
 				if (m.isIncomplete()) {
 					desc += "\nThis machine is incomplete. Use at your own risk.";

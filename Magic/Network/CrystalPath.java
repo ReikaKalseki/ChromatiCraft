@@ -222,4 +222,27 @@ public class CrystalPath implements Comparable<CrystalPath> {
 		return nodes.hashCode() ^ element.ordinal();
 	}
 
+	public CrystalPath optimize() {
+		return new CrystalPath(network, hasRealTarget, element, this.getOptimizedNodePath());
+	}
+
+	protected final ArrayList<WorldLocation> getOptimizedNodePath() {
+		return optimizeRoute(network, element, nodes);
+	}
+
+	static final ArrayList<WorldLocation> optimizeRoute(CrystalNetworker net, CrystalElement e, ArrayList<WorldLocation> nodes) {
+		ArrayList<WorldLocation> li = new ArrayList();
+		li.add(0, nodes.get(nodes.size()-1));
+		for (int i = nodes.size()-2; i > 0; i--) {
+			li.add(0, nodes.get(i));
+			CrystalTransmitter src = PylonFinder.getTransmitterAt(nodes.get(i), true);
+			CrystalReceiver tgt = PylonFinder.getReceiverAt(nodes.get(/*i-1*/0), true);
+			if (net.canMakeConnection(src, tgt, e)) {
+				break;
+			}
+		}
+		li.add(0, nodes.get(0));
+		return li;
+	}
+
 }

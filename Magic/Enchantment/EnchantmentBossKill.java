@@ -11,7 +11,9 @@ package Reika.ChromatiCraft.Magic.Enchantment;
 
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ChromaticEnchantment;
 
 
@@ -38,9 +40,14 @@ public class EnchantmentBossKill extends ChromaticEnchantment {
 		return EnumEnchantmentType.weapon.canEnchantItem(is.getItem()) || EnumEnchantmentType.bow.canEnchantItem(is.getItem());
 	}
 
+	@Override
+	public boolean isVisibleToPlayer(EntityPlayer ep) {
+		return ProgressStage.KILLDRAGON.isPlayerAtStage(ep) || ProgressStage.KILLWITHER.isPlayerAtStage(ep);
+	}
+
 	public static float getDamageDealt(EntityLivingBase e, int lvl) {
 		float max = e.getMaxHealth();
-		DamageProfile dp = damageFraction[lvl];
+		DamageProfile dp = damageFraction[lvl-1];
 		if (max >= dp.damageThreshold) {
 			return Math.min(max*dp.damageFraction, dp.damageCap);
 		}

@@ -58,7 +58,7 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 					this.programShardAndGiveData(is, ep);
 				}
 				else {
-					if (r.playerHasProgress(ep) && ChromaResearchManager.instance.playerHasDependencies(r, ep))
+					if (r.playerHasProgress(ep) && ChromaResearchManager.instance.getNextResearchesFor(ep).contains(r))
 						ChromaResearchManager.instance.givePlayerFragment(ep, r, true);
 				}
 			}

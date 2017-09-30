@@ -40,14 +40,14 @@ public class RecipeHoverWand extends PylonCastingRecipe {
 		this.addAuxItem(ChromaStacks.spaceDust, 0, 4);
 		this.addAuxItem(ChromaStacks.spaceDust, 0, -4);
 
-		this.addAuxItem(ChromaStacks.floatstone, -4, -2);
-		this.addAuxItem(ChromaStacks.floatstone, -4, 2);
-		this.addAuxItem(ChromaStacks.floatstone, 4, -2);
-		this.addAuxItem(ChromaStacks.floatstone, 4, 2);
-		this.addAuxItem(ChromaStacks.floatstone, -2, -4);
-		this.addAuxItem(ChromaStacks.floatstone, 2, -4);
-		this.addAuxItem(ChromaStacks.floatstone, -2, 4);
-		this.addAuxItem(ChromaStacks.floatstone, 2, 4);
+		this.addAuxItem(ChromaStacks.enderDust, -4, -2);
+		this.addAuxItem(ChromaStacks.enderDust, -4, 2);
+		this.addAuxItem(ChromaStacks.enderDust, 4, -2);
+		this.addAuxItem(ChromaStacks.enderDust, 4, 2);
+		this.addAuxItem(ChromaStacks.enderDust, -2, -4);
+		this.addAuxItem(ChromaStacks.enderDust, 2, -4);
+		this.addAuxItem(ChromaStacks.enderDust, -2, 4);
+		this.addAuxItem(ChromaStacks.enderDust, 2, 4);
 
 		this.addAuraRequirement(CrystalElement.BLACK, 2000);
 		this.addAuraRequirement(CrystalElement.LIME, 10000);
