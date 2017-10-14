@@ -195,7 +195,7 @@ public enum ChromaBlocks implements BlockEnum {
 	DIMGEN(BlockDimensionDeco.class,			ItemBlockMultiType.class,		"chroma.dimdeco"),
 	DIMGENTILE(BlockDimensionDecoTile.class,	ItemBlockMultiType.class,		"chroma.dimdeco2"),
 	COLORLOCK(BlockColoredLock.class,											"chroma.colorlock"),
-	DIMDATA(BlockStructureDataStorage.class,									"chroma.dimdata"),
+	DIMDATA(BlockStructureDataStorage.class,	ItemBlockMultiType.class,		"chroma.dimdata"),
 	LOCKFENCE(BlockLockFence.class,												"chroma.lockfence"),
 	LOCKFREEZE(BlockLockFreeze.class,											"chroma.lockfreeze"),
 	LOCKKEY(BlockLockKey.class,					ItemBlockLockKey.class,			"chroma.lockkey"),
@@ -459,6 +459,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return StatCollector.translateToLocal("chromablock.dimgen."+BlockDimensionDeco.DimDecoTypes.list[meta].name().toLowerCase(Locale.ENGLISH));
 			case DIMGENTILE:
 				return StatCollector.translateToLocal("chromablock.dimgen."+BlockDimensionDecoTile.DimDecoTileTypes.list[meta].name().toLowerCase(Locale.ENGLISH));
+			case DIMDATA:
+				return StatCollector.translateToLocal("chromablock.dimdata."+meta);
 			case LOCKKEY:
 			case HOVER:
 				return this.getBasicName();
@@ -514,7 +516,6 @@ public enum ChromaBlocks implements BlockEnum {
 			case SHIFTKEY:
 			case TELEPORT:
 			case DOOR:
-			case DIMDATA:
 			case CONSOLE:
 			case LIGHT:
 			case SELECTIVEGLASS:
@@ -571,6 +572,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return BlockDimensionDeco.DimDecoTypes.list.length;
 			case DIMGENTILE:
 				return BlockDimensionDecoTile.DimDecoTileTypes.list.length;
+			case DIMDATA:
+				return 2;
 			case LOCKKEY:
 				return BlockLockKey.LockChannel.lockList.length;
 			case HOVER:

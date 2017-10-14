@@ -728,9 +728,9 @@
 			Or not.
 		</desc>
 	</structcheat>
-	<name>
+	<voidmonster>
 		<title>
-
+			Below the world lurks a...THING.
 		</title>
 		<hint>
 
@@ -738,5 +738,5 @@
 		<reveal>
 
 		</reveal>
-	</name>
+	</voidmonster>
 </progression>

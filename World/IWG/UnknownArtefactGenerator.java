@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockBush;
+import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkCoordIntPair;
@@ -59,6 +61,7 @@ public class UnknownArtefactGenerator implements RetroactiveGenerator {
 					int dz = MathHelper.floor_double(z+r*sin);
 					ChunkCoordIntPair p2 = new ChunkCoordIntPair((dx >> 4) << 4, (dz >> 4) << 4);
 					UAChunks.add(p2);
+					//ReikaJavaLibrary.pConsole("Artefact: Tower "+t+" @ "+p+" from seed "+world.getSeed()+" > "+p2, t == Towers.ALPHA);
 				}
 			}
 		}
@@ -111,13 +114,24 @@ public class UnknownArtefactGenerator implements RetroactiveGenerator {
 	}
 
 	public static boolean canGenerateArtefactAt(World world, int x, int y, int z) { //the artefact would be at x, y-1, z
+		//ReikaJavaLibrary.pConsole("Attempting @ "+x+", "+y+", "+z);
 		Block b = world.getBlock(x, y, z);
-		if (b != Blocks.dirt && b != Blocks.grass)
+		if (b != Blocks.dirt && b != Blocks.grass) {
+			//ReikaJavaLibrary.pConsole("Invalid surface block");
 			return false;
-		if (!world.getBlock(x, y+1, z).isAir(world, x, y+1, z))
+		}
+		if (!isValidSurfaceBlock(world, x, y+1, z)) {
+			//ReikaJavaLibrary.pConsole("Invalid cover block");
 			return false;
-		if (world.getBlock(x, y-1, z) != Blocks.dirt)
+		}
+		if (world.getBlock(x, y-1, z) != Blocks.dirt) {
+			//ReikaJavaLibrary.pConsole("Not dirt");
 			return false;
+		}
+		if (ReikaWorldHelper.checkForAdjMaterial(world, x, y-1, z, Material.air) != null) {
+			//ReikaJavaLibrary.pConsole("Adj air");
+			return false;
+		}
 		for (int i = 0; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 			if (dir != ForgeDirection.UP) {
@@ -125,12 +139,30 @@ public class UnknownArtefactGenerator implements RetroactiveGenerator {
 					int dx = x+dir.offsetX*d;
 					int dy = y+dir.offsetY*d;
 					int dz = z+dir.offsetZ*d;
-					if (!world.getBlock(dx, dy, dz).isAir(world, dx, dy, dz))
+					if (world.getBlock(dx, dy, dz).isAir(world, dx, dy, dz)) {
+						//ReikaJavaLibrary.pConsole("Near air");
 						return false;
+					}
 				}
 			}
 		}
+		//ReikaJavaLibrary.pConsole("Success");
 		return true;
+	}
+
+	private static boolean isValidSurfaceBlock(World world, int x, int y, int z) {
+		Block b = world.getBlock(x, y, z);
+		if (b.isAir(world, x, y, z))
+			return true;
+		if (b == Blocks.snow_layer)
+			return true;
+		if (b == ChromaBlocks.DECOFLOWER.getBlockInstance())
+			return true;
+		if (ReikaWorldHelper.softBlocks(world, x, y, z))
+			return true;
+		if (b instanceof BlockBush)
+			return true;
+		return false;
 	}
 
 	private boolean isVoidWorld(World world, int x, int z) {

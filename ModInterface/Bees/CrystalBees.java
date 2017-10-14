@@ -111,6 +111,7 @@ public class CrystalBees {
 	static BasicBee protective;
 	static BasicBee luminous;
 	static BasicBee hostile;
+	static BasicBee magical;
 
 	static BasicBee crystal;
 	static BasicBee purity;
@@ -250,12 +251,14 @@ public class CrystalBees {
 		protective = new BasicBee("Protective", "Vitreus Auxilium", Speeds.SLOWER, Life.ELONGATED, Flowering.SLOWER, Fertility.NORMAL, Territory.DEFAULT, 0xFF5993);
 		luminous = new BasicBee("Luminous", "Vitreus Lumens", Speeds.SLOW, Life.SHORTER, Flowering.SLOWER, Fertility.HIGH, Territory.DEFAULT, 0xBAEBFF);
 		hostile = new BasicBee("Hostile", "Vitreus Inimicus", Speeds.SLOWEST, Life.SHORT, Flowering.SLOW, Fertility.LOW, Territory.DEFAULT, 0xFF6A00);
+		magical = new BasicBee("Proximal", "Vitreus Proxima", Speeds.NORMAL, Life.NORMAL, Flowering.SLOW, Fertility.NORMAL, Territory.DEFAULT, 0xD53DFF);
 
 		crystal.register();
 		purity.register();
 		protective.register();
 		luminous.register();
 		hostile.register();
+		magical.register();
 
 		chroma = new AdvancedBee("Iridescent", "Auram Stellans", Speeds.SLOWER, Life.NORMAL, Flowering.SLOWEST, Fertility.NORMAL, Territory.DEFAULT, chromaColor, EnumTemperature.COLD, ProgressStage.ALLOY);
 		lumen = new AdvancedBee("Luminescent", "Auram Ardens", Speeds.NORMAL, Life.SHORTENED, Flowering.SLOWER, Fertility.NORMAL, Territory.DEFAULT, lumenColor, EnumTemperature.NORMAL, ProgressStage.DIMENSION);
@@ -278,7 +281,7 @@ public class CrystalBees {
 		addBreeding(CrystalElement.PINK, CrystalElement.PURPLE, CrystalElement.MAGENTA);
 
 		addBreeding(purity, crystal, CrystalElement.WHITE);
-		addBreeding(protective, hostile, CrystalElement.BLACK);
+		addBreeding(magical, crystal, CrystalElement.BLACK);
 		addBreeding(protective, crystal, CrystalElement.RED);
 		addBreeding(luminous, crystal, CrystalElement.BLUE);
 
@@ -289,6 +292,7 @@ public class CrystalBees {
 		protective.addBreeding("Heroic", crystal, 10);
 		hostile.addBreeding("Demonic", crystal, 10);
 		luminous.addBreeding("Ended", purity, 5);
+		magical.addBreeding("Imperial", ModList.MAGICBEES.isLoaded() ? "Arcane" : "Wintry", 4);
 
 		chroma.addBreeding(beeMap.get(CrystalElement.PURPLE), beeMap.get(CrystalElement.WHITE), 5);
 		lumen.addBreeding(beeMap.get(CrystalElement.BLUE), beeMap.get(CrystalElement.BLACK), 5);
@@ -298,9 +302,11 @@ public class CrystalBees {
 		protective.addProduct(new ItemStack(Blocks.obsidian), 2);
 		hostile.addProduct(new ItemStack(Items.gunpowder), 4);
 		luminous.addProduct(new ItemStack(Items.glowstone_dust), 5);
+		magical.addProduct(ChromaStacks.chromaDust, 5);
 		protective.addProduct(Combs.HONEY.getItem(), 10);
 		hostile.addProduct(Combs.HONEY.getItem(), 10);
 		luminous.addProduct(Combs.HONEY.getItem(), 10);
+		magical.addProduct(Combs.HONEY.getItem(), 10);
 		crystal.addProduct(ChromaStacks.crystalPowder, 5);
 		purity.addProduct(new ItemStack(Items.ghast_tear), 1);
 

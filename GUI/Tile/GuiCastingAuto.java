@@ -47,6 +47,8 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class GuiCastingAuto extends GuiChromaBase {
 
+	public static CastingRecipe lexiconSelectedRecipe = null;
+
 	private static final List<ChromaResearch> list = new ArrayList();
 
 	static {
@@ -91,6 +93,8 @@ public class GuiCastingAuto extends GuiChromaBase {
 	}
 
 	private CastingRecipe getRecipe() {
+		if (lexiconSelectedRecipe != null)
+			return lexiconSelectedRecipe;
 		return index >= 0 && !visible.isEmpty() ? visible.get(index) : null;
 	}
 
@@ -135,6 +139,11 @@ public class GuiCastingAuto extends GuiChromaBase {
 		Collections.sort(visible, new RecipeComparator());
 
 		index = Math.min(index, visible.size()-1);
+
+		if (!visible.isEmpty() && lexiconSelectedRecipe != null && !visible.contains(lexiconSelectedRecipe)) {
+			ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 1, 1);
+			lexiconSelectedRecipe = null;
+		}
 	}
 
 	@Override
@@ -166,6 +175,7 @@ public class GuiCastingAuto extends GuiChromaBase {
 
 			case 5:
 				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.AUTOCANCEL.ordinal(), tile);
+				lexiconSelectedRecipe = null;
 				break;
 		}
 	}

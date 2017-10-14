@@ -4150,6 +4150,11 @@ public class LocksRoomHouse extends LockLevel {
 	}
 
 	@Override
+	public int getMirroredOffset() {
+		return 2;
+	}
+
+	@Override
 	public int getDifficultyRating() {
 		return 4;
 	}

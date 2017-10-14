@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Block.Dimension.Structure.Locks;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -37,7 +38,9 @@ import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 
 public class BlockColoredLock extends BlockDimensionStructureTile {
 
@@ -72,6 +75,20 @@ public class BlockColoredLock extends BlockDimensionStructureTile {
 	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int s) {
 		TileEntity te = iba.getTileEntity(x, y, z);
 		return te instanceof TileEntityColorLock && ((TileEntityColorLock)te).isOpen ? icons[1] : icons[0];
+	}
+
+	@Override
+	public void randomDisplayTick(World world, int x, int y, int z, Random rand) {
+		TileEntityColorLock te = (TileEntityColorLock)world.getTileEntity(x, y, z);
+		if (te.isOpen) {
+			if (world.getBlockMetadata(x, y, z) == 0) {
+				CrystalElement e = ReikaJavaLibrary.getRandomCollectionEntry(rand, te.colors);
+				float r = e.getRed()/255F;
+				float g = e.getGreen()/255F;
+				float b = e.getBlue()/255F;
+				ReikaParticleHelper.spawnColoredParticles(world, x, y, z, r, g, b, 3);
+			}
+		}
 	}
 
 	@Override

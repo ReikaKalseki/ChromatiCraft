@@ -94,6 +94,8 @@ public class MusicPuzzle extends StructurePiece implements TileCallback {
 		world.setBlock(x+9, y+1, z+13, tr);
 
 		world.setTileEntity(x+5, y+1, z+5, ChromaBlocks.MUSICMEMORY.getBlockInstance(), 0, this);
+		if (index == 0)
+			parent.generatePasswordTile(x+5, y+2, z+5);
 	}
 
 	public void initialize(Random rand) {

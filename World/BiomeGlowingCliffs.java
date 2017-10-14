@@ -11,7 +11,6 @@ package Reika.ChromatiCraft.World;
 
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
@@ -31,18 +30,17 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.feature.WorldGenAbstractTree;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.DragonAPI.Instantiable.ResettableRandom;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ModifiableBigTree;
 import Reika.DragonAPI.Instantiable.Worldgen.ModifiableSmallTrees;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -235,9 +233,10 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 	}
 
 	public static boolean isGlowingCliffs(BiomeGenBase b) {
-		return b instanceof BiomeGlowingCliffs;
+		return b instanceof BiomeGlowingCliffs || (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.getMystParentBiome(b) instanceof BiomeGlowingCliffs);
 	}
 
+	/* No longer callable, nor was it a good idea
 	public static void runIWGs(int cx, int cz, World world, IChunkProvider gen, IChunkProvider loader) {
 		List<IWorldGenerator> iwgs = ReikaWorldHelper.getModdedGenerators();
 		ResettableRandom rand = ReikaWorldHelper.getModdedGeneratorChunkRand(cx, cz, world);
@@ -249,8 +248,9 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 			}
 		}
 	}
+	 */
 
-	private static boolean canRunGenerator(IWorldGenerator gen) {
+	public static boolean canRunGenerator(IWorldGenerator gen) {
 		Class c = gen.getClass();
 		Boolean flag = generatorRules.get(c);
 		if (flag == null) {

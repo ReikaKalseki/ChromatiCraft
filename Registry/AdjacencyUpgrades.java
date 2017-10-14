@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.StatCollector;
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -177,6 +179,13 @@ public enum AdjacencyUpgrades {
 				break;
 		}
 		return 0;
+	}
+
+	public ItemStack getStackOfTier(int tier) {
+		ItemStack is = ChromaItems.ADJACENCY.getStackOfMetadata(this.ordinal());
+		is.stackTagCompound = new NBTTagCompound();
+		is.stackTagCompound.setInteger("tier", tier);
+		return is;
 	}
 
 }

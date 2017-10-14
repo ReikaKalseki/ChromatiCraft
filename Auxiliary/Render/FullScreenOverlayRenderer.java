@@ -37,6 +37,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 
 public class FullScreenOverlayRenderer {
@@ -53,7 +54,7 @@ public class FullScreenOverlayRenderer {
 	private final EnumMap<CrystalElement, Float> factors = new EnumMap(CrystalElement.class);
 
 	private static final int GROUP_LIFESPAN = 100;
-	private final Collection<TileGroupRender> renderingGroups = new ArrayList();
+	private final Collection<FullElementRender> renderingGroups = new ArrayList();
 
 	private FullScreenOverlayRenderer() {
 
@@ -179,6 +180,11 @@ public class FullScreenOverlayRenderer {
 		}
 	}
 
+	void addStructurePasswordNote(EntityPlayer ep, int hex) {
+		byte[] vals = ReikaJavaLibrary.splitIntToHexChars(hex);
+		renderingGroups.add(new StructurePasswordRender(vals));
+	}
+
 	boolean renderLoreHexes(RenderGameOverlayEvent.Pre evt, int tick) {
 		if (!renderingGroups.isEmpty()) {
 			GL11.glPushMatrix();
@@ -191,7 +197,7 @@ public class FullScreenOverlayRenderer {
 			BlendMode.DEFAULT.apply();
 
 			float maxa = 0;
-			for (TileGroupRender t : renderingGroups) {
+			for (FullElementRender t : renderingGroups) {
 				maxa = Math.max(maxa, t.getAlpha());
 			}
 
@@ -216,25 +222,14 @@ public class FullScreenOverlayRenderer {
 			GL11.glTranslated(evt.resolution.getScaledWidth_double()/2, evt.resolution.getScaledHeight_double()/2, 800);
 			GL11.glTranslated(-KeyAssemblyPuzzle.CELL_SIZE/2D*s-0.5, -KeyAssemblyPuzzle.CELL_SIZE/2D*s+2, 0);
 			GL11.glScaled(s, s, s);
-			KeyAssemblyPuzzle p = LoreManager.instance.getPuzzle(Minecraft.getMinecraft().thePlayer);
-			Iterator<TileGroupRender> it = renderingGroups.iterator();
+			Iterator<FullElementRender> it = renderingGroups.iterator();
 			while (it.hasNext()) {
-				TileGroupRender t = it.next();
+				FullElementRender t = it.next();
 				GL11.glPushMatrix();
 				GL11.glTranslated(i*60, 0, 0);
 				t.age++;
 				GL11.glColor4f(1, 1, 1, t.getAlpha());
-				//ReikaJavaLibrary.pConsole(t.getHexes());
-				Point pt = t.group.getCenter(p);
-				GL11.glTranslated(-pt.x, -pt.y, 0);
-				for (Hex h : t.group.getHexes()) {
-					GL11.glPushMatrix();
-					HexCell c = p.getCell(h);
-					Point pt2 = p.getHexLocation(h);
-					GL11.glTranslated(pt2.x, pt2.y, 0);
-					c.render(p, Tessellator.instance, false, 1);
-					GL11.glPopMatrix();
-				}
+				t.render();
 				GL11.glPopMatrix();
 				i++;
 				if (t.age >= GROUP_LIFESPAN)
@@ -253,24 +248,76 @@ public class FullScreenOverlayRenderer {
 		return !renderingGroups.isEmpty();
 	}
 
-	private static class TileGroupRender {
+	private static abstract class FullElementRender {
 
-		private final TileGroup group;
+		private final int lifespan;
+
 		private int age;
 
-		private TileGroupRender(TileGroup g) {
-			group = g;
+		protected FullElementRender(int life) {
+			lifespan = life;
 		}
 
-		private float getAlpha() {
-			if (age < GROUP_LIFESPAN/8) {
-				return age*8F/GROUP_LIFESPAN;
+		protected final float getAlpha() {
+			if (age < lifespan/8) {
+				return age*8F/lifespan;
 			}
-			else if (age > GROUP_LIFESPAN/2) {
-				return 1-((age-GROUP_LIFESPAN/2F)/(GROUP_LIFESPAN/2F));
+			else if (age > lifespan/2) {
+				return 1-((age-lifespan/2F)/(lifespan/2F));
 			}
 			else {
 				return 1;
+			}
+		}
+
+		protected abstract void render();
+
+	}
+
+	private static class StructurePasswordRender extends FullElementRender {
+
+		private final byte[] colors;
+
+		private StructurePasswordRender(byte[] c) {
+			super(GROUP_LIFESPAN*5);
+			colors = c;
+		}
+
+		@Override
+		protected void render() {
+			ReikaTextureHelper.bindTerrainTexture();
+			for (int i = 0; i < colors.length; i++) {
+				byte color = colors[i];
+				int x = (i%16-4)*24+12;
+				int y = 0;//(i/4)*32;
+				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y, CrystalElement.elements[color].getGlowRune(), 16, 16);
+			}
+		}
+
+	}
+
+	private static class TileGroupRender extends FullElementRender {
+
+		private final TileGroup group;
+
+		private TileGroupRender(TileGroup g) {
+			super(GROUP_LIFESPAN);
+			group = g;
+		}
+
+		@Override
+		protected void render() {
+			KeyAssemblyPuzzle p = LoreManager.instance.getPuzzle(Minecraft.getMinecraft().thePlayer);
+			//ReikaJavaLibrary.pConsole(t.getHexes());
+			Point pt = group.getCenter(p);
+			GL11.glTranslated(-pt.x, -pt.y, 0);
+			for (Hex h : group.getHexes()) {
+				GL11.glPushMatrix();
+				HexCell c = p.getCell(h);
+				Point pt2 = p.getHexLocation(h);
+				GL11.glTranslated(pt2.x, pt2.y, 0);
+				c.render(p, Tessellator.instance, false, 1);
+				GL11.glPopMatrix();
 			}
 		}
 

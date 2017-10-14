@@ -127,6 +127,8 @@ public abstract class ChargedCrystalPowered extends InventoriedChromaticBase imp
 	public abstract boolean canExtractItem(int slot, ItemStack is, int side);
 	public abstract boolean isItemValidForSlot(int slot, ItemStack is);
 
+	public abstract ElementTagCompound getRequiredEnergy();
+
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);

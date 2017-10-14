@@ -39,19 +39,21 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
+import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.ChangeCallback;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.ExtractedItem;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.MatchMode;
 import appeng.api.AEApi;
 import appeng.api.networking.IGridBlock;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.IActionHost;
+import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AECableType;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @Strippable(value={"appeng.api.networking.IActionHost"})
-public class TileEntityMEDistributor extends TileEntityChromaticBase implements IActionHost, SidePlacedTile {
+public class TileEntityMEDistributor extends TileEntityChromaticBase implements IActionHost, SidePlacedTile, ChangeCallback {
 
 	@ModDependent(ModList.APPENG)
 	private MESystemReader network;
@@ -69,6 +71,8 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 	private ItemStack[] filter = new ItemStack[NSLOTS*2];
 	private int[] threshold = new int[NSLOTS];
 	private MatchMode[] match = new MatchMode[NSLOTS];
+
+	private boolean hasWork = true;
 
 	public TileEntityMEDistributor() {
 		if (ModList.APPENG.isLoaded()) {
@@ -112,26 +116,30 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 
 			if (network != null) {
 				checkTimer.update();
-				if (checkTimer.checkCap()) {
-					output.clear();
-					TileEntity te = this.getAdjacentTileEntity(this.getFacing().getOpposite());
-					if (te instanceof IInventory) {
-						output.addInventory((IInventory)te);
-					}
-					for (int i = 0; i < NSLOTS; i++) {
-						ItemStack f1 = filter[i];
-						ItemStack f2 = filter[i+NSLOTS];
-						if (f1 != null && f2 != null) {
-							int fit = f2.getMaxStackSize()-output.addItemsToUnderlyingInventories(ReikaItemHelper.getSizedItemStack(f2, f2.getMaxStackSize()), true);
-							if (fit > 0) {
-								MatchMode mode = this.getMode(i);
-								long has = mode.countItems(network, f1);//this.isFuzzy(i) ? network.getFuzzyItemCount(f1, FuzzyMode.IGNORE_ALL, this.useOreDict(i)) : network.getItemCount(f1);
-								int missing = this.getThreshold(i)-(has > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)has);
-								if (missing > 0) {
-									this.transferItem(ReikaItemHelper.getSizedItemStack(f2, Math.min(Math.min(fit, missing), f2.getMaxStackSize())), (IInventory)te, mode);
+				if (hasWork) {
+					if (checkTimer.checkCap()) {
+						checkTimer.setCap(Math.min(40, checkTimer.getCap()+2));
+						output.clear();
+						TileEntity te = this.getAdjacentTileEntity(this.getFacing().getOpposite());
+						if (te instanceof IInventory) {
+							output.addInventory((IInventory)te);
+						}
+						for (int i = 0; i < NSLOTS; i++) {
+							ItemStack f1 = filter[i];
+							ItemStack f2 = filter[i+NSLOTS];
+							if (f1 != null && f2 != null) {
+								int fit = f2.getMaxStackSize()-output.addItemsToUnderlyingInventories(ReikaItemHelper.getSizedItemStack(f2, f2.getMaxStackSize()), true);
+								if (fit > 0) {
+									MatchMode mode = this.getMode(i);
+									long has = mode.countItems(network, f1);//this.isFuzzy(i) ? network.getFuzzyItemCount(f1, FuzzyMode.IGNORE_ALL, this.useOreDict(i)) : network.getItemCount(f1);
+									int missing = this.getThreshold(i)-(has > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)has);
+									if (missing > 0) {
+										this.transferItem(ReikaItemHelper.getSizedItemStack(f2, Math.min(Math.min(fit, missing), f2.getMaxStackSize())), (IInventory)te, mode);
+									}
 								}
 							}
 						}
+						hasWork = false;
 					}
 				}
 			}
@@ -149,12 +157,37 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 	private void buildCache() {
 		if (ModList.APPENG.isLoaded()) {
 			((DirectionalAEInterface)aeGridBlock).disconnectAll().connect(this.getFacing());
+			Object oldNode = aeGridNode;
 			if (aeGridNode == null) {
 				aeGridNode = FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER ? AEApi.instance().createGridNode((IGridBlock)aeGridBlock) : null;
 			}
-			((IGridNode)aeGridNode).updateState();
-			network = aeGridNode != null ? new MESystemReader((IGridNode)aeGridNode, this) : null;
+			if (aeGridNode != null)
+				((IGridNode)aeGridNode).updateState();
+
+			if (oldNode != aeGridNode || network == null) {
+				if (aeGridNode == null)
+					network = null;
+				else if (network == null)
+					network = new MESystemReader((IGridNode)aeGridNode, this);
+				else
+					network = new MESystemReader((IGridNode)aeGridNode, network);
+
+				this.buildCallbacks();
+			}
 		}
+	}
+
+	private void buildCallbacks() {
+		if (network != null) {
+			network.clearCallbacks();
+			for (int i = 0; i < filter.length; i++) {
+				ItemStack pattern = filter[i];
+				if (pattern != null) {
+					network.addCallback(pattern, this);
+				}
+			}
+		}
+		hasWork = true;
 	}
 
 	private void transferItem(ItemStack is, IInventory ii, MatchMode mode) {
@@ -167,6 +200,7 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 			}
 			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.METRANSFER.ordinal(), this, 32, Item.getIdFromItem(add.getItem()), add.getItemDamage());
 			AEPowerCost = Math.min(500, AEPowerCost+Math.max(1, add.stackSize/4));
+			checkTimer.setCap(Math.max(4, checkTimer.getCap()-4));
 		}
 	}
 
@@ -221,6 +255,7 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 
 	public void setMapping(int slot, ItemStack is) {
 		filter[slot] = is;
+		this.buildCallbacks();
 		this.syncAllData(true);
 	}
 
@@ -230,11 +265,13 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 
 	public void setThreshold(int slot, int thresh) {
 		threshold[slot] = thresh;
+		this.buildCallbacks();
 		this.syncAllData(true);
 	}
 
 	public void toggleFuzzy(int slot) {
 		match[slot] = match[slot].next();
+		this.buildCallbacks();
 		this.syncAllData(true);
 	}
 
@@ -334,6 +371,12 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 	public void drop() {
 		ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, this.getTile().getCraftedProduct());
 		this.delete();
+	}
+
+
+	@Override
+	public void onItemChange(IAEItemStack iae) {
+		hasWork = true;
 	}
 
 }

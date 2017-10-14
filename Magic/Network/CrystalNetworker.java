@@ -49,6 +49,7 @@ import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCompoundRepeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalBroadcaster;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntitySkypeater;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
 import Reika.DragonAPI.Auxiliary.Trackers.CrashNotifications;
@@ -114,7 +115,7 @@ public class CrystalNetworker implements TickHandler {
 	}
 
 	@SubscribeEvent
-	public void markChunkCache(SetBlockEvent evt) {
+	public void markChunkCache(SetBlockEvent.Post evt) {
 		if (!evt.world.isRemote) {
 			WorldChunk wc = new WorldChunk(evt.world, evt.chunkLocation);
 			Collection<CrystalLink> c = losCache.get(wc);
@@ -588,7 +589,7 @@ public class CrystalNetworker implements TickHandler {
 			CrystalNetworkTile tile = tiles.get(c);
 			if (tile instanceof CrystalTransmitter && r != tile) {
 				CrystalTransmitter te = (CrystalTransmitter)tile;
-				if (te.canConduct() && te.canTransmitTo(r)) {
+				if (te.canConduct() && te.canTransmitTo(r) && r.canReceiveFrom(te)) {
 					if (e == null || te.isConductingElement(e)) {
 						boolean flag = r instanceof PylonConnector;
 						double d = flag ? 0 : te.getDistanceSqTo(r.getX(), r.getY(), r.getZ());
@@ -621,7 +622,7 @@ public class CrystalNetworker implements TickHandler {
 				if (tile instanceof CrystalReceiver && r != tile) {
 					CrystalReceiver te = (CrystalReceiver)tile;
 					//ReikaJavaLibrary.pConsole(te, !(te instanceof TileEntityCrystalRepeater));
-					if (te.canConduct() && r.canTransmitTo(te)) {
+					if (te.canConduct() && r.canTransmitTo(te) && te.canReceiveFrom(r)) {
 						if (e == null || te.isConductingElement(e)) {
 							double d = te.getDistanceSqTo(r.getX(), r.getY(), r.getZ());
 							//ReikaJavaLibrary.pConsole(e+": "+d+": "+te);
@@ -874,7 +875,11 @@ public class CrystalNetworker implements TickHandler {
 			if (r instanceof CrystalFuse) {
 				wt = ((CrystalFuse)r).getFailureWeight(color);
 			}
-			w.addEntry(r, wt*10);
+			if (r instanceof TileEntitySkypeater) {
+				wt = 0;
+			}
+			if (wt > 0)
+				w.addEntry(r, wt*10);
 		}
 		for (int i = 0; i < num; i++) {
 			CrystalNetworkTile tile = w.getRandomEntry();
@@ -918,13 +923,13 @@ public class CrystalNetworker implements TickHandler {
 		return li;
 	}
 
-	public LinkedList<CrystalNetworkTile> findPathToRandomReceiverFromSource(CrystalSource src, CrystalElement e) {
+	public LinkedList<CrystalNetworkTile> findPathToRandomReceiverFromSource(CrystalSource src, CrystalElement e, boolean allowSkypeaterTarget) {
 		LinkedList li = new LinkedList();
-		this.findRandomTransmitterPath(src, e, li, new HashSet());
+		this.findRandomTransmitterPath(src, e, li, new HashSet(), allowSkypeaterTarget);
 		return li;
 	}
 
-	private void findRandomTransmitterPath(CrystalTransmitter src, CrystalElement e, LinkedList<CrystalNetworkTile> path, HashSet<WorldLocation> locs) {
+	private void findRandomTransmitterPath(CrystalTransmitter src, CrystalElement e, LinkedList<CrystalNetworkTile> path, HashSet<WorldLocation> locs, boolean allowSkypeaterTarget) {
 		path.add(src);
 		ArrayList<CrystalReceiver> li = this.getNearbyReceivers(src, e);
 		while (!li.isEmpty()) {
@@ -932,9 +937,9 @@ public class CrystalNetworker implements TickHandler {
 			CrystalReceiver r = li.remove(idx);
 			WorldLocation loc = new WorldLocation(r.getWorld(), r.getX(), r.getY(), r.getZ());
 			if (!locs.contains(loc)) {
-				if (r instanceof CrystalTransmitter && (rand.nextInt(12) > 0 || path.size() <= 1)) {
+				if (r instanceof CrystalTransmitter && (rand.nextInt(12) > 0 || path.size() <= 1) || (!allowSkypeaterTarget && r instanceof TileEntitySkypeater)) {
 					locs.add(loc);
-					this.findRandomTransmitterPath((CrystalTransmitter)r, e, path, locs);
+					this.findRandomTransmitterPath((CrystalTransmitter)r, e, path, locs, allowSkypeaterTarget);
 				}
 				else {
 					path.add(r);

@@ -178,7 +178,6 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 			}
 			else if (item == null) {
 				this.dropSlot();
-				inv[0] = null;
 			}
 			else {
 				this.dropSlot();
@@ -250,9 +249,11 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 		return item;
 	}
 
-	private void dropSlot() {
-		if (inv[0] != null)
+	public void dropSlot() {
+		if (inv[0] != null) {
 			ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+1, zCoord+0.5, inv[0]);
+			inv[0] = null;
+		}
 	}
 
 	@Override

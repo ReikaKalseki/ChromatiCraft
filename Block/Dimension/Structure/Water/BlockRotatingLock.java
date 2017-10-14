@@ -88,7 +88,7 @@ public class BlockRotatingLock extends Block {
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
 		if (this.hasTileEntity(world.getBlockMetadata(x, y, z)))
-			((TileEntityRotatingLock)world.getTileEntity(x, y, z)).startRotating();
+			((TileEntityRotatingLock)world.getTileEntity(x, y, z)).startRotating(ep.isSneaking());
 		return true;
 	}
 
@@ -119,7 +119,15 @@ public class BlockRotatingLock extends Block {
 				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 				if (rotatingAmount == 90) {
 					rotatingAmount = 0;
-					this.finishRotating();
+					this.finishRotating(false);
+				}
+			}
+			else if (rotatingAmount < 0) {
+				rotatingAmount = Math.max(rotatingAmount-3, -90);
+				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+				if (rotatingAmount == -90) {
+					rotatingAmount = 0;
+					this.finishRotating(true);
 				}
 			}
 		}
@@ -163,10 +171,10 @@ public class BlockRotatingLock extends Block {
 			return isCheckpoint;
 		}
 
-		private void startRotating() {
-			if (rotatingAmount > 0)
+		private void startRotating(boolean reverse) {
+			if (rotatingAmount != 0)
 				return;
-			rotatingAmount = 1;
+			rotatingAmount = reverse ? -1 : 1;
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 			ChromaSounds.WATERLOCK.playSoundAtBlock(this, 2, 1);
 			lockState = new FilledBlockArray(worldObj);
@@ -197,19 +205,19 @@ public class BlockRotatingLock extends Block {
 			ReikaWorldHelper.causeAdjacentUpdates(worldObj, xCoord, yCoord, zCoord);
 		}
 
-		private void finishRotating() {
-			direction = ReikaDirectionHelper.getRightBy90(direction);
+		private void finishRotating(boolean reverse) {
+			direction = reverse ? ReikaDirectionHelper.getLeftBy90(direction) : ReikaDirectionHelper.getRightBy90(direction);
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 			ReikaSoundHelper.playBreakSound(worldObj, xCoord, yCoord, zCoord, Blocks.stone, 2, 0);
 			WaterPuzzleGenerator gen = this.getGenerator();
 			if (gen != null) {
 				WaterFloor f = gen.getLevel(level);
 				if (f != null) {
-					f.rotateLock(lockX, lockY);
+					f.rotateLock(lockX, lockY, reverse);
 				}
 			}
 			//if (gen == null || worldObj.provider.dimensionId == 0) { //debug testing
-			lockState = (FilledBlockArray)lockState.rotate90Degrees(xCoord, zCoord, false);
+			lockState = (FilledBlockArray)lockState.rotate90Degrees(xCoord, zCoord, reverse);
 			lockState.place();
 			//}
 			ReikaWorldHelper.causeAdjacentUpdates(worldObj, xCoord, yCoord, zCoord);
@@ -288,7 +296,7 @@ public class BlockRotatingLock extends Block {
 
 		@Override
 		public double getMaxRenderDistanceSquared() {
-			return super.getMaxRenderDistanceSquared()*4;
+			return super.getMaxRenderDistanceSquared();//*4;
 		}
 
 		@Override

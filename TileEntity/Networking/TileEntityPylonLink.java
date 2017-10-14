@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -79,8 +80,18 @@ public class TileEntityPylonLink extends TileEntityChromaticBase implements Loca
 	private void doFX(World world, int x, int y, int z) {
 		int c = connection.color.getColor();
 
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		double dd = ep.getDistanceSq(x+0.5, y+0.5, z+0.5);
+
+		if (dd >= 256 && rand.nextInt(3) == 0)
+			return;
+		else if (dd >= 1024 && rand.nextInt(2) == 0)
+			return;
+		else if (dd >= 4096 && rand.nextInt(3) > 0)
+			return;
+
 		double t = this.getTicksExisted()*1.5D;
-		int n = 6;
+		int n = dd >= 256 ? 3 : 6;
 		double da = 360D/n;
 		double r = 0.4375;
 		for (double a = 0; a < 360; a += da) {
@@ -176,6 +187,10 @@ public class TileEntityPylonLink extends TileEntityChromaticBase implements Loca
 
 		if (connection != null)
 			connection.writeToNBT("link", NBT);
+	}
+
+	public UUID getUUID() {
+		return placerUUID;
 	}
 
 	private static class PylonNode {

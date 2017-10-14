@@ -28,4 +28,9 @@ public class RedstonePodRecipe extends TempleCastingRecipe {
 		return 32;
 	}
 
+	@Override
+	public int getNumberProduced() {
+		return 2;
+	}
+
 }

@@ -36,6 +36,7 @@ public class MazeBuilder {
 
 	public void placeControllerTile(ShiftMazeGenerator gen, int x, int y, int z) {
 		gen.generateDataTile(x, y, z);
+		gen.generatePasswordTile(x, y-1, z);
 	}
 
 	@SuppressWarnings("incomplete-switch")

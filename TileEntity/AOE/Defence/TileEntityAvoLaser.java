@@ -168,7 +168,7 @@ public class TileEntityAvoLaser extends TileEntityRelayPowered implements SidePl
 	}
 
 	@Override
-	protected ElementTagCompound getRequiredEnergy() {
+	public ElementTagCompound getRequiredEnergy() {
 		return required.copy();
 	}
 

@@ -265,7 +265,7 @@ public class TileEntityFluxMaker extends InventoriedRelayPowered implements Oper
 	}
 
 	@Override
-	protected ElementTagCompound getRequiredEnergy() {
+	public ElementTagCompound getRequiredEnergy() {
 		return required.copy();
 	}
 

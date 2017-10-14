@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -177,6 +178,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	public void link(TileEntityPylonLink te) {
 		linkTile = te == null ? null : new WorldLocation(te);
+		this.syncAllData(true);
+		if (te != null)
+			PylonGenerator.instance.cachePylon(this);
 	}
 
 	public void markPlaced() {
@@ -338,10 +342,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				world.spawnEntityInWorld(new EntityBallLightning(world, color, x+0.5, y+0.5, z+0.5).setPylon().setNoDrops());
 			}
 
-			if (linkTile != null && energy >= this.getCapacity()*0.75) {
-				TileEntity tile = linkTile.getTileEntity();
-				if (tile instanceof TileEntityPylonLink) {
-					TileEntityPylonLink te = (TileEntityPylonLink)tile;
+			if (energy >= this.getCapacity()*0.75) {
+				TileEntityPylonLink te = this.getLinkTile();
+				if (te != null) {
 					Collection<WorldLocation> c = te.getLinkedPylons();
 					for (WorldLocation loc : c) {
 						if (!loc.equals(world, x, y, z)) {
@@ -359,6 +362,19 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				}
 			}
 		}
+	}
+
+	private TileEntityPylonLink getLinkTile() {
+		if (linkTile != null) {
+			TileEntity tile = linkTile.getTileEntity();
+			return tile instanceof TileEntityPylonLink ? (TileEntityPylonLink)tile : null;
+		}
+		return null;
+	}
+
+	public UUID getLinkTileUUID() {
+		TileEntityPylonLink te = this.getLinkTile();
+		return te != null ? te.getUUID() : null;
 	}
 
 	private int getAttackRate(World world) {
@@ -393,7 +409,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	}
 
 	public void sendRandomShock(World world, boolean canJumpColors, int dmg) {
-		LinkedList<CrystalNetworkTile> li = CrystalNetworker.instance.findPathToRandomReceiverFromSource(this, canJumpColors && rand.nextInt(2) == 0 ? null : color);
+		LinkedList<CrystalNetworkTile> li = CrystalNetworker.instance.findPathToRandomReceiverFromSource(this, canJumpColors && rand.nextInt(2) == 0 ? null : color, false);
 		if (li.size() > 1) {
 			ArrayList<Coordinate> li2 = new ArrayList();
 			for (CrystalNetworkTile te : li) {
@@ -650,6 +666,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				else {
 					float amt = Math.max(5, Math.min(e.getHealth()-4, e.getMaxHealth()*0.75F));
 					ChromaAux.doPylonAttack(color, e, amt, false);
+					ChromaSounds.DISCHARGE.playSound(e.worldObj, e.posX, e.posY, e.posZ, 1, 1);
 				}
 			}
 			else {
@@ -700,6 +717,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		ChromaSounds.DISCHARGE.playSoundAtBlock(this);
 
 		ChromaAux.doPylonAttack(color, e, Math.max(5, e.getHealth()/4F), true);
+		ChromaSounds.DISCHARGE.playSound(e.worldObj, e.posX, e.posY, e.posZ, 1, 1);
 
 		PotionEffect eff = CrystalPotionController.getEffectFromColor(color, 200, 2);
 		if (eff != null) {
@@ -856,19 +874,16 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	}
 
 	private int getLinkedThroughput(int base) {
-		if (linkTile != null) {
-			TileEntity tile = linkTile.getTileEntity();
-			if (tile instanceof TileEntityPylonLink) {
-				TileEntityPylonLink te = (TileEntityPylonLink)tile;
-				Collection<WorldLocation> c = te.getLinkedPylons();
-				for (WorldLocation loc : c) {
-					if (!loc.equals(worldObj, xCoord, yCoord, zCoord)) {
-						TileEntity tile2 = loc.getTileEntity();
-						if (tile2 instanceof TileEntityCrystalPylon) {
-							TileEntityCrystalPylon tp = (TileEntityCrystalPylon)tile2;
-							if (tp.color == color) {
-								base += tp.getBaseThroughput();
-							}
+		TileEntityPylonLink te = this.getLinkTile();
+		if (te != null) {
+			Collection<WorldLocation> c = te.getLinkedPylons();
+			for (WorldLocation loc : c) {
+				if (!loc.equals(worldObj, xCoord, yCoord, zCoord)) {
+					TileEntity tile2 = loc.getTileEntity();
+					if (tile2 instanceof TileEntityCrystalPylon) {
+						TileEntityCrystalPylon tp = (TileEntityCrystalPylon)tile2;
+						if (tp.color == color) {
+							base += tp.getBaseThroughput();
 						}
 					}
 				}
@@ -1038,6 +1053,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	public ItemStack onWandRightClick(World world, ItemStack wandstack, EntityPlayer player) {
 		player.setItemInUse(wandstack, Integer.MAX_VALUE);
 		ReikaThaumHelper.setWandInUse(wandstack, this);
+		this.forceLoading();
 		return wandstack;
 	}
 
@@ -1179,6 +1195,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		enhanced = true;
 		enhancing = false;
 		this.syncAllData(true);
+		PylonGenerator.instance.cachePylon(this);
 	}
 
 	public void disenhance() {

@@ -88,6 +88,10 @@ public class ItemMagicRegistry {
 		this.addOreElement(ModOreList.SULFUR, CrystalElement.ORANGE, 2);
 		this.addOreElement(ModOreList.NIKOLITE, CrystalElement.BROWN, 2);
 		this.addOreElement(ModOreList.NIKOLITE, CrystalElement.YELLOW, 2);
+		this.addOreElement(ModOreList.NIKOLITE, CrystalElement.LIME, 2);
+		this.addOreElement(ModOreList.NIKOLITE, CrystalElement.GRAY, 1);
+		this.addOreElement(ModOreList.CINNABAR, CrystalElement.BROWN, 3);
+		this.addOreElement(ModOreList.CINNABAR, CrystalElement.CYAN, 1);
 
 		this.addOreElement(ModOreList.COPPER, CrystalElement.BROWN, 2);
 		this.addOreElement(ModOreList.TIN, CrystalElement.BROWN, 2);

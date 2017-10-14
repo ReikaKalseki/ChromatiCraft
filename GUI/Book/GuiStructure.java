@@ -162,6 +162,14 @@ public class GuiStructure extends GuiBookSection {
 			render.addOverride(array.getMidX(), array.getMinY()+1, array.getMidZ(), ChromaTiles.TELEPORT.getCraftedProduct());
 		}
 
+		if (page == ChromaResearch.DATATOWER) {
+			render.addOverride(array.getMidX(), array.getMaxY(), array.getMidZ(), ChromaTiles.DATANODE.getCraftedProduct());
+			render.addOverride(array.getMidX(), array.getMaxY()-1, array.getMidZ(), ChromaTiles.DATANODE.getCraftedProduct());
+			render.addOverride(array.getMidX(), array.getMaxY()-2, array.getMidZ(), ChromaTiles.DATANODE.getCraftedProduct());
+			render.addOverride(array.getMidX(), array.getMaxY()-3, array.getMidZ(), ChromaTiles.DATANODE.getCraftedProduct());
+			render.addOverride(array.getMidX(), array.getMaxY()-4, array.getMidZ(), ChromaTiles.DATANODE.getCraftedProduct());
+		}
+
 		if (page == ChromaResearch.CASTING2 || page == ChromaResearch.CASTING3) {
 			for (int i = -4; i <= 4; i += 2) {
 				for (int k = -4; k <= 4; k += 2) {

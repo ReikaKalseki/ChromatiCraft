@@ -176,11 +176,11 @@ public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
 			AbilityHelper.instance.copyVoxelMapWaypoints();
 		}*/
 		else if (b.id == 4) {
-			listOffset = Math.max(0, listOffset-1);
+			listOffset = Math.max(0, listOffset-(GuiScreen.isShiftKeyDown() ? 10 : 1));
 			return;
 		}
 		else if (b.id == 5) {
-			listOffset = Math.min(this.maxListOffset(), listOffset+1);
+			listOffset = Math.min(this.maxListOffset(), listOffset+(GuiScreen.isShiftKeyDown() ? 10 : 1));
 			return;
 		}
 		this.initGui();

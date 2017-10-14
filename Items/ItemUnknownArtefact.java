@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -168,11 +167,11 @@ public class ItemUnknownArtefact extends ItemChromaMulti implements AnimatedSpri
 
 	@SideOnly(Side.CLIENT)
 	private void doItemFX(World world, Entity e, ItemStack is) {
-		doUA_FX(world, e.posX, e.posY, e.posZ);
+		doUA_FX(world, e.posX, e.posY, e.posZ, false);
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void doUA_FX(World world, double posX, double posY, double posZ) {
+	public static void doUA_FX(World world, double posX, double posY, double posZ, boolean renderThroughGround) {
 		if (rand.nextBoolean()) {
 			double px = ReikaRandomHelper.getRandomPlusMinus(posX, 1);
 			double py = ReikaRandomHelper.getRandomPlusMinus(posY+0.25, 1);
@@ -180,7 +179,10 @@ public class ItemUnknownArtefact extends ItemChromaMulti implements AnimatedSpri
 			int l = ReikaRandomHelper.getRandomBetween(10, 40);
 			double s = 6+rand.nextDouble()*9;
 			int c = ReikaColorAPI.mixColors(0x003010, 0x000030, rand.nextFloat());
-			EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(c).setLife(l).setScale((float)s).setAlphaFading().setIcon(ChromaIcons.FADE_CLOUD);//.setNoDepthTest();
+			EntityBlurFX fx = new EntityBlurFX(world, px, py, pz);
+			fx.setColor(c).setLife(l).setScale((float)s).setAlphaFading().setIcon(ChromaIcons.FADE_CLOUD);
+			if (renderThroughGround)
+				fx.setNoDepthTest();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 
@@ -194,7 +196,10 @@ public class ItemUnknownArtefact extends ItemChromaMulti implements AnimatedSpri
 			double vx = ReikaRandomHelper.getRandomPlusMinus(0, maxv);
 			double vy = ReikaRandomHelper.getRandomPlusMinus(0, maxv);
 			double vz = ReikaRandomHelper.getRandomPlusMinus(0, maxv);
-			EntityFX fx = new EntityBlurFX(world, px, py, pz, vx, vy, vz).setColor(0xffffff).setLife(l).setRapidExpand().setIcon(ChromaIcons.FADE_STAR);
+			EntityBlurFX fx = new EntityBlurFX(world, px, py, pz, vx, vy, vz);
+			fx.setColor(0xffffff).setLife(l).setRapidExpand().setIcon(ChromaIcons.FADE_STAR);
+			if (renderThroughGround)
+				fx.setNoDepthTest();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

@@ -362,6 +362,9 @@ public class LightPanelRoom extends StructurePiece {
 			this.placeSwitch(world, dx, dy, dz, k);
 		}
 
+		if (level == 0)
+			parent.generatePasswordTile(dx-5, y+1, z);
+
 		for (int i = -2; i <= 2; i++) {
 			for (int k = 1; k <= 3; k++) {
 				world.setBlock(x, y+k, z+i, Blocks.air);

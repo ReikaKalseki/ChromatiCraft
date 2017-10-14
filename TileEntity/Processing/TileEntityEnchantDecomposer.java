@@ -206,7 +206,7 @@ public class TileEntityEnchantDecomposer extends InventoriedRelayPowered impleme
 	}
 
 	@Override
-	protected ElementTagCompound getRequiredEnergy() {
+	public ElementTagCompound getRequiredEnergy() {
 		return required.copy();
 	}
 

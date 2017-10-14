@@ -27,10 +27,11 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage.TileEntityStructureDataStorage;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage.StructureInterfaceTile;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -56,11 +57,14 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public abstract class DimensionStructureGenerator implements TileCallback {
 
 	protected final ChunkSplicedGenerationCache world = new ChunkSplicedGenerationCache();
 	private DimensionStructureType structureType;
+	private int structureTypeIndex;
+
 	private ChunkCoordIntPair genCore;
 	private ChunkCoordIntPair center;
 
@@ -118,6 +122,10 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 	public final DimensionStructureType getType() {
 		return structureType;
+	}
+
+	public int getGenerationIndex() {
+		return structureTypeIndex;
 	}
 
 	protected final void addDynamicStructure(DynamicStructurePiece dsp, int x, int z) {
@@ -261,6 +269,14 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 	protected abstract void openStructure(World world);
 
+	public int getPassword(EntityPlayer ep) {
+		int hash = ep.getUniqueID().hashCode();
+		hash = hash ^ 31*structureTypeIndex;
+		hash = hash ^ 17*structureType.ordinal();
+		hash = hash ^ 47*ChromaOptions.getStructureDifficulty();
+		return hash;
+	}
+
 	@Override
 	public final String toString() {
 		return this.getClass().getSimpleName()+" @ "+this.getCentralBlockCoords()+" (E = "+this.getEntryLocation()+")";
@@ -334,7 +350,7 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 			desc = s;
 
 			//Test
-			DimensionStructureGenerator gen = this.createGenerator(false);
+			DimensionStructureGenerator gen = this.createGenerator(false, -1);
 			gen.startCalculate(CrystalElement.WHITE, 0, 0, new Random());
 			gennedCore = gen.isComplete();
 			gen.clear();
@@ -354,14 +370,15 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		}
 		 */
 
-		public DimensionStructureGenerator createGenerator() {
-			return this.createGenerator(true);
+		public DimensionStructureGenerator createGenerator(int idx) {
+			return this.createGenerator(true, idx);
 		}
 
-		private DimensionStructureGenerator createGenerator(boolean doCache) {
+		private DimensionStructureGenerator createGenerator(boolean doCache, int idx) {
 			try {
 				DimensionStructureGenerator generator = (DimensionStructureGenerator)generatorClass.newInstance();
 				generator.structureType = this;
+				generator.structureTypeIndex = idx;
 				if (doCache) {
 					generators.put(generator.id, generator);
 					generatorTypes.put(generator.id, generator.getType());
@@ -404,6 +421,13 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 	}
 
+	public static void resetCachedGenerators() {
+		DimensionStructureType.generatorTypes.clear();
+		for (int i = 0; i < DimensionStructureType.types.length; i++) {
+			DimensionStructureType.types[i].generators.clear();
+		}
+	}
+
 	public static DimensionStructureGenerator getGeneratorByID(UUID uid) {
 		DimensionStructureType type = DimensionStructureType.generatorTypes.get(uid);
 		return type != null ? type.generators.get(uid) : null;
@@ -424,7 +448,13 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 	}
 
 	public final void generateDataTile(int x, int y, int z, Object... data) {
-		world.setTileEntity(x, y, z, ChromaBlocks.DIMDATA.getBlockInstance(), 0, new StructureDataCallback(this, data));
+		world.setTileEntity(x, y, z, ChromaBlocks.DIMDATA.getBlockInstance(), 0, new StructureInterfaceCallback(this, data));
+	}
+
+	public final void generatePasswordTile(int x, int y, int z) {
+		if (ChromaOptions.ALLOWSTRUCTPASS.getState())
+			world.setTileEntity(x, y, z, ChromaBlocks.DIMDATA.getBlockInstance(), 1, new StructureInterfaceCallback(this, null));
+		//ReikaJavaLibrary.pConsole("Genning password tile @ "+x+", "+y+", "+z);
 	}
 
 	public final void generateLootChest(int x, int y, int z, ForgeDirection dir, String chest, int bonus, Object... extras) {
@@ -435,24 +465,27 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 	}
 
-	private static final class StructureDataCallback implements TileCallback {
+	private static final class StructureInterfaceCallback implements TileCallback {
 
 		private final DimensionStructureGenerator generator;
 		private final HashMap<String, Object> data;
 
-		private StructureDataCallback(DimensionStructureGenerator gen, Object[] data) {
+		private StructureInterfaceCallback(DimensionStructureGenerator gen, Object[] data) {
 			generator = gen;
-			this.data = new HashMap();
-			for (int i = 0; i < data.length; i += 2) {
-				String s = (String)data[i];
-				this.data.put(s, data[i+1]);
+			this.data = data != null ? new HashMap() : null;
+			if (this.data != null) {
+				for (int i = 0; i < data.length; i += 2) {
+					String s = (String)data[i];
+					this.data.put(s, data[i+1]);
+				}
 			}
 		}
 
 		@Override
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
-			if (te instanceof TileEntityStructureDataStorage) {
-				((TileEntityStructureDataStorage)te).loadData(generator, data);
+			if (te instanceof StructureInterfaceTile) {
+				ReikaJavaLibrary.pConsole("Generating "+te+" @ "+new Coordinate(te));
+				((StructureInterfaceTile)te).loadData(generator, data);
 			}
 		}
 

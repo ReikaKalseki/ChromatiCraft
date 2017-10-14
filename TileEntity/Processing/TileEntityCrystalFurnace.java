@@ -275,7 +275,7 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 	}
 
 	@Override
-	protected ElementTagCompound getRequiredEnergy() {
+	public ElementTagCompound getRequiredEnergy() {
 		ElementTagCompound tag = smelt.copy();
 		tag.addTag(CrystalElement.LIGHTBLUE, 500);
 		return tag;
@@ -283,7 +283,7 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
-		return e == CrystalElement.LIGHTBLUE ? 20000 : 120000;
+		return e == CrystalElement.LIGHTBLUE ? 60000 : 400000;
 	}
 
 	public static ElementTagCompound smeltTags() {

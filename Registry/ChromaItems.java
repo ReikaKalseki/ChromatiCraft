@@ -83,6 +83,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemShooWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.ModInterface.ItemColoredModInteract;
 import Reika.ChromatiCraft.ModInterface.AE.ItemCrystalCell;
+import Reika.ChromatiCraft.ModInterface.AE.ItemShieldedCell;
 import Reika.ChromatiCraft.ModInterface.AE.ItemVoidStorage;
 import Reika.ChromatiCraft.ModInterface.Bees.ItemChromaBeeFrame;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.ItemWarpProofer;
@@ -171,6 +172,7 @@ public enum ChromaItems implements ItemEnum {
 	FERTILITYSEED(209, true,"chroma.fertileseed",	ItemFertilitySeed.class),
 	CAVEPATHER(45, false,	"chroma.cavepather",	ItemCaveExitFinder.class),
 	SPLINEATTACK(46, false,	"chroma.splineattack",	ItemSplineAttack.class),
+	SHIELDEDCELL(47, false,	"chroma.shieldedcell",	ItemShieldedCell.class),
 	;
 
 	private final int index;

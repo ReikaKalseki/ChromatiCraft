@@ -20,4 +20,6 @@ public interface LumenTile {
 
 	public int getMaxStorage(CrystalElement e);
 
+	//public ElementTagCompound getRequiredEnergy();
+
 }

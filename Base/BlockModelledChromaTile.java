@@ -20,11 +20,13 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomHitbox;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemCollision;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityAvoLaser;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -66,6 +68,9 @@ public class BlockModelledChromaTile extends BlockChromaTile {
 			box = AxisAlignedBB.getBoundingBox(x+m.getMinX(te), y+m.getMinY(te), z+m.getMinZ(te), x+m.getMaxX(te), y+m.getMaxY(te), z+m.getMaxZ(te));
 			if (m.providesCustomHitbox()) {
 				box = ((CustomHitbox)world.getTileEntity(x, y, z)).getHitbox();
+			}
+			else if (m.isIntangible()) {
+				box = ReikaAABBHelper.getBlockAABB(x, y, z).contract(0.375, 0.375, 0.375);
 			}
 		}
 		this.setBounds(box, x, y, z);
@@ -127,8 +132,7 @@ public class BlockModelledChromaTile extends BlockChromaTile {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public final boolean addDestroyEffects(World world, int x, int y, int z, int meta, EffectRenderer eff)
-	{
+	public final boolean addDestroyEffects(World world, int x, int y, int z, int meta, EffectRenderer eff) {
 		return ReikaRenderHelper.addModelledBlockParticles("/Reika/ChromatiCraft/Textures/TileEntity/", world, x, y, z, this, eff, ReikaJavaLibrary.makeListFrom(new double[]{0,0,1,1}), ChromatiCraft.class);
 	}
 
@@ -137,6 +141,21 @@ public class BlockModelledChromaTile extends BlockChromaTile {
 	public final boolean addHitEffects(World world, MovingObjectPosition tg, EffectRenderer eff)
 	{
 		return ReikaRenderHelper.addModelledBlockParticles("/Reika/ChromatiCraft/Textures/TileEntity/", world, tg, this, eff, ReikaJavaLibrary.makeListFrom(new double[]{0,0,1,1}), ChromatiCraft.class);
+	}
+
+	@Override
+	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection dir) {
+		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
+		switch(c) {
+			case FARMER:
+				return dir == ForgeDirection.UP || dir == ForgeDirection.DOWN;
+			case LAMP:
+				return dir == ForgeDirection.DOWN;
+			case AVOLASER:
+				return dir == ((TileEntityAvoLaser)world.getTileEntity(x, y, z)).getFacing().getOpposite();
+			default:
+				return super.isSideSolid(world, x, y, z, dir);
+		}
 	}
 
 }

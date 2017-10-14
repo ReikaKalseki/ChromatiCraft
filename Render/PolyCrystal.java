@@ -25,6 +25,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.BlockPolygonizer;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -35,7 +36,19 @@ public class PolyCrystal {
 
 	private Collection<RenderPolygon> polygons;
 
-	private static final ColorBlendList colors = new ColorBlendList(80, ChromaFX.getChromaColorTiles());
+	private static final ColorBlendList colors;
+
+	static {
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+			colors = createColorList();
+		else
+			colors = null;
+	}
+
+	@SideOnly(Side.CLIENT)
+	private static ColorBlendList createColorList() {
+		return new ColorBlendList(80, ChromaFX.getChromaColorTiles());
+	}
 
 	public PolyCrystal() {
 		this(new BlockArray());

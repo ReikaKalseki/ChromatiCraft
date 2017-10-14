@@ -15,6 +15,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -64,12 +66,13 @@ public class OuterRegionsEvents {
 		return f;
 	}
 
-	public boolean doRejectAttack(EntityDimensionFlare e, EntityPlayer ep) {
+	public boolean doRejectAttackWithAggro(EntityDimensionFlare e, EntityPlayer ep) {
 		this.doFlareAggro(ep);
-		return this.doRejectAttack(e, ep, Math.max(3, ep.getHealth()/2F));
+		return this.doRejectAttack(e, ep);
 	}
 
-	public boolean doRejectAttack(EntityDimensionFlare e, EntityPlayer ep, float dmg) {
+	public boolean doRejectAttack(EntityDimensionFlare e, EntityPlayer ep) {
+		float dmg = this.getRejectAttackDamage(e, ep);
 		if (ep.worldObj.isRemote) {
 			this.doRejectAttackFX(e, ep);
 			return false;
@@ -88,6 +91,20 @@ public class OuterRegionsEvents {
 				return false;
 			}
 		}
+	}
+
+	private float getRejectAttackDamage(EntityDimensionFlare e, EntityPlayer ep) {
+		float base = Math.max(3, ep.getHealth()/2F);
+		base *= 1+e.getAttackTicks(ep)/200F;
+		PotionEffect eff1 = ep.getActivePotionEffect(Potion.regeneration);
+		PotionEffect eff2 = ep.getActivePotionEffect(ChromatiCraft.betterRegen);
+		int r1 = eff1 != null ? eff1.getAmplifier() : -1;
+		int r2 = eff2 != null ? eff2.getAmplifier() : -1;
+		int rl = Math.max(r1, r2);
+		if (rl > -1) {
+			base *= 2*(1+rl/2F);
+		}
+		return base;
 	}
 
 	@SideOnly(Side.CLIENT)

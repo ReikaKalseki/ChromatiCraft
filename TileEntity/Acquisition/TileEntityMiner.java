@@ -111,7 +111,8 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		required.addTag(CrystalElement.BROWN, 40);
 	}
 
-	public static ElementTagCompound getRequiredEnergy() {
+	@Override
+	public ElementTagCompound getRequiredEnergy() {
 		return required.copy();
 	}
 

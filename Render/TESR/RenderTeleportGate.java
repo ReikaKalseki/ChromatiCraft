@@ -76,6 +76,8 @@ public class RenderTeleportGate extends ChromaRenderBase {
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		GL11.glTranslated(par2, par4, par6);
 
+		GL11.glPushMatrix();
+
 		if (!te.isInWorld() || (!te.hasStructure() && MinecraftForgeClient.getRenderPass() == 1)) {
 			if (te.isInWorld()) {
 				GL11.glDisable(GL11.GL_CULL_FACE);
@@ -326,9 +328,17 @@ public class RenderTeleportGate extends ChromaRenderBase {
 			}
 
 		}
+		GL11.glPopAttrib();
 
 		GL11.glPopMatrix();
-		GL11.glPopAttrib();
+
+		//if (StructureRenderer.isRenderingTiles())
+		//	te.tickFX();
+
+		if (MinecraftForgeClient.getRenderPass() == 1)
+			te.particles.render(true);
+
+		GL11.glPopMatrix();
 	}
 
 }

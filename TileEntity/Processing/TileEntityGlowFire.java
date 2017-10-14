@@ -16,6 +16,7 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -36,6 +37,7 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -49,6 +51,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledEvent;
+import Reika.DragonAPI.Instantiable.Rendering.FXCollection;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -92,6 +95,14 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 	private double[] secondaryAnglePhiVel = new double[MAX_BRANCHES];
 	private int[] secondaryLife = new int[MAX_BRANCHES];
 
+	@SideOnly(Side.CLIENT)
+	public FXCollection particles;
+
+	public TileEntityGlowFire() {
+		if (this.getSide() == Side.CLIENT)
+			particles = new FXCollection();
+	}
+
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.GLOWFIRE;
@@ -100,13 +111,18 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (world.isRemote) {
+			particles.update();
 			if (!this.isSmothered() || rand.nextInt(4) == 0)
 				this.doParticles(world, x, y, z);
 		}
 		else {
 			this.consumeItems(world, x, y, z);
-		}
 
+			this.doOverloadShocks();
+		}
+	}
+
+	private void doOverloadShocks() {
 		CrystalElement e = energy.asWeightedRandom().getRandomEntry();
 		if (energy.getValue(e) >= this.getMaxStorage(e)) {
 			float f = 0.03125F*0.75F*energy.getValue(e)/this.getMaxStorage(e);
@@ -404,17 +420,30 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 			c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, 0.5F+0.25F*rand.nextFloat());
 		}
 		EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.5, z+0.5, v[0], v[1], v[2]).setColor(c).setScale(s).setLife(l);
-		if (rand.nextBoolean())
-			fx.setColliding();
-		if (primary)
+		if (primary) {
 			fx.setRapidExpand();
-		fx.forceIgnoreLimits();
-		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+		if (rand.nextBoolean()) {
+			fx.setColliding();
+			fx.forceIgnoreLimits();
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+		else {
+			if (GuiScreen.isCtrlKeyDown())
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			else
+				particles.addEffectWithVelocity(0.5, 0.5, 0.5, v[0], v[1], v[2], ChromaIcons.FADE.getIcon(), l, s, c, primary);
+		}
 	}
 
 	private void retargetSecondary(int i) {
 		secondaryAngleThetaVel[i] = ReikaRandomHelper.getRandomPlusMinus(0, 2);//ReikaRandomHelper.getRandomPlusMinus(0, 90);
 		secondaryAnglePhiVel[i] = ReikaRandomHelper.getRandomPlusMinus(0, 2);//rand.nextDouble()*360;
+	}
+
+	@Override
+	public AxisAlignedBB getRenderBoundingBox() {
+		return ReikaAABBHelper.getBlockAABB(this).expand(2, 2, 2);
 	}
 
 	@Override
@@ -515,6 +544,8 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 	}
 
 	private static void dischargeIntoPlayer(TileEntityGlowFire tile, EntityPlayer player, CrystalElement color, float power) {
+		if (player.worldObj.isRemote)
+			return;
 		ChromaAux.doPylonAttack(color, player, player.getHealth()/4F*Math.min(1, 2*power), false);
 		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.FIREDUMPSHOCK.ordinal(), tile, 64, color.ordinal(), player.getEntityId());
 		ReikaEntityHelper.knockbackEntityFromPos(tile.xCoord+0.5, /*tile.yCoord+0.125*/player.posY, tile.zCoord+0.5, player, 1.5*Math.min(power*4, 1));

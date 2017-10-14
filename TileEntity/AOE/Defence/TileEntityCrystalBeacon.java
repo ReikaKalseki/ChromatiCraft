@@ -67,6 +67,7 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
+		super.onFirstTick(world, x, y, z);
 		this.validateStructure();
 		WorldLocation loc = new WorldLocation(this);
 		if (!cache.contains(loc))

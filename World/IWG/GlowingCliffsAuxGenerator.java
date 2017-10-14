@@ -41,6 +41,7 @@ import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Math.LobulatedCurve;
+import Reika.DragonAPI.Instantiable.Math.Simplex3DGenerator;
 import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ControllableOreVein.ExposedOreVein;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
@@ -69,6 +70,7 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 
 	private SimplexNoiseGenerator contours;
 	private SimplexNoiseGenerator islandFrequency;
+	private Simplex3DGenerator crystalNoise;
 	private long noiseSeed;
 
 	private final WeightedRandom<TreeType> treeRand = new WeightedRandom();
@@ -125,6 +127,7 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 		if (contours == null || noiseSeed != seed) {
 			contours = new SimplexNoiseGenerator(seed >> 1).setFrequency(1/16D).addOctave(2, 0.5, 1000);
 			islandFrequency = new SimplexNoiseGenerator(seed << 1).setFrequency(1/32D);
+			crystalNoise = (Simplex3DGenerator)new Simplex3DGenerator(-seed).setFrequency(1/24D);
 			noiseSeed = seed;
 			treeRand.setSeed(seed);
 		}
@@ -176,6 +179,7 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 							if (flag) {
 								tree.func_150524_b(world, rand, x, y, z);
 							}
+							//ReikaJavaLibrary.pConsole("Grow Tree @ "+x+", "+y+", "+z);
 
 							//((GlowingTreeGen)tree).resetGlowChance();
 						}
@@ -215,6 +219,7 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 
 	private void generateMaterialVeins(World world, int chunkX, int chunkZ, Random random) {
 		if (ReikaChunkHelper.chunkContainsBiomeTypeBlockCoords(world, chunkX, chunkZ, BiomeGlowingCliffs.class)) {
+
 			int n = 1+random.nextInt(6);
 			for (int i = 0; i < n; i++) {
 				int x = chunkX+random.nextInt(16)+8;
@@ -230,6 +235,27 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 					}
 				}
 			}
+			/*
+			if (true || ModList.MYSTCRAFT.isLoaded()) {
+				Block b = Blocks.brick_block;//MystCraftHandler.getInstance().crystalID;
+				if (b != null) {
+					for (int x = chunkX; x < chunkX+16; x++) {
+						for (int z = chunkZ; z < chunkZ+16; z++) {
+							for (int y = GlowingCliffsColumnShaper.SEA_LEVEL-5; y < GlowingCliffsColumnShaper.MAX_UPPER_TOP_Y; y++) {
+								double val = crystalNoise.getValue(x, y, z);
+								if (Math.abs(val) <= 0.125) {
+									Block b2 = world.getBlock(x, y, z);
+									if (b2.isReplaceableOreGen(world, x, y, z, Blocks.stone)) {
+										if (ReikaWorldHelper.checkForAdjMaterial(world, x, y, z, Material.air) != null) {
+											world.setBlock(x, y, z, b);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}*/
 		}
 	}
 

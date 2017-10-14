@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -44,7 +45,10 @@ public class TileEntityProtectionUpgrade extends TileEntityAdjacencyUpgrade {
 
 	}
 
-	public static boolean canExplode(World world, int x, int y, int z, Explosion e) {
+	public static boolean canExplode(World world, Explosion e) {
+		int x = MathHelper.floor_double(e.explosionX);
+		int y = MathHelper.floor_double(e.explosionY);
+		int z = MathHelper.floor_double(e.explosionZ);
 		Integer get = getAdjacentUpgrades(world, x, y, z).get(CrystalElement.RED);
 		if (get == null || get.intValue() == 0) {
 			return true;

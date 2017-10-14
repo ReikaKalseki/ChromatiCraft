@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -38,6 +40,7 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fluids.Fluid;
@@ -69,15 +72,15 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
-import Reika.ChromatiCraft.World.BiomeRainbowForest;
-import Reika.ChromatiCraft.World.Dimension.WorldProviderChroma;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Auxiliary.WorldGenInterceptionRegistry.BlockSetData;
+import Reika.DragonAPI.Auxiliary.WorldGenInterceptionRegistry.BlockSetWatcher;
+import Reika.DragonAPI.Auxiliary.WorldGenInterceptionRegistry.IWGWatcher;
+import Reika.DragonAPI.Auxiliary.WorldGenInterceptionRegistry.InterceptionException;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
-import Reika.DragonAPI.Instantiable.Worldgen.GenerationInterceptWorld;
-import Reika.DragonAPI.Instantiable.Worldgen.GenerationInterceptWorld.TileHook;
 import Reika.DragonAPI.Interfaces.Entity.CustomProjectile;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
@@ -87,10 +90,11 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ChiselBlockHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerBlockHandler;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
 import WayofTime.alchemicalWizardry.api.soulNetwork.SoulNetworkHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.relauncher.Side;
 
 public class ChromaAux {
@@ -98,143 +102,97 @@ public class ChromaAux {
 	public static final Color[] sideColors = {Color.CYAN, Color.BLUE, Color.YELLOW, Color.BLACK, new Color(255, 120, 0), Color.MAGENTA};
 	public static final String[] sideColorNames = {"CYAN", "BLUE", "YELLOW", "BLACK", "ORANGE", "MAGENTA"};
 
-	private static final GenerationInterceptWorld cliffRelayWorld = new GenerationInterceptWorld();
-	private static final GenerationInterceptWorld rainbowRelayWorld = new GenerationInterceptWorld();
+	//private static final GenerationInterceptWorld cliffRelayWorld = new GenerationInterceptWorld();
+	//private static final GenerationInterceptWorld rainbowRelayWorld = new GenerationInterceptWorld();
 
 	static {
-		if (ModList.THAUMCRAFT.isLoaded()) {
-			/*
-			relayWorld.disallowBlock(ThaumItemHelper.BlockEntry.NODE.getBlock());
-			relayWorld.disallowBlock(ThaumItemHelper.BlockEntry.TOTEM.getBlock());
-			relayWorld.disallowBlock(ThaumItemHelper.BlockEntry.TILE.getBlock());
-			relayWorld.disallowBlock(ThaumItemHelper.BlockEntry.TOTEMNODE.getBlock());
-			 */
-			cliffRelayWorld.addHook(new NodeHook());
-			cliffRelayWorld.addHook(new WispSpawnerHook());
 
-			rainbowRelayWorld.addHook(new NodeHook2());
-			rainbowRelayWorld.disallowBlock(ThaumItemHelper.BlockEntry.TOTEM.getBlock());
-		}
-		rainbowRelayWorld.addHook(new WeakSpawnerHook());
-
-		if (ModList.CHISEL.isLoaded()) {
-			cliffRelayWorld.disallowBlockChange(ChromaBlocks.CLIFFSTONE.getBlockInstance(), ChiselBlockHandler.BlockEntry.DIORITE.getBlock());
-			cliffRelayWorld.disallowBlockChange(ChromaBlocks.CLIFFSTONE.getBlockInstance(), ChiselBlockHandler.BlockEntry.ANDESITE.getBlock());
-			cliffRelayWorld.disallowBlockChange(ChromaBlocks.CLIFFSTONE.getBlockInstance(), ChiselBlockHandler.BlockEntry.GRANITE.getBlock());
-			cliffRelayWorld.disallowBlockChange(ChromaBlocks.CLIFFSTONE.getBlockInstance(), ChiselBlockHandler.BlockEntry.MARBLE.getBlock());
-			cliffRelayWorld.disallowBlockChange(ChromaBlocks.CLIFFSTONE.getBlockInstance(), ChiselBlockHandler.BlockEntry.SANDSTONE.getBlock());
-			cliffRelayWorld.disallowBlockChange(ChromaBlocks.CLIFFSTONE.getBlockInstance(), ChiselBlockHandler.BlockEntry.LIMESTONE.getBlock());
-		}
 	}
 
-	private static class WispSpawnerHook implements TileHook {
+	public static final IWGWatcher slimeIslandBlocker = new IWGWatcher() {
 
 		@Override
-		public void onTileChanged(TileEntity te) {
-			if (te instanceof TileEntityMobSpawner) {
-				TileEntityMobSpawner tm = (TileEntityMobSpawner)te;
-				if (ReikaSpawnerHelper.getMobSpawnerMobName(tm).toLowerCase(Locale.ENGLISH).contains("wisp")) {
-					ReikaSpawnerHelper.setMobSpawnerMob(tm, ChromaEntities.GLOWCLOUD.entityName);
-				}
+		public boolean canIWGRun(IWorldGenerator gen, Random random, int cx, int cz, World world, IChunkProvider generator, IChunkProvider loader) {
+			if (ReikaChunkHelper.chunkContainsBiomeType(world, cx, cz, BiomeGlowingCliffs.class)) {
+				return BiomeGlowingCliffs.canRunGenerator(gen);
 			}
+			return true;
 		}
 
+	};
+
+	public static final InterceptionException dimensionException = new InterceptionException() {
+
 		@Override
-		public boolean shouldRun(World world, int x, int y, int z) {
-			return BiomeGlowingCliffs.isGlowingCliffs(world.getBiomeGenForCoords(x, z));
+		public boolean doesExceptionApply(World world, int x, int y, int z) {
+			return world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue();
 		}
 
-	}
+	};
 
-	private static class NodeHook implements TileHook {
+	public static final BlockSetWatcher populationWatcher = new BlockSetWatcher() {
 
 		@Override
-		public void onTileChanged(TileEntity te) {
-			if (InterfaceCache.NODE.instanceOf(te)) {
-				INode n = (INode)te;
-				n.setNodeType(NodeType.NORMAL);
-				n.setNodeModifier(NodeModifier.BRIGHT);
-				if (te.worldObj.rand.nextInt(4) == 0) {
-					float f = 1+te.worldObj.rand.nextFloat()*2;
-					AspectList al = n.getAspects();
-					for (Aspect a : new HashSet<Aspect>(al.aspects.keySet())) {
-						al.aspects.put(a, (int)(f*al.getAmount(a)));
+		public void onChunkGeneration(World world, Map<Coordinate, BlockSetData> set) {
+			for (Coordinate c : set.keySet()) {
+				BiomeGenBase b = c.getBiome(world);
+				if (ChromatiCraft.isRainbowForest(b)) {
+					BlockSetData dat = set.get(c);
+					if (dat.newBlock == ThaumItemHelper.BlockEntry.TOTEM.getBlock())
+						dat.revert(world);
+					else if (dat.newBlock == Blocks.mob_spawner) {
+						TileEntityMobSpawner tm = (TileEntityMobSpawner)dat.getTileEntity(world);
+						MobSpawnerBaseLogic lgc = tm.func_145881_a();
+						lgc.activatingRangeFromPlayer = 6;
+						lgc.minSpawnDelay *= 2;
+						lgc.maxSpawnDelay *= 4;
+					}
+					else if (InterfaceCache.NODE.instanceOf(dat.getTileEntity(world))) {
+						TileEntity te = dat.getTileEntity(world);
+						INode n = (INode)te;
+						n.setNodeType(NodeType.NORMAL);
+						n.setNodeModifier(NodeModifier.BRIGHT);
+						if (te.worldObj.rand.nextInt(4) == 0) {
+							float f = 2+te.worldObj.rand.nextFloat()*4;
+							AspectList al = n.getAspects();
+							for (Aspect a : new HashSet<Aspect>(al.aspects.keySet())) {
+								al.aspects.put(a, (int)(f*al.getAmount(a)));
+							}
+						}
+					}
+				}
+				else if (BiomeGlowingCliffs.isGlowingCliffs(b)) {
+					BlockSetData dat = set.get(c);
+					if (ModList.CHISEL.isLoaded() && dat.oldBlock == ChromaBlocks.CLIFFSTONE.getBlockInstance() && ChiselBlockHandler.isWorldgenBlock(dat.newBlock, dat.newMetadata)) {
+						dat.revert(world);
+					}
+					else if (dat.newBlock == Blocks.mob_spawner) {
+						TileEntityMobSpawner tm = (TileEntityMobSpawner)dat.getTileEntity(world);
+						if (ReikaSpawnerHelper.getMobSpawnerMobName(tm).toLowerCase(Locale.ENGLISH).contains("wisp")) {
+							ReikaSpawnerHelper.setMobSpawnerMob(tm, ChromaEntities.GLOWCLOUD.entityName);
+						}
+					}
+					else if (ModList.TINKERER.isLoaded() && TinkerBlockHandler.getInstance().isSlimeIslandBlock(dat.newBlock, dat.newMetadata)) {
+						dat.revert(world);
+					}
+					else if (InterfaceCache.NODE.instanceOf(dat.getTileEntity(world))) {
+						TileEntity te = dat.getTileEntity(world);
+						INode n = (INode)te;
+						n.setNodeType(NodeType.NORMAL);
+						n.setNodeModifier(NodeModifier.BRIGHT);
+						if (te.worldObj.rand.nextInt(4) == 0) {
+							float f = 1+te.worldObj.rand.nextFloat()*2;
+							AspectList al = n.getAspects();
+							for (Aspect a : new HashSet<Aspect>(al.aspects.keySet())) {
+								al.aspects.put(a, (int)(f*al.getAmount(a)));
+							}
+						}
 					}
 				}
 			}
 		}
 
-		@Override
-		public boolean shouldRun(World world, int x, int y, int z) {
-			return BiomeGlowingCliffs.isGlowingCliffs(world.getBiomeGenForCoords(x, z));
-		}
-
-	}
-
-	private static class NodeHook2 implements TileHook {
-
-		@Override
-		public void onTileChanged(TileEntity te) {
-			if (InterfaceCache.NODE.instanceOf(te)) {
-				INode n = (INode)te;
-				n.setNodeType(NodeType.NORMAL);
-				n.setNodeModifier(NodeModifier.BRIGHT);
-				if (te.worldObj.rand.nextInt(4) == 0) {
-					float f = 2+te.worldObj.rand.nextFloat()*4;
-					AspectList al = n.getAspects();
-					for (Aspect a : new HashSet<Aspect>(al.aspects.keySet())) {
-						al.aspects.put(a, (int)(f*al.getAmount(a)));
-					}
-				}
-			}
-		}
-
-		@Override
-		public boolean shouldRun(World world, int x, int y, int z) {
-			return ChromatiCraft.isRainbowForest(world.getBiomeGenForCoords(x, z));
-		}
-
-	}
-
-	private static class WeakSpawnerHook implements TileHook {
-
-		@Override
-		public void onTileChanged(TileEntity te) {
-			if (te instanceof TileEntityMobSpawner) {
-				TileEntityMobSpawner tm = (TileEntityMobSpawner)te;
-				MobSpawnerBaseLogic lgc = tm.func_145881_a();
-				lgc.activatingRangeFromPlayer = 6;
-				lgc.minSpawnDelay *= 2;
-				lgc.maxSpawnDelay *= 4;
-			}
-		}
-
-		@Override
-		public boolean shouldRun(World world, int x, int y, int z) {
-			return ChromatiCraft.isRainbowForest(world.getBiomeGenForCoords(x, z));
-		}
-
-	}
-
-	public static void interceptChunkPopulation(int cx, int cz, World world, IChunkProvider generator, IChunkProvider loader) {
-		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
-			((WorldProviderChroma)world.provider).getChunkGenerator().onPopulationHook(generator, loader, cx, cz);
-		}
-		else if (ReikaChunkHelper.chunkContainsBiomeType(world, cx, cz, BiomeGlowingCliffs.class)) {
-			cliffRelayWorld.link(world);
-			//GameRegistry.generateWorld(cx, cz, relayWorld, generator, loader);
-			BiomeGlowingCliffs.runIWGs(cx, cz, cliffRelayWorld, generator, loader);
-			cliffRelayWorld.runHooks();
-		}
-		else if (ReikaChunkHelper.chunkContainsBiomeType(world, cx, cz, BiomeRainbowForest.class)) {
-			rainbowRelayWorld.link(world);
-			GameRegistry.generateWorld(cx, cz, rainbowRelayWorld, generator, loader);
-			rainbowRelayWorld.runHooks();
-		}
-		else {
-			GameRegistry.generateWorld(cx, cz, world, generator, loader);
-		}
-	}
+	};
 
 	public static final boolean hasGui(World world, int x, int y, int z, EntityPlayer ep) {
 		ChromaTiles m = ChromaTiles.getTile(world, x, y, z);
@@ -349,7 +307,6 @@ public class ChromaAux {
 	}
 
 	public static void doPylonAttack(CrystalElement color, EntityLivingBase e, float amt, boolean taperNew) {
-		//ChromaSounds.DISCHARGE.playSound(e.worldObj, e.posX, e.posY, e.posZ, 1, 1);
 
 		final float originalAmt = amt;
 

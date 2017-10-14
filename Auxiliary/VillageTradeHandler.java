@@ -13,6 +13,7 @@ import java.util.Random;
 
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.village.MerchantRecipeList;
+import Reika.ChromatiCraft.Magic.Artefact.UATrade;
 import cpw.mods.fml.common.registry.VillagerRegistry.IVillageTradeHandler;
 
 
@@ -31,6 +32,17 @@ public class VillageTradeHandler implements IVillageTradeHandler {
 		if (rand.nextInt(4) == 0 && !this.hasFocusTrade(ev.buyingList)) {
 			ev.buyingList.add(new FocusCrystalTrade()); //add an unlocked trade
 		}
+		if (!this.hasUATrade(ev.buyingList)) {
+			ev.buyingList.add(new UATrade()); //add an unlocked trade
+		}
+	}
+
+	private boolean hasUATrade(MerchantRecipeList li) {
+		for (Object r : li) {
+			if (r instanceof UATrade)
+				return true;
+		}
+		return false;
 	}
 
 	private boolean hasFocusTrade(MerchantRecipeList li) {

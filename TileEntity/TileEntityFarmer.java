@@ -46,7 +46,7 @@ public class TileEntityFarmer extends TileEntityRelayPowered {
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
-		if (!world.isRemote && this.getEnergy(CrystalElement.GREEN) >= 200) {
+		if (!world.isRemote && !this.hasRedstoneSignal() && this.getEnergy(CrystalElement.GREEN) >= 200) {
 			int n = this.getNumberAttempts();
 			for (int i = 0; i < n; i++) {
 				Coordinate c = this.getRandomPosition(world, x, y, z);
@@ -203,7 +203,7 @@ public class TileEntityFarmer extends TileEntityRelayPowered {
 	}
 
 	@Override
-	protected ElementTagCompound getRequiredEnergy() {
+	public ElementTagCompound getRequiredEnergy() {
 		ElementTagCompound tag = new ElementTagCompound();
 		tag.addTag(CrystalElement.GREEN, this.getMaxStorage(CrystalElement.GREEN)-energy.getValue(CrystalElement.GREEN));
 		tag.addTag(CrystalElement.PURPLE, this.getMaxStorage(CrystalElement.PURPLE)-energy.getValue(CrystalElement.PURPLE));

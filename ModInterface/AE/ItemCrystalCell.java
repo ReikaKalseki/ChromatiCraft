@@ -20,6 +20,7 @@ import net.minecraftforge.client.IItemRenderer.ItemRenderType;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import Reika.ChromatiCraft.API.Interfaces.CrystalTypesProxy;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
@@ -194,7 +195,11 @@ public class ItemCrystalCell extends ItemChromaTool implements SpriteRenderCallb
 	}
 
 	public static boolean isTypeStorable(ItemStack is) {
-		return is.getItem() instanceof ItemCrystalBasic || is.getItem() instanceof ItemBlockDyeTypes || is.getItem() instanceof ItemBlockCrystalColors || is.getItem() instanceof ItemBlockCrystal || is.getItem() instanceof ItemColoredModInteract;
+		if (is.getItem() instanceof ItemCrystalBasic || is.getItem() instanceof ItemBlockCrystalColors || is.getItem() instanceof ItemBlockCrystal)
+			return true;
+		if (is.getItem() instanceof CrystalTypesProxy && ((CrystalTypesProxy)is.getItem()).isCrystalType(is))
+			return true;
+		return is.getItem() instanceof ItemBlockDyeTypes || is.getItem() instanceof ItemColoredModInteract;
 	}
 
 	@Override

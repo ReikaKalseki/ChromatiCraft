@@ -64,6 +64,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCloakingTower;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalFence;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityExplosionShield;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityLumenTurret;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityMeteorTower;
@@ -215,7 +216,7 @@ public enum ChromaTiles implements TileEnum {
 	HOVERPAD("chroma.hoverpad",			ChromaBlocks.TILEMODELLED3,	TileEntityHoverPad.class,			4/*, "RenderHoverPad"*/),
 	METEOR("chroma.meteor",				ChromaBlocks.TILEMODELLED3,	TileEntityMeteorTower.class,		5, "RenderMeteorTower"),
 	FLUIDDISTRIBUTOR("chroma.fluiddistrib",ChromaBlocks.TILEMODELLED3,TileEntityFluidDistributor.class,	6, "RenderFluidDistributor"),
-	FLUXMAKER("chroma.taintmaker",		ChromaBlocks.TILEMODELLED3,	TileEntityFluxMaker.class,			7, "RenderFluxMaker"),
+	FLUXMAKER("chroma.taintmaker",		ChromaBlocks.TILEMODELLED3,	TileEntityFluxMaker.class,			7, "RenderFluxMaker", ModList.THAUMCRAFT),
 	AREABREAKER("chroma.areabreaker",	ChromaBlocks.TILEMODELLED3, TileEntityAreaBreaker.class,		8, "RenderAreaBreaker"),
 	TELEPORT("chroma.gate",				ChromaBlocks.TILEMODELLED3,	TileEntityTeleportGate.class,		9, "RenderTeleportGate"),
 	FLUIDRELAY("chroma.fluidrelay",		ChromaBlocks.TILEMODELLED3,	TileEntityFluidRelay.class,			10, "RenderFluidRelay"),
@@ -231,7 +232,8 @@ public enum ChromaTiles implements TileEnum {
 	PYLONLINK("chroma.pylonlink",		ChromaBlocks.TILEENTITY2,	TileEntityPylonLink.class,			2,	"RenderPylonLink"),
 	SKYPEATER("chroma.skypeater",		ChromaBlocks.PYLON,			TileEntitySkypeater.class,			11, "RenderSkypeater"),
 	FUNCTIONRELAY("chroma.funcrelay",	ChromaBlocks.TILEMODELLED4,	TileEntityFunctionRelay.class,		0, "RenderFunctionRelay"),
-	MULTIBUILDER("chroma.multibuilder",	ChromaBlocks.TILEMODELLED4,	TileEntityMultiBuilder.class,		1, "RenderMultiBuilder");
+	MULTIBUILDER("chroma.multibuilder",	ChromaBlocks.TILEMODELLED4,	TileEntityMultiBuilder.class,		1, "RenderMultiBuilder"),
+	EXPLOSIONSHIELD("chroma.explosionshield",ChromaBlocks.TILEENTITY2,TileEntityExplosionShield.class,	3);
 
 	private final Class tile;
 	private final String name;
@@ -338,6 +340,7 @@ public enum ChromaTiles implements TileEnum {
 			case WIRELESS:
 			case CHROMACRAFTER:
 			case MULTIBUILDER:
+			case GLOWFIRE:
 				return true;
 			default:
 				return false;
@@ -442,6 +445,8 @@ public enum ChromaTiles implements TileEnum {
 		if (this == BOOKDECOMP)
 			return true;
 		if (this == MULTIBUILDER)
+			return true;
+		if (this == TABLE)
 			return true;
 		return false;
 	}
@@ -728,6 +733,8 @@ public enum ChromaTiles implements TileEnum {
 			case GLOWFIRE:
 			case FLUXMAKER:
 			case FUNCTIONRELAY:
+			case DIMENSIONCORE:
+			case AURAPOINT:
 				return true;
 			default:
 				return false;

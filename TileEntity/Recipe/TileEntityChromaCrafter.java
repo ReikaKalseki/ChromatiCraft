@@ -73,7 +73,7 @@ public class TileEntityChromaCrafter extends InventoriedRelayPowered implements 
 
 	private PoolRecipe recipe = null;
 	private int recipeTick = 0;
-	private boolean hasEtherBerries = false;
+	private int hasEtherBerries = 0;
 	private ArrayList<ItemStack> recipeItems = new ArrayList();
 
 	public static final int CAPACITY = 3000;
@@ -92,7 +92,7 @@ public class TileEntityChromaCrafter extends InventoriedRelayPowered implements 
 	protected void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
 
-		NBT.setBoolean("ether", hasEtherBerries);
+		NBT.setInteger("etherb", hasEtherBerries);
 		NBT.setInteger("recipe", recipeTick);
 		tank.writeToNBT(NBT);
 	}
@@ -101,7 +101,7 @@ public class TileEntityChromaCrafter extends InventoriedRelayPowered implements 
 	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 
-		hasEtherBerries = NBT.getBoolean("ether");
+		hasEtherBerries = NBT.getInteger("etherb");
 		recipeTick = NBT.getInteger("recipe");
 		tank.readFromNBT(NBT);
 	}
@@ -129,13 +129,13 @@ public class TileEntityChromaCrafter extends InventoriedRelayPowered implements 
 
 		if (inv[0] != null) {
 			//ReikaJavaLibrary.pConsole(inv[0]);
-			if (ReikaItemHelper.matchStacks(inv[0], ChromaStacks.etherBerries) && !hasEtherBerries && inv[0].stackSize >= TileEntityChroma.ETHER_SATURATION) {
-				hasEtherBerries = true;
-				ReikaInventoryHelper.decrStack(0, this, TileEntityChroma.ETHER_SATURATION);
+			if (ReikaItemHelper.matchStacks(inv[0], ChromaStacks.etherBerries)) {
+				hasEtherBerries += inv[0].stackSize;
+				inv[0] = null;
 				//ReikaJavaLibrary.pConsole(hasEtherBerries+" / "+recipeItems.size()+":"+recipeItems+" > "+recipe);
 				this.syncAllData(true);
 			}
-			else if (recipe == null && !ReikaItemHelper.matchStacks(inv[0], ChromaStacks.etherBerries)) {
+			else if (recipe == null) {
 				recipeItems.add(inv[0]);
 				recipeItems = ReikaItemHelper.collateItemList(recipeItems);
 				inv[0] = null;
@@ -207,11 +207,12 @@ public class TileEntityChromaCrafter extends InventoriedRelayPowered implements 
 			}
 		}
 		ItemStack out = recipe.getOutput();
-		if (recipe.allowDoubling() && hasEtherBerries) {
+		if (recipe.allowDoubling() && hasEtherBerries >= TileEntityChroma.ETHER_SATURATION) {
 			out.stackSize *= 2;
 		}
-		recipeItems.clear();
-		hasEtherBerries = false;
+		hasEtherBerries -= TileEntityChroma.ETHER_SATURATION;
+		//recipeItems.clear();
+		//hasEtherBerries = false;
 		ReikaInventoryHelper.addOrSetStack(out, inv, 1);
 		recipe = null;
 		tank.removeLiquid(3000);
@@ -292,7 +293,7 @@ public class TileEntityChromaCrafter extends InventoriedRelayPowered implements 
 	}
 
 	@Override
-	protected ElementTagCompound getRequiredEnergy() {
+	public ElementTagCompound getRequiredEnergy() {
 		return required.copy();
 	}
 
@@ -336,7 +337,7 @@ public class TileEntityChromaCrafter extends InventoriedRelayPowered implements 
 	}
 
 	public boolean hasEtherBerries() {
-		return hasEtherBerries;
+		return hasEtherBerries > 0;
 	}
 
 	@Override

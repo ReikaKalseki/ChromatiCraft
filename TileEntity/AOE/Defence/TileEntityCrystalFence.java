@@ -285,7 +285,7 @@ public class TileEntityCrystalFence extends TileEntityRelayPowered implements Ow
 	}
 
 	@Override
-	protected ElementTagCompound getRequiredEnergy() {
+	public ElementTagCompound getRequiredEnergy() {
 		return required.copy();
 	}
 

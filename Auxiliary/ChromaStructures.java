@@ -77,7 +77,8 @@ public class ChromaStructures {
 		PYLONBROADCAST(true),
 		PYLONTURBO(true),
 		DATANODE(false),
-		WIRELESSPEDESTAL(false);
+		WIRELESSPEDESTAL(false),
+		WIRELESSPEDESTAL2(false);
 
 		public final boolean requiresColor;
 
@@ -149,6 +150,8 @@ public class ChromaStructures {
 					return getDataTowerStructure(world, x, y, z);
 				case WIRELESSPEDESTAL:
 					return getWirelessPedestalStructure(world, x, y, z);
+				case WIRELESSPEDESTAL2:
+					return getWirelessPedestalStructure2(world, x, y, z);
 			}
 			return null;
 		}
@@ -217,6 +220,8 @@ public class ChromaStructures {
 					return getDataTowerStructure(w, 0, 0, 0);
 				case WIRELESSPEDESTAL:
 					return getWirelessPedestalStructure(w, 0, 0, 0);
+				case WIRELESSPEDESTAL2:
+					return getWirelessPedestalStructure2(w, 0, 0, 0);
 			}
 			return null;
 		}

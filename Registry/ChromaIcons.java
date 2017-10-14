@@ -155,9 +155,9 @@ public enum ChromaIcons {
 		return c.get(Calendar.MONTH) == Calendar.APRIL && c.get(Calendar.DAY_OF_MONTH) <= 2;
 	}
 
-	private static boolean loadXmasTextures() {
+	public static boolean loadXmasTextures() {
 		Calendar c = Calendar.getInstance();
-		return c.get(Calendar.MONTH) == Calendar.DECEMBER && c.get(Calendar.DAY_OF_MONTH) >= 23;
+		return (c.get(Calendar.MONTH) == Calendar.DECEMBER && c.get(Calendar.DAY_OF_MONTH) >= 21) || (c.get(Calendar.MONTH) == Calendar.JANUARY && c.get(Calendar.DAY_OF_MONTH) <= 4);
 	}
 
 	@SideOnly(Side.CLIENT)

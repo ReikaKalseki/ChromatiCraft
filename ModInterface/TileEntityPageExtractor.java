@@ -219,7 +219,7 @@ public class TileEntityPageExtractor extends InventoriedRelayPowered implements 
 	}
 
 	@Override
-	protected ElementTagCompound getRequiredEnergy() {
+	public ElementTagCompound getRequiredEnergy() {
 		return required;
 	}
 

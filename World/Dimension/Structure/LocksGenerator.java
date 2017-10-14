@@ -45,7 +45,7 @@ public class LocksGenerator extends DimensionStructureGenerator {
 
 	@Override
 	public void calculate(int x, int z, Random rand) {
-		posY = 40;
+		posY = 70;
 
 		this.resetColorCaches();
 
@@ -56,19 +56,10 @@ public class LocksGenerator extends DimensionStructureGenerator {
 		this.addDynamicStructure(new LocksEntrance(this, dir, radius, len), x, z);
 
 		int len2 = 4+rand.nextInt(6);
-		//int[] lens = new int[4];
-		//lens[dir.ordinal()-2] = len2; //far side
-		//lens[dir.getOpposite().ordinal()-2] = len; //near side
 
 		int d = radius+3+len;
-		//ReikaJavaLibrary.pConsole("R="+enter.radius+", LEN="+len+"; pos $ ("+x+", "+(x+d)+")");
 		x += d*dir.offsetX;
 		z += d*dir.offsetZ;
-
-		//new LockRoomConnector(this, lens).setWindowed().setOpenFloor(15+rand.nextInt(40)).generate(world, x, y, z);
-
-		//x += (len+len2+7)*dir.offsetX;
-		//z += (len+len2+7)*dir.offsetZ;
 
 		new LockRoomConnector(this, 0, 0, 0, 0).setLength(dir, len2).setOpenCeiling().generate(world, x, posY, z);
 
@@ -76,6 +67,8 @@ public class LocksGenerator extends DimensionStructureGenerator {
 		z += (len2+3)*dir.offsetZ;
 
 		Coordinate c = this.genRooms(x, posY, z, dir, rand);
+
+		this.generatePasswordTile(x, posY, z);
 
 		new LocksLoot(this).generate(world, c.xCoord-dir.offsetZ*4+dir.offsetX*6, c.yCoord, c.zCoord-dir.offsetX*4+dir.offsetZ*6); //6 was 7
 	}
@@ -86,7 +79,7 @@ public class LocksGenerator extends DimensionStructureGenerator {
 		int dz = z;
 
 		ForgeDirection dir2 = dir;
-		ForgeDirection turn = ReikaDirectionHelper.getLeftBy90(dir);
+		ForgeDirection turn = ReikaDirectionHelper.getLeftBy90(dir2);
 
 		int n = genOrder.size();
 		for (int i = 0; i < n; i++) {
@@ -94,14 +87,23 @@ public class LocksGenerator extends DimensionStructureGenerator {
 			LockLevel prev = i > 0 ? genOrder.get(i-1) : null;
 			LockLevel next = i < n-1 ? genOrder.get(i+1) : null;
 			int d1 = l.getInitialOffset();
+			if (dir != dir2) {
+				dz -= 12;
+				l.mirrorZ();
+				d1 = -d1;
+			}
+			else if (i > 0) {
+				dz += 12;
+			}
+
+			//dz += l.getMirroredOffset();
+
 			l.generate(world, dx+turn.offsetX*d1, dy, dz+turn.offsetZ*d1);
 
-			int out = 2+rand.nextInt(3);
+			int out = 5;//2+rand.nextInt(3);
 
-			dx += l.getEnterExitDL()*dir.offsetX+l.getEnterExitDT()*turn.offsetX;
-			dz += l.getEnterExitDL()*dir.offsetZ+l.getEnterExitDT()*turn.offsetZ;
-
-			//world.setBlock(dx, dy+10, dz, Blocks.brick_block);
+			dx += l.getEnterExitDL()*dir2.offsetX+l.getEnterExitDT()*Math.abs(turn.offsetX);
+			dz += l.getEnterExitDL()*dir2.offsetZ+l.getEnterExitDT()*Math.abs(turn.offsetZ);
 
 			int dx2 = dx+(2+out)*dir2.offsetX;
 			int dz2 = dz+(2+out)*dir2.offsetZ;
@@ -115,13 +117,13 @@ public class LocksGenerator extends DimensionStructureGenerator {
 			//world.setBlock(dx, dy+10, dz, Blocks.brick_block);
 
 			LockRoomConnector con = new LockRoomConnector(this, 0, 0, 0, 0);
-			con.setLength(dir, out);
-			con.setLength(dir.getOpposite(), out);
-			if (next == null) {
-				con.setLength(dir, out*3);
-				dx += dir.offsetX*out*3;
-				dz += dir.offsetZ*out*3;
-			}
+
+			con.setLength(dir2.getOpposite(), out);
+			//if (next == null) {
+			//	con.setLength(dir2, out*3);
+			//	dx += dir2.offsetX*out*3;
+			//	dz += dir2.offsetZ*out*3;
+			//}
 			/*
 			else if (i%2 == 0 && false) {
 				dir2 = dir2.getOpposite();
@@ -136,7 +138,15 @@ public class LocksGenerator extends DimensionStructureGenerator {
 			}
 			 */
 
+			con.setOpenFloor(3);
 			con.generate(world, dx2, dy, dz2);
+			dy -= 8;
+			dir2 = dir2.getOpposite();
+			turn = ReikaDirectionHelper.getLeftBy90(dir2);
+			new LockRoomConnector(this, 0, 0, 0, 0).setLength(dir2, out).setOpenCeiling().forceLoot().generate(world, dx2, dy, dz2);
+			if (i == n-1) {
+				dz += 20;
+			}
 		}
 
 		return new Coordinate(dx, dy, dz);
@@ -249,15 +259,15 @@ public class LocksGenerator extends DimensionStructureGenerator {
 	}
 
 	public int getWhiteLock(int channel) {
-		return forcedOpen() ? 1 : whiteLock[channel];
+		return this.forcedOpen() ? 1 : whiteLock[channel];
 	}
 
 	public int getColorCode(int channel, CrystalElement e) {
-		return forcedOpen() ? 1 : keyCodes[channel][e.ordinal()];
+		return this.forcedOpen() ? 1 : keyCodes[channel][e.ordinal()];
 	}
 
 	public int getGateCode(int channel) {
-		return forcedOpen() ? 0 : gateCodes[channel];
+		return this.forcedOpen() ? 0 : gateCodes[channel];
 	}
 
 	public void freezeLocks(World world, int structIndex, int time) {

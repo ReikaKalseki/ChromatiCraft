@@ -10,7 +10,6 @@
 package Reika.ChromatiCraft.Block;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -28,6 +27,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Render.ISBRH.CrystallineStoneRenderer;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
@@ -170,11 +170,6 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 	public boolean canRenderInPass(int pass) {
 		CrystallineStoneRenderer.renderPass = pass;
 		return pass <= 1;
-	}
-
-	private boolean loadXmasTextures() {
-		Calendar c = Calendar.getInstance();
-		return c.get(Calendar.MONTH) == Calendar.DECEMBER && c.get(Calendar.DAY_OF_MONTH) >= 23;
 	}
 
 	@Override
@@ -345,7 +340,7 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 			for (int k = 0; k < variants[i]; k++) {
 				String suff = k > 0 ? String.valueOf(i+"-"+(k+1)) : String.valueOf(i);
 				if (StoneTypes.list[i].isColumn()) {
-					if (k == 0 && this.loadXmasTextures()) {
+					if (k == 0 && ChromaIcons.loadXmasTextures()) {
 						suff = suff+"_xm";
 					}
 				}

@@ -60,7 +60,7 @@ public class WaterFloor extends StructurePiece {
 				for (ForgeDirection dir : path.lockSides[i][k]) {
 					flowGrid[i][k].openEnds.add(dir);
 					while (rand.nextInt(4) > 0) //randomize
-						flowGrid[i][k].rotate(false);
+						flowGrid[i][k].rotate(false, false);
 				}
 			}
 		}
@@ -303,8 +303,8 @@ public class WaterFloor extends StructurePiece {
 	}
 	 */
 
-	public void rotateLock(int i, int k) {
-		this.getLock(i, k).rotate(true);
+	public void rotateLock(int i, int k, boolean ccw) {
+		this.getLock(i, k).rotate(true, ccw);
 	}
 
 	public Lock getLock(int i, int k) {

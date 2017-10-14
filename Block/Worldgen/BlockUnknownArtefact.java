@@ -117,7 +117,7 @@ public class BlockUnknownArtefact extends Block {
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 		double d = ep.getDistanceSq(x+0.5, y+0.5, z+0.5);
 		if (d < 576) {
-			ItemUnknownArtefact.doUA_FX(world, x+0.5, y+0.5+1.5*rand.nextDouble(), z+0.5);
+			ItemUnknownArtefact.doUA_FX(world, x+0.5, y+0.5+1.5*rand.nextDouble(), z+0.5, false);
 		}
 	}
 

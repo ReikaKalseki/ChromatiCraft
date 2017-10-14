@@ -18,6 +18,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.RenderLocusPoint;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
+import Reika.ChromatiCraft.GUI.Book.GuiMachineDescription;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
@@ -91,6 +92,10 @@ public class RenderAuraPoint extends RenderLocusPoint {
 				int hue = (int)((System.currentTimeMillis()/100)%360);
 				//color = ((int)(f*255) << 24) | ReikaColorAPI.getModifiedHue(0xff9090, hue);
 				GL11.glLineWidth(1.5F);
+			}
+			if (GuiMachineDescription.runningRender) {
+				GL11.glLineWidth(2.5F);
+				GL11.glTranslated(0, 0.1875, 0);
 			}
 			te.knot.render(dx, dy, dz, color, tile.isInWorld());
 			GL11.glLineWidth(w);

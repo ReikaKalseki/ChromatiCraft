@@ -215,7 +215,7 @@ public class ProgressModifyCommand extends DragonCommandBase {
 					this.sendChatToSender(ics, EnumChatFormatting.RED+" Invalid color '"+args[1]+"'.");
 					return;
 				}
-				ProgressionManager.instance.markPlayerCompletedStructureColor(ep, e, set, false);
+				ProgressionManager.instance.markPlayerCompletedStructureColor(ep, null, e, set, false);
 				this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Structure "+e.displayName+" set to "+set+" for "+ep.getCommandSenderName());
 				break;
 			}
@@ -261,7 +261,7 @@ public class ProgressModifyCommand extends DragonCommandBase {
 				}
 				if (args[1].equals("all") || args[1].equals("dimstruct")) {
 					for (int i = 0; i < 16; i++) {
-						ProgressionManager.instance.markPlayerCompletedStructureColor(ep, CrystalElement.elements[i], false, false);
+						ProgressionManager.instance.markPlayerCompletedStructureColor(ep, null, CrystalElement.elements[i], false, false);
 					}
 					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Dimstruct reset for "+ep.getCommandSenderName());
 				}
@@ -298,7 +298,7 @@ public class ProgressModifyCommand extends DragonCommandBase {
 				}
 				if (args[1].equals("all") || args[1].equals("dimstruct")) {
 					for (int i = 0; i < 16; i++) {
-						ProgressionManager.instance.markPlayerCompletedStructureColor(ep, CrystalElement.elements[i], true, false);
+						ProgressionManager.instance.markPlayerCompletedStructureColor(ep, null, CrystalElement.elements[i], true, false);
 					}
 					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Dimstruct maximized for "+ep.getCommandSenderName());
 				}

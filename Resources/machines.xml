@@ -82,8 +82,6 @@
 		</desc>
 		<note>
 			Needs to scan the area after being placed
-			Base Cost per block:
-			%s
 		</note>
 	</telepump>
 	<miner>
@@ -92,8 +90,6 @@
 		</desc>
 		<note>
 			Needs to scan the area after being placed, and can be triggered with the manipulator
-			Base Cost per block:
-			%s
 		</note>
 	</miner>
 	<reprogrammer>
@@ -653,10 +649,10 @@
 	</focuscrystal>
 	<chromacrafter>
 		<desc>
-			As powerful as some of your constructs have proven, crafting them has been at times painful enough that you have mentally prepended the ingredient's names with some variant of an expletive. In particular has been the various alloy ingots, which are not exactly expensive but whose particularly finicky and easy-to-disrupt nature of crafting has made you dread their production, to say nothing of their unified compound. If only you could mix them all together in a shielded glass tank or something...
+			As powerful as some of your constructs have proven, crafting them has been at times painful enough that you have mentally prepended the ingredient's names with some variant of an expletive. In particular has been the various alloy ingots, which are not exactly expensive but whose particularly finicky and easy-to-disrupt nature of crafting has made you dread their production, to say nothing of their unified compound. If only you could mix them all together in a shielded glass tank or something, though you would need to find a way to have it fit more than one block of fluid...
 		</desc>
 		<note>
-
+			Consumes three buckets of chroma per crafting cycle
 		</note>
 	</chromacrafter>
 	<fluxmaker>
@@ -683,22 +679,22 @@
 			Manipulator changes region size; empty hand changes cell count or region shape
 		</note>
 	</multibuilder>
-	<name>
+	<explosionshield>
 		<desc>
-
+			You found a way to convert between that magic fluidlike power and a more mechanical variant, a...manafetic...malgetonatic...macta...whatever. However, they require coolant, and when you tried to use them, your supply of said coolant apparently proved insufficient, as what you returned to was less a house and more a field of craters. You COULD hunt down the designer and leave them an immature rant, complaining about how they ruined your base, but a more dignified solution would be some sort of...shield. Something that, while it may not save the engines themselves, will prevent them from destroying their surroundings.
 		</desc>
 		<note>
 
 		</note>
-	</name>
-	<name>
+	</explosionshield>
+	<aurapoint>
 		<desc>
-
+			Upon completing the restorative ritual, the glowing central point transformed itself, into a much more luminous...something. Having finally brought it back home - after inadvertently destroying one on a previous attempt, forgetting to use an enchanted pick - you have determined that it has multiple properties, including defence and imbuing the surrounding area with a large boost in fertility. You have also learned it does not terribly appreciate being moved.
 		</desc>
 		<note>
 
 		</note>
-	</name>
+	</aurapoint>
 	<name>
 		<desc>
 

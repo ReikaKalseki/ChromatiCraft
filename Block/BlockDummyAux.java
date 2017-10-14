@@ -46,6 +46,8 @@ public class BlockDummyAux extends BlockContainer implements IWailaDataProvider 
 
 	public BlockDummyAux(Material mat) {
 		super(mat);
+		this.setResistance(60000);
+		this.setBlockUnbreakable();
 	}
 
 	@Override

@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityAreaDistributor;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -31,6 +32,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.ModRegistry.InterfaceCache;
 import cofh.api.energy.IEnergyHandler;
 import cofh.api.energy.IEnergyReceiver;
 import cpw.mods.fml.relauncher.Side;
@@ -190,6 +192,8 @@ public class TileEntityRFDistributor extends TileEntityAreaDistributor implement
 		if (te instanceof TileEntityRFDistributor)
 			return te.yCoord < yCoord;
 		if (te instanceof IEnergyReceiver || te instanceof IEnergyHandler) {
+			if (ModList.IMMERSIVEENG.isLoaded() && InterfaceCache.IMMERSIVEWIRE.instanceOf(te))
+				return false;
 			String s = c.getName().toLowerCase(Locale.ENGLISH);
 			if (s.contains("conduit") || ReikaStringParser.containsWord(s, "duct") || s.contains("cable") || s.contains("pipepower") || ReikaStringParser.containsWord(s, "wire")) {
 				blacklist.add(c);

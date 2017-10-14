@@ -80,6 +80,9 @@ public class ChromaDimensionManager {
 
 	private static final Collection<EntityAurora> aurorae = new HashSet();
 
+	static int dimensionAge = 0;
+	static long dimensionSeed = -1;
+
 	public static enum Biomes implements ChromaDimensionBiomeType {
 		PLAINS(BiomeGenCrystalPlains.class,	"Crystal Plains",			8, 0,	ExtraChromaIDs.PLAINS, 		SubBiomes.MOUNTAINS, 	Type.MAGICAL, Type.PLAINS),
 		ISLANDS(BiomeGenIslands.class,		"Iridescent Archipelago",	6, -5,	ExtraChromaIDs.ISLANDS, 	SubBiomes.DEEPOCEAN, 	Type.MAGICAL, Type.BEACH, Type.WET),
@@ -261,20 +264,33 @@ public class ChromaDimensionManager {
 	}
 
 	public static void resetDimension(World world) {
+		if (dimensionAge <= 1200) {
+			ChromatiCraft.logger.log("Dimension is only "+dimensionAge+" ticks old; not resetting");
+			return;
+		}
+		ChromatiCraft.logger.log("Resetting dimension of age "+dimensionAge);
+		dimensionSeed = -1;
+		dimensionAge = 0;
 		playersInStructures.clear();
 		aurorae.clear();
 		if (world instanceof WorldServer)
 			((WorldServer)world).flush(); //Hopefully kill all I/O
+		DimensionStructureGenerator.resetCachedGenerators();
 		getChunkProvider(world).clearCaches();
 		System.gc();
 		String path = DimensionManager.getCurrentSaveRootDirectory().getAbsolutePath().replaceAll("\\\\", "/").replaceAll("/\\./", "/");
 		File dim = new File(path+"/DIM"+ExtraChromaIDs.DIMID.getValue());
 		if (dim.exists() && dim.isDirectory()) {
 			boolean del = ReikaFileReader.deleteFolderWithContents(dim, 100);
+			if (!del) {
+				ChromatiCraft.logger.logError("Could not delete dimension chunk data; you must delete it manually or the dimension will be invalid.");
+			}
 		}
 	}
 
 	public static void resetDimensionClient() {
+		dimensionSeed = -1;
+		dimensionAge = 0;
 		playersInStructures.clear();
 		System.gc();
 		String path = DragonAPICore.getMinecraftDirectoryString()+"mods/VoxelMods/voxelMap/cache/";
@@ -357,7 +373,7 @@ public class ChromaDimensionManager {
 
 	@SideOnly(Side.CLIENT)
 	public static void addPlayerToStructureClient(EntityPlayer ep, DimensionStructureType structure) {
-		playersInStructures.put(ep, structure.createGenerator());
+		playersInStructures.put(ep, structure.createGenerator(-1));
 	}
 
 	public static void removePlayerFromStructure(EntityPlayer ep) {

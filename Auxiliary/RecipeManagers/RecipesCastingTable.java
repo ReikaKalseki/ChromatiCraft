@@ -84,6 +84,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.Iridesc
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.LumenChunkRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.LumenCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.RawCrystalRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.ShieldedCellRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.ThrowableGemRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.TransformationCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.VoidCoreRecipe;
@@ -117,6 +118,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.Crystal
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.EnchantDecompRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.EnchanterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.EssentiaRelayRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ExplosionShieldRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FabricatorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FarmerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FluidDistributorRecipe;
@@ -546,6 +548,7 @@ public class RecipesCastingTable {
 		if (ModList.APPENG.isLoaded()) {
 			this.addRecipe(new VoidStorageRecipe(ChromaItems.VOIDCELL.getStackOf(), ChromaStacks.voidCore));
 			this.addRecipe(new CrystalCellRecipe(ChromaItems.CRYSTALCELL.getStackOf(), ChromaStacks.crystalFocus));
+			this.addRecipe(new ShieldedCellRecipe(ChromaItems.SHIELDEDCELL.getStackOf()));
 		}
 
 		for (int i = 0; i < BlockPath.PathType.list.length; i++) {
@@ -791,6 +794,8 @@ public class RecipesCastingTable {
 		this.addRecipe(new FakeSkyRecipe(is, sr));
 
 		this.addRecipe(new MultiBuilderRecipe(ChromaTiles.MULTIBUILDER.getCraftedProduct(), ChromaStacks.elementUnit));
+
+		this.addRecipe(new ExplosionShieldRecipe(ChromaTiles.EXPLOSIONSHIELD.getCraftedProduct(), ChromaStacks.crystalStar));
 
 		this.addSpecialRecipes();
 	}

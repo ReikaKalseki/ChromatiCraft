@@ -46,8 +46,6 @@ import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
-import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
-import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
@@ -418,8 +416,9 @@ public final class ChromaDescriptions {
 		addNotes(ChromaTiles.ADJACENCY, TileEntityAdjacencyUpgrade.MAX_TIER);
 		addNotes(ChromaTiles.ENCHANTER, TileEntityAutoEnchanter.CHROMA_PER_LEVEL_BASE);
 		addNotes(ChromaTiles.GUARDIAN, TileEntityGuardianStone.RANGE);
-		addNotes(ChromaTiles.TELEPUMP, TileEntityTeleportationPump.getRequiredEnergy().toDisplay());
-		addNotes(ChromaTiles.MINER, TileEntityMiner.getRequiredEnergy().toDisplay());
+		//addNotes(ChromaTiles.TELEPUMP, TileEntityTeleportationPump.getRequiredEnergy().toDisplay());
+		//addNotes(ChromaTiles.MINER, TileEntityMiner.getRequiredEnergy().toDisplay());
+
 		//addNotes(ChromaTiles.REPROGRAMMER, TileEntitySpawnerReprogrammer.getRequiredEnergy().toDisplay());
 		addNotes(ChromaTiles.TANK, TileEntityCrystalTank.FACTOR/1000, TileEntityCrystalTank.MAXCAPACITY/1000);
 		addNotes(ChromaTiles.CHARGER, TileEntityCrystalCharger.CAPACITY);

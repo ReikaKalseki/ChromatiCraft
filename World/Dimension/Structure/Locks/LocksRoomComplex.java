@@ -50,6 +50,11 @@ public class LocksRoomComplex extends LockLevel {
 	}
 
 	@Override
+	public int getMirroredOffset() {
+		return 0;
+	}
+
+	@Override
 	public int getDifficultyRating() {
 		return 4;
 	}

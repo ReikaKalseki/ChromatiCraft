@@ -26,6 +26,11 @@ public class UATrade extends MerchantRecipe implements PlayerSpecificTrade {
 	}
 
 	@Override
+	public void incrementToolUses() {
+		//No-op to prevent expiry
+	}
+
+	@Override
 	public boolean isValid(EntityPlayer ep) {
 		return ProgressionManager.ProgressStage.ARTEFACT.isPlayerAtStage(ep);
 	}

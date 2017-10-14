@@ -51,6 +51,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.Repea
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Items.ItemMagicBranch;
@@ -133,7 +134,7 @@ public enum ChromaResearch implements ProgressElement {
 	FENCE(			ChromaTiles.FENCE, 			ResearchLevel.MULTICRAFT),
 	FURNACE(		ChromaTiles.FURNACE, 		ResearchLevel.PYLONCRAFT),
 	TELEPUMP(		ChromaTiles.TELEPUMP, 		ResearchLevel.PYLONCRAFT),
-	MINER(			ChromaTiles.MINER, 			ResearchLevel.CTM,				ProgressStage.CTM),
+	MINER(			ChromaTiles.MINER, 			ResearchLevel.ENDGAME,			ProgressStage.STRUCTCOMPLETE),
 	ITEMSTAND(		ChromaTiles.STAND,			ResearchLevel.RUNECRAFT),
 	LASER(			ChromaTiles.LASER, 			ResearchLevel.PYLONCRAFT),
 	ITEMRIFT(		ChromaTiles.ITEMRIFT, 		ResearchLevel.MULTICRAFT),
@@ -195,6 +196,8 @@ public enum ChromaResearch implements ProgressElement {
 	FUNCRELAY(		ChromaTiles.FUNCTIONRELAY,	ResearchLevel.RUNECRAFT),
 	CHROMACRAFTER(	ChromaTiles.CHROMACRAFTER,	ResearchLevel.PYLONCRAFT,		ProgressStage.ALLOY),
 	MULTIBUILDER(	ChromaTiles.MULTIBUILDER,	ResearchLevel.MULTICRAFT),
+	EXPLOSIONSHIELD(ChromaTiles.EXPLOSIONSHIELD,ResearchLevel.PYLONCRAFT),
+	AURALOCUS(		ChromaTiles.AURAPOINT,		ResearchLevel.CTM),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT,	ProgressStage.ALLCOLORS),
@@ -264,6 +267,7 @@ public enum ChromaResearch implements ProgressElement {
 	MOBSONAR(			ChromaItems.MOBSONAR,		ResearchLevel.RUNECRAFT,		ProgressStage.KILLMOB, ProgressStage.CHARGE),
 	CAVEEXIT(			ChromaItems.CAVEPATHER,		ResearchLevel.BASICCRAFT),
 	SPLINEATTACK(		ChromaItems.SPLINEATTACK,	ResearchLevel.RUNECRAFT,		ProgressStage.KILLMOB),
+	SHIELDEDCELL(		ChromaItems.SHIELDEDCELL,	ResearchLevel.BASICCRAFT,		ProgressStage.ARTEFACT),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
@@ -353,6 +357,8 @@ public enum ChromaResearch implements ProgressElement {
 	PYLONBROADCAST(	Structures.PYLONBROADCAST,5,ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
 	PYLONTURBORING(	Structures.PYLONTURBO,	5,	ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.TURBOCHARGE)),
 	WIRELESSPED(	Structures.WIRELESSPEDESTAL, 13, ResearchLevel.ENDGAME),
+	WIRELESSPED2(	Structures.WIRELESSPEDESTAL2, 13, ResearchLevel.CTM),
+	DATATOWER(		Structures.DATANODE,	ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.MOSS.metadata, ResearchLevel.RAWEXPLORE,	ProgressStage.TOWER)
 	;
 
 	private final ItemStack iconItem;
@@ -757,6 +763,8 @@ public enum ChromaResearch implements ProgressElement {
 			return false;
 		if (this == BALLLIGHTNING)
 			return false;
+		if (this == FOCUSCRYSTALS)
+			return false;
 		if (this.requiresProgress(ProgressStage.TOWER) || this.requiresProgress(ProgressStage.ARTEFACT))
 			return false;
 		return struct == null || !struct.isNatural();
@@ -775,6 +783,8 @@ public enum ChromaResearch implements ProgressElement {
 			return true;
 		if (this == TURBOREPEATER)
 			return true;
+		if (this == AURALOCUS)
+			return false;
 		if (this.isMachine() || this.isTool())
 			return true;
 		if (this == GROUPS)

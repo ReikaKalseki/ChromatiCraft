@@ -19,6 +19,7 @@ import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
 import Reika.ChromatiCraft.Block.BlockHeatLamp.TileEntityHeatLamp;
 import Reika.ChromatiCraft.Block.BlockRouterNode.RouterFilter;
 import Reika.ChromatiCraft.Block.Decoration.BlockRangedLamp.TileEntityRangedLamp;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage.TileEntityStructurePassword;
 import Reika.ChromatiCraft.Block.Relay.BlockRelayFilter.TileEntityRelayFilter;
 import Reika.ChromatiCraft.Container.ContainerAuraPouch;
 import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
@@ -41,6 +42,7 @@ import Reika.ChromatiCraft.Container.ContainerItemInserter;
 import Reika.ChromatiCraft.Container.ContainerMiner;
 import Reika.ChromatiCraft.Container.ContainerRouterFilter;
 import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
+import Reika.ChromatiCraft.Container.ContainerStructurePassword;
 import Reika.ChromatiCraft.Container.ContainerTelePump;
 import Reika.ChromatiCraft.GUI.GuiAbilitySelect;
 import Reika.ChromatiCraft.GUI.GuiAuraPouch;
@@ -94,6 +96,7 @@ import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiItemFabricator;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiItemInserter;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiMiner;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiSpawnerProgrammer;
+import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiStructurePassword;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiTelePump;
 import Reika.ChromatiCraft.ModInterface.AE.ContainerMEDistributor;
 import Reika.ChromatiCraft.ModInterface.AE.ContainerPatternCache;
@@ -220,6 +223,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new ContainerBulkMover(player);
 			case BURNERINV:
 				return new ContainerItemBurner(player);
+			case STRUCTUREPASS:
+				return new ContainerStructurePassword(player, (TileEntityStructurePassword)world.getTileEntity(x, y, z));
 			default:
 				return null;
 		}
@@ -364,6 +369,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiFlightWand(player);
 			case BURNERINV:
 				return new GuiItemBurner(player);
+			case STRUCTUREPASS:
+				return new GuiStructurePassword(player, (TileEntityStructurePassword)world.getTileEntity(x, y, z));
 		}
 		return null;
 	}

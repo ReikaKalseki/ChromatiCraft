@@ -120,14 +120,16 @@ public class StructureCalculator extends ThreadedGenerator {
 		 */
 
 		ArrayList<DimensionStructureType> structs = this.getUsableStructures();
+		int idx = 0;
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			int index = seededRand.nextInt(structs.size());
 			DimensionStructureType e = structs.get(index);
 			structs.remove(index);
-			ChunkProviderChroma.structures.add(new StructurePair(e.createGenerator(), CrystalElement.elements[i]));
+			ChunkProviderChroma.structures.add(new StructurePair(e.createGenerator(idx), CrystalElement.elements[i]));
 
 			if (structs.isEmpty()) {
 				structs = this.getUsableStructures(); //reuse structure types as necessary
+				idx++;
 			}
 		}
 

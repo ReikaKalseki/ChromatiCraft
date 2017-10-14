@@ -17,6 +17,7 @@ import java.util.HashSet;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -130,8 +131,14 @@ public class WarpPointData {
 				String y = parts[2];
 				String z = parts[3];
 				String dim = parts[4];
-				WarpPoint p = new WarpPoint("["+idx+"] "+label, new WorldLocation(Integer.parseInt(dim), Integer.parseInt(x), Integer.parseInt(y), Integer.parseInt(z)));
-				map.add(p);
+				try {
+					WarpPoint p = new WarpPoint("["+idx+"] "+label, new WorldLocation(Integer.parseInt(dim), Integer.parseInt(x), Integer.parseInt(y), Integer.parseInt(z)));
+					map.add(p);
+				}
+				catch (Exception e) {
+					ChromatiCraft.logger.logError("Could not parse waypoint entry: "+s);
+					e.printStackTrace();
+				}
 				idx++;
 			}
 		}
@@ -147,8 +154,14 @@ public class WarpPointData {
 			int y = j.getAsJsonPrimitive("y").getAsInt();
 			int z = j.getAsJsonPrimitive("z").getAsInt();
 			String id = j.getAsJsonPrimitive("name").getAsString();
-			WarpPoint p = new WarpPoint(id, new WorldLocation(dims.get(0).getAsInt(), x, y, z));
-			map.add(p);
+			try {
+				WarpPoint p = new WarpPoint(id, new WorldLocation(dims.get(0).getAsInt(), x, y, z));
+				map.add(p);
+			}
+			catch (Exception ex) {
+				ChromatiCraft.logger.logError("Could not parse waypoint entry: "+e.toString());
+				ex.printStackTrace();
+			}
 		}
 	}
 
@@ -172,8 +185,14 @@ public class WarpPointData {
 				String label = dat.get("name");
 				label = label.replaceAll("~comma~", ",");
 				label = label.replaceAll("~colon~", ":");
-				WarpPoint p = new WarpPoint("["+idx+"] "+label, new WorldLocation(Integer.parseInt(dat.get("dimensions")), Integer.parseInt(dat.get("x")), Integer.parseInt(dat.get("y")), Integer.parseInt(dat.get("z"))));
-				map.add(p);
+				try {
+					WarpPoint p = new WarpPoint("["+idx+"] "+label, new WorldLocation(Integer.parseInt(dat.get("dimensions")), Integer.parseInt(dat.get("x")), Integer.parseInt(dat.get("y")), Integer.parseInt(dat.get("z"))));
+					map.add(p);
+				}
+				catch (Exception e) {
+					ChromatiCraft.logger.logError("Could not parse waypoint entry: "+s);
+					e.printStackTrace();
+				}
 				idx++;
 			}
 		}

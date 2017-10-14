@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Block.Crystal;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockSlab;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -81,15 +82,15 @@ public class BlockCrystalGlow extends CrystalTypeBlock {
 		EntityFX fx = null;
 		int type = rand.nextInt(3);
 		switch(type) {
-		case 0:
-			fx = new EntityBlurFX(this.getCrystalElement(world, x, y, z), world, rx, ry, rz, vx, 0, vz).setScale(1+rand.nextFloat()).setGravity(g);
-			break;
-		case 1:
-			fx = new EntityCenterBlurFX(this.getCrystalElement(world, x, y, z), world, rx, ry, rz, vx, 0, vz).setScale(1+rand.nextFloat()).setGravity(g);
-			break;
-		case 2:
-			fx = new EntityLaserFX(this.getCrystalElement(world, x, y, z), world, rx, ry, rz, vx, 0, vz).setScale(1+rand.nextFloat()).setGravity(g);
-			break;
+			case 0:
+				fx = new EntityBlurFX(this.getCrystalElement(world, x, y, z), world, rx, ry, rz, vx, 0, vz).setScale(1+rand.nextFloat()).setGravity(g);
+				break;
+			case 1:
+				fx = new EntityCenterBlurFX(this.getCrystalElement(world, x, y, z), world, rx, ry, rz, vx, 0, vz).setScale(1+rand.nextFloat()).setGravity(g);
+				break;
+			case 2:
+				fx = new EntityLaserFX(this.getCrystalElement(world, x, y, z), world, rx, ry, rz, vx, 0, vz).setScale(1+rand.nextFloat()).setGravity(g);
+				break;
 		}
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
@@ -126,7 +127,13 @@ public class BlockCrystalGlow extends CrystalTypeBlock {
 	}
 
 	public boolean canPlaceOn(World world, int x, int y, int z, ForgeDirection side) {
-		return world.getBlock(x, y, z).isSideSolid(world, x, y, z, side);
+		Block b = world.getBlock(x, y, z);
+		if (b instanceof BlockSlab) { //because slabs are not coded properly
+			if (side == ForgeDirection.DOWN) {
+				return world.getBlockMetadata(x, y, z) < 8;
+			}
+		}
+		return b.isSideSolid(world, x, y, z, side);
 	}
 
 	public void setSide(World world, int x, int y, int z, ForgeDirection dir) {
@@ -166,50 +173,50 @@ public class BlockCrystalGlow extends CrystalTypeBlock {
 		ForgeDirection dir = te instanceof TileEntityCrystalGlow ? ((TileEntityCrystalGlow)te).direction : ForgeDirection.UNKNOWN;
 		ForgeDirection ax = te instanceof TileEntityCrystalGlow ? ((TileEntityCrystalGlow)te).longAxis : ForgeDirection.UNKNOWN;
 		switch(dir) {
-		case WEST:
-			zmin = 0.5F-w;
-			zmax = 0.5F+w;
-			ymin = 0.5F-w;
-			ymax = 0.5F+w;
-			xmin = 1-h;
-			break;
-		case EAST:
-			zmin = 0.5F-w;
-			zmax = 0.5F+w;
-			ymin = 0.5F-w;
-			ymax = 0.5F+w;
-			xmax = h;
-			break;
-		case NORTH:
-			xmin = 0.5F-w;
-			xmax = 0.5F+w;
-			ymin = 0.5F-w;
-			ymax = 0.5F+w;
-			zmin = 1-h;
-			break;
-		case SOUTH:
-			xmin = 0.5F-w;
-			xmax = 0.5F+w;
-			ymin = 0.5F-w;
-			ymax = 0.5F+w;
-			zmax = h;
-			break;
-		case UP:
-			xmin = 0.5F-w;
-			xmax = 0.5F+w;
-			zmin = 0.5F-w;
-			zmax = 0.5F+w;
-			ymax = h;
-			break;
-		case DOWN:
-			xmin = 0.5F-w;
-			xmax = 0.5F+w;
-			zmin = 0.5F-w;
-			zmax = 0.5F+w;
-			ymin = 1-h;
-			break;
-		default:
-			break;
+			case WEST:
+				zmin = 0.5F-w;
+				zmax = 0.5F+w;
+				ymin = 0.5F-w;
+				ymax = 0.5F+w;
+				xmin = 1-h;
+				break;
+			case EAST:
+				zmin = 0.5F-w;
+				zmax = 0.5F+w;
+				ymin = 0.5F-w;
+				ymax = 0.5F+w;
+				xmax = h;
+				break;
+			case NORTH:
+				xmin = 0.5F-w;
+				xmax = 0.5F+w;
+				ymin = 0.5F-w;
+				ymax = 0.5F+w;
+				zmin = 1-h;
+				break;
+			case SOUTH:
+				xmin = 0.5F-w;
+				xmax = 0.5F+w;
+				ymin = 0.5F-w;
+				ymax = 0.5F+w;
+				zmax = h;
+				break;
+			case UP:
+				xmin = 0.5F-w;
+				xmax = 0.5F+w;
+				zmin = 0.5F-w;
+				zmax = 0.5F+w;
+				ymax = h;
+				break;
+			case DOWN:
+				xmin = 0.5F-w;
+				xmax = 0.5F+w;
+				zmin = 0.5F-w;
+				zmax = 0.5F+w;
+				ymin = 1-h;
+				break;
+			default:
+				break;
 		}
 		this.setBlockBounds(xmin, ymin, zmin, xmax, ymax, zmax);
 	}

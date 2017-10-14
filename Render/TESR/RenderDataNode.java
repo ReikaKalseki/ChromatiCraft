@@ -507,7 +507,7 @@ public class RenderDataNode extends ChromaRenderBase {
 	}
 
 	private void renderSymbol(TileEntityDataNode te, Tessellator v5) {
-		Towers t = te.getTower();
+		Towers t = StructureRenderer.isRenderingTiles() ? Towers.towerList[(int)((System.currentTimeMillis()/1000)%Towers.towerList.length)] : te.getTower();
 		if (t != null) {
 			double d = te.getExtension0()+te.getExtension1()+te.getExtension2();
 			d /= te.EXTENSION_LIMIT_0+te.EXTENSION_LIMIT_1+te.EXTENSION_LIMIT_2;
@@ -518,7 +518,8 @@ public class RenderDataNode extends ChromaRenderBase {
 				double v = (idx/8)/8D;
 				double du = u+1/8D;
 				double dv = v+1/8D;
-				double tk = (-te.getTicksExisted()/1.5D)%360D;
+				double tt = StructureRenderer.isRenderingTiles() ? System.currentTimeMillis()/25D : te.getTicksExisted();
+				double tk = (-tt/1.5D)%360D;
 				ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/towersymbols.png");
 				GL11.glPushMatrix();
 				GL11.glDisable(GL11.GL_CULL_FACE);
@@ -601,8 +602,9 @@ public class RenderDataNode extends ChromaRenderBase {
 		d /= te.EXTENSION_LIMIT_0+te.EXTENSION_LIMIT_1+te.EXTENSION_LIMIT_2;
 		float f = 0.5F+0.5F*(float)d;
 		double h = te.isInWorld() ? 1.5 : 1;
-		double dy = te.isInWorld() ? 0.5+te.getExtension1()+te.getExtension2()+0.0625*Math.sin((te.getTicksExisted()/8D)%(2*Math.PI)) : -0.5;
-		this.renderPrism(te.isInWorld() ? te.getTicksExisted()*2 : System.currentTimeMillis()/20D, v5, f, h, dy);
+		double t = StructureRenderer.isRenderingTiles() ? System.currentTimeMillis()/50D : te.getTicksExisted();
+		double dy = te.isInWorld() ? 0.5+te.getExtension1()+te.getExtension2()+0.0625*Math.sin((t/8D)%(2*Math.PI)) : -0.5;
+		this.renderPrism(te.isInWorld() ? t*2 : System.currentTimeMillis()/20D, v5, f, h, dy);
 	}
 
 	public static void renderPrism(double tick, Tessellator v5, float colorFactor, double h, double dy) {

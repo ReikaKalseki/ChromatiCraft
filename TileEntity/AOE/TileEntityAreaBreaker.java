@@ -76,7 +76,8 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 		required.addTag(CrystalElement.PURPLE, 10);
 	}
 
-	public static ElementTagCompound getRequiredEnergy() {
+	@Override
+	public ElementTagCompound getRequiredEnergy() {
 		return required.copy();
 	}
 
@@ -259,6 +260,7 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 		range++;
 		if (range > MAX_RANGE)
 			range = 1;
+		this.initArea();
 		ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.NUMBERPARTICLE.ordinal(), this, range);
 		ChromaSounds.USE.playSoundAtBlock(this);
 	}

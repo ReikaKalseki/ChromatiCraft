@@ -178,6 +178,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 	private void attack(World world, int x, int y, int z, EntityLivingBase e) {
 		float dmg = this.getAttackDamage(e);
 		ChromaAux.doPylonAttack(CrystalElement.WHITE, e, dmg, false);
+		ChromaSounds.DISCHARGE.playSound(e.worldObj, e.posX, e.posY, e.posZ, 1, 1);
 		ChromaSounds.DISCHARGE.playSound(e, 0.5F, 1);
 
 		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.AURATTACK.ordinal(), this, 192, e.getEntityId());

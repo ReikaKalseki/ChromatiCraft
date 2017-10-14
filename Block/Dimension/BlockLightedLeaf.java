@@ -65,7 +65,7 @@ public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBloc
 
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase e, ItemStack is) {
-		world.setBlockMetadataWithNotify(x, y, z, rand.nextInt(overlay.length), 3);
+		world.setBlockMetadataWithNotify(x, y, z, rand.nextInt(overlay.length), 2);
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBloc
 
 	@Override
 	protected void onRandomUpdate(World world, int x, int y, int z, Random r) {
-		world.setBlockMetadataWithNotify(x, y, z, rand.nextInt(overlay.length), 3);
+		world.setBlockMetadataWithNotify(x, y, z, rand.nextInt(overlay.length), 2);
 		world.scheduleBlockUpdate(x, y, z, this, 200+rand.nextInt(1000));
 	}
 

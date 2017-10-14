@@ -23,7 +23,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
@@ -40,6 +39,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
+import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Items.Tools.ItemKillAuraGun;
@@ -553,11 +553,11 @@ public class ChromaOverlays {
 			int r1 = eff1 != null ? eff1.getAmplifier() : 0;
 			int r2 = eff2 != null ? eff2.getAmplifier() : 0;
 			int rl = Math.max(r1, r2);
-			regen = (int)(tick/100D*(1+0.33*rl)%34)-2;
+			regen = (int)(System.currentTimeMillis()/120D*(1+0.33*rl)%34)-2;
 		}
 
 		v5.startDrawingQuads();
-		double boost = ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).getModifier(Chromabilities.HEALTH_UUID).getAmount();
+		double boost = AbilityHelper.instance.getBoostedHealth(ep);
 		boolean highlight = ep.hurtResistantTime >= 10 && ep.hurtResistantTime / 3 % 2 == 1;
 		int health = Math.round(ep.getHealth()/2F);
 		int maxhealth = Math.round(ep.getMaxHealth()/2F);
@@ -627,7 +627,8 @@ public class ChromaOverlays {
 
 		GuiIngameForge.left_height += h+1;
 		FontRenderer f = ChromaFontRenderer.FontType.HUD.renderer;
-		f.drawString(String.format("Health: %d/%d", health, maxhealth), left, top-f.FONT_HEIGHT, 0xffffff);
+		int n = ep.getTotalArmorValue() > 0 ? f.FONT_HEIGHT+1 : 0;
+		f.drawString(String.format("Health: %d/%d", health, maxhealth), left, top-f.FONT_HEIGHT-n, 0xffffff);
 		ReikaTextureHelper.bindHUDTexture();
 		evt.setCanceled(true);
 	}
@@ -923,6 +924,10 @@ public class ChromaOverlays {
 
 	public void addLoreNote(EntityPlayer ep, Towers t) {
 		FullScreenOverlayRenderer.instance.addLoreNote(ep, t);
+	}
+
+	public void addStructurePasswordNote(EntityPlayer ep, int hex) {
+		FullScreenOverlayRenderer.instance.addStructurePasswordNote(ep, hex);
 	}
 
 	private static class FlareMessage {

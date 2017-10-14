@@ -175,4 +175,10 @@ public class LoreManager {
 		return rosetta;
 	}
 
+	public void clearOnLogout() {
+		rosetta = null;
+		puzzle = null;
+		towerGroups.clear();
+	}
+
 }

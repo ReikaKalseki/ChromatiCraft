@@ -37,20 +37,8 @@ public class SkyRiverManager {
 
 	public static final PlayerChunkTracker.TrackingCondition skyRiverCondition = new TrackingConditionSkyRiver();
 	private static final List<DelayedSkyRiverPacketEvent> delayedPackets = new LinkedList();
-	private static final Map<EntityPlayer, Integer> recentlyLeftSkyRiver = new HashMap(); // Allows
-	// the
-	// server
-	// to
-	// keep
-	// up
-	// after
-	// leaving
-	// the
-	// SkyRiver
-	private static final int SKYRIVER_ENTER_DELAY = 60; // ticks - allows the
-
-	// server to catch up
-	// after untrack.
+	private static final Map<EntityPlayer, Integer> recentlyLeftSkyRiver = new HashMap(); // Allows the server to keep up after leaving the SkyRiver
+	private static final int SKYRIVER_ENTER_DELAY = 60; // ticks - allows the server to catch up after untrack.
 
 	public static void tickSkyRiverServer(World w) {
 		if (!w.isRemote) {
@@ -273,7 +261,7 @@ public class SkyRiverManager {
 	private static void schedulePacketSending(EntityPlayer player, SkyRiverGenerator.Ray toSend, int delay) {
 		DelayedSkyRiverPacketEvent pktEvent = new DelayedSkyRiverPacketEvent(player, toSend);
 		delayedPackets.add(pktEvent);
-		TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(pktEvent), delay);
+		TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(pktEvent), 1+delay);
 	}
 
 	private static class DelayedSkyRiverPacketEvent implements ScheduledTickEvent.ScheduledEvent {

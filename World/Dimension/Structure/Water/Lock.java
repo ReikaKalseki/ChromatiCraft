@@ -41,10 +41,10 @@ public class Lock {
 		location = new Point(i, k);
 	}
 
-	//see if can make animated, slow, heavy-sounding
-	void rotate(boolean updateParent) { //CLOCKWISE
-		rotation += ROTATION_STEP;
-		facing = ReikaDirectionHelper.getRightBy90(facing);
+	void rotate(boolean updateParent, boolean ccw) {
+		rotation += ccw ? -ROTATION_STEP : ROTATION_STEP;
+		rotation = (rotation+360)%360;
+		facing = ccw ? ReikaDirectionHelper.getLeftBy90(facing) : ReikaDirectionHelper.getRightBy90(facing);
 		if (updateParent)
 			;//level.updateChannels();
 	}

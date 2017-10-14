@@ -14,12 +14,11 @@ import java.util.Collection;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
-import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class AdjacencyRecipe extends PylonCastingRecipe {
@@ -56,10 +55,7 @@ public class AdjacencyRecipe extends PylonCastingRecipe {
 	}
 
 	private static ItemStack getItem(CrystalElement e, int tier) {
-		ItemStack is = ChromaItems.ADJACENCY.getStackOfMetadata(e.ordinal());
-		is.stackTagCompound = new NBTTagCompound();
-		is.stackTagCompound.setInteger("tier", tier);
-		return is;
+		return AdjacencyUpgrades.upgrades[e.ordinal()].getStackOfTier(tier);
 	}
 
 	@Override

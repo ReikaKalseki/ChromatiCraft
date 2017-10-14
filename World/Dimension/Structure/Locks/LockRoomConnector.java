@@ -30,6 +30,7 @@ public class LockRoomConnector extends StructurePiece {
 	private boolean window;
 	private int openFloor;
 	private boolean openCeiling;
+	private boolean forceLoot;
 
 	public LockRoomConnector(DimensionStructureGenerator s, int[] len) {
 		super(s);
@@ -60,6 +61,11 @@ public class LockRoomConnector extends StructurePiece {
 		return this;
 	}
 
+	public LockRoomConnector forceLoot() {
+		forceLoot = true;
+		return this;
+	}
+
 	@Override
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
 		Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
@@ -85,7 +91,7 @@ public class LockRoomConnector extends StructurePiece {
 		world.setBlock(x-2, y, z+2, b, ml);
 		world.setBlock(x+2, y, z+2, b, ml);
 
-		if (!openCeiling && openFloor == 0) {
+		if (forceLoot || (!openCeiling && openFloor == 0)) {
 			if (ReikaRandomHelper.doWithChance(25)) {
 				parent.generateLootChest(x-2, y+1, z, ForgeDirection.EAST, ChestGenHooks.PYRAMID_JUNGLE_CHEST, 0, ChromaStacks.iridChunk.copy(), 10, ChromaStacks.avolite.copy(), 50);
 			}

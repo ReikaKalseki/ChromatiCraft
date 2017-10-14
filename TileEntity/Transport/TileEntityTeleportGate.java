@@ -22,6 +22,7 @@ import java.util.UUID;
 import javax.imageio.ImageIO;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -43,8 +44,12 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
+import Reika.ChromatiCraft.Items.ItemUnknownArtefact.ArtefactTypes;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.Artefact.UABombingEffects;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -62,22 +67,28 @@ import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledEvent;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget.PlayerTarget;
 import Reika.DragonAPI.Instantiable.ParticleController.CollectingPositionController;
+import Reika.DragonAPI.Instantiable.Rendering.FXCollection;
+import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
+import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer.StructureRenderingParticleSpawner;
 import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class TileEntityTeleportGate extends CrystalReceiverBase implements LocationCached, OwnedTile, GuiController, ChunkLoadingTile, MultiBlockChromaTile {
+public class TileEntityTeleportGate extends CrystalReceiverBase implements LocationCached, OwnedTile, GuiController, ChunkLoadingTile,
+MultiBlockChromaTile, StructureRenderingParticleSpawner {
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 	private static final HashSet<GateData> cache = new HashSet();
@@ -102,6 +113,14 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 	private static final ArrayList<Orbit> activationOrbits = new ArrayList();
 
 	private static final HashMap<WorldLocation, BufferedImage> imageCache = new HashMap();
+
+	@SideOnly(Side.CLIENT)
+	public FXCollection particles;
+
+	public TileEntityTeleportGate() {
+		if (this.getSide() == Side.CLIENT)
+			particles = new FXCollection();
+	}
 
 	private static final String LOGGER_ID = "telegate";
 
@@ -131,6 +150,7 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 		}
 
 		if (this.hasStructure() && world.isRemote) {
+			particles.update();
 			this.doParticles(world, x, y, z);
 		}
 
@@ -154,6 +174,11 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 			this.doGuiChecks(world, x, y, z);
 		else
 			cooldowns.clear();
+	}
+
+	public void tickFX() {
+		particles.update();
+		this.doParticles(worldObj, xCoord, yCoord, zCoord);
 	}
 
 	private void tryCreateSnapshot() {
@@ -447,7 +472,29 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 		}
 		else {
 			if (e instanceof EntityLivingBase) {
-				((EntityLivingBase)e).setPositionAndUpdate(te2.xCoord+0.5+dx, te2.yCoord+0.5+dy, te2.zCoord+0.5+dz);
+				if (e instanceof EntityPlayer) {
+					boolean flag = ReikaInventoryHelper.checkForItemStack(ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.ARTIFACT.ordinal()), ((EntityPlayer)e).inventory, false);
+					double nx = te2.xCoord+0.5+dx;
+					double ny = te2.yCoord+0.5+dy;
+					double nz = te2.zCoord+0.5+dz;
+					if (flag) {
+						double[] xyz = ReikaPhysicsHelper.polarToCartesian(2+rand.nextDouble()*6, 35, rand.nextDouble()*360);
+						e.motionX = xyz[0];
+						e.motionY = xyz[1]+1.5;
+						e.motionZ = xyz[2];
+						e.velocityChanged = true;
+						nx = ReikaRandomHelper.getRandomPlusMinus(nx, 128);
+						nz = ReikaRandomHelper.getRandomPlusMinus(nz, 128);
+						ny = Math.max(ny, te2.worldObj.getTopSolidOrLiquidBlock(MathHelper.floor_double(nx), MathHelper.floor_double(nz))+2);
+					}
+					((EntityLivingBase)e).setPositionAndUpdate(nx, ny, nz);
+					if (flag) {
+						UABombingEffects.instance.trigger(e);
+					}
+				}
+				else {
+					((EntityLivingBase)e).setPositionAndUpdate(te2.xCoord+0.5+dx, te2.yCoord+0.5+dy, te2.zCoord+0.5+dz);
+				}
 			}
 			else {
 				e.setLocationAndAngles(te2.xCoord+0.5, te2.yCoord+0.5, te2.zCoord+0.5, e.rotationYaw, e.rotationPitch);
@@ -536,7 +583,7 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 			pf = 0.75F;
 		}
 
-		double dt = this.getTicksExisted();
+		double dt = StructureRenderer.isRenderingTiles() ? System.currentTimeMillis()/50D : this.getTicksExisted();
 		double r = 3.25;
 		int l = 30;
 		int c = this.getRenderColor();
@@ -549,14 +596,20 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 				double pz = z+0.5+r*Math.sin(ang1);
 				double py = y+0.5+1.5+0.5*Math.sin(t/32D);
 				EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				if (GuiScreen.isCtrlKeyDown())
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				else
+					particles.addEffect(px-x, py-y, pz-z, ChromaIcons.FADE.getIcon(), l, s, c, true);
 
 				py += 0.375;
 
 				px = x+0.5+r*Math.cos(-ang1);
 				pz = z+0.5+r*Math.sin(-ang1);
 				fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				if (GuiScreen.isCtrlKeyDown())
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				else
+					particles.addEffect(px-x, py-y, pz-z, ChromaIcons.FADE.getIcon(), l, s, c, true);
 
 				double ang2 = ang1+Math.toRadians(180);
 				py = y+0.5+1.5+0.5*Math.sin((t+16)/32D);
@@ -564,14 +617,20 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 				px = x+0.5+r*Math.cos(ang2);
 				pz = z+0.5+r*Math.sin(ang2);
 				fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				if (GuiScreen.isCtrlKeyDown())
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				else
+					particles.addEffect(px-x, py-y, pz-z, ChromaIcons.FADE.getIcon(), l, s, c, true);
 
 				py += 0.375;
 
 				px = x+0.5+r*Math.cos(-ang2);
 				pz = z+0.5+r*Math.sin(-ang2);
 				fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				if (GuiScreen.isCtrlKeyDown())
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				else
+					particles.addEffect(px-x, py-y, pz-z, ChromaIcons.FADE.getIcon(), l, s, c, true);
 
 				for (double ang4 = ang2; ang4 <= ang2+Math.PI; ang4 += Math.PI) {
 					px = x+0.5+0.5*Math.sin(t/32D);
@@ -579,7 +638,10 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 					pz = z+0.5+r*Math.sin(-ang4);
 					if (py >= y-0.5) {
 						fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
-						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+						if (GuiScreen.isCtrlKeyDown())
+							Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+						else
+							particles.addEffect(px-x, py-y, pz-z, ChromaIcons.FADE.getIcon(), l, s, c, true);
 					}
 
 					px = x+0.5+0.5*Math.sin((t+16)/32D);
@@ -587,7 +649,10 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 					pz = z+0.5+r*Math.sin(ang4);
 					if (py >= y-0.5) {
 						fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
-						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+						if (GuiScreen.isCtrlKeyDown())
+							Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+						else
+							particles.addEffect(px-x, py-y, pz-z, ChromaIcons.FADE.getIcon(), l, s, c, true);
 					}
 				}
 
@@ -597,7 +662,10 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 					px = x+0.5+r*Math.sin(-ang4+Math.PI/2);
 					if (py >= y-0.5) {
 						fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
-						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+						if (GuiScreen.isCtrlKeyDown())
+							Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+						else
+							particles.addEffect(px-x, py-y, pz-z, ChromaIcons.FADE.getIcon(), l, s, c, true);
 					}
 
 					pz = z+0.5+0.5*Math.sin((t+16)/32D);
@@ -605,7 +673,10 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 					px = x+0.5+r*Math.sin(ang4+Math.PI/2);
 					if (py >= y-0.5) {
 						fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
-						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+						if (GuiScreen.isCtrlKeyDown())
+							Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+						else
+							particles.addEffect(px-x, py-y, pz-z, ChromaIcons.FADE.getIcon(), l, s, c, true);
 					}
 				}
 			}
@@ -682,7 +753,7 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 
 	@Override
 	public AxisAlignedBB getRenderBoundingBox() {
-		return this.hasStructure() ? ReikaAABBHelper.getBlockAABB(this).expand(8, 8, 8) : super.getRenderBoundingBox();
+		return this.hasStructure() ? ReikaAABBHelper.getBlockAABB(this).expand(6, 6, 6) : super.getRenderBoundingBox();
 	}
 
 	@Override

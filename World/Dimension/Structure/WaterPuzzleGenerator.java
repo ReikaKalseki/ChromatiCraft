@@ -124,6 +124,9 @@ public class WaterPuzzleGenerator extends DimensionStructureGenerator {
 		}
 		world.setTileEntity(dx, y+WaterFloor.HEIGHT+4, dz, ChromaBlocks.EVERFLUID.getBlockInstance(), 0, new EverFluidCallback(id, 0));
 
+		y = posY+WaterFloor.HEIGHT;
+		this.generatePasswordTile(posX, y, posZ);
+
 		this.addDynamicStructure(new WaterStructureEntrance(this), posX, posZ);
 	}
 

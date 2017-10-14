@@ -128,7 +128,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 	}
 
 	private static synchronized void regenerateGenerators(int invflags) {
-		long seed = System.currentTimeMillis();
+		long seed = getOrCreateSeed();
 		generationFlags = ReikaMathLibrary.getNBitflags(ThreadedGenerators.generators.length) & ~invflags;
 		if ((invflags & ThreadedGenerators.STRUCTURE.getBit()) == 0) {
 			for (StructurePair s : structures)
@@ -141,6 +141,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 			if ((invflags & gen.getBit()) == 0)
 				gen.run(seed);
 		}
+		ChromaDimensionManager.dimensionAge = 0;
 	}
 
 	static synchronized void finishGeneration(ThreadedGenerators gen) {
@@ -165,10 +166,9 @@ public class ChunkProviderChroma implements IChunkProvider {
 		return monument;
 	}
 
-	public ChunkProviderChroma(World world)
-	{
+	public ChunkProviderChroma(World world) {
 		worldObj = world;
-		randomSeed = System.currentTimeMillis();
+		randomSeed = this.getOrCreateSeed();
 		chunkManager = new ChromaChunkManager(world);
 		worldType = WorldType.DEFAULT;//world.getWorldInfo().getTerrainType(); //not that it matters
 		overWorldSeed = world.getSeed();
@@ -195,6 +195,13 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 		//this.clearCaches();
 		this.createDecorators();
+	}
+
+	private static long getOrCreateSeed() {
+		if (ChromaDimensionManager.dimensionSeed >= 0)
+			return ChromaDimensionManager.dimensionSeed;
+		ChromaDimensionManager.dimensionSeed = System.currentTimeMillis();
+		return ChromaDimensionManager.dimensionSeed;
 	}
 
 	private void createDecorators() {

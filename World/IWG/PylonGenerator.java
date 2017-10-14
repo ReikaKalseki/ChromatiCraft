@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
@@ -109,6 +110,10 @@ public final class PylonGenerator implements RetroactiveGenerator {
 				NBTTagCompound tag = new NBTTagCompound();
 				loc.location.writeToNBT("pos", tag);
 				tag.setInteger("color", e.ordinal());
+				tag.setBoolean("turbo", loc.isTurboCharged);
+				if (loc.playerLink != null) {
+					tag.setString("link", loc.playerLink.toString());
+				}
 				NBTTagList li2 = new NBTTagList();
 				for (Coordinate c2 : loc.powerCrystals) {
 					li2.appendTag(c2.writeToTag());
@@ -128,6 +133,9 @@ public final class PylonGenerator implements RetroactiveGenerator {
 			NBTTagCompound tag = it.next();
 			WorldLocation loc = WorldLocation.readFromNBT("pos", tag);
 			CrystalElement e = CrystalElement.elements[tag.getInteger("color")];
+			boolean turbo = tag.getBoolean("turbo");
+			String uids = tag.hasKey("link") ? tag.getString("link") : null;
+			UUID uid = uids != null ? UUID.fromString(uids) : null;
 			NBTTagList crystals = tag.getTagList("crystals", NBTTypes.COMPOUND.ID);
 			ArrayList<Coordinate> li2 = new ArrayList();
 			for (Object o : crystals.tagList) {
@@ -136,7 +144,7 @@ public final class PylonGenerator implements RetroactiveGenerator {
 				li2.add(c);
 			}
 			if (this.validateCachedLocation(loc, e)) {
-				this.addLocation(loc, e, li2);
+				this.addLocation(loc, e, li2, turbo, uid);
 			}
 			else {
 				it.remove();
@@ -156,8 +164,32 @@ public final class PylonGenerator implements RetroactiveGenerator {
 		for (CrystalElement e : colorCache.keySet()) {
 			Collection<PylonEntry> c = colorCache.get(e);
 			for (PylonEntry loc : c) {
-				if (loc.location.dimensionID == dim)
-					ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.PYLONCACHE.ordinal(), ep, loc.location.xCoord, loc.location.yCoord, loc.location.zCoord, e.ordinal());
+				if (loc.location.dimensionID == dim) {
+					ArrayList<Integer> li = ReikaJavaLibrary.makeIntListFromArray(loc.location.xCoord, loc.location.yCoord, loc.location.zCoord, e.ordinal());
+					li.add(loc.isTurboCharged ? 1 : 0);
+					if (loc.playerLink != null) {
+						long l1 = loc.playerLink.getLeastSignificantBits();
+						long l2 = loc.playerLink.getMostSignificantBits();
+						int[] a1 = ReikaJavaLibrary.splitLong(l1);
+						int[] a2 = ReikaJavaLibrary.splitLong(l2);
+						li.add(a1[0]);
+						li.add(a1[1]);
+						li.add(a2[0]);
+						li.add(a2[1]);
+					}
+					else {
+						li.add(-1);
+						li.add(-1);
+						li.add(-1);
+						li.add(-1);
+					}
+					for (Coordinate c2 : loc.powerCrystals) {
+						li.add(c2.xCoord);
+						li.add(c2.yCoord);
+						li.add(c2.zCoord);
+					}
+					ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.PYLONCACHE.ordinal(), ep, li);
+				}
 			}
 		}
 	}
@@ -572,6 +604,23 @@ public final class PylonGenerator implements RetroactiveGenerator {
 	private void addToCache(PylonEntry e) {
 		this.addLocation(e);
 		List<Integer> li = ReikaJavaLibrary.makeIntListFromArray(e.location.xCoord, e.location.yCoord, e.location.zCoord, e.color.ordinal());
+		li.add(e.isTurboCharged ? 1 : 0);
+		if (e.playerLink != null) {
+			long l1 = e.playerLink.getLeastSignificantBits();
+			long l2 = e.playerLink.getMostSignificantBits();
+			int[] a1 = ReikaJavaLibrary.splitLong(l1);
+			int[] a2 = ReikaJavaLibrary.splitLong(l2);
+			li.add(a1[0]);
+			li.add(a1[1]);
+			li.add(a2[0]);
+			li.add(a2[1]);
+		}
+		else {
+			li.add(-1);
+			li.add(-1);
+			li.add(-1);
+			li.add(-1);
+		}
 		for (Coordinate c : e.powerCrystals) {
 			li.add(c.xCoord);
 			li.add(c.yCoord);
@@ -581,13 +630,13 @@ public final class PylonGenerator implements RetroactiveGenerator {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void cachePylonLocation(World world, int x, int y, int z, CrystalElement e, ArrayList<Coordinate> li) {
+	public void cachePylonLocation(World world, int x, int y, int z, CrystalElement e, ArrayList<Coordinate> li, boolean turbo, UUID link) {
 		//ReikaJavaLibrary.pConsole("Receive for cache in DIM"+world.provider.dimensionId+": "+x+","+y+","+z+"="+e);
-		this.addLocation(new WorldLocation(world, x, y, z), e, li);
+		this.addLocation(new WorldLocation(world, x, y, z), e, li, turbo, link);
 	}
 
-	private void addLocation(WorldLocation loc, CrystalElement e, ArrayList<Coordinate> li) {
-		this.addLocation(new PylonEntry(e, loc, li));
+	private void addLocation(WorldLocation loc, CrystalElement e, ArrayList<Coordinate> li, boolean turbo, UUID link) {
+		this.addLocation(new PylonEntry(e, loc, li, turbo, link));
 	}
 
 	private void addLocation(PylonEntry pe) {
@@ -636,12 +685,14 @@ public final class PylonGenerator implements RetroactiveGenerator {
 		public final CrystalElement color;
 		public final WorldLocation location;
 		private final ArrayList<Coordinate> powerCrystals = new ArrayList();
+		public final boolean isTurboCharged;
+		public final UUID playerLink;
 
 		private PylonEntry(TileEntityCrystalPylon te) {
-			this(te.getColor(), new WorldLocation(te), te.getBoosterCrystals(te.worldObj, te.xCoord, te.yCoord, te.zCoord, false));
+			this(te.getColor(), new WorldLocation(te), te.getBoosterCrystals(te.worldObj, te.xCoord, te.yCoord, te.zCoord, false), te.isEnhanced(), te.getLinkTileUUID());
 		}
 
-		public PylonEntry(CrystalElement e, WorldLocation loc, ArrayList li) {
+		public PylonEntry(CrystalElement e, WorldLocation loc, ArrayList li, boolean turbo, UUID link) {
 			color = e;
 			location = loc;
 			for (Object o : li) {
@@ -650,6 +701,8 @@ public final class PylonGenerator implements RetroactiveGenerator {
 				else if (o instanceof TileEntityChromaCrystal)
 					powerCrystals.add(new Coordinate((TileEntity)o));
 			}
+			isTurboCharged = turbo;
+			playerLink = link;
 		}
 
 		@Override

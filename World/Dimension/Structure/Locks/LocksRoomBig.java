@@ -3046,6 +3046,11 @@ public class LocksRoomBig extends LockLevel {
 	}
 
 	@Override
+	public int getMirroredOffset() {
+		return 0;
+	}
+
+	@Override
 	public int getDifficultyRating() {
 		return 2;
 	}

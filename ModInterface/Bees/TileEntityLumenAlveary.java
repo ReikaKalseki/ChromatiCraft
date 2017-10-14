@@ -308,7 +308,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	}
 
 	@Override
-	protected ElementTagCompound getRequiredEnergy() {
+	public ElementTagCompound getRequiredEnergy() {
 		ElementTagCompound tag = new ElementTagCompound();
 		if (!this.isAlvearyComplete())
 			return tag;

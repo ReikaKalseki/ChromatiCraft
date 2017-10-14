@@ -40,6 +40,7 @@ public enum ChromaGuis {
 	LOREKEY(),
 	BURNERINV(),
 	//LORE();
+	STRUCTUREPASS(),
 	;
 
 	public static final ChromaGuis[] guiList = values();

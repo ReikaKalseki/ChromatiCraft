@@ -76,7 +76,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 			ENDPROVIDER("net.minecraft.world.gen.ChunkProviderEnd", "ara"),
 			REACHDIST("net.minecraft.client.multiplayer.PlayerControllerMP", "bje"),
 			//CHARWIDTH("Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer"), //Thank you, Optifine T_T
-			CHUNKPOPLN("net.minecraft.world.gen.ChunkProviderServer", "ms"),
+			//CHUNKPOPLN("net.minecraft.world.gen.ChunkProviderServer", "ms"),
 			//WORLDLIGHT("net.minecraft.world.World", "ahb"),
 			//WORLDLIGHT2("net.minecraft.world.ChunkCache", "ahr"),
 			//ENTITYCOLLISION("net.minecraft.entity.Entity", "sa"),
@@ -192,31 +192,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						}
 					}*//*
 				break;
-				}*/
-					case CHUNKPOPLN: {
-						MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_73153_a", "populate", "(Lnet/minecraft/world/chunk/IChunkProvider;II)V");
-						boolean primed = false;
-						for (int i = 0; i < m.instructions.size(); i++) {
-							AbstractInsnNode ain = m.instructions.get(i);
-							if (ain.getOpcode() == Opcodes.INVOKEINTERFACE) {
-								primed = true;
-							}
-							else if (primed && ain.getOpcode() == Opcodes.INVOKESTATIC) {
-								MethodInsnNode min = (MethodInsnNode)ain;
-								if (min.owner.contains("GameRegistry") && min.name.equals("generateWorld")) {
-									primed = false;
-
-									min.owner = "Reika/ChromatiCraft/Auxiliary/ChromaAux";
-									min.name = "interceptChunkPopulation";
-									min.desc = "(IILnet/minecraft/world/World;Lnet/minecraft/world/chunk/IChunkProvider;Lnet/minecraft/world/chunk/IChunkProvider;)V";
-
-									ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");
-									break;
-								}
-							}
-						}
-					}
-					break;/*
+				}*//*
 					case WORLDLIGHT:
 					case WORLDLIGHT2: {
 						MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_72802_i", "getLightBrightnessForSkyBlocks", "(IIII)I");
@@ -231,7 +207,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");
 						break;
 					}
-					 */
+				 */
 					/*
 					case ENTITYCOLLISION: {
 						String func = FMLForgePlugin.RUNTIME_DEOBF ? "func_72945_a" : "getCollidingBoundingBoxes";

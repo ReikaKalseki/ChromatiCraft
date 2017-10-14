@@ -184,6 +184,8 @@ public enum Chromabilities implements Ability {
 	public static final UUID HEALTH_UUID = UUID.fromString("71d6a916-a54b-11e7-abc4-cec278b6b50a");
 	public static final int MAX_REACH = 128;
 
+	private static long lastNullPlayerDump = -1;
+
 	private Chromabilities(Phase tick, boolean client) {
 		this(tick, client, null);
 	}
@@ -559,6 +561,13 @@ public enum Chromabilities implements Ability {
 	}
 
 	public static boolean enabledOn(EntityPlayer ep, Ability a) {
+		if (ep == null) {
+			ChromatiCraft.logger.logError("Tried to get ability status of null player!?");
+			if (System.currentTimeMillis()-lastNullPlayerDump > 5000)
+				Thread.dumpStack();
+			lastNullPlayerDump = System.currentTimeMillis();
+			return false;
+		}
 		NBTTagCompound nbt = ep.getEntityData();
 		NBTTagCompound abilities = nbt.getCompoundTag(NBT_TAG);
 		return abilities != null && abilities.getBoolean(a.getID());
@@ -829,10 +838,14 @@ public enum Chromabilities implements Ability {
 				}
 				else {
 					//if (b.canSustainPlant(ep.worldObj, dx, dy, dz, ForgeDirection.UP, Blocks.red_flower) && ep.worldObj.getBlock(dx, dy+1, dz).isAir(ep.worldObj, dx, dy+1, dz))
-					if (ep.worldObj.rand.nextInt(b == Blocks.grass ? 18 : 6) == 0)
-						ItemDye.applyBonemeal(ReikaItemHelper.bonemeal.copy(), ep.worldObj, dx, dy, dz, ep);
-					else
+					if (ep.worldObj.rand.nextInt(b == Blocks.grass ? 18 : 6) == 0) {
+						EntityPlayer fake = ReikaPlayerAPI.getFakePlayerByNameAndUUID((WorldServer)ep.worldObj, "Random", UUID.randomUUID());
+						fake.setCurrentItemOrArmor(0, ReikaItemHelper.bonemeal.copy());
+						ItemDye.applyBonemeal(fake.getCurrentEquippedItem().copy(), ep.worldObj, dx, dy, dz, fake);
+					}
+					else {
 						b.updateTick(ep.worldObj, dx, dy, dz, ep.worldObj.rand);
+					}
 				}
 			}
 			if (ModList.REACTORCRAFT.isLoaded() && ep.worldObj.rand.nextInt(40) == 0) {
@@ -1047,11 +1060,6 @@ public enum Chromabilities implements Ability {
 		PlayerElementBuffer.instance.removeFromPlayer(ep, AbilityHelper.instance.getElementsFor(Chromabilities.HOTBAR));
 	}
 
-	@SideOnly(Side.CLIENT)
-	public static void setHealthClient(EntityPlayer ep, int value) {
-		setPlayerMaxHealth(ep, value);
-	}
-
 	private static void setPlayerMaxHealth(EntityPlayer ep, int value) {
 		float factor = value/10F;
 		//ReikaJavaLibrary.pConsole(added+":"+add+":"+ep.getMaxHealth());
@@ -1062,7 +1070,8 @@ public enum Chromabilities implements Ability {
 			//	ep.heal(added);
 		}
 		ep.setHealth(Math.min(ep.getHealth(), ep.getMaxHealth()));
-		AbilityHelper.instance.boostHealth(ep, value);
+		if (ep instanceof EntityPlayerMP)
+			AbilityHelper.instance.syncHealth((EntityPlayerMP)ep);
 	}
 
 	private static void attractItemsAndXP(EntityPlayer ep, int range, boolean nc) {
@@ -1172,6 +1181,12 @@ public enum Chromabilities implements Ability {
 								int meta = ep.worldObj.getBlockMetadata(dx, dy, dz);
 								if (b instanceof SemiUnbreakable && ((SemiUnbreakable)b).isUnbreakable(ep.worldObj, dx, dy, dz, meta)) {
 									continue;
+								}
+								if (ep.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+									if (b == Blocks.grass || b == Blocks.stone || b == Blocks.dirt) {
+										if (ep.worldObj.getBlockMetadata(x, y, z) == 1)
+											continue;
+									}
 								}
 								if (ReikaPlayerAPI.playerCanBreakAt((WorldServer)ep.worldObj, dx, dy, dz, (EntityPlayerMP)ep)) {
 									if (power > b.getExplosionResistance(ep, ep.worldObj, dx, dy, dz, ep.posX, ep.posY, ep.posZ)/12F) {

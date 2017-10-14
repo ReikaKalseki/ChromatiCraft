@@ -16,13 +16,14 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
@@ -131,7 +132,7 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 		EntityPlayer ep = this.getPlacer();
 		if (ep != null && !ReikaPlayerAPI.isFake(ep) && !world.isRemote) {
 			this.validateStructure();
-			enhanced = ProgressStage.POWERCRYSTAL.isPlayerAtStage(ep) && hasEnhancedStructure;
+			enhanced = ChromaResearchManager.instance.playerHasFragment(ep, ChromaResearch.RELAYSTRUCT) && hasEnhancedStructure;
 		}
 		else {
 			//enhanced = false;

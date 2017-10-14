@@ -75,7 +75,8 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	PROGRESSDURATION("Progression Notification Duration", 800),
 	RECEIVEDIMSOUND("Play Dimension Join Sound For Others", true),
 	BIOMEBLEND("Blend CC Biome Edges", true),
-	MIDISIZE("Orchestra MIDI Size Limit (KB)", 80);
+	MIDISIZE("Orchestra MIDI Size Limit (KB)", 80),
+	ALLOWSTRUCTPASS("Allow Structure Bypass Passwords", true);
 
 	private String label;
 	private boolean defaultState;

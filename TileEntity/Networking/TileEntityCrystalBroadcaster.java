@@ -32,6 +32,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
@@ -161,6 +162,8 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 	}
 
 	public static void updateAirCaches(World world, int x, int y, int z) {
+		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
+			return;
 		Collection<TileEntityCrystalBroadcaster> c = CrystalNetworker.instance.getNearTilesOfType(world, x, y, z, TileEntityCrystalBroadcaster.class, AIR_SEARCH);
 		for (TileEntityCrystalBroadcaster te : c) {
 			if (Math.abs(te.yCoord-y) <= AIR_SEARCH_Y && Math.abs(te.xCoord-x) <= AIR_SEARCH && Math.abs(te.zCoord-z) <= AIR_SEARCH) {

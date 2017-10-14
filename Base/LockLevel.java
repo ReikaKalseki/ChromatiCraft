@@ -150,6 +150,7 @@ public abstract class LockLevel extends StructurePiece implements Comparable<Loc
 	public abstract int getLength();
 
 	public abstract int getInitialOffset();
+	public abstract int getMirroredOffset();
 
 	public abstract int getEnterExitDL();
 	public abstract int getEnterExitDT();

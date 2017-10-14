@@ -77,6 +77,7 @@ import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityEnchantDecomposer;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityGlowFire;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
@@ -295,6 +296,12 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 		if (m == ChromaTiles.STAND && ep.isSneaking() && is == null) {
 			if (!world.isRemote)
 				((TileEntityItemStand)te).spreadItemWith(ep, is);
+			return true;
+		}
+
+		if (m == ChromaTiles.TABLE && ep.isSneaking() && is == null) {
+			if (!world.isRemote)
+				((TileEntityCastingTable)te).dumpAllStands();
 			return true;
 		}
 

@@ -26,6 +26,8 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -99,6 +101,7 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
@@ -140,8 +143,6 @@ public class AbilityHelper {
 	public final PlayerMap<ScaledDirection> shifts = new PlayerMap();
 
 	private final PlayerMap<LossCache> lossCache = new PlayerMap();
-
-	final PlayerMap<Integer> healthCache = new PlayerMap();
 
 	final PlayerMap<InventoryArray> inventories = new PlayerMap();
 
@@ -227,10 +228,6 @@ public class AbilityHelper {
 	@SideOnly(Side.CLIENT)
 	public AbilityXRays getAbilityXRay(Object te) {
 		return xRayMap.get(te.getClass());
-	}
-
-	public void boostHealth(EntityPlayer ep, int attr) {
-		healthCache.put(ep, attr);
 	}
 
 	public void startDrawingBoxes(EntityPlayer ep) {
@@ -1554,5 +1551,28 @@ public class AbilityHelper {
 			return ((BlockTieredResource)b).isPlayerSufficientTier(world, x, y, z, ep);
 		}
 		return true;
+	}
+
+	public double getBoostedHealth(EntityPlayer ep) {
+		AttributeModifier mod = ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).getModifier(Chromabilities.HEALTH_UUID);
+		double boost = mod != null ? mod.getAmount() : 0;
+		return boost;
+	}
+
+	public void syncHealth(EntityPlayerMP player) {
+		double health = this.getBoostedHealth(player);
+		int[] i = ReikaJavaLibrary.splitDoubleToInts(health);
+		ChromatiCraft.logger.log("Syncing health boost from server, boost="+health);
+		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.HEALTHSYNC.ordinal(), player, i[0], i[1]);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void setHealthClient(EntityPlayer ep, double attr) {
+		ChromatiCraft.logger.log("Receiving health boost sync from server, boost="+attr);
+		ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier(Chromabilities.HEALTH_UUID, "Chroma", attr, 2));
+	}
+
+	public void copyHealthBoost(EntityPlayer original, EntityPlayer ep) {
+		ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier(Chromabilities.HEALTH_UUID, "Chroma", this.getBoostedHealth(original), 2));
 	}
 }

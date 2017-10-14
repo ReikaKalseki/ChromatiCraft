@@ -116,6 +116,8 @@ public class GOLEntrance extends DynamicStructurePiece {
 			world.setBlock(x, top-1, z+i, b, BlockType.MOSS.metadata, 3);
 		}
 
+		parent.generatePasswordTile(x, y-1, z);
+
 		parent.offsetEntry(-10, 0);
 	}
 

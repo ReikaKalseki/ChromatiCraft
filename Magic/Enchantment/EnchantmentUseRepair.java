@@ -22,6 +22,11 @@ public class EnchantmentUseRepair extends ChromaticEnchantment {
 	}
 
 	@Override
+	public boolean canApply(ItemStack is) {
+		return EnumEnchantmentType.weapon.canEnchantItem(is.getItem()) || EnumEnchantmentType.bow.canEnchantItem(is.getItem());
+	}
+
+	@Override
 	public int getMaxLevel() {
 		return 3;
 	}

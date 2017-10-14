@@ -10,8 +10,11 @@
 package Reika.ChromatiCraft.Entity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Random;
+import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -48,7 +51,7 @@ public class EntityDimensionFlare extends Entity/*Living*/ {
 
 	private FlareIdentity identity;
 
-	private final ArrayList<EntityPlayer> aggroPlayers = new ArrayList();
+	private final HashMap<UUID, Integer> aggroPlayers = new HashMap();
 
 	private final ArrayList<ColorDirection> trailColors = new ArrayList();
 
@@ -162,17 +165,24 @@ public class EntityDimensionFlare extends Entity/*Living*/ {
 	}
 
 	private void doAggro() {
-		Iterator<EntityPlayer> it = aggroPlayers.iterator();
+		Iterator<Entry<UUID, Integer>> it = aggroPlayers.entrySet().iterator();
 		while (it.hasNext()) {
-			EntityPlayer ep = it.next();
+			Entry<UUID, Integer> e = it.next();
+			EntityPlayer ep = worldObj.func_152378_a(e.getKey());
+			int get = e.getValue() != null ? e.getValue() : 0;
+			e.setValue(get+1);
 			if (rand.nextInt(120) == 0 && this.getDistanceSqToEntity(ep) < 1024) { //32
 				boolean flag = OuterRegionsEvents.instance.doRejectAttack(this, ep);
-
 				if (flag || ep.isDead || ep.getHealth() <= 0) {
 					it.remove();
 				}
 			}
 		}
+	}
+
+	public int getAttackTicks(EntityPlayer ep) {
+		Integer get = aggroPlayers.get(ep.getUniqueID());
+		return get != null ? get.intValue() : 0;
 	}
 
 	private void moveToTarget() { //looping flight
@@ -268,8 +278,8 @@ public class EntityDimensionFlare extends Entity/*Living*/ {
 	}
 
 	public void aggroTo(EntityPlayer ep) {
-		if (!aggroPlayers.contains(ep))
-			aggroPlayers.add(ep);
+		if (!aggroPlayers.containsKey(ep.getUniqueID()))
+			aggroPlayers.put(ep.getUniqueID(), 0);
 		state = RelationState.ATTACKED;
 	}
 

@@ -130,7 +130,10 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 		if (amt > 0) {
 			amt = Math.min(amt, Math.max(25, amt/8));
 			this.drainEnergy(e, amt);
-			te.receiveElement(e, amt/(te.worldObj.provider.dimensionId != worldObj.provider.dimensionId ? 4 : 2)); //50% loss + another 50% if cross-dimension
+			float loss = te.worldObj.provider.dimensionId != worldObj.provider.dimensionId ? 4F : 2F;
+			if (enhancedBroadcasting)
+				loss = Math.max(1, loss/2);
+			te.receiveElement(e, (int)(amt/loss)); //50% loss + another 50% if cross-dimension
 			//ReikaJavaLibrary.pConsole("Moved "+amt+" of "+e+" to "+te+" > "+te.energy);
 			te.syncAllData(false);
 			return true;

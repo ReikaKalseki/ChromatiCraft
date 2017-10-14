@@ -292,7 +292,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		//ReikaJavaLibrary.pConsole(craftingTick, Side.SERVER);
 		activeRecipe.onRecipeTick(this);
 		if (activeRecipe instanceof PylonCastingRecipe) {
-			ElementTagCompound req = ((PylonCastingRecipe)activeRecipe).getRequiredAura();
+			ElementTagCompound req = this.getRequiredEnergy();
 			if (!energy.containsAtLeast(req)) {
 				if (this.getCooldown() == 0 && checkTimer.checkCap()) {
 					this.requestEnergyDifference(req);
@@ -531,14 +531,21 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 
 				this.setRecipeTickDuration(activeRecipe);
 				if (activeRecipe instanceof PylonCastingRecipe) {
-					ElementTagCompound tag = ((PylonCastingRecipe)activeRecipe).getRequiredAura();
-					this.requestEnergyDifference(tag.scale(craftingAmount));
+					this.requestEnergyDifference(this.getRequiredEnergy());
 				}
 				return true;
 			}
 		}
 		ChromaSounds.ERROR.playSoundAtBlock(this);
 		return false;
+	}
+
+	public ElementTagCompound getRequiredEnergy() {
+		if (activeRecipe instanceof PylonCastingRecipe) {
+			ElementTagCompound tag = ((PylonCastingRecipe)activeRecipe).getRequiredAura();
+			return tag.scale(craftingAmount);
+		}
+		return null;
 	}
 
 	private void setRecipeTickDuration(CastingRecipe r) {
@@ -945,7 +952,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 	private void evaluateRecipeAndRequest() {
 		CastingRecipe r = this.getValidRecipe();
 		if (r != null && r != activeRecipe && r instanceof PylonCastingRecipe) {
-			ElementTagCompound tag = ((PylonCastingRecipe)r).getRequiredAura();
+			ElementTagCompound tag = this.getRequiredEnergy();
 			this.requestEnergyDifference(tag);
 		}
 		activeRecipe = r;
@@ -1062,7 +1069,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 
 	@Override
 	public ElementTagCompound getRequestedTotal() {
-		return craftingTick > 0 && activeRecipe instanceof PylonCastingRecipe ? ((PylonCastingRecipe)activeRecipe).getRequiredAura() : null;
+		return craftingTick > 0 && activeRecipe instanceof PylonCastingRecipe ? this.getRequiredEnergy() : null;
 	}
 
 	public BlockArray getBlocks() {
@@ -1139,9 +1146,19 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		if (activeRecipe == null)
 			return OperationState.INVALID;
 		if (activeRecipe instanceof PylonCastingRecipe)
-			return energy.containsAtLeast(((PylonCastingRecipe)activeRecipe).getRequiredAura()) ? OperationState.RUNNING : OperationState.PENDING;
+			return energy.containsAtLeast(this.getRequiredEnergy()) ? OperationState.RUNNING : OperationState.PENDING;
 		else
 			return OperationState.RUNNING;
+	}
+
+	public void dumpAllStands() {
+		if (tier.isAtLeast(RecipeType.MULTIBLOCK)) {
+			for (TileEntityItemStand te : this.getOtherStands().values()) {
+				te.dropSlot();
+				ChromaSounds.ITEMSTAND.playSoundAtBlock(te);
+				te.syncAllData(true);
+			}
+		}
 	}
 
 }

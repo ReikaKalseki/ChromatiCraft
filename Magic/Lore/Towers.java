@@ -81,6 +81,8 @@ public enum Towers {
 			int y = ReikaMathLibrary.roundToNearestX(16, (int)Math.round(p.y));
 			t.position = new ChunkCoordIntPair(x, y);
 			towerChunkCache.put(t.position, t);
+
+			//ReikaJavaLibrary.pConsole("Poscalc: Tower "+t+" @ "+t.position+" from seed "+world.getSeed());
 		}
 
 		lastWorldSeed = world.getSeed();

@@ -9,9 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Generators;
 
+import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -28,6 +29,8 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
+import Reika.ChromatiCraft.World.Dimension.FissurePatternCalculator;
+import Reika.ChromatiCraft.World.Dimension.FissurePatternCalculator.FissurePattern;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
@@ -48,6 +51,7 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 		int my = 8+rand.nextInt(16);
 		double w = rand.nextDouble();
 
+		/*
 		Collection<ForgeDirection> dirs = new ArrayList();
 		for (int i = 2; i < 6; i++) {
 			if (rand.nextInt(3) > 0) {
@@ -55,15 +59,23 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 				dirs.add(dir);
 			}
 		}
-
+		 */
 		int color = rand.nextInt(16);
 		HashMap<Coordinate, Integer> columns = new HashMap();
-
+		/*
 		for (ForgeDirection dir : dirs) {
 			int l = 12;
 			ArrayList<ForgeDirection> li = new ArrayList();
 			li.add(dir);
 			this.cut(rand, world, x, y, z, w, my, 0, l, li, columns, color);
+		}
+		 */
+		FissurePattern fp = FissurePatternCalculator.getRandomFissure(world, x, y, z);
+		Map<Point, Integer> map = fp.getDepthMap();
+		for (Point p : map.keySet()) {
+			int dx = x+p.x;
+			int dz = z+p.y;
+			this.cut(rand, world, dx, y, dz, w, my, 0, 12, new ArrayList(), columns, color, false);
 		}
 
 		for (Coordinate c : columns.keySet()) {
@@ -76,7 +88,7 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 		return true;
 	}
 
-	private void cut(Random rand, World world, int x, int y, int z, double w, int my, int dist, int len, ArrayList<ForgeDirection> follow, HashMap<Coordinate, Integer> columns, int color) {
+	private void cut(Random rand, World world, int x, int y, int z, double w, int my, int dist, int len, ArrayList<ForgeDirection> follow, HashMap<Coordinate, Integer> columns, int color, boolean allowSpread) {
 		for (int dy = my; dy <= y+12; dy++) {
 
 			int r = (int)(w*Math.sqrt(1+(dy-my)/4D));
@@ -130,20 +142,22 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 			}
 		}
 
-		if (dist > 1) {
-			if (rand.nextInt(2) == 0) {
-				ForgeDirection dir = ReikaDirectionHelper.getLeftBy90(follow.get(follow.size()-1));
-				if (rand.nextBoolean())
-					dir = dir.getOpposite();
-				follow.add(dir);
-				this.cut(rand, world, x+dir.offsetX, y, z+dir.offsetZ, w, my, 0, len-1, follow, columns, color);
-				follow.remove(follow.size()-1);
+		if (allowSpread) {
+			if (dist > 1) {
+				if (rand.nextInt(2) == 0) {
+					ForgeDirection dir = ReikaDirectionHelper.getLeftBy90(follow.get(follow.size()-1));
+					if (rand.nextBoolean())
+						dir = dir.getOpposite();
+					follow.add(dir);
+					this.cut(rand, world, x+dir.offsetX, y, z+dir.offsetZ, w, my, 0, len-1, follow, columns, color, allowSpread);
+					follow.remove(follow.size()-1);
+				}
 			}
-		}
 
-		if (len > 0 && rand.nextInt(6+len) > 0) {
-			ForgeDirection dir = follow.get(rand.nextInt(follow.size()));
-			this.cut(rand, world, x+dir.offsetX, y, z+dir.offsetZ, w, my, dist+1, len-1, follow, columns, color);
+			if (len > 0 && rand.nextInt(6+len) > 0) {
+				ForgeDirection dir = follow.get(rand.nextInt(follow.size()));
+				this.cut(rand, world, x+dir.offsetX, y, z+dir.offsetZ, w, my, dist+1, len-1, follow, columns, color, allowSpread);
+			}
 		}
 
 	}

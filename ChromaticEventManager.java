@@ -35,6 +35,7 @@ import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntitySheep;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -79,6 +80,7 @@ import net.minecraftforge.event.terraingen.ChunkProviderEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.event.world.ChunkEvent;
+import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.common.entities.monster.EntityWisp;
@@ -120,6 +122,7 @@ import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentBossKill;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentPhasingSequence;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentUseRepair;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentWeaponAOE;
+import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.ChromaAspectManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -141,6 +144,8 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityMultiBuilder;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCloakingTower;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalBeacon;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityExplosionShield;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityProtectionUpgrade;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalBroadcaster;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
@@ -150,6 +155,7 @@ import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionTicker;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
+import Reika.ChromatiCraft.World.Dimension.WorldProviderChroma;
 import Reika.ChromatiCraft.World.Dimension.Structure.BridgeGenerator;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ClassDependent;
@@ -162,6 +168,7 @@ import Reika.DragonAPI.Instantiable.Event.BlockSpreadEvent.BlockDeathEvent;
 import Reika.DragonAPI.Instantiable.Event.BlockTickEvent;
 import Reika.DragonAPI.Instantiable.Event.BlockTillEvent;
 import Reika.DragonAPI.Instantiable.Event.CanSeeSkyEvent;
+import Reika.DragonAPI.Instantiable.Event.ChunkPopulationEvent;
 import Reika.DragonAPI.Instantiable.Event.EnderAttackTPEvent;
 import Reika.DragonAPI.Instantiable.Event.EntitySpawnerCheckEvent;
 import Reika.DragonAPI.Instantiable.Event.FarmlandTrampleEvent;
@@ -235,7 +242,15 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void updateFakeSkyBlocks(SetBlockEvent evt) {
+	public void interceptChunkPopulation(ChunkPopulationEvent evt) {
+		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			((WorldProviderChroma)evt.world.provider).getChunkGenerator().onPopulationHook(evt.generator, evt.loader, evt.chunkX, evt.chunkZ);
+			evt.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void updateFakeSkyBlocks(SetBlockEvent.Post evt) {
 		BlockFakeSky.updateColumn(evt.world, evt.xCoord, evt.yCoord, evt.zCoord);
 	}
 
@@ -280,7 +295,9 @@ public class ChromaticEventManager {
 		TileEntityCloakingTower.clearCache();
 		TileEntityCrystalBeacon.clearCache();
 		TileEntityMultiBuilder.clearCache();
+		TileEntityExplosionShield.clearCache();
 		BlockFakeSky.clearCache();
+		LoreManager.instance.clearOnLogout();
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -299,7 +316,7 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
-	public void reloadBroacastAirCache(SetBlockEvent evt) {
+	public void reloadBroacastAirCache(SetBlockEvent.Post evt) {
 		TileEntityCrystalBroadcaster.updateAirCaches(evt.world, evt.xCoord, evt.yCoord, evt.zCoord);
 	}
 
@@ -439,6 +456,10 @@ public class ChromaticEventManager {
 		if (evt.trade instanceof UATrade) {
 			if (ReikaRandomHelper.doWithChance(UABombingEffects.TRADE_BOMBING_CHANCE))
 				UABombingEffects.instance.trigger((Entity)evt.villager);
+			if (evt.villager instanceof EntityVillager) {
+				EntityVillager ev = (EntityVillager)evt.villager;
+				ev.setRevengeTarget(evt.entityPlayer);
+			}
 		}
 	}
 
@@ -583,7 +604,7 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
-	public void dioramaSpawners(PlayerInteractEvent evt) {
+	public void bridgeBlockInteract(PlayerInteractEvent evt) {
 		if (ChromaDimensionManager.getStructurePlayerIsIn(evt.entityPlayer) instanceof BridgeGenerator) {
 			if (evt.action == Action.RIGHT_CLICK_BLOCK) {
 				if (evt.world.getBlock(evt.x, evt.y, evt.z) == ChromaBlocks.BRIDGECONTROL.getBlockInstance()) {
@@ -628,7 +649,7 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent //fallback
-	public void banDimensionBlocks(SetBlockEvent evt) {
+	public void banDimensionBlocks(SetBlockEvent.Post evt) {
 		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
 			Block b = evt.getBlock();
 			int meta = evt.getMetadata();
@@ -822,6 +843,8 @@ public class ChromaticEventManager {
 	@SubscribeEvent
 	public void applyBossKill(LivingAttackEvent evt) {
 		DamageSource src = evt.source;
+		if (evt.entity.worldObj.isRemote)
+			return;
 		if (src.getEntity() instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)src.getEntity();
 			EntityLivingBase mob = evt.entityLiving;
@@ -1100,6 +1123,7 @@ public class ChromaticEventManager {
 		if (!evt.wasDeath) {
 			PlayerElementBuffer.instance.copyTo(evt.original, evt.entityPlayer);
 			Chromabilities.copyTo(evt.original, evt.entityPlayer);
+			AbilityHelper.instance.copyHealthBoost(evt.original, evt.entityPlayer);
 		}
 	}
 
@@ -1564,6 +1588,18 @@ public class ChromaticEventManager {
 				evt.setResult(Result.DENY);
 			}
 		}
+	}
+
+	@SubscribeEvent(priority=EventPriority.LOWEST)
+	public void explosionProtectionByRedCore(ExplosionEvent.Start evt) {
+		if (!TileEntityProtectionUpgrade.canExplode(evt.world, evt.explosion)) {
+			evt.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent(priority=EventPriority.LOWEST)
+	public void explosionProtection(ExplosionEvent.Detonate evt) {
+		TileEntityExplosionShield.dampenExplosion(evt.world, evt.explosion);
 	}
 
 	@SubscribeEvent(priority=EventPriority.LOWEST)

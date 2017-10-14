@@ -274,11 +274,21 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 		}
 
 		if (ModList.APPENG.isLoaded()) {
+			Object oldNode = aeGridNode;
 			if (aeGridNode == null) {
 				aeGridNode = FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER ? AEApi.instance().createGridNode((IGridBlock)aeGridBlock) : null;
 			}
-			((IGridNode)aeGridNode).updateState();
-			network = aeGridNode != null ? new MESystemReader((IGridNode)aeGridNode, this) : null;
+			if (aeGridNode != null)
+				((IGridNode)aeGridNode).updateState();
+
+			if (oldNode != aeGridNode || network == null) {
+				if (aeGridNode == null)
+					network = null;
+				else if (network == null)
+					network = new MESystemReader((IGridNode)aeGridNode, this);
+				else
+					network = new MESystemReader((IGridNode)aeGridNode, network);
+			}
 		}
 	}
 

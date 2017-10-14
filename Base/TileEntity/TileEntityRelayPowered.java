@@ -68,7 +68,7 @@ public abstract class TileEntityRelayPowered extends TileEntityChromaticBase imp
 
 	protected abstract boolean canReceiveFrom(CrystalElement e, ForgeDirection dir);
 
-	protected abstract ElementTagCompound getRequiredEnergy();
+	public abstract ElementTagCompound getRequiredEnergy();
 
 	private final boolean requestEnergy(CrystalElement e, int amt, ForgeDirection dir) {
 		TileEntityRelaySource te = RelayNetworker.instance.findRelaySource(worldObj, xCoord, yCoord, zCoord, dir, e, amt, 128);

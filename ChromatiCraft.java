@@ -46,6 +46,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import ttftcuts.atg.api.ATGBiomes;
 import Reika.ChromatiCraft.Auxiliary.ChromaASMHandler;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookSpawner;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaLock;
@@ -95,6 +96,7 @@ import Reika.ChromatiCraft.Auxiliary.Tab.TabChromatiCraft;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.Artefact.ArtefactSpawner;
+import Reika.ChromatiCraft.Magic.Artefact.UABombingEffects;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.IC2ReactorAcceleration;
 import Reika.ChromatiCraft.ModInterface.ModInteraction;
@@ -149,6 +151,7 @@ import Reika.DragonAPI.Auxiliary.CreativeTabSorter;
 import Reika.DragonAPI.Auxiliary.PopupWriter;
 import Reika.DragonAPI.Auxiliary.SpecialBiomePlacementRegistry;
 import Reika.DragonAPI.Auxiliary.SpecialBiomePlacementRegistry.Category;
+import Reika.DragonAPI.Auxiliary.WorldGenInterceptionRegistry;
 import Reika.DragonAPI.Auxiliary.Trackers.BiomeCollisionTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.CommandableUpdateChecker;
 import Reika.DragonAPI.Auxiliary.Trackers.ConfigMatcher;
@@ -177,7 +180,9 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.BannedItemReader;
 import Reika.DragonAPI.ModInteract.ItemStackRepository;
 import Reika.DragonAPI.ModInteract.ReikaEEHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
 import Reika.DragonAPI.ModInteract.DeepInteract.MTInteractionManager;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.SensitiveFluidRegistry;
 import Reika.DragonAPI.ModInteract.DeepInteract.SensitiveItemRegistry;
 import Reika.DragonAPI.ModInteract.DeepInteract.TimeTorchHelper;
@@ -651,6 +656,10 @@ public class ChromatiCraft extends DragonAPIMod {
 			ModInteraction.blacklistTravelStaff();
 		}
 
+		if (ModList.APPENG.isLoaded()) {
+			MESystemReader.registerMESystemEffect(UABombingEffects.instance.createMESystemEffect());
+		}
+
 		this.finishTiming();
 	}
 
@@ -712,6 +721,10 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		//CliffFogRenderer.instance.initialize();
 		GlowingCliffsAuxGenerator.instance.initialize();
+
+		WorldGenInterceptionRegistry.instance.addWatcher(ChromaAux.populationWatcher);
+		WorldGenInterceptionRegistry.instance.addIWGWatcher(ChromaAux.slimeIslandBlocker);
+		WorldGenInterceptionRegistry.instance.addException(ChromaAux.dimensionException);
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			ModInteraction.addThaumCraft();
@@ -793,7 +806,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	}
 
 	public static boolean isRainbowForest(BiomeGenBase b) {
-		return b instanceof BiomeRainbowForest || b.biomeName.equals("Rainbow Forest");
+		return b instanceof BiomeRainbowForest || (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.getMystParentBiome(b) instanceof BiomeRainbowForest);
 	}
 
 	@EventHandler

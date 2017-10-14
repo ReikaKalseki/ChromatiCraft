@@ -349,7 +349,7 @@ public class TileEntityCrystalLaser extends InventoriedRelayPowered {
 	}
 
 	@Override
-	protected ElementTagCompound getRequiredEnergy() {
+	public ElementTagCompound getRequiredEnergy() {
 		ElementTagCompound tag = new ElementTagCompound();
 		if (this.getColor() != null)
 			tag.addValueToColor(this.getColor(), 1);

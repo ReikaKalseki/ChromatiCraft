@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.IIcon;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 
@@ -29,6 +30,7 @@ import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaEngLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -50,6 +52,7 @@ public class PylonFinderOverlay {
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 			if (PylonGenerator.instance.canGenerateIn(ep.worldObj)) {
 				if ((ep.getEntityData().hasKey("pylonoverlay") && ep.getEntityData().getLong("pylonoverlay") >= ep.worldObj.getTotalWorldTime()-20) || ChromaItems.FINDER.matchWith(ep.getCurrentEquippedItem())) {
+					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 					Tessellator v5 = Tessellator.instance;
 
 					//ArrayList<CrystalElement> left = new ArrayList();
@@ -184,6 +187,31 @@ public class PylonFinderOverlay {
 								v5.addVertex(cx-8, cy-8, 0);
 								v5.draw();
 
+								GL11.glShadeModel(GL11.GL_SMOOTH);
+
+								if (c.playerLink != null && c.playerLink.equals(ep.getUniqueID())) {
+									v5.startDrawing(GL11.GL_LINE_LOOP);
+									v5.setBrightness(240);
+									double t = (System.currentTimeMillis()/250D)%360;
+									double f1 = 0.5+0.5*Math.sin(t);
+									double f2 = 0.5+0.5*Math.sin(t+90);
+									double f3 = 0.5+0.5*Math.sin(t+180);
+									double f4 = 0.5+0.5*Math.sin(t+270);
+									int c1 = ReikaColorAPI.mixColors(e.getColor(), 0, (float)f1);
+									int c2 = ReikaColorAPI.mixColors(e.getColor(), 0, (float)f2);
+									int c3 = ReikaColorAPI.mixColors(e.getColor(), 0, (float)f3);
+									int c4 = ReikaColorAPI.mixColors(e.getColor(), 0, (float)f4);
+									v5.setColorOpaque_I(c1);
+									v5.addVertex(cx-12, cy+12, 0);
+									v5.setColorOpaque_I(c2);
+									v5.addVertex(cx+12, cy+12, 0);
+									v5.setColorOpaque_I(c3);
+									v5.addVertex(cx+12, cy-12, 0);
+									v5.setColorOpaque_I(c4);
+									v5.addVertex(cx-12, cy-12, 0);
+									v5.draw();
+								}
+
 								ReikaTextureHelper.bindTerrainTexture();
 								GL11.glEnable(GL11.GL_TEXTURE_2D);
 								v5.startDrawingQuads();
@@ -194,6 +222,25 @@ public class PylonFinderOverlay {
 								v5.addVertexWithUV(cx+8, cy-8, 0, du, v);
 								v5.addVertexWithUV(cx-8, cy-8, 0, u, v);
 								v5.draw();
+
+								if (c.isTurboCharged) {
+									GL11.glDepthMask(false);
+									BlendMode.ADDITIVEDARK.apply();
+									IIcon ico = ChromaIcons.ECLIPSEFLARE.getIcon();
+									u = ico.getMinU();
+									v = ico.getMinV();
+									du = ico.getMaxU();
+									dv = ico.getMaxV();
+
+									v5.startDrawingQuads();
+									v5.setColorOpaque_I(e.getColor());
+									v5.setBrightness(240);
+									v5.addVertexWithUV(cx-36, cy+36, -1, u, dv);
+									v5.addVertexWithUV(cx+36, cy+36, -1, du, dv);
+									v5.addVertexWithUV(cx+36, cy-36, -1, du, v);
+									v5.addVertexWithUV(cx-36, cy-36, -1, u, v);
+									v5.draw();
+								}
 
 								for (Coordinate c2 : c.getCrystals()) {
 									int px = (c2.xCoord-c.location.xCoord)*4;
@@ -241,6 +288,7 @@ public class PylonFinderOverlay {
 					i++;
 				}*/
 
+					GL11.glPopAttrib();
 					GL11.glPopMatrix();
 				}
 			}

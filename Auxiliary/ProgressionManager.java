@@ -47,6 +47,8 @@ import Reika.ChromatiCraft.API.Event.ProgressionEvent;
 import Reika.ChromatiCraft.API.Event.ProgressionEvent.ResearchType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
+import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact.ArtefactTypes;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -57,6 +59,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
@@ -71,6 +74,7 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
@@ -705,7 +709,7 @@ public class ProgressionManager implements ProgressRegistry {
 		ChromaResearchManager.instance.getRootNBTTag(ep).setTag(MAIN_NBT_TAG, li);
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			this.setPlayerDiscoveredColor(ep, CrystalElement.elements[i], false, notify);
-			this.markPlayerCompletedStructureColor(ep, CrystalElement.elements[i], false, notify);
+			this.markPlayerCompletedStructureColor(ep, null, CrystalElement.elements[i], false, notify);
 		}
 		if (ep instanceof EntityPlayerMP)
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
@@ -722,7 +726,7 @@ public class ProgressionManager implements ProgressRegistry {
 		}
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			this.setPlayerDiscoveredColor(ep, CrystalElement.elements[i], true, notify);
-			this.markPlayerCompletedStructureColor(ep, CrystalElement.elements[i], true, notify);
+			this.markPlayerCompletedStructureColor(ep, null, CrystalElement.elements[i], true, notify);
 		}
 		for (int i = 0; i < RecipeType.typeList.length; i++) {
 			RecipeType r = RecipeType.typeList[i];
@@ -890,7 +894,7 @@ public class ProgressionManager implements ProgressRegistry {
 
 		@Override
 		public boolean giveToPlayer(EntityPlayer ep, boolean notify) {
-			return instance.markPlayerCompletedStructureColor(ep, color, true, notify);
+			return instance.markPlayerCompletedStructureColor(ep, null, color, true, notify);
 		}
 
 	}
@@ -970,13 +974,15 @@ public class ProgressionManager implements ProgressRegistry {
 		return nbt.getBoolean(e.name());
 	}
 
-	public boolean markPlayerCompletedStructureColor(EntityPlayer ep, CrystalElement e, boolean set, boolean notify) {
+	public boolean markPlayerCompletedStructureColor(EntityPlayer ep, DimensionStructureGenerator gen, CrystalElement e, boolean set, boolean notify) {
 		//ReikaJavaLibrary.pConsole(this.getPlayerData(ep));
 		NBTTagCompound nbt = ChromaResearchManager.instance.getRootNBTTag(ep);
 		NBTTagCompound tag = nbt.getCompoundTag(STRUCTURE_NBT_TAG);
 		boolean had = tag.getBoolean(e.name());
 		tag.setBoolean(e.name(), set);
 		if (had != set) {
+			if (set && gen != null && !gen.forcedOpen() && notify)
+				this.triggerStructurePassword(ep, gen);
 			nbt.setTag(STRUCTURE_NBT_TAG, tag);
 			if (set) {
 				ProgressStage.STRUCTCOMPLETE.stepPlayerTo(ep);
@@ -998,6 +1004,19 @@ public class ProgressionManager implements ProgressRegistry {
 			return true;
 		}
 		return false;
+	}
+
+	private void triggerStructurePassword(EntityPlayer ep, DimensionStructureGenerator gen) {
+		if (ep instanceof EntityPlayerMP) {
+			int hex = gen.getPassword(ep);
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.STRUCTPASSNOTE.ordinal(), (EntityPlayerMP)ep, hex);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void addStructurePasswordNote(EntityPlayer ep, int hex) {
+		ReikaSoundHelper.playClientSound(ChromaSounds.LOREHEX, ep, 1, 1, false);
+		ChromaOverlays.instance.addStructurePasswordNote(ep, hex);
 	}
 
 	private void checkPlayerStructures(EntityPlayer ep) {

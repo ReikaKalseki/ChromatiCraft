@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -46,16 +47,24 @@ public class RenderGlowFire extends ChromaRenderBase {
 		GL11.glDepthMask(false);
 		ReikaRenderHelper.disableEntityLighting();
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GL11.glTranslatef((float)par2, (float)par4 + 1.0F, (float)par6 + 1.0F);
+		GL11.glTranslated(par2, par4, par6);
+		GL11.glPushMatrix();
+		GL11.glTranslatef(0, 1F, 1F);
 		GL11.glScalef(1.0F, -1.0F, -1.0F);
 
-		this.drawInner(te);
+		if (MinecraftForgeClient.getRenderPass() == 1 || !te.isInWorld())
+			this.drawInner(te);
 
 		if (te.hasWorldObj())
 			GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-		GL11.glPopMatrix();
 		GL11.glPopAttrib();
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GL11.glPopMatrix();
+
+		if (MinecraftForgeClient.getRenderPass() == 1)
+			te.particles.render(true);
+
+		GL11.glPopMatrix();
 	}
 
 	private void drawInner(TileEntityGlowFire te) {

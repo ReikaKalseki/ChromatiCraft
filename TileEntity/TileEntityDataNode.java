@@ -41,6 +41,8 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
+import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer.StructureRenderingParticleSpawner;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -54,7 +56,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class TileEntityDataNode extends TileEntityChromaticBase implements OperationInterval {
+public class TileEntityDataNode extends TileEntityChromaticBase implements OperationInterval, StructureRenderingParticleSpawner {
 
 	private double extension0;
 	private double extension1;
@@ -149,6 +151,11 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 		}
 	}
 
+	@Override
+	public void tickFX() {
+		//this.doParticles(worldObj, xCoord, yCoord, zCoord);
+	}
+
 	private void spawnMetaAlloy(World world, int x, int y, int z) {
 		int dx = ReikaRandomHelper.getRandomPlusMinus(x, 256);
 		int dz = ReikaRandomHelper.getRandomPlusMinus(z, 256);
@@ -237,15 +244,15 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 	}
 
 	public double getExtension0() {
-		return extension0;
+		return StructureRenderer.isRenderingTiles() ? EXTENSION_LIMIT_0 : extension0;
 	}
 
 	public double getExtension1() {
-		return extension1;
+		return StructureRenderer.isRenderingTiles() ? EXTENSION_LIMIT_1 : extension1;
 	}
 
 	public double getExtension2() {
-		return extension2;
+		return StructureRenderer.isRenderingTiles() ? EXTENSION_LIMIT_2 : extension2;
 	}
 
 	public boolean canBeAccessed() {

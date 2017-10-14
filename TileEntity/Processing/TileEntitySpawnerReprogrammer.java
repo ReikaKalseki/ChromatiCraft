@@ -114,7 +114,7 @@ public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered imple
 	}
 
 	@Override
-	protected ElementTagCompound getRequiredEnergy() {
+	public ElementTagCompound getRequiredEnergy() {
 		return required.copy();
 	}
 

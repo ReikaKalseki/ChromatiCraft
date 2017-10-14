@@ -69,6 +69,7 @@ import Reika.ChromatiCraft.Entity.EntityThrownGem;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
 import Reika.ChromatiCraft.GUI.Tile.GuiTeleportGate;
 import Reika.ChromatiCraft.Items.ItemFertilitySeed;
+import Reika.ChromatiCraft.Items.ItemUnknownArtefact;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
 import Reika.ChromatiCraft.Items.Tools.ItemBulkMover;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
@@ -77,7 +78,6 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemFlightWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
-import Reika.ChromatiCraft.Magic.Artefact.ArtefactSpawner;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.ModInterface.AE.TileEntityMEDistributor;
@@ -146,6 +146,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.DataPacket;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.PacketObj;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -437,7 +438,7 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				}
 				case HEALTHSYNC:
-					Chromabilities.setHealthClient(ep, data[0]);
+					AbilityHelper.instance.setHealthClient(ep, ReikaJavaLibrary.buildDoubleFromInts(data[0], data[1]));
 					break;
 				case INVCYCLE:
 					AbilityHelper.instance.cycleInventoryClient(ep, data[0] > 0);
@@ -503,14 +504,23 @@ public class ChromatiPackets implements PacketHandler {
 				}
 				case PYLONCACHE: {
 					ArrayList<Coordinate> li = new ArrayList();
-					for (int i = 4; i < data.length; i += 3) {
+					UUID uid = null;
+					if (data[5] == -1 && data[6] == -1 && data[7] == -1 && data[8] == -1) {
+
+					}
+					else {
+						long least = ReikaJavaLibrary.buildLong(data[5], data[6]);
+						long most = ReikaJavaLibrary.buildLong(data[7], data[8]);
+						uid = new UUID(most, least);
+					}
+					for (int i = 9; i < data.length; i += 3) {
 						int cx = data[i];
 						int cy = data[i+1];
 						int cz = data[i+2];
 						Coordinate c = new Coordinate(cx, cy, cz);
 						li.add(c);
 					}
-					PylonGenerator.instance.cachePylonLocation(world, data[0], data[1], data[2], CrystalElement.elements[data[3]], li);
+					PylonGenerator.instance.cachePylonLocation(world, data[0], data[1], data[2], CrystalElement.elements[data[3]], li, data[4] > 0, uid);
 					break;
 				}
 				case PYLONCACHECLEAR: {
@@ -896,12 +906,14 @@ public class ChromatiPackets implements PacketHandler {
 				case INSCRIBE:
 					InscriptionRecipes.instance.getRecipeByID(data[0]).doFX(world, x, y, z);
 					break;
+					/*
 				case DIGARTEFACT:
 					ArtefactSpawner.instance.checkPlayerBreakClient(world, data[0], data[1], data[2]);
 					break;
 				case ARTEFACTCONFIRM:
 					ArtefactSpawner.instance.confirmUA(world, data[0], data[1], data[2]);
 					break;
+					 */
 				case ARTEFACTCLICK:
 					BlockUnknownArtefact.doInteractFX(world, x, y, z);
 					break;
@@ -928,6 +940,12 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case SPELLFAIL:
 					ChromaClientEventController.doDimensionSpellFailParticles(world, dx, dy, dz);
+					break;
+				case UAFX:
+					ItemUnknownArtefact.doUA_FX(world, dx, dy, dz, true);
+					break;
+				case STRUCTPASSNOTE:
+					ProgressionManager.instance.addStructurePasswordNote(ep, data[0]);
 					break;
 			}
 		}

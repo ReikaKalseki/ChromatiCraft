@@ -75,10 +75,10 @@ public abstract class BlockRelayBase extends Block {
 		if (ChromaItems.TOOL.matchWith(is)) {
 			TileRelayBase te = (TileRelayBase)world.getTileEntity(x, y, z);
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[s];
-			if (dir.getOpposite().ordinal() != world.getBlockMetadata(x, y, z)) {
-				te.setInput(dir);
-				return true;
-			}
+			//if (dir.getOpposite().ordinal() != world.getBlockMetadata(x, y, z)) {
+			te.setInput(dir);
+			return true;
+			//}
 		}
 		return false;
 	}

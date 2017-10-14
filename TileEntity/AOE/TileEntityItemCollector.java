@@ -66,7 +66,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	}
 
 	@Override
-	protected ElementTagCompound getRequiredEnergy() {
+	public ElementTagCompound getRequiredEnergy() {
 		return required.copy();
 	}
 
@@ -119,6 +119,10 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 				e.setDead();
 			}
 		}
+
+		//WorldLocation loc = new WorldLocation(this);
+		//if (!cache.contains(loc))
+		//	cache.add(loc);
 	}
 
 	private int getYRange() {
@@ -143,14 +147,19 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 		Iterator<WorldLocation> it = cache.iterator();
 		while (it.hasNext()) {
 			WorldLocation loc = it.next();
-			TileEntity te = loc.getTileEntity(world);
-			if (te instanceof TileEntityItemCollector) {
-				if (((TileEntityItemCollector)te).checkAbsorb(e))
-					return true;
-			}
-			else {
-				it.remove();
-				ChromatiCraft.logger.logError("Incorrect tile ("+te+") @ "+loc+" in Item Collector cache!?");
+			if (loc.dimensionID == world.provider.dimensionId) {
+				TileEntity te = loc.getTileEntity(world);
+				if (te instanceof TileEntityItemCollector) {
+					if (((TileEntityItemCollector)te).checkAbsorb(e))
+						return true;
+				}
+				else {
+					it.remove();
+					ChromatiCraft.logger.logError("Incorrect tile ("+te+") @ "+loc+" (with "+loc.getBlockKey(world)+") in Item Collector cache!?");
+					if (loc.getBlock(world) == ChromaTiles.COLLECTOR.getBlock() && loc.getBlockMetadata(world) == ChromaTiles.COLLECTOR.getBlockMetadata()) {
+						ChromatiCraft.logger.logError("Item Collector block and meta but no TileEntity!?!?");
+					}
+				}
 			}
 		}
 		return false;

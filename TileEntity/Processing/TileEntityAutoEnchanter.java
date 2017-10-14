@@ -427,6 +427,8 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	}
 
 	public static boolean isBlacklisted(Enchantment e) {
+		if (e.getName().toLowerCase(Locale.ENGLISH).startsWith("enchantment.molecule")) //Minechem
+			return true;
 		return blacklist.contains(e);
 	}
 

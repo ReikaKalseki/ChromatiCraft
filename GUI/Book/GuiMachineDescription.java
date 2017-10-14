@@ -23,7 +23,11 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import Reika.ChromatiCraft.Base.GuiDescription;
+import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityRelayPowered;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -54,7 +58,52 @@ public class GuiMachineDescription extends GuiDescription {
 	protected int getMaxSubpage() {
 		if (page == ChromaResearch.ACCEL)
 			return 2+16-1;
-		return super.getMaxSubpage();
+		int max = super.getMaxSubpage();
+		if (max == 0 && this.getUsedEnergy() != null)
+			max = 1;
+		return max;
+	}
+
+	@Override
+	protected int parseMaxSubpage() {
+		int ret = super.parseMaxSubpage();
+		if (ret == 0 && this.getUsedEnergy() != null)
+			ret = 1;
+		return ret;
+	}
+
+	private ElementTagCompound getUsedEnergy() {
+		ElementTagCompound tag = new ElementTagCompound();
+		ChromaTiles m = page.getMachine();
+		TileEntity te = m.createTEInstanceForRender(0);
+		if (m == ChromaTiles.ADJACENCY) {
+			ArrayList<Integer> li = new ArrayList();
+			for (int i = 0; i < CrystalElement.elements.length; i++) {
+				if (AdjacencyUpgrades.upgrades[i].isImplemented())
+					li.add(i);
+			}
+			int offset = li.get((int)((System.currentTimeMillis()/(1000*TileEntityAdjacencyUpgrade.MAX_TIER))%li.size()));
+			te = m.createTEInstanceForRender(offset);
+			tag.addValueToColor(CrystalElement.elements[offset], 1);
+		}
+		else if (m.isChargedCrystalPowered()) {
+			ChargedCrystalPowered r = (ChargedCrystalPowered)te;
+			tag = r.getRequiredEnergy();
+		}
+		else if (m.isRelayPowered()) {
+			TileEntityRelayPowered r = (TileEntityRelayPowered)te;
+			tag = r.getRequiredEnergy();
+		}
+		else if (m.isPylonPowered()) {
+			CrystalReceiver r = (CrystalReceiver)te;
+			for (int i = 0; i < 16; i++) {
+				if (r.isConductingElement(CrystalElement.elements[i])) {
+					int amt = 25+(int)(20*Math.sin(i+this.getGuiTick()/20D));
+					tag.addValueToColor(CrystalElement.elements[i], amt);
+				}
+			}
+		}
+		return tag != null && !tag.isEmpty() ? tag : null;
 	}
 
 	@Override
@@ -66,6 +115,20 @@ public class GuiMachineDescription extends GuiDescription {
 
 		if (subpage == 0 || (page == ChromaResearch.ACCEL && subpage != 1))
 			this.drawMachineRender(posX, posY);
+		else {
+			ElementTagCompound tag = this.getUsedEnergy();
+			if (tag != null) {
+				int r = 32;
+				int dx = posX+xSize-r-50;
+				int dy = posY+r+10;
+				tag.getProportionality().renderAsPie(dx, dy, r, System.identityHashCode(this)+this.getGuiTick()%360, CrystalElement.getColorMap());
+				float lf = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
+				GL11.glLineWidth(2.5F);
+				api.drawCircle(dx, dy, r+1, 0xffffffff);
+				api.drawCircle(dx, dy, r, 0xff000000);
+				GL11.glLineWidth(lf);
+			}
+		}
 	}
 
 	private void drawMachineRender(int posX, int posY) {
@@ -151,6 +214,9 @@ public class GuiMachineDescription extends GuiDescription {
 			}
 			if (m == ChromaTiles.AVOLASER) {
 				GL11.glTranslated(0, 0.5, 0);
+			}
+			if (m == ChromaTiles.AURAPOINT) {
+				GL11.glTranslated(0, -0.25, 0);
 			}
 			if (m == ChromaTiles.TELEPORT) {
 				a = b = -0.125;

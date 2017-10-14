@@ -29,14 +29,19 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer.FontType;
 import Reika.ChromatiCraft.Base.GuiBookSection;
+import Reika.ChromatiCraft.GUI.Tile.GuiCastingAuto;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.IO.DelegateFontRenderer;
 import Reika.DragonAPI.Instantiable.AlphabeticItemComparator;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -70,6 +75,9 @@ public class GuiCastingRecipe extends GuiBookSection {
 		int k = (height - ySize) / 2;
 
 		String file = "Textures/GUIs/Handbook/buttons.png";
+
+		if (ChromaResearchManager.instance.playerHasFragment(player, ChromaResearch.AUTO))
+			buttonList.add(new CustomSoundGuiButton(4, j+xSize-27-20-28, k-2, 20, 20, " ", this));
 
 		if (recipes.size() > 1) {
 			buttonList.add(new CustomSoundImagedGuiButton(0, j+205, k-3, 10, 12, 183, 6, file, ChromatiCraft.class, this));
@@ -126,6 +134,10 @@ public class GuiCastingRecipe extends GuiBookSection {
 			else if (button.id == 3 && recipeTextOffset < this.getActiveRecipe().getItemCounts().size()-11) {
 				recipeTextOffset++;
 			}
+			else if (button.id == 4) {
+				GuiCastingAuto.lexiconSelectedRecipe = this.getActiveRecipe();
+				player.closeScreen();
+			}
 		}
 		//renderq = 22.5F;
 		super.actionPerformed(button);
@@ -181,6 +193,9 @@ public class GuiCastingRecipe extends GuiBookSection {
 	}
 
 	protected void drawAuxGraphics(int posX, int posY) {
+		if (ChromaResearchManager.instance.playerHasFragment(player, ChromaResearch.AUTO))
+			api.drawItemStack(itemRender, fontRendererObj, ChromaTiles.AUTOMATOR.getCraftedProduct(), posX+xSize-27-16-28, posY+7);
+
 		if (subpage == 0) {
 			ItemHashMap<Integer> items = this.getActiveRecipe().getItemCounts();
 			ArrayList<ItemStack> li = new ArrayList(items.keySet());

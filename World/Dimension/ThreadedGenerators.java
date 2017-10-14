@@ -25,6 +25,7 @@ public enum ThreadedGenerators {
 	BIOME(BiomeDistributor.class),
 	REGION(RegionMapper.class),
 	SKYRIVER(SkyRiverGenerator.class),
+	FISSUREPATTERNS(FissurePatternCalculator.class),
 	;
 
 	private final Class generator;
@@ -48,6 +49,8 @@ public enum ThreadedGenerators {
 			case STRUCTURE:
 				return false;
 			case SKYRIVER:
+				return false;
+			case FISSUREPATTERNS:
 				return false;
 		}
 		return false;
