@@ -140,7 +140,7 @@ public class GuiEnderTNT extends GuiContainer {
 		tx_last = tx;
 		ty_last = ty;
 		tz_last = tz;
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.TNT.ordinal(), tile, dim, tx, ty, tz);
+		ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.TNT.ordinal(), tile, dim, tx, ty, tz);
 	}
 
 	@Override

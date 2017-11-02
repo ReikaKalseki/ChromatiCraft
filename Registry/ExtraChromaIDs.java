@@ -40,6 +40,7 @@ public enum ExtraChromaIDs implements IDRegistry {
 	CENTRAL(		"Dimension Biome IDs", 	"Central Biome ID", 			109, 	BiomeGenBase.class),
 	SPARKLE(		"Dimension Biome IDs", 	"Sparkling Sands Biome ID",		110, 	BiomeGenBase.class),
 	GLOWCRACKS(		"Dimension Biome IDs", 	"Radiant Fissures Biome ID",	111, 	BiomeGenBase.class),
+	MONUMENT(		"Dimension Biome IDs", 	"Monument Field Biome ID",		112, 	BiomeGenBase.class),
 	WEAPONAOEID(	"Enchantment IDs", 		"Weapon AOE ID", 				90, 	Enchantment.class),
 	ENDERLOCKID(	"Enchantment IDs", 		"Ender Lock ID", 				91, 	Enchantment.class),
 	AGGROMASKID(	"Enchantment IDs", 		"Aggro Mask ID", 				92, 	Enchantment.class),

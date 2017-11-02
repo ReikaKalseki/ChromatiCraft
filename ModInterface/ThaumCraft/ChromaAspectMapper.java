@@ -29,7 +29,7 @@ public class ChromaAspectMapper {
 
 	private final HashMap<MachineKey, AspectList> data = new HashMap();
 
-	private final ItemHashMap<AspectList> calcedValues = new ItemHashMap();
+	private final ItemHashMap<AspectList> calcedValues = new ItemHashMap().enableNBT();
 
 	private ChromaAspectMapper() {
 

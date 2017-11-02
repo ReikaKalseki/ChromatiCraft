@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityTankCapacityUpgrade;
 import Reika.DragonAPI.Instantiable.FlaggedTank;
 import Reika.DragonAPI.Instantiable.FlaggedTank.TankWatcher;
+import Reika.DragonAPI.Instantiable.LightingCache;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -59,6 +60,7 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 
 	//Render only-------
 	public final TankRunes runes = new TankRunes();
+	public final LightingCache lighting = new LightingCache(10);
 	public int ptick = -1;
 	public int lastptick = -1;
 	//------------------
@@ -76,6 +78,9 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 			if (scheduledUpdate == 0)
 				this.doUpdate();
 		}
+
+		if (world.isRemote && this.getTicksExisted()%1024 == 0)
+			lighting.update(world);
 	}
 
 	public int getViscosity() {
@@ -98,6 +103,7 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 
 	private void doUpdate() {
 		fluidType = tank.getActualFluid();
+		//ReikaJavaLibrary.pConsole(this);
 		for (int i = 0; i < blocks.getSize(); i++) {
 			Coordinate c = blocks.getNthBlock(i);
 			c.triggerBlockUpdate(worldObj, false);
@@ -191,9 +197,9 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 	}
 
 	public int getCapacity() {
-		int base = Math.min(size*size, 500000);
+		int base = Math.min((size+3)*(size+3), 500000);
 		int lin = base*FACTOR;
-		double fac = Math.pow(1.005, size-1);
+		double fac = Math.pow(1.006, size-1);
 		if (capacityIncreaseFactor > 1) {
 			fac *= capacityIncreaseFactor;
 		}
@@ -224,15 +230,23 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 	}
 
 	public void addCoordinate(int x, int y, int z) {
-		if (blocks.addBlockCoordinate(x, y, z))
+		if (blocks.addBlockCoordinate(x, y, z)) {
 			size++;
+
+			if (worldObj.isRemote)
+				lighting.setArray(blocks);
+		}
 		this.updateBoostFactor();
 	}
 
 	public void removeCoordinate(int x, int y, int z) {
-		if (blocks.hasBlock(x, y, z))
+		if (blocks.hasBlock(x, y, z)) {
+			blocks.remove(x, y, z);
 			size--;
-		blocks.remove(x, y, z);
+
+			if (worldObj.isRemote)
+				lighting.setArray(blocks);
+		}
 		this.updateBoostFactor();
 		if (tank.getLevel() > this.getCapacity())
 			tank.setContents(this.getCapacity(), fluidType);
@@ -281,11 +295,6 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 	@Override
 	public void readFromNBT(NBTTagCompound NBT) {
 		super.readFromNBT(NBT);
-	}
-
-	@Override
-	public AxisAlignedBB getRenderBoundingBox() {
-		return blocks.asAABB();
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -345,6 +354,11 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 		}
 		offset *= Math.min(1, 8F*tank.getLevel()/this.getCapacity());
 		return offset;
+	}
+
+	@Override
+	public AxisAlignedBB getRenderBoundingBox() {
+		return blocks.asAABB();
 	}
 
 	public double getFillPercentage() {

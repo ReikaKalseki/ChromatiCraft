@@ -58,7 +58,7 @@ public class GuiInventoryTicker extends GuiChromaBase {
 			}
 			break;
 		}
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.TICKER.ordinal(), tile, count);
+		ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.TICKER.ordinal(), tile, count);
 		this.initGui();
 	}
 

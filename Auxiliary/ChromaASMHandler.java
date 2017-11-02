@@ -89,6 +89,8 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 			TRANSPARENCY1("net.minecraft.block.BlockDirt", "akl"),
 			TRANSPARENCY2("net.minecraft.block.BlockGrass", "alh"),
 			UPDATEDCLIMATE("climateControl.biomeSettings.ReikasPackage"),
+			//FLOWERCACHE("Reika.ChromatiCraft.ModInterface.Bees.EfficientFlowerCache"),
+			TEXTURELOAD("net.minecraft.client.renderer.texture.TextureAtlasSprite", "bqd"),
 			;
 
 			private final String obfName;
@@ -365,6 +367,41 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 								ReikaASMHelper.log("Successfully applied "+this+" ASM handler 2!");
 							}
 						}
+						break;
+					}/*
+					case FLOWERCACHE: {
+						cn.superName = "forestry/apiculture/HasFlowersCache";
+
+						String sig = "(Lforestry/api/apiculture/IBee;Lforestry/api/apiculture/IBeeHousing;)Z";
+						MethodNode m = ReikaASMHelper.getMethodByName(cn, "hasFlowers", sig);
+						m.instructions.clear();
+
+						m.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
+						m.instructions.add(new VarInsnNode(Opcodes.ALOAD, 1));
+						m.instructions.add(new VarInsnNode(Opcodes.ALOAD, 2));
+						m.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, cn.superName, "hasFlowers", sig, false));
+						m.instructions.add(new InsnNode(Opcodes.IRETURN));
+
+						sig = "(Lforestry/api/core/INBTTagable;)V";
+						m = ReikaASMHelper.getMethodByName(cn, "<init>", sig);
+						//m.instructions.insert(new MethodInsnNode(Opcodes.INVOKESPECIAL, cn.superName, "<init>", sig, false));
+						//m.instructions.insert(new VarInsnNode(Opcodes.ALOAD, 0));
+						MethodInsnNode min = (MethodInsnNode)ReikaASMHelper.getFirstOpcode(m.instructions, Opcodes.INVOKESPECIAL);
+						min.owner = cn.superName;
+						break;
+					}*/
+					case TEXTURELOAD: {
+						MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_147964_a", "loadSprite", "([Ljava/awt/image/BufferedImage;Lnet/minecraft/client/resources/data/AnimationMetadataSection;Z)V");
+
+						InsnList li = new InsnList();
+
+						li.add(new VarInsnNode(Opcodes.ALOAD, 0));
+						li.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/ChromatiCraft/Auxiliary/ChromaAux", "onIconLoad", "(L"+cn.name+";)V", false));
+
+						m.instructions.insertBefore(ReikaASMHelper.getLastOpcode(m.instructions, Opcodes.RETURN), li);
+
+						//ReikaASMHelper.log(ReikaASMHelper.clearString(m.instructions));
+						ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");
 						break;
 					}
 				}

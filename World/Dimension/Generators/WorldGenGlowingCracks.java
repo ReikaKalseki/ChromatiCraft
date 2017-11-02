@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Generators;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Random;
@@ -66,7 +67,7 @@ public class WorldGenGlowingCracks extends ChromaWorldGenerator {
 
 	@Override
 	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
-		return 0.25F;
+		return 0.125F;
 	}
 
 	@Override
@@ -99,8 +100,17 @@ public class WorldGenGlowingCracks extends ChromaWorldGenerator {
 		Collection<Coordinate> li = cry.getCoordinates();
 		oreRand.setSeed(rand.nextLong());
 		OreType ore = oreRand.getRandomEntry();
-		ItemStack is = ore.getFirstOreBlock();
-		BlockKey bk = rand.nextInt(2) == 0 ? new BlockKey(ChromaBlocks.TIEREDORE.getBlockInstance(), this.getRandomOre(rand)) : new BlockKey(Block.getBlockFromItem(is.getItem()), is.getItemDamage());
+		ArrayList<ItemStack> li2 = new ArrayList(ore.getAllOreBlocks());
+		int idx = rand.nextInt(li2.size());
+		ItemStack is = li2.get(idx);
+		while (!li2.isEmpty() && ReikaOreHelper.isGregOre(Block.getBlockFromItem(is.getItem()))) {
+			li2.remove(idx);
+			idx = rand.nextInt(li2.size());
+			is = li2.get(idx);
+		}
+		if (li2.isEmpty())
+			is = null;
+		BlockKey bk = is == null || rand.nextInt(2) == 0 ? new BlockKey(ChromaBlocks.TIEREDORE.getBlockInstance(), this.getRandomOre(rand)) : new BlockKey(Block.getBlockFromItem(is.getItem()), is.getItemDamage());
 		for (Coordinate c : li) {
 			if (c.getBlock(world) == Blocks.stone || c.getBlock(world) == ChromaBlocks.TIEREDORE.getBlockInstance())
 				c.setBlock(world, bk.blockID, bk.metadata, 2);

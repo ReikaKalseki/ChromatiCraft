@@ -74,6 +74,7 @@ import com.chocolate.chocolateQuest.API.WeightedItemStack;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.relauncher.Side;
+import forestry.api.apiculture.FlowerManager;
 
 
 public class ModInteraction {
@@ -128,7 +129,7 @@ public class ModInteraction {
 		ChromaAspectManager.instance.register();
 		ChromaAspectMapper.instance.register();
 
-		new CrystalWand().setGlowing(true);
+		new CrystalWand();
 		TieredOreCap.registerAll();
 
 		ThaumcraftApi.portableHoleBlackList.add(ChromaBlocks.STRUCTSHIELD.getBlockInstance());
@@ -183,6 +184,14 @@ public class ModInteraction {
 	public static void addForestry() {
 		try {
 			CrystalBees.register();
+
+			FlowerManager.flowerRegistry.registerAcceptableFlower(ChromaBlocks.DECOFLOWER.getBlockInstance(), Flowers.ENDERFLOWER.ordinal(), FlowerManager.FlowerTypeVanilla);
+			FlowerManager.flowerRegistry.registerAcceptableFlower(ChromaBlocks.DECOFLOWER.getBlockInstance(), Flowers.GLOWDAISY.ordinal(), FlowerManager.FlowerTypeVanilla);
+			FlowerManager.flowerRegistry.registerAcceptableFlower(ChromaBlocks.DECOFLOWER.getBlockInstance(), Flowers.RESOCLOVER.ordinal(), FlowerManager.FlowerTypeVanilla);
+			FlowerManager.flowerRegistry.registerAcceptableFlower(ChromaBlocks.DECOFLOWER.getBlockInstance(), Flowers.LUMALILY.ordinal(), FlowerManager.FlowerTypeVanilla);
+			FlowerManager.flowerRegistry.registerAcceptableFlower(ChromaBlocks.DECOFLOWER.getBlockInstance(), Flowers.LUMALILY.ordinal(), FlowerManager.FlowerTypeSnow);
+			FlowerManager.flowerRegistry.registerAcceptableFlower(ChromaBlocks.DECOFLOWER.getBlockInstance(), Flowers.SANOBLOOM.ordinal(), FlowerManager.FlowerTypeJungle);
+			FlowerManager.flowerRegistry.registerAcceptableFlower(ChromaBlocks.DECOFLOWER.getBlockInstance(), Flowers.VOIDREED.ordinal(), FlowerManager.FlowerTypeMushrooms);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

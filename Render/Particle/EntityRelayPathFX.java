@@ -74,7 +74,7 @@ public class EntityRelayPathFX extends EntityFX {
 
 		this.testAndUpdate();
 
-		if (ReikaMathLibrary.py3d(motionX, motionY, motionZ) < 0.125)
+		if (motionX*motionX+motionY*motionY+motionZ*motionZ < 0.125*0.125)
 			this.die();
 	}
 

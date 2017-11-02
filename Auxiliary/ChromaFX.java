@@ -226,25 +226,27 @@ public class ChromaFX {
 			t /= 30D;
 
 			MultiMap<TargetData, CrystalElement> map = ChromaAux.getBeamColorMixes(li);
+			int p = Minecraft.getMinecraft().gameSettings.particleSetting;
 			for (TargetData pos : map.keySet()) {
 				if (pos.targetClass == TileEntityAtmosphericRelay.class)
 					continue;
-				List<CrystalElement> lc = (List<CrystalElement>)map.get(pos);
-				int clr = getBlendedColorFromElementList(lc, t, 0.125);
-				int p = Minecraft.getMinecraft().gameSettings.particleSetting;
-				if (rand.nextInt(1+p*2) == 0) {
-					double dx = pos.position.xCoord-x-0.5;
-					double dy = pos.position.yCoord-y-0.5;
-					double dz = pos.position.zCoord-z-0.5;
-					double dd = ReikaMathLibrary.py3d(dx, dy, dz);
-					double dr = rand.nextDouble();
-					float s = (float)(15D/0.35*ReikaMathLibrary.linterpolate(dr, 0, 1, r, pos.targetWidth));
-					//ReikaJavaLibrary.pConsole(dr+" @ "+r+" > "+pos.right+" = "+s);
-					double px = dx*dr+x+0.5;
-					double py = dy*dr+y+0.5;
-					double pz = dz*dr+z+0.5;
-					EntityLaserFX fx = new EntityLaserFX(CrystalElement.WHITE, world, px, py, pz).setScale(s).setColor(clr);
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				if (pos.isRenderable()) {
+					List<CrystalElement> lc = (List<CrystalElement>)map.get(pos);
+					int clr = getBlendedColorFromElementList(lc, t, 0.125);
+					if (rand.nextInt(1+p*3) == 0) {
+						double dx = pos.position.xCoord-x-0.5;
+						double dy = pos.position.yCoord-y-0.5;
+						double dz = pos.position.zCoord-z-0.5;
+						//double dd = ReikaMathLibrary.py3d(dx, dy, dz);
+						double dr = rand.nextDouble();
+						float s = (float)(15D/0.35*ReikaMathLibrary.linterpolate(dr, 0, 1, r, pos.targetWidth));
+						//ReikaJavaLibrary.pConsole(dr+" @ "+r+" > "+pos.right+" = "+s);
+						double px = dx*dr+x+0.5;
+						double py = dy*dr+y+0.5;
+						double pz = dz*dr+z+0.5;
+						EntityLaserFX fx = new EntityLaserFX(CrystalElement.WHITE, world, px, py, pz).setScale(s).setColor(clr);
+						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					}
 				}
 			}
 		}
@@ -273,23 +275,27 @@ public class ChromaFX {
 
 			MultiMap<TargetData, CrystalElement> map = ChromaAux.getBeamColorMixes(li);
 			for (TargetData pos : map.keySet()) {
-				List<CrystalElement> lc = (List<CrystalElement>)map.get(pos);
-				int clr = getBlendedColorFromElementList(lc, tick, 0.125);
-				if (pos.targetClass == TileEntityAtmosphericRelay.class) {
-					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-					GL11.glEnable(GL11.GL_BLEND);
-					ReikaTextureHelper.bindTexture(ChromatiCraft.class, "/Reika/ChromatiCraft/Textures/beam_trans.png");
-					DecimalPosition pos2 = DecimalPosition.interpolate(new DecimalPosition(src), pos.position, 0.5).offset(0, 192, 0);
-					drawEnergyTransferBeam(src, pos2, clr, r, pos.targetWidth, sides, tick, false);
-					GL11.glPushMatrix();
-					GL11.glTranslated(pos2.xCoord-src.xCoord-0.5, pos2.yCoord-src.yCoord-0.5, pos2.zCoord-src.zCoord-0.5);
-					drawEnergyTransferBeam(pos2, pos.position, clr, r, pos.targetWidth, sides, tick, false);
-					GL11.glPopMatrix();
-					ReikaTextureHelper.bindTexture(ChromatiCraft.class, "/Reika/ChromatiCraft/Textures/beam.png");
-					GL11.glPopAttrib();
+				if (pos.isRenderable()) {
+					List<CrystalElement> lc = (List<CrystalElement>)map.get(pos);
+					int clr = getBlendedColorFromElementList(lc, tick, 0.125);
+					if (pos.targetClass == TileEntityAtmosphericRelay.class) {
+						GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+						GL11.glEnable(GL11.GL_BLEND);
+						ReikaTextureHelper.bindTexture(ChromatiCraft.class, "/Reika/ChromatiCraft/Textures/beam_trans.png");
+						DecimalPosition pos2 = DecimalPosition.interpolate(src.xCoord+0.5, src.yCoord+0.5, src.zCoord+0.5, pos.position.xCoord, pos.position.yCoord, pos.position.zCoord, 0.5).offset(0, 192, 0);
+						drawEnergyTransferBeam(src, pos2, clr, r, pos.targetWidth, sides, tick, false);
+						GL11.glPushMatrix();
+						GL11.glTranslated(pos2.xCoord-src.xCoord-0.5, pos2.yCoord-src.yCoord-0.5, pos2.zCoord-src.zCoord-0.5);
+						drawEnergyTransferBeam(pos2, pos.position, clr, r, pos.targetWidth, sides, tick, false);
+						GL11.glPopMatrix();
+						ReikaTextureHelper.bindTexture(ChromatiCraft.class, "/Reika/ChromatiCraft/Textures/beam.png");
+						GL11.glPopAttrib();
+					}
+					else {
+						//ReikaJavaLibrary.pConsole("Rendering beam from "+src+" to "+pos.position);
+						drawEnergyTransferBeam(src, pos.position, clr, r, pos.targetWidth, sides, tick, false);
+					}
 				}
-				else
-					drawEnergyTransferBeam(src, pos.position, clr, r, pos.targetWidth, sides, tick, false);
 			}
 
 			//BlendMode.DEFAULT.apply();
@@ -299,21 +305,25 @@ public class ChromaFX {
 		}
 	}
 
-	public static void drawEnergyTransferBeam(WorldLocation src, DecimalPosition pos, int color, double r1, double r2, int sides, double tick, boolean spiralTex) {
-		drawEnergyTransferBeam(new DecimalPosition(src), pos, color, r1, r2, sides, tick, spiralTex);
+	public static void drawEnergyTransferBeam(WorldLocation src, DecimalPosition tgt, int color, double r1, double r2, int sides, double tick, boolean spiralTex) {
+		drawEnergyTransferBeam(src.xCoord+0.5, src.yCoord+0.5, src.zCoord+0.5, tgt.xCoord, tgt.yCoord, tgt.zCoord, color, color, r1, r2, sides, tick, spiralTex);
 	}
 
 	public static void drawEnergyTransferBeam(DecimalPosition src, DecimalPosition tgt, int color, double r1, double r2, int sides, double tick, boolean spiralTex) {
-		drawEnergyTransferBeam(src, tgt, color, color, r1, r2, sides, tick, spiralTex);
+		drawEnergyTransferBeam(src.xCoord, src.yCoord, src.zCoord, tgt.xCoord, tgt.yCoord, tgt.zCoord, color, color, r1, r2, sides, tick, spiralTex);
 	}
 
 	public static void drawEnergyTransferBeam(DecimalPosition src, DecimalPosition tgt, int color1, int color2, double r1, double r2, int sides, double tick, boolean spiralTex) {
+		drawEnergyTransferBeam(src.xCoord, src.yCoord, src.zCoord, tgt.xCoord, tgt.yCoord, tgt.zCoord, color1, color2, r1, r2, sides, tick, spiralTex);
+	}
+
+	public static void drawEnergyTransferBeam(double x1, double y1, double z1, double x2, double y2, double z2, int color1, int color2, double r1, double r2, int sides, double tick, boolean spiralTex) {
 		//v5.setColorRGBA_I(te.getColor().color.getJavaColor().brighter().getRGB(), te.renderAlpha+255);
 		//v5.addVertex(src.xCoord-te.xCoord+0.5, src.yCoord-te.yCoord+0.5, src.zCoord-te.zCoord+0.5);
 		Tessellator v5 = Tessellator.instance;
-		double dx = tgt.xCoord-src.xCoord;
-		double dy = tgt.yCoord-src.yCoord;
-		double dz = tgt.zCoord-src.zCoord;
+		double dx = x2-x1;
+		double dy = y2-y1;
+		double dz = z2-z1;
 
 		GL11.glPushMatrix();
 		double f7 = Math.sqrt(dx*dx+dz*dz);

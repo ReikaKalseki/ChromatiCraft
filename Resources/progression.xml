@@ -733,10 +733,13 @@
 			Below the world lurks a...THING.
 		</title>
 		<hint>
-
+			Exactly what that thing is, remains unknown.
 		</hint>
 		<reveal>
-
+			A thing that must now be destroyed after what it has done to you.
 		</reveal>
+		<desc>
+			Death by amorphous evil
+		</desc>
 	</voidmonster>
 </progression>

@@ -43,6 +43,8 @@ import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.DragonAPI.Instantiable.Data.SphericalVector;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget.DimensionTarget;
+import Reika.DragonAPI.Interfaces.Entity.DestroyOnUnload;
+import Reika.DragonAPI.Interfaces.Entity.EtherealEntity;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -55,7 +57,7 @@ import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class EntityBallLightning extends EntityLiving implements IEntityAdditionalSpawnData {
+public class EntityBallLightning extends EntityLiving implements IEntityAdditionalSpawnData, DestroyOnUnload, EtherealEntity {
 
 	private SphericalVector velocity;
 	private double targetTheta = rand.nextInt(360);
@@ -206,6 +208,9 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 
 		if (worldObj.isRemote) {
 			this.lifeParticles();
+			if (!isDead && ticksExisted%128 == 0) {
+				ReikaEntityHelper.verifyClientEntity(this);
+			}
 		}
 
 		fallDistance = 0;
@@ -393,6 +398,14 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 		}
 	}
 
+	public static boolean canSpawnHere(World world, double x, double y, double z) {
+		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-24, 0, z-24, x+24, 1024, z+24);
+		List<EntityBallLightning> li = world.getEntitiesWithinAABB(EntityBallLightning.class, box);
+		if (world.rand.nextInt(1+li.size()/16) > 0)
+			return false;
+		return true;
+	}
+
 	@Override
 	public boolean getCanSpawnHere() {
 		return rand.nextInt(5) == 0 && worldObj.canBlockSeeTheSky(MathHelper.floor_double(posX), MathHelper.floor_double(posY)+1, MathHelper.floor_double(posZ));
@@ -542,8 +555,7 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 	}
 
 	@Override
-	public boolean shouldRenderInPass(int pass)
-	{
+	public boolean shouldRenderInPass(int pass) {
 		return pass == 1;
 	}
 
@@ -552,6 +564,11 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 		if (recentHit) {
 
 		}
+	}
+
+	@Override
+	public void destroy() {
+		this.setDead();
 	}
 
 }

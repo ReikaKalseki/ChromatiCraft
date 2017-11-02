@@ -302,7 +302,7 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 				}
 			}
 			if (!this.isOmniDirectional() && !world.isRemote)
-				te.rotate();
+				te.rotate(ep.isSneaking());
 		}
 	}
 
@@ -461,9 +461,9 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 			return color.getRenderColor();
 		}
 
-		public void rotate() {
+		public void rotate(boolean rev) {
 			if (this.isRotateable() && !this.areLasersInPlay()) {
-				facing = facing.getRotation(true);
+				facing = facing.getRotation(!rev);
 				ReikaSoundHelper.playSoundAtBlock(worldObj, xCoord, yCoord, zCoord, "random.click", 0.4F, 0.5F);
 				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 			}

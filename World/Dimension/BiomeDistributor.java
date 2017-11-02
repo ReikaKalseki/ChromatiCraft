@@ -92,17 +92,24 @@ public class BiomeDistributor extends ThreadedGenerator {
 	}
 
 	public static ChromaDimensionBiome getBiome(int x, int z) {
-		double d = ChunkProviderChroma.getDistanceToNearestStructureBlockCoords(x, z);
+		double d = ChunkProviderChroma.getDistanceToNearestStructureBlockCoordsWithinRange(x, z, MAX_STRUCTURE_RADIUS);
 		if (d <= MAX_STRUCTURE_RADIUS) {
-			StructurePair p = ChunkProviderChroma.getNearestStructure(x, z);
-			LobulatedCurve map = monumentBlob;
-			if (p != null) {
-				map = structureBlobs.get(p.color);
+			StructurePair p = ChunkProviderChroma.getNearestStructureWithinRange(x, z, d);
+			LobulatedCurve map;
+			int dx;
+			int dz;
+			if (p == null) {
+				map = monumentBlob;
+				dx = x-ChunkProviderChroma.getMonumentGenerator().getPosX();
+				dz = z-ChunkProviderChroma.getMonumentGenerator().getPosZ();
 			}
-			int dx = x-p.generator.getEntryPosX();
-			int dz = z-p.generator.getEntryPosZ();
+			else {
+				map = structureBlobs.get(p.color);
+				dx = x-p.generator.getEntryPosX();
+				dz = z-p.generator.getEntryPosZ();
+			}
 			if (map.isPointInsideCurve(dx, dz)) {
-				return Biomes.STRUCTURE.getBiome();
+				return map == monumentBlob ? Biomes.MONUMENT.getBiome() : Biomes.STRUCTURE.getBiome();
 			}
 		}
 		if (RegionMapper.isPointInCentralRegion(x, z))

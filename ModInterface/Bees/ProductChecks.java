@@ -20,6 +20,8 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
+import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
+import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant.Modifier;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityAuraInfuser;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray.MultiKey;
@@ -242,7 +244,19 @@ public class ProductChecks {
 
 		@Override
 		public boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
-			return check.check(world, x, y, z, ibg, ibh);
+			if (check.check(world, x, y, z, ibg, ibh)) {
+				if (world.rand.nextInt(30) == 0) {
+					WorldLocation loc = ChromaBeeHelpers.getLocation(ibh);
+					Coordinate plant = AreaBlockCheck.successfulChecks.get(loc);
+					TileEntityCrystalPlant te = (TileEntityCrystalPlant)plant.getTileEntity(world);
+					te.setState(Modifier.BOOSTED);
+					if (world.rand.nextInt(30) == 0) {
+						te.setState(Modifier.PRIMAL);
+					}
+				}
+				return true;
+			}
+			return false;
 		}
 
 		@Override

@@ -56,7 +56,7 @@ public class GuiCrystalCharger extends GuiChromaBase {
 	@Override
 	protected void actionPerformed(GuiButton b) {
 		if (b.id >= 0 && b.id < 16)
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.CHARGERTOGGLE.ordinal(), tile, b.id);
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.CHARGERTOGGLE.ordinal(), tile, b.id);
 	}
 
 	@Override

@@ -39,6 +39,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.CarpenterBlockHandler;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
@@ -78,7 +79,8 @@ public class ChromaStructures {
 		PYLONTURBO(true),
 		DATANODE(false),
 		WIRELESSPEDESTAL(false),
-		WIRELESSPEDESTAL2(false);
+		WIRELESSPEDESTAL2(false),
+		PROGRESSLINK(false);
 
 		public final boolean requiresColor;
 
@@ -152,6 +154,8 @@ public class ChromaStructures {
 					return getWirelessPedestalStructure(world, x, y, z);
 				case WIRELESSPEDESTAL2:
 					return getWirelessPedestalStructure2(world, x, y, z);
+				case PROGRESSLINK:
+					return getProgressionLinkerStructure(world, x, y, z);
 			}
 			return null;
 		}
@@ -222,6 +226,8 @@ public class ChromaStructures {
 					return getWirelessPedestalStructure(w, 0, 0, 0);
 				case WIRELESSPEDESTAL2:
 					return getWirelessPedestalStructure2(w, 0, 0, 0);
+				case PROGRESSLINK:
+					return getProgressionLinkerStructure(w, 0, 0, 0);
 			}
 			return null;
 		}
@@ -2204,6 +2210,14 @@ public class ChromaStructures {
 			}
 		}
 
+		for (int i = 1; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			int dx = x+dir.offsetX;
+			int dy = y+1+dir.offsetY;
+			int dz = z+dir.offsetZ;
+			array.setEmpty(dx, dy, dz, false, false);
+		}
+
 		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
 		for (int i = 2; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
@@ -2585,6 +2599,7 @@ public class ChromaStructures {
 		}
 
 		array.addBlock(x, y, z, ChromaTiles.PYLONLINK.getBlock(), ChromaTiles.PYLONLINK.getBlockMetadata());
+		array.addBlock(x, y+1, z, ChromaTiles.PYLONTURBO.getBlock(), ChromaTiles.PYLONTURBO.getBlockMetadata());
 
 		return array;
 	}
@@ -3845,6 +3860,56 @@ public class ChromaStructures {
 					array.setBlock(x+i, y-4, z+k, b, m);
 				}
 			}
+		}
+
+		return array;
+	}
+
+	public static FilledBlockArray getProgressionLinkerStructure(World world, int x, int y, int z) {
+		FilledBlockArray array = new FilledBlockArray(world);
+		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
+
+		array.setBlock(x, y, z, ChromaTiles.PROGRESSLINK.getBlock(), ChromaTiles.PROGRESSLINK.getBlockMetadata());
+
+		for (int i = -1; i <= 1; i++) {
+			for (int k = -1; k <= 1; k++) {
+				for (int j = 1; j <= 2; j++) {
+					StoneTypes s = StoneTypes.SMOOTH;
+					if (j == 1) {
+						if (i == 0 || k == 0) {
+							if (i != 0 || k != 0) {
+								s = StoneTypes.BRICKS;
+							}
+							else {
+								s = StoneTypes.MULTICHROMIC;
+							}
+						}
+						else {
+							s = StoneTypes.CORNER;
+						}
+
+					}
+					if (j == 2) {
+						if (i == 0 || k == 0) {
+
+						}
+						else {
+							s = StoneTypes.COLUMN;
+						}
+					}
+					array.setBlock(x+i, y-j, z+k, b, s.ordinal());
+				}
+			}
+		}
+
+		for (int i = 2; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			ForgeDirection dir2 = ReikaDirectionHelper.getRightBy90(dir);
+			int dx = x+dir.offsetX*2;
+			int dy = y-2;
+			int dz = z+dir.offsetZ*2;
+			array.setBlock(dx, dy, dz, b, StoneTypes.BEAM.ordinal());
+			array.setBlock(dx+dir2.offsetX, dy, dz+dir2.offsetZ, b, StoneTypes.BEAM.ordinal());
 		}
 
 		return array;

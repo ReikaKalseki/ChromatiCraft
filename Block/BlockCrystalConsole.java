@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Block;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -263,76 +264,76 @@ public class BlockCrystalConsole extends BlockContainer implements ConnectedText
 		return pass <= 1;
 	}
 
-	public ArrayList<Integer> getEdgesForFace(IBlockAccess world, int x, int y, int z, ForgeDirection face) {
-		ArrayList<Integer> li = new ArrayList();
+	public HashSet<Integer> getEdgesForFace(IBlockAccess world, int x, int y, int z, ForgeDirection face) {
+		HashSet<Integer> li = new HashSet();
 		li.addAll(allDirs);
 
 		TileEntityCrystalConsole te = (TileEntityCrystalConsole)world.getTileEntity(x, y, z);
 		if (face != te.getConsoleFace())
-			li.remove(new Integer(5));
+			li.remove(5);
 
 		if (face.offsetX != 0) { //test YZ
 			//sides; removed if have adjacent on side
 			if (world.getBlock(x, y, z+1) == this)
-				li.remove(new Integer(2));
+				li.remove(2);
 			if (world.getBlock(x, y, z-1) == this)
-				li.remove(new Integer(8));
+				li.remove(8);
 			if (world.getBlock(x, y+1, z) == this)
-				li.remove(new Integer(4));
+				li.remove(4);
 			if (world.getBlock(x, y-1, z) == this)
-				li.remove(new Integer(6));
+				li.remove(6);
 
 			//Corners; only removed if have adjacent on side AND corner
 			if (world.getBlock(x, y+1, z+1) == this && !li.contains(4) && !li.contains(2))
-				li.remove(new Integer(1));
+				li.remove(1);
 			if (world.getBlock(x, y-1, z-1) == this && !li.contains(6) && !li.contains(8))
-				li.remove(new Integer(9));
+				li.remove(9);
 			if (world.getBlock(x, y+1, z-1) == this && !li.contains(4) && !li.contains(8))
-				li.remove(new Integer(7));
+				li.remove(7);
 			if (world.getBlock(x, y-1, z+1) == this && !li.contains(2) && !li.contains(6))
-				li.remove(new Integer(3));
+				li.remove(3);
 		}
 		if (face.offsetY != 0) { //test XZ
 			//sides; removed if have adjacent on side
 			if (world.getBlock(x, y, z+1) == this)
-				li.remove(new Integer(2));
+				li.remove(2);
 			if (world.getBlock(x, y, z-1) == this)
-				li.remove(new Integer(8));
+				li.remove(8);
 			if (world.getBlock(x+1, y, z) == this)
-				li.remove(new Integer(4));
+				li.remove(4);
 			if (world.getBlock(x-1, y, z) == this)
-				li.remove(new Integer(6));
+				li.remove(6);
 
 			//Corners; only removed if have adjacent on side AND corner
 			if (world.getBlock(x+1, y, z+1) == this && !li.contains(4) && !li.contains(2))
-				li.remove(new Integer(1));
+				li.remove(1);
 			if (world.getBlock(x-1, y, z-1) == this && !li.contains(6) && !li.contains(8))
-				li.remove(new Integer(9));
+				li.remove(9);
 			if (world.getBlock(x+1, y, z-1) == this && !li.contains(4) && !li.contains(8))
-				li.remove(new Integer(7));
+				li.remove(7);
 			if (world.getBlock(x-1, y, z+1) == this && !li.contains(2) && !li.contains(6))
-				li.remove(new Integer(3));
+				li.remove(3);
 		}
 		if (face.offsetZ != 0) { //test XY
 			//sides; removed if have adjacent on side
 			if (world.getBlock(x, y+1, z) == this)
-				li.remove(new Integer(4));
+				li.remove(4);
 			if (world.getBlock(x, y-1, z) == this)
-				li.remove(new Integer(6));
+				li.remove(6);
 			if (world.getBlock(x+1, y, z) == this)
-				li.remove(new Integer(2));
+				li.remove(2);
 			if (world.getBlock(x-1, y, z) == this)
-				li.remove(new Integer(8));
+				li.remove(8);
 
 			//Corners; only removed if have adjacent on side AND corner
 			if (world.getBlock(x+1, y+1, z) == this && !li.contains(2) && !li.contains(4))
-				li.remove(new Integer(1));
+				li.remove(1);
 			if (world.getBlock(x-1, y-1, z) == this && !li.contains(8) && !li.contains(6))
-				li.remove(new Integer(9));
+				li.remove(9);
 			if (world.getBlock(x+1, y-1, z) == this && !li.contains(2) && !li.contains(6))
-				li.remove(new Integer(3));
+				li.remove(3);
 			if (world.getBlock(x-1, y+1, z) == this && !li.contains(4) && !li.contains(8))
-				li.remove(new Integer(7));
+				li.remove(7);
 		}
 		return li;
 	}

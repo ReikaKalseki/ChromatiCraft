@@ -65,7 +65,7 @@ public class ArtefactSpawner implements TickHandler {
 			return;
 		EntityPlayerMP ep = (EntityPlayerMP)pl;
 		if (rand.nextInt(2) == 0 && this.canSpawnArtefactNearPlayer(ep))
-			ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.PARTICLE.ordinal(), ep.worldObj, MathHelper.floor_double(ep.posX), (int)ep.posY+1, MathHelper.floor_double(ep.posZ), ReikaJavaLibrary.makeListFrom(ReikaParticleHelper.PORTAL.ordinal(), 1));
+			ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.PARTICLE.ordinal(), ep.worldObj, MathHelper.floor_double(ep.posX), (int)ep.posY+1, MathHelper.floor_double(ep.posZ), new PacketTarget.PlayerTarget(ep), ReikaJavaLibrary.makeListFrom(ReikaParticleHelper.PORTAL.ordinal(), 1));
 		if (artefacts.size() < SPAWN_LIMIT && rand.nextInt(1000) == 0 && this.canSpawnArtefactNearPlayer(ep)) {
 			double a = Math.toRadians(rand.nextDouble()*360);
 			double dx = ep.posX+SPAWN_DISTANCE*Math.cos(a);

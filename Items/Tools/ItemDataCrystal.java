@@ -66,7 +66,7 @@ public class ItemDataCrystal extends ItemChromaTool {
 				int tick = is.stackTagCompound.getInteger("carve")+1;
 				if (tick >= ir.duration) {
 					ir.place(world, x, y, z, ep);
-					ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.INSCRIBE.ordinal(), world, x, y, z, ir.referenceIndex);
+					ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.INSCRIBE.ordinal(), world, x, y, z, 128, ir.referenceIndex);
 					is.stackTagCompound = null;
 				}
 				else {

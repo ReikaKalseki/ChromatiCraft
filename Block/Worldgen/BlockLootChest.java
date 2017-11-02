@@ -271,6 +271,8 @@ public class BlockLootChest extends BlockContainer {
 
 		private final Collection<ProgressElement> triggers = new HashSet();
 
+		public boolean hasMarker;
+
 		@Override
 		public void updateEntity() {
 			super.updateEntity();
@@ -438,6 +440,8 @@ public class BlockLootChest extends BlockContainer {
 				NBT.setString("placer", placer.toString());
 
 			NBT.setBoolean("opened", opened);
+
+			NBT.setBoolean("marker", hasMarker);
 		}
 
 		@Override
@@ -472,6 +476,8 @@ public class BlockLootChest extends BlockContainer {
 				placer = UUID.fromString(NBT.getString("placer"));
 
 			opened = NBT.getBoolean("opened");
+
+			hasMarker = NBT.getBoolean("marker");
 		}
 
 		public boolean isUntouchedWorldgen() {
@@ -537,6 +543,11 @@ public class BlockLootChest extends BlockContainer {
 		@Override
 		public boolean canExtractItem(int i, ItemStack is, int side) {
 			return this.isUsable();
+		}
+
+		@Override
+		public boolean shouldRenderInPass(int pass) {
+			return pass == 0 || hasMarker;
 		}
 	}
 

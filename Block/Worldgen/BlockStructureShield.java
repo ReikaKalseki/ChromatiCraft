@@ -161,6 +161,8 @@ public class BlockStructureShield extends Block implements SemiUnbreakable, Subm
 				return false;
 			if (b == ChromaBlocks.CRYSTAL.getBlockInstance())
 				return false;
+			if (b == ChromaBlocks.CHUNKLOADER.getBlockInstance())
+				return false;
 			int mx = ChunkProviderChroma.getMonumentGenerator().getPosX();
 			int mz = ChunkProviderChroma.getMonumentGenerator().getPosZ();
 			if (ReikaMathLibrary.py3d(x-mx, 0, z-mz) < 100)

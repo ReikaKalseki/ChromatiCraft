@@ -17,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Block.BlockChromaTrail.TileChromaTrail;
@@ -45,7 +46,7 @@ public class ItemCaveExitFinder extends ItemChromaTool {
 	private static final PropagationCondition pathFinder = new PropagationCondition() {
 
 		@Override
-		public boolean isValidLocation(World world, int x, int y, int z) {
+		public boolean isValidLocation(IBlockAccess world, int x, int y, int z) {
 			Block b = world.getBlock(x, y, z);
 			return b.isAir(world, x, y, z) || b == ChromaBlocks.HOVER.getBlockInstance() || b == Blocks.iron_bars || b == ChromaBlocks.TRAIL.getBlockInstance() || ReikaBlockHelper.isLiquid(b) || ReikaWorldHelper.softBlocks(world, x, y, z) || ReikaBlockHelper.isLeaf(world, x, y, z);
 		}
@@ -61,7 +62,7 @@ public class ItemCaveExitFinder extends ItemChromaTool {
 		}
 
 		@Override
-		public boolean isValidLocation(World world, int x, int y, int z) {
+		public boolean isValidLocation(IBlockAccess world, int x, int y, int z) {
 			return pathFinder.isValidLocation(world, x, y, z) && y <= startY;
 		}
 
@@ -100,7 +101,7 @@ public class ItemCaveExitFinder extends ItemChromaTool {
 		PropagationCondition f = deep ? new DownwardsFinder(y) : pathFinder;
 		TerminationCondition t = skyFinder;
 		if (deep) {
-			s.limit = new BlockBox(x, y, z, x, y, z).expand(800, 512, 800);
+			s.limit = new BlockBox(x, y, z, x, y, z).expand(400, 256, 400);
 			BlockArray b = new BlockArray();
 			b.recursiveAddCallbackWithBounds(world, x, y, z, s.limit.minX, 0, s.limit.minZ, s.limit.maxX, 256, s.limit.maxZ, f);
 			t = new LowYFinder(b.getMinY());
@@ -113,13 +114,12 @@ public class ItemCaveExitFinder extends ItemChromaTool {
 			int n = 0;
 			ArrayList<Coordinate> li2 = new ArrayList();
 			for (Coordinate c : li) {
-				if (n%4 == 0) {
+				if (n%4 == 0 && !c.equals(li.getLast())) {
 					li2.add(c);
 				}
 				n++;
 			}
-			if (!li2.get(li2.size()-1).equals(li.getLast()))
-				li2.add(li.getLast());
+			li2.add(li.getLast());
 			for (int i = 0; i < li2.size(); i++) {
 				Coordinate c = li2.get(i);
 				Coordinate next = i < li2.size()-1 ? li2.get(i+1) : null;

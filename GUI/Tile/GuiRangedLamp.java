@@ -61,7 +61,7 @@ public class GuiRangedLamp extends GuiContainer {
 		super.actionPerformed(b);
 
 		if (b.id == 0) {
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.LAMPINVERT.ordinal(), lamp);
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.LAMPINVERT.ordinal(), lamp);
 			//lastInvertTime = lamp.worldObj.getTotalWorldTime();
 		}
 		this.initGui();
@@ -88,12 +88,12 @@ public class GuiRangedLamp extends GuiContainer {
 		if (!(input.getText().matches("^[0-9 ]+$"))) {
 			channel = 0;
 			input.deleteFromCursor(-1);
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.LAMPCHANNEL.ordinal(), lamp, channel);
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.LAMPCHANNEL.ordinal(), lamp, channel);
 			return;
 		}
 		channel = Integer.parseInt(input.getText());
 		if (channel >= 0) {
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.LAMPCHANNEL.ordinal(), lamp, channel);
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.LAMPCHANNEL.ordinal(), lamp, channel);
 		}
 	}
 

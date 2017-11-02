@@ -87,7 +87,7 @@ public class GuiBookPages extends GuiContainer implements CustomSoundGui {
 		scroll += up ? 1 : -1;
 		scroll = MathHelper.clamp_int(scroll, 0, ContainerBookPages.MAX_SCROLL);
 		inv.scroll(up);
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BOOKINVSCROLL.ordinal(), player.worldObj, 0, 0, 0, up ? 1 : 0);
+		ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.BOOKINVSCROLL.ordinal(), up ? 1 : 0);
 	}
 
 	@Override

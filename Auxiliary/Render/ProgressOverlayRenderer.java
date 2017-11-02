@@ -29,8 +29,10 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
 
 public class ProgressOverlayRenderer {
@@ -49,9 +51,11 @@ public class ProgressOverlayRenderer {
 	void renderProgressOverlays(EntityPlayer ep, int gsc) {
 		HashMap<ProgressElement, Integer> map = new HashMap();
 		int dy = 0;
+		boolean flag = false;
 		//ReikaJavaLibrary.pConsole(progressFlags.keySet());
 		for (ProgressElement p : progressFlags.keySet()) {
 			int tick = progressFlags.get(p);
+			flag |= tick == PROGRESS_DURATION-1;
 			GL11.glColor4f(1, 1, 1, 1);
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			GL11.glDisable(GL11.GL_LIGHTING);
@@ -102,6 +106,10 @@ public class ProgressOverlayRenderer {
 		//else
 		//	progressFlags.keySet().removeAll(map.keySet());
 		progressFlags.putAll(map);
+
+		if (flag) {
+			ReikaSoundHelper.playClientSound(ChromaSounds.GAINPROGRESS, ep, 0.5F, 1, false);
+		}
 	}
 
 	void addProgressionNote(ProgressElement p) {

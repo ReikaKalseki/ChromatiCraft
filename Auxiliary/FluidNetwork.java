@@ -77,7 +77,7 @@ public class FluidNetwork {
 	}
 
 	public void update(World world) {
-		if (lastUpdate != world.getTotalWorldTime()) {
+		if (lastUpdate != world.getTotalWorldTime() && !world.isRemote) {
 			this.doUpdate(world);
 		}
 		lastUpdate = world.getTotalWorldTime();

@@ -21,7 +21,7 @@ import net.minecraft.tileentity.TileEntity;
 import Reika.ChromatiCraft.Base.ChromaModelBase;
 import Reika.DragonAPI.Instantiable.Rendering.LODModelPart;
 
-public class ModelLoreReader extends ChromaModelBase
+public class ModelProgressionLinker extends ChromaModelBase
 {
 	//fields
 	LODModelPart Shape1;
@@ -43,7 +43,7 @@ public class ModelLoreReader extends ChromaModelBase
 	LODModelPart Shape3d;
 	LODModelPart Shape3e;
 
-	public ModelLoreReader()
+	public ModelProgressionLinker()
 	{
 		textureWidth = 32;
 		textureHeight = 32;

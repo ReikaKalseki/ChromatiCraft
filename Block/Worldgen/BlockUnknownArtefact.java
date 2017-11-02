@@ -86,7 +86,7 @@ public class BlockUnknownArtefact extends Block {
 			ep.motionY = MathHelper.clamp_double(v[1], 1.25, 1.75);
 			//ChromaSounds.DISCHARGE.playSoundAtBlockNoAttenuation(world, ep.posX+ep.motionX*4, ep.posY+ep.motionY*4, ep.posZ+ep.motionZ*4, 1, 0.5F, 64);
 			ep.velocityChanged = true;
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ARTEFACTCLICK.ordinal(), world, x, y, z);
+			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.ARTEFACTCLICK.ordinal(), world, x, y, z, 64);
 		}
 	}
 

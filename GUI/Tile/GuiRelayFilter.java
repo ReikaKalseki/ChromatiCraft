@@ -86,7 +86,7 @@ public class GuiRelayFilter extends GuiContainer {
 	}
 
 	private void sendData(int color) {
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.RELAYFILTER.ordinal(), tile, color, allow[color] ? 1 : 0);
+		ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.RELAYFILTER.ordinal(), tile, color, allow[color] ? 1 : 0);
 	}
 
 	@Override

@@ -24,6 +24,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
@@ -221,7 +222,7 @@ public class BlockStructureDataStorage extends BlockDimensionStructureTile {
 				return true;
 			}
 			int pass = gen.getPassword(ep);
-			if (ReikaPlayerAPI.isReika(ep)) {
+			if (ReikaPlayerAPI.isReika(ep) || ProgressionManager.instance.hasPlayerCompletedStructureColor(ep, gen.getCoreColor(ep.worldObj))) {
 				ChromaSounds.CRAFTDONE.playSoundAtBlock(this);
 				gen.forceOpen(worldObj, ep);
 				return true;

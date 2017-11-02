@@ -175,7 +175,7 @@ public class PylonFinder {
 						CrystalNetworkTile te2 = this.getNetTileAt(loc2, true);
 						if (te1 instanceof TileEntitySkypeater && te2 instanceof TileEntitySkypeater) {
 							double d = ((TileEntitySkypeater)te1).getReceiveRange();
-							if (te1.getDistanceSqTo(te2.getX(), te2.getY(), te2.getZ()) <= d*d && this.lineOfSight(te1, te2)) {
+							if (te1.getDistanceSqTo(te2.getX(), te2.getY(), te2.getZ()) <= d*d && net.checkLOS((TileEntitySkypeater)te1, (TileEntitySkypeater)te2)) {
 								while (k > i+1) {
 									li.remove(k-1);
 									k--;
@@ -350,9 +350,7 @@ public class PylonFinder {
 
 				if (te != target) {
 					if ((te.needsLineOfSightToReceiver(r) || r.needsLineOfSightFromTransmitter(te)) && !l.hasLineOfSight()) {
-						l.recalculateLOS();
-						if (!l.hasLineOfSight())
-							continue;
+						continue;
 					}
 
 					/*
@@ -491,9 +489,9 @@ public class PylonFinder {
 		return lineOfSight(te1.getWorld(), te1.getX(), te1.getY(), te1.getZ(), te.getX(), te.getY(), te.getZ());
 	}
 
-	private boolean lineOfSight(World world, int x, int y, int z, CrystalNetworkTile te) {
-		return lineOfSight(world, x, y, z, te.getX(), te.getY(), te.getZ());
-	}
+	//private boolean lineOfSight(World world, int x, int y, int z, CrystalNetworkTile te) {
+	//	return lineOfSight(world, x, y, z, te.getX(), te.getY(), te.getZ());
+	//}
 
 	public static boolean lineOfSight(World world, int x1, int y1, int z1, int x2, int y2, int z2) {
 		tracer.setOrigins(x1, y1, z1, x2, y2, z2);
@@ -505,6 +503,7 @@ public class PylonFinder {
 		tracer = new RayTracer(0, 0, 0, 0, 0, 0);
 		tracer.softBlocksOnly = true;
 		tracer.allowFluids = false;
+		tracer.uniDirectionalChecks = true;
 		tracer.addTransparentBlock(Blocks.glass);
 		tracer.addTransparentBlock(Blocks.glass_pane);
 		tracer.addTransparentBlock(Blocks.snow_layer, 0);
@@ -570,7 +569,7 @@ public class PylonFinder {
 		tracer.addTransparentBlock(GeoBlocks.GLOWVINE.getBlockInstance());
 	}
 
-	static final WorldLocation getLocation(CrystalNetworkTile te) {
+	public static final WorldLocation getLocation(CrystalNetworkTile te) {
 		return new WorldLocation(te.getWorld(), te.getX(), te.getY(), te.getZ());
 	}
 

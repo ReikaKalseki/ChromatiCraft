@@ -19,10 +19,23 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Network.CrystalPath;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class TileEntityCrystalBase extends TileEntityChromaticBase implements CrystalNetworkTile {
 
 	private UUID uniqueID = CrystalNetworker.instance.getNewUniqueID();
+
+	private int bottleNeckDisplayTick = 0;
+
+	@Override
+	public void updateEntity(World world, int x, int y, int z, int meta) {
+		if (bottleNeckDisplayTick > 0) {
+			if (world.isRemote)
+				this.doBottleneckDisplay();
+			bottleNeckDisplayTick--;
+		}
+	}
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
@@ -87,6 +100,20 @@ public abstract class TileEntityCrystalBase extends TileEntityChromaticBase impl
 			uniqueID = CrystalNetworker.instance.getNewUniqueID();
 	}
 
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		NBT.setInteger("bottleneck", bottleNeckDisplayTick);
+	}
+
+	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		bottleNeckDisplayTick = NBT.getInteger("bottleneck");
+	}
+
 	public final UUID getUniqueID() {
 		return uniqueID;
 	}
@@ -124,6 +151,20 @@ public abstract class TileEntityCrystalBase extends TileEntityChromaticBase impl
 
 	public boolean canConductInterdimensionally() {
 		return false;
+	}
+
+	public final void triggerBottleneckDisplay(int duration) {
+		bottleNeckDisplayTick = duration;
+		this.syncAllData(false);
+	}
+
+	public final boolean isDoingBottleneckDisplay() {
+		return bottleNeckDisplayTick > 0;
+	}
+
+	@SideOnly(Side.CLIENT)
+	protected void doBottleneckDisplay() {
+
 	}
 
 }

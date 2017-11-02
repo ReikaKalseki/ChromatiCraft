@@ -87,7 +87,7 @@ public class BlockRotatingLock extends Block {
 
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
-		if (this.hasTileEntity(world.getBlockMetadata(x, y, z)))
+		if (!world.isRemote && this.hasTileEntity(world.getBlockMetadata(x, y, z)))
 			((TileEntityRotatingLock)world.getTileEntity(x, y, z)).startRotating(ep.isSneaking());
 		return true;
 	}
@@ -116,18 +116,22 @@ public class BlockRotatingLock extends Block {
 		public void updateEntity() {
 			if (rotatingAmount > 0) {
 				rotatingAmount = Math.min(rotatingAmount+3, 90);
-				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 				if (rotatingAmount == 90) {
 					rotatingAmount = 0;
 					this.finishRotating(false);
 				}
+				else {
+					worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+				}
 			}
 			else if (rotatingAmount < 0) {
 				rotatingAmount = Math.max(rotatingAmount-3, -90);
-				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 				if (rotatingAmount == -90) {
 					rotatingAmount = 0;
 					this.finishRotating(true);
+				}
+				else {
+					worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 				}
 			}
 		}

@@ -64,6 +64,7 @@ import Reika.ChromatiCraft.Auxiliary.ToolDispenserHandlers.ManipulatorDispenserA
 import Reika.ChromatiCraft.Auxiliary.ToolDispenserHandlers.ProjectileToolDispenserAction;
 import Reika.ChromatiCraft.Auxiliary.VillageTradeHandler;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
+import Reika.ChromatiCraft.Auxiliary.Ability.ChromabilityHandler;
 import Reika.ChromatiCraft.Auxiliary.Command.CrystalNetCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.DimensionGeneratorCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.GuardianCommand;
@@ -119,6 +120,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.ChromatiCraft.Render.ParticleEngine;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityOreCreator;
@@ -143,6 +145,7 @@ import Reika.ChromatiCraft.World.IWG.LumaGenerator;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.ChromatiCraft.World.IWG.SkypeaterGenerator;
 import Reika.ChromatiCraft.World.IWG.TieredWorldGenerator;
+import Reika.ChromatiCraft.World.IWG.WarpNodeGenerator;
 import Reika.ChromatiCraft.World.Nether.NetherStructureGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.DragonOptions;
@@ -499,6 +502,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		RetroGenController.instance.addHybridGenerator(GlowingCliffsAuxGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
 		RetroGenController.instance.addHybridGenerator(SkypeaterGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
 		//RetroGenController.instance.addHybridGenerator(UnknownArtefactGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
+		RetroGenController.instance.addHybridGenerator(WarpNodeGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
 
 		this.addRerunnableDecorator(CrystalGenerator.instance, 0);
 		this.addRerunnableDecorator(ColorTreeGenerator.instance, -10);
@@ -660,6 +664,8 @@ public class ChromatiCraft extends DragonAPIMod {
 			MESystemReader.registerMESystemEffect(UABombingEffects.instance.createMESystemEffect());
 		}
 
+		ChunkProviderChroma.regenerateGenerators();
+
 		this.finishTiming();
 	}
 
@@ -705,7 +711,6 @@ public class ChromatiCraft extends DragonAPIMod {
 		TileEntityBiomePainter.buildBiomeList();
 		TileEntityOreCreator.initOreMap();
 		ItemDuplicationWand.loadMappings();
-		ChunkProviderChroma.regenerateGenerators();
 
 		ReikaDispenserHelper.addDispenserAction(ChromaItems.TOOL.getStackOf(), new ManipulatorDispenserAction());
 		ProjectileToolDispenserAction proj = new ProjectileToolDispenserAction();
@@ -725,6 +730,8 @@ public class ChromatiCraft extends DragonAPIMod {
 		WorldGenInterceptionRegistry.instance.addWatcher(ChromaAux.populationWatcher);
 		WorldGenInterceptionRegistry.instance.addIWGWatcher(ChromaAux.slimeIslandBlocker);
 		WorldGenInterceptionRegistry.instance.addException(ChromaAux.dimensionException);
+
+		ItemMagicRegistry.instance.addPostload();
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			ModInteraction.addThaumCraft();
@@ -809,6 +816,10 @@ public class ChromatiCraft extends DragonAPIMod {
 		return b instanceof BiomeRainbowForest || (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.getMystParentBiome(b) instanceof BiomeRainbowForest);
 	}
 
+	public static boolean isEnderForest(BiomeGenBase b) {
+		return b instanceof BiomeEnderForest || (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.getMystParentBiome(b) instanceof BiomeEnderForest);
+	}
+
 	@EventHandler
 	public void registerCommands(FMLServerStartingEvent evt) {
 		evt.registerServerCommand(new GuardianCommand());
@@ -847,6 +858,8 @@ public class ChromatiCraft extends DragonAPIMod {
 	@EventHandler
 	public void serverShutdown(FMLServerStoppingEvent evt) {
 		ProgressionCacher.instance.saveAll();
+		if (MinecraftServer.getServer().isDedicatedServer())
+			ChromaDimensionManager.serverStopping = true;
 	}
 
 	private void setupClassFiles() {
@@ -883,7 +896,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (!ModList.THERMALFOUNDATION.isLoaded())
 			FluidContainerRegistry.registerFluidContainer(new FluidStack(ender, FluidContainerRegistry.BUCKET_VOLUME), ChromaItems.BUCKET.getStackOfMetadata(1), new ItemStack(Items.bucket));
 		FluidContainerRegistry.registerFluidContainer(new FluidStack(crystal, FluidContainerRegistry.BUCKET_VOLUME), ChromaItems.BUCKET.getStackOfMetadata(2), new ItemStack(Items.bucket));
-		FluidContainerRegistry.registerFluidContainer(new FluidStack(lumen, FluidContainerRegistry.BUCKET_VOLUME), ChromaItems.BUCKET.getStackOfMetadata(3), new ItemStack(Items.bucket));
+		FluidContainerRegistry.registerFluidContainer(new FluidStack(lumen, FluidContainerRegistry.BUCKET_VOLUME), ChromaItems.BUCKET.getStackOfMetadata(4), new ItemStack(Items.bucket));
 	}
 
 	@SideOnly(Side.CLIENT)

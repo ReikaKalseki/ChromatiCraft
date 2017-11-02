@@ -148,9 +148,7 @@ public class CrystalPath implements Comparable<CrystalPath> {
 			if (sr.needsLineOfSightToReceiver(rec) || rec.needsLineOfSightFromTransmitter(sr)) {
 				CrystalLink l = network.getLink(tgt, src);
 				if (!l.hasLineOfSight()) {
-					l.recalculateLOS();
-					if (!l.hasLineOfSight())
-						return false;
+					return false;
 				}
 			}
 		}
@@ -220,6 +218,15 @@ public class CrystalPath implements Comparable<CrystalPath> {
 	@Override
 	public final int hashCode() {
 		return nodes.hashCode() ^ element.ordinal();
+	}
+
+	/** Sorted from receiver to source */
+	public ArrayList<CrystalNetworkTile> getTileList() {
+		ArrayList<CrystalNetworkTile> li = new ArrayList();
+		for (WorldLocation loc : nodes) {
+			li.add(PylonFinder.getNetTileAt(loc, true));
+		}
+		return li;
 	}
 
 	public CrystalPath optimize() {

@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -29,9 +28,9 @@ import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.DragonAPI.Instantiable.Data.Maps.RegionMap;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
@@ -130,7 +129,7 @@ public class GuiFragmentRecovery extends ChromaBookGui {
 	}
 
 	private void giveResearch(ChromaResearch r) {
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.RERESEARCH.ordinal(), Minecraft.getMinecraft().theWorld, 0, 0, 0, r.ordinal());
+		ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.RERESEARCH.ordinal(), r.ordinal());
 		missing.remove(r);
 		this.recalculateMissingVisible();
 	}

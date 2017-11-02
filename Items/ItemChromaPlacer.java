@@ -132,7 +132,7 @@ public class ItemChromaPlacer extends Item implements ISize {
 			return false;
 		if (!m.allowFakePlacer() && ReikaPlayerAPI.isFake(ep))
 			return false;
-		else {
+		else if (m.canPlayerPlace(ep)) {
 			if (!ep.capabilities.isCreativeMode)
 				--is.stackSize;
 			world.setBlock(x, y, z, m.getBlock(), m.getBlockMetadata(), 3);

@@ -15,6 +15,7 @@ import java.util.Iterator;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
@@ -46,7 +47,36 @@ public class RenderRouterHub extends ChromaRenderBase {
 		TileEntityRouterHub te = (TileEntityRouterHub)tile;
 		GL11.glPushMatrix();
 		GL11.glTranslated(par2, par4, par6);
+		GL11.glPushMatrix();
+		if (te.isInWorld()) {
+			switch(te.getFacing()) {
+				case NORTH:
+					GL11.glTranslated(0, 1, 0);
+					GL11.glRotated(90, 1, 0, 0);
+					break;
+				case SOUTH:
+					GL11.glTranslated(0, 0, 1);
+					GL11.glRotated(-90, 1, 0, 0);
+					break;
+				case WEST:
+					GL11.glTranslated(0, 1, 0);
+					GL11.glRotated(-90, 0, 0, 1);
+					break;
+				case EAST:
+					GL11.glTranslated(1, 0, 0);
+					GL11.glRotated(90, 0, 0, 1);
+					break;
+				case UP:
+					GL11.glTranslated(0, 1, 1);
+					GL11.glRotated(180, 1, 0, 0);
+					break;
+				case DOWN:
+				default:
+					break;
+			}
+		}
 		this.renderModel(te, model);
+		GL11.glPopMatrix();
 
 		if (te.isInWorld() && MinecraftForgeClient.getRenderPass() == 1) {
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
@@ -89,6 +119,10 @@ public class RenderRouterHub extends ChromaRenderBase {
 
 			Collection<Highlight> li = te.getHighlightLocations();
 			Iterator<Highlight> it = li.iterator();
+			ForgeDirection dir = te.getFacing();
+			double ox = 0.5-dir.offsetX*0.3125;
+			double oy = 0.5-dir.offsetY*0.3125;
+			double oz = 0.5-dir.offsetZ*0.3125;
 			while (it.hasNext()) {
 				Highlight h = it.next();
 				Coordinate c = h.location;
@@ -98,7 +132,7 @@ public class RenderRouterHub extends ChromaRenderBase {
 					if (a > 0) {
 						DecimalPosition d = new DecimalPosition(c).offset(-0.5, -0.5, -0.5);
 						d = d.offset(((TileEntityRouterNode)node).getSide(), -0.5).offset(-te.xCoord, -te.yCoord, -te.zCoord);
-						ChromaFX.renderBeam(0.5, 0.75, 0.5, d.xCoord+0.5, d.yCoord+0.5, d.zCoord+0.5, par8, a, 0.1875);
+						ChromaFX.renderBeam(ox, oy, oz, d.xCoord+0.5, d.yCoord+0.5, d.zCoord+0.5, par8, a, 0.1875);
 					}
 					h.age++;
 					if (h.age >= h.lifespan)

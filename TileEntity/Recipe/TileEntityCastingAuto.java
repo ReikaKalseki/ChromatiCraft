@@ -176,7 +176,9 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 						}
 						else {
 							int amt = Math.min(recipesToGo, recipe.getOutput().getMaxStackSize()/recipe.getOutput().stackSize);
+							//ReikaJavaLibrary.pConsole("Preparing step for recipe "+recipe);
 							UpdateStep c = this.prepareRecipeStep(world, x, y, z, te, amt);
+							//ReikaJavaLibrary.pConsole("Obtained "+c);
 							if (c != null) {
 								recipeCycles = recipeCycles > 0 ? Math.min(recipeCycles, c.item.stackSize) : c.item.stackSize;
 								ChromaSounds.CAST.playSoundAtBlock(world, c.loc.xCoord, c.loc.yCoord, c.loc.zCoord);
@@ -311,6 +313,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 				MultiBlockCastingRecipe mr = (MultiBlockCastingRecipe)recipe;
 				HashMap<List<Integer>, TileEntityItemStand> map = te.getOtherStands();
 				Map<List<Integer>, ItemMatch> items = mr.getAuxItems();
+				//ReikaJavaLibrary.pConsole("Need items "+items);
 				for (List<Integer> key : map.keySet()) {
 					ItemMatch item = items.get(key);
 					TileEntityItemStand stand = map.get(key);
@@ -325,6 +328,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 							}
 							else {
 								ItemStack ret = this.findItem(item, amt);
+								//ReikaJavaLibrary.pConsole("Looking for "+item+", got "+ret);
 								if (ret != null) {
 									stand.setInventorySlotContents(0, ret);
 									return new UpdateStep(stand, ret);
@@ -353,6 +357,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 						}
 						else {
 							ItemStack ret = this.findItem(ctr, amt);
+							//ReikaJavaLibrary.pConsole("Looking for center item "+ctr+", got "+ret);
 							if (ret != null) {
 								te.setInventorySlotContents(i, ret);
 								return new UpdateStep(te, ret);
@@ -369,6 +374,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 			}
 			else {
 				Object[] arr = recipe.getInputArray();
+				//ReikaJavaLibrary.pConsole("Looking for "+Arrays.toString(arr));
 				for (int i = 0; i < 9; i++) {
 					Object item = arr[i];
 					ItemStack in = te.getStackInSlot(i);
@@ -384,6 +390,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 						}
 						else {
 							ItemStack ret = this.findItem(item, amt);
+							//ReikaJavaLibrary.pConsole("Looking for "+item+", got "+ret);
 							if (ret != null) {
 								te.setInventorySlotContents(i, ret);
 								return new UpdateStep(te, ret);
@@ -488,6 +495,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 	}
 
 	public void setRecipe(CastingRecipe c, int amt) {
+		//ReikaJavaLibrary.pConsole(amt+" x "+c);
 		recipe = c;
 		recipesToGo = amt;
 	}

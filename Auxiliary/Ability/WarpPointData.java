@@ -149,18 +149,20 @@ public class WarpPointData {
 		JsonElement e = new JsonParser().parse(ReikaFileReader.getReader(f));
 		if (e instanceof JsonObject) {
 			JsonObject j = (JsonObject)e;
-			JsonArray dims = j.getAsJsonArray("dimensions");
-			int x = j.getAsJsonPrimitive("x").getAsInt();
-			int y = j.getAsJsonPrimitive("y").getAsInt();
-			int z = j.getAsJsonPrimitive("z").getAsInt();
-			String id = j.getAsJsonPrimitive("name").getAsString();
-			try {
-				WarpPoint p = new WarpPoint(id, new WorldLocation(dims.get(0).getAsInt(), x, y, z));
-				map.add(p);
-			}
-			catch (Exception ex) {
-				ChromatiCraft.logger.logError("Could not parse waypoint entry: "+e.toString());
-				ex.printStackTrace();
+			if (j.getAsJsonPrimitive("enable").getAsBoolean()) {
+				JsonArray dims = j.getAsJsonArray("dimensions");
+				int x = j.getAsJsonPrimitive("x").getAsInt();
+				int y = j.getAsJsonPrimitive("y").getAsInt();
+				int z = j.getAsJsonPrimitive("z").getAsInt();
+				String id = j.getAsJsonPrimitive("name").getAsString();
+				try {
+					WarpPoint p = new WarpPoint(id, new WorldLocation(dims.get(0).getAsInt(), x, y, z));
+					map.add(p);
+				}
+				catch (Exception ex) {
+					ChromatiCraft.logger.logError("Could not parse waypoint entry: "+e.toString());
+					ex.printStackTrace();
+				}
 			}
 		}
 	}

@@ -9,7 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MathHelper;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
@@ -19,8 +23,10 @@ import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Models.ModelLootChest;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public class RenderLootChest extends ChromaRenderBase {
 
@@ -93,6 +99,49 @@ public class RenderLootChest extends ChromaRenderBase {
 			GL11.glTranslated(1/256D, 0, -1/256D);
 			ReikaRenderHelper.renderEnchantedModel(te, model, null, rot);
 			GL11.glPopMatrix();
+		}
+
+		if (te.hasMarker && MinecraftForgeClient.getRenderPass() == 1) {
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glDisable(GL11.GL_ALPHA_TEST);
+			GL11.glDepthMask(false);
+			ReikaRenderHelper.disableEntityLighting();
+			BlendMode.ADDITIVEDARK.apply();
+			GL11.glDisable(GL11.GL_CULL_FACE);
+
+			GL11.glTranslated(1, 1.25, 1);
+			double s = 2;
+			GL11.glScaled(s, s*2, s);
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/lightcone-foggy.png");
+			long tick = Minecraft.getMinecraft().theWorld.getTotalWorldTime()+te.hashCode();
+			int idx = (int)(tick%48);
+			double u = (idx%12)/12D;
+			double v = (idx/12)/4D;
+			double du = u+1/12D;
+			double dv = v+1/4D;
+			Tessellator v5 = Tessellator.instance;
+
+			double h = 2.5;
+			double f = 0.5+0.5*Math.sin(tick/8D)+0.125*Math.sin((tick+300)/3D)+0.25*Math.cos((tick+20)/7D);
+			int c1 = 0x22aaff;
+			int c2 = 0x5588ff;
+			int c = ReikaColorAPI.mixColors(c1, c2, (float)MathHelper.clamp_double(f, 0, 1));
+
+			//for (double a = 0; a < 360; a += 120) {
+			GL11.glPushMatrix();
+			//GL11.glRotated(a, 0, 1, 0);
+			GL11.glRotated(-RenderManager.instance.playerViewY, 0, 1, 0);
+			v5.startDrawingQuads();
+			v5.setColorOpaque_I(c);
+			v5.addVertexWithUV(-0.5, h, 0, u, v);
+			v5.addVertexWithUV(0.5, h, 0, du, v);
+			v5.addVertexWithUV(0.5, 0, 0, du, dv);
+			v5.addVertexWithUV(-0.5, 0, 0, u, dv);
+			v5.draw();
+			GL11.glPopMatrix();
+			GL11.glPopAttrib();
 		}
 
 		GL11.glPopMatrix();

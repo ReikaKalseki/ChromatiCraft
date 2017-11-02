@@ -123,7 +123,7 @@ public class EntityFloatingSeedsFX extends EntityBlurFX {
 	}
 
 	private void updateVelocities() {
-		double[] xyz = ReikaPhysicsHelper.polarToCartesian(particleVelocity, angY, angXZ);
+		double[] xyz = ReikaPhysicsHelper.polarToCartesianFast(particleVelocity, angY, angXZ);
 		motionX = xyz[0];
 		motionY = xyz[1];
 		motionZ = xyz[2];

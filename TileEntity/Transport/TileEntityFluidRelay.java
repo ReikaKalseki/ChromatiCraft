@@ -172,7 +172,7 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 
 	private void renderFluid(Fluid f) {
 		if (!worldObj.isRemote) {
-			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.RELAYFLUID.ordinal(), this, 32, f.getID());
+			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.RELAYFLUID.ordinal(), this, 24, f.getID());
 		}
 	}
 
@@ -211,6 +211,8 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 	}
 
 	public void pushFluids() {
+		if (network == null)
+			return;
 		IFluidHandler ifl = this.getTank();
 		if (ifl == null)
 			return;
@@ -227,6 +229,8 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 	}
 
 	public void suckFluids() {
+		if (network == null)
+			return;
 		IFluidHandler ifl = this.getTank();
 		if (ifl == null)
 			return;

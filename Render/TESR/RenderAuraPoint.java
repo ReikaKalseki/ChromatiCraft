@@ -49,7 +49,7 @@ public class RenderAuraPoint extends RenderLocusPoint {
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glDepthMask(false);
 
-			if (te.doPVP && te.isInWorld()) {
+			if (te.doPvP() && te.isInWorld()) {
 				ReikaTextureHelper.bindTerrainTexture();
 				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 				Tessellator v5 = Tessellator.instance;

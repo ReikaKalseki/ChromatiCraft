@@ -133,7 +133,7 @@
 			Items are easy to store en masse - particularly after you found a way to store them in patterns on some strange purple crystals - but too often you find yourself out of storage for fluids that you collect or produce. Tanks of all sizes are already available to you, but even the largest ones, these mysterious metal boxes that only seem structurally stable in a few preset sizes, hold a few tens of thousands of buckets. By trapping a link to the void hole inside a glass frame and adding large quantities of fluid energy, you have a multiblock tank that can quickly reach enormous capacities.
 		</desc>
 		<note>
-			Capacity is approximately %d*n^2 buckets, where n is the number of blocks in the tank
+			Capacity is approximately %d*(n+3)^2 buckets, where n is the number of blocks in the tank
 
 			Can be built to any size and shape, up to a capacity of %d buckets
 		</note>
@@ -316,7 +316,7 @@
 			The standard method of keeping unwanted creatures away is to light the area, but that is often difficult or ugly to do, and the best designs can be rendered worthless with one block left a bit too dark. With that in mind, you seek to concentrate crystal energy, being luminous itself, in some sort of lamp to keep the mobs at bay.
 		</desc>
 		<note>
-			Range: %d for each element in the lamp
+			Range: %d for each element in the lamp, added via shards
 		</note>
 	</lamp>
 	<powertree>
@@ -695,22 +695,22 @@
 
 		</note>
 	</aurapoint>
-	<name>
+	<manabooster>
 		<desc>
-
+			Pools of shiny blue liquid and flowers that eat cake, leaves, bread, and coal to make said liquid are nice, as are ones that turn this blue liquid into clay, item movement, dungeon loot, or forbidden knowledge. But there comes a time when you realize that in order to fully supply those flowers (disregarding the sunflower field that now looks more like a radiation accident), you need enough flowers and their preferred foods that you can barely move. Additionally, even the best spreaders can barely manage the load. What you need is something else which can pull from the flowers with a much greater efficiency.
 		</desc>
 		<note>
 
 		</note>
-	</name>
-	<name>
+	</manabooster>
+	<progresslink>
 		<desc>
-
+			Sharing a base with a friend is a common practice, but you have found that what you learn as you explore and experiment is less easily shared. You could of course have your partner perform the same actions as you, but they may be more interested in pulling up ores, playing bee matchmaker, or going insane by reading ancient scribbles. Or they may be interested but unable to learn, preferring to watch crops grow or to fall into lava. Either way, if you could make it such that the two - or more - of you learned in tandem, this problem would be solved.
 		</desc>
 		<note>
 
 		</note>
-	</name>
+	</progresslink>
 	<name>
 		<desc>
 

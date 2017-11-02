@@ -205,6 +205,9 @@ public class EntityDimensionFlare extends Entity/*Living*/ {
 		if (stateTick >= state.duration) {
 			state = state.next(!ProgressStage.CTM.isPlayerAtStage(target));
 			stateTick = 0;
+			if (state == RelationState.ATTACK) {
+				aggroPlayers.put(target.getUniqueID(), 0);
+			}
 		}
 	}
 

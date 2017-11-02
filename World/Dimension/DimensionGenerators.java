@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.SubBiomes;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenAurorae;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenChromaMeteor;
+import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenChunkloaderBlocks;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenCrystalPit;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenCrystalShrub;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenCrystalTree;
@@ -66,6 +67,7 @@ public enum DimensionGenerators {
 	BLOBS(WorldGenTerrainBlob.class,				GeneratorType.TERRAIN,		GeneratorTheme.OCEANIC,			Integer.MIN_VALUE),
 	GLASSCLIFFS(WorldGenGlassCliffs.class,			GeneratorType.FEATURE,		GeneratorTheme.GEOHISTORICAL,	Integer.MIN_VALUE),
 	CRACKS(WorldGenGlowingCracks.class,				GeneratorType.FEATURE,		GeneratorTheme.ENERGY,			Integer.MAX_VALUE),
+	CHUNKLOADER(WorldGenChunkloaderBlocks.class,	GeneratorType.FEATURE,		GeneratorTheme.PRECURSORS,		Integer.MAX_VALUE),
 	;
 
 	private final Class genClass;
@@ -98,8 +100,10 @@ public enum DimensionGenerators {
 	}
 
 	public boolean generateIn(ChromaDimensionBiome b) {
-		if (b.biomeType == Biomes.STRUCTURE) {
-			return ReikaRandomHelper.doWithChance(25) && this.generateIn(Biomes.CENTER.getBiome());
+		if (this == CHUNKLOADER)
+			return b.biomeType == Biomes.STRUCTURE || b.biomeType == Biomes.MONUMENT;
+		if (b.biomeType == Biomes.STRUCTURE || b.biomeType == Biomes.MONUMENT) {
+			return ReikaRandomHelper.doWithChance(25) && this.generateIn(Biomes.CENTER.getBiome()) && this.canGenerateInStructureBiome();
 		}
 		if (b.biomeType == Biomes.CENTER)
 			return !this.isDedicatedBiomeOnly();
@@ -144,6 +148,10 @@ public enum DimensionGenerators {
 			default:
 				return true;
 		}
+	}
+
+	private boolean canGenerateInStructureBiome() {
+		return true;
 	}
 
 	private boolean isDedicatedBiomeOnly() {

@@ -61,7 +61,7 @@ public class GuiItemCollector extends GuiChromaBase
 	protected void actionPerformed(GuiButton b) {
 		super.actionPerformed(b);
 		if (b.id <= 1) {
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.COLLECTORRANGE.ordinal(), vac, b.id);
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.COLLECTORRANGE.ordinal(), vac, b.id);
 			if (b.id > 0)
 				vac.increaseRange();
 			else

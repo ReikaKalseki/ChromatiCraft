@@ -19,8 +19,10 @@ import net.minecraftforge.fluids.FluidRegistry;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.Auxiliary.WorldGenInterceptionRegistry;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Maps.ThresholdMapping;
+import Reika.DragonAPI.Instantiable.Event.SetBlockEvent;
 import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
@@ -85,6 +87,11 @@ public class LavaRiverGenerator implements IPopulate {
 	}
 
 	public void generate(World world, int chunkX, int chunkZ) {
+
+		WorldGenInterceptionRegistry.skipLighting = true;
+		SetBlockEvent.eventEnabledPre = false;
+		SetBlockEvent.eventEnabledPost = false;
+
 		for (int i = 0; i < 16; i++) {
 			for (int k = 0; k < 16; k++) {
 				int dx = chunkX*16+i;
@@ -114,6 +121,10 @@ public class LavaRiverGenerator implements IPopulate {
 				}
 			}
 		}
+
+		WorldGenInterceptionRegistry.skipLighting = false;
+		SetBlockEvent.eventEnabledPre = true;
+		SetBlockEvent.eventEnabledPost = true;
 	}
 
 	private Block getLiquid(double rx, double rz) {

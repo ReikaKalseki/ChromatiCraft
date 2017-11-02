@@ -15,6 +15,7 @@ import java.util.Random;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ChestGenHooks;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.BlockHoverBlock.HoverType;
@@ -24,6 +25,8 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.ThreeDMazeGenerator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 
@@ -51,6 +54,9 @@ public class MazeRoom extends StructurePiece {
 
 	@Override
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) { //XYZ is of origin cell
+
+		MultiMap<Coordinate, ForgeDirection> openCells = new MultiMap(new HashSetFactory());
+
 		for (Coordinate c : cells) {
 			c = c.offset(center.negate());
 			for (int i = 0; i <= size; i++) {
@@ -63,12 +69,14 @@ public class MazeRoom extends StructurePiece {
 							BlockKey bk = world.getBlock(dx, dy, dz);
 							if (bk != null && bk.blockID == Blocks.air) {
 								world.setBlock(dx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CRACKS.metadata);
+								openCells.addValue(c, ForgeDirection.DOWN);
 							}
 						}
 						else if (j == size) {
 							BlockKey bk = world.getBlock(dx, dy, dz);
 							if (bk != null && bk.blockID == Blocks.air) {
 								world.setBlock(dx, dy, dz, ChromaBlocks.HOVER.getBlockInstance(), HoverType.DAMPER.getPermanentMeta());
+								openCells.addValue(c, ForgeDirection.UP);
 							}
 						}
 						else {
@@ -121,7 +129,7 @@ public class MazeRoom extends StructurePiece {
 		}
 
 		if (cellRadius == 2) {
-			if (rand.nextBoolean()) {
+			if (rand.nextBoolean() && !openCells.get(new Coordinate(0, 0, 0)).contains(ForgeDirection.DOWN)) { //blocks center down
 				for (int i = -2; i <= size+2; i++) {
 					for (int k = -2; k <= size+2; k++) {
 						int dx = x+i;

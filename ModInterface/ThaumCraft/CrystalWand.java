@@ -16,12 +16,14 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.wands.IWandRodOnUpdate;
 import thaumcraft.api.wands.WandRod;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
@@ -30,6 +32,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.IO.DirectResourceManager;
+import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -45,21 +48,36 @@ public class CrystalWand extends WandRod {
 	private static final Random rand = new Random();
 
 	private final IWandRodOnUpdate updater = new WandUpdater();
+	private ColorBlendList colors;
 
 	public CrystalWand() {
 		super("CRYSTALWAND", 6000, ChromaStacks.crystalWand, 18, null, null);
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
 			this.registerTexture();
+		this.setGlowing(true);
 	}
 
 	@SideOnly(Side.CLIENT)
 	private void registerTexture() {
 		this.setTexture(DirectResourceManager.getResource("Reika/ChromatiCraft/Textures/Wands/crystalwand.png"));
+		colors = new ColorBlendList(10, ChromaFX.getChromaColorTiles());
 	}
 
 	@Override
 	public IWandRodOnUpdate getOnUpdate() {
 		return updater;
+	}
+
+	@Override
+	public ResourceLocation getTexture() {
+		/*
+		int c = colors != null ? colors.getColor(System.currentTimeMillis()/50D) : 0;
+		float r = ReikaColorAPI.getRed(c)/255F;
+		float g = ReikaColorAPI.getGreen(c)/255F;
+		float b = ReikaColorAPI.getBlue(c)/255F;
+		GL11.glColor4f(r, g, b, 1);
+		 */
+		return super.getTexture();
 	}
 
 	private static class WandUpdater implements IWandRodOnUpdate {

@@ -122,6 +122,11 @@ public final class RuneShape {
 		return new RuneViewer(this);
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof RuneShape && ((RuneShape)o).runes.equals(runes);
+	}
+
 	public static class RuneLocation {
 
 		public final CrystalElement color;

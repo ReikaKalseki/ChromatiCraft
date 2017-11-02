@@ -98,12 +98,21 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 	private final FastBlockCache cache = new FastBlockCache();
 	private final FastPlayerCache hostilePlayers = new FastPlayerCache();
 
-	public boolean doPVP = true;
+	private boolean doPVP = true;
 
 	@Override
 	public void breakBlock() {
 		super.breakBlock();
 		this.removePoint();
+	}
+
+	public void togglePVP() {
+		doPVP = !doPVP;
+		hostilePlayers.clear();
+	}
+
+	public boolean doPvP() {
+		return doPVP;
 	}
 
 	@Override

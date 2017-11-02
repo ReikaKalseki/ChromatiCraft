@@ -760,13 +760,24 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	}
 
 	public boolean triggerMonument(EntityPlayer ep) {
+		if (ep.worldObj.isRemote)
+			return false;
 		triggeredMonument = true;
 		monument = new MonumentCompletionRitual(worldObj, xCoord, yCoord, zCoord, ep);
 		if (monument.doChecks(false)) {
+			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.MONUMENTSTART.ordinal(), this, 128);
 			monument.start();
 			return true;
 		}
 		return false;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public boolean triggerMonumentClient(EntityPlayer ep) {
+		triggeredMonument = true;
+		monument = new MonumentCompletionRitual(worldObj, xCoord, yCoord, zCoord, ep);
+		monument.start();
+		return true;
 	}
 
 	public boolean isTriggerPlayer(EntityPlayer ep) {

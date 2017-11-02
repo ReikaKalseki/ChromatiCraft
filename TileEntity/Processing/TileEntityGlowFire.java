@@ -301,16 +301,22 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 			tag.scale(2);
 		}
 		tag.scale(BASE_ITEM_FACTOR);
-		if (is.getItem() == Items.dye || ChromaItems.DYE.matchWith(is))
+		if (is.getItem() == Items.dye || ChromaItems.DYE.matchWith(is) || ReikaItemHelper.isOreNugget(is))
 			tag.scale(0.25F);
 		if (sc)
 			tag.scale(1.2F);
+		if (ChromaItems.SHARD.matchWith(is))
+			tag.scale(is.getItemDamage() >= 16 ? 4 : 1.5F);
 		return tag;
 	}
 
 	private static ElementTagCompound scaleDecompositionTag(ItemStack is, ElementTagCompound tag) {
-		if (is.getItem() != Items.dye && !ChromaItems.DYE.matchWith(is))
+		if (is.getItem() != Items.dye && !ChromaItems.DYE.matchWith(is) && !ReikaItemHelper.isOreNugget(is))
 			tag.scale(BASE_ITEM_FACTOR);
+		if (ChromaBlocks.PYLONSTRUCT.match(is))
+			tag.scale(0.5F);
+		if (ChromaItems.SHARD.matchWith(is))
+			tag.scale(is.getItemDamage() >= 16 ? 3 : 2);
 		return tag;
 	}
 

@@ -113,7 +113,7 @@ public class TileEntityHarvesterPlant extends TileEntityMagicPlant {
 		}
 		ReikaItemHelper.dropItems(world, x+0.5, y+0.5, z+0.5, li);
 		ReikaSoundHelper.playBreakSound(world, x, y, z, Blocks.grass);
-		ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, x, y, z, Block.getIdFromBlock(b), meta);
+		ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, x, y, z, 48, Block.getIdFromBlock(b), meta);
 		world.setBlock(x, y, z, Blocks.air);
 	}
 

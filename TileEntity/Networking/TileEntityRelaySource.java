@@ -165,7 +165,7 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 
 	@Override
 	public int maxThroughput() {
-		return enhanced ? 12000 : 4000;
+		return enhanced ? 30000 : 6000;
 	}
 
 	@Override

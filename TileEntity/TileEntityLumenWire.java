@@ -247,23 +247,29 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 		int n = 1+rand.nextInt(3);
 		float ds = 0;
 		if (dp > 16384) {
-			if (rand.nextInt(4) > 0)
+			if (rand.nextInt(6) > 0)
 				return;
 		}
 		else if (dp > 4096) { //64
-			if (rand.nextInt(2) == 0)
+			if (rand.nextInt(4) > 0)
 				return;
 			n = n/3;
 			ds = 4;
 		}
 		else if (dp > 1024) { //32
-			if (rand.nextInt(3) == 0)
+			if (rand.nextInt(3) > 0)
 				return;
 			n = n/2;
 			ds = 1.5F;
 		}
 		else if (dp > 256) { //16
-			if (rand.nextInt(4) == 0)
+			if (rand.nextInt(2) == 0)
+				return;
+			n = n*3/2;
+			ds = 0.5F;
+		}
+		else if (dp > 64) { //8
+			if (rand.nextInt(3) == 0)
 				return;
 			n = n*3/2;
 			ds = 0.5F;

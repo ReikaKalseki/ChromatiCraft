@@ -68,6 +68,7 @@ import forestry.api.apiculture.IBeeHousingInventory;
 public class TileEntityRouterHub extends TileEntityChromaticBase implements IActionHost, RouterFilter, AdjacentUpdateWatcher {
 
 	private final ItemCollection ingredients = new ItemCollection();
+
 	@ModDependent(ModList.APPENG)
 	private MESystemReader network;
 	private Object aeGridBlock;
@@ -82,6 +83,8 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 	private final HashSet<Highlight> highlights = new HashSet();
 
 	private ItemRule[] defaults = new ItemRule[9];
+
+	private ForgeDirection facing = ForgeDirection.DOWN;
 
 	public TileEntityRouterHub() {
 		if (ModList.APPENG.isLoaded()) {
@@ -125,9 +128,9 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 			if (operationTimer.checkCap()) {
 				ArrayList<Coordinate> li = new ArrayList(extractions.keySet());
 				li.addAll(insertions.keySet());
-				boolean flag = true;
+				int count = this.getRunnableTicks(li);
 				Collections.shuffle(li);
-				while (flag && !li.isEmpty()) {
+				while (count > 0 && !li.isEmpty()) {
 					int idx = rand.nextInt(li.size());
 					Coordinate c = li.remove(idx);
 					Connection e = extractions.get(c);
@@ -136,7 +139,7 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 					if (e != null) {
 						if (e.performOperation(this)) {
 							this.addHighlight(c);
-							flag = false;
+							count--;
 						}
 					}
 				}
@@ -159,6 +162,10 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 				}
 			}
 		}*/
+	}
+
+	private int getRunnableTicks(ArrayList<Coordinate> li) {
+		return 1+li.size()/36;
 	}
 
 	public void addHighlight(Coordinate c) {
@@ -195,7 +202,7 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 
 	private void buildCache() {
 		ingredients.clear();
-		TileEntity te = this.getAdjacentTileEntity(ForgeDirection.DOWN);
+		TileEntity te = this.getAdjacentTileEntity(this.getFacing());
 		if (te instanceof IInventory) {
 			ingredients.addInventory((IInventory)te);
 		}
@@ -217,6 +224,15 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 					network = new MESystemReader((IGridNode)aeGridNode, network);
 			}
 		}
+	}
+
+	public ForgeDirection getFacing() {
+		return facing != null ? facing : ForgeDirection.DOWN;
+	}
+
+	public void setFacing(ForgeDirection dir) {
+		facing = dir;
+		this.buildCache();
 	}
 
 	private ItemStack findItem(ItemStack is, MatchMode mode, boolean simulate) {
@@ -278,7 +294,7 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 	@Override
 	@ModDependent(ModList.APPENG)
 	public IGridNode getGridNode(ForgeDirection dir) {
-		return dir == ForgeDirection.DOWN ? (IGridNode)aeGridNode : null;
+		return dir == this.getFacing() ? (IGridNode)aeGridNode : null;
 	}
 
 	@Override
@@ -298,6 +314,20 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 		super.onInvalidateOrUnload(world, x, y, z, invalid);
 		if (ModList.APPENG.isLoaded() && aeGridNode != null)
 			((IGridNode)aeGridNode).destroy();
+	}
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		NBT.setInteger("facing", this.getFacing().ordinal());
+	}
+
+	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		facing = dirs[NBT.getInteger("facing")];
 	}
 
 	@Override

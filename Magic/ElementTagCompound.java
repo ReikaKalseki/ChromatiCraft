@@ -430,4 +430,9 @@ public final class ElementTagCompound {
 		}
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof ElementTagCompound && ((ElementTagCompound)o).data.equals(data);
+	}
+
 }

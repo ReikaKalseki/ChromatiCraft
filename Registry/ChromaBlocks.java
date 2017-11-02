@@ -72,6 +72,7 @@ import Reika.ChromatiCraft.Block.Decoration.BlockMetaAlloyLamp;
 import Reika.ChromatiCraft.Block.Decoration.BlockMusicTrigger;
 import Reika.ChromatiCraft.Block.Decoration.BlockRangedLamp;
 import Reika.ChromatiCraft.Block.Decoration.BlockRepeaterLight;
+import Reika.ChromatiCraft.Block.Dimension.BlockDimensionChunkloader;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDecoTile;
 import Reika.ChromatiCraft.Block.Dimension.BlockLightedLeaf;
@@ -252,7 +253,8 @@ public enum ChromaBlocks implements BlockEnum {
 	MOLTENLUMEN(BlockLiquidLumen.class, 		ChromatiCraft.lumen,			"Molten Lumen"),
 	METAALLOYLAMP(BlockMetaAlloyLamp.class,		ItemBlockSidePlaced.class,		"chroma.metaalloy"),
 	WARPNODE(BlockWarpNode.class,												"chroma.warpnode"),
-	FAKESKY(BlockFakeSky.class,													"chroma.fakesky");
+	FAKESKY(BlockFakeSky.class,													"chroma.fakesky"),
+	CHUNKLOADER(BlockDimensionChunkloader.class,								"chroma.chunkloader");
 
 	private Class blockClass;
 	private String blockName;
@@ -328,6 +330,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case TRAIL:
 				return ChromatiCraft.airMat;
 			case LIGHT:
+			case ROUTERNODE:
 				return Material.circuits;
 			case SPARKLE:
 			case CLIFFSTONE:
@@ -539,6 +542,8 @@ public enum ChromaBlocks implements BlockEnum {
 			case POLYCRYSTAL:
 			case METAALLOYLAMP:
 			case FAKESKY:
+			case WARPNODE:
+			case CHUNKLOADER:
 				return false;
 			default:
 				return true;

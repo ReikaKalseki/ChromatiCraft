@@ -14,6 +14,7 @@ import java.util.Collections;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -48,6 +49,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import codechicken.nei.NEIClientConfig;
 
 public class GuiCastingRecipe extends GuiBookSection {
@@ -119,12 +121,20 @@ public class GuiCastingRecipe extends GuiBookSection {
 	protected void actionPerformed(GuiButton button) {
 		if (System.currentTimeMillis()-buttoncooldown >= 50) {
 			if (button.id == 0 && index > 0) {
+				ItemStack is = this.getActiveRecipe().getOutput();
 				index--;
+				while (GuiScreen.isShiftKeyDown() && index > 0 && ReikaItemHelper.matchStacks(is, this.getActiveRecipe().getOutput())) {
+					index--;
+				}
 				recipeTextOffset = 0;
 				subpage = Math.min(subpage, this.getMaxSubpage());
 			}
 			else if (button.id == 1 && index < recipes.size()-1) {
+				ItemStack is = this.getActiveRecipe().getOutput();
 				index++;
+				while (GuiScreen.isShiftKeyDown() && index < recipes.size()-1 && ReikaItemHelper.matchStacks(is, this.getActiveRecipe().getOutput())) {
+					index++;
+				}
 				recipeTextOffset = 0;
 				subpage = Math.min(subpage, this.getMaxSubpage());
 			}

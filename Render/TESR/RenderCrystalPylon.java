@@ -56,6 +56,7 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 			ReikaRenderHelper.disableEntityLighting();
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glDisable(GL11.GL_CULL_FACE);
+			GL11.glDepthMask(false);
 			BlendMode.ADDITIVEDARK.apply();
 			if (VoidGazeLevels.PYLONXRAY.isActiveOnPlayer(Minecraft.getMinecraft().thePlayer))
 				GL11.glDisable(GL11.GL_DEPTH_TEST);

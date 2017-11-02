@@ -40,6 +40,8 @@ import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicVariablePoint;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
 import Reika.DragonAPI.Instantiable.ParticleController.ListOfPositionsController;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -139,6 +141,31 @@ public class BlockChromaTrail extends BlockContainer {
 				EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.5, z+0.5).setLife(l*3/2).setScale(f).setColliding();
 				fx.setAlphaFading().setRapidExpand().setPositionController(s).setColorController(BlockEtherealLight.colorController);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
+			if (ChromaItems.TOOL.matchWith(Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem())) {
+				if (world.rand.nextInt(2) == 0) {
+					double px = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.0625);
+					double py = ReikaRandomHelper.getRandomPlusMinus(y+0.5, 0.0625);
+					double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.0625);
+					int l = 10+world.rand.nextInt(31);
+					float f = 0.75F+world.rand.nextFloat()*0.75F;
+					EntityBlurFX fx = new EntityBlurFX(world, px, py, pz).setLife(l).setScale(f);
+					int c = ReikaColorAPI.mixColors(0xffffff, BlockEtherealLight.colorController.getColor(fx), world.rand.nextFloat()*0.375F);
+					fx.setColor(c);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+
+					if (pathIndex%4 == 0 && world.rand.nextInt(4) == 0) {
+						px = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.5);
+						py = ReikaRandomHelper.getRandomPlusMinus(y+0.5, 0.5);
+						pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.5);
+						l = 25+world.rand.nextInt(51);
+						f *= 2;
+						fx = new EntityBlurFX(world, px, py, pz).setLife(l).setScale(f);
+						c = ReikaColorAPI.getModifiedHue(c, ReikaRandomHelper.getRandomPlusMinus(ReikaColorAPI.getHue(c), 60));
+						fx.setColor(c).setIcon(ChromaIcons.FADE_GENTLE);
+						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					}
+				}
 			}
 		}
 

@@ -37,7 +37,7 @@ public class TerrainGenChromaIslands extends ChromaDimensionBiomeTerrainShaper {
 
 	private final SimplexNoiseGenerator sandNoise;
 
-	private static final int MIN_FLOOR_OCEAN = 6;
+	public static final int MIN_FLOOR_OCEAN = 16;
 	private static final int MAX_FLOOR_OCEAN = 36;
 	private static final int MIN_FLOOR_SHALLOWS = 64;
 	private static final int MAX_FLOOR_SHALLOWS = 80;

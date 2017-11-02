@@ -37,7 +37,6 @@ import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import thaumcraft.api.ThaumcraftApi;
@@ -78,7 +77,7 @@ public class ItemElementCalculator {
 
 	private static final int MAX_DEPTH = 40;
 
-	private final ItemHashMap<ElementTagCompound> cache = new ItemHashMap();
+	private final ItemHashMap<ElementTagCompound> cache = new ItemHashMap().enableNBT();
 
 	private final Collection<ItemInOutHandler> handlers = new ArrayList();
 
@@ -547,9 +546,7 @@ public class ItemElementCalculator {
 
 		tag = new ElementTagCompound();
 
-		int[] ids = OreDictionary.getOreIDs(is);
-		for (int i = 0; i < ids.length; i++) {
-			String name = OreDictionary.getOreName(ids[i]);
+		for (String name : ReikaItemHelper.getOreNames(is)) {
 			OreType ore = ReikaItemHelper.parseOreTypeName(name);
 			if (ore != null) {
 				ElementTagCompound tag2 = ItemMagicRegistry.instance.getValueForOreType(ore);

@@ -11,6 +11,9 @@ package Reika.ChromatiCraft.ModInterface.Bees;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashSet;
 
 import net.minecraft.client.Minecraft;
@@ -46,10 +49,12 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.BeeGene;
 import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Fertility;
 import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Flowering;
+import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Life;
 import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Speeds;
 import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Territory;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 
+import com.google.common.base.Strings;
 import com.mojang.authlib.GameProfile;
 
 import cpw.mods.fml.relauncher.Side;
@@ -63,8 +68,10 @@ import forestry.api.apiculture.IBeeHousing;
 import forestry.api.apiculture.IBeeHousingInventory;
 import forestry.api.apiculture.IBeeListener;
 import forestry.api.apiculture.IBeeModifier;
+import forestry.api.apiculture.IBeekeepingLogic;
 import forestry.api.core.EnumTemperature;
 import forestry.api.core.IClimateControlled;
+import forestry.api.core.INBTTagable;
 import forestry.api.genetics.AlleleManager;
 import forestry.api.genetics.EnumTolerance;
 import forestry.api.genetics.IAllele;
@@ -85,11 +92,17 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 
 	private static final HashSet<AlvearyEffect> effectSet = new HashSet();
 	private static final HashSet<AlvearyEffect> continualSet = new HashSet();
+	private static final HashSet<AlvearyEffect> clientSet = new HashSet();
 	private static final AutomationEffect automation;
+	private static final PlayerRestrictionEffect playerOnlyEffects;
+	private static final EnumMap<CrystalElement, ElementalBoostEffect> colorEffects = new EnumMap(CrystalElement.class);
 
 	private static Method tickMethod;
 	private static Field tempField;
 	private static Field humidField;
+	private static Field flowerCacheField;
+	private static Class beeLogicClass;
+	private static Class fakeLogicClass;
 
 	private Object logic;
 
@@ -102,12 +115,15 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 
 	private int lightningTicks;
 	private String movePrincess;
-
-	private boolean canWork;
+	private final Collection<AlvearyEffect> activeEffects = new HashSet();
+	private EfficientFlowerCache flowerCache;
 
 	private EntityItem renderItem;
 
 	private boolean multipleBoosters = false;
+
+	private IAlleleBeeSpecies cachedQueen;
+	private boolean canWork;
 
 	static {
 		if (ModList.FORESTRY.isLoaded()) {
@@ -121,9 +137,15 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 				tempField.setAccessible(true);
 				humidField = c.getDeclaredField("humidChange");
 				humidField.setAccessible(true);
+
+				beeLogicClass = Class.forName("forestry.apiculture.BeekeepingLogic");
+				flowerCacheField = beeLogicClass.getDeclaredField("hasFlowersCache");
+				flowerCacheField.setAccessible(true);
+
+				fakeLogicClass = Class.forName("forestry.apiculture.FakeBeekeepingLogic");
 			}
 			catch (Exception e) {
-				ChromatiCraft.logger.logError("Could not fetch Alveary tick() method");
+				ChromatiCraft.logger.logError("Could not fetch alveary internal methods!");
 				e.printStackTrace();
 				ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.FORESTRY, e);
 			}
@@ -142,7 +164,14 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		new HumidityMatchingEffect();
 		new GeneticRepairEffectI();
 		new GeneticRepairEffectII();
+		new EternalEffect();
+		//new SuppressionEffect(); //not implementable
 		automation = new AutomationEffect();
+		playerOnlyEffects = new PlayerRestrictionEffect();
+		for (int i = 0; i < 16; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			colorEffects.put(e, new ElementalBoostEffect(e));
+		}
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			new ProductionBoostEffect();
@@ -228,18 +257,35 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 			}
 
 			if (this.isAlvearyComplete()) {
-				if (this.getTicksExisted()%4 == 0)
+				if (!world.isRemote && this.getTicksExisted()%8 == 0) {
 					canWork = this.calcCanWork();
+					this.calcSpecies();
+				}
 
 				if (world.isRemote) {
 					this.doParticles(world, x, y, z);
+
+					for (AlvearyEffect ae : clientSet) {
+						if (ae.isActive(this)) {
+							if (ae.tickRate() == 1 || this.getTicksExisted()%ae.tickRate() == 0)
+								ae.clientTick(this);
+						}
+					}
+
+					if (!canWork && cachedQueen != null && this.getTicksExisted()%32 == 0) {
+						this.syncAllData(false);
+					}
 				}
 				if (this.hasQueen()) {
+					if (this.getTicksExisted()%8 == 0)
+						this.replaceFlowerCacher();
+					activeEffects.clear();
 					if (this.canQueenWork()) {
 						for (AlvearyEffect ae : effectSet) {
 							if (ae.isActive(this)) {
 								if (ae.tickRate() == 1 || this.getTicksExisted()%ae.tickRate() == 0)
-									ae.tick(this);
+									if (ae.tick(this))
+										activeEffects.add(ae);
 							}
 
 							if (ModList.THAUMCRAFT.isLoaded()) {
@@ -259,12 +305,13 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 						for (AlvearyEffect ae : continualSet) {
 							if (ae.isActive(this)) {
 								if (ae.tickRate() == 1 || this.getTicksExisted()%ae.tickRate() == 0)
-									ae.tick(this);
+									if (ae.tick(this))
+										activeEffects.add(ae);
 							}
 						}
 					}
 				}
-				else if (movePrincess != null && !movePrincess.isEmpty()) {
+				else if (!Strings.isNullOrEmpty(movePrincess)) {
 					if (energy.containsAtLeast(automation.color, automation.requiredEnergy)) {
 						this.cycleBees(movePrincess);
 						movePrincess = null;
@@ -272,10 +319,43 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 					}
 				}
 			}
-			else {
+			else if (!world.isRemote) {
 				canWork = false;
 			}
 		}
+	}
+
+	/** Replace with one that will never scan multiple times in the same tick, and has more advanced anti-lag behavior */
+	private void replaceFlowerCacher() {
+		if (flowerCache == null) {
+			flowerCache = new EfficientFlowerCache();
+		}
+		if (worldObj != null && this.isTickingNaturally()) {
+			IBeekeepingLogic bkl = this.getMultiblockLogic().getController().getBeekeepingLogic();
+			if (bkl.getClass() == beeLogicClass) {
+				try {
+					INBTTagable o = (INBTTagable)flowerCacheField.get(bkl);
+					if (!(o instanceof EfficientFlowerCache)) {
+						//NBTTagCompound tag = new NBTTagCompound();
+						//o.writeToNBT(tag);
+						//eff.readFromNBT(tag);
+						flowerCacheField.set(bkl, flowerCache);
+					}
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public EfficientFlowerCache getFlowerCache() {
+		this.replaceFlowerCacher();
+		return flowerCache;
+	}
+
+	public Collection<AlvearyEffect> getActiveEffects() {
+		return Collections.unmodifiableCollection(activeEffects);
 	}
 
 	@Override
@@ -356,9 +436,9 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	public void onMachineAssembled(IMultiblockController controller, ChunkCoordinates minCoord, ChunkCoordinates maxCoord) {
 		this.validateStructure(controller);
 		this.triggerBlockUpdate();
-		this.syncAllData(true);
 		relativeLocation = new Coordinate(this).offset(new Coordinate(minCoord).negate());
 		this.updateRenderItem();
+		this.syncAllData(true);
 	}
 
 	@ModDependent(ModList.FORESTRY)
@@ -368,6 +448,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		for (IMultiblockComponent com : controller.getComponents()) {
 			if (com instanceof TileEntityLumenAlveary && com != this) {
 				multipleBoosters = true;
+				this.syncAllData(true);
 				break;
 			}
 		}
@@ -378,9 +459,9 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	public void onMachineBroken() {
 		ReikaWorldHelper.causeAdjacentUpdates(worldObj, xCoord, yCoord, zCoord);
 		this.triggerBlockUpdate();
-		this.syncAllData(true);
 		relativeLocation = null;
 		this.updateRenderItem();
+		this.syncAllData(true);
 	}
 
 	@Override
@@ -409,9 +490,12 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	@ModDependent(ModList.FORESTRY)
 	public void onQueenDeath() {
 		movePrincess = this.getSpecies().getUID();
+		//ReikaJavaLibrary.pConsole("Marked to cycle "+movePrincess);
+		cachedQueen = null;
 	}
 
 	private void cycleBees(String species) {
+		//ReikaJavaLibrary.pConsole("Cycling "+movePrincess);
 		IBeeHousing ibh = this.getBeeHousing();
 		IBeeHousingInventory ibhi = ibh.getBeeInventory();
 		ISidedInventory inv = (ISidedInventory)ibhi;
@@ -604,7 +688,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	}
 
 	public boolean hasQueen() {
-		return ModList.FORESTRY.isLoaded() && this.getQueenItem() != null;
+		return ModList.FORESTRY.isLoaded() && this.getQueenItem() != null;// && ReikaBeeHelper.getBeeRoot().getType(this.getQueenItem()) == EnumBeeType.QUEEN;
 	}
 
 	@ModDependent(ModList.FORESTRY)
@@ -613,7 +697,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		if (ibh == null)
 			return null;
 		ItemStack is = ibh.getBeeInventory().getQueen();
-		return is != null ? is.copy() : null;
+		return is;
 	}
 
 	@ModDependent(ModList.FORESTRY)
@@ -623,12 +707,38 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 
 	@ModDependent(ModList.FORESTRY)
 	private boolean calcCanWork() {
-		return this.isAlvearyComplete() && this.getMultiblockLogic().getController().getBeekeepingLogic().canWork();
+		return this.hasQueen() && this.isAlvearyComplete() && this.getMultiblockLogic().getController().getBeekeepingLogic().canWork();
 	}
 
 	@ModDependent(ModList.FORESTRY)
-	private IAlleleBeeSpecies getSpecies() {
-		return this.hasQueen() ? this.getBeeGenome().getPrimary() : null;
+	public IAlleleBeeSpecies getSpecies() {
+		return this.getQueenItem() != null ? cachedQueen : null;
+	}
+
+	@ModDependent(ModList.FORESTRY)
+	private void calcSpecies() {
+		IAlleleBeeSpecies type = this.getQueenItem() != null ? this.getBeeGenome().getPrimary() : null;
+		boolean flag = type != cachedQueen;
+		cachedQueen = type;
+		if (flag)
+			this.syncAllData(false);
+	}
+
+	@Override
+	protected void readSyncTag(NBTTagCompound data) {
+		super.readSyncTag(data);
+
+		canWork = data.getBoolean("canWork");
+		String queen = data.getString("queen");
+		cachedQueen = queen.isEmpty() ? null : (IAlleleBeeSpecies)AlleleManager.alleleRegistry.getAllele(queen);
+	}
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound data) {
+		super.writeSyncTag(data);
+
+		data.setBoolean("canWork", canWork);
+		data.setString("queen", cachedQueen != null ? cachedQueen.getUID() : "");
 	}
 
 	@Override
@@ -638,10 +748,14 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 			this.getMultiblockLogic().readFromNBT(data);
 
 		movePrincess = data.getString("move");
+		if (movePrincess.isEmpty())
+			movePrincess = null;
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			aspects.readFromNBT(data);
 		}
+
+		this.getFlowerCache().readFromNBT(data);
 	}
 
 	@Override
@@ -650,12 +764,13 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		if (ModList.FORESTRY.isLoaded())
 			this.getMultiblockLogic().writeToNBT(data);
 
-		if (movePrincess != null && !movePrincess.isEmpty())
-			data.setString("move", movePrincess);
+		data.setString("move", !Strings.isNullOrEmpty(movePrincess) ? movePrincess : "");
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			aspects.writeToNBT(data);
 		}
+
+		this.getFlowerCache().writeToNBT(data);
 	}
 
 	@Override
@@ -701,15 +816,31 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	}
 
 	private void updateRenderItem() {
-		renderItem = this.isAlvearyComplete() && this.hasQueen() ? new InertItem(worldObj, this.getQueenItem()) : null;
+		renderItem = this.isAlvearyComplete() && this.getQueenItem() != null ? new InertItem(worldObj, this.getQueenItem()) : null;
 	}
 
-	private static abstract class AlvearyEffect {
+	public boolean effectsOnlyOnPlayers() {
+		return playerOnlyEffects.isActive(this);
+	}
+
+	public boolean isColorBoosted(CrystalElement e) {
+		return colorEffects.get(e).isActive(this);
+	}
+
+	@Override
+	public int getPacketDelay() {
+		return super.getPacketDelay()*4;
+	}
+
+	public static abstract class AlvearyEffect {
 
 		protected AlvearyEffect() {
 			effectSet.add(this);
 			if (this.worksWhenBeesDoNot()) {
 				continualSet.add(this);
+			}
+			if (this.ticksOnClient()) {
+				clientSet.add(this);
 			}
 		}
 
@@ -719,8 +850,17 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 
 		protected abstract boolean isActive(TileEntityLumenAlveary te);
 
-		protected void tick(TileEntityLumenAlveary te) {
+		protected boolean tick(TileEntityLumenAlveary te) {
+			return true;
+		}
 
+		@SideOnly(Side.CLIENT)
+		protected void clientTick(TileEntityLumenAlveary te) {
+
+		}
+
+		protected boolean ticksOnClient() {
+			return false;
 		}
 
 		protected int tickRate() {
@@ -822,7 +962,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 
 	}
 
-	private static abstract class LumenAlvearyEffect extends AlvearyEffect {
+	public static abstract class LumenAlvearyEffect extends AlvearyEffect {
 
 		public final CrystalElement color;
 		public final int requiredEnergy;
@@ -837,7 +977,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		}
 
 		@Override
-		protected final boolean isActive(TileEntityLumenAlveary te) {
+		protected boolean isActive(TileEntityLumenAlveary te) {
 			return te.energy.containsAtLeast(color, requiredEnergy);
 		}
 
@@ -884,9 +1024,10 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		}
 
 		@Override
-		protected void tick(TileEntityLumenAlveary te) {
+		protected final boolean tick(TileEntityLumenAlveary te) {
 			for (int i = 0; i < tickRate; i++)
 				te.tickAlveary();
+			return true;
 		}
 
 		@Override
@@ -928,7 +1069,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		}
 
 		@Override
-		protected void tick(TileEntityLumenAlveary te) {
+		protected boolean tick(TileEntityLumenAlveary te) {
 			if (te.getBeeHousing().canBlockSeeTheSky() && te.getBeeHousing().getBiome().canSpawnLightningBolt() && te.worldObj.isThundering()) {
 				if (te.worldObj.weatherEffects.size() > 0)
 					te.lightningTicks = 15;
@@ -940,6 +1081,8 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 					ReikaBeeHelper.runProductionCycle(te.getBeeHousing());
 				te.lightningTicks--;
 			}
+
+			return true;
 		}
 
 		@Override
@@ -954,13 +1097,13 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		private static final double mateRewriteChance = 0.01;
 
 		private HistoryRewriteEffect() {
-			super(CrystalElement.LIGHTGRAY, 40);
+			super(CrystalElement.GRAY, 40);
 		}
 
 		@Override
-		protected void tick(TileEntityLumenAlveary te) {
+		protected boolean tick(TileEntityLumenAlveary te) {
 			if (ReikaRandomHelper.doWithChance(mateRewriteChance)) {
-				ItemStack queen = te.getBeeHousing().getBeeInventory().getQueen();
+				ItemStack queen = te.getQueenItem();
 				if (queen != null) {
 					IIndividual ii = AlleleManager.alleleRegistry.getIndividual(queen);
 					if (ii instanceof IBee) {
@@ -968,6 +1111,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 					}
 				}
 			}
+			return true;
 		}
 
 		@Override
@@ -987,11 +1131,11 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		}
 
 		@Override
-		protected void tick(TileEntityLumenAlveary te) {
+		protected boolean tick(TileEntityLumenAlveary te) {
 			IBeeHousing ibh = te.getBeeHousing();
 			IBeeGenome ibg = te.getBeeGenome();
 			if (ibg == null)
-				return;
+				return false;
 			if (ReikaRandomHelper.doWithChance(pristineConversionChance)) {
 				ItemStack queen = ibh.getBeeInventory().getQueen();
 				if (queen != null && AlleleManager.alleleRegistry.getIndividual(queen) instanceof IBee) {
@@ -1007,6 +1151,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 					}
 				}
 			}
+			return true;
 		}
 
 		@ModDependent(ModList.FORESTRY)
@@ -1098,19 +1243,20 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		}
 
 		@Override
-		protected void tick(TileEntityLumenAlveary te) {
+		protected boolean tick(TileEntityLumenAlveary te) {
 			if (ReikaRandomHelper.doWithChance(geneImprovementChance)) {
 				ItemStack queen = te.getBeeHousing().getBeeInventory().getQueen();
 				if (queen != null && AlleleManager.alleleRegistry.getIndividual(queen) instanceof IBee) {
 					IBeeGenome ibg = te.getBeeGenome();
 					if (ibg == null)
-						return;
+						return false;
 					EnumBeeChromosome gene = EnumBeeChromosome.values()[rand.nextInt(EnumBeeChromosome.values().length)];
 					if (this.canImprove(gene, ibg)) {
 						this.improveGene(gene, ibg, queen);
 					}
 				}
 			}
+			return true;
 		}
 
 		@ModDependent(ModList.FORESTRY)
@@ -1194,7 +1340,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 
 		@Override
 		protected int tickRate() {
-			return 2;
+			return 1;
 		}
 
 		@Override
@@ -1203,12 +1349,12 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		}
 
 		@Override
-		protected void tick(TileEntityLumenAlveary te) {
+		protected boolean tick(TileEntityLumenAlveary te) {
 			IAlvearyController ac = te.getMultiblockLogic().getController();
 			IClimateControlled cc = (IClimateControlled)ac;
 			IAlleleBeeSpecies queen = te.getSpecies();
 			if (queen == null)
-				return;
+				return false;
 			ChunkCoordinates loc = ac.getCoordinates();
 			float cur = /*ReikaBeeHelper.getTemperatureRangeCenter(EnumTemperature.getFromBiome(ac.getBiome(), loc.posX, loc.posY, loc.posZ));*/
 					ac.getBiome().getFloatTemperature(loc.posX, loc.posY, loc.posZ);
@@ -1227,8 +1373,10 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 				}
 				catch (Exception e) {
 					e.printStackTrace();
+					return false;
 				}
 			}
+			return true;
 		}
 
 		@Override
@@ -1251,7 +1399,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 
 		@Override
 		protected int tickRate() {
-			return 2;
+			return 1;
 		}
 
 		@Override
@@ -1260,12 +1408,12 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		}
 
 		@Override
-		protected void tick(TileEntityLumenAlveary te) {
+		protected boolean tick(TileEntityLumenAlveary te) {
 			IAlvearyController ac = te.getMultiblockLogic().getController();
 			IClimateControlled cc = (IClimateControlled)ac;
 			IAlleleBeeSpecies queen = te.getSpecies();
 			if (queen == null)
-				return;
+				return false;
 			ChunkCoordinates loc = ac.getCoordinates();
 			float cur = /*ReikaBeeHelper.getHumidityRangeCenter(EnumHumidity.getFromValue(*/ac.getBiome().rainfall/*))*/;
 			float pref = ReikaBeeHelper.getHumidityRangeCenter(queen.getHumidity());
@@ -1283,8 +1431,10 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 				}
 				catch (Exception e) {
 					e.printStackTrace();
+					return false;
 				}
 			}
+			return true;
 		}
 
 		@Override
@@ -1340,6 +1490,68 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		protected boolean doRepair(TileEntityLumenAlveary te) {
 			return true;
 		}
+	}
+
+	private static class EternalEffect extends LumenAlvearyEffect {
+
+		private EternalEffect() {
+			super(CrystalElement.RED, 600);
+		}
+
+		@Override
+		public String getDescription() {
+			return "Eternal Life";
+		}
+		/*
+		@Override
+		protected void tick(TileEntityLumenAlveary te) {
+			if (te.hasQueen()) {
+				ItemStack is = te.getQueenItem();
+				if (ReikaBeeHelper.getBeeRoot().getType(is) == EnumBeeType.QUEEN) {
+					Life l = (Life)ReikaBeeHelper.getGeneEnum(EnumBeeChromosome.LIFESPAN, ReikaBeeHelper.getBee(is).getGenome());
+					if (l == CrystalBees.superLife || true)
+						ReikaBeeHelper.rejuvenateBee(te.getMultiblockLogic().getController(), is);
+				}
+			}
+		}*/
+
+		@Override
+		protected float lifespanFactor(TileEntityLumenAlveary te) {
+			Life l = (Life)ReikaBeeHelper.getGeneEnum(EnumBeeChromosome.LIFESPAN, ReikaBeeHelper.getBee(te.getQueenItem()).getGenome());
+			if (l == CrystalBees.superLife)
+				return 10000;
+			return 1;
+		}
+
+	}
+
+	private static class PlayerRestrictionEffect extends LumenAlvearyEffect {
+
+		private PlayerRestrictionEffect() {
+			super(CrystalElement.LIGHTGRAY, 20);
+		}
+
+		@Override
+		public String getDescription() {
+			return "Effect Restriction";
+		}
+
+	}
+
+	private static class ElementalBoostEffect extends LumenAlvearyEffect {
+
+		private final CrystalElement color;
+
+		private ElementalBoostEffect(CrystalElement e) {
+			super(e, 100);
+			color = e;
+		}
+
+		@Override
+		public String getDescription() {
+			return color.displayName+" Boost";
+		}
+
 	}
 
 }

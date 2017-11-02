@@ -13,7 +13,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
@@ -33,6 +32,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -191,85 +191,70 @@ public class TankRender extends ChromaRenderBase {
 		v5.startDrawingQuads();
 
 		BlockArray blocks = te.getBlocks();
-		if (!blocks.hasBlock(te.xCoord, te.yCoord+1, te.zCoord))
-			blocks.remove(te.xCoord, te.yCoord, te.zCoord);
+		boolean canRenderInTank = blocks.hasBlock(te.xCoord, te.yCoord+1, te.zCoord);
 
 		boolean flip = te.isInvertedFilled();
 		if (flip)
 			GL11.glFrontFace(GL11.GL_CW);
+
+		//RenderBlocks rb = RenderBlocks.getInstance();
+
 		for (int i = 0; i < blocks.getSize(); i++) {
 			Coordinate c = blocks.getNthBlock(i);
 			int x = c.xCoord;
 			int y = c.yCoord;
 			int z = c.zCoord;
+			int dx = x-te.xCoord;
+			int dy = y-te.yCoord;
+			int dz = z-te.zCoord;
 
 			double h = te.getFillLevelForY(y);
 			boolean disp = flip ? (h < 1 || te.getFillLevelForY(y+1) == 1) : (h > 0 || te.getFillLevelForY(y-1) == 1);
 
 			if (disp) {
-				v5.addTranslation(x-te.xCoord, y-te.yCoord, z-te.zCoord);
-				double o = 0.0025;
-				h = Math.max(o, h);
-				double min = flip ? 1-o : 0+o;
-				double max = flip ? h+o : h-o;
 
-				int bc = Keyboard.isKeyDown(Keyboard.KEY_NUMPAD7) ? 240 : te.getBlockType().getMixedBrightnessForBlock(te.worldObj, x, y, z);
+				int br = f.getLuminosity() > 10 ? 240 : (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD7) ? 240 : te.lighting.getCachedBrightness(te.worldObj, c));/*te.getBlockType().getMixedBrightnessForBlock(te.worldObj, x, y, z));*/
+				/*
 				int[] brs = new int[6];
 				for (int k = 0; k < 6; k++) {
 					ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[k];
 					brs[k] = b.getMixedBrightnessForBlock(te.worldObj, x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ);
 				}
+				 */
 
-				int br = f.getLuminosity() > 10 ? 240 : bc;
-				if (x == te.xCoord && y == te.yCoord && z == te.zCoord)
-					br = te.worldObj.getBlock(x, y+1, z).getMixedBrightnessForBlock(te.worldObj, x, y+1, z);
+				if (x == te.xCoord && y == te.yCoord && z == te.zCoord) {
+					if (!canRenderInTank)
+						continue;
+					br = te.lighting.getCachedBrightness(te.worldObj, c.offset(0, 1, 0));//te.worldObj.getBlock(x, y+1, z).getMixedBrightnessForBlock(te.worldObj, x, y+1, z);
+				}
+
+				v5.addTranslation(dx, dy, dz);
+				double o = 0.0025;
+				h = Math.max(o, h);
+				double min = flip ? 1-o : 0+o;
+				double max = flip ? h+o : h-o;
+
 				v5.setBrightness(br);
-
-				RenderBlocks rb = RenderBlocks.getInstance();
+				int clr = 0xffffffff;
+				if (f.canBePlacedInWorld()) {
+					clr = f.getBlock().colorMultiplier(te.worldObj, x*2, y*2, z*2);
+				}
 
 				if (h < 1 || b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.UP.ordinal())) {
-					this.setFaceBrightness(v5, ForgeDirection.UP, f.getLuminosity());
+					this.setFaceBrightness(v5, ForgeDirection.UP, f.getLuminosity(), clr);
 					double ee = blocks.hasBlock(x+1, y, z) ? 1 : 1-o;
 					double ew = blocks.hasBlock(x-1, y, z) ? 0 : 0+o;
 					double es = blocks.hasBlock(x, y, z+1) ? 1 : 1-o;
 					double en = blocks.hasBlock(x, y, z-1) ? 0 : 0+o;
-					//ReikaRenderHelper.prepareAmbientOcclusion(te.worldObj, x, y, z, b, rb, ForgeDirection.UP, 1, 1, 1);
 
-					//v5.setColorOpaque_F(rb.colorRedTopRight, rb.colorGreenTopRight, rb.colorBlueTopRight);
-					//v5.setBrightness(rb.brightnessTopRight);
-
-					//if (Minecraft.getMinecraft().gameSettings.fancyGraphics && f.getLuminosity() < 10) {
-					//	v5.setBrightness((bc+brs[ForgeDirection.WEST.ordinal()]+brs[ForgeDirection.SOUTH.ordinal()])/4);
-					//}
 					v5.addVertexWithUV(ew, max+te.getHeightOffsetAtCorner(x, y, z, -1, 1, h, par8), es, u, dv);
-
-					//v5.setColorOpaque_F(rb.colorRedBottomRight, rb.colorGreenBottomRight, rb.colorBlueBottomRight);
-					//v5.setBrightness(rb.brightnessBottomRight);
-
-					//if (Minecraft.getMinecraft().gameSettings.fancyGraphics && f.getLuminosity() < 10) {
-					//	v5.setBrightness((bc+brs[ForgeDirection.EAST.ordinal()]+brs[ForgeDirection.SOUTH.ordinal()])/4);
-					//}
 					v5.addVertexWithUV(ee, max+te.getHeightOffsetAtCorner(x, y, z, 1, 1, h, par8), es, du, dv);
-
-					//v5.setColorOpaque_F(rb.colorRedBottomLeft, rb.colorGreenBottomLeft, rb.colorBlueBottomLeft);
-					//v5.setBrightness(rb.brightnessBottomLeft);
-
-					//if (Minecraft.getMinecraft().gameSettings.fancyGraphics && f.getLuminosity() < 10) {
-					//	v5.setBrightness((bc+brs[ForgeDirection.EAST.ordinal()]+brs[ForgeDirection.NORTH.ordinal()])/4);
-					//}
 					v5.addVertexWithUV(ee, max+te.getHeightOffsetAtCorner(x, y, z, 1, -1, h, par8), en, du, v);
-
-					//v5.setColorOpaque_F(rb.colorRedTopLeft, rb.colorGreenTopLeft, rb.colorBlueTopLeft);
-					//v5.setBrightness(rb.brightnessTopLeft);
-
-					//if (Minecraft.getMinecraft().gameSettings.fancyGraphics && f.getLuminosity() < 10) {
-					//	v5.setBrightness((bc+brs[ForgeDirection.WEST.ordinal()]+brs[ForgeDirection.NORTH.ordinal()])/4);
-					//}
 					v5.addVertexWithUV(ew, max+te.getHeightOffsetAtCorner(x, y, z, -1, -1, h, par8), en, u, v);
 				}
 
 				if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.DOWN.ordinal())) {
-					this.setFaceBrightness(v5, ForgeDirection.DOWN, f.getLuminosity());
+					this.setFaceBrightness(v5, ForgeDirection.DOWN, f.getLuminosity(), clr);
 					double ee = blocks.hasBlock(x+1, y, z) ? 1 : 1-o;
 					double ew = blocks.hasBlock(x-1, y, z) ? 0 : 0+o;
 					double es = blocks.hasBlock(x, y, z+1) ? 1 : 1-o;
@@ -281,7 +266,7 @@ public class TankRender extends ChromaRenderBase {
 				}
 
 				if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.NORTH.ordinal())) {
-					this.setFaceBrightness(v5, ForgeDirection.NORTH, f.getLuminosity());
+					this.setFaceBrightness(v5, ForgeDirection.NORTH, f.getLuminosity(), clr);
 					double ee = blocks.hasBlock(x+1, y, z) ? 1 : 1-o;
 					double ew = blocks.hasBlock(x-1, y, z) ? 0 : 0+o;
 					double eu = blocks.hasBlock(x, y+1, z) ? h : max;
@@ -293,7 +278,7 @@ public class TankRender extends ChromaRenderBase {
 				}
 
 				if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.SOUTH.ordinal())) {
-					this.setFaceBrightness(v5, ForgeDirection.SOUTH, f.getLuminosity());
+					this.setFaceBrightness(v5, ForgeDirection.SOUTH, f.getLuminosity(), clr);
 					double ee = blocks.hasBlock(x+1, y, z) ? 1 : 1-o;
 					double ew = blocks.hasBlock(x-1, y, z) ? 0 : 0+o;
 					double eu = blocks.hasBlock(x, y+1, z) ? h : max;
@@ -305,7 +290,7 @@ public class TankRender extends ChromaRenderBase {
 				}
 
 				if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.WEST.ordinal())) {
-					this.setFaceBrightness(v5, ForgeDirection.WEST, f.getLuminosity());
+					this.setFaceBrightness(v5, ForgeDirection.WEST, f.getLuminosity(), clr);
 					double es = blocks.hasBlock(x, y, z+1) ? 1 : 1-o;
 					double en = blocks.hasBlock(x, y, z-1) ? 0 : 0+o;
 					double eu = blocks.hasBlock(x, y+1, z) ? h : max;
@@ -317,7 +302,7 @@ public class TankRender extends ChromaRenderBase {
 				}
 
 				if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.EAST.ordinal())) {
-					this.setFaceBrightness(v5, ForgeDirection.EAST, f.getLuminosity());
+					this.setFaceBrightness(v5, ForgeDirection.EAST, f.getLuminosity(), clr);
 					double es = blocks.hasBlock(x, y, z+1) ? 1 : 1-o;
 					double en = blocks.hasBlock(x, y, z-1) ? 0 : 0+o;
 					double eu = blocks.hasBlock(x, y+1, z) ? h : max;
@@ -327,7 +312,7 @@ public class TankRender extends ChromaRenderBase {
 					v5.addVertexWithUV(1-o, eu+te.getHeightOffsetAtCorner(x, y, z, 1, 1, h, par8), es, du, v);
 					v5.addVertexWithUV(1-o, ed, es, du, dv);
 				}
-				v5.addTranslation(-x+te.xCoord, -y+te.yCoord, -z+te.zCoord);
+				v5.addTranslation(-dx, -dy, -dz);
 			}
 		}
 
@@ -339,7 +324,7 @@ public class TankRender extends ChromaRenderBase {
 		GL11.glPopMatrix();
 	}
 
-	private void setFaceBrightness(Tessellator v5, ForgeDirection dir, int brightness) {
+	private void setFaceBrightness(Tessellator v5, ForgeDirection dir, int brightness, int color) {
 		if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD8))
 			return;
 		float f = 1;
@@ -370,7 +355,7 @@ public class TankRender extends ChromaRenderBase {
 		sub *= (16-brightness)/4F;
 		sub = Math.min(sub, osub);
 		f -= sub*0.75F;
-		v5.setColorOpaque_F(f, f, f);
+		v5.setColorOpaque((int)(f*ReikaColorAPI.getRed(color)), (int)(f*ReikaColorAPI.getGreen(color)), (int)(f*ReikaColorAPI.getBlue(color)));
 	}
 
 }

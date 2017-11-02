@@ -9,19 +9,29 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface.Bees;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
+import net.minecraft.command.IEntitySelector;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.ProductCondition;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.GUI.StatusLogger;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 
 import com.mojang.authlib.GameProfile;
 
@@ -30,9 +40,32 @@ import forestry.api.apiculture.IBeeGenome;
 import forestry.api.apiculture.IBeeHousing;
 import forestry.api.apiculture.IBeeModifier;
 import forestry.api.genetics.EnumTolerance;
+import forestry.api.multiblock.IAlvearyController;
+import forestry.api.multiblock.IMultiblockComponent;
 
 
 public class ChromaBeeHelpers {
+
+	private static HashMap<SelectionKey, EntitySelection> entityLists = new HashMap();
+	private static HashMap<ChunkCoordinates, Coordinate> alvearyControllerLocations = new HashMap();
+	private static HashMap<ChunkCoordinates, CachedTerritory> territoryCache = new HashMap();
+
+	static List<WeakReference<EntityLivingBase>> getEntityList(AxisAlignedBB box, long time, World world, ChunkCoordinates c, Class ce, IEntitySelector s) {
+		SelectionKey sk = new SelectionKey(world, c, ce, s);
+		EntitySelection e = entityLists.get(sk);
+		if (e == null || e.age > 5) {
+			if (e == null) {
+				e = new EntitySelection();
+				entityLists.put(sk, e);
+			}
+			e.updateList(box, world, ce, s);
+		}
+		else if (time > e.lastTick) {
+			e.lastTick = time;
+			e.age++;
+		}
+		return e.entityList;
+	}
 
 	public static interface ConditionalProductProvider {
 
@@ -132,6 +165,115 @@ public class ChromaBeeHelpers {
 	public static EntityPlayer getOwner(IBeeHousing ibh) {
 		GameProfile p = ibh.getOwner();
 		return p != null && p.getId() != null ? ibh.getWorld().func_152378_a(p.getId()) : null;
+	}
+
+	private static class SelectionKey {
+
+		private final int dimension;
+		private final ChunkCoordinates location;
+		private final Class classType;
+		private final IEntitySelector selector;
+
+		private SelectionKey(World world, ChunkCoordinates c, Class ce, IEntitySelector s) {
+			dimension = world.provider.dimensionId;
+			location = c;
+			classType = ce;
+			selector = s;
+		}
+
+		@Override
+		public int hashCode() {
+			return dimension ^ location.hashCode() - classType.hashCode() ^ (selector != null ? selector.hashCode() : 0);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o instanceof SelectionKey) {
+				SelectionKey sk = (SelectionKey)o;
+				return sk.dimension == dimension && classType == sk.classType && (selector == sk.selector || (selector != null && sk.selector != null && selector.getClass() == sk.selector.getClass())) && location.equals(sk.location);
+			}
+			else {
+				return false;
+			}
+		}
+
+	}
+
+	private static class EntitySelection {
+
+		private int age;
+		private long lastTick;
+		private ArrayList<WeakReference<EntityLivingBase>> entityList = new ArrayList();
+
+		private void updateList(AxisAlignedBB box, World world, Class ce, IEntitySelector s) {
+			entityList = new ArrayList();
+			for (EntityLivingBase e : ((List<EntityLivingBase>)world.selectEntitiesWithinAABB(ce, box, s))) {
+				entityList.add(new WeakReference(e));
+			}
+			age = 0;
+		}
+
+	}
+
+	public static TileEntityLumenAlveary getLumenAlvearyController(IBeeHousing ibh, World world, ChunkCoordinates cc) {
+		if (ibh instanceof IAlvearyController) {
+			Coordinate loc = alvearyControllerLocations.get(cc);
+			if (loc != null) {
+				TileEntity te = loc.getTileEntity(world);
+				if (te instanceof TileEntityLumenAlveary) {
+					return (TileEntityLumenAlveary)te;
+				}
+				else {
+					alvearyControllerLocations.remove(cc);
+				}
+			}
+			for (IMultiblockComponent ib : ((IAlvearyController)ibh).getComponents()) {
+				if (ib instanceof TileEntityLumenAlveary) {
+					TileEntityLumenAlveary te = (TileEntityLumenAlveary)ib;
+					alvearyControllerLocations.put(cc, new Coordinate(te));
+					return te;
+				}
+			}
+		}
+		return null;
+	}
+
+	public static boolean checkProgression(World world, IBeeHousing ibh, ProgressStage p) {
+		TileEntityLumenAlveary te = getLumenAlvearyController(ibh, world, ibh.getCoordinates());
+		if (te != null) {
+			return p.isPlayerAtStage(te.getPlacer());
+		}
+		GameProfile gp = ibh.getOwner();
+		return gp != null && p.isPlayerAtStage(world, gp.getId());
+	}
+
+	public static int[] getEffectiveTerritory(IBeeHousing ibh, ChunkCoordinates c, IBeeGenome ibg, long time) {
+		CachedTerritory t = territoryCache.get(c);
+		if (t == null || t.territory == null || t.age >= 20) {
+			if (t == null) {
+				t = new CachedTerritory();
+				territoryCache.put(c, t);
+			}
+			t.recalculate(ibg, ibh);
+		}
+		else if (time > t.lastTick) {
+			t.lastTick = time;
+			t.age++;
+		}
+		return t.territory;
+	}
+
+	private static class CachedTerritory {
+
+		private int[] territory;
+		private int age;
+		private long lastTick;
+
+		private void recalculate(IBeeGenome ibg, IBeeHousing ibh) {
+			age = 0;
+			territory = ReikaBeeHelper.getFinalTerritory(ibg, ibh);
+		}
+
 	}
 
 }

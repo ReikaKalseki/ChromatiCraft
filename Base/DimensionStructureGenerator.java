@@ -25,7 +25,6 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage.StructureInterfaceTile;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
@@ -51,13 +50,16 @@ import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.TessellationGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.ThreeDMazeGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.WaterPuzzleGenerator;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Exception.RegistrationException;
+import Reika.DragonAPI.IO.ReikaFileReader.HashType;
 import Reika.DragonAPI.Instantiable.Data.Collections.ChancedOutputList;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import cpw.mods.fml.common.Loader;
 
 public abstract class DimensionStructureGenerator implements TileCallback {
 
@@ -248,7 +250,7 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 	}
 
 	public final boolean shouldAllowCoreMining(World world, EntityPlayer ep) {
-		return (forcedOpen && ProgressionManager.instance.hasPlayerCompletedStructureColor(ep, this.getCoreColor(world))) || this.hasBeenSolved(world);
+		return forcedOpen || this.hasBeenSolved(world);
 	}
 
 	protected abstract boolean hasBeenSolved(World world);
@@ -270,11 +272,12 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 	protected abstract void openStructure(World world);
 
 	public int getPassword(EntityPlayer ep) {
-		int hash = ep.getUniqueID().hashCode();
-		hash = hash ^ 31*structureTypeIndex;
-		hash = hash ^ 17*structureType.ordinal();
-		hash = hash ^ 47*ChromaOptions.getStructureDifficulty();
-		return hash;
+		int hash = (ep != null ? ep.getUniqueID() : DragonAPICore.Reika_UUID).toString().hashCode();
+		hash = hash ^ 3178531*structureTypeIndex;
+		hash = hash ^ 1780943*structureType.ordinal();
+		hash = hash ^ 4702617*ChromaOptions.getStructureDifficulty();
+		hash = hash ^ 3689507*Loader.MC_VERSION.hashCode();
+		return HashType.SHA1.hash(hash).hashCode();
 	}
 
 	@Override

@@ -42,6 +42,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.ItemWandBase;
+import Reika.ChromatiCraft.Items.Tools.ItemBottleneckFinder.WarningLevels;
 import Reika.ChromatiCraft.Items.Tools.ItemKillAuraGun;
 import Reika.ChromatiCraft.Items.Tools.ItemOrePick;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
@@ -57,6 +58,7 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderingLoopEvent;
 import Reika.DragonAPI.Interfaces.Registry.OreType;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -126,7 +128,8 @@ public class ChromaOverlays {
 		ItemStack is = ep.getCurrentEquippedItem();
 
 		boolean renderCursor = true;
-		if (FullScreenOverlayRenderer.instance.isRenderingHexGroups())
+		boolean fullScreenRendersActive = FullScreenOverlayRenderer.instance.isRenderingHexGroups();
+		if (fullScreenRendersActive)
 			renderCursor = false;
 		if (evt.type == ElementType.HELMET) {
 			if (FullScreenOverlayRenderer.instance.isWashoutActive()) {
@@ -180,7 +183,8 @@ public class ChromaOverlays {
 			this.renderPingOverlays(ep, gsc);
 			GL11.glPushMatrix();
 			GL11.glTranslated(0, 0, FRONT_TRANSLATE);
-			ProgressOverlayRenderer.instance.renderProgressOverlays(ep, gsc);
+			if (!fullScreenRendersActive)
+				ProgressOverlayRenderer.instance.renderProgressOverlays(ep, gsc);
 			this.renderStructureText(ep, gsc);
 			this.renderFlareMessages(gsc);
 			GL11.glPopMatrix();
@@ -928,6 +932,10 @@ public class ChromaOverlays {
 
 	public void addStructurePasswordNote(EntityPlayer ep, int hex) {
 		FullScreenOverlayRenderer.instance.addStructurePasswordNote(ep, hex);
+	}
+
+	public void addBottleneckWarning(int dim, int x, int y, int z, int level, boolean isThroughput, CrystalElement e) {
+		PylonFinderOverlay.instance.addBottleneckWarning(new WorldLocation(dim, x, y, z), e, WarningLevels.list[level], isThroughput);
 	}
 
 	private static class FlareMessage {

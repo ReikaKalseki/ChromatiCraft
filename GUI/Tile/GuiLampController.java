@@ -66,11 +66,11 @@ public class GuiLampController extends GuiChromaBase {
 		super.actionPerformed(b);
 
 		if (b.id == 0 && lockout == 0) {
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.LAMPCONTROL.ordinal(), lamp, 1, 0);
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.LAMPCONTROL.ordinal(), lamp, 1, 0);
 			control = control.next();
 		}
 		else if (b.id == 1) {
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.LAMPCONTROL.ordinal(), lamp, 2, 0);
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.LAMPCONTROL.ordinal(), lamp, 2, 0);
 		}
 		lockout = 20;
 		this.initGui();
@@ -97,12 +97,12 @@ public class GuiLampController extends GuiChromaBase {
 		if (!(input.getText().matches("^[0-9 ]+$"))) {
 			channel = 0;
 			input.deleteFromCursor(-1);
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.LAMPCONTROL.ordinal(), lamp, 0, channel);
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.LAMPCONTROL.ordinal(), lamp, 0, channel);
 			return;
 		}
 		channel = Integer.parseInt(input.getText());
 		if (channel >= 0) {
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.LAMPCONTROL.ordinal(), lamp, 0, channel);
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.LAMPCONTROL.ordinal(), lamp, 0, channel);
 		}
 	}
 

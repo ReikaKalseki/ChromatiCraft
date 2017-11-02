@@ -60,11 +60,12 @@ public class MonumentGenerator {
 		int r = 32;
 		int r2 = 24;
 		for (int i = -r; i <= r; i++) {
-			for (int j = 0; j <= r2; j++) {
-				for (int k = -r; k <= r; k++) {
+			for (int k = -r; k <= r; k++) {
+				for (int j = 0; j <= r2; j++) {
 					if (ReikaMathLibrary.isPointInsideEllipse(i, j, k, r, r2, r)) {
 						world.setBlock(x+i, posY+j, z+k, Blocks.air);
 					}
+					world.setBlock(x+i, posY-1, z+k, Blocks.grass);
 				}
 			}
 		}

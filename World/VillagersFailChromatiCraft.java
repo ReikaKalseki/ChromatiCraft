@@ -30,10 +30,10 @@ import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.DragonAPI.Instantiable.Worldgen.VillageBuilding.StructureEntry;
-import Reika.DragonAPI.Instantiable.Worldgen.VillageBuilding.VillagePiece;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Worldgen.VillageBuilding.StructureEntry;
+import Reika.DragonAPI.Instantiable.Worldgen.VillageBuilding.VillagePiece;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import cpw.mods.fml.common.registry.VillagerRegistry;
@@ -93,6 +93,10 @@ public class VillagersFailChromatiCraft {
 
 		public WoodenChromaStructure(Start start, int par2, Random rand, StructureBoundingBox bb, int par5, int x, int y, int z) {
 			super(start, par2, rand, bb, par5, x, y, z);
+		}
+
+		public WoodenChromaStructure() {
+			super();
 		}
 
 		@Override
@@ -835,6 +839,10 @@ public class VillagersFailChromatiCraft {
 
 		public BrokenChromaStructure(StructureVillagePieces.Start start, int par2, Random rand, StructureBoundingBox bb, int par5, int x, int y, int z) {
 			super(start, par2, rand, bb, par5, x, y, z);
+		}
+
+		public BrokenChromaStructure() {
+			super();
 		}
 
 		@Override

@@ -41,7 +41,7 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 
 	@Override
 	public final void addTarget(WorldLocation loc, CrystalElement e, double dx, double dy, double dz, double w) {
-		CrystalTarget tg = new CrystalTarget(loc, e, dx, dy, dz, w);
+		CrystalTarget tg = new CrystalTarget(this, loc, e, dx, dy, dz, w);
 		if (!worldObj.isRemote) {
 			if (!targets.contains(tg))
 				targets.add(tg);
@@ -51,7 +51,7 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 
 	@Override
 	public final void addSelfTickingTarget(WorldLocation loc, CrystalElement e, double dx, double dy, double dz, double w, int duration) {
-		TickingCrystalTarget tg = new TickingCrystalTarget(loc, e, dx, dy, dz, w, duration);
+		TickingCrystalTarget tg = new TickingCrystalTarget(this, loc, e, dx, dy, dz, w, duration);
 		if (!worldObj.isRemote) {
 			if (!targets.contains(tg)) {
 				targets.add(tg);
@@ -63,6 +63,7 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
+		super.updateEntity(world, x, y, z, meta);
 		if (!targets.isEmpty() && world.isRemote) {
 			//this.spawnBeamParticles(world, x, y, z);
 			ChromaFX.drawLeyLineParticles(world, x, y, z, this.getOutgoingBeamRadius(), targets);
@@ -118,7 +119,7 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 	public final void removeTarget(WorldLocation loc, CrystalElement e) {
 		if (!worldObj.isRemote) {
 			//ReikaJavaLibrary.pConsole(this+":"+targets.size()+":"+targets);
-			targets.remove(new CrystalTarget(loc, e, 0));
+			targets.remove(new CrystalTarget(this, loc, e, 0));
 			this.onTargetChanged();
 			//ReikaJavaLibrary.pConsole(this+":"+targets.size()+":"+targets);
 		}

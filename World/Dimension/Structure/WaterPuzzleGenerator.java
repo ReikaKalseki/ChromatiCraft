@@ -48,6 +48,10 @@ public class WaterPuzzleGenerator extends DimensionStructureGenerator {
 		int r = this.getRadius(0);
 		int startx = ReikaRandomHelper.getRandomPlusMinus(0, r);
 		int startz = ReikaRandomHelper.getRandomPlusMinus(0, r);
+		while (startx == 0 && startz == 0) {
+			startx = ReikaRandomHelper.getRandomPlusMinus(0, r);
+			startz = ReikaRandomHelper.getRandomPlusMinus(0, r);
+		}
 		for (int i = 0; i < n; i++) {
 			r = this.getRadius(i);
 			int endx = ReikaRandomHelper.getRandomPlusMinus(0, r);

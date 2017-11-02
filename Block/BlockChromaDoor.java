@@ -48,8 +48,6 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
 
 @Strippable(value="mcp.mobius.waila.api.IWailaDataProvider")
@@ -309,32 +307,30 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 
 		private UUID uid;
 		private UUID placer;
+
+		private int lastAutoOpenDuration = 20;
 		private boolean autoOpen;
 
 		@Override
 		public void updateEntity() {
+			boolean flag = false;
 			if (!worldObj.isRemote && autoOpen && !isOpen(worldObj, xCoord, yCoord, zCoord)) {
-				if (worldObj.getBlock(xCoord, yCoord-1, zCoord) != this.getBlockType()) {
+				if (worldObj.getBlock(xCoord, yCoord-1, zCoord) != this.getBlockType() && worldObj.getBlock(xCoord-1, yCoord, zCoord) != this.getBlockType() && worldObj.getBlock(xCoord, yCoord, zCoord-1) != this.getBlockType()) {
 					EntityPlayer ep = worldObj.func_152378_a(placer);
 					if (ep != null) {
-						if (Math.abs(ep.posY-yCoord) < 1 && ep.getDistanceSq(xCoord+0.5, yCoord, zCoord+0.5) < 9) {
-							double dx = xCoord+0.5-ep.posX;
-							double dz = zCoord+0.5-ep.posZ;
-							double ang1 = ReikaPhysicsHelper.cartesianToPolar(dx, 0, dz)[2];
-							//double mx = ep.motionX;
-							//double mz = ep.motionZ;
-							//double ang2 = ReikaPhysicsHelper.cartesianToPolar(mx, 0, mz)[2];
-							double ang2 = ep.rotationYaw+180;
-							//ReikaJavaLibrary.pConsole(mx+", "+mz, zCoord == 778);
-							//ReikaJavaLibrary.pConsole(ang1+":"+ang2, zCoord == 778);
-
-							if (true || ReikaMathLibrary.approxr(ang1, ang2, 5)) {
-								this.open(20);
+						double d = ep.getDistanceSq(xCoord+0.5, yCoord, zCoord+0.5);
+						if (Math.abs(ep.posY-yCoord) < 1 && d < 9) {
+							if (d < 2 || ReikaEntityHelper.isLookingAt(ep, xCoord+0.5, yCoord-1.5, zCoord+0.5) || ReikaEntityHelper.isLookingAt(ep, xCoord+0.5, yCoord+0.5, zCoord+0.5)) {
+								lastAutoOpenDuration = Math.min(lastAutoOpenDuration+10, 200);
+								this.open(lastAutoOpenDuration);
+								flag = true;
 							}
 						}
 					}
 				}
 			}
+			if (!flag)
+				lastAutoOpenDuration = Math.max(lastAutoOpenDuration-10, 20);
 		}
 
 		@Override

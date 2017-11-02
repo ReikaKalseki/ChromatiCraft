@@ -41,6 +41,8 @@ public interface CrystalNetworkTile {
 
 	public UUID getPlacerUUID();
 
+	public void triggerBottleneckDisplay(int duration);
+
 	//public ResearchLevel getResearchTier();
 
 	//public boolean canConductInterdimensionally();

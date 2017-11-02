@@ -80,6 +80,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
+import Reika.ChromatiCraft.ModInterface.VoidMonsterDestructionRitual;
 import Reika.ChromatiCraft.ModInterface.AE.TileEntityMEDistributor;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.CrystalWand;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.EssentiaNetwork.EssentiaPath;
@@ -150,6 +151,9 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+
+import com.google.common.base.Strings;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -268,6 +272,7 @@ public class ChromatiPackets implements PacketHandler {
 					NBT = ((DataPacket)packet).asNBT();
 					break;
 				case STRINGINT:
+				case STRINGINTLOC:
 					stringdata = packet.readString();
 					control = inputStream.readInt();
 					pack = ChromaPackets.getPacket(control);
@@ -579,8 +584,8 @@ public class ChromatiPackets implements PacketHandler {
 					((TileEntityCastingAuto)tile).receiveUpdatePacket(data);
 					break;
 				case AUTORECIPE:
-					CastingRecipe cr = data[0] >= 0 ? RecipesCastingTable.instance.getRecipeByID(data[0]) : null;
-					((TileEntityCastingAuto)tile).setRecipe(cr, data[1]);
+					CastingRecipe cr = !Strings.isNullOrEmpty(stringdata) ? RecipesCastingTable.instance.getRecipeByStringID(stringdata) : null;
+					((TileEntityCastingAuto)tile).setRecipe(cr, data[0]);
 					break;
 				case AUTOCANCEL:
 					((TileEntityCastingAuto)tile).cancelCrafting();
@@ -695,6 +700,9 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case TURRETATTACK:
 					((TileEntityLumenTurret)tile).doAttackParticles(data[0]);
+					break;
+				case MONUMENTSTART:
+					((TileEntityStructControl)tile).triggerMonumentClient(ep);
 					break;
 				case MONUMENTCOMPLETE:
 					MonumentCompletionRitual.completeMonumentClient(world, data[0], data[1], data[2]);
@@ -946,6 +954,15 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case STRUCTPASSNOTE:
 					ProgressionManager.instance.addStructurePasswordNote(ep, data[0]);
+					break;
+				case MINERCATEGORY:
+					((TileEntityMiner)tile).setCategory(data[0]);
+					break;
+				case BOTTLENECK:
+					ChromaOverlays.instance.addBottleneckWarning(data[0], data[1], data[2], data[3], data[4], data[5] > 0, CrystalElement.elements[data[6]]);
+					break;
+				case VOIDMONSTERRITUAL:
+					VoidMonsterDestructionRitual.handlePacket(data[0], data[1]);
 					break;
 			}
 		}

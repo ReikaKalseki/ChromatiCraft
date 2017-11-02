@@ -48,6 +48,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
 import Reika.ChromatiCraft.TileEntity.TileEntityDataNode;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
+import Reika.ChromatiCraft.TileEntity.TileEntityProgressionLinker;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAreaBreaker;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemInserter;
@@ -121,6 +122,10 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			boolean flag = ((TileEntityRitualTable)tile).triggerRitual(ep);
 			return flag;
 		}
+		if (t == ChromaTiles.PROGRESSLINK) {
+			boolean flag = ((TileEntityProgressionLinker)tile).trigger(ep);
+			return flag;
+		}
 		if (t == ChromaTiles.MINER) {
 			((TileEntityMiner)tile).triggerDigging();
 			return true;
@@ -137,7 +142,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 		}
 		if (t == ChromaTiles.AURAPOINT) {
 			TileEntityAuraPoint tp = (TileEntityAuraPoint)tile;
-			tp.doPVP = !tp.doPVP;
+			tp.togglePVP();
 			return true;
 		}
 		if (t == ChromaTiles.BIOMEPAINTER) {
@@ -215,7 +220,12 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 
 		if (t == ChromaTiles.ROUTERHUB) {
 			TileEntityRouterHub rh = (TileEntityRouterHub)tile;
-			rh.scanAndLink(world, x, y, z, 32);
+			if (ep.isSneaking()) {
+				rh.scanAndLink(world, x, y, z, 64);
+			}
+			else {
+				rh.setFacing(ForgeDirection.VALID_DIRECTIONS[s].getOpposite());
+			}
 			ChromaSounds.USE.playSoundAtBlock(rh);
 			return true;
 		}
@@ -298,22 +308,22 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 		}
 
 		if (t == ChromaTiles.STRUCTCONTROL) {
-			//if (!world.isRemote) {
-			ChromatiCraft.logger.debug("Right clicked struct control. Side="+FMLCommonHandler.instance().getEffectiveSide());
-			if (ProgressStage.CTM.playerHasPrerequisites(ep)) {
-				ChromatiCraft.logger.debug("Player has CTM prereqs. Side="+FMLCommonHandler.instance().getEffectiveSide());
-				TileEntityStructControl te = (TileEntityStructControl)tile;
-				if (te.isMonument()) {
-					ChromatiCraft.logger.debug("Tile is a monument. Side="+FMLCommonHandler.instance().getEffectiveSide());
-					if (te.triggerMonument(ep)) {
-						ChromatiCraft.logger.debug("Monument triggered. Side="+FMLCommonHandler.instance().getEffectiveSide());
-						ChromaSounds.USE.playSoundAtBlockNoAttenuation(te, 1, 1, 128);
-						return true;
+			if (!world.isRemote) {
+				ChromatiCraft.logger.debug("Right clicked struct control. Side="+FMLCommonHandler.instance().getEffectiveSide());
+				if (ProgressStage.CTM.playerHasPrerequisites(ep)) {
+					ChromatiCraft.logger.debug("Player has CTM prereqs. Side="+FMLCommonHandler.instance().getEffectiveSide());
+					TileEntityStructControl te = (TileEntityStructControl)tile;
+					if (te.isMonument()) {
+						ChromatiCraft.logger.debug("Tile is a monument. Side="+FMLCommonHandler.instance().getEffectiveSide());
+						if (te.triggerMonument(ep)) {
+							ChromatiCraft.logger.debug("Monument triggered. Side="+FMLCommonHandler.instance().getEffectiveSide());
+							ChromaSounds.USE.playSoundAtBlockNoAttenuation(te, 1, 1, 128);
+							return true;
+						}
 					}
 				}
+				ChromaSounds.ERROR.playSoundAtBlock(tile);
 			}
-			ChromaSounds.ERROR.playSoundAtBlock(tile);
-			//}
 			return true;
 		}
 
@@ -357,8 +367,8 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 					int rd = e.getRed();
 					int gn = e.getGreen();
 					int bl = e.getBlue();
-					ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), te, rd, gn, bl, 32, 8);
-					ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.NUMBERPARTICLE.ordinal(), te, te.getSignalDepth(e));
+					ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), te, 128, rd, gn, bl, 32, 8);
+					ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.NUMBERPARTICLE.ordinal(), te, 128, te.getSignalDepth(e));
 				}
 				else {
 					ChromaSounds.ERROR.playSoundAtBlock(world, x, y, z);
@@ -385,7 +395,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 						int rd = ReikaColorAPI.getRed(color);
 						int gn = ReikaColorAPI.getGreen(color);
 						int bl = ReikaColorAPI.getBlue(color);
-						ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), tile, rd, gn, bl, 8, 2);
+						ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), tile, 64, rd, gn, bl, 8, 2);
 					}
 					for (Aspect asp : ((INode)tile).getAspects().aspects.keySet()) {
 						((INode)tile).takeFromContainer(asp, 1);

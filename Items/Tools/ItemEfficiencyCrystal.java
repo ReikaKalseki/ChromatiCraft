@@ -53,7 +53,7 @@ public class ItemEfficiencyCrystal extends ItemChromaTool {
 			OrbitMotionController p = new OrbitMotionController(o, e.posX, e.posY, e.posZ).trackEntity(e);
 			p.thetaSpeed = ReikaRandomHelper.getRandomBetween(1.5, 5);
 			int l = 60+itemRand.nextInt(120);
-			float s = (float)ReikaRandomHelper.getRandomPlusMinus(1, 0.25);
+			float s = (float)ReikaRandomHelper.getRandomPlusMinus(1, 0.25)*0.5F;
 			EntityFX fx = new EntityBlurFX(e.worldObj, e.posX, e.posY, e.posZ).setPositionController(p).setLife(l).setIcon(ChromaIcons.CHROMA).setBasicBlend().setScale(s);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}

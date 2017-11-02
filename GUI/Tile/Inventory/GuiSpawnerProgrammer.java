@@ -30,8 +30,8 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
 import Reika.DragonAPI.DragonOptions;
-import Reika.DragonAPI.Instantiable.GUI.FractionalBar;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
+import Reika.DragonAPI.Instantiable.GUI.FractionalBar;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -154,7 +154,7 @@ public class GuiSpawnerProgrammer extends GuiChromaBase {
 	}
 
 	private void sendData() {
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.SPAWNERDATA.ordinal(), prog, minDelay.currentValue, maxDelay.currentValue, maxNearMobs.currentValue, spawnCount.currentValue, spawnRange.currentValue, activationRange.currentValue);
+		ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.SPAWNERDATA.ordinal(), prog, minDelay.currentValue, maxDelay.currentValue, maxNearMobs.currentValue, spawnCount.currentValue, spawnRange.currentValue, activationRange.currentValue);
 	}
 
 	@Override

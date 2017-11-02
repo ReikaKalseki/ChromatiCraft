@@ -9,7 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.ISBRH;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -164,15 +164,15 @@ public class ConsoleRenderer implements ISBRH {
 				v5.addTranslation(x, y, z);
 
 				double o = 0.0025;
+				HashSet<Integer> li = null;
 
-				ArrayList<Integer> li = b.getEdgesForFace(world, x, y, z, ForgeDirection.UP);
-				this.setFaceBrightness(v5, ForgeDirection.UP);
 				if (block.shouldSideBeRendered(world, x, y+1, z, ForgeDirection.UP.ordinal())) {
+					li = b.getEdgesForFace(world, x, y, z, ForgeDirection.UP);
+					this.setFaceBrightness(v5, ForgeDirection.UP);
 					int mix = block.getMixedBrightnessForBlock(world, x, y+1, z);
 					v5.setBrightness(mix);
 					v5.setNormal(0, 1, 0);
-					for (int i = 0; i < li.size(); i++) {
-						int edge = li.get(i);
+					for (int edge : li) {
 						IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 						float u = ico.getMinU();
 						float du = ico.getMaxU();
@@ -190,16 +190,13 @@ public class ConsoleRenderer implements ISBRH {
 					}
 				}
 
-
-
-				li = b.getEdgesForFace(world, x, y, z, ForgeDirection.DOWN);
-				this.setFaceBrightness(v5, ForgeDirection.DOWN);
 				if (block.shouldSideBeRendered(world, x, y-1, z, ForgeDirection.DOWN.ordinal())) {
+					li = b.getEdgesForFace(world, x, y, z, ForgeDirection.DOWN);
+					this.setFaceBrightness(v5, ForgeDirection.DOWN);
 					int mix = block.getMixedBrightnessForBlock(world, x, y-1, z);
 					v5.setBrightness(mix);
 					v5.setNormal(0, -1, 0);
-					for (int i = 0; i < li.size(); i++) {
-						int edge = li.get(i);
+					for (int edge : li) {
 						IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 						float u = ico.getMinU();
 						float du = ico.getMaxU();
@@ -218,14 +215,13 @@ public class ConsoleRenderer implements ISBRH {
 				}
 
 
-				li = b.getEdgesForFace(world, x, y, z, ForgeDirection.EAST);
-				this.setFaceBrightness(v5, ForgeDirection.EAST);
 				if (block.shouldSideBeRendered(world, x+1, y, z, ForgeDirection.EAST.ordinal())) {
+					li = b.getEdgesForFace(world, x, y, z, ForgeDirection.EAST);
+					this.setFaceBrightness(v5, ForgeDirection.EAST);
 					int mix = block.getMixedBrightnessForBlock(world, x+1, y, z);
 					v5.setBrightness(mix);
 					v5.setNormal(1, 0, 0);
-					for (int i = 0; i < li.size(); i++) {
-						int edge = li.get(i);
+					for (int edge : li) {
 						IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 						float u = ico.getMinU();
 						float du = ico.getMaxU();
@@ -243,14 +239,13 @@ public class ConsoleRenderer implements ISBRH {
 					}
 				}
 
-				li = b.getEdgesForFace(world, x, y, z, ForgeDirection.WEST);
-				this.setFaceBrightness(v5, ForgeDirection.WEST);
 				if (block.shouldSideBeRendered(world, x-1, y, z, ForgeDirection.WEST.ordinal())) {
+					li = b.getEdgesForFace(world, x, y, z, ForgeDirection.WEST);
+					this.setFaceBrightness(v5, ForgeDirection.WEST);
 					int mix = block.getMixedBrightnessForBlock(world, x-1, y, z);
 					v5.setBrightness(mix);
 					v5.setNormal(-1, 0, 0);
-					for (int i = 0; i < li.size(); i++) {
-						int edge = li.get(i);
+					for (int edge : li) {
 						IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 						float u = ico.getMinU();
 						float du = ico.getMaxU();
@@ -268,14 +263,13 @@ public class ConsoleRenderer implements ISBRH {
 					}
 				}
 
-				li = b.getEdgesForFace(world, x, y, z, ForgeDirection.SOUTH);
-				this.setFaceBrightness(v5, ForgeDirection.SOUTH);
 				if (block.shouldSideBeRendered(world, x, y, z+1, ForgeDirection.SOUTH.ordinal())) {
+					li = b.getEdgesForFace(world, x, y, z, ForgeDirection.SOUTH);
+					this.setFaceBrightness(v5, ForgeDirection.SOUTH);
 					int mix = block.getMixedBrightnessForBlock(world, x, y, z+1);
 					v5.setBrightness(mix);
 					v5.setNormal(0, 0, 1);
-					for (int i = 0; i < li.size(); i++) {
-						int edge = li.get(i);
+					for (int edge : li) {
 						IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 						float u = ico.getMinU();
 						float du = ico.getMaxU();
@@ -293,14 +287,13 @@ public class ConsoleRenderer implements ISBRH {
 					}
 				}
 
-				li = b.getEdgesForFace(world, x, y, z, ForgeDirection.NORTH);
-				this.setFaceBrightness(v5, ForgeDirection.NORTH);
 				if (block.shouldSideBeRendered(world, x, y, z-1, ForgeDirection.NORTH.ordinal())) {
+					li = b.getEdgesForFace(world, x, y, z, ForgeDirection.NORTH);
+					this.setFaceBrightness(v5, ForgeDirection.NORTH);
 					int mix = block.getMixedBrightnessForBlock(world, x, y, z-1);
 					v5.setBrightness(mix);
 					v5.setNormal(0, 0, -1);
-					for (int i = 0; i < li.size(); i++) {
-						int edge = li.get(i);
+					for (int edge : li) {
 						IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 						float u = ico.getMinU();
 						float du = ico.getMaxU();

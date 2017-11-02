@@ -100,7 +100,7 @@ public class TileEntityBiomePainter extends TileEntityChromaticBase implements G
 			else {
 				int id = biome != null ? biome.biomeID : -1;
 				//ReikaJavaLibrary.pConsole("Setting biome "+biome+" with ID "+id+" @ "+dx+", "+dz);
-				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BIOMEPAINT.ordinal(), this, dx, dz, id);
+				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.BIOMEPAINT.ordinal(), this, dx, dz, id);
 			}
 		}
 	}

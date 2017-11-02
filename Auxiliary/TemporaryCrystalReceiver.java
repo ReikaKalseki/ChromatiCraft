@@ -166,4 +166,9 @@ public class TemporaryCrystalReceiver implements CrystalReceiver, WrapperTile {
 		return true;
 	}
 
+	@Override
+	public void triggerBottleneckDisplay(int duration) {
+
+	}
+
 }

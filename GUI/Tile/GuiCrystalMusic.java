@@ -140,17 +140,17 @@ public class GuiCrystalMusic extends GuiChromaBase implements PianoGui {
 	@Override
 	protected void actionPerformed(GuiButton b) {
 		if (b.id == 0) {
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.MUSICCLEAR.ordinal(), music);
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.MUSICCLEAR.ordinal(), music);
 		}
 		else if (b.id == 1) {
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.MUSICCLEARCHANNEL.ordinal(), music, channel);
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.MUSICCLEARCHANNEL.ordinal(), music, channel);
 		}
 		else if (b.id == 2) {
 			rest = !rest;
 		}
 		else if (b.id == 3) {
 			music.dispatchDemo(); //in case serverside does not have functioning MIDI environment
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.MUSICDEMO.ordinal(), music);
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.MUSICDEMO.ordinal(), music);
 		}
 		else if (b.id == 4) {
 			page = page.otherPage();
@@ -261,7 +261,7 @@ public class GuiCrystalMusic extends GuiChromaBase implements PianoGui {
 		for (CrystalElement e : CrystalMusicManager.instance.getColorsWithKey(key)) {
 			music.playCrystal(music.worldObj, music.xCoord, music.yCoord, music.zCoord, e, length);
 		}
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.MUSICNOTE.ordinal(), music, channel, key.ordinal(), length, rest ? 1 : 0);
+		ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.MUSICNOTE.ordinal(), music, channel, key.ordinal(), length, rest ? 1 : 0);
 	}
 
 	@Override

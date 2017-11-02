@@ -253,6 +253,7 @@ public class MonumentCompletionRitual {
 			Block b = c.getBlock(world);
 			if (b != map.get(c)) {
 				//ReikaJavaLibrary.pConsole("@ "+c+": "+map.get(c).getLocalizedName()+", "+b.getLocalizedName());
+				//c.setBlock(world, map.get(c));
 				return false;
 			}
 		}
@@ -277,6 +278,9 @@ public class MonumentCompletionRitual {
 			world.setBlock(x, y, z, ChromaTiles.AURAPOINT.getBlock(), ChromaTiles.AURAPOINT.getBlockMetadata(), 3);
 			TileEntityAuraPoint te = (TileEntityAuraPoint)world.getTileEntity(x, y, z);
 			te.setPlacer(ep);
+			ep.setLocationAndAngles(x+0.5, y-4, z-4.5, 0, -25);
+			ep.onGround = true;
+			ep.motionX = ep.motionY = ep.motionZ = 0;
 			ProgressStage.CTM.stepPlayerTo(ep);
 			if (!world.isRemote)
 				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.RESETMONUMENT.ordinal(), packetTarget, x, y, z);

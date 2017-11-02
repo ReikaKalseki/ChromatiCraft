@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -54,6 +55,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Block.BlockSelectiveGlass;
+import Reika.ChromatiCraft.Block.Dimension.BlockLightedLeaf;
 import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
@@ -96,6 +98,7 @@ import WayofTime.alchemicalWizardry.api.soulNetwork.SoulNetworkHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ChromaAux {
 
@@ -104,6 +107,9 @@ public class ChromaAux {
 
 	//private static final GenerationInterceptWorld cliffRelayWorld = new GenerationInterceptWorld();
 	//private static final GenerationInterceptWorld rainbowRelayWorld = new GenerationInterceptWorld();
+
+	private static HashMap<String, ArrayList<CrystalElement>> fluidRunes = new HashMap();
+	private static final MultiMap<TargetData, CrystalElement> beamColorMixes = new MultiMap(new MultiMap.ListFactory());
 
 	static {
 
@@ -353,11 +359,11 @@ public class ChromaAux {
 	}
 
 	public static MultiMap<TargetData, CrystalElement> getBeamColorMixes(Collection<CrystalTarget> c) {
-		MultiMap<TargetData, CrystalElement> map = new MultiMap(new MultiMap.ListFactory());
+		beamColorMixes.clear();
 		for (CrystalTarget t : c) {
-			map.addValue(new TargetData(t), t.color);
+			beamColorMixes.addValue(new TargetData(t), t.color);
 		}
-		return map;
+		return beamColorMixes;
 	}
 
 	public static void changePylonColor(World world, TileEntityCrystalPylon te, CrystalElement e) {
@@ -440,26 +446,31 @@ public class ChromaAux {
 	}
 
 	public static CrystalElement getRune(Fluid fluid) {
-		ArrayList<CrystalElement> li = new ArrayList();
-		li.add(CrystalElement.CYAN);
-		if (fluid.getTemperature() > 900) //900K
-			li.add(CrystalElement.ORANGE);
-		if (fluid.getTemperature() < 270)
-			li.add(CrystalElement.WHITE);
-		if (fluid.isGaseous())
-			li.add(CrystalElement.LIME);
-		if (fluid.getLuminosity() > 0)
-			li.add(CrystalElement.BLUE);
-		if (fluid.getDensity() > 4000)
-			li.add(CrystalElement.RED);
-		if (fluid.getName().toLowerCase(Locale.ENGLISH).contains("oil"))
-			li.add(CrystalElement.BROWN);
-		if (fluid.getName().toLowerCase(Locale.ENGLISH).contains("fuel"))
-			li.add(CrystalElement.YELLOW);
-		if (fluid.getName().toLowerCase(Locale.ENGLISH).contains("xp") || fluid == ChromatiCraft.chroma)
-			li.add(CrystalElement.PURPLE);
-		if (fluid.getName().toLowerCase(Locale.ENGLISH).contains("bio") || fluid.getName().toLowerCase(Locale.ENGLISH).contains("honey"))
-			li.add(CrystalElement.GREEN);
+		ArrayList<CrystalElement> li = fluidRunes.get(fluid.getName());
+		if (li == null) {
+			li = new ArrayList();
+			fluidRunes.put(fluid.getName(), li);
+			li.add(CrystalElement.CYAN);
+			if (fluid.getTemperature() > 900) //900K
+				li.add(CrystalElement.ORANGE);
+			if (fluid.getTemperature() < 270)
+				li.add(CrystalElement.WHITE);
+			if (fluid.isGaseous())
+				li.add(CrystalElement.LIME);
+			if (fluid.getLuminosity() > 0)
+				li.add(CrystalElement.BLUE);
+			if (fluid.getDensity() > 4000)
+				li.add(CrystalElement.RED);
+			String n = fluid.getName().toLowerCase(Locale.ENGLISH);
+			if (n.contains("oil"))
+				li.add(CrystalElement.BROWN);
+			if (n.contains("fuel"))
+				li.add(CrystalElement.YELLOW);
+			if (n.contains("xp") || fluid == ChromatiCraft.chroma)
+				li.add(CrystalElement.PURPLE);
+			if (n.contains("bio") || n.contains("honey") || n.contains("seed"))
+				li.add(CrystalElement.GREEN);
+		}
 		return li.get(ReikaRandomHelper.getSafeRandomInt(li.size()));
 	}
 
@@ -596,5 +607,12 @@ public class ChromaAux {
 			b2 = iba.getBlock(x, y, z);
 		}
 		return b2 == ChromaBlocks.CLIFFSTONE.getBlockInstance() && BlockCliffStone.isTransparent(iba, x, y, z) ? 0 : 255;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void onIconLoad(TextureAtlasSprite tex) {
+		if (tex.getIconName().startsWith("chromaticraft:dimgen/glowleaf")) {
+			BlockLightedLeaf.setAnimationData(tex);
+		}
 	}
 }

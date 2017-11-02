@@ -15,7 +15,8 @@ import java.util.UUID;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Items.Tools.ItemDoorKey;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -66,6 +67,11 @@ public class MazePartGenerator {
 		public void generateExtras(ShiftMazeGenerator gen, ChunkSplicedGenerationCache world, int offsetX, int posY, int offsetZ, MazeGrid.MazeSegment segment) {
 
 			world.setTileEntity(offsetX + 2, posY + 1, offsetZ + 2, ChromaBlocks.LOOTCHEST.getBlockInstance(), 0, new LootChestCallback(segment.keyUUID, RAND));
+			for (int i = -1; i <= 1; i++) {
+				for (int k = -1; k <= 1; k++) {
+					world.setBlock(offsetX+2+i, posY, offsetZ+2+k, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.LIGHT.metadata);
+				}
+			}
 
 		}
 
@@ -81,11 +87,12 @@ public class MazePartGenerator {
 
 			@Override
 			public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
-				if (te instanceof BlockLootChest.TileEntityLootChest) {
-					BlockLootChest.TileEntityLootChest tc = (BlockLootChest.TileEntityLootChest)te;
+				if (te instanceof TileEntityLootChest) {
+					TileEntityLootChest tc = (TileEntityLootChest)te;
 					ItemStack key = ChromaItems.KEY.getStackOf();
 					((ItemDoorKey)ChromaItems.KEY.getItemInstance()).setID(key, uid);
 					tc.setInventorySlotContents(rand.nextInt(tc.getSizeInventory()), key);
+					((TileEntityLootChest)te).hasMarker = true;
 				}
 			}
 

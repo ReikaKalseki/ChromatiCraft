@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
+import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -18,18 +19,43 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.Magic.Network.RelayNetworker;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityEfficiencyUpgrade;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Interfaces.TileEntity.AdjacentUpdateWatcher;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class TileEntityRelayPowered extends TileEntityChromaticBase implements LumenTile, NBTTile {
+public abstract class TileEntityRelayPowered extends TileEntityChromaticBase implements LumenTile, NBTTile, AdjacentUpdateWatcher {
 
 	protected final ElementTagCompound energy = new ElementTagCompound();
 
 	private int requestTimer = rand.nextInt(200);
 
 	private long lastRequestDecrTime = -1;
+
+	private int efficiencyBoost;
+
+	public final void onAdjacentUpdate(World world, int x, int y, int z, Block b) {
+		this.calcEfficiency();
+		this.syncAllData(false);
+	}
+
+	public int getEfficiencyBoost() {
+		return efficiencyBoost;
+	}
+
+	protected final float getEnergyCostScale() {
+		float f = 1;
+		int e = this.getEfficiencyBoost();
+		if (e > 0)
+			f *= TileEntityEfficiencyUpgrade.getCostFactor(e-1);
+		return f;
+	}
+
+	private void calcEfficiency() {
+		efficiencyBoost = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.BLACK);
+	}
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -120,6 +146,8 @@ public abstract class TileEntityRelayPowered extends TileEntityChromaticBase imp
 		super.readSyncTag(NBT);
 
 		energy.readFromNBT("energy", NBT);
+
+		efficiencyBoost = NBT.getInteger("eff");
 	}
 
 	@Override
@@ -127,14 +155,26 @@ public abstract class TileEntityRelayPowered extends TileEntityChromaticBase imp
 		super.writeSyncTag(NBT);
 
 		energy.writeToNBT("energy", NBT);
+
+		NBT.setInteger("eff", efficiencyBoost);
 	}
 
 	protected final void drainEnergy(CrystalElement e, int amt) {
+		if (this.allowsEfficiencyBoost())
+			amt = (int)Math.max(1, amt*this.getEnergyCostScale());
 		energy.subtract(e, amt);
 	}
 
 	protected final void drainEnergy(ElementTagCompound tag) {
+		if (this.allowsEfficiencyBoost()) {
+			tag = tag.copy();
+			tag.scale(this.getEnergyCostScale());
+		}
 		energy.subtract(tag);
+	}
+
+	protected boolean allowsEfficiencyBoost() {
+		return true;
 	}
 
 	@SideOnly(Side.CLIENT)

@@ -85,6 +85,7 @@ import Reika.ChromatiCraft.Auxiliary.Tab.TabChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaBookGui;
 import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux;
 import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux.Flags;
+import Reika.ChromatiCraft.Block.BlockFakeSky;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
@@ -131,6 +132,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
 import Reika.DragonAPI.Instantiable.Event.ProfileEvent;
+import Reika.DragonAPI.Instantiable.Event.ProfileEvent.ProfileEventWatcher;
 import Reika.DragonAPI.Instantiable.Event.Client.ClientLoginEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.ClientLogoutEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.CloudRenderEvent;
@@ -182,7 +184,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ChromaClientEventController {
+public class ChromaClientEventController implements ProfileEventWatcher {
 
 	public static final ChromaClientEventController instance = new ChromaClientEventController();
 
@@ -209,6 +211,18 @@ public class ChromaClientEventController {
 			textureLoadingComplete = true;
 		}
 		 */
+		ProfileEvent.registerHandler("gui", this);
+	}
+
+	public void onCall(String tag) {
+		switch(tag) {
+			case "gui": {
+				if (ChromaOverlays.instance.isWashoutActive()) {
+					Minecraft.getMinecraft().gameSettings.hideGUI = false;
+				}
+				break;
+			}
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -641,6 +655,13 @@ public class ChromaClientEventController {
 	}
 
 	@SubscribeEvent
+	public void renderFakeSky(EntityRenderingLoopEvent evt) {
+		if (MinecraftForgeClient.getRenderPass() == 0) {
+			BlockFakeSky.doSkyRendering();
+		}
+	}
+
+	@SubscribeEvent
 	public void clearLexiconCache(SinglePlayerLogoutEvent evt) {
 		ChromaBookGui.lastGui = null;
 	}
@@ -648,15 +669,6 @@ public class ChromaClientEventController {
 	@SubscribeEvent
 	public void clearLexiconCache(ClientLogoutEvent evt) {
 		ChromaBookGui.lastGui = null;
-	}
-
-	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void ensureWhiteout(ProfileEvent evt) {
-		if (evt.sectionName.equals("gui")) {
-			if (ChromaOverlays.instance.isWashoutActive()) {
-				Minecraft.getMinecraft().gameSettings.hideGUI = false;
-			}
-		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)

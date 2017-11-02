@@ -12,12 +12,14 @@ package Reika.ChromatiCraft.Registry;
 import java.util.ArrayList;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.IBlockAccess;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomHitbox;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
@@ -33,6 +35,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
+import Reika.ChromatiCraft.ModInterface.TileEntityManaBooster;
 import Reika.ChromatiCraft.ModInterface.TileEntityPageExtractor;
 import Reika.ChromatiCraft.ModInterface.AE.TileEntityMEDistributor;
 import Reika.ChromatiCraft.ModInterface.AE.TileEntityPatternCache;
@@ -48,6 +51,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityDisplayPoint;
 import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
 import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
+import Reika.ChromatiCraft.TileEntity.TileEntityProgressionLinker;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAIShutdown;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAreaBreaker;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
@@ -233,7 +237,9 @@ public enum ChromaTiles implements TileEnum {
 	SKYPEATER("chroma.skypeater",		ChromaBlocks.PYLON,			TileEntitySkypeater.class,			11, "RenderSkypeater"),
 	FUNCTIONRELAY("chroma.funcrelay",	ChromaBlocks.TILEMODELLED4,	TileEntityFunctionRelay.class,		0, "RenderFunctionRelay"),
 	MULTIBUILDER("chroma.multibuilder",	ChromaBlocks.TILEMODELLED4,	TileEntityMultiBuilder.class,		1, "RenderMultiBuilder"),
-	EXPLOSIONSHIELD("chroma.explosionshield",ChromaBlocks.TILEENTITY2,TileEntityExplosionShield.class,	3);
+	EXPLOSIONSHIELD("chroma.explosionshield",ChromaBlocks.TILEENTITY2,TileEntityExplosionShield.class,	3),
+	PROGRESSLINK("chroma.progresslink",	ChromaBlocks.TILEMODELLED4,	TileEntityProgressionLinker.class,	2, "RenderProgressionLinker"),
+	MANABOOSTER("chroma.manabooster",	ChromaBlocks.TILEMODELLED4,	TileEntityManaBooster.class,		3, "RenderManaBooster", ModList.BOTANIA);
 
 	private final Class tile;
 	private final String name;
@@ -341,6 +347,7 @@ public enum ChromaTiles implements TileEnum {
 			case CHROMACRAFTER:
 			case MULTIBUILDER:
 			case GLOWFIRE:
+			case MANABOOSTER:
 				return true;
 			default:
 				return false;
@@ -619,6 +626,8 @@ public enum ChromaTiles implements TileEnum {
 				return 0.25;
 			case MULTIBUILDER:
 				return 0.75;
+			case PROGRESSLINK:
+				return 0.375;
 			default:
 				return 1;
 		}
@@ -735,6 +744,7 @@ public enum ChromaTiles implements TileEnum {
 			case FUNCTIONRELAY:
 			case DIMENSIONCORE:
 			case AURAPOINT:
+			case MANABOOSTER:
 				return true;
 			default:
 				return false;
@@ -762,6 +772,7 @@ public enum ChromaTiles implements TileEnum {
 			case SKYPEATER:
 			case FLUXMAKER:
 			case FUNCTIONRELAY:
+			case MANABOOSTER:
 				return true;
 			default:
 				return false;
@@ -800,6 +811,12 @@ public enum ChromaTiles implements TileEnum {
 
 	public boolean isTurbochargeableRepeater() {
 		return this.isRepeater() && this != WEAKREPEATER && this != IONOSPHERIC && this != SKYPEATER;
+	}
+
+	public boolean canPlayerPlace(EntityPlayer ep) {
+		if (this == AURAPOINT)
+			return ProgressStage.CTM.isPlayerAtStage(ep);
+		return true;
 	}
 
 }

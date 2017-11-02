@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -36,7 +37,7 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-
+		super.updateEntity(world, x, y, z, meta);
 		long time = world.getTotalWorldTime();
 		boolean flag = lastRequestDecrTime != time;
 		if (flag)
@@ -83,7 +84,9 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 			flag = CrystalNetworker.instance.makeRequest(this, e, amount, this.getReceiveRange());
 		}
 		if (flag) {
-			ProgressStage.USEENERGY.stepPlayerTo(this.getPlacer());
+			EntityPlayer ep = this.getPlacer();
+			if (ep != null)
+				ProgressStage.USEENERGY.stepPlayerTo(ep);
 		}
 		return flag;
 	}

@@ -146,4 +146,12 @@ public class WaterPath {
 		return solution.size()+": "+solution.toString();
 	}
 
+	public boolean startsAt(Point p) {
+		return startLoc.equals(p);
+	}
+
+	public boolean endsAt(Point p) {
+		return endLoc.equals(p);
+	}
+
 }

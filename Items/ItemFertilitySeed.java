@@ -91,7 +91,7 @@ public class ItemFertilitySeed extends ItemChromaBasic implements BreakerCallbac
 				if (this.canTickBlock(b, ei.worldObj.getBlockMetadata(x, y, z))) {
 					b.updateTick(ei.worldObj, x, y, z, ei.worldObj.rand);
 					MinecraftForge.EVENT_BUS.post(new BlockTickEvent(ei.worldObj, x, y, z, b, UpdateFlags.FORCED.flag));
-					ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.FERTILITYSEED.ordinal(), ei.worldObj, x, y, z);
+					ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.FERTILITYSEED.ordinal(), ei.worldObj, x, y, z, 256);
 				}
 			}
 		}

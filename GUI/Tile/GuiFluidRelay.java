@@ -63,7 +63,7 @@ public class GuiFluidRelay extends GuiChromaBase {
 				break;
 		}
 		if (delta != 0) {
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.RELAYPRESSURE.ordinal(), relay, delta);
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.RELAYPRESSURE.ordinal(), relay, delta);
 		}
 	}
 

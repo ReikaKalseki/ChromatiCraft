@@ -52,7 +52,6 @@ import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
 import com.google.common.collect.HashBiMap;
 
@@ -400,7 +399,6 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	public void notifyPlayerOfProgression(EntityPlayer ep, ProgressElement p) {
 		if (ep.worldObj.isRemote) {
 			ChromaOverlays.instance.addProgressionNote(p);
-			ReikaSoundHelper.playClientSound(ChromaSounds.GAINPROGRESS, ep, 0.5F, 1, false);
 		}
 		else if (ep instanceof EntityPlayerMP) {
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.PROGRESSNOTE.ordinal(), (EntityPlayerMP)ep, this.getID(p));
@@ -548,6 +546,24 @@ public final class ChromaResearchManager implements ResearchRegistry {
 
 		public boolean isAtLeast(ResearchLevel rl) {
 			return rl.ordinal() <= this.ordinal();
+		}
+	}
+
+	public static enum Shareability {
+		SELFONLY(),
+		PROXIMITY(),
+		ALWAYS();
+
+		public boolean canShareTo(EntityPlayer from, EntityPlayer to) {
+			switch(this) {
+				case ALWAYS:
+					return true;
+				case PROXIMITY:
+					return to.getDistanceSqToEntity(from) <= 576;
+				case SELFONLY:
+					return false;
+			}
+			return false;
 		}
 	}
 

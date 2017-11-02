@@ -338,7 +338,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				this.spawnLightning(world, x, y, z);
 			}
 
-			if (!world.isRemote && ChromaOptions.BALLLIGHTNING.getState() && energy >= this.getCapacity()/2 && rand.nextInt(1000) == 0 && this.isChunkLoaded()) {
+			if (!world.isRemote && ChromaOptions.BALLLIGHTNING.getState() && energy >= this.getCapacity()/2 && rand.nextInt(1000) == 0 && EntityBallLightning.canSpawnHere(world, x+0.5, y+0.5, z+0.5)) {
 				world.spawnEntityInWorld(new EntityBallLightning(world, color, x+0.5, y+0.5, z+0.5).setPylon().setNoDrops());
 			}
 
@@ -544,18 +544,16 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		if (energy < max) {
 			energy += energyStep*ticks;
 		}
-		if (energyStep > 1)
-			energyStep--;
 
 		int a = ticks;
 		if (energy < max) {
 			ArrayList<TileEntityChromaCrystal> blocks = this.getBoosterCrystals(world, x, y, z, true);
 			int c = this.isEnhanced() ? 3 : 2;
 			for (int i = 0; i < blocks.size(); i++) {
-				energy += a;
+				energy += a*energyStep;
 				a *= c;
 				if (i == 7) { //8 crystals
-					energy += a*2;
+					energy += a*2*energyStep;
 				}
 				if (energy >= max) {
 					break;
@@ -572,6 +570,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			}
 		}
 
+		if (energyStep > 1)
+			energyStep--;
+
 		energy = Math.min(energy, this.getCapacity());
 
 		if (energy == this.getCapacity() && laste != this.getCapacity()) {
@@ -583,8 +584,8 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		}
 	}
 
-	public void speedRegenShortly() {
-		energyStep = 5;
+	public void speedRegenShortly(int power) {
+		energyStep = power;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -634,13 +635,15 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		ArrayList<TileEntityChromaCrystal> li = new ArrayList();
 		EntityPlayer owner = null;
 		for (Coordinate c : crystalPositions) {
-			if (ChromaTiles.getTile(world, x+c.xCoord, y+c.yCoord, z+c.zCoord) == ChromaTiles.CRYSTAL) {
-				TileEntityChromaCrystal te = (TileEntityChromaCrystal)world.getTileEntity(x+c.xCoord, y+c.yCoord, z+c.zCoord); {
-					EntityPlayer ep = te.getPlacer();
-					if (!matchOwner || (ep != null && (owner == null || ep == owner))) {
-						if (owner == null)
-							owner = ep;
-						li.add(te);
+			if (world.checkChunksExist(c.xCoord+x, c.yCoord+y, c.zCoord+z, c.xCoord+x, c.yCoord+y, c.zCoord+z)) {
+				if (ChromaTiles.getTile(world, x+c.xCoord, y+c.yCoord, z+c.zCoord) == ChromaTiles.CRYSTAL) {
+					TileEntityChromaCrystal te = (TileEntityChromaCrystal)world.getTileEntity(x+c.xCoord, y+c.yCoord, z+c.zCoord); {
+						EntityPlayer ep = te.getPlacer();
+						if (!matchOwner || (ep != null && (owner == null || ep == owner))) {
+							if (owner == null)
+								owner = ep;
+							li.add(te);
+						}
 					}
 				}
 			}
@@ -732,7 +735,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		int x = MathHelper.floor_double(e.posX);
 		int y = MathHelper.floor_double(e.posY)+1;
 		int z = MathHelper.floor_double(e.posZ);
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.PYLONATTACK.ordinal(), this, tx, ty, tz, x, y, z);
+		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.PYLONATTACK.ordinal(), te.getWorld(), tx, ty, tz, 128, tx, ty, tz, x, y, z);
 		if (e instanceof EntityPlayerMP)
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.PYLONATTACKRECEIVE.ordinal(), this, (EntityPlayerMP)e, this.getColor().ordinal());
 	}
@@ -870,7 +873,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	}
 
 	private int getBaseThroughput() {
-		return this.isEnhanced() ? 15000 : 5000;
+		return this.isEnhanced() ? 18000 : 6000;
 	}
 
 	private int getLinkedThroughput(int base) {
@@ -1061,20 +1064,39 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	@ModDependent(ModList.THAUMCRAFT)
 	public void onUsingWandTick(ItemStack wandstack, EntityPlayer player, int count) {
 		if (!worldObj.isRemote && this.canConduct() && player.ticksExisted%5 == 0) {
-			if (!ChromaOptions.HARDTHAUM.getState() || ReikaThaumHelper.isResearchComplete(player, "NODETAPPER2")) {
+			if (!ChromaOptions.HARDTHAUM.getState() || ReikaThaumHelper.isResearchComplete(player, "WANDPEDFOC")) {
 				AspectList al = ReikaThaumHelper.decompose(this.getAspects());
 				for (Aspect a : al.aspects.keySet()) {
-					int amt = 2;
-					if (ReikaThaumHelper.isResearchComplete(player, "NODETAPPER1"))
+					int amt = 1;
+					int eff = 2400;
+					if (ReikaThaumHelper.isResearchComplete(player, "NODETAPPER1")) {
 						amt *= 2;
-					if (ReikaThaumHelper.isResearchComplete(player, "NODETAPPER2"))
+						eff *= 0.9;
+					}
+					if (ReikaThaumHelper.isResearchComplete(player, "NODETAPPER2")) {
 						amt *= 2;
+						eff *= 0.8;
+					}
+					if (ReikaThaumHelper.isResearchComplete(player, "ROD_silverwood_staff")) {
+						amt *= 1.5;
+						eff *= 0.8;
+					}
+					if (ReikaThaumHelper.isResearchComplete(player, "FOCUSPRIMAL")) {
+						amt *= 1.25;
+						eff *= 0.6;
+					}
+					if (ReikaThaumHelper.isResearchComplete(player, "WARPPROOF")) {
+						eff *= 0.5;
+					}
+					if (ReikaThaumHelper.isResearchComplete(player, "CRYSTALWAND")) {
+						amt *= 2;
+					}
 					amt = Math.min(amt, al.getAmount(a));
 					amt = Math.min(amt, ReikaThaumHelper.getWandSpaceFor(wandstack, a));
 					int ret = ReikaThaumHelper.addVisToWand(wandstack, a, amt);
 					int added = amt-ret;
 					if (added > 0) {
-						this.drain(color, Math.min(energy, added*900));
+						this.drain(color, Math.min(energy, added*eff));
 					}
 				}
 			}

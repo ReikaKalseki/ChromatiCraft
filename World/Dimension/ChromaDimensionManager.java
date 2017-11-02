@@ -32,13 +32,13 @@ import net.minecraftforge.common.DimensionManager;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome.ChromaDimensionSubBiome;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Entity.EntityAurora;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenCentral;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenChromaMountains;
@@ -51,6 +51,7 @@ import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenIslands;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenSkylands;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenSparkle;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenVoidlands;
+import Reika.ChromatiCraft.World.Dimension.Biome.MonumentBiome;
 import Reika.ChromatiCraft.World.Dimension.Biome.StructureBiome;
 import Reika.ChromatiCraft.World.Dimension.Rendering.Aurora;
 import Reika.DragonAPI.DragonAPICore;
@@ -63,6 +64,7 @@ import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
@@ -82,6 +84,7 @@ public class ChromaDimensionManager {
 
 	static int dimensionAge = 0;
 	static long dimensionSeed = -1;
+	public static boolean serverStopping = false;;
 
 	public static enum Biomes implements ChromaDimensionBiomeType {
 		PLAINS(BiomeGenCrystalPlains.class,	"Crystal Plains",			8, 0,	ExtraChromaIDs.PLAINS, 		SubBiomes.MOUNTAINS, 	Type.MAGICAL, Type.PLAINS),
@@ -91,7 +94,8 @@ public class ChromaDimensionManager {
 		SPARKLE(BiomeGenSparkle.class,		"Sparkling Sands",			4, 0,	ExtraChromaIDs.SPARKLE,								Type.MAGICAL, Type.BEACH, Type.SANDY),
 		GLOWCRACKS(BiomeGenGlowCracks.class,"Radiant Fissures",			3, 0,	ExtraChromaIDs.GLOWCRACKS,							Type.MAGICAL, Type.HOT),
 		STRUCTURE(StructureBiome.class,		"Structure Field",			0, 0,	ExtraChromaIDs.STRUCTURE, 							Type.MAGICAL, Type.PLAINS),
-		CENTER(BiomeGenCentral.class, 		"Luminescent Sanctuary",	0, 0,	ExtraChromaIDs.CENTRAL,								Type.MAGICAL, Type.FOREST, Type.DENSE);
+		CENTER(BiomeGenCentral.class, 		"Luminescent Sanctuary",	0, 0,	ExtraChromaIDs.CENTRAL,								Type.MAGICAL, Type.FOREST, Type.DENSE),
+		MONUMENT(MonumentBiome.class,		"Monument Field",			0, 0,	ExtraChromaIDs.MONUMENT,							Type.MAGICAL, Type.PLAINS);
 
 		private int id;
 		public final String biomeName;
@@ -264,11 +268,13 @@ public class ChromaDimensionManager {
 	}
 
 	public static void resetDimension(World world) {
-		if (dimensionAge <= 1200) {
+		if (!DragonAPICore.hasGameLoaded())
+			return;
+		if (dimensionAge <= 1200 && !serverStopping) {
 			ChromatiCraft.logger.log("Dimension is only "+dimensionAge+" ticks old; not resetting");
 			return;
 		}
-		ChromatiCraft.logger.log("Resetting dimension of age "+dimensionAge);
+		ChromatiCraft.logger.log("Resetting dimension of age "+dimensionAge+"; Server shutdown? "+serverStopping);
 		dimensionSeed = -1;
 		dimensionAge = 0;
 		playersInStructures.clear();
@@ -276,7 +282,7 @@ public class ChromaDimensionManager {
 		if (world instanceof WorldServer)
 			((WorldServer)world).flush(); //Hopefully kill all I/O
 		DimensionStructureGenerator.resetCachedGenerators();
-		getChunkProvider(world).clearCaches();
+		getChunkProvider(world).clearCaches(!serverStopping);
 		System.gc();
 		String path = DimensionManager.getCurrentSaveRootDirectory().getAbsolutePath().replaceAll("\\\\", "/").replaceAll("/\\./", "/");
 		File dim = new File(path+"/DIM"+ExtraChromaIDs.DIMID.getValue());
@@ -286,9 +292,11 @@ public class ChromaDimensionManager {
 				ChromatiCraft.logger.logError("Could not delete dimension chunk data; you must delete it manually or the dimension will be invalid.");
 			}
 		}
+		ReikaPacketHelper.sendDataPacketToEntireServer(ChromatiCraft.packetChannel, ChromaPackets.LEAVEDIM.ordinal());
 	}
 
 	public static void resetDimensionClient() {
+		ChromatiCraft.logger.log("Resetting clientside dimension");
 		dimensionSeed = -1;
 		dimensionAge = 0;
 		playersInStructures.clear();
@@ -366,9 +374,11 @@ public class ChromaDimensionManager {
 
 	public static void addPlayerToStructure(EntityPlayer ep, DimensionStructureGenerator structure) {
 		playersInStructures.put(ep, structure);
+		/*
 		if (ProgressionManager.instance.hasPlayerCompletedStructureColor(ep, structure.getCoreColor(ep.worldObj))) {
 			structure.forceOpen(ep.worldObj, ep);
 		}
+		 */
 	}
 
 	@SideOnly(Side.CLIENT)

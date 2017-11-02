@@ -29,6 +29,8 @@ import Reika.ChromatiCraft.Entity.EntityTNTPinball;
 import Reika.ChromatiCraft.Entity.EntityThrownGem;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
 import Reika.ChromatiCraft.Items.Tools.ItemDataCrystal.EntityDataCrystal;
+import Reika.ChromatiCraft.ModInterface.EntityChromaManaBurst;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.Registry.EntityEnum;
 
 public enum ChromaEntities implements EntityEnum {
@@ -51,7 +53,8 @@ public enum ChromaEntities implements EntityEnum {
 	NUKERBALL(EntityNukerBall.class, "Cluster Ball"),
 	GLOWCLOUD(EntityGlowCloud.class, "GlowCloud", 0x000040, 0x22aaff),
 	DATACRYSTAL(EntityDataCrystal.class, "DataCrystal"),
-	PYLONOVERLOAD(EntityOverloadingPylonShock.class, "Pylon Overload");
+	PYLONOVERLOAD(EntityOverloadingPylonShock.class, "Pylon Overload"),
+	CHROMAMANA(EntityChromaManaBurst.class, "Mana Pulse");
 
 	public final String entityName;
 	private final Class entityClass;
@@ -81,6 +84,8 @@ public enum ChromaEntities implements EntityEnum {
 
 	@Override
 	public boolean isDummiedOut() {
+		if (this == CHROMAMANA)
+			return !ModList.BOTANIA.isLoaded();
 		return false;
 	}
 

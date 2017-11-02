@@ -9,7 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.ISBRH;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -21,6 +21,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Block.BlockCrystalTank.CrystalTankAuxTile;
+import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
 import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
 
@@ -153,12 +155,19 @@ public class TankBlockRenderer implements ISBRH {
 		v5.setBrightness(mix);
 		v5.setNormal(0, 1, 0);
 
+		CrystalTankAuxTile te = (CrystalTankAuxTile)world.getTileEntity(x, y, z);
+		TileEntityCrystalTank te2 = te.getTankController();
+		if (te2 != null) {
+			te2.lighting.update(te2.worldObj, x, y, z);
+		}
+
 		if (renderPass == 0) {
-			ArrayList<Integer> li = b.getEdgesForFace(world, x, y, z, ForgeDirection.UP);
-			this.setFaceBrightness(v5, ForgeDirection.UP);
-			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.UP.ordinal()))
-				for (int i = 0; i < li.size(); i++) {
-					int edge = li.get(i);
+			HashSet<Integer> li = null;
+
+			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.UP.ordinal())) {
+				li = b.getEdgesForFace(world, x, y, z, ForgeDirection.UP);
+				this.setFaceBrightness(v5, ForgeDirection.UP);
+				for (int edge : li) {
 					IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 					float u = ico.getMinU();
 					float du = ico.getMaxU();
@@ -174,14 +183,12 @@ public class TankBlockRenderer implements ISBRH {
 					v5.addVertexWithUV(0, 1, 1, du, dv);
 					v5.addVertexWithUV(1, 1, 1, u, dv);
 				}
+			}
 
-
-
-			li = b.getEdgesForFace(world, x, y, z, ForgeDirection.DOWN);
-			this.setFaceBrightness(v5, ForgeDirection.DOWN);
-			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.DOWN.ordinal()))
-				for (int i = 0; i < li.size(); i++) {
-					int edge = li.get(i);
+			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.DOWN.ordinal())) {
+				li = b.getEdgesForFace(world, x, y, z, ForgeDirection.DOWN);
+				this.setFaceBrightness(v5, ForgeDirection.DOWN);
+				for (int edge : li) {
 					IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 					float u = ico.getMinU();
 					float du = ico.getMaxU();
@@ -197,13 +204,12 @@ public class TankBlockRenderer implements ISBRH {
 					v5.addVertexWithUV(1, 0, 1, u, dv);
 					v5.addVertexWithUV(0, 0, 1, du, dv);
 				}
+			}
 
-
-			li = b.getEdgesForFace(world, x, y, z, ForgeDirection.EAST);
-			this.setFaceBrightness(v5, ForgeDirection.EAST);
-			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.EAST.ordinal()))
-				for (int i = 0; i < li.size(); i++) {
-					int edge = li.get(i);
+			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.EAST.ordinal())) {
+				li = b.getEdgesForFace(world, x, y, z, ForgeDirection.EAST);
+				this.setFaceBrightness(v5, ForgeDirection.EAST);
+				for (int edge : li) {
 					IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 					float u = ico.getMinU();
 					float du = ico.getMaxU();
@@ -219,12 +225,12 @@ public class TankBlockRenderer implements ISBRH {
 					v5.addVertexWithUV(1, 1, 1, u, dv);
 					v5.addVertexWithUV(1, 0, 1, du, dv);
 				}
+			}
 
-			li = b.getEdgesForFace(world, x, y, z, ForgeDirection.WEST);
-			this.setFaceBrightness(v5, ForgeDirection.WEST);
-			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.WEST.ordinal()))
-				for (int i = 0; i < li.size(); i++) {
-					int edge = li.get(i);
+			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.WEST.ordinal())) {
+				li = b.getEdgesForFace(world, x, y, z, ForgeDirection.WEST);
+				this.setFaceBrightness(v5, ForgeDirection.WEST);
+				for (int edge : li) {
 					IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 					float u = ico.getMinU();
 					float du = ico.getMaxU();
@@ -240,12 +246,12 @@ public class TankBlockRenderer implements ISBRH {
 					v5.addVertexWithUV(0, 0, 1, du, dv);
 					v5.addVertexWithUV(0, 1, 1, u, dv);
 				}
+			}
 
-			li = b.getEdgesForFace(world, x, y, z, ForgeDirection.SOUTH);
-			this.setFaceBrightness(v5, ForgeDirection.SOUTH);
-			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.SOUTH.ordinal()))
-				for (int i = 0; i < li.size(); i++) {
-					int edge = li.get(i);
+			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.SOUTH.ordinal())) {
+				li = b.getEdgesForFace(world, x, y, z, ForgeDirection.SOUTH);
+				this.setFaceBrightness(v5, ForgeDirection.SOUTH);
+				for (int edge : li) {
 					IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 					float u = ico.getMinU();
 					float du = ico.getMaxU();
@@ -261,12 +267,12 @@ public class TankBlockRenderer implements ISBRH {
 					v5.addVertexWithUV(1, 0, 1, du, dv);
 					v5.addVertexWithUV(1, 1, 1, u, dv);
 				}
+			}
 
-			li = b.getEdgesForFace(world, x, y, z, ForgeDirection.NORTH);
-			this.setFaceBrightness(v5, ForgeDirection.NORTH);
-			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.NORTH.ordinal()))
-				for (int i = 0; i < li.size(); i++) {
-					int edge = li.get(i);
+			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.NORTH.ordinal())) {
+				li = b.getEdgesForFace(world, x, y, z, ForgeDirection.NORTH);
+				this.setFaceBrightness(v5, ForgeDirection.NORTH);
+				for (int edge : li) {
 					IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 					float u = ico.getMinU();
 					float du = ico.getMaxU();
@@ -282,6 +288,7 @@ public class TankBlockRenderer implements ISBRH {
 					v5.addVertexWithUV(1, 1, 0, u, dv);
 					v5.addVertexWithUV(1, 0, 0, du, dv);
 				}
+			}
 		}
 
 		v5.addVertex(0, 0, 0);

@@ -18,6 +18,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
@@ -214,7 +215,7 @@ public class RenderAlveary extends ChromaRenderBase {
 				double s2 = 0.0625;
 				GL11.glScaled(s2, -s2, s2);
 				String sg = ReikaBeeHelper.getBee(is).getDisplayName();
-				FontRenderer f = ChromaFontRenderer.FontType.GUI.renderer;
+				FontRenderer f = sg.startsWith(EnumChatFormatting.OBFUSCATED.toString()) ? ChromaFontRenderer.FontType.OBFUSCATED.renderer : ChromaFontRenderer.FontType.GUI.renderer;
 
 				double a = 180+ReikaPhysicsHelper.cartesianToPolar(RenderManager.renderPosX-te.xCoord, RenderManager.renderPosY-te.yCoord, RenderManager.renderPosZ-te.zCoord)[2];
 				GL11.glRotated(a, 0, 1, 0);

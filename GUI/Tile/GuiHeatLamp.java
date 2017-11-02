@@ -92,7 +92,7 @@ public class GuiHeatLamp extends GuiContainer {
 
 	private void sendData() {
 		tile.temperature = temperature;
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.HEATLAMP.ordinal(), tile, temperature);
+		ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.HEATLAMP.ordinal(), tile, temperature);
 	}
 
 	@Override

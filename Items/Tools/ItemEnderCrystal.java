@@ -60,8 +60,8 @@ public class ItemEnderCrystal extends ItemChromaTool {
 		if (this.canPickUpCrystal(is)) {
 			li.add("Can pick up an Ender Crystal");
 		}
-		else if (this.canPlaceCrystal(is)) {
-			li.add("Contains 1 Ender Crystal");
+		/*else */if (this.canPlaceCrystal(is)) {
+			li.add("Contains "+is.getItemDamage()+" Ender Crystals");
 		}
 	}
 
@@ -96,7 +96,7 @@ public class ItemEnderCrystal extends ItemChromaTool {
 		else
 		{
 			if (!ep.capabilities.isCreativeMode)
-				is.setItemDamage(0);
+				is.setItemDamage(is.getItemDamage()-1);
 			//world.setBlock(x, y, z, RedstoneBlocks.WIRE.getBlock());
 			world.setBlock(x, y, z, Blocks.bedrock);
 			world.setBlock(x, y+1, z, Blocks.fire);
@@ -116,7 +116,7 @@ public class ItemEnderCrystal extends ItemChromaTool {
 			ItemStack is = ep.getCurrentEquippedItem();
 			if (is != null && is.getItem() == this && this.canPickUpCrystal(is)) {
 				if (!ep.capabilities.isCreativeMode)
-					is.setItemDamage(1);
+					is.setItemDamage(is.getItemDamage()+1);
 				e.setDead();
 				int x = MathHelper.floor_double(e.posX);
 				int y = MathHelper.floor_double(e.posY);
@@ -134,11 +134,11 @@ public class ItemEnderCrystal extends ItemChromaTool {
 	}
 
 	public boolean canPickUpCrystal(ItemStack is) {
-		return is.getItemDamage() == 0;
+		return true;//is.getItemDamage() == 0;
 	}
 
 	public boolean canPlaceCrystal(ItemStack is) {
-		return is.getItemDamage() == 1;
+		return is.getItemDamage() >= 1;
 	}
 
 	private boolean checkSpace(World world, int x, int y, int z) {

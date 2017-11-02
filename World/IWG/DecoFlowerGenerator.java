@@ -47,6 +47,10 @@ public class DecoFlowerGenerator implements RetroactiveGenerator, ChromaDecorato
 						tries++;
 						int posX = chunkX + random.nextInt(16);
 						int posZ = chunkZ + random.nextInt(16);
+						if (p == Flowers.FLOWIVY) { //prevent chunk spilling
+							posX = chunkX+1 + random.nextInt(14);
+							posZ = chunkZ+1 + random.nextInt(14);
+						}
 						BiomeGenBase b = world.getBiomeGenForCoords(posX, posZ);
 						if (p.canGenerateIn(b)) {
 							int posY = ReikaRandomHelper.getRandomPlusMinus(world.getTopSolidOrLiquidBlock(posX, posZ), 25);

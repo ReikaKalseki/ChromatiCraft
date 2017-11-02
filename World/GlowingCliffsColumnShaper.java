@@ -328,7 +328,7 @@ public class GlowingCliffsColumnShaper {
 		int look = search;
 		//ScaledCubeDirection result = null;
 		Coordinate result = null;
-		for (int d = 1; d <= look; d++) {
+		for (int d = 1; d <= look; d += 4) {
 			//for (int i = 0; i < CubeDirections.list.length; i++) {
 			//CubeDirections dir = CubeDirections.list[i];
 			for (double a = 0; a < 360; a += ANGLE_SEARCH_STEP) {

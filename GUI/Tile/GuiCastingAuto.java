@@ -170,11 +170,11 @@ public class GuiCastingAuto extends GuiChromaBase {
 
 			case 4:
 				if (this.getRecipe() != null)
-					ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.AUTORECIPE.ordinal(), tile, RecipesCastingTable.instance.getIDForRecipe(this.getRecipe()), number);
+					ReikaPacketHelper.sendStringIntPacket(ChromatiCraft.packetChannel, ChromaPackets.AUTORECIPE.ordinal(), tile, RecipesCastingTable.instance.getStringIDForRecipe(this.getRecipe()), number);
 				break;
 
 			case 5:
-				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.AUTOCANCEL.ordinal(), tile);
+				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.AUTOCANCEL.ordinal(), tile);
 				lexiconSelectedRecipe = null;
 				break;
 		}

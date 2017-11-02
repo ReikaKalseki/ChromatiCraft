@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -81,6 +82,18 @@ public class TileEntityFarmer extends TileEntityRelayPowered {
 				return true;
 			}
 		}
+		else if (o instanceof Block) {
+			Block b = (Block)o;
+			int meta = c.getBlockMetadata(world);
+			int fortune = this.getFortune();
+			ArrayList<ItemStack> li = b.getDrops(world, c.xCoord, c.yCoord, c.zCoord, fortune, meta);
+			ReikaItemHelper.dropItems(world, c.xCoord+0.5, c.yCoord+0.5, c.zCoord+0.5, li);
+			c.setBlock(world, Blocks.air);
+			ReikaSoundHelper.playBreakSound(world, c.xCoord, c.yCoord, c.zCoord, b);
+			this.drainEnergy(CrystalElement.GREEN, 200);
+			this.drainEnergy(CrystalElement.PURPLE, 50);
+			return true;
+		}
 		return false;
 	}
 
@@ -108,6 +121,8 @@ public class TileEntityFarmer extends TileEntityRelayPowered {
 
 	private Object getCropOrRelayAt(World world, Coordinate c) {
 		Block b = c.getBlock(world);
+		if ((b == Blocks.cactus || b == Blocks.reeds) && c.offset(0, -1, 0).getBlock(world) == b)
+			return b;
 		int meta = c.getBlockMetadata(world);
 		if (ChromaTiles.getTileFromIDandMetadata(b, meta) == ChromaTiles.FUNCTIONRELAY) {
 			TileEntityFunctionRelay te = (TileEntityFunctionRelay)c.getTileEntity(world);

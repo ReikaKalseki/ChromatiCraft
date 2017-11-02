@@ -48,6 +48,7 @@ public enum ChromaSounds implements SoundEnum {
 	GUICLICK("gui2"),
 	GUISEL("gui4"),
 	DRONE("drone2"),
+	DRONE_HI("drone2_hi"),
 	PORTAL("portal2"),
 	ORB("orb"),
 	ORB_HI("orb_hi"),
@@ -93,6 +94,8 @@ public enum ChromaSounds implements SoundEnum {
 	WATERLOCK("waterlock"),
 	REPEATERRING("repeaterring"),
 	FAIL("fail"),
+	DIMENSIONHUM("dimensionhum"),
+	DIMENSIONHUM_HI("dimensionhum_hi"),
 	;
 
 	public static final ChromaSounds[] soundList = values();
@@ -222,7 +225,7 @@ public enum ChromaSounds implements SoundEnum {
 
 	@Override
 	public boolean attenuate() {
-		return this != GOTODIM && this != PYLONTURBO && this != PYLONFLASH && this != PYLONBOOSTRITUAL && this != PYLONBOOSTSTART && this != REPEATERSURGE && this != MONUMENT && this != MONUMENTRAY && this != GAINPROGRESS;
+		return this != GOTODIM && this != PYLONTURBO && this != PYLONFLASH && this != PYLONBOOSTRITUAL && this != PYLONBOOSTSTART && this != REPEATERSURGE && this != MONUMENT && this != MONUMENTRAY && this != GAINPROGRESS && this != LOREHEX && this != LORECOMPLETE;
 	}
 
 	public boolean hasWiderPitchRange() {

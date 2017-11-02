@@ -152,7 +152,8 @@ public class ProgressionCacher implements PlayerTracker {
 	}
 
 	public NBTTagCompound attemptToLoadBackup(EntityPlayer ep) {
-		ChromatiCraft.logger.log("Attempting to load backup progression for "+ep);
+		if (!ReikaPlayerAPI.isFake(ep))
+			ChromatiCraft.logger.log("Attempting to load backup progression for "+ep);
 		NBTTagCompound tag = cachedBackup.get(ep);
 		if (tag == null) {
 			File f = this.getBackupFile(ep);

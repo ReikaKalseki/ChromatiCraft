@@ -26,6 +26,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
+import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
@@ -113,6 +114,9 @@ public class GuiStructure extends GuiBookSection {
 		}
 		else if (page == ChromaResearch.BEACONSTRUCT) {
 			render.addOverride(array.getMidX(), array.getMinY()+1, array.getMidZ(), ChromaTiles.BEACON.getCraftedProduct());
+		}
+		else if (page == ChromaResearch.PROGLINKSTRUCT) {
+			render.addOverride(array.getMidX(), array.getMaxY(), array.getMidZ(), ChromaTiles.PROGRESSLINK.getCraftedProduct());
 		}
 		else if (page.name().contains("METEOR")) {
 			ItemStack is = ChromaTiles.METEOR.getCraftedProduct();
@@ -279,12 +283,17 @@ public class GuiStructure extends GuiBookSection {
 
 	private void drawTally(int j, int k) {
 		ItemHashMap<Integer> map = array.tally();
+		ItemHashMap<Integer> map2 = null;
+		Structures diff = this.getDifferenceTally();
+		if (diff != null) {
+			map2 = ItemHashMap.subtract(map, diff.getStructureForDisplay().tally());
+		}
 		int i = 0;
 		int n = 8;
 		List<ItemStack> c = new ArrayList(map.keySet());
 		Collections.sort(c, ReikaItemHelper.comparator);
 		for (ItemStack is : c) {
-			int dx = j+10+(i/n)*50;
+			int dx = j+10+(i/n)*(map2 != null ? 65 : 50);
 			int dy = k+30+(i%n)*22;
 			ItemStack is2 = is.copy();
 			if (ChromaBlocks.CHROMA.match(is)) {
@@ -329,8 +338,41 @@ public class GuiStructure extends GuiBookSection {
 				is2 = ChromaTiles.getTileFromIDandMetadata(Block.getBlockFromItem(is2.getItem()), is2.getItemDamage()).getCraftedProduct();
 			}
 			api.drawItemStackWithTooltip(itemRender, fontRendererObj, is2, dx, dy);
-			fontRendererObj.drawString(String.valueOf(map.get(is)), dx+20, dy+5, 0xffffff);
+			String s = String.valueOf(map.get(is));
+			fontRendererObj.drawString(s, dx+20, dy+5, 0xffffff);
+			if (map2 != null) {
+				int dx2 = dx+20+fontRendererObj.getStringWidth(s)+fontRendererObj.getCharWidth(' ');
+				Integer get = map2.get(is);
+				if (get == null)
+					get = 0;
+				s = "("+get+")";
+				fontRendererObj.drawString(s, dx2, dy+5, 0x22ff22);
+			}
 			i++;
+		}
+	}
+
+	private Structures getDifferenceTally() {
+		switch(page.getStructure()) {
+			case CASTING2:
+				return Structures.CASTING1;
+			case CASTING3:
+				return Structures.CASTING2;
+			case METEOR2:
+				return Structures.METEOR1;
+			case METEOR3:
+				return Structures.METEOR2;
+			case PYLONBROADCAST:
+			case PYLONTURBO:
+				return Structures.PYLON;
+			case RITUAL2:
+				return Structures.RITUAL;
+			case TREE_BOOSTED:
+				return Structures.TREE;
+			case WIRELESSPEDESTAL2:
+				return Structures.WIRELESSPEDESTAL;
+			default:
+				return null;
 		}
 	}
 

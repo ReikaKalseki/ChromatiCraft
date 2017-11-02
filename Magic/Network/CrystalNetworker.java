@@ -85,7 +85,7 @@ public class CrystalNetworker implements TickHandler {
 	private final MultiMap<Integer, CrystalFlow> flows = new MultiMap(new MultiMap.HashSetFactory());
 	private final HashMap<UUID, WorldLocation> verifier = new HashMap();
 	private final MultiMap<WorldChunk, CrystalLink> losCache = new MultiMap(new MultiMap.HashSetFactory()).setNullEmpty();
-	private final PluralMap<CrystalLink> links = new PluralMap(2);
+	private final PluralMap<CrystalLink> links = new PluralMap(2).setBidirectional();
 	private final HashSet<CrystalFlow> toBreak = new HashSet();
 	private final ArrayList<NotifiedNetworkTile> notifyCache = new ArrayList();
 	//private final Collection<ChunkRequest> pathfindingChunkRequests = new ConcurrentLinkedQueue();
@@ -125,11 +125,14 @@ public class CrystalNetworker implements TickHandler {
 					WorldLocation l1 = l.loc1;
 					WorldLocation l2 = l.loc2;
 
-					double[] angs = ReikaPhysicsHelper.cartesianToPolar(l1.xCoord-l2.xCoord, l1.yCoord-l2.yCoord, l1.zCoord-l2.zCoord);
-					double[] angs2 = ReikaPhysicsHelper.cartesianToPolar(l1.xCoord-evt.xCoord, l1.yCoord-evt.yCoord, l1.zCoord-evt.zCoord);
+					boolean close = l1.isWithinSquare(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, 2) || l2.isWithinSquare(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, 2);
+					double[] angs = close ? null : ReikaPhysicsHelper.cartesianToPolar(l1.xCoord-l2.xCoord, l1.yCoord-l2.yCoord, l1.zCoord-l2.zCoord);
+					double[] angs2 = close ? null : ReikaPhysicsHelper.cartesianToPolar(l1.xCoord-evt.xCoord, l1.yCoord-evt.yCoord, l1.zCoord-evt.zCoord);
 					//Only check link if block near it
-					if (ReikaMathLibrary.approxrAbs(angs[1], angs2[1], 3) && ReikaMathLibrary.approxrAbs(angs[2], angs2[2], 3)) {
-						l.hasLOS = false;
+					//ReikaJavaLibrary.pConsole(Arrays.toString(angs)+" , "+Arrays.toString(angs2));
+					if (close || (ReikaMathLibrary.approxrAbs(angs[1], angs2[1], 5) && ReikaMathLibrary.approxrAbs(angs[2], angs2[2], 5))) {
+						l.needsCalculation = true;
+						//ReikaJavaLibrary.pConsole("Invalidating LOS for "+l+" (#"+System.identityHashCode(l)+")");
 
 						//Kill active flows if blocked
 						for (CrystalFlow p : flows.get(evt.world.provider.dimensionId)) {
@@ -150,6 +153,7 @@ public class CrystalNetworker implements TickHandler {
 
 	void addLink(CrystalLink l, boolean connect) {
 		l.hasLOS = connect;
+		l.needsCalculation = !connect;
 		for (WorldChunk wc : l.chunks)
 			losCache.addValue(wc, l);
 		links.put(l, l.loc1, l.loc2);
@@ -224,16 +228,7 @@ public class CrystalNetworker implements TickHandler {
 	}
 
 	public boolean checkConnectivity(CrystalElement e, CrystalReceiver r) {
-		EntityPlayer ep = r.getPlacerUUID() != null ? r.getWorld().func_152378_a(r.getPlacerUUID()) : null;
-		try {
-			CrystalPath p = new PylonFinder(e, r, ep).findPylon();
-			return p != null && p.canTransmit();
-		}
-		catch (ConcurrentModificationException ex) {
-			ex.printStackTrace();
-			ChromatiCraft.logger.logError("CME during pathfinding!");
-			return false;
-		}
+		return this.getConnectivity(e, r) != null;
 	}
 
 	public CrystalPath getConnectivity(CrystalElement e, CrystalReceiver r) {
@@ -607,7 +602,23 @@ public class CrystalNetworker implements TickHandler {
 	}
 
 	public boolean canMakeConnection(CrystalTransmitter src, CrystalReceiver tgt, CrystalElement e) {
-		return src.canConduct() && src.canTransmitTo(tgt) && (e == null || src.isConductingElement(e)) && tgt.getDistanceSqTo(src.getX(), src.getY(), src.getZ()) <= Math.min(tgt.getReceiveRange()*tgt.getReceiveRange(), src.getSendRange()*src.getSendRange()) && (!(src.needsLineOfSightToReceiver(tgt) || tgt.needsLineOfSightFromTransmitter(src)) || PylonFinder.lineOfSight(PylonFinder.getLocation(src), PylonFinder.getLocation(tgt)));
+		if (src.canConduct() && src.canTransmitTo(tgt)) {
+			if (e == null || src.isConductingElement(e)) {
+				if (tgt.getDistanceSqTo(src.getX(), src.getY(), src.getZ()) <= Math.min(tgt.getReceiveRange()*tgt.getReceiveRange(), src.getSendRange()*src.getSendRange())) {
+					if (this.checkLOS(src, tgt)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	boolean checkLOS(CrystalTransmitter src, CrystalReceiver tgt) {
+		if (!src.needsLineOfSightToReceiver(tgt) && !tgt.needsLineOfSightFromTransmitter(src))
+			return true;
+		CrystalLink l = this.getLink(PylonFinder.getLocation(src), PylonFinder.getLocation(tgt));
+		return l.hasLineOfSight();
 	}
 
 	ArrayList<CrystalReceiver> getNearbyReceivers(CrystalTransmitter r, CrystalElement e) {
@@ -814,7 +825,9 @@ public class CrystalNetworker implements TickHandler {
 		public final WorldLocation loc1;
 		public final WorldLocation loc2;
 		private final HashSet<WorldChunk> chunks = new HashSet();
+
 		private boolean hasLOS = false;
+		private boolean needsCalculation = true;
 
 		CrystalLink(WorldLocation l1, WorldLocation l2) {
 			loc1 = l1;
@@ -830,8 +843,12 @@ public class CrystalNetworker implements TickHandler {
 			}
 		}
 
-		void recalculateLOS() {
+		private void recalculateLOS() {
+			if (!needsCalculation)
+				return;
+			needsCalculation = false;
 			hasLOS = PylonFinder.lineOfSight(loc1, loc2);
+			//ReikaJavaLibrary.pConsole("Recalculating LOS for "+this+" (#"+System.identityHashCode(this)+"): "+hasLOS);
 		}
 
 		public boolean isChunkInPath(WorldChunk wc) {
@@ -847,17 +864,20 @@ public class CrystalNetworker implements TickHandler {
 		public final boolean equals(Object o) {
 			if (o instanceof CrystalLink) {
 				CrystalLink l = (CrystalLink)o;
-				return l.loc1.equals(loc1) && l.loc2.equals(loc2);
+				return (l.loc1.equals(loc1) && l.loc2.equals(loc2)) || (l.loc1.equals(loc2) && l.loc2.equals(loc1)); //order irrelevant
 			}
 			return false;
 		}
 
 		@Override
-		public String toString() {
+		public final String toString() {
 			return "["+loc1+" > "+loc2+"]";
 		}
 
 		final boolean hasLineOfSight() {
+			if (needsCalculation)
+				this.recalculateLOS();
+			//ReikaJavaLibrary.pConsole("Returning LOS for "+this+" (#"+System.identityHashCode(this)+"): "+hasLOS);
 			return hasLOS;
 		}
 

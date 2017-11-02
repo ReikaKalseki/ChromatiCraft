@@ -12,7 +12,7 @@ package Reika.ChromatiCraft.TileEntity.Acquisition;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.EnumMap;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.API.Interfaces.MinerBlock;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -50,7 +51,9 @@ import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
+import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Interfaces.Block.SpecialOreBlock;
+import Reika.DragonAPI.Interfaces.Registry.OreType;
 import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
@@ -91,7 +94,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 	private boolean dropFlag = false;
 	private long lastWarning;
 
-	private boolean chunkloaded;
+	private boolean preparedScanning;
 
 	private static final int TICKSTEP = 2048;
 	private int index;
@@ -99,10 +102,12 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
-	private final ArrayList<Coordinate> coords = new ArrayList();
-	private final ItemHashMap<Integer> found = new ItemHashMap(); //pre-unified for display
+	private final EnumMap<MineralCategory, ArrayList<Coordinate>> coords = new EnumMap(MineralCategory.class);
+	private final ItemHashMap<ItemDisplay> found = new ItemHashMap(); //pre-unified for display
+	private MineralCategory selectedCategory = null;
 
 	private boolean silkTouch;
+	private int fortuneLevel;
 
 	static {
 		required.addTag(CrystalElement.YELLOW, 50);
@@ -141,7 +146,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 	public void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
 		this.updateRange();
-		this.calcSilkTouch();
+		this.calcSilkTouchAndFortune();
 		digging = digReady = dropFlag = false;
 		readY = 0;
 	}
@@ -156,46 +161,45 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 			}
 			else {
 				if (digging && !coords.isEmpty()) {
-					//this.prepareChunkloading();
-					this.calcSilkTouch();
-					miningTimer.update();
-					if (miningTimer.checkCap()) {
-						if (this.hasEnergy(required)) {
-							Coordinate c = coords.get(index);
-							int dx = c.xCoord;
-							int dy = c.yCoord;
-							int dz = c.zCoord;
-							Block id = this.parseBlock(world.getBlock(dx, dy, dz));
-							int meta2 = world.getBlockMetadata(dx, dy, dz);
-							//ReikaJavaLibrary.pConsole(readX+":"+dx+", "+dy+", "+readZ+":"+dz+" > "+ores.getSize(), Side.SERVER);
-							this.removeFound(world, dx, dy, dz, id, meta2);
-							if (id instanceof SpecialOreBlock) {
-								this.dropSpecialOreBlock(world, x, y, z, dx, dy, dz, (SpecialOreBlock)id, meta2);
-							}
-							else if (ReikaBlockHelper.isOre(id, meta2)) {
-								//ores.addBlockCoordinate(dx, dy, dz);
-								this.dropBlock(world, x, y, z, dx, dy, dz, id, meta2);
-							}
-							else if (this.shouldMine(id, meta2)) {
-								this.dropBlock(world, x, y, z, dx, dy, dz, id, meta2);
-							}
-							else if (this.isTieredResource(world, dx, dy, dz, id, meta2)) {
-								this.dropTieredResource(world, x, y, z, dx, dy, dz, id, meta2);
-							}
-							else if (id instanceof MinerBlock) {
-								this.dropMineableBlock(world, x, y, z, dx, dy, dz, id, meta2);
-							}
-							this.useEnergy(required.copy().scale(this.getEnergyCostScale()));
-							//ReikaJavaLibrary.pConsole("Mining "+id+":"+meta2+" @ "+dx+","+dy+","+dz+"; index="+index);
-							index++;
-							if (index >= coords.size()) {
-								this.finishDigging();
+					this.calcSilkTouchAndFortune();
+					if (selectedCategory != null) {
+						//this.prepareChunkloading();
+						miningTimer.update();
+						if (miningTimer.checkCap()) {
+							if (this.hasEnergy(required)) {
+								ArrayList<Coordinate> li = coords.get(selectedCategory);
+								Coordinate c = li.get(index);
+								int dx = c.xCoord;
+								int dy = c.yCoord;
+								int dz = c.zCoord;
+								Block id = this.parseBlock(world.getBlock(dx, dy, dz));
+								int meta2 = world.getBlockMetadata(dx, dy, dz);
+								//ReikaJavaLibrary.pConsole(readX+":"+dx+", "+dy+", "+readZ+":"+dz+" > "+ores.getSize(), Side.SERVER);
+								this.removeFound(world, dx, dy, dz, id, meta2, selectedCategory);
+								if (id instanceof SpecialOreBlock) {
+									this.dropSpecialOreBlock(world, x, y, z, dx, dy, dz, (SpecialOreBlock)id, meta2);
+								}
+								else if (this.isTieredResource(world, dx, dy, dz, id, meta2)) {
+									this.dropTieredResource(world, x, y, z, dx, dy, dz, id, meta2);
+								}
+								else if (id instanceof MinerBlock) {
+									this.dropMineableBlock(world, x, y, z, dx, dy, dz, id, meta2);
+								}
+								else {
+									this.dropBlock(world, x, y, z, dx, dy, dz, id, meta2);
+								}
+								this.useEnergy(required.copy().scale(this.getEnergyCostScale()));
+								//ReikaJavaLibrary.pConsole("Mining "+id+":"+meta2+" @ "+dx+","+dy+","+dz+"; index="+index);
+								index++;
+								if (index >= li.size()) {
+									this.finishDigging();
+								}
 							}
 						}
 					}
 				}
 				else if (!digReady && !finishedDigging) {
-					this.prepareChunkloading();
+					this.prepareScanning();
 					for (int i = 0; i < TICKSTEP; i++) {
 						int dx = x+readX;
 						int dy = readY;
@@ -204,22 +208,13 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 						Block id = this.parseBlock(world.getBlock(dx, dy, dz));
 						int meta2 = world.getBlockMetadata(dx, dy, dz);
 						//ReikaJavaLibrary.pConsole(readX+":"+dx+", "+dy+", "+readZ+":"+dz+" > "+ores.getSize(), Side.SERVER);
-						boolean add = false;
-						if (ReikaBlockHelper.isOre(id, meta2)) {
-							//ores.addBlockCoordinate(dx, dy, dz);
-							add = coords.add(new Coordinate(dx, dy, dz));
-						}
-						else if (this.isTieredResource(world, dx, dy, dz, id, meta2)) {
-							add = coords.add(new Coordinate(dx, dy, dz));
-						}
-						else if (id instanceof MinerBlock && ((MinerBlock)id).isMineable(meta2)) {
-							add = coords.add(new Coordinate(dx, dy, dz));
-						}
-						else if (this.shouldMine(id, meta2)) {
-							add = coords.add(new Coordinate(dx, dy, dz));
-						}
-						if (add) {
-							this.addFound(world, dx, dy, dz, id, meta2);
+						MineralCategory mc = this.getMiningCategory(world, dx, dy, dz, id, meta2);
+						if (mc != null) {
+							Coordinate c = new Coordinate(dx, dy, dz);
+							if (coords.get(mc).add(c)) {
+								coords.get(MineralCategory.ANY).add(c);
+								this.addFound(world, dx, dy, dz, id, meta2, mc);
+							}
 						}
 						this.updateReadPosition();
 						if (readY >= worldObj.getActualHeight()) {
@@ -230,14 +225,17 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 				progress = readY;
 			}
 		}
-		if (world.isRemote)
+		if (world.isRemote && this.isTickingNaturally())
 			this.spawnParticles(world, x, y, z);
 	}
 
-	private void prepareChunkloading() {
-		if (!chunkloaded) {
-			chunkloaded = true;
+	private void prepareScanning() {
+		if (!preparedScanning) {
+			preparedScanning = true;
 			ChunkManager.instance.loadChunks(this);
+			for (MineralCategory mc : MineralCategory.list) {
+				coords.put(mc, new ArrayList());
+			}
 		}
 	}
 
@@ -252,14 +250,27 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 
 	private void finishDigging() {
 		digging = false;
-		digReady = false;
-		coords.clear();
-		found.clear();
 		finishedDigging = true;
+		index = 0;
+		if (selectedCategory == MineralCategory.ANY || this.hasDepletedAllBlocks()) {
+			digReady = false;
+			coords.clear();
+			found.clear();
+		}
+		ChromaSounds.CRAFTDONE.playSoundAtBlock(this);
+		selectedCategory = null;
 		//ReikaJavaLibrary.pConsole(found);
 		this.syncAllData(true);
 		this.scheduleBlockUpdate(5);
 		//ChunkManager.instance.unloadChunks(this);
+	}
+
+	private boolean hasDepletedAllBlocks() {
+		for (ArrayList<Coordinate> li : coords.values()) {
+			if (!li.isEmpty())
+				return false;
+		}
+		return true;
 	}
 
 	private Block parseBlock(Block b) {
@@ -268,6 +279,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		return b;
 	}
 
+	/*
 	private boolean shouldMine(Block id, int meta2) {
 		if (id == Blocks.glowstone)
 			return true;
@@ -275,16 +287,66 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 			;//return true;
 		return false;
 	}
+	 */
+	private MineralCategory getMiningCategory(World world, int x, int y, int z, Block b, int meta) {
+		if (b == Blocks.glowstone)
+			return MineralCategory.MISC_UNDERGROUND_VALUABLE;
+		//if (b == Blocks.mob_spawner) //need an item
+		//	;//return true;
+		if (Item.getItemFromBlock(b) == null)
+			return null;
+		if (b instanceof SemiUnbreakable && ((SemiUnbreakable)b).isUnbreakable(world, x, y, z, meta))
+			return null;
+		OreType ore = ReikaOreHelper.getEntryByOreDict(new ItemStack(b, meta));
+		if (ore != null) {
+			switch(ore.getRarity()) {
+				case EVERYWHERE:
+				case COMMON:
+					return MineralCategory.UBIQUITOUS_ORE;
+				case AVERAGE:
+					return MineralCategory.COMMON_ORE;
+				case SCATTERED:
+					return MineralCategory.UNCOMMON_ORE;
+				case SCARCE:
+				case RARE:
+					return MineralCategory.RARE_ORE;
+
+			}
+		}
+		ore = ModOreList.getModOreFromOre(b, meta);
+		if (ore != null) {
+			switch(ore.getRarity()) {
+				case EVERYWHERE:
+				case COMMON:
+					return MineralCategory.UBIQUITOUS_ORE;
+				case AVERAGE:
+					return MineralCategory.COMMON_ORE;
+				case SCATTERED:
+					return MineralCategory.UNCOMMON_ORE;
+				case SCARCE:
+				case RARE:
+					return MineralCategory.RARE_ORE;
+
+			}
+		}
+		if (this.isTieredResource(world, x, y, z, b, meta)) {
+			return b instanceof BlockTieredOre ? MineralCategory.UNCOMMON_ORE : MineralCategory.MISC_UNDERGROUND_VALUABLE;
+		}
+		else if (b instanceof MinerBlock && ((MinerBlock)b).isMineable(meta)) {
+			return MineralCategory.from(((MinerBlock)b).getCategory());
+		}
+		return null;
+	}
 
 	public float getDigCompletion() {
 		return this.isReady() ? 1 : (float)progress/worldObj.getActualHeight();
 	}
 
 	public boolean isReady() {
-		return digReady;
+		return digReady && selectedCategory != null;
 	}
 
-	private void removeFound(World world, int x, int y, int z, Block b, int meta) {
+	private void removeFound(World world, int x, int y, int z, Block b, int meta, MineralCategory mc) {
 		if (Item.getItemFromBlock(b) == null)
 			return;
 		ItemStack is = new ItemStack(b, 1, meta);
@@ -301,17 +363,17 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 				is = mod.getFirstOreBlock();
 			}
 		}
-		Integer i = found.get(is);
-		if (i == null)
-			i = 0;
-		if (i > 1)
-			found.put(is, i-1);
-		else
-			found.remove(is);
+		ItemDisplay i = found.get(is);
+		if (i != null) {
+			if (i.amount > 1)
+				i.amount--;
+			else
+				found.remove(is);
+		}
 		//ReikaJavaLibrary.pConsole("Removed "+b+":"+meta+" from cache, now have "+found.get(is));
 	}
 
-	private void addFound(World world, int x, int y, int z, Block b, int meta) {
+	private void addFound(World world, int x, int y, int z, Block b, int meta, MineralCategory mc) {
 		if (b != null && Item.getItemFromBlock(b) == null) {
 			ChromatiCraft.logger.logError("Block "+b+" has no item to drop when mined???");
 			return;
@@ -330,20 +392,36 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 				is = mod.getFirstOreBlock();
 			}
 		}
-		Integer i = found.get(is);
-		if (i == null)
-			i = 0;
-		found.put(is, i+1);
+		ItemDisplay i = found.get(is);
+		if (i == null) {
+			i = new ItemDisplay(mc, is);
+			found.put(is, i);
+		}
+		i.amount++;
 		//ReikaJavaLibrary.pConsole("Found "+b+":"+meta+" @ "+x+","+y+","+z+"; have "+(i+1));
 	}
 
-	public List<ItemStack> getFound() {
-		return Collections.unmodifiableList(found.sortedKeyset());
+	public Collection<ItemDisplay> getFound() {
+		return Collections.unmodifiableCollection(found.values());
 	}
 
-	public int getNumberFound(ItemStack is) {
-		Integer i = found.get(is);
-		return i != null ? i.intValue() : 0;
+	public EnumMap<MineralCategory, ArrayList<ItemDisplay>> getFoundByCategory() {
+		EnumMap<MineralCategory, ArrayList<ItemDisplay>> map = new EnumMap(MineralCategory.class);
+		for (ItemDisplay i : found.values()) {
+			ArrayList<ItemDisplay> li = map.get(i.category);
+			if (li == null) {
+				li = new ArrayList();
+				map.put(i.category, li);
+			}
+			li.add(i);
+		}
+		for (ArrayList li : map.values())
+			Collections.sort(li);
+		return map;
+	}
+
+	public ItemDisplay getNumberFound(ItemStack is) {
+		return found.get(is);
 	}
 
 	private boolean isTieredResource(World world, int x, int y, int z, Block id, int meta) {
@@ -429,7 +507,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 			this.dropItems(world, x, y, z, ReikaJavaLibrary.makeListFrom(id.getSilkTouchVersion(world, dx, dy, dz)));
 		}
 		else {
-			this.dropItems(world, x, y, z, id.getDrops(world, dx, dy, dz, 0));
+			this.dropItems(world, x, y, z, id.getDrops(world, dx, dy, dz, fortuneLevel));
 		}
 		ReikaWorldHelper.setBlock(world, dx, dy, dz, id.getReplacementBlock(world, dx, dy, dz));
 	}
@@ -439,11 +517,11 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 			this.dropItems(world, x, y, z, ReikaJavaLibrary.makeListFrom(new ItemStack(id, 1, meta2)));
 		}
 		else {
-			this.dropItems(world, x, y, z, id.getDrops(world, dx, dy, dz, meta2, 0));
+			this.dropItems(world, x, y, z, id.getDrops(world, dx, dy, dz, meta2, fortuneLevel));
 		}
 		this.getFillerBlock(world, dx, dy, dz, id, meta2).place(world, dx, dy, dz);
 		ReikaSoundHelper.playBreakSound(world, dx, dy, dz, id);
-		ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, dx, dy, dz, Block.getIdFromBlock(id), meta2);
+		ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, dx, dy, dz, 128, Block.getIdFromBlock(id), meta2);
 	}
 
 	private void dropTieredResource(World world, int x, int y, int z, int dx,int dy, int dz, Block id, int meta2) {
@@ -451,7 +529,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		this.dropItems(world, x, y, z, li);
 		this.getFillerBlock(world, dx, dy, dz, id, meta2).place(world, dx, dy, dz);
 		ReikaSoundHelper.playBreakSound(world, dx, dy, dz, id);
-		ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, dx, dy, dz, Block.getIdFromBlock(id), meta2);
+		ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, dx, dy, dz, 128, Block.getIdFromBlock(id), meta2);
 	}
 
 	private void dropMineableBlock(World world, int x, int y, int z, int dx, int dy, int dz, Block id, int meta2) {
@@ -459,14 +537,16 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 			this.dropItems(world, x, y, z, ReikaJavaLibrary.makeListFrom(new ItemStack(id, 1, meta2)));
 		}
 		else {
-			this.dropItems(world, x, y, z, ((MinerBlock)id).getHarvestItems(world, dx, dy, dz, meta2, 0));
+			this.dropItems(world, x, y, z, ((MinerBlock)id).getHarvestItems(world, dx, dy, dz, meta2, fortuneLevel));
 		}
 		this.getFillerBlock(world, dx, dy, dz, id, meta2).place(world, dx, dy, dz);
 		ReikaSoundHelper.playBreakSound(world, dx, dy, dz, id);
-		ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, dx, dy, dz, Block.getIdFromBlock(id), meta2);
+		ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, dx, dy, dz, 128, Block.getIdFromBlock(id), meta2);
 	}
 
 	private BlockKey getFillerBlock(World world, int dx, int dy, int dz, Block id, int meta2) {
+		if (id instanceof MinerBlock)
+			return new BlockKey(((MinerBlock)id).getReplacedBlock(world, dx, dy, dz));
 		if (!id.getMaterial().isSolid())
 			return new BlockKey(Blocks.air);
 		if (id == Blocks.glowstone)
@@ -484,13 +564,15 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		return ChromaItems.STORAGE.matchWith(inv[0]);
 	}
 
-	private void calcSilkTouch() {
-		silkTouch = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.PURPLE) > 2;
+	private void calcSilkTouchAndFortune() {
+		int lvl = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.PURPLE);
+		silkTouch = lvl > 5;
+		fortuneLevel = lvl+1;
 	}
 
 	@Override
 	public void onAdjacentUpdate(World world, int x, int y, int z, Block b) {
-		this.calcSilkTouch();
+		this.calcSilkTouchAndFortune();
 		this.updateRange();
 		super.onAdjacentUpdate(world, x, y, z, b);
 	}
@@ -567,6 +649,11 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		return false;
 	}
 
+	public void setCategory(int idx) {
+		selectedCategory = MineralCategory.list[idx];
+		this.syncAllData(false);
+	}
+
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
 
@@ -615,17 +702,18 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		dropFlag = NBT.getBoolean("dropped");
 
 		silkTouch = NBT.getBoolean("silk");
+		fortuneLevel = NBT.getInteger("fortune");
 
 		found.clear();
 		NBTTagList li = NBT.getTagList("count", NBTTypes.COMPOUND.ID);
 		for (Object o : li.tagList) {
 			NBTTagCompound tag = (NBTTagCompound)o;
-			int id = tag.getInteger("id");
-			int meta = tag.getInteger("meta");
-			int count = tag.getInteger("count");
-			ItemStack is = new ItemStack(Item.getItemById(id), 1, meta);
-			found.put(is, count);
+			ItemDisplay is = ItemDisplay.readFromNBT(tag);
+			found.put(is.item, is);
 		}
+
+		int mode = NBT.getInteger("mode");
+		selectedCategory = mode >= 0 ? MineralCategory.list[mode] : null;
 	}
 
 	@Override
@@ -637,18 +725,19 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		NBT.setInteger("index", index);
 		NBT.setBoolean("finish", finishedDigging);
 		NBT.setBoolean("silk", silkTouch);
+		NBT.setInteger("fortune", fortuneLevel);
 
 		NBTTagList li = new NBTTagList();
-		for (ItemStack is : found.keySet()) {
+		for (ItemDisplay is : found.values()) {
 			NBTTagCompound tag = new NBTTagCompound();
-			tag.setInteger("id", Item.getIdFromItem(is.getItem()));
-			tag.setInteger("meta", is.getItemDamage());
-			tag.setInteger("count", found.get(is));
+			is.writeToNBT(tag);
 			li.appendTag(tag);
 		}
 		NBT.setTag("count", li);
 
 		NBT.setBoolean("dropped", dropFlag);
+
+		NBT.setInteger("mode", selectedCategory != null ? selectedCategory.ordinal() : -1);
 	}
 
 	@Override
@@ -692,6 +781,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		if (silkTouch) {
 			f *= 8;
 		}
+		f *= 1+fortuneLevel/4F;
 		return f;
 	}
 
@@ -719,6 +809,97 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 
 	public boolean hasSilkTouch() {
 		return silkTouch;
+	}
+
+	public int getFortune() {
+		return fortuneLevel;
+	}
+
+	public MineralCategory getCategory() {
+		return selectedCategory;
+	}
+
+	public int getTotalFound(MineralCategory mc) {
+		return coords.isEmpty() ? 0 : coords.get(mc).size();
+	}
+
+	public static enum MineralCategory {
+		UBIQUITOUS_ORE("Ubiquitous Ore"),
+		COMMON_ORE("Common Ore"),
+		UNCOMMON_ORE("Uncommon Ore"),
+		RARE_ORE("Rare Ore"),
+		MISC_UNDERGROUND("Misc Material"),
+		MISC_UNDERGROUND_VALUABLE("Misc Valuable"),
+		ANY("Any");
+
+		private static final MineralCategory[] list = values();
+		public final String displayName;
+
+		private MineralCategory(String s) {
+			displayName = s;
+		}
+
+		public static MineralCategory from(Reika.ChromatiCraft.API.Interfaces.MinerBlock.MineralCategory category) {
+			return list[category.ordinal()];
+		}
+	}
+
+	public static class ItemDisplay implements Comparable<ItemDisplay> {
+
+		private int amount = 0;
+		public final MineralCategory category;
+		private final ItemStack item;
+
+		private ItemDisplay(MineralCategory mc, ItemStack is) {
+			category = mc;
+			item = is;
+		}
+
+		public int getAmount() {
+			return amount;
+		}
+
+		public ItemStack getDisplayItem() {
+			return item.copy();
+		}
+
+		public void writeToNBT(NBTTagCompound tag) {
+			tag.setInteger("amt", amount);
+			tag.setInteger("cat", category.ordinal());
+			item.writeToNBT(tag);
+		}
+
+		public static ItemDisplay readFromNBT(NBTTagCompound tag) {
+			int amt = tag.getInteger("amt");
+			int cat = tag.getInteger("cat");
+			ItemStack is = ItemStack.loadItemStackFromNBT(tag);
+			ItemDisplay id = new ItemDisplay(MineralCategory.list[cat], is);
+			id.amount = amt;
+			return id;
+		}
+
+		@Override
+		public int compareTo(ItemDisplay o) {
+			if (o.category != category) {
+				return category.compareTo(o.category);
+			}
+			else {
+				if (o.item.getItem() != item.getItem()) {
+					Block b1 = Block.getBlockFromItem(item.getItem());
+					Block b2 = Block.getBlockFromItem(o.item.getItem());
+					if (b1 != null && b2 != null) {
+						if (b1 instanceof BlockTieredResource) {
+							return Integer.MAX_VALUE;
+						}
+						else if (b2 instanceof BlockTieredResource) {
+							return Integer.MIN_VALUE;
+						}
+					}
+				}
+				return ReikaItemHelper.comparator.compare(item, o.item);
+			}
+		}
+
 	}
 
 }

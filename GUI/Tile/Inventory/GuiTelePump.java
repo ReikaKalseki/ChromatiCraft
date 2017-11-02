@@ -78,7 +78,7 @@ public class GuiTelePump extends GuiChromaBase {
 		}
 		else if (!list.isEmpty()) {
 			Fluid sel = list.get(active);
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.TELEPUMP.ordinal(), pump, sel.getID());
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.TELEPUMP.ordinal(), pump, sel.getID());
 			player.closeScreen();
 		}
 		this.initGui();

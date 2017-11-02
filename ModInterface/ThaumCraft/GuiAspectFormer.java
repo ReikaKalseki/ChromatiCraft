@@ -122,7 +122,7 @@ public class GuiAspectFormer extends GuiChromaBase {
 				break;
 			case 3:
 				mode = mode.next();
-				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ASPECTMODE.ordinal(), tile);
+				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.ASPECTMODE.ordinal(), tile);
 				index = 0;
 				ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.ASPECT.ordinal(), "", tile);
 				this.initGui();

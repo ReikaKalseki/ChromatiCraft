@@ -26,6 +26,11 @@ public class CrystalStarRecipe extends MultiBlockCastingRecipe implements ShardG
 			this.addAuxItem(ChromaStacks.crystalCore, dir.offsetX*2, dir.offsetZ*2);
 		}
 
+		this.addAuxItem(ChromaStacks.elementUnit, -2, -2);
+		this.addAuxItem(ChromaStacks.elementUnit, 2, -2);
+		this.addAuxItem(ChromaStacks.elementUnit, -2, 2);
+		this.addAuxItem(ChromaStacks.elementUnit, 2, 2);
+
 		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+0), -4, -4);
 		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+1), -2, -4);
 		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+2), 0, -4);

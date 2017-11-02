@@ -51,6 +51,8 @@ import Reika.ChromatiCraft.ModInterface.Bees.SpecialAlleles.CrystalEffect;
 import Reika.ChromatiCraft.ModInterface.Bees.SpecialAlleles.FlowerProviderCrystal;
 import Reika.ChromatiCraft.ModInterface.Bees.SpecialAlleles.FlowerProviderMulti;
 import Reika.ChromatiCraft.ModInterface.Bees.SpecialAlleles.MultiAllele;
+import Reika.ChromatiCraft.ModInterface.Bees.SpecialAlleles.PolychromaEffect;
+import Reika.ChromatiCraft.ModInterface.Bees.SpecialAlleles.RechargeEffect;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -88,6 +90,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.EnumBeeType;
+import forestry.api.apiculture.IAlleleBeeEffect;
 import forestry.api.apiculture.IAlleleBeeSpecies;
 import forestry.api.apiculture.IBee;
 import forestry.api.apiculture.IBeeGenome;
@@ -125,6 +128,12 @@ public class CrystalBees {
 	static Territory superTerritory;
 	static Speeds superSpeed;
 	static Flowering superFlowering;
+
+	static Fertility noFertility;
+	static Territory noTerritory;
+	static Speeds noWork;
+	static Flowering noFlowering;
+
 	static Life superLife;
 	static Life blinkLife;
 	//static IAlleleTolerance anyTemperature; green
@@ -133,6 +142,8 @@ public class CrystalBees {
 	static BeeBranch crystalBranch;
 
 	static MultiAllele multiFlower;
+	static PolychromaEffect multiEffect;
+	static RechargeEffect rechargeEffect;
 
 	private static ColorBlendList chromaColor;
 	private static ColorBlendList auraColor;
@@ -217,6 +228,12 @@ public class CrystalBees {
 		superSpeed = Speeds.createNew("accelerated", 4F, false);
 		superFlowering = Flowering.createNew("naturalistic", 240, false);
 		superTerritory = Territory.createNew("exploratory", 32, 16, false);
+
+		noFertility = Fertility.createNew("sterile", 0, false);
+		noWork = Speeds.createNew("unproductive", 0, false);
+		noFlowering = Flowering.createNew("nonpollinating", 0, false);
+		noTerritory = Territory.createNew("lethargic", 1, 1, false);
+
 		superLife = Life.createNew("eon", 600, false);
 		blinkLife = Life.createNew("blink", 2, false);
 		//anyTemperature = Tolerance.createNew("", new OmniToleranceCheck(), false);
@@ -240,6 +257,8 @@ public class CrystalBees {
 		}
 
 		multiFlower = new MultiAllele();
+		multiEffect = new PolychromaEffect();
+		rechargeEffect = new RechargeEffect();
 
 		ForestryAPI.errorStateRegistry.registerErrorState(conditionalsUnavailable);
 
@@ -262,8 +281,8 @@ public class CrystalBees {
 
 		chroma = new AdvancedBee("Iridescent", "Auram Stellans", Speeds.SLOWER, Life.NORMAL, Flowering.SLOWEST, Fertility.NORMAL, Territory.DEFAULT, chromaColor, EnumTemperature.COLD, ProgressStage.ALLOY);
 		lumen = new AdvancedBee("Luminescent", "Auram Ardens", Speeds.NORMAL, Life.SHORTENED, Flowering.SLOWER, Fertility.NORMAL, Territory.DEFAULT, lumenColor, EnumTemperature.NORMAL, ProgressStage.DIMENSION);
-		aura = new AdvancedBee("Radiant", "Auram Pharus", Speeds.SLOW, Life.LONG, Flowering.SLOW, Fertility.NORMAL, Territory.DEFAULT, auraColor, EnumTemperature.ICY, ProgressStage.CTM);
-		multi = new AdvancedBee("Polychromatic", "Pigmentum Pluralis", Speeds.SLOWEST, Life.ELONGATED, Flowering.AVERAGE, Fertility.LOW, Territory.DEFAULT, multiColor, EnumTemperature.WARM, ProgressStage.CTM);
+		aura = (AdvancedBee)new AdvancedBee("Radiant", "Auram Pharus", Speeds.SLOW, Life.LONG, Flowering.SLOW, Fertility.NORMAL, Territory.DEFAULT, auraColor, EnumTemperature.ICY, ProgressStage.CTM).setEffect(rechargeEffect);
+		multi = (AdvancedBee)new AdvancedBee("Polychromatic", "Pigmentum Pluralis", Speeds.SLOWEST, Life.ELONGATED, Flowering.AVERAGE, Fertility.LOW, Territory.DEFAULT, multiColor, EnumTemperature.WARM, ProgressStage.CTM).setEffect(multiEffect);
 
 		chroma.register();
 		lumen.register();
@@ -292,7 +311,10 @@ public class CrystalBees {
 		protective.addBreeding("Heroic", crystal, 10);
 		hostile.addBreeding("Demonic", crystal, 10);
 		luminous.addBreeding("Ended", purity, 5);
-		magical.addBreeding("Imperial", ModList.MAGICBEES.isLoaded() ? "Arcane" : "Wintry", 4);
+		if (ModList.MAGICBEES.isLoaded())
+			magical.addBreeding("Imperial", ModList.FORESTRY, "Arcane", ModList.MAGICBEES, 4);
+		else
+			magical.addBreeding("Imperial", "Wintry", 4);
 
 		chroma.addBreeding(beeMap.get(CrystalElement.PURPLE), beeMap.get(CrystalElement.WHITE), 5);
 		lumen.addBreeding(beeMap.get(CrystalElement.BLUE), beeMap.get(CrystalElement.BLACK), 5);
@@ -492,11 +514,6 @@ public class CrystalBees {
 		}
 
 		@Override
-		public IAllele getEffectAllele() {
-			return Effect.NONE.getAllele();
-		}
-
-		@Override
 		public IAllele getFlowerAllele() {
 			return this == multi ? multiFlower : super.getFlowerAllele();
 		}
@@ -516,7 +533,7 @@ public class CrystalBees {
 	static class RawBee extends BasicBee {
 
 		private RawBee(String name, String latin, int color) {
-			super(name, latin, Speeds.SLOWEST, Life.NORMAL, Flowering.SLOWEST, Fertility.LOW, Territory.DEFAULT, color);
+			super(name, latin, noWork, Life.NORMAL, noFlowering, noFertility, noTerritory, color);
 		}
 
 		@Override
@@ -533,6 +550,7 @@ public class CrystalBees {
 	static class BasicBee extends TraitsBee {
 
 		public final int outline;
+		private IAlleleBeeEffect effect;
 
 		private BasicBee(String name, String latin, Speeds s, Life l, Flowering f, Fertility f2, Territory a, int color) {
 			this(name, latin, s, l, f, f2, a, color, EnumTemperature.NORMAL);
@@ -556,6 +574,11 @@ public class CrystalBees {
 
 			if (this.getClass() == BasicBee.class)
 				basicBees.add(this);
+		}
+
+		protected BasicBee setEffect(IAlleleBeeEffect eff) {
+			effect = eff;
+			return this;
 		}
 		/*
 		private BasicBee setCave() {
@@ -602,7 +625,7 @@ public class CrystalBees {
 
 		@Override
 		public IAllele getEffectAllele() {
-			return Effect.NONE.getAllele();
+			return effect != null ? effect : Effect.NONE.getAllele();
 		}
 
 		@Override
@@ -695,7 +718,7 @@ public class CrystalBees {
 					break;
 				case MAGENTA:
 					ItemStack is = ReikaBeeHelper.getBeeItem(feedstock.getUID(), EnumBeeType.PRINCESS);
-					this.addSpecialty(is, 2);
+					this.addSpecialty(is, 1);
 				default:
 					break;
 			}

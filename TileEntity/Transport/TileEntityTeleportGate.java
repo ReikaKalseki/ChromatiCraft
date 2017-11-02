@@ -53,6 +53,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.DragonAPICore;
@@ -396,8 +397,16 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 		if (!world.isRemote)
 			cache.add(new GateData(this));
 		this.validateStructure();
-		if (hasStructure)
+		if (hasStructure && this.canLoadChunks())
 			ChunkManager.instance.loadChunks(this);
+		else
+			ChunkManager.instance.unloadChunks(this);
+	}
+
+	private boolean canLoadChunks() {
+		if (publicMode)
+			return true;
+		return !this.getOwners(false).isEmpty();
 	}
 
 	@Override
@@ -472,28 +481,14 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 		}
 		else {
 			if (e instanceof EntityLivingBase) {
+				double dx2 = te2.xCoord+0.5+dx;
+				double dy2 = te2.yCoord+0.5+dy;
+				double dz2 = te2.zCoord+0.5+dz;
 				if (e instanceof EntityPlayer) {
-					boolean flag = ReikaInventoryHelper.checkForItemStack(ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.ARTIFACT.ordinal()), ((EntityPlayer)e).inventory, false);
-					double nx = te2.xCoord+0.5+dx;
-					double ny = te2.yCoord+0.5+dy;
-					double nz = te2.zCoord+0.5+dz;
-					if (flag) {
-						double[] xyz = ReikaPhysicsHelper.polarToCartesian(2+rand.nextDouble()*6, 35, rand.nextDouble()*360);
-						e.motionX = xyz[0];
-						e.motionY = xyz[1]+1.5;
-						e.motionZ = xyz[2];
-						e.velocityChanged = true;
-						nx = ReikaRandomHelper.getRandomPlusMinus(nx, 128);
-						nz = ReikaRandomHelper.getRandomPlusMinus(nz, 128);
-						ny = Math.max(ny, te2.worldObj.getTopSolidOrLiquidBlock(MathHelper.floor_double(nx), MathHelper.floor_double(nz))+2);
-					}
-					((EntityLivingBase)e).setPositionAndUpdate(nx, ny, nz);
-					if (flag) {
-						UABombingEffects.instance.trigger(e);
-					}
+					onTeleportPlayer((EntityPlayer)e, dx, dy, dz, te2.worldObj, dx2, dy2, dz2);
 				}
 				else {
-					((EntityLivingBase)e).setPositionAndUpdate(te2.xCoord+0.5+dx, te2.yCoord+0.5+dy, te2.zCoord+0.5+dz);
+					((EntityLivingBase)e).setPositionAndUpdate(dx2, dy2, dz2);
 				}
 			}
 			else {
@@ -502,6 +497,25 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 				e.lastTickPosY = e.posY;
 				e.lastTickPosZ = e.posZ;
 			}
+		}
+	}
+
+	private static void onTeleportPlayer(EntityPlayer ep, double dx, double dy, double dz, World w2, double nx, double ny, double nz) {
+		Chromabilities.MAGNET.setToPlayer(ep, false);
+		boolean flag = ReikaInventoryHelper.checkForItemStack(ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.ARTIFACT.ordinal()), ep.inventory, false);
+		if (flag) {
+			double[] xyz = ReikaPhysicsHelper.polarToCartesian(2+rand.nextDouble()*6, 35, rand.nextDouble()*360);
+			ep.motionX = xyz[0];
+			ep.motionY = xyz[1]+1.5;
+			ep.motionZ = xyz[2];
+			ep.velocityChanged = true;
+			nx = ReikaRandomHelper.getRandomPlusMinus(nx, 128);
+			nz = ReikaRandomHelper.getRandomPlusMinus(nz, 128);
+			ny = Math.max(ny, w2.getTopSolidOrLiquidBlock(MathHelper.floor_double(nx), MathHelper.floor_double(nz))+2);
+		}
+		ep.setPositionAndUpdate(nx, ny, nz);
+		if (flag) {
+			UABombingEffects.instance.trigger(ep);
 		}
 	}
 

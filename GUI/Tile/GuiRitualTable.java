@@ -83,7 +83,7 @@ public class GuiRitualTable extends GuiChromability {
 		if (b.id == 2) {
 			Ability a = this.getActiveAbility();
 			if (a.isAvailableToPlayer(player)) {
-				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ABILITYCHOOSE.ordinal(), tile, Chromabilities.getAbilityInt(a));
+				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.ABILITYCHOOSE.ordinal(), tile, Chromabilities.getAbilityInt(a));
 				player.closeScreen();
 			}
 			else {

@@ -75,7 +75,7 @@ public class GuiMEDistributor extends GuiChromaBase
 		super.actionPerformed(b);
 
 		if (b.id < med.NSLOTS) {
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.MEDISTRIBFUZZY.ordinal(), med, b.id);
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.MEDISTRIBFUZZY.ordinal(), med, b.id);
 		}
 	}
 
@@ -112,7 +112,7 @@ public class GuiMEDistributor extends GuiChromaBase
 	private void parseAndSend(int slot) {
 		int data = ReikaJavaLibrary.safeIntParse(texts[slot].getText());
 		data = Math.max(data, 0);
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.MEDISTRIBTHRESH.ordinal(), med, slot, data);
+		ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.MEDISTRIBTHRESH.ordinal(), med, slot, data);
 	}
 
 	@Override

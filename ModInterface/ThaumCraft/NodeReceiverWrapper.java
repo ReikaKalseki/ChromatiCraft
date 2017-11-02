@@ -218,7 +218,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		if (rand.nextInt(20) == 0)
 			this.playSound("thaumcraft:runicShieldCharge", 1, 0.5F);
 
-		if (rand.nextInt(240) == 0)
+		if (rand.nextInt(180) == 0)
 			this.healNode();
 
 		ModularLogger.instance.log(LOGGER_ID, "Node "+location+" recharge");
@@ -235,7 +235,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.CHARGINGNODE.ordinal(), (TileEntity)node, 32);
 		}
 
-		if (rand.nextInt(1600) == 0)
+		if (rand.nextInt(1000) == 0)
 			this.healNode();
 
 		if (tick >= DELAY && fulltick >= MIN_DELAY) {
@@ -362,7 +362,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		ChromaSounds.CAST.playSoundAtBlock(location);
 		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.HEALNODE.ordinal(), (TileEntity)node, 32);
 
-		if (rand.nextInt(60) == 0) {
+		if (rand.nextInt(90) == 0) {
 			if (node.getNodeModifier() != null) {
 				switch(node.getNodeModifier()) {
 					case BRIGHT:
@@ -382,7 +382,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 			ModularLogger.instance.log(LOGGER_ID, "Node "+location+" brightness change");
 		}
 
-		if (rand.nextInt(240) == 0) {
+		if (rand.nextInt(360) == 0) {
 			switch(node.getNodeType()) {
 				case PURE:
 					break;
@@ -639,6 +639,11 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	@Override
 	public boolean needsLineOfSightFromTransmitter(CrystalTransmitter r) {
 		return true;
+	}
+
+	@Override
+	public void triggerBottleneckDisplay(int duration) {
+
 	}
 
 }

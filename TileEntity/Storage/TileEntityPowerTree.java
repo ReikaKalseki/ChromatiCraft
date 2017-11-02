@@ -411,7 +411,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	private void grow(CrystalElement e) {
 		int stage = growth.get(e);
 		ArrayList<Coordinate> li = locations.get(e);
-		if (this.getRemainingSpace(e) == 0) {
+		if (this.getEnergy(e)*100/this.getMaxStorage(e) >= 95) {
 			//ReikaJavaLibrary.pConsole(e+":"+growth.get(e)+">"+this.getMaxStorage(e));
 			if (stage < li.size()) {
 				Coordinate c = li.get(stage).offset(xCoord, yCoord, zCoord);
@@ -493,7 +493,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	@Override
 	public int maxThroughput() {
-		return this.isEnhanced() ? 20000 : 1000;
+		return this.isEnhanced() ? 90000 : 12000;
 	}
 
 	@Override
@@ -555,7 +555,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	@Override
 	public final void addTarget(WorldLocation loc, CrystalElement e, double dx, double dy, double dz, double w) {
-		CrystalTarget tg = new CrystalTarget(loc, e, dx, dy, dz, w);
+		CrystalTarget tg = new CrystalTarget(this, loc, e, dx, dy, dz, w);
 		if (!worldObj.isRemote) {
 			if (!targets.contains(tg))
 				targets.add(tg);
@@ -565,7 +565,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	@Override
 	public final void addSelfTickingTarget(WorldLocation loc, CrystalElement e, double dx, double dy, double dz, double w, int duration) {
-		TickingCrystalTarget tg = new TickingCrystalTarget(loc, e, dx, dy, dz, w, duration);
+		TickingCrystalTarget tg = new TickingCrystalTarget(this, loc, e, dx, dy, dz, w, duration);
 		if (!worldObj.isRemote) {
 			if (!targets.contains(tg)) {
 				targets.add(tg);
@@ -578,7 +578,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	public final void removeTarget(WorldLocation loc, CrystalElement e) {
 		if (!worldObj.isRemote) {
 			//ReikaJavaLibrary.pConsole(this+":"+targets.size()+":"+targets);
-			targets.remove(new CrystalTarget(loc, e, 0));
+			targets.remove(new CrystalTarget(this, loc, e, 0));
 			this.onTargetChanged();
 			//ReikaJavaLibrary.pConsole(this+":"+targets.size()+":"+targets);
 		}
@@ -632,7 +632,9 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		targets = new ArrayList();
 		int num = NBT.getInteger("targetcount");
 		for (int i = 0; i < num; i++) {
-			targets.add(CrystalTarget.readFromNBT("target"+i, NBT));
+			CrystalTarget tg = CrystalTarget.readFromNBT("target"+i, NBT);
+			if (tg != null)
+				targets.add(tg);
 		}
 
 		hadEnhancedProgress = NBT.getBoolean("progress");
@@ -706,7 +708,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		int r = e.getRed();
 		int g = e.getGreen();
 		int b = e.getBlue();
-		ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), world, x, y, z, r, g, b, 32, 8);
+		ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), world, x, y, z, 64, r, g, b, 32, 8);
 		int mod = (int)(world.getTotalWorldTime()%16);
 		if (mod == 0) {
 			ChromaSounds.DING.playSoundAtBlock(world, x, y, z, 1, (float)CrystalMusicManager.instance.getDingPitchScale(e));

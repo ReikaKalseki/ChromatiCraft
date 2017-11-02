@@ -53,12 +53,14 @@ import Reika.DragonAPI.Instantiable.Data.SphericalVector;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.ParticleController.CollectingPositionController;
+import Reika.DragonAPI.Interfaces.Entity.EtherealEntity;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -68,7 +70,7 @@ import cofh.api.energy.IEnergyHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class EntityGlowCloud extends EntityLiving {
+public class EntityGlowCloud extends EntityLiving implements EtherealEntity {
 
 	private SphericalVector velocity;
 	private double targetTheta = rand.nextInt(360);
@@ -87,6 +89,9 @@ public class EntityGlowCloud extends EntityLiving {
 
 	private Coordinate light;
 	private Coordinate oldLight;
+	private AxisAlignedBB lightingBox = AxisAlignedBB.getBoundingBox(0, 0, 0, 0, 0, 0);
+
+	private static int LIGHT_UPDATE_RATE = 16;//32;//64;//16;
 
 	private static int spawnedEntities;
 	private static final int SPAWN_LIMIT = 80;
@@ -291,7 +296,26 @@ public class EntityGlowCloud extends EntityLiving {
 		if (worldObj.isRemote) {
 			this.lifeParticles();
 
-			if (!isDead && ticksExisted%16 == 0) {
+			if (!isDead) {
+				this.updateLight();
+				if (ticksExisted%128 == 0) {
+					ReikaEntityHelper.verifyClientEntity(this);
+				}
+			}
+		}
+		else {
+			//worldObj.setBlock(MathHelper.floor_double(posX), MathHelper.floor_double(posY), MathHelper.floor_double(posZ), ChromaBlocks.LIGHT.getBlockInstance(), Flags.DECAY.getFlag(), 3);
+		}
+
+		fallDistance = 0;
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void updateLight() {
+		double d = this.getDistanceSqToEntity(Minecraft.getMinecraft().thePlayer);
+		int r = d >= 4096 ? 64 : (d >= 1024 ? 48 : (d >= 256 ? 32 : 16));
+		if (ticksExisted%r == 0) {
+			if (d <= 144 || ReikaRenderHelper.renderFrustrum.isBoundingBoxInFrustum(this.getLightingBox())) {
 				Coordinate c = new Coordinate(this);
 				if (!c.equals(light) && c.getBlock(worldObj) == Blocks.air) {
 					this.deleteOldLight();
@@ -301,11 +325,11 @@ public class EntityGlowCloud extends EntityLiving {
 				}
 			}
 		}
-		else {
-			//worldObj.setBlock(MathHelper.floor_double(posX), MathHelper.floor_double(posY), MathHelper.floor_double(posZ), ChromaBlocks.LIGHT.getBlockInstance(), Flags.DECAY.getFlag(), 3);
-		}
+	}
 
-		fallDistance = 0;
+	private AxisAlignedBB getLightingBox() {
+		lightingBox.setBounds(boundingBox.minX-3, boundingBox.minY-3, boundingBox.minZ-3, boundingBox.maxX+3, boundingBox.maxY+3, boundingBox.maxZ+3);
+		return lightingBox;
 	}
 
 	private void deleteOldLight() {

@@ -243,15 +243,15 @@ public class CrystalPotionController {
 					break;
 				case BROWN:
 					if (!e.isPotionActive(Potion.confusion.id))
-						e.addPotionEffect(new PotionEffect(Potion.confusion.id, Math.max(100, (int)(dura*1.8)), level, true));
+						addPotionEffect(e, new PotionEffect(Potion.confusion.id, Math.max(100, (int)(dura*1.8)), level, true));
 					break;
 				case LIME:
-					e.addPotionEffect(new PotionEffect(Potion.jump.id, dura, -5, true));
+					addPotionEffect(e, new PotionEffect(Potion.jump.id, dura, -5, true));
 					break;
 				default:
 					PotionEffect eff = CrystalPotionController.getNetherEffectFromColor(color, dura, level);
 					if (CrystalPotionController.isPotionAllowed(eff, e))
-						e.addPotionEffect(eff);
+						addPotionEffect(e, eff);
 			}
 		}
 		else {
@@ -279,10 +279,16 @@ public class CrystalPotionController {
 					PotionEffect eff = CrystalPotionController.getEffectFromColor(color, dura, level);
 					if (eff != null) {
 						if (CrystalPotionController.isPotionAllowed(eff, e)) {
-							e.addPotionEffect(eff);
+							addPotionEffect(e, eff);
 						}
 					}
 			}
 		}
+	}
+
+	private static void addPotionEffect(EntityLivingBase e, PotionEffect eff) {
+		PotionEffect cur = e.getActivePotionEffect(Potion.potionTypes[eff.getPotionID()]);
+		if (cur == null || cur.getAmplifier() < eff.getAmplifier() || cur.getDuration() < 20 || eff.getDuration() < 80)
+			e.addPotionEffect(eff);
 	}
 }

@@ -143,6 +143,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LumenBr
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LumenTurretRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LumenWireRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MEDistributorRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ManaBoosterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MeteorTowerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MinerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MultiBuilderRecipe;
@@ -150,6 +151,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MusicRe
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.PageExtractorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ParticleSpawnerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.PlantAccelerationRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ProgressLinkerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.PylonTurboRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.RFDistributorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.RecipeAreaBreaker;
@@ -170,6 +172,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.Wireles
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.AuraCleanerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.AuraPouchRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.BeeFrameRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.BottleneckFinderRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.BuilderWandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.CaptureWandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.CavePatherRecipe;
@@ -249,12 +252,14 @@ public class RecipesCastingTable {
 
 	private int maxID = 0;
 	private final HashBiMap<Integer, CastingRecipe> recipeIDs;
+	private final HashBiMap<String, CastingRecipe> recipeStringIDs;
 
 	private int maxEnergyCost = 0;
 	private int maxTotalEnergyCost = 0;
 
 	private RecipesCastingTable() {
 		recipeIDs = HashBiMap.create();
+		recipeStringIDs = HashBiMap.create();
 		this.loadRecipes();
 	}
 
@@ -797,6 +802,15 @@ public class RecipesCastingTable {
 
 		this.addRecipe(new ExplosionShieldRecipe(ChromaTiles.EXPLOSIONSHIELD.getCraftedProduct(), ChromaStacks.crystalStar));
 
+		this.addRecipe(new BottleneckFinderRecipe(ChromaItems.BOTTLENECK.getStackOf(), ChromaStacks.auraIngot));
+
+		is = ChromaTiles.PROGRESSLINK.getCraftedProduct();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "ada", "gCg", "CPC", 'P', ChromaBlocks.CRYSTAL.getStackOfMetadata(CrystalElement.PURPLE.ordinal()), 'C', ChromaBlocks.PYLONSTRUCT.getStackOf(), 'd', Items.diamond, 'a', ChromaStacks.auraDust, 'g', Items.gold_ingot);
+		this.addRecipe(new ProgressLinkerRecipe(is, sr));
+
+		if (ModList.BOTANIA.isLoaded())
+			this.addRecipe(new ManaBoosterRecipe(ChromaTiles.MANABOOSTER.getCraftedProduct()));
+
 		this.addSpecialRecipes();
 	}
 
@@ -864,6 +878,13 @@ public class RecipesCastingTable {
 			moddedItemRecipes.add(r);
 
 		recipeIDs.put(maxID, r);
+		String id = r.getIDString();
+		CastingRecipe conflict = recipeStringIDs.get(id);
+		if (conflict != null && !APIrecipes.contains(conflict) && !conflict.equals(r)) {
+			throw new RuntimeException("Recipe "+r+" has a recipe ID which conflicts with "+conflict);
+		}
+		recipeStringIDs.put(id, r);
+		//ChromatiCraft.logger.log("Registering recipe "+r+" with IDs "+maxID+" & "+id);
 		maxID++;
 		//ChromaResearchManager.instance.register(r);
 
@@ -880,8 +901,8 @@ public class RecipesCastingTable {
 	}
 
 	private void addCustomRecipe(CastingRecipe r) {
-		this.addRecipe(r);
 		APIrecipes.add(r);
+		this.addRecipe(r);
 	}
 
 	public List<CastingRecipe> getAllAPIRecipes() {
@@ -965,12 +986,22 @@ public class RecipesCastingTable {
 		ChromaResearchManager.instance.checkForUpgrade(ep);
 	}
 
+	/** DO NOT USE FOR CLIENT/SERVER COMMS, AS LIST ORDERING MAY BE DIFFERENT! */
 	public CastingRecipe getRecipeByID(int id) {
 		return recipeIDs.get(id);
 	}
 
+	/** DO NOT USE FOR CLIENT/SERVER COMMS, AS LIST ORDERING MAY BE DIFFERENT! */
 	public int getIDForRecipe(CastingRecipe cr) {
 		return recipeIDs.inverse().get(cr);
+	}
+
+	public CastingRecipe getRecipeByStringID(String id) {
+		return recipeStringIDs.get(id);
+	}
+
+	public String getStringIDForRecipe(CastingRecipe cr) {
+		return recipeStringIDs.inverse().get(cr);
 	}
 
 	public Collection<CastingRecipe> getAllRecipes() {
@@ -986,6 +1017,7 @@ public class RecipesCastingTable {
 		recipes.clear();
 		moddedItemRecipes.clear();
 		recipeIDs.clear();
+		recipeStringIDs.clear();
 		maxID = 0;
 		maxEnergyCost = 0;
 		maxTotalEnergyCost = 0;

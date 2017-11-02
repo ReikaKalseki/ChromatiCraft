@@ -94,6 +94,9 @@ public class CastingAPI {
 			add.invoke(instance, r);
 			return r;
 		}
+		catch (RuntimeException e) {
+			throw e;
+		}
 		catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -116,6 +119,9 @@ public class CastingAPI {
 			}
 			add.invoke(instance, r);
 			return r;
+		}
+		catch (RuntimeException e) {
+			throw e;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -143,6 +149,9 @@ public class CastingAPI {
 			}
 			add.invoke(instance, r);
 			return r;
+		}
+		catch (RuntimeException e) {
+			throw e;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -173,6 +182,9 @@ public class CastingAPI {
 			}
 			add.invoke(instance, r);
 			return r;
+		}
+		catch (RuntimeException e) {
+			throw e;
 		}
 		catch (Exception e) {
 			e.printStackTrace();

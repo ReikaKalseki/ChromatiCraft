@@ -90,13 +90,13 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 	protected void actionPerformed(GuiButton b) {
 		switch (b.id) {
 			case 0:
-				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ENCHANTER.ordinal(), ench, this.getID(), 0);
+				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.ENCHANTER.ordinal(), ench, this.getID(), 0);
 				break;
 			case 1:
-				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ENCHANTER.ordinal(), ench, this.getID(), 1);
+				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.ENCHANTER.ordinal(), ench, this.getID(), 1);
 				break;
 			case 10:
-				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ENCHANTERRESET.ordinal(), ench);
+				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.ENCHANTERRESET.ordinal(), ench);
 				selectedEnchant = 0;
 				break;
 			case 2:

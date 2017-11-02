@@ -108,11 +108,14 @@ public class RenderAvoLamp extends ChromaRenderBase {
 	private void renderCrystal(TileEntityAvoLamp te, float par8) {
 		Tessellator v5 = Tessellator.instance;
 
-		double my = 0.0625+Math.abs(0.03125*te.hashCode()/Integer.MAX_VALUE);
-		double dy = 0.125+my*Math.sin(te.hashCode()+System.currentTimeMillis()/600D);
-		double sy = 0.5+Math.abs(-(double)te.hashCode()/Integer.MAX_VALUE);
+		long t = System.currentTimeMillis();
+		double hash = te.hashCode()/Integer.MAX_VALUE;
+
+		double my = 0.0625+Math.abs(0.03125*hash);
+		double dy = 0.125+my*Math.sin(te.hashCode()+t/600D);
+		double sy = 0.5+hash;
 		GL11.glTranslated(0, dy, 0);
-		GL11.glRotated((-te.hashCode()+System.currentTimeMillis()*sy/20D)%360D, 0, 1, 0);
+		GL11.glRotated((-te.hashCode()+t*sy/20D)%360D, 0, 1, 0);
 
 		v5.startDrawing(GL11.GL_LINES);
 
@@ -127,7 +130,7 @@ public class RenderAvoLamp extends ChromaRenderBase {
 
 		int n = 60;
 		for (int i = 0; i < 360; i += n) {
-			float br = 0.5F*(0.75F+0.25F*(float)Math.sin(Math.toRadians(i*2+System.currentTimeMillis()/4D)));
+			float br = 0.5F*(0.75F+0.25F*(float)Math.sin(Math.toRadians(i*2+t/4D)));
 			int c = ReikaColorAPI.mixColors(0xff0000, 0xffffff, br+0.125F);
 			v5.setColorOpaque_I(c);
 			double a1 = Math.toRadians(i);
@@ -175,9 +178,9 @@ public class RenderAvoLamp extends ChromaRenderBase {
 
 		for (int i = 0; i < 360; i += n) {
 
-			float br = 0.375F*(0.75F+0.25F*(float)Math.sin(te.hashCode()+Math.toRadians(i*2+System.currentTimeMillis()/80D)));
+			float br = 0.375F*(0.75F+0.25F*(float)Math.sin(hash*Math.PI*2+Math.toRadians(i*2+t/80D)));
 			int c = ReikaColorAPI.mixColors(0xff0000, 0xffffff, br+0.625F);
-			int a = 224+(int)(15*Math.sin(-te.hashCode()+i+System.currentTimeMillis()/180D));
+			int a = 224+(int)(15*Math.sin(-hash*Math.PI*2+i+t/180D));
 			v5.setColorRGBA_I(c, a);
 
 			double a1 = Math.toRadians(i);

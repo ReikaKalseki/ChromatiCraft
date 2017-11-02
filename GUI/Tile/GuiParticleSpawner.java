@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityParticleSpawner;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityParticleSpawner.VariableValue;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Instantiable.BoundedValue;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -124,7 +125,7 @@ public class GuiParticleSpawner extends GuiChromaBase {
 			int y = k+n+20*i;
 			int u = i == page.ordinal() ? 198 : 178;
 			int v = i*20;
-			buttonList.add(new ImagedGuiButton(i, x, y, 20, 20, u, v, file, ChromatiCraft.class));
+			buttonList.add(new CustomSoundImagedGuiButton(i, x, y, 20, 20, u, v, file, ChromatiCraft.class, this));
 		}
 
 		switch(page) {
@@ -135,7 +136,7 @@ public class GuiParticleSpawner extends GuiChromaBase {
 					int y = k+19+(i/2)*24;
 					int u = i%2 == 1 ? 126 : 106;
 					int v = 173;
-					GuiButton b = new ImagedGuiButton(i+100, x, y, 20, 20, u, v, file, ChromatiCraft.class);
+					GuiButton b = new CustomSoundImagedGuiButton(i+100, x, y, 20, 20, u, v, file, ChromatiCraft.class, this);
 					buttonList.add(b);
 				}
 				break;
@@ -145,7 +146,7 @@ public class GuiParticleSpawner extends GuiChromaBase {
 					int y = k+18+(i/8)*18;
 					int u = 106;
 					int v = 213;
-					ImagedGuiButton b = new ImagedGuiButton(i+100, x, y, 20, 20, u, v, file, ChromatiCraft.class);
+					ImagedGuiButton b = new CustomSoundImagedGuiButton(i+100, x, y, 20, 20, u, v, file, ChromatiCraft.class, this);
 					b.icon = CrystalElement.elements[i].getGlowRune();
 					b.iconHeight = b.iconWidth = 16;
 					buttonList.add(b);
@@ -155,7 +156,7 @@ public class GuiParticleSpawner extends GuiChromaBase {
 					int y = k+58+(i/2)*20;
 					int u = i%2 == 1 ? 126 : 106;
 					int v = i >= 6 ? 193 : 173;
-					GuiButton b = new ImagedGuiButton(i+200, x, y, 20, 20, u, v, file, ChromatiCraft.class);
+					GuiButton b = new CustomSoundImagedGuiButton(i+200, x, y, 20, 20, u, v, file, ChromatiCraft.class, this);
 					buttonList.add(b);
 				}
 				int in = 45;
@@ -169,7 +170,7 @@ public class GuiParticleSpawner extends GuiChromaBase {
 					int y = k+18+(i/r)*21;
 					int u = 106;
 					int v = 213;
-					ImagedGuiButton b = new ImagedGuiButton(i+100, x, y, 20, 20, u, v, file, ChromatiCraft.class);
+					ImagedGuiButton b = new CustomSoundImagedGuiButton(i+100, x, y, 20, 20, u, v, file, ChromatiCraft.class, this);
 					b.icon = ico.getIcon();
 					b.iconHeight = b.iconWidth = 16;
 					buttonList.add(b);
@@ -185,7 +186,7 @@ public class GuiParticleSpawner extends GuiChromaBase {
 					int v = 173;
 					if (i >= 6)
 						v += 20;
-					GuiButton b = new ImagedGuiButton(i+100, x, y, 20, 20, u, v, file, ChromatiCraft.class);
+					GuiButton b = new CustomSoundImagedGuiButton(i+100, x, y, 20, 20, u, v, file, ChromatiCraft.class, this);
 					buttonList.add(b);
 				}
 				break;
@@ -197,7 +198,7 @@ public class GuiParticleSpawner extends GuiChromaBase {
 					int v = 173;
 					if (i >= 8)
 						v += 20;
-					GuiButton b = new ImagedGuiButton(i+100, x, y, 20, 20, u, v, file, ChromatiCraft.class);
+					GuiButton b = new CustomSoundImagedGuiButton(i+100, x, y, 20, 20, u, v, file, ChromatiCraft.class, this);
 					buttonList.add(b);
 				}
 				break;

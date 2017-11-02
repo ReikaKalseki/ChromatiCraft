@@ -107,41 +107,36 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 	private static int generationFlags = 0;
 
-	public void clearCaches() {
-		//populatedChunks.clear();
-		/*
-		for (int i = 0; i < 16; i++) {
-			unusedColors.add(CrystalElement.elements[i]);
-		}
-		for (int i = 0; i < DimensionStructureType.types.length; i++) {
-			unusedTypes.add(DimensionStructureType.types[i]);
-		}*/
-		this.regenerateGenerators();
+	public void clearCaches(boolean doGen) {
+		this.regenerateGenerators(doGen, 0);
+		ChromaDimensionManager.dimensionAge = 0;
 	}
 
 	public static synchronized void triggerGenerator(ThreadedGenerators gen) {
-		regenerateGenerators(~gen.getBit());
+		regenerateGenerators(true, ~gen.getBit());
 	}
 
 	public static synchronized void regenerateGenerators() {
-		regenerateGenerators(0);
+		regenerateGenerators(true, 0);
 	}
 
-	private static synchronized void regenerateGenerators(int invflags) {
+	private static synchronized void regenerateGenerators(boolean doGen, int invflags) {
 		long seed = getOrCreateSeed();
-		generationFlags = ReikaMathLibrary.getNBitflags(ThreadedGenerators.generators.length) & ~invflags;
+		if (doGen)
+			generationFlags = ReikaMathLibrary.getNBitflags(ThreadedGenerators.generators.length) & ~invflags;
 		if ((invflags & ThreadedGenerators.STRUCTURE.getBit()) == 0) {
 			for (StructurePair s : structures)
 				s.generator.clear();
 			structures.clear();
 			monument.clear();
 		}
-		for (int i = 0; i < ThreadedGenerators.generators.length; i++) {
-			ThreadedGenerators gen = ThreadedGenerators.generators[i];
-			if ((invflags & gen.getBit()) == 0)
-				gen.run(seed);
+		if (doGen) {
+			for (int i = 0; i < ThreadedGenerators.generators.length; i++) {
+				ThreadedGenerators gen = ThreadedGenerators.generators[i];
+				if ((invflags & gen.getBit()) == 0)
+					gen.run(seed);
+			}
 		}
-		ChromaDimensionManager.dimensionAge = 0;
 	}
 
 	static synchronized void finishGeneration(ThreadedGenerators gen) {
@@ -208,7 +203,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 		decorators.addAll(DimensionGenerators.getSortedList(rand, randomSeed));
 	}
 
-	static StructurePair getNearestStructure(int x, int z) {
+	static StructurePair getNearestStructureWithinRange(int x, int z, double r) {
 		double d = Double.POSITIVE_INFINITY;
 		StructurePair ret = null;
 		for (StructurePair s : structures) {
@@ -216,7 +211,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 			double dx = x-(p.chunkXPos << 4);
 			double dz = z-(p.chunkZPos << 4);
 			double dd = Math.sqrt(dx*dx+dz*dz);
-			if (dd < d) {
+			if (dd < d && dd <= r) {
 				d = dd;
 				ret = s;
 			}
@@ -225,6 +220,10 @@ public class ChunkProviderChroma implements IChunkProvider {
 	}
 
 	static double getDistanceToNearestStructureBlockCoords(int x, int z) {
+		return getDistanceToNearestStructureBlockCoordsWithinRange(x, z, -1);
+	}
+
+	static double getDistanceToNearestStructureBlockCoordsWithinRange(int x, int z, double r) {
 		double dx = monument.getPosX()-x;
 		double dz = monument.getPosZ()-z;
 		double d = Math.sqrt(dx*dx+dz*dz);
@@ -233,7 +232,8 @@ public class ChunkProviderChroma implements IChunkProvider {
 			dx = x-(p.chunkXPos << 4);
 			dz = z-(p.chunkZPos << 4);
 			double dd = Math.sqrt(dx*dx+dz*dz);
-			d = Math.min(d, dd);
+			if (dd <= r)
+				d = Math.min(d, dd);
 		}
 		return d;
 	}

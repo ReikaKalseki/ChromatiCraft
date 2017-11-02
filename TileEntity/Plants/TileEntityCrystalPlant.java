@@ -207,10 +207,14 @@ public class TileEntityCrystalPlant extends TileEntity {
 		for (int i = 0; i < Modifier.list.length; i++) {
 			Modifier m = Modifier.list[i];
 			if (m.present(meta)) {
-				flags |= m.flag;
+				this.setState(m);
 			}
 		}
 		sterile = item.stackTagCompound != null && item.stackTagCompound.getBoolean("sterile");
+	}
+
+	public void setState(Modifier m) {
+		flags |= m.flag;
 	}
 
 	public boolean is(Modifier m) {

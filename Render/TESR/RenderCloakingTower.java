@@ -186,10 +186,10 @@ public class RenderCloakingTower extends ChromaRenderBase {
 				int c1 = ReikaColorAPI.GStoHex(a) | (a << 24);
 				int c2 = ReikaColorAPI.GStoHex(a) | (a << 24);
 				double r = 0.03125;
-				ReikaRenderHelper.renderTube(-wan, i, wan, -wap, i+d, wap, c1, c2, r, r);
-				ReikaRenderHelper.renderTube(wan, i, wan, wap, i+d, wap, c1, c2, r, r);
-				ReikaRenderHelper.renderTube(-wan, i, -wan, -wap, i+d, -wap, c1, c2, r, r);
-				ReikaRenderHelper.renderTube(wan, i, -wan, wap, i+d, -wap, c1, c2, r, r);
+				ReikaRenderHelper.renderTube(-wan, i, wan, -wap, i+d, wap, c1, c2, r, r, 6);
+				ReikaRenderHelper.renderTube(wan, i, wan, wap, i+d, wap, c1, c2, r, r, 6);
+				ReikaRenderHelper.renderTube(-wan, i, -wan, -wap, i+d, -wap, c1, c2, r, r, 6);
+				ReikaRenderHelper.renderTube(wan, i, -wan, wap, i+d, -wap, c1, c2, r, r, 6);
 				GL11.glPopAttrib();
 
 			}

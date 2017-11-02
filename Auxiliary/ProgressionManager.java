@@ -59,6 +59,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.Shareability;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -104,64 +105,65 @@ public class ProgressionManager implements ProgressRegistry {
 
 	public static enum ProgressStage implements ProgressElement {
 
-		CASTING(ChromaTiles.TABLE.getCraftedProduct()), //Do a recipe
-		CRYSTALS(ChromaBlocks.CRYSTAL.getStackOfMetadata(CrystalElement.RED.ordinal())), //Found a crystal
-		DYETREE(ChromaBlocks.DYELEAF.getStackOfMetadata(CrystalElement.YELLOW.ordinal())), //Harvest a dye tree
-		MULTIBLOCK(ChromaTiles.STAND.getCraftedProduct()), //Assembled a multiblock
-		RUNEUSE(ChromaBlocks.RUNE.getStackOfMetadata(CrystalElement.ORANGE.ordinal())), //Placed runes
-		PYLON(ChromaTiles.PYLON.getCraftedProduct()), //Found pylon
-		LINK(ChromaTiles.COMPOUND.getCraftedProduct()), //Made a network connection/high-tier crafting
-		CHARGE(ChromaItems.TOOL.getStackOf()), //charge from a pylon
-		ABILITY(ChromaTiles.RITUAL.getCraftedProduct()), //use an ability
-		RAINBOWLEAF(ChromaBlocks.RAINBOWLEAF.getStackOfMetadata(3)), //harvest a rainbow leaf
-		MAKECHROMA(ChromaTiles.COLLECTOR.getCraftedProduct()),
-		SHARDCHARGE(ChromaStacks.chargedRedShard),
-		ALLOY(ChromaStacks.chromaIngot),
-		CHROMA(ChromaBlocks.CHROMA.getBlockInstance()), //step in liquid chroma
-		//STONES(ChromaStacks.elementUnit), //craft all elemental stones together
-		SHOCK(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(5)), //get hit by a pylon
-		HIVE(ChromaBlocks.HIVE.getBlockInstance(), ModList.FORESTRY.isLoaded()),
-		NETHER(Blocks.portal), //go to the nether
-		END(Blocks.end_portal_frame), //go to the end
+		CASTING(								ChromaTiles.TABLE.getCraftedProduct()), //Do a recipe
+		CRYSTALS(								ChromaBlocks.CRYSTAL.getStackOfMetadata(CrystalElement.RED.ordinal())), //Found a crystal
+		DYETREE(								ChromaBlocks.DYELEAF.getStackOfMetadata(CrystalElement.YELLOW.ordinal())), //Harvest a dye tree
+		MULTIBLOCK(		Shareability.PROXIMITY,	ChromaTiles.STAND.getCraftedProduct()), //Assembled a multiblock
+		RUNEUSE(		Shareability.PROXIMITY,	ChromaBlocks.RUNE.getStackOfMetadata(CrystalElement.ORANGE.ordinal())), //Placed runes
+		PYLON(									ChromaTiles.PYLON.getCraftedProduct()), //Found pylon
+		LINK(			Shareability.PROXIMITY,	ChromaTiles.COMPOUND.getCraftedProduct()), //Made a network connection/high-tier crafting
+		CHARGE(									ChromaItems.TOOL.getStackOf()), //charge from a pylon
+		ABILITY(								ChromaTiles.RITUAL.getCraftedProduct()), //use an ability
+		RAINBOWLEAF(	Shareability.PROXIMITY,	ChromaBlocks.RAINBOWLEAF.getStackOfMetadata(3)), //harvest a rainbow leaf
+		MAKECHROMA(		Shareability.PROXIMITY,	ChromaTiles.COLLECTOR.getCraftedProduct()),
+		SHARDCHARGE(	Shareability.PROXIMITY,	ChromaStacks.chargedRedShard),
+		ALLOY(			Shareability.PROXIMITY,	ChromaStacks.chromaIngot),
+		CHROMA(									ChromaBlocks.CHROMA.getBlockInstance()), //step in liquid chroma
+		//STONES(								ChromaStacks.elementUnit), //craft all elemental stones together
+		SHOCK(									ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(5)), //get hit by a pylon
+		HIVE(			Shareability.ALWAYS,	new ItemStack(ChromaBlocks.HIVE.getBlockInstance()), ModList.FORESTRY.isLoaded()),
+		NETHER(									Blocks.portal), //go to the nether
+		END(									Blocks.end_portal_frame), //go to the end
 		TWILIGHT(ModList.TWILIGHT.isLoaded() ? ModWoodList.CANOPY.getItem() : null, ModList.TWILIGHT.isLoaded()), //Go to the twilight forest
-		BEDROCK(Blocks.bedrock), //Find bedrock
-		CAVERN(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CLOAK.metadata)), //Cavern structure
-		BURROW(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.MOSS.metadata)), //Burrow structure
-		OCEAN(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.GLASS.metadata)), //Ocean floor structure
-		DESERTSTRUCT(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.COBBLE.metadata)),
-		DIE(Items.skull), //die and lose energy
-		ALLCOLORS(ChromaItems.ELEMENTAL.getStackOf(CrystalElement.CYAN)), //find all colors
-		REPEATER(ChromaTiles.REPEATER.getCraftedProduct()), //craft any repeater type
-		RAINBOWFOREST(ChromaBlocks.RAINBOWSAPLING.getBlockInstance()),
-		DIMENSION(ChromaBlocks.PORTAL.getBlockInstance()),
-		CTM(ChromaTiles.AURAPOINT.getCraftedProduct()),
-		STORAGE(ChromaItems.STORAGE.getStackOf()),
-		CHARGECRYSTAL(ChromaTiles.CHARGER.getCraftedProduct()),
-		BALLLIGHTNING(ChromaStacks.auraDust),
-		POWERCRYSTAL(ChromaTiles.CRYSTAL.getCraftedProduct()),
-		TURBOCHARGE(ChromaTiles.PYLONTURBO.getCraftedProduct()),
-		BREAKSPAWNER(Blocks.mob_spawner),
-		KILLDRAGON(Blocks.dragon_egg),
-		KILLWITHER(Items.nether_star),
-		KILLMOB(new ItemStack(Items.skull, 1, 4)),
-		ALLCORES(ChromaTiles.DIMENSIONCORE.getCraftedNBTProduct("color", CrystalElement.RED.ordinal())),
-		USEENERGY(ChromaTiles.WEAKREPEATER.getCraftedProduct()),
-		BLOWREPEATER(ChromaStacks.crystalPowder),
-		STRUCTCOMPLETE(ChromaBlocks.DIMDATA.getStackOf()),
-		NETHERROOF(Blocks.netherrack),
-		NETHERSTRUCT(Blocks.nether_brick),
-		VILLAGECASTING(Blocks.cobblestone),
-		FOCUSCRYSTAL(Items.emerald),
-		ANYSTRUCT(ChromaTiles.STRUCTCONTROL.getCraftedProduct()),
-		ARTEFACT(ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.FRAGMENT.ordinal())),
-		TOWER(ChromaTiles.DATANODE.getCraftedProduct()),
-		STRUCTCHEAT(Blocks.tnt), //optional, just to rub it in
-		VOIDMONSTER((ItemStack)null, ModList.VOIDMONSTER.isLoaded()),
-		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
+		BEDROCK(								Blocks.bedrock), //Find bedrock
+		CAVERN(			Shareability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CLOAK.metadata)), //Cavern structure
+		BURROW(			Shareability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.MOSS.metadata)), //Burrow structure
+		OCEAN(			Shareability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.GLASS.metadata)), //Ocean floor structure
+		DESERTSTRUCT(	Shareability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.COBBLE.metadata)),
+		DIE(									Items.skull), //die and lose energy
+		ALLCOLORS(								ChromaItems.ELEMENTAL.getStackOf(CrystalElement.CYAN)), //find all colors
+		REPEATER(		Shareability.ALWAYS,	ChromaTiles.REPEATER.getCraftedProduct()), //craft any repeater type
+		RAINBOWFOREST(							ChromaBlocks.RAINBOWSAPLING.getBlockInstance()),
+		DIMENSION(								ChromaBlocks.PORTAL.getBlockInstance()),
+		CTM(									ChromaTiles.AURAPOINT.getCraftedProduct()),
+		STORAGE(		Shareability.ALWAYS,	ChromaItems.STORAGE.getStackOf()),
+		CHARGECRYSTAL(	Shareability.ALWAYS,	ChromaTiles.CHARGER.getCraftedProduct()),
+		BALLLIGHTNING(							ChromaStacks.auraDust),
+		POWERCRYSTAL(	Shareability.PROXIMITY,	ChromaTiles.CRYSTAL.getCraftedProduct()),
+		TURBOCHARGE(	Shareability.PROXIMITY,	ChromaTiles.PYLONTURBO.getCraftedProduct()),
+		BREAKSPAWNER(	Shareability.ALWAYS,	new ItemStack(Blocks.mob_spawner)),
+		KILLDRAGON(		Shareability.PROXIMITY,	new ItemStack(Blocks.dragon_egg)),
+		KILLWITHER(		Shareability.PROXIMITY,	new ItemStack(Items.nether_star)),
+		KILLMOB(								new ItemStack(Items.skull, 1, 4)),
+		ALLCORES(								ChromaTiles.DIMENSIONCORE.getCraftedNBTProduct("color", CrystalElement.RED.ordinal())),
+		USEENERGY(		Shareability.PROXIMITY,	ChromaTiles.WEAKREPEATER.getCraftedProduct()),
+		BLOWREPEATER(	Shareability.PROXIMITY,	ChromaStacks.crystalPowder),
+		STRUCTCOMPLETE(							ChromaBlocks.DIMDATA.getStackOf()),
+		NETHERROOF(								Blocks.netherrack),
+		NETHERSTRUCT(	Shareability.PROXIMITY,	new ItemStack(Blocks.nether_brick)),
+		VILLAGECASTING(	Shareability.PROXIMITY,	new ItemStack(Blocks.cobblestone)),
+		FOCUSCRYSTAL(	Shareability.ALWAYS,	new ItemStack(Items.emerald)),
+		ANYSTRUCT(								ChromaTiles.STRUCTCONTROL.getCraftedProduct()),
+		ARTEFACT(								ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.FRAGMENT.ordinal())),
+		TOWER(									ChromaTiles.DATANODE.getCraftedProduct()),
+		STRUCTCHEAT(							Blocks.tnt), //optional, just to rub it in
+		VOIDMONSTER(							(ItemStack)null, ModList.VOIDMONSTER.isLoaded()),
+		NEVER(									(ItemStack)null, false), //used as a no-trigger placeholder
 		;
 
 		private final ItemStack icon;
 		public final boolean active;
+		public final Shareability shareLevel;
 
 		public static final ProgressStage[] list = values();
 
@@ -174,12 +176,17 @@ public class ProgressionManager implements ProgressRegistry {
 		}
 
 		private ProgressStage(ItemStack is, boolean... cond) {
+			this(Shareability.SELFONLY, is, cond);
+		}
+
+		private ProgressStage(Shareability s, ItemStack is, boolean... cond) {
 			icon = is;
 			boolean flag = true;
 			for (int i = 0; i < cond.length; i++)
 				flag = flag && cond[i];
 			active = flag;
 			ChromaResearchManager.instance.register(this);
+			shareLevel = s;
 		}
 
 		public boolean stepPlayerTo(EntityPlayer ep) {
@@ -274,6 +281,10 @@ public class ProgressionManager implements ProgressRegistry {
 
 		public void forceOnPlayer(EntityPlayer ep, boolean notify) {
 			//instance.setPlayerStage(ep, this, true, notify);
+		}
+
+		public Shareability getShareability() {
+			return shareLevel;
 		}
 	}
 
@@ -524,10 +535,6 @@ public class ProgressionManager implements ProgressRegistry {
 		return c1.equals(c2);
 	}
 
-	private boolean playerCanReceiveProgressWith(EntityPlayer e, EntityPlayer ep) {
-		return e.getDistanceToEntity(ep) <= 12;
-	}
-
 	private NBTTagList getCooperatorList(EntityPlayer ep) {
 		NBTTagCompound nbt = ChromaResearchManager.instance.getRootNBTTag(ep);
 		if (!nbt.hasKey(COOPERATE_NBT_TAG))
@@ -633,7 +640,7 @@ public class ProgressionManager implements ProgressRegistry {
 			if (e == null || ReikaPlayerAPI.isFake(e)) {
 				return;
 			}
-			if (!this.playerCanReceiveProgressWith(e, ep)) {
+			if (!s.getShareability().canShareTo(ep, e)) {
 				return;
 			}
 			players.add(e);

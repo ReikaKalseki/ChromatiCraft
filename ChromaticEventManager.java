@@ -54,8 +54,10 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.gen.feature.WorldGenAbstractTree;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager.ForceChunkEvent;
+import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
@@ -79,7 +81,6 @@ import net.minecraftforge.event.entity.player.PlayerPickupXpEvent;
 import net.minecraftforge.event.terraingen.ChunkProviderEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
-import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import thaumcraft.api.aspects.Aspect;
@@ -115,6 +116,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemPurifyCrystal;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Magic.WarpNetwork;
 import Reika.ChromatiCraft.Magic.Artefact.UABombingEffects;
 import Reika.ChromatiCraft.Magic.Artefact.UATrade;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAggroMask;
@@ -124,6 +126,9 @@ import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentUseRepair;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentWeaponAOE;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.ModInterface.MystPages;
+import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers;
+import Reika.ChromatiCraft.ModInterface.Bees.EfficientFlowerCache;
+import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.ChromaAspectManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaEnchants;
@@ -151,6 +156,7 @@ import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
+import Reika.ChromatiCraft.World.BiomeGlowingCliffs.GlowingTreeGen;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionTicker;
@@ -161,6 +167,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ClassDependent;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.IO.ReikaFileReader;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Event.AttackAggroEvent;
 import Reika.DragonAPI.Instantiable.Event.BlockConsumedByFireEvent;
 import Reika.DragonAPI.Instantiable.Event.BlockSpreadEvent;
@@ -207,7 +214,6 @@ import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
-import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.FrameBlacklist.FrameUsageEvent;
@@ -227,6 +233,8 @@ import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
+import forestry.api.multiblock.IAlvearyComponent;
 
 public class ChromaticEventManager {
 
@@ -239,6 +247,52 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@ModDependent(ModList.FORESTRY)
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void resyncAlvearies(PlayerInteractEvent evt) {
+		if (evt.action == Action.RIGHT_CLICK_BLOCK) {
+			TileEntity te = evt.world.getTileEntity(evt.x, evt.y, evt.z);
+			if (te instanceof IAlvearyComponent && !(te instanceof TileEntityLumenAlveary)) {
+				IAlvearyComponent iae = (IAlvearyComponent)te;
+				TileEntityLumenAlveary te2 = ChromaBeeHelpers.getLumenAlvearyController(iae.getMultiblockLogic().getController(), evt.world, iae.getCoordinates());
+				if (te2 != null) {
+					te2.syncAllData(true);
+					EfficientFlowerCache eff = te2.getFlowerCache();
+					if (eff != null) {
+						eff.forceUpdate(te2);
+					}
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void growGlowcliffsTrees(PlayerInteractEvent evt) {
+		if (evt.action == Action.RIGHT_CLICK_BLOCK) {
+			if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.x, evt.z))) {
+				if (evt.world.getBlock(evt.x, evt.y, evt.z) == Blocks.sapling && evt.world.getBlockMetadata(evt.x, evt.y, evt.z)%8 == 0) {
+					ItemStack is = evt.entityPlayer.getCurrentEquippedItem();
+					if (is != null && is.getItem() == Items.glowstone_dust && rand.nextInt(3) == 0) {
+						evt.world.setBlock(evt.x, evt.y, evt.z, Blocks.air);
+						WorldGenAbstractTree tree = ChromatiCraft.glowingcliffs.getUndergroundTreeGen(rand, true);
+						((GlowingTreeGen)tree).setGlowChance(10);
+						tree.setScale(1.0D, 1.0D, 1.0D);
+						int n = 8;
+						boolean flag = tree.generate(evt.world, rand, evt.x, evt.y, evt.z);
+						while (!flag && n <= 8) {
+							flag = tree.generate(evt.world, rand, evt.x, evt.y, evt.z);
+							n++;
+						}
+						if (flag) {
+							tree.func_150524_b(evt.world, rand, evt.x, evt.y, evt.z);
+						}
+						is.stackSize--;
+					}
+				}
+			}
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -298,6 +352,22 @@ public class ChromaticEventManager {
 		TileEntityExplosionShield.clearCache();
 		BlockFakeSky.clearCache();
 		LoreManager.instance.clearOnLogout();
+		WarpNetwork.instance.clear();
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void clearCachedTiles(ClientDisconnectionFromServerEvent evt) {
+		TileEntityItemCollector.clearCache();
+		TileEntityLocusPoint.clearCache();
+		TileEntityLampController.clearCache();
+		TileEntityChromaLamp.clearCache();
+		TileEntityCloakingTower.clearCache();
+		TileEntityCrystalBeacon.clearCache();
+		TileEntityMultiBuilder.clearCache();
+		TileEntityExplosionShield.clearCache();
+		BlockFakeSky.clearCache();
+		LoreManager.instance.clearOnLogout();
+		WarpNetwork.instance.clear();
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -1129,8 +1199,18 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void preventDimLoading(ForceChunkEvent evt) {
-		if (evt.ticket.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
-			ChromaDimensionTicker.instance.scheduleTicketUnload(evt.ticket);
+		Ticket t = evt.ticket;
+		if (t.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			NBTTagCompound tag = t.getModData();
+			if (tag.hasKey("tileX") && tag.hasKey("tileY") && tag.hasKey("tileZ")) {
+				WorldLocation loc = new WorldLocation(t.world, tag.getInteger("tileX"), tag.getInteger("tileY"), tag.getInteger("tileZ"));
+				Block b = loc.getBlock(t.world);
+				if (b == ChromaBlocks.CHUNKLOADER.getBlockInstance()) {
+					return;
+				}
+			}
+			ChromatiCraft.logger.log("Discarding force-loaded chunk request: "+t.getModId()+":"+t.getModData()+":"+t.getChunkList());
+			ChromaDimensionTicker.instance.scheduleTicketUnload(t);
 		}
 	}
 
@@ -1291,20 +1371,6 @@ public class ChromaticEventManager {
 			evt.setCanceled(true);
 		if (evt.destination != null && evt.destination.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
 			evt.setCanceled(true);
-	}
-
-	@SubscribeEvent
-	public void unloadLightnings(WorldEvent.Unload evt) {
-		for (Entity e : ((List<Entity>)evt.world.loadedEntityList)) {
-			if (e instanceof EntityBallLightning) {
-				e.setDead();
-			}
-		}
-	}
-
-	@SubscribeEvent
-	public void unloadChunkLightnings(ChunkEvent.Unload evt) {
-		ReikaChunkHelper.clearEntities(evt.getChunk(), new ReikaEntityHelper.ClassEntitySelector(EntityBallLightning.class));
 	}
 
 	@SubscribeEvent

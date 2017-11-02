@@ -134,7 +134,7 @@ public enum ChromaResearch implements ProgressElement {
 	FENCE(			ChromaTiles.FENCE, 			ResearchLevel.MULTICRAFT),
 	FURNACE(		ChromaTiles.FURNACE, 		ResearchLevel.PYLONCRAFT),
 	TELEPUMP(		ChromaTiles.TELEPUMP, 		ResearchLevel.PYLONCRAFT),
-	MINER(			ChromaTiles.MINER, 			ResearchLevel.ENDGAME,			ProgressStage.STRUCTCOMPLETE),
+	MINER(			ChromaTiles.MINER, 			ResearchLevel.CTM),
 	ITEMSTAND(		ChromaTiles.STAND,			ResearchLevel.RUNECRAFT),
 	LASER(			ChromaTiles.LASER, 			ResearchLevel.PYLONCRAFT),
 	ITEMRIFT(		ChromaTiles.ITEMRIFT, 		ResearchLevel.MULTICRAFT),
@@ -198,6 +198,8 @@ public enum ChromaResearch implements ProgressElement {
 	MULTIBUILDER(	ChromaTiles.MULTIBUILDER,	ResearchLevel.MULTICRAFT),
 	EXPLOSIONSHIELD(ChromaTiles.EXPLOSIONSHIELD,ResearchLevel.PYLONCRAFT),
 	AURALOCUS(		ChromaTiles.AURAPOINT,		ResearchLevel.CTM),
+	PROGRESSLINK(	ChromaTiles.PROGRESSLINK,	ResearchLevel.BASICCRAFT),
+	MANABOOSTER(	ChromaTiles.MANABOOSTER,	ResearchLevel.PYLONCRAFT),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT,	ProgressStage.ALLCOLORS),
@@ -225,6 +227,7 @@ public enum ChromaResearch implements ProgressElement {
 	REPEATERLAMP(	ChromaBlocks.REPEATERLAMP,										ResearchLevel.ENERGYEXPLORE),
 	REDSTONEPOD(	ChromaBlocks.REDSTONEPOD,										ResearchLevel.RUNECRAFT),
 	FAKESKY(		ChromaBlocks.FAKESKY,											ResearchLevel.RUNECRAFT),
+	CHUNKLOADER(	ChromaBlocks.CHUNKLOADER,										ResearchLevel.ENDGAME,		ProgressStage.DIMENSION),
 
 	TOOLDESC("Tools", ""),
 	WAND(				ChromaItems.TOOL,			ResearchLevel.ENTRY),
@@ -268,6 +271,7 @@ public enum ChromaResearch implements ProgressElement {
 	CAVEEXIT(			ChromaItems.CAVEPATHER,		ResearchLevel.BASICCRAFT),
 	SPLINEATTACK(		ChromaItems.SPLINEATTACK,	ResearchLevel.RUNECRAFT,		ProgressStage.KILLMOB),
 	SHIELDEDCELL(		ChromaItems.SHIELDEDCELL,	ResearchLevel.BASICCRAFT,		ProgressStage.ARTEFACT),
+	BOTTLENECK(			ChromaItems.BOTTLENECK,		ResearchLevel.NETWORKING,		ProgressStage.REPEATER),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
@@ -358,7 +362,8 @@ public enum ChromaResearch implements ProgressElement {
 	PYLONTURBORING(	Structures.PYLONTURBO,	5,	ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.TURBOCHARGE)),
 	WIRELESSPED(	Structures.WIRELESSPEDESTAL, 13, ResearchLevel.ENDGAME),
 	WIRELESSPED2(	Structures.WIRELESSPEDESTAL2, 13, ResearchLevel.CTM),
-	DATATOWER(		Structures.DATANODE,	ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.MOSS.metadata, ResearchLevel.RAWEXPLORE,	ProgressStage.TOWER)
+	DATATOWER(		Structures.DATANODE,	ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.MOSS.metadata, ResearchLevel.RAWEXPLORE,	ProgressStage.TOWER),
+	PROGLINKSTRUCT(	Structures.PROGRESSLINK,6,	ResearchLevel.BASICCRAFT),
 	;
 
 	private final ItemStack iconItem;

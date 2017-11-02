@@ -190,7 +190,7 @@ public class TileEntityMultiBuilder extends TileEntityChromaticBase implements L
 				b.onBlockPlacedBy(world, x, y, z, ep, is);
 				b.onPostBlockPlaced(world, x, y, z, meta);
 				ReikaSoundHelper.playBreakSound(world, x, y, z, b);
-				ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, x, y, z, Block.getIdFromBlock(b), meta);
+				ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, x, y, z, 128, Block.getIdFromBlock(b), meta);
 				if (!ep.capabilities.isCreativeMode)
 					is.stackSize--;
 			}
@@ -206,7 +206,7 @@ public class TileEntityMultiBuilder extends TileEntityChromaticBase implements L
 			if (ep.capabilities.isCreativeMode) {
 				world.setBlock(x, y, z, Blocks.air);
 				ReikaSoundHelper.playBreakSound(world, x, y, z, b);
-				ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, x, y, z, Block.getIdFromBlock(b), meta);
+				ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, x, y, z, 128, Block.getIdFromBlock(b), meta);
 			}
 			else
 				ReikaWorldHelper.dropAndDestroyBlockAt(world, x, y, z, ep, true, true);

@@ -109,7 +109,7 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 			Collections.shuffle(li);
 			for (WorldLocation loc : li) {
 				//if (loc.dimensionID == world.provider.dimensionId) { //world specific means tile accelerators in other worlds cannot work
-				TileEntity te = loc.getTileEntity(world);
+				TileEntity te = loc.getTileEntity();
 				if (te instanceof TileEntityWirelessSource) {
 					if (this.longRangeTransfer((TileEntityWirelessSource)te, CrystalElement.randomElement()))
 						break;

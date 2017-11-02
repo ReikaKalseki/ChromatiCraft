@@ -21,6 +21,7 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
@@ -105,7 +106,7 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 
 		public boolean canSilkTouch() {
 			switch(this) {
-				case FLOATSTONE:
+				//case FLOATSTONE:
 				case MIASMA:
 				case LATTICE:
 				case LIFEWATER:
@@ -226,8 +227,7 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 	}
 
 	@Override
-	public boolean canSilkHarvest(World world, EntityPlayer player, int x, int y, int z, int metadata)
-	{
+	public boolean canSilkHarvest(World world, EntityPlayer player, int x, int y, int z, int metadata) {
 		return DimDecoTypes.list[metadata].canSilkTouch();
 	}
 
@@ -348,6 +348,16 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 			return false;
 		}
 		return super.canCreatureSpawn(type, world, x, y, z);
+	}
+
+	@Override
+	public MineralCategory getCategory() {
+		return MineralCategory.MISC_UNDERGROUND_VALUABLE;
+	}
+
+	@Override
+	public Block getReplacedBlock(World world, int x, int y, int z) {
+		return Blocks.air;
 	}
 
 }

@@ -135,7 +135,7 @@ public class BlockPowerTree extends Block implements IWailaDataProvider {
 	private void breakEffects(World world, int x, int y, int z, CrystalElement e) {
 		ChromaSounds.POWERDOWN.playSoundAtBlock(world, x, y, z);
 		ChromaSounds.POWERDOWN.playSoundAtBlock(world, x, y, z, 1, 2);
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.LEAFBREAK.ordinal(), world, x, y, z, e.ordinal());
+		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.LEAFBREAK.ordinal(), world, x, y, z, 32, e.ordinal());
 	}
 
 	@SideOnly(Side.CLIENT)

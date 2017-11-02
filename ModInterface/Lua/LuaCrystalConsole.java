@@ -36,7 +36,7 @@ public class LuaCrystalConsole extends LuaMethod {
 
 	@Override
 	public String getArgsAsString() {
-		return "int slot, boolean pitch";
+		return "int slot, boolean on";
 	}
 
 	@Override

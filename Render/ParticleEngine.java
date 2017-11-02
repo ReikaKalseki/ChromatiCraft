@@ -129,13 +129,15 @@ public class ParticleEngine extends EffectRenderer {
 				v5.startDrawingQuads();
 
 				for (EntityFX fx : parts) {
-					if (rm.mode.flags[RenderModeFlags.LIGHT.ordinal()]) {
-						v5.setBrightness(fx.getBrightnessForRender(frame));
+					if (ThrottleableEffectRenderer.isParticleVisible(fx)) {
+						if (rm.mode.flags[RenderModeFlags.LIGHT.ordinal()]) {
+							v5.setBrightness(fx.getBrightnessForRender(frame));
+						}
+						else {
+							v5.setBrightness(240);
+						}
+						fx.renderParticle(v5, frame, yaw, f5, pitch, f3, f4);
 					}
-					else {
-						v5.setBrightness(240);
-					}
-					fx.renderParticle(v5, frame, yaw, f5, pitch, f3, f4);
 				}
 
 				v5.draw();
@@ -210,7 +212,8 @@ public class ParticleEngine extends EffectRenderer {
 						it.remove();
 				}
 				catch (ConcurrentModificationException e) {
-
+					ChromatiCraft.logger.log("CME thrown updating particle type "+rm+"!");
+					//e.printStackTrace();
 				}
 			}
 		}
@@ -367,6 +370,11 @@ public class ParticleEngine extends EffectRenderer {
 				return Arrays.equals(flags, r.flags);
 			}
 			return false;
+		}
+
+		@Override
+		public String toString() {
+			return Arrays.toString(flags);
 		}
 
 		private void apply() {

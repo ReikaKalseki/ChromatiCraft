@@ -576,4 +576,10 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		return 0;
 	}
 
+	@Override
+	@SideOnly(Side.CLIENT)
+	protected void doBottleneckDisplay() {
+		super.doBottleneckDisplay();
+	}
+
 }

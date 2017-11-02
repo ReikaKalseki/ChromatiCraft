@@ -69,12 +69,14 @@ public class BlockDyeLeaf extends BlockCustomLeaf {
 
 	@Override
 	protected void onRandomUpdate(World world, int x, int y, int z, Random r) {
-		CrystalElement e = CrystalElement.elements[world.getBlockMetadata(x, y, z)];
-		ArrayList<TileEntityCrystalPylon> c = new ArrayList(CrystalNetworker.instance.getNearbyPylons(world, x, y, z, e, 16, false));
-		if (c == null || c.isEmpty())
-			return;
-		TileEntityCrystalPylon te = c.get(r.nextInt(c.size()));
-		te.speedRegenShortly();
+		if (r.nextInt(10) == 0) {
+			CrystalElement e = CrystalElement.elements[world.getBlockMetadata(x, y, z)];
+			ArrayList<TileEntityCrystalPylon> c = new ArrayList(CrystalNetworker.instance.getNearbyPylons(world, x, y, z, e, 16, false));
+			if (c == null || c.isEmpty())
+				return;
+			TileEntityCrystalPylon te = c.get(r.nextInt(c.size()));
+			te.speedRegenShortly(4);
+		}
 	}
 
 	@Override

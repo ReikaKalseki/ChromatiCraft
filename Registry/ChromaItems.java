@@ -40,6 +40,7 @@ import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Items.ItemTieredResource;
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
+import Reika.ChromatiCraft.Items.Tools.ItemBottleneckFinder;
 import Reika.ChromatiCraft.Items.Tools.ItemBulkMover;
 import Reika.ChromatiCraft.Items.Tools.ItemCaveExitFinder;
 import Reika.ChromatiCraft.Items.Tools.ItemChainGun;
@@ -173,6 +174,7 @@ public enum ChromaItems implements ItemEnum {
 	CAVEPATHER(45, false,	"chroma.cavepather",	ItemCaveExitFinder.class),
 	SPLINEATTACK(46, false,	"chroma.splineattack",	ItemSplineAttack.class),
 	SHIELDEDCELL(47, false,	"chroma.shieldedcell",	ItemShieldedCell.class),
+	BOTTLENECK(48, false,	"chroma.bottleneck",	ItemBottleneckFinder.class),
 	;
 
 	private final int index;

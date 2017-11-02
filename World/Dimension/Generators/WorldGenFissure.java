@@ -31,7 +31,9 @@ import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.ChromatiCraft.World.Dimension.FissurePatternCalculator;
 import Reika.ChromatiCraft.World.Dimension.FissurePatternCalculator.FissurePattern;
+import Reika.DragonAPI.Auxiliary.WorldGenInterceptionRegistry;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Event.SetBlockEvent;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 
@@ -70,6 +72,10 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 			this.cut(rand, world, x, y, z, w, my, 0, l, li, columns, color);
 		}
 		 */
+		WorldGenInterceptionRegistry.skipLighting = true;
+		SetBlockEvent.eventEnabledPre = false;
+		SetBlockEvent.eventEnabledPost = false;
+
 		FissurePattern fp = FissurePatternCalculator.getRandomFissure(world, x, y, z);
 		Map<Point, Integer> map = fp.getDepthMap();
 		for (Point p : map.keySet()) {
@@ -81,9 +87,13 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 		for (Coordinate c : columns.keySet()) {
 			int h = columns.get(c);
 			if (c.offset(0, h-1, 0).getBlock(world) == ChromaBlocks.STRUCTSHIELD.getBlockInstance()) {
-				c.offset(0, h, 0).setBlock(world, ChromaBlocks.VOIDRIFT.getBlockInstance(), color, 3);
+				c.offset(0, h, 0).setBlock(world, ChromaBlocks.VOIDRIFT.getBlockInstance(), color, 2);
 			}
 		}
+
+		WorldGenInterceptionRegistry.skipLighting = false;
+		SetBlockEvent.eventEnabledPre = true;
+		SetBlockEvent.eventEnabledPost = true;
 
 		return true;
 	}
@@ -107,7 +117,7 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 							Block b = world.getBlock(dx2, dy2, dz2);
 							int m = world.getBlockMetadata(dx2, dy2, dz2);
 							if (b.getMaterial() == Material.rock && this.canCutInto(world, dx2, dy2, dz2)) {
-								world.setBlock(dx2, dy2, dz2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.ordinal(), 3);
+								world.setBlock(dx2, dy2, dz2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.ordinal(), 2);
 								Coordinate c = new Coordinate(dx2, 0, dz2);
 								Integer get = columns.get(c);
 								int h = get != null ? get.intValue() : 0;
@@ -126,17 +136,17 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 									for (int h = 1; h < my; h++) {
 										dy2 = gy+dir.offsetY*h;
 										if (this.canCutInto(world, dx2, dy2, dz2)) {
-											world.setBlock(dx2, dy2, dz2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.ordinal(), 3);
+											world.setBlock(dx2, dy2, dz2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.ordinal(), 2);
 										}
 									}
 								}
 								else {
 									if (world.getBlock(dx2, dy2, dz2) != ChromaBlocks.DIMGEN.getBlockInstance())
-										world.setBlock(dx2, dy2, dz2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata, 3);
+										world.setBlock(dx2, dy2, dz2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata, 2);
 								}
 							}
 						}
-						world.setBlock(dx, gy, dz, ChromaBlocks.DIMGEN.getBlockInstance(), DimDecoTypes.LIFEWATER.ordinal(), 3);
+						world.setBlock(dx, gy, dz, ChromaBlocks.DIMGEN.getBlockInstance(), DimDecoTypes.LIFEWATER.ordinal(), 2);
 					}
 				}
 			}
@@ -169,16 +179,18 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 			return false;
 		if (b instanceof BlockStructureShield && meta >= 8)
 			return false;
+		if (b == ChromaBlocks.RUNE.getBlockInstance())
+			return false;
+		if (b == ChromaBlocks.MOLTENLUMEN.getBlockInstance())
+			return false;
+		if (b == ChromaBlocks.LOOTCHEST.getBlockInstance())
+			return false;
 		if (b.getBlockHardness(world, x, y, z) < 0)
 			return false;
 		if (b instanceof SemiUnbreakable) {
 			if (((SemiUnbreakable)b).isUnbreakable(world, x, y, z, meta))
 				return false;
 		}
-		if (b == ChromaBlocks.RUNE.getBlockInstance())
-			return false;
-		if (b == ChromaBlocks.MOLTENLUMEN.getBlockInstance())
-			return false;
 		ChromaBlocks cb = ChromaBlocks.getEntryByID(b);
 		if (cb != null && cb.isDimensionStructureBlock()) {
 			return false;

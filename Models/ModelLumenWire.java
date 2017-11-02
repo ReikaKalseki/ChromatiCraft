@@ -18,9 +18,6 @@ package Reika.ChromatiCraft.Models;
 import java.util.ArrayList;
 
 import net.minecraft.tileentity.TileEntity;
-
-import org.lwjgl.opengl.GL11;
-
 import Reika.ChromatiCraft.Base.ChromaModelBase;
 import Reika.DragonAPI.Instantiable.Rendering.LODModelPart;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -107,8 +104,7 @@ public class ModelLumenWire extends ChromaModelBase
 	}
 
 	@Override
-	public void renderAll(TileEntity te, ArrayList li)
-	{
+	public void renderAll(TileEntity te, ArrayList li) {
 		Shape1.render(te, f5);
 		Shape3a.render(te, f5);
 		Shape3.render(te, f5);
@@ -119,11 +115,9 @@ public class ModelLumenWire extends ChromaModelBase
 		Shape4b.render(te, f5);
 		Shape4c.render(te, f5);
 
-		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-		GL11.glDisable(GL11.GL_LIGHTING);
-		ReikaRenderHelper.disableEntityLighting();
+		ReikaRenderHelper.pushTESRLightingState();
 		Shape2.render(te, f5);
-		GL11.glPopAttrib();
+		ReikaRenderHelper.popTESRLightingState();
 	}
 
 }

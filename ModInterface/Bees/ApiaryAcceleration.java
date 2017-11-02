@@ -26,6 +26,7 @@ import forestry.api.apiculture.IBeeHousing;
 import forestry.api.apiculture.IBeeHousingInventory;
 import forestry.api.apiculture.IBeeModifier;
 import forestry.api.apiculture.IBeekeepingLogic;
+import forestry.api.multiblock.IAlvearyController;
 
 public class ApiaryAcceleration extends Acceleration {
 
@@ -33,9 +34,11 @@ public class ApiaryAcceleration extends Acceleration {
 
 	private Field beeLogicModifiers;
 	private Field beeLogicProgress;
+	private Field beeLogicProgressMax;
 	private Method beeLogicMate;
 
 	private Field tileProgress;
+	private Field tileProgressAlveary;
 
 	private static final int TICK_LENGTH = 550;
 
@@ -53,10 +56,16 @@ public class ApiaryAcceleration extends Acceleration {
 			beeLogicModifiers.setAccessible(true);
 			beeLogicProgress = c.getDeclaredField("beeProgress");
 			beeLogicProgress.setAccessible(true);
+			beeLogicProgressMax = c.getDeclaredField("beeProgressMax");
+			beeLogicProgressMax.setAccessible(true);
 
 			c = Class.forName("forestry.apiculture.tiles.TileBeeHousingBase");
 			tileProgress = c.getDeclaredField("breedingProgressPercent");
 			tileProgress.setAccessible(true);
+
+			c = Class.forName("forestry.apiculture.multiblock.AlvearyController");
+			tileProgressAlveary = c.getDeclaredField("breedingProgressPercent");
+			tileProgressAlveary.setAccessible(true);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -91,10 +100,7 @@ public class ApiaryAcceleration extends Acceleration {
 					//ReikaJavaLibrary.pConsole(f+", "+fac+", "+c);
 					if (ReikaRandomHelper.doWithChance(c*fac))
 						ReikaBeeHelper.ageBee(te.worldObj, queen, f*fac); //not divide, is a lifespan factor, not a how much to age!
-					beeLogicProgress.set(lgc, bee.getHealth());
-					tileProgress.set(te, (int)(bee.getHealth()*2.25));
-					//lgc.syncToClient();
-					//te.worldObj.markBlockForUpdate(te.xCoord, te.yCoord, te.zCoord);
+					this.updateBeeHealthBar(te, lgc, bee);
 				}
 			}
 			else if (type == EnumBeeType.PRINCESS) {
@@ -105,6 +111,23 @@ public class ApiaryAcceleration extends Acceleration {
 
 			}
 		}
+	}
+
+	public void resetProgress(IBeekeepingLogic lgc) throws Exception {
+		beeLogicProgress.set(lgc, beeLogicProgressMax.get(lgc));
+	}
+
+	public void updateBeeHealthBar(IAlvearyController con, IBee bee) throws Exception {
+		beeLogicProgress.set(con.getBeekeepingLogic(), bee.getHealth());
+		tileProgressAlveary.set(con, (int)(bee.getHealth()*2.25));
+		//lgc.syncToClient();
+	}
+
+	public void updateBeeHealthBar(TileEntity te, IBeekeepingLogic lgc, IBee bee) throws Exception {
+		beeLogicProgress.set(lgc, bee.getHealth());
+		tileProgress.set(te, (int)(bee.getHealth()*2.25));
+		//lgc.syncToClient();
+		//te.worldObj.markBlockForUpdate(te.xCoord, te.yCoord, te.zCoord);
 	}
 
 }

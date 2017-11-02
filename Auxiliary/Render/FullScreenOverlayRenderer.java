@@ -232,7 +232,7 @@ public class FullScreenOverlayRenderer {
 				t.render();
 				GL11.glPopMatrix();
 				i++;
-				if (t.age >= GROUP_LIFESPAN)
+				if (t.age >= t.lifespan)
 					it.remove();
 			}
 			GL11.glPopMatrix();
@@ -250,9 +250,8 @@ public class FullScreenOverlayRenderer {
 
 	private static abstract class FullElementRender {
 
-		private final int lifespan;
-
-		private int age;
+		protected final int lifespan;
+		protected int age;
 
 		protected FullElementRender(int life) {
 			lifespan = life;
@@ -279,18 +278,34 @@ public class FullScreenOverlayRenderer {
 		private final byte[] colors;
 
 		private StructurePasswordRender(byte[] c) {
-			super(GROUP_LIFESPAN*5);
+			super(GROUP_LIFESPAN*7);
 			colors = c;
 		}
 
 		@Override
 		protected void render() {
 			ReikaTextureHelper.bindTerrainTexture();
-			for (int i = 0; i < colors.length; i++) {
+			int l = Math.min(colors.length, age/5);
+			boolean full = false;//age < colors.length*5;
+			for (int i = 0; i < l; i++) {
 				byte color = colors[i];
 				int x = (i%16-4)*24+12;
 				int y = 0;//(i/4)*32;
-				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y, CrystalElement.elements[color].getGlowRune(), 16, 16);
+				float f = full ? 1 : 1+(float)(0.625*Math.sin(System.currentTimeMillis()/300D-i));
+				f = Math.min(1, f);
+				GL11.glColor4f(f, f, f, this.getAlpha());
+				CrystalElement e = CrystalElement.elements[color];
+				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y, e.getOutlineRune(), 16, 16);
+				GL11.glColor4f(1, 1, 1, 1);
+				float w = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
+				GL11.glLineWidth(5);
+				int alpha = age < lifespan-100 ? 255 : (lifespan-age+1)*255/100;
+				for (int d = 0; d <= 2; d += 1) {
+					int c = full ? e.getColor() : ReikaColorAPI.getColorWithBrightnessMultiplier(e.getColor(), 1-f*d/3F);
+					c = ReikaColorAPI.getColorWithAlpha(c, alpha);
+					ReikaGuiAPI.instance.drawRectFrame(x-d, y-d, 16+d*2, 16+d*2, c);
+				}
+				GL11.glLineWidth(w);
 			}
 		}
 

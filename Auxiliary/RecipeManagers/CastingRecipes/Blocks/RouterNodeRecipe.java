@@ -33,4 +33,17 @@ public class RouterNodeRecipe extends CastingRecipe {
 		return 2;
 	}
 
+	@Override
+	public boolean crafts(ItemStack is) {
+		return super.crafts(this.stripUncaredTags(is));
+	}
+
+	private ItemStack stripUncaredTags(ItemStack is) {
+		if (is.stackTagCompound == null)
+			return is;
+		is = is.copy();
+		is.stackTagCompound.removeTag("target");
+		return is;
+	}
+
 }

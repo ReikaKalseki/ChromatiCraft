@@ -73,7 +73,7 @@ public class TileEntityHoverPad extends TileEntityChromaticBase {
 	private int getParticleRate() {
 		int base = mode == HoverMode.HOVER ? 1 : 4;
 		base *= 4*Math.sqrt(ReikaAABBHelper.getVolume(hoverBox)/480D);
-		return base;
+		return Math.max(1, base);
 	}
 
 	@Override
@@ -93,7 +93,7 @@ public class TileEntityHoverPad extends TileEntityChromaticBase {
 		if (bk != ChromaBlocks.PAD.getBlockInstance())
 			return null;
 		BlockArray b = new BlockArray();
-		b.recursiveAddWithBounds(world, x, dy, z, ChromaBlocks.PAD.getBlockInstance(), x-32, x+32, dy, dy, z-32, z+32);
+		b.recursiveAddWithBounds(world, x, dy, z, ChromaBlocks.PAD.getBlockInstance(), x-32, dy, z-32, x+32, dy, z+32);
 		HashSet<Coordinate> set = new HashSet(b.keySet());
 		for (int i = 1; i < 16; i++) {
 			for (Coordinate c : set) {
@@ -102,7 +102,7 @@ public class TileEntityHoverPad extends TileEntityChromaticBase {
 					b.addBlockCoordinate(c.xCoord, c.yCoord+i, c.zCoord);
 			}
 		}
-		b.shaveToCube();
+		//b.shaveToCube();
 		return b.asAABB();
 	}
 
@@ -137,6 +137,8 @@ public class TileEntityHoverPad extends TileEntityChromaticBase {
 	}
 
 	public void toggleMode() {
+		if (hoverBox == null)
+			return;
 		mode = mode.next();
 		this.initParticleVectors();
 		ChromaSounds.USE.playSoundAtBlock(this, 0.75F, 1);

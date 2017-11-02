@@ -18,6 +18,7 @@ public class ChromaLuaMethods {
 	private static final LuaMethod isConnected = new LuaIsConnected();
 	private static final LuaMethod getTankFraction = new LuaGetTankFraction();
 	private static final LuaMethod console = new LuaCrystalConsole();
+	private static final LuaMethod setEnchantments = new LuaSetEnchantments();
 
 	private static final LibraryLuaMethod elementColor = new LuaElementColor();
 

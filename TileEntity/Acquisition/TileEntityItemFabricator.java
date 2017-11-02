@@ -111,7 +111,7 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 		}
 
 		//ReikaJavaLibrary.pConsole(recipe.energy+" <"+craftingTick+"> "+energy, Side.SERVER);
-		if (recipe != null && energy.containsAtLeast(recipe.energy) && craftingTick > 0) {
+		if (recipe != null && energy.containsAtLeast(recipe.energy) && craftingTick > 0 && !this.hasRedstoneSignal()) {
 			this.onCraftingTick(world, x, y, z);
 		}
 	}

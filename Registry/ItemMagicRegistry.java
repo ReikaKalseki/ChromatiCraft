@@ -25,8 +25,10 @@ import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Interfaces.Registry.OreType;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
 import Reika.DragonAPI.ModRegistry.ModOreList;
 
@@ -313,6 +315,50 @@ public class ItemMagicRegistry {
 
 		this.addElement(FluidRegistry.getFluid("milk"), CrystalElement.CYAN, 2);
 		this.addElement(FluidRegistry.getFluid("milk"), CrystalElement.GREEN, 3);
+
+		this.addElement(FluidRegistry.getFluid("liquidessence"), CrystalElement.CYAN, 2);
+		this.addElement(FluidRegistry.getFluid("liquidessence"), CrystalElement.BLACK, 3);
+		this.addElement(FluidRegistry.getFluid("liquidessence"), CrystalElement.PURPLE, 2);
+	}
+
+	public void addPostload() {
+		if (ModList.BOP.isLoaded()) {
+			String[] arr = {
+					"plants/0-8,12-15",
+					"mushrooms/0-5",
+					"willow",
+					"ivy",
+					"treeMoss",
+					"flowerVine",
+					"wisteria",
+					"lilyBop/0-2",
+					"foliage/0-5,7-15",
+					"coral1/11-15",
+					"coral2/8",
+					"moss",
+			};
+			for (int i = 0; i < arr.length; i++) {
+				for (ItemStack is : ReikaItemHelper.parseMultiRangedMeta(ModList.BOP, arr[i])) {
+					this.addElement(is, CrystalElement.GREEN, 1);
+				}
+			}
+		}
+
+		if (ModList.TWILIGHT.isLoaded()) {
+			String[] arr = {
+					"tile.TFPlant/3,4,8-11,13,14",
+					"tile.HugeLilyPad",
+					"tile.HugeWaterLily",
+					"tile.TrollVidr",
+					"tile.UnripeTrollBer",
+					"tile.TrollBer",
+			};
+			for (int i = 0; i < arr.length; i++) {
+				for (ItemStack is : ReikaItemHelper.parseMultiRangedMeta(ModList.TWILIGHT, arr[i])) {
+					this.addElement(is, CrystalElement.GREEN, 1);
+				}
+			}
+		}
 	}
 
 	private void addOreElement(OreType ore, CrystalElement e, int amt) {

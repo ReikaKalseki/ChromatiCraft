@@ -80,13 +80,13 @@ public class GuiItemInserter extends GuiChromaBase {
 		super.actionPerformed(b);
 
 		if (b.id < tile.getSizeInventory()) {
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.INSERTERMODE.ordinal(), tile, b.id);
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.INSERTERMODE.ordinal(), tile, b.id);
 			tile.setInsertionType(b.id, tile.getInsertionType(b.id).next());
 		}
 		else if (b.id >= 100 && b.id < 100+(tile.getSizeInventory()*tile.getSizeInventory())) {
 			int i = (b.id-100)/tile.getSizeInventory();
 			int k = (b.id-100)%tile.getSizeInventory();
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.INSERTERCONNECTION.ordinal(), tile, i, k);
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.INSERTERCONNECTION.ordinal(), tile, i, k);
 			//tile.toggleConnection(i, k);
 		}
 	}
@@ -102,7 +102,7 @@ public class GuiItemInserter extends GuiChromaBase {
 			int slot = this.getClickedSlot(-j+x, -k+y);
 			if (slot >= 0) {
 				tile.removeCoordinate(slot);
-				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.INSERTERCLEAR.ordinal(), tile, slot);
+				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.INSERTERCLEAR.ordinal(), tile, slot);
 			}
 		}
 

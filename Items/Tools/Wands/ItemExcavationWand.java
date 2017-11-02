@@ -83,6 +83,8 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 	@Override
 	public boolean onBlockStartBreak(ItemStack itemstack, int x, int y, int z, EntityPlayer ep) {
 		World world = ep.worldObj;
+		if (!this.spreadOn(world, x, y, z, world.getBlock(x, y, z), world.getBlockMetadata(x, y, z)))
+			return false;
 		if (!world.isRemote) {
 			ProgressiveBreaker b = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, this.getDepth(ep));
 			//b.looseMatches.put(Blocks.redstone_ore, new BlockKey(Blocks.lit_redstone_ore));
@@ -192,7 +194,7 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 	}
 
 	private void placeSomeLight(World world, int x, int y, int z) {
-		if (world.getBlockLightValue(x, y, z) < 8) {
+		if (world.getBlockLightValue(x, y, z) < 8 && !world.canBlockSeeTheSky(x, y, z)) {
 			world.setBlock(x, y, z, ChromaBlocks.LIGHT.getBlockInstance(), Flags.PARTICLES.getFlag(), 3);
 		}
 	}

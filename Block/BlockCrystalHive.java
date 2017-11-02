@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
@@ -147,6 +148,16 @@ public class BlockCrystalHive extends Block implements MinerBlock {
 	@Override
 	public ArrayList<ItemStack> getHarvestItems(World world, int x, int y, int z, int meta, int fortune) {
 		return this.getDrops(world, x, y, z, meta, fortune);
+	}
+
+	@Override
+	public MineralCategory getCategory() {
+		return MineralCategory.MISC_UNDERGROUND;
+	}
+
+	@Override
+	public Block getReplacedBlock(World world, int x, int y, int z) {
+		return Blocks.air;
 	}
 
 }

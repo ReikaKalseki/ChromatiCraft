@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.World.Dimension;
 import java.lang.reflect.Constructor;
 import java.util.ConcurrentModificationException;
 import java.util.EnumMap;
+import java.util.Locale;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ThreadedGenerator;
@@ -26,6 +27,7 @@ public enum ThreadedGenerators {
 	REGION(RegionMapper.class),
 	SKYRIVER(SkyRiverGenerator.class),
 	FISSUREPATTERNS(FissurePatternCalculator.class),
+	//ARCHCALC(ArchCalculator.class),
 	;
 
 	private final Class generator;
@@ -52,6 +54,8 @@ public enum ThreadedGenerators {
 				return false;
 			case FISSUREPATTERNS:
 				return false;
+				//case ARCHCALC:
+				//	return false;
 		}
 		return false;
 	}
@@ -104,6 +108,10 @@ public enum ThreadedGenerators {
 		}
 
 		public void run() {
+			if (Thread.currentThread().getName().toLowerCase(Locale.ENGLISH).contains("server thread")) {
+				String msg = "Threaded generator being run from server thread!";
+				FMLCommonHandler.instance().raiseException(new IllegalStateException(msg), msg, true);
+			}
 			if (generator.isRunning) {
 				String msg = "You cannot run two threaded generator instances simultaneously!";
 				FMLCommonHandler.instance().raiseException(new IllegalStateException(msg), msg, true);

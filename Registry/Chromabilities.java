@@ -55,6 +55,7 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fluids.BlockFluidBase;
@@ -415,13 +416,13 @@ public enum Chromabilities implements Ability {
 
 	public static void triggerAbility(EntityPlayer ep, Ability a, int data, boolean dispatchPacket) {
 		if (ep.worldObj.isRemote) {
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ABILITY.ordinal(), ep.worldObj, 0, 0, 0, getAbilityInt(a), data);
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.ABILITY.ordinal(), getAbilityInt(a), data);
 
 			if (!a.actOnClient())
 				return;
 		}
 		else if (a.actOnClient() && dispatchPacket) { //notify other players
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ABILITYSEND.ordinal(), ep.worldObj, 0, 0, 0, getAbilityInt(a), data, ep.getEntityId());
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ABILITYSEND.ordinal(), PacketTarget.allPlayers, getAbilityInt(a), data, ep.getEntityId());
 		}
 
 		ProgressStage.ABILITY.stepPlayerTo(ep);
@@ -562,10 +563,11 @@ public enum Chromabilities implements Ability {
 
 	public static boolean enabledOn(EntityPlayer ep, Ability a) {
 		if (ep == null) {
-			ChromatiCraft.logger.logError("Tried to get ability status of null player!?");
-			if (System.currentTimeMillis()-lastNullPlayerDump > 5000)
+			if (System.currentTimeMillis()-lastNullPlayerDump > 5000) {
+				ChromatiCraft.logger.logError("Tried to get ability status of null player!?");
 				Thread.dumpStack();
-			lastNullPlayerDump = System.currentTimeMillis();
+				lastNullPlayerDump = System.currentTimeMillis();
+			}
 			return false;
 		}
 		NBTTagCompound nbt = ep.getEntityData();
@@ -628,31 +630,46 @@ public enum Chromabilities implements Ability {
 		else {
 			int x = MathHelper.floor_double(ep.posX);
 			int z = MathHelper.floor_double(ep.posZ);
-			int dx = ReikaRandomHelper.getRandomPlusMinus(x, 128);
-			int dz = ReikaRandomHelper.getRandomPlusMinus(z, 128);
-			int dy = world.getTopSolidOrLiquidBlock(dx, dz);
-			ReikaWorldHelper.ignite(world, dx, dy, dz);
-			for (int i = -1; i <= 1; i++) {
-				for (int j = -1; j <= 1; j++) {
-					for (int k = -1; k <= 1; k++) {
-						int ddx = dx+i;
-						int ddy = dy+j;
-						int ddz = dz+k;
-						if (ModWoodList.getModWoodFromLeaf(world.getBlock(ddx, ddy, ddz), world.getBlockMetadata(ddx, ddy, ddz)) == ModWoodList.DARKWOOD) {
-							world.setBlock(ddx, ddy, ddz, Blocks.fire);
+			BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
+			int n = 4;
+			if (biome.biomeName.contains("Dark Forest"))
+				n = 32;
+			for (int m = 0; m < n; m++) {
+				int dr = m < 32 ? 128 : m < 64 ? 64 : 32;
+				int dx = ReikaRandomHelper.getRandomPlusMinus(x, dr);
+				int dz = ReikaRandomHelper.getRandomPlusMinus(z, dr);
+				int dy = ReikaWorldHelper.getTopNonAirBlock(world, dx, dz);
+				ReikaWorldHelper.ignite(world, dx, dy, dz);
+				int r = m > 256 && world.rand.nextInt(4) == 0 ? 2 : 1;
+				for (int i = -r; i <= r; i++) {
+					for (int j = -r; j <= r; j++) {
+						for (int k = -r; k <= r; k++) {
+							int ddx = dx+i;
+							int ddy = dy+j;
+							int ddz = dz+k;
+							Block b = world.getBlock(ddx, ddy, ddz);
+							int meta = world.getBlockMetadata(ddx, ddy, ddz);
+							ModWoodList wood = ModWoodList.getModWoodFromLeaf(b, meta);
+							//ReikaJavaLibrary.pConsole(new BlockKey(b, meta)+" > "+wood);
+							if (wood == ModWoodList.DARKWOOD) {
+								//ReikaJavaLibrary.pConsole(new Coordinate(ddx, ddy, ddz));
+								world.setBlock(ddx, ddy, ddz, Blocks.fire);
+								if (world.rand.nextInt(60) == 0)
+									world.newExplosion(ep, ddx+0.5, ddy+0.5, ddz+0.5, 8, true, true);
+							}
 						}
 					}
 				}
-			}
-			/*
+				/*
 			if (world.rand.nextInt(20) == 0) {
 				ReikaWorldHelper.temperatureEnvironment(world, dx, dy, dz, 910);
 			}
 			else if (world.rand.nextInt(200) == 0) {
 				ReikaWorldHelper.temperatureEnvironment(world, dx, dy, dz, 1510);
 			}
-			 */
-			ChromaSounds.FIRE.playSoundAtBlock(world, dx, dy, dz, 1.5F, 1+world.rand.nextFloat()*0.5F);
+				 */
+				ChromaSounds.FIRE.playSoundAtBlock(world, dx, dy, dz, 1.5F, 1+world.rand.nextFloat()*0.5F);
+			}
 			if (ep.ticksExisted%4 == 0) {
 				ChromaSounds.FIRE.playSound(ep, 0.3F, 0.2F+world.rand.nextFloat());
 			}
@@ -1184,7 +1201,7 @@ public enum Chromabilities implements Ability {
 								}
 								if (ep.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
 									if (b == Blocks.grass || b == Blocks.stone || b == Blocks.dirt) {
-										if (ep.worldObj.getBlockMetadata(x, y, z) == 1)
+										if (ep.worldObj.getBlockMetadata(dx, dy, dz) == 1)
 											continue;
 									}
 								}

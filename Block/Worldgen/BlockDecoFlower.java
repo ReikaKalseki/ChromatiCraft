@@ -228,8 +228,8 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 				c.setBlock(world, this, meta);
 				ReikaSoundHelper.playBreakSound(world, x, y, z, this, 1, 1);
 				ReikaSoundHelper.playBreakSound(world, c.xCoord, c.yCoord, c.zCoord, this, 1, 1);
-				ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, x, y, z, Block.getIdFromBlock(this), meta);
-				ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, c.xCoord, c.yCoord, c.zCoord, Block.getIdFromBlock(this), meta);
+				ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, x, y, z, 32, Block.getIdFromBlock(this), meta);
+				ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, c.xCoord, c.yCoord, c.zCoord, 64, Block.getIdFromBlock(this), meta);
 			}
 			else {
 				f.tick(world, x, y, z, rand);

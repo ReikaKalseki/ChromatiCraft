@@ -120,9 +120,9 @@
 	<shieldedcell>
 		Those star-shaped things you found do not seem to mix well with electrical hardware. Indeed, to your horror, putting them in your crystal-based storage network caused the entire system to experience cascading failures. Some time ago, you DID pass a villager who offered a 'shielded' storage unit, but the idiot first demanded you venture 5000 blocks into the middle of nowhere, and asked for the smashed remains of some of the very items you want to store. Screw him and his device; you will create your own superior version, no fetch quests for random items or to random places required.
 	</shieldedcell>
-	<name>
-		
-	</name>
+	<bottleneck>
+		As you have upgraded various parts of your crystal network, you have found that there is usually a small handful of constructs acting as the limiting factor in energy transport, either due to their inefficiencies or limitations on their transfer rate. If you could send pulses through the network, almost "ringing" the components, you might be able to identify these bottlenecks.
+	</bottleneck>
 	<name>
 		
 	</name>

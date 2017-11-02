@@ -105,9 +105,9 @@
 	<nuker>
 		You have found a world with hollow mounds of earth from the roofs of which hang stalactites of ore. That sounds lucrative, but collecting said ore is often a hassle, as it is in a number of small disconnected patches, and manually mining it out as metal boxes pump forth monsters is proving very unpleasant. You need something more dramatic, and the stories of some others' ability to break the fabric of reality to achieve just this are now an inspiration.
 	</nuker>
-	<name>
-
-	</name>
+	<jump>
+		Gliders of leather are nice - except when they spontaneously fail and drop you to your death - but they only work so long as you can gain that initial altitude. You cannot carry saplings for giant trees everywhere you go, and you never seem to remember to refuel your more mundane flight devices, but perhaps there is another way. Hopefully never again will you need to hop three thousand meters, 8 blocks at a time.
+	</jump>
 	<name>
 
 	</name>

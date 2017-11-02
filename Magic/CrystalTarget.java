@@ -10,11 +10,14 @@
 package Reika.ChromatiCraft.Magic;
 
 import net.minecraft.nbt.NBTTagCompound;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
+import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 
 public class CrystalTarget {
 
+	public final WorldLocation source;
 	public final WorldLocation location;
 	public final CrystalElement color;
 	public final double endWidth;
@@ -22,15 +25,26 @@ public class CrystalTarget {
 	public final double offsetY;
 	public final double offsetZ;
 
-	public CrystalTarget(WorldLocation target, CrystalElement color, double w) {
-		this(target, color, 0, 0, 0, w);
+	public CrystalTarget(WorldLocation src, WorldLocation target, CrystalElement color, double w) {
+		this(src, target, color, 0, 0, 0, w);
 	}
 
-	public CrystalTarget(WorldLocation target, CrystalElement color, double dx, double dy, double dz, double w) {
+	public CrystalTarget(CrystalNetworkTile src, WorldLocation target, CrystalElement color, double w) {
+		this(PylonFinder.getLocation(src), target, color, 0, 0, 0, w);
+	}
+
+	public CrystalTarget(CrystalNetworkTile src, WorldLocation target, CrystalElement color, double dx, double dy, double dz, double w) {
+		this(PylonFinder.getLocation(src), target, color, dx, dy, dz, w);
+	}
+
+	public CrystalTarget(WorldLocation src, WorldLocation target, CrystalElement color, double dx, double dy, double dz, double w) {
+		if (src == null)
+			throw new IllegalArgumentException("Cannot supply null source!");
 		if (target == null)
 			throw new IllegalArgumentException("Cannot supply null target!");
 		if (color == null)
 			throw new IllegalArgumentException("Cannot supply null color!");
+		source = src;
 		this.color = color;
 		location = target;
 		offsetX = dx;
@@ -49,6 +63,7 @@ public class CrystalTarget {
 		tag.setDouble("dz", offsetZ);
 		tag.setDouble("width", endWidth);
 		location.writeToNBT("loc", tag);
+		source.writeToNBT("src", tag);
 		NBT.setTag(name, tag);
 	}
 
@@ -59,12 +74,13 @@ public class CrystalTarget {
 		if (tag == null)
 			return null;
 		WorldLocation loc = WorldLocation.readFromNBT("loc", tag);
+		WorldLocation src = WorldLocation.readFromNBT("src", tag);
 		CrystalElement e = CrystalElement.elements[tag.getInteger("color")];
 		double dx = tag.getDouble("dx");
 		double dy = tag.getDouble("dy");
 		double dz = tag.getDouble("dz");
 		double w = tag.getDouble("width");
-		return loc != null && e != null ? new CrystalTarget(loc, e, dx, dy, dz, w) : null;
+		return loc != null && src != null && e != null ? new CrystalTarget(src, loc, e, dx, dy, dz, w) : null;
 	}
 
 	@Override
@@ -91,13 +107,13 @@ public class CrystalTarget {
 		private final int lifespan;
 		private int tick;
 
-		public TickingCrystalTarget(WorldLocation target, CrystalElement color, double w, int l) {
-			super(target, color, w);
+		public TickingCrystalTarget(CrystalNetworkTile src, WorldLocation target, CrystalElement color, double w, int l) {
+			super(src, target, color, w);
 			lifespan = l;
 		}
 
-		public TickingCrystalTarget(WorldLocation target, CrystalElement color, double dx, double dy, double dz, double w, int l) {
-			super(target, color, dx, dy, dz, w);
+		public TickingCrystalTarget(CrystalNetworkTile src, WorldLocation target, CrystalElement color, double dx, double dy, double dz, double w, int l) {
+			super(src, target, color, dx, dy, dz, w);
 			lifespan = l;
 		}
 

@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeTypes;
 import Reika.ChromatiCraft.ModInterface.ItemColoredModInteract;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
@@ -132,7 +133,7 @@ public class ItemCrystalCell extends ItemChromaTool implements SpriteRenderCallb
 
 	@Override
 	public double getIdleDrain() {
-		return 2.5;
+		return 2;
 	}
 
 	@Override
@@ -187,6 +188,8 @@ public class ItemCrystalCell extends ItemChromaTool implements SpriteRenderCallb
 	public static boolean isItemValid(ItemStack cell, ItemStack is) {
 		if (ModList.APPENG.isLoaded()) {
 			ItemStack in = getStoredItemType(cell);
+			if (ChromaItems.PLACER.matchWith(is) && is.getItemDamage() == ChromaTiles.DIMENSIONCORE.ordinal())
+				return ReikaItemHelper.matchStacks(is, in);
 			return in != null ? (in.getItem() == is.getItem() && in.getItemDamage()/16 == is.getItemDamage()/16) : isTypeStorable(is);
 		}
 		else {
@@ -198,6 +201,8 @@ public class ItemCrystalCell extends ItemChromaTool implements SpriteRenderCallb
 		if (is.getItem() instanceof ItemCrystalBasic || is.getItem() instanceof ItemBlockCrystalColors || is.getItem() instanceof ItemBlockCrystal)
 			return true;
 		if (is.getItem() instanceof CrystalTypesProxy && ((CrystalTypesProxy)is.getItem()).isCrystalType(is))
+			return true;
+		if (ChromaItems.PLACER.matchWith(is) && is.getItemDamage() == ChromaTiles.DIMENSIONCORE.ordinal())
 			return true;
 		return is.getItem() instanceof ItemBlockDyeTypes || is.getItem() instanceof ItemColoredModInteract;
 	}

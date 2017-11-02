@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.Co
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.LaserEffectType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Base.ParticleEntity;
@@ -90,7 +91,10 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 
 	@SideOnly(Side.CLIENT)
 	private void spawnParticle() {
+		Minecraft mc = Minecraft.getMinecraft();
 		int l = 10+rand.nextInt(15);
+		if (rand.nextInt(ChromaItems.TOOL.matchWith(mc.thePlayer.getCurrentEquippedItem()) ? 3 : 12) == 0)
+			l *= 16;
 		double[] r = {0.1875, 0.125, 0.0625};
 		for (int i = 0; i < r.length; i++) {
 			float s = (1+rand.nextFloat())/(i+1);
@@ -98,7 +102,7 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 			double py = ReikaRandomHelper.getRandomPlusMinus(posY, r[i]);
 			double pz = ReikaRandomHelper.getRandomPlusMinus(posZ, r[i]);
 			EntityFX fx = new EntityBlurFX(worldObj, px, py, pz).setColor(color.getRenderColor()).setIcon(ChromaIcons.FADE_GENTLE).setLife(l).setScale(s);
-			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			mc.effectRenderer.addEffect(fx);
 		}
 	}
 

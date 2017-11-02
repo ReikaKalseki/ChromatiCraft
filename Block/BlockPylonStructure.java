@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Block;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -515,73 +516,73 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 		}
 	}
 
-	public ArrayList<Integer> getEdgesForFace(IBlockAccess world, int x, int y, int z, ForgeDirection face) {
-		ArrayList<Integer> li = new ArrayList();
+	public HashSet<Integer> getEdgesForFace(IBlockAccess world, int x, int y, int z, ForgeDirection face) {
+		HashSet<Integer> li = new HashSet();
 		li.addAll(allDirs);
 		int meta = world.getBlockMetadata(x, y, z);
 
 		if (face.offsetX != 0) { //test YZ
 			//sides; removed if have adjacent on side
 			if (this.connectTo(world, x, y, z+1, meta))
-				li.remove(new Integer(2));
+				li.remove(2);
 			if (this.connectTo(world, x, y, z-1, meta))
-				li.remove(new Integer(8));
+				li.remove(8);
 			if (this.connectTo(world, x, y+1, z, meta))
-				li.remove(new Integer(4));
+				li.remove(4);
 			if (this.connectTo(world, x, y-1, z, meta))
-				li.remove(new Integer(6));
+				li.remove(6);
 
 			//Corners; only removed if have adjacent on side AND corner
 			if (this.connectTo(world, x, y+1, z+1, meta) && !li.contains(4) && !li.contains(2))
-				li.remove(new Integer(1));
+				li.remove(1);
 			if (this.connectTo(world, x, y-1, z-1, meta) && !li.contains(6) && !li.contains(8))
-				li.remove(new Integer(9));
+				li.remove(9);
 			if (this.connectTo(world, x, y+1, z-1, meta) && !li.contains(4) && !li.contains(8))
-				li.remove(new Integer(7));
+				li.remove(7);
 			if (this.connectTo(world, x, y-1, z+1, meta) && !li.contains(2) && !li.contains(6))
-				li.remove(new Integer(3));
+				li.remove(3);
 		}
 		if (face.offsetY != 0) { //test XZ
 			//sides; removed if have adjacent on side
 			if (this.connectTo(world, x, y, z+1, meta))
-				li.remove(new Integer(2));
+				li.remove(2);
 			if (this.connectTo(world, x, y, z-1, meta))
-				li.remove(new Integer(8));
+				li.remove(8);
 			if (this.connectTo(world, x+1, y, z, meta))
-				li.remove(new Integer(4));
+				li.remove(4);
 			if (this.connectTo(world, x-1, y, z, meta))
-				li.remove(new Integer(6));
+				li.remove(6);
 
 			//Corners; only removed if have adjacent on side AND corner
 			if (this.connectTo(world, x+1, y, z+1, meta) && !li.contains(4) && !li.contains(2))
-				li.remove(new Integer(1));
+				li.remove(1);
 			if (this.connectTo(world, x-1, y, z-1, meta) && !li.contains(6) && !li.contains(8))
-				li.remove(new Integer(9));
+				li.remove(9);
 			if (this.connectTo(world, x+1, y, z-1, meta) && !li.contains(4) && !li.contains(8))
-				li.remove(new Integer(7));
+				li.remove(7);
 			if (this.connectTo(world, x-1, y, z+1, meta) && !li.contains(2) && !li.contains(6))
-				li.remove(new Integer(3));
+				li.remove(3);
 		}
 		if (face.offsetZ != 0) { //test XY
 			//sides; removed if have adjacent on side
 			if (this.connectTo(world, x, y+1, z, meta))
-				li.remove(new Integer(4));
+				li.remove(4);
 			if (this.connectTo(world, x, y-1, z, meta))
-				li.remove(new Integer(6));
+				li.remove(6);
 			if (this.connectTo(world, x+1, y, z, meta))
-				li.remove(new Integer(2));
+				li.remove(2);
 			if (this.connectTo(world, x-1, y, z, meta))
-				li.remove(new Integer(8));
+				li.remove(8);
 
 			//Corners; only removed if have adjacent on side AND corner
 			if (this.connectTo(world, x+1, y+1, z, meta) && !li.contains(2) && !li.contains(4))
-				li.remove(new Integer(1));
+				li.remove(1);
 			if (this.connectTo(world, x-1, y-1, z, meta) && !li.contains(8) && !li.contains(6))
-				li.remove(new Integer(9));
+				li.remove(9);
 			if (this.connectTo(world, x+1, y-1, z, meta) && !li.contains(2) && !li.contains(6))
-				li.remove(new Integer(3));
+				li.remove(3);
 			if (this.connectTo(world, x-1, y+1, z, meta) && !li.contains(4) && !li.contains(8))
-				li.remove(new Integer(7));
+				li.remove(7);
 		}
 		return li;
 	}

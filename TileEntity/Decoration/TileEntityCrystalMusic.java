@@ -384,14 +384,14 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 	}
 
 	private void dispatchTrack(MusicScore mus) {
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.MUSICCLEAR.ordinal(), this);
+		ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.MUSICCLEAR.ordinal(), this);
 		for (int i = 0; i < mus.countTracks(); i++) {
 			Map<Integer, Collection<Note>> track = mus.getTrack(i);
 			for (int time : track.keySet()) {
 				Collection<Note> c = track.get(time);
 				for (Note n : c) {
 					if (n != null && n.key != null)
-						ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.FIXEDMUSICNOTE.ordinal(), this, i, n.key.ordinal(), n.length, n.voice == -1 ? 1 : 0, time);
+						ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.FIXEDMUSICNOTE.ordinal(), this, i, n.key.ordinal(), n.length, n.voice == -1 ? 1 : 0, time);
 				}
 			}
 		}

@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -212,9 +213,11 @@ public class CastingRecipe implements APICastingRecipe {
 	}
 
 	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep, int amount) {
-		ChromaResearchManager.instance.givePlayerRecipe(ep, this);
-		te.giveRecipe(ep, this);
-		ep.addExperience(this.getExperience()*amount/4);
+		if (!te.worldObj.isRemote) {
+			ChromaResearchManager.instance.givePlayerRecipe(ep, this);
+			te.giveRecipe(ep, this);
+			ep.addExperience(this.getExperience()*amount/4);
+		}
 	}
 
 	@Override
@@ -282,6 +285,20 @@ public class CastingRecipe implements APICastingRecipe {
 		return flag;
 	}
 
+	public final String getIDString() {
+		String flag = this.getClass().getName();
+		flag = flag + " for " + out.getItem().getClass().getName();
+		flag = flag + " x " + Math.max(out.stackSize, this.getNumberProduced());
+		flag = flag + " @ " + out.getItemDamage();
+		flag = flag + " * " + (out.stackTagCompound != null ? out.stackTagCompound.toString() : 0);
+		flag = flag + " from " + this.getIngredientsID();
+		return flag;
+	}
+
+	protected String getIngredientsID() {
+		return ReikaRecipeHelper.toDeterministicString(recipe);
+	}
+
 	public NBTTagCompound getOutputTag(NBTTagCompound input) {
 		return null;
 	}
@@ -323,6 +340,15 @@ public class CastingRecipe implements APICastingRecipe {
 		if (crafted.getItem() instanceof ItemChromaTool) {
 			((ItemChromaTool)crafted.getItem()).setOwner(crafted, ep);
 		}
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof CastingRecipe && o.getClass() == this.getClass() && this.matchRecipeData((CastingRecipe)o);
+	}
+
+	protected boolean matchRecipeData(CastingRecipe cr) {
+		return recipe.equals(cr.recipe);
 	}
 
 	public static class TempleCastingRecipe extends CastingRecipe implements RuneRecipe {
@@ -466,9 +492,23 @@ public class CastingRecipe implements APICastingRecipe {
 			return new RuneShape(allRunes).getView();
 		}
 
+		@Override
+		protected boolean matchRecipeData(CastingRecipe cr) {
+			return super.matchRecipeData(cr) && runes.equals(((TempleCastingRecipe)cr).runes);
+		}
+
 	}
 
 	public static class MultiBlockCastingRecipe extends TempleCastingRecipe implements MultiRecipe {
+
+		private static final Comparator<List<Integer>> auxItemPosSorter = new Comparator<List<Integer>>() {
+
+			@Override
+			public int compare(List<Integer> o1, List<Integer> o2) {
+				return Integer.compare(o1.get(1), o2.get(1))*10+Integer.compare(o1.get(0), o2.get(0)); //z is more important for display
+			}
+
+		};
 
 		private final HashMap<List<Integer>, ItemMatch> inputs = new HashMap();
 		private final ItemStack main;
@@ -597,6 +637,13 @@ public class CastingRecipe implements APICastingRecipe {
 		}
 
 		@Override
+		protected String getIngredientsID() {
+			TreeMap<List<Integer>, ItemMatch> map = new TreeMap(auxItemPosSorter);
+			map.putAll(inputs);
+			return main+" & "+map;
+		}
+
+		@Override
 		public ItemStack[] getArrayForDisplay() {
 			ItemStack[] iss = new ItemStack[9];
 			iss[4] = main;
@@ -648,6 +695,11 @@ public class CastingRecipe implements APICastingRecipe {
 				}
 			}
 			return c;
+		}
+
+		@Override
+		protected boolean matchRecipeData(CastingRecipe cr) {
+			return ItemStack.areItemStacksEqual(main, ((MultiBlockCastingRecipe)cr).main) && inputs.equals(((MultiBlockCastingRecipe)cr).inputs);
 		}
 	}
 
@@ -710,6 +762,16 @@ public class CastingRecipe implements APICastingRecipe {
 		@Override
 		public boolean canBeStacked() {
 			return false;
+		}
+
+		@Override
+		protected String getIngredientsID() {
+			return super.getIngredientsID()+" % "+elements;
+		}
+
+		@Override
+		protected boolean matchRecipeData(CastingRecipe cr) {
+			return super.matchRecipeData(cr) && elements.equals(((PylonCastingRecipe)cr).elements);
 		}
 	}
 

@@ -9,7 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.ISBRH;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -213,11 +213,11 @@ public class CrystallineStoneRenderer implements ISBRH {
 
 	private void renderConnectedTextures(IBlockAccess world, int x, int y, int z, StoneTypes s, BlockPylonStructure b, int meta, RenderBlocks rb, Tessellator v5) {
 		v5.setColorRGBA_I(0xffffff, 255);
-		ArrayList<Integer> li = b.getEdgesForFace(world, x, y, z, ForgeDirection.UP);
-		this.setFaceBrightness(v5, ForgeDirection.UP);
+		HashSet<Integer> li = null;
 		if (b.shouldSideBeRendered(world, x, y+1, z, ForgeDirection.UP.ordinal())) {
-			for (int i = 0; i < li.size(); i++) {
-				int edge = li.get(i);
+			li = b.getEdgesForFace(world, x, y, z, ForgeDirection.UP);
+			this.setFaceBrightness(v5, ForgeDirection.UP);
+			for (int edge : li) {
 				IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 				float u = ico.getMinU();
 				float du = ico.getMaxU();
@@ -236,11 +236,10 @@ public class CrystallineStoneRenderer implements ISBRH {
 		}
 
 		v5.setBrightness(240);
-		li = b.getEdgesForFace(world, x, y, z, ForgeDirection.DOWN);
-		this.setFaceBrightness(v5, ForgeDirection.DOWN);
 		if (b.shouldSideBeRendered(world, x, y-1, z, ForgeDirection.DOWN.ordinal())) {
-			for (int i = 0; i < li.size(); i++) {
-				int edge = li.get(i);
+			li = b.getEdgesForFace(world, x, y, z, ForgeDirection.DOWN);
+			this.setFaceBrightness(v5, ForgeDirection.DOWN);
+			for (int edge : li) {
 				IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 				float u = ico.getMinU();
 				float du = ico.getMaxU();
@@ -259,11 +258,10 @@ public class CrystallineStoneRenderer implements ISBRH {
 		}
 
 		v5.setBrightness(240);
-		li = b.getEdgesForFace(world, x, y, z, ForgeDirection.EAST);
-		this.setFaceBrightness(v5, ForgeDirection.EAST);
 		if (b.shouldSideBeRendered(world, x+1, y, z, ForgeDirection.EAST.ordinal())) {
-			for (int i = 0; i < li.size(); i++) {
-				int edge = li.get(i);
+			li = b.getEdgesForFace(world, x, y, z, ForgeDirection.EAST);
+			this.setFaceBrightness(v5, ForgeDirection.EAST);
+			for (int edge : li) {
 				IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 				float u = ico.getMinU();
 				float du = ico.getMaxU();
@@ -290,11 +288,10 @@ public class CrystallineStoneRenderer implements ISBRH {
 		}
 
 		v5.setBrightness(240);
-		li = b.getEdgesForFace(world, x, y, z, ForgeDirection.WEST);
-		this.setFaceBrightness(v5, ForgeDirection.WEST);
 		if (b.shouldSideBeRendered(world, x-1, y, z, ForgeDirection.WEST.ordinal())) {
-			for (int i = 0; i < li.size(); i++) {
-				int edge = li.get(i);
+			li = b.getEdgesForFace(world, x, y, z, ForgeDirection.WEST);
+			this.setFaceBrightness(v5, ForgeDirection.WEST);
+			for (int edge : li) {
 				IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 				float u = ico.getMinU();
 				float du = ico.getMaxU();
@@ -321,11 +318,10 @@ public class CrystallineStoneRenderer implements ISBRH {
 		}
 
 		v5.setBrightness(240);
-		li = b.getEdgesForFace(world, x, y, z, ForgeDirection.SOUTH);
-		this.setFaceBrightness(v5, ForgeDirection.SOUTH);
 		if (b.shouldSideBeRendered(world, x, y, z+1, ForgeDirection.SOUTH.ordinal())) {
-			for (int i = 0; i < li.size(); i++) {
-				int edge = li.get(i);
+			li = b.getEdgesForFace(world, x, y, z, ForgeDirection.SOUTH);
+			this.setFaceBrightness(v5, ForgeDirection.SOUTH);
+			for (int edge : li) {
 				IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 				float u = ico.getMinU();
 				float du = ico.getMaxU();
@@ -352,11 +348,10 @@ public class CrystallineStoneRenderer implements ISBRH {
 		}
 
 		v5.setBrightness(240);
-		li = b.getEdgesForFace(world, x, y, z, ForgeDirection.NORTH);
-		this.setFaceBrightness(v5, ForgeDirection.NORTH);
 		if (b.shouldSideBeRendered(world, x, y, z-1, ForgeDirection.NORTH.ordinal())) {
-			for (int i = 0; i < li.size(); i++) {
-				int edge = li.get(i);
+			li = b.getEdgesForFace(world, x, y, z, ForgeDirection.NORTH);
+			this.setFaceBrightness(v5, ForgeDirection.NORTH);
+			for (int edge : li) {
 				IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 				float u = ico.getMinU();
 				float du = ico.getMaxU();

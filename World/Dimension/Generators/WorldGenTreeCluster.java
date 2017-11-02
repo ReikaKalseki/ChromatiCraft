@@ -18,7 +18,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
+import Reika.DragonAPI.Auxiliary.WorldGenInterceptionRegistry;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
+import Reika.DragonAPI.Instantiable.Event.SetBlockEvent;
 import Reika.DragonAPI.Interfaces.Registry.TreeType;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
@@ -116,8 +118,15 @@ public class WorldGenTreeCluster extends ChromaWorldGenerator {
 		}
 
 		public void generate(World world, int x, int y, int z, Random rand) {
+			if (type != ModWoodList.LIGHTED)
+				WorldGenInterceptionRegistry.skipLighting = true;
+			SetBlockEvent.eventEnabledPre = false;
+			SetBlockEvent.eventEnabledPost = false;
 			TreeShape shape = WorldGenTreeCluster.getRandomTreeShape(rand);
 			shape.generate(world, x, y, z, rand, this);
+			WorldGenInterceptionRegistry.skipLighting = false;
+			SetBlockEvent.eventEnabledPre = true;
+			SetBlockEvent.eventEnabledPost = true;
 		}
 
 	}

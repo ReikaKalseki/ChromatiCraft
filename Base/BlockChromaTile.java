@@ -48,6 +48,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaPowered;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.FluidEmitterChromaticBase;
@@ -241,6 +242,9 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 		if (te instanceof AdjacentUpdateWatcher) {
 			((AdjacentUpdateWatcher)te).onAdjacentUpdate(world, x, y, z, b);
 		}
+		if (te instanceof MultiBlockChromaTile) {
+			((MultiBlockChromaTile)te).validateStructure();
+		}
 	}
 
 	@Override
@@ -422,8 +426,8 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 					int rd = e.getRed();
 					int gn = e.getGreen();
 					int bl = e.getBlue();
-					ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), te, rd, gn, bl, 32, 8);
-					//shows -1? ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.NUMBERPARTICLE.ordinal(), te, tw.getSignalDepth(e));
+					ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), te, 64, rd, gn, bl, 32, 8);
+					//shows -1? ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.NUMBERPARTICLE.ordinal(), te, 64, tw.getSignalDepth(e));
 				}
 				else {
 					ChromaSounds.ERROR.playSoundAtBlock(world, x, y, z);

@@ -43,6 +43,7 @@ public enum ChromaIcons {
 	RIFT("rift"),
 	RIFTHALO("rift_halo"),
 	FADE("fade"),
+	FADE_BASICBLEND("fade_basic"),
 	FADE_GENTLE("fade_gentle"),
 	FADE_STAR("fade_star"),
 	FADE_RAY("fade_ray"),
@@ -192,6 +193,7 @@ public enum ChromaIcons {
 	public boolean isTransparent() {
 		switch(this) {
 			case BASICFADE:
+			case FADE_BASICBLEND:
 			case BASICFADE_FAST:
 			case FRAME:
 			case BATTERY:

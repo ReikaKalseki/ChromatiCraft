@@ -16,6 +16,7 @@ import java.util.Random;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
@@ -28,6 +29,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LightedTreeBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Render.LightedTreeIconControl;
 import Reika.ChromatiCraft.Render.ISBRH.GlowTreeRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
@@ -37,7 +39,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBlock {
 
-	private final IIcon[] overlay = new IIcon[5];
+	private final IIcon[] overlay = new IIcon[16];
 	private static final Random rand = new Random();
 
 	public BlockLightedLeaf() {
@@ -47,8 +49,8 @@ public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBloc
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void getSubBlocks(Item item, CreativeTabs cr, List li) {
-		for (int i = 0; i < overlay.length; i++)
-			li.add(new ItemStack(this, 1, i));
+		//for (int i = 0; i < overlay.length; i++)
+		li.add(new ItemStack(this, 1, /*i*/0));
 	}
 
 	@Override
@@ -65,7 +67,7 @@ public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBloc
 
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase e, ItemStack is) {
-		world.setBlockMetadataWithNotify(x, y, z, rand.nextInt(overlay.length), 2);
+		world.setBlockMetadataWithNotify(x, y, z, rand.nextInt(16), 2);
 	}
 
 	@Override
@@ -101,13 +103,13 @@ public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBloc
 
 	@Override
 	protected void onRandomUpdate(World world, int x, int y, int z, Random r) {
-		world.setBlockMetadataWithNotify(x, y, z, rand.nextInt(overlay.length), 2);
-		world.scheduleBlockUpdate(x, y, z, this, 200+rand.nextInt(1000));
+		world.setBlockMetadataWithNotify(x, y, z, rand.nextInt(16), 2);
+		world.scheduleBlockUpdate(x, y, z, this, 5000+rand.nextInt(100000));
 	}
 
 	@Override
 	public boolean shouldRandomTick() {
-		return true;
+		return false;
 	}
 
 	@Override
@@ -136,10 +138,26 @@ public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBloc
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister ico) {
 		blockIcon = Blocks.leaves.getIcon(0, 0);
 		for (int i = 0; i < overlay.length; i++) {
-			overlay[i] = ico.registerIcon("chromaticraft:dimgen/glowleaf-light_"+i);
+			String s = "chromaticraft:dimgen/glowleaf/"+i;
+			TextureAtlasSprite icon = (TextureAtlasSprite)ico.registerIcon(s);
+			//setAnimationData(icon);
+			overlay[i] = icon;//new DynamicIcon(s, (TextureMap)ico, icon);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void setAnimationData(TextureAtlasSprite icon) {
+		if (icon.animationMetadata == null) {
+			ChromatiCraft.logger.logError("Animation "+icon.getIconName()+" has no data?!");
+		}
+		else {
+			String s = icon.getIconName();
+			int idx = Integer.parseInt(s.substring(s.lastIndexOf('/')+1));
+			icon.animationMetadata = new LightedTreeIconControl(idx, icon.animationMetadata);
 		}
 	}
 

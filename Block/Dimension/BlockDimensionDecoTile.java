@@ -19,6 +19,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -115,6 +116,16 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 		this.setResistance(50000);
 		//this.setBlockUnbreakable();
 		this.setHardness(10);
+	}
+
+	@Override
+	public boolean isMineable(int meta) {
+		return DimDecoTileTypes.list[meta].isMineable();
+	}
+
+	@Override
+	public Item getItemDropped(int meta, Random r, int fortune) {
+		return Item.getItemFromBlock(this);
 	}
 
 	@Override

@@ -296,10 +296,12 @@ public final class PylonGenerator implements RetroactiveGenerator {
 		double dist = Double.POSITIVE_INFINITY;
 		PylonEntry close = null;
 		for (PylonEntry loc : c) {
-			double d = loc.location.dimensionID == world.provider.dimensionId ? loc.location.getDistanceTo(x, y, z) : Double.POSITIVE_INFINITY;
-			if (d < dist) {
-				dist = d;
-				close = loc;
+			if (loc.location.dimensionID == world.provider.dimensionId) {
+				double d = loc.location.getDistanceTo(x, y, z);
+				if (d < dist) {
+					dist = d;
+					close = loc;
+				}
 			}
 		}
 		return close;

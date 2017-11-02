@@ -95,7 +95,8 @@ public class OuterRegionsEvents {
 
 	private float getRejectAttackDamage(EntityDimensionFlare e, EntityPlayer ep) {
 		float base = Math.max(3, ep.getHealth()/2F);
-		base *= 1+e.getAttackTicks(ep)/200F;
+		int tick = e.getAttackTicks(ep);
+		base *= 1+tick/200F;
 		PotionEffect eff1 = ep.getActivePotionEffect(Potion.regeneration);
 		PotionEffect eff2 = ep.getActivePotionEffect(ChromatiCraft.betterRegen);
 		int r1 = eff1 != null ? eff1.getAmplifier() : -1;
@@ -104,7 +105,7 @@ public class OuterRegionsEvents {
 		if (rl > -1) {
 			base *= 2*(1+rl/2F);
 		}
-		return base;
+		return tick < 200 ? Math.min(ep.getHealth()-1, base) : base;
 	}
 
 	@SideOnly(Side.CLIENT)

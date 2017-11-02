@@ -209,8 +209,8 @@ public class TileEntityChromaCrafter extends InventoriedRelayPowered implements 
 		ItemStack out = recipe.getOutput();
 		if (recipe.allowDoubling() && hasEtherBerries >= TileEntityChroma.ETHER_SATURATION) {
 			out.stackSize *= 2;
+			hasEtherBerries -= TileEntityChroma.ETHER_SATURATION;
 		}
-		hasEtherBerries -= TileEntityChroma.ETHER_SATURATION;
 		//recipeItems.clear();
 		//hasEtherBerries = false;
 		ReikaInventoryHelper.addOrSetStack(out, inv, 1);

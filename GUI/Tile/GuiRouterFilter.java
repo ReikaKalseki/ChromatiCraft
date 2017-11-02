@@ -65,7 +65,7 @@ public class GuiRouterFilter extends GuiContainer {
 
 		if (b.id == 0) {
 			blacklist = !blacklist;
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ROUTERFILTERFLAG.ordinal(), (TileEntity)tile, blacklist ? 1 : 0);
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.ROUTERFILTERFLAG.ordinal(), (TileEntity)tile, blacklist ? 1 : 0);
 			((TileEntityRouterNode)tile).isBlacklist = blacklist;
 		}
 	}
