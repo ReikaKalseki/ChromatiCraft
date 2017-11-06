@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Items;
+package Reika.ChromatiCraft.Items.ItemBlock;
 
 import java.util.List;
 
@@ -15,7 +15,6 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockSidePlaced;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 
 

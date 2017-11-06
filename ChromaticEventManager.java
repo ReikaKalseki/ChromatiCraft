@@ -258,11 +258,11 @@ public class ChromaticEventManager {
 				IAlvearyComponent iae = (IAlvearyComponent)te;
 				TileEntityLumenAlveary te2 = ChromaBeeHelpers.getLumenAlvearyController(iae.getMultiblockLogic().getController(), evt.world, iae.getCoordinates());
 				if (te2 != null) {
-					te2.syncAllData(true);
 					EfficientFlowerCache eff = te2.getFlowerCache();
 					if (eff != null) {
 						eff.forceUpdate(te2);
 					}
+					te2.syncAllData(true);
 				}
 			}
 		}

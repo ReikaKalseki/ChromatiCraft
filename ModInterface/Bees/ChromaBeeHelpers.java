@@ -30,6 +30,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.GUI.StatusLogger;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 
@@ -51,6 +52,15 @@ public class ChromaBeeHelpers {
 	private static HashMap<ChunkCoordinates, CachedTerritory> territoryCache = new HashMap();
 
 	static List<WeakReference<EntityLivingBase>> getEntityList(AxisAlignedBB box, long time, World world, ChunkCoordinates c, Class ce, IEntitySelector s) {
+		if (EntityPlayer.class.isAssignableFrom(ce) || s == ReikaEntityHelper.playerSelector) {
+			List<WeakReference<EntityLivingBase>> li = new ArrayList();
+			for (EntityPlayer ep : ((List<EntityPlayer>)world.playerEntities)) {
+				if (ep.boundingBox.intersectsWith(box))
+					li.add(new WeakReference(ep));
+			}
+			return li;
+		}
+
 		SelectionKey sk = new SelectionKey(world, c, ce, s);
 		EntitySelection e = entityLists.get(sk);
 		if (e == null || e.age > 5) {

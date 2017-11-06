@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.TileEntity;
 
 import java.util.HashSet;
+import java.util.Iterator;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -27,6 +28,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Block.Decoration.BlockMetaAlloyLamp;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -38,6 +40,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -121,6 +124,9 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 		if (world.isRemote) {
 			this.doParticles(world, x, y, z);
 		}
+		else {
+			tower.generatedAt(x, y, z);
+		}
 
 		if (scanSustain > 0) {
 			scanSustain--;
@@ -146,8 +152,18 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 			}
 		}
 
-		if (tower != null && rand.nextInt(800) == 0 && metaAlloyPlants.size() < 4) {
-			this.spawnMetaAlloy(world, x, y, z);
+		if (tower != null && !world.isRemote && rand.nextInt(800) == 0) {
+			if (metaAlloyPlants.size() < 4) {
+				this.spawnMetaAlloy(world, x, y, z);
+			}
+			else { //verify all flowers
+				Iterator<Coordinate> it = metaAlloyPlants.iterator();
+				while (it.hasNext()) {
+					Coordinate c = it.next();
+					if (c.getBlock(world) != ChromaBlocks.METAALLOYLAMP.getBlockInstance())
+						it.remove();
+				}
+			}
 		}
 	}
 
@@ -190,10 +206,8 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 				else {
 					Towers t1 = tower.getNeighbor1();
 					Towers t2 = tower.getNeighbor2();
-					if (t1 == null || t1.getRootPosition() == null) { //init
-						LoreManager.instance.initTowers(world);
-						t1 = tower.getNeighbor1();
-						t2 = tower.getNeighbor2();
+					if (t1 == null || t1.getRootPosition() == null) { //sync not yet received
+						return;
 					}
 					double px = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 1);
 					double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 1);
@@ -422,16 +436,20 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 	}
 
 	public static void removeMetaAlloy(World world, int x, int y, int z) {
+		LoreManager.instance.initTowers(world);
 		Coordinate c = new Coordinate(x, y, z);
 		for (int i = 0; i < Towers.towerList.length; i++) {
 			Towers t = Towers.towerList[i];
 			Coordinate loc = t.getGeneratedLocation();
 			if (loc != null) {
-				loc = loc.offset(0, 1, 0);
 				TileEntity te = loc.getTileEntity(world);
 				if (te instanceof TileEntityDataNode) {
-					if (((TileEntityDataNode)te).metaAlloyPlants.remove(c))
+					if (((TileEntityDataNode)te).metaAlloyPlants.remove(c)) {
 						((TileEntityDataNode)te).syncAllData(true);
+						if (ModList.FORESTRY.isLoaded()) {
+							BlockMetaAlloyLamp.doBeeDrops(world, x, y, z);
+						}
+					}
 				}
 			}
 		}

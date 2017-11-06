@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler.PlayerTracker;
 
@@ -27,6 +28,7 @@ public class PylonCacheLoader implements PlayerTracker {
 	public void onPlayerLogin(EntityPlayer ep) {
 		if (ep instanceof EntityPlayerMP) {
 			PylonGenerator.instance.sendDimensionCacheToPlayer((EntityPlayerMP)ep, ep.worldObj.provider.dimensionId);
+			LoreManager.instance.sendTowersToClient((EntityPlayerMP)ep);
 		}
 	}
 

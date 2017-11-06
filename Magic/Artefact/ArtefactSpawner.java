@@ -47,6 +47,7 @@ public class ArtefactSpawner implements TickHandler {
 	private static final int DESPAWN_DISTANCE = 64;
 
 	private static final int SPAWN_LIMIT = 3;
+	private static final int FORCED_SPAWN_LIMIT = 20;
 
 	private static final Random rand = new Random();
 
@@ -70,13 +71,7 @@ public class ArtefactSpawner implements TickHandler {
 			double a = Math.toRadians(rand.nextDouble()*360);
 			double dx = ep.posX+SPAWN_DISTANCE*Math.cos(a);
 			double dz = ep.posZ+SPAWN_DISTANCE*Math.sin(a);
-			int x = MathHelper.floor_double(dx);
-			int z = MathHelper.floor_double(dz);
-			int y = ep.worldObj.getTopSolidOrLiquidBlock(x, z)-1;
-			if (UnknownArtefactGenerator.canGenerateArtefactAt(ep.worldObj, x, y, z)) {
-				double dy = y-0.5;
-				artefacts.add(new SpawnedArtefact(dx, dy, dz, ep));
-			}
+			this.addArtefact(dx, dz, ep, Integer.MAX_VALUE);
 		}
 		if (!artefacts.isEmpty()) {
 			Iterator<SpawnedArtefact> it = artefacts.iterator();
@@ -84,6 +79,18 @@ public class ArtefactSpawner implements TickHandler {
 				SpawnedArtefact a = it.next();
 				if (a.tick(ep))
 					it.remove();
+			}
+		}
+	}
+
+	public void addArtefact(double dx, double dz, EntityPlayer ep, int life) {
+		if (artefacts.size() < FORCED_SPAWN_LIMIT) {
+			int x = MathHelper.floor_double(dx);
+			int z = MathHelper.floor_double(dz);
+			int y = ep.worldObj.getTopSolidOrLiquidBlock(x, z)-1;
+			if (UnknownArtefactGenerator.canGenerateArtefactAt(ep.worldObj, x, y, z)) {
+				double dy = y-0.5;
+				artefacts.add(new SpawnedArtefact(dx, dy, dz, ep, life));
 			}
 		}
 	}
@@ -160,15 +167,24 @@ public class ArtefactSpawner implements TickHandler {
 
 		private final DecimalPosition position;
 		private final UUID spawnedByPlayer;
+		private final int maxLife;
+
+		private int age;
 
 		private SpawnedArtefact(double x, double y, double z, EntityPlayer ep) {
+			this(x, y, z, ep, Integer.MAX_VALUE);
+		}
+
+		private SpawnedArtefact(double x, double y, double z, EntityPlayer ep, int l) {
 			position = new DecimalPosition(x, y, z);
 			spawnedByPlayer = ep.getUniqueID();
+			maxLife = l;
 		}
 
 		private boolean tick(EntityPlayerMP ep) {
 			ReikaPacketHelper.sendPositionPacket(ChromatiCraft.packetChannel, ChromaPackets.UAFX.ordinal(), ep.worldObj, position.xCoord, position.yCoord, position.zCoord, new PacketTarget.PlayerTarget(ep));
-			return ep.getUniqueID().equals(spawnedByPlayer) && ep.getDistanceSq(position.xCoord, position.yCoord, position.zCoord) >= DESPAWN_DISTANCE*DESPAWN_DISTANCE;
+			age++;
+			return age >= maxLife || ep.getUniqueID().equals(spawnedByPlayer) && ep.getDistanceSq(position.xCoord, position.yCoord, position.zCoord) >= DESPAWN_DISTANCE*DESPAWN_DISTANCE;
 		}
 
 	}

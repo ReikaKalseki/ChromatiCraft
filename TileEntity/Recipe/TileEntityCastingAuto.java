@@ -23,6 +23,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.OreDictionary;
@@ -31,6 +32,7 @@ import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
@@ -52,6 +54,7 @@ import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Collections.ItemCollection;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.ModInteract.BasicAEInterface;
 import Reika.DragonAPI.Instantiable.Recipe.ItemMatch;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
@@ -327,7 +330,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 								}
 							}
 							else {
-								ItemStack ret = this.findItem(item, amt);
+								ItemStack ret = this.findItem(item, amt, false);
 								//ReikaJavaLibrary.pConsole("Looking for "+item+", got "+ret);
 								if (ret != null) {
 									stand.setInventorySlotContents(0, ret);
@@ -356,7 +359,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 							}
 						}
 						else {
-							ItemStack ret = this.findItem(ctr, amt);
+							ItemStack ret = this.findItem(ctr, amt, false);
 							//ReikaJavaLibrary.pConsole("Looking for center item "+ctr+", got "+ret);
 							if (ret != null) {
 								te.setInventorySlotContents(i, ret);
@@ -389,7 +392,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 							}
 						}
 						else {
-							ItemStack ret = this.findItem(item, amt);
+							ItemStack ret = this.findItem(item, amt, false);
 							//ReikaJavaLibrary.pConsole("Looking for "+item+", got "+ret);
 							if (ret != null) {
 								te.setInventorySlotContents(i, ret);
@@ -415,7 +418,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 		return false;
 	}
 
-	private ItemStack findItem(Object item, int amt) {
+	private ItemStack findItem(Object item, int amt, boolean simulate) {
 		List<ItemStack> li = new ArrayList();
 		if (item instanceof ItemStack)
 			li.add((ItemStack)item);
@@ -440,7 +443,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 		for (ItemStack is : li) {
 			if (ModList.APPENG.isLoaded()) {
 				if (is.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
-					ExtractedItem rem = network.removeItemFuzzy(ReikaItemHelper.getSizedItemStack(is, amt), false, FuzzyMode.IGNORE_ALL, false, is.stackTagCompound != null);
+					ExtractedItem rem = network.removeItemFuzzy(ReikaItemHelper.getSizedItemStack(is, amt), simulate, FuzzyMode.IGNORE_ALL, false, is.stackTagCompound != null);
 					if (rem != null) {
 						ItemStack ret = ReikaItemHelper.getSizedItemStack(rem.getItem(), (int)rem.amount);
 						ret.setItemDamage(0);
@@ -451,7 +454,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 					}
 				}
 				else {
-					int rem = (int)network.removeItem(ReikaItemHelper.getSizedItemStack(is, amt), false, is.stackTagCompound != null);
+					int rem = (int)network.removeItem(ReikaItemHelper.getSizedItemStack(is, amt), simulate, is.stackTagCompound != null);
 					if (rem > 0) {
 						return ReikaItemHelper.getSizedItemStack(is, rem);
 					}
@@ -464,7 +467,8 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 			int has = ingredients.getItemCount(is);
 			if (has > 0) {
 				int rem = Math.min(amt, has);
-				ingredients.removeXItems(is, rem);
+				if (!simulate)
+					ingredients.removeXItems(is, rem);
 				return ReikaItemHelper.getSizedItemStack(is, rem);
 			}
 		}
@@ -491,17 +495,131 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 
 	@Override
 	public void onPathBroken(CrystalFlow p, FlowFail f) {
-		this.setRecipe(null, 0);
+		//this.cancelCrafting();
 	}
 
-	public void setRecipe(CastingRecipe c, int amt) {
+	public void setRecipe(CastingRecipe c, int amt, boolean recurse) {
 		//ReikaJavaLibrary.pConsole(amt+" x "+c);
+		if (recurse && false) {
+			HashMap<CastingRecipe, Integer> li = this.determineMissingRecipes(this.getTable(worldObj, xCoord, yCoord, zCoord), c, amt);
+		}
 		recipe = c;
 		recipesToGo = amt;
 	}
 
+	private HashMap<CastingRecipe, Integer> determineMissingRecipes(TileEntityCastingTable te, CastingRecipe recipe, int amt) {
+		ItemHashMap<Integer> missing = new ItemHashMap();
+		HashMap<CastingRecipe, Integer> li = new HashMap();
+		if (recipe instanceof MultiBlockCastingRecipe) {
+			MultiBlockCastingRecipe mr = (MultiBlockCastingRecipe)recipe;
+			HashMap<List<Integer>, TileEntityItemStand> map = te.getOtherStands();
+			Map<List<Integer>, ItemMatch> items = mr.getAuxItems();
+			//ReikaJavaLibrary.pConsole("Need items "+items);
+			for (List<Integer> key : map.keySet()) {
+				ItemMatch item = items.get(key);
+				TileEntityItemStand stand = map.get(key);
+				if (stand != null) {
+					ItemStack in = stand.getStackInSlot(0);
+					if ((item == null && in != null) || (item != null && !item.match(in))) {
+						if (in != null) {
+
+						}
+						else {
+							ItemStack ret = this.findItem(item, amt, true);
+							//ReikaJavaLibrary.pConsole("Looking for "+item+", got "+ret);
+							if (ret == null || ret.stackSize < amt) {
+								if (item.getItemList().size() == 1)
+									missing.add(item.getItemList().iterator().next().getItemStack(), ret != null ? amt-ret.stackSize : amt);
+								else
+									return null;
+							}
+						}
+					}
+					else {
+						//matches
+					}
+				}
+			}
+			ItemStack ctr = mr.getMainInput();
+			for (int i = 0; i < 9; i++) {
+				ItemStack in = te.getStackInSlot(i);
+				if (i == 4) {
+					if (in != null) {
+						if (ReikaItemHelper.matchStacks(in, ctr) && (ctr.stackTagCompound == null || ItemStack.areItemStackTagsEqual(in, ctr))) {
+							//matches
+						}
+						else {
+
+						}
+					}
+					else {
+						ItemStack ret = this.findItem(ctr, amt, true);
+						//ReikaJavaLibrary.pConsole("Looking for center item "+ctr+", got "+ret);
+						if (ret == null || ret.stackSize < amt) {
+							missing.add(ctr, ret != null ? amt-ret.stackSize : amt);
+						}
+					}
+				}
+				else {
+
+				}
+			}
+		}
+		else {
+			Object[] arr = recipe.getInputArray();
+			//ReikaJavaLibrary.pConsole("Looking for "+Arrays.toString(arr));
+			for (int i = 0; i < 9; i++) {
+				Object item = arr[i];
+				ItemStack in = te.getStackInSlot(i);
+				if (this.matches(item, in)) {
+					//match
+				}
+				else {
+					if (in != null) {
+
+					}
+					else {
+						ItemStack ret = this.findItem(item, amt, true);
+						//ReikaJavaLibrary.pConsole("Looking for "+item+", got "+ret);
+						if (ret == null || ret.stackSize < amt) {
+							if (item instanceof ItemStack)
+								missing.add((ItemStack)item, ret != null ? amt-ret.stackSize : amt);
+							else
+								return null;
+						}
+					}
+				}
+			}
+		}
+
+		ItemHashMap<Integer> moreMissing = new ItemHashMap();
+
+		while (!missing.isEmpty()) {
+			for (ItemStack is : missing.keySet()) {
+				int req = missing.get(is);
+				ArrayList<CastingRecipe> li2 = RecipesCastingTable.instance.getAllRecipesMaking(is);
+				if (li2.size() != 1)
+					return null;
+				CastingRecipe c = li2.get(0);
+				for (ItemStack is2 : c.getAllInputs()) {
+					if (missing.containsKey(is2)) {
+						moreMissing.add(is2, 1);
+					}
+				}
+				int num = MathHelper.ceiling_float_int((float)req/c.getOutput().stackSize);
+				Integer get = li.get(c);
+				int has = get != null ? get.intValue() : 0;
+				li.put(c, has+num);
+			}
+
+			missing = moreMissing;
+		}
+
+		return li;
+	}
+
 	public void cancelCrafting() {
-		this.setRecipe(null, 0);
+		this.setRecipe(null, 0, false);
 	}
 
 	@Override

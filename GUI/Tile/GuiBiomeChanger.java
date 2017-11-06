@@ -37,7 +37,6 @@ import Reika.DragonAPI.Instantiable.GUI.GuiPainter.Brush;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter.PaintElement;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 
@@ -180,7 +179,14 @@ public class GuiBiomeChanger extends GuiChromaBase {
 		super.mouseClicked(x, y, b);
 		if (page == GuiPages.BIOME) {
 			search.mouseClicked(x, y, b);
-			ReikaJavaLibrary.pConsole(x+":"+y);
+			//ReikaJavaLibrary.pConsole(x+":"+y);
+
+			for (Object o : buttonList) {
+				GuiButton gb = (GuiButton)o;
+				if (x >= gb.xPosition && y >= gb.yPosition && x < gb.xPosition+gb.width && y < gb.yPosition+gb.height) {
+					return;
+				}
+			}
 
 			//if (y < 190) {
 			int j = (width - xSize) / 2;
@@ -190,6 +196,7 @@ public class GuiBiomeChanger extends GuiChromaBase {
 				//Minecraft.getMinecraft().thePlayer.playSound("random.click", 2, 1);
 				ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
 			painter.activeElement = erase ? fallback : biome != null ? biomeEntries.get(biome) : null;
+			//ReikaJavaLibrary.pConsole(biome+" > "+painter.activeElement);
 			//}
 		}
 	}

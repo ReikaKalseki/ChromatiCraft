@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Render;
 import java.util.ArrayList;
 import java.util.Random;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 
@@ -21,6 +22,7 @@ import Reika.ChromatiCraft.Magic.Lore.LoreScriptRenderer;
 import Reika.ChromatiCraft.Magic.Lore.LoreScripts;
 import Reika.ChromatiCraft.Magic.Lore.LoreScripts.LoreLine;
 import Reika.ChromatiCraft.Magic.Lore.LoreScripts.LorePanel;
+import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
 import Reika.ChromatiCraft.TileEntity.TileEntityDataNode;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
@@ -103,7 +105,70 @@ public class InWorldScriptRenderer {
 		GL11.glPopMatrix();
 	}
 
-	public static void renderTowerScript(TileEntityDataNode te, float par8, Tessellator v5, double sc) {
+	public static void renderAlvearyScript(TileEntityLumenAlveary te, float par8, Tessellator v5, double sc, double maxDSq) {
+		int c1 = 0xFFFFFF;
+		int c2 = 0x73DCFF;
+
+		//GL11.glDisable(GL11.GL_DEPTH_TEST);
+		GL11.glTranslated(1.5, 2.5, 1.5);
+
+		seedRandom(te);
+
+		GL11.glPushMatrix();
+		GL11.glTranslated(-0.5, -0.5, -0.5);
+		GL11.glTranslated(0, 0-0.225, 0);
+
+		GL11.glPushMatrix();
+		ArrayList<LorePanel> li = LoreScripts.ScriptLocations.ALVEARY.getUniqueRandomPanels(rand, 4);
+
+		double d = Minecraft.getMinecraft().thePlayer.getDistanceSq(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
+		double da = 1;
+		if (d >= maxDSq*0.5) {
+			da = 2*(1-d/maxDSq);
+		}
+
+		for (int r = 0; r < 4; r++) {
+			GL11.glPushMatrix();
+			GL11.glRotated(90*r, 0, 1, 0);
+			GL11.glTranslated(0, 0, 2+0.005);
+			switch(r) {
+				case 1:
+					GL11.glTranslated(-1, 0, 0);
+					break;
+				case 2:
+					GL11.glTranslated(-1, 0, -1);
+					break;
+				case 3:
+					GL11.glTranslated(0, 0, -1);
+					break;
+			}
+			GL11.glTranslated(0.25, 0, 0);
+			GL11.glScaled(sc, sc, sc);
+			int i = 0;
+			LorePanel p = li.get(r);
+			int w = 4*p.size.maxLength*2;
+			double x = 4*(p.size.maxLength+1.5)-4;
+			for (int k = 0; k < p.lineCount; k++) {
+				LoreLine l = p.getLine(k);
+				double tick = -i+0.125*(te.getTicksExisted()+par8);
+				float f1 = (float)(0.5+0.5*Math.sin(tick));
+				float f2 = (float)Math.min(1, (0.75+0.25*Math.sin(tick*0.25-4.7)+0.03125*Math.sin(tick*5-1)));
+				f2 *= da;
+				int c = ReikaColorAPI.mixColors(c1, c2, f1);
+				c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, f2);
+				LoreScriptRenderer.instance.startRendering(true, c);
+				LoreScriptRenderer.instance.renderLine(l.text, x, i, w, true);
+				LoreScriptRenderer.instance.stopRendering();
+				i -= 11;
+			}
+			GL11.glPopMatrix();
+		}
+		GL11.glPopMatrix();
+
+		GL11.glPopMatrix();
+	}
+
+	public static void renderTowerScript(TileEntityDataNode te, float par8, Tessellator v5, double sc, double maxDSq) {
 		int c1 = 0xFFFFFF;
 		int c2 = 0x73DCFF;
 
@@ -117,6 +182,12 @@ public class InWorldScriptRenderer {
 
 		GL11.glPushMatrix();
 		ArrayList<LorePanel> li = LoreScripts.ScriptLocations.TOWER.getUniqueRandomPanels(rand, 4);
+
+		double d = Minecraft.getMinecraft().thePlayer.getDistanceSq(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
+		double da = 1;
+		if (d >= maxDSq*0.5) {
+			da = 2*(1-d/maxDSq);
+		}
 
 		for (int r = 0; r < 4; r++) {
 			GL11.glPushMatrix();
@@ -144,6 +215,7 @@ public class InWorldScriptRenderer {
 				double tick = -i+0.125*(te.getTicksExisted()+par8);
 				float f1 = (float)(0.5+0.5*Math.sin(tick));
 				float f2 = (float)Math.min(1, (0.75+0.25*Math.sin(tick*0.25-4.7)+0.03125*Math.sin(tick*5-1)));
+				f2 *= da;
 				int c = ReikaColorAPI.mixColors(c1, c2, f1);
 				c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, f2);
 				LoreScriptRenderer.instance.startRendering(true, c);

@@ -150,9 +150,11 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 			this.checkAndRequest();
 		}
 
-		if (this.hasStructure() && world.isRemote) {
+		if (world.isRemote) {
 			particles.update();
-			this.doParticles(world, x, y, z);
+			if (this.hasStructure()) {
+				this.doParticles(world, x, y, z);
+			}
 		}
 
 		if (activationTick > 0) {
@@ -416,6 +418,8 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 
 	public void validateStructure() {
 		hasStructure = !worldObj.isRemote && ChromaStructures.getGateStructure(worldObj, xCoord, yCoord, zCoord).matchInWorld();
+		if (!hasStructure)
+			ChunkManager.instance.unloadChunks(this);
 	}
 
 	private static boolean canTeleport(WorldLocation loc1, WorldLocation loc2, EntityPlayer caller) {

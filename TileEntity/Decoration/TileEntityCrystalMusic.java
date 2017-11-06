@@ -123,6 +123,10 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 		track.clearChannel(channel);
 	}
 
+	public void backspace(int channel) {
+		track.backspace(channel);
+	}
+
 	public void clearMusic() {
 		track = new MusicScore(16);
 		isPlaying = false;

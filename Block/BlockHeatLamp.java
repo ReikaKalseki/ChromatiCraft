@@ -9,13 +9,16 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -23,6 +26,8 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -47,21 +52,41 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockHeatLamp extends BlockAttachableMini {
 
+	private IIcon coldIcon;
+
 	public BlockHeatLamp(Material mat) {
 		super(mat);
 	}
 
 	@Override
+	public void getSubBlocks(Item item, CreativeTabs c, List li) {
+		li.add(ChromaBlocks.HEATLAMP.getStackOfMetadata(0));
+		li.add(ChromaBlocks.HEATLAMP.getStackOfMetadata(8));
+	}
+
+	@Override
 	public void registerBlockIcons(IIconRegister ico) {
 		blockIcon = ((BlockTieredOre)ChromaBlocks.TIEREDORE.getBlockInstance()).getGeodeIcon(6);
+		coldIcon = ((BlockTieredOre)ChromaBlocks.TIEREDORE.getBlockInstance()).getGeodeIcon(7);
+	}
+
+	@Override
+	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int s) {
+		return isCold(iba, x, y, z) ? coldIcon : super.getIcon(iba, x, y, z, s);
+	}
+
+	@Override
+	public IIcon getIcon(int s, int meta) {
+		return meta >= 8 ? coldIcon : blockIcon;
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	protected void createFX(World world, double dx, double dy, double dz, Random r) {
-		EntityFX fx = new EntityCenterBlurFX(CrystalElement.ORANGE, world, dx, dy, dz, 0, 0, 0).setScale(2+r.nextFloat()*2);
+	protected void createFX(World world, int x, int y, int z, double dx, double dy, double dz, Random r) {
+		CrystalElement e = isCold(world, x, y, z) ? CrystalElement.WHITE : CrystalElement.ORANGE;
+		EntityFX fx = new EntityCenterBlurFX(e, world, dx, dy, dz, 0, 0, 0).setScale(2+r.nextFloat()*2);
 		if (r.nextInt(4) == 0) {
-			fx = new EntityLaserFX(CrystalElement.ORANGE, world, dx, dy, dz, 0, 0, 0).setScale(2+r.nextFloat()*2);
+			fx = new EntityLaserFX(e, world, dx, dy, dz, 0, 0, 0).setScale(2+r.nextFloat()*2);
 		}
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
@@ -83,14 +108,21 @@ public class BlockHeatLamp extends BlockAttachableMini {
 	}
 
 	@Override
-	public int getColor() {
-		return 0xffaa00;
+	public int getColor(IBlockAccess iba, int x, int y, int z) {
+		return this.isCold(iba, x, y, z) ? 0x90b0ff : 0xffaa00;
+	}
+
+	private static boolean isCold(IBlockAccess iba, int x, int y, int z) {
+		return iba.getBlockMetadata(x, y, z) >= 8;
 	}
 
 	public static class TileEntityHeatLamp extends TileEntity implements GuiController {
 
 		public int temperature;
 		public static final int MAXTEMP = 615;
+		public static final int MAXTEMP_COLD = 15;
+		public static final int MINTEMP = 20;
+		public static final int MINTEMP_COLD = -60;
 
 		@Override
 		public boolean canUpdate() {
@@ -99,15 +131,15 @@ public class BlockHeatLamp extends BlockAttachableMini {
 
 		@Override
 		public void updateEntity() {
-			temperature = Math.max(0, Math.min(MAXTEMP, temperature));
+			temperature = Math.max(this.isCold() ? MINTEMP_COLD : MINTEMP, Math.min(this.isCold() ? MAXTEMP_COLD : MAXTEMP, temperature));
 			ForgeDirection dir = ((BlockHeatLamp)this.getBlockType()).getSide(worldObj, xCoord, yCoord, zCoord).getOpposite();
 			TileEntity te = worldObj.getTileEntity(xCoord+dir.offsetX, yCoord+dir.offsetY, zCoord+dir.offsetZ);
 			if (te instanceof ThermalTile) {
 				//((ThermalTile)te).setTemperature(((ThermalTile) te).getTemperature()+(int)Math.signum(temperature-((ThermalTile) te).getTemperature()));
 				ThermalTile tl = (ThermalTile)te;
 				if (this.canHeat(tl)) {
-					if (temperature > tl.getTemperature()) {
-						tl.setTemperature(tl.getTemperature()+1);
+					if (this.isCold() ? temperature < tl.getTemperature() : temperature > tl.getTemperature()) {
+						tl.setTemperature(tl.getTemperature()+(this.isCold() ? -1 : 1));
 						if (ModList.ROTARYCRAFT.isLoaded() && te instanceof BasicTemperatureMachine)
 							((BasicTemperatureMachine)te).resetAmbientTemperatureTimer();
 					}
@@ -116,7 +148,7 @@ public class BlockHeatLamp extends BlockAttachableMini {
 					((BlockHeatLamp)this.getBlockType()).drop(worldObj, xCoord, yCoord, zCoord);
 				}
 			}
-			else if (te instanceof TileEntityFurnace) {
+			else if (!this.isCold() && te instanceof TileEntityFurnace) {
 				TileEntityFurnace tf = (TileEntityFurnace)te;
 				double c = Math.min(1, 1.25*temperature/1000D);
 				if (ReikaRandomHelper.doWithChance(c)) {
@@ -126,6 +158,10 @@ public class BlockHeatLamp extends BlockAttachableMini {
 					te.updateEntity();
 				}
 			}
+		}
+
+		private boolean isCold() {
+			return BlockHeatLamp.isCold(worldObj, xCoord, yCoord, zCoord);
 		}
 
 		private boolean canHeat(ThermalTile tl) {

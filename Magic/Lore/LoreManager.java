@@ -15,8 +15,10 @@ import java.util.Collections;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
 import Reika.ChromatiCraft.Magic.Lore.KeyAssemblyPuzzle.TileGroup;
@@ -25,6 +27,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -179,6 +182,34 @@ public class LoreManager {
 		rosetta = null;
 		puzzle = null;
 		towerGroups.clear();
+	}
+
+	public void sendTowersToClient(EntityPlayerMP ep) {
+		this.initTowers(DimensionManager.getWorld(0));
+		NBTTagCompound data = new NBTTagCompound();
+		NBTTagList li = new NBTTagList();
+		for (Towers t : Towers.towerList) {
+			NBTTagCompound tag = new NBTTagCompound();
+			ChunkCoordIntPair p = t.getRootPosition();
+			tag.setInteger("x", ~p.chunkXPos); //very weak but nontrivial-if-manual encryption
+			tag.setInteger("z", ~p.chunkZPos);
+			tag.setInteger("idx", t.ordinal());
+			li.appendTag(tag);
+		}
+		data.setTag("list", li);
+		ReikaPacketHelper.sendNBTPacket(ChromatiCraft.packetChannel, ChromaPackets.TOWERLOC.ordinal(), data, new PacketTarget.PlayerTarget(ep));
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void readTowersFromServer(NBTTagCompound data) {
+		NBTTagList li = data.getTagList("list", NBTTypes.COMPOUND.ordinal());
+		for (Object o : li.tagList) {
+			NBTTagCompound tag = (NBTTagCompound)o;
+			int x = ~tag.getInteger("x");
+			int z = ~tag.getInteger("z");
+			int idx = tag.getInteger("idx");
+			Towers.towerList[idx].setLocationFromServer(x, z);
+		}
 	}
 
 }

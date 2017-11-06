@@ -887,6 +887,14 @@ public enum ChromaResearch implements ProgressElement {
 			li.add(ChromaBlocks.ROUTERNODE.getStackOfMetadata(1));
 			return li;
 		}
+		if (this == HEATLAMP) {
+			ArrayList<ItemStack> li = new ArrayList();
+			for (int i = 0; i < ChromaBlocks.HEATLAMP.getNumberMetadatas(); i++) {
+				if (ChromaBlocks.HEATLAMP.isMetaInCreative(i))
+					li.add(new ItemStack(ChromaBlocks.HEATLAMP.getBlockInstance(), 1, i));
+			}
+			return li;
+		}
 		if (this == FOCUSCRYSTALS) {
 			ArrayList<ItemStack> li = new ArrayList();
 			for (int i = 0; i < CrystalTier.tierList.length; i++) {

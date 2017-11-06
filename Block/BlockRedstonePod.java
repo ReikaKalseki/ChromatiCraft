@@ -46,14 +46,14 @@ public class BlockRedstonePod extends BlockAttachableMini {
 	}
 
 	@Override
-	public int getColor() {
+	public int getColor(IBlockAccess iba, int x, int y, int z) {
 		return 0xff3030;
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	protected void createFX(World world, double dx, double dy, double dz, Random r) {
-		ReikaParticleHelper.spawnColoredParticleAt(world, dx, dy, dz, this.getColor());
+	protected void createFX(World world, int x, int y, int z, double dx, double dy, double dz, Random r) {
+		ReikaParticleHelper.spawnColoredParticleAt(world, dx, dy, dz, this.getColor(world, x, y, z));
 	}
 
 	@Override
@@ -79,7 +79,8 @@ public class BlockRedstonePod extends BlockAttachableMini {
 			TileEntityRedstonePod tp = (TileEntityRedstonePod)te;
 			if (tp.isPrimary() && tp.isLinked()) {
 				WorldLocation loc = tp.getLinkTarget();
-				this.updateNeighbors(world, loc.xCoord, loc.yCoord, loc.zCoord, loc.getBlockMetadata());
+				if (!loc.isWithinSquare(world, x, y, z, 2))
+					this.updateNeighbors(world, loc.xCoord, loc.yCoord, loc.zCoord, loc.getBlockMetadata());
 			}
 		}
 	}

@@ -219,7 +219,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		super.onFirstTick(world, x, y, z);
 		PylonGenerator.instance.cachePylon(this);
 		if (ChromaOptions.PYLONLOAD.getState()) {
-			if (forceLoad && this.getEnergy(color) < this.getMaxStorage(color)) {
+			if (forceLoad && this.getEnergy(color) < this.getMaxStorage(color) && this.hasStructure()) {
 				ChunkManager.instance.loadChunks(this);
 			}
 			else {
@@ -750,6 +750,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				this.invalidatationParticles();
 		}
 		hasMultiblock = false;
+		this.unload();
 		this.clearTargets(false);
 		energy = 0;
 		this.syncAllData(true);

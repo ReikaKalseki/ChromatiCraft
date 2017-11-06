@@ -455,24 +455,27 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity {
 			ChromaSounds.BUFFERWARNING_LOW.playSound(this, 1F, 0.5F);
 
 		if (!worldObj.isRemote) {
-			EntityPlayer ep = worldObj.getClosestPlayerToEntity(this, -1);
-			if (ep == null || worldObj.playerEntities.isEmpty()) {
-				this.die();
-			}
-			else if (ticksExisted >= 80000 || rand.nextInt(80000-ticksExisted) == 0) {
-				this.die();
-			}
-			else if (this.isInWater()) {
-				this.die();
-			}
-			else if (this.getDistanceSqToEntity(ep) >= 65536) {
-				this.die();
-			}
-			else if (this.getDistanceSqToEntity(ep) >= 16384 && rand.nextInt(200) == 0) {
-				this.die();
+			if (!this.hasCustomNameTag()) {
+				EntityPlayer ep = worldObj.getClosestPlayerToEntity(this, -1);
+				if (ep == null || worldObj.playerEntities.isEmpty()) {
+					this.die();
+				}
+				else if (ticksExisted >= 80000 || rand.nextInt(80000-ticksExisted) == 0) {
+					this.die();
+				}
+				else if (this.isInWater()) {
+					this.die();
+				}
+				else if (this.getDistanceSqToEntity(ep) >= 65536) {
+					this.die();
+				}
+				else if (this.getDistanceSqToEntity(ep) >= 16384 && rand.nextInt(200) == 0) {
+					this.die();
+				}
 			}
 
 			if (isAngry) {
+				EntityPlayer ep = worldObj.getClosestPlayerToEntity(this, -1);
 				if (attackCooldown > 0)
 					attackCooldown--;
 				else if (this.getDistanceSqToEntity(ep) <= 64) {
@@ -626,6 +629,13 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity {
 					this.doDrops((EntityPlayer)e);
 				}
 				isAngry = true;
+				int n = rand.nextInt(8);
+				int r = rand.nextInt(64);
+				AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(e, r);
+				List<EntityGlowCloud> li = worldObj.getEntitiesWithinAABBExcludingEntity(this, box, new ReikaEntityHelper.ClassEntitySelector(this.getClass()));
+				for (int i = 0; i < Math.min(n, li.size()); i++) {
+					li.get(i).isAngry = true;
+				}
 				return flag;
 			}
 		}

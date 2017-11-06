@@ -50,7 +50,7 @@ import Reika.DragonAPI.Instantiable.Data.RunningAverage;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
-import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledEvent;
+import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.DelayableSchedulableEvent;
 import Reika.DragonAPI.Instantiable.Rendering.FXCollection;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
@@ -550,11 +550,15 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 	}
 
 	private static void dischargeIntoPlayer(TileEntityGlowFire tile, EntityPlayer player, CrystalElement color, float power) {
+		dischargeIntoPlayer(tile.xCoord+0.5, tile.yCoord+0.125, tile.zCoord+0.5, player, color, power);
+	}
+
+	private static void dischargeIntoPlayer(double x, double y, double z, EntityPlayer player, CrystalElement color, float power) {
 		if (player.worldObj.isRemote)
 			return;
 		ChromaAux.doPylonAttack(color, player, player.getHealth()/4F*Math.min(1, 2*power), false);
-		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.FIREDUMPSHOCK.ordinal(), tile, 64, color.ordinal(), player.getEntityId());
-		ReikaEntityHelper.knockbackEntityFromPos(tile.xCoord+0.5, /*tile.yCoord+0.125*/player.posY, tile.zCoord+0.5, player, 1.5*Math.min(power*4, 1));
+		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.FIREDUMPSHOCK.ordinal(), player.worldObj, (int)x, (int)player.posY, (int)z, 64, color.ordinal(), player.getEntityId());
+		ReikaEntityHelper.knockbackEntityFromPos(x, /*y*/player.posY, z, player, 1.5*Math.min(power*4, 1));
 		player.motionY += 0.125+rand.nextDouble()*0.0625;
 	}
 
@@ -581,15 +585,15 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 		}
 	}
 
-	private static class GlowFireDischarge implements ScheduledEvent {
+	private static class GlowFireDischarge implements DelayableSchedulableEvent {
 
-		private final TileEntityGlowFire tile;
+		private final DecimalPosition tile;
 		private final EntityPlayer player;
 		private final CrystalElement color;
 		private final float fraction;
 
 		public GlowFireDischarge(TileEntityGlowFire te, EntityPlayer ep, CrystalElement e, float amt) {
-			tile = te;
+			tile = new DecimalPosition(te);
 			player = ep;
 			color = e;
 			fraction = amt;
@@ -597,12 +601,17 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 
 		@Override
 		public void fire() {
-			dischargeIntoPlayer(tile, player, color, fraction);
+			dischargeIntoPlayer(tile.xCoord, tile.yCoord, tile.zCoord, player, color, fraction);
 		}
 
 		@Override
 		public boolean runOnSide(Side s) {
 			return s == Side.SERVER;
+		}
+
+		@Override
+		public boolean canTick() {
+			return player != null && !ReikaPlayerAPI.isFake(player) && player.worldObj != null && ReikaPlayerAPI.getPlayerByNameAnyWorld(player.getCommandSenderName()) != null;
 		}
 
 	}

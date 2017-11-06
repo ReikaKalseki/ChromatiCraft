@@ -585,7 +585,7 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case AUTORECIPE:
 					CastingRecipe cr = !Strings.isNullOrEmpty(stringdata) ? RecipesCastingTable.instance.getRecipeByStringID(stringdata) : null;
-					((TileEntityCastingAuto)tile).setRecipe(cr, data[0]);
+					((TileEntityCastingAuto)tile).setRecipe(cr, data[0], data[1] > 0);
 					break;
 				case AUTOCANCEL:
 					((TileEntityCastingAuto)tile).cancelCrafting();
@@ -670,6 +670,9 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case FIXEDMUSICNOTE:
 					((TileEntityCrystalMusic)tile).addNote(data[4], data[0], MusicKey.getByIndex(data[1]), data[2], data[3] > 0);
+					break;
+				case MUSICBKSP:
+					((TileEntityCrystalMusic)tile).backspace(data[0]);
 					break;
 				case MUSICDEMO:
 					((TileEntityCrystalMusic)tile).loadDemo();
@@ -913,6 +916,9 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case INSCRIBE:
 					InscriptionRecipes.instance.getRecipeByID(data[0]).doFX(world, x, y, z);
+					break;
+				case TOWERLOC:
+					LoreManager.instance.readTowersFromServer(NBT);
 					break;
 					/*
 				case DIGARTEFACT:

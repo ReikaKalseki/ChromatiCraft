@@ -578,9 +578,9 @@ public class RecipesCastingTable {
 		for (int i = 0; i < metal.length; i += 2) {
 			if (metal[i] instanceof String && !ReikaItemHelper.oreItemExists((String)metal[i]))
 				continue;
-			is = ReikaItemHelper.getSizedItemStack(ChromaBlocks.HEATLAMP.getStackOf(), (int)metal[i+1]);
-			sr = new ShapedOreRecipe(is, "fff", "faf", "fff", 'f', ChromaStacks.firaxite, 'a', metal[i]);
-			this.addRecipe(new HeatLampRecipe(is, sr, hr));
+			int n = (int)metal[i+1];
+			this.addRecipe(new HeatLampRecipe(metal[i], n, hr, false));
+			this.addRecipe(new HeatLampRecipe(metal[i], n, hr, true));
 
 			is = ReikaItemHelper.getSizedItemStack(ChromaBlocks.REDSTONEPOD.getStackOf(), (int)metal[i+1]);
 			sr = new ShapedOreRecipe(is, "fbf", "dad", "fbf", 'f', Items.redstone, 'a', metal[i], 'd', ChromaStacks.auraDust, 'b', ChromaStacks.beaconDust);

@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Items;
+package Reika.ChromatiCraft.Items.ItemBlock;
 
 import java.util.List;
 

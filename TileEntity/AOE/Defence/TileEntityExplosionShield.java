@@ -111,8 +111,9 @@ public class TileEntityExplosionShield extends CrystalReceiverBase implements Lo
 	private void checkAndRequest() {
 		CrystalElement e = CrystalElement.RED;
 		int capacity = this.getMaxStorage(e);
-		int space = capacity-this.getEnergy(e);
-		if (space > 0) {
+		int has = this.getEnergy(e);
+		int space = capacity-has;
+		if (space*4 > has) { // <80%
 			this.requestEnergy(e, space);
 		}
 	}

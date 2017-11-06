@@ -21,6 +21,8 @@ import Reika.DragonAPI.Instantiable.Math.HexGrid.Hex;
 import Reika.DragonAPI.Instantiable.Math.HexGrid.MapShape;
 import Reika.DragonAPI.Instantiable.Math.HexGrid.Point;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public enum Towers {
@@ -58,6 +60,13 @@ public enum Towers {
 
 	public ChunkCoordIntPair getRootPosition() {
 		return position;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void setLocationFromServer(int x, int z) {
+		towerChunkCache.remove(position);
+		position = new ChunkCoordIntPair(x, z);
+		towerChunkCache.put(position, this);
 	}
 
 	public static void loadPositions(World world, double radius) { //radius is in chunks, and is the size of a hex in "chunks as pixels"

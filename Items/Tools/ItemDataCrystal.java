@@ -36,6 +36,18 @@ public class ItemDataCrystal extends ItemChromaTool {
 	}
 
 	@Override
+	public void onUpdate(ItemStack is, World world, Entity e, int slot, boolean held) {
+		if (is.stackTagCompound != null && world.getTotalWorldTime()-is.stackTagCompound.getLong("last") >= 10) {
+			int get = is.stackTagCompound.getInteger("carve");
+			if (get > 0) {
+				is.stackTagCompound.setInteger("carve", get-1);
+				if (get == 1)
+					is.stackTagCompound = null;
+			}
+		}
+	}
+
+	@Override
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float a, float b, float c) {
 		/*
 		if (LoreManager.instance.hasPlayerCompletedBoard(ep) && world.getBlock(x, y, z) == ChromaBlocks.LOREREADER.getBlockInstance() && ChromaStructures.getLoreReaderStructure(world, x, y, z).matchInWorld()) {
@@ -60,6 +72,7 @@ public class ItemDataCrystal extends ItemChromaTool {
 		if (is.stackTagCompound == null)
 			is.stackTagCompound = new NBTTagCompound();
 		is.stackTagCompound.setInteger("recipe", ir.referenceIndex);
+		is.stackTagCompound.setLong("last", world.getTotalWorldTime());
 		Coordinate loc = Coordinate.readFromNBT("loc", is.stackTagCompound);
 		if (loc != null && loc.equals(x, y, z)) {
 			if (!world.isRemote) {
@@ -164,6 +177,16 @@ public class ItemDataCrystal extends ItemChromaTool {
 			return pass == 1;
 		}
 
+	}
+
+	@Override
+	public boolean showDurabilityBar(ItemStack is) {
+		return is.stackTagCompound != null;
+	}
+
+	@Override
+	public double getDurabilityForDisplay(ItemStack is) {
+		return 1-(double)is.stackTagCompound.getInteger("carve")/InscriptionRecipes.instance.getRecipeByID(is.stackTagCompound.getInteger("recipe")).duration;
 	}
 
 }

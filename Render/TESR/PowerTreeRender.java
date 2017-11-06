@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Render.TESR;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
@@ -126,7 +127,7 @@ public class PowerTreeRender extends ChromaRenderBase {
 
 		ReikaRenderHelper.prepareGeoDraw(true);
 		int d = 1;
-		double dsq = Minecraft.getMinecraft().thePlayer.getDistanceSq(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
+		double dsq = GuiScreen.isCtrlKeyDown() ? 0 : Minecraft.getMinecraft().thePlayer.getDistanceSq(te.xCoord+0.5, te.yCoord+0.5-7, te.zCoord+0.5);
 		double da = dsq >= 4096 ? 60 : dsq >= 1024 ? 45 : dsq >= 256 ? 30 : 20;
 		double i = 0;
 		int c = 0xff000000 | ReikaColorAPI.getModifiedHue(0x5f0000, te.getTicksExisted()%360);

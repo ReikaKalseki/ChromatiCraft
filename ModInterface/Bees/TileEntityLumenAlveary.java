@@ -492,6 +492,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		movePrincess = this.getSpecies().getUID();
 		//ReikaJavaLibrary.pConsole("Marked to cycle "+movePrincess);
 		cachedQueen = null;
+		canWork = false;
 	}
 
 	private void cycleBees(String species) {
@@ -665,6 +666,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	}
 
 	@ModDependent(ModList.FORESTRY)
+	@Deprecated
 	private void tickAlveary() {
 		IAlvearyController iac = this.getMultiblockLogic().getController();
 		try {
@@ -1025,8 +1027,16 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 
 		@Override
 		protected final boolean tick(TileEntityLumenAlveary te) {
-			for (int i = 0; i < tickRate; i++)
-				te.tickAlveary();
+			if (te.worldObj.isRemote)
+				return true;
+			IBeekeepingLogic bkl = te.getMultiblockLogic().getController().getBeekeepingLogic();
+			//max of 16 ticks per tick, so no massive changes (eg 2 prod cycles), and no ingame time passage,
+			//and thus only possible change to canWork is queen death, and even that is called by canWork
+			boolean work = bkl.canWork();
+			for (int i = 0; work && te.canQueenWork() && i < tickRate; i++) {
+				//te.tickAlveary();
+				bkl.doWork();
+			}
 			return true;
 		}
 

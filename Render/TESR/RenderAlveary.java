@@ -28,8 +28,11 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
+import Reika.ChromatiCraft.Magic.Lore.LoreScripts.ScriptLocations;
+import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Render.InWorldScriptRenderer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -38,7 +41,9 @@ import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
+import Reika.DragonAPI.ModInteract.Bees.BeeSpecies;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
+import forestry.api.apiculture.IAlleleBeeSpecies;
 
 
 public class RenderAlveary extends ChromaRenderBase {
@@ -209,6 +214,45 @@ public class RenderAlveary extends ChromaRenderBase {
 			GL11.glDisable(GL11.GL_ALPHA_TEST);
 
 			GL11.glPopMatrix();
+
+			IAlleleBeeSpecies bee = te.getSpecies();
+			if (bee == CrystalBees.getPrecursorBee() || bee == CrystalBees.getUABee()) {
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				BlendMode.ADDITIVEDARK.apply();
+				ReikaTextureHelper.bindTerrainTexture();
+
+				GL11.glPushMatrix();
+				GL11.glDisable(GL11.GL_CULL_FACE);
+
+				double sc = 3.5;
+				GL11.glTranslated(0, 0.75, 0);
+				GL11.glScaled(sc, sc, sc);
+				RenderManager rm = RenderManager.instance;
+				GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
+				GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
+
+				IIcon ico = ChromaIcons.ECLIPSEFLARE.getIcon();
+				float u = ico.getMinU();
+				float v = ico.getMinV();
+				float du = ico.getMaxU();
+				float dv = ico.getMaxV();
+				float uu = du-u;
+				float vv = dv-v;
+
+				GL11.glPushMatrix();
+				v5.startDrawingQuads();
+				v5.setColorOpaque_I(((BeeSpecies)bee).getOutlineColor());
+				v5.addVertexWithUV(-1, -1, 0, u, v);
+				v5.addVertexWithUV(1, -1, 0, du, v);
+				v5.addVertexWithUV(1, 1, 0, du, dv);
+				v5.addVertexWithUV(-1, 1, 0, u, dv);
+				v5.draw();
+				GL11.glPopMatrix();
+
+				GL11.glPopMatrix();
+				GL11.glPopAttrib();
+			}
+
 			GL11.glPushMatrix();
 
 			if (text) {
@@ -319,6 +363,14 @@ public class RenderAlveary extends ChromaRenderBase {
 		}
 
 		v5.draw();
+
+		if (te.hasQueen() && te.getSpecies() == CrystalBees.getPrecursorBee()) {
+			if (te.isInWorld() && ScriptLocations.ALVEARY.isEnabled() && MinecraftForgeClient.getRenderPass() == 1 && Minecraft.getMinecraft().thePlayer.getDistanceSq(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5) < 2304) {
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				InWorldScriptRenderer.renderAlvearyScript(te, par8, v5, 0.03125/1.45, 2304);
+				GL11.glPopAttrib();
+			}
+		}
 	}
 
 }

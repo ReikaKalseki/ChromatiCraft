@@ -46,12 +46,12 @@ public abstract class BlockAttachableMini extends Block implements SidedBlock {
 
 	@Override
 	public final int getLightValue(IBlockAccess iba, int x, int y, int z) {
-		return ModList.COLORLIGHT.isLoaded() ? ReikaColorAPI.getPackedIntForColoredLight(this.getColor(), 7) : 7;
+		return ModList.COLORLIGHT.isLoaded() ? ReikaColorAPI.getPackedIntForColoredLight(this.getColor(iba, x, y, z), 7) : 7;
 	}
 
 	@Override
 	public final int damageDropped(int meta) {
-		return 0;
+		return meta & (~7);
 	}
 
 	@Override
@@ -64,11 +64,11 @@ public abstract class BlockAttachableMini extends Block implements SidedBlock {
 	}
 
 	public final void setSide(World world, int x, int y, int z, int side) {
-		world.setBlockMetadataWithNotify(x, y, z, side, 3);
+		world.setBlockMetadataWithNotify(x, y, z, (world.getBlockMetadata(x, y, z) & (~7)) | side, 3);
 	}
 
 	public final ForgeDirection getSide(IBlockAccess world, int x, int y, int z) {
-		return ForgeDirection.VALID_DIRECTIONS[world.getBlockMetadata(x, y, z)];
+		return ForgeDirection.VALID_DIRECTIONS[world.getBlockMetadata(x, y, z) & 7];
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public abstract class BlockAttachableMini extends Block implements SidedBlock {
 
 	@Override
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block b) {
-		int meta = world.getBlockMetadata(x, y, z);
+		int meta = world.getBlockMetadata(x, y, z) & 7;
 		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[meta];
 		if (!this.canPlaceOn(world, x-dir.offsetX, y-dir.offsetY, z-dir.offsetZ, meta)) {
 			ReikaSoundHelper.playBreakSound(world, x, y, z, this);
@@ -92,7 +92,7 @@ public abstract class BlockAttachableMini extends Block implements SidedBlock {
 	}
 
 	public final void drop(World world, int x, int y, int z) {
-		ItemStack is = new ItemStack(this);
+		ItemStack is = new ItemStack(this, 1, this.damageDropped(world.getBlockMetadata(x, y, z)));
 		ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, is);
 		world.setBlock(x, y, z, Blocks.air);
 	}
@@ -211,7 +211,7 @@ public abstract class BlockAttachableMini extends Block implements SidedBlock {
 	protected final void updateNeighbors(World world, int x, int y, int z, int meta) {
 		world.markBlockForUpdate(x, y, z);
 		ReikaWorldHelper.causeAdjacentUpdates(world, x, y, z);
-		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[meta].getOpposite();
+		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[meta & 7].getOpposite();
 		ReikaWorldHelper.causeAdjacentUpdates(world, x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ);
 	}
 
@@ -242,12 +242,12 @@ public abstract class BlockAttachableMini extends Block implements SidedBlock {
 			dz = ReikaRandomHelper.getRandomPlusMinus(dz, h);
 		}
 
-		this.createFX(world, dx, dy, dz, r);
+		this.createFX(world, x, y, z, dx, dy, dz, r);
 	}
 
 	@SideOnly(Side.CLIENT)
-	protected abstract void createFX(World world, double dx, double dy, double dz, Random r);
+	protected abstract void createFX(World world, int x, int y, int z, double dx, double dy, double dz, Random r);
 
-	public abstract int getColor();
+	public abstract int getColor(IBlockAccess iba, int x, int y, int z);
 
 }

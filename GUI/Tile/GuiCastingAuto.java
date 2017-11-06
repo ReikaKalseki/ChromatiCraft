@@ -40,6 +40,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButtonSneakIcon;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -111,7 +112,7 @@ public class GuiCastingAuto extends GuiChromaBase {
 		buttonList.add(new CustomSoundImagedGuiButton(3, j+40, k+32, 10, 10, 90, 16, tex, ChromatiCraft.class, this));
 		buttonList.add(new CustomSoundImagedGuiButton(2, j+40, k+42, 10, 10, 90, 26, tex, ChromatiCraft.class, this));
 
-		buttonList.add(new CustomSoundImagedGuiButton(4, j+28, k+32, 10, 10, 90, 66, tex, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButtonSneakIcon(4, j+28, k+32, 10, 10, 90, 66, tex, ChromatiCraft.class, this, 90, 86));
 		buttonList.add(new CustomSoundImagedGuiButton(5, j+28, k+42, 10, 10, 90, 56, tex, ChromatiCraft.class, this));
 	}
 
@@ -169,8 +170,11 @@ public class GuiCastingAuto extends GuiChromaBase {
 				break;
 
 			case 4:
-				if (this.getRecipe() != null)
-					ReikaPacketHelper.sendStringIntPacket(ChromatiCraft.packetChannel, ChromaPackets.AUTORECIPE.ordinal(), tile, RecipesCastingTable.instance.getStringIDForRecipe(this.getRecipe()), number);
+				if (this.getRecipe() != null) {
+					ReikaPacketHelper.sendStringIntPacket(ChromatiCraft.packetChannel, ChromaPackets.AUTORECIPE.ordinal(), tile, RecipesCastingTable.instance.getStringIDForRecipe(this.getRecipe()), number, this.shouldCraftRecursive() ? 1 : 0);
+					if (this.getRecipe() == lexiconSelectedRecipe)
+						lexiconSelectedRecipe = null;
+				}
 				break;
 
 			case 5:
@@ -178,6 +182,10 @@ public class GuiCastingAuto extends GuiChromaBase {
 				lexiconSelectedRecipe = null;
 				break;
 		}
+	}
+
+	private boolean shouldCraftRecursive() {
+		return GuiScreen.isShiftKeyDown();
 	}
 
 	@Override

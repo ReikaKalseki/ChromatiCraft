@@ -26,15 +26,19 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SidedBlock;
+import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.ModInteract.Bees.BeeSpecies;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import forestry.api.apiculture.EnumBeeType;
 
 
 public class BlockMetaAlloyLamp extends Block implements SidedBlock {
@@ -174,6 +178,27 @@ public class BlockMetaAlloyLamp extends Block implements SidedBlock {
 		float maxY = this.hasPod(world, x, y, z) ? 1 : 0.5F;
 		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x, y, z, x+1, y+maxY, z+1);
 		return box;
+	}
+
+	@ModDependent(ModList.FORESTRY)
+	public static void doBeeDrops(World world, int x, int y, int z) {
+		BeeSpecies s = CrystalBees.getTowerBee();
+		if (world.rand.nextInt(5) > 0) {
+			ItemStack is = s.getBeeItem(world, EnumBeeType.DRONE);
+			ReikaItemHelper.dropItem(world, x+world.rand.nextDouble(), y+world.rand.nextDouble(), z+world.rand.nextDouble(), is);
+		}
+		if (world.rand.nextInt(4) > 0) {
+			ItemStack is = s.getBeeItem(world, EnumBeeType.LARVAE);
+			ReikaItemHelper.dropItem(world, x+world.rand.nextDouble(), y+world.rand.nextDouble(), z+world.rand.nextDouble(), is);
+		}
+		if (world.rand.nextInt(2) == 0) {
+			ItemStack is = s.getBeeItem(world, EnumBeeType.PRINCESS);
+			ReikaItemHelper.dropItem(world, x+world.rand.nextDouble(), y+world.rand.nextDouble(), z+world.rand.nextDouble(), is);
+		}
+		if (world.rand.nextInt(5) == 0) {
+			ItemStack is = s.getBeeItem(world, EnumBeeType.QUEEN);
+			ReikaItemHelper.dropItem(world, x+world.rand.nextDouble(), y+world.rand.nextDouble(), z+world.rand.nextDouble(), is);
+		}
 	}
 
 }

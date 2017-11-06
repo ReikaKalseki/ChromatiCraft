@@ -130,6 +130,7 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 							if (f1 != null && f2 != null) {
 								int fit = f2.getMaxStackSize()-output.addItemsToUnderlyingInventories(ReikaItemHelper.getSizedItemStack(f2, f2.getMaxStackSize()), true);
 								if (fit > 0) {
+									hasWork = false;
 									MatchMode mode = this.getMode(i);
 									long has = mode.countItems(network, f1);//this.isFuzzy(i) ? network.getFuzzyItemCount(f1, FuzzyMode.IGNORE_ALL, this.useOreDict(i)) : network.getItemCount(f1);
 									int missing = this.getThreshold(i)-(has > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)has);
@@ -139,7 +140,6 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 								}
 							}
 						}
-						hasWork = false;
 					}
 				}
 			}

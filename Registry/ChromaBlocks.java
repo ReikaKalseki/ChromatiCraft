@@ -124,7 +124,6 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant;
 import Reika.ChromatiCraft.Block.Worldgen.BlockUnknownArtefact;
 import Reika.ChromatiCraft.Block.Worldgen.BlockWarpNode;
-import Reika.ChromatiCraft.Items.ItemRedstonePodPlacer;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockChromaFlower;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockChromaTiered;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
@@ -144,6 +143,7 @@ import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockRainbowSapling;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockRouterNode;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockSidePlaced;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockStructShield;
+import Reika.ChromatiCraft.Items.ItemBlock.ItemRedstonePodPlacer;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
 import Reika.DragonAPI.Interfaces.Registry.BlockEnum;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
@@ -488,6 +488,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return "Cliff "+Variants.getVariant(meta).getBlockProxy().getLocalizedName();
 			case REPEATERLAMP:
 				return BlockRepeaterLight.MODELS[meta].getName()+" Lamp";
+			case HEATLAMP:
+				return meta >= 8 ? "Freeze Lamp" : "Heat Lamp";
 			default:
 				return "";
 		}
@@ -501,7 +503,6 @@ public enum ChromaBlocks implements BlockEnum {
 			case TNT:
 			case FENCE:
 			case LOOTCHEST:
-			case HEATLAMP:
 			case PORTAL:
 			case COLORLOCK:
 			case LOCKKEY:
@@ -601,6 +602,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return Variants.list.length;
 			case REPEATERLAMP:
 				return BlockRepeaterLight.MODELS.length;
+			case HEATLAMP:
+				return 9;
 			default:
 				return 1;
 		}
@@ -669,6 +672,8 @@ public enum ChromaBlocks implements BlockEnum {
 	public boolean isMetaInCreative(int meta) {
 		if (this == LIGHTPANEL)
 			return meta%2 == 0;
+		if (this == HEATLAMP)
+			return meta == 0 || meta == 8;
 		return true;
 	}
 
