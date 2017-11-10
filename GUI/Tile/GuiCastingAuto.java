@@ -273,7 +273,7 @@ public class GuiCastingAuto extends GuiChromaBase {
 			//fontRendererObj.drawSplitString(r.getTitle(), 40, 36, 120, 0xffffff);
 
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-			ItemStack out = cr.getOutput();
+			ItemStack out = cr.getOutputForDisplay();
 			BlendMode.DEFAULT.apply();
 			String s = out.getDisplayName();
 			if (ChromaItems.ADJACENCY.matchWith(out)) {

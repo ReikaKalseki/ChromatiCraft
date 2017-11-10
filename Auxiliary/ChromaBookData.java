@@ -55,15 +55,16 @@ public class ChromaBookData {
 				CastingRecipe c = li.get(recipe);
 				drawCastingRecipe(fr, ri, c, subpage, posX, posY);
 				if (h.getTitle().isEmpty()) {
-					fr.drawString(c.getOutput().getDisplayName(), posX+6, posY-2, 0);
+					fr.drawString(c.getOutputForDisplay().getDisplayName(), posX+6, posY-2, 0);
 				}
 			}
 		}
 	}
 
 	public static void drawCastingRecipe(FontRenderer fr, RenderItem ri, CastingRecipe c, int subpage, int posX, int posY) {
-		ItemStack isout = c.getOutput();
+		ItemStack isout = c.getOutputForDisplay();
 		ItemStack ctr = c instanceof MultiBlockCastingRecipe ? ((MultiBlockCastingRecipe)c).getMainInput() : c.getArrayForDisplay()[4];
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		if (ctr != null && isout.stackTagCompound != null)
 			ReikaNBTHelper.combineNBT(isout.stackTagCompound, c.getOutputTag(ctr.stackTagCompound));
 		gui.drawItemStack(ri, fr, isout, posX+7, posY+5);
@@ -73,6 +74,8 @@ public class ChromaBookData {
 			for (int i = 0; i < 9; i++) {
 				ItemStack in = arr[i];
 				if (in != null) {
+					if (i == 4 && c instanceof MultiBlockCastingRecipe)
+						in = ReikaItemHelper.getSizedItemStack(in, ((MultiBlockCastingRecipe)c).getRequiredCentralItemCount());
 					int x = subpage == 0 ? 54 : 102;
 					int y = subpage == 0 ? 10 : 76;
 					int dx = x+posX+i%3*18;
@@ -82,6 +85,7 @@ public class ChromaBookData {
 				}
 			}
 		}
+		GL11.glPopAttrib();
 		GL11.glColor4f(1, 1, 1, 1);
 		if (subpage == 1) {
 			RuneShapeRenderer.instance.render(((TempleCastingRecipe)c).getRunes(), posX+128, posY+110);
@@ -201,6 +205,8 @@ public class ChromaBookData {
 		for (int i = 0; i < 9; i++) {
 			ItemStack in = arr[i];
 			if (in != null) {
+				if (i == 4 && c instanceof MultiBlockCastingRecipe)
+					in = ReikaItemHelper.getSizedItemStack(in, ((MultiBlockCastingRecipe)c).getRequiredCentralItemCount());
 				int x = 47;
 				int y = 96;
 				int dx = x+posX+i%3*18;

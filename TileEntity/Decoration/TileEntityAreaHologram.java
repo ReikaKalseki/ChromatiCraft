@@ -26,11 +26,18 @@ public class TileEntityAreaHologram extends TileEntityChromaticBase {
 	private int readY = -RANGE;
 	private int readZ = -RANGE;
 
+	@SideOnly(Side.CLIENT)
 	private StructureRenderer renderer;
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
-		renderer = new MutableStructureRenderer(world, RANGE);
+		if (world.isRemote)
+			this.initRenderer();
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void initRenderer() {
+		renderer = new MutableStructureRenderer(worldObj, RANGE);
 
 		/*
 		FilledBlockArray array = new FilledBlockArray(world);
@@ -82,6 +89,7 @@ public class TileEntityAreaHologram extends TileEntityChromaticBase {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void addBlock(int dx, int dy, int dz, World world, int x, int y, int z) {
 		//ReikaJavaLibrary.pConsole(dx+","+dy+","+dz);
 		((MutableStructureRenderer)renderer).addBlock(dx, dy, dz, world.getBlock(x, y, z), world.getBlockMetadata(x, y, z), world.getTileEntity(x, y, z));

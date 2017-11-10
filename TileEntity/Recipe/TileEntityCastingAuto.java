@@ -179,6 +179,10 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 						}
 						else {
 							int amt = Math.min(recipesToGo, recipe.getOutput().getMaxStackSize()/recipe.getOutput().stackSize);
+							if (recipe instanceof MultiBlockCastingRecipe) {
+								MultiBlockCastingRecipe mr = (MultiBlockCastingRecipe)recipe;
+								amt = Math.min(amt, mr.getMainInput().getMaxStackSize()/mr.getRequiredCentralItemCount());
+							}
 							//ReikaJavaLibrary.pConsole("Preparing step for recipe "+recipe);
 							UpdateStep c = this.prepareRecipeStep(world, x, y, z, te, amt);
 							//ReikaJavaLibrary.pConsole("Obtained "+c);
@@ -348,7 +352,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 					ItemStack in = te.getStackInSlot(i);
 					if (i == 4) {
 						if (in != null) {
-							if (ReikaItemHelper.matchStacks(in, ctr) && (ctr.stackTagCompound == null || ItemStack.areItemStackTagsEqual(in, ctr))) {
+							if (ReikaItemHelper.matchStacks(in, ctr) && in.stackSize >= mr.getRequiredCentralItemCount() && (ctr.stackTagCompound == null || ItemStack.areItemStackTagsEqual(in, ctr))) {
 								//matches
 							}
 							else {
@@ -359,7 +363,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 							}
 						}
 						else {
-							ItemStack ret = this.findItem(ctr, amt, false);
+							ItemStack ret = this.findItem(ctr, amt*mr.getRequiredCentralItemCount(), false);
 							//ReikaJavaLibrary.pConsole("Looking for center item "+ctr+", got "+ret);
 							if (ret != null) {
 								te.setInventorySlotContents(i, ret);

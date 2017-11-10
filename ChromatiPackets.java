@@ -82,6 +82,7 @@ import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.ModInterface.VoidMonsterDestructionRitual;
 import Reika.ChromatiCraft.ModInterface.AE.TileEntityMEDistributor;
+import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.CrystalWand;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.EssentiaNetwork.EssentiaPath;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeReceiverWrapper;
@@ -969,6 +970,9 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case VOIDMONSTERRITUAL:
 					VoidMonsterDestructionRitual.handlePacket(data[0], data[1]);
+					break;
+				case ALVEARYEFFECT:
+					((TileEntityLumenAlveary)tile).setEffectSelectionState(data[0], data[1] > 0);
 					break;
 			}
 		}

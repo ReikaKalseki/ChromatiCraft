@@ -58,24 +58,6 @@ public class GuiNotes extends ChromaBookGui {
 				data.add(((NBTTagString)o).func_150285_a_());
 			}
 		}
-		/*
-		data.add("This is a test line 1");
-		data.add("This is a test line 2, of an extremely long and overly wordy string that will not fit in the gui.");
-		data.add("Containing special characters. \n new line?");
-		data.add("This is a test line 4");
-		data.add("This is a test line 5");
-		data.add("This is a test line 6");
-		data.add("This is a test line 7");
-		data.add("This is a test line 8");
-		data.add("This is a test line 9");
-		data.add("This is a test line 10");
-		data.add("This is a test line 11");
-		data.add("This is a test line 12");
-		data.add("This is a test line 13");
-		data.add("This is a test line 14");
-		data.add("This is a test line 15");
-		data.add("This is a test line 16");
-		 */
 	}
 
 	@Override

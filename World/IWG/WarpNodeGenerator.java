@@ -32,7 +32,7 @@ public class WarpNodeGenerator implements RetroactiveGenerator {
 
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
-		if (world.getWorldInfo().getTerrainType() != WorldType.FLAT) {
+		if (world.provider.dimensionId == 0 && world.getWorldInfo().getTerrainType() != WorldType.FLAT) {
 			chunkX *= 16;
 			chunkZ *= 16;
 			int posX = chunkX + random.nextInt(16);
@@ -41,6 +41,10 @@ public class WarpNodeGenerator implements RetroactiveGenerator {
 			if (random.nextInt(this.getBiomeChance(b)) == 0) {
 				int miny = this.getMinY(world, posX, posZ, b);
 				int maxy = this.getMaxY(world, posX, posZ, b);
+				if (miny == maxy) {
+					ChromatiCraft.logger.logError("Failed to generate a warp node @ "+posX+", "+posZ+" due to zero height range!");
+					return;
+				}
 				int posY = miny+random.nextInt(maxy-miny+1);
 				if (this.canGenerateAt(world, posX, posY, posZ)) {
 					world.setBlock(posX, posY, posZ, ChromaBlocks.WARPNODE.getBlockInstance());

@@ -105,6 +105,16 @@ public class CastingRecipe implements APICastingRecipe {
 		return ReikaItemHelper.getSizedItemStack(out, Math.max(out.stackSize, this.getNumberProduced()));
 	}
 
+	@SideOnly(Side.CLIENT)
+	public ItemStack getOutputForDisplay() {
+		return this.getOutput();
+	}
+
+	@SideOnly(Side.CLIENT)
+	public ItemStack getOutputForDisplay(ItemStack center) {
+		return this.getOutputForDisplay();
+	}
+
 	protected int getNumberProduced() {
 		return 1;
 	}
@@ -303,7 +313,7 @@ public class CastingRecipe implements APICastingRecipe {
 		return null;
 	}
 
-	public NBTTagCompound handleNBTResult(TileEntityCastingTable te, EntityPlayer ep, NBTTagCompound tag) {
+	public NBTTagCompound handleNBTResult(TileEntityCastingTable te, EntityPlayer ep, NBTTagCompound originalCenter, NBTTagCompound tag) {
 		return tag;
 	}
 
@@ -565,7 +575,7 @@ public class CastingRecipe implements APICastingRecipe {
 			return map;
 		}
 
-		public HashMap<WorldLocation, ItemMatch> getOtherInputs(World world, int x, int y, int z) {
+		public final HashMap<WorldLocation, ItemMatch> getOtherInputs(World world, int x, int y, int z) {
 			HashMap<WorldLocation, ItemMatch> map = new HashMap();
 			for (List<Integer> li : inputs.keySet()) {
 				ItemMatch is = inputs.get(li).copy();
@@ -576,6 +586,10 @@ public class CastingRecipe implements APICastingRecipe {
 				map.put(loc, is);
 			}
 			return map;
+		}
+
+		public int getRequiredCentralItemCount() {
+			return 1;
 		}
 
 		@Override
@@ -589,7 +603,7 @@ public class CastingRecipe implements APICastingRecipe {
 			}
 			ItemStack ctr = this.getMainInput();
 			//ReikaJavaLibrary.pConsole(ctr.stackTagCompound+":"+main.stackTagCompound, this instanceof RepeaterTurboRecipe);
-			if (ReikaItemHelper.matchStacks(main, ctr) && this.isValidCentralNBT(main)) {
+			if (ReikaItemHelper.matchStacks(main, ctr) && this.isValidCentralNBT(main) && main.stackSize >= this.getRequiredCentralItemCount()) {
 				HashMap<List<Integer>, TileEntityItemStand> stands = table.getOtherStands();
 				//ReikaJavaLibrary.pConsole(stands.size(), this instanceof RepeaterTurboRecipe);
 				if (stands.size() != 24)
@@ -686,7 +700,7 @@ public class CastingRecipe implements APICastingRecipe {
 		}
 
 		@Override
-		public Collection<ItemStack> getAllInputs() {
+		public final Collection<ItemStack> getAllInputs() {
 			Collection<ItemStack> c = new ArrayList();
 			c.add(main);
 			for (ItemMatch m : inputs.values()) {

@@ -178,6 +178,7 @@ public class TankRender extends ChromaRenderBase {
 
 		ReikaTextureHelper.bindTerrainTexture();
 		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glDepthMask(false);
 		BlendMode.DEFAULT.apply();
 		GL11.glDisable(GL11.GL_LIGHTING);
 		IIcon ico = ReikaLiquidRenderer.getFluidIconSafe(f);
@@ -320,6 +321,7 @@ public class TankRender extends ChromaRenderBase {
 		//GL11.glFrontFace(GL11.GL_CCW);
 		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glDepthMask(true);
 
 		GL11.glPopMatrix();
 	}

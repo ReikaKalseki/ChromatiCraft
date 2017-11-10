@@ -649,7 +649,7 @@ public class EffectAlleles {
 							if (world.rand.nextInt(100) == 0) {
 								int dx = ReikaRandomHelper.getRandomPlusMinus(c.posX, r[0]);
 								int dz = ReikaRandomHelper.getRandomPlusMinus(c.posZ, r[2]);
-								ArtefactSpawner.instance.addArtefact(dx, dz, (EntityPlayer)e, 5000);
+								ArtefactSpawner.instance.addArtefact(dx, dz, (EntityPlayer)e, 72000);
 							}
 						}
 					}

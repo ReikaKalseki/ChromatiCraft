@@ -58,7 +58,7 @@ public abstract class RepeaterRecipe extends MultiBlockCastingRecipe implements 
 	}
 
 	@Override
-	public final NBTTagCompound handleNBTResult(TileEntityCastingTable te, EntityPlayer ep, NBTTagCompound tag) {
+	public final NBTTagCompound handleNBTResult(TileEntityCastingTable te, EntityPlayer ep, NBTTagCompound originalCenter, NBTTagCompound tag) {
 		if (tile.isTurbochargeableRepeater()) {
 			if (tag == null)
 				tag = new NBTTagCompound();

@@ -721,7 +721,10 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 				if (inv[i] != null) {
 					ItemStack container = inv[i].getItem().getContainerItem(inv[i]);
 					if (container == null) {
-						ReikaInventoryHelper.decrStack(i, inv);
+						int amt = 1;
+						if (recipe instanceof MultiBlockCastingRecipe)
+							amt = ((MultiBlockCastingRecipe)recipe).getRequiredCentralItemCount();
+						ReikaInventoryHelper.decrStack(i, this, amt);
 					}
 					else {
 						container = container.copy();
@@ -766,11 +769,12 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 			count--;
 
 			ItemStack toadd = ReikaItemHelper.getSizedItemStack(out, activeRecipe.getOutput().stackSize);
-			if (NBTin != null) {
-				ReikaNBTHelper.combineNBT(NBTin, toadd.stackTagCompound);
-				toadd.stackTagCompound = (NBTTagCompound)NBTin.copy();
+			NBTTagCompound NBTout = NBTin != null ? (NBTTagCompound)NBTin.copy() : null;
+			if (NBTout != null) {
+				ReikaNBTHelper.combineNBT(NBTout, toadd.stackTagCompound);
+				toadd.stackTagCompound = (NBTTagCompound)NBTout.copy();
 			}
-			toadd.stackTagCompound = activeRecipe.handleNBTResult(this, craftingPlayer, toadd.stackTagCompound);
+			toadd.stackTagCompound = activeRecipe.handleNBTResult(this, craftingPlayer, NBTin, toadd.stackTagCompound);
 			activeRecipe.setOwner(toadd, craftingPlayer);
 			ReikaInventoryHelper.addOrSetStack(toadd, inv, 9);
 			//ReikaJavaLibrary.pConsole("post "+inv[9]);

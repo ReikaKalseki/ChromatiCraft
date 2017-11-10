@@ -174,7 +174,9 @@ public enum Chromabilities implements Ability {
 	BEEALYZE(null, true),
 	NUKER(Phase.START, false),
 	LIGHTCAST(null, false),
-	JUMP(null, false);
+	JUMP(null, false),
+	//VOXELPLACE(null, false);
+	;
 
 
 	private final boolean tickBased;
@@ -309,6 +311,7 @@ public enum Chromabilities implements Ability {
 			case MOBSEEK:
 			case BEEALYZE:
 			case NUKER:
+				//case VOXELPLACE:
 				return true;
 			default:
 				return false;

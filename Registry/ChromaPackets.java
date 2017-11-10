@@ -178,6 +178,7 @@ public enum ChromaPackets {
 	MINERCATEGORY(1),
 	BOTTLENECK(7),
 	VOIDMONSTERRITUAL(2),
+	ALVEARYEFFECT(2),
 	;
 
 	public final int numInts;

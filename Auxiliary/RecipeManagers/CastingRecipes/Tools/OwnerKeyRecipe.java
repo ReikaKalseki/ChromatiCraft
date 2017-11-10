@@ -29,7 +29,7 @@ public class OwnerKeyRecipe extends CastingRecipe {
 	}
 
 	@Override
-	public NBTTagCompound handleNBTResult(TileEntityCastingTable te, EntityPlayer ep, NBTTagCompound tag) {
+	public NBTTagCompound handleNBTResult(TileEntityCastingTable te, EntityPlayer ep, NBTTagCompound originalCenter, NBTTagCompound tag) {
 		EntityPlayer plc = te.getPlacer();
 		if (plc != null && ep == plc) {
 			if (tag == null)

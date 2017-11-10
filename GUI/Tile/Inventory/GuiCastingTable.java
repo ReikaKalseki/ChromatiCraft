@@ -118,8 +118,8 @@ public class GuiCastingTable extends GuiChromaBase {
 				GL11.glDisable(GL11.GL_BLEND);
 			}
 			else {
-				ItemStack out = r.getOutput();
 				ItemStack ctr = tile.getStackInSlot(4);
+				ItemStack out = r.getOutputForDisplay(ctr);
 				if (ctr != null && out.stackTagCompound != null) {
 					ReikaNBTHelper.combineNBT(out.stackTagCompound, r.getOutputTag(ctr.stackTagCompound));
 				}

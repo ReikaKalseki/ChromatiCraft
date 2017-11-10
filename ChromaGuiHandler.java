@@ -78,6 +78,7 @@ import Reika.ChromatiCraft.GUI.Tile.GuiEnderTNT;
 import Reika.ChromatiCraft.GUI.Tile.GuiFluidRelay;
 import Reika.ChromatiCraft.GUI.Tile.GuiHeatLamp;
 import Reika.ChromatiCraft.GUI.Tile.GuiLampController;
+import Reika.ChromatiCraft.GUI.Tile.GuiLumenAlveary;
 import Reika.ChromatiCraft.GUI.Tile.GuiParticleSpawner;
 import Reika.ChromatiCraft.GUI.Tile.GuiRangedLamp;
 import Reika.ChromatiCraft.GUI.Tile.GuiRelayFilter;
@@ -106,6 +107,7 @@ import Reika.ChromatiCraft.ModInterface.AE.GuiPatternCache;
 import Reika.ChromatiCraft.ModInterface.AE.GuiRemoteTerminal;
 import Reika.ChromatiCraft.ModInterface.AE.TileEntityMEDistributor;
 import Reika.ChromatiCraft.ModInterface.AE.TileEntityPatternCache;
+import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.ContainerFluxMaker;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.GuiAspectFormer;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.GuiFluxMaker;
@@ -314,6 +316,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 					return new GuiRouterFilter(player, (RouterFilter)te);
 				if (te instanceof TileEntityFluxMaker)
 					return new GuiFluxMaker(player, (TileEntityFluxMaker)te);
+				if (te instanceof TileEntityLumenAlveary)
+					return new GuiLumenAlveary(player, (TileEntityLumenAlveary)te);
 
 				if (te instanceof OneSlotMachine) {
 					return new GuiOneSlot(player, (TileEntityChromaticBase)te);

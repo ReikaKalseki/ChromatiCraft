@@ -330,6 +330,31 @@ public class ChromaticEventManager {
 		}
 	}
 
+	/*
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void voxelBuild(PlayerPlaceBlockEvent evt) {
+		if (Chromabilities.VOXELPLACE.enabledOn(evt.player) && !evt.block.hasTileEntity(evt.metadata)) {
+			double r = 3.5;
+			for (int i = MathHelper.floor_double(-r); i <= MathHelper.ceiling_double_int(r); i++) {
+				for (int j = MathHelper.floor_double(-r); j <= MathHelper.ceiling_double_int(r); j++) {
+					for (int k = MathHelper.floor_double(-r); k <= MathHelper.ceiling_double_int(r); k++) {
+						if (ReikaMathLibrary.py3d(i, j, k) <= r) {
+							int dx = evt.xCoord+i;
+							int dy = evt.yCoord+j;
+							int dz = evt.zCoord+k;
+							ItemStack is = evt.player.getCurrentEquippedItem();
+							if (is != null && is.stackSize > 0 && evt.world.getBlock(dx, dy, dz).isAir(evt.world, dx, dy, dz)) {
+								evt.world.setBlock(dx, dy, dz, evt.block, evt.metadata, 3);
+								if (!evt.player.capabilities.isCreativeMode)
+									is.stackSize--;
+							}
+						}
+					}
+				}
+			}
+		}
+	}*/
+
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void multiBuild(PlayerPlaceBlockEvent evt) {
 		TileEntityMultiBuilder.placeBlock(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, evt.block, evt.metadata, evt.player, evt.player.getCurrentEquippedItem());

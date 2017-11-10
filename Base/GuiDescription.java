@@ -9,7 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
@@ -36,8 +36,9 @@ public abstract class GuiDescription extends GuiBookSection {
 			if (button.id == 2 && textOffset > 0) {
 				textOffset--;
 			}
-			else if (button.id == 3 && textOffset < CrystalBees.getBeeDescription(CrystalBees.getBeeByIndex(subpage-1)).size()-11) {
-				textOffset++;
+			else if (button.id == 3 && this.getSplitDescription() != null) {
+				if (textOffset < this.getSplitDescription().size()-11)
+					textOffset++;
 			}
 			else {
 				textOffset = 0;
@@ -57,7 +58,7 @@ public abstract class GuiDescription extends GuiBookSection {
 
 		String file = "Textures/GUIs/Handbook/buttons.png";
 
-		if (page == ChromaResearch.BEES && subpage > 0) {
+		if (this.getSplitDescription() != null) {
 			buttonList.add(new CustomSoundImagedGuiButton(2, j+205, k+50, 12, 10, 100, 6, file, ChromatiCraft.class, this));
 			buttonList.add(new CustomSoundImagedGuiButton(3, j+205, k+60, 12, 10, 112, 6, file, ChromatiCraft.class, this));
 		}
@@ -95,8 +96,8 @@ public abstract class GuiDescription extends GuiBookSection {
 				fontRendererObj.drawSplitString(s, px, posY+descY, 242, c);
 			}
 			else {
-				if (page == ChromaResearch.BEES && subpage > 0) {
-					ArrayList<String> li = CrystalBees.getBeeDescription(CrystalBees.getBeeByIndex(subpage-1));
+				List<String> li = this.getSplitDescription();
+				if (li != null) {
 					for (int i = textOffset; i < li.size(); i++) {
 						fontRendererObj.drawString(li.get(i), px, posY+descY+(fontRendererObj.FONT_HEIGHT+2)*(i-textOffset), c);
 						if (i-textOffset > 9)
@@ -113,6 +114,16 @@ public abstract class GuiDescription extends GuiBookSection {
 				fontRendererObj.drawSplitString("If you are the server admin or pack creator, use the configuration files to change this setting.", px, posY+descY+54, 242, 0xffffff);
 			}
 		}
+	}
+
+	private List<String> getSplitDescription() {
+		if (page == ChromaResearch.BEES && subpage > 0) {
+			return CrystalBees.getBeeDescription(CrystalBees.getBeeByIndex(subpage-1));
+		}
+		else if (page == ChromaResearch.ALVEARY && subpage > 0) {
+			return fontRendererObj.listFormattedStringToWidth(page.getNotes(subpage), 242);
+		}
+		return null;
 	}
 
 	@Override

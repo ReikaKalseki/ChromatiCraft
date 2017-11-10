@@ -273,7 +273,7 @@ public class GuiCastingRecipe extends GuiBookSection {
 	@Override
 	public String getPageTitle() {
 		String s = this.getActiveRecipe().canRunRecipe(player) ? "" : ChromaFontRenderer.FontType.OBFUSCATED.id;
-		return s+this.getActiveRecipe().getOutput().getDisplayName();//+" Casting";
+		return s+this.getActiveRecipe().getOutputForDisplay().getDisplayName();//+" Casting";
 	}
 
 	@Override

@@ -89,6 +89,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.Throwab
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.TransformationCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.VoidCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.VoidStorageRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.BeeConversionRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.ConfigRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.DoubleJumpRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.EnchantmentRecipe;
@@ -844,6 +845,10 @@ public class RecipesCastingTable {
 			if (ctr == null)
 				ctr = GameRegistry.findBlock(ModList.FORESTRY.modLabel, "alveary");
 			this.addRecipe(new LumenAlvearyRecipe(ChromaTiles.ALVEARY.getCraftedProduct(), new ItemStack(ctr)));
+
+			CastingRecipe r = new BeeConversionRecipe();
+			this.addRecipe(r);
+			moddedItemRecipes.add(r);
 		}
 
 		if (ModList.TINKERER.isLoaded()) {

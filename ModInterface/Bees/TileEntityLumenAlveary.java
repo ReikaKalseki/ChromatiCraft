@@ -11,8 +11,10 @@ package Reika.ChromatiCraft.ModInterface.Bees;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashSet;
 
@@ -42,8 +44,11 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.BeeGene;
@@ -88,14 +93,50 @@ import forestry.api.multiblock.MultiblockManager;
 //@SmartStrip
 @Strippable(value={"forestry.api.multiblock.IAlvearyComponent", "forestry.api.multiblock.IAlvearyComponent$BeeModifier",
 		"forestry.api.multiblock.IAlvearyComponent$BeeListener", "forestry.api.apiculture.IBeeModifier", "forestry.api.apiculture.IBeeListener"})
-public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IAlvearyComponent, BeeModifier, BeeListener, IBeeModifier, IBeeListener {
+public class TileEntityLumenAlveary extends TileEntityRelayPowered implements GuiController, IAlvearyComponent, BeeModifier, BeeListener,
+IBeeModifier, IBeeListener {
 
-	private static final HashSet<AlvearyEffect> effectSet = new HashSet();
+	private static final ArrayList<AlvearyEffect> effectSet = new ArrayList();
 	private static final HashSet<AlvearyEffect> continualSet = new HashSet();
 	private static final HashSet<AlvearyEffect> clientSet = new HashSet();
+	private static final GeneticRepairEffect geneRepair2;
 	private static final AutomationEffect automation;
 	private static final PlayerRestrictionEffect playerOnlyEffects;
 	private static final EnumMap<CrystalElement, ElementalBoostEffect> colorEffects = new EnumMap(CrystalElement.class);
+
+	public static final Comparator<AlvearyEffect> effectSorter = new Comparator<AlvearyEffect>(){
+		@Override
+		public int compare(AlvearyEffect o1, AlvearyEffect o2) {
+			if (o1 instanceof LumenAlvearyEffect && o2 instanceof LumenAlvearyEffect) {
+				LumenAlvearyEffect l1 = (LumenAlvearyEffect)o1;
+				LumenAlvearyEffect l2 = (LumenAlvearyEffect)o2;
+				return Integer.compare(100000*l1.color.ordinal()+l1.requiredEnergy, 100000*l2.color.ordinal()+l2.requiredEnergy);
+			}
+			else if (o1 instanceof VisAlvearyEffect && o2 instanceof VisAlvearyEffect) {
+				VisAlvearyEffect v1 = (VisAlvearyEffect)o1;
+				VisAlvearyEffect v2 = (VisAlvearyEffect)o2;
+				if (v1.aspect == v2.aspect) {
+					return Integer.compare(v1.requiredVis, v2.requiredVis);
+				}
+				else {
+					return v1.aspect.getLocalizedDescription().compareToIgnoreCase(v2.aspect.getLocalizedDescription());
+				}
+			}
+			else if (o1 instanceof LumenAlvearyEffect) {
+				return Integer.MAX_VALUE;
+			}
+			else if (o2 instanceof LumenAlvearyEffect) {
+				return Integer.MIN_VALUE;
+			}
+			else if (o1 instanceof VisAlvearyEffect) {
+				return Integer.MAX_VALUE;
+			}
+			else if (o2 instanceof VisAlvearyEffect) {
+				return Integer.MIN_VALUE;
+			}
+			return o1.getDescription().compareToIgnoreCase(o2.getDescription());
+		}
+	};
 
 	private static Method tickMethod;
 	private static Field tempField;
@@ -115,6 +156,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 
 	private int lightningTicks;
 	private String movePrincess;
+	private final HashSet<Integer> selectedEffects = new HashSet();
 	private final Collection<AlvearyEffect> activeEffects = new HashSet();
 	private EfficientFlowerCache flowerCache;
 
@@ -159,11 +201,12 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		new ExplorationEffect();
 		new GeneticFluxEffect();
 		new GeneticStabilityEffect();
+		new GeneticImmutabilityEffect();
 		new GeneticImprovementEffect();
 		new TemperatureMatchingEffect();
 		new HumidityMatchingEffect();
 		new GeneticRepairEffectI();
-		new GeneticRepairEffectII();
+		geneRepair2 = new GeneticRepairEffectII();
 		new EternalEffect();
 		//new SuppressionEffect(); //not implementable
 		automation = new AutomationEffect();
@@ -180,16 +223,24 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 
 	public static String getEffectsAsString() {
 		StringBuilder sb = new StringBuilder();
-		for (AlvearyEffect ae : effectSet) {
+		ArrayList<AlvearyEffect> li = new ArrayList(effectSet);
+		Collections.sort(li, effectSorter);
+		for (AlvearyEffect ae : li) {
+			sb.append(ae.getDescription());
+			sb.append(" - ");
 			if (ae instanceof LumenAlvearyEffect) {
-				sb.append(ae.getDescription());
-				sb.append(" - ");
 				sb.append(((LumenAlvearyEffect)ae).color.displayName);
 				sb.append(" (");
 				sb.append(((LumenAlvearyEffect)ae).requiredEnergy);
 				sb.append(" L/cycle)");
-				sb.append("\n");
 			}
+			else if (ae instanceof VisAlvearyEffect) {
+				sb.append(((VisAlvearyEffect)ae).aspect.getLocalizedDescription());
+				sb.append(" (");
+				sb.append(((VisAlvearyEffect)ae).requiredVis);
+				sb.append(" cv/cycle)");
+			}
+			sb.append("\n");
 		}
 		return sb.toString();
 	}
@@ -200,6 +251,10 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		}
 		if (ModList.FORESTRY.isLoaded()) {
 			logic = MultiblockManager.logicFactory.createAlvearyLogic();
+		}
+
+		for (AlvearyEffect ae : effectSet) {
+			selectedEffects.add(ae.ID);
 		}
 	}
 
@@ -266,7 +321,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 					this.doParticles(world, x, y, z);
 
 					for (AlvearyEffect ae : clientSet) {
-						if (ae.isActive(this)) {
+						if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 							if (ae.tickRate() == 1 || this.getTicksExisted()%ae.tickRate() == 0)
 								ae.clientTick(this);
 						}
@@ -282,7 +337,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 					activeEffects.clear();
 					if (this.canQueenWork()) {
 						for (AlvearyEffect ae : effectSet) {
-							if (ae.isActive(this)) {
+							if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 								if (ae.tickRate() == 1 || this.getTicksExisted()%ae.tickRate() == 0)
 									if (ae.tick(this))
 										activeEffects.add(ae);
@@ -303,7 +358,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 					}
 					else {
 						for (AlvearyEffect ae : continualSet) {
-							if (ae.isActive(this)) {
+							if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 								if (ae.tickRate() == 1 || this.getTicksExisted()%ae.tickRate() == 0)
 									if (ae.tick(this))
 										activeEffects.add(ae);
@@ -356,6 +411,23 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 
 	public Collection<AlvearyEffect> getActiveEffects() {
 		return Collections.unmodifiableCollection(activeEffects);
+	}
+
+	public Collection<AlvearyEffect> getSelectedEffects() {
+		HashSet<AlvearyEffect> set = new HashSet();
+		for (int id : selectedEffects) {
+			set.add(AlvearyEffect.getEffectByID(id));
+		}
+		return set;
+	}
+
+	public void setEffectSelectionState(int id, boolean active) {
+		if (active) {
+			selectedEffects.add(id);
+		}
+		else {
+			selectedEffects.remove(id);
+		}
 	}
 
 	@Override
@@ -490,6 +562,10 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	@ModDependent(ModList.FORESTRY)
 	public void onQueenDeath() {
 		movePrincess = this.getSpecies().getUID();
+		if (energy.containsAtLeast(geneRepair2.color, geneRepair2.requiredEnergy)) {
+			if (geneRepair2.repairQueen(this))
+				energy.subtract(geneRepair2.color, geneRepair2.requiredEnergy);
+		}
 		//ReikaJavaLibrary.pConsole("Marked to cycle "+movePrincess);
 		cachedQueen = null;
 		canWork = false;
@@ -545,7 +621,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	public float getTerritoryModifier(IBeeGenome genome, float current) {
 		float f = 1;
 		for (AlvearyEffect ae : effectSet) {
-			if (ae.isActive(this)) {
+			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				f *= ae.territoryFactor(this);
 			}
 		}
@@ -557,7 +633,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	public float getMutationModifier(IBeeGenome genome, IBeeGenome mate, float current) {
 		float f = 1;
 		for (AlvearyEffect ae : effectSet) {
-			if (ae.isActive(this)) {
+			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				f *= ae.mutationFactor(this);
 			}
 		}
@@ -569,7 +645,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	public float getLifespanModifier(IBeeGenome genome, IBeeGenome mate, float current) {
 		float f = 1;
 		for (AlvearyEffect ae : effectSet) {
-			if (ae.isActive(this)) {
+			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				f *= ae.lifespanFactor(this);
 			}
 		}
@@ -581,7 +657,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	public float getProductionModifier(IBeeGenome genome, float current) {
 		float f = 1;
 		for (AlvearyEffect ae : effectSet) {
-			if (ae.isActive(this)) {
+			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				f *= ae.productionFactor(this);
 			}
 		}
@@ -593,7 +669,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	public float getFloweringModifier(IBeeGenome genome, float current) {
 		float f = 1;
 		for (AlvearyEffect ae : effectSet) {
-			if (ae.isActive(this)) {
+			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				f *= ae.pollinationFactor(this);
 			}
 		}
@@ -605,7 +681,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	public float getGeneticDecay(IBeeGenome genome, float current) {
 		float f = 1;
 		for (AlvearyEffect ae : effectSet) {
-			if (ae.isActive(this)) {
+			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				f *= ae.decayFactor(this);
 			}
 		}
@@ -616,7 +692,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	@ModDependent(ModList.FORESTRY)
 	public boolean isSealed() {
 		for (AlvearyEffect ae : effectSet) {
-			if (ae.isActive(this)) {
+			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				if (ae.isSealed(this))
 					return true;
 			}
@@ -628,7 +704,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	@ModDependent(ModList.FORESTRY)
 	public boolean isSelfLighted() {
 		for (AlvearyEffect ae : effectSet) {
-			if (ae.isActive(this)) {
+			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				if (ae.isSelfLit(this))
 					return true;
 			}
@@ -640,7 +716,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	@ModDependent(ModList.FORESTRY)
 	public boolean isSunlightSimulated() {
 		for (AlvearyEffect ae : effectSet) {
-			if (ae.isActive(this)) {
+			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				if (ae.isSkySimulated(this))
 					return true;
 			}
@@ -651,7 +727,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	@Override
 	public boolean isHellish() {
 		for (AlvearyEffect ae : effectSet) {
-			if (ae.isActive(this)) {
+			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				if (ae.isHellish(this))
 					return true;
 			}
@@ -758,6 +834,9 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		}
 
 		this.getFlowerCache().readFromNBT(data);
+
+		if (data.hasKey("effects"))
+			ReikaNBTHelper.readCollectionFromNBT(selectedEffects, data, "effects");
 	}
 
 	@Override
@@ -773,6 +852,8 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		}
 
 		this.getFlowerCache().writeToNBT(data);
+
+		ReikaNBTHelper.writeCollectionToNBT(selectedEffects, data, "effects");
 	}
 
 	@Override
@@ -834,9 +915,16 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		return super.getPacketDelay()*4;
 	}
 
+	public static final Collection<AlvearyEffect> getEffectSet() {
+		return Collections.unmodifiableCollection(effectSet);
+	}
+
 	public static abstract class AlvearyEffect {
 
+		public final int ID;
+
 		protected AlvearyEffect() {
+			ID = effectSet.size();
 			effectSet.add(this);
 			if (this.worksWhenBeesDoNot()) {
 				continualSet.add(this);
@@ -844,6 +932,10 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 			if (this.ticksOnClient()) {
 				clientSet.add(this);
 			}
+		}
+
+		public static AlvearyEffect getEffectByID(int id) {
+			return effectSet.get(id);
 		}
 
 		public abstract String getDescription();
@@ -918,7 +1010,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		}
 	}
 
-	private static abstract class VisAlvearyEffect extends AlvearyEffect {
+	public static abstract class VisAlvearyEffect extends AlvearyEffect {
 
 		public final Aspect aspect;
 		public final int requiredVis;
@@ -970,6 +1062,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		public final int requiredEnergy;
 
 		protected LumenAlvearyEffect(CrystalElement e, int amt) {
+			super();
 			color = e;
 			requiredEnergy = amt;
 		}
@@ -1204,6 +1297,29 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		@Override
 		public String getDescription() {
 			return "Genetic Stability";
+		}
+
+	}
+
+	private static class GeneticImmutabilityEffect extends LumenAlvearyEffect {
+
+		private GeneticImmutabilityEffect() {
+			super(CrystalElement.WHITE, 600);
+		}
+
+		@Override
+		protected float mutationFactor(TileEntityLumenAlveary te) {
+			return 0;
+		}
+
+		@Override
+		protected float decayFactor(TileEntityLumenAlveary te) {
+			return 0F;
+		}
+
+		@Override
+		public String getDescription() {
+			return "Genetic Immutability";
 		}
 
 	}
@@ -1456,22 +1572,32 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 
 	private static abstract class GeneticRepairEffect extends LumenAlvearyEffect {
 
-		private GeneticRepairEffect(int cost) {
-			super(CrystalElement.MAGENTA, cost);
+		private final int tier;
+
+		private GeneticRepairEffect(int tier) {
+			super(CrystalElement.MAGENTA, 100*ReikaMathLibrary.intpow2(24, tier-1));
+			this.tier = tier;
 		}
 
 		@Override
 		public final String getDescription() {
-			return "Genetic Repair";
+			return "Genetic Repair "+tier;
 		}
 
 		@Override
 		protected final void onProductionTick(TileEntityLumenAlveary te) {
 			if (this.doRepair(te)) {
-				ItemStack is = te.getQueenItem();
-				ReikaBeeHelper.setPristine(is, true);
-				te.getBeeHousing().getBeeInventory().setQueen(is);
+				this.repairQueen(te);
 			}
+		}
+
+		private boolean repairQueen(TileEntityLumenAlveary te) {
+			ItemStack is = te.getQueenItem();
+			if (ReikaBeeHelper.isPristine(is))
+				return false;
+			ReikaBeeHelper.setPristine(is, true);
+			te.getBeeHousing().getBeeInventory().setQueen(is);
+			return true;
 		}
 
 		protected abstract boolean doRepair(TileEntityLumenAlveary te);
@@ -1481,7 +1607,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	private static class GeneticRepairEffectI extends GeneticRepairEffect {
 
 		private GeneticRepairEffectI() {
-			super(100);
+			super(1);
 		}
 
 		@Override
@@ -1493,7 +1619,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	private static class GeneticRepairEffectII extends GeneticRepairEffect {
 
 		private GeneticRepairEffectII() {
-			super(2400);
+			super(2);
 		}
 
 		@Override
@@ -1553,13 +1679,18 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		private final CrystalElement color;
 
 		private ElementalBoostEffect(CrystalElement e) {
-			super(e, 100);
+			super(e, 240);
 			color = e;
 		}
 
 		@Override
 		public String getDescription() {
 			return color.displayName+" Boost";
+		}
+
+		@Override
+		protected boolean isActive(TileEntityLumenAlveary te) {
+			return super.isActive(te) && te.getSpecies() == CrystalBees.getElementalBee(color);
 		}
 
 	}

@@ -20,6 +20,8 @@ import Reika.DragonAPI.Interfaces.TileModel;
 
 public abstract class ChromaModelBase extends ModelBase implements TileModel {
 
+	public static boolean allowRendering = true;
+
 	protected final float f5 = 0.0625F;
 	protected int pass;
 
@@ -34,8 +36,7 @@ public abstract class ChromaModelBase extends ModelBase implements TileModel {
 	@Override
 	public final void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f6) {}
 
-	protected final void setRotation(ModelRenderer model, float x, float y, float z)
-	{
+	protected final void setRotation(ModelRenderer model, float x, float y, float z) {
 		model.rotateAngleX = x;
 		model.rotateAngleY = y;
 		model.rotateAngleZ = z;

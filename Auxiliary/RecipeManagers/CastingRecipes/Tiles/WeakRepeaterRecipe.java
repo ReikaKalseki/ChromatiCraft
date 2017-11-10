@@ -58,7 +58,7 @@ public class WeakRepeaterRecipe extends TempleCastingRecipe implements CoreRecip
 	}
 
 	@Override
-	public NBTTagCompound handleNBTResult(TileEntityCastingTable te, EntityPlayer ep, NBTTagCompound tag) {
+	public NBTTagCompound handleNBTResult(TileEntityCastingTable te, EntityPlayer ep, NBTTagCompound originalCenter, NBTTagCompound tag) {
 		if (tag == null)
 			tag = new NBTTagCompound();
 		tag.setBoolean("boosted", false);
