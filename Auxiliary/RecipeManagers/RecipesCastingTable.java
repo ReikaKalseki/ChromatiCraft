@@ -234,6 +234,7 @@ import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerBlockHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler.ToolParts;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler.WeaponParts;
 import Reika.DragonAPI.ModRegistry.PowerTypes;
@@ -852,11 +853,15 @@ public class RecipesCastingTable {
 		}
 
 		if (ModList.TINKERER.isLoaded()) {
-			for (int i = 0; i < ToolParts.partList.length; i++) {
-				this.addRecipe(new TinkerToolPartRecipe(ToolParts.partList[i]));
+			if (TinkerBlockHandler.Pulses.TOOLS.isLoaded()) {
+				for (int i = 0; i < ToolParts.partList.length; i++) {
+					this.addRecipe(new TinkerToolPartRecipe(ToolParts.partList[i]));
+				}
 			}
-			for (int i = 0; i < WeaponParts.partList.length; i++) {
-				this.addRecipe(new TinkerToolPartRecipe(WeaponParts.partList[i]));
+			if (TinkerBlockHandler.Pulses.WEAPONS.isLoaded()) {
+				for (int i = 0; i < WeaponParts.partList.length; i++) {
+					this.addRecipe(new TinkerToolPartRecipe(WeaponParts.partList[i]));
+				}
 			}
 		}
 
@@ -872,6 +877,8 @@ public class RecipesCastingTable {
 	}
 
 	private void addRecipe(CastingRecipe r) {
+		r.validate();
+
 		OneWayList<CastingRecipe> li = recipes.get(r.type);
 		if (li == null) {
 			li = new OneWayList();

@@ -209,7 +209,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 						int meta2 = world.getBlockMetadata(dx, dy, dz);
 						//ReikaJavaLibrary.pConsole(readX+":"+dx+", "+dy+", "+readZ+":"+dz+" > "+ores.getSize(), Side.SERVER);
 						MineralCategory mc = this.getMiningCategory(world, dx, dy, dz, id, meta2);
-						if (mc != null) {
+						if (mc != null && coords.containsKey(mc)) {
 							Coordinate c = new Coordinate(dx, dy, dz);
 							if (coords.get(mc).add(c)) {
 								coords.get(MineralCategory.ANY).add(c);
@@ -289,6 +289,8 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 	}
 	 */
 	private MineralCategory getMiningCategory(World world, int x, int y, int z, Block b, int meta) {
+		if (b == Blocks.air || b == Blocks.stone || b == Blocks.netherrack || b == Blocks.end_stone || b == Blocks.dirt || b == Blocks.grass)
+			return null;
 		if (b == Blocks.glowstone)
 			return MineralCategory.MISC_UNDERGROUND_VALUABLE;
 		//if (b == Blocks.mob_spawner) //need an item
@@ -579,6 +581,11 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 
 	private void dropItems(World world, int x, int y, int z, Collection<ItemStack> li) {
 		for (ItemStack is : li) {
+			if (is == null || is.getItem() == null) {
+				BlockKey bk = BlockKey.getAt(world, x, y, z);
+				ChromatiCraft.logger.logError("Block "+bk+" @ "+x+", "+y+", "+z+" dropped a stack of null! This is a bug on their end!");
+				continue;
+			}
 			boolean flag = true;
 			for (int i = 0; i < 6 && flag; i++) {
 				TileEntity te = this.getAdjacentTileEntity(dirs[i]);

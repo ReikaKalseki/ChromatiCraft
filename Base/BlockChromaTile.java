@@ -568,8 +568,12 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			}
 			if (m == ChromaTiles.GLOWFIRE && ((TileEntityGlowFire)te).isSmothered())
 				is = ChromaStacks.transformCore.copy();
-			li = ReikaJavaLibrary.makeListFrom(is);
-			ReikaItemHelper.dropItems(world, x+par5Random.nextDouble(), y+par5Random.nextDouble(), z+par5Random.nextDouble(), li);
+			if (m == ChromaTiles.PYLONTURBO && ((TileEntityChromaticBase)te).getOwners(false).isEmpty()) //fix for ones in accidental worldgen
+				is = null;
+			if (is != null) {
+				li = ReikaJavaLibrary.makeListFrom(is);
+				ReikaItemHelper.dropItems(world, x+par5Random.nextDouble(), y+par5Random.nextDouble(), z+par5Random.nextDouble(), li);
+			}
 		}
 	}
 

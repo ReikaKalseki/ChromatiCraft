@@ -476,17 +476,19 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity {
 
 			if (isAngry) {
 				EntityPlayer ep = worldObj.getClosestPlayerToEntity(this, -1);
-				if (attackCooldown > 0)
-					attackCooldown--;
-				else if (this.getDistanceSqToEntity(ep) <= 64) {
-					if (rand.nextInt(40) == 0) {
-						this.attack();
+				if (ep != null) {
+					if (attackCooldown > 0)
+						attackCooldown--;
+					else if (this.getDistanceSqToEntity(ep) <= 64) {
+						if (rand.nextInt(40) == 0) {
+							this.attack();
+						}
 					}
-				}
-				if (velocity != null) {
-					velocity.aimFrom(posX, posY, posZ, ep.posX, ep.posY+1.62, ep.posZ);
-					velocity.magnitude = 0.375;
-					velocityChanged = true;
+					if (velocity != null) {
+						velocity.aimFrom(posX, posY, posZ, ep.posX, ep.posY+1.62, ep.posZ);
+						velocity.magnitude = 0.375;
+						velocityChanged = true;
+					}
 				}
 			}
 		}

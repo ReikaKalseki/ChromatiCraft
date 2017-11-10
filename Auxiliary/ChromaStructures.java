@@ -2599,7 +2599,11 @@ public class ChromaStructures {
 		}
 
 		array.addBlock(x, y, z, ChromaTiles.PYLONLINK.getBlock(), ChromaTiles.PYLONLINK.getBlockMetadata());
+
+		array.setEmpty(x, y+1, z, false, false);
 		array.addBlock(x, y+1, z, ChromaTiles.PYLONTURBO.getBlock(), ChromaTiles.PYLONTURBO.getBlockMetadata());
+		array.setPlacementOverride(x, y, z, b, 0);
+		array.setPlacementOverride(x, y+1, z, Blocks.air, 0);
 
 		return array;
 	}

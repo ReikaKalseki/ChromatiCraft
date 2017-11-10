@@ -177,7 +177,7 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 		for (int i = 0; i < DimDecoTileTypes.list.length; i++) {
 			icons[0][i] = ico.registerIcon("chromaticraft:dimgen2/underlay_"+i);
 			icons[1][i] = ico.registerIcon("chromaticraft:dimgen2/overlay_"+i);
-			DimDecoTileTypes.list[i].icon = ico.registerIcon("chromaticraft:"+DimDecoTileTypes.list[i].itemTex);
+			DimDecoTileTypes.list[i].icon = ico.registerIcon("chromaticraft:dimgen/"+DimDecoTileTypes.list[i].itemTex);
 		}
 	}
 

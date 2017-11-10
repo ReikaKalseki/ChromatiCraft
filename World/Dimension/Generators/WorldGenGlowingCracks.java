@@ -37,6 +37,7 @@ import Reika.DragonAPI.Interfaces.Registry.OreType;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.GregOreHandler;
 import Reika.DragonAPI.ModRegistry.ModOreList;
 
 
@@ -103,7 +104,7 @@ public class WorldGenGlowingCracks extends ChromaWorldGenerator {
 		ArrayList<ItemStack> li2 = new ArrayList(ore.getAllOreBlocks());
 		int idx = rand.nextInt(li2.size());
 		ItemStack is = li2.get(idx);
-		while (!li2.isEmpty() && ReikaOreHelper.isGregOre(Block.getBlockFromItem(is.getItem()))) {
+		while (!li2.isEmpty() && GregOreHandler.getInstance().isGregOre(Block.getBlockFromItem(is.getItem()))) {
 			li2.remove(idx);
 			idx = rand.nextInt(li2.size());
 			is = li2.get(idx);

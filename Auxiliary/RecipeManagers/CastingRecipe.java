@@ -361,6 +361,31 @@ public class CastingRecipe implements APICastingRecipe {
 		return recipe.equals(cr.recipe);
 	}
 
+	public final void validate() {
+		try {
+			if (out == null)
+				throw new IllegalArgumentException("Null output");
+			if (out.getItem() == null)
+				throw new IllegalArgumentException("Null-item output");
+			if (this instanceof MultiBlockCastingRecipe) {
+				MultiBlockCastingRecipe mr = (MultiBlockCastingRecipe)this;
+				if (mr.main == null)
+					throw new IllegalArgumentException("Null central item");
+				if (mr.main.getItem() == null)
+					throw new IllegalArgumentException("Null-item central item");
+			}
+			else {
+				if (recipe == null)
+					throw new IllegalArgumentException("Null recipe");
+			}
+
+			this.getIDString(); //will trigger failures as a last resort to catch anything missed
+		}
+		catch (Exception e) {
+			throw new RegistrationException(ChromatiCraft.instance, "Invalid casting recipe was going to be added: "+this.getClass(), e);
+		}
+	}
+
 	public static class TempleCastingRecipe extends CastingRecipe implements RuneRecipe {
 
 		private static final ArrayList<Coordinate> runeRing = new ArrayList();
