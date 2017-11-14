@@ -127,6 +127,17 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 	}
 
 	@Override
+	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection dir) {
+		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
+		switch(c) {
+			case TABLE:
+				return dir != ForgeDirection.UP;
+			default:
+				return super.isSideSolid(world, x, y, z, dir);
+		}
+	}
+
+	@Override
 	public float getExplosionResistance(Entity e, World world, int x, int y, int z, double eX, double eY, double eZ) {
 		ChromaTiles t = ChromaTiles.getTile(world, x, y, z);
 		if (t == ChromaTiles.TABLE)

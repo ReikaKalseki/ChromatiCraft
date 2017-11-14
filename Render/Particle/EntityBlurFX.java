@@ -11,10 +11,12 @@ package Reika.ChromatiCraft.Render.Particle;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomRenderFX;
@@ -314,7 +316,7 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 				f = (particleMaxAge/age >= 12 ? age*12F/particleMaxAge : 1-age/(float)particleMaxAge);
 			}
 			else {
-				f = (float)Math.sin(Math.toRadians(180D*age/particleMaxAge));
+				f = MathHelper.sin((float)Math.toRadians(180D*age/particleMaxAge));
 			}
 			if (additiveBlend) {
 				particleRed = defaultRed*f;
@@ -329,7 +331,7 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 			if (rapidExpand)
 				particleScale = scale*(particleMaxAge/age >= 12 ? age*12F/particleMaxAge : 1-age/(float)particleMaxAge);
 			else
-				particleScale = scale*(float)Math.sin(Math.toRadians(180D*age/particleMaxAge));
+				particleScale = scale*MathHelper.sin((float)Math.toRadians(180D*age/particleMaxAge));
 			//if (particleAge < 10)
 			//	particleScale = scale*(particleAge+1)/10F;
 			//else if (particleAge > 50)
@@ -367,13 +369,15 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 			motionZ = lock.motionZ;
 		}
 
-		for (EntityFX fx : locks) {
-			//fx.posX = posX;
-			//fx.posY = posY;
-			//fx.posZ = posZ;
-			fx.motionX = motionX;
-			fx.motionY = motionY;
-			fx.motionZ = motionZ;
+		if (!locks.isEmpty()) {
+			for (EntityFX fx : locks) {
+				//fx.posX = posX;
+				//fx.posY = posY;
+				//fx.posZ = posZ;
+				fx.motionX = motionX;
+				fx.motionY = motionY;
+				fx.motionZ = motionZ;
+			}
 		}
 
 		if (motionController != null) {
@@ -393,6 +397,49 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 		if (colorController != null) {
 			this.setColor(colorController.getColor(this));
 			colorController.update(this);
+		}
+	}
+
+	@Override
+	public void moveEntity(double vx, double vy, double vz) {
+		if (noClip) {
+			super.moveEntity(vx, vy, vz);
+		}
+		else { //streamlined, removed everything that was never applicable or desirable for a particle
+			ySize *= 0.4F;
+
+			double vxCopy = vx;
+			double vyCopy = vy;
+			double vzCopy = vz;
+
+			List<AxisAlignedBB> list = worldObj.getCollidingBoundingBoxes(this, boundingBox.addCoord(vx, vy, vz));
+
+			if (!list.isEmpty()) {
+				for (AxisAlignedBB box : list) {
+					vx = box.calculateXOffset(boundingBox, vx);
+					vy = box.calculateYOffset(boundingBox, vy);
+					vz = box.calculateZOffset(boundingBox, vz);
+				}
+			}
+
+			boundingBox.offset(vx, vy, vz);
+
+			posX = (boundingBox.minX + boundingBox.maxX) * 0.5;
+			posY = boundingBox.minY + yOffset - ySize;
+			posZ = (boundingBox.minZ + boundingBox.maxZ) * 0.5;
+			isCollidedHorizontally = vxCopy != vx || vzCopy != vz;
+			isCollidedVertically = vyCopy != vy;
+			onGround = vyCopy != vy && vyCopy < 0.0D;
+			isCollided = isCollidedHorizontally || isCollidedVertically;
+
+			if (isCollidedHorizontally) {
+				motionX = 0.0D;
+				motionZ = 0.0D;
+			}
+
+			if (isCollidedVertically) {
+				motionY = 0.0D;
+			}
 		}
 	}
 

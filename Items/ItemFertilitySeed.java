@@ -91,7 +91,7 @@ public class ItemFertilitySeed extends ItemChromaBasic implements BreakerCallbac
 				if (this.canTickBlock(b, ei.worldObj.getBlockMetadata(x, y, z))) {
 					b.updateTick(ei.worldObj, x, y, z, ei.worldObj.rand);
 					MinecraftForge.EVENT_BUS.post(new BlockTickEvent(ei.worldObj, x, y, z, b, UpdateFlags.FORCED.flag));
-					ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.FERTILITYSEED.ordinal(), ei.worldObj, x, y, z, 256);
+					ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.FERTILITYSEED.ordinal(), ei.worldObj, x, y, z, 96);
 				}
 			}
 		}
@@ -104,15 +104,18 @@ public class ItemFertilitySeed extends ItemChromaBasic implements BreakerCallbac
 
 	@SideOnly(Side.CLIENT)
 	public static void doFertilizeFX(World world, int x, int y, int z) {
+		double d = Minecraft.getMinecraft().thePlayer.getDistanceSq(x+0.5, y+0.5, z+0.5);
+		int n = d >= 4096 ? 4 : d >= 1024 ? 6 : 8;
+		int maxl = d >= 4096 ? 20 : d >= 576 ? 30 : 40;
 		Block b = world.getBlock(x, y, z);
 		b.setBlockBoundsBasedOnState(world, x, y, z);
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < n; i++) {
 			double px = x+b.getBlockBoundsMinX()+(b.getBlockBoundsMaxX()-b.getBlockBoundsMinX())*rand.nextDouble();
 			double py = y+b.getBlockBoundsMinY()+(b.getBlockBoundsMaxY()-b.getBlockBoundsMinY())*rand.nextDouble();
 			double pz = z+b.getBlockBoundsMinZ()+(b.getBlockBoundsMaxZ()-b.getBlockBoundsMinZ())*rand.nextDouble();
 			int c = ReikaColorAPI.getModifiedHue(0x00ff00, ReikaRandomHelper.getRandomBetween(80, 150));
 			float f = 0.5F+rand.nextFloat();
-			int l = ReikaRandomHelper.getRandomBetween(10, 40);
+			int l = ReikaRandomHelper.getRandomBetween(10, maxl);
 			EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(c).setScale(f).setLife(l);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}

@@ -255,7 +255,8 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 
 	public void setMapping(int slot, ItemStack is) {
 		filter[slot] = is;
-		this.buildCallbacks();
+		if (ModList.APPENG.isLoaded())
+			this.buildCallbacks();
 		this.syncAllData(true);
 	}
 
@@ -265,13 +266,15 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 
 	public void setThreshold(int slot, int thresh) {
 		threshold[slot] = thresh;
-		this.buildCallbacks();
+		if (ModList.APPENG.isLoaded())
+			this.buildCallbacks();
 		this.syncAllData(true);
 	}
 
 	public void toggleFuzzy(int slot) {
 		match[slot] = match[slot].next();
-		this.buildCallbacks();
+		if (ModList.APPENG.isLoaded())
+			this.buildCallbacks();
 		this.syncAllData(true);
 	}
 

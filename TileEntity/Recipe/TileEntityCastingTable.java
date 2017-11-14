@@ -238,7 +238,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		fx.setIcon(ChromaIcons.HOLE);
 		//fx.setColor(CrystalElement.getBlendedColor(this.getTicksExisted(), 15));
 		fx.setColor(ReikaColorAPI.getModifiedHue(0xff0000, (this.getTicksExisted()*3)%360));
-		fx.setColliding();
+		//fx.setColliding();
 		fx.setGravity(-0.03125F*8);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}

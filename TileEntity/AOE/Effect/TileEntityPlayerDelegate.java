@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
@@ -56,7 +57,7 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 			int dy = y+dir.offsetY;
 			int dz = z+dir.offsetZ;
 			Block b = world.getBlock(dx, dy, dz);
-			if (b instanceof CrystalBlock && rand.nextInt(70/this.getTier()) == 0) {
+			if (b instanceof CrystalBlock && rand.nextInt(80/(this.getTier()+1)) == 0) {
 				CrystalBlock c = (CrystalBlock)b;
 				CrystalElement e = CrystalElement.elements[world.getBlockMetadata(dx, dy, dz)];
 				if (e == CrystalElement.PURPLE) {
@@ -217,6 +218,31 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 		@Override
 		protected String[] getClasses() {
 			return new String[]{"thaumcraft.common.tiles.TileDeconstructionTable"};
+		}
+
+	}
+
+	private static class ChromaCollectorDelegateInterface extends DelegateInterface {
+
+		@Override
+		protected void tick(TileEntity te, int tier, EntityPlayer ep) throws Exception {
+			TileEntityCollector tc = (TileEntityCollector)te;
+			tc.tryIntakeXPFromPlayer(ep, false);
+		}
+
+		@Override
+		protected void init() throws Exception {
+
+		}
+
+		@Override
+		protected ModList getMod() {
+			return ModList.CHROMATICRAFT;
+		}
+
+		@Override
+		protected String[] getClasses() {
+			return new String[]{TileEntityCollector.class.getName()};
 		}
 
 	}

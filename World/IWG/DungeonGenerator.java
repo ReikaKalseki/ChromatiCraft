@@ -832,7 +832,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 
 		private StructureFile(File f) {
 			super(f);
-			encryptData = true;
+			//encryptData = true;
 		}
 
 		@Override

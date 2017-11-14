@@ -47,13 +47,13 @@ public class TileEntityCollector extends FluidIOInventoryBase implements OwnedTi
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 
-		int speed = this.getConversionSpeed();
 		if (output.canTakeIn(XP_PER_BOTTLE))
 			this.internalizeXP();
 
 		if (!input.isEmpty() && !this.hasRedstoneSignal()) {
 			FluidStack fs = ReikaXPFluidHelper.getFluid();
 			if (fs != null) {
+				int speed = this.getConversionSpeed();
 				int produce = Math.min(speed, input.getLevel()/fs.amount/XP_PER_CHROMA);
 				if (produce > 0) {
 					if (output.canTakeIn(produce)) {
@@ -64,8 +64,9 @@ public class TileEntityCollector extends FluidIOInventoryBase implements OwnedTi
 			}
 		}
 
-		if (output.canTakeIn(speed))
-			this.intakeXPFromPlayer(world, x, y, z);
+		for (EntityPlayer ep : this.getOwners(false)) {
+			this.tryIntakeXPFromPlayer(ep, true);
+		}
 
 		if (world.isRemote && rand.nextInt(4) == 0)
 			this.spawnParticles(world, x, y, z, meta);
@@ -98,19 +99,22 @@ public class TileEntityCollector extends FluidIOInventoryBase implements OwnedTi
 		return 5;
 	}
 
-	private void intakeXPFromPlayer(World world, int x, int y, int z) {
-		for (EntityPlayer ep : this.getOwners(false)) {
-			if (ep != null && !ReikaPlayerAPI.isFakeOrNotInteractable(ep, x+0.5, y+0.5, z+0.5, 2)) {
-				int mult = this.getConversionSpeed();
-				if (ep.experienceTotal >= XP_PER_CHROMA*mult) {
-					AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).offset(0, 1, 0);
-					if (ep.boundingBox.intersectsWith(box)) {
-						int add = Math.min(output.getRemainingSpace(), mult);
-						if (add > 0) {
-							output.addLiquid(add, FluidRegistry.getFluid("chroma"));
-							ReikaPlayerAPI.removeExperience(ep, XP_PER_CHROMA*add);
-							ProgressStage.MAKECHROMA.stepPlayerTo(ep);
-						}
+	public void tryIntakeXPFromPlayer(EntityPlayer ep, boolean doAABB) {
+		if (output.canTakeIn(this.getConversionSpeed()))
+			this.intakeXPFromPlayer(ep, doAABB);
+	}
+
+	private void intakeXPFromPlayer(EntityPlayer ep, boolean doAABB) {
+		if (ep != null && !(doAABB ? ReikaPlayerAPI.isFakeOrNotInteractable(ep, xCoord+0.5, yCoord+0.5, zCoord+0.5, 2) : ReikaPlayerAPI.isFake(ep))) {
+			int mult = this.getConversionSpeed();
+			if (ep.experienceTotal >= XP_PER_CHROMA*mult) {
+				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(xCoord, yCoord, zCoord).offset(0, 1, 0);
+				if (!doAABB || ep.boundingBox.intersectsWith(box)) {
+					int add = Math.min(output.getRemainingSpace(), mult);
+					if (add > 0) {
+						output.addLiquid(add, FluidRegistry.getFluid("chroma"));
+						ReikaPlayerAPI.removeExperience(ep, XP_PER_CHROMA*add);
+						ProgressStage.MAKECHROMA.stepPlayerTo(ep);
 					}
 				}
 			}

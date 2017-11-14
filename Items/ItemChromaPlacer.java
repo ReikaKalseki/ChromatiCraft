@@ -137,6 +137,9 @@ public class ItemChromaPlacer extends Item implements ISize {
 				--is.stackSize;
 			world.setBlock(x, y, z, m.getBlock(), m.getBlockMetadata(), 3);
 		}
+		else {
+			return false;
+		}
 		Material mat = m.getBlock().getMaterial();
 		Block b = m.getBlock();
 		if (b == ChromaBlocks.TILECRYSTAL.getBlockInstance() || b == ChromaBlocks.TILECRYSTALNONCUBE.getBlockInstance()) {

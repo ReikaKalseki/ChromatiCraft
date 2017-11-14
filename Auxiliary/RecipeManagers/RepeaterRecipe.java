@@ -75,6 +75,24 @@ public abstract class RepeaterRecipe extends MultiBlockCastingRecipe implements 
 	}
 
 	@Override
+	protected final boolean isValidCentralNBT(ItemStack is) {
+		return super.isValidCentralNBT(this.stripUncaredTags(is));
+	}
+
+	@Override
+	public final boolean crafts(ItemStack is) {
+		return super.crafts(this.stripUncaredTags(is));
+	}
+
+	private final ItemStack stripUncaredTags(ItemStack is) {
+		if (is.stackTagCompound == null)
+			return is;
+		is = is.copy();
+		is.stackTagCompound.removeTag("boosted");
+		return is;
+	}
+
+	@Override
 	public final float getAutomationCostFactor(TileEntityCastingAuto ae, TileEntityCastingTable te, ItemStack is) {
 		switch(tile) {
 			case REPEATER:

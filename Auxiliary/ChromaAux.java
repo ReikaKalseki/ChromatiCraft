@@ -153,7 +153,7 @@ public class ChromaAux {
 						lgc.minSpawnDelay *= 2;
 						lgc.maxSpawnDelay *= 4;
 					}
-					else if (InterfaceCache.NODE.instanceOf(dat.getTileEntity(world))) {
+					else if (ChromaTiles.getTileFromIDandMetadata(dat.newBlock, dat.newMetadata) != ChromaTiles.PYLON && InterfaceCache.NODE.instanceOf(dat.getTileEntity(world))) {
 						TileEntity te = dat.getTileEntity(world);
 						INode n = (INode)te;
 						n.setNodeType(NodeType.NORMAL);
@@ -181,7 +181,7 @@ public class ChromaAux {
 					else if (ModList.TINKERER.isLoaded() && TinkerBlockHandler.getInstance().isSlimeIslandBlock(dat.newBlock, dat.newMetadata)) {
 						dat.revert(world);
 					}
-					else if (InterfaceCache.NODE.instanceOf(dat.getTileEntity(world))) {
+					else if (ChromaTiles.getTileFromIDandMetadata(dat.newBlock, dat.newMetadata) != ChromaTiles.PYLON && InterfaceCache.NODE.instanceOf(dat.getTileEntity(world))) {
 						TileEntity te = dat.getTileEntity(world);
 						INode n = (INode)te;
 						n.setNodeType(NodeType.NORMAL);

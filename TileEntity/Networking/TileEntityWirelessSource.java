@@ -174,7 +174,9 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 			double v = ReikaRandomHelper.getRandomBetween(0.03125, 0.125);
 			double[] vel = ReikaPhysicsHelper.polarToCartesian(v, rand.nextDouble()*360, rand.nextDouble()*360);
 			float g = rand.nextBoolean() ? 0.0625F : -0.0625F;
-			EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.5, z+0.5, vel[0], vel[1], vel[2]).setColor(c).setRapidExpand().setGravity(g).setColliding();
+			EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.5, z+0.5, vel[0], vel[1], vel[2]).setColor(c).setRapidExpand().setGravity(g);
+			if (rand.nextBoolean())
+				fx.setColliding();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 		if (broadcasting) {

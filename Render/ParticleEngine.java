@@ -40,6 +40,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityGlobeFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.IO.ThrottleableEffectRenderer;
+import Reika.DragonAPI.IO.ThrottleableEffectRenderer.CustomEffectRenderer;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.ListFactory;
 import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
@@ -53,7 +54,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ParticleEngine extends EffectRenderer {
+public class ParticleEngine extends EffectRenderer implements CustomEffectRenderer {
 
 	public static final ParticleEngine instance = new ParticleEngine();
 
@@ -223,6 +224,11 @@ public class ParticleEngine extends EffectRenderer {
 	@Override
 	public void clearEffects(World world) {
 		particles.clear();
+	}
+
+	@Override
+	public int getParticleCount() {
+		return particles.totalSize();
 	}
 
 	private static class RenderKey {

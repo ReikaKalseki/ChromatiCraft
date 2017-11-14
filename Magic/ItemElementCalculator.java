@@ -555,7 +555,7 @@ public class ItemElementCalculator {
 			}
 		}
 
-		if (!tag.isEmpty() || is.getItem().getUnlocalizedName().contains("gt.metatool")) { //hopefully avoid deep recursion
+		if (!tag.isEmpty() || ModList.GREGTECH.modLabel.equals(ReikaItemHelper.getRegistrantMod(is))) { //hopefully avoid deep recursion
 			return tag;
 		}
 

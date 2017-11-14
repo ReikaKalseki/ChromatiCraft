@@ -352,7 +352,7 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity {
 		double pz = ReikaRandomHelper.getRandomPlusMinus(posZ, d);
 		int l = ReikaRandomHelper.getRandomBetween(10, 60);
 		float s = 2+rand.nextFloat()*2;
-		EntityFX fx = new EntityBlurFX(worldObj, px, py, pz).setColor(c).setLife(l).setScale(s).setAlphaFading().setRapidExpand().setColliding();
+		EntityFX fx = new EntityBlurFX(worldObj, px, py, pz).setColor(c).setLife(l).setScale(s).setAlphaFading().setRapidExpand();//.setColliding();
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, 0.4F);
@@ -360,7 +360,7 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity {
 		px = ReikaRandomHelper.getRandomPlusMinus(posX, d);
 		py = ReikaRandomHelper.getRandomPlusMinus(posY, d);
 		pz = ReikaRandomHelper.getRandomPlusMinus(posZ, d);
-		fx = new EntityBlurFX(worldObj, px, py, pz).setColor(c).setLife(l/2).setScale(s*3).setAlphaFading().setRapidExpand().setColliding();
+		fx = new EntityBlurFX(worldObj, px, py, pz).setColor(c).setLife(l/2).setScale(s*3).setAlphaFading().setRapidExpand();//.setColliding();
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 

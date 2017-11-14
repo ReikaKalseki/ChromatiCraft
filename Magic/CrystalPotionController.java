@@ -288,7 +288,7 @@ public class CrystalPotionController {
 
 	private static void addPotionEffect(EntityLivingBase e, PotionEffect eff) {
 		PotionEffect cur = e.getActivePotionEffect(Potion.potionTypes[eff.getPotionID()]);
-		if (cur == null || cur.getAmplifier() < eff.getAmplifier() || cur.getDuration() < 20 || eff.getDuration() < 80)
+		if (e instanceof EntityPlayer || cur == null || cur.getAmplifier() < eff.getAmplifier() || cur.getDuration() < 20 || eff.getDuration() < 80)
 			e.addPotionEffect(eff);
 	}
 }

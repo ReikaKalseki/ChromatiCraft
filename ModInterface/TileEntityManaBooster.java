@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.Search;
@@ -210,6 +211,7 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered implements 
 		return null;
 	}
 
+	@ModDependent(ModList.BOTANIA)
 	public static int receiveMana(World world, Coordinate c, int amt, boolean doRemove) {
 		TileEntity te = c.getTileEntity(world);
 		if (!isGeneratingFlower(te))
@@ -235,6 +237,7 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered implements 
 		}
 	}
 
+	@ModDependent(ModList.BOTANIA)
 	public static int dumpMana(World world, Coordinate c, int amt, boolean doAdd) {
 		TileEntity te = c.getTileEntity(world);
 		if (!isValidPool(te))
@@ -277,10 +280,12 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered implements 
 		}
 	}
 
+	@ModDependent(ModList.BOTANIA)
 	private static boolean isValidPool(TileEntity te) {
 		return te instanceof IManaPool && te instanceof ISparkAttachable;
 	}
 
+	@ModDependent(ModList.BOTANIA)
 	private static boolean isGeneratingFlower(TileEntity te) {
 		if (te instanceof ISubTileContainer) {
 			SubTileEntity st = ((ISubTileContainer)te).getSubTile();
@@ -327,6 +332,7 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered implements 
 	}
 
 	@Override
+	@ModDependent(ModList.BOTANIA)
 	public float getManaYieldMultiplier(IManaBurst burst) {
 		return 1;
 	}
