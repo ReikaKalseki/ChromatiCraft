@@ -2313,6 +2313,11 @@ public class ChromaStructures {
 		array.addBlock(x, y, z+1, ChromaBlocks.RUNE.getBlockInstance());
 		array.addBlock(x, y, z-1, ChromaBlocks.RUNE.getBlockInstance());
 
+		array.addBlock(x+1, y+1, z, Blocks.fire); //to prevent lightning causing issues
+		array.addBlock(x-1, y+1, z, Blocks.fire);
+		array.addBlock(x, y+1, z+1, Blocks.fire);
+		array.addBlock(x, y+1, z-1, Blocks.fire);
+
 		return array;
 	}
 

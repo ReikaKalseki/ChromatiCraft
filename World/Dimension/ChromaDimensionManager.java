@@ -421,6 +421,13 @@ public class ChromaDimensionManager {
 			Block b = GameRegistry.findBlock(ModList.THAUMICTINKER.modLabel, "warpGate");
 			banBlock(b);
 		}
+
+		i = GameRegistry.findItem(ModList.DRACONICEVO.modLabel, "teleporterMKI");
+		if (i != null)
+			bannedItems.add(new KeyedItemStack(i).setIgnoreNBT(true).setSimpleHash(true));
+		i = GameRegistry.findItem(ModList.DRACONICEVO.modLabel, "teleporterMKII");
+		if (i != null)
+			bannedItems.add(new KeyedItemStack(i).setIgnoreNBT(true).setSimpleHash(true));
 	}
 
 	@SideOnly(Side.CLIENT)

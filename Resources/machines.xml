@@ -492,6 +492,8 @@
 		</desc>
 		<note>
 			Link to a location with the linking tool
+			
+			Redstone input to a side disables the corresponding slot
 		</note>
 	</inserter>
 	<essentiarelay>

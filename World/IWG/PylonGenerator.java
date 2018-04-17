@@ -717,6 +717,11 @@ public final class PylonGenerator implements RetroactiveGenerator {
 			return o instanceof PylonEntry && ((PylonEntry)o).location.equals(location);
 		}
 
+		@Override
+		public String toString() {
+			return color.name()+" @ "+location.toString()+" [CRY = "+powerCrystals.size()+"x/TRB = "+isTurboCharged+"/LNK = "+playerLink+"]";
+		}
+
 		public Collection<Coordinate> getCrystals() {
 			return Collections.unmodifiableCollection(powerCrystals);
 		}

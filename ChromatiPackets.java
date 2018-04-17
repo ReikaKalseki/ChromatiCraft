@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Auxiliary.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Ability.AbilityCalls;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
@@ -938,7 +939,7 @@ public class ChromatiPackets implements PacketHandler {
 				case NUKERLOC:
 					Entity e = world.getEntityByID(data[3]);
 					if (e instanceof EntityPlayer)
-						Chromabilities.doNukerFX(world, data[0], data[1], data[2], (EntityPlayer)e);
+						AbilityCalls.doNukerFX(world, data[0], data[1], data[2], (EntityPlayer)e);
 					break;
 				case BURNERINV:
 					if (data[0] > 0) {

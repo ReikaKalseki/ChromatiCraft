@@ -48,7 +48,7 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 	public ItemTransitionWand(int index) {
 		super(index);
 		this.addEnergyCost(CrystalElement.GRAY, 2);
-		this.addEnergyCost(CrystalElement.YELLOW, 1);
+		this.addEnergyCost(CrystalElement.BROWN, 1);
 	}
 
 	@Override

@@ -471,6 +471,10 @@ public class ProgressionManager implements ProgressRegistry {
 
 	private NBTTagList getNBTList(EntityPlayer ep) {
 		NBTTagCompound nbt = ChromaResearchManager.instance.getRootNBTTag(ep);
+		if (nbt == null) {
+			ChromatiCraft.logger.logError("Looking for progression data on player "+ep.getCommandSenderName()+", with no NBT?!");
+			return new NBTTagList();
+		}
 		if (!nbt.hasKey(MAIN_NBT_TAG))
 			nbt.setTag(MAIN_NBT_TAG, new NBTTagList());
 		NBTTagList li = nbt.getTagList(MAIN_NBT_TAG, NBTTypes.STRING.ID);

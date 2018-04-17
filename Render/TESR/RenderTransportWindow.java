@@ -284,7 +284,7 @@ public class RenderTransportWindow extends ChromaRenderBase {
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
-		return ((TileEntityTransportWindow)te).renderTexture ? "window.png" : "window_notex.png";
+		return ((TileEntityTransportWindow)te).renderTexture() ? "window.png" : "window_notex.png";
 	}
 
 }

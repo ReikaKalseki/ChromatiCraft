@@ -171,6 +171,10 @@ public class ChromaBookData {
 				double a = ba+ang/2D;
 				int ix = (int)Math.round(dx+ir*Math.cos(Math.toRadians(a)));
 				int iy = (int)Math.round(dy+ir*Math.sin(Math.toRadians(a)));
+				if (p.getElements().size() == 1) {
+					ix = dx;
+					iy = dy;
+				}
 				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(ix-si/2, iy-si/2, e.getOutlineRune(), si, si);
 				ba += ang;
 			}

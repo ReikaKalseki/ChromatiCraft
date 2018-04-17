@@ -327,8 +327,7 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			if (te instanceof TileEntityTransportWindow) {
 				((TileEntityTransportWindow)te).setFacing(direction);
-				((TileEntityTransportWindow)te).renderBackPane = false;
-				((TileEntityTransportWindow)te).renderTexture = false;
+				((TileEntityTransportWindow)te).setRenderStates(false, false);
 				((TileEntityTransportWindow)te).setUnmineable(true);
 
 				if (other.getBlock(world) != ChromaTiles.WINDOW.getBlock() || other.getBlockMetadata(world) != ChromaTiles.WINDOW.getBlockMetadata())

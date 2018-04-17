@@ -87,6 +87,7 @@ import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
 import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
 import Reika.DragonAPI.Instantiable.Event.MobTargetingEvent;
 import Reika.DragonAPI.Instantiable.Event.PlayerHasItemEvent;
+import Reika.DragonAPI.Instantiable.Event.PlayerPlaceBlockEvent;
 import Reika.DragonAPI.Instantiable.Event.PostItemUseEvent;
 import Reika.DragonAPI.Instantiable.Event.RawKeyPressEvent;
 import Reika.DragonAPI.Instantiable.Event.RemovePlayerItemEvent;
@@ -262,7 +263,7 @@ public class AbilityHelper {
 	private void playerMakeBox(EntityPlayer ep, BlockBox box) {
 		if (!ep.worldObj.isRemote && Chromabilities.SHIFT.enabledOn(ep)) {
 			ScaledDirection dir = shifts.get(ep);
-			Chromabilities.shiftArea((WorldServer)ep.worldObj, box, dir.direction, dir.distance, (EntityPlayerMP)ep);
+			AbilityCalls.shiftArea((WorldServer)ep.worldObj, box, dir.direction, dir.distance, (EntityPlayerMP)ep);
 		}
 	}
 
@@ -270,6 +271,14 @@ public class AbilityHelper {
 	public void clickBlock(PlayerInteractEvent evt) {
 		if (evt.action == Action.RIGHT_CLICK_BLOCK) {
 			this.addPlayerClick(evt.entityPlayer, evt.world, evt.x, evt.y, evt.z);
+		}
+	}
+
+	@SubscribeEvent
+	public void superbuild(PlayerPlaceBlockEvent evt) {
+		if (!evt.world.isRemote && Chromabilities.SUPERBUILD.enabledOn(evt.player)) {
+			AbilityCalls.superbuild(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, evt.side, evt.block, evt.metadata, evt.getItem(), evt.player);
+			Chromabilities.SUPERBUILD.setToPlayer(evt.player, false);
 		}
 	}
 

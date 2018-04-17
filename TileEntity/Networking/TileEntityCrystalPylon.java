@@ -719,7 +719,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	void attackEntity(EntityLivingBase e) {
 		ChromaSounds.DISCHARGE.playSoundAtBlock(this);
 
-		ChromaAux.doPylonAttack(color, e, Math.max(5, e.getHealth()/4F), true);
+		ChromaAux.doPylonAttack(color, e, Math.max(this.isEnhanced() ? 10 : 5, e.getHealth()/4F), true);
 		ChromaSounds.DISCHARGE.playSound(e.worldObj, e.posX, e.posY, e.posZ, 1, 1);
 
 		PotionEffect eff = CrystalPotionController.getEffectFromColor(color, 200, 2);

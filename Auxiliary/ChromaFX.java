@@ -226,11 +226,12 @@ public class ChromaFX {
 			t /= 30D;
 
 			MultiMap<TargetData, CrystalElement> map = ChromaAux.getBeamColorMixes(li);
-			int p = Minecraft.getMinecraft().gameSettings.particleSetting;
+			Minecraft mc = Minecraft.getMinecraft();
+			int p = mc.gameSettings.particleSetting;
 			for (TargetData pos : map.keySet()) {
 				if (pos.targetClass == TileEntityAtmosphericRelay.class)
 					continue;
-				if (pos.isRenderable()) {
+				if (pos.isRenderable() && pos.isMaximumEndpointDistanceWithin(mc.thePlayer, 512)) {
 					List<CrystalElement> lc = (List<CrystalElement>)map.get(pos);
 					int clr = getBlendedColorFromElementList(lc, t, 0.125);
 					if (rand.nextInt(1+p*3) == 0) {
@@ -245,7 +246,7 @@ public class ChromaFX {
 						double py = dy*dr+y+0.5;
 						double pz = dz*dr+z+0.5;
 						EntityLaserFX fx = new EntityLaserFX(CrystalElement.WHITE, world, px, py, pz).setScale(s).setColor(clr);
-						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+						mc.effectRenderer.addEffect(fx);
 					}
 				}
 			}

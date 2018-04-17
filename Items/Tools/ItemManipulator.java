@@ -196,10 +196,10 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			TileEntityTransportWindow ir = (TileEntityTransportWindow)tile;
 			if (!ir.isUnMineable()) {
 				if (ep.isSneaking()) {
-					ir.renderBackPane = !ir.renderBackPane;
+					ir.toggleBackPane();
 				}
 				else {
-					ir.renderTexture = !ir.renderTexture;
+					ir.toggleTexture();
 				}
 			}
 			return true;

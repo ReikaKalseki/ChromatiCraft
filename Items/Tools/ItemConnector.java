@@ -239,10 +239,15 @@ public class ItemConnector extends ItemChromaTool {
 					is.stackTagCompound = null;
 					return false;
 				}
-				//rf1.reset();
-				//rf2.reset();
-				rf1.linkTo(rf2);
-				ReikaChatHelper.sendChatToPlayer(ep, "Linked "+rf1+" and "+rf2);
+				if (rf1.matchRenderStates(rf2)) {
+					//rf1.reset();
+					//rf2.reset();
+					rf1.linkTo(rf2);
+					ReikaChatHelper.sendChatToPlayer(ep, "Linked "+rf1+" and "+rf2);
+				}
+				else {
+					ReikaChatHelper.sendChatToPlayer(ep, "Cannot link windows; states do not match.");
+				}
 				is.stackTagCompound = null;
 			}
 		}

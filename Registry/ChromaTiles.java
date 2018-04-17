@@ -57,6 +57,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAreaBreaker;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCaveLighter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalLaser;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityDeathFogEmitter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityHoverPad;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemInserter;
@@ -239,7 +240,8 @@ public enum ChromaTiles implements TileEnum {
 	MULTIBUILDER("chroma.multibuilder",	ChromaBlocks.TILEMODELLED4,	TileEntityMultiBuilder.class,		1, "RenderMultiBuilder"),
 	EXPLOSIONSHIELD("chroma.explosionshield",ChromaBlocks.TILEENTITY2,TileEntityExplosionShield.class,	3),
 	PROGRESSLINK("chroma.progresslink",	ChromaBlocks.TILEMODELLED4,	TileEntityProgressionLinker.class,	2, "RenderProgressionLinker"),
-	MANABOOSTER("chroma.manabooster",	ChromaBlocks.TILEMODELLED4,	TileEntityManaBooster.class,		3, "RenderManaBooster", ModList.BOTANIA);
+	MANABOOSTER("chroma.manabooster",	ChromaBlocks.TILEMODELLED4,	TileEntityManaBooster.class,		3, "RenderManaBooster", ModList.BOTANIA),
+	DEATHFOG("chroma.deathfog",			ChromaBlocks.TILEENTITY2,	TileEntityDeathFogEmitter.class,	4);
 
 	private final Class tile;
 	private final String name;

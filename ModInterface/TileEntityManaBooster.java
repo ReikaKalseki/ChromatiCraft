@@ -12,7 +12,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import vazkii.botania.api.internal.IManaBurst;
-import vazkii.botania.api.mana.IManaCollector;
 import vazkii.botania.api.mana.IManaPool;
 import vazkii.botania.api.mana.spark.ISparkAttachable;
 import vazkii.botania.api.subtile.ISubTileContainer;
@@ -24,8 +23,8 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.ASM.InterfaceInjector.Injectable;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.Search;
@@ -40,8 +39,8 @@ import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
-@Strippable(value = {"vazkii.botania.api.mana.IManaCollector"})
-public class TileEntityManaBooster extends TileEntityWirelessPowered implements IManaCollector {
+@Injectable(value = {"vazkii.botania.api.mana.IManaCollector"})
+public class TileEntityManaBooster extends TileEntityWirelessPowered {
 
 	private static final int FLOWER_RANGE = 8;
 	private static final int POOL_RANGE = 12;
@@ -306,38 +305,38 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered implements 
 
 	}
 
-	@Override
+	//@Override
 	public boolean isFull() {
 		return true;
 	}
 
-	@Override
+	//@Override
 	public void recieveMana(int mana) {
 
 	}
 
-	@Override
+	//@Override
 	public boolean canRecieveManaFromBursts() {
 		return false;
 	}
 
-	@Override
+	//@Override
 	public int getCurrentMana() {
 		return 0;
 	}
 
-	@Override
+	//@Override
 	public void onClientDisplayTick() {
 
 	}
 
-	@Override
+	//@Override
 	@ModDependent(ModList.BOTANIA)
 	public float getManaYieldMultiplier(IManaBurst burst) {
 		return 1;
 	}
 
-	@Override
+	//@Override
 	public int getMaxMana() {
 		return Integer.MAX_VALUE;
 	}

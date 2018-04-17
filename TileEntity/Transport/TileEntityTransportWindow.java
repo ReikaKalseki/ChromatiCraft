@@ -43,12 +43,53 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 	private WorldLocation target;
 	private WorldLocation source;
 
-	public boolean renderBackPane = true;
-	public boolean renderTexture = true;
+	private boolean renderBackPane = true;
+	private boolean renderTexture = true;
 
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.WINDOW;
+	}
+
+	public void toggleBackPane() {
+		renderBackPane = !renderBackPane;
+		this.syncRenderWithTarget();
+	}
+
+	public void toggleTexture() {
+		renderTexture = !renderTexture;
+		this.syncRenderWithTarget();
+	}
+
+	public void setRenderStates(boolean back, boolean texture) {
+		renderBackPane = back;
+		renderTexture = texture;
+		this.syncRenderWithTarget();
+	}
+
+	private void syncRenderWithTarget() {
+		if (source != null) {
+			TileEntity te = source.getTileEntity();
+			if (te instanceof TileEntityTransportWindow) {
+				((TileEntityTransportWindow)te).renderBackPane = renderBackPane;
+				((TileEntityTransportWindow)te).renderTexture = renderTexture;
+			}
+		}
+		if (target != null) {
+			TileEntity te = target.getTileEntity();
+			if (te instanceof TileEntityTransportWindow) {
+				((TileEntityTransportWindow)te).renderBackPane = renderBackPane;
+				((TileEntityTransportWindow)te).renderTexture = renderTexture;
+			}
+		}
+	}
+
+	public boolean renderTexture() {
+		return renderTexture;
+	}
+
+	public boolean matchRenderStates(TileEntityTransportWindow te) {
+		return te.renderBackPane == renderBackPane && te.renderTexture == renderTexture;
 	}
 
 	@Override

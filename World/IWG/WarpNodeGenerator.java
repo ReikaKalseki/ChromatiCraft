@@ -41,7 +41,7 @@ public class WarpNodeGenerator implements RetroactiveGenerator {
 			if (random.nextInt(this.getBiomeChance(b)) == 0) {
 				int miny = this.getMinY(world, posX, posZ, b);
 				int maxy = this.getMaxY(world, posX, posZ, b);
-				if (miny == maxy) {
+				if (miny >= maxy) {
 					ChromatiCraft.logger.logError("Failed to generate a warp node @ "+posX+", "+posZ+" due to zero height range!");
 					return;
 				}
@@ -82,7 +82,7 @@ public class WarpNodeGenerator implements RetroactiveGenerator {
 		if (BiomeGlowingCliffs.isGlowingCliffs(b)) {
 			max = 255;
 		}
-		return max;
+		return Math.max(128, max);
 	}
 
 	private boolean canGenerateAt(World world, int x, int y, int z) {

@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic.Network;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
@@ -50,6 +51,10 @@ public class TargetData {
 	public boolean isRenderable() {
 		//ReikaAABBHelper.renderAABB(renderBox, 0, 0, 0, 0, 0, 0, 160, 255, 255, 255, true);
 		return ReikaRenderHelper.renderFrustrum.isBoundingBoxInFrustum(renderBox);
+	}
+
+	public boolean isMaximumEndpointDistanceWithin(EntityPlayer ep, double dist) {
+		return ep.getDistanceSq(position.xCoord, position.yCoord, position.zCoord) <= dist*dist || ep.getDistanceSq(source.xCoord+0.5, source.yCoord+0.5, source.zCoord+0.5) <= dist*dist;
 	}
 
 }

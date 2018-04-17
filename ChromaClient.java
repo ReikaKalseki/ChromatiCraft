@@ -55,6 +55,7 @@ import Reika.ChromatiCraft.Entity.EntityParticleCluster;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityTNTPinball;
 import Reika.ChromatiCraft.Entity.EntityThrownGem;
+import Reika.ChromatiCraft.Entity.EntityTunnelNuker;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
 import Reika.ChromatiCraft.Items.Tools.ItemDataCrystal.EntityDataCrystal;
 import Reika.ChromatiCraft.ModInterface.EntityChromaManaBurst;
@@ -82,6 +83,7 @@ import Reika.ChromatiCraft.Render.Entity.RenderParticleCluster;
 import Reika.ChromatiCraft.Render.Entity.RenderSplashGunShot;
 import Reika.ChromatiCraft.Render.Entity.RenderTNTPinball;
 import Reika.ChromatiCraft.Render.Entity.RenderThrownGem;
+import Reika.ChromatiCraft.Render.Entity.RenderTunnelNuker;
 import Reika.ChromatiCraft.Render.Entity.RenderVacuum;
 import Reika.ChromatiCraft.Render.ISBRH.ArtefactRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CaveIndicatorRenderer;
@@ -234,6 +236,7 @@ public class ChromaClient extends ChromaCommon {
 		RenderingRegistry.registerEntityRenderingHandler(EntityGlowCloud.class, new RenderGlowCloud());
 		RenderingRegistry.registerEntityRenderingHandler(EntityDataCrystal.class, new RenderDataCrystal());
 		RenderingRegistry.registerEntityRenderingHandler(EntityOverloadingPylonShock.class, new RenderOverloadingPylonShock());
+		RenderingRegistry.registerEntityRenderingHandler(EntityTunnelNuker.class, new RenderTunnelNuker());
 		if (ModList.BOTANIA.isLoaded())
 			RenderingRegistry.registerEntityRenderingHandler(EntityChromaManaBurst.class, new RenderChromaManaBurst());
 

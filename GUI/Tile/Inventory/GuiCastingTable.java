@@ -35,6 +35,7 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public class GuiCastingTable extends GuiChromaBase {
 
@@ -95,12 +96,14 @@ public class GuiCastingTable extends GuiChromaBase {
 		for (int i = 0; i <= tier.ordinal(); i++) {
 			int x = (i/*%2*/)*d;
 			int y = 0;//(i/2)*d;
+			BlendMode.DEFAULT.apply();
 			float red = ReikaColorAPI.getRed(color[i])/255F;
 			float green = ReikaColorAPI.getGreen(color[i])/255F;
 			float blue = ReikaColorAPI.getBlue(color[i])/255F;
 			GL11.glColor4f(red, green, blue, 1);
 			this.drawTexturedModelRectFromIcon(x, y, ChromaIcons.DIAMOND.getIcon(), 16, 16);
 			if (!struct[i]) {
+				BlendMode.DEFAULT.apply();
 				GL11.glColor4f(1, 1, 1, 1);
 				this.drawTexturedModelRectFromIcon(x+2, y+2, ChromaIcons.NOENTER.getIcon(), 12, 12);
 			}

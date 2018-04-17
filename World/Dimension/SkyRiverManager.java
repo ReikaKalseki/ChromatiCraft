@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Vec3;
@@ -123,6 +124,10 @@ public class SkyRiverManager {
 		player.motionX = moveVector.xCoord * multiplier;
 		player.motionY = moveVector.yCoord * multiplier;
 		player.motionZ = moveVector.zCoord * multiplier;
+
+		if (player instanceof EntityPlayerMP) {
+			((EntityPlayerMP)player).playerNetServerHandler.floatingTickCount = 0;
+		}
 	}
 
 	protected static void debugMessage(String message) {

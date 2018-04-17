@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Entity.EntityParticleCluster;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityTNTPinball;
 import Reika.ChromatiCraft.Entity.EntityThrownGem;
+import Reika.ChromatiCraft.Entity.EntityTunnelNuker;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
 import Reika.ChromatiCraft.Items.Tools.ItemDataCrystal.EntityDataCrystal;
 import Reika.ChromatiCraft.ModInterface.EntityChromaManaBurst;
@@ -54,7 +55,8 @@ public enum ChromaEntities implements EntityEnum {
 	GLOWCLOUD(EntityGlowCloud.class, "GlowCloud", 0x000040, 0x22aaff),
 	DATACRYSTAL(EntityDataCrystal.class, "DataCrystal"),
 	PYLONOVERLOAD(EntityOverloadingPylonShock.class, "Pylon Overload"),
-	CHROMAMANA(EntityChromaManaBurst.class, "Mana Pulse");
+	CHROMAMANA(EntityChromaManaBurst.class, "Mana Pulse"),
+	TUNNELNUKER(EntityTunnelNuker.class, "Tunnel Nuker", 0x402020, 0xf0a030);
 
 	public final String entityName;
 	private final Class entityClass;
