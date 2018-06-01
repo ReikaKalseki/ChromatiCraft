@@ -515,14 +515,20 @@ public class PylonFinder {
 			addGeoVines();
 		}
 		if (ModList.EXTRAUTILS.isLoaded() && ExtraUtilsHandler.getInstance().initializedProperly()) {
-			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().deco2ID, 1);
-			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().deco2ID, 2);
-			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().deco2ID, 4);
+			Block b = ExtraUtilsHandler.getInstance().deco2ID;
+			if (b != null) {
+				tracer.addTransparentBlock(b, 1);
+				tracer.addTransparentBlock(b, 2);
+				tracer.addTransparentBlock(b, 4);
+			}
 
-			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().etherealBlockID, ExtraUtilsHandler.getInstance().ethereal);
-			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().etherealBlockID, ExtraUtilsHandler.getInstance().invethereal);
-			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().etherealBlockID, ExtraUtilsHandler.getInstance().ineffable);
-			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().etherealBlockID, ExtraUtilsHandler.getInstance().invineffable);
+			b = ExtraUtilsHandler.getInstance().etherealBlockID;
+			if (b != null) {
+				tracer.addTransparentBlock(b, ExtraUtilsHandler.getInstance().ethereal);
+				tracer.addTransparentBlock(b, ExtraUtilsHandler.getInstance().invethereal);
+				tracer.addTransparentBlock(b, ExtraUtilsHandler.getInstance().ineffable);
+				tracer.addTransparentBlock(b, ExtraUtilsHandler.getInstance().invineffable);
+			}
 		}
 		if (ModList.TINKERER.isLoaded() && TinkerBlockHandler.getInstance().initializedProperly()) {
 			tracer.addTransparentBlock(TinkerBlockHandler.getInstance().clearGlassID);

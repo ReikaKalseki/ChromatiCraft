@@ -831,15 +831,19 @@ public class RecipesCastingTable {
 
 		if (ModList.FORESTRY.isLoaded()) {
 			ItemStack is = new ItemStack(CrystalBackpack.instance.getItem1());
-			IRecipe sr = ReikaRecipeHelper.getShapedRecipeFor(is, "SWS", "cCc", "SWS", 'S', Items.string, 'C', Blocks.chest, 'W', Blocks.wool, 'c', ChromaItems.SHARD.getAnyMetaStack());
-			this.addRecipe(new CastingRecipe(is, sr));
+			if (is != null) { //disabled
+				IRecipe sr = ReikaRecipeHelper.getShapedRecipeFor(is, "SWS", "cCc", "SWS", 'S', Items.string, 'C', Blocks.chest, 'W', Blocks.wool, 'c', ChromaItems.SHARD.getAnyMetaStack());
+				this.addRecipe(new CastingRecipe(is, sr));
+			}
 
 			ItemStack is2 = new ItemStack(CrystalBackpack.instance.getItem2());
-			sr = ReikaRecipeHelper.getShapedRecipeFor(is2, "WDW", "WCW", "WWW", 'D', Items.diamond, 'C', is, 'W', ForestryHandler.CraftingMaterials.WOVENSILK.getItem());
-			this.addRecipe(new CastingRecipe(is2, sr));
+			if (is2 != null) {
+				IRecipe sr = ReikaRecipeHelper.getShapedRecipeFor(is2, "WDW", "WCW", "WWW", 'D', Items.diamond, 'C', is, 'W', ForestryHandler.CraftingMaterials.WOVENSILK.getItem());
+				this.addRecipe(new CastingRecipe(is2, sr));
+			}
 
 			ItemStack frame = ChromaItems.BEEFRAME.getStackOf();
-			sr = ReikaRecipeHelper.getShapedRecipeFor(frame, "agb", "gfg", "bga", 'a', ChromaStacks.auraDust, 'b', ChromaStacks.chromaDust, 'g', ChromaStacks.lightBlueShard, 'f', ForestryHandler.ItemEntry.IMPREGFRAME.getItem());
+			IRecipe sr = ReikaRecipeHelper.getShapedRecipeFor(frame, "agb", "gfg", "bga", 'a', ChromaStacks.auraDust, 'b', ChromaStacks.chromaDust, 'g', ChromaStacks.lightBlueShard, 'f', ForestryHandler.ItemEntry.IMPREGFRAME.getItem());
 			this.addRecipe(new BeeFrameRecipe(frame, sr));
 
 			Block ctr = GameRegistry.findBlock("MagicBees", "magicApiary");

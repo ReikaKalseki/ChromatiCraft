@@ -38,7 +38,7 @@ public class ChromabilityHandler implements TickHandler {
 		EntityPlayer ep = (EntityPlayer) tickData[0];
 		Collection<Ability> li = Chromabilities.getAbilitiesForTick((Phase)tickData[1]);
 		for (Ability c : li) {
-			if (Chromabilities.playerHasAbility(ep, c) && Chromabilities.enabledOn(ep, c)) {
+			if ((!ep.worldObj.isRemote || c.actOnClient()) && Chromabilities.playerHasAbility(ep, c) && Chromabilities.enabledOn(ep, c)) {
 				if (Chromabilities.canPlayerExecuteAt(ep, c))
 					c.apply(ep);
 				if (ReikaRandomHelper.doWithChance(0.002)) { //was 0.0002

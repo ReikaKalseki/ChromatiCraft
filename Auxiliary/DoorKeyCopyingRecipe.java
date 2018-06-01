@@ -16,6 +16,8 @@ import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
+import net.minecraftforge.oredict.RecipeSorter;
+import net.minecraftforge.oredict.RecipeSorter.Category;
 import Reika.ChromatiCraft.Items.Tools.ItemDoorKey;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
@@ -23,6 +25,10 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 
 public class DoorKeyCopyingRecipe implements IRecipe {
+
+	static {
+		RecipeSorter.register("chromaticraft:doorkey", DoorKeyCopyingRecipe.class, Category.SHAPELESS, "after:minecraft:shaped after:minecraft:shapeless");
+	}
 
 	@Override
 	public boolean matches(InventoryCrafting ic, World world) {

@@ -179,6 +179,7 @@ public enum ChromaPackets {
 	BOTTLENECK(7),
 	VOIDMONSTERRITUAL(2),
 	ALVEARYEFFECT(2),
+	SUPERBUILD(1),
 	;
 
 	public final int numInts;

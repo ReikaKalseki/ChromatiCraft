@@ -94,6 +94,7 @@ public enum Chromabilities implements Ability {
 	JUMP(null, false),
 	//VOXELPLACE(null, false);
 	SUPERBUILD(null, false),
+	CHESTCLEAR(Phase.END, false),
 	;
 
 
@@ -271,6 +272,9 @@ public enum Chromabilities implements Ability {
 				break;
 			case NUKER:
 				AbilityCalls.breakSurroundingBlocks(ep);
+				break;
+			case CHESTCLEAR:
+				AbilityCalls.doChestCollection((EntityPlayerMP)ep);
 				break;
 			default:
 				break;

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0"?>
 <tools>
 	<wand>
-		The manipulator is your first foray into this strange new field of crystal elements and chromatic forces. The tool seems to be your main way of activating blocks, either to start some operation or to change settings on a device. It also seems capable of testing the connectivity of segments of a crystal network, and drawing energy off a pylon into yourself.
+		The manipulator is your first foray into this strange new field of crystal elements and chromatic forces. The tool seems to be your main way of activating blocks, either to start some operation or to change settings on a device. It also seems capable of testing the connectivity of segments of a crystal network, and drawing energy off a pylon into yourself. Because of its strong link to your person, it will not work for other users, nor will it fare well in constructs designed to imitate you.
 	</wand>
 	<finder>
 		The pylon compass scans the energy field that permeates the world and analyzes it to calculate the location of the nearest pylon of each crystal element. Due to the fact that the energy is always in flux, there is some inaccuracy to the calculation, but the location you are directed to should be within a short walk of the actual pylon.

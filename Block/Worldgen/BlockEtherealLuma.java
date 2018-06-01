@@ -25,6 +25,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.BlockFluidClassic;
 import net.minecraftforge.fluids.Fluid;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionVoidGaze;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionVoidGaze.VoidGazeLevels;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -100,6 +101,7 @@ public class BlockEtherealLuma extends BlockFluidClassic {
 				elb.setAir(elb.getAir()+1);
 			if (elb instanceof EntityPlayer && world.getBlockMetadata(x, y, z) == 0) {
 				EntityPlayer ep = (EntityPlayer)elb;
+				ProgressStage.LUMA.stepPlayerTo(ep);
 				PotionEffect cur = ep.getActivePotionEffect(ChromatiCraft.voidGaze);
 				if (cur == null || cur.getDuration() < 5) {
 					int lvl = PotionVoidGaze.VoidGazeLevels.getAppliedLevel(ep);

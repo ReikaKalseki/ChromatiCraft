@@ -32,8 +32,10 @@ import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Items.AuraPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 
@@ -349,6 +351,31 @@ public class ItemInventoryLinker extends ItemChromaTool implements AuraPowered {
 			return new KeyedItemStack(item).setIgnoreMetadata(false).setSized(false).setIgnoreNBT(false).setSimpleHash(true);
 		}
 
+	}
+
+	public static boolean tryLinkItem(EntityPlayer ep, ItemStack is) {
+		//return MinecraftForge.EVENT_BUS.post(new EntityItemPickupEvent(ep, new EntityItem(ep.worldObj, ep.posX, ep.posY, ep.posZ, is)));
+		return parseInventoryForLinking(ep, is, ep.inventory.mainInventory, null);
+	}
+
+	private static boolean parseInventoryForLinking(EntityPlayer ep, ItemStack picked, ItemStack[] inv, ItemStack active) {
+		for (int i = 0; i < inv.length; i++) {
+			if (active == null || ((ActivatedInventoryItem)active.getItem()).isSlotActive(active, i)) {
+				ItemStack in = inv[i];
+				if (in != null && in.getItem() == ChromaItems.LINK.getItemInstance()) {
+					if (linksItem(ep, in, picked)) {
+						if (processItem(ep.worldObj, in, picked)) {
+							ep.playSound("random.pop", 0.5F, 1);
+							return true;
+						}
+					}
+				}
+				else if (in != null && in.getItem() instanceof ActivatedInventoryItem) {
+					parseInventoryForLinking(ep, picked, ((ActivatedInventoryItem)in.getItem()).getInventory(in), in);
+				}
+			}
+		}
+		return false;
 	}
 
 }

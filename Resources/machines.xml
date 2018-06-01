@@ -710,7 +710,9 @@
 			Sharing a base with a friend is a common practice, but you have found that what you learn as you explore and experiment is less easily shared. You could of course have your partner perform the same actions as you, but they may be more interested in pulling up ores, playing bee matchmaker, or going insane by reading ancient scribbles. Or they may be interested but unable to learn, preferring to watch crops grow or to fall into lava. Either way, if you could make it such that the two - or more - of you learned in tandem, this problem would be solved.
 		</desc>
 		<note>
-
+			Requires that both players have matching progression at the time of linking
+			
+			Both players are still required to be involved for some progress
 		</note>
 	</progresslink>
 	<name>

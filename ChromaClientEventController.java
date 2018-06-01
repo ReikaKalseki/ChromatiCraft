@@ -791,6 +791,16 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 	}
 
 	@SubscribeEvent
+	public void renderChestCollectionFX(EntityRenderEvent evt) {
+		if (evt.entity.worldObj != null && evt.entity instanceof EntityPlayer) {
+			EntityPlayer ep = (EntityPlayer)evt.entity;
+			if (Chromabilities.CHESTCLEAR.enabledOn(ep)) {
+				AbilityHelper.instance.renderChestCollectionFX(ep, ReikaRenderHelper.getPartialTickTime());
+			}
+		}
+	}
+
+	@SubscribeEvent
 	public void renderMobsThroughWalls(EntityRenderEvent evt) {
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 		if (evt.entity.worldObj != null && Chromabilities.MOBSEEK.enabledOn(ep)) {

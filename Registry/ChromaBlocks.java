@@ -655,6 +655,10 @@ public enum ChromaBlocks implements BlockEnum {
 		return this.getStackOfMetadata(0);
 	}
 
+	public ItemStack getStackOf(CrystalElement e) {
+		return this.getStackOfMetadata(e.ordinal());
+	}
+
 	public ItemStack getStackOfMetadata(int meta) {
 		return new ItemStack(this.getBlockInstance(), 1, meta);
 	}

@@ -25,11 +25,12 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
+import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import buildcraft.core.lib.engines.TileEngineBase;
 import cofh.api.energy.EnergyStorage;
 
 
-public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
+public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade implements BreakAction {
 
 	private static final HashMap<Class, EnergyInterface> interactions = new HashMap();
 
@@ -108,6 +109,19 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
 
 	}
 
+	@Override
+	public void breakBlock() {
+		for (int i = 0; i < 6; i++) {
+			TileEntity te = this.getAdjacentTileEntity(dirs[i]);
+			if (te != null) {
+				EnergyInterface e = this.getInterface(te);
+				if (e != NoInterface.instance) {
+					e.onBoosterBroken(te);
+				}
+			}
+		}
+	}
+
 	private static abstract class EnergyInterface {
 
 		protected EnergyInterface() {
@@ -146,6 +160,10 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
 
 		public double getMultiplier() {
 			return 1;
+		}
+
+		protected void onBoosterBroken(TileEntity te) {
+
 		}
 	}
 
@@ -392,12 +410,24 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
 		@Override
 		protected void inject(TileEntity te, double gen) throws Exception {
 			EnergyStorage es = (EnergyStorage)energyStorage.get(te);
+			es.setMaxTransfer((int)((this.getBaseGeneration(te) + gen)*2));
 			es.modifyEnergyStored((int)gen);
 		}
 
 		@Override
 		protected int getBaseGeneration(TileEntity te) throws Exception {
 			return isActive.getBoolean(te) ? maxPower.getInt(config.get(te)) : 0;
+		}
+
+		@Override
+		protected void onBoosterBroken(TileEntity te) {
+			try {
+				EnergyStorage es = (EnergyStorage)energyStorage.get(te);
+				es.setMaxTransfer(this.getBaseGeneration(te)*2);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 	}

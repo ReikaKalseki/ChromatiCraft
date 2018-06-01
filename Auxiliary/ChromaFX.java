@@ -714,6 +714,10 @@ public class ChromaFX {
 	}
 
 	public static void renderBolt(LightningBolt b, float par8, int a, double h, int splinePoints) {
+		renderBolt(b, par8, a, h, splinePoints, 0xffffff);
+	}
+
+	public static void renderBolt(LightningBolt b, float par8, int a, double h, int splinePoints, int color) {
 		if (splinePoints > 2) {
 			Spline s = new Spline(SplineType.CENTRIPETAL);
 			for (int i = 0; i <= b.nsteps; i++) {
@@ -724,14 +728,14 @@ public class ChromaFX {
 			for (int i = 0; i < li.size()-1; i++) {
 				DecimalPosition pos1 = li.get(i);
 				DecimalPosition pos2 = li.get(i+1);
-				renderBeam(pos1.xCoord, pos1.yCoord, pos1.zCoord, pos2.xCoord, pos2.yCoord, pos2.zCoord, par8, a, h);
+				renderBeam(pos1.xCoord, pos1.yCoord, pos1.zCoord, pos2.xCoord, pos2.yCoord, pos2.zCoord, par8, a, h, color);
 			}
 		}
 		else {
 			for (int i = 0; i < b.nsteps; i++) {
 				DecimalPosition pos1 = b.getPosition(i);
 				DecimalPosition pos2 = b.getPosition(i+1);
-				renderBeam(pos1.xCoord, pos1.yCoord, pos1.zCoord, pos2.xCoord, pos2.yCoord, pos2.zCoord, par8, a, h);
+				renderBeam(pos1.xCoord, pos1.yCoord, pos1.zCoord, pos2.xCoord, pos2.yCoord, pos2.zCoord, par8, a, h, color);
 			}
 		}
 	}

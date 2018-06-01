@@ -2,11 +2,15 @@ package Reika.ChromatiCraft.Entity;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Block.Decoration.BlockEtherealLight.Flags;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.Interfaces.Entity.DestroyOnUnload;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
@@ -14,7 +18,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class EntityTunnelNuker extends EntityLiving {
+public class EntityTunnelNuker extends EntityLiving implements DestroyOnUnload {
 
 	public EntityTunnelNuker(World world) {
 		super(world);
@@ -31,7 +35,7 @@ public class EntityTunnelNuker extends EntityLiving {
 			if (worldObj.isRemote) {
 				this.doParticles();
 			}
-			else if (ticksExisted%64 == 0) {
+			else if (worldObj.provider.dimensionId != ExtraChromaIDs.DIMID.getValue() && ticksExisted%64 == 0) {
 				int y = MathHelper.floor_double(posY);
 				if (worldObj.getBlock(x, y, z).isAir(worldObj, x, y, z)) {
 					worldObj.setBlock(x, y, z, ChromaBlocks.LIGHT.getBlockInstance(), Flags.DECAY.getFlag(), 3);
@@ -39,9 +43,11 @@ public class EntityTunnelNuker extends EntityLiving {
 			}
 		}
 
-		rotationYaw = prevRotationYaw;
 		rotationPitch = 0;
-		rotationYaw = 0;
+		//rotationYaw = 0;
+		if (ticksExisted%8 == 0)
+			rotationYaw += Math.signum(System.identityHashCode(this));
+		prevRotationYaw = rotationYaw;
 
 		onGround = false;
 		isAirBorne = true;
@@ -81,6 +87,36 @@ public class EntityTunnelNuker extends EntityLiving {
 		EntityBlurFX fx = new EntityBlurFX(worldObj, posX, posY+0.9, posZ);
 		fx.setRapidExpand().setAlphaFading().setScale(s).setLife(l).setColor(c);//.setPositionController();
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+	}
+
+	@Override
+	public boolean getCanSpawnHere() {
+		return !ReikaEntityHelper.existsAnotherValidEntityWithin(this, 32, new ReikaEntityHelper.ClassEntitySelector(this.getClass()));
+	}
+
+	@Override
+	public void destroy() {
+		this.setDead();
+	}
+
+	@Override
+	public void readEntityFromNBT(NBTTagCompound nbt) {
+		super.readEntityFromNBT(nbt);
+
+		if (nbt.getBoolean("isdead"))
+			this.setDead();
+	}
+
+	@Override
+	public void writeEntityToNBT(NBTTagCompound nbt) {
+		super.writeEntityToNBT(nbt);
+
+		nbt.setBoolean("isdead", isDead);
+	}
+
+	@Override
+	public boolean getAlwaysRenderNameTag() {
+		return false;
 	}
 
 }

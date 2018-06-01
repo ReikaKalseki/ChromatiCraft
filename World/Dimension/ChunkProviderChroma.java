@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -733,20 +732,13 @@ public class ChunkProviderChroma implements IChunkProvider {
 		long i1 = rand.nextLong() / 2L * 2L + 1L;
 		long j1 = rand.nextLong() / 2L * 2L + 1L;
 		rand.setSeed(chunkX * i1 + chunkZ * j1 ^ worldObj.getSeed());
-		boolean flag = false;
-
-		int k1;
-		int l1;
-		int i2;
 
 		//controls vanilla ores and things like dirt patches
 		//biomegenbase.decorate(worldObj, rand, k, l);
 
 		//if (TerrainGen.populate(loader, worldObj, rand, chunkX, chunkZ, flag, ANIMALS)) {
-		//	SpawnerAnimals.performWorldGenSpawning(worldObj, biomegenbase, k + 8, l + 8, 16, 16, rand);
+		//SpawnerAnimals.performWorldGenSpawning(worldObj, biomegenbase, k + 8, l + 8, 16, 16, rand);
 		//}
-		k += 8;
-		l += 8;
 
 		BlockFalling.fallInstantly = false;
 	}
@@ -860,16 +852,12 @@ public class ChunkProviderChroma implements IChunkProvider {
 	/**
 	 * Returns a list of creatures of the specified type that can spawn at the given location.
 	 */
-	public List getPossibleCreatures(EnumCreatureType type, int x, int y, int z)
-	{
-		//BiomeGenBase biomegenbase = worldObj.getBiomeGenForCoords(x, z);
-		//return type == EnumCreatureType.monster && scatteredFeatureGenerator.func_143030_a(x, y, z) ? scatteredFeatureGenerator.getScatteredFeatureSpawnList() : biomegenbase.getSpawnableList(type);
-		return new ArrayList();
+	public List getPossibleCreatures(EnumCreatureType type, int x, int y, int z) {
+		return worldObj.getBiomeGenForCoords(x, z).getSpawnableList(type);
 	}
 
-	public ChunkPosition func_147416_a(World world, String type, int x, int y, int z)
-	{
-		return null;//"Stronghold".equals(type) && strongholdGenerator != null ? strongholdGenerator.func_151545_a(world, x, y, z) : null;
+	public ChunkPosition func_147416_a(World world, String type, int x, int y, int z) {
+		return null;
 	}
 
 	public int getLoadedChunkCount()
@@ -879,10 +867,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 	public void recreateStructures(int p_82695_1_, int p_82695_2_)
 	{
-		//mineshaftGenerator.func_151539_a(this, worldObj, p_82695_1_, p_82695_2_, (Block[])null);
-		//villageGenerator.func_151539_a(this, worldObj, p_82695_1_, p_82695_2_, (Block[])null);
-		//strongholdGenerator.func_151539_a(this, worldObj, p_82695_1_, p_82695_2_, (Block[])null);
-		//scatteredFeatureGenerator.func_151539_a(this, worldObj, p_82695_1_, p_82695_2_, (Block[])null);
+
 	}
 
 }

@@ -24,6 +24,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
@@ -35,10 +36,13 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.BlockChromaTiered;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.DragonAPI.Instantiable.Data.StatisticalRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Worldgen.ControllableOreVein;
 import Reika.DragonAPI.Instantiable.Worldgen.ControllableOreVein.BlockExcludingOreVein;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.RotaryCraft.API.ItemFetcher;
 import cpw.mods.fml.relauncher.Side;
@@ -116,6 +120,13 @@ public class BlockTieredOre extends BlockChromaTiered {
 		}
 	}
 
+	private static NBTTagCompound getStoneHistory(EntityPlayer ep) {
+		NBTTagCompound tag = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		NBTTagCompound ret = tag.getCompoundTag("elementalstones");
+		tag.setTag("elementalstones", ret);
+		return ret;
+	}
+
 	@Override
 	public Collection<ItemStack> getHarvestResources(World world, int x, int y, int z, int fortune, EntityPlayer player) {
 		ArrayList li = new ArrayList();
@@ -130,8 +141,14 @@ public class BlockTieredOre extends BlockChromaTiered {
 				break;
 			case STONES:
 				n = Math.min(4, 1+fortune/2);
-				for (int i = 0; i < n; i++)
-					li.add(ChromaItems.ELEMENTAL.getStackOfMetadata(rand.nextInt(16)));
+				NBTTagCompound tag = getStoneHistory(player);
+				StatisticalRandom<CrystalElement> sr = new StatisticalRandom(CrystalElement.class);
+				sr.readFromNBT(tag);
+				for (int i = 0; i < n; i++) {
+					CrystalElement e = sr.roll();
+					li.add(ChromaItems.ELEMENTAL.getStackOfMetadata(e.ordinal()));
+				}
+				sr.writeToNBT(tag);
 				break;
 			case BINDING:
 				n = Math.min(8, 1+rand.nextInt(3)*(1+rand.nextInt(1+fortune/2)));

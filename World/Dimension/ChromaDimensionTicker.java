@@ -96,7 +96,7 @@ public class ChromaDimensionTicker implements TickHandler {
 
 					ChromaDimensionManager.tickPlayersInStructures(world);
 					SkyRiverManager.tickSkyRiverServer(world);
-					world.setAllowedSpawnTypes(false, false);
+					world.setAllowedSpawnTypes(false, true);
 					if (!world.playerEntities.isEmpty()) {
 						ChromaDimensionManager.dimensionAge++;
 					}

@@ -20,6 +20,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -28,7 +29,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.potion.Potion;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.stats.Achievement;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -94,6 +94,7 @@ import Reika.ChromatiCraft.Auxiliary.Render.OreOverlayRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.PylonFinderOverlay;
 import Reika.ChromatiCraft.Auxiliary.Tab.FragmentTab;
 import Reika.ChromatiCraft.Auxiliary.Tab.TabChromatiCraft;
+import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.Artefact.ArtefactSpawner;
@@ -124,6 +125,7 @@ import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.ChromatiCraft.Render.ParticleEngine;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityOreCreator;
+import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.World.BiomeEnderForest;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
@@ -248,8 +250,6 @@ public class ChromatiCraft extends DragonAPIMod {
 	public static final Item[] items = new Item[ChromaItems.itemList.length];
 	public static final Enchantment[] enchants = new Enchantment[ChromaEnchants.enchantmentList.length];
 
-	public static Achievement[] achievements;
-
 	public static final Material crystalMat = new CrystalMaterial();
 	public static final Material airMat = PseudoAirMaterial.instance;
 
@@ -263,6 +263,8 @@ public class ChromatiCraft extends DragonAPIMod {
 	public static PotionLumenRegen lumenRegen;
 
 	public static final PylonDamage[] pylonDamage = new PylonDamage[16];
+
+	public static EnumCreatureType glowCloudType = EnumHelper.addCreatureType("glowcloud", EntityGlowCloud.class, 24, Material.air, true, false);
 
 	@Instance("ChromatiCraft")
 	public static ChromatiCraft instance = new ChromatiCraft();
@@ -711,6 +713,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		TileEntityBiomePainter.buildBiomeList();
 		TileEntityOreCreator.initOreMap();
+		TileEntityTeleportationPump.buildProgressionMap();
 		ItemDuplicationWand.loadMappings();
 
 		ReikaDispenserHelper.addDispenserAction(ChromaItems.TOOL.getStackOf(), new ManipulatorDispenserAction());

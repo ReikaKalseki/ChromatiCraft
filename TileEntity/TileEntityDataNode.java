@@ -125,7 +125,8 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 			this.doParticles(world, x, y, z);
 		}
 		else {
-			tower.generatedAt(x, y, z);
+			if (tower != null)
+				tower.generatedAt(x, y, z);
 		}
 
 		if (scanSustain > 0) {

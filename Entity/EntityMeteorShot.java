@@ -21,6 +21,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -38,6 +39,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import cpw.mods.fml.relauncher.Side;
@@ -165,6 +167,7 @@ public class EntityMeteorShot extends Entity implements IEntityAdditionalSpawnDa
 		}
 		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.METEORIMPACT.ordinal(), new PacketTarget.RadiusTarget(this, 96), this.getEntityId());
 		motionX = motionY = motionZ = 0;
+		ReikaWorldHelper.ignite(worldObj, MathHelper.floor_double(posX), MathHelper.floor_double(posY), MathHelper.floor_double(posZ));
 	}
 
 	@SideOnly(Side.CLIENT)

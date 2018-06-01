@@ -24,10 +24,12 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class NodeRecharger implements TickHandler {
 
@@ -37,14 +39,19 @@ public class NodeRecharger implements TickHandler {
 
 	private final HashMap<Integer, HashMap<WorldLocation, NodeReceiverWrapper>> nodes = new HashMap();
 
+	private final HashSet<BlockKey> blacklist = new HashSet();
+
 	private final HashSet<Integer> ticked = new HashSet();
 
 	private NodeRecharger() {
-
+		blacklist.add(new BlockKey(GameRegistry.findBlock("ThaumicHorizons", "synthNode"))); //who cares if adds null to the set
 	}
 
 	public boolean addNode(INode n) {
-		WorldLocation loc = new WorldLocation((TileEntity)n);
+		TileEntity te = (TileEntity)n;
+		if (blacklist.contains(new BlockKey(te.getBlockType(), te.getBlockMetadata())))
+			return false;
+		WorldLocation loc = new WorldLocation(te);
 		return this.addLocation(loc, n, true);
 	}
 

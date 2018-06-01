@@ -256,7 +256,8 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 		int has = ingredients.getItemCount(is);
 		if (has > 0) {
 			int rem = Math.min(is.stackSize, has);
-			ingredients.removeXItems(is, rem);
+			if (!simulate)
+				ingredients.removeXItems(is, rem);
 			return ReikaItemHelper.getSizedItemStack(is, rem);
 		}
 		return null;
@@ -423,7 +424,7 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 		return true;
 	}
 
-	public static class ItemRule {
+	public static final class ItemRule {
 
 		private final ItemStack item;
 		public final MatchMode mode;
@@ -449,6 +450,11 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 				return ItemStack.areItemStacksEqual(item, ir.item) && mode == ir.mode;
 			}
 			return false;
+		}
+
+		@Override
+		public String toString() {
+			return item+" * "+mode;
 		}
 
 		public ItemStack getItem() {
@@ -558,12 +564,16 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 				if (te.defaults[i] != null)
 					c.add(te.defaults[i]);
 			}
+			//ReikaJavaLibrary.pConsole("Running "+c.size()+" insertions from "+te+": "+c);
 			for (ItemRule i : c) {
 				ItemStack found = te.findItem(i.item, i.mode, true);//i.mode.removeItems(te.network, i.item, true);
+				//ReikaJavaLibrary.pConsole("Found: "+found);
 				if (found != null) {
 					ItemStack move = ReikaItemHelper.getSizedItemStack(i.item, found.stackSize);
+					//ReikaJavaLibrary.pConsole("Attempting to move "+move);
 					if (ReikaInventoryHelper.addToIInv(move, ii)) {
 						te.findItem(move, i.mode, false);//i.mode.removeItems(te.network, i.item, false);
+						//ReikaJavaLibrary.pConsole("Moved "+move);
 						flag = true;
 					}
 				}

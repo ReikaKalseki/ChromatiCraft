@@ -185,7 +185,7 @@ public class TileEntityMultiBuilder extends TileEntityChromaticBase implements L
 
 	private boolean buildBlock(WorldServer world, int x, int y, int z, Block b, int meta, EntityPlayerMP ep, ItemStack is) {
 		if (ReikaWorldHelper.softBlocks(world, x, y, z) && ReikaPlayerAPI.playerCanBreakAt(world, x, y, z, ep)) {
-			if (is != null && is.stackSize > 0) {
+			if (is != null && is.stackSize > 1) {
 				world.setBlock(x, y, z, b, meta, 3);
 				b.onBlockPlacedBy(world, x, y, z, ep, is);
 				b.onPostBlockPlaced(world, x, y, z, meta);
@@ -193,12 +193,10 @@ public class TileEntityMultiBuilder extends TileEntityChromaticBase implements L
 				ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, x, y, z, 128, Block.getIdFromBlock(b), meta);
 				if (!ep.capabilities.isCreativeMode)
 					is.stackSize--;
-			}
-			else {
-				return true;
+				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 
 	private void mineBlock(WorldServer world, int x, int y, int z, Block b, int meta, EntityPlayerMP ep) {

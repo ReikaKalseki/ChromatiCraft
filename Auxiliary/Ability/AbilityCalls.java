@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockChest;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockTNT;
 import net.minecraft.client.Minecraft;
@@ -24,6 +25,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
@@ -50,8 +52,10 @@ import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.RainbowTreeEffects;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Entity.EntityNukerBall;
+import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
@@ -68,6 +72,8 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFireFX;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
+import Reika.DragonAPI.APIPacketHandler.PacketIDs;
+import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
@@ -84,12 +90,16 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledBlockPlace;
+import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledPacket;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledSoundEvent;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
+import Reika.DragonAPI.Instantiable.ParticleController.BlendListColorController;
+import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -1057,9 +1067,111 @@ public class AbilityCalls {
 			double d = ReikaMathLibrary.py3d(ep.posX-x-0.5, ep.posY-y-0.5, ep.posZ-z-0.5);
 			float v = (float)(0.5*(1-d/maxd));
 			TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new ScheduledSoundEvent(ChromaSounds.RIFT, world, ep.posX, ep.posY, ep.posZ, v, 2)), delay);
+			TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new ScheduledPacket(ChromatiCraft.packetChannel, ChromaPackets.SUPERBUILD.ordinal(), world, x, y, z, 64, dir.ordinal())), delay);
 
 			delay = delay+(int)(5/Math.pow(delay, 0.33));
 		}
 	}
+
+	@SideOnly(Side.CLIENT)
+	public static void doSuperbuildFX(World world, int x, int y, int z, ForgeDirection dir) {
+		EntityBlurFX fx;
+		double o = 0.0625;
+		double ox = dir.offsetX != 0 ? 0 : o;
+		double oy = dir.offsetY != 0 ? 0 : o;
+		double oz = dir.offsetZ != 0 ? 0 : o;
+		for (double d = -ox; d <= 1+ox; d += 0.0625) {
+			createSuperbuildParticle(world, x+d, y-oy, z-oz);
+			createSuperbuildParticle(world, x+d, y+1+oy, z-oz);
+			createSuperbuildParticle(world, x+d, y-oy, z+1+oz);
+			createSuperbuildParticle(world, x+d, y+1+oy, z+1+oz);
+		}
+		for (double d = -oy; d <= 1+oy; d += 0.0625) {
+			createSuperbuildParticle(world, x-ox, y+d, z-oz);
+			createSuperbuildParticle(world, x+1+ox, y+d, z-oz);
+			createSuperbuildParticle(world, x-ox, y+d, z+1+oz);
+			createSuperbuildParticle(world, x+1+ox, y+d, z+1+oz);
+		}
+		for (double d = -oz; d <= 1+oz; d += 0.0625) {
+			createSuperbuildParticle(world, x-ox, y-oy, z+d);
+			createSuperbuildParticle(world, x+1+ox, y-oy, z+d);
+			createSuperbuildParticle(world, x-ox, y+1+oy, z+d);
+			createSuperbuildParticle(world, x+1+ox, y+1+oy, z+d);
+		}
+	}
+
+	private static void createSuperbuildParticle(World world, double px, double py, double pz) {
+		EntityBlurFX fx = new EntityBlurFX(world, px, py, pz).setLife(30).setScale(0.625F).setRapidExpand().setAlphaFading();
+		fx.setColorController(new BlendListColorController(new ColorBlendList(10, 0xffffff, 0x22aaff, 0x0000ff, 0x000000)));
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+	}
+
+	public static void doChestCollection(EntityPlayerMP ep) {
+		int x = MathHelper.floor_double(ep.posX);
+		int y = MathHelper.floor_double(ep.posY);
+		int z = MathHelper.floor_double(ep.posZ);
+
+		x = ReikaRandomHelper.getRandomPlusMinus(x, ep.getRNG().nextBoolean() ? 3 : 9);
+		z = ReikaRandomHelper.getRandomPlusMinus(z, ep.getRNG().nextBoolean() ? 3 : 9);
+		y = ReikaRandomHelper.getRandomPlusMinus(y, ep.getRNG().nextBoolean() ? 1 : 4);
+
+		if (!ReikaPlayerAPI.playerCanBreakAt((WorldServer)ep.worldObj, x, y, z, ep)) {
+			return;
+		}
+
+		Block b = ep.worldObj.getBlock(x, y, z);
+		if (b instanceof BlockChest || b instanceof BlockLootChest) {
+			TileEntity te = ep.worldObj.getTileEntity(x, y, z);
+			if (te instanceof IInventory) {
+				IInventory ii = (IInventory)te;
+				int s = ii.getSizeInventory()-1;
+				for (int i = 0; i <= s; i++) {
+					ItemStack is = ii.getStackInSlot(i);
+					if (is != null) {
+						if (ItemInventoryLinker.tryLinkItem(ep, is)) {
+							emptySlot(ep, x, y, z, b, ii, i, s);
+						}
+						else if (ReikaInventoryHelper.addToIInv(is, ep.inventory)) {
+							emptySlot(ep, x, y, z, b, ii, i, s);
+						}
+						else {
+							break;
+						}
+					}
+					if (i == s && ii.getStackInSlot(s) == null)
+						breakChest(ep, x, y, z, b); //made it to last slot and successfully emptied it, or it was empty
+				}
+			}
+		}
+	}
+
+	private static void emptySlot(EntityPlayer ep, int x, int y, int z, Block b, IInventory ii, int slot, int size) {
+		ii.setInventorySlotContents(slot, null);
+		if (slot == size) { //chest is empty, since only makes it to last slot if all slots before are empty
+			breakChest(ep, x, y, z, b);
+		}
+	}
+
+	private static void breakChest(EntityPlayer ep, int x, int y, int z, Block b) {
+		int meta = ep.worldObj.getBlockMetadata(x, y, z);
+		ItemStack is = ReikaBlockHelper.getSilkTouch(ep.worldObj, x, y, z, b, meta, ep, false);
+		if (is != null) {
+			if (!ItemInventoryLinker.tryLinkItem(ep, is) && !ReikaInventoryHelper.addToIInv(is, ep.inventory))
+				return;
+		}
+		ep.worldObj.setBlock(x, y, z, Blocks.air);
+		ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), ep.worldObj, x, y, z, 24, Block.getIdFromBlock(b), meta);
+		ReikaSoundHelper.playBreakSound(ep.worldObj, x, y, z, b);
+		//ReikaWorldHelper.dropAndDestroyBlockAt(ep.worldObj, x, y, size, ep, true, true);
+	}
+	/*
+	@SideOnly(Side.CLIENT)
+	public static void doChestCollectionFX(EntityPlayer ep) {
+		Collection<LightningBolt> c = AbilityHelper.instance.getCollectionBeamsForPlayer(ep);
+		for (LightningBolt b : c) {
+			ChromaFX.renderBolt(b, ReikaRenderHelper.getPartialTickTime(), 192, 0.1875, 6);
+			b.update();
+		}
+	}*/
 
 }

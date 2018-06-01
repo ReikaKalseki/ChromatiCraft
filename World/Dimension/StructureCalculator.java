@@ -12,12 +12,14 @@ package Reika.ChromatiCraft.World.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.Random;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructureTypeData;
 import Reika.ChromatiCraft.Base.ThreadedGenerator;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.DragonAPICore;
@@ -144,6 +146,28 @@ public class StructureCalculator extends ThreadedGenerator {
 		}
 
 		this.generateMonument();
+	}
+
+	public static EnumMap<CrystalElement, StructureTypeData> getStructureColorTypes() {
+		EnumMap<CrystalElement, StructureTypeData> map = new EnumMap(CrystalElement.class);
+
+		StructureCalculator throwaway = new StructureCalculator(0, 0);
+
+		ArrayList<DimensionStructureType> structs = throwaway.getUsableStructures();
+		int idx = 0;
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			int index = throwaway.seededRand.nextInt(structs.size());
+			DimensionStructureType e = structs.get(index);
+			structs.remove(index);
+			map.put(CrystalElement.elements[i], new StructureTypeData(CrystalElement.elements[i], e, idx));
+
+			if (structs.isEmpty()) {
+				structs = throwaway.getUsableStructures(); //reuse structure types as necessary
+				idx++;
+			}
+		}
+
+		return map;
 	}
 
 	@Override

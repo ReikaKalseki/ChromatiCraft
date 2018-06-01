@@ -28,6 +28,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidRegistry;
 import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
@@ -974,6 +975,9 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case ALVEARYEFFECT:
 					((TileEntityLumenAlveary)tile).setEffectSelectionState(data[0], data[1] > 0);
+					break;
+				case SUPERBUILD:
+					AbilityCalls.doSuperbuildFX(world, x, y, z, ForgeDirection.VALID_DIRECTIONS[data[0]]);
 					break;
 			}
 		}

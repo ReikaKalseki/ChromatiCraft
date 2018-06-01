@@ -13,6 +13,7 @@ import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBow;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ChromaticEnchantment;
@@ -30,6 +31,11 @@ public class EnchantmentPhasingSequence extends ChromaticEnchantment {
 	@Override
 	public int getMaxLevel() {
 		return 4;
+	}
+
+	@Override
+	public boolean canApply(ItemStack is) {
+		return EnumEnchantmentType.weapon.canEnchantItem(is.getItem()) || EnumEnchantmentType.bow.canEnchantItem(is.getItem());
 	}
 
 	public boolean canEnchantItem(Item item)  {

@@ -3890,7 +3890,7 @@ public class ChromaStructures {
 								s = StoneTypes.BRICKS;
 							}
 							else {
-								s = StoneTypes.MULTICHROMIC;
+								s = null;
 							}
 						}
 						else {
@@ -3906,7 +3906,10 @@ public class ChromaStructures {
 							s = StoneTypes.COLUMN;
 						}
 					}
-					array.setBlock(x+i, y-j, z+k, b, s.ordinal());
+					if (s == null)
+						array.setBlock(x+i, y-j, z+k, Blocks.glowstone);
+					else
+						array.setBlock(x+i, y-j, z+k, b, s.ordinal());
 				}
 			}
 		}

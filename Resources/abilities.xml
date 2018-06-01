@@ -108,6 +108,12 @@
 	<jump>
 		Gliders of leather are nice - except when they spontaneously fail and drop you to your death - but they only work so long as you can gain that initial altitude. You cannot carry saplings for giant trees everywhere you go, and you never seem to remember to refuel your more mundane flight devices, but perhaps there is another way. Hopefully never again will you need to hop three thousand meters, 8 blocks at a time.
 	</jump>
+	<superbuild>
+		Waking from a nightmare, featuring a distorted version of the world, populated not with creepers and spiders but noisy bomb flies and giant tunneling worms, you had a flash of inspiration. While noone in their right mind would want to recreate the entire dream, the ability to build across chasms or into the air is something you WOULD like to see. Fortunately, that is probably within your abilities.
+	</superbuild>
+	<chestclear>
+		Finding rooms with chests of loot is always a nice surprise - though slightly less pleasant when a hidden spawner arranges for an unexpected encounter - but actually TAKING all of the loot is something of a chore. And that does not even begin to cover cases like when the chests are inaccessible, such as the one you encountered behind a tripwire some maniac rigged to TNT. Being able to raid these things at a distance would be not only convenient, but prudent.
+	</chestclear>
 	<name>
 
 	</name>
@@ -120,10 +126,4 @@
 	<name>
 
 	</name>
-	<name>
-
-	</name>
-	<name>
-
-	</name>v
 </ability>

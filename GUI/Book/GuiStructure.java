@@ -22,6 +22,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fluids.FluidRegistry;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -86,6 +87,9 @@ public class GuiStructure extends GuiBookSection {
 		}
 		if (page == ChromaResearch.MINIPYLON) {
 			array.setBlock(array.getMidX(), array.getMinY()+6, array.getMidZ(), ChromaTiles.PERSONAL.getBlock(), ChromaTiles.PERSONAL.getBlockMetadata());
+		}
+		if (page == ChromaResearch.PYLON) {
+			array.setBlock(array.getMidX(), array.getMinY()+1, array.getMidZ(), Blocks.air);
 		}
 		if (page == ChromaResearch.PYLON || page == ChromaResearch.PYLONTURBO) {
 			array.setBlock(array.getMidX(), array.getMinY()+9, array.getMidZ(), ChromaTiles.PYLON.getBlock(), ChromaTiles.PYLON.getBlockMetadata());
@@ -298,6 +302,12 @@ public class GuiStructure extends GuiBookSection {
 			ItemStack is2 = is.copy();
 			if (ChromaBlocks.CHROMA.match(is)) {
 				is2 = ChromaItems.BUCKET.getStackOfMetadata(0);
+			}
+			else if (ChromaBlocks.ENDER.match(is) || Block.getBlockFromItem(is.getItem()) == FluidRegistry.getFluid("ender").getBlock()) {
+				is2 = ChromaItems.BUCKET.getStackOfMetadata(1);
+			}
+			else if (ChromaBlocks.LUMA.match(is)) {
+				is2 = ChromaItems.BUCKET.getStackOfMetadata(3);
 			}
 			else if (ChromaBlocks.RUNE.match(is)) {
 				is2 = ChromaBlocks.RUNE.getStackOfMetadata(getElementByTick());

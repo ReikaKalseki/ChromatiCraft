@@ -58,7 +58,6 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import cpw.mods.fml.common.Loader;
 
 public abstract class DimensionStructureGenerator implements TileCallback {
@@ -272,12 +271,7 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 	protected abstract void openStructure(World world);
 
 	public int getPassword(EntityPlayer ep) {
-		int hash = (ep != null ? ep.getUniqueID() : DragonAPICore.Reika_UUID).toString().hashCode();
-		hash = hash ^ 3178531*structureTypeIndex;
-		hash = hash ^ 1780943*structureType.ordinal();
-		hash = hash ^ 4702617*ChromaOptions.getStructureDifficulty();
-		hash = hash ^ 3689507*Loader.MC_VERSION.hashCode();
-		return HashType.SHA1.hash(hash).hashCode();
+		return new StructureTypeData(this).getPassword(ep);
 	}
 
 	@Override
@@ -314,6 +308,36 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 			return color.name()+" "+generator;
 		}
 
+	}
+
+	public static final class StructureTypeData {
+
+		public final CrystalElement color;
+		public final DimensionStructureType type;
+		public final int generationIndex;
+
+		public StructureTypeData(StructurePair p) {
+			this(p.color, p.generator.getType(), p.generator.getGenerationIndex());
+		}
+
+		public StructureTypeData(DimensionStructureGenerator gen) {
+			this(gen.genColor, gen.getType(), gen.getGenerationIndex());
+		}
+
+		public StructureTypeData(CrystalElement e, DimensionStructureType type, int idx) {
+			color = e;
+			this.type = type;
+			generationIndex = idx;
+		}
+
+		public int getPassword(EntityPlayer ep) {
+			int hash = (ep != null ? ep.getUniqueID() : DragonAPICore.Reika_UUID).toString().hashCode();
+			hash = hash ^ 3178531*generationIndex;
+			hash = hash ^ 1780943*type.ordinal();
+			hash = hash ^ 4702617*ChromaOptions.getStructureDifficulty();
+			hash = hash ^ 3689507*Loader.MC_VERSION.hashCode();
+			return HashType.SHA1.hash(hash).hashCode();
+		}
 	}
 
 	public static enum DimensionStructureType {
@@ -422,6 +446,10 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 			return Collections.unmodifiableCollection(generators.keySet());
 		}
 
+		public int getIconIndex() {
+			return 8+this.ordinal();
+		}
+
 	}
 
 	public static void resetCachedGenerators() {
@@ -487,7 +515,7 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		@Override
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			if (te instanceof StructureInterfaceTile) {
-				ReikaJavaLibrary.pConsole("Generating "+te+" @ "+new Coordinate(te));
+				//ReikaJavaLibrary.pConsole("Generating "+te+" @ "+new Coordinate(te));
 				((StructureInterfaceTile)te).loadData(generator, data);
 			}
 		}

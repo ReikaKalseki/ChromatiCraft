@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.World;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
@@ -18,6 +19,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockFlower;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntitySlime;
@@ -31,6 +33,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.feature.WorldGenAbstractTree;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -39,6 +42,7 @@ import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ModifiableBigTree;
 import Reika.DragonAPI.Instantiable.Worldgen.ModifiableSmallTrees;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import cpw.mods.fml.common.IWorldGenerator;
@@ -67,6 +71,8 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 	private final WorldGenAbstractTree bigTreeGen = new ModifiableBigTree(false); //defaults to oak
 	private final GlowingTreeGenerator glowTree = new GlowingTreeGenerator();
 	private final GlowingTreeGenerator smallGlowTrees = new GlowingTreeGenerator();
+
+	private final List<SpawnListEntry> glowCloudList;
 
 	public BiomeGlowingCliffs(int id) {
 		super(id);
@@ -100,10 +106,10 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 		spawnableMonsterList.add(new BiomeGenBase.SpawnListEntry(EntitySlime.class, 10, 4, 4));
 		spawnableMonsterList.add(new BiomeGenBase.SpawnListEntry(EntityEnderman.class, 2, 1, 4)); //2x
 		//spawnableMonsterList.add(new BiomeGenBase.SpawnListEntry(EntityWitch.class, 5, 1, 1)); //0x
-		spawnableMonsterList.add(new BiomeGenBase.SpawnListEntry(EntityGlowCloud.class, 30, 1, 4));
 
 		spawnableCaveCreatureList.add(new BiomeGenBase.SpawnListEntry(EntityBat.class, 10, 8, 8));
-		spawnableCaveCreatureList.add(new BiomeGenBase.SpawnListEntry(EntityGlowCloud.class, 30, 1, 1));
+
+		glowCloudList = ReikaJavaLibrary.makeListFrom(new BiomeGenBase.SpawnListEntry(EntityGlowCloud.class, 30, 1, 1));
 
 		//if (ModList.THAUMCRAFT.isLoaded())
 		//	spawnableMonsterList.add(new ModSpawnEntry(ModList.THAUMCRAFT, "thaumcraft.common.entities.monster.EntityWisp", 5, 1, 1).getEntry());
@@ -177,6 +183,11 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 		float h = (float)ReikaMathLibrary.normalizeToBounds(hueShift.getValue(x, z), 0, 50);
 		//ReikaJavaLibrary.pConsole(x+", "+z+" > "+hueShift.getValue(x, z)+" > "+h);
 		return ReikaColorAPI.getShiftedHue(base, h);
+	}
+
+	@Override
+	public List getSpawnableList(EnumCreatureType type) {
+		return type == ChromatiCraft.glowCloudType ? glowCloudList : super.getSpawnableList(type);
 	}
 
 	@Override

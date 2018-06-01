@@ -32,6 +32,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
@@ -67,6 +68,8 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
+	private static final HashMap<Fluid, ProgressStage> liquidProgress = new HashMap();
+
 	private static final Comparator comparator = new PosComparator();
 
 	private static class PosComparator implements Comparator<FluidSource> {
@@ -88,6 +91,16 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 		required.addTag(CrystalElement.LIME, 500);
 	}
 
+	public static void buildProgressionMap() {
+		liquidProgress.put(FluidRegistry.getFluid("luma"), ProgressStage.LUMA);
+	}
+
+	public static boolean isFluidDiscovered(Fluid f, EntityPlayer ep) {
+		ProgressStage p = liquidProgress.get(f);
+		return p == null || p.isPlayerAtStage(ep);
+	}
+
+	@Override
 	public ElementTagCompound getRequiredEnergy() {
 		return required.copy();
 	}

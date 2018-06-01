@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 
 public class ItemDataCrystal extends ItemChromaTool {
@@ -118,6 +119,9 @@ public class ItemDataCrystal extends ItemChromaTool {
 		ei.motionY = e.motionY;
 		ei.motionZ = e.motionZ;
 		ei.delayBeforeCanPickup = 40;
+		EntityPlayer ep = ReikaItemHelper.getDropper((EntityItem)e);
+		if (ep != null)
+			ReikaItemHelper.setDropper(ei, ep);
 		return ei;
 	}
 

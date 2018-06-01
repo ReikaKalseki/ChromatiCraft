@@ -153,8 +153,10 @@ public class BlockHoverBlock extends Block {
 
 	@Override
 	public void randomDisplayTick(World world, int x, int y, int z, Random r) {
-		ReikaParticleHelper.PORTAL.spawnAroundBlock(world, x, y, z, 4);
-		ReikaParticleHelper.PORTAL.spawnAroundBlock(world, x, y-1, z, 2);
+		if (world.getBlock(x, y-1, z) != this || r.nextInt(6) == 0) {
+			ReikaParticleHelper.PORTAL.spawnAroundBlock(world, x, y, z, 1);
+			ReikaParticleHelper.PORTAL.spawnAroundBlock(world, x, y-1, z, 1);
+		}
 	}
 
 	@Override
@@ -164,7 +166,7 @@ public class BlockHoverBlock extends Block {
 
 	@Override
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity e) {
-		if (e instanceof EntityPlayer) {
+		if (e instanceof EntityPlayer && !e.isSneaking()) {
 			int meta = world.getBlockMetadata(x, y, z);
 			HoverType.getFromMeta(meta).updateEntity((EntityPlayer)e);
 		}

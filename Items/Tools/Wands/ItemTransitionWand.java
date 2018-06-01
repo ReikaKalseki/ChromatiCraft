@@ -15,17 +15,15 @@ import java.util.HashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemWandBase;
+import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
@@ -219,7 +217,7 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 			boolean exists = world.getPlayerEntityByName(r.player.getCommandSenderName()) != null;
 			if (exists) {
 				if (this.sufficientEnergy(r.player) && ReikaPlayerAPI.playerHasOrIsCreative(r.player, r.place, r.placeM)) {
-					boolean perm = world.isRemote || ReikaPlayerAPI.playerCanBreakAt((WorldServer)world, x, y, z, (EntityPlayerMP)r.player);
+					boolean perm = world.isRemote || (ReikaPlayerAPI.playerCanBreakAt((WorldServer)world, x, y, z, (EntityPlayerMP)r.player));
 					switch(r.mode) {
 						case CONTIGUOUS:
 							return perm;
@@ -242,7 +240,7 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 		EntityPlayer ep = r.player;
 		if (!ep.capabilities.isCreativeMode) {
 			for (ItemStack is : r.drops) {
-				if (MinecraftForge.EVENT_BUS.post(new EntityItemPickupEvent(ep, new EntityItem(ep.worldObj, ep.posX, ep.posY, ep.posZ, is)))) {
+				if (ItemInventoryLinker.tryLinkItem(ep, is)) {
 					continue;
 				}
 				ReikaPlayerAPI.addOrDropItem(is, ep);

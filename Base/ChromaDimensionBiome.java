@@ -35,6 +35,16 @@ public abstract class ChromaDimensionBiome extends BiomeGenBase implements Custo
 		this.setDisableRain();
 		biomeType = t;
 		grassColor = new SimplexNoiseGenerator(System.currentTimeMillis());
+
+		spawnableMonsterList.clear();
+		spawnableCreatureList.clear();
+		spawnableCaveCreatureList.clear();
+		spawnableWaterCreatureList.clear();
+		this.initSpawnRules();
+	}
+
+	protected void initSpawnRules() {
+		//spawnableWaterCreatureList.add(new SpawnListEntry(EntitySquid.class, 10, 4, 4));
 	}
 
 	//public abstract boolean allowsGenerator(DimensionGenerators gen);

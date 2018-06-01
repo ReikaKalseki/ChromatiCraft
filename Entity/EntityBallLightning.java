@@ -234,7 +234,6 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 		}
 	}
 
-
 	@Override
 	public void readEntityFromNBT(NBTTagCompound nbt) {
 		super.readEntityFromNBT(nbt);

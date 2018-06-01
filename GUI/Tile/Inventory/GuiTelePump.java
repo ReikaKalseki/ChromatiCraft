@@ -22,12 +22,17 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerTelePump;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.Libraries.MathSci.ReikaEngLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
@@ -78,8 +83,13 @@ public class GuiTelePump extends GuiChromaBase {
 		}
 		else if (!list.isEmpty()) {
 			Fluid sel = list.get(active);
-			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.TELEPUMP.ordinal(), pump, sel.getID());
-			player.closeScreen();
+			if (pump.isFluidDiscovered(sel, player)) {
+				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.TELEPUMP.ordinal(), pump, sel.getID());
+				player.closeScreen();
+			}
+			else {
+				ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 1, 1);
+			}
 		}
 		this.initGui();
 	}
@@ -122,16 +132,22 @@ public class GuiTelePump extends GuiChromaBase {
 		int max = Math.min(list.size()-1, active+1);
 		for (int i = min; i <= max; i++) {
 			f = list.get(i);
+			boolean disc = pump.isFluidDiscovered(f, player);
 			//ReikaJavaLibrary.pConsole(f.getName());
 			IIcon ico = ReikaLiquidRenderer.getFluidIconSafe(f);
+			if (!disc) {
+				ico = ChromaIcons.QUESTION.getIcon();
+			}
 			GL11.glColor3f(1, 1, 1);
 			int dy = 24*(i-active);
 			ReikaLiquidRenderer.bindFluidTexture(f);
 			this.drawTexturedModelRectFromIcon(13, 35+dy, ico, 16, 16);
 
 			if (i == active) {
-				double ct = pump.getFluidCount(f)/(double)FluidContainerRegistry.BUCKET_VOLUME;
+				double ct = disc ? pump.getFluidCount(f)/(double)FluidContainerRegistry.BUCKET_VOLUME : 0;
 				String sg = String.format("%s (%.3f%sB)", f.getLocalizedName(), ReikaMathLibrary.getThousandBase(ct), ReikaEngLibrary.getSIPrefix(ct));
+				if (!disc)
+					sg = "[Unknown] ("+ReikaStringParser.padToLength(String.valueOf(ReikaRandomHelper.getRandomBetween(0, 99999)), 5, " ")+" B)";
 				fontRendererObj.drawStringWithShadow(sg, 36, 39+dy, 0xffffff);
 			}
 		}

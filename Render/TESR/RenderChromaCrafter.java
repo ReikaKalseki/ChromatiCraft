@@ -58,7 +58,7 @@ public class RenderChromaCrafter extends ChromaRenderBase {
 			Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 			ReikaTextureHelper.bindTerrainTexture();
 			if (te.isInWorld()) {
-				RenderBlocks.getInstance().setRenderBoundsFromBlock(te.getBlockType());
+				RenderBlocks.getInstance().setRenderBounds(0, 0, 0, 1, 1, 1);
 				Tessellator.instance.setNormal(0, 1, 0);
 				Tessellator.instance.setBrightness(te.getBlockType().getMixedBrightnessForBlock(te.worldObj, te.xCoord, te.yCoord, te.zCoord));
 				Tessellator.instance.startDrawingQuads();

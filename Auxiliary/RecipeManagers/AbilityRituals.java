@@ -282,9 +282,15 @@ public final class AbilityRituals {
 		this.addRitual(rit);
 
 		rit = new AbilityRitual(Chromabilities.SUPERBUILD);
-		rit.addAura(CrystalElement.LIME, 30000);
-		rit.addAura(CrystalElement.GRAY, 10000);
-		rit.addAura(CrystalElement.PURPLE, 10000);
+		rit.addAura(CrystalElement.LIGHTBLUE, 24000);
+		rit.addAura(CrystalElement.GRAY, 6000);
+		rit.addAura(CrystalElement.PURPLE, 6000);
+		this.addRitual(rit);
+
+		rit = new AbilityRitual(Chromabilities.CHESTCLEAR);
+		rit.addAura(CrystalElement.LIME, 9000);
+		rit.addAura(CrystalElement.LIGHTGRAY, 1000);
+		rit.addAura(CrystalElement.WHITE, 3000);
 		this.addRitual(rit);
 	}
 

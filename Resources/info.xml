@@ -69,9 +69,9 @@
 	<enchants>
 		You have found a way to magically imbue your tools with a purple glow and improve their usefulness, and later a way to even control what kind of bonus you wish to obtain. However, you have noticed something else: Using the %s, there are a series of powers not previously available to you, and on top of that others can be made more powerful.
 	</enchants>
-	<name>
-		
-	</name>
+	<structurepasswords>
+		Upon - finally - completing a vast subterranean puzzle, you were struck with a random thought, though you as yet have no idea what it might mean or be related to. Nonetheless, having learned from past mistakes (you may never remember that idea you had for improving the fuel efficiency of your home base machinery), you have written these down for potential future reference.
+	</structurepasswords>
 	<name>
 		
 	</name>

@@ -197,6 +197,11 @@ OperationInterval, MultiBlockChromaTile {
 		abilityTick = 0;
 		tickPlayerOut = 0;
 		playerSteppedIn = false;
+
+		if (ritualPlayer != null) {
+			this.resetGUIs();
+		}
+		ritualPlayer = null;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -266,9 +271,7 @@ OperationInterval, MultiBlockChromaTile {
 		if (ep instanceof EntityPlayerMP)
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 		if (worldObj.isRemote) {
-			GameSettings gs = Minecraft.getMinecraft().gameSettings;
-			gs.thirdPersonView = 0;
-			gs.hideGUI = false;
+			this.resetGUIs();
 		}
 	}
 
@@ -301,6 +304,11 @@ OperationInterval, MultiBlockChromaTile {
 		abilityTick = 0;
 		playerSteppedIn = false;
 		ability = null;
+		this.resetGUIs();
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void resetGUIs() {
 		if (worldObj.isRemote) {
 			GameSettings gs = Minecraft.getMinecraft().gameSettings;
 			gs.thirdPersonView = 0;

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -41,23 +42,23 @@ public class ReservoirHandlers {
 	private static abstract class ChromaReservoirRecipeHandlerBase implements TankHandler {
 
 		@Override
-		public final int onTick(TileEntity te, FluidStack stored) {
+		public final int onTick(TileEntity te, FluidStack stored, EntityPlayer owner) {
 			if (stored != null && stored.amount >= 1000 && stored.getFluid() == FluidRegistry.getFluid("chroma")) {
-				return this.doTick(te, stored);
+				return this.doTick(te, stored, owner);
 			}
 			else {
 				return 0;
 			}
 		}
 
-		protected abstract int doTick(TileEntity te, FluidStack fs);
+		protected abstract int doTick(TileEntity te, FluidStack fs, EntityPlayer owner);
 
 	}
 
 	public static class ChromaPrepHandler extends ChromaReservoirRecipeHandlerBase {
 
 		@Override
-		protected int doTick(TileEntity te, FluidStack fs) {
+		protected int doTick(TileEntity te, FluidStack fs, EntityPlayer owner) {
 			int dye = fs.tag != null ? fs.tag.getInteger("berries") : 0;
 			int ether = fs.tag != null ? fs.tag.getInteger("ether") : 0;
 			CrystalElement e = dye > 0 ? CrystalElement.elements[fs.tag.getInteger("element")] : null;
@@ -102,7 +103,7 @@ public class ReservoirHandlers {
 	public static class ShardBoostingHandler extends ChromaReservoirRecipeHandlerBase {
 
 		@Override
-		protected int doTick(TileEntity te, FluidStack fs) {
+		protected int doTick(TileEntity te, FluidStack fs, EntityPlayer owner) {
 			int dye = fs.tag != null ? fs.tag.getInteger("berries") : 0;
 			int ether = fs.tag != null ? fs.tag.getInteger("ether") : 0;
 			CrystalElement e = dye > 0 ? CrystalElement.elements[fs.tag.getInteger("element")] : null;
@@ -131,14 +132,14 @@ public class ReservoirHandlers {
 	public static class PoolRecipeHandler extends ChromaReservoirRecipeHandlerBase {
 
 		@Override
-		protected int doTick(TileEntity te, FluidStack fs) {
+		protected int doTick(TileEntity te, FluidStack fs, EntityPlayer owner) {
 			if (rand.nextInt(3) == 0) {
 				int ether = fs.tag != null ? fs.tag.getInteger("ether") : 0;
 				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(te.xCoord, te.yCoord, te.zCoord);
 				List<EntityItem> li = te.worldObj.getEntitiesWithinAABB(EntityItem.class, box);
 				for (EntityItem ei : li) {
 					if (PoolRecipes.instance.canAlloyItem(ei)) {
-						PoolRecipe pr = PoolRecipes.instance.getPoolRecipe(ei, li, false);
+						PoolRecipe pr = PoolRecipes.instance.getPoolRecipe(ei, li, false, owner);
 						if (pr != null) {
 							if (ei.worldObj.isRemote) {
 								for (int i = 0; i < ACCEL_FACTOR; i++) {

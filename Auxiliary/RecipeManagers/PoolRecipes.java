@@ -62,7 +62,8 @@ public class PoolRecipes {
 		PoolRecipe pr = this.addRecipe(ChromaStacks.complexIngot, ChromaStacks.chromaIngot, ChromaStacks.enderIngot, ChromaStacks.waterIngot, ChromaStacks.spaceIngot, ChromaStacks.fieryIngot, ChromaStacks.auraIngot, ChromaStacks.conductiveIngot, ChromaStacks.iridChunk, new ItemStack(Blocks.obsidian, 4, 0), new ItemStack(Items.emerald, 8, 0));
 		//pr.allowDoubling = false;
 
-		this.addRecipe(ChromaItems.DATACRYSTAL.getCraftedProduct(2), ChromaItems.DATACRYSTAL.getStackOf(), ReikaItemHelper.getSizedItemStack(ChromaStacks.crystalPowder, 18)).addProgress(ProgressStage.TOWER);
+		pr = this.addRecipe(ChromaItems.DATACRYSTAL.getCraftedProduct(2), ChromaItems.DATACRYSTAL.getStackOf(), ReikaItemHelper.getSizedItemStack(ChromaStacks.crystalPowder, 18)).addProgress(ProgressStage.TOWER);
+		pr.allowDoubling = false;
 	}
 
 	private PoolRecipe addRecipe(ItemStack out, ItemStack main, ItemStack... ingredients) {
@@ -83,10 +84,10 @@ public class PoolRecipes {
 	}
 
 	public PoolRecipe getPoolRecipe(EntityItem ei) {
-		return this.getPoolRecipe(ei, null, true);
+		return this.getPoolRecipe(ei, null, true, ReikaItemHelper.getDropper(ei));
 	}
 
-	public PoolRecipe getPoolRecipe(EntityItem ei, Collection<EntityItem> li, boolean block) {
+	public PoolRecipe getPoolRecipe(EntityItem ei, Collection<EntityItem> li, boolean block, EntityPlayer ep) {
 		Collection<PoolRecipe> prs = recipes.get(ei.getEntityItem());
 		if (prs != null) {
 			int x = MathHelper.floor_double(ei.posX);
@@ -97,7 +98,7 @@ public class PoolRecipes {
 				if (li == null)
 					li = ei.worldObj.getEntitiesWithinAABB(EntityItem.class, box);
 				for (PoolRecipe pr : prs) {
-					if (pr.canBeMadeFrom(li)) {
+					if (ep != null && pr.playerHasProgress(ep) && pr.canBeMadeFrom(li)) {
 						return pr;
 					}
 				}
@@ -145,12 +146,15 @@ public class PoolRecipes {
 		pr.makeFrom(li);
 		ReikaEntityHelper.decrEntityItemStack(ei, 1);
 		int n = pr.allowDoubling() && ReikaRandomHelper.doWithChance(BlockActiveChroma.getDoublingChance(ether)) ? 2 : 1;
-		EntityItem newitem = ReikaItemHelper.dropItem(ei, ReikaItemHelper.getSizedItemStack(pr.getOutput(), n*pr.getOutput().stackSize));
-		newitem.lifespan = Integer.MAX_VALUE;
+		int n2 = n*pr.getOutput().stackSize;
+		for (int i = 0; i < n2; i++) {
+			EntityItem newitem = ReikaItemHelper.dropItem(ei, ReikaItemHelper.getSizedItemStack(pr.getOutput(), 1));
+			newitem.lifespan = Integer.MAX_VALUE;
+			//newitem.getEntityData().setBoolean("ccalloy", true);
+		}
 		if (flag) {
 			ei.worldObj.setBlock(x, y, z, Blocks.air);
 		}
-		//newitem.getEntityData().setBoolean("ccalloy", true);
 		ReikaWorldHelper.causeAdjacentUpdates(ei.worldObj, x, y, z);
 		ProgressStage.ALLOY.stepPlayerTo(ReikaItemHelper.getDropper(ei));
 	}

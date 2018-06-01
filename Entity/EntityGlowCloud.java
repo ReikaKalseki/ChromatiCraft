@@ -23,7 +23,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -35,13 +35,12 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
+import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -70,7 +69,7 @@ import cofh.api.energy.IEnergyHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class EntityGlowCloud extends EntityLiving implements EtherealEntity {
+public class EntityGlowCloud extends EntityLiving implements EtherealEntity, IMob {
 
 	private SphericalVector velocity;
 	private double targetTheta = rand.nextInt(360);
@@ -407,8 +406,7 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity {
 
 	private void drop(EntityPlayer ep, ItemStack is) {
 		if (Chromabilities.RANGEDBOOST.enabledOn(ep)) {
-			EntityItem ei = new EntityItem(ep.worldObj, posX, posY, posZ, is);
-			if (!MinecraftForge.EVENT_BUS.post(new EntityItemPickupEvent(ep, ei))) {
+			if (ItemInventoryLinker.tryLinkItem(ep, is)) {
 				if (ReikaInventoryHelper.addToIInv(is, ep.inventory)) {
 
 				}

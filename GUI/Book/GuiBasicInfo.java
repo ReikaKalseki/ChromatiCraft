@@ -11,9 +11,11 @@ package Reika.ChromatiCraft.GUI.Book;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Random;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.Tessellator;
@@ -27,6 +29,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
@@ -34,6 +37,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.Encha
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.RuneShapeRenderer;
 import Reika.ChromatiCraft.Base.CrystalBlock;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructureTypeData;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Magic.RuneShape;
 import Reika.ChromatiCraft.Magic.RuneShape.RuneViewer;
@@ -46,6 +50,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
+import Reika.ChromatiCraft.World.Dimension.StructureCalculator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
@@ -53,6 +58,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class GuiBasicInfo extends GuiBookSection {
@@ -160,6 +166,8 @@ public class GuiBasicInfo extends GuiBookSection {
 			return ChromaEnchants.enchantmentList.length+enchantMap.size();
 		else if (page == ChromaResearch.ENCHANTING)
 			return enchants.size()+1;
+		else if (page == ChromaResearch.STRUCTUREPASSWORDS)
+			return 1;
 		return 0;
 	}
 
@@ -173,6 +181,8 @@ public class GuiBasicInfo extends GuiBookSection {
 			return PageType.MULTICAST;
 		else if (page == ChromaResearch.ENCHANTING && subpage == 1)
 			return PageType.RUNES;
+		else if (page == ChromaResearch.STRUCTUREPASSWORDS && subpage == 1)
+			return PageType.STRUCTPASS;
 		return PageType.PLAIN;
 	}
 
@@ -221,6 +231,60 @@ public class GuiBasicInfo extends GuiBookSection {
 		}
 		else if (page == ChromaResearch.ENCHANTS && subpage >= 1) {
 			this.renderEnchantDesc(posX, posY, px, c);
+		}
+		else if (page == ChromaResearch.STRUCTUREPASSWORDS && subpage >= 1) {
+			this.renderStructureKeys(posX, posY);
+		}
+	}
+
+	private void renderStructureKeys(int posX, int posY) {
+		int k = 0;
+		int n = 0;
+		ArrayList<StructureTypeData> set = new ArrayList(StructureCalculator.getStructureColorTypes().values());
+
+		Collections.shuffle(set, new Random(player.hashCode()));
+
+		for (StructureTypeData data : set) {
+			boolean complete = ProgressionManager.instance.hasPlayerCompletedStructureColor(player, data.color);
+			String tex = "Textures/dimensionstructures.png";
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, tex);
+			int idx = data.type.getIconIndex();
+			if (!complete)
+				idx = 1;
+			int u = (idx%8)*32;
+			int v = (idx/8)*32;
+			int maxw = 4;
+			if (k >= maxw) {
+				k = 0;
+				n++;
+			}
+			int x = posX+k*60+10;
+			int y = posY+n*36+29;
+
+			api.drawTexturedModalRect(x, y, u, v, 32, 32);
+
+			GL11.glColor4f(1, 1, 1, 1);
+			if (complete && api.isMouseInBox(x, x+33, y, y+33)) {
+				//api.drawTooltipAt(font, d.getDisplayTime(j), mx, my);
+				ReikaRenderHelper.disableLighting();
+
+				ReikaTextureHelper.bindTerrainTexture();
+
+				int pass = data.getPassword(player);
+				byte[] vals = ReikaJavaLibrary.splitIntToHexChars(pass);
+				for (int i = 0; i < vals.length; i++) {
+					CrystalElement e = CrystalElement.elements[vals[i]];
+					IIcon ico = e.getGlowRune();
+					int dx = posX+35+i*24;
+					int dy = posY+189;
+
+					api.drawTexturedModelRectFromIcon(dx, dy, ico, 16, 16);
+				}
+
+				//fontRendererObj.drawString(data.color.displayName, posX+10, posY+150, 0xffffff);
+			}
+
+			k++;
 		}
 	}
 

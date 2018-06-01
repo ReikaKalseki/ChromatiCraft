@@ -158,6 +158,7 @@ public class ProgressionManager implements ProgressRegistry {
 		TOWER(									ChromaTiles.DATANODE.getCraftedProduct()),
 		STRUCTCHEAT(							Blocks.tnt), //optional, just to rub it in
 		VOIDMONSTER(							(ItemStack)null, ModList.VOIDMONSTER.isLoaded()),
+		LUMA(									ChromaBlocks.LUMA.getBlockInstance()),
 		NEVER(									(ItemStack)null, false), //used as a no-trigger placeholder
 		;
 

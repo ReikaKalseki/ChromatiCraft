@@ -22,6 +22,9 @@ import java.util.UUID;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
+import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
@@ -56,8 +59,12 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
+
+import org.lwjgl.opengl.GL11;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
@@ -73,6 +80,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
@@ -80,11 +88,13 @@ import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.Base.BlockTieredResource;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.ScaledDirection;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
 import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
+import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
 import Reika.DragonAPI.Instantiable.Event.MobTargetingEvent;
 import Reika.DragonAPI.Instantiable.Event.PlayerHasItemEvent;
 import Reika.DragonAPI.Instantiable.Event.PlayerPlaceBlockEvent;
@@ -102,6 +112,7 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -123,6 +134,7 @@ import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -163,6 +175,8 @@ public class AbilityHelper {
 	private final PlayerMap<Long> dashTime = new PlayerMap();
 
 	private final HashSet<UUID> doubleJumps = new HashSet();
+
+	private final PlayerMap<Collection<LightningBolt>> playerBolts = new PlayerMap();
 
 	public static final AbilityHelper instance = new AbilityHelper();
 
@@ -1584,4 +1598,91 @@ public class AbilityHelper {
 	public void copyHealthBoost(EntityPlayer original, EntityPlayer ep) {
 		ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier(Chromabilities.HEALTH_UUID, "Chroma", this.getBoostedHealth(original), 2));
 	}
+
+	public Collection<LightningBolt> getCollectionBeamsForPlayer(EntityPlayer ep) {
+		Collection<LightningBolt> c = playerBolts.get(ep);
+		if (c == null || c.isEmpty()) {
+			if (c == null) {
+				c = new ArrayList();
+				playerBolts.put(ep, c);
+			}
+			c.clear();
+			DecimalPosition p1 = new DecimalPosition(0, -0.75, 0);
+			int n = 3;
+			double r = 3;
+			for (int i = 0; i < n; i++) {
+				double a1 = Math.toRadians(i*360D/n);
+				double a2 = Math.toRadians((i+0.5)*360/n);
+				double x1 = r*Math.cos(a1);
+				double z1 = r*Math.sin(a1);
+				double x2 = r*Math.cos(a2);
+				double z2 = r*Math.sin(a2);
+				LightningBolt b1 = new LightningBolt(p1, new DecimalPosition(x1, -1.6, z1), 3);
+				LightningBolt b2 = new LightningBolt(p1, new DecimalPosition(x2, 0.5, z2), 3);
+				b1.velocity = b2.velocity = b1.velocity/32D;
+				//b1.variance = b2.variance = b1.variance*2D;
+				c.add(b1);
+				c.add(b2);
+			}
+		}
+		return Collections.unmodifiableCollection(c);
+	}
+
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void renderChestCollectionFirstPerson(TickEvent.RenderTickEvent evt) {
+		if (Minecraft.getMinecraft().gameSettings.thirdPersonView == 0) {
+			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+			if (ep != null && Chromabilities.CHESTCLEAR.enabledOn(ep)) { //ep != null is 'not main menu'
+				GL11.glPushMatrix();
+				GL11.glTranslated(0, 0, 0);
+				this.renderChestCollectionFX(ep, evt.renderTickTime);
+				GL11.glPopMatrix();
+			}
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void renderChestCollectionFX(EntityPlayer ep, float ptick) {
+		if (ep.worldObj == null)
+			return;
+
+		if (!Minecraft.getMinecraft().isGamePaused() && ep.ticksExisted%32 == 0)
+			ReikaSoundHelper.playClientSound(ChromaSounds.RADIANCE, ep, 0.20F, 1F, false);
+
+		GuiScreen gui = Minecraft.getMinecraft().currentScreen;
+		if (gui instanceof GuiContainerCreative || gui instanceof GuiInventory)
+			return;
+
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		ReikaRenderHelper.disableEntityLighting();
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		GL11.glDepthMask(false);
+		BlendMode.ADDITIVEDARK.apply();
+		GL11.glPushMatrix();
+		double sc = 1.25+0.5*Math.sin(ep.ticksExisted/60D);
+		GL11.glScaled(sc, sc, sc);
+		GL11.glRotated(ep.ticksExisted*2.4, 0, 1, 0);
+		Collection<LightningBolt> c = AbilityHelper.instance.getCollectionBeamsForPlayer(ep);
+		//ReikaJavaLibrary.pConsole(c.size());
+		int clr = 0xB6FF00;
+		for (LightningBolt b : c) {
+			ChromaFX.renderBolt(b, ptick, 192, 0.1875, 6, clr);
+			b.update();
+		}
+		GL11.glPopAttrib();
+		GL11.glPopMatrix();
+
+		if (!Minecraft.getMinecraft().isGamePaused() && ep.getRNG().nextInt(8) == 0) {
+			double px = ReikaRandomHelper.getRandomPlusMinus(ep.posX, 0.5);
+			double pz = ReikaRandomHelper.getRandomPlusMinus(ep.posZ, 0.5);
+			double py = ep.posY-1.62+rand.nextDouble()*1.8;
+			double v = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
+			float s = (float)ReikaRandomHelper.getRandomBetween(0.75, 1.5);
+			EntityFX fx = new EntityBlurFX(ep.worldObj, px, py, pz, 0, v, 0).setColor(clr).setGravity(0).setScale(s);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+	}
+
 }

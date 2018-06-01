@@ -155,7 +155,8 @@ public abstract class GuiBookSection extends ChromaBookGui {
 		STRUCT("structure"),
 		RITUAL("ritual2"),
 		ELEMENT("element"),
-		POOL("pool");
+		POOL("pool"),
+		STRUCTPASS("password");
 
 		private final String endString;
 

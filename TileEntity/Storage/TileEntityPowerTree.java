@@ -411,7 +411,8 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	private void grow(CrystalElement e) {
 		int stage = growth.get(e);
 		ArrayList<Coordinate> li = locations.get(e);
-		if (this.getEnergy(e)*100/this.getMaxStorage(e) >= 95) {
+		//ReikaJavaLibrary.pConsole(e+" : "+this.getEnergy(e)+" > "+(this.getEnergy(e)*100L)+" > "+(this.getEnergy(e)*100L/this.getMaxStorage(e)));
+		if (this.getEnergy(e)*100L/this.getMaxStorage(e) >= 95) {
 			//ReikaJavaLibrary.pConsole(e+":"+growth.get(e)+">"+this.getMaxStorage(e));
 			if (stage < li.size()) {
 				Coordinate c = li.get(stage).offset(xCoord, yCoord, zCoord);

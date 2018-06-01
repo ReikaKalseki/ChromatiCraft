@@ -14,6 +14,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.oredict.RecipeSorter;
+import net.minecraftforge.oredict.RecipeSorter.Category;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -21,6 +23,10 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 
 public class LegacyTileAcceleratorRecipe implements IRecipe {
+
+	static {
+		RecipeSorter.register("chromaticraft:tileaccel", LegacyTileAcceleratorRecipe.class, Category.SHAPELESS, "after:minecraft:shaped after:minecraft:shapeless");
+	}
 
 	@Override
 	public boolean matches(InventoryCrafting ics, World world) {

@@ -50,6 +50,8 @@ public class RenderDataNode extends ChromaRenderBase {
 		TileEntityDataNode te = (TileEntityDataNode)tile;
 		GL11.glPushMatrix();
 		GL11.glTranslated(par2+0.5, par4+0.5, par6+0.5);
+		//double s = 7D/3;
+		//GL11.glScaled(s, s, s);
 
 		Tessellator v5 = Tessellator.instance;
 

@@ -248,7 +248,12 @@ public class ChromaticEventManager {
 	private ChromaticEventManager() {
 
 	}
+	/*
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void clampGlowCloudCount(WorldEvent.PotentialSpawns evt) {
 
+	}
+	 */
 	@ModDependent(ModList.FORESTRY)
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void resyncAlvearies(PlayerInteractEvent evt) {
@@ -1444,6 +1449,7 @@ public class ChromaticEventManager {
 	public void doPoolRecipes(ItemUpdateEvent evt) {
 		EntityItem ei = evt.entityItem;
 		if (rand.nextInt(5) == 0) {
+			//ReikaJavaLibrary.pConsole(ei+" : "+ReikaItemHelper.getDropper(ei));
 			if (PoolRecipes.instance.canAlloyItem(ei)) {
 				PoolRecipe out = PoolRecipes.instance.getPoolRecipe(ei);
 				if (out != null) {
@@ -1834,6 +1840,7 @@ public class ChromaticEventManager {
 			world.setBlockToAir(x, y, z);
 			event.setResult(Result.ALLOW);
 			event.result = ChromaItems.BUCKET.getStackOfMetadata(3);
+			ProgressStage.LUMA.stepPlayerTo(event.entityPlayer);
 			//event.entityPlayer.setCurrentItemOrArmor(0, event.result);
 		}
 		else if (b == ChromaBlocks.MOLTENLUMEN.getBlockInstance()) {
