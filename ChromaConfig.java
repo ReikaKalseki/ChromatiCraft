@@ -12,7 +12,9 @@ package Reika.ChromatiCraft;
 import java.util.ArrayList;
 
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
 import Reika.DragonAPI.Base.DragonAPIMod;
 import Reika.DragonAPI.Instantiable.IO.ControlledConfig;
 import Reika.DragonAPI.Interfaces.Configuration.ConfigList;
@@ -29,6 +31,7 @@ public class ChromaConfig extends ControlledConfig {
 	private static final int vanillaTreeCount = ReikaTreeHelper.treeList.length;
 	private final DataElement<Boolean>[] trees = new DataElement[treeLength+vanillaTreeCount];
 	private DataElement<String[]> guardianExceptions;
+	private Key superbuildKey;
 
 	public ChromaConfig(DragonAPIMod mod, ConfigList[] option, IDRegistry[] id) {
 		super(mod, option, id);
@@ -43,6 +46,15 @@ public class ChromaConfig extends ControlledConfig {
 		}
 
 		guardianExceptions = this.registerAdditionalOption("Other Options", "Guardian Stone Exceptions", this.getDefaultGuardstoneExceptions());
+	}
+
+	@Override
+	protected void afterInit() {
+		superbuildKey = Key.readFromConfig(configMod, ChromaOptions.SUPERBUILDKEYBIND);
+	}
+
+	public Key getSuperbuildKey() {
+		return superbuildKey;
 	}
 
 	private String[] getDefaultGuardstoneExceptions() {

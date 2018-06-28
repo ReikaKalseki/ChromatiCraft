@@ -636,6 +636,21 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
+	public void autoCollect(HarvestDropsEvent evt) {
+		EntityPlayer ep = evt.harvester;
+		if (ep != null && !ReikaPlayerAPI.isFake(ep)) {
+			ItemStack tool = ep.getCurrentEquippedItem();
+			int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.AUTOCOLLECT.getEnchantment(), tool);
+			if (level > 0) {
+				for (ItemStack is : evt.drops) {
+					ReikaPlayerAPI.addOrDropItem(is, ep);
+				}
+				evt.drops.clear();
+			}
+		}
+	}
+
+	@SubscribeEvent
 	public void rareLootBoost(LivingDropsEvent ev) {
 		if (ev.source.getEntity() instanceof EntityLivingBase) {
 			EntityLivingBase src = (EntityLivingBase)ev.source.getEntity();

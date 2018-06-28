@@ -83,6 +83,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
@@ -290,9 +291,9 @@ public class AbilityHelper {
 
 	@SubscribeEvent
 	public void superbuild(PlayerPlaceBlockEvent evt) {
-		if (!evt.world.isRemote && Chromabilities.SUPERBUILD.enabledOn(evt.player)) {
+		if (!evt.world.isRemote && Chromabilities.SUPERBUILD.enabledOn(evt.player) && KeyWatcher.instance.isKeyDown(evt.player, ChromatiCraft.config.getSuperbuildKey())) {
 			AbilityCalls.superbuild(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, evt.side, evt.block, evt.metadata, evt.getItem(), evt.player);
-			Chromabilities.SUPERBUILD.setToPlayer(evt.player, false);
+			//Chromabilities.SUPERBUILD.setToPlayer(evt.player, false);
 		}
 	}
 

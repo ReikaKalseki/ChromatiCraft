@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0"?>
 <enchants>
+	<boostedlevel>
+		%s is the best you have been able to achieve thus far, but you want more. With the power of liquid chroma, %s is within your reach.
+	</boostedlevel>
 	<weaponaoe>
 		Your sword of an unbreakable alloy of metal and the world's very foundation is wonderful, but even it is somewhat outmatched should you find yourself in the midst of a crowd. With some luck, that will no longer be an obstacle.
 	</weaponaoe>
@@ -27,12 +30,9 @@
 	<phasing>
 		Combat becomes somewhat pointless when both you and your opponent have nigh-impenetrable armor or magic energy shields upon which you can unload every weapon you have and never make a scratch. You may not have the means to disable said protection outright (nor would that go over well with those relying on such protection), but if you could focus a portion of your damage so it can punch through...
 	</phasing>
-	<boostedlevel>
-		%s is the best you have been able to achieve thus far, but you want more. With the power of liquid chroma, %s is within your reach.
-	</boostedlevel>
-	<name>
-		
-	</name>
+	<autocollect>
+		More than once you have delighted in a rare find deep in a cave, then upon mining the valuable ore, finding out too late that it was directly adjacent to lava and watching helplessly as the items are incinerated. Carefully digging out the surroundings first is an unacceptable amount of work - you want something that will instead make the contents of the blocks you mine automatically enter your inventory.
+	</autocollect>
 	<name>
 		
 	</name>

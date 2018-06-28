@@ -265,27 +265,34 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 			int x = chunkX+random.nextInt(16)+8;
 			int z = chunkZ+random.nextInt(16)+8;
 			if (BiomeGlowingCliffs.isGlowingCliffs(world.getBiomeGenForCoords(x, z))) {
-				int c = world.getBlock(x, world.getTopSolidOrLiquidBlock(x, z)+1, z) == Blocks.water ? 3 : 6;
+				boolean water = world.getBlock(x, world.getTopSolidOrLiquidBlock(x, z)+1, z) == Blocks.water;
+				int c = water ? 3 : 6;
 				if (random.nextInt(c) == 0) {
-					Island is = this.initializeIsland(world, x, z, random, s);
+					Island is = this.initializeIsland(world, x, z, random, s, water);
 					this.generateIsland(world, x, z, random, is);
 				}
 			}
 		}
 	}
 
-	private Island initializeIsland(World world, int x, int z, Random rand, double sizeScale) {
+	private Island initializeIsland(World world, int x, int z, Random rand, double sizeScale, boolean overWater) {
 		Island is = new Island(x, z);
 		is.degree = 3+rand.nextInt(4);
 		is.scale = sizeScale;
+		is.overWater = overWater;
 		is.innerRadius = (8+4*rand.nextDouble())*sizeScale;
 		is.outerRadius = (12+6*rand.nextDouble())*sizeScale;
 		is.maxThickness = (18+12*rand.nextDouble())*sizeScale;
 		is.originX = x;
 		is.originZ = z;
 		is.originY = Math.min(250, Math.max(world.getTopSolidOrLiquidBlock(x, z)+10+(int)is.maxThickness, 90)+rand.nextInt(80));
-		is.hasLake = rand.nextInt(2) == 0;
-		is.hasRiver = rand.nextInt(5) == 0;
+		is.hasLake = overWater ? rand.nextInt(3) > 0 : rand.nextInt(2) == 0;
+		is.hasRiver = rand.nextInt(overWater ? 4 : 5) == 0;
+		if (is.hasLake || is.hasRiver) {
+			if (overWater && is.originY > 220 && rand.nextInt(20) == 0) {
+				is.liquid = ChromaBlocks.LUMA.getBlockInstance();
+			}
+		}
 		if (rand.nextInt(20) == 0) {
 			is.hasLake = is.hasRiver = true;
 		}
@@ -358,8 +365,12 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 
 		private int degree = 6;
 
+		private boolean overWater;
+
 		private boolean hasLake = false;
 		private boolean hasRiver = false;
+
+		private Block liquid = Blocks.flowing_water;
 
 		private double lakeDepth = 5;
 		private double lakeScale = 0.5;
@@ -407,7 +418,7 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 							blocks.put(c, bk);
 					}
 					if ((hasRiver || (hasLake && dr < lr)) && cont < 0.125) {
-						BlockKey bk = new BlockKey(Blocks.flowing_water);
+						BlockKey bk = new BlockKey(liquid);
 						blocks.put(new Coordinate(dx, ty, dz), bk);
 						blocks.put(new Coordinate(dx, ty-1, dz), GRASS);
 						if (cont < 0.0625) {
@@ -416,23 +427,27 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 						}
 						if (dr >= r-1) {
 							if (allowableChildren > 0) {
-								Island is = instance.initializeIsland(world, dx, dz, rand, scale);
-								is.originY = originY-(int)maxThickness-10-rand.nextInt(30);
-								is.hasLake = true;
-								is.lakeDepth = 2+rand.nextInt(5);
-								is.lakeScale = 0.375+rand.nextDouble()*0.5;
-								is.hasRiver = false;
-								is.innerRadius = 6+2*rand.nextDouble();
-								is.outerRadius = 10+2*rand.nextDouble();
-								is.maxThickness = 12+6*rand.nextDouble();
-								if (instance.generateIsland(world, dx, dz, rand, is))
-									allowableChildren--;
+								this.generateChild(world, dx, dz, rand);
 							}
 						}
 					}
 					topMap.put(new Coordinate(dx, 0, dz), ty);
 				}
 			}
+		}
+
+		private void generateChild(World world, int dx, int dz, Random rand) {
+			Island is = instance.initializeIsland(world, dx, dz, rand, scale, overWater);
+			is.originY = originY-(int)maxThickness-10-rand.nextInt(30);
+			is.hasLake = true;
+			is.lakeDepth = 2+rand.nextInt(5);
+			is.lakeScale = 0.375+rand.nextDouble()*0.5;
+			is.hasRiver = false;
+			is.innerRadius = 6+2*rand.nextDouble();
+			is.outerRadius = 10+2*rand.nextDouble();
+			is.maxThickness = 12+6*rand.nextDouble();
+			if (instance.generateIsland(world, dx, dz, rand, is))
+				allowableChildren--;
 		}
 
 		private boolean canGenerate(World world) {

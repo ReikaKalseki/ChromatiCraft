@@ -53,6 +53,7 @@ import Reika.ChromatiCraft.Auxiliary.RainbowTreeEffects;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Entity.EntityNukerBall;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
@@ -1046,6 +1047,11 @@ public class AbilityCalls {
 
 		double maxd = ReikaMathLibrary.py3d(ep.posX-x-0.5, ep.posY-y-0.5, ep.posZ-z-0.5);
 
+		boolean reachedX = dir.offsetX != 0 && (dir.offsetX < 0 ? x <= ep.posX : x >= ep.posX);
+		boolean reachedY = dir.offsetY != 0 && (dir.offsetY < 0 ? y <= ep.posY-1 : y >= ep.posY-1); //on this direction, stop at foot level
+		boolean reachedZ = dir.offsetZ != 0 && (dir.offsetZ < 0 ? z <= ep.posZ : z >= ep.posZ);
+		reached = reachedX || reachedY || reachedZ;
+
 		while (!reached && hasBlock && !hitBlock) {
 			x += dir.offsetX;
 			y += dir.offsetY;
@@ -1057,19 +1063,20 @@ public class AbilityCalls {
 				if (!ep.capabilities.isCreativeMode)
 					is.stackSize--;
 				hasBlock = is.stackSize > 0;
+
+				reachedX = dir.offsetX != 0 && (dir.offsetX < 0 ? x <= ep.posX : x >= ep.posX);
+				reachedY = dir.offsetY != 0 && (dir.offsetY < 0 ? y <= ep.posY-1 : y >= ep.posY-1); //on this direction, stop at foot level
+				reachedZ = dir.offsetZ != 0 && (dir.offsetZ < 0 ? z <= ep.posZ : z >= ep.posZ);
+				reached = reachedX || reachedY || reachedZ;
+
+				TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new ScheduledBlockPlace(world, x, y, z, b, meta)), delay);
+				double d = ReikaMathLibrary.py3d(ep.posX-x-0.5, ep.posY-y-0.5, ep.posZ-z-0.5);
+				float v = (float)(0.5*(1-d/maxd));
+				TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new ScheduledSoundEvent(ChromaSounds.RIFT, world, ep.posX, ep.posY, ep.posZ, v, 2)), delay);
+				TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new ScheduledPacket(ChromatiCraft.packetChannel, ChromaPackets.SUPERBUILD.ordinal(), world, x, y, z, 64, dir.ordinal())), delay);
+
+				delay = delay+(int)(5/Math.pow(delay, 0.33));
 			}
-			boolean reachedX = dir.offsetX != 0 && (dir.offsetX < 0 ? x <= ep.posX : x >= ep.posX);
-			boolean reachedY = dir.offsetY != 0 && (dir.offsetY < 0 ? y <= ep.posY : y >= ep.posY);
-			boolean reachedZ = dir.offsetZ != 0 && (dir.offsetZ < 0 ? z <= ep.posZ : z >= ep.posZ);
-			reached = reachedX || reachedY || reachedZ;
-
-			TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new ScheduledBlockPlace(world, x, y, z, b, meta)), delay);
-			double d = ReikaMathLibrary.py3d(ep.posX-x-0.5, ep.posY-y-0.5, ep.posZ-z-0.5);
-			float v = (float)(0.5*(1-d/maxd));
-			TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new ScheduledSoundEvent(ChromaSounds.RIFT, world, ep.posX, ep.posY, ep.posZ, v, 2)), delay);
-			TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new ScheduledPacket(ChromatiCraft.packetChannel, ChromaPackets.SUPERBUILD.ordinal(), world, x, y, z, 64, dir.ordinal())), delay);
-
-			delay = delay+(int)(5/Math.pow(delay, 0.33));
 		}
 	}
 
@@ -1123,6 +1130,11 @@ public class AbilityCalls {
 		if (b instanceof BlockChest || b instanceof BlockLootChest) {
 			TileEntity te = ep.worldObj.getTileEntity(x, y, z);
 			if (te instanceof IInventory) {
+				if (te instanceof TileEntityLootChest) {
+					TileEntityLootChest tc = (TileEntityLootChest)te;
+					if (!tc.isAccessibleBy(ep))
+						return;
+				}
 				IInventory ii = (IInventory)te;
 				int s = ii.getSizeInventory()-1;
 				for (int i = 0; i <= s; i++) {

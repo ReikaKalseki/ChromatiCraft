@@ -114,7 +114,7 @@ public enum AdjacencyUpgrades {
 			case GREEN:
 				return String.format("Ticks blocks around it, %d times per 5 seconds", (int)(this.getFactor(tier)*50));
 			case BROWN:
-				return String.format("Transmutes stone into mineral, %s per tick, up to rarity '%s'", ReikaStringParser.getAutoDecimal(this.getFactor(tier)), TileEntityOreCreator.getMaxSpawnableRarity(tier));
+				return String.format("Transmutes stone into mineral, %s per second, up to rarity '%s'", ReikaStringParser.getAutoDecimal(this.getFactor(tier)*20), TileEntityOreCreator.getMaxSpawnableRarity(tier));
 			case BLUE:
 				break;
 			case PURPLE:

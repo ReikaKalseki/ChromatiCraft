@@ -159,7 +159,7 @@ public class BlockLootChest extends BlockContainer {
 		if (!(te instanceof TileEntityLootChest))
 			return false;
 		if (world.getBlockMetadata(x, y, z) >= 8 || (world.isSideSolid(x, y+1, z, DOWN) && !CarpenterBlockHandler.getInstance().isCarpenterBlock(world.getBlock(x, y+1, z))))
-			return ep == null || ep.getUniqueID().equals(((TileEntityLootChest)te).placer);
+			return ep == null || ((TileEntityLootChest)te).isOwnedBy(ep);
 		return ep == null || ((TileEntityLootChest)te).isUseableByPlayer(ep);
 	}
 
@@ -331,6 +331,14 @@ public class BlockLootChest extends BlockContainer {
 				if (lidAngle < 0)
 					lidAngle = 0;
 			}
+		}
+
+		public boolean isOwnedBy(EntityPlayer ep) {
+			return placer != null && ep.getUniqueID().equals(placer);
+		}
+
+		public boolean isAccessibleBy(EntityPlayer ep) {
+			return placer == null || this.isOwnedBy(ep);
 		}
 
 		public final ItemStack getStackInSlot(int par1) {

@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Block.Worldgen;
 
 import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -32,6 +33,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -43,6 +45,25 @@ public class BlockEtherealLuma extends BlockFluidClassic {
 
 	public BlockEtherealLuma(Fluid fluid, Material material) {
 		super(fluid, material);
+		this.setQuantaPerBlock(16);
+	}
+
+	@Override
+	protected void flowIntoBlock(World world, int x, int y, int z, int meta) {
+		//int m2 = meta;
+		//if (ReikaBlockHelper.isLiquid(world.getBlock(x, y-1, z)))
+		//	m2++;
+		//Block b = world.getBlock(x, y-1, z);
+		//this.setQuantaPerBlock(ReikaBlockHelper.isLiquid(b) ? 3 : 16);
+		//ReikaJavaLibrary.pConsole(b+ " > "+quantaPerBlock);
+		super.flowIntoBlock(world, x, y, z, meta);
+	}
+
+	@Override
+	public int getQuantaValue(IBlockAccess world, int x, int y, int z) {
+		Block b = world.getBlock(x, y-1, z);
+		int val = super.getQuantaValue(world, x, y, z);
+		return ReikaBlockHelper.isLiquid(b) ? Math.min(val, 2) : val;
 	}
 
 	@Override

@@ -9,16 +9,21 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
+import java.util.Locale;
+
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
 import Reika.DragonAPI.Interfaces.Configuration.BooleanConfig;
+import Reika.DragonAPI.Interfaces.Configuration.CustomCategoryConfig;
 import Reika.DragonAPI.Interfaces.Configuration.DecimalConfig;
 import Reika.DragonAPI.Interfaces.Configuration.IntegerConfig;
 import Reika.DragonAPI.Interfaces.Configuration.MatchingConfig;
+import Reika.DragonAPI.Interfaces.Configuration.StringConfig;
 import Reika.DragonAPI.Interfaces.Configuration.UserSpecificConfig;
 import Reika.DragonAPI.Interfaces.Registry.Dependency;
 
 
-public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig, MatchingConfig, UserSpecificConfig, Dependency {
+public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig, StringConfig, MatchingConfig, CustomCategoryConfig, UserSpecificConfig, Dependency {
 
 	NOISE("Lamp Noises", true),
 	NETHER("Nether Crystals", true),
@@ -76,12 +81,14 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	RECEIVEDIMSOUND("Play Dimension Join Sound For Others", true),
 	BIOMEBLEND("Blend CC Biome Edges", true),
 	MIDISIZE("Orchestra MIDI Size Limit (KB)", 80),
-	ALLOWSTRUCTPASS("Allow Structure Bypass Passwords", true);
+	ALLOWSTRUCTPASS("Allow Structure Bypass Passwords", true),
+	SUPERBUILDKEYBIND("Superbuild Ability Activation", Key.LCTRL.toString());
 
 	private String label;
 	private boolean defaultState;
 	private int defaultValue;
 	private float defaultFloat;
+	private String defaultString;
 	private Class type;
 	private boolean enforcing = false;
 
@@ -110,6 +117,12 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 		type = float.class;
 	}
 
+	private ChromaOptions(String l, String d) {
+		label = l;
+		defaultString = d;
+		type = String.class;
+	}
+
 	public boolean isBoolean() {
 		return type == boolean.class;
 	}
@@ -120,6 +133,10 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 
 	public boolean isDecimal() {
 		return type == float.class;
+	}
+
+	public boolean isString() {
+		return type == String.class;
 	}
 
 	public Class getPropertyType() {
@@ -142,6 +159,11 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 		return (Float)ChromatiCraft.config.getControl(this.ordinal());
 	}
 
+	@Override
+	public String getString() {
+		return (String)ChromatiCraft.config.getControl(this.ordinal());
+	}
+
 	public boolean isDummiedOut() {
 		return type == null;
 	}
@@ -159,6 +181,11 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	@Override
 	public float getDefaultFloat() {
 		return defaultFloat;
+	}
+
+	@Override
+	public String getDefaultString() {
+		return defaultString;
 	}
 
 	@Override
@@ -253,6 +280,13 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 			default:
 				return false;
 		}
+	}
+
+	@Override
+	public String getCategory() {
+		if (this.isString() && this.name().toLowerCase(Locale.ENGLISH).contains("keybind"))
+			return "Keybinds";
+		return null;
 	}
 
 }

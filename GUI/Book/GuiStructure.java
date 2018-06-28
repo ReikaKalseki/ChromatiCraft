@@ -78,6 +78,10 @@ public class GuiStructure extends GuiBookSection {
 					}
 				}
 			}
+			array.setBlock(array.getMidX()+1, array.getMinY()+1, array.getMidZ(), Blocks.air);
+			array.setBlock(array.getMidX()-1, array.getMinY()+1, array.getMidZ(), Blocks.air);
+			array.setBlock(array.getMidX(), array.getMinY()+1, array.getMidZ()+1, Blocks.air);
+			array.setBlock(array.getMidX(), array.getMinY()+1, array.getMidZ()-1, Blocks.air);
 		}
 		if (page == ChromaResearch.TREE || page == ChromaResearch.BOOSTTREE) {
 			array.setBlock(array.getMidX()-1, array.getMaxY(), array.getMidZ(), ChromaTiles.POWERTREE.getBlock(), ChromaTiles.POWERTREE.getBlockMetadata());

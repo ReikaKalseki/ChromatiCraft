@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Block.Decoration.BlockEtherealLight.Flags;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaEnchants;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.DragonAPI.ModList;
@@ -94,7 +95,7 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 			b.fortune = ReikaEnchantmentHelper.getEnchantmentLevel(Enchantment.fortune, itemstack);
 			if (ep.isSneaking())
 				b.extraSpread = true;
-			if (ReikaEnchantmentHelper.getEnchantmentLevel(Enchantment.field_151369_A, itemstack) > 0) { //lure
+			if (ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.AUTOCOLLECT.getEnchantment(), itemstack) > 0) {
 				b.dropInventory = ep.inventory;
 			}
 			b.taxiCabDistance = true;

@@ -17,8 +17,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
+import Reika.ChromatiCraft.API.RitualCompletionEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -265,6 +267,7 @@ OperationInterval, MultiBlockChromaTile {
 		}
 		else {
 			Chromabilities.give(ep, ability);
+			MinecraftForge.EVENT_BUS.post(new RitualCompletionEvent(ep, ability.getID()));
 		}
 		abilitySoundTick = 2000;
 		ability = null;

@@ -500,6 +500,10 @@ public enum Chromabilities implements Ability {
 		return abilities != null && abilities.getBoolean(a.getID());
 	}
 
+	public static boolean playerHasAbility(EntityPlayer ep, String id) {
+		return playerHasAbility(ep, getAbility(id));
+	}
+
 	public static boolean playerHasAbility(EntityPlayer ep, Ability a) {
 		NBTTagCompound nbt = ep.getEntityData();
 		NBTTagCompound abilities = nbt.getCompoundTag(NBT_TAG);

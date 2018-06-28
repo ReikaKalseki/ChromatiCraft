@@ -16,6 +16,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Items.Tools.ItemPendant;
@@ -101,6 +102,10 @@ public class PlayerElementBuffer {
 		return flag;
 	}
 
+	public void removeFromPlayer(EntityPlayer ep, CrystalElementProxy e, int amt) {
+		this.removeFromPlayer(ep, CrystalElement.getFromAPI(e), amt);
+	}
+
 	public void removeFromPlayer(EntityPlayer ep, CrystalElement e, int amt) {
 		if (ep.capabilities.isCreativeMode)
 			return;
@@ -167,8 +172,7 @@ public class PlayerElementBuffer {
 
 	public void removeFromPlayer(EntityPlayer player, ElementTagCompound tag) {
 		for (CrystalElement e : tag.elementSet()) {
-			int amt = tag.getValue(e);
-			this.removeFromPlayer(player, e, amt);
+			this.removeFromPlayer(player, e, tag.getValue(e));
 		}
 	}
 

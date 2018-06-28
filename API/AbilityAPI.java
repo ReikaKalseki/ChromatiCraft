@@ -20,6 +20,7 @@ public class AbilityAPI {
 
 	private static Class abilities;
 	private static Method add;
+	private static Method completed;
 
 	/** Call this to add abilities to the game. */
 	public static void addAbility(Ability a) {
@@ -29,6 +30,17 @@ public class AbilityAPI {
 		catch (Exception e) {
 			System.out.println("Could not add ability "+a+"!");
 			e.printStackTrace();
+		}
+	}
+
+	public static boolean hasPlayerCompletedRitual(EntityPlayer ep, String id) {
+		try {
+			return (boolean)completed.invoke(null, ep, id);
+		}
+		catch (Exception e) {
+			System.out.println("Could not check ability status for "+ep+"!");
+			e.printStackTrace();
+			return false;
 		}
 	}
 
@@ -93,6 +105,7 @@ public class AbilityAPI {
 		try {
 			abilities = Class.forName("Reika.ChromatiCraft.Registry.Chromabilities");
 			add = abilities.getMethod("addAbility", Ability.class);
+			completed = abilities.getMethod("playerHasAbility", String.class);
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
