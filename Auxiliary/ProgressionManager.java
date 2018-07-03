@@ -510,8 +510,11 @@ public class ProgressionManager implements ProgressRegistry {
 	}
 
 	public boolean linkProgression(EntityPlayer ep1, EntityPlayer ep2, boolean link) {
-		if (!this.canLinkProgression(ep1, ep2))
+		ChromatiCraft.logger.debug("Attempting to link progression from "+ep1.getCommandSenderName()+" to "+ep2.getCommandSenderName());
+		if (!this.canLinkProgression(ep1, ep2)) {
+			ChromatiCraft.logger.debug("Failed to link progression; "+this.isProgressionEqual(ep1, ep2)+" & "+(ChromaResearchManager.instance.getPlayerResearchLevel(ep1) == ChromaResearchManager.instance.getPlayerResearchLevel(ep2)));
 			return false;
+		}
 		NBTTagString s1 = new NBTTagString(ep2.getUniqueID().toString());
 		NBTTagString s2 = new NBTTagString(ep1.getUniqueID().toString());
 		NBTTagList li1 = this.getCooperatorList(ep1);
@@ -652,6 +655,7 @@ public class ProgressionManager implements ProgressRegistry {
 			players.add(e);
 		}
 		for (EntityPlayer e : players) {
+			ChromatiCraft.logger.debug("Sharing progression "+s+" from "+ep.getCommandSenderName()+" to "+e.getCommandSenderName());
 			this.setPlayerStage(ep, s, set, allowClient, notify);
 		}
 		if (notify && ep instanceof EntityPlayerMP)

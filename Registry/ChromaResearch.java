@@ -773,6 +773,8 @@ public enum ChromaResearch implements ProgressElement {
 			return false;
 		if (this == FOCUSCRYSTALS)
 			return false;
+		if (this == LUMA)
+			return false;
 		if (this.requiresProgress(ProgressStage.TOWER) || this.requiresProgress(ProgressStage.ARTEFACT))
 			return false;
 		return struct == null || !struct.isNatural();

@@ -51,7 +51,7 @@ public class TileEntityProgressionLinker extends TileEntityChromaticBase impleme
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (this.hasStructure() && this.hasPlayer()) {
 			EntityPlayer ep = world.func_152378_a(targetPlayer);
-			if (ep == null || !ep.boundingBox.intersectsWith(ReikaAABBHelper.getBlockAABB(this).offset(0, 0.5, 0))) {
+			if (ep == null || !ep.boundingBox.intersectsWith(ReikaAABBHelper.getBlockAABB(this).addCoord(0, 4, 0))) {
 				linkProgress = 0;
 				targetPlayer = null;
 			}
@@ -59,7 +59,8 @@ public class TileEntityProgressionLinker extends TileEntityChromaticBase impleme
 				if (linkProgress%20 == 0)
 					ChromaSounds.LOREHEX.playSoundAtBlock(this, 1, 0.5F);
 				linkProgress--;
-				if (linkProgress == 0) {
+				//ReikaJavaLibrary.pConsole(linkProgress, Side.SERVER);
+				if (linkProgress == 0 && !world.isRemote) {
 					this.linkPlayers(this.getPlacer(), ep);
 					targetPlayer = null;
 				}
