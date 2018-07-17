@@ -282,7 +282,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			}
 		}
 
-		long diff = 1;//world.getTotalWorldTime()-lastWorldTick;
+		long diff = world.getTotalWorldTime()-lastWorldTick; //1; //was commented out, not sure why
 		lastWorldTick = world.getTotalWorldTime();
 
 		if (hasMultiblock) {

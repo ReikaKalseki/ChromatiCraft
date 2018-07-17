@@ -31,12 +31,12 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.ElementMixer;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.ResettableRandom;
+import Reika.DragonAPI.Instantiable.Data.ExtremaFinder;
 import Reika.DragonAPI.Instantiable.Math.HexGrid;
 import Reika.DragonAPI.Instantiable.Math.HexGrid.Hex;
 import Reika.DragonAPI.Instantiable.Math.HexGrid.MapShape;
 import Reika.DragonAPI.Instantiable.Math.HexGrid.Point;
-import Reika.DragonAPI.Instantiable.ResettableRandom;
-import Reika.DragonAPI.Instantiable.Data.ExtremaFinder;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -118,10 +118,23 @@ public class KeyAssemblyPuzzle {
 		activeCells = 0;
 		groups.clear();
 		freeGroups.clear();
-		this.fillGrid(rand);
-		this.generateVoids(rand);
-		LinkedList<Move> li = this.shuffle(rand);
-		this.subdivide(rand);
+		LinkedList<Move> li = null;
+		boolean flag = false;
+		int attempts = 0;
+		long time = System.currentTimeMillis();
+		while (!flag) {
+			this.fillGrid(rand);
+			this.generateVoids(rand);
+			li = this.shuffle(rand);
+			flag = this.subdivide(rand);
+			long dur = System.currentTimeMillis()-time;
+			ChromatiCraft.logger.log("Attempted to generate lore puzzle; attempt #"+attempts+" took "+dur+" ms. Success: "+flag);
+			if (time > 15000) {
+				ChromatiCraft.logger.logError("Could not generate lore puzzle within 15s, even after "+attempts+" attempts!");
+				this.errorGrid();
+				return;
+			}
+		}
 		if (LoreManager.instance.hasPlayerCompletedBoard(ep)) {
 			Iterator<Move> it = li.descendingIterator();
 			while (it.hasNext()) {
@@ -150,6 +163,14 @@ public class KeyAssemblyPuzzle {
 	private void fillGrid(Random rand) {
 		for (HexCell c : cells.values()) {
 			c.occupant = new HexTile(this.generateColor(c.location, rand));
+			this.setCellContents(c.location, c.occupant, null);
+			c.occupant.update(this, true, null);
+		}
+	}
+
+	private void errorGrid() {
+		for (HexCell c : cells.values()) {
+			c.occupant = new HexTile(rand.nextBoolean() ? CrystalElement.BLACK : CrystalElement.MAGENTA);
 			this.setCellContents(c.location, c.occupant, null);
 			c.occupant.update(this, true, null);
 		}
@@ -208,8 +229,10 @@ public class KeyAssemblyPuzzle {
 		return moves;
 	}
 
-	private void subdivide(Random rand) {
+	private boolean subdivide(Random rand) {
 		LinkedList<Hex> li = this.findHamiltonianPath(rand);
+		if (li == null)
+			return false;
 		TileGroup g = new TileGroup();
 		for (Hex h : li) {
 			g.hexes.add(h);
@@ -219,12 +242,16 @@ public class KeyAssemblyPuzzle {
 			}
 		}
 		freeGroups.addAll(groups);
+		return true;
 	}
 
 	private LinkedList<Hex> findHamiltonianPath(Random rand) {
 		LinkedList<Hex> path = null;
 		boolean flag = true;
+		int attempts = 0;
+		long time = System.currentTimeMillis();
 		while (flag) {
+			attempts++;
 			Hex h = grid.getRandomEdgeCell(rand);
 			while (this.getCell(h).occupant == null)
 				h = grid.getRandomEdgeCell(rand);
@@ -232,6 +259,12 @@ public class KeyAssemblyPuzzle {
 			path = new LinkedList();
 			HashSet<Hex> pathCache = new HashSet();
 			flag = !this.pathSearch(rand, h, path, pathCache);
+			long dur = System.currentTimeMillis()-time;
+			ChromatiCraft.logger.log("Attempted to path lore puzzle; attempt #"+attempts+" took "+dur+" ms. Success: "+flag);
+			if (time > 15000) {
+				ChromatiCraft.logger.logError("Could not path lore puzzle within 15s, even after "+attempts+" attempts!");
+				return null;
+			}
 		}
 		return path;
 	}

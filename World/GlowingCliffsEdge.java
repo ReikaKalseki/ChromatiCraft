@@ -13,7 +13,7 @@ package Reika.ChromatiCraft.World;
 public class GlowingCliffsEdge extends BiomeGlowingCliffs {
 
 	public GlowingCliffsEdge(int id) {
-		super(id);
+		super(id, true);
 
 		biomeName = "Luminous Cliffs Shores";
 	}

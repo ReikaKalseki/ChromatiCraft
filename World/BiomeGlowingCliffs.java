@@ -74,8 +74,8 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 
 	private final List<SpawnListEntry> glowCloudList;
 
-	public BiomeGlowingCliffs(int id) {
-		super(id);
+	public BiomeGlowingCliffs(int id, boolean register) {
+		super(id, register);
 
 		biomeName = "Luminous Cliffs";
 

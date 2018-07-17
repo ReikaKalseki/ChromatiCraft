@@ -360,4 +360,9 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 		return Blocks.air;
 	}
 
+	@Override
+	public boolean isBeaconBase(IBlockAccess world, int x, int y, int z, int beaconX, int beaconY, int beaconZ) {
+		return world.getBlockMetadata(x, y, z) == DimDecoTypes.FLOATSTONE.ordinal();
+	}
+
 }

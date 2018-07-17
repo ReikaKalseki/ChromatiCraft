@@ -1075,6 +1075,8 @@ public class AbilityCalls {
 				TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new ScheduledSoundEvent(ChromaSounds.RIFT, world, ep.posX, ep.posY, ep.posZ, v, 2)), delay);
 				TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new ScheduledPacket(ChromatiCraft.packetChannel, ChromaPackets.SUPERBUILD.ordinal(), world, x, y, z, 64, dir.ordinal())), delay);
 
+				PlayerElementBuffer.instance.removeFromPlayer(ep, AbilityHelper.instance.getUsageElementsFor(Chromabilities.SUPERBUILD, ep).scale(0.05F));
+
 				delay = delay+(int)(5/Math.pow(delay, 0.33));
 			}
 		}
