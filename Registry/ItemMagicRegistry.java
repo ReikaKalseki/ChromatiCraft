@@ -32,15 +32,13 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
 import Reika.DragonAPI.ModRegistry.ModOreList;
 
-import com.google.common.collect.HashBiMap;
-
 /** Specifies the magic elements present in each "fundamental" item. */
 public class ItemMagicRegistry {
 
 	public static final ItemMagicRegistry instance = new ItemMagicRegistry();
 
-	private final HashBiMap<KeyedItemStack, ElementTagCompound> data = HashBiMap.create();
-	private final HashBiMap<Fluid, ElementTagCompound> fluidData = HashBiMap.create();
+	private final HashMap<KeyedItemStack, ElementTagCompound> data = new HashMap();
+	private final HashMap<Fluid, ElementTagCompound> fluidData = new HashMap();
 	private final HashMap<OreType, ElementTagCompound> cachedOreNames = new HashMap();
 
 	private ItemMagicRegistry() {

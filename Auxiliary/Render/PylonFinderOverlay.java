@@ -60,7 +60,7 @@ public class PylonFinderOverlay {
 	public void renderPylonFinderHUD(RenderGameOverlayEvent evt) {
 		if (evt.type == ElementType.HELMET) {
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-			if (PylonGenerator.instance.canGenerateIn(ep.worldObj) || true) {
+			if (PylonGenerator.instance.canGenerateIn(ep.worldObj)) {
 				boolean compass = ChromaItems.FINDER.matchWith(ep.getCurrentEquippedItem()) || (ep.getEntityData().hasKey("pylonoverlay") && ep.getEntityData().getLong("pylonoverlay") >= ep.worldObj.getTotalWorldTime()-20);
 				if (compass || !renders.isEmpty()) {
 					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);

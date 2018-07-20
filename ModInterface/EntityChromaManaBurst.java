@@ -159,8 +159,8 @@ public class EntityChromaManaBurst extends ParticleEntity implements IEntityAddi
 							if (boosterEntryTick == -1 || boosterExitTick >= 6) {
 								boosterEntryTick = -1;
 								this.setPosition(p);
-								pathTick++;
-								if (pathTick == path.pathToBooster.size()) {
+								pathTick = Math.min(path.pathToPool.size()-1, pathTick+1);
+								if (pathTick >= path.pathToBooster.size()) {
 									this.dumpMana();
 								}
 							}
