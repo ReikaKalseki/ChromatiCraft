@@ -408,6 +408,12 @@ public enum ChromaTiles implements TileEnum {
 		ChromaTiles index = getTileFromIDandMetadata(id, meta);
 		if (index == null) {
 			ChromatiCraft.logger.logError("ID "+id+" and metadata "+meta+" are not a valid tile identification pair!");
+			Thread.dumpStack();
+			return null;
+		}
+		if (index.hasPrerequisite() && !index.getPrerequisite().isLoaded() && !ReikaObfuscationHelper.isDeObfEnvironment()) {
+			ChromatiCraft.logger.logError("The tile "+index+" is dependent on "+index.getPrerequisite()+" and should not attempt to be loaded without it!");
+			Thread.dumpStack();
 			return null;
 		}
 		if (index == ADJACENCY) {
@@ -424,6 +430,11 @@ public enum ChromaTiles implements TileEnum {
 		catch (IllegalAccessException e) {
 			e.printStackTrace();
 			throw new RegistrationException(ChromatiCraft.instance, "ID "+id+" and Metadata "+meta+" failed; illegally accessed a member its TileEntity of "+TEClass);
+		}
+		catch (LinkageError e) {
+			ChromatiCraft.logger.logError("ID "+id+" and Metadata "+meta+" failed to instantiate its TileEntity of "+TEClass+"; class could not be loaded properly");
+			e.printStackTrace();
+			return null;
 		}
 	}
 

@@ -13,6 +13,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
@@ -44,7 +45,9 @@ public class NodeRecharger implements TickHandler {
 	private final HashSet<Integer> ticked = new HashSet();
 
 	private NodeRecharger() {
-		blacklist.add(new BlockKey(GameRegistry.findBlock("ThaumicHorizons", "synthNode"))); //who cares if adds null to the set
+		Block b = GameRegistry.findBlock("ThaumicHorizons", "synthNode");
+		if (b != null)
+			blacklist.add(new BlockKey(b));
 	}
 
 	public boolean addNode(INode n) {

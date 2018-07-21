@@ -53,14 +53,15 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 	private static Field manaField;
 
 	static {
-		try {
-			manaField = SubTileGenerating.class.getDeclaredField("mana");
-			manaField.setAccessible(true);
-		}
-		catch (Exception e) {
-			ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.BOTANIA, e);
-			ChromatiCraft.logger.logError("Could not access generating flower mana variable!");
-			e.printStackTrace();
+		if (ModList.BOTANIA.isLoaded()) {
+			try {
+				initFields();
+			}
+			catch (Exception e) {
+				ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.BOTANIA, e);
+				ChromatiCraft.logger.logError("Could not access generating flower mana variable!");
+				e.printStackTrace();
+			}
 		}
 
 		required.addTag(CrystalElement.BLACK, 250);
@@ -70,6 +71,12 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 
 		requestable.addTag(required);
 		requestable.addTag(CrystalElement.LIGHTBLUE, 400);
+	}
+
+	@ModDependent(ModList.BOTANIA)
+	private static void initFields() throws Exception {
+		manaField = SubTileGenerating.class.getDeclaredField("mana");
+		manaField.setAccessible(true);
 	}
 
 	private final StepTimer flowerScan = new StepTimer(50);

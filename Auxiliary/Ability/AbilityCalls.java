@@ -1109,6 +1109,7 @@ public class AbilityCalls {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	private static void createSuperbuildParticle(World world, double px, double py, double pz) {
 		EntityBlurFX fx = new EntityBlurFX(world, px, py, pz).setLife(30).setScale(0.625F).setRapidExpand().setAlphaFading();
 		fx.setColorController(new BlendListColorController(new ColorBlendList(10, 0xffffff, 0x22aaff, 0x0000ff, 0x000000)));

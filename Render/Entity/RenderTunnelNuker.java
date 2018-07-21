@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Render.Entity;
 
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Models.ModelTunnelNuker;
@@ -36,6 +37,11 @@ public class RenderTunnelNuker extends RendererLivingEntity {
 	@Override
 	protected void bindEntityTexture(Entity e) {
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/tunnelnuker.png");
+	}
+
+	@Override
+	protected boolean func_110813_b(EntityLivingBase e) {
+		return false;
 	}
 
 }

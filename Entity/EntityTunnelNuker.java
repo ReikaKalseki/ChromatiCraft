@@ -119,4 +119,9 @@ public class EntityTunnelNuker extends EntityLiving implements DestroyOnUnload {
 		return false;
 	}
 
+	@Override
+	public String getCommandSenderName() {
+		return "Lumafly";
+	}
+
 }
