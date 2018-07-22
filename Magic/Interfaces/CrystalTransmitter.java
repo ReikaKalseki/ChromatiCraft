@@ -17,5 +17,6 @@ public interface CrystalTransmitter extends CrystalNetworkTile, EnergyBeamRender
 
 	public boolean canTransmitTo(CrystalReceiver r);
 
+	/** Larger is higher priority. */
 	public int getPathPriority();
 }

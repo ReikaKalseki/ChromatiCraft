@@ -307,7 +307,8 @@ OperationInterval, MultiBlockChromaTile {
 		abilityTick = 0;
 		playerSteppedIn = false;
 		ability = null;
-		this.resetGUIs();
+		if (worldObj.isRemote)
+			this.resetGUIs();
 	}
 
 	@SideOnly(Side.CLIENT)

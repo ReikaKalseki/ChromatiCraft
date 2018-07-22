@@ -133,7 +133,7 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 
 	@Override
 	@ModDependent(ModList.OPENCOMPUTERS)
-	protected final Visibility getOCNetworkVisibility() {
+	public final Visibility getOCNetworkVisibility() {
 		return Visibility.Network;//this.getMachine().isPipe() ? Visibility.Neighbors : Visibility.Network;
 	}
 
