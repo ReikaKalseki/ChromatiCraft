@@ -21,7 +21,6 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
-import Reika.ChromatiCraft.Magic.Network.CrystalNetworker.CrystalLink;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 
@@ -115,7 +114,7 @@ public class CrystalPath implements Comparable<CrystalPath> {
 			WorldLocation tgt = nodes.get(i);
 			if (l == null || tgt.equals(l.loc1) || tgt.equals(l.loc2)) {
 				WorldLocation src = nodes.get(i+1);
-				if (!PylonFinder.lineOfSight(src, tgt)) {
+				if (!PylonFinder.lineOfSight(src, tgt).hasLineOfSight) {
 					CrystalReceiver rec = PylonFinder.getReceiverAt(tgt, true);
 					CrystalTransmitter sr = PylonFinder.getTransmitterAt(src, true);
 					if (sr.needsLineOfSightToReceiver(rec) || rec.needsLineOfSightFromTransmitter(sr)) {

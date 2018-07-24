@@ -441,7 +441,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 					}
 					if (flag) {
 						if (this.getDistanceSqTo(te.xCoord, te.yCoord, te.zCoord) <= r*r) {
-							if (!(te instanceof CrystalReceiver ? this.needsLineOfSightToReceiver((CrystalReceiver)te) : ((CrystalTransmitter)te).needsLineOfSightToReceiver(this)) || (PylonFinder.lineOfSight(worldObj, xCoord, yCoord, zCoord, te.xCoord, te.yCoord, te.zCoord))) {
+							if (!(te instanceof CrystalReceiver ? this.needsLineOfSightToReceiver((CrystalReceiver)te) : ((CrystalTransmitter)te).needsLineOfSightToReceiver(this)) || (PylonFinder.lineOfSight(worldObj, xCoord, yCoord, zCoord, te.xCoord, te.yCoord, te.zCoord).hasLineOfSight)) {
 								c.add(new WorldLocation(te));
 							}
 						}

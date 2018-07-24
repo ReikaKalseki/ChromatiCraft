@@ -58,35 +58,37 @@ public class RenderDataNode extends ChromaRenderBase {
 		if (MinecraftForgeClient.getRenderPass() == 0 || StructureRenderer.isRenderingTiles() || !te.isInWorld()) {
 			this.renderTower(te, v5);
 		}
+
 		if (MinecraftForgeClient.getRenderPass() == 1 || StructureRenderer.isRenderingTiles() || !te.isInWorld()) {
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.ADDITIVEDARK.apply();
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glDisable(GL11.GL_ALPHA_TEST);
+			ReikaRenderHelper.disableEntityLighting();
+			GL11.glDepthMask(false);
+			//GL11.glDisable(GL11.GL_TEXTURE_2D);
 
-			if (!te.hasBeenScanned(Minecraft.getMinecraft().thePlayer)) {
-				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-				GL11.glEnable(GL11.GL_BLEND);
-				BlendMode.ADDITIVEDARK.apply();
-				GL11.glDisable(GL11.GL_LIGHTING);
-				GL11.glDisable(GL11.GL_ALPHA_TEST);
-				ReikaRenderHelper.disableEntityLighting();
-				GL11.glDepthMask(false);
-				//GL11.glDisable(GL11.GL_TEXTURE_2D);
+			GL11.glPushMatrix();
+			if (te.hasBeenScanned(Minecraft.getMinecraft().thePlayer)) {
 
-				GL11.glPushMatrix();
+			}
+			else {
 				this.renderPrism(te, v5);
-				if (te.isInWorld()) {
-					this.renderSymbol(te, v5);
-					this.renderFlare(te, v5);
-				}
-				GL11.glPopMatrix();
+			}
+			if (te.isInWorld()) {
+				this.renderSymbol(te, v5);
+				this.renderFlare(te, v5);
+			}
+			GL11.glPopMatrix();
 
-				if (te.isInWorld() && ScriptLocations.TOWER.isEnabled() && MinecraftForgeClient.getRenderPass() == 1 && Minecraft.getMinecraft().thePlayer.getDistanceSq(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5) < 4096) {
-					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-					InWorldScriptRenderer.renderTowerScript(te, par8, v5, 0.03125/2, 4096);
-					GL11.glPopAttrib();
-				}
-
+			if (te.isInWorld() && ScriptLocations.TOWER.isEnabled() && MinecraftForgeClient.getRenderPass() == 1 && Minecraft.getMinecraft().thePlayer.getDistanceSq(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5) < 4096) {
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				InWorldScriptRenderer.renderTowerScript(te, par8, v5, 0.03125/2, 4096);
 				GL11.glPopAttrib();
 			}
 
+			GL11.glPopAttrib();
 		}
 
 		GL11.glPopMatrix();

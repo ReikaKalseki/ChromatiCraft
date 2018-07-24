@@ -32,7 +32,6 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.WrapperTile;
-import Reika.ChromatiCraft.Magic.Network.CrystalNetworker.CrystalLink;
 import Reika.ChromatiCraft.Magic.Network.NetworkSorters.TransmitterDistanceSorter;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeReceiverWrapper;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeRecharger;
@@ -481,11 +480,11 @@ public class PylonFinder {
 		return new CrystalPath(CrystalNetworker.instance, false, e, li2);
 	}
 
-	static boolean lineOfSight(WorldLocation l1, WorldLocation l2) {
+	static LOSData lineOfSight(WorldLocation l1, WorldLocation l2) {
 		return lineOfSight(l1.getWorld(), l1.xCoord, l1.yCoord, l1.zCoord, l2.xCoord, l2.yCoord, l2.zCoord);
 	}
 
-	private boolean lineOfSight(CrystalNetworkTile te1, CrystalNetworkTile te) {
+	private LOSData lineOfSight(CrystalNetworkTile te1, CrystalNetworkTile te) {
 		return lineOfSight(te1.getWorld(), te1.getX(), te1.getY(), te1.getZ(), te.getX(), te.getY(), te.getZ());
 	}
 
@@ -493,10 +492,11 @@ public class PylonFinder {
 	//	return lineOfSight(world, x, y, z, te.getX(), te.getY(), te.getZ());
 	//}
 
-	public static boolean lineOfSight(World world, int x1, int y1, int z1, int x2, int y2, int z2) {
+	public static LOSData lineOfSight(World world, int x1, int y1, int z1, int x2, int y2, int z2) {
 		tracer.setOrigins(x1, y1, z1, x2, y2, z2);
 		tracer.offset(0.5, 0.5, 0.5);
-		return tracer.isClearLineOfSight(world);
+		boolean los = tracer.isClearLineOfSight(world);
+		return new LOSData(los, tracer.getRayBlocks());
 	}
 
 	static {
@@ -562,6 +562,8 @@ public class PylonFinder {
 		tracer.addOpaqueBlock(Blocks.wheat);
 		tracer.addOpaqueBlock(Blocks.carrots);
 		tracer.addOpaqueBlock(Blocks.potatoes);*/
+
+		tracer.cacheBlockRay = true;
 	}
 
 	@ModDependent(ModList.ROTARYCRAFT)

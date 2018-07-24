@@ -199,41 +199,36 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 
-		if (this.canBeAccessed() && rand.nextInt(5) == 0 && !this.hasBeenScanned(Minecraft.getMinecraft().thePlayer)) {
+		if (this.canBeAccessed() && rand.nextInt(5) == 0/* && !this.hasBeenScanned(Minecraft.getMinecraft().thePlayer)*/) {
 			if (tower != null) {
 				if (tower == Towers.ALPHA) {
-
+					int idx = 1+((this.getTicksExisted()/60)%(Towers.towerList.length-1));
+					this.sendParticlesToTower(world, x, y, z, Towers.towerList[idx]);
 				}
 				else {
-					Towers t1 = tower.getNeighbor1();
-					Towers t2 = tower.getNeighbor2();
-					if (t1 == null || t1.getRootPosition() == null) { //sync not yet received
-						return;
-					}
-					double px = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 1);
-					double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 1);
-					double py = ReikaRandomHelper.getRandomBetween(y+3.5, y+5);
-
-					double dx = t1.getRootPosition().chunkXPos-tower.getRootPosition().chunkXPos;
-					double dz = t1.getRootPosition().chunkZPos-tower.getRootPosition().chunkZPos;
-					double a = -ReikaPhysicsHelper.cartesianToPolar(dx, 0, dz)[2]-90;
-					float s = rand.nextFloat()+0.25F;
-					EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, px, py, pz, a, 0);
-					fx.freedom *= 0.5;
-					fx.setColor(0xa0e0ff).setLife(120).setIcon(ChromaIcons.FADE).setScale(s);
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-
-					dx = t2.getRootPosition().chunkXPos-tower.getRootPosition().chunkXPos;
-					dz = t2.getRootPosition().chunkZPos-tower.getRootPosition().chunkZPos;
-					a = -ReikaPhysicsHelper.cartesianToPolar(dx, 0, dz)[2]-90;
-					s = rand.nextFloat()+0.25F;
-					fx = new EntityFloatingSeedsFX(world, px, py, pz, a, 0);
-					fx.freedom *= 0.5;
-					fx.setColor(0xa0e0ff).setLife(120).setIcon(ChromaIcons.FADE).setScale(s);
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					this.sendParticlesToTower(world, x, y, z, tower.getNeighbor1());
+					this.sendParticlesToTower(world, x, y, z, tower.getNeighbor2());
 				}
 			}
 		}
+	}
+
+	private void sendParticlesToTower(World world, int x, int y, int z, Towers t) {
+		if (t == null || t.getRootPosition() == null) //sync not yet received
+			return;
+
+		double px = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 1);
+		double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 1);
+		double py = ReikaRandomHelper.getRandomBetween(y+3.5, y+5);
+
+		double dx = t.getRootPosition().chunkXPos-tower.getRootPosition().chunkXPos;
+		double dz = t.getRootPosition().chunkZPos-tower.getRootPosition().chunkZPos;
+		double a = -ReikaPhysicsHelper.cartesianToPolar(dx, 0, dz)[2]-90;
+		float s = rand.nextFloat()+0.25F;
+		EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, px, py, pz, a, 0);
+		fx.freedom *= 0.5;
+		fx.setColor(0xa0e0ff).setLife(120).setIcon(ChromaIcons.FADE).setScale(s);
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
 	public double getRotation() {

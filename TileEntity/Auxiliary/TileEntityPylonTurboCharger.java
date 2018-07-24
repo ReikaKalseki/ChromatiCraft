@@ -771,7 +771,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 						return false;
 					Location l = location.getNext();
 					Coordinate end = l.position.offset(location.position.negate()).offset(x, y, z);
-					return end.getTileEntity(world) instanceof TileEntityPylonTurboCharger && PylonFinder.lineOfSight(world, x, y, z, end.xCoord, end.yCoord, end.zCoord);
+					return end.getTileEntity(world) instanceof TileEntityPylonTurboCharger && PylonFinder.lineOfSight(world, x, y, z, end.xCoord, end.yCoord, end.zCoord).hasLineOfSight;
 				}
 			}
 		}

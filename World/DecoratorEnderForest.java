@@ -60,12 +60,10 @@ public class DecoratorEnderForest extends BiomeDecorator {
 	@Override
 	public void decorateChunk(World par1World, Random par2Random, BiomeGenBase biome, int par3, int par4)
 	{
-		if (currentWorld != null)
-		{
+		if (currentWorld != null) {
 			ChromatiCraft.logger.logError("Already decorating!!");
 		}
-		else
-		{
+		else {
 			currentWorld = par1World;
 			randomGenerator = par2Random;
 			chunk_X = par3;

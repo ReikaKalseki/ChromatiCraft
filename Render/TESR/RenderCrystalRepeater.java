@@ -188,7 +188,7 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 				int y = mov.blockY+dir.offsetY;
 				int z = mov.blockZ+dir.offsetZ;
 				if (ReikaMathLibrary.py3d(x-te.xCoord, y-te.yCoord, z-te.zCoord) <= te.getSendRange()) {
-					if (PylonFinder.lineOfSight(Minecraft.getMinecraft().theWorld, te.xCoord, te.yCoord, te.zCoord, x, y, z)) {
+					if (PylonFinder.lineOfSight(Minecraft.getMinecraft().theWorld, te.xCoord, te.yCoord, te.zCoord, x, y, z).hasLineOfSight) {
 						GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 						GL11.glDisable(GL11.GL_LIGHTING);
 						GL11.glDisable(GL11.GL_TEXTURE_2D);

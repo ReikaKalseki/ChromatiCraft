@@ -26,7 +26,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
-import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
 import net.minecraftforge.common.MinecraftForge;
@@ -57,6 +56,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.CrashNotifications.CrashNotification;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldChunk;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
@@ -64,8 +64,6 @@ import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.TileEntityCache;
 import Reika.DragonAPI.Instantiable.Event.SetBlockEvent;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
@@ -120,8 +118,9 @@ public class CrystalNetworker implements TickHandler {
 			WorldChunk wc = new WorldChunk(evt.world, evt.chunkLocation);
 			Collection<CrystalLink> c = losCache.get(wc);
 			if (c != null) {
+				Coordinate loc = new Coordinate(evt.xCoord, evt.yCoord, evt.zCoord);
 				for (CrystalLink l : c) {
-
+					/*
 					WorldLocation l1 = l.loc1;
 					WorldLocation l2 = l.loc2;
 
@@ -131,6 +130,8 @@ public class CrystalNetworker implements TickHandler {
 					//Only check link if block near it
 					//ReikaJavaLibrary.pConsole(Arrays.toString(angs)+" , "+Arrays.toString(angs2));
 					if (close || (ReikaMathLibrary.approxrAbs(angs[1], angs2[1], 5) && ReikaMathLibrary.approxrAbs(angs[2], angs2[2], 5))) {
+					 */
+					if (l.containsBlock(loc)) {
 						l.needsCalculation = true;
 						//ReikaJavaLibrary.pConsole("Invalidating LOS for "+l+" (#"+System.identityHashCode(l)+")");
 
@@ -436,7 +437,7 @@ public class CrystalNetworker implements TickHandler {
 			WorldLocation p = new WorldLocation(world, x, y, z);
 			for (WorldLocation loc : c.getAllLocationsNear(p, range)) {
 				if (loc.getDistanceTo(x, y, z) <= range) {
-					if (!LOS || PylonFinder.lineOfSight(world, x, y, z, loc.xCoord, loc.yCoord, loc.zCoord)) {
+					if (!LOS || PylonFinder.lineOfSight(world, x, y, z, loc.xCoord, loc.yCoord, loc.zCoord).hasLineOfSight) {
 						TileEntityCrystalPylon te = c.get(loc);
 						if (te == null) {
 							ChromatiCraft.logger.logError("Null tile returned for location "+loc+"; "+loc.getBlockKey().getLocalized());
@@ -818,69 +819,6 @@ public class CrystalNetworker implements TickHandler {
 			}
 			return data;
 		}
-	}
-
-	static class CrystalLink {
-
-		public final WorldLocation loc1;
-		public final WorldLocation loc2;
-		private final HashSet<WorldChunk> chunks = new HashSet();
-
-		private boolean hasLOS = false;
-		private boolean needsCalculation = true;
-
-		CrystalLink(WorldLocation l1, WorldLocation l2) {
-			loc1 = l1;
-			loc2 = l2;
-			double dd = l1.getDistanceTo(l2);
-			World world = l1.getWorld();
-			for (int i = 0; i < dd; i++) {
-				int x = MathHelper.floor_double(l1.xCoord+i*(l2.xCoord-l1.xCoord)/dd);
-				int z = MathHelper.floor_double(l1.zCoord+i*(l2.zCoord-l1.zCoord)/dd);
-				WorldChunk ch = new WorldChunk(world, new ChunkCoordIntPair(x >> 4, z >> 4));
-				if (!chunks.contains(ch))
-					chunks.add(ch);
-			}
-		}
-
-		private void recalculateLOS() {
-			if (!needsCalculation)
-				return;
-			needsCalculation = false;
-			hasLOS = PylonFinder.lineOfSight(loc1, loc2);
-			//ReikaJavaLibrary.pConsole("Recalculating LOS for "+this+" (#"+System.identityHashCode(this)+"): "+hasLOS);
-		}
-
-		public boolean isChunkInPath(WorldChunk wc) {
-			return chunks.contains(wc);
-		}
-
-		@Override
-		public final int hashCode() {
-			return loc1.hashCode()^loc2.hashCode();
-		}
-
-		@Override
-		public final boolean equals(Object o) {
-			if (o instanceof CrystalLink) {
-				CrystalLink l = (CrystalLink)o;
-				return (l.loc1.equals(loc1) && l.loc2.equals(loc2)) || (l.loc1.equals(loc2) && l.loc2.equals(loc1)); //order irrelevant
-			}
-			return false;
-		}
-
-		@Override
-		public final String toString() {
-			return "["+loc1+" > "+loc2+"]";
-		}
-
-		final boolean hasLineOfSight() {
-			if (needsCalculation)
-				this.recalculateLOS();
-			//ReikaJavaLibrary.pConsole("Returning LOS for "+this+" (#"+System.identityHashCode(this)+"): "+hasLOS);
-			return hasLOS;
-		}
-
 	}
 
 	public void overloadColorConnectedTo(CrystalTransmitter te, CrystalElement color, int num, boolean recursive) {

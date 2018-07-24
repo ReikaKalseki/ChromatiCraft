@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityWirelessPowered;
 import Reika.ChromatiCraft.Magic.Interfaces.WirelessSource;
+import Reika.ChromatiCraft.Magic.Network.LOSData;
 import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -246,7 +247,8 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 		int ret = Math.min(amt, has);
 		int rem = ret;
 		ret /= 1+LOSS_PER_LUMEN;
-		if (!PylonFinder.lineOfSight(worldObj, xCoord, yCoord, zCoord, x, y, z))
+		LOSData los = PylonFinder.lineOfSight(worldObj, xCoord, yCoord, zCoord, x, y, z);
+		if (!los.hasLineOfSight)
 			ret /= OCCLUSION_FACTOR;
 		energy.subtract(e, rem);
 		return ret;
