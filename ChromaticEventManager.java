@@ -510,9 +510,9 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
-	public void blendCliffEdges(ChunkProviderEvent.ReplaceBiomeBlocks evt) {
+	public void blendCliffEdgesAndShapeCliffs(ChunkProviderEvent.ReplaceBiomeBlocks evt) {
 		if (evt.world != null && evt.blockArray != null) {
-			BiomeGlowingCliffs.blendTerrainEdges(evt.world, evt.chunkX, evt.chunkZ, evt.blockArray, evt.metaArray);
+			BiomeGlowingCliffs.blendTerrainEdgesAndGenCliffs(evt.world, evt.chunkX, evt.chunkZ, evt.blockArray, evt.metaArray);
 		}
 	}
 

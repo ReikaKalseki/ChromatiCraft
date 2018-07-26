@@ -21,6 +21,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Magic.Lore.LoreScripts.ScriptLocations;
@@ -30,6 +31,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Render.InWorldScriptRenderer;
 import Reika.ChromatiCraft.TileEntity.TileEntityDataNode;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
+import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -39,6 +41,8 @@ import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 
 public class RenderDataNode extends ChromaRenderBase {
+
+	private final ColorBlendList beamColors = new ColorBlendList(30, 0xafafaf, 0x73DCFF, 0xb0e0ff, 0x4C79EE, 0x2C02FF);
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
@@ -70,15 +74,19 @@ public class RenderDataNode extends ChromaRenderBase {
 			//GL11.glDisable(GL11.GL_TEXTURE_2D);
 
 			GL11.glPushMatrix();
-			if (te.hasBeenScanned(Minecraft.getMinecraft().thePlayer)) {
-
+			boolean scan = te.hasBeenScanned(Minecraft.getMinecraft().thePlayer);
+			if (te.isInWorld()) {
+				GL11.glPushMatrix();
+				GL11.glTranslated(0, te.getExtension0()+te.getExtension1()+te.getExtension2(), 0);
+				this.renderSymbol(te, v5);
+				this.renderFlare(te, v5);
+				GL11.glPopMatrix();
+			}
+			if (scan) {
+				this.renderTwistingBeam(te, v5, par8);
 			}
 			else {
 				this.renderPrism(te, v5);
-			}
-			if (te.isInWorld()) {
-				this.renderSymbol(te, v5);
-				this.renderFlare(te, v5);
 			}
 			GL11.glPopMatrix();
 
@@ -92,6 +100,67 @@ public class RenderDataNode extends ChromaRenderBase {
 		}
 
 		GL11.glPopMatrix();
+	}
+
+	private void renderTwistingBeam(TileEntityDataNode te, Tessellator v5, float ptick) {
+		double o1 = ((System.currentTimeMillis()/23.7D)%360);
+		double o2 = ((System.currentTimeMillis()/17.8D)%360);
+		double h = 6;
+		double oy = 0.5;
+		double h2 = 128;
+
+		int c2 = beamColors.getColor(System.currentTimeMillis()/100D);
+		int c1 = ReikaColorAPI.mixColors(c2, 0xffffff, 0.75F);
+		double t = 0.0625;
+
+		for (double dy = 0; dy < h2; dy += h) {
+			double r = 0.25;
+			double y1 = dy+oy;
+			double y2 = y1+h;
+			double da = 30;
+			for (double a = 0; a < 360; a += da) {
+				double a1 = Math.toRadians(a+o1);
+				double a2 = Math.toRadians(a+o2);
+				double x1 = r*Math.cos(a1);
+				double z1 = r*Math.sin(a1);
+				double x2 = r*Math.cos(a2);
+				double z2 = r*Math.sin(a2);
+
+				double a1b = Math.toRadians(a+o1+da);
+				double a2b = Math.toRadians(a+o2+da);
+				double x1b = r*Math.cos(a1b);
+				double z1b = r*Math.sin(a1b);
+				double x2b = r*Math.cos(a2b);
+				double z2b = r*Math.sin(a2b);
+
+				ChromaFX.renderBeam(x1, y1, z1, x2, y2, z2, ptick, 255, t, c1);
+				ChromaFX.renderBeam(x1, y1, z1, x1b, y1, z1b, ptick, 255, t, c1);
+				ChromaFX.renderBeam(x2, y2, z2, x2b, y2, z2b, ptick, 255, t, c1);
+
+				double midx = (x1+x2)/2;
+				double midz = (z1+z2)/2;
+				double midxb = (x1b+x2b)/2;
+				double midzb = (z1b+z2b)/2;
+				double midy = (y1+y2)/2;
+
+				GL11.glDisable(GL11.GL_TEXTURE_2D);
+				GL11.glDisable(GL11.GL_CULL_FACE);
+				v5.startDrawingQuads();
+				v5.setColorOpaque_I(c2);
+				v5.addVertex(x1, y1, z1);
+				v5.addVertex(x1b, y1, z1b);
+				v5.addVertex(midxb, midy, midzb);
+				v5.addVertex(midx, midy, midz);
+
+				v5.addVertex(midx, midy, midx);
+				v5.addVertex(midxb, midy, midzb);
+				v5.addVertex(x2b, y2, z2b);
+				v5.addVertex(x2, y2, z2);
+				v5.draw();
+				GL11.glEnable(GL11.GL_TEXTURE_2D);
+				GL11.glEnable(GL11.GL_CULL_FACE);
+			}
+		}
 	}
 
 	private void renderTower(TileEntityDataNode te, Tessellator v5) {

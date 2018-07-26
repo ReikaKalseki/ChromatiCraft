@@ -163,6 +163,8 @@ public class ItemDataCrystal extends ItemChromaTool {
 			if (motionY < 0 && motionY < -0.125) {
 				motionY = -0.125;
 			}
+			if (this.handleWaterMovement())
+				motionY += 0.05;
 			velocityChanged = true;
 		}
 

@@ -202,7 +202,7 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 		if (this.canBeAccessed() && rand.nextInt(5) == 0/* && !this.hasBeenScanned(Minecraft.getMinecraft().thePlayer)*/) {
 			if (tower != null) {
 				if (tower == Towers.ALPHA) {
-					int idx = 1+((this.getTicksExisted()/60)%(Towers.towerList.length-1));
+					int idx = 1+((this.getTicksExisted()/120)%(Towers.towerList.length-1));
 					this.sendParticlesToTower(world, x, y, z, Towers.towerList[idx]);
 				}
 				else {

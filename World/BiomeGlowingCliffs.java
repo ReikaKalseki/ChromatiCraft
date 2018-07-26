@@ -38,6 +38,7 @@ import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Auxiliary.Trackers.WorldgenProfiler;
 import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ModifiableBigTree;
 import Reika.DragonAPI.Instantiable.Worldgen.ModifiableSmallTrees;
@@ -197,7 +198,7 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 		//terrain.generateColumn(world, x, z, rand, arr, m, this);
 	}
 
-	public static void blendTerrainEdges(World world, int chunkX, int chunkZ, Block[] blockArray, byte[] metaArray) {
+	public static void blendTerrainEdgesAndGenCliffs(World world, int chunkX, int chunkZ, Block[] blockArray, byte[] metaArray) {
 		initTerrain(world);
 
 		for (int i = 0; i < 16; i++) {
@@ -206,11 +207,21 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 				int z = chunkZ*16+k;
 				BiomeGenBase b = world.getWorldChunkManager().getBiomeGenAt(x, z);
 				if (!BiomeGlowingCliffs.isGlowingCliffs(b)) {
-					if (ChromaOptions.BIOMEBLEND.getState())
+					if (ChromaOptions.BIOMEBLEND.getState()) {
+						if (WorldgenProfiler.profilingEnabled())
+							WorldgenProfiler.startGenerator(world, "Luminous cliff adjacency biome blending", chunkX, chunkZ);
 						terrain.blendEdge(world, x, z, blockArray, metaArray);
+						if (WorldgenProfiler.profilingEnabled())
+							WorldgenProfiler.onRunGenerator(world, "Luminous cliff adjacency biome blending", chunkX, chunkZ);
+					}
 				}
-				else
+				else {
+					if (WorldgenProfiler.profilingEnabled())
+						WorldgenProfiler.startGenerator(world, "Luminous cliff terrain shaping", chunkX, chunkZ);
 					terrain.generateColumn(world, x, z, new Random(chunkX*341873128712L+chunkZ*132897987541L), blockArray, metaArray, b);
+					if (WorldgenProfiler.profilingEnabled())
+						WorldgenProfiler.onRunGenerator(world, "Luminous cliff terrain shaping", chunkX, chunkZ);
+				}
 			}
 		}
 	}

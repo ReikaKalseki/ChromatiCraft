@@ -76,6 +76,8 @@ public class KeyAssemblyPuzzle {
 	private final ArrayList<TileGroup> groups = new ArrayList();
 	private final ArrayList<TileGroup> freeGroups = new ArrayList();
 
+	private boolean isErrored;
+
 	private int activeCells;
 
 	private static final String hexPNG = "Textures/colorhexes.png";
@@ -123,13 +125,14 @@ public class KeyAssemblyPuzzle {
 		int attempts = 0;
 		long time = System.currentTimeMillis();
 		while (!flag) {
+			attempts++;
 			this.fillGrid(rand);
 			this.generateVoids(rand);
 			li = this.shuffle(rand);
 			flag = this.subdivide(rand);
 			long dur = System.currentTimeMillis()-time;
 			ChromatiCraft.logger.log("Attempted to generate lore puzzle; attempt #"+attempts+" took "+dur+" ms. Success: "+flag);
-			if (time > 15000) {
+			if (dur > 15000) {
 				ChromatiCraft.logger.logError("Could not generate lore puzzle within 15s, even after "+attempts+" attempts!");
 				this.errorGrid();
 				return;
@@ -147,6 +150,8 @@ public class KeyAssemblyPuzzle {
 	public Collection<TileGroup> getRandomGroupsForTower(Towers t) {
 		rand.setSeed(seed ^ t.ordinal());
 		ArrayList<TileGroup> ret = new ArrayList();
+		if (isErrored)
+			return ret;
 		for (int i = 0; i < GROUPS_PER_TOWER; i++) {
 			int idx = rand.nextInt(freeGroups.size());
 			TileGroup g = freeGroups.get(idx);
@@ -169,6 +174,7 @@ public class KeyAssemblyPuzzle {
 	}
 
 	private void errorGrid() {
+		isErrored = true;
 		for (HexCell c : cells.values()) {
 			c.occupant = new HexTile(rand.nextBoolean() ? CrystalElement.BLACK : CrystalElement.MAGENTA);
 			this.setCellContents(c.location, c.occupant, null);
@@ -261,7 +267,7 @@ public class KeyAssemblyPuzzle {
 			flag = !this.pathSearch(rand, h, path, pathCache);
 			long dur = System.currentTimeMillis()-time;
 			ChromatiCraft.logger.log("Attempted to path lore puzzle; attempt #"+attempts+" took "+dur+" ms. Success: "+flag);
-			if (time > 15000) {
+			if (dur > 15000) {
 				ChromatiCraft.logger.logError("Could not path lore puzzle within 15s, even after "+attempts+" attempts!");
 				return null;
 			}
@@ -414,7 +420,7 @@ public class KeyAssemblyPuzzle {
 		GL11.glEnable(GL11.GL_BLEND);
 		BlendMode.DEFAULT.apply();
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
-		boolean flag = LoreManager.instance.hasPlayerCompletedBoard(ep);
+		boolean flag = isErrored || LoreManager.instance.hasPlayerCompletedBoard(ep);
 		boolean flag2 = flag;
 		if (flag) {
 			//this.drawTexturedGrid(v5);
@@ -444,8 +450,8 @@ public class KeyAssemblyPuzzle {
 				 */
 
 				if (flag && f >= 1) {
-					Hex h = c.location;
 					/*
+					Hex h = c.location;
 					Point pt = grid.getHexLocation(h);
 					double u = 0.5+pt.x*0.03125;//CELL_SIZE/SIZE;
 					double v = 0.5-pt.y*0.03125;//CELL_SIZE/SIZE;
