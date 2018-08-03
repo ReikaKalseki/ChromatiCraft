@@ -84,7 +84,8 @@ public class ChromaDimensionManager {
 
 	static int dimensionAge = 0;
 	static long dimensionSeed = -1;
-	public static boolean serverStopping = false;;
+	public static boolean serverStopping = false;
+	private static boolean dimensionClearing = false;
 
 	public static enum Biomes implements ChromaDimensionBiomeType {
 		PLAINS(BiomeGenCrystalPlains.class,	"Crystal Plains",			8, 0,	ExtraChromaIDs.PLAINS, 		SubBiomes.MOUNTAINS, 	Type.MAGICAL, Type.PLAINS),
@@ -267,6 +268,14 @@ public class ChromaDimensionManager {
 		}
 	}
 
+	public static void checkChromaDimensionUnload() {
+		World world = DimensionManager.getWorld(ExtraChromaIDs.DIMID.getValue());
+		if (world != null) {
+			if (world.playerEntities.isEmpty())
+				resetDimension(world);
+		}
+	}
+
 	public static void resetDimension(World world) {
 		if (!DragonAPICore.hasGameLoaded())
 			return;
@@ -274,6 +283,11 @@ public class ChromaDimensionManager {
 			ChromatiCraft.logger.log("Dimension is only "+dimensionAge+" ticks old; not resetting");
 			return;
 		}
+		if (dimensionClearing) {
+			ChromatiCraft.logger.log("Dimension already resetting; not attempting to reset during a reset");
+			return;
+		}
+		dimensionClearing = true;
 		ChromatiCraft.logger.log("Resetting dimension of age "+dimensionAge+"; Server shutdown? "+serverStopping);
 		dimensionSeed = -1;
 		dimensionAge = 0;
@@ -293,6 +307,7 @@ public class ChromaDimensionManager {
 			}
 		}
 		ReikaPacketHelper.sendDataPacketToEntireServer(ChromatiCraft.packetChannel, ChromaPackets.LEAVEDIM.ordinal());
+		dimensionClearing = false;
 	}
 
 	public static void resetDimensionClient() {

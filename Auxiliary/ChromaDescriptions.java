@@ -68,7 +68,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public final class ChromaDescriptions {
 
-	private static String PARENT = getParent();
+	private static String PARENT = getParent(true);
 	private static final String DESC_SUFFIX = ":desc";
 	private static final String NOTE_SUFFIX = ":note";
 
@@ -90,22 +90,28 @@ public final class ChromaDescriptions {
 	private static final EnumMap<CrystalElement, String> elementText = new EnumMap(CrystalElement.class);
 	//private static final MultiMap<ScriptLocations, String> loreText = new MultiMap();
 
-	private static final boolean mustLoad = !ReikaObfuscationHelper.isDeObfEnvironment();
-	private static final XMLInterface machines = new XMLInterface(ChromatiCraft.class, PARENT+"machines.xml", mustLoad);
-	private static final XMLInterface elements = new XMLInterface(ChromatiCraft.class, PARENT+"elements.xml", mustLoad);
-	private static final XMLInterface blocks = new XMLInterface(ChromatiCraft.class, PARENT+"blocks.xml", mustLoad);
-	private static final XMLInterface abilities = new XMLInterface(ChromatiCraft.class, PARENT+"abilities.xml", mustLoad);
-	private static final XMLInterface structures = new XMLInterface(ChromatiCraft.class, PARENT+"structure.xml", mustLoad);
-	private static final XMLInterface tools = new XMLInterface(ChromatiCraft.class, PARENT+"tools.xml", mustLoad);
-	private static final XMLInterface resources = new XMLInterface(ChromatiCraft.class, PARENT+"resource.xml", mustLoad);
-	private static final XMLInterface infos = new XMLInterface(ChromatiCraft.class, PARENT+"info.xml", mustLoad);
-	private static final XMLInterface hover = new XMLInterface(ChromatiCraft.class, PARENT+"hover.xml", mustLoad);
-	private static final XMLInterface progress = new XMLInterface(ChromatiCraft.class, PARENT+"progression.xml", mustLoad);
-	private static final XMLInterface enchants = new XMLInterface(ChromatiCraft.class, PARENT+"enchants.xml", mustLoad);
-	private static final XMLInterface lore = LoreScripts.instance.hasReroutePath() ? new XMLInterface(LoreScripts.instance.getReroutedLoreFile(), true) : new XMLInterface(ChromatiCraft.class, PARENT+"lore.xml", mustLoad);
+	private static final XMLInterface machines = loadData("machines");
+	private static final XMLInterface elements = loadData("elements");
+	private static final XMLInterface blocks = loadData("blocks");
+	private static final XMLInterface abilities = loadData("abilities");
+	private static final XMLInterface structures = loadData("structure");
+	private static final XMLInterface tools = loadData("tools");
+	private static final XMLInterface resources = loadData("resource");
+	private static final XMLInterface infos = loadData("info");
+	private static final XMLInterface hover = loadData("hover");
+	private static final XMLInterface progress = loadData("progression");
+	private static final XMLInterface enchants = loadData("enchants");
+	private static final XMLInterface lore = LoreScripts.instance.hasReroutePath() ? new XMLInterface(LoreScripts.instance.getReroutedLoreFile(), true) : loadData("lore");
 
-	private static String getParent() {
-		return FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? getLocalizedParent() : "Resources/";
+	private static XMLInterface loadData(String name) {
+		XMLInterface xml = new XMLInterface(ChromatiCraft.class, PARENT+name+".xml", !ReikaObfuscationHelper.isDeObfEnvironment());
+		xml.setFallback(getParent(false)+name+".xml");
+		xml.init();
+		return xml;
+	}
+
+	private static String getParent(boolean locale) {
+		return locale && FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? getLocalizedParent() : "Resources/";
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -168,7 +174,7 @@ public final class ChromaDescriptions {
 	}
 
 	public static void reload() {
-		PARENT = getParent();
+		PARENT = getParent(true);
 
 		loadNumericalData();
 

@@ -264,22 +264,29 @@ public class GuiBasicInfo extends GuiBookSection {
 			api.drawTexturedModalRect(x, y, u, v, 32, 32);
 
 			GL11.glColor4f(1, 1, 1, 1);
-			if (complete && api.isMouseInBox(x, x+33, y, y+33)) {
-				//api.drawTooltipAt(font, d.getDisplayTime(j), mx, my);
-				ReikaRenderHelper.disableLighting();
+			if (complete) {
+				if (api.isMouseInBox(x, x+33, y, y+33)) {
+					//api.drawTooltipAt(font, d.getDisplayTime(j), mx, my);
+					ReikaRenderHelper.disableLighting();
 
-				ReikaTextureHelper.bindTerrainTexture();
+					ReikaTextureHelper.bindTerrainTexture();
 
-				int pass = data.getPassword(player);
-				byte[] vals = ReikaJavaLibrary.splitIntToHexChars(pass);
-				for (int i = 0; i < vals.length; i++) {
-					CrystalElement e = CrystalElement.elements[vals[i]];
-					IIcon ico = e.getGlowRune();
-					int dx = posX+35+i*24;
-					int dy = posY+189;
+					int pass = data.getPassword(player);
+					byte[] vals = ReikaJavaLibrary.splitIntToHexChars(pass);
+					for (int i = 0; i < vals.length; i++) {
+						CrystalElement e = CrystalElement.elements[vals[i]];
+						IIcon ico = e.getGlowRune();
+						int dx = posX+35+i*24;
+						int dy = posY+189;
 
-					api.drawTexturedModelRectFromIcon(dx, dy, ico, 16, 16);
+						api.drawTexturedModelRectFromIcon(dx, dy, ico, 16, 16);
+					}
 				}
+
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				ReikaRenderHelper.prepareGeoDraw(true);
+				api.drawRectFrame(x-1, y-1, 34, 34, 0xff000000 | data.color.getColor());
+				GL11.glPopAttrib();
 
 				//fontRendererObj.drawString(data.color.displayName, posX+10, posY+150, 0xffffff);
 			}

@@ -126,7 +126,7 @@ public class ProductChecks {
 		private final int stepSize;
 		private final int stepSizeY;
 
-		private static final HashMap<WorldLocation, Coordinate> successfulChecks = new HashMap();
+		private final HashMap<WorldLocation, Coordinate> successfulChecks = new HashMap();
 		private static final WeightedRandom<Double> rangeRandom = new WeightedRandom();
 		private static final int SEARCH_LOCS = 16;
 
@@ -247,7 +247,7 @@ public class ProductChecks {
 			if (check.check(world, x, y, z, ibg, ibh)) {
 				if (world.rand.nextInt(30) == 0) {
 					WorldLocation loc = ChromaBeeHelpers.getLocation(ibh);
-					Coordinate plant = AreaBlockCheck.successfulChecks.get(loc);
+					Coordinate plant = check.successfulChecks.get(loc);
 					TileEntityCrystalPlant te = (TileEntityCrystalPlant)plant.getTileEntity(world);
 					te.setState(Modifier.BOOSTED);
 					if (world.rand.nextInt(30) == 0) {
@@ -325,8 +325,8 @@ public class ProductChecks {
 			leaf = new LeafCheck(e);
 			chroma = new AreaBlockCheck(new BlockKey(ChromaBlocks.CHROMA.getBlockInstance(), 0), 1);
 			MultiKey crys = new MultiKey();
-			crys.add(new BlockKey(ChromaBlocks.CRYSTAL.getBlockInstance(), 0));
-			crys.add(new BlockKey(ChromaBlocks.SUPER.getBlockInstance(), 0));
+			crys.add(new BlockKey(ChromaBlocks.CRYSTAL.getBlockInstance(), color.ordinal()));
+			crys.add(new BlockKey(ChromaBlocks.SUPER.getBlockInstance(), color.ordinal()));
 			crystal = new AreaBlockCheck(crys, 1);
 			progress = new ProgressionCheck(ProgressStage.SHARDCHARGE);
 		}

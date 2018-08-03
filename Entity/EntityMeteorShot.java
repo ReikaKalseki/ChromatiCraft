@@ -90,7 +90,7 @@ public class EntityMeteorShot extends Entity implements IEntityAdditionalSpawnDa
 
 	private double getGravity(World world) {
 		double g = 0.03125;
-		if (ModList.GALACTICRAFT.isLoaded() && InterfaceCache.IGALACTICWORLD.instanceOf(world)) {
+		if (ModList.GALACTICRAFT.isLoaded() && InterfaceCache.IGALACTICWORLD.instanceOf(world.provider)) {
 			g += ((IGalacticraftWorldProvider)world.provider).getGravity();
 		}
 		return g;

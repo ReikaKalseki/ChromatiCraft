@@ -1454,6 +1454,18 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
+	public void resetDimension(PlayerEvent.PlayerChangedDimensionEvent evt) {
+		if (evt.fromDim == ExtraChromaIDs.DIMID.getValue())
+			ChromaDimensionManager.checkChromaDimensionUnload();
+	}
+
+	@SubscribeEvent
+	public void resetDimension(PlayerEvent.PlayerLoggedOutEvent evt) {
+		//if (evt.player.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
+		ChromaDimensionManager.checkChromaDimensionUnload();
+	}
+
+	@SubscribeEvent
 	public void harvestSpawner(BlockEvent.BreakEvent evt) {
 		if (evt.block == Blocks.mob_spawner) {
 			ProgressStage.BREAKSPAWNER.stepPlayerTo(evt.getPlayer());

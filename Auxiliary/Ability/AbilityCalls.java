@@ -1052,7 +1052,9 @@ public class AbilityCalls {
 		boolean reachedZ = dir.offsetZ != 0 && (dir.offsetZ < 0 ? z <= ep.posZ : z >= ep.posZ);
 		reached = reachedX || reachedY || reachedZ;
 
-		while (!reached && hasBlock && !hitBlock) {
+		ElementTagCompound tag = AbilityHelper.instance.getUsageElementsFor(Chromabilities.SUPERBUILD, ep).scale(0.05F);
+
+		while (!reached && hasBlock && !hitBlock && PlayerElementBuffer.instance.playerHas(ep, tag)) {
 			x += dir.offsetX;
 			y += dir.offsetY;
 			z += dir.offsetZ;
@@ -1075,10 +1077,15 @@ public class AbilityCalls {
 				TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new ScheduledSoundEvent(ChromaSounds.RIFT, world, ep.posX, ep.posY, ep.posZ, v, 2)), delay);
 				TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new ScheduledPacket(ChromatiCraft.packetChannel, ChromaPackets.SUPERBUILD.ordinal(), world, x, y, z, 64, dir.ordinal())), delay);
 
-				PlayerElementBuffer.instance.removeFromPlayer(ep, AbilityHelper.instance.getUsageElementsFor(Chromabilities.SUPERBUILD, ep).scale(0.05F));
+				PlayerElementBuffer.instance.removeFromPlayer(ep, tag);
 
 				delay = delay+(int)(5/Math.pow(delay, 0.33));
 			}
+		}
+
+		if (!ep.capabilities.isCreativeMode) {
+			is.stackSize--; //to compensate for the first block
+			ep.setCurrentItemOrArmor(0, is);
 		}
 	}
 

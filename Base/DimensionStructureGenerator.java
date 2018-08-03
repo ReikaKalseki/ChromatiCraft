@@ -482,6 +482,15 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		world.setTileEntity(x, y, z, ChromaBlocks.DIMDATA.getBlockInstance(), 0, new StructureInterfaceCallback(this, data));
 	}
 
+	public final void generatePasswordTile(World world, int x, int y, int z) {
+		if (ChromaOptions.ALLOWSTRUCTPASS.getState()) {
+			world.setBlock(x, y, z, ChromaBlocks.DIMDATA.getBlockInstance(), 1, 2);
+			StructureInterfaceCallback sr = new StructureInterfaceCallback(this, null);
+			sr.onTilePlaced(world, x, y, z, world.getTileEntity(x, y, z));
+		}
+		//ReikaJavaLibrary.pConsole("Genning password tile @ "+x+", "+y+", "+z);
+	}
+
 	public final void generatePasswordTile(int x, int y, int z) {
 		if (ChromaOptions.ALLOWSTRUCTPASS.getState())
 			world.setTileEntity(x, y, z, ChromaBlocks.DIMDATA.getBlockInstance(), 1, new StructureInterfaceCallback(this, null));
