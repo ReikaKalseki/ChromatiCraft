@@ -157,7 +157,12 @@ public class GuiCrystalMusic extends GuiChromaBase implements PianoGui {
 			page = page.otherPage();
 		}
 		else if (b.id == 5) {
-			music.loadLocalMIDI(input.getText());
+			if (music.loadLocalMIDI(input.getText())) {
+				ReikaSoundHelper.playClientSound(ChromaSounds.CAST, player, 1, 1);
+			}
+			else {
+				ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 1, 1);
+			}
 			return; //prevent reinit and textbox clear
 		}
 		else if (b.id == 6) {

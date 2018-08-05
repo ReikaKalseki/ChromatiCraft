@@ -57,12 +57,14 @@ import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -306,15 +308,28 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 		if (sc)
 			tag.scale(1.2F);
 		if (ChromaItems.SHARD.matchWith(is))
-			tag.scale(is.getItemDamage() >= 16 ? 4 : 1.5F);
+			tag.scale(is.getItemDamage() >= 16 ? 5 : 2);
+		if (ReikaItemHelper.isInOreTag(is, "flower")) {
+			addFlowerCrafting(is, tag);
+		}
 		return tag;
+	}
+
+	private static void addFlowerCrafting(ItemStack is, ElementTagCompound tag) {
+		ItemStack out = ReikaRecipeHelper.getShapelessCraftResult(is);
+		Collection<ReikaDyeHelper> c = ReikaDyeHelper.getColorsFromItem(is);
+		if (c != null) {
+			for (ReikaDyeHelper dye : c) {
+				tag.addValueToColor(CrystalElement.elements[dye.ordinal()], 1);
+			}
+		}
 	}
 
 	private static ElementTagCompound scaleDecompositionTag(ItemStack is, ElementTagCompound tag) {
 		if (is.getItem() != Items.dye && !ChromaItems.DYE.matchWith(is) && !ReikaItemHelper.isOreNugget(is))
 			tag.scale(BASE_ITEM_FACTOR);
 		if (ChromaBlocks.PYLONSTRUCT.match(is))
-			tag.scale(0.5F);
+			tag.scale(2F/BASE_ITEM_FACTOR); //was 5F/BASE_ITEM_FACTOR
 		if (ChromaItems.SHARD.matchWith(is))
 			tag.scale(is.getItemDamage() >= 16 ? 3 : 2);
 		return tag;

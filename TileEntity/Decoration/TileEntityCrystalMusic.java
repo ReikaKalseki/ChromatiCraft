@@ -362,23 +362,25 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void loadLocalMIDI(String file) {
+	public boolean loadLocalMIDI(String file) {
 		File f = new File(file);
 		if (!f.exists() || f.isDirectory()) {
 			ChromatiCraft.logger.logError("Could not load local MIDI: file is not a MIDI file!");
-			return;
+			return false;
 		}
 		if (f.length() > 1024*ChromaOptions.MIDISIZE.getValue()) {
 			ChromatiCraft.logger.logError("Could not load local MIDI: file is too large ("+f.length()+" bytes) and cannot be safely used!");
-			return;
+			return false;
 		}
 		try {
 			MusicScore mus = new MIDIInterface(f).fillToScore(false).scaleSpeed(11);
 			this.dispatchTrack(mus);
+			return true;
 		}
 		catch (Exception e) {
 			ChromatiCraft.logger.logError(e.toString());
 			e.printStackTrace();
+			return false;
 		}
 	}
 
