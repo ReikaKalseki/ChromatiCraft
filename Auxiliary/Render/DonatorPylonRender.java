@@ -18,6 +18,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerSpecificRenderer.PlayerRotationData;
 import Reika.DragonAPI.Interfaces.PlayerRenderObj;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 
 public class DonatorPylonRender implements PlayerRenderObj {
 
@@ -29,6 +30,7 @@ public class DonatorPylonRender implements PlayerRenderObj {
 
 	@Override
 	public void render(EntityPlayer ep, float ptick, PlayerRotationData dat) {
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		GL11.glPushMatrix();
 		GL11.glTranslated(0, 2.25, 0);
 		//GL11.glRotated(-dat.getRenderYaw(), 0, 1, 0);
@@ -39,9 +41,12 @@ public class DonatorPylonRender implements PlayerRenderObj {
 		GL11.glScaled(s, s, s);
 		//GL11.glRotated(45-ep.rotationPitch+90, 1, 0, 0);
 		//GL11.glRotated(RenderManager.instance.playerViewY-ep.rotationYawHead-45, 0, 1, 0);
+		ReikaRenderHelper.disableEntityLighting();
+		ReikaRenderHelper.disableLighting();
 		TileEntityCrystalPylon te = (TileEntityCrystalPylon)ChromaTiles.PYLON.createTEInstanceForRender(0);
 		TileEntityRendererDispatcher.instance.renderTileEntityAt(te, 0, 0, 0, ptick);
 		GL11.glPopMatrix();
+		GL11.glPopAttrib();
 	}
 
 	@Override

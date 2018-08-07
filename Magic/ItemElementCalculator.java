@@ -156,7 +156,7 @@ public class ItemElementCalculator {
 		cache.put(ChromaStacks.oceanrock, new ElementTagCompound(1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		cache.put(ChromaStacks.cliffshard, new ElementTagCompound(1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1));
 
-		cache.put(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), ElementTagCompound.getUniformTag(1));
+		cache.put(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 
 		cache.put(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.STONE.ordinal()), new ElementTagCompound(2, 4, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		cache.put(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.COBBLE.ordinal()), new ElementTagCompound(2, 4, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
