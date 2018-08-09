@@ -36,7 +36,7 @@ public class RenderTunnelNuker extends RendererLivingEntity {
 
 	@Override
 	protected void bindEntityTexture(Entity e) {
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/tunnelnuker.png");
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/TunnelNuker.png");
 	}
 
 	@Override

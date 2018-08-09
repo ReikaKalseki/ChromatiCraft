@@ -15,20 +15,17 @@ import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.Bases;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.TileEntityCrystalGlow;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
 
-public class ItemBlockCrystalGlow extends ItemBlock {
+public class ItemBlockCrystalGlow extends ItemBlockDyeTypes {
 
 	public ItemBlockCrystalGlow(Block b) {
 		super(b);
-		hasSubtypes = true;
 	}
 
 	@Override
@@ -43,16 +40,6 @@ public class ItemBlockCrystalGlow extends ItemBlock {
 	@Override
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
 
-	}
-
-	@Override
-	public int getMetadata(int meta) {
-		return meta;
-	}
-
-	@Override
-	public String getItemStackDisplayName(ItemStack is) {
-		return ChromaBlocks.getEntryByID(field_150939_a).getMultiValuedName(is.getItemDamage());
 	}
 
 	@Override

@@ -213,6 +213,7 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void sendParticlesToTower(World world, int x, int y, int z, Towers t) {
 		if (t == null || t.getRootPosition() == null) //sync not yet received
 			return;

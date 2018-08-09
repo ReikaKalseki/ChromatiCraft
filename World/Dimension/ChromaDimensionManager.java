@@ -271,6 +271,7 @@ public class ChromaDimensionManager {
 	public static void checkChromaDimensionUnload() {
 		World world = DimensionManager.getWorld(ExtraChromaIDs.DIMID.getValue());
 		if (world != null) {
+			ChromatiCraft.logger.log("Checking dimension for unload - player entities: "+world.playerEntities);
 			if (world.playerEntities.isEmpty())
 				resetDimension(world);
 		}

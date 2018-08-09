@@ -9,79 +9,34 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface.Bees;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.command.IEntitySelector;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
-
-import org.apache.commons.lang3.tuple.ImmutablePair;
-
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ChromaAux;
-import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.ChromatiCraft.Auxiliary.RainbowTreeEffects;
-import Reika.ChromatiCraft.Items.ItemUnknownArtefact;
-import Reika.ChromatiCraft.Magic.CrystalPotionController;
-import Reika.ChromatiCraft.Magic.Artefact.ArtefactSpawner;
-import Reika.ChromatiCraft.Magic.Artefact.UABombingEffects;
-import Reika.ChromatiCraft.Magic.Lore.Towers;
-import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.ConditionalProductProvider;
-import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees.CrystalBee;
-import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees.PrecursorBee;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.ProductCondition;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
-import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
-import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
-import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
-import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.GUI.StatusLogger;
-import Reika.DragonAPI.Libraries.ReikaAABBHelper;
-import Reika.DragonAPI.Libraries.ReikaEntityHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.KeySignature;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.Note;
-import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.Bees.BasicFlowerProvider;
 import Reika.DragonAPI.ModInteract.Bees.BasicGene;
 import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Flowering;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.EnumBeeChromosome;
-import forestry.api.apiculture.IAlleleBeeEffect;
 import forestry.api.apiculture.IAlleleBeeSpecies;
 import forestry.api.apiculture.IBee;
 import forestry.api.apiculture.IBeeGenome;
 import forestry.api.apiculture.IBeeHousing;
 import forestry.api.genetics.IAlleleFlowers;
-import forestry.api.genetics.IEffectData;
 import forestry.api.genetics.IFlowerProvider;
 import forestry.api.genetics.IIndividual;
 
@@ -409,8 +364,11 @@ public class FlowerAlleles {
 								if (this.areConditionalsAvailable(world, x, y, z, ibg, ibh)) {
 									ibh.getErrorLogic().setCondition(false, CrystalBees.conditionalsUnavailable);
 									if (c.check(world, x, y, z, ibg, ibh)) {
-										ModularLogger.instance.log(CrystalBees.LOGGER_TAG, "Check for "+is.getDisplayName()+" passed.");
+										ModularLogger.instance.log(CrystalBees.LOGGER_TAG, "Check "+c.toString()+" for "+is.getDisplayName()+" passed.");
 										flag = true;
+									}
+									else {
+										ModularLogger.instance.log(CrystalBees.LOGGER_TAG, "Check "+c.toString()+" for "+is.getDisplayName()+" failed.");
 									}
 								}
 								else {

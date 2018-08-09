@@ -35,26 +35,23 @@ public class ItemBlockDyeTypes extends ItemBlock {
 	}
 
 	@Override
-	public void getSubItems(Item id, CreativeTabs par2CreativeTabs, List par3List)
-	{
+	public void getSubItems(Item id, CreativeTabs par2CreativeTabs, List par3List) {
 		for (int i = 0; i < ReikaDyeHelper.dyes.length; i++)
 			par3List.add(new ItemStack(id, 1, i));
 	}
 
 	@Override
-	public int getMetadata(int dmg)
-	{
-		return dmg;
+	public int getMetadata(int meta) {
+		return meta;
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public int getColorFromItemStack(ItemStack is, int par2)
-	{
+	public int getColorFromItemStack(ItemStack is, int par2) {
 		if (ChromaBlocks.DYE.match(is) || ChromaBlocks.DYELEAF.match(is) || ChromaBlocks.DECAY.match(is))
 			return super.getColorFromItemStack(is, par2);
 
-		return ReikaDyeHelper.getColorFromDamage(is.getItemDamage()).getJavaColor().brighter().getRGB();
+		return CrystalElement.elements[is.getItemDamage()%16].getColor();
 	}
 
 	@Override

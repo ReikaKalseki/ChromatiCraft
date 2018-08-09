@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.ModInterface.Bees;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -44,6 +45,11 @@ public class ProductChecks {
 		public abstract boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh);
 
 		public abstract String getDescription();
+
+		@Override
+		public final String toString() {
+			return this.getClass().getSimpleName()+": "+this.getDescription();
+		}
 
 	}
 
@@ -127,6 +133,8 @@ public class ProductChecks {
 		private final int stepSizeY;
 
 		private final HashMap<WorldLocation, Coordinate> successfulChecks = new HashMap();
+		private final HashSet<WorldLocation> testedCoordinates = new HashSet();
+
 		private static final WeightedRandom<Double> rangeRandom = new WeightedRandom();
 		private static final int SEARCH_LOCS = 16;
 
@@ -157,10 +165,14 @@ public class ProductChecks {
 			if (c != null && !this.validate(world, loc, c, r[0], r[1]))
 				c = null;
 			if (c == null) {
-				Coordinate find = this.check(world, x, y, z, r[0], r[1]);
+				Coordinate find = this.check(world, x, y, z, loc, r[0], r[1]);
+				testedCoordinates.add(loc);
 				if (find != null) {
 					successfulChecks.put(loc, find);
 					c = find;
+				}
+				else {
+					successfulChecks.remove(loc);
 				}
 			}
 			return c != null;
@@ -174,8 +186,8 @@ public class ProductChecks {
 			return true;
 		}
 
-		private Coordinate check(World world, int x, int y, int z, int r, int vr) {
-			double f = rangeRandom.getRandomEntry();
+		private Coordinate check(World world, int x, int y, int z, WorldLocation loc, int r, int vr) {
+			double f = testedCoordinates.contains(loc) ? rangeRandom.getRandomEntry() : -1; //always run full scan for first scan
 			if (f == -1) {
 				for (int i = -r; i <= r; i += stepSize) {
 					for (int k = -r; k <= r; k += stepSize) {
