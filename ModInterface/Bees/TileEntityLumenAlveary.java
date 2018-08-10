@@ -833,7 +833,8 @@ IBeeModifier, IBeeListener {
 			aspects.readFromNBT(data);
 		}
 
-		this.getFlowerCache().readFromNBT(data);
+		if (ModList.FORESTRY.isLoaded())
+			this.getFlowerCache().readFromNBT(data);
 
 		if (data.hasKey("effects"))
 			ReikaNBTHelper.readCollectionFromNBT(selectedEffects, data, "effects");
@@ -851,7 +852,8 @@ IBeeModifier, IBeeListener {
 			aspects.writeToNBT(data);
 		}
 
-		this.getFlowerCache().writeToNBT(data);
+		if (ModList.FORESTRY.isLoaded())
+			this.getFlowerCache().writeToNBT(data);
 
 		ReikaNBTHelper.writeCollectionToNBT(selectedEffects, data, "effects");
 	}

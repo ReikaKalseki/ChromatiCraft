@@ -334,7 +334,7 @@ public class ProgressModifyCommand extends DragonCommandBase {
 					missing.removeAll(cp);
 					ChromaResearchManager.instance.removeAllDummiedFragments(missing);
 					//ReikaJavaLibrary.pConsole(missing);
-					sendChatToSender(ics, "Can step to "+pl.post()+": "+pl.post().canProgressTo(ep)+" && "+missing.isEmpty());
+					sendChatToSender(ics, "Can step to "+pl.post()+": F="+pl.post().canProgressTo(ep)+" && R="+missing.isEmpty());
 					sendChatToSender(ics, "Missing research for "+pl+": "+missing);
 				}
 				if (args[1].equals("all") || args[1].equals("progress") || args[1].equals("progression")) {
