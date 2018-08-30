@@ -50,6 +50,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.RepeaterTurboRecipe;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
@@ -113,6 +114,7 @@ public enum ChromaResearch implements ProgressElement {
 	DIMENSION3("The Far Regions",			ChromaBlocks.DIMGEN.getStackOfMetadata(DimDecoTypes.FLOATSTONE.ordinal()),	ResearchLevel.ENDGAME,	ProgressStage.STRUCTCOMPLETE),
 	TURBO("Turbocharging",					ChromaStacks.elementUnit,								ResearchLevel.ENDGAME, 		ProgressionManager.instance.getPrereqsArray(ProgressStage.TURBOCHARGE)),
 	TURBOREPEATER("Repeater Turbocharging", ChromaStacks.turboRepeater,								ResearchLevel.ENDGAME,		ProgressStage.TURBOCHARGE),
+	TURBOREPEATER2("Maximized Networking",	ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.RESORING.ordinal()),		ResearchLevel.CTM,		ProgressStage.TURBOCHARGE),
 	PACKCHANGES("Modpack Changes",			new ItemStack(Blocks.dirt),								ResearchLevel.ENTRY),
 	NODENET("Networking Aura Nodes",		new ItemStack(Blocks.dirt),								ResearchLevel.CTM,			ProgressStage.CTM),
 	SELFCHARGE("Energy Internalization",	ChromaItems.TOOL.getStackOf(),							ResearchLevel.CHARGESELF,	ProgressStage.CHARGE),

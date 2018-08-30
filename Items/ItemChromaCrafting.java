@@ -88,7 +88,17 @@ public class ItemChromaCrafting extends ItemChromaMulti implements ResearchDepen
 
 	@Override
 	public Collection<ChromaResearch> getRequiredResearch(ItemStack is) {
-		return ChromaResearch.getPageFor(is) == ChromaResearch.CORES ? ReikaJavaLibrary.makeListFrom(ChromaResearch.CORES) : null;
+		ChromaResearch r = ChromaResearch.getPageFor(is);
+		if (r == null)
+			return null;
+		switch(r) {
+			case CORES:
+				return ReikaJavaLibrary.makeListFrom(ChromaResearch.CORES);
+			case ALLOYS:
+				return ReikaJavaLibrary.makeListFrom(ChromaResearch.ALLOYS);
+			default:
+				return null;
+		}
 	}
 
 	@Override

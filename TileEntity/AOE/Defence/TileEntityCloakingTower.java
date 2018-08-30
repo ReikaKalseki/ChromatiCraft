@@ -9,6 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE.Defence;
 
+import ic2.api.item.ElectricItem;
+import ic2.api.item.IElectricItem;
+
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -74,10 +77,11 @@ public class TileEntityCloakingTower extends TileEntityChromaticBase implements 
 				this.createParticles(world, x, y, z);
 			}
 			else {
+				/*
 				EntityPlayer ep = this.getPlacer();
 				if (ep.boundingBox.intersectsWith(this.getCloseEffectBox(world, x, y, z))) {
 					this.rechargeTools(ep);
-				}
+				}*/
 			}
 		}
 	}
@@ -111,17 +115,15 @@ public class TileEntityCloakingTower extends TileEntityChromaticBase implements 
 			}
 			return false;
 		}
-		/*
 		else if (InterfaceCache.IELECTRICITEM.instanceOf(is.getItem())) {
-			IElectricItem ie = (IElectricItem)is.getItem();
-			int amt = Math.min(Math.max(1, ie.getMaxCharge(is)/100), ie.getMaxCharge(is)-ie.);
+			double max = ((IElectricItem)is.getItem()).getMaxCharge(is);
+			double amt = Math.min(Math.max(1, max/100), max-ElectricItem.manager.getCharge(is));
 			if (amt > 0) {
-				int add = ie.receiveEnergy(is, amt, false);
+				double add = ElectricItem.manager.charge(is, amt, Integer.MAX_VALUE, true, false);
 				return add > 0;
 			}
 			return false;
 		}
-		 */
 		else if (InterfaceCache.MUSEELECTRICITEM.instanceOf(is.getItem())) {
 			MuseElectricItem ms = (MuseElectricItem)is.getItem();
 			int amt = Math.min(Math.max(1, ms.getMaxCharge(is)/100), ms.getMaxCharge(is)-(int)ms.getCurrentEnergy(is));

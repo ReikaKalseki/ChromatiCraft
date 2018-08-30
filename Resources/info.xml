@@ -7,7 +7,7 @@
   Distribution of the software in any form is only allowed with
   explicit, prior permission from the owner.
 -->
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <info>
 	<elements>
 		You quickly realized that the magic elements that shape and drive the world are divided into sixteen types, each with an associated color.
@@ -81,6 +81,9 @@
 	<structurepasswords>
 		Upon - finally - completing a vast subterranean puzzle, you were struck with a random thought, though you as yet have no idea what it might mean or be related to. Nonetheless, having learned from past mistakes (you may never remember that idea you had for improving the fuel efficiency of your home base machinery), you have written these down for potential future reference.
 	</structurepasswords>
+	<turborepeater2>
+		A turbocharged repeater helps, but for the truly powerful constructs even they have proved unable to keep up. Perhaps a slight upgrade to their tower, replacing some parts with more energetic variants, could improve them even further.
+	</turborepeater2>
 	<name>
 		
 	</name>

@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ResearchDependentName;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
+import Reika.ChromatiCraft.ModInterface.ItemColoredModInteract;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
@@ -148,7 +149,7 @@ public abstract class ItemChromaBasic extends Item implements MultisheetItem {
 				}
 			}
 		}
-		if (this instanceof ItemCrystalBasic) {
+		if (this instanceof ItemCrystalBasic || this instanceof ItemColoredModInteract) {
 			CrystalElement e = CrystalElement.elements[is.getItemDamage()%16];
 			if (!ProgressionManager.instance.hasPlayerDiscoveredColor(Minecraft.getMinecraft().thePlayer, e)) {
 				return true;

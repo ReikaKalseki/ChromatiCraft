@@ -243,7 +243,7 @@ public enum ChromaTiles implements TileEnum {
 	PROGRESSLINK("chroma.progresslink",	ChromaBlocks.TILEMODELLED4,	TileEntityProgressionLinker.class,	2, "RenderProgressionLinker"),
 	MANABOOSTER("chroma.manabooster",	ChromaBlocks.TILEMODELLED4,	TileEntityManaBooster.class,		3, "RenderManaBooster", ModList.BOTANIA),
 	DEATHFOG("chroma.deathfog",			ChromaBlocks.TILEENTITY2,	TileEntityDeathFogEmitter.class,	4),
-	OPTIMIZER("chroma.optimizer",		ChromaBlocks.TILEENTITY2,	TileEntityNetworkOptimizer.class,	5);
+	OPTIMIZER("chroma.optimizer",		ChromaBlocks.TILEMODELLED4,	TileEntityNetworkOptimizer.class,	4, "RenderNetworkOptimizer");
 
 	private final Class tile;
 	private final String name;
@@ -352,6 +352,7 @@ public enum ChromaTiles implements TileEnum {
 			case MULTIBUILDER:
 			case GLOWFIRE:
 			case MANABOOSTER:
+			case OPTIMIZER:
 				return true;
 			default:
 				return false;
@@ -788,6 +789,7 @@ public enum ChromaTiles implements TileEnum {
 			case FLUXMAKER:
 			case FUNCTIONRELAY:
 			case MANABOOSTER:
+			case OPTIMIZER:
 				return true;
 			default:
 				return false;

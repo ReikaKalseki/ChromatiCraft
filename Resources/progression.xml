@@ -7,7 +7,7 @@
   Distribution of the software in any form is only allowed with
   explicit, prior permission from the owner.
 -->
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <progression>
 	<crystals>
 		<title>
@@ -378,7 +378,7 @@
 			Broadcasting
 		</title>
 		<hint>
-			Unless you set up dangerously close to a pylon, there does not seem to be a way to use them, as their range is too limited.
+			You need a better way to transfer lumen energy from the pylons to your base.
 		</hint>
 		<reveal>
 			These refractors of a sort seem to be able to reconcentrate and repeat the signal.

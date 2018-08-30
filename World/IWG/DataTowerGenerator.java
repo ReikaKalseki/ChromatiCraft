@@ -178,7 +178,12 @@ public class DataTowerGenerator implements RetroactiveGenerator {
 				int dx = x+i;
 				int dz = z+k;
 				double dr = ReikaMathLibrary.py3d(i, 0, k);
-				if (dr <= r) {
+				if (dr <= 4) {
+					for (int dy = y; dy <= y+7; dy++) {
+						world.setBlock(dx, dy, dz, Blocks.air);
+					}
+				}
+				else if (dr <= r) {
 					double f = Math.min(1, 1-dr/r);
 					int dd = (int)Math.ceil(f*d);
 					for (int dy = 250+d-dd; dy < 256; dy++) {

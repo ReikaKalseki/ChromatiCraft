@@ -7,7 +7,7 @@
   Distribution of the software in any form is only allowed with
   explicit, prior permission from the owner.
 -->
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <machines>
 	<adjacency>
 		<desc>
@@ -441,7 +441,8 @@
 	</pylonturbo>
 	<personal>
 		<desc>
-			Flying out to each of the sixteen colors of pylon to draw energy from them to power your abilities is a massive headache. Perhaps you could try to imitate them somehow. No doubt you lack the skill - or patience - required to duplicate them exactly, but the end result, if not able to be networked, might still serve as a useful charging point, as well as a nice decoration.
+			<!-- Flying out to each of the sixteen colors of pylon to draw energy from them to power your abilities is a massive headache. Perhaps you could try to imitate them somehow. No doubt you lack the skill - or patience - required to duplicate them exactly, but the end result, if not able to be networked, might still serve as a useful charging point, as well as a nice decoration. -->
+			Ever since you first started discovering and making use of the pylons, basically every person you have met has cracked some joke about how you should construct more of them. If you could do THAT, you would have already done so, not still be wasting time flying out to the ones you found so as to charge yourself off of them. Perhaps another attempt at an imitation for charging purposes is in order...
 		</desc>
 		<note>
 

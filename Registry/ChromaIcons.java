@@ -112,6 +112,8 @@ public enum ChromaIcons {
 	CELLFLARE("cellflare"),
 	ECLIPSEFLARE("eclipseflare"),
 	SUNFLARE("sunflare"),
+	COLORWHIRL("colorwhirl3"),
+	COLORWHIRLFLARE("colorwhirlflare"),
 	;
 
 	private IIcon icon;
