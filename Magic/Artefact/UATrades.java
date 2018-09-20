@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic.Artefact;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.MalformedURLException;
@@ -29,9 +31,11 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact.ArtefactTypes;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.IO.ReikaFileReader.ConnectionErrorHandler;
 import Reika.DragonAPI.Interfaces.PlayerSpecificTrade;
+import Reika.DragonAPI.Libraries.Java.ReikaJVMParser;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -54,31 +58,42 @@ public class UATrades implements ConnectionErrorHandler {
 	private UATrades() {
 		this.loadDefaults();
 
+		for (Class c : this.getClass().getDeclaredClasses()) {
+			if (c.getSuperclass() == UATypeTrade.class) {
+				tradeList.add(c);
+			}
+		}
+
+		boolean jvm = ReikaJVMParser.isArgumentPresent("useCachedEDDBForCC");
+		if (jvm) {
+			File f = new File(DragonAPICore.getMinecraftDirectoryString()+"/ChromatiCraft_Data/eddbcache.json");
+			if (f.exists() && System.currentTimeMillis()-f.lastModified() < 24*3600*1000) { //1d
+				Reader r = ReikaFileReader.getReader(f);
+				if (r != null) {
+					this.loadJSONData(r);
+					return;
+				}
+			}
+			else {
+				f.delete();
+			}
+		}
+
 		try {
 			URL url = new URL("https://eddb.io/archive/v5/commodities.json"); //dynamically load the prices from eddb, so that the ones in CC can match the ones in E:D in real time, because :D
-			Reader r = ReikaFileReader.getReader(url, 5000, this, null);
-			if (r == null)
+			Reader r = ReikaFileReader.getReader(url, 2000, this, null);
+			if (r == null) {
 				throw new IOException("Could not read URL!");
-			JsonReader jr = new JsonReader(r);
-			jr.setLenient(true);
-			JsonElement e = new JsonParser().parse(jr);
-			if (e instanceof JsonArray) {
-				JsonArray j = (JsonArray)e;
-				Iterator<JsonElement> it = j.iterator();
-				while (it.hasNext()) {
-					JsonElement elem = it.next();
-					if (elem instanceof JsonObject) {
-						JsonObject obj = (JsonObject)elem;
-						JsonElement n = obj.get("name");
-						String data = n.getAsString();
-						if (prices.containsKey(data)) {
-							int price = obj.get("average_price").getAsInt();
-							prices.put(data, price);
-							ChromatiCraft.logger.log("Loading price data for "+data+" from eddb.io database: "+price+" CR");
-						}
-					}
+			}
+			else {
+				this.loadJSONData(r);
+				if (jvm) {
+					File f = new File(DragonAPICore.getMinecraftDirectoryString()+"/ChromatiCraft_Data/eddbcache.json");
+					f.getParentFile().mkdirs();
+					f.delete();
+					ReikaFileReader.copyFile(url.openStream(), new FileOutputStream(f), 4096, null);
+					ChromatiCraft.logger.log("Downloaded eddb.io commodity data for caching.");
 				}
-				return;
 			}
 		}
 		catch (MalformedURLException e) {
@@ -88,9 +103,27 @@ public class UATrades implements ConnectionErrorHandler {
 			e.printStackTrace();
 		}
 
-		for (Class c : this.getClass().getDeclaredClasses()) {
-			if (c.getSuperclass() == UATypeTrade.class) {
-				tradeList.add(c);
+	}
+
+	private void loadJSONData(Reader r) {
+		JsonReader jr = new JsonReader(r);
+		jr.setLenient(true);
+		JsonElement e = new JsonParser().parse(jr);
+		if (e instanceof JsonArray) {
+			JsonArray j = (JsonArray)e;
+			Iterator<JsonElement> it = j.iterator();
+			while (it.hasNext()) {
+				JsonElement elem = it.next();
+				if (elem instanceof JsonObject) {
+					JsonObject obj = (JsonObject)elem;
+					JsonElement n = obj.get("name");
+					String data = n.getAsString();
+					if (prices.containsKey(data)) {
+						int price = obj.get("average_price").getAsInt();
+						prices.put(data, price);
+						ChromatiCraft.logger.log("Loading price data for "+data+" from eddb.io database: "+price+" CR");
+					}
+				}
 			}
 		}
 	}
