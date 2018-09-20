@@ -98,6 +98,10 @@ public class BlockGOLTile extends BlockDimensionStructure {
 			ChromatiCraft.logger.logError("No structure for tile at "+x+", "+y+", "+z+", UID="+te.uid+"!?!");
 			return;
 		}
+		if (te.isTicking) {
+			ChromaSounds.ERROR.playSoundAtBlock(world, x, y, z);
+			return;
+		}
 		boolean flag = true;
 		if (te.isActive()) {
 			ReikaSoundHelper.playSoundAtBlock(world, x, y, z, "random.click", 0.75F, 0.65F);

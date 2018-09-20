@@ -14,11 +14,12 @@ import java.util.Calendar;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.IIcon;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaIcon;
 import Reika.DragonAPI.DragonOptions;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public enum ChromaIcons {
+public enum ChromaIcons implements ChromaIcon {
 
 	TRANSPARENT("transparent"),
 	GUARDIANOUTER("guardian_outer"),

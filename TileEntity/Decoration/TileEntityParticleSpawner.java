@@ -14,11 +14,14 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaIcon;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Instantiable.BoundedValue;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
@@ -116,7 +119,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 		public boolean alphaFade = false;
 		public boolean cyclingColor = false;
 
-		public ChromaIcons particleIcon = ChromaIcons.FADE;
+		public ChromaIcon particleIcon = ChromaIcons.FADE;
 
 		public BoundedValue<Integer> particleRate = new BoundedValue(1, 300, 10).setStep(1);
 
@@ -127,6 +130,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 		@SideOnly(Side.CLIENT)
 		public EntityFX getFX(int tick) {
 			if (tick%(int)particleRate.getValue() == 0) {
+				World world = Minecraft.getMinecraft().theWorld;
 				double px = location.xCoord+0.5+ReikaRandomHelper.getRandomPlusMinus(particlePositionX.getValue(), particlePositionX.getVariation());
 				double py = location.yCoord+0.5+ReikaRandomHelper.getRandomPlusMinus(particlePositionY.getValue(), particlePositionY.getVariation());
 				double pz = location.zCoord+0.5+ReikaRandomHelper.getRandomPlusMinus(particlePositionZ.getValue(), particlePositionZ.getVariation());
@@ -136,21 +140,28 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 				float g = (float)ReikaRandomHelper.getRandomPlusMinus(particleGravity.getValue(), particleGravity.getVariation());
 				float s = (float)ReikaRandomHelper.getRandomPlusMinus(particleSize.getValue(), particleSize.getVariation());
 				int l = ReikaRandomHelper.getRandomPlusMinus((int)particleLife.getValue(), (int)particleLife.getVariation());
-				EntityBlurFX fx = new EntityBlurFX(Minecraft.getMinecraft().theWorld, px, py, pz, vx, vy, vz).setGravity(g).setLife(l).setScale(s).setColor(particleColor);
-				fx.setIcon(particleIcon);
-				if (particleCollision)
-					fx.setColliding();
-				if (particleIcon.isTransparent())
-					fx.setBasicBlend();
-				if (rapidExpand)
-					fx.setRapidExpand();
-				if (noSlowdown)
-					fx.setNoSlowdown();
-				if (alphaFade)
-					fx.setAlphaFading();
-				if (cyclingColor)
-					fx.setCyclingColor(1);
-				return fx;
+				if (particleIcon instanceof CrystalElement) {
+					EntityRuneFX fx = new EntityRuneFX(world, px, py, pz, vx, vy, vz, (CrystalElement)particleIcon).setGravity(g).setLife(l).setScale(s);
+					return fx;
+				}
+				else {
+					ChromaIcons ico = (ChromaIcons)particleIcon;
+					EntityBlurFX fx = new EntityBlurFX(world, px, py, pz, vx, vy, vz).setGravity(g).setLife(l).setScale(s).setColor(particleColor);
+					fx.setIcon(ico);
+					if (particleCollision)
+						fx.setColliding();
+					if (ico.isTransparent())
+						fx.setBasicBlend();
+					if (rapidExpand)
+						fx.setRapidExpand();
+					if (noSlowdown)
+						fx.setNoSlowdown();
+					if (alphaFade)
+						fx.setAlphaFading();
+					if (cyclingColor)
+						fx.setCyclingColor(1);
+					return fx;
+				}
 			}
 			else {
 				return null;
@@ -214,8 +225,13 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 				particleIcon = ChromaIcons.valueOf(NBT.getString("icon"));
 			}
 			catch (IllegalArgumentException e) {
-				ChromatiCraft.logger.logError("Tried to load invalid particle type '"+NBT.getString("icon")+"' from NBT.");
-				e.printStackTrace();
+				try {
+					particleIcon = CrystalElement.valueOf(NBT.getString("icon"));
+				}
+				catch (IllegalArgumentException e2) {
+					ChromatiCraft.logger.logError("Tried to load invalid particle type '"+NBT.getString("icon")+"' from NBT.");
+					e.printStackTrace();
+				}
 			}
 
 			NBTTagCompound tag = NBT.getCompoundTag("rate");

@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.World.Dimension;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -266,6 +267,11 @@ public class WorldProviderChroma extends WorldProvider implements CustomBiomeDis
 	@Override
 	public int getBiomeID(World world, int x, int z) {
 		return BiomeDistributor.getBiome(x, z).biomeID;
+	}
+
+	public static boolean isUnbreakableTerrain(World world, int x, int y, int z) {
+		Block b = world.getBlock(x, y, z);
+		return (b == Blocks.grass || b == Blocks.stone) && world.getBlockMetadata(x, y, z) == 1;
 	}
 
 }

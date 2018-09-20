@@ -105,7 +105,7 @@ public class ItemSplineAttack extends ItemChromaTool {
 		float f = 0.5F*(float)(CrystalMusicManager.instance.getRandomScaledDing(CrystalElement.BLACK)/CrystalMusicManager.instance.getDingPitchScale(CrystalElement.BLACK));
 		for (EntityLivingBase e : li) {
 			if (!world.isRemote) {
-				TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new DelayedAttack(e, DamageSource.magic, 6)), i*4);//e.attackEntityFrom(DamageSource.magic, 6);
+				TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new DelayedAttack(e, DamageSource.causeIndirectMagicDamage(ep, ep), 6)), i*4);//e.attackEntityFrom(DamageSource.magic, 6);
 				ScheduledSoundEvent ev = new ScheduledSoundEvent(ChromaSounds.ORB_LO, ep, 0.5F, f);
 				ev.attenuate = false;
 				ev.broadcastRange = 96;

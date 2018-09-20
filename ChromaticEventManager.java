@@ -51,6 +51,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -118,7 +119,7 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.WarpNetwork;
 import Reika.ChromatiCraft.Magic.Artefact.UABombingEffects;
-import Reika.ChromatiCraft.Magic.Artefact.UATrade;
+import Reika.ChromatiCraft.Magic.Artefact.UATrades.UATrade;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAggroMask;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentBossKill;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentPhasingSequence;
@@ -329,8 +330,21 @@ public class ChromaticEventManager {
 	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
 	public void preventSomeGrassBreakInDimension(BreakSpeed evt) {
 		if (evt.entityPlayer.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
-			if ((evt.block == Blocks.grass || evt.block == Blocks.stone) && evt.metadata == 1) {
+			if (WorldProviderChroma.isUnbreakableTerrain(evt.entityPlayer.worldObj, evt.x, evt.y, evt.z)) {
 				evt.setCanceled(true);
+			}
+		}
+	}
+
+	@SubscribeEvent(priority=EventPriority.LOWEST)
+	public void preventSomeGrassBreakInDimension(ExplosionEvent.Detonate evt) {
+		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			Iterator<ChunkPosition> it = evt.explosion.affectedBlockPositions.iterator();
+			while (it.hasNext()) {
+				ChunkPosition p = it.next();
+				if (WorldProviderChroma.isUnbreakableTerrain(evt.world, p.chunkPosX, p.chunkPosY, p.chunkPosZ)) {
+					it.remove();
+				}
 			}
 		}
 	}
@@ -575,10 +589,15 @@ public class ChromaticEventManager {
 	public void onAddArmor(AddToSlotEvent evt) {
 		int id = evt.slotID;
 		if (evt.inventory instanceof InventoryPlayer && evt.slotID == 36) { //foot armor
-			ItemStack is = evt.getItem();
-			if (is == null || !ItemFloatstoneBoots.isFloatBoots(is)) {
-				if (!((InventoryPlayer)evt.inventory).player.capabilities.isCreativeMode)
-					((InventoryPlayer)evt.inventory).player.capabilities.allowFlying = false;
+			ItemStack pre = evt.getPreviousItem();
+			if (pre != null && ItemFloatstoneBoots.isFloatBoots(pre)) {
+				ItemStack is = evt.getItem();
+				if (is == null || !ItemFloatstoneBoots.isFloatBoots(is)) {
+					if (!((InventoryPlayer)evt.inventory).player.capabilities.isCreativeMode) {
+						((InventoryPlayer)evt.inventory).player.capabilities.allowFlying = false;
+						((InventoryPlayer)evt.inventory).player.capabilities.isFlying = false;
+					}
+				}
 			}
 		}
 	}
@@ -589,8 +608,10 @@ public class ChromaticEventManager {
 		if (evt.slotID == 36) { //foot armor
 			ItemStack is = evt.getItem();
 			if (is != null && ItemFloatstoneBoots.isFloatBoots(is)) {
-				if (!evt.player.capabilities.isCreativeMode)
+				if (!evt.player.capabilities.isCreativeMode) {
 					evt.player.capabilities.allowFlying = false;
+					evt.player.capabilities.isFlying = false;
+				}
 			}
 		}
 	}

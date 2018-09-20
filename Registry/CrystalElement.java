@@ -21,6 +21,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaIcon;
 import Reika.ChromatiCraft.Magic.ElementMixer;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -30,7 +31,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public enum CrystalElement {
+public enum CrystalElement implements ChromaIcon {
 
 	BLACK("Kuro", 0x191919, EnumChatFormatting.BLACK), //Magic
 	RED("Karmir", 0xFF0000, EnumChatFormatting.DARK_RED), //Endurance
@@ -242,6 +243,11 @@ public enum CrystalElement {
 
 	public static Map<CrystalElement, Integer> getColorMap() {
 		return Collections.unmodifiableMap(colorMap);
+	}
+
+	@Override
+	public IIcon getIcon() {
+		return this.getGlowRune();
 	}
 
 }

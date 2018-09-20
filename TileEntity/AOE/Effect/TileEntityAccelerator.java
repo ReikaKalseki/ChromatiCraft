@@ -130,6 +130,8 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 		if (te.isInvalid())
 			return blacklistKey;
 		Class c = te.getClass();
+		while (c.isAnonymousClass())
+			c = c.getSuperclass();
 		Acceleration a = actions.get(c);
 		if (a != null)
 			return a;

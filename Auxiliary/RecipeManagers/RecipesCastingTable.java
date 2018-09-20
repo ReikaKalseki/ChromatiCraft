@@ -245,8 +245,6 @@ import com.google.common.collect.HashBiMap;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-
 public class RecipesCastingTable {
 
 	public static final RecipesCastingTable instance = new RecipesCastingTable();
@@ -834,13 +832,13 @@ public class RecipesCastingTable {
 
 		if (ModList.FORESTRY.isLoaded()) {
 			ItemStack is = new ItemStack(CrystalBackpack.instance.getItem1());
-			if (is != null) { //disabled
+			if (is != null && is.getItem() != null) { //disabled
 				IRecipe sr = ReikaRecipeHelper.getShapedRecipeFor(is, "SWS", "cCc", "SWS", 'S', Items.string, 'C', Blocks.chest, 'W', Blocks.wool, 'c', ChromaItems.SHARD.getAnyMetaStack());
 				this.addRecipe(new CastingRecipe(is, sr));
 			}
 
 			ItemStack is2 = new ItemStack(CrystalBackpack.instance.getItem2());
-			if (is2 != null) {
+			if (is2 != null && is2.getItem() != null) {
 				IRecipe sr = ReikaRecipeHelper.getShapedRecipeFor(is2, "WDW", "WCW", "WWW", 'D', Items.diamond, 'C', is, 'W', ForestryHandler.CraftingMaterials.WOVENSILK.getItem());
 				this.addRecipe(new CastingRecipe(is2, sr));
 			}

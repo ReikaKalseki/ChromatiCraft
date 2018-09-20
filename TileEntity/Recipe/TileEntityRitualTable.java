@@ -200,7 +200,7 @@ OperationInterval, MultiBlockChromaTile {
 		tickPlayerOut = 0;
 		playerSteppedIn = false;
 
-		if (ritualPlayer != null) {
+		if (ritualPlayer != null && worldObj.isRemote) {
 			this.resetGUIs();
 		}
 		ritualPlayer = null;

@@ -19,6 +19,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaIcon;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -48,7 +49,7 @@ public class GuiParticleSpawner extends GuiChromaBase {
 	private float luminosity;
 	private int color;
 
-	private static ArrayList<ChromaIcons> permittedIcons = new ArrayList();
+	private static ArrayList<ChromaIcon> permittedIcons = new ArrayList();
 
 	public GuiParticleSpawner(EntityPlayer ep, TileEntityParticleSpawner te) {
 		super(new CoreContainer(ep, te), ep, te);
@@ -66,6 +67,9 @@ public class GuiParticleSpawner extends GuiChromaBase {
 	}
 
 	static {
+		for (int i = 0; i < 16; i++) {
+			permittedIcons.add(CrystalElement.elements[i]);
+		}
 		for (int i = 0; i < ChromaIcons.iconList.length; i++) {
 			ChromaIcons ico = ChromaIcons.iconList[i];
 			if (isIconAllowed(ico)) {
@@ -164,7 +168,7 @@ public class GuiParticleSpawner extends GuiChromaBase {
 				break;
 			case ICON: {
 				int i = 0;
-				for (ChromaIcons ico : permittedIcons) {
+				for (ChromaIcon ico : permittedIcons) {
 					int r = 7;
 					int x = j+29+(i%r)*21-2;
 					int y = k+18+(i/r)*21;

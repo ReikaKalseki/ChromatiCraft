@@ -44,6 +44,8 @@ import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Interfaces.TileEntity.ThermalTile;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.TinkerSmelteryHandler;
+import Reika.DragonAPI.ModInteract.DeepInteract.TinkerSmelteryHandler.SmelteryWrapper;
 import Reika.ReactorCraft.Auxiliary.ReactorCoreTE;
 import Reika.RotaryCraft.API.Interfaces.BasicTemperatureMachine;
 import Reika.RotaryCraft.Auxiliary.Interfaces.TemperatureTE;
@@ -157,6 +159,13 @@ public class BlockHeatLamp extends BlockAttachableMini {
 					}
 					te.updateEntity();
 				}
+			}
+			else if (!this.isCold() && TinkerSmelteryHandler.isSmelteryController(te)) {
+				SmelteryWrapper s = new SmelteryWrapper(te);
+				s.fuelLevel = 4000;
+				s.meltPower = temperature*1500/MAXTEMP; //that puts max heat lamp at 1500
+				s.write(te);
+				//TinkerSmelteryHandler.tick(te, temperature*1500/MAXTEMP);
 			}
 		}
 

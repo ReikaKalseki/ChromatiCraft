@@ -53,7 +53,7 @@ public class RosettaStone {
 	public void loadText() {
 		text.clear();
 		for (String s : this.getData()) {
-			if (s.isEmpty() || s.equals(System.lineSeparator()))
+			if (s.isEmpty() || s.equals(System.lineSeparator()) || s.charAt(0) == '#')
 				continue;
 			text.add(s);
 		}
