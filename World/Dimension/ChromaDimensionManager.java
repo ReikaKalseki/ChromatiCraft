@@ -56,7 +56,7 @@ import Reika.ChromatiCraft.World.Dimension.Biome.StructureBiome;
 import Reika.ChromatiCraft.World.Dimension.Rendering.Aurora;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Auxiliary.Trackers.BiomeCollisionTracker;
+import Reika.DragonAPI.Auxiliary.Trackers.IDCollisionTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.RetroGenController;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.IO.ReikaFileReader;
@@ -127,7 +127,7 @@ public class ChromaDimensionManager {
 
 		private void create() {
 			id = config.getValue();
-			BiomeCollisionTracker.instance.addBiomeID(ChromatiCraft.instance, id, biomeClass);
+			IDCollisionTracker.instance.addBiomeID(ChromatiCraft.instance, id, biomeClass);
 			IDMap.put(id, this);
 
 			if (subBiome != null) {
@@ -204,7 +204,7 @@ public class ChromaDimensionManager {
 		private void create(Biomes b) {
 			parent = b;
 			id = config.getValue();
-			BiomeCollisionTracker.instance.addBiomeID(ChromatiCraft.instance, id, biomeClass);
+			IDCollisionTracker.instance.addBiomeID(ChromatiCraft.instance, id, biomeClass);
 			IDMap.put(id, this);
 
 			try {

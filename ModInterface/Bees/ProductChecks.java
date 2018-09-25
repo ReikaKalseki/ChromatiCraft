@@ -13,7 +13,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -32,6 +34,9 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.BlockCheck;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.IBeeGenome;
 import forestry.api.apiculture.IBeeHousing;
@@ -239,7 +244,19 @@ public class ProductChecks {
 
 		@Override
 		public String getDescription() {
-			return "Progression '"+progress.getTitle()+"'";
+			String s = progress.getTitle();
+			if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+				s = this.obfuscateIf(s);
+			return "Progression '"+s+"'";
+		}
+
+		@SideOnly(Side.CLIENT)
+		private String obfuscateIf(String s) {
+			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+			if (!progress.isOneStepAway(ep) && !progress.playerHasPrerequisites(ep)) {
+				s = EnumChatFormatting.OBFUSCATED.toString()+s;
+			}
+			return s;
 		}
 
 	}

@@ -76,6 +76,7 @@ import pneumaticCraft.api.client.pneumaticHelmet.InventoryTrackEvent;
 import thaumcraft.api.research.ResearchItem;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
+import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHotkeys;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityXRays;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionVoidGaze.VoidGazeLevels;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
@@ -89,6 +90,7 @@ import Reika.ChromatiCraft.Block.BlockFakeSky;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
+import Reika.ChromatiCraft.GUI.GuiAbilitySelect;
 import Reika.ChromatiCraft.GUI.GuiAuraPouch;
 import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
 import Reika.ChromatiCraft.GUI.GuiItemBurner.ButtonItemBurner;
@@ -223,6 +225,20 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 				break;
 			}
 		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void tickAbilityHotkeys(ClientTickEvent evt) {
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		GuiScreen scr = Minecraft.getMinecraft().currentScreen;
+		/*
+		if (scr instanceof GuiAbilitySelect) {
+			GuiAbilitySelect gui = (GuiAbilitySelect)scr;
+			AbilityHotkeys.tick(ep, gui.getSelectedAbility(), gui.getSelectedData());
+		}
+		else {*/
+		AbilityHotkeys.tick(ep, null, 0);
+		//}
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)

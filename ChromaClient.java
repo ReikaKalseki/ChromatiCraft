@@ -22,6 +22,10 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
+
+import org.lwjgl.input.Keyboard;
+
+import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHotkeys;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaRenderList;
 import Reika.ChromatiCraft.Auxiliary.Render.DonatorPylonRender;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
@@ -256,6 +260,11 @@ public class ChromaClient extends ChromaCommon {
 			key_ability = new KeyBinding("Use Ability", -98, "ChromatiCraft"); //Middle mouse
 			//ClientRegistry.registerKeyBinding(key_ability);
 			KeybindHandler.instance.addKeybind(key_ability);
+		}
+
+		for (int i = 0; i < AbilityHotkeys.SLOTS; i++) {
+			AbilityHotkeys.keys[i] = new KeyBinding("Fire Ability "+i, Keyboard.KEY_NUMPAD1+i, "ChromatiCraft"); //defaults to numpad 1,2,3,0
+			KeybindHandler.instance.addKeybind(AbilityHotkeys.keys[i]);
 		}
 	}
 

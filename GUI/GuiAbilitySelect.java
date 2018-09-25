@@ -13,6 +13,8 @@ import java.util.ArrayList;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.settings.GameSettings;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.input.Keyboard;
@@ -22,6 +24,8 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
+import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHotkeys;
+import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHotkeys.CachedAbilitySelection;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer.FontType;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -45,6 +49,7 @@ public class GuiAbilitySelect extends GuiScreen {
 	public GuiAbilitySelect(EntityPlayer ep) {
 		player = ep;
 		abilities.addAll(Chromabilities.getAbilitiesAvailableToPlayer(ep));
+		allowUserInput = true;
 	}
 
 	@Override
@@ -54,6 +59,18 @@ public class GuiAbilitySelect extends GuiScreen {
 		int sep = 22;
 		int w = 50;
 		int step = w+sep;
+
+		for (int i = 0; i < AbilityHotkeys.keys.length; i++) {
+			if (AbilityHotkeys.keys[i] != null) {
+				if (key == AbilityHotkeys.keys[i].getKeyCode()) {
+					AbilityHotkeys.cacheAbility(player, ability, data, i);
+					ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+					player.closeScreen();
+					return;
+				}
+			}
+		}
+
 		if (key == Keyboard.KEY_ESCAPE || (ChromaOptions.KEYBINDABILITY.getState() && key == ChromaClient.key_ability.getKeyCode())) {
 			player.closeScreen();
 		}
@@ -186,6 +203,32 @@ public class GuiAbilitySelect extends GuiScreen {
 		}
 
 		//fontRendererObj.drawString(String.valueOf(data), 8, 8, 0xffffff);
+
+		for (int i = 0; i < AbilityHotkeys.SLOTS; i++) {
+			KeyBinding kb = AbilityHotkeys.keys[i];
+			if (kb != null) {
+				String disp = GameSettings.getKeyDisplayString(kb.getKeyCode());
+				fontRendererObj.drawString("Press "+disp+" to save this ability to hotkey slot "+i, 8, 8+i*(fontRendererObj.FONT_HEIGHT+1), 0xffffff);
+
+				CachedAbilitySelection a = AbilityHotkeys.getCachedHotkey(player, i);
+				double sz = 0.1;
+				GL11.glPushMatrix();
+				GL11.glScaled(sz, sz, sz);
+				int ix = (int)((width/2+60+i*40)/sz);
+				int iy = (int)(8/sz);
+				if (a != null) {
+					String s = this.getTextureName(a.ability);
+					ReikaTextureHelper.bindTexture(ChromatiCraft.class, s);
+				}
+				else {
+					ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/NoAbilityHotKey.png");
+				}
+				this.drawTexturedModalRect(ix, iy, 0, 0, 256, 256);
+				GL11.glPopMatrix();
+				fontRendererObj.drawString(String.valueOf(i), (int)(ix*sz)-6, (int)(iy*sz), 0xffffff);
+				fontRendererObj.drawString(disp, (int)(ix*sz)+13-fontRendererObj.getStringWidth(disp)/2, (int)(iy*sz)+27, 0xffffff);
+			}
+		}
 	}
 
 	private void scrollLeft(int step) {
@@ -216,24 +259,37 @@ public class GuiAbilitySelect extends GuiScreen {
 	}
 
 	private void selectAbility() {
-		if (ability != null && Chromabilities.playerHasAbility(player, ability)) {
-			if (Chromabilities.canPlayerExecuteAt(player, ability)) {
-				//mc.getSoundHandler().playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation("gui.button.press"), 1.0F));
-				ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.75F, 1);
-				player.closeScreen();
-				Chromabilities.triggerAbility(player, ability, data, true);
-			}
-			else {
-				ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 1, 1);
-				ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 1, 2);
-			}
+		if (selectAbility(player, ability, data)) {
+			player.closeScreen();
 		}
 	}
 
-	@Override
-	public boolean doesGuiPauseGame()
-	{
+	public static boolean selectAbility(EntityPlayer ep, Ability a, int data) {
+		if (a != null && Chromabilities.playerHasAbility(ep, a)) {
+			if (Chromabilities.canPlayerExecuteAt(ep, a)) {
+				ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, ep, 0.75F, 1);
+				Chromabilities.triggerAbility(ep, a, data, true);
+				return true;
+			}
+			else {
+				ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, ep, 1, 1);
+				ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, ep, 1, 2);
+			}
+		}
 		return false;
+	}
+
+	@Override
+	public boolean doesGuiPauseGame() {
+		return false;
+	}
+
+	public Ability getSelectedAbility() {
+		return ability;
+	}
+
+	public int getSelectedData() {
+		return data;
 	}
 
 }

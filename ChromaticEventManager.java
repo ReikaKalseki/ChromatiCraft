@@ -664,7 +664,8 @@ public class ChromaticEventManager {
 			int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.AUTOCOLLECT.getEnchantment(), tool);
 			if (level > 0) {
 				for (ItemStack is : evt.drops) {
-					ReikaPlayerAPI.addOrDropItem(is, ep);
+					if (!MinecraftForge.EVENT_BUS.post(new EntityItemPickupEvent(ep, new EntityItem(ep.worldObj, ep.posX, ep.posY, ep.posZ, is))))
+						ReikaPlayerAPI.addOrDropItem(is, ep);
 				}
 				evt.drops.clear();
 			}

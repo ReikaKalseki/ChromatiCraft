@@ -193,7 +193,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 	private void renderElement(ProgressStage p, int x, int y) {
 		//draw
 		int color = 0xffffff;
-		boolean see = this.renderClearText(p);
+		boolean see = this.renderClearText(p, player);
 		drawRect(x, y, x+elementWidth, y+elementHeight, 0xff444444);
 		api.drawRectFrame(x, y, elementWidth, elementHeight, color); //temp
 		if (see || p.isOneStepAway(player)) {
@@ -235,7 +235,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 		locations.put(p, new Rectangle(x, y, elementWidth, elementHeight));
 	}
 
-	private boolean renderClearText(ProgressStage p) {
+	public static boolean renderClearText(ProgressStage p, EntityPlayer player) {
 		return p.isPlayerAtStage(player) || p.playerHasPrerequisites(player);
 	}
 
@@ -258,7 +258,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 				ChromaFontRenderer.FontType.OBFUSCATED.renderer.drawSplitString(p.getTitleString(), px, posY+descY+36, 242, 0xffffff);
 			}
 
-			if (this.renderClearText(p)) {
+			if (this.renderClearText(p, player)) {
 				fontRendererObj.drawSplitString(p.getHintString(), px, posY+descY+36+20, 242, 0xffffff);
 			}
 			else {

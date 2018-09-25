@@ -157,16 +157,15 @@ import Reika.DragonAPI.Auxiliary.PopupWriter;
 import Reika.DragonAPI.Auxiliary.SpecialBiomePlacementRegistry;
 import Reika.DragonAPI.Auxiliary.SpecialBiomePlacementRegistry.Category;
 import Reika.DragonAPI.Auxiliary.WorldGenInterceptionRegistry;
-import Reika.DragonAPI.Auxiliary.Trackers.BiomeCollisionTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.CommandableUpdateChecker;
 import Reika.DragonAPI.Auxiliary.Trackers.ConfigMatcher;
 import Reika.DragonAPI.Auxiliary.Trackers.DonatorController;
 import Reika.DragonAPI.Auxiliary.Trackers.FurnaceFuelRegistry;
+import Reika.DragonAPI.Auxiliary.Trackers.IDCollisionTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.IntegrityChecker;
 import Reika.DragonAPI.Auxiliary.Trackers.PackModificationTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerFirstTimeTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler;
-import Reika.DragonAPI.Auxiliary.Trackers.PotionCollisionTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.RetroGenController;
 import Reika.DragonAPI.Auxiliary.Trackers.SuggestedModsTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry;
@@ -366,36 +365,36 @@ public class ChromatiCraft extends DragonAPIMod {
 		}
 
 		int id = ExtraChromaIDs.GROWTHID.getValue();
-		PotionCollisionTracker.instance.addPotionID(instance, id, PotionGrowthHormone.class);
+		IDCollisionTracker.instance.addPotionID(instance, id, PotionGrowthHormone.class);
 		growth = new PotionGrowthHormone(id);
 
 		id = ExtraChromaIDs.SATID.getValue();
-		PotionCollisionTracker.instance.addPotionID(instance, id, PotionBetterSaturation.class);
+		IDCollisionTracker.instance.addPotionID(instance, id, PotionBetterSaturation.class);
 		betterSat = new PotionBetterSaturation(id);
 
 		id = ExtraChromaIDs.REGENID.getValue();
-		PotionCollisionTracker.instance.addPotionID(instance, id, PotionCustomRegen.class);
+		IDCollisionTracker.instance.addPotionID(instance, id, PotionCustomRegen.class);
 		betterRegen = new PotionCustomRegen(id);
 
 		id = ExtraChromaIDs.LUMARHEAID.getValue();
-		PotionCollisionTracker.instance.addPotionID(instance, id, PotionLumarhea.class);
+		IDCollisionTracker.instance.addPotionID(instance, id, PotionLumarhea.class);
 		lumarhea = new PotionLumarhea(id);
 
 		id = ExtraChromaIDs.VOIDGAZEID.getValue();
-		PotionCollisionTracker.instance.addPotionID(instance, id, PotionVoidGaze.class);
+		IDCollisionTracker.instance.addPotionID(instance, id, PotionVoidGaze.class);
 		voidGaze = new PotionVoidGaze(id);
 
 		id = ExtraChromaIDs.LUMENREGENID.getValue();
-		PotionCollisionTracker.instance.addPotionID(instance, id, PotionLumenRegen.class);
+		IDCollisionTracker.instance.addPotionID(instance, id, PotionLumenRegen.class);
 		lumenRegen = new PotionLumenRegen(id);
 
 		lumen.setBlock(ChromaBlocks.MOLTENLUMEN.getBlockInstance());
 		ender.setBlock(ChromaBlocks.ENDER.getBlockInstance());
 		luma.setBlock(ChromaBlocks.LUMA.getBlockInstance());
 
-		BiomeCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.RAINBOWFOREST.getValue(), BiomeRainbowForest.class);
-		BiomeCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.ENDERFOREST.getValue(), BiomeEnderForest.class);
-		BiomeCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.LUMINOUSCLIFFS.getValue(), BiomeGlowingCliffs.class);
+		IDCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.RAINBOWFOREST.getValue(), BiomeRainbowForest.class);
+		IDCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.ENDERFOREST.getValue(), BiomeEnderForest.class);
+		IDCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.LUMINOUSCLIFFS.getValue(), BiomeGlowingCliffs.class);
 
 		this.setupClassFiles();
 		//ChromaResearch.loadCache();
