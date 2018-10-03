@@ -9,9 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic.Lore;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -19,11 +21,14 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
 
 public class RosettaStone {
+
+	public static final RosettaStone init = new RosettaStone(0);
 
 	private static final HashSet<Character> decodableCharacters = new HashSet();
 
@@ -43,16 +48,25 @@ public class RosettaStone {
 	private final ArrayList<String> text;
 
 	public RosettaStone(EntityPlayer ep) {
+		this(ep.getUniqueID());
+	}
+
+	private RosettaStone(UUID uid) {
+		this(uid.getMostSignificantBits() ^ uid.getLeastSignificantBits());
+	}
+
+	private RosettaStone(long seed) {
 		text = new ArrayList();
 		this.loadText();
 
-		seed = ep.getUniqueID().hashCode();
+		this.seed = seed;
 		rand = new Random(seed);
 	}
 
 	public void loadText() {
 		text.clear();
-		for (String s : this.getData()) {
+		ArrayList<String> li = this.getData();
+		for (String s : li) {
 			if (s.isEmpty() || s.equals(System.lineSeparator()) || s.charAt(0) == '#')
 				continue;
 			text.add(s);
@@ -60,11 +74,28 @@ public class RosettaStone {
 	}
 
 	private ArrayList<String> getData() {
+		/*
+		InputStream in1 = ChromatiCraft.class.getResourceAsStream("Resources/rosetta.txt");
+		InputStream in2 = ChromatiCraft.class.getResourceAsStream("Resources/lore.xml");
+		File f1 = new File(DragonAPICore.getMinecraftDirectory(), "flippedrosetta.txt");
+		File f2 = new File(DragonAPICore.getMinecraftDirectory(), "flippedlore.xml");
+		File f3 = new File(DragonAPICore.getMinecraftDirectory(), "flippedunflipped.xml");
+		ArrayList<String> li1 = ReikaFileReader.encryptFileBytes(in1);
+		ArrayList<String> li2 = ReikaFileReader.encryptFileBytes(in2);
+		ReikaFileReader.writeLinesToFile(f1, li1, true);
+		ReikaFileReader.writeLinesToFile(f2, li2, true);
+
+		ArrayList<String> test = new ArrayList(li2);
+		ArrayList<Byte> test2 = ReikaFileReader.decryptByteList(test);
+		ReikaFileReader.writeDataToFile(f3, test2, true);
+		 */
 		if (LoreScripts.instance.hasReroutePath()) {
 			return ReikaFileReader.getFileAsLines(LoreScripts.instance.getReroutedRosettaFile(), true);
 		}
 		else {
-			return ReikaFileReader.getFileAsLines(ChromatiCraft.class.getResourceAsStream("Resources/rosetta.txt"), true);
+			InputStream in = ChromatiCraft.class.getResourceAsStream("Resources/rosetta.txt");
+			in = ReikaFileReader.decryptInputStream(in);
+			return ReikaFileReader.getFileAsLines(in, true);
 		}
 	}
 
@@ -133,6 +164,12 @@ public class RosettaStone {
 			int a = Math.max(4, (int)(alpha*(0.5+0.5*rand.nextDouble())));
 			Minecraft.getMinecraft().standardGalacticFontRenderer.drawString(String.valueOf(c), x, y, 0xffffff | (a << 24));
 		}
+	}
+
+	public void test() {
+		this.loadText();
+		if (text.isEmpty())
+			throw new RegistrationException(ChromatiCraft.instance, "Could not load loretext!");
 	}
 
 }

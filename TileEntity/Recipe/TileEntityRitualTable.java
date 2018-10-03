@@ -38,7 +38,9 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityGlobeFX;
+import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.TriggerableAction;
@@ -46,7 +48,9 @@ import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -259,6 +263,7 @@ OperationInterval, MultiBlockChromaTile {
 			ChromatiCraft.logger.logError("Tried to give ability to null or fake player???");
 			return;
 		}
+		boolean flag = false;
 		if (ability instanceof Chromabilities && !ChromaResearchManager.instance.playerHasFragment(ep, ChromaResearch.getPageFor((Chromabilities)ability))) {
 			ReikaParticleHelper.EXPLODE.spawnAroundBlock(worldObj, xCoord, yCoord, zCoord, 6);
 			ReikaSoundHelper.playSoundAtBlock(worldObj, xCoord, yCoord, zCoord, "random.explode");
@@ -267,7 +272,9 @@ OperationInterval, MultiBlockChromaTile {
 		}
 		else {
 			Chromabilities.give(ep, ability);
+			ChromaSounds.ABILITYCOMPLETE.playSound(ep, 1, 1);
 			MinecraftForge.EVENT_BUS.post(new RitualCompletionEvent(ep, ability.getID()));
+			flag = true;
 		}
 		abilitySoundTick = 2000;
 		ability = null;
@@ -275,6 +282,26 @@ OperationInterval, MultiBlockChromaTile {
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 		if (worldObj.isRemote) {
 			this.resetGUIs();
+			if (flag)
+				this.doCompletionParticles(ep, ability);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private static void doCompletionParticles(EntityPlayer ep, Ability a) {
+		int n = ReikaRandomHelper.getRandomBetween(100, 200);
+		ElementTagCompound tag = AbilityRituals.instance.getAura(a);
+		WeightedRandom<CrystalElement> wr = tag.asWeightedRandom();
+		for (int i = 0; i < n; i++) {
+			double v0 = ReikaRandomHelper.getRandomBetween(0.1, 0.35);
+			double[] v = ReikaPhysicsHelper.polarToCartesian(v0, rand.nextDouble()*360, rand.nextDouble()*360);
+			float g = -(float)ReikaRandomHelper.getRandomBetween(0.03125, 0.125);
+			int l = ReikaRandomHelper.getRandomBetween(40, 100);
+			EntityBlurFX fx = new EntityBlurFX(ep.worldObj, ep.posX, ep.posY-1.62+0.8, ep.posZ, v[0], v[1], v[2]);
+			fx.setGravity(g).setScale(2).setLife(l);
+			fx.setRapidExpand().setAlphaFading();
+			fx.setColor(wr.getRandomEntry().getColor());
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
 

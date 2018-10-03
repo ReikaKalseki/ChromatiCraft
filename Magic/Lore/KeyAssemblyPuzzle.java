@@ -20,6 +20,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,6 +29,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Magic.ElementMixer;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -107,7 +109,8 @@ public class KeyAssemblyPuzzle {
 		long seed1 = ep.worldObj.getSeed();
 		UUID seed0 = ep.getPersistentID();
 		long seed2 = ReikaMathLibrary.cantorCombine(seed1, seed0.getMostSignificantBits(), seed0.getLeastSignificantBits());
-		return seed2;
+		long seed3 = seed2;// ^ System.currentTimeMillis();
+		return seed3;
 	}
 
 	public long getSeed() {
@@ -266,7 +269,7 @@ public class KeyAssemblyPuzzle {
 			HashSet<Hex> pathCache = new HashSet();
 			flag = !this.pathSearch(rand, h, path, pathCache);
 			long dur = System.currentTimeMillis()-time;
-			ChromatiCraft.logger.log("Attempted to path lore puzzle; attempt #"+attempts+" took "+dur+" ms. Success: "+flag);
+			ChromatiCraft.logger.log("Attempted to path lore puzzle; attempt #"+attempts+"; took "+dur+" ms so far. Success: "+!flag);
 			if (dur > 15000) {
 				ChromatiCraft.logger.logError("Could not path lore puzzle within 15s, even after "+attempts+" attempts!");
 				return null;
@@ -420,6 +423,15 @@ public class KeyAssemblyPuzzle {
 		GL11.glEnable(GL11.GL_BLEND);
 		BlendMode.DEFAULT.apply();
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
+
+		if (isErrored) {
+			String s = "Puzzle generation failed. Restart your client, then try again.";
+			FontRenderer f = ChromaFontRenderer.FontType.HUD.renderer;
+			int c = ReikaColorAPI.mixColors(0xffffff, 0, (float)(0.5+0.5*Math.sin(System.currentTimeMillis()/500D)));
+			f.drawString(s, (-f.getStringWidth(s))/2, 12-(int)h2, c);
+			GL11.glColor4f(1, 1, 1, 1);
+		}
+
 		boolean flag = isErrored || LoreManager.instance.hasPlayerCompletedBoard(ep);
 		boolean flag2 = flag;
 		if (flag) {

@@ -101,11 +101,17 @@ public final class ChromaDescriptions {
 	private static final XMLInterface hover = loadData("hover");
 	private static final XMLInterface progress = loadData("progression");
 	private static final XMLInterface enchants = loadData("enchants");
-	private static final XMLInterface lore = LoreScripts.instance.hasReroutePath() ? new XMLInterface(LoreScripts.instance.getReroutedLoreFile(), true) : loadData("lore");
+	private static final XMLInterface lore = LoreScripts.instance.hasReroutePath() ? new XMLInterface(LoreScripts.instance.getReroutedLoreFile(), true) : loadData("lore", true);
 
 	private static XMLInterface loadData(String name) {
+		return loadData(name, false);
+	}
+
+	private static XMLInterface loadData(String name, boolean decrypt) {
 		XMLInterface xml = new XMLInterface(ChromatiCraft.class, PARENT+name+".xml", !ReikaObfuscationHelper.isDeObfEnvironment());
 		xml.setFallback(getParent(false)+name+".xml");
+		if (decrypt)
+			xml.setEncrypted();
 		xml.init();
 		return xml;
 	}

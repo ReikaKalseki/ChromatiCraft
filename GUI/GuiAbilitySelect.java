@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHotkeys;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHotkeys.CachedAbilitySelection;
+import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer.FontType;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -53,8 +54,7 @@ public class GuiAbilitySelect extends GuiScreen {
 	}
 
 	@Override
-	protected final void keyTyped(char c, int key)
-	{
+	protected final void keyTyped(char c, int key) {
 		super.keyTyped(c, key);
 		int sep = 22;
 		int w = 50;
@@ -103,6 +103,13 @@ public class GuiAbilitySelect extends GuiScreen {
 		else if (key == Keyboard.KEY_PRIOR) {
 			this.scrollLeft(step*2);
 		}
+	}
+
+	@Override
+	public void setWorldAndResolution(Minecraft mc, int x, int y) {
+		super.setWorldAndResolution(mc, x, y);
+
+		fontRendererObj = ChromaFontRenderer.FontType.HUD.renderer;
 	}
 
 	@Override

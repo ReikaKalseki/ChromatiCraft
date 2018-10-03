@@ -99,6 +99,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.Artefact.ArtefactSpawner;
 import Reika.ChromatiCraft.Magic.Artefact.UABombingEffects;
+import Reika.ChromatiCraft.Magic.Lore.RosettaStone;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.IC2ReactorAcceleration;
 import Reika.ChromatiCraft.ModInterface.ModInteraction;
@@ -667,6 +668,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		}
 
 		ChunkProviderChroma.regenerateGenerators();
+		RosettaStone.init.test();
 
 		this.finishTiming();
 	}
