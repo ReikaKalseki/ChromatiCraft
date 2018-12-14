@@ -18,6 +18,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Container.ContainerAuraPouch;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
@@ -31,10 +32,9 @@ public class GuiAuraPouch extends GuiContainer {
 	}
 
 	@Override
-	protected void drawGuiContainerForegroundLayer(int par1, int par2)
-	{
+	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, ySize - 96 + 2, 0xffffff);
-		if (player.getCurrentEquippedItem() != null) {
+		if (ChromaItems.AURAPOUCH.matchWith(player.getCurrentEquippedItem())) {
 			ItemAuraPouch iap = (ItemAuraPouch)player.getCurrentEquippedItem().getItem();
 			boolean[] active = iap.getActiveSlots(player.getCurrentEquippedItem());
 			for (int i = 0; i < iap.SIZE; i++) {

@@ -907,6 +907,10 @@ public class CrystalNetworker implements TickHandler {
 		}
 	}
 
+	public void replacePath(CrystalPath p) {
+		PylonFinder.replacePath(p.transmitter, p.origin, p.element, p);
+	}
+
 	public void printCrystalNetwork(World world, int chunkX, int chunkZ) {
 		MultiMap<Integer, String> data = new MultiMap();
 		for (WorldLocation loc : tiles.keySet()) {
@@ -958,6 +962,10 @@ public class CrystalNetworker implements TickHandler {
 
 	public int size() {
 		return tiles.size();
+	}
+
+	public Collection<? extends CrystalPath> getAllCachedPaths(CrystalElement e) {
+		return PylonFinder.getCachedPaths(e);
 	}
 
 	/** Returns -1 for "never tested, assume yes and pathfind" *//*

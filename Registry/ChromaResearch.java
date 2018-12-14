@@ -202,6 +202,7 @@ public enum ChromaResearch implements ProgressElement {
 	AURALOCUS(		ChromaTiles.AURAPOINT,		ResearchLevel.CTM),
 	PROGRESSLINK(	ChromaTiles.PROGRESSLINK,	ResearchLevel.BASICCRAFT),
 	MANABOOSTER(	ChromaTiles.MANABOOSTER,	ResearchLevel.PYLONCRAFT),
+	NETWORKOPT(		ChromaTiles.OPTIMIZER,		ResearchLevel.ENDGAME,			TieredOres.LUMA.level),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT,	ProgressStage.ALLCOLORS),
@@ -281,7 +282,7 @@ public enum ChromaResearch implements ProgressElement {
 	SHARDS("Shards",				ChromaStacks.redShard, 									ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),
 	DUSTS("Plant Dusts",			ChromaStacks.auraDust, 									ResearchLevel.ENERGYEXPLORE),
 	GROUPS("Groups",				ChromaStacks.crystalCore, 								ResearchLevel.RUNECRAFT),
-	CORES("Cores",					ChromaStacks.energyCore,								ResearchLevel.CHARGESELF),
+	CORES("Cores",					ChromaStacks.energyCore,								ResearchLevel.MULTICRAFT),
 	HICORES("Energized Cores",		ChromaStacks.energyCoreHigh,							ResearchLevel.PYLONCRAFT),
 	IRID("Iridescent Crystal",		ChromaStacks.iridCrystal,								ResearchLevel.MULTICRAFT,	ProgressStage.ALLOY),
 	ORES("Buried Secrets",			ChromaStacks.bindingCrystal,							ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),
@@ -369,6 +370,7 @@ public enum ChromaResearch implements ProgressElement {
 	WIRELESSPED2(	Structures.WIRELESSPEDESTAL2, 13, ResearchLevel.CTM),
 	DATATOWER(		Structures.DATANODE,	ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.MOSS.metadata, ResearchLevel.RAWEXPLORE,	ProgressStage.TOWER),
 	PROGLINKSTRUCT(	Structures.PROGRESSLINK,6,	ResearchLevel.BASICCRAFT),
+	OPTIMISTRUCT(	Structures.OPTIMIZER,	15,	ResearchLevel.ENDGAME,			TieredOres.LUMA.level),
 	;
 
 	private final ItemStack iconItem;

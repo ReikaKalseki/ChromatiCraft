@@ -25,8 +25,10 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
 import Reika.DragonAPI.Base.TileEntityBase;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -102,8 +104,18 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 			long time = System.nanoTime();
 			for (int i = 0; i < 6; i++) {
 				ForgeDirection dir = dirs[i];
-				if (!this.tickDirection(world, x, y, z, dir, time))
+				if (this.tickDirection(world, x, y, z, dir, time) && rand.nextInt(4) == 0) {
+					double o = 0.0625;
+					double px = x+dir.offsetX-o+rand.nextDouble()*(1+2*o);
+					double py = y+dir.offsetY-o+rand.nextDouble()*(1+2*o);
+					double pz = z+dir.offsetZ-o+rand.nextDouble()*(1+2*o);
+					EntityBlurFX fx = new EntityBlurFX(world, px, py, pz);
+					fx.setRapidExpand().setAlphaFading().setLife(ReikaRandomHelper.getRandomBetween(8, 40)).setColor(this.getColor().getColor());
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				}
+				else {
 					break;
+				}
 			}
 		}
 		else {

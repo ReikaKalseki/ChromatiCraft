@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.oredict.ShapedOreRecipe;
@@ -32,7 +33,7 @@ public class HeatLampRecipe extends TempleCastingRecipe {
 	}
 
 	private static IRecipe getRecipe(Object ingot, int n, boolean isColdLamp) {
-		return new ShapedOreRecipe(calcOutput(n, isColdLamp), "fff", "faf", "fff", 'f', isColdLamp ? ChromaStacks.icyDust : ChromaStacks.firaxite, 'a', ingot);
+		return new ShapedOreRecipe(calcOutput(n, isColdLamp), "fgf", "gag", "fgf", 'g', isColdLamp ? new ItemStack(Items.snowball) : ChromaStacks.firaxite, 'f', isColdLamp ? ChromaStacks.icyDust : ChromaStacks.firaxite, 'a', ingot);
 	}
 
 	private static ItemStack calcOutput(int n, boolean isColdLamp) {

@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.LumenTurretDamage;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
+import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -130,6 +131,8 @@ public class TileEntityLumenTurret extends TileEntityChromaticBase {
 	}
 
 	private boolean shouldAttack(EntityLivingBase e) {
+		if (e instanceof EntityBallLightning)
+			return false;
 		if (e instanceof TameHostile || (e instanceof EntityTameable && ((EntityTameable)e).isTamed()))
 			return false;
 		if (ReikaEntityHelper.isHostile(e))

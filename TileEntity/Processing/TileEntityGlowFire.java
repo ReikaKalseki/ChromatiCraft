@@ -317,10 +317,10 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 
 	private static void addFlowerCrafting(ItemStack is, ElementTagCompound tag) {
 		ItemStack out = ReikaRecipeHelper.getShapelessCraftResult(is);
-		Collection<ReikaDyeHelper> c = ReikaDyeHelper.getColorsFromItem(is);
+		Collection<ReikaDyeHelper> c = ReikaDyeHelper.getColorsFromItem(out);
 		if (c != null) {
 			for (ReikaDyeHelper dye : c) {
-				tag.addValueToColor(CrystalElement.elements[dye.ordinal()], 1);
+				tag.addValueToColor(CrystalElement.elements[dye.ordinal()], 2);
 			}
 		}
 	}

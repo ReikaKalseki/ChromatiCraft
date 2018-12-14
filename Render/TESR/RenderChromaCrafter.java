@@ -150,6 +150,7 @@ public class RenderChromaCrafter extends ChromaRenderBase {
 
 		while (amt > 0) {
 			double lvl = Math.min(1, amt);
+
 			float dv2 = ico.getInterpolatedV(lvl*16D);
 			double o2 = o;
 			double o3 = o;
@@ -180,10 +181,13 @@ public class RenderChromaCrafter extends ChromaRenderBase {
 			Tessellator.instance.addVertexWithUV(0+o, y-o2+lvl, 0+o, u, dv2);
 			amt -= lvl;
 			y += lvl;
+			if (!te.hasStructure() && y >= 1) {
+				amt = 0;
+			}
 			//GL11.glTranslated(0, lvl, 0);
 		}
 
-		double o2 = y < 3 ? 0 : o;
+		double o2 = y < 3 && te.hasStructure() ? 0 : o;
 		Tessellator.instance.addVertexWithUV(0+o, y-o2, 0+o, u, dv);
 		Tessellator.instance.addVertexWithUV(0+o, y-o2, 1-o, du, dv);
 		Tessellator.instance.addVertexWithUV(1-o, y-o2, 1-o, du, v);

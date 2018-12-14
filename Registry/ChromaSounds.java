@@ -98,6 +98,8 @@ public enum ChromaSounds implements SoundEnum {
 	DIMENSIONHUM_HI("dimensionhum_hi"),
 	RADIANCE("radiance2"),
 	ABILITYCOMPLETE("abilityfinish"),
+	NETWORKOPT("networkopt"),
+	NETWORKOPTCHARGE("networkopt_charge2"),
 	;
 
 	public static final ChromaSounds[] soundList = values();

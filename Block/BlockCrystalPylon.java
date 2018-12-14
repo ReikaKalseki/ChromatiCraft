@@ -18,6 +18,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import vazkii.botania.api.mana.ILaputaImmobile;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Magic.Interfaces.NaturalNetworkTile;
@@ -29,12 +30,14 @@ import Reika.ChromatiCraft.TileEntity.Networking.TileEntitySkypeater;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Interfaces.TileEntity.PlayerBreakHook;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 
-public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTrigger, SemiUnbreakable {
+@Strippable(value = {"vazkii.botania.api.mana.ILaputaImmobile"})
+public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTrigger, SemiUnbreakable, ILaputaImmobile {
 
 	public BlockCrystalPylon(Material mat) {
 		super(mat);
@@ -183,6 +186,11 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 			default:
 				return false;
 		}
+	}
+
+	@Override
+	public final boolean canMove(World world, int x, int y, int z) {
+		return false;
 	}
 
 }

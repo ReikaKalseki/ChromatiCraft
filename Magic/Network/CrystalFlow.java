@@ -215,8 +215,8 @@ public class CrystalFlow extends CrystalPath {
 	}
 
 	@Override
-	public CrystalPath optimize() {
-		return new CrystalFlow(network, super.optimize(), receiver, requestedAmount, throughputLimit);
+	public CrystalPath cleanExtraEndJumps() {
+		return new CrystalFlow(network, super.cleanExtraEndJumps(), receiver, requestedAmount, throughputLimit);
 	}
 
 }

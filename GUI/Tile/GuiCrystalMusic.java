@@ -254,8 +254,8 @@ public class GuiCrystalMusic extends GuiChromaBase implements PianoGui {
 				int d = input.getCursorPosition();
 				//fontRendererObj.drawStringWithShadow(file.substring(d, Math.min(file.length(), 37+d)), posX+10, posY+ySize-15, 0xaaaaaa);
 			}
-			ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, "Select a MIDI file. Be sure to include", j+xSize/2+1, k+64, 0xffffff);
-			ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, "C:/ and file extension and use \"/\", not \"\\\".", j+xSize/2+1, k+74, 0xffffff);
+			ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, "Select a MIDI file. Be sure to include the drive", j+xSize/2+1, k+64, 0xffffff);
+			ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, "letter and file extension and use \"/\", not \"\\\".", j+xSize/2+1, k+74, 0xffffff);
 		}
 	}
 

@@ -11,6 +11,7 @@ package Reika.ChromatiCraft;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -168,6 +169,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ClassDependent;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.IO.ReikaFileReader;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Event.AttackAggroEvent;
 import Reika.DragonAPI.Instantiable.Event.BlockConsumedByFireEvent;
@@ -245,6 +247,8 @@ public class ChromaticEventManager {
 
 	private boolean applyingAOE;
 	private boolean applyingPhasing;
+
+	private final HashSet<Coordinate> playerBreakCache = new HashSet();
 
 	private ChromaticEventManager() {
 
@@ -657,9 +661,14 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
-	public void autoCollect(HarvestDropsEvent evt) {
+	public void autoCollectPre(BlockEvent.BreakEvent evt) {
+		playerBreakCache.add(new Coordinate(evt.x, evt.y, evt.z));
+	}
+
+	@SubscribeEvent
+	public void autoCollectPost(HarvestDropsEvent evt) {
 		EntityPlayer ep = evt.harvester;
-		if (ep != null && !ReikaPlayerAPI.isFake(ep)) {
+		if (ep != null && !ReikaPlayerAPI.isFake(ep) && playerBreakCache.contains(new Coordinate(evt.x, evt.y, evt.z))) {
 			ItemStack tool = ep.getCurrentEquippedItem();
 			int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.AUTOCOLLECT.getEnchantment(), tool);
 			if (level > 0) {
@@ -670,6 +679,7 @@ public class ChromaticEventManager {
 				evt.drops.clear();
 			}
 		}
+		playerBreakCache.clear();
 	}
 
 	@SubscribeEvent
@@ -1030,7 +1040,7 @@ public class ChromaticEventManager {
 					Class<? extends EntityLivingBase> cat = ReikaEntityHelper.getEntityCategoryClass(mob);
 					List<EntityLivingBase> li = mob.worldObj.getEntitiesWithinAABB(cat, box);
 					for (EntityLivingBase e : li) {
-						if (e != mob) {
+						if (e != mob && e != ep) {
 							Class<? extends EntityLivingBase> cat2 = ReikaEntityHelper.getEntityCategoryClass(e);
 							if (cat2 == cat) {
 								double d = e.getDistanceToEntity(mob);

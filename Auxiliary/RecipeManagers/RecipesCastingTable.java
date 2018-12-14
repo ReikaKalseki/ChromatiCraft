@@ -149,6 +149,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MeteorT
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MinerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MultiBuilderRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MusicRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.NetworkOptimizerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.PageExtractorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ParticleSpawnerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.PlantAccelerationRecipe;
@@ -813,6 +814,8 @@ public class RecipesCastingTable {
 
 		if (ModList.BOTANIA.isLoaded())
 			this.addRecipe(new ManaBoosterRecipe(ChromaTiles.MANABOOSTER.getCraftedProduct()));
+
+		this.addRecipe(new NetworkOptimizerRecipe(ChromaTiles.OPTIMIZER.getCraftedProduct(), ChromaStacks.lumenCore));
 
 		this.addSpecialRecipes();
 	}

@@ -118,8 +118,9 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 						return false;
 				}
 			}
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	private Acceleration getAccelerate(TileEntity te) {

@@ -122,7 +122,7 @@ public class PylonFinder {
 		//ReikaJavaLibrary.pConsole(this.toString());
 		if (this.isComplete()) {
 			ArrayList<WorldLocation> li = new ArrayList(nodes);
-			CrystalPath path = new CrystalPath(net, !(target instanceof WrapperTile), element, CrystalPath.optimizeRoute(net, element, li));
+			CrystalPath path = new CrystalPath(net, !(target instanceof WrapperTile), element, CrystalPath.cleanRoute(net, element, li));
 			if (!(target instanceof WrapperTile))
 				this.addValidPath(path);
 			return path;
@@ -151,7 +151,7 @@ public class PylonFinder {
 			if (lastSkypeaterType != null) {
 				this.optimizeSkypeaterRoute(li);
 			}
-			CrystalFlow flow = new CrystalFlow(net, target, element, amount, CrystalPath.optimizeRoute(net, element, li), maxthru);
+			CrystalFlow flow = new CrystalFlow(net, target, element, amount, CrystalPath.cleanRoute(net, element, li), maxthru);
 			//ReikaJavaLibrary.pConsole(flow.checkLineOfSight()+":"+flow);
 			if (!(target instanceof WrapperTile))
 				this.addValidPath(flow.asPath());
@@ -161,8 +161,19 @@ public class PylonFinder {
 	}
 
 	private void optimizeSkypeaterRoute(ArrayList<WorldLocation> path) {
+		this.optimizeRoute(net, path, Integer.MAX_VALUE, new JumpOptimizationCheck() {
+
+			@Override
+			public boolean canDirectLink(CrystalNetworkTile t1, CrystalNetworkTile t2) {
+				return t1 instanceof TileEntitySkypeater && t2 instanceof TileEntitySkypeater;
+			}});
+	}
+
+	static boolean optimizeRoute(CrystalNetworker net, ArrayList<WorldLocation> path, int nsteps, JumpOptimizationCheck joc) {
 		ArrayList<WorldLocation> li = new ArrayList(path);
 		boolean flag = true;
+		int cycles = 0;
+		boolean limit = false;
 		while (flag) {
 			flag = false;
 			for (int i = 0; i < li.size() && !flag; i++) {
@@ -170,24 +181,30 @@ public class PylonFinder {
 					if (i < k && Math.abs(i-k) > 1) {
 						WorldLocation loc = li.get(i);
 						WorldLocation loc2 = li.get(k);
-						CrystalNetworkTile te1 = this.getNetTileAt(loc, true);
-						CrystalNetworkTile te2 = this.getNetTileAt(loc2, true);
-						if (te1 instanceof TileEntitySkypeater && te2 instanceof TileEntitySkypeater) {
-							double d = ((TileEntitySkypeater)te1).getReceiveRange();
-							if (te1.getDistanceSqTo(te2.getX(), te2.getY(), te2.getZ()) <= d*d && net.checkLOS((TileEntitySkypeater)te1, (TileEntitySkypeater)te2)) {
+						CrystalNetworkTile te1 = getNetTileAt(loc, true);
+						CrystalNetworkTile te2 = getNetTileAt(loc2, true);
+						if (te1 instanceof CrystalReceiver && te2 instanceof CrystalTransmitter && joc.canDirectLink(te1, te2)) {
+							double d = ((CrystalReceiver)te1).getReceiveRange();
+							if (te1.getDistanceSqTo(te2.getX(), te2.getY(), te2.getZ()) <= d*d && net.checkLOS((CrystalTransmitter)te2, (CrystalReceiver)te1)) {
 								while (k > i+1) {
 									li.remove(k-1);
 									k--;
 								}
 								flag = true;
+								cycles++;
 							}
 						}
 					}
 				}
 			}
+			if (cycles >= nsteps) {
+				flag = false;
+				limit = true;
+			}
 		}
 		path.clear();
 		path.addAll(li);
+		return !limit;
 	}
 	/*
 	private boolean anyConnectedSources() {
@@ -478,6 +495,29 @@ public class PylonFinder {
 			li2.add(new WorldLocation(te.getWorld(), te.getX(), te.getY(), te.getZ()));
 		}
 		return new CrystalPath(CrystalNetworker.instance, false, e, li2);
+	}
+
+	static void replacePath(CrystalSource src, WorldLocation tgt, CrystalElement color, CrystalPath p) {
+		EnumMap<CrystalElement, ArrayList<CrystalPath>> data = paths.get(tgt);
+		ArrayList<CrystalPath> li = data.get(color);
+		for (int i = 0; i < li.size(); i++) {
+			CrystalPath at = li.get(i);
+			if (at.hasSameEndpoints(p) && at.element == p.element) {
+				li.set(i, p);
+				return;
+			}
+		}
+		ChromatiCraft.logger.logError("Tried to replace a "+color+" path from "+src+" to "+tgt+", but no such path exists!");
+	}
+
+	static Collection<? extends CrystalPath> getCachedPaths(CrystalElement e) {
+		ArrayList<CrystalPath> li = new ArrayList();
+		for (EnumMap<CrystalElement, ArrayList<CrystalPath>> map : paths.values()) {
+			ArrayList<CrystalPath> list = map.get(e);
+			if (list != null)
+				li.addAll(list);
+		}
+		return li;
 	}
 
 	static LOSData lineOfSight(WorldLocation l1, WorldLocation l2) {

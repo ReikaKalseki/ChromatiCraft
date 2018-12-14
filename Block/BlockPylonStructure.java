@@ -11,9 +11,11 @@ package Reika.ChromatiCraft.Block;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -31,6 +33,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Render.ISBRH.CrystallineStoneRenderer;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityPowerTree;
@@ -38,6 +41,7 @@ import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 
 public class BlockPylonStructure extends Block implements ConnectedTextureGlass {
@@ -391,6 +395,29 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 					}
 				}
 			}
+		}
+	}
+
+	@Override
+	public void randomDisplayTick(World world, int x, int y, int z, Random rand) {
+		if (ChromaIcons.loadXmasTextures() && StoneTypes.list[world.getBlockMetadata(x, y, z)].isColumn()) {
+			double o = 0.0625;
+			int d = 2+rand.nextInt(4);
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[d];
+			double px = 0.5;
+			double pz = 0.5;
+			if (dir.offsetX != 0) {
+				px += dir.offsetX/2D+o*dir.offsetX;
+				pz = rand.nextDouble()*(1+o*2)-o;
+			}
+			else {
+				pz += dir.offsetZ/2D+o*dir.offsetZ;
+				px = rand.nextDouble()*(1+o*2)-o;
+			}
+			EntityBlurFX fx = new EntityBlurFX(world, x+px, y+rand.nextDouble(), z+pz);
+			int rgb = ReikaColorAPI.RGBtoHex(rand.nextBoolean() ? 255 : 0, rand.nextBoolean() ? 255 : 0, rand.nextBoolean() ? 255 : 0);
+			fx.setColor(rgb).setIcon(ChromaIcons.CENTER).setAlphaFading().setRapidExpand();
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
 

@@ -80,7 +80,8 @@ public class ChromaStructures {
 		DATANODE(false),
 		WIRELESSPEDESTAL(false),
 		WIRELESSPEDESTAL2(false),
-		PROGRESSLINK(false);
+		PROGRESSLINK(false),
+		OPTIMIZER(false);
 
 		public final boolean requiresColor;
 
@@ -156,6 +157,8 @@ public class ChromaStructures {
 					return getWirelessPedestalStructure2(world, x, y, z);
 				case PROGRESSLINK:
 					return getProgressionLinkerStructure(world, x, y, z);
+				case OPTIMIZER:
+					return getNetworkOptimizerStructureV2(world, x, y, z);
 			}
 			return null;
 		}
@@ -228,6 +231,8 @@ public class ChromaStructures {
 					return getWirelessPedestalStructure2(w, 0, 0, 0);
 				case PROGRESSLINK:
 					return getProgressionLinkerStructure(w, 0, 0, 0);
+				case OPTIMIZER:
+					return getNetworkOptimizerStructureV2(w, 0, 0, 0);
 			}
 			return null;
 		}
@@ -3923,6 +3928,275 @@ public class ChromaStructures {
 			array.setBlock(dx, dy, dz, b, StoneTypes.BEAM.ordinal());
 			array.setBlock(dx+dir2.offsetX, dy, dz+dir2.offsetZ, b, StoneTypes.BEAM.ordinal());
 		}
+
+		return array;
+	}
+
+	public static FilledBlockArray getNetworkOptimizerStructure(World world, int x, int y, int z) {
+		FilledBlockArray array = new FilledBlockArray(world);
+		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
+
+		for (int i = -4; i <= 4; i++) {
+			for (int k = -4; k <= 4; k++) {
+				for (int j = 1; j >= -7; j--) {
+					array.setEmpty(x+i, y+j, z+k, false, false);
+				}
+			}
+		}
+
+		array.setBlock(x, y, z, ChromaTiles.OPTIMIZER.getBlock(), ChromaTiles.OPTIMIZER.getBlockMetadata());
+
+		for (int j = 3; j <= 7; j++) {
+			int r = j == 7 ? 2 : 1;
+			for (int i = -r; i <= r; i++) {
+				for (int k = -r; k <= r; k++) {
+					if (j == 3) {
+						array.setBlock(x+i, y-j, z+k, ChromaBlocks.LUMA.getBlockInstance(), 0);
+					}
+					else {
+						StoneTypes s = j == 5 && Math.abs(i) == r && Math.abs(k) == r ? StoneTypes.BRICKS : StoneTypes.SMOOTH;
+						array.setBlock(x+i, y-j, z+k, b, s.ordinal());
+					}
+				}
+			}
+		}
+
+		for (int j = 3; j <= 6; j++) {
+			for (int i = -1; i <= 1; i++) {
+				array.setBlock(x+i, y-j, z-2, ChromaBlocks.LUMA.getBlockInstance());
+				array.setBlock(x+i, y-j, z+2, ChromaBlocks.LUMA.getBlockInstance());
+				array.setBlock(x-2, y-j, z+i, ChromaBlocks.LUMA.getBlockInstance());
+				array.setBlock(x+2, y-j, z+i, ChromaBlocks.LUMA.getBlockInstance());
+			}
+		}
+
+		for (int i = -1; i <= 1; i++) {
+			array.setBlock(x+i, y-6, z-3, ChromaBlocks.LUMA.getBlockInstance());
+			array.setBlock(x+i, y-6, z+3, ChromaBlocks.LUMA.getBlockInstance());
+			array.setBlock(x-3, y-6, z+i, ChromaBlocks.LUMA.getBlockInstance());
+			array.setBlock(x+3, y-6, z+i, ChromaBlocks.LUMA.getBlockInstance());
+		}
+
+		int r = 4;
+		for (int i = -r; i <= r; i++) {
+			array.setBlock(x+i, y-7, z-r, b, StoneTypes.SMOOTH.ordinal());
+			array.setBlock(x+i, y-7, z+r, b, StoneTypes.SMOOTH.ordinal());
+			array.setBlock(x-r, y-7, z+i, b, StoneTypes.SMOOTH.ordinal());
+			array.setBlock(x+r, y-7, z+i, b, StoneTypes.SMOOTH.ordinal());
+		}
+
+		r = 3;
+		for (int i = -r; i <= r; i++) {
+			array.setBlock(x+i, y-7, z-r, ChromaBlocks.LUMA.getBlockInstance(), 0);
+			array.setBlock(x+i, y-7, z+r, ChromaBlocks.LUMA.getBlockInstance(), 0);
+			array.setBlock(x-r, y-7, z+i, ChromaBlocks.LUMA.getBlockInstance(), 0);
+			array.setBlock(x+r, y-7, z+i, ChromaBlocks.LUMA.getBlockInstance(), 0);
+		}
+
+		for (int j = 2; j <= 6; j++) {
+			StoneTypes s = StoneTypes.COLUMN;
+			if (j == 2)
+				s = StoneTypes.STABILIZER;
+			else if (j == 4)
+				s = StoneTypes.GLOWCOL;
+			array.setBlock(x+2, y-j, z+2, b, s.ordinal());
+			array.setBlock(x-2, y-j, z+2, b, s.ordinal());
+			array.setBlock(x+2, y-j, z-2, b, s.ordinal());
+			array.setBlock(x-2, y-j, z-2, b, s.ordinal());
+		}
+
+		array.setBlock(x-1, y-4, z+1, b, StoneTypes.CORNER.ordinal());
+		array.setBlock(x+1, y-4, z+1, b, StoneTypes.CORNER.ordinal());
+		array.setBlock(x-1, y-4, z-1, b, StoneTypes.CORNER.ordinal());
+		array.setBlock(x+1, y-4, z-1, b, StoneTypes.CORNER.ordinal());
+
+		array.setBlock(x-1, y-4, z, b, StoneTypes.GROOVE2.ordinal());
+		array.setBlock(x+1, y-4, z, b, StoneTypes.GROOVE2.ordinal());
+		array.setBlock(x, y-4, z+1, b, StoneTypes.GROOVE1.ordinal());
+		array.setBlock(x, y-4, z-1, b, StoneTypes.GROOVE1.ordinal());
+
+		return array;
+	}
+
+	public static FilledBlockArray getNetworkOptimizerStructureV2(World world, int x, int y, int z) {
+		FilledBlockArray array = new FilledBlockArray(world);
+		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
+
+		for (int i = -4; i <= 4; i++) {
+			for (int k = -4; k <= 4; k++) {
+				for (int j = 1; j >= -7; j--) {
+					array.setEmpty(x+i, y+j, z+k, false, false);
+				}
+			}
+		}
+
+		array.setBlock(x, y, z, ChromaTiles.OPTIMIZER.getBlock(), ChromaTiles.OPTIMIZER.getBlockMetadata());
+
+		int i = x-4;
+		int j = y-9;
+		int k = z-4;
+
+		array.setBlock(i + 0, j + 2, k + 2, b, StoneTypes.CORNER.ordinal());
+		array.setBlock(i + 0, j + 2, k + 3, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 0, j + 2, k + 4, b, StoneTypes.CORNER.ordinal());
+		array.setBlock(i + 1, j + 1, k + 3, b, StoneTypes.MULTICHROMIC.ordinal());
+		array.setBlock(i + 1, j + 2, k + 2, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 1, j + 2, k + 3, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 1, j + 2, k + 4, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 1, j + 2, k + 5, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 1, j + 2, k + 6, b, StoneTypes.CORNER.ordinal());
+		array.setBlock(i + 1, j + 3, k + 3, ChromaBlocks.LUMA.getBlockInstance(), 2);
+		array.setBlock(i + 1, j + 3, k + 4, b, StoneTypes.BRICKS.ordinal());
+		array.setBlock(i + 1, j + 3, k + 5, b, StoneTypes.BRICKS.ordinal());
+		array.setBlock(i + 1, j + 4, k + 4, b, StoneTypes.BRICKS.ordinal());
+		array.setBlock(i + 2, j + 2, k + 1, b, StoneTypes.CORNER.ordinal());
+		array.setBlock(i + 2, j + 2, k + 2, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 2, j + 2, k + 3, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 2, j + 2, k + 4, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 2, j + 2, k + 5, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 2, j + 2, k + 6, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 2, j + 2, k + 7, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 2, j + 2, k + 8, b, StoneTypes.CORNER.ordinal());
+		array.setBlock(i + 2, j + 3, k + 2, b, StoneTypes.GLOWCOL.ordinal());
+		array.setBlock(i + 2, j + 3, k + 3, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 2, j + 3, k + 4, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 2, j + 3, k + 5, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 2, j + 3, k + 6, b, StoneTypes.GLOWCOL.ordinal());
+		array.setBlock(i + 2, j + 4, k + 2, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 2, j + 4, k + 3, b, StoneTypes.BEAM.ordinal());
+		array.setBlock(i + 2, j + 4, k + 4, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 2, j + 4, k + 5, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 2, j + 4, k + 6, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 2, j + 5, k + 2, b, StoneTypes.COLUMN.ordinal());
+		array.setBlock(i + 2, j + 5, k + 4, b, StoneTypes.BRICKS.ordinal());
+		array.setBlock(i + 2, j + 5, k + 6, b, StoneTypes.COLUMN.ordinal());
+		array.setBlock(i + 2, j + 6, k + 2, b, StoneTypes.COLUMN.ordinal());
+		array.setBlock(i + 2, j + 6, k + 6, b, StoneTypes.COLUMN.ordinal());
+		array.setBlock(i + 2, j + 7, k + 2, b, StoneTypes.FOCUS.ordinal());
+		array.setBlock(i + 2, j + 7, k + 6, b, StoneTypes.FOCUS.ordinal());
+		array.setBlock(i + 3, j + 1, k + 7, b, StoneTypes.MULTICHROMIC.ordinal());
+		array.setBlock(i + 3, j + 2, k + 1, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 3, j + 2, k + 2, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 3, j + 2, k + 3, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 3, j + 2, k + 4, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 3, j + 2, k + 5, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 3, j + 2, k + 6, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 3, j + 2, k + 7, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 3, j + 2, k + 8, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 3, j + 3, k + 1, b, StoneTypes.BRICKS.ordinal());
+		array.setBlock(i + 3, j + 3, k + 2, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 3, j + 3, k + 3, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 3, j + 3, k + 4, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 3, j + 3, k + 5, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 3, j + 3, k + 6, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 3, j + 3, k + 7, ChromaBlocks.LUMA.getBlockInstance(), 2);
+		array.setBlock(i + 3, j + 4, k + 2, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 3, j + 4, k + 3, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 3, j + 4, k + 4, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 3, j + 4, k + 5, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 3, j + 4, k + 6, b, StoneTypes.BEAM.ordinal());
+		array.setBlock(i + 3, j + 5, k + 3, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 3, j + 5, k + 4, b, StoneTypes.RESORING.ordinal());
+		array.setBlock(i + 3, j + 5, k + 5, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 3, j + 6, k + 3, ChromaBlocks.LUMA.getBlockInstance(), 2);
+		array.setBlock(i + 3, j + 6, k + 4, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 3, j + 6, k + 5, ChromaBlocks.LUMA.getBlockInstance(), 2);
+		array.setBlock(i + 4, j + 2, k + 0, b, StoneTypes.CORNER.ordinal());
+		array.setBlock(i + 4, j + 2, k + 1, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 4, j + 2, k + 2, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 4, j + 2, k + 3, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 4, j + 2, k + 4, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 4, j + 2, k + 5, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 4, j + 2, k + 6, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 4, j + 2, k + 7, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 4, j + 2, k + 8, b, StoneTypes.CORNER.ordinal());
+		array.setBlock(i + 4, j + 3, k + 1, b, StoneTypes.BRICKS.ordinal());
+		array.setBlock(i + 4, j + 3, k + 2, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 4, j + 3, k + 3, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 4, j + 3, k + 4, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 4, j + 3, k + 5, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 4, j + 3, k + 6, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 4, j + 3, k + 7, b, StoneTypes.BRICKS.ordinal());
+		array.setBlock(i + 4, j + 4, k + 1, b, StoneTypes.BRICKS.ordinal());
+		array.setBlock(i + 4, j + 4, k + 2, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 4, j + 4, k + 3, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 4, j + 4, k + 4, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 4, j + 4, k + 5, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 4, j + 4, k + 6, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 4, j + 5, k + 2, b, StoneTypes.BRICKS.ordinal());
+		array.setBlock(i + 4, j + 5, k + 3, b, StoneTypes.RESORING.ordinal());
+		array.setBlock(i + 4, j + 5, k + 4, b, StoneTypes.STABILIZER.ordinal());
+		array.setBlock(i + 4, j + 5, k + 5, b, StoneTypes.RESORING.ordinal());
+		array.setBlock(i + 4, j + 5, k + 6, b, StoneTypes.BRICKS.ordinal());
+		array.setBlock(i + 4, j + 6, k + 3, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 4, j + 6, k + 4, ChromaBlocks.LUMA.getBlockInstance());
+		array.setBlock(i + 4, j + 6, k + 5, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 5, j + 1, k + 1, b, StoneTypes.MULTICHROMIC.ordinal());
+		array.setBlock(i + 5, j + 2, k + 0, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 5, j + 2, k + 1, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 5, j + 2, k + 2, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 5, j + 2, k + 3, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 5, j + 2, k + 4, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 5, j + 2, k + 5, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 5, j + 2, k + 6, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 5, j + 2, k + 7, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 5, j + 3, k + 1, ChromaBlocks.LUMA.getBlockInstance(), 2);
+		array.setBlock(i + 5, j + 3, k + 2, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 5, j + 3, k + 3, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 5, j + 3, k + 4, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 5, j + 3, k + 5, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 5, j + 3, k + 6, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 5, j + 3, k + 7, b, StoneTypes.BRICKS.ordinal());
+		array.setBlock(i + 4, j + 4, k + 7, b, StoneTypes.BRICKS.ordinal());
+		array.setBlock(i + 5, j + 4, k + 2, b, StoneTypes.BEAM.ordinal());
+		array.setBlock(i + 5, j + 4, k + 3, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 5, j + 4, k + 4, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 5, j + 4, k + 5, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 5, j + 4, k + 6, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 5, j + 5, k + 3, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 5, j + 5, k + 4, b, StoneTypes.RESORING.ordinal());
+		array.setBlock(i + 5, j + 5, k + 5, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 5, j + 6, k + 3, ChromaBlocks.LUMA.getBlockInstance(), 2);
+		array.setBlock(i + 5, j + 6, k + 4, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 5, j + 6, k + 5, ChromaBlocks.LUMA.getBlockInstance(), 2);
+		array.setBlock(i + 6, j + 2, k + 0, b, StoneTypes.CORNER.ordinal());
+		array.setBlock(i + 6, j + 2, k + 1, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 6, j + 2, k + 2, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 6, j + 2, k + 3, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 6, j + 2, k + 4, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 6, j + 2, k + 5, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 6, j + 2, k + 6, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 6, j + 2, k + 7, b, StoneTypes.CORNER.ordinal());
+		array.setBlock(i + 6, j + 3, k + 2, b, StoneTypes.GLOWCOL.ordinal());
+		array.setBlock(i + 6, j + 3, k + 3, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 6, j + 3, k + 4, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 6, j + 3, k + 5, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 6, j + 3, k + 6, b, StoneTypes.GLOWCOL.ordinal());
+		array.setBlock(i + 6, j + 4, k + 2, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 6, j + 4, k + 3, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 6, j + 4, k + 4, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 6, j + 4, k + 5, b, StoneTypes.BEAM.ordinal());
+		array.setBlock(i + 6, j + 4, k + 6, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 6, j + 5, k + 2, b, StoneTypes.COLUMN.ordinal());
+		array.setBlock(i + 6, j + 5, k + 4, b, StoneTypes.BRICKS.ordinal());
+		array.setBlock(i + 6, j + 5, k + 6, b, StoneTypes.COLUMN.ordinal());
+		array.setBlock(i + 6, j + 6, k + 2, b, StoneTypes.COLUMN.ordinal());
+		array.setBlock(i + 6, j + 6, k + 6, b, StoneTypes.COLUMN.ordinal());
+		array.setBlock(i + 6, j + 7, k + 2, b, StoneTypes.FOCUS.ordinal());
+		array.setBlock(i + 6, j + 7, k + 6, b, StoneTypes.FOCUS.ordinal());
+		array.setBlock(i + 7, j + 1, k + 5, b, StoneTypes.MULTICHROMIC.ordinal());
+		array.setBlock(i + 7, j + 2, k + 2, b, StoneTypes.CORNER.ordinal());
+		array.setBlock(i + 7, j + 2, k + 3, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 7, j + 2, k + 4, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 7, j + 2, k + 5, ChromaBlocks.LUMA.getBlockInstance(), 1);
+		array.setBlock(i + 7, j + 2, k + 6, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 7, j + 3, k + 3, b, StoneTypes.BRICKS.ordinal());
+		array.setBlock(i + 7, j + 3, k + 4, b, StoneTypes.BRICKS.ordinal());
+		array.setBlock(i + 7, j + 3, k + 5, ChromaBlocks.LUMA.getBlockInstance(), 2);
+		array.setBlock(i + 7, j + 4, k + 4, b, StoneTypes.BRICKS.ordinal());
+		array.setBlock(i + 8, j + 2, k + 4, b, StoneTypes.CORNER.ordinal());
+		array.setBlock(i + 8, j + 2, k + 5, b, StoneTypes.SMOOTH.ordinal());
+		array.setBlock(i + 8, j + 2, k + 6, b, StoneTypes.CORNER.ordinal());
 
 		return array;
 	}

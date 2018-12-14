@@ -688,7 +688,7 @@
 			For some applications, you find yourself needing to build either a structure consisting of a repeating unit, or multiple orderly-arranged multiblocks. Either case has generally proven tedious, as there is only so much enjoyment to be had in placing the same ten blocks over and over (and over and over and over) again. Your first attempt with a wooden axe proved utterly fruitless - whoever claimed it has magic capabilities is clearly about as sane as a house made of TNT - so what you may want to try is to mirror your actions when you build or break blocks.
 		</desc>
 		<note>
-			Manipulator changes region size; empty hand changes cell count or region shape
+			Interacting with a manipulator changes region size; empty hand changes cell count or region shape
 		</note>
 	</multibuilder>
 	<explosionshield>
@@ -725,14 +725,14 @@
 			Both players are still required to be involved for some progress
 		</note>
 	</progresslink>
-	<name>
+	<optimizer>
 		<desc>
-
+			More often than not, the path energy takes from pylons to your constructs looks less like a route and more like the random wanderings of a chicken. This would not matter, were it not for the fact that the less direct paths lead to less efficient transfer of said energy, and thus a greater load on your pylons. After a number of attempts, some of which ended in puddles or fountains of goo, you have finally devised a construct that can optimize the energy flow in your network.
 		</desc>
 		<note>
 
 		</note>
-	</name>
+	</optimizer>
 	<name>
 		<desc>
 

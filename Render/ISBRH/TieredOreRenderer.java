@@ -129,6 +129,7 @@ public class TieredOreRenderer implements ISBRH {
 				GL11.glPushMatrix();
 				GL11.glTranslated(-0.5, -0.5, -0.5);
 				v5.startDrawingQuads();
+				v5.setBrightness(240);
 				this.renderGeode(null, 0, 0, 0, bt, metadata, rb);
 				v5.draw();
 				GL11.glPopMatrix();
@@ -288,10 +289,18 @@ public class TieredOreRenderer implements ISBRH {
 				float vs1 = center ? (float)(vb+(dvb-vb)*d2) : (float)(vs+(dvs-vs)*d2);
 				float us2 = center ? (float)(ub+(dub-ub)*(d+s)) : (float)(us+(dus-us)*(d+s));
 				float vs2 = center ? (float)(vb+(dvb-vb)*(d2+s)) : (float)(vs+(dvs-vs)*(d2+s));
+
+				/*
 				v5.addVertexWithUV(d, stoneOffsets[da][(i)*numSections+(k+1)], d2+s, us1, vs1);
 				v5.addVertexWithUV(d+s, stoneOffsets[da][(i+1)*numSections+(k+1)], d2+s, us2, vs1);
 				v5.addVertexWithUV(d+s, stoneOffsets[da][(i+1)*numSections+(k)], d2, us2, vs2);
 				v5.addVertexWithUV(d, stoneOffsets[da][(i)*numSections+(k)], d2, us1, vs2);
+				 */
+
+				v5.addVertexWithUV(d, stoneOffsets[da][(i)*numSections+(k+1)], d2+s, us1, vs2);
+				v5.addVertexWithUV(d+s, stoneOffsets[da][(i+1)*numSections+(k+1)], d2+s, us1, vs1);
+				v5.addVertexWithUV(d+s, stoneOffsets[da][(i+1)*numSections+(k)], d2, us2, vs1);
+				v5.addVertexWithUV(d, stoneOffsets[da][(i)*numSections+(k)], d2, us2, vs2);
 			}
 		}
 

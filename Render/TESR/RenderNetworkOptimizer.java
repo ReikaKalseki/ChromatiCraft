@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL12;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityNetworkOptimizer;
+import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -42,7 +43,7 @@ public class RenderNetworkOptimizer extends ChromaRenderBase {
 		GL11.glTranslatef((float)par2, (float)par4 + 1.0F, (float)par6 + 1.0F);
 		GL11.glScalef(1.0F, -1.0F, -1.0F);
 
-		if (MinecraftForgeClient.getRenderPass() == 1 || !te.isInWorld())
+		if (MinecraftForgeClient.getRenderPass() == 1 || !te.isInWorld() || StructureRenderer.isRenderingTiles())
 			this.drawInner(te, par8);
 
 		GL11.glDisable(GL11.GL_BLEND);
@@ -66,9 +67,15 @@ public class RenderNetworkOptimizer extends ChromaRenderBase {
 		if (te.hasWorldObj()) {
 			GL11.glTranslated(0.5, 0.5, 0.5);
 			GL11.glScaled(s, s, s);
-			RenderManager rm = RenderManager.instance;
-			GL11.glRotatef(rm.playerViewY, 0.0F, 1.0F, 0.0F);
-			GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
+			if (StructureRenderer.isRenderingTiles()) {
+				GL11.glRotated(StructureRenderer.getRenderRY(), 0, 1, 0);
+				GL11.glRotated(-StructureRenderer.getRenderRX(), 1, 0, 0);
+			}
+			else {
+				RenderManager rm = RenderManager.instance;
+				GL11.glRotatef(rm.playerViewY, 0.0F, 1.0F, 0.0F);
+				GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
+			}
 		}
 		else {
 			s = 0.5;
@@ -81,11 +88,13 @@ public class RenderNetworkOptimizer extends ChromaRenderBase {
 		//double ang = (System.currentTimeMillis()/20D)%360;
 		//GL11.glRotated(ang, 0, 0, 1);
 
+		boolean valid = te.hasStructure() || !te.isInWorld() || StructureRenderer.isRenderingTiles();
+
 		double t = te.isInWorld() ? (te.getTicksExisted()+par8) : System.currentTimeMillis()/50D;
 
 		double s2 = 1.5+0.25*Math.sin(t/32D);
 
-		IIcon ico = ChromaIcons.COLORWHIRL.getIcon();
+		IIcon ico = valid ? ChromaIcons.COLORWHIRL.getIcon() : ChromaIcons.BIGFLARE.getIcon();
 		float u = ico.getMinU();
 		float v = ico.getMinV();
 		float du = ico.getMaxU();
@@ -107,26 +116,28 @@ public class RenderNetworkOptimizer extends ChromaRenderBase {
 		v5.draw();
 		GL11.glPopMatrix();
 
-		int c = 0xffffff;//ReikaColorAPI.getModifiedHue(0xff0000, (int)(((System.currentTimeMillis()/5)%360)));
-		br = 0.75F;
-		ico = ChromaIcons.COLORWHIRLFLARE.getIcon();//ChromaIcons.SUNFLARE.getIcon();
-		u = ico.getMinU();
-		v = ico.getMinV();
-		du = ico.getMaxU();
-		dv = ico.getMaxV();
-		sz = te.isInWorld() ? 4.5 : 1.5;
-		s3 = s2*sz;
-		GL11.glPushMatrix();
-		GL11.glScaled(s3, s3, s3);
-		//GL11.glRotated((-System.currentTimeMillis()/50D)%360D, 0, 0, 1);
-		v5.startDrawingQuads();
-		v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(c, br));
-		v5.addVertexWithUV(-1, -1, 0, u, v);
-		v5.addVertexWithUV(1, -1, 0, du, v);
-		v5.addVertexWithUV(1, 1, 0, du, dv);
-		v5.addVertexWithUV(-1, 1, 0, u, dv);
-		v5.draw();
-		GL11.glPopMatrix();
+		if (valid) {
+			int c = 0xffffff;//ReikaColorAPI.getModifiedHue(0xff0000, (int)(((System.currentTimeMillis()/5)%360)));
+			br = 0.75F;
+			ico = ChromaIcons.COLORWHIRLFLARE.getIcon();//ChromaIcons.SUNFLARE.getIcon();
+			u = ico.getMinU();
+			v = ico.getMinV();
+			du = ico.getMaxU();
+			dv = ico.getMaxV();
+			sz = te.isInWorld() ? 4.5 : 1.5;
+			s3 = s2*sz;
+			GL11.glPushMatrix();
+			GL11.glScaled(s3, s3, s3);
+			//GL11.glRotated((-System.currentTimeMillis()/50D)%360D, 0, 0, 1);
+			v5.startDrawingQuads();
+			v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(c, br));
+			v5.addVertexWithUV(-1, -1, 0, u, v);
+			v5.addVertexWithUV(1, -1, 0, du, v);
+			v5.addVertexWithUV(1, 1, 0, du, dv);
+			v5.addVertexWithUV(-1, 1, 0, u, dv);
+			v5.draw();
+			GL11.glPopMatrix();
+		}
 
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		BlendMode.DEFAULT.apply();

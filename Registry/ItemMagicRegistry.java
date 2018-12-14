@@ -264,7 +264,7 @@ public class ItemMagicRegistry {
 			ItemStack vdye = new ItemStack(Items.dye, 1, i);
 			ItemStack leaf = ChromaBlocks.DYELEAF.getStackOfMetadata(i);
 			this.addElement(seed, e, 1);
-			this.addElement(crystal, e, 10);
+			this.addElement(crystal, e, 15);
 			this.addElement(berry, e, 1);
 			this.addElement(shard, e, 4);
 			this.addElement(shard2, e, 6);

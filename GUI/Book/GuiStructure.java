@@ -126,6 +126,9 @@ public class GuiStructure extends GuiBookSection {
 		else if (page == ChromaResearch.PROGLINKSTRUCT) {
 			render.addOverride(array.getMidX(), array.getMaxY(), array.getMidZ(), ChromaTiles.PROGRESSLINK.getCraftedProduct());
 		}
+		else if (page == ChromaResearch.OPTIMISTRUCT) {
+			render.addOverride(array.getMidX(), array.getMinY()+8, array.getMidZ(), ChromaTiles.OPTIMIZER.getCraftedProduct());
+		}
 		else if (page.name().contains("METEOR")) {
 			ItemStack is = ChromaTiles.METEOR.getCraftedProduct();
 			if (page == ChromaResearch.METEOR2) {

@@ -41,7 +41,12 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 
 	public static final int RATIO = 100;
 	public static final int POWER = 2;
+
 	public static final int MAXRANGE = 64;
+
+	public static final int COOLDOWN = 30;
+	//private static final TimerMap<UUID> playerCooldowns = new TimerMap();
+	private static final String NBT_TAG = "LAST_PROTECTION_BEACON_DATA";
 
 	private boolean hasStructure;
 
@@ -61,6 +66,10 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 		if (!world.isRemote && hasStructure && this.getCooldown() == 0 && checkTimer.checkCap()) {
 			this.checkAndRequest();
 		}
+
+		//if (!world.isRemote) {
+		//	playerCooldowns.tick();
+		//}
 
 		range = MAXRANGE;
 	}
@@ -177,6 +186,21 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 	}
 
 	public static boolean isPlayerInvincible(EntityPlayer ep, float dmg) {
+		NBTTagCompound tag = ep.getEntityData().getCompoundTag(NBT_TAG);
+		ep.getEntityData().setTag(NBT_TAG, tag);
+		if (ep.worldObj.provider.dimensionId != tag.getInteger("dimension")) {
+			ep.getEntityData().removeTag(NBT_TAG);
+		}
+		if (ep.worldObj.getTotalWorldTime()-tag.getLong("time") <= COOLDOWN) {
+			if (dmg <= tag.getFloat("damage")) {
+				return true;
+			}
+		}
+		else {
+			tag.setLong("time", ep.worldObj.getTotalWorldTime());
+		}
+		tag.setFloat("damage", dmg);
+		tag.setInteger("dimension", ep.worldObj.provider.dimensionId);
 		for (WorldLocation loc : cache) {
 			if (loc.dimensionID == ep.worldObj.provider.dimensionId) {
 				TileEntityCrystalBeacon te = (TileEntityCrystalBeacon)loc.getTileEntity(ep.worldObj);
@@ -188,6 +212,7 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 				}
 			}
 		}
+		ep.getEntityData().removeTag(NBT_TAG);
 		return false;
 	}
 
@@ -218,7 +243,7 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 
 	@Override
 	public int maxThroughput() {
-		return 500;
+		return 250;
 	}
 
 	@Override
@@ -254,5 +279,28 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 	public static void clearCache() {
 		cache.clear();
 	}
+
+	/*
+	private static class DamageEntry {
+
+		private final UUID player;
+		private final float amount;
+
+		private DamageEntry(EntityPlayer ep, float amt) {
+			player = ep.getPersistentID();
+			amount = amt;
+		}
+
+		@Override
+		public int hashCode() {
+			return player.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o instanceof DamageEntry && ((DamageEntry)o).player.equals(player);
+		}
+
+	}*/
 
 }

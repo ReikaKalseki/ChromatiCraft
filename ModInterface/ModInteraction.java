@@ -69,7 +69,6 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.RotaryCraft.API.BlockColorInterface;
 
 import com.chocolate.chocolateQuest.API.RegisterChestItem;
-import com.chocolate.chocolateQuest.API.WeightedItemStack;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInterModComms;
@@ -228,12 +227,12 @@ public class ModInteraction {
 
 	public static void addChocoDungeonLoot() {
 		try {
-			RegisterChestItem.treasureList.add(new WeightedItemStack(ChromaItems.FRAGMENT.getStackOf(), 40));
+			RegisterChestItem.addTreasureItem(ChromaItems.FRAGMENT.getStackOf(), 40);
 
 			for (int i = 0; i < 16; i++) {
 				ItemStack is = ChromaItems.SHARD.getStackOfMetadata(i);
 				int wt = CrystalElement.elements[i].isPrimary() ? 50 : 25;
-				RegisterChestItem.mineralList.add(new WeightedItemStack(is, wt));
+				RegisterChestItem.addMineralsChestItem(is, wt);
 			}
 		}
 		catch (IllegalAccessError e) {

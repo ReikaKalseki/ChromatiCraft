@@ -634,6 +634,10 @@ public class ProgressionManager implements ProgressRegistry {
 	}
 
 	private void setPlayerStage(EntityPlayer ep, ProgressStage s, boolean set, boolean allowClient, boolean notify) {
+		this.setPlayerStage(ep, s, set, allowClient, notify, new HashSet());
+	}
+
+	private void setPlayerStage(EntityPlayer ep, ProgressStage s, boolean set, boolean allowClient, boolean notify, HashSet<UUID> activeList) {
 		//ReikaJavaLibrary.pConsole("Giving "+ep.getCommandSenderName()+" progress '"+s+"': "+set+"/"+allowClient+"/"+notify);
 		//ReikaJavaLibrary.pConsole("NBT PRE: ");
 		//for (String sg : ReikaNBTHelper.parseNBTAsLines(ChromaResearchManager.instance.getRootNBTTag(ep)))
@@ -642,6 +646,9 @@ public class ProgressionManager implements ProgressRegistry {
 			return;
 		if (ep.worldObj.isRemote && !allowClient)
 			return;
+		if (activeList.contains(ep.getUniqueID()))
+			return;
+		activeList.add(ep.getUniqueID());
 		Collection<UUID> coop = this.getSlavedIDs(ep);
 		Collection<EntityPlayer> players = new ArrayList();
 		for (UUID u : coop) {
@@ -656,7 +663,7 @@ public class ProgressionManager implements ProgressRegistry {
 		}
 		for (EntityPlayer e : players) {
 			ChromatiCraft.logger.debug("Sharing progression "+s+" from "+ep.getCommandSenderName()+" to "+e.getCommandSenderName());
-			this.setPlayerStage(ep, s, set, allowClient, notify);
+			this.setPlayerStage(ep, s, set, allowClient, notify, activeList);
 		}
 		if (notify && ep instanceof EntityPlayerMP)
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.GIVEPROGRESS.ordinal(), (EntityPlayerMP)ep, s.ordinal(), set ? 1 : 0);

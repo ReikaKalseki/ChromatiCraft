@@ -38,6 +38,8 @@ public class CrystalPath implements Comparable<CrystalPath> {
 	private int theoreticalRange;
 	private double totalDistance;
 
+	private boolean wasOptimized = false;
+
 	protected CrystalPath(CrystalNetworker net, boolean real, CrystalElement e, List<WorldLocation> li) {
 		nodes = new ArrayList(li);
 		transmitter = PylonFinder.getSourceAt(nodes.get(nodes.size()-1), true);
@@ -47,6 +49,11 @@ public class CrystalPath implements Comparable<CrystalPath> {
 		hasRealTarget = real;
 		this.initialize();
 		//remainingAmount = amt;
+	}
+
+	private CrystalPath setOptimized() {
+		wasOptimized = true;
+		return this;
 	}
 
 	protected void initialize() {
@@ -228,15 +235,38 @@ public class CrystalPath implements Comparable<CrystalPath> {
 		return li;
 	}
 
-	public CrystalPath optimize() {
-		return new CrystalPath(network, hasRealTarget, element, this.getOptimizedNodePath());
+	public boolean hasSameEndpoints(CrystalPath p) {
+		return PylonFinder.getLocation(transmitter).equals(PylonFinder.getLocation(p.transmitter)) && origin.equals(p.origin);
 	}
 
-	protected final ArrayList<WorldLocation> getOptimizedNodePath() {
-		return optimizeRoute(network, element, nodes);
+	public CrystalPath cleanExtraEndJumps() {
+		return new CrystalPath(network, hasRealTarget, element, this.getCleanedNodePath());
 	}
 
-	static final ArrayList<WorldLocation> optimizeRoute(CrystalNetworker net, CrystalElement e, ArrayList<WorldLocation> nodes) {
+	protected final ArrayList<WorldLocation> getCleanedNodePath() {
+		return cleanRoute(network, element, nodes);
+	}
+
+	public void optimize() {
+		this.optimize(Integer.MAX_VALUE);
+	}
+
+	public CrystalPath optimize(int nsteps) {
+		ArrayList<WorldLocation> li = new ArrayList(nodes);
+		boolean complete = PylonFinder.optimizeRoute(network, li, nsteps, JumpOptimizationCheck.always);
+		CrystalPath p = new CrystalPath(network, hasRealTarget, element, li);
+		if (complete) {
+			p.setOptimized();
+		}
+		return p;
+	}
+
+	public boolean isOptimized() {
+		return wasOptimized;
+	}
+
+	/** Reduces hop count; obeys LOS */
+	static final ArrayList<WorldLocation> cleanRoute(CrystalNetworker net, CrystalElement e, ArrayList<WorldLocation> nodes) {
 		ArrayList<WorldLocation> li = new ArrayList();
 		li.add(0, nodes.get(nodes.size()-1));
 		for (int i = nodes.size()-2; i > 0; i--) {

@@ -40,6 +40,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.MusicScore;
 import Reika.DragonAPI.Instantiable.MusicScore.Note;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -273,6 +274,8 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 	public boolean playCrystal(World world, int x, int y, int z, CrystalElement e, int length) {
 		Coordinate c = colorPositions.get(e).offset(xCoord, yCoord, zCoord);
 		Block b = c.getBlock(world);
+		if (DragonAPICore.debugtest)
+			c.setBlock(world, ChromaBlocks.LAMP.getBlockInstance(), e.ordinal());
 		if (b instanceof CrystalBlock && c.getBlockMetadata(world) == e.ordinal()) {
 			this.generateParticles(world, c.xCoord, c.yCoord, c.zCoord, e);
 			if (networkConnections[e.ordinal()] != null && networkConnections[e.ordinal()].stillValid()) {
