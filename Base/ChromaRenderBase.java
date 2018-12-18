@@ -19,6 +19,7 @@ import org.lwjgl.opengl.GL12;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.DragonAPI.Base.DragonAPIMod;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Base.TileEntityRenderBase;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
@@ -87,6 +88,11 @@ public abstract class ChromaRenderBase extends TileEntityRenderBase implements T
 		if (tile.isInWorld())
 			GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 		GL11.glPopMatrix();
+	}
+
+	@Override
+	protected final DragonAPIMod getOwnerMod() {
+		return ChromatiCraft.instance;
 	}
 
 	@Override

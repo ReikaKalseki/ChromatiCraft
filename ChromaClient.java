@@ -330,10 +330,30 @@ public class ChromaClient extends ChromaCommon {
 		ClientRegistry.bindTileEntitySpecialRenderer(TilePolyCrystal.class, new RenderPolyCrystal());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityWarpNode.class, new RenderWarpNode());
 
-		MinecraftForgeClient.registerItemRenderer(ChromaItems.PLACER.getItemInstance(), placer);
-		MinecraftForgeClient.registerItemRenderer(ChromaItems.RIFT.getItemInstance(), placer);
-		MinecraftForgeClient.registerItemRenderer(ChromaItems.ADJACENCY.getItemInstance(), placer);
+		MinecraftForgeClient.registerItemRenderer(ChromaItems.PLACER.getItemInstance(), ChromatiCraft.instance.isLocked() ? null : placer);
+		MinecraftForgeClient.registerItemRenderer(ChromaItems.RIFT.getItemInstance(), ChromatiCraft.instance.isLocked() ? null : placer);
+		MinecraftForgeClient.registerItemRenderer(ChromaItems.ADJACENCY.getItemInstance(), ChromatiCraft.instance.isLocked() ? null : placer);
 
+		if (!ChromatiCraft.instance.isLocked())
+			this.renderISBRHs();
+
+		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGuardianStone.class, new GuardianStoneRenderer());
+		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPlant.class, new CrystalPlantRenderer());
+		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAccelerator.class, new AcceleratorRenderer());
+
+		//MinecraftForgeClient.registerItemRenderer(ChromaBlocks.GUARDIAN.getItem(), teibr);
+		//MinecraftForgeClient.registerItemRenderer(ChromaBlocks.ACCELERATOR.getItem(), teibr);
+
+		MinecraftForgeClient.registerItemRenderer(ChromaItems.ENDERCRYSTAL.getItemInstance(), csr);
+
+		MinecraftForgeClient.registerItemRenderer(ChromaBlocks.PORTAL.getItem(), new PortalItemRenderer());
+		MinecraftForgeClient.registerItemRenderer(ChromaBlocks.COLORALTAR.getItem(), new AltarItemRenderer());
+		MinecraftForgeClient.registerItemRenderer(ChromaBlocks.LOOTCHEST.getItem(), new LootChestRenderer());
+		MinecraftForgeClient.registerItemRenderer(ChromaBlocks.AVOLAMP.getItem(), new TESRItemRenderer());
+	}
+
+
+	private void renderISBRHs() {
 		crystalRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(crystalRender, crystal);
 
@@ -421,22 +441,7 @@ public class ChromaClient extends ChromaCommon {
 
 		caveIndicatorRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(caveIndicatorRender, indicator);
-
-		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGuardianStone.class, new GuardianStoneRenderer());
-		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPlant.class, new CrystalPlantRenderer());
-		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAccelerator.class, new AcceleratorRenderer());
-
-		//MinecraftForgeClient.registerItemRenderer(ChromaBlocks.GUARDIAN.getItem(), teibr);
-		//MinecraftForgeClient.registerItemRenderer(ChromaBlocks.ACCELERATOR.getItem(), teibr);
-
-		MinecraftForgeClient.registerItemRenderer(ChromaItems.ENDERCRYSTAL.getItemInstance(), csr);
-
-		MinecraftForgeClient.registerItemRenderer(ChromaBlocks.PORTAL.getItem(), new PortalItemRenderer());
-		MinecraftForgeClient.registerItemRenderer(ChromaBlocks.COLORALTAR.getItem(), new AltarItemRenderer());
-		MinecraftForgeClient.registerItemRenderer(ChromaBlocks.LOOTCHEST.getItem(), new LootChestRenderer());
-		MinecraftForgeClient.registerItemRenderer(ChromaBlocks.AVOLAMP.getItem(), new TESRItemRenderer());
 	}
-
 
 	private void registerBlockSheets() {
 		//RenderingRegistry.registerBlockHandler(BlockSheetTexRenderID, block);

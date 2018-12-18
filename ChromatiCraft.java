@@ -164,6 +164,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.DonatorController;
 import Reika.DragonAPI.Auxiliary.Trackers.FurnaceFuelRegistry;
 import Reika.DragonAPI.Auxiliary.Trackers.IDCollisionTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.IntegrityChecker;
+import Reika.DragonAPI.Auxiliary.Trackers.ModLockController;
 import Reika.DragonAPI.Auxiliary.Trackers.PackModificationTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerFirstTimeTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler;
@@ -236,7 +237,6 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	static final Random rand = new Random();
 
-	private boolean isLocked = false;
 	private boolean isOfflineMode = false;
 
 	public static final EnhancedFluid chroma = (EnhancedFluid)new EnhancedFluid("chroma").setColor(0x00aaff).setViscosity(300).setTemperature(288).setDensity(300).setLuminosity(15);
@@ -288,7 +288,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	}
 
 	public final boolean isLocked() {
-		return isLocked;
+		return !ModLockController.instance.verify(this);
 	}
 
 	private final boolean checkForLock() {
@@ -349,21 +349,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			MinecraftForge.EVENT_BUS.register(PylonFinderOverlay.instance);
 		}
 
-		isLocked = this.checkForLock();
-		if (this.isLocked()) {
-			ReikaJavaLibrary.pConsole("");
-			ReikaJavaLibrary.pConsole("\t========================================= ChromatiCraft ===============================================");
-			ReikaJavaLibrary.pConsole("\tNOTICE: It has been detected that third-party plugins are being used to disable parts of ChromatiCraft.");
-			ReikaJavaLibrary.pConsole("\tBecause this is frequently done to sell access to mod content, which is against the Terms of Use");
-			ReikaJavaLibrary.pConsole("\tof both Mojang and the mod, the mod has been functionally disabled. No damage will occur to worlds,");
-			ReikaJavaLibrary.pConsole("\tand all machines (including contents) and items already placed or in inventories will remain so,");
-			ReikaJavaLibrary.pConsole("\tbut its machines will not function, recipes will not load, and no renders or textures will be present.");
-			ReikaJavaLibrary.pConsole("\tAll other mods in your installation will remain fully functional.");
-			ReikaJavaLibrary.pConsole("\tTo regain functionality, unban the ChromatiCraft content, and then reload the game. All functionality");
-			ReikaJavaLibrary.pConsole("\twill be restored. You may contact Reika for further information on his forum thread.");
-			ReikaJavaLibrary.pConsole("\t=====================================================================================================");
-			ReikaJavaLibrary.pConsole("");
-		}
+		this.setupClassFiles();
 
 		int id = ExtraChromaIDs.GROWTHID.getValue();
 		IDCollisionTracker.instance.addPotionID(instance, id, PotionGrowthHormone.class);
@@ -397,7 +383,6 @@ public class ChromatiCraft extends DragonAPIMod {
 		IDCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.ENDERFOREST.getValue(), BiomeEnderForest.class);
 		IDCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.LUMINOUSCLIFFS.getValue(), BiomeGlowingCliffs.class);
 
-		this.setupClassFiles();
 		//ChromaResearch.loadCache();
 
 		ReikaPacketHelper.registerPacketHandler(instance, packetChannel, new ChromatiPackets());
@@ -441,6 +426,26 @@ public class ChromatiCraft extends DragonAPIMod {
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
 		this.startTiming(LoadPhase.LOAD);
+
+		ModLockController.instance.registerMod(this);
+		if (this.checkForLock()) {
+			ModLockController.instance.unverify(this);
+		}
+		if (this.isLocked()) {
+			ReikaJavaLibrary.pConsole("");
+			ReikaJavaLibrary.pConsole("\t========================================= ChromatiCraft ===============================================");
+			ReikaJavaLibrary.pConsole("\tNOTICE: It has been detected that third-party plugins are being used to disable parts of ChromatiCraft.");
+			ReikaJavaLibrary.pConsole("\tBecause this is frequently done to sell access to mod content, which is against the Terms of Use");
+			ReikaJavaLibrary.pConsole("\tof both Mojang and the mod, the mod has been functionally disabled. No damage will occur to worlds,");
+			ReikaJavaLibrary.pConsole("\tand all machines (including contents) and items already placed or in inventories will remain so,");
+			ReikaJavaLibrary.pConsole("\tbut its machines will not function, recipes will not load, and no renders or textures will be present.");
+			ReikaJavaLibrary.pConsole("\tAll other mods in your installation will remain fully functional.");
+			ReikaJavaLibrary.pConsole("\tTo regain functionality, unban the ChromatiCraft content, and then reload the game. All functionality");
+			ReikaJavaLibrary.pConsole("\twill be restored. You may contact Reika for further information on his forum thread.");
+			ReikaJavaLibrary.pConsole("\t=====================================================================================================");
+			ReikaJavaLibrary.pConsole("");
+		}
+
 		ChromaRecipes.loadDictionary();
 		if (this.isLocked())
 			PlayerHandler.instance.registerTracker(ChromaLock.instance);
@@ -649,6 +654,8 @@ public class ChromatiCraft extends DragonAPIMod {
 		SensitiveFluidRegistry.instance.registerFluid("chroma");
 		SensitiveFluidRegistry.instance.registerFluid("ender");
 		SensitiveFluidRegistry.instance.registerFluid("potion crystal");
+		SensitiveFluidRegistry.instance.registerFluid("luma");
+		SensitiveFluidRegistry.instance.registerFluid("lumen");
 
 		ReikaEEHelper.blacklistEntry(ChromaItems.TIERED);
 		ReikaEEHelper.blacklistEntry(ChromaItems.SHARD);

@@ -55,6 +55,7 @@ public class RenderPersonalCharger extends ChromaRenderBase {
 			ReikaRenderHelper.disableEntityLighting();
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glDisable(GL11.GL_CULL_FACE);
+			GL11.glDepthMask(false);
 			BlendMode.ADDITIVEDARK.apply();
 			GL11.glPushMatrix();
 			GL11.glTranslated(par2, par4, par6);
@@ -118,6 +119,7 @@ public class RenderPersonalCharger extends ChromaRenderBase {
 			//GL11.glEnable(GL11.GL_ALPHA_TEST);
 			GL11.glEnable(GL11.GL_CULL_FACE);
 			GL11.glDisable(GL11.GL_BLEND);
+			GL11.glDepthMask(true);
 			ReikaRenderHelper.enableEntityLighting();
 			GL11.glEnable(GL11.GL_LIGHTING);
 		}

@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Auxiliary.Render;
 import java.util.HashMap;
 
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
@@ -48,6 +49,8 @@ public class ChromaRenderList {
 	}
 
 	public static TileEntitySpecialRenderer instantiateRenderer(ChromaTiles m) {
+		if (ChromatiCraft.instance.isLocked())
+			return null;
 		try {
 			ChromaRenderBase r = (ChromaRenderBase)Class.forName(m.getRenderer()).newInstance();
 			if (addRender(m, r))

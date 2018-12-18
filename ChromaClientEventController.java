@@ -90,7 +90,6 @@ import Reika.ChromatiCraft.Block.BlockFakeSky;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
-import Reika.ChromatiCraft.GUI.GuiAbilitySelect;
 import Reika.ChromatiCraft.GUI.GuiAuraPouch;
 import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
 import Reika.ChromatiCraft.GUI.GuiItemBurner.ButtonItemBurner;
@@ -127,6 +126,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.AntFarmGenerator;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.KeybindHandler.KeyPressEvent;
+import Reika.DragonAPI.Auxiliary.Trackers.ModLockController.ModReVerifyEvent;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
@@ -225,6 +225,11 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 				break;
 			}
 		}
+	}
+
+	@SubscribeEvent
+	public void reverify(ModReVerifyEvent evt) {
+		ChromatiCraft.proxy.registerRenderers();
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)

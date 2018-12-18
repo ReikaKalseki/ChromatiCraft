@@ -111,6 +111,54 @@ public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered imple
 		addDisallowedMob("etfuturum.ender_dragon");
 
 		addDisallowedMob("DraconicEvolution.EnderDragon");
+
+		addDisallowedMob("Thaumcraft.EldritchGolem");
+		addDisallowedMob("Thaumcraft.CultistPortal");
+		addDisallowedMob("Thaumcraft.CultistLeader");
+		addDisallowedMob("arsmagica2.ShadowHelper");
+		addDisallowedMob("arsmagica2.BossEnderGuardian");
+		addDisallowedMob("arsmagica2.BossLightningGuardian");
+		addDisallowedMob("arsmagica2.BossLifeGuardian");
+		addDisallowedMob("arsmagica2.AirSled");
+		addDisallowedMob("arsmagica2.DaBroom");
+		addDisallowedMob("arsmagica2.BossFireGuardian");
+		addDisallowedMob("arsmagica2.Shockwave");
+		addDisallowedMob("arsmagica2.Whirlwind");
+		addDisallowedMob("arsmagica2.BossAirGuardian");
+		addDisallowedMob("arsmagica2.ThrownArm");
+		addDisallowedMob("arsmagica2.BossWinterGuardian");
+		addDisallowedMob("arsmagica2.BossWaterGuardian");
+		addDisallowedMob("arsmagica2.ThrownRock");
+		addDisallowedMob("arsmagica2.BossEarthGuardian");
+		addDisallowedMob("arsmagica2.BossArcaneGuardian");
+		addDisallowedMob("arsmagica2.ThrownSickle");
+		addDisallowedMob("arsmagica2.BossNatureGuardian");
+		addDisallowedMob("arsmagica2.RiftStorage");
+		addDisallowedMob("arsmagica2.ZoneSpell");
+		addDisallowedMob("arsmagica2.ManaVortex");
+		addDisallowedMob("arsmagica2.SpellProjectile");
+		addDisallowedMob("TwilightForest.Yeti Boss");
+		addDisallowedMob("TwilightForest.Snow Queen");
+		addDisallowedMob("TwilightForest.Apocalypse Cube");
+		addDisallowedMob("TwilightForest.Adherent");
+		addDisallowedMob("TwilightForest.Questing Ram");
+		addDisallowedMob("HardcoreEnderExpansion.FireFiend");
+		addDisallowedMob("HardcoreEnderExpansion.EnderDemon");
+		addDisallowedMob("HardcoreEnderExpansion.EnderEye");
+		addDisallowedMob("HardcoreEnderExpansion.Dragon");
+		addDisallowedMob("TConstruct.Crystal");
+		addDisallowedMob("witchery.hornedHuntsman");
+		addDisallowedMob("witchery.babayaga");
+		addDisallowedMob("witchery.death");
+		addDisallowedMob("witchery.lordoftorment");
+		addDisallowedMob("witchery.goblinmog");
+		addDisallowedMob("witchery.goblingulg");
+		addDisallowedMob("witchery.leonard");
+		addDisallowedMob("witchery.lilith");
+		addDisallowedMob("witchery.mirrorface");
+		addDisallowedMob("witchery.corpse");
+		addDisallowedMob("witchery.eye");
+		addDisallowedMob("witchery.attackbat");
 	}
 
 	@Override

@@ -670,7 +670,8 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 		//if (/*LegacyWailaHelper.cacheAndReturn(acc)*/!currenttip.isEmpty())
 		//	return currenttip;
 		TileEntityChromaticBase te = (TileEntityChromaticBase)acc.getTileEntity();
-		te.syncAllData(false);
+		if (te.getTile() != ChromaTiles.MUSIC) //to prevent lag, and has nothing to sync anywyas
+			te.syncAllData(false);
 		if (te instanceof TileEntityRift) {
 			WorldLocation loc = ((TileEntityRift)te).getLinkTarget();
 			if (loc != null) {
