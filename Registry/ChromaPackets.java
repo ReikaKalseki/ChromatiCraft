@@ -180,6 +180,7 @@ public enum ChromaPackets {
 	VOIDMONSTERRITUAL(2),
 	ALVEARYEFFECT(2),
 	SUPERBUILD(1),
+	OPTIMIZE(1),
 	;
 
 	public final int numInts;

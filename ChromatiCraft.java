@@ -323,6 +323,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		config.loadSubfolderedConfigFile(evt);
 		config.initProps(evt);
+		ModLockController.instance.registerMod(this);
 
 		logger = new ModLogger(instance, false);
 		if (DragonOptions.FILELOG.getState())
@@ -427,7 +428,6 @@ public class ChromatiCraft extends DragonAPIMod {
 	public void load(FMLInitializationEvent event) {
 		this.startTiming(LoadPhase.LOAD);
 
-		ModLockController.instance.registerMod(this);
 		if (this.checkForLock()) {
 			ModLockController.instance.unverify(this);
 		}

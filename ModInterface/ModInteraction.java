@@ -70,9 +70,7 @@ import Reika.RotaryCraft.API.BlockColorInterface;
 
 import com.chocolate.chocolateQuest.API.RegisterChestItem;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInterModComms;
-import cpw.mods.fml.relauncher.Side;
 import forestry.api.apiculture.FlowerManager;
 
 
@@ -428,7 +426,7 @@ public class ModInteraction {
 	@ModDependent(ModList.THAUMCRAFT)
 	public static void addThaumRecipes() {
 		Class root = ChromatiCraft.class;
-		String ref = FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? ChromaDescriptions.getParentPage()+"thaum.xml" : "";
+		String ref = ChromaDescriptions.getParentPage()+"thaum.xml";
 
 		ReikaThaumHelper.addBookCategory(new ResourceLocation("chromaticraft", "textures/blocks/tile/table_top.png"), "chromaticraft");
 

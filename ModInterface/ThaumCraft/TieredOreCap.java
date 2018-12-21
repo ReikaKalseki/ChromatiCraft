@@ -90,7 +90,7 @@ public class TieredOreCap extends WandCap {
 
 	public static void addRecipes() {
 		int i = -2;
-		String ref = FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? ChromaDescriptions.getParentPage()+"thaum.xml" : "";
+		String ref = ChromaDescriptions.getParentPage()+"thaum.xml";
 		ArrayList<ShapedArcaneRecipe> li = new ArrayList();
 		AspectList total = new AspectList();
 		for (TieredOres t : items.keySet()) {

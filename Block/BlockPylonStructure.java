@@ -43,6 +43,8 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockPylonStructure extends Block implements ConnectedTextureGlass {
 
@@ -399,6 +401,7 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void randomDisplayTick(World world, int x, int y, int z, Random rand) {
 		if (ChromaIcons.loadXmasTextures() && StoneTypes.list[world.getBlockMetadata(x, y, z)].isColumn()) {
 			double o = 0.0625;

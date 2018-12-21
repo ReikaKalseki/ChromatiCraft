@@ -119,6 +119,7 @@ import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityParticleSpawner;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalBroadcaster;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityNetworkOptimizer;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCobbleGen;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
@@ -978,6 +979,9 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case SUPERBUILD:
 					AbilityCalls.doSuperbuildFX(world, x, y, z, ForgeDirection.VALID_DIRECTIONS[data[0]]);
+					break;
+				case OPTIMIZE:
+					TileEntityNetworkOptimizer.runOptimizationStepFX(world, x, y, z, data[0]);
 					break;
 			}
 		}

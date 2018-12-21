@@ -5,17 +5,22 @@ import java.util.ArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Network.CrystalPath;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class TileEntityNetworkOptimizer extends CrystalReceiverBase implements MultiBlockChromaTile {
@@ -88,17 +93,22 @@ public class TileEntityNetworkOptimizer extends CrystalReceiverBase implements M
 		boolean ret = data[clr].optimizeStep();
 		if (ret) {
 			for (int i = 0; i < 24; i++) {
-				double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
-				double vy = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
-				double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
-				EntityBlurFX fx = new EntityBlurFX(world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble(), vx, vy, vz);
-				fx.setColor(CrystalElement.elements[clr].getColor()).setColliding();
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.OPTIMIZE.ordinal(), this, 48, clr);
 				ChromaSounds.CAST.playSoundAtBlock(world, x, y, z, 1, 0.5F);
 			}
 			advanceDelay = 60;
 		}
 		return ret;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void runOptimizationStepFX(World world, int x, int y, int z, int clr) {
+		double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
+		double vy = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
+		double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
+		EntityBlurFX fx = new EntityBlurFX(world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble(), vx, vy, vz);
+		fx.setColor(CrystalElement.elements[clr].getColor()).setColliding();
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
 	private void onOptimizationComplete(World world, int x, int y, int z) {

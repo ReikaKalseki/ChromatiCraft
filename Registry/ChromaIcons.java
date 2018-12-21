@@ -39,7 +39,7 @@ public enum ChromaIcons implements ChromaIcon {
 	LASER("laser_2"),
 	LASEREND("laser_end_2"),
 	BIGFLARE("bigflare"),
-	ROUNDFLARE(loadAprilTextures() ? "smileflare" : "roundflare"),
+	ROUNDFLARE(loadAprilTextures() ? "smileflare" : loadXmasTextures() ? "xmasflare" : "roundflare"),
 	RINGS("ringrow_fade"),
 	RIFT("rift"),
 	RIFTHALO("rift_halo"),

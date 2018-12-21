@@ -105,13 +105,8 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 			for (int i = 0; i < 6; i++) {
 				ForgeDirection dir = dirs[i];
 				if (this.tickDirection(world, x, y, z, dir, time) && rand.nextInt(4) == 0) {
-					double o = 0.0625;
-					double px = x+dir.offsetX-o+rand.nextDouble()*(1+2*o);
-					double py = y+dir.offsetY-o+rand.nextDouble()*(1+2*o);
-					double pz = z+dir.offsetZ-o+rand.nextDouble()*(1+2*o);
-					EntityBlurFX fx = new EntityBlurFX(world, px, py, pz);
-					fx.setRapidExpand().setAlphaFading().setLife(ReikaRandomHelper.getRandomBetween(8, 40)).setColor(this.getColor().getColor());
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					if (world.isRemote)
+						this.spawnActionParticles(world, x, y, z, dir);
 				}
 				else {
 					break;
@@ -121,6 +116,17 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 		else {
 			this.doCollectiveTick(world, x, y, z);
 		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void spawnActionParticles(World world, int x, int y, int z, ForgeDirection dir) {
+		double o = 0.0625;
+		double px = x+dir.offsetX-o+rand.nextDouble()*(1+2*o);
+		double py = y+dir.offsetY-o+rand.nextDouble()*(1+2*o);
+		double pz = z+dir.offsetZ-o+rand.nextDouble()*(1+2*o);
+		EntityBlurFX fx = new EntityBlurFX(world, px, py, pz);
+		fx.setRapidExpand().setAlphaFading().setLife(ReikaRandomHelper.getRandomBetween(8, 40)).setColor(this.getColor().getColor());
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
 	@SideOnly(Side.CLIENT)
