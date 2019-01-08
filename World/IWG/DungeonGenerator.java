@@ -64,16 +64,19 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.TileEntityCache;
 import Reika.DragonAPI.Instantiable.IO.NBTFile;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
+import Reika.DragonAPI.Interfaces.Registry.TreeType;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
+import Reika.DragonAPI.ModRegistry.ModWoodList;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
@@ -382,8 +385,11 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					arr.place(2);
 					this.mossify(s, arr, r);
 					this.convertDirtToGrass(arr);
-					this.addSnowCover(arr);
+					this.programSpawners(s, arr);
+					this.removeAdjacentTrees(arr);
 					this.cleanupSnowEntrances(arr);
+					this.addMissingSupport(arr, Blocks.stone, 0, 5);
+					this.addSnowCover(arr, 4);
 					world.setBlock(x+8, y-3, z+6, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
 					TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x+8, y-3, z+6);
 					te.generate(s, CrystalElement.WHITE);
@@ -651,12 +657,61 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 	}
 
-	private void addSnowCover(FilledBlockArray arr) {
+	private void addMissingSupport(FilledBlockArray arr, Block b, int meta, int d) {
+		for (int x = arr.getMinX(); x <= arr.getMaxX(); x++) {
+			for (int z = arr.getMinZ(); z <= arr.getMaxZ(); z++) {
+				int bottom = arr.getBottomBlockAtXZ(x, z);
+				if (bottom != Integer.MAX_VALUE) {
+					bottom--;
+					for (int i = 1; i <= d; i++) {
+						int y = bottom-i;
+						if (ReikaWorldHelper.softBlocks(arr.world, x, y, z))
+							arr.world.setBlock(x, y, z, b, meta, 2);
+					}
+				}
+			}
+		}
+	}
+
+	private void addSnowCover(FilledBlockArray arr, int r) {
+		/*
 		for (int k = 0; k < arr.getSize(); k++) {
 			Coordinate c = arr.getNthBlock(k);
 			if (c.isEmpty(arr.world) && Blocks.snow_layer.canPlaceBlockAt(arr.world, c.xCoord, c.yCoord, c.zCoord)) {
 				if (arr.world.getPrecipitationHeight(c.xCoord, c.zCoord) <= c.yCoord)
 					c.setBlock(arr.world, Blocks.snow_layer);
+			}
+		}
+		 */
+		for (int x = arr.getMinX()-r; x <= arr.getMaxX()+r; x++) {
+			for (int z = arr.getMinZ()-r; z <= arr.getMaxZ()+r; z++) {
+				int top = arr.world.getTopSolidOrLiquidBlock(x, z)-1;
+				if (arr.world.getBlock(x, top, z) != Blocks.snow_layer && arr.world.getBlock(x, top+1, z) == Blocks.air) {
+					arr.world.setBlock(x, top+1, z, Blocks.snow_layer);
+				}
+			}
+		}
+	}
+
+	private void removeAdjacentTrees(FilledBlockArray arr) {
+		for (int k = 0; k < arr.getSize(); k++) {
+			Coordinate c = arr.getNthBlock(k);
+			for (int i = 0; i < 6; i++) {
+				Coordinate c2 = c.offset(ForgeDirection.VALID_DIRECTIONS[i], 1);
+				Block b = c2.getBlock(arr.world);
+				if (b != Blocks.air && b != ChromaBlocks.STRUCTSHIELD.getBlockInstance()) {
+					int meta = c2.getBlockMetadata(arr.world);
+					TreeType tree = ReikaTreeHelper.getTree(b, meta);
+					if (tree == null)
+						tree = ModWoodList.getModWood(b, meta);
+					if (tree != null) {
+						BlockArray barr = new BlockArray();
+						barr.recursiveMultiAddWithBounds(arr.world, c2.xCoord, c2.yCoord, c2.zCoord, c2.xCoord-12, c2.yCoord-12, c2.zCoord-12, c2.xCoord+12, c2.yCoord+12, c2.zCoord+12, b, tree.getLeafID());
+						for (Coordinate c3 : barr.keySet()) {
+							c3.setBlock(arr.world, Blocks.air);
+						}
+					}
+				}
 			}
 		}
 	}
@@ -665,12 +720,21 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		for (int k = 0; k < arr.getSize(); k++) {
 			Coordinate c = arr.getNthBlock(k);
 			Block b = c.getBlock(arr.world);
-			int i = 1;
-			Block b2 = c.offset(0, i, 0).getBlock(arr.world);
-			while (b2 == Blocks.dirt || b2 == Blocks.grass || b2 == Blocks.snow_layer) {
-				c.offset(0, i, 0).setBlock(arr.world, Blocks.air);
-				i++;
-				b2 = c.offset(0, i, 0).getBlock(arr.world);
+			if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance() && c.getBlockMetadata(arr.world) == BlockType.MOSS.metadata) {
+				Block b3 = c.offset(0, 1, 0).getBlock(arr.world);
+				if (b3 != b) {
+					for (int i = 1; i < 4; i++) {
+						for (int dx = -i; dx <= i; dx++) {
+							for (int dz = -i; dz <= i; dz++) {
+								Coordinate c2 = c.offset(dx, i, dz);
+								Block b2 = c2.getBlock(arr.world);
+								if (b2 == Blocks.grass || b2.getMaterial() == Material.ground || b2.getMaterial() == Material.plants || b2 == Blocks.stone || b2 == Blocks.snow_layer) {
+									c2.setBlock(arr.world, Blocks.air);
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}
@@ -839,11 +903,17 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		BiomeGenBase b4 = world.getBiomeGenForCoords(arr.getMaxX(), arr.getMaxZ());
 		if (b1 != b2 || b1 != b3 || b1 != b4)
 			return false;
-		Block id1 = world.getBlock(arr.getMinX(), h1, arr.getMinZ());
-		Block id2 = world.getBlock(arr.getMaxX(), h2, arr.getMinZ());
-		Block id3 = world.getBlock(arr.getMinX(), h3, arr.getMaxZ());
-		Block id4 = world.getBlock(arr.getMaxX(), h4, arr.getMaxZ());
-		return id1 != Blocks.ice && id2 != Blocks.ice && id3 != Blocks.ice && id4 != Blocks.ice;
+		for (int d = 1; d <= 5; d++) { //starts at the top non-air
+			Block id1 = world.getBlock(arr.getMinX(), h1-d, arr.getMinZ());
+			Block id2 = world.getBlock(arr.getMaxX(), h2-d, arr.getMinZ());
+			Block id3 = world.getBlock(arr.getMinX(), h3-d, arr.getMaxZ());
+			Block id4 = world.getBlock(arr.getMaxX(), h4-d, arr.getMaxZ());
+			if (id1 == Blocks.air || id2 == Blocks.air || id3 == Blocks.air || id4 == Blocks.air)
+				return false;
+			if (ReikaBlockHelper.isLiquid(id1) || ReikaBlockHelper.isLiquid(id2) || ReikaBlockHelper.isLiquid(id3) || ReikaBlockHelper.isLiquid(id4))
+				return false;
+		}
+		return true;
 	}
 
 	private boolean isVoidWorld(World world, int x, int z) {

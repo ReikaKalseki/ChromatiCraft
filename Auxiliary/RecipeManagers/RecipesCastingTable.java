@@ -273,18 +273,18 @@ public class RecipesCastingTable {
 		if (ChromatiCraft.instance.isLocked())
 			return;
 
-		this.addRecipe(new CrystalGroupRecipe(ChromaStacks.redGroup, CrystalElement.RED, CrystalElement.BLUE, CrystalElement.PURPLE, CrystalElement.MAGENTA, ChromaStacks.auraDust, false));
-		this.addRecipe(new CrystalGroupRecipe(ChromaStacks.greenGroup, CrystalElement.YELLOW, CrystalElement.CYAN, CrystalElement.LIME, CrystalElement.GREEN, ChromaStacks.livingEssence, false));
-		this.addRecipe(new CrystalGroupRecipe(ChromaStacks.orangeGroup, CrystalElement.BROWN, CrystalElement.PINK, CrystalElement.ORANGE, CrystalElement.LIGHTBLUE, ChromaStacks.chromaDust, false));
-		this.addRecipe(new CrystalGroupRecipe(ChromaStacks.whiteGroup, CrystalElement.BLACK, CrystalElement.GRAY, CrystalElement.LIGHTGRAY, CrystalElement.WHITE, ChromaStacks.icyDust, false));
+		CrystalGroupRecipe redgroup = (CrystalGroupRecipe)this.addRecipe(new CrystalGroupRecipe(ChromaStacks.redGroup, CrystalElement.RED, CrystalElement.BLUE, CrystalElement.PURPLE, CrystalElement.MAGENTA, ChromaStacks.auraDust, false));
+		CrystalGroupRecipe greengroup = (CrystalGroupRecipe)this.addRecipe(new CrystalGroupRecipe(ChromaStacks.greenGroup, CrystalElement.YELLOW, CrystalElement.CYAN, CrystalElement.LIME, CrystalElement.GREEN, ChromaStacks.livingEssence, false));
+		CrystalGroupRecipe orangegroup = (CrystalGroupRecipe)this.addRecipe(new CrystalGroupRecipe(ChromaStacks.orangeGroup, CrystalElement.BROWN, CrystalElement.PINK, CrystalElement.ORANGE, CrystalElement.LIGHTBLUE, ChromaStacks.chromaDust, false));
+		CrystalGroupRecipe whitegroup = (CrystalGroupRecipe)this.addRecipe(new CrystalGroupRecipe(ChromaStacks.whiteGroup, CrystalElement.BLACK, CrystalElement.GRAY, CrystalElement.LIGHTGRAY, CrystalElement.WHITE, ChromaStacks.icyDust, false));
 
 		this.addRecipe(new CrystalGroupRecipe(ChromaStacks.redGroup, CrystalElement.RED, CrystalElement.BLUE, CrystalElement.PURPLE, CrystalElement.MAGENTA, ChromaStacks.auraDust, true));
 		this.addRecipe(new CrystalGroupRecipe(ChromaStacks.greenGroup, CrystalElement.YELLOW, CrystalElement.CYAN, CrystalElement.LIME, CrystalElement.GREEN, ChromaStacks.livingEssence, true));
 		this.addRecipe(new CrystalGroupRecipe(ChromaStacks.orangeGroup, CrystalElement.BROWN, CrystalElement.PINK, CrystalElement.ORANGE, CrystalElement.LIGHTBLUE, ChromaStacks.chromaDust, true));
 		this.addRecipe(new CrystalGroupRecipe(ChromaStacks.whiteGroup, CrystalElement.BLACK, CrystalElement.GRAY, CrystalElement.LIGHTGRAY, CrystalElement.WHITE, ChromaStacks.icyDust, true));
 
-		this.addRecipe(new CrystalClusterRecipe(ChromaStacks.primaryCluster));
-		this.addRecipe(new CrystalClusterRecipe(ChromaStacks.secondaryCluster));
+		this.addRecipe(new CrystalClusterRecipe(ChromaStacks.primaryCluster, redgroup, greengroup));
+		this.addRecipe(new CrystalClusterRecipe(ChromaStacks.secondaryCluster, orangegroup, whitegroup));
 		this.addRecipe(new CrystalCoreRecipe(ChromaStacks.crystalCore, new ItemStack(Items.diamond)));
 		this.addRecipe(new CrystalStarRecipe(ChromaStacks.crystalStar, new ItemStack(Items.nether_star)));
 
@@ -902,7 +902,7 @@ public class RecipesCastingTable {
 		}
 	}
 
-	private void addRecipe(CastingRecipe r) {
+	private CastingRecipe addRecipe(CastingRecipe r) {
 		r.validate();
 
 		OneWayList<CastingRecipe> li = recipes.get(r.type);
@@ -931,6 +931,8 @@ public class RecipesCastingTable {
 			maxEnergyCost = Math.max(maxEnergyCost, tag.getMaximumValue());
 			maxTotalEnergyCost = Math.max(maxTotalEnergyCost, tag.getTotalEnergy());
 		}
+
+		return r;
 	}
 
 	public void addModdedRecipe(CastingRecipe r) {

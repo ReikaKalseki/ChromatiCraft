@@ -68,6 +68,16 @@ public class SnowStructure {
 			array.setBlock(x + c.xCoord, y + c.yCoord, z + c.zCoord, b, mcrack);
 		}
 
+		array.setBlock(x + 5, y + 10, z + 4, b, BlockType.CRACK.metadata);
+		array.setBlock(x + 5, y + 11, z + 4, b, BlockType.CRACK.metadata);
+		array.setBlock(x + 6, y + 10, z + 4, b, BlockType.CRACK.metadata);
+		array.setBlock(x + 6, y + 11, z + 4, b, BlockType.CRACK.metadata);
+
+		array.setBlock(x + 5, y + 10, z + 12, b, ms);
+		array.setBlock(x + 5, y + 11, z + 12, b, ms);
+		array.setBlock(x + 6, y + 10, z + 12, b, ms);
+		array.setBlock(x + 6, y + 11, z + 12, b, ms);
+
 		array.setBlock(x + 0, y + 5, z + 6, b, BlockType.MOSS.metadata);
 		array.setBlock(x + 0, y + 5, z + 7, b, BlockType.MOSS.metadata);
 		array.setBlock(x + 0, y + 5, z + 8, b, BlockType.MOSS.metadata);
@@ -426,18 +436,14 @@ public class SnowStructure {
 		array.setBlock(x + 5, y + 10, z + 1, b, mc);
 		array.setBlock(x + 5, y + 10, z + 2, b, mc);
 		array.setBlock(x + 5, y + 10, z + 3, b, mc);
-		array.setBlock(x + 5, y + 10, z + 4, b, ms);
 		array.setBlock(x + 5, y + 10, z + 5, b, ms);
 		array.setBlock(x + 5, y + 10, z + 11, b, ms);
-		array.setBlock(x + 5, y + 10, z + 12, b, 3);
 		array.setBlock(x + 5, y + 10, z + 13, b, mc);
 		array.setBlock(x + 5, y + 10, z + 14, b, mc);
 		array.setBlock(x + 5, y + 10, z + 15, b, mc);
 		array.setBlock(x + 5, y + 11, z + 3, b, mc);
-		array.setBlock(x + 5, y + 11, z + 4, b, ms);
 		array.setBlock(x + 5, y + 11, z + 5, b, ms);
 		array.setBlock(x + 5, y + 11, z + 11, b, ms);
-		array.setBlock(x + 5, y + 11, z + 12, b, 3);
 		array.setBlock(x + 5, y + 11, z + 13, b, mc);
 		array.setBlock(x + 5, y + 12, z + 3, b, mc);
 		array.setBlock(x + 5, y + 12, z + 4, b, mc);
@@ -546,13 +552,9 @@ public class SnowStructure {
 		array.setBlock(x + 6, y + 9, z + 15, b, mc);
 		array.setBlock(x + 6, y + 10, z + 2, b, ms);
 		array.setBlock(x + 6, y + 10, z + 3, b, ms);
-		array.setBlock(x + 6, y + 10, z + 4, b, ms);
-		array.setBlock(x + 6, y + 10, z + 12, b, 3);
 		array.setBlock(x + 6, y + 10, z + 13, b, ms);
 		array.setBlock(x + 6, y + 10, z + 14, b, ms);
 		array.setBlock(x + 6, y + 11, z + 3, b, ms);
-		array.setBlock(x + 6, y + 11, z + 4, b, ms);
-		array.setBlock(x + 6, y + 11, z + 12, b, 3);
 		array.setBlock(x + 6, y + 11, z + 13, b, ms);
 		array.setBlock(x + 6, y + 12, z + 3, b, mc);
 		array.setBlock(x + 6, y + 12, z + 4, b, ms);

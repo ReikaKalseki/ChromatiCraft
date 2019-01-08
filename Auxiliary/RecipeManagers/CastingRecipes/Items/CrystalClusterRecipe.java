@@ -20,10 +20,11 @@ import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 
 public class CrystalClusterRecipe extends TempleCastingRecipe implements ShardGroupingRecipe {
 
-	public CrystalClusterRecipe(ItemStack out) {
+	public CrystalClusterRecipe(ItemStack out, CrystalGroupRecipe r1, CrystalGroupRecipe r2) {
 		super(out, getRecipe(out));
 
-		//this.addRune(color, rx, ry, rz);
+		this.addRunes(r1.getRunes());
+		this.addRunes(r2.getRunes());
 	}
 
 	private static IRecipe getRecipe(ItemStack out) {

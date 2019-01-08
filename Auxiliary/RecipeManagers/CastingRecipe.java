@@ -384,6 +384,12 @@ public class CastingRecipe implements APICastingRecipe {
 		catch (Exception e) {
 			throw new RegistrationException(ChromatiCraft.instance, "Invalid casting recipe was going to be added: "+this.getClass(), e);
 		}
+
+		if (this instanceof TempleCastingRecipe) {
+			if (!MultiBlockCastingRecipe.class.isAssignableFrom(this.getClass()) && ((TempleCastingRecipe)this).runes.isEmpty()) {
+				ChromatiCraft.logger.log("WARNING! Recipe "+this.toString()+" contains no runes!");
+			}
+		}
 	}
 
 	public static class TempleCastingRecipe extends CastingRecipe implements RuneRecipe {

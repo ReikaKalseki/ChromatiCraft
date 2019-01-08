@@ -398,6 +398,7 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.BURROW);
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.OCEAN);
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.DESERTSTRUCT);
+		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.SNOWSTRUCT);
 
 		progressMap.addParent(ProgressStage.TURBOCHARGE,	ProgressStage.DIMENSION);
 		progressMap.addParent(ProgressStage.TURBOCHARGE,	ProgressStage.STRUCTCOMPLETE);
