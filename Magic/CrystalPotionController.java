@@ -26,7 +26,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Items.Tools.ItemPurifyCrystal;
+import Reika.ChromatiCraft.Items.Tools.Powered.ItemPurifyCrystal;
 import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;

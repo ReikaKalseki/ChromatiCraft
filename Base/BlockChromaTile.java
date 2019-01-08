@@ -51,6 +51,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
 import Reika.ChromatiCraft.Base.TileEntity.FluidEmitterChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.FluidIOChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverChromaticBase;
@@ -140,7 +141,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 	@Override
 	public float getExplosionResistance(Entity e, World world, int x, int y, int z, double eX, double eY, double eZ) {
 		ChromaTiles t = ChromaTiles.getTile(world, x, y, z);
-		if (t == ChromaTiles.TABLE)
+		if (t == ChromaTiles.TABLE || t == ChromaTiles.DATANODE || t == ChromaTiles.EXPLOSIONSHIELD)
 			return Float.MAX_VALUE;
 		return super.getExplosionResistance(e, world, x, y, z, eX, eY, eZ);
 	}
@@ -180,7 +181,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int s) {
 		int meta = iba.getBlockMetadata(x, y, z);
 		TileEntityChromaticBase te = (TileEntityChromaticBase)iba.getTileEntity(x, y, z);
-		return icons[meta][s][te.getIconState(s)];
+		return icons[meta][s][te instanceof VariableTexture ? ((VariableTexture)te).getIconState(s) : 0];
 	}
 
 	@Override
@@ -225,7 +226,9 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 					String s = k == 0 ? "bottom" : k == 1 ? "top" : "side";
 					String path = c.name().toLowerCase(Locale.ENGLISH)+"_"+s;
 					icons[c.getBlockMetadata()][k][0] = ico.registerIcon("chromaticraft:tile/"+path);
-					icons[c.getBlockMetadata()][k][1] = ico.registerIcon("chromaticraft:tile/"+path+"_variant");
+					if (c.hasTextureVariants()) {
+						icons[c.getBlockMetadata()][k][1] = ico.registerIcon("chromaticraft:tile/"+path+"_variant");
+					}
 				}
 			}
 		}

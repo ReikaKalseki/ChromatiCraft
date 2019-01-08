@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -56,7 +57,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityRitualTable extends InventoriedCrystalReceiver implements /*GuiController, */BreakAction, TriggerableAction, OwnedTile,
-OperationInterval, MultiBlockChromaTile {
+OperationInterval, MultiBlockChromaTile, VariableTexture {
 
 	private boolean hasStructure = false;
 	private boolean hasEnhancedStructure = false;
@@ -276,8 +277,6 @@ OperationInterval, MultiBlockChromaTile {
 			MinecraftForge.EVENT_BUS.post(new RitualCompletionEvent(ep, ability.getID()));
 			flag = true;
 		}
-		abilitySoundTick = 2000;
-		ability = null;
 		if (ep instanceof EntityPlayerMP)
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 		if (worldObj.isRemote) {
@@ -285,6 +284,8 @@ OperationInterval, MultiBlockChromaTile {
 			if (flag)
 				this.doCompletionParticles(ep, ability);
 		}
+		abilitySoundTick = 2000;
+		ability = null;
 	}
 
 	@SideOnly(Side.CLIENT)

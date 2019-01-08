@@ -27,7 +27,7 @@ public class ChromaChests {
 			data.addItem(2, Location.DUNGEON, ChromaStacks.getShard(CrystalElement.elements[i]), 2, 8, 2);
 			data.addItem(3, Location.VILLAGE, ChromaStacks.getShard(CrystalElement.elements[i]), 1, 3, 2);
 			data.addItem(1, Location.PYRAMID, ChromaStacks.getShard(CrystalElement.elements[i]), 4, 16, 5);
-			data.addItem(1, Location.JUNGLE_DISPENSER, ChromaStacks.getShard(CrystalElement.elements[i]), 2, 9, 3);
+			//data.addItem(1, Location.JUNGLE_DISPENSER, ChromaStacks.getShard(CrystalElement.elements[i]), 2, 9, 3);
 		}
 
 		data.addItem(2, Location.BONUS, ChromaItems.HELP.getStackOf(), 1, 1, 3);

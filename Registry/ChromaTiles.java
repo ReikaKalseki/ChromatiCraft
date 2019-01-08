@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomHitbox;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
@@ -834,6 +835,10 @@ public enum ChromaTiles implements TileEnum {
 		if (this == AURAPOINT)
 			return ProgressStage.CTM.isPlayerAtStage(ep);
 		return true;
+	}
+
+	public boolean hasTextureVariants() {
+		return VariableTexture.class.isAssignableFrom(tile);
 	}
 
 }

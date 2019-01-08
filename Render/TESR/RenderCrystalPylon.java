@@ -96,6 +96,9 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 				if (!te.getTargets().isEmpty()) {
 					s += 1;
 				}
+				if (ChromaIcons.loadXmasTextures()) {
+					s *= 0.7;
+				}
 				if (!te.canConduct() && !StructureRenderer.isRenderingTiles()) {
 					s = 0.75;
 				}

@@ -331,7 +331,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 				case SANOBLOOM:
 					return BiomeDictionary.isBiomeOfType(b, Type.JUNGLE);
 				case VOIDREED:
-					return b.biomeID == ThaumIDHandler.Biomes.EERIE.getID() || b instanceof BiomeGenSwamp || b.getClass().getName().contains("BiomeGenBOPSwamp");
+					return b.biomeID == ThaumIDHandler.Biomes.EERIE.getID() || b instanceof BiomeGenSwamp || b.getClass().getName().contains("BiomeGenBOPSwamp") || b.getClass().getName().contains("BiomeGenLushSwamp");
 				case FLOWIVY:
 					return b instanceof BiomeGenHills || (b.rootHeight >= 1 && b.topBlock == Blocks.grass && !BiomeGlowingCliffs.isGlowingCliffs(b)/* && ReikaBiomeHelper.getBiomeTemp(world, b) < 40*/);
 				case GLOWDAISY:

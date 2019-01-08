@@ -11,35 +11,24 @@ package Reika.ChromatiCraft.World.Dimension;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Random;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
-import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
-
-import org.lwjgl.input.Keyboard;
-
-import paulscode.sound.StreamThread;
 import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Auxiliary.MusicLoader;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionalAudioHandler.DimensionMusic;
 import Reika.DragonAPI.Auxiliary.Trackers.RemoteAssetLoader.RemoteAssetsDownloadCompleteEvent;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.IO.DirectResourceManager;
-import Reika.DragonAPI.Instantiable.IO.CustomMusic;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.relauncher.Side;
@@ -53,21 +42,14 @@ public class ChromaDimensionTicker implements TickHandler {
 
 	public final int dimID = ExtraChromaIDs.DIMID.getValue();
 	private final Collection<Ticket> tickets = new ArrayList();
-	private final ArrayList<DimensionMusic> music = new ArrayList();
-	private final ArrayList<DimensionMusic> freshTracks = new ArrayList();
-
-	private int musicCooldown;
-
-	@SideOnly(Side.CLIENT)
-	private ISound currentMusic;
 
 	private ChromaDimensionTicker() {
 
 	}
 
 	@SideOnly(Side.CLIENT)
-	public ISound getCurrentMusic() {
-		return currentMusic;
+	public static ISound getCurrentMusic() {
+		return ChromaDimensionalAudioHandler.currentMusic;
 	}
 
 	@SubscribeEvent
@@ -77,7 +59,7 @@ public class ChromaDimensionTicker implements TickHandler {
 		ChromatiCraft.logger.log(li.size()+" music tracks available for the dimension: "+li);
 		for (String path : li) {
 			DimensionMusic mus = new DimensionMusic(path, path.substring(0, path.length()-4).endsWith("_c"));
-			music.add(mus);
+			ChromaDimensionalAudioHandler.music.add(mus);
 			DirectResourceManager.getInstance().registerCustomPath(mus.path, ChromaClient.chromaCategory, true);
 		}
 	}
@@ -104,8 +86,9 @@ public class ChromaDimensionTicker implements TickHandler {
 				break;
 			}
 			case CLIENT:
-				if (!music.isEmpty())
-					this.playMusic();
+				if (!ChromaDimensionalAudioHandler.music.isEmpty())
+					ChromaDimensionalAudioHandler.playMusic();
+				ChromaDimensionalAudioHandler.ensureSoundOn();
 				SkyRiverManagerClient.handleSkyRiverMovementClient();
 				break;
 			case PLAYER:
@@ -127,52 +110,6 @@ public class ChromaDimensionTicker implements TickHandler {
 			default:
 				break;
 		}
-	}
-
-	@SideOnly(Side.CLIENT)
-	private void playMusic() {
-		if (Minecraft.getMinecraft().theWorld != null && Minecraft.getMinecraft().theWorld.provider.dimensionId == dimID) {
-			if (!MonumentCompletionRitual.areRitualsRunning()) {
-				SoundHandler sh = Minecraft.getMinecraft().getSoundHandler();
-				StreamThread th = ReikaSoundHelper.getStreamingThread(sh);
-				if (th == null || !th.isAlive()) {
-					sh.stopSounds();
-					ReikaSoundHelper.restartStreamingSystem(sh);
-				}
-				//ReikaJavaLibrary.pConsole(s.path+":"+sh.isSoundPlaying(s));
-				if (currentMusic != null && ReikaObfuscationHelper.isDeObfEnvironment() && Keyboard.isKeyDown(Keyboard.KEY_END)) {
-					sh.stopSound(currentMusic);
-					musicCooldown = 0;
-				}
-				if (currentMusic != null && sh.isSoundPlaying(currentMusic)) {
-					return;
-				}
-				if (musicCooldown > 0) {
-					musicCooldown--;
-					return;
-				}
-
-				DimensionMusic s = this.selectTrack(Minecraft.getMinecraft().thePlayer);
-				if (s != null)
-					s.play(sh);
-
-				currentMusic = s;
-				musicCooldown = 300+rand.nextInt(900);
-			}
-		}
-	}
-
-	@SideOnly(Side.CLIENT)
-	private DimensionMusic selectTrack(EntityPlayer ep) {
-		if (freshTracks.isEmpty()) {
-			freshTracks.addAll(music);
-			Collections.shuffle(freshTracks);
-		}
-		DimensionMusic s = freshTracks.remove(0);
-		while (!s.canPlay(ep) && !freshTracks.isEmpty()) {
-			s = freshTracks.remove(0);
-		}
-		return s.canPlay(ep) ? s : null;
 	}
 
 	private void unloadChunks() {
@@ -201,22 +138,6 @@ public class ChromaDimensionTicker implements TickHandler {
 	@Override
 	public String getLabel() {
 		return "Chroma Dimension Tag";
-	}
-
-	private static class DimensionMusic extends CustomMusic {
-
-		private final boolean isCompletionGated;
-
-		private DimensionMusic(String path, boolean b) {
-			super(path);
-
-			isCompletionGated = b;
-		}
-
-		public final boolean canPlay(EntityPlayer ep) {
-			return isCompletionGated ? ProgressStage.CTM.isPlayerAtStage(ep) : true;
-		}
-
 	}
 
 }

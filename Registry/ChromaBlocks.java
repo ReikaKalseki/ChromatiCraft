@@ -57,6 +57,7 @@ import Reika.ChromatiCraft.Block.BlockRedstonePod;
 import Reika.ChromatiCraft.Block.BlockRift;
 import Reika.ChromatiCraft.Block.BlockRouterNode;
 import Reika.ChromatiCraft.Block.BlockSelectiveGlass;
+import Reika.ChromatiCraft.Block.BlockTrapFloor;
 import Reika.ChromatiCraft.Block.Crystal.BlockCaveCrystal;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlass;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow;
@@ -254,7 +255,10 @@ public enum ChromaBlocks implements BlockEnum {
 	METAALLOYLAMP(BlockMetaAlloyLamp.class,		ItemBlockSidePlaced.class,		"chroma.metaalloy"),
 	WARPNODE(BlockWarpNode.class,												"chroma.warpnode"),
 	FAKESKY(BlockFakeSky.class,													"chroma.fakesky"),
-	CHUNKLOADER(BlockDimensionChunkloader.class,								"chroma.chunkloader");
+	CHUNKLOADER(BlockDimensionChunkloader.class,								"chroma.chunkloader"),
+	//SPAWNERCONTROL(BlockSpawnerShutdown.class,	ItemBlockSidePlaced.class,		"chroma.spawnershutdown"),
+	TRAPFLOOR(BlockTrapFloor.class,												"chroma.trapfloor"),
+	;
 
 	private Class blockClass;
 	private String blockName;
@@ -545,6 +549,8 @@ public enum ChromaBlocks implements BlockEnum {
 			case FAKESKY:
 			case WARPNODE:
 			case CHUNKLOADER:
+				//case SPAWNERCONTROL:
+			case TRAPFLOOR:
 				return false;
 			default:
 				return true;

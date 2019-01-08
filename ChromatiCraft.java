@@ -183,6 +183,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 import Reika.DragonAPI.ModInteract.BannedItemReader;
 import Reika.DragonAPI.ModInteract.ItemStackRepository;
 import Reika.DragonAPI.ModInteract.ReikaEEHelper;
@@ -490,6 +491,8 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		glowingcliffsEdge = new GlowingCliffsEdge(ExtraChromaIDs.LUMINOUSEDGE.getValue());
 
+		ReikaBiomeHelper.addChildBiome(glowingcliffs, glowingcliffsEdge);
+
 		//replace 1/8 of jungle and 1/8 of Mega Taiga, for a total of 4/(16-2) = 28% net spawn rate of either Jungle or MT
 		//revised to 1/16th of each for 2/15 = 13% spawn rate
 		SpecialBiomePlacementRegistry.instance.registerID(this, Category.WARM, 2, glowingcliffs.biomeID);
@@ -795,6 +798,9 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		if (ModList.VOIDMONSTER.isLoaded()) {
 			DimensionAPI.blacklistDimensionForSounds(ExtraChromaIDs.DIMID.getValue());
+			DimensionAPI.blacklistBiomeForSounds(ExtraChromaIDs.RAINBOWFOREST.getValue());
+			DimensionAPI.blacklistBiomeForSounds(ExtraChromaIDs.LUMINOUSCLIFFS.getValue());
+			DimensionAPI.blacklistBiomeForSounds(ExtraChromaIDs.LUMINOUSEDGE.getValue());
 			DimensionAPI.setDimensionRuleForSpawning(ExtraChromaIDs.DIMID.getValue(), false);
 		}
 

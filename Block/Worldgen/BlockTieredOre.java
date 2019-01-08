@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Block.Worldgen;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -44,6 +45,7 @@ import Reika.DragonAPI.Instantiable.Worldgen.ControllableOreVein;
 import Reika.DragonAPI.Instantiable.Worldgen.ControllableOreVein.BlockExcludingOreVein;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.RotaryCraft.API.ItemFetcher;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -56,6 +58,10 @@ public class BlockTieredOre extends BlockChromaTiered {
 	private final IIcon[] back = new IIcon[ARR_LENGTH];
 	private final IIcon[] geode = new IIcon[ARR_LENGTH];
 	private final IIcon[] geodestone = new IIcon[ARR_LENGTH];
+
+	private static final HashSet<String> geodes = new HashSet(ReikaJavaLibrary.makeListFrom(
+			"BINDING", "FOCAL", "TELEPORT", "FIRAXITE", "THERMITE", "SPACERIFT"
+			));
 
 	public BlockTieredOre(Material mat) {
 		super(mat);
@@ -109,7 +115,7 @@ public class BlockTieredOre extends BlockChromaTiered {
 		}
 
 		public boolean renderAsGeode() {
-			return this == BINDING || this == FOCAL || this == TELEPORT || this == FIRAXITE || this == THERMITE || this == SPACERIFT;
+			return geodes.contains(this.name());
 		}
 	}
 
@@ -239,15 +245,21 @@ public class BlockTieredOre extends BlockChromaTiered {
 
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
+		ArrayList<String> entries = ReikaJavaLibrary.getEnumEntriesWithoutInitializing(TieredOres.class);
 		for (int i = 0; i < ARR_LENGTH; i++) {
 			String s = "chromaticraft:ore/tier_"+i;
-			back[i] = ico.registerIcon(s+"_underlay");
-			overlay[i] = ico.registerIcon(s+"_overlay");
-			geode[i] = ico.registerIcon(s+"_geode");
+			if (geodes.contains(entries.get(i))) {
+				geode[i] = ico.registerIcon(s+"_geode");
+			}
+			else {
+				back[i] = ico.registerIcon(s+"_underlay");
+				overlay[i] = ico.registerIcon(s+"_overlay");
+			}
 		}
 
 		for (int i = 0; i < geodestone.length; i++) {
-			geodestone[i] = ico.registerIcon("chromaticraft:ore/geodestone/"+i);
+			if (geodes.contains(entries.get(i)))
+				geodestone[i] = ico.registerIcon("chromaticraft:ore/geodestone/"+i);
 		}
 
 		blockIcon = Blocks.stone.getIcon(0, 0);

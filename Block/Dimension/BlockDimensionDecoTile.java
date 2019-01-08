@@ -57,7 +57,7 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 		public static DimDecoTileTypes[] list = values();
 
 		private final String itemTex;
-		private IIcon icon;
+		private IIcon itemIcon;
 
 		private DimDecoTileTypes(String s) {
 			itemTex = s;
@@ -90,7 +90,7 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 		}
 
 		public IIcon getItemIcon() {
-			return icon;
+			return itemIcon;
 		}
 
 		public List<IIcon> getIcons(int pass) {
@@ -177,7 +177,8 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 		for (int i = 0; i < DimDecoTileTypes.list.length; i++) {
 			icons[0][i] = ico.registerIcon("chromaticraft:dimgen2/underlay_"+i);
 			icons[1][i] = ico.registerIcon("chromaticraft:dimgen2/overlay_"+i);
-			DimDecoTileTypes.list[i].icon = ico.registerIcon("chromaticraft:dimgen/"+DimDecoTileTypes.list[i].itemTex);
+			//if (DimDecoTileTypes.list[i].isMineable())
+				DimDecoTileTypes.list[i].itemIcon = ico.registerIcon("chromaticraft:dimgen/"+DimDecoTileTypes.list[i].itemTex);
 		}
 	}
 

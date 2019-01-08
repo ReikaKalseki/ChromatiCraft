@@ -62,14 +62,15 @@ import Reika.ChromatiCraft.Items.Tools.ItemOrePick;
 import Reika.ChromatiCraft.Items.Tools.ItemOreSilker;
 import Reika.ChromatiCraft.Items.Tools.ItemOwnerKey;
 import Reika.ChromatiCraft.Items.Tools.ItemPendant;
-import Reika.ChromatiCraft.Items.Tools.ItemPurifyCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemPylonFinder;
 import Reika.ChromatiCraft.Items.Tools.ItemSplashGun;
 import Reika.ChromatiCraft.Items.Tools.ItemSplineAttack;
-import Reika.ChromatiCraft.Items.Tools.ItemStructureFinder;
 import Reika.ChromatiCraft.Items.Tools.ItemThrowableGem;
 import Reika.ChromatiCraft.Items.Tools.ItemVacuumGun;
 import Reika.ChromatiCraft.Items.Tools.ItemWarpCapsule;
+import Reika.ChromatiCraft.Items.Tools.Powered.ItemPurifyCrystal;
+import Reika.ChromatiCraft.Items.Tools.Powered.ItemSpawnerBypass;
+import Reika.ChromatiCraft.Items.Tools.Powered.ItemStructureFinder;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
@@ -165,7 +166,7 @@ public enum ChromaItems implements ItemEnum {
 	FLOATBOOTS(40, false,	"chroma.floatboots",	ItemFloatstoneBoots.class),
 	WARPCAPSULE(41, false,	"chroma.warpitem",		ItemWarpCapsule.class),
 	BEEFRAME(208, false, 	"chroma.beeframe",		ItemChromaBeeFrame.class, ModList.FORESTRY),
-	STRUCTUREFINDER(43, false, "chroma.structfind",	ItemStructureFinder.class),
+	STRUCTUREFINDER(49, false, "chroma.structfind",	ItemStructureFinder.class),
 	MAGICBRANCH(0, true, 	"chroma.branch",		ItemMagicBranch.class),
 	ARTEFACT(112, true,		"chroma.artefact",		ItemUnknownArtefact.class),
 	DATACRYSTAL(44, false, 	"chroma.datacrystal",	ItemDataCrystal.class),
@@ -175,6 +176,7 @@ public enum ChromaItems implements ItemEnum {
 	SPLINEATTACK(46, false,	"chroma.splineattack",	ItemSplineAttack.class),
 	SHIELDEDCELL(47, false,	"chroma.shieldedcell",	ItemShieldedCell.class),
 	BOTTLENECK(48, false,	"chroma.bottleneck",	ItemBottleneckFinder.class),
+	SPAWNERBYPASS(43, false,"chroma.spawnerbypass",	ItemSpawnerBypass.class),
 	;
 
 	private final int index;

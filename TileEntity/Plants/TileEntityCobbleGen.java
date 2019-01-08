@@ -412,6 +412,7 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant implements Operati
 		CRYSTALSTONE("chroma", "lava", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.SMOOTH.ordinal()), 50, 25F, 50F),
 		//ALLOY1("iron.molten", "lava", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.SMOOTH.ordinal()), 10, 10F, 20F),
 		CLIFFSTONE("luma", "lava", ChromaBlocks.CLIFFSTONE.getStackOfMetadata(Variants.STONE.getMeta(false, false)), 120, 0F, 10F),
+		ENDSTONE("ender", "lava", new ItemStack(Blocks.end_stone), 80, 1F, 20F),
 		;
 
 		private final ItemStack output;

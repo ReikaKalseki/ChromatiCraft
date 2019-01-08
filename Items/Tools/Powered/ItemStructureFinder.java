@@ -7,13 +7,12 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Items.Tools;
+package Reika.ChromatiCraft.Items.Tools.Powered;
 
 import java.util.List;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -21,9 +20,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
-import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.World.IWG.DungeonGenerator;
 import Reika.DragonAPI.DragonAPICore;
@@ -41,7 +41,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class ItemStructureFinder extends ItemChromaTool {
+public class ItemStructureFinder extends ItemPoweredChromaTool {
 
 	private static final double RANGE = 512;
 	private static final double FUZZ = 96;
@@ -62,8 +62,8 @@ public class ItemStructureFinder extends ItemChromaTool {
 	}
 
 	@Override
-	public void onUpdate(ItemStack is, World world, Entity e, int slot, boolean held) {
-		if (held && e instanceof EntityPlayer && !world.isRemote) {
+	public boolean doTick(ItemStack is, World world, EntityPlayer e, boolean held) {
+		if (!world.isRemote) {
 			if (is.stackTagCompound == null) {
 				is.stackTagCompound = new NBTTagCompound();
 			}
@@ -76,16 +76,17 @@ public class ItemStructureFinder extends ItemChromaTool {
 					double px = ReikaRandomHelper.getRandomPlusMinus(e.posX, FUZZ);
 					double py = ReikaRandomHelper.getRandomPlusMinus(e.posY, FUZZ);
 					double pz = ReikaRandomHelper.getRandomPlusMinus(e.posZ, FUZZ);
-					this.sendParticle((EntityPlayer)e, px, py, pz, TYPES[type], true);
+					this.sendParticle(e, px, py, pz, TYPES[type], true);
 				}
 				else {
 					double px = ReikaRandomHelper.getRandomPlusMinus(loc.xCoord+0.5, FUZZ);
 					double py = ReikaRandomHelper.getRandomPlusMinus(loc.yCoord+0.5, FUZZ);
 					double pz = ReikaRandomHelper.getRandomPlusMinus(loc.zCoord+0.5, FUZZ);
-					this.sendParticle((EntityPlayer)e, px, py, pz, TYPES[type], false);
+					this.sendParticle(e, px, py, pz, TYPES[type], false);
 				}
 			}
 		}
+		return true;
 	}
 
 	private void sendParticle(EntityPlayer ep, double sx, double sy, double sz, Structures s, boolean close) {
@@ -140,6 +141,7 @@ public class ItemStructureFinder extends ItemChromaTool {
 
 	@Override
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
+		super.addInformation(is, ep, li, vb);
 		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) {
 			int type = this.getStructureType(is);
 			li.add(String.format("Type: "+TYPES[type]));
@@ -152,6 +154,36 @@ public class ItemStructureFinder extends ItemChromaTool {
 		type = (type+1)%TYPES.length;
 		is.stackTagCompound.setInteger("type", type);
 		return is;
+	}
+
+	@Override
+	protected boolean isActivated(EntityPlayer e, boolean held) {
+		return held;
+	}
+
+	@Override
+	protected CrystalElement getColor() {
+		return CrystalElement.BLACK;
+	}
+
+	@Override
+	protected int getMaxCharge() {
+		return 36000; //half hour
+	}
+
+	@Override
+	protected int getChargeStates() {
+		return 2;
+	}
+
+	@Override
+	protected int getChargeState(float frac) {
+		return frac > 0.1 ? 1 : 0;
+	}
+
+	@Override
+	protected int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is) {
+		return 1;
 	}
 
 }

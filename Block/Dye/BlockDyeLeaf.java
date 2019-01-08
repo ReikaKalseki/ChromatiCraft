@@ -13,6 +13,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -35,6 +36,8 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
+import Reika.DragonAPI.ModRegistry.ModWoodList;
 
 public class BlockDyeLeaf extends BlockCustomLeaf {
 
@@ -208,6 +211,33 @@ public class BlockDyeLeaf extends BlockCustomLeaf {
 	@Override
 	public boolean allowModDecayControl() {
 		return true;
+	}
+
+	@Override
+	public boolean isNatural() {
+		return this.decays();
+	}
+
+	@Override
+	public boolean isMatchingLeaf(IBlockAccess iba, int x, int y, int z, int lookX, int lookY, int lookZ) {
+		return iba.getBlock(lookX, lookY, lookZ) == this && iba.getBlockMetadata(x, y, z) == iba.getBlockMetadata(lookX, lookY, lookZ);
+	}
+
+	@Override
+	public boolean isValidLog(IBlockAccess iba, int thisX, int thisY, int thisZ, int lookX, int lookY, int lookZ) {
+		Block b = iba.getBlock(lookX, lookY, lookZ);
+		int meta = iba.getBlockMetadata(lookX, lookY, lookZ);
+		return ReikaTreeHelper.getTree(b, meta) != null || ModWoodList.isModWood(b, meta);
+	}
+
+	@Override
+	public int getMaximumLogSearchRadius() {
+		return 6;
+	}
+
+	@Override
+	public int getMaximumLogSearchDepth() {
+		return 5;
 	}
 
 }

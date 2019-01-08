@@ -305,5 +305,30 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 		return true;
 	}
 
+	@Override
+	public boolean isNatural() {
+		return true;
+	}
+
+	@Override
+	public boolean isMatchingLeaf(IBlockAccess iba, int thisX, int thisY, int thisZ, int lookX, int lookY, int lookZ) {
+		return iba.getBlock(lookX, lookY, lookZ) == this;
+	}
+
+	@Override
+	public boolean isValidLog(IBlockAccess iba, int thisX, int thisY, int thisZ, int lookX, int lookY, int lookZ) {
+		return ((BlockDyeLeaf)ChromaBlocks.DECAY.getBlockInstance()).isValidLog(iba, thisX, thisY, thisZ, lookX, lookY, lookZ);
+	}
+
+	@Override
+	public int getMaximumLogSearchRadius() {
+		return 18;
+	}
+
+	@Override
+	public int getMaximumLogSearchDepth() {
+		return 15;
+	}
+
 
 }

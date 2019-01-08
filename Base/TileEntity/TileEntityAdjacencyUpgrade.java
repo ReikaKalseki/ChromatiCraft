@@ -158,6 +158,7 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 		}
 	}
 
+	/** Return false to prevent further ticking! */
 	protected abstract boolean tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime);
 
 	public boolean canRun(World world, int x, int y, int z) {

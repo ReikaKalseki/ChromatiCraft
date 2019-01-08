@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityChromaCrafter;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Interfaces.Block.CustomSnowAccumulation;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Interfaces.Block.Submergeable;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -37,7 +38,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
-public class BlockStructureShield extends Block implements SemiUnbreakable, Submergeable {
+public class BlockStructureShield extends Block implements SemiUnbreakable, Submergeable, CustomSnowAccumulation {
 
 	public static enum BlockType {
 		CLOAK("Cloak"),
@@ -267,6 +268,14 @@ public class BlockStructureShield extends Block implements SemiUnbreakable, Subm
 	@Override
 	public boolean isSubmergeable(IBlockAccess iba, int x, int y, int z) {
 		return true;
+	}
+
+	@Override
+	public boolean canSnowAccumulate(World world, int x, int y, int z) {
+		int meta = world.getBlockMetadata(x, y, z);
+		if (BlockType.list[meta%8] == BlockType.GLASS)
+			return meta >= 8;
+			return true;
 	}
 
 }

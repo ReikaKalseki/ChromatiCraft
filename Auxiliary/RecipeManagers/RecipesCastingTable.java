@@ -65,6 +65,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.Repeat
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RouterNodeRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RuneRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.SelectiveGlassRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.TrapFloorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.CrystalCellRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.CrystalClusterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.CrystalCoreRecipe;
@@ -199,6 +200,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.PurifyC
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.PylonFinderRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.RecipeHoverWand;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.RecipeItemMover;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.SpawnerBypassRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.SplashGunRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.SplineAttackRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.StorageCrystalRecipe;
@@ -816,6 +818,22 @@ public class RecipesCastingTable {
 			this.addRecipe(new ManaBoosterRecipe(ChromaTiles.MANABOOSTER.getCraftedProduct()));
 
 		this.addRecipe(new NetworkOptimizerRecipe(ChromaTiles.OPTIMIZER.getCraftedProduct(), ChromaStacks.lumenCore));
+
+		is = ChromaItems.SPAWNERBYPASS.getStackOf();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "ptq", "ada", "rvp", 'd', Items.diamond, 'v', ChromaStacks.voidDust, 'a', ChromaStacks.auraDust, 't', ChromaStacks.beaconDust, 'p', Items.ender_pearl, 'r', Items.redstone, 'l', ReikaItemHelper.lapisDye, 'q', Items.quartz);
+		this.addRecipe(new SpawnerBypassRecipe(is, sr));
+
+		//is = ChromaBlocks.SPAWNERCONTROL.getStackOf();
+		//sr = ReikaRecipeHelper.getShapedRecipeFor(is, "fef", "ege", "rgr", 'f', ChromaStacks.bindingCrystal, 'g', Blocks.glowstone, 'r', Blocks.redstone_block, 'e', Items.emerald);
+		//this.addRecipe(new SpawnerShutdownRecipe(is, sr));
+
+		is = ChromaBlocks.TRAPFLOOR.getStackOf();
+		sr = new ShapedOreRecipe(is, "bab", "svs", "bvb", 's', "slimeball", 'b', Blocks.cobblestone, 'a', ChromaStacks.auraDust, 'v', ChromaStacks.voidDust);
+		this.addRecipe(new TrapFloorRecipe(is, 1, sr));
+		sr = new ShapedOreRecipe(is, "bab", "svs", "bvb", 's', "slimeball", 'b', Blocks.stonebrick, 'a', ChromaStacks.auraDust, 'v', ChromaStacks.voidDust);
+		this.addRecipe(new TrapFloorRecipe(is, 4, sr));
+		sr = new ShapedOreRecipe(is, "bab", "svs", "bvb", 's', "slimeball", 'b', ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.STONE.ordinal()), 'a', ChromaStacks.auraDust, 'v', ChromaStacks.voidDust);
+		this.addRecipe(new TrapFloorRecipe(is, 12, sr));
 
 		this.addSpecialRecipes();
 	}

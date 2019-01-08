@@ -20,7 +20,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaRenderList;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -78,10 +77,6 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 
 	public abstract ChromaTiles getTile();
 
-	public int getTextureState(ForgeDirection side) {
-		return 0;
-	}
-
 	@Override
 	protected void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
@@ -135,10 +130,6 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 	@ModDependent(ModList.OPENCOMPUTERS)
 	public final Visibility getOCNetworkVisibility() {
 		return Visibility.Network;//this.getMachine().isPipe() ? Visibility.Neighbors : Visibility.Network;
-	}
-
-	public int getIconState(int side) {
-		return 0;
 	}
 
 	public final boolean isOwnedByPlayer(EntityPlayer ep) {

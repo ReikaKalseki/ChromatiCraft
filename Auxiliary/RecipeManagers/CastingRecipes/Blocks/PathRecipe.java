@@ -47,7 +47,7 @@ public class PathRecipe extends TempleCastingRecipe {
 
 	@Override
 	public int getTypicalCraftedAmount() {
-		return 64;
+		return 8;
 	}
 
 }

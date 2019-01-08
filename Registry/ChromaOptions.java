@@ -82,7 +82,8 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	BIOMEBLEND("Blend CC Biome Edges", true),
 	MIDISIZE("Orchestra MIDI Size Limit (KB)", 80),
 	ALLOWSTRUCTPASS("Allow Structure Bypass Passwords", true),
-	SUPERBUILDKEYBIND("Superbuild Ability Activation", Key.LCTRL.toString());
+	SUPERBUILDKEYBIND("Superbuild Ability Activation", Key.LCTRL.toString()),
+	VILLAGERATE("Village Structure Frequency", 1F);
 
 	private String label;
 	private boolean defaultState;
@@ -196,6 +197,11 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	@Override
 	public boolean shouldLoad() {
 		return true;
+	}
+
+	public static float getVillageStructureWeight(float defaultValue) {
+		float f = Math.min(2.5F, VILLAGERATE.getFloat());
+		return Math.max(0.1F, f*defaultValue);
 	}
 
 	public static boolean doesVanillaDyeDrop() {

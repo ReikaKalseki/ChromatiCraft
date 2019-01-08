@@ -22,6 +22,8 @@ import java.util.UUID;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -130,6 +132,7 @@ public class ProgressionManager implements ProgressRegistry {
 		BURROW(			Shareability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.MOSS.metadata)), //Burrow structure
 		OCEAN(			Shareability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.GLASS.metadata)), //Ocean floor structure
 		DESERTSTRUCT(	Shareability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.COBBLE.metadata)),
+		SNOWSTRUCT(		Shareability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.LIGHT.metadata)),
 		DIE(									Items.skull), //die and lose energy
 		ALLCOLORS(								ChromaItems.ELEMENTAL.getStackOf(CrystalElement.CYAN)), //find all colors
 		REPEATER(		Shareability.ALWAYS,	ChromaTiles.REPEATER.getCraftedProduct()), //craft any repeater type
@@ -141,7 +144,8 @@ public class ProgressionManager implements ProgressRegistry {
 		BALLLIGHTNING(							ChromaStacks.auraDust),
 		POWERCRYSTAL(	Shareability.PROXIMITY,	ChromaTiles.CRYSTAL.getCraftedProduct()),
 		TURBOCHARGE(	Shareability.PROXIMITY,	ChromaTiles.PYLONTURBO.getCraftedProduct()),
-		BREAKSPAWNER(	Shareability.ALWAYS,	new ItemStack(Blocks.mob_spawner)),
+		FINDSPAWNER(	Shareability.PROXIMITY,	new ItemStack(Blocks.mob_spawner)),
+		BREAKSPAWNER(	Shareability.ALWAYS,	new ItemStack(Items.spawn_egg, 1, (int)EntityList.classToIDMapping.get(EntitySpider.class))),
 		KILLDRAGON(		Shareability.PROXIMITY,	new ItemStack(Blocks.dragon_egg)),
 		KILLWITHER(		Shareability.PROXIMITY,	new ItemStack(Items.nether_star)),
 		KILLMOB(								new ItemStack(Items.skull, 1, 4)),
@@ -330,6 +334,8 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.CHARGE, 	ProgressStage.CRYSTALS);
 
 		progressMap.addParent(ProgressStage.FOCUSCRYSTAL, 	ProgressStage.CRYSTALS);
+
+		progressMap.addParent(ProgressStage.BREAKSPAWNER, 	ProgressStage.FINDSPAWNER);
 
 		progressMap.addParent(ProgressStage.ABILITY, 	ProgressStage.CHARGE);
 		progressMap.addParent(ProgressStage.ABILITY, 	ProgressStage.LINK);

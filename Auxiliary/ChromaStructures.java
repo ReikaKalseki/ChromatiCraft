@@ -64,6 +64,7 @@ public class ChromaStructures {
 		BURROW(true),
 		OCEAN(false),
 		DESERT(false),
+		SNOWSTRUCT(false),
 		PORTAL(false),
 		PERSONAL(true),
 		BROADCAST(false),
@@ -123,6 +124,8 @@ public class ChromaStructures {
 					return getOceanStructure(world, x, y, z);
 				case DESERT:
 					return getDesertStructure(world, x, y, z);
+				case SNOWSTRUCT:
+					return getSnowStructure(world, x, y, z);
 				case PORTAL:
 					return getPortalStructure(world, x, y, z, false);
 				case PERSONAL:
@@ -197,6 +200,8 @@ public class ChromaStructures {
 					return getOceanStructure(w, 0, 0, 0);
 				case DESERT:
 					return getDesertStructure(w, 0, 0, 0);
+				case SNOWSTRUCT:
+					return getSnowStructure(w, 0, 0, 0);
 				case PORTAL:
 					return getPortalStructure(w, 0, 0, 0, true);
 				case PERSONAL:
@@ -248,6 +253,7 @@ public class ChromaStructures {
 				case BURROW:
 				case OCEAN:
 				case DESERT:
+				case SNOWSTRUCT:
 					return true;
 				default:
 					return false;
@@ -1850,6 +1856,10 @@ public class ChromaStructures {
 
 	public static FilledBlockArray getDesertStructure(World world, int x, int y, int z) {
 		return DesertStructure.getDesertStructure(world, x, y, z);
+	}
+
+	public static FilledBlockArray getSnowStructure(World world, int x, int y, int z) {
+		return SnowStructure.getSnowStructure(world, x, y, z);
 	}
 
 	public static Block getChestGen() {

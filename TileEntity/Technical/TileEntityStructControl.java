@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Auxiliary.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Auxiliary.OceanStructure;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.SnowStructure;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.LootChestAccessEvent;
@@ -154,6 +155,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 					break;
 				case DESERT:
 					break;
+				case SNOWSTRUCT:
+					break;
 				default:
 					break;
 			}
@@ -204,6 +207,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				return aabb.offset(0, 2, 0).expand(1, 1, 1);
 			case DESERT:
 				return aabb.expand(5, 2, 5).offset(0, 1, 0);
+			case SNOWSTRUCT:
+				return aabb.offset(0, 5, 2).expand(6, 2, 6);
 			default:
 				return aabb;
 		}
@@ -298,6 +303,17 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				world.setBlockMetadataWithNotify(x+7, y+6, z+11, BlockType.CRACK.metadata, 3);
 				world.setBlockMetadataWithNotify(x+7, y+6, z+12, BlockType.CRACK.metadata, 3);
 				world.setBlockMetadataWithNotify(x+11, y+6, z+7, BlockType.CRACK.metadata, 3);
+				break;
+			case SNOWSTRUCT:
+				for (Coordinate c : SnowStructure.getCrackToCenter()) {
+					int dx = x+c.xCoord-8;
+					int dy = y+c.yCoord-3;
+					int dz = z+c.zCoord-6;
+					world.setBlockMetadataWithNotify(dx, dy, dz, BlockStructureShield.BlockType.CRACKS.metadata, 3);
+					ReikaSoundHelper.playBreakSound(world, dx, dy, dz, Blocks.stone);
+					if (world.isRemote)
+						ReikaRenderHelper.spawnDropParticles(world, dx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+				}
 				break;
 			default:
 				break;
@@ -403,6 +419,20 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 					}
 				}
 				break;
+			case SNOWSTRUCT:
+				if (blocks != null) {
+					for (int i = 0; i < blocks.getSize(); i++) {
+						Coordinate c = blocks.getNthBlock(i);
+						int x = c.xCoord+8;
+						int y = c.yCoord+3;
+						int z = c.zCoord+6;
+						if (y > yCoord && worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
+							worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+							ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
+						}
+					}
+				}
+				break;
 			default:
 				break;
 		}
@@ -497,6 +527,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				break;
 			case DESERT:
 				break;
+			case SNOWSTRUCT:
+				break;
 			default:
 				break;
 		}
@@ -527,6 +559,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			case DESERT:
 				ReikaInventoryHelper.addToIInv(ChromaStacks.desertLoot, this, true);
 				break;
+			case SNOWSTRUCT:
+				ReikaInventoryHelper.addToIInv(ChromaStacks.snowLoot, this, true);
+				break;
 			default:
 				break;
 		}
@@ -545,6 +580,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				break;
 			case DESERT:
 				blocks = ChromaStructures.getDesertStructure(world, x, y, z);
+				break;
+			case SNOWSTRUCT:
+				blocks = ChromaStructures.getSnowStructure(world, x, y, z);
 				break;
 			default:
 				break;
@@ -624,6 +662,22 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 							int x = c.xCoord-7;
 							int y = c.yCoord-3;
 							int z = c.zCoord-7;
+							if (worldObj.getBlock(x, y, z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
+								worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+							else if (worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
+								worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+								ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
+							}
+						}
+					}
+					break;
+				case SNOWSTRUCT:
+					if (blocks != null) {
+						for (int i = 0; i < blocks.getSize(); i++) {
+							Coordinate c = blocks.getNthBlock(i);
+							int x = c.xCoord+5;
+							int y = c.yCoord+8;
+							int z = c.zCoord+2;
 							if (worldObj.getBlock(x, y, z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
 								worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
 							else if (worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
@@ -734,6 +788,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				return ProgressStage.OCEAN;
 			case DESERT:
 				return ProgressStage.DESERTSTRUCT;
+			case SNOWSTRUCT:
+				return ProgressStage.SNOWSTRUCT;
 			default:
 				return null;
 		}

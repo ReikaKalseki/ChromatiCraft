@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Worldgen.VillageBuilding.StructureEntry;
@@ -45,8 +46,8 @@ public class VillagersFailChromatiCraft {
 	private static final ArrayList<StructureEntry> entries = new ArrayList();
 
 	static {
-		entries.add(new StructureEntry(BrokenChromaStructure.class, 1, "FailChC", 15, 6, 16));
-		entries.add(new StructureEntry(WoodenChromaStructure.class, 4, "ChCHouse", 15, 8, 15));
+		entries.add(new StructureEntry(BrokenChromaStructure.class, ChromaOptions.getVillageStructureWeight(0.4F), "FailChC", 15, 6, 16));
+		entries.add(new StructureEntry(WoodenChromaStructure.class, ChromaOptions.getVillageStructureWeight(4), "ChCHouse", 15, 8, 15));
 	}
 
 	public static void register() {

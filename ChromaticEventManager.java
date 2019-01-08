@@ -114,7 +114,8 @@ import Reika.ChromatiCraft.Items.ItemFertilitySeed;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemFloatstoneBoots;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
-import Reika.ChromatiCraft.Items.Tools.ItemPurifyCrystal;
+import Reika.ChromatiCraft.Items.Tools.Powered.ItemPurifyCrystal;
+import Reika.ChromatiCraft.Items.Tools.Powered.ItemSpawnerBypass;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
@@ -169,6 +170,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ClassDependent;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.IO.ReikaFileReader;
+import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Event.AttackAggroEvent;
@@ -201,6 +203,7 @@ import Reika.DragonAPI.Instantiable.Event.PlayerSprintEvent;
 import Reika.DragonAPI.Instantiable.Event.SetBlockEvent;
 import Reika.DragonAPI.Instantiable.Event.SlotEvent.AddToSlotEvent;
 import Reika.DragonAPI.Instantiable.Event.SlotEvent.RemoveFromSlotEvent;
+import Reika.DragonAPI.Instantiable.Event.SpawnerCheckPlayerEvent;
 import Reika.DragonAPI.Instantiable.Event.VillagerTradeEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.SinglePlayerLogoutEvent;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
@@ -259,6 +262,19 @@ public class ChromaticEventManager {
 
 	}
 	 */
+	@SubscribeEvent
+	public void toggleSpawners(SpawnerCheckPlayerEvent evt) {
+		if (ItemSpawnerBypass.isActive(evt.player)) {
+			RayTracer rt = RayTracer.getVisualLOS();
+			rt.addTransparentBlock(Blocks.mob_spawner);
+			rt.setOrigins(evt.spawner.getSpawnerX()+0.5, evt.spawner.getSpawnerY()+0.5, evt.spawner.getSpawnerZ()+0.5, evt.player.posX, evt.player.posY, evt.player.posZ);
+			if (!rt.isClearLineOfSight(evt.player.worldObj)) {
+				evt.player.getEntityData().setLong("spawnerpass", evt.player.worldObj.getTotalWorldTime());
+				evt.setResult(Result.DENY);
+			}
+		}
+	}
+
 	@ModDependent(ModList.FORESTRY)
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void resyncAlvearies(PlayerInteractEvent evt) {
@@ -820,17 +836,36 @@ public class ChromaticEventManager {
 			if (evt.target instanceof EntityPlayer) {
 				EntityPlayer ep = (EntityPlayer)evt.target;
 				if (evt.entityLiving instanceof EntityLiving) {
-					if (Chromabilities.COMMUNICATE.enabledOn(ep)) {
-						//evt.setCanceled(true);
-						((EntityLiving)evt.entityLiving).setAttackTarget(null);
-					}
-					else if (TileEntityCloakingTower.isPlayerCloaked(ep)) {
+					if (this.isPlayerNotTargetable(ep, evt.entityLiving.posX, evt.entityLiving.posY, evt.entityLiving.posZ)) {
 						//evt.setCanceled(true);
 						((EntityLiving)evt.entityLiving).setAttackTarget(null);
 					}
 				}
 			}
 		}
+	}
+
+	@SubscribeEvent(priority=EventPriority.LOWEST)
+	public void cloakPlayers(MobTargetingEvent.Pre evt) {
+		if (evt.world.isRemote)
+			return;
+		if (this.isPlayerNotTargetable(evt.player, evt.x, evt.y, evt.z)) {
+			evt.setResult(Result.DENY);
+		}
+	}
+
+	private boolean isPlayerNotTargetable(EntityPlayer ep, double x, double y, double z) {
+		if (Chromabilities.COMMUNICATE.enabledOn(ep)) {
+			//evt.setCanceled(true);
+			return true;
+		}
+		else if (TileEntityCloakingTower.isPlayerCloaked(ep)) {
+			if (ep.getDistanceSq(x, y, z) >= 4) {
+				//evt.setCanceled(true);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -1732,17 +1767,6 @@ public class ChromaticEventManager {
 		}
 		else if (evt.toDim == ReikaTwilightHelper.getDimensionID()) {
 			ProgressStage.TWILIGHT.stepPlayerTo(evt.player);
-		}
-	}
-
-	@SubscribeEvent(priority=EventPriority.LOWEST)
-	public void cloakPlayers(MobTargetingEvent.Pre evt) {
-		if (evt.world.isRemote)
-			return;
-		if (TileEntityCloakingTower.isPlayerCloaked(evt.player)) {
-			if (evt.player.getDistanceSq(evt.x, evt.y, evt.z) >= 4) {
-				evt.setResult(Result.DENY);
-			}
 		}
 	}
 

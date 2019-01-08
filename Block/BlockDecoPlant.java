@@ -182,8 +182,10 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
 		for (int i = 0; i < 16; i++) {
-			front_icons[i] = ico.registerIcon("chromaticraft:plant/decoplant_"+i+"_front");
-			back_icons[i] = ico.registerIcon("chromaticraft:plant/decoplant_"+i+"_back");
+			if (ChromaTiles.getTileFromIDandMetadata(this, i) != null) {
+				front_icons[i] = ico.registerIcon("chromaticraft:plant/decoplant_"+i+"_front");
+				back_icons[i] = ico.registerIcon("chromaticraft:plant/decoplant_"+i+"_back");
+			}
 		}
 	}
 

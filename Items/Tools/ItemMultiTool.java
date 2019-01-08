@@ -22,7 +22,7 @@ public class ItemMultiTool extends ItemChromaTool implements ToolSprite {
 
 	public ItemMultiTool(int index) {
 		super(index);
-		this.setMaxDamage(400);
+		this.setMaxDamage(900); //was 400
 	}
 
 	@Override

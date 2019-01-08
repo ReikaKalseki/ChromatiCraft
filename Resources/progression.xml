@@ -485,15 +485,29 @@
 			A giant, hostile dragon whose destruction gives both physical and conceptual reward
 		</desc>
 	</killdragon>
-	<breakspawner>
+	<findspawner>
 		<title>
 			Endless Mobs
 		</title>
 		<hint>
-			These metal cages spew forth endless creatures...
+			What is that strange flaming box?
 		</hint>
 		<reveal>
-			The only way to stop them is to destroy them.
+			A construct of some malevolent origin, a source for an interminable stream of creatures.
+		</reveal>
+		<desc>
+			Strange metal boxes that release infinite numbers of monsters
+		</desc>
+	</findspawner>
+	<breakspawner>
+		<title>
+			Stopping the Torrent
+		</title>
+		<hint>
+			These metal cages spew forth endless creatures...how to put an end to it?
+		</hint>
+		<reveal>
+			The only way to stop them is to destroy them...for now.
 		</reveal>
 		<desc>
 			Destroying a spawner not only stops the flood of creatures, but also lets you better understand, and maybe even harvest it

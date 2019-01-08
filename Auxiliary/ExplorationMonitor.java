@@ -64,6 +64,9 @@ public class ExplorationMonitor implements TickHandler {
 				else if (b == Blocks.bedrock && y < 6) {
 					ProgressStage.BEDROCK.stepPlayerTo(ep);
 				}
+				else if (b == Blocks.mob_spawner) {
+					ProgressStage.FINDSPAWNER.stepPlayerTo(ep);
+				}
 			}
 
 			if (ep.worldObj.provider.dimensionId == -1 && ep.posY > 128) {

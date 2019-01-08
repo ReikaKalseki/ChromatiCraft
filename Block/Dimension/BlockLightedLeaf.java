@@ -190,4 +190,29 @@ public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBloc
 		return true;
 	}
 
+	@Override
+	public boolean isNatural() {
+		return true;
+	}
+
+	@Override
+	public boolean isMatchingLeaf(IBlockAccess iba, int thisX, int thisY, int thisZ, int lookX, int lookY, int lookZ) {
+		return iba.getBlock(lookX, lookY, lookZ) == this;
+	}
+
+	@Override
+	public boolean isValidLog(IBlockAccess iba, int thisX, int thisY, int thisZ, int lookX, int lookY, int lookZ) {
+		return iba.getBlock(lookX, lookY, lookZ) == ChromaBlocks.GLOWLOG.getBlockInstance();
+	}
+
+	@Override
+	public int getMaximumLogSearchRadius() {
+		return 8;
+	}
+
+	@Override
+	public int getMaximumLogSearchDepth() {
+		return 12;
+	}
+
 }

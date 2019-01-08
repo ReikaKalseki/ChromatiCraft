@@ -26,6 +26,7 @@ import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -53,7 +54,8 @@ import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeTile.PipeType;
 
 @Strippable(value = {"buildcraft.api.transport.IPipeConnection"})
-public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements IFluidHandler, IPipeConnection, OperationInterval {
+public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements IFluidHandler, IPipeConnection, OperationInterval,
+VariableTexture {
 
 	private static final ElementTagCompound smelt = new ElementTagCompound();
 

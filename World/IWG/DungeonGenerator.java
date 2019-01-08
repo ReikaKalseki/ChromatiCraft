@@ -26,6 +26,7 @@ import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntitySilverfish;
 import net.minecraft.entity.monster.EntitySpider;
+import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -66,6 +67,7 @@ import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -94,6 +96,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		structs.add(Structures.BURROW);
 		structs.add(Structures.OCEAN);
 		structs.add(Structures.DESERT);
+		structs.add(Structures.SNOWSTRUCT);
 
 		generatedStructures = new EnumMap(Structures.class);
 
@@ -213,6 +216,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		if (this.canGenerateIn(world)) {
 			for (Structures s : structs) {
 				if (this.isGennableChunk(world, chunkX*16, chunkZ*16, random, s)) {
+					//ReikaWorldHelper.forceGenAndPopulate(world, chunkX*16, chunkZ*16, s == Structures.OCEAN ? 2 : 1); causes extra structures
 					if (this.tryGenerate(world, chunkX*16, chunkZ*16, random, s)) {
 						//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+chunkX*16+", "+chunkZ*16);
 					}
@@ -367,6 +371,25 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						//too dry for moss//this.mossify(s, struct, r);
 						return true;
 					}
+				}
+				return false;
+			}
+			case SNOWSTRUCT: {
+				int y = world.getTopSolidOrLiquidBlock(x, z)-1;
+				FilledBlockArray arr = ChromaStructures.getSnowStructure(world, x, y, z);
+				if (this.isValidSnowStructLocation(world, x, y, z, arr)) {
+					arr.offset(0, -6, 0);
+					arr.place(2);
+					this.mossify(s, arr, r);
+					this.convertDirtToGrass(arr);
+					this.addSnowCover(arr);
+					this.cleanupSnowEntrances(arr);
+					world.setBlock(x+8, y-3, z+6, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
+					TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x+8, y-3, z+6);
+					te.generate(s, CrystalElement.WHITE);
+					this.generateStructure(s, te);
+					this.populateChests(s, arr, r);
+					return true;
 				}
 				return false;
 			}
@@ -552,6 +575,19 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					}
 				}
 				break;
+			case SNOWSTRUCT:
+				for (int k = 0; k < arr.getSize(); k++) {
+					Coordinate c = arr.getNthBlock(k);
+					Block b = c.getBlock(arr.world);
+					if (b == Blocks.mob_spawner) {
+						TileEntityMobSpawner te = (TileEntityMobSpawner)arr.world.getTileEntity(c.xCoord, c.yCoord, c.zCoord);
+						ReikaSpawnerHelper.setMobSpawnerMob(te, (String)EntityList.classToStringMapping.get(EntityWolf.class));
+						te.func_145881_a().activatingRangeFromPlayer = 30;
+						te.func_145881_a().spawnDelay = 0;
+						te.func_145881_a().maxNearbyEntities = 8;
+					}
+				}
+				break;
 			default:
 				break;
 		}
@@ -569,6 +605,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						bonus = 4;
 					if (struct == Structures.DESERT && c.yCoord-arr.getMinY() < 4)
 						bonus = 2;
+					if (struct == Structures.SNOWSTRUCT)
+						bonus = c.yCoord-arr.getMinY() < 4 ? 2 : 1;
 					populateChest(te, struct, bonus, r);
 				}
 			}
@@ -589,6 +627,10 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				break;
 			case DESERT:
 				s = ChestGenHooks.PYRAMID_DESERT_CHEST;
+				break;
+			case SNOWSTRUCT:
+				s = ChestGenHooks.STRONGHOLD_CORRIDOR;
+				break;
 			default:
 				break;
 		}
@@ -605,6 +647,30 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				if (arr.world.getBlockLightValue(c.xCoord, c.yCoord+1, c.zCoord) > 8) {
 					c.setBlock(arr.world, Blocks.grass);
 				}
+			}
+		}
+	}
+
+	private void addSnowCover(FilledBlockArray arr) {
+		for (int k = 0; k < arr.getSize(); k++) {
+			Coordinate c = arr.getNthBlock(k);
+			if (c.isEmpty(arr.world) && Blocks.snow_layer.canPlaceBlockAt(arr.world, c.xCoord, c.yCoord, c.zCoord)) {
+				if (arr.world.getPrecipitationHeight(c.xCoord, c.zCoord) <= c.yCoord)
+					c.setBlock(arr.world, Blocks.snow_layer);
+			}
+		}
+	}
+
+	private void cleanupSnowEntrances(FilledBlockArray arr) {
+		for (int k = 0; k < arr.getSize(); k++) {
+			Coordinate c = arr.getNthBlock(k);
+			Block b = c.getBlock(arr.world);
+			int i = 1;
+			Block b2 = c.offset(0, i, 0).getBlock(arr.world);
+			while (b2 == Blocks.dirt || b2 == Blocks.grass || b2 == Blocks.snow_layer) {
+				c.offset(0, i, 0).setBlock(arr.world, Blocks.air);
+				i++;
+				b2 = c.offset(0, i, 0).getBlock(arr.world);
 			}
 		}
 	}
@@ -758,6 +824,28 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		return false;
 	}
 
+	private boolean isValidSnowStructLocation(World world, int x, int y, int z, FilledBlockArray arr) {
+		int h1 = world.getTopSolidOrLiquidBlock(arr.getMinX(), arr.getMinZ());
+		int h2 = world.getTopSolidOrLiquidBlock(arr.getMaxX(), arr.getMinZ());
+		int h3 = world.getTopSolidOrLiquidBlock(arr.getMinX(), arr.getMaxZ());
+		int h4 = world.getTopSolidOrLiquidBlock(arr.getMaxX(), arr.getMaxZ());
+		int max = ReikaMathLibrary.multiMax(h1, h2, h3, h4);
+		int min = ReikaMathLibrary.multiMin(h1, h2, h3, h4);
+		if (Math.abs(max-min) > 2)
+			return false;
+		BiomeGenBase b1 = world.getBiomeGenForCoords(arr.getMinX(), arr.getMinZ());
+		BiomeGenBase b2 = world.getBiomeGenForCoords(arr.getMaxX(), arr.getMinZ());
+		BiomeGenBase b3 = world.getBiomeGenForCoords(arr.getMinX(), arr.getMaxZ());
+		BiomeGenBase b4 = world.getBiomeGenForCoords(arr.getMaxX(), arr.getMaxZ());
+		if (b1 != b2 || b1 != b3 || b1 != b4)
+			return false;
+		Block id1 = world.getBlock(arr.getMinX(), h1, arr.getMinZ());
+		Block id2 = world.getBlock(arr.getMaxX(), h2, arr.getMinZ());
+		Block id3 = world.getBlock(arr.getMinX(), h3, arr.getMaxZ());
+		Block id4 = world.getBlock(arr.getMaxX(), h4, arr.getMaxZ());
+		return id1 != Blocks.ice && id2 != Blocks.ice && id3 != Blocks.ice && id4 != Blocks.ice;
+	}
+
 	private boolean isVoidWorld(World world, int x, int z) {
 		return world.getBlock(x, 0, z) == Blocks.air || world.canBlockSeeTheSky(x, 1, z);
 	}
@@ -767,15 +855,18 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			return false;
 		if (this.isStructureWithin(s, world, x, 48, z, this.getMinSeparation(s)))
 			return false;
+		BiomeGenBase b = world.getBiomeGenForCoords(x, z);
 		switch(s) {
 			case OCEAN:
-				return r.nextInt(/*32*/6) == 0 && ReikaBiomeHelper.isOcean(world.getBiomeGenForCoords(x, z));
+				return r.nextInt(/*32*/6) == 0 && ReikaBiomeHelper.isOcean(b);
 			case CAVERN:
 				return r.nextInt(/*48*/5) == 0;
 			case BURROW:
-				return r.nextInt(/*64*/8) == 0 && world.getBiomeGenForCoords(x, z).topBlock == Blocks.grass;
+				return r.nextInt(/*64*/8) == 0 && b.topBlock == Blocks.grass && (b.theBiomeDecorator.treesPerChunk > 1 || !b.getEnableSnow());
 			case DESERT:
-				return r.nextInt(/*120*/10) == 0 && world.getBiomeGenForCoords(x, z).topBlock == Blocks.sand;
+				return r.nextInt(/*120*/10) == 0 && b.topBlock == Blocks.sand;
+			case SNOWSTRUCT:
+				return r.nextInt(/*120*/2) == 0 && b.topBlock == Blocks.grass && b.getEnableSnow() && b.theBiomeDecorator.treesPerChunk < 1;
 			default:
 				return false;
 		}
@@ -791,6 +882,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				return 128;
 			case BURROW:
 				return 192;
+			case SNOWSTRUCT:
+				return 768;
 			default:
 				return 0;
 		}

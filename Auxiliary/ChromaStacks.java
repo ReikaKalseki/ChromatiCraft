@@ -92,6 +92,7 @@ public class ChromaStacks {
 	public static final ItemStack boostroot	 		= ChromaItems.TIERED.getStackOfMetadata(22);
 	public static final ItemStack lumenGem			= ChromaItems.TIERED.getStackOfMetadata(23);
 	public static final ItemStack avolite			= ChromaItems.TIERED.getStackOfMetadata(24);
+	public static final ItemStack snowLoot	 		= ChromaItems.TIERED.getStackOfMetadata(25);
 
 	public static final ItemStack miasma			= ChromaItems.DIMGEN.getStackOfMetadata(0);
 	public static final ItemStack floatstone		= ChromaItems.DIMGEN.getStackOfMetadata(1);

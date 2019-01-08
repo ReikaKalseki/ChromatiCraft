@@ -42,6 +42,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -80,6 +81,10 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 		}
 
 		public List<IIcon> getIcons(int pass) {
+			if (icons[this.ordinal()] == null) {
+				ChromatiCraft.logger.logError("Dimension Deco Type "+this+" is missing icons!");
+				return ReikaJavaLibrary.makeListFrom(Blocks.bedrock.blockIcon, Blocks.emerald_block.blockIcon, Blocks.obsidian.blockIcon, Blocks.mob_spawner.blockIcon);
+			}
 			List<IIcon> li = new ArrayList();
 			int idx = 0;
 			for (IIcon ico : icons[this.ordinal()]) {
@@ -182,17 +187,23 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
+		if (icons[meta] == null) {
+			ChromatiCraft.logger.logError("Dimension Deco Type "+DimDecoTypes.list[meta]+" is missing icons!");
+			return Blocks.bedrock.blockIcon;
+		}
 		return icons[meta].get(0);
 	}
 
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
 		for (int i = 0; i < DimDecoTypes.list.length; i++) {
+			//if (DimDecoTypes.list[i].hasBlockRender()) {
 			int n = DimDecoTypes.list[i].numIcons;
 			icons[i] = new ArrayList();
 			for (int k = 0; k < n; k++) {
 				icons[i].add(ico.registerIcon("chromaticraft:dimgen/"+i+"_layer_"+k));
 			}
+			//}
 		}
 	}
 

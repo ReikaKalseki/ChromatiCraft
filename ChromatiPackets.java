@@ -75,7 +75,7 @@ import Reika.ChromatiCraft.Items.ItemUnknownArtefact;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
 import Reika.ChromatiCraft.Items.Tools.ItemBulkMover;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
-import Reika.ChromatiCraft.Items.Tools.ItemStructureFinder;
+import Reika.ChromatiCraft.Items.Tools.Powered.ItemStructureFinder;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemFlightWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;

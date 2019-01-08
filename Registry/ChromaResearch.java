@@ -232,6 +232,8 @@ public enum ChromaResearch implements ProgressElement {
 	FAKESKY(		ChromaBlocks.FAKESKY,											ResearchLevel.RUNECRAFT),
 	CHUNKLOADER(	ChromaBlocks.CHUNKLOADER,										ResearchLevel.ENDGAME,		ProgressStage.DIMENSION),
 	LUMA(			ChromaBlocks.LUMA,												ResearchLevel.RAWEXPLORE,	ProgressStage.LUMA),
+	//SPAWNERCONTROL(	ChromaBlocks.SPAWNERCONTROL,									ResearchLevel.RAWEXPLORE,	ProgressStage.BREAKSPAWNER),
+	TRAPFLOOR(		ChromaBlocks.TRAPFLOOR,											ResearchLevel.RAWEXPLORE,	ProgressStage.SNOWSTRUCT),
 
 	TOOLDESC("Tools", ""),
 	WAND(				ChromaItems.TOOL,			ResearchLevel.ENTRY),
@@ -276,6 +278,7 @@ public enum ChromaResearch implements ProgressElement {
 	SPLINEATTACK(		ChromaItems.SPLINEATTACK,	ResearchLevel.RUNECRAFT,		ProgressStage.KILLMOB),
 	SHIELDEDCELL(		ChromaItems.SHIELDEDCELL,	ResearchLevel.BASICCRAFT,		ProgressStage.ARTEFACT),
 	BOTTLENECK(			ChromaItems.BOTTLENECK,		ResearchLevel.NETWORKING,		ProgressStage.REPEATER),
+	SPAWNERBYPASS(		ChromaItems.SPAWNERBYPASS,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.FINDSPAWNER),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
@@ -779,6 +782,8 @@ public enum ChromaResearch implements ProgressElement {
 			return false;
 		if (this == LUMA)
 			return false;
+		if (this == SPAWNERBYPASS)
+			return false;
 		if (this.requiresProgress(ProgressStage.TOWER) || this.requiresProgress(ProgressStage.ARTEFACT))
 			return false;
 		return struct == null || !struct.isNatural();
@@ -858,6 +863,10 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == REPEATERLAMP)
 			return true;
 		if (this == FAKESKY)
+			return true;
+		//if (this == SPAWNERCONTROL)
+		//	return true;
+		if (this == TRAPFLOOR)
 			return true;
 		return false;
 	}
