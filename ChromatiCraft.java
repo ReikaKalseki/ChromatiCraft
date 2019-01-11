@@ -488,6 +488,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		//BiomeManager.addBiome(BiomeType.COOL, new BiomeEntry(glowingcliffs, ChromaOptions.getGlowingCliffsWeight()));
 		//BiomeManager.addBiome(BiomeType.WARM, new BiomeEntry(glowingcliffs, ChromaOptions.getGlowingCliffsWeight()));
 		//BiomeManager.addSpawnBiome(glowingcliffs);
+		BiomeManager.addStrongholdBiome(glowingcliffs);
 
 		glowingcliffsEdge = new GlowingCliffsEdge(ExtraChromaIDs.LUMINOUSEDGE.getValue());
 

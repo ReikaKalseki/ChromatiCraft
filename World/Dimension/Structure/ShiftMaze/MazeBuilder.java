@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
+import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock.Passability;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;
@@ -128,7 +129,7 @@ public class MazeBuilder {
 	}
 
 	private void setDoor(ShiftMazeGenerator gen, ChunkSplicedGenerationCache world, int x, int y, int z, List<ShiftMazeState> states) {
-		world.setBlock(x, y, z, ChromaBlocks.SHIFTLOCK.getBlockInstance(), states.contains(gen.getActiveState()) ? 1 : 0);
+		world.setBlock(x, y, z, ChromaBlocks.SHIFTLOCK.getBlockInstance(), states.contains(gen.getActiveState()) ? Passability.OPEN.ordinal() : Passability.CLOSED.ordinal());
 		gen.addToggleDoor(x, y, z, states);
 	}
 

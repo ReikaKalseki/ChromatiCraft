@@ -53,6 +53,7 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 		COLORS[Structures.CAVERN.ordinal()] = 0x8FA3B5;
 		COLORS[Structures.OCEAN.ordinal()] = 0x60C4C4;
 		COLORS[Structures.DESERT.ordinal()] = 0xBF655D;
+		COLORS[Structures.SNOWSTRUCT.ordinal()] = 0xf050c0;
 	}
 
 	private static final Random rand = new Random();

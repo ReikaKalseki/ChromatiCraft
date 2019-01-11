@@ -97,7 +97,7 @@ public class SkypeaterGenerator implements RetroactiveGenerator {
 
 	@Override
 	public String getIDString() {
-		return "airpeaters";
+		return "ChromatiCraft Airpeaters";
 	}
 
 }

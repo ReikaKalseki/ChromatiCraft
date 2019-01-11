@@ -345,6 +345,20 @@
 			A subsurface hollow, filled with loot but also danger
 		</desc>
 	</desertstruct>
+	<snowstruct>
+		<title>
+			Snowy Outposts
+		</title>
+		<hint>
+			Snow and ice as far as the eye can see, and yet there remain things to find.
+		</hint>
+		<reveal>
+			Including, it seems, long-abandoned outposts holding...something.
+		</reveal>
+		<desc>
+			A rich discovery in a desolate arctic wasteland
+		</desc>
+	</snowstruct>
 	<die>
 		<title>
 			Painful Loss

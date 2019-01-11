@@ -35,6 +35,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityMeteorTower;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger.Location;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
@@ -1859,7 +1860,7 @@ public class ChromaStructures {
 	}
 
 	public static FilledBlockArray getSnowStructure(World world, int x, int y, int z) {
-		return SnowStructure.getSnowStructure(world, x, y, z);
+		return SnowStructure.getSnowStructure(world, x, y, z, DragonAPICore.rand);
 	}
 
 	public static Block getChestGen() {

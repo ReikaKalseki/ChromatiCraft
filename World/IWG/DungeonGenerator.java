@@ -48,6 +48,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Auxiliary.DesertStructure;
 import Reika.ChromatiCraft.Auxiliary.OceanStructure;
+import Reika.ChromatiCraft.Auxiliary.SnowStructure;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.ModInterface.MystPages;
@@ -379,7 +380,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			}
 			case SNOWSTRUCT: {
 				int y = world.getTopSolidOrLiquidBlock(x, z)-1;
-				FilledBlockArray arr = ChromaStructures.getSnowStructure(world, x, y, z);
+				FilledBlockArray arr = SnowStructure.getSnowStructure(world, x, y, z, r);
 				if (this.isValidSnowStructLocation(world, x, y, z, arr)) {
 					arr.offset(0, -6, 0);
 					arr.place(2);

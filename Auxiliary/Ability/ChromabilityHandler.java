@@ -68,6 +68,7 @@ public class ChromabilityHandler implements TickHandler {
 		if (ep.worldObj != null && ModList.MYSTCRAFT.isLoaded() && MystPages.Pages.BUFFERDRAIN.existsInWorld(ep.worldObj)) {
 			PlayerElementBuffer.instance.removeFromPlayer(ep, CrystalElement.randomElement(), 1);
 		}
+		ep.noClip = Chromabilities.ORECLIP.enabledOn(ep);
 	}
 
 	@Override

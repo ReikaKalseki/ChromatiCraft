@@ -11,14 +11,22 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock.Passability;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.GeoStrata.Blocks.BlockLavaRock;
+import Reika.GeoStrata.Registry.GeoBlocks;
 
 
 public class SnowStructure {
@@ -43,41 +51,172 @@ public class SnowStructure {
 		li.add(new Coordinate(8, 5, 8));
 		li.add(new Coordinate(8, 5, 9));
 		li.add(new Coordinate(8, 5, 10));
-		li.add(new Coordinate(8, 6, 10));
+		//li.add(new Coordinate(8, 6, 10));
 		li.add(new Coordinate(7, 5, 7));
 		li.add(new Coordinate(7, 5, 8));
 		li.add(new Coordinate(7, 5, 9));
 		li.add(new Coordinate(7, 5, 10));
-		li.add(new Coordinate(7, 6, 10));
-		li.add(new Coordinate(7, 7, 10));
-		li.add(new Coordinate(7, 8, 10));
-		li.add(new Coordinate(8, 7, 10));
-		li.add(new Coordinate(8, 8, 10));
-		li.add(new Coordinate(9, 6, 10));
-		li.add(new Coordinate(9, 7, 10));
-		li.add(new Coordinate(9, 8, 10));
+		//li.add(new Coordinate(7, 6, 10));
+		//li.add(new Coordinate(7, 7, 10));
+		//li.add(new Coordinate(7, 8, 10));
+		//li.add(new Coordinate(8, 7, 10));
+		//li.add(new Coordinate(8, 8, 10));
+		//li.add(new Coordinate(9, 6, 10));
+		//li.add(new Coordinate(9, 7, 10));
+		//li.add(new Coordinate(9, 8, 10));
 		return li;
 	}
 
-	public static FilledBlockArray getSnowStructure(World world, int x, int y, int z) {
+	public static Collection<Coordinate> getRoofCracks(Random rand) {
+		Collection<Coordinate> li = new ArrayList();
+		switch(rand.nextInt(8)) {
+			case 0:
+				li.add(new Coordinate(4, 10, 5));
+				li.add(new Coordinate(4, 10, 6));
+				li.add(new Coordinate(4, 11, 5));
+				li.add(new Coordinate(4, 11, 6));
+				break;
+			case 1:
+				li.add(new Coordinate(4, 10, 10));
+				li.add(new Coordinate(4, 10, 11));
+				li.add(new Coordinate(4, 11, 10));
+				li.add(new Coordinate(4, 11, 11));
+				break;
+			case 2:
+				li.add(new Coordinate(5, 10, 4));
+				li.add(new Coordinate(5, 11, 4));
+				li.add(new Coordinate(6, 10, 4));
+				li.add(new Coordinate(6, 11, 4));
+				break;
+			case 3:
+				li.add(new Coordinate(5, 10, 12));
+				li.add(new Coordinate(5, 11, 12));
+				li.add(new Coordinate(6, 10, 12));
+				li.add(new Coordinate(6, 11, 12));
+				break;
+			case 4:
+				li.add(new Coordinate(10, 10, 4));
+				li.add(new Coordinate(10, 11, 4));
+				li.add(new Coordinate(11, 10, 4));
+				li.add(new Coordinate(11, 11, 4));
+				break;
+			case 5:
+				li.add(new Coordinate(10, 10, 12));
+				li.add(new Coordinate(10, 11, 12));
+				li.add(new Coordinate(11, 10, 12));
+				li.add(new Coordinate(11, 11, 12));
+				break;
+			case 6:
+				li.add(new Coordinate(12, 10, 5));
+				li.add(new Coordinate(12, 10, 6));
+				li.add(new Coordinate(12, 11, 5));
+				li.add(new Coordinate(12, 11, 6));
+				break;
+			case 7:
+				li.add(new Coordinate(12, 10, 10));
+				li.add(new Coordinate(12, 10, 11));
+				li.add(new Coordinate(12, 11, 10));
+				li.add(new Coordinate(12, 11, 11));
+				break;
+		}
+		return li;
+	}
+
+	public static Collection<Coordinate> getCenterAccess(ForgeDirection dir) {
+		Collection<Coordinate> li = new ArrayList();
+		switch(dir) {
+			case WEST:
+				li.add(new Coordinate(6, 6, 7));
+				li.add(new Coordinate(6, 6, 8));
+				li.add(new Coordinate(6, 6, 9));
+				li.add(new Coordinate(6, 7, 7));
+				li.add(new Coordinate(6, 7, 8));
+				li.add(new Coordinate(6, 7, 9));
+				li.add(new Coordinate(6, 8, 7));
+				li.add(new Coordinate(6, 8, 8));
+				li.add(new Coordinate(6, 8, 9));
+				break;
+			case SOUTH:
+				li.add(new Coordinate(7, 6, 10));
+				li.add(new Coordinate(7, 7, 10));
+				li.add(new Coordinate(7, 8, 10));
+				li.add(new Coordinate(8, 6, 10));
+				li.add(new Coordinate(8, 7, 10));
+				li.add(new Coordinate(8, 8, 10));
+				li.add(new Coordinate(9, 6, 10));
+				li.add(new Coordinate(9, 7, 10));
+				li.add(new Coordinate(9, 8, 10));
+				break;
+			case NORTH:
+				li.add(new Coordinate(7, 6, 6));
+				li.add(new Coordinate(7, 7, 6));
+				li.add(new Coordinate(7, 8, 6));
+				li.add(new Coordinate(8, 6, 6));
+				li.add(new Coordinate(8, 7, 6));
+				li.add(new Coordinate(8, 8, 6));
+				li.add(new Coordinate(9, 6, 6));
+				li.add(new Coordinate(9, 7, 6));
+				li.add(new Coordinate(9, 8, 6));
+				break;
+			case EAST:
+				li.add(new Coordinate(10, 6, 7));
+				li.add(new Coordinate(10, 6, 8));
+				li.add(new Coordinate(10, 6, 9));
+				li.add(new Coordinate(10, 7, 7));
+				li.add(new Coordinate(10, 7, 8));
+				li.add(new Coordinate(10, 7, 9));
+				li.add(new Coordinate(10, 8, 7));
+				li.add(new Coordinate(10, 8, 8));
+				li.add(new Coordinate(10, 8, 9));
+				break;
+			default:
+				break;
+		}
+		return li;
+	}
+
+	public static FilledBlockArray getSnowStructure(World world, int x, int y, int z, Random rand) {
 		FilledBlockArray array = new FilledBlockArray(world);
 
 		//array.setBlock(x + 8, y + 3, z + 6, Blocks.blockDiamond);
+
+		getBaseStructure(array, x, y, z);
+		getAirSpaces(array, x, y, z);
 
 		for (Coordinate c : getCrackToCenter()) {
 			array.setBlock(x + c.xCoord, y + c.yCoord, z + c.zCoord, b, mcrack);
 		}
 
-		array.setBlock(x + 5, y + 10, z + 4, b, BlockType.CRACK.metadata);
-		array.setBlock(x + 5, y + 11, z + 4, b, BlockType.CRACK.metadata);
-		array.setBlock(x + 6, y + 10, z + 4, b, BlockType.CRACK.metadata);
-		array.setBlock(x + 6, y + 11, z + 4, b, BlockType.CRACK.metadata);
+		for (int i = 2; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			for (Coordinate c : getCenterAccess(dir)) {
+				array.setBlock(x + c.xCoord, y + c.yCoord, z + c.zCoord, ChromaBlocks.SHIFTLOCK.getBlockInstance(), Passability.CLOSED_HIDDEN.ordinal());
+			}
+		}
+
+		for (Coordinate c : getRoofCracks(rand)) {
+			array.setBlock(x + c.xCoord, y + c.yCoord, z + c.zCoord, b, ms);
+		}
+
+		array.setBlock(x + 5, y + 10, z + 4, b, ms);
+		array.setBlock(x + 5, y + 11, z + 4, b, ms);
+		array.setBlock(x + 6, y + 10, z + 4, b, ms);
+		array.setBlock(x + 6, y + 11, z + 4, b, ms);
+
+		//array.setBlock(x + 5, y + 10, z + 4, b, BlockType.CRACK.metadata);
+		//array.setBlock(x + 5, y + 11, z + 4, b, BlockType.CRACK.metadata);
+		//array.setBlock(x + 6, y + 10, z + 4, b, BlockType.CRACK.metadata);
+		//array.setBlock(x + 6, y + 11, z + 4, b, BlockType.CRACK.metadata);
 
 		array.setBlock(x + 5, y + 10, z + 12, b, ms);
 		array.setBlock(x + 5, y + 11, z + 12, b, ms);
 		array.setBlock(x + 6, y + 10, z + 12, b, ms);
 		array.setBlock(x + 6, y + 11, z + 12, b, ms);
 
+		return array;
+	}
+
+	private static void getBaseStructure(FilledBlockArray array, int x, int y, int z) {
 		array.setBlock(x + 0, y + 5, z + 6, b, BlockType.MOSS.metadata);
 		array.setBlock(x + 0, y + 5, z + 7, b, BlockType.MOSS.metadata);
 		array.setBlock(x + 0, y + 5, z + 8, b, BlockType.MOSS.metadata);
@@ -1363,9 +1502,6 @@ public class SnowStructure {
 		array.setBlock(x + 16, y + 5, z + 8, b, BlockType.MOSS.metadata);
 		array.setBlock(x + 16, y + 5, z + 9, b, BlockType.MOSS.metadata);
 		array.setBlock(x + 16, y + 5, z + 10, b, BlockType.MOSS.metadata);
-
-		getAirSpaces(array, x, y, z);
-		return array;
 	}
 
 	private static void getAirSpaces(FilledBlockArray array, int x, int y, int z) {
@@ -1401,10 +1537,10 @@ public class SnowStructure {
 		array.setBlock(x + 2, y + 8, z + 11, Blocks.air);
 		array.setBlock(x + 2, y + 8, z + 12, Blocks.air);
 		array.setBlock(x + 2, y + 8, z + 13, Blocks.air);
-		array.setBlock(x + 3, y + 4, z + 5, Blocks.lava);
-		array.setBlock(x + 3, y + 4, z + 6, Blocks.lava);
-		array.setBlock(x + 3, y + 4, z + 7, Blocks.lava);
-		array.setBlock(x + 3, y + 4, z + 8, Blocks.lava);
+		array.setBlock(x + 3, y + 4, z + 5, getLava());
+		array.setBlock(x + 3, y + 4, z + 6, getLava());
+		array.setBlock(x + 3, y + 4, z + 7, getLava());
+		array.setBlock(x + 3, y + 4, z + 8, getLava());
 		array.setBlock(x + 3, y + 6, z + 2, Blocks.air);
 		array.setBlock(x + 3, y + 6, z + 3, Blocks.air);
 		array.setBlock(x + 3, y + 6, z + 4, Blocks.air);
@@ -1441,15 +1577,15 @@ public class SnowStructure {
 		array.setBlock(x + 3, y + 8, z + 12, Blocks.air);
 		array.setBlock(x + 3, y + 8, z + 13, Blocks.air);
 		array.setBlock(x + 3, y + 8, z + 14, Blocks.air);
-		array.setBlock(x + 4, y + 4, z + 5, Blocks.lava);
-		array.setBlock(x + 4, y + 4, z + 6, Blocks.lava);
-		array.setBlock(x + 4, y + 4, z + 7, Blocks.lava);
-		array.setBlock(x + 4, y + 4, z + 8, Blocks.lava);
-		array.setBlock(x + 4, y + 4, z + 9, Blocks.lava);
-		array.setBlock(x + 4, y + 4, z + 10, Blocks.lava);
-		array.setBlock(x + 4, y + 4, z + 11, Blocks.lava);
-		array.setBlock(x + 4, y + 4, z + 12, Blocks.lava);
-		array.setBlock(x + 4, y + 4, z + 13, Blocks.lava);
+		array.setBlock(x + 4, y + 4, z + 5, getLava());
+		array.setBlock(x + 4, y + 4, z + 6, getLava());
+		array.setBlock(x + 4, y + 4, z + 7, getLava());
+		array.setBlock(x + 4, y + 4, z + 8, getLava());
+		array.setBlock(x + 4, y + 4, z + 9, getLava());
+		array.setBlock(x + 4, y + 4, z + 10, getLava());
+		array.setBlock(x + 4, y + 4, z + 11, getLava());
+		array.setBlock(x + 4, y + 4, z + 12, getLava());
+		array.setBlock(x + 4, y + 4, z + 13, getLava());
 		array.setBlock(x + 4, y + 6, z + 2, Blocks.air);
 		array.setBlock(x + 4, y + 6, z + 3, Blocks.air);
 		array.setBlock(x + 4, y + 6, z + 4, Blocks.air);
@@ -1486,13 +1622,13 @@ public class SnowStructure {
 		array.setBlock(x + 4, y + 8, z + 12, Blocks.air);
 		array.setBlock(x + 4, y + 8, z + 13, Blocks.air);
 		array.setBlock(x + 4, y + 8, z + 14, Blocks.air);
-		array.setBlock(x + 5, y + 4, z + 6, Blocks.lava);
-		array.setBlock(x + 5, y + 4, z + 7, Blocks.lava);
-		array.setBlock(x + 5, y + 4, z + 8, Blocks.lava);
-		array.setBlock(x + 5, y + 4, z + 9, Blocks.lava);
-		array.setBlock(x + 5, y + 4, z + 10, Blocks.lava);
-		array.setBlock(x + 5, y + 4, z + 12, Blocks.lava);
-		array.setBlock(x + 5, y + 4, z + 13, Blocks.lava);
+		array.setBlock(x + 5, y + 4, z + 6, getLava());
+		array.setBlock(x + 5, y + 4, z + 7, getLava());
+		array.setBlock(x + 5, y + 4, z + 8, getLava());
+		array.setBlock(x + 5, y + 4, z + 9, getLava());
+		array.setBlock(x + 5, y + 4, z + 10, getLava());
+		array.setBlock(x + 5, y + 4, z + 12, getLava());
+		array.setBlock(x + 5, y + 4, z + 13, getLava());
 		array.setBlock(x + 5, y + 6, z + 2, Blocks.air);
 		array.setBlock(x + 5, y + 6, z + 3, Blocks.air);
 		array.setBlock(x + 5, y + 6, z + 4, Blocks.air);
@@ -1533,9 +1669,9 @@ public class SnowStructure {
 		array.setBlock(x + 5, y + 11, z + 8, Blocks.air);
 		array.setBlock(x + 5, y + 11, z + 9, Blocks.air);
 		array.setBlock(x + 5, y + 11, z + 10, Blocks.air);
-		array.setBlock(x + 6, y + 4, z + 11, Blocks.lava);
-		array.setBlock(x + 6, y + 4, z + 12, Blocks.lava);
-		array.setBlock(x + 6, y + 4, z + 13, Blocks.lava);
+		array.setBlock(x + 6, y + 4, z + 11, getLava());
+		array.setBlock(x + 6, y + 4, z + 12, getLava());
+		array.setBlock(x + 6, y + 4, z + 13, getLava());
 		array.setBlock(x + 6, y + 6, z + 2, Blocks.air);
 		array.setBlock(x + 6, y + 6, z + 3, Blocks.air);
 		array.setBlock(x + 6, y + 6, z + 11, Blocks.air);
@@ -1579,9 +1715,9 @@ public class SnowStructure {
 		array.setBlock(x + 7, y + 4, z + 7, Blocks.air);
 		array.setBlock(x + 7, y + 4, z + 8, Blocks.air);
 		array.setBlock(x + 7, y + 4, z + 9, Blocks.air);
-		array.setBlock(x + 7, y + 4, z + 11, Blocks.lava);
-		array.setBlock(x + 7, y + 4, z + 12, Blocks.lava);
-		array.setBlock(x + 7, y + 4, z + 13, Blocks.lava);
+		array.setBlock(x + 7, y + 4, z + 11, getLava());
+		array.setBlock(x + 7, y + 4, z + 12, getLava());
+		array.setBlock(x + 7, y + 4, z + 13, getLava());
 		array.setBlock(x + 7, y + 6, z + 4, Blocks.air);
 		array.setBlock(x + 7, y + 6, z + 5, Blocks.air);
 		array.setBlock(x + 7, y + 6, z + 7, Blocks.air);
@@ -1627,9 +1763,9 @@ public class SnowStructure {
 		array.setBlock(x + 8, y + 4, z + 7, Blocks.air);
 		array.setBlock(x + 8, y + 4, z + 8, Blocks.air);
 		array.setBlock(x + 8, y + 4, z + 9, Blocks.air);
-		array.setBlock(x + 8, y + 4, z + 11, Blocks.lava);
-		array.setBlock(x + 8, y + 4, z + 12, Blocks.lava);
-		array.setBlock(x + 8, y + 4, z + 13, Blocks.lava);
+		array.setBlock(x + 8, y + 4, z + 11, getLava());
+		array.setBlock(x + 8, y + 4, z + 12, getLava());
+		array.setBlock(x + 8, y + 4, z + 13, getLava());
 		array.setBlock(x + 8, y + 6, z + 1, Blocks.air);
 		array.setBlock(x + 8, y + 6, z + 2, Blocks.air);
 		array.setBlock(x + 8, y + 6, z + 3, Blocks.air);
@@ -1686,8 +1822,8 @@ public class SnowStructure {
 		array.setBlock(x + 9, y + 4, z + 7, Blocks.air);
 		array.setBlock(x + 9, y + 4, z + 8, Blocks.air);
 		array.setBlock(x + 9, y + 4, z + 9, Blocks.air);
-		array.setBlock(x + 9, y + 4, z + 11, Blocks.lava);
-		array.setBlock(x + 9, y + 4, z + 12, Blocks.lava);
+		array.setBlock(x + 9, y + 4, z + 11, getLava());
+		array.setBlock(x + 9, y + 4, z + 12, getLava());
 		array.setBlock(x + 9, y + 6, z + 2, Blocks.air);
 		array.setBlock(x + 9, y + 6, z + 3, Blocks.air);
 		array.setBlock(x + 9, y + 6, z + 4, Blocks.air);
@@ -1723,9 +1859,9 @@ public class SnowStructure {
 		array.setBlock(x + 9, y + 11, z + 6, Blocks.air);
 		array.setBlock(x + 9, y + 11, z + 10, Blocks.air);
 		array.setBlock(x + 9, y + 11, z + 11, Blocks.air);
-		array.setBlock(x + 10, y + 4, z + 11, Blocks.lava);
-		array.setBlock(x + 10, y + 4, z + 12, Blocks.lava);
-		array.setBlock(x + 10, y + 4, z + 13, Blocks.lava);
+		array.setBlock(x + 10, y + 4, z + 11, getLava());
+		array.setBlock(x + 10, y + 4, z + 12, getLava());
+		array.setBlock(x + 10, y + 4, z + 13, getLava());
 		array.setBlock(x + 10, y + 6, z + 2, Blocks.air);
 		array.setBlock(x + 10, y + 6, z + 3, Blocks.air);
 		array.setBlock(x + 10, y + 6, z + 4, Blocks.air);
@@ -1758,12 +1894,12 @@ public class SnowStructure {
 		array.setBlock(x + 10, y + 11, z + 9, Blocks.air);
 		array.setBlock(x + 10, y + 11, z + 10, Blocks.air);
 		array.setBlock(x + 10, y + 11, z + 11, Blocks.air);
-		array.setBlock(x + 11, y + 4, z + 7, Blocks.lava);
-		array.setBlock(x + 11, y + 4, z + 8, Blocks.lava);
-		array.setBlock(x + 11, y + 4, z + 9, Blocks.lava);
-		array.setBlock(x + 11, y + 4, z + 10, Blocks.lava);
-		array.setBlock(x + 11, y + 4, z + 12, Blocks.lava);
-		array.setBlock(x + 11, y + 4, z + 13, Blocks.lava);
+		array.setBlock(x + 11, y + 4, z + 7, getLava());
+		array.setBlock(x + 11, y + 4, z + 8, getLava());
+		array.setBlock(x + 11, y + 4, z + 9, getLava());
+		array.setBlock(x + 11, y + 4, z + 10, getLava());
+		array.setBlock(x + 11, y + 4, z + 12, getLava());
+		array.setBlock(x + 11, y + 4, z + 13, getLava());
 		array.setBlock(x + 11, y + 6, z + 2, Blocks.air);
 		array.setBlock(x + 11, y + 6, z + 3, Blocks.air);
 		array.setBlock(x + 11, y + 6, z + 4, Blocks.air);
@@ -1804,13 +1940,13 @@ public class SnowStructure {
 		array.setBlock(x + 11, y + 11, z + 8, Blocks.air);
 		array.setBlock(x + 11, y + 11, z + 9, Blocks.air);
 		array.setBlock(x + 11, y + 11, z + 10, Blocks.air);
-		array.setBlock(x + 12, y + 4, z + 7, Blocks.lava);
-		array.setBlock(x + 12, y + 4, z + 8, Blocks.lava);
-		array.setBlock(x + 12, y + 4, z + 9, Blocks.lava);
-		array.setBlock(x + 12, y + 4, z + 10, Blocks.lava);
-		array.setBlock(x + 12, y + 4, z + 11, Blocks.lava);
-		array.setBlock(x + 12, y + 4, z + 12, Blocks.lava);
-		array.setBlock(x + 12, y + 4, z + 13, Blocks.lava);
+		array.setBlock(x + 12, y + 4, z + 7, getLava());
+		array.setBlock(x + 12, y + 4, z + 8, getLava());
+		array.setBlock(x + 12, y + 4, z + 9, getLava());
+		array.setBlock(x + 12, y + 4, z + 10, getLava());
+		array.setBlock(x + 12, y + 4, z + 11, getLava());
+		array.setBlock(x + 12, y + 4, z + 12, getLava());
+		array.setBlock(x + 12, y + 4, z + 13, getLava());
 		array.setBlock(x + 12, y + 6, z + 2, Blocks.air);
 		array.setBlock(x + 12, y + 6, z + 3, Blocks.air);
 		array.setBlock(x + 12, y + 6, z + 4, Blocks.air);
@@ -1847,12 +1983,12 @@ public class SnowStructure {
 		array.setBlock(x + 12, y + 8, z + 12, Blocks.air);
 		array.setBlock(x + 12, y + 8, z + 13, Blocks.air);
 		array.setBlock(x + 12, y + 8, z + 14, Blocks.air);
-		array.setBlock(x + 13, y + 4, z + 8, Blocks.lava);
-		array.setBlock(x + 13, y + 4, z + 9, Blocks.lava);
-		array.setBlock(x + 13, y + 4, z + 10, Blocks.lava);
-		array.setBlock(x + 13, y + 4, z + 11, Blocks.lava);
-		array.setBlock(x + 13, y + 4, z + 12, Blocks.lava);
-		array.setBlock(x + 13, y + 4, z + 13, Blocks.lava);
+		array.setBlock(x + 13, y + 4, z + 8, getLava());
+		array.setBlock(x + 13, y + 4, z + 9, getLava());
+		array.setBlock(x + 13, y + 4, z + 10, getLava());
+		array.setBlock(x + 13, y + 4, z + 11, getLava());
+		array.setBlock(x + 13, y + 4, z + 12, getLava());
+		array.setBlock(x + 13, y + 4, z + 13, getLava());
 		array.setBlock(x + 13, y + 6, z + 2, Blocks.air);
 		array.setBlock(x + 13, y + 6, z + 3, Blocks.air);
 		array.setBlock(x + 13, y + 6, z + 4, Blocks.air);
@@ -1921,5 +2057,16 @@ public class SnowStructure {
 		array.setBlock(x + 14, y + 8, z + 13, Blocks.air);
 		array.setBlock(x + 15, y + 6, z + 8, Blocks.air);
 		array.setBlock(x + 15, y + 7, z + 8, Blocks.air);
+	}
+
+	private static BlockKey getLava() {
+		if (ModList.GEOSTRATA.isLoaded())
+			return getLavaRock();
+		return new BlockKey(Blocks.lava, 0);
+	}
+
+	@ModDependent(ModList.GEOSTRATA)
+	private static BlockKey getLavaRock() {
+		return new BlockKey(GeoBlocks.LAVAROCK.getBlockInstance(), 0 | BlockLavaRock.Flags.NONREPLACEABLE.flag());
 	}
 }

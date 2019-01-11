@@ -101,6 +101,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.NonEuclid.BlockTeleport;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Pinball.BlockPinballTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftKey;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock;
+import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock.Passability;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Water.BlockEverFluid;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Water.BlockRotatingLock;
 import Reika.ChromatiCraft.Block.Dye.BlockDye;
@@ -147,6 +148,7 @@ import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockStructShield;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemRedstonePodPlacer;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
 import Reika.DragonAPI.Interfaces.Registry.BlockEnum;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 
@@ -210,7 +212,7 @@ public enum ChromaBlocks implements BlockEnum {
 	MUSICMEMORY(BlockMusicMemory.class,											"chroma.musicmem"),
 	MUSICTRIGGER(BlockMusicTrigger.class,										"chroma.musictrigger"),
 	SHIFTKEY(BlockShiftKey.class,				ItemBlockMultiType.class,		"chroma.shiftkey"),
-	SHIFTLOCK(BlockShiftLock.class,												"chroma.shiftlock"),
+	SHIFTLOCK(BlockShiftLock.class,				ItemBlockMultiType.class,		"chroma.shiftlock"),
 	TELEPORT(BlockTeleport.class,												"chroma.teleportblock"),
 	SPECIALSHIELD(BlockSpecialShield.class,		ItemBlockStructShield.class,	"chroma.specialshield"),
 	COLORALTAR(BlockColoredAltar.class,			ItemBlockDyeTypes.class,		"chroma.coloraltar"),
@@ -494,6 +496,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return BlockRepeaterLight.MODELS[meta].getName()+" Lamp";
 			case HEATLAMP:
 				return meta >= 8 ? "Freeze Lamp" : "Heat Lamp";
+			case SHIFTLOCK:
+				return ReikaObfuscationHelper.isDeObfEnvironment() ? this.getBasicName()+" ["+Passability.list[meta]+"]" : this.getBasicName();
 			default:
 				return "";
 		}
@@ -520,7 +524,6 @@ public enum ChromaBlocks implements BlockEnum {
 			case GOLCONTROL:
 			case MUSICMEMORY:
 			case MUSICTRIGGER:
-			case SHIFTLOCK:
 			case SHIFTKEY:
 			case TELEPORT:
 			case DOOR:
@@ -610,6 +613,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return BlockRepeaterLight.MODELS.length;
 			case HEATLAMP:
 				return 9;
+			case SHIFTLOCK:
+				return Passability.list.length;
 			default:
 				return 1;
 		}

@@ -84,10 +84,12 @@ public class ChromaDimensionalAudioHandler {
 
 	@SideOnly(Side.CLIENT)
 	static void ensureSoundOn() {
-		for (SoundCategory s : SoundCategory.values()) {
-			if (requiresSounds(s)) {
-				GameSettings gs = Minecraft.getMinecraft().gameSettings;
-				gs.setSoundLevel(s, Math.max(gs.getSoundLevel(s), 0.15F)); //15%
+		if (Minecraft.getMinecraft().theWorld != null && Minecraft.getMinecraft().theWorld.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			for (SoundCategory s : SoundCategory.values()) {
+				if (requiresSounds(s)) {
+					GameSettings gs = Minecraft.getMinecraft().gameSettings;
+					gs.setSoundLevel(s, Math.max(gs.getSoundLevel(s), 0.15F)); //15%
+				}
 			}
 		}
 	}

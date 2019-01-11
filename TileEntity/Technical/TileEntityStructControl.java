@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
@@ -27,6 +28,7 @@ import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
@@ -36,6 +38,7 @@ import Reika.ChromatiCraft.Auxiliary.OceanStructure;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.SnowStructure;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
+import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock.Passability;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.LootChestAccessEvent;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
@@ -208,7 +211,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			case DESERT:
 				return aabb.expand(5, 2, 5).offset(0, 1, 0);
 			case SNOWSTRUCT:
-				return aabb.offset(0, 5, 2).expand(6, 2, 6);
+				return aabb.offset(0, 4, 2).expand(6, 1, 6);
 			default:
 				return aabb;
 		}
@@ -313,6 +316,24 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 					ReikaSoundHelper.playBreakSound(world, dx, dy, dz, Blocks.stone);
 					if (world.isRemote)
 						ReikaRenderHelper.spawnDropParticles(world, dx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+				}
+				Random rand2 = new Random(new WorldLocation(this).hashCode());
+				rand2.nextLong(); //discard
+				for (Coordinate c : SnowStructure.getRoofCracks(rand2)) {
+					int dx = x+c.xCoord-8;
+					int dy = y+c.yCoord-3;
+					int dz = z+c.zCoord-6;
+					world.setBlockMetadataWithNotify(dx, dy, dz, BlockStructureShield.BlockType.CRACK.metadata, 3);
+					ReikaSoundHelper.playBreakSound(world, dx, dy, dz, Blocks.stone);
+					if (world.isRemote)
+						ReikaRenderHelper.spawnDropParticles(world, dx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+				}
+				ForgeDirection dir = dirs[2+rand2.nextInt(4)];
+				for (Coordinate c : SnowStructure.getCenterAccess(dir)) {
+					int dx = x+c.xCoord-8;
+					int dy = y+c.yCoord-3;
+					int dz = z+c.zCoord-6;
+					world.setBlockMetadataWithNotify(dx, dy, dz, Passability.getHiddenPassability(dir).ordinal(), 3);
 				}
 				break;
 			default:

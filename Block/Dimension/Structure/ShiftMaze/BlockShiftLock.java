@@ -9,26 +9,169 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze;
 
+import java.util.List;
+
+import mcp.mobius.waila.api.IWailaConfigHandler;
+import mcp.mobius.waila.api.IWailaDataAccessor;
+import mcp.mobius.waila.api.IWailaDataProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.BlockDimensionStructure;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
-public class BlockShiftLock extends BlockDimensionStructure {
+@Strippable(value = {"mcp.mobius.waila.api.IWailaDataProvider"})
+public class BlockShiftLock extends BlockDimensionStructure implements IWailaDataProvider {
 
 	private IIcon[] icons = new IIcon[2];
 
 	public BlockShiftLock(Material mat) {
 		super(mat);
 	}
+
+	public static enum Passability {
+		CLOSED(),
+		OPEN(),
+		EAST_CLOSED(),
+		EAST_OPEN(),
+		WEST_CLOSED(),
+		WEST_OPEN(),
+		SOUTH_CLOSED(),
+		SOUTH_OPEN(),
+		NORTH_CLOSED(),
+		NORTH_OPEN(),
+		CLOSED_HIDDEN(),
+		EAST_HIDDEN(),
+		WEST_HIDDEN(),
+		SOUTH_HIDDEN(),
+		NORTH_HIDDEN();
+
+		public static final Passability[] list = values();
+
+		public boolean useOpenTexture() {
+			switch(this) {
+				case CLOSED:
+				case EAST_CLOSED:
+				case WEST_CLOSED:
+				case SOUTH_CLOSED:
+				case NORTH_CLOSED:
+				case CLOSED_HIDDEN:
+					return false;
+				default:
+					return true;
+			}
+		}
+
+		public boolean isPassable(ForgeDirection side) {
+			switch(this) {
+				default:
+					return false;
+				case OPEN:
+					return true;
+				case EAST_HIDDEN:
+				case WEST_HIDDEN:
+					return side.offsetX != 0;
+				case EAST_OPEN:
+					return side == ForgeDirection.EAST;
+				case NORTH_OPEN:
+					return side == ForgeDirection.NORTH;
+				case NORTH_HIDDEN:
+				case SOUTH_HIDDEN:
+					return side.offsetZ != 0;
+				case SOUTH_OPEN:
+					return side == ForgeDirection.SOUTH;
+				case WEST_OPEN:
+					return side == ForgeDirection.WEST;
+			}
+		}
+
+		public boolean isOmniPassable() {
+			switch(this) {
+				case OPEN:
+					return true;
+				default:
+					return false;
+			}
+		}
+
+		public boolean isDisguised(int side) {
+			switch(this) {
+				case CLOSED_HIDDEN:
+					return true;
+				case EAST_HIDDEN:
+					return side != ForgeDirection.WEST.ordinal();
+				case WEST_HIDDEN:
+					return side != ForgeDirection.EAST.ordinal();
+				case SOUTH_HIDDEN:
+					return side != ForgeDirection.NORTH.ordinal();
+				case NORTH_HIDDEN:
+					return side != ForgeDirection.SOUTH.ordinal();
+				case EAST_OPEN:
+				case EAST_CLOSED:
+					return side != ForgeDirection.EAST.ordinal();
+				case WEST_OPEN:
+				case WEST_CLOSED:
+					return side != ForgeDirection.WEST.ordinal();
+				case SOUTH_OPEN:
+				case SOUTH_CLOSED:
+					return side != ForgeDirection.SOUTH.ordinal();
+				case NORTH_OPEN:
+				case NORTH_CLOSED:
+					return side != ForgeDirection.NORTH.ordinal();
+				default:
+					return false;
+			}
+		}
+
+		public static Passability getDirectionalPassability(ForgeDirection dir, boolean open) {
+			switch(dir) {
+				case EAST:
+					return open ? EAST_OPEN : EAST_CLOSED;
+				case WEST:
+					return open ? WEST_OPEN : WEST_CLOSED;
+				case SOUTH:
+					return open ? SOUTH_OPEN : SOUTH_CLOSED;
+				case NORTH:
+					return open ? NORTH_OPEN : NORTH_CLOSED;
+				default:
+					return null;
+			}
+		}
+
+		public static Passability getHiddenPassability(ForgeDirection dir) {
+			switch(dir) {
+				case EAST:
+					return EAST_HIDDEN;
+				case WEST:
+					return WEST_HIDDEN;
+				case SOUTH:
+					return SOUTH_HIDDEN;
+				case NORTH:
+					return NORTH_HIDDEN;
+				default:
+					return null;
+			}
+		}
+	}
+
 	/*
 	@Override
 	public int damageDropped(int meta) {
@@ -43,7 +186,10 @@ public class BlockShiftLock extends BlockDimensionStructure {
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
-		return icons[meta];
+		Passability p = Passability.list[meta];
+		if (p.isDisguised(s))
+			return ChromaBlocks.STRUCTSHIELD.getBlockInstance().getIcon(0, BlockType.STONE.ordinal());
+		return icons[p.useOpenTexture() ? 1 : 0];
 	}
 
 	@Override
@@ -51,21 +197,7 @@ public class BlockShiftLock extends BlockDimensionStructure {
 		ItemStack is = ep.getCurrentEquippedItem();
 		if (is != null && ReikaItemHelper.matchStackWithBlock(is, this))
 			return false;
-		if (ep.capabilities.isCreativeMode) {
-			/*
-			if (ChromaItems.SHARD.matchWith(is)) {
-				te.addColor(CrystalElement.elements[is.getItemDamage()%16]);
-			}
-			else if (is == null && ep.isSneaking()) {
-				te.colors.clear();
-			}
-			else if (is != null && ReikaItemHelper.matchStackWithBlock(is, Blocks.obsidian)) {
-				world.setBlockMetadataWithNotify(x, y, z, 1, 3);
-			}
-			 */
-		}
 		world.markBlockForUpdate(x, y, z);
-		//ReikaJavaLibrary.pConsole(Arrays.deepToString(keyCodes));
 		return true;
 	}
 
@@ -90,6 +222,44 @@ public class BlockShiftLock extends BlockDimensionStructure {
 	}
 
 	@Override
+	public void addCollisionBoxesToList(World world, int x, int y, int z, AxisAlignedBB mask, List li, Entity e) {
+		if (e == null || e.boundingBox == null)
+			return;
+		AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z);
+		if (e.boundingBox.intersectsWith(box)) //entity inside block space, you can go through
+			return;
+
+		double d = 0.125;
+		Passability p = Passability.list[world.getBlockMetadata(x, y, z)];
+
+		if (p.isOmniPassable())
+			return;
+
+		if (p.isPassable(ForgeDirection.DOWN))
+			box.minY += d;
+		if (p.isPassable(ForgeDirection.UP))
+			box.maxY -= d;
+		if (p.isPassable(ForgeDirection.EAST))
+			box.maxX -= d;
+		if (p.isPassable(ForgeDirection.WEST))
+			box.minX += d;
+		if (p.isPassable(ForgeDirection.NORTH))
+			box.minZ += d;
+		if (p.isPassable(ForgeDirection.SOUTH))
+			box.maxZ -= d;
+
+		if (box != null && box.intersectsWith(mask)) {
+			li.add(box);
+		}
+	}
+
+	@Override
+	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
+		Passability p = Passability.list[world.getBlockMetadata(x, y, z)];
+		return !p.isPassable(side) && p.isDisguised(side.ordinal());
+	}
+
+	@Override
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		return world.getBlockMetadata(x, y, z) == 1 ? null : ReikaAABBHelper.getBlockAABB(x, y, z);
 	}
@@ -102,6 +272,44 @@ public class BlockShiftLock extends BlockDimensionStructure {
 	@Override
 	public boolean shouldSideBeRendered(IBlockAccess iba, int dx, int dy, int dz, int s) {
 		return super.shouldSideBeRendered(iba, dx, dy, dz, s) && iba.getBlock(dx, dy, dz) != this;
+	}
+
+	@Override
+	@ModDependent(ModList.WAILA)
+	public ItemStack getWailaStack(IWailaDataAccessor acc, IWailaConfigHandler config) {
+		World world = acc.getWorld();
+		MovingObjectPosition mov = acc.getPosition();
+		if (mov != null) {
+			int x = mov.blockX;
+			int y = mov.blockY;
+			int z = mov.blockZ;
+			if (Passability.list[acc.getMetadata()].isDisguised(mov.sideHit))
+				return ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.STONE.metadata);
+		}
+		return null;
+	}
+
+	@Override
+	@ModDependent(ModList.WAILA)
+	public final List<String> getWailaHead(ItemStack is, List<String> tip, IWailaDataAccessor acc, IWailaConfigHandler config) {
+		return tip;
+	}
+
+	@Override
+	@ModDependent(ModList.WAILA)
+	public final List<String> getWailaBody(ItemStack is, List<String> tip, IWailaDataAccessor acc, IWailaConfigHandler config) {
+		return tip;
+	}
+
+	@ModDependent(ModList.WAILA)
+	public final List<String> getWailaTail(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler config) {
+		return currenttip;
+	}
+
+	@Override
+	@ModDependent(ModList.WAILA)
+	public final NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, int x, int y, int z) {
+		return tag;
 	}
 
 }
