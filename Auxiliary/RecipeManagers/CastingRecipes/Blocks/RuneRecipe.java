@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,32 +11,34 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 
 import java.util.Collection;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ShapedRecipes;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.ShapedRecipes;
 
 public class RuneRecipe extends CastingRecipe implements CoreRecipe {
 
-	private final boolean isBoosted;
-
-	public RuneRecipe(ItemStack out, int meta) {
-		super(out, getRecipe(out, meta));
-		isBoosted = meta >= 16;
+	public RuneRecipe(CrystalElement e) {
+		super(genOutput(e), getRecipe(e, false));
 	}
 
-	private static ShapedRecipes getRecipe(ItemStack out, int meta) {
-		ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(meta);
-		return ReikaRecipeHelper.getShapedRecipeFor(out, "SSS", "SCS", "SSS", 'C', shard, 'S', ChromaBlocks.PYLONSTRUCT.getStackOf());
+	static ShapedRecipes getRecipe(CrystalElement e, boolean enhanced) {
+		ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(enhanced ? 16+e.ordinal() : e.ordinal());
+		return ReikaRecipeHelper.getShapedRecipeFor(genOutput(e), "SSS", "SCS", "SSS", 'C', shard, 'S', ChromaBlocks.PYLONSTRUCT.getStackOf());
+	}
+
+	static ItemStack genOutput(CrystalElement e) {
+		return ChromaBlocks.RUNE.getStackOf(e);
 	}
 
 	@Override
 	public int getExperience() {
-		return isBoosted ? 4*super.getExperience() : 2*super.getExperience();
+		return 2*super.getExperience();
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -16,20 +16,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
@@ -69,6 +55,19 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
 
 //Structure core, does FX and things
 public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBTTile, PlayerBreakHook {
@@ -312,7 +311,7 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 		int y = gen.getPosY();
 		int z = gen.getEntryPosZ();
 		int r = 8;
-		return AxisAlignedBB.getBoundingBox(x-r, y, z-r, x+r+1, ReikaWorldHelper.getTopNonAirBlock(worldObj, x, z)+9, z+r+1);
+		return AxisAlignedBB.getBoundingBox(x-r, y, z-r, x+r+1, ReikaWorldHelper.getTopNonAirBlock(worldObj, x, z, true)+9, z+r+1);
 	}
 
 	private void doStructureCalculation(World world, int x, int y, int z) {

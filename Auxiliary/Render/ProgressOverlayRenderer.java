@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,11 +12,6 @@ package Reika.ChromatiCraft.Auxiliary.Render;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.TreeMap;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.opengl.GL11;
 
@@ -33,6 +28,10 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.entity.player.EntityPlayer;
 
 
 public class ProgressOverlayRenderer {
@@ -44,6 +43,8 @@ public class ProgressOverlayRenderer {
 
 	private final TreeMap<ProgressElement, Integer> progressFlags = new TreeMap(new ProgressComparator());
 
+	private int soundCooldown;
+
 	private ProgressOverlayRenderer() {
 
 	}
@@ -51,11 +52,9 @@ public class ProgressOverlayRenderer {
 	void renderProgressOverlays(EntityPlayer ep, int gsc) {
 		HashMap<ProgressElement, Integer> map = new HashMap();
 		int dy = 0;
-		boolean flag = false;
 		//ReikaJavaLibrary.pConsole(progressFlags.keySet());
 		for (ProgressElement p : progressFlags.keySet()) {
 			int tick = progressFlags.get(p);
-			flag |= tick == PROGRESS_DURATION-1;
 			GL11.glColor4f(1, 1, 1, 1);
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			GL11.glDisable(GL11.GL_LIGHTING);
@@ -106,14 +105,17 @@ public class ProgressOverlayRenderer {
 		//else
 		//	progressFlags.keySet().removeAll(map.keySet());
 		progressFlags.putAll(map);
-
-		if (flag) {
-			ReikaSoundHelper.playClientSound(ChromaSounds.GAINPROGRESS, ep, 0.5F, 1, false);
-		}
+		if (soundCooldown > 0)
+			soundCooldown--;
 	}
 
 	void addProgressionNote(ProgressElement p) {
 		progressFlags.put(p, PROGRESS_DURATION);
+
+		if (soundCooldown == 0) {
+			ReikaSoundHelper.playClientSound(ChromaSounds.GAINPROGRESS, Minecraft.getMinecraft().thePlayer, 0.5F, 1, false);
+			soundCooldown = 24;
+		}
 		//ReikaJavaLibrary.pConsole("Adding "+p+" to map ("+progressFlags.keySet().contains(p)+"), set is "+progressFlags.keySet());
 	}
 

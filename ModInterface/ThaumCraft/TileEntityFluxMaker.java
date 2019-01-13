@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,20 +11,6 @@ package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 
 import java.util.HashMap;
 
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.BlockFluidFinite;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidHandler;
-import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -43,6 +29,20 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.BlockFluidFinite;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidHandler;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
 
 
 public class TileEntityFluxMaker extends InventoriedRelayPowered implements OperationInterval {
@@ -293,7 +293,7 @@ public class TileEntityFluxMaker extends InventoriedRelayPowered implements Oper
 		super.readSyncTag(NBT);
 
 		processTimer = NBT.getInteger("time");
-		HashMap<String, Integer> map = (HashMap<String, Integer>)ReikaNBTHelper.readMapFromNBT(NBT, "particles");
+		HashMap<String, Integer> map = (HashMap<String, Integer>)ReikaNBTHelper.readMapFromNBT(NBT.getCompoundTag("particles"));
 		particleTimers.clear();
 		particleTimers.putAll(map);
 	}
@@ -331,7 +331,7 @@ public class TileEntityFluxMaker extends InventoriedRelayPowered implements Oper
 	public void readFromNBT(NBTTagCompound NBT) {
 		super.readFromNBT(NBT);
 
-		HashMap<String, Integer> map = (HashMap<String, Integer>)ReikaNBTHelper.readMapFromNBT(NBT, "fluids");
+		HashMap<String, Integer> map = (HashMap<String, Integer>)ReikaNBTHelper.readMapFromNBT(NBT.getCompoundTag("fluids"));
 		fluxCache.clear();
 		fluxCache.putAll(map);
 	}

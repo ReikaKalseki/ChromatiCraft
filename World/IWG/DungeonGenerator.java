@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,34 +15,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.material.Material;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.monster.EntityBlaze;
-import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.monster.EntitySilverfish;
-import net.minecraft.entity.monster.EntitySpider;
-import net.minecraft.entity.passive.EntityWolf;
-import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.TileEntityMobSpawner;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraftforge.common.BiomeDictionary;
-import net.minecraftforge.common.ChestGenHooks;
-import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fluids.BlockFluidBase;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
@@ -80,6 +55,32 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.material.Material;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.monster.EntityBlaze;
+import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.monster.EntitySilverfish;
+import net.minecraft.entity.monster.EntitySpider;
+import net.minecraft.entity.passive.EntityWolf;
+import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.tileentity.TileEntityMobSpawner;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldType;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraftforge.common.BiomeDictionary;
+import net.minecraftforge.common.ChestGenHooks;
+import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fluids.BlockFluidBase;
 
 public class DungeonGenerator implements RetroactiveGenerator {
 
@@ -927,17 +928,36 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		if (this.isStructureWithin(s, world, x, 48, z, this.getMinSeparation(s)))
 			return false;
 		BiomeGenBase b = world.getBiomeGenForCoords(x, z);
+		if (!this.isValidBiome(s, b))
+			return false;
 		switch(s) {
 			case OCEAN:
-				return r.nextInt(/*32*/6) == 0 && ReikaBiomeHelper.isOcean(b);
+				return r.nextInt(/*32*/6) == 0;
 			case CAVERN:
 				return r.nextInt(/*48*/5) == 0;
 			case BURROW:
-				return r.nextInt(/*64*/8) == 0 && b.topBlock == Blocks.grass && (b.theBiomeDecorator.treesPerChunk > 1 || !b.getEnableSnow());
+				return r.nextInt(/*64*/8) == 0;
 			case DESERT:
-				return r.nextInt(/*120*/10) == 0 && b.topBlock == Blocks.sand;
+				return r.nextInt(/*120*/10) == 0;
 			case SNOWSTRUCT:
-				return r.nextInt(/*120*/2) == 0 && b.topBlock == Blocks.grass && b.getEnableSnow() && b.theBiomeDecorator.treesPerChunk < 1;
+				return r.nextInt(/*120*/2) == 0;
+			default:
+				return false;
+		}
+	}
+
+	private boolean isValidBiome(Structures s, BiomeGenBase b) {
+		switch(s) {
+			case OCEAN:
+				return ReikaBiomeHelper.isOcean(b);
+			case CAVERN:
+				return true;
+			case BURROW:
+				return b.topBlock == Blocks.grass && !this.isValidBiome(Structures.SNOWSTRUCT, b);
+			case DESERT:
+				return b.topBlock == Blocks.sand;
+			case SNOWSTRUCT:
+				return b.topBlock == Blocks.grass && b.getEnableSnow() && ReikaBiomeHelper.getBiomeDecorator(b).treesPerChunk < 1 && !b.biomeName.toLowerCase(Locale.ENGLISH).contains("forest");
 			default:
 				return false;
 		}
