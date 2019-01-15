@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,6 +11,14 @@ package Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze;
 
 import java.util.List;
 
+import Reika.ChromatiCraft.Base.BlockDimensionStructure;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
@@ -29,14 +37,6 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.Base.BlockDimensionStructure;
-import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.ASM.APIStripper.Strippable;
-import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
-import Reika.DragonAPI.Libraries.ReikaAABBHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 @Strippable(value = {"mcp.mobius.waila.api.IWailaDataProvider"})
 public class BlockShiftLock extends BlockDimensionStructure implements IWailaDataProvider {
@@ -62,7 +62,8 @@ public class BlockShiftLock extends BlockDimensionStructure implements IWailaDat
 		EAST_HIDDEN(),
 		WEST_HIDDEN(),
 		SOUTH_HIDDEN(),
-		NORTH_HIDDEN();
+		NORTH_HIDDEN(),
+		BREAKABLE();
 
 		public static final Passability[] list = values();
 
@@ -178,6 +179,12 @@ public class BlockShiftLock extends BlockDimensionStructure implements IWailaDat
 		return meta;
 	}
 	 */
+	@Override
+	public float getBlockHardness(World world, int x, int y, int z) {
+		int meta = world.getBlockMetadata(x, y, z);
+		return meta == Passability.BREAKABLE.ordinal() ? 1 : super.getBlockHardness(world, x, y, z);
+	}
+
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
 		icons[0] = ico.registerIcon("chromaticraft:dimstruct/shiftlock-closed");

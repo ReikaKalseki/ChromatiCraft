@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -16,19 +16,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.WeightedRandomChestContent;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ChestGenHooks;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
@@ -74,6 +61,19 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.WeightedRandomChestContent;
+import net.minecraft.world.World;
+import net.minecraftforge.common.ChestGenHooks;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityStructControl extends InventoriedChromaticBase implements BreakAction, HitAction, InertIInv, PlayerBreakHook {
 
@@ -696,14 +696,18 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 					if (blocks != null) {
 						for (int i = 0; i < blocks.getSize(); i++) {
 							Coordinate c = blocks.getNthBlock(i);
-							int x = c.xCoord+5;
-							int y = c.yCoord+8;
-							int z = c.zCoord+2;
-							if (worldObj.getBlock(x, y, z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
+							int x = c.xCoord+8;
+							int y = c.yCoord+3;
+							int z = c.zCoord+6;
+							Block b = worldObj.getBlock(x, y, z);
+							if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
 								worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
-							else if (worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
+							else if (b == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
 								worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
 								ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
+							}
+							else if (b == ChromaBlocks.SHIFTLOCK.getBlockInstance()) {
+								worldObj.setBlockMetadataWithNotify(x, y, z, Passability.BREAKABLE.ordinal(), 3);
 							}
 						}
 					}

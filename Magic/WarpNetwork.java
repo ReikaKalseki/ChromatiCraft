@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2018
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,15 +12,15 @@ package Reika.ChromatiCraft.Magic;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldSavedData;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.AngleMap;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldSavedData;
 
 
 public class WarpNetwork {
@@ -42,6 +42,7 @@ public class WarpNetwork {
 	}
 
 	public WorldLocation getLink(WorldLocation loc, double angle, double tolerance) {
+		WarpNetworkData.initNetworkData(loc.getWorld());
 		AngleMap<WorldLocation> map = data.get(loc);
 		if (map == null || map.isEmpty())
 			return null;

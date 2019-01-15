@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,14 +12,6 @@ package Reika.ChromatiCraft.Base;
 import java.util.Collection;
 import java.util.Random;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -36,6 +28,14 @@ import Reika.DragonAPI.Interfaces.Item.MultisheetItem;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 public abstract class ItemChromaBasic extends Item implements MultisheetItem {
 
@@ -163,7 +163,7 @@ public abstract class ItemChromaBasic extends Item implements MultisheetItem {
 		TieredItem it = (TieredItem)this;
 		if (it.isTiered(is)) {
 			ProgressStage p = it.getDiscoveryTier(is);
-			if (!p.isPlayerAtStage(Minecraft.getMinecraft().thePlayer)) {
+			if (p == null || !p.isPlayerAtStage(Minecraft.getMinecraft().thePlayer)) {
 				return true;
 			}
 		}

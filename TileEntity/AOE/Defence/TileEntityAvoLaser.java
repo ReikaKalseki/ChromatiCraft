@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,19 +12,14 @@ package Reika.ChromatiCraft.TileEntity.AOE.Defence;
 import java.util.List;
 import java.util.UUID;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.DamageSource;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
+import Reika.DragonAPI.Instantiable.CustomStringDamageSource;
 import Reika.DragonAPI.Instantiable.Data.Maps.TimerMap;
 import Reika.DragonAPI.Interfaces.TileEntity.SidePlacedTile;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -32,6 +27,13 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.DamageSource;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 
 public class TileEntityAvoLaser extends TileEntityRelayPowered implements SidePlacedTile {
@@ -39,6 +41,8 @@ public class TileEntityAvoLaser extends TileEntityRelayPowered implements SidePl
 	public static final int MAXDIST = 8;
 
 	private static final ElementTagCompound required = new ElementTagCompound();
+
+	private DamageSource damageSource;
 
 	static {
 		required.addValueToColor(CrystalElement.PINK, 25);
@@ -83,8 +87,23 @@ public class TileEntityAvoLaser extends TileEntityRelayPowered implements SidePl
 	private void attack(EntityLivingBase e) {
 		if (!attackCooldowns.containsKey(e.getUniqueID())) {
 			attackCooldowns.put(e.getUniqueID(), 40);
-			e.attackEntityFrom(DamageSource.magic, 8); //4 hearts, since original does 40/100 damage
+			e.attackEntityFrom(this.getDamageSource(), this.hasPinkRune() ? 15 : 8); //4 hearts, since original does 40/100 damage
 		}
+	}
+
+	private DamageSource getDamageSource() {
+		if (damageSource == null) {
+			damageSource = new CustomStringDamageSource("has sacrificed themselves to the Sovereign Temple of "+this.getPlacerName());
+			damageSource.setDamageIsAbsolute().setMagicDamage().setDamageBypassesArmor();
+		}
+		return damageSource;
+	}
+
+	private boolean hasPinkRune() {
+		int dx = xCoord-this.getFacing().offsetX;
+		int dy = yCoord-this.getFacing().offsetY;
+		int dz = zCoord-this.getFacing().offsetZ;
+		return worldObj.getBlock(dx, dy, dz) == ChromaBlocks.RUNE.getBlockInstance() && worldObj.getBlockMetadata(dx, dy, dz) == CrystalElement.PINK.ordinal();
 	}
 
 	@SideOnly(Side.CLIENT)
