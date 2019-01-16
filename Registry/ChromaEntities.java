@@ -1,21 +1,21 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
-import net.minecraft.entity.Entity;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Entity.EntityAurora;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Entity.EntityDimensionFlare;
+import Reika.ChromatiCraft.Entity.EntityEnderEyeT2;
 import Reika.ChromatiCraft.Entity.EntityFlyingLight;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemDataCrystal.EntityDataCrystal;
 import Reika.ChromatiCraft.ModInterface.EntityChromaManaBurst;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.Registry.EntityEnum;
+import net.minecraft.entity.Entity;
 
 public enum ChromaEntities implements EntityEnum {
 
@@ -56,7 +57,8 @@ public enum ChromaEntities implements EntityEnum {
 	DATACRYSTAL(EntityDataCrystal.class, "DataCrystal"),
 	PYLONOVERLOAD(EntityOverloadingPylonShock.class, "Pylon Overload"),
 	CHROMAMANA(EntityChromaManaBurst.class, "Mana Pulse"),
-	TUNNELNUKER(EntityTunnelNuker.class, "Tunnel Nuker", 0x402020, 0xf0a030);
+	TUNNELNUKER(EntityTunnelNuker.class, "Tunnel Nuker", 0x402020, 0xf0a030),
+	ENDEREYE(EntityEnderEyeT2.class, "Ender Eye T2");
 
 	public final String entityName;
 	private final Class entityClass;

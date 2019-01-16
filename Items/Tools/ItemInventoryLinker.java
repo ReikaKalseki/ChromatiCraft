@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -14,6 +14,17 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.lwjgl.input.Keyboard;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -25,21 +36,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 
-import org.lwjgl.input.Keyboard;
-
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.ItemChromaTool;
-import Reika.ChromatiCraft.Items.AuraPowered;
-import Reika.ChromatiCraft.Magic.ElementTagCompound;
-import Reika.ChromatiCraft.Registry.ChromaGuis;
-import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
-import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
-import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
-import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
-
-public class ItemInventoryLinker extends ItemChromaTool implements AuraPowered {
+public class ItemInventoryLinker extends ItemChromaTool {
 
 	public ItemInventoryLinker(int index) {
 		super(index);
@@ -123,11 +120,6 @@ public class ItemInventoryLinker extends ItemChromaTool implements AuraPowered {
 				}
 			}
 		}
-	}
-
-	@Override
-	public ElementTagCompound getRequirements(ItemStack is) {
-		return new ElementTagCompound();
 	}
 
 	private static boolean canLinkItems(EntityPlayer ep, ItemStack tool) {

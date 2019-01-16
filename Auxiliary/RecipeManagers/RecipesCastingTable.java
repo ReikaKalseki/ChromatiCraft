@@ -66,6 +66,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.Crystal
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.CrystalStarRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.DoorKeyRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.ElementUnitRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.EnderEyeRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.EnergyCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.HighEnergyCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.HighTransformationCoreRecipe;
@@ -834,6 +835,8 @@ public class RecipesCastingTable {
 		this.addRecipe(new TrapFloorRecipe(is, 4, sr));
 		sr = new ShapedOreRecipe(is, "bab", "svs", "bvb", 's', "slimeball", 'b', ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.STONE.ordinal()), 'a', ChromaStacks.auraDust, 'v', ChromaStacks.voidDust);
 		this.addRecipe(new TrapFloorRecipe(is, 12, sr));
+
+		this.addRecipe(new EnderEyeRecipe(ChromaItems.ENDEREYE.getCraftedProduct(3), new ItemStack(Items.emerald)));
 
 		this.addSpecialRecipes();
 	}

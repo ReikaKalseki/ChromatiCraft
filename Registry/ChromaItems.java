@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,12 +12,6 @@ package Reika.ChromatiCraft.Registry;
 import java.util.HashMap;
 import java.util.Locale;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemArmor.ArmorMaterial;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.StatCollector;
-import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.ChromaNames;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
@@ -36,6 +30,7 @@ import Reika.ChromatiCraft.Items.ItemFertilitySeed;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.ItemMagicBranch;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
+import Reika.ChromatiCraft.Items.ItemT2EnderEye;
 import Reika.ChromatiCraft.Items.ItemTieredResource;
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemLinkedTilePlacer;
@@ -100,6 +95,12 @@ import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor.ArmorMaterial;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.StatCollector;
+import net.minecraftforge.oredict.OreDictionary;
 
 public enum ChromaItems implements ItemEnum {
 
@@ -177,6 +178,7 @@ public enum ChromaItems implements ItemEnum {
 	SHIELDEDCELL(47, false,	"chroma.shieldedcell",	ItemShieldedCell.class),
 	BOTTLENECK(48, false,	"chroma.bottleneck",	ItemBottleneckFinder.class),
 	SPAWNERBYPASS(43, false,"chroma.spawnerbypass",	ItemSpawnerBypass.class),
+	ENDEREYE(0,	false,		"chroma.endereye",		ItemT2EnderEye.class),
 	;
 
 	private final int index;

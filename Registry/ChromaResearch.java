@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -17,21 +17,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
-
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
@@ -90,6 +75,20 @@ import Reika.DragonAPI.ModRegistry.PowerTypes;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.EnumBeeType;
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.world.World;
 
 public enum ChromaResearch implements ProgressElement {
 
@@ -279,6 +278,7 @@ public enum ChromaResearch implements ProgressElement {
 	SHIELDEDCELL(		ChromaItems.SHIELDEDCELL,	ResearchLevel.BASICCRAFT,		ProgressStage.ARTEFACT),
 	BOTTLENECK(			ChromaItems.BOTTLENECK,		ResearchLevel.NETWORKING,		ProgressStage.REPEATER),
 	SPAWNERBYPASS(		ChromaItems.SPAWNERBYPASS,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.FINDSPAWNER),
+	ENDEREYE(			ChromaItems.ENDEREYE,		ResearchLevel.ENERGYEXPLORE,	ProgressStage.NETHERROOF),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
