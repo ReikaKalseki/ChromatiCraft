@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -19,29 +19,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.effect.EntityLightningBolt;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
-import thaumcraft.api.nodes.INode;
-import thaumcraft.api.nodes.NodeModifier;
-import thaumcraft.api.nodes.NodeType;
-import thaumcraft.api.wands.IWandable;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
@@ -106,6 +83,29 @@ import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.RotaryCraft.TileEntities.Weaponry.TileEntityEMP;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.effect.EntityLightningBolt;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.nodes.INode;
+import thaumcraft.api.nodes.NodeModifier;
+import thaumcraft.api.nodes.NodeType;
+import thaumcraft.api.wands.IWandable;
 
 @Strippable(value = {"thaumcraft.api.nodes.INode", "thaumcraft.api.wands.IWandable"})
 public class TileEntityCrystalPylon extends CrystalTransmitterBase implements NaturalCrystalSource, ChargingPoint, ChunkLoadingTile, INode, IWandable {
@@ -1065,11 +1065,11 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	@ModDependent(ModList.THAUMCRAFT)
 	public void onUsingWandTick(ItemStack wandstack, EntityPlayer player, int count) {
 		if (!worldObj.isRemote && this.canConduct() && player.ticksExisted%5 == 0) {
-			if (!ChromaOptions.HARDTHAUM.getState() || ReikaThaumHelper.isResearchComplete(player, "WANDPEDFOC")) {
+			if (!ChromaOptions.HARDTHAUM.getState() || (ReikaThaumHelper.isResearchComplete(player, "WANDPEDFOC") && ProgressStage.ALLCOLORS.isPlayerAtStage(player))) {
 				AspectList al = ReikaThaumHelper.decompose(this.getAspects());
 				for (Aspect a : al.aspects.keySet()) {
 					int amt = 1;
-					int eff = 2400;
+					int eff = 1800;//2400;
 					if (ReikaThaumHelper.isResearchComplete(player, "NODETAPPER1")) {
 						amt *= 2;
 						eff *= 0.9;
@@ -1091,6 +1091,30 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 					}
 					if (ReikaThaumHelper.isResearchComplete(player, "CRYSTALWAND")) {
 						amt *= 2;
+					}
+					if (!ProgressStage.ALLCOLORS.isPlayerAtStage(player)) {
+						eff *= 1.75;
+						amt *= 0.75;
+						amt = Math.max(1, amt);
+					}
+					if (ProgressStage.RUNEUSE.isPlayerAtStage(player)) {
+						eff *= 0.95;
+					}
+					if (ProgressStage.LINK.isPlayerAtStage(player)) {
+						eff *= 0.8;
+						amt *= 1.2;
+					}
+					if (ProgressStage.POWERCRYSTAL.isPlayerAtStage(player)) {
+						eff *= 0.7;
+						amt *= 1.8;
+					}
+					if (ProgressStage.TURBOCHARGE.isPlayerAtStage(player)) {
+						eff *= 0.6;
+						amt *= 2;
+					}
+					if (ProgressStage.CTM.isPlayerAtStage(player)) {
+						eff *= 0.5;
+						amt *= 2.5;
 					}
 					amt = Math.min(amt, al.getAmount(a));
 					amt = Math.min(amt, ReikaThaumHelper.getWandSpaceFor(wandstack, a));

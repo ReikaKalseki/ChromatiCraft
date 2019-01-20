@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2018
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,9 +11,6 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special;
 
 import java.util.Collection;
 
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -24,6 +21,10 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.EnumBeeType;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 
 public class BeeConversionRecipe extends PylonCastingRecipe {
@@ -119,7 +120,7 @@ public class BeeConversionRecipe extends PylonCastingRecipe {
 	}
 
 	@Override
-	public NBTTagCompound getOutputTag(NBTTagCompound input) {
+	public NBTTagCompound getOutputTag(EntityPlayer ep, NBTTagCompound input) {
 		return this.calcOutput(input).stackTagCompound;
 	}
 

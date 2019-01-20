@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -16,18 +16,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fluids.FluidContainerRegistry;
 import Reika.ChromatiCraft.API.Event.CastingEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
@@ -84,6 +72,18 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fluids.FluidContainerRegistry;
 
 public class TileEntityCastingTable extends InventoriedCrystalReceiver implements NBTTile, BreakAction, TriggerableAction, OwnedTile,
 OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
@@ -689,7 +689,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 		int xpToAdd = 0;
 		while (activeRecipe == recipe && count*activeRecipe.getOutput().stackSize < activeRecipe.getOutput().getMaxStackSize()) {
 			if (inv[4] != null)
-				NBTin = recipe.getOutputTag(inv[4].stackTagCompound);
+				NBTin = recipe.getOutputTag(craftingPlayer, inv[4].stackTagCompound);
 			xpToAdd += (int)(activeRecipe.getExperience()*this.getXPModifier(activeRecipe));
 			if (activeRecipe instanceof MultiBlockCastingRecipe) {
 				MultiBlockCastingRecipe mult = (MultiBlockCastingRecipe)activeRecipe;

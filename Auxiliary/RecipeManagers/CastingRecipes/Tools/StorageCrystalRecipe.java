@@ -1,17 +1,14 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
@@ -19,6 +16,9 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class StorageCrystalRecipe extends MultiBlockCastingRecipe {
 
@@ -107,7 +107,7 @@ public class StorageCrystalRecipe extends MultiBlockCastingRecipe {
 	}
 
 	@Override
-	public NBTTagCompound getOutputTag(NBTTagCompound input) {
+	public NBTTagCompound getOutputTag(EntityPlayer ep, NBTTagCompound input) {
 		return input;
 	}
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -14,18 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.monster.EntityEnderman;
-import net.minecraft.entity.passive.EntityTameable;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.LumenTurretDamage;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
@@ -48,6 +36,19 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.monster.EntityEnderman;
+import net.minecraft.entity.passive.EntityTameable;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
 
 
 public class TileEntityLumenTurret extends TileEntityChromaticBase {
@@ -168,6 +169,10 @@ public class TileEntityLumenTurret extends TileEntityChromaticBase {
 	private void doAttackEntity(World world, int x, int y, int z, EntityLivingBase e) {
 		attackCooldown.put(e.getUniqueID(), this.getAttackCooldown(e));
 		e.attackEntityFrom(new LumenTurretDamage(this, TurretUpgrades.NONPLAYER.check(this)), this.getAttackDamage(e));
+		if (e instanceof EntityCreature) {
+			EntityCreature em = (EntityCreature)e;
+			em.setTarget(null); //de-aggro
+		}
 		e.hurtResistantTime = 0;
 		if (TurretUpgrades.FIRE.check(this))
 			e.setFire(2);

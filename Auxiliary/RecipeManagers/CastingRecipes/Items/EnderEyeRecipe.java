@@ -2,8 +2,10 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 
 public class EnderEyeRecipe extends MultiBlockCastingRecipe {
@@ -34,6 +36,13 @@ public class EnderEyeRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(ChromaStacks.beaconDust, 2, 2);
 		this.addAuxItem(ChromaStacks.auraDust, -2, 0);
 		this.addAuxItem(ChromaStacks.auraDust, 2, 0);
+	}
+
+	@Override
+	public NBTTagCompound getOutputTag(EntityPlayer ep, NBTTagCompound input) {
+		NBTTagCompound tag = new NBTTagCompound();
+		tag.setString("owner", ep.getUniqueID().toString());
+		return tag;
 	}
 
 }

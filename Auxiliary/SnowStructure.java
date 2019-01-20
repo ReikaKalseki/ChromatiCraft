@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -13,10 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock.Passability;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -27,6 +23,10 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.GeoStrata.Blocks.BlockLavaRock;
 import Reika.GeoStrata.Registry.GeoBlocks;
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 
 public class SnowStructure {
@@ -183,6 +183,11 @@ public class SnowStructure {
 		getBaseStructure(array, x, y, z);
 		getAirSpaces(array, x, y, z);
 
+		Block spw = ChromaBlocks.STRUCTSHIELD.getBlockInstance();//Blocks.mob_spawner;
+		array.setBlock(x + 14, y + 4, z + 14, spw);
+		array.setBlock(x + 3, y + 4, z + 14, spw);
+		array.setBlock(x + 2, y + 4, z + 4, spw);
+
 		for (Coordinate c : getCrackToCenter()) {
 			array.setBlock(x + c.xCoord, y + c.yCoord, z + c.zCoord, b, mcrack);
 		}
@@ -291,7 +296,6 @@ public class SnowStructure {
 		array.setBlock(x + 2, y + 3, z + 8, b, ms);
 		array.setBlock(x + 2, y + 3, z + 9, b, ms);
 		array.setBlock(x + 2, y + 4, z + 3, b, ms);
-		array.setBlock(x + 2, y + 4, z + 4, Blocks.mob_spawner);
 		array.setBlock(x + 2, y + 4, z + 5, b, ms);
 		array.setBlock(x + 2, y + 4, z + 6, b, ms);
 		array.setBlock(x + 2, y + 4, z + 7, b, ms);
@@ -363,7 +367,6 @@ public class SnowStructure {
 		array.setBlock(x + 3, y + 4, z + 11, b, ms);
 		array.setBlock(x + 3, y + 4, z + 12, b, ms);
 		array.setBlock(x + 3, y + 4, z + 13, b, ms);
-		array.setBlock(x + 3, y + 4, z + 14, Blocks.mob_spawner);
 		array.setBlock(x + 3, y + 4, z + 15, b, ms);
 		array.setBlock(x + 3, y + 5, z + 1, b, ms);
 		array.setBlock(x + 3, y + 5, z + 2, b2);
@@ -1389,7 +1392,6 @@ public class SnowStructure {
 		array.setBlock(x + 14, y + 4, z + 11, b, ms);
 		array.setBlock(x + 14, y + 4, z + 12, b, ms);
 		array.setBlock(x + 14, y + 4, z + 13, b, ms);
-		array.setBlock(x + 14, y + 4, z + 14, Blocks.mob_spawner);
 		array.setBlock(x + 14, y + 4, z + 15, b, ms);
 		array.setBlock(x + 14, y + 5, z + 2, b, ms);
 		array.setBlock(x + 14, y + 5, z + 3, b2);

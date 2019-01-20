@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -16,14 +16,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.API.CastingAPI;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 
 /** Use this to fetch registered casting table recipes. This allows you to query various properties, but take note that recipes are read-only. */
@@ -82,8 +82,8 @@ public class CastingRecipeViewer {
 		/** Whether a given item is used in the recipe. */
 		public boolean usesItem(ItemStack is);
 
-		/** Some recipes modify NBT on the input item. Use this to determine the output. Null is permitted. */
-		public NBTTagCompound getOutputTag(NBTTagCompound input);
+		/** Some recipes modify NBT on the output item. Use this to determine the output. Null is permitted. The supplied tag is that of the main center item.*/
+		public NBTTagCompound getOutputTag(EntityPlayer ep, NBTTagCompound input);
 
 	}
 

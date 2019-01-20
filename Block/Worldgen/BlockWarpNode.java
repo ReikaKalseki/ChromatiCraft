@@ -1,14 +1,22 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2018
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Block.Worldgen;
 
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Magic.WarpNetwork;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
@@ -22,14 +30,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.ChromatiCraft.Magic.WarpNetwork;
-import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
 
 public class BlockWarpNode extends BlockContainer {
@@ -80,14 +80,18 @@ public class BlockWarpNode extends BlockContainer {
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity e) {
 		if (e instanceof EntityPlayerMP) {
 			EntityPlayerMP ep = (EntityPlayerMP)e;
-			double vx = ep.posX-ep.prevPosX;
-			double vz = ep.posZ-ep.prevPosZ;
-			if (vx != 0 || vz != 0) {
-				double ang = ReikaPhysicsHelper.cartesianToPolar(vx, 0, vz)[2];
-				//ReikaJavaLibrary.pConsole(vx+" , "+vz+" > "+ang);
-				WorldLocation loc = WarpNetwork.instance.getLink(new WorldLocation(world, x, y, z), ang, ANGLE_TOLERANCE);
-				if (loc != null) {
-					this.teleportPlayer(ep, loc);
+			long last = ep.getEntityData().getLong("lastWarpNode");
+			if (world.getTotalWorldTime()-last > 200) {
+				double vx = ep.posX-ep.prevPosX;
+				double vz = ep.posZ-ep.prevPosZ;
+				if (vx != 0 || vz != 0) {
+					double ang = ReikaPhysicsHelper.cartesianToPolar(vx, 0, vz)[2];
+					//ReikaJavaLibrary.pConsole(vx+" , "+vz+" > "+ang);
+					WorldLocation loc = WarpNetwork.instance.getLink(new WorldLocation(world, x, y, z), ang, ANGLE_TOLERANCE);
+					if (loc != null) {
+						this.teleportPlayer(ep, loc);
+						ep.getEntityData().setLong("lastWarpNode", world.getTotalWorldTime());
+					}
 				}
 			}
 		}

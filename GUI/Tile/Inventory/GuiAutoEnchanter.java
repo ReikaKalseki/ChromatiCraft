@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,14 +11,6 @@ package Reika.ChromatiCraft.GUI.Tile.Inventory;
 
 import java.util.ArrayList;
 import java.util.Collections;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -34,6 +26,14 @@ import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.StatCollector;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 
 public class GuiAutoEnchanter extends GuiChromaBase {
 
@@ -154,6 +154,7 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 		int k = (height - ySize) / 2;
 
 		GL11.glDisable(GL11.GL_BLEND);
+		BlendMode.DEFAULT.apply();
 
 		int level = ench.getLevel();
 		if (level > 0) {

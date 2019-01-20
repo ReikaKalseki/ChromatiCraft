@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,11 +11,6 @@ package Reika.ChromatiCraft.GUI.Tile.Inventory;
 
 import java.util.HashMap;
 import java.util.List;
-
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
 
 import org.lwjgl.opengl.GL11;
 
@@ -36,6 +31,10 @@ import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 
 public class GuiCastingTable extends GuiChromaBase {
 
@@ -124,7 +123,7 @@ public class GuiCastingTable extends GuiChromaBase {
 				ItemStack ctr = tile.getStackInSlot(4);
 				ItemStack out = r.getOutputForDisplay(ctr);
 				if (ctr != null && out.stackTagCompound != null) {
-					ReikaNBTHelper.combineNBT(out.stackTagCompound, r.getOutputTag(ctr.stackTagCompound));
+					ReikaNBTHelper.combineNBT(out.stackTagCompound, r.getOutputTag(player, ctr.stackTagCompound));
 				}
 				api.drawItemStack(itemRender, out, 189, 12);
 				if (api.isMouseInBox(a+186, a+207, b+10, b+30)) {

@@ -255,6 +255,18 @@ public class ChromaticEventManager {
 	private ChromaticEventManager() {
 
 	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void lockT2EnderEyes(EntityItemPickupEvent evt) {
+		if (evt.item.getEntityItem().getItem() == ChromaItems.ENDEREYE.getItemInstance()) {
+			NBTTagCompound tag = evt.item.getEntityItem().stackTagCompound;
+			if (tag != null && tag.hasKey("owner")) {
+				UUID uid = UUID.fromString(tag.getString("owner"));
+				if (!uid.equals(evt.entityPlayer.getPersistentID()))
+					evt.setCanceled(true);
+			}
+		}
+	}
 	/*
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void clampGlowCloudCount(WorldEvent.PotentialSpawns evt) {
@@ -268,8 +280,9 @@ public class ChromaticEventManager {
 			rt.addTransparentBlock(Blocks.mob_spawner);
 			rt.addTransparentBlock(Blocks.web);
 			rt.setOrigins(evt.spawner.getSpawnerX()+0.5, evt.spawner.getSpawnerY()+0.5, evt.spawner.getSpawnerZ()+0.5, evt.player.posX, evt.player.posY, evt.player.posZ);
-			if (!rt.isClearLineOfSight(evt.player.worldObj)) {
+			if (evt.player.getDistanceSq(evt.spawner.getSpawnerX()+0.5, evt.spawner.getSpawnerY()+0.5, evt.spawner.getSpawnerZ()+0.5) <= evt.spawner.activatingRangeFromPlayer*evt.spawner.activatingRangeFromPlayer)
 				evt.player.getEntityData().setLong("spawnerpass", evt.player.worldObj.getTotalWorldTime());
+			if (!rt.isClearLineOfSight(evt.player.worldObj)) {
 				evt.setResult(Result.DENY);
 			}
 		}
@@ -689,7 +702,9 @@ public class ChromaticEventManager {
 			int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.AUTOCOLLECT.getEnchantment(), tool);
 			if (level > 0) {
 				for (ItemStack is : evt.drops) {
-					if (!MinecraftForge.EVENT_BUS.post(new EntityItemPickupEvent(ep, new EntityItem(ep.worldObj, ep.posX, ep.posY, ep.posZ, is))))
+					if (MinecraftForge.EVENT_BUS.post(new EntityItemPickupEvent(ep, new EntityItem(ep.worldObj, ep.posX, ep.posY, ep.posZ, is))))
+						ReikaSoundHelper.playSoundAtEntity(ep.worldObj, ep, "random.pop", 0.5F+ep.getRNG().nextFloat(), 0.8F+0.4F*ep.getRNG().nextFloat());
+					else
 						ReikaPlayerAPI.addOrDropItem(is, ep);
 				}
 				evt.drops.clear();
@@ -2240,7 +2255,7 @@ public class ChromaticEventManager {
 	}
 	 */
 
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	//@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void fillFragments(EntityItemPickupEvent ev) {
 		ItemStack is = ev.item.getEntityItem();
 		if (ChromaItems.FRAGMENT.matchWith(is) && ItemInfoFragment.isBlank(is) && !ev.entityPlayer.capabilities.isCreativeMode) {

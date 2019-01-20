@@ -34,4 +34,9 @@ public class EnhancedRuneRecipe extends TempleCastingRecipe implements CoreRecip
 		c.add(ProgressStage.ALLCOLORS);
 	}
 
+	@Override
+	public int getNumberProduced() {
+		return 8;
+	}
+
 }

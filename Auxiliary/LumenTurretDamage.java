@@ -1,18 +1,18 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityLumenTurret;
 import Reika.DragonAPI.Instantiable.CustomStringDamageSource;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 
 
 public class LumenTurretDamage extends CustomStringDamageSource {
@@ -25,8 +25,7 @@ public class LumenTurretDamage extends CustomStringDamageSource {
 	}
 
 	@Override
-	public Entity getSourceOfDamage()
-	{
+	public Entity getSourceOfDamage() {
 		return player;
 	}
 
@@ -36,8 +35,7 @@ public class LumenTurretDamage extends CustomStringDamageSource {
 	}
 
 	@Override
-	public boolean isMagicDamage()
-	{
+	public boolean isMagicDamage() {
 		return true;
 	}
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -13,9 +13,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
@@ -25,6 +22,10 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 
 public final class EnchantmentRecipe extends MultiBlockCastingRecipe {
@@ -65,7 +66,7 @@ public final class EnchantmentRecipe extends MultiBlockCastingRecipe {
 	}
 
 	@Override
-	public NBTTagCompound getOutputTag(NBTTagCompound input) {
+	public NBTTagCompound getOutputTag(EntityPlayer ep, NBTTagCompound input) {
 		NBTTagCompound tag = input != null ? (NBTTagCompound)input.copy() : new NBTTagCompound();
 		//ReikaJavaLibrary.pConsole("Adding "+enchantment+" "+level+" to "+input);
 		ReikaEnchantmentHelper.addEnchantment(tag, enchantment, level, false);

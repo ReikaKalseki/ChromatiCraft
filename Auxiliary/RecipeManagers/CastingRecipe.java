@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -20,15 +20,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.CastingAPI.FXCallback;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
@@ -63,6 +54,15 @@ import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.oredict.OreDictionary;
 
 
 public class CastingRecipe implements APICastingRecipe {
@@ -309,7 +309,7 @@ public class CastingRecipe implements APICastingRecipe {
 		return ReikaRecipeHelper.toDeterministicString(recipe);
 	}
 
-	public NBTTagCompound getOutputTag(NBTTagCompound input) {
+	public NBTTagCompound getOutputTag(EntityPlayer ep, NBTTagCompound input) {
 		return null;
 	}
 

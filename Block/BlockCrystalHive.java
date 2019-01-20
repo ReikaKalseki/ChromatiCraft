@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,18 +12,6 @@ package Reika.ChromatiCraft.Block;
 import java.util.ArrayList;
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.boss.EntityDragon;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Interfaces.MinerBlock;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -38,6 +26,18 @@ import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.EnumBeeType;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.boss.EntityDragon;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 public class BlockCrystalHive extends Block implements MinerBlock {
 
@@ -83,7 +83,9 @@ public class BlockCrystalHive extends Block implements MinerBlock {
 				li.add(bee.getBeeItem(world, EnumBeeType.DRONE));
 			}
 			ItemStack pr = bee.getBeeItem(world, EnumBeeType.PRINCESS);
-			ReikaBeeHelper.setPristine(pr, ReikaRandomHelper.doWithChance(10));
+			double ch = bee == CrystalBees.getPureBee() ? 15+5*fortune*fortune : 10+5*fortune;
+			ch = Math.min(bee == CrystalBees.getPureBee() ? 95 : 80, ch);
+			ReikaBeeHelper.setPristine(pr, ReikaRandomHelper.doWithChance(ch));
 			li.add(pr);
 		}
 		return li;

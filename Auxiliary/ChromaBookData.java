@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,11 +12,6 @@ package Reika.ChromatiCraft.Auxiliary;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.oredict.OreDictionary;
 
 import org.lwjgl.opengl.GL11;
 
@@ -41,6 +36,11 @@ import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
 
 public class ChromaBookData {
 
@@ -66,7 +66,7 @@ public class ChromaBookData {
 		ItemStack ctr = c instanceof MultiBlockCastingRecipe ? ((MultiBlockCastingRecipe)c).getMainInput() : c.getArrayForDisplay()[4];
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		if (ctr != null && isout.stackTagCompound != null)
-			ReikaNBTHelper.combineNBT(isout.stackTagCompound, c.getOutputTag(ctr.stackTagCompound));
+			ReikaNBTHelper.combineNBT(isout.stackTagCompound, c.getOutputTag(Minecraft.getMinecraft().thePlayer, ctr.stackTagCompound));
 		gui.drawItemStack(ri, fr, isout, posX+7, posY+5);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		if (subpage == 0 || subpage == 2) {

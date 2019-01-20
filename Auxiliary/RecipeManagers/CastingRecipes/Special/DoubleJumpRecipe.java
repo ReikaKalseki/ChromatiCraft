@@ -1,23 +1,24 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special;
 
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 
 
 public class DoubleJumpRecipe extends TempleCastingRecipe {
@@ -30,7 +31,7 @@ public class DoubleJumpRecipe extends TempleCastingRecipe {
 	}
 
 	@Override
-	public NBTTagCompound getOutputTag(NBTTagCompound input) {
+	public NBTTagCompound getOutputTag(EntityPlayer ep, NBTTagCompound input) {
 		return input;
 	}
 

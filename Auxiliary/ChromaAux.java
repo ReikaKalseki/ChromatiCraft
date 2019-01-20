@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -19,37 +19,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.IProjectile;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.projectile.EntityFireball;
-import net.minecraft.init.Blocks;
-import net.minecraft.tileentity.MobSpawnerBaseLogic;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityMobSpawner;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.StatCollector;
-import net.minecraft.util.Vec3;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.fluids.Fluid;
-import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
-import thaumcraft.api.nodes.INode;
-import thaumcraft.api.nodes.NodeModifier;
-import thaumcraft.api.nodes.NodeType;
 import Reika.ChromatiCraft.ChromaGuiHandler;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -99,6 +68,37 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IProjectile;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityFireball;
+import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.MobSpawnerBaseLogic;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityMobSpawner;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.StatCollector;
+import net.minecraft.util.Vec3;
+import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.fluids.Fluid;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.nodes.INode;
+import thaumcraft.api.nodes.NodeModifier;
+import thaumcraft.api.nodes.NodeType;
 
 public class ChromaAux {
 
@@ -149,7 +149,7 @@ public class ChromaAux {
 					else if (dat.newBlock == Blocks.mob_spawner) {
 						TileEntityMobSpawner tm = (TileEntityMobSpawner)dat.getTileEntity(world);
 						MobSpawnerBaseLogic lgc = tm.func_145881_a();
-						lgc.activatingRangeFromPlayer = 6;
+						lgc.activatingRangeFromPlayer = lgc.getEntityNameToSpawn().equals("CaveSpider") && lgc.getSpawnerY() < 55 ? 12 : 6;
 						lgc.minSpawnDelay *= 2;
 						lgc.maxSpawnDelay *= 4;
 					}
