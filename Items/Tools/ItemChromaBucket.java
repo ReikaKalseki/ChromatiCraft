@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,7 +11,16 @@ package Reika.ChromatiCraft.Items.Tools;
 
 import java.util.List;
 
+import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockEnchantmentTable;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,12 +29,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Base.ItemChromaTool;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemChromaBucket extends ItemChromaTool {
 
@@ -41,6 +44,21 @@ public class ItemChromaBucket extends ItemChromaTool {
 	{
 		for (int i = 0; i < ChromaItems.BUCKET.getNumberMetadatas(); i++)
 			par3List.add(new ItemStack(par1, 1, i));
+	}
+
+	@Override
+	public boolean onItemUseFirst(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int side, float a, float b, float c) {
+		if (!world.isRemote) {
+			if (world.getBlock(x, y, z) instanceof BlockEnchantmentTable) {
+				if (ChromaTiles.getTile(world, x, y-1, z) == ChromaTiles.ENCHANTER) {
+					if (((TileEntityAutoEnchanter)world.getTileEntity(x, y-1, z)).isAssisted()) {
+						ChromaTiles.ENCHANTER.getBlock().onBlockActivated(world, x, y-1, z, ep, side, 0, 0, 0);
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override

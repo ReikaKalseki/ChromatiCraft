@@ -1,11 +1,11 @@
 /*******************************************************************************
- * @author Reika Kalseki
- * 
- * Copyright 2017
- * 
- * All rights reserved.
- * Distribution of the software in any form is only allowed with
- * explicit, prior permission from the owner.
+ *@author Reika Kalseki
+ *
+ *Copyright 2017
+ *
+ *All rights reserved.
+ *Distribution of the software in any form is only allowed with
+ *explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Processing;
 
@@ -14,23 +14,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnumEnchantmentType;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemShears;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Interfaces.EnchantableItem;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaPowered;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
 import Reika.ChromatiCraft.Base.ChromaticEnchantment;
 import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverInventoryBase;
 import Reika.ChromatiCraft.Registry.ChromaEnchants;
@@ -40,10 +30,26 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler;
 import cpw.mods.fml.common.Loader;
+import net.minecraft.block.BlockEnchantmentTable;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnumEnchantmentType;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemShears;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 
-public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implements ChromaPowered, OperationInterval {
+public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implements ChromaPowered, OperationInterval, VariableTexture {
 
 	private HashMap<Enchantment, Integer> selected = new HashMap();
 
@@ -122,7 +128,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	}
 
 	public int getProgressScaled(int a) {
-		return a * progressTimer / progress.getCap();
+		return a*progressTimer / progress.getCap();
 	}
 
 	private boolean canProgress() {
@@ -244,16 +250,30 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		if (inv[0].getItem() == Items.book)
 			inv[0] = new ItemStack(Items.enchanted_book);
 		ReikaEnchantmentHelper.removeEnchantments(inv[0], selected.keySet());
+		if (inv[1] != null) {
+			ReikaEnchantmentHelper.removeEnchantments(inv[1], selected.keySet());
+			int dmg = 0;
+			for (Entry<Enchantment, Integer> e : selected.entrySet())
+				dmg += e.getValue()*ReikaRandomHelper.getRandomBetween(4D, 15D)*this.getCostFactor(e.getKey());
+			inv[1].damageItem(dmg, this.getPlacer());
+		}
 		ReikaEnchantmentHelper.applyEnchantments(inv[0], selected);
 		tank.removeLiquid(this.getConsumedChroma());
 		this.syncAllData(true);
 	}
 
-	private int getConsumedChroma() {
+	public int getConsumedChroma() {
 		int total = 0;
 		for (Enchantment e : selected.keySet()) {
-			int level = selected.get(e);
-			total += level*CHROMA_PER_LEVEL_BASE*this.getCostFactor(e);
+			float level = selected.get(e);
+			if (inv[1] != null)
+				level = Math.max(0.25F, level-0.8F*ReikaEnchantmentHelper.getEnchantmentLevel(e, inv[1]));
+			float add = level*CHROMA_PER_LEVEL_BASE*this.getCostFactor(e);
+			if (this.isAssisted())
+				add /= Math.min(2.5F, 1+this.getAssistPower());
+			add = Math.max(add, 50*level);
+			add = ReikaMathLibrary.roundToNearestX(100, Math.round(add));
+			total += (int)add;
 		}
 		return total;
 	}
@@ -341,7 +361,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 
 	@Override
 	public int getSizeInventory() {
-		return 1;
+		return 2;
 	}
 
 	@Override
@@ -447,6 +467,40 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 
 	public static boolean canPlayerGetEnchantment(Enchantment e, EntityPlayer ep) {
 		return e instanceof ChromaticEnchantment ? ((ChromaticEnchantment)e).isVisibleToPlayer(ep) : true;
+	}
+
+	public boolean isAssisted() {
+		return worldObj.getBlock(xCoord, yCoord+1, zCoord) instanceof BlockEnchantmentTable;
+	}
+
+	private float getAssistPower() {
+		float ret = 0;
+		float max = 0;
+
+		int y = yCoord+1;
+		for (int dz = -1; dz <= 1; dz++) {
+			for (int dx = -1; dx <= 1; dx++) {
+				if ((dz != 0 || dx != 0) && worldObj.isAirBlock(xCoord+dx, y, zCoord+dz) && worldObj.isAirBlock(xCoord+dx, y+1, zCoord+dz)) {
+					ret += ForgeHooks.getEnchantPower(worldObj, xCoord+dx*2, y, zCoord+dz*2);
+					ret += ForgeHooks.getEnchantPower(worldObj, xCoord+dx*2, y+1, zCoord+dz*2);
+					max += 2;
+
+					if (dx != 0 && dz != 0) {
+						ret += ForgeHooks.getEnchantPower(worldObj, xCoord+dx*2, y, zCoord+dz);
+						ret += ForgeHooks.getEnchantPower(worldObj, xCoord+dx*2, y+1, zCoord+dz);
+						ret += ForgeHooks.getEnchantPower(worldObj, xCoord+dx, y, zCoord+dz*2);
+						ret += ForgeHooks.getEnchantPower(worldObj, xCoord+dx, y+1, zCoord+dz*2);
+						max += 4;
+					}
+				}
+			}
+		}
+		return ret/max;
+	}
+
+	@Override
+	public int getIconState(int side) {
+		return side > 1 && this.isAssisted() ? 1 : 0;
 	}
 
 }

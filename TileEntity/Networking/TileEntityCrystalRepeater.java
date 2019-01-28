@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -10,18 +10,6 @@
 package Reika.ChromatiCraft.TileEntity.Networking;
 
 import java.util.HashSet;
-
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
@@ -61,6 +49,17 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements CrystalRepeater, CrystalFuse, NBTTile, SneakPop, OwnedTile, MultiBlockChromaTile {
 
@@ -113,8 +112,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	}
 
 	@Override
-	public void onBlockUpdate() {
-		super.onBlockUpdate();
+	public void onAdjacentBlockUpdate() {
 		redstoneCache = worldObj.isBlockIndirectlyGettingPowered(xCoord+facing.offsetX, yCoord+facing.offsetY, zCoord+facing.offsetZ);
 	}
 

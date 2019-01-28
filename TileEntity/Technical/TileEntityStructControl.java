@@ -696,9 +696,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 					if (blocks != null) {
 						for (int i = 0; i < blocks.getSize(); i++) {
 							Coordinate c = blocks.getNthBlock(i);
-							int x = c.xCoord+8;
-							int y = c.yCoord+3;
-							int z = c.zCoord+6;
+							int x = c.xCoord-8;
+							int y = c.yCoord-3;
+							int z = c.zCoord-6;
 							Block b = worldObj.getBlock(x, y, z);
 							if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
 								worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);

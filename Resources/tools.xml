@@ -132,9 +132,9 @@
 	<bottleneck>
 		As you have upgraded various parts of your crystal network, you have found that there is usually a small handful of constructs acting as the limiting factor in energy transport, either due to their inefficiencies or limitations on their transfer rate. If you could send pulses through the network, almost "ringing" the components, you might be able to identify these bottlenecks.
 	</bottleneck>
-	<name>
-		
-	</name>
+	<lightgun>
+		More than once during your cave expeditions, you have come across great fissures or hollows, and have had nothing but torches with which to (ineffectually) attempt to dispel the cavernous gloom. Sure, you have various constructs which can flood a large area with light, but most are either expensive, slow, or temporary, and at any rate none of those do any good when you venture into new regions without the requisite preparation. What you need is the ability to literally [i]fling[/i] light into the depths.
+	</lightgun>
 	<name>
 		
 	</name>

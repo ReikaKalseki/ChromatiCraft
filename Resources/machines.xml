@@ -192,10 +192,12 @@
 	</fence>
 	<furnace>
 		<desc>
-			Smelting. One of the most boring, mundane tasks you nonetheless still find yourself forced to do. Sure, there are all sorts of ways to speed up the process - although the external heating methods have a nastly tendency of liquefying the whole setup - but you might now be able to enhance the yield with a new kind of furnace able to harness not only fire but also enhancement energy as well.
+			Smelting. One of the most boring, mundane tasks you nonetheless still find yourself forced to do. Sure, there are all sorts of ways to speed up the process - although the external heating methods have a nasty tendency of liquefying the whole setup - but you might now be able to enhance the yield with a new kind of furnace able to harness not only fire but also enhancement energy as well.
 		</desc>
 		<note>
-			Yields %dx output for anything smelted inside it except for ingot dusts
+			Yields increased output for anything smelted inside it except for ingot dusts
+			
+			Base increase is %dx, higher for some other materials
 		</note>
 	</furnace>
 	<laser>
@@ -252,7 +254,9 @@
 			Enchanting has always been a random and infurating process. Spend a week collecting experience and you might get Bane of Arthropods I, or you might be lucky enough to get Fortune III and Efficiency V off of a few levels. Rather than tear your hair out trying to spend your experience efficiently, you recall the liquid chroma, which, being concentrated experience, may allow you not only automatic enchanting, but to allow you more fine control over the actual enchantments as well.
 		</desc>
 		<note>
-			Each level of enchantment requires %d mB of Chroma
+			Enchantment base cost: %d mB per level
+			
+			Can take an already-enchanted item to discount this cost
 		</note>
 	</enchanter>
 	<chromaflower>

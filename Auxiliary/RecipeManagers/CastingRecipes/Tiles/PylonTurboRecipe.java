@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,12 +11,6 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles;
 
 import java.util.Random;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
@@ -38,6 +32,12 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.util.ForgeDirection;
 
 
 public class PylonTurboRecipe extends PylonCastingRecipe {
@@ -209,7 +209,7 @@ public class PylonTurboRecipe extends PylonCastingRecipe {
 			for (int k = 1; k < 8; k += 1) {
 				Coordinate c = new Coordinate(te).offset(ForgeDirection.VALID_DIRECTIONS[i], k);
 				if (c.getBlock(te.worldObj).isAir(te.worldObj, c.xCoord, c.yCoord, c.zCoord))
-					c.setBlock(te.worldObj, ChromaBlocks.LIGHT.getBlockInstance(), Flags.DECAY.getFlag());
+					c.setBlock(te.worldObj, ChromaBlocks.LIGHT.getBlockInstance(), Flags.FASTDECAY.getFlag());
 			}
 		}
 	}

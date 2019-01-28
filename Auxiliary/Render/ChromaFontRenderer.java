@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,8 +11,6 @@ package Reika.ChromatiCraft.Auxiliary.Render;
 
 import java.awt.image.BufferedImage;
 import java.util.HashSet;
-
-import net.minecraftforge.client.event.GuiOpenEvent;
 
 import org.lwjgl.opengl.GL11;
 
@@ -26,6 +24,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.client.event.GuiOpenEvent;
 
 @SideOnly(Side.CLIENT)
 public class ChromaFontRenderer extends BasicFontRenderer {
@@ -42,6 +41,7 @@ public class ChromaFontRenderer extends BasicFontRenderer {
 		super(false);
 		offsets = new int[charWidth.length];
 		type = f;
+		//parseBBCode = true;
 	}
 
 	@Override

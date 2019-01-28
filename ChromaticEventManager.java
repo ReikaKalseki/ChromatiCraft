@@ -89,6 +89,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityProtectionUpgrade;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalBroadcaster;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
+import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs.GlowingTreeGen;
@@ -254,6 +255,22 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void delegateEnchantGui(PlayerInteractEvent evt) {
+		if (evt.entityPlayer.isSneaking())
+			return;
+		if (ChromaItems.BUCKET.matchWith(evt.entityPlayer.getCurrentEquippedItem()))
+			return;
+		if (evt.action == Action.RIGHT_CLICK_BLOCK) {
+			if (ChromaTiles.getTile(evt.world, evt.x, evt.y-1, evt.z) == ChromaTiles.ENCHANTER) {
+				if (((TileEntityAutoEnchanter)evt.world.getTileEntity(evt.x, evt.y-1, evt.z)).isAssisted()) {
+					ChromaTiles.ENCHANTER.getBlock().onBlockActivated(evt.world, evt.x, evt.y-1, evt.z, evt.entityPlayer, evt.face, 0, 0, 0);
+					evt.setCanceled(true);
+				}
+			}
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -702,11 +719,10 @@ public class ChromaticEventManager {
 			int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.AUTOCOLLECT.getEnchantment(), tool);
 			if (level > 0) {
 				for (ItemStack is : evt.drops) {
-					if (MinecraftForge.EVENT_BUS.post(new EntityItemPickupEvent(ep, new EntityItem(ep.worldObj, ep.posX, ep.posY, ep.posZ, is))))
-						ReikaSoundHelper.playSoundAtEntity(ep.worldObj, ep, "random.pop", 0.5F+ep.getRNG().nextFloat(), 0.8F+0.4F*ep.getRNG().nextFloat());
-					else
+					if (!MinecraftForge.EVENT_BUS.post(new EntityItemPickupEvent(ep, new EntityItem(ep.worldObj, ep.posX, ep.posY, ep.posZ, is))))
 						ReikaPlayerAPI.addOrDropItem(is, ep);
 				}
+				ReikaSoundHelper.playSoundAtEntity(ep.worldObj, ep, "random.pop", 0.25F+0.25F*rand.nextFloat(), ((rand.nextFloat()-rand.nextFloat())*0.7F+1)*2);
 				evt.drops.clear();
 			}
 		}

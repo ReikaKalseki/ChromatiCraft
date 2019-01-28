@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,6 +12,13 @@ package Reika.ChromatiCraft.Block.Decoration;
 import java.util.ArrayList;
 import java.util.Random;
 
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.Interfaces.ColorController;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -24,14 +31,6 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.DragonAPI.Interfaces.ColorController;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class BlockEtherealLight extends Block {
@@ -61,7 +60,8 @@ public class BlockEtherealLight extends Block {
 	public static enum Flags {
 		MINEABLE(),
 		PARTICLES(),
-		DECAY();
+		SLOWDECAY(),
+		FASTDECAY();
 
 		public boolean isPresent(World world, int x, int y, int z) {
 			return this.isPresent(world.getBlockMetadata(x, y, z));
@@ -88,20 +88,28 @@ public class BlockEtherealLight extends Block {
 
 	@Override
 	public void updateTick(World world, int x, int y, int z, Random r) {
-		if (Flags.DECAY.isPresent(world, x, y, z))
+		if ((Flags.SLOWDECAY.isPresent(world, x, y, z) && r.nextInt(5) == 0) || Flags.FASTDECAY.isPresent(world, x, y, z)) {
 			world.setBlock(x, y, z, Blocks.air);
+			world.markBlockRangeForRenderUpdate(x, y, z, x, y, z);
+		}
 	}
 
 	@Override
 	public void onBlockAdded(World world, int x, int y, int z) {
-		if (Flags.DECAY.isPresent(world, x, y, z))
-			world.scheduleBlockUpdate(x, y, z, this, 20);
+		if (Flags.FASTDECAY.isPresent(world, x, y, z)) {
+			world.scheduleBlockUpdate(x, y, z, this, ReikaRandomHelper.getRandomBetween(15, 30));
+		}
 	}
 
 	@Override
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block n) {
-		if (Flags.DECAY.isPresent(world, x, y, z))
+		if (Flags.SLOWDECAY.isPresent(world, x, y, z)) {
+			world.scheduleBlockUpdate(x, y, z, this, ReikaRandomHelper.getRandomBetween(40, 200));
+		}
+		else if (Flags.FASTDECAY.isPresent(world, x, y, z)) {
 			world.setBlock(x, y, z, Blocks.air);
+			world.markBlockRangeForRenderUpdate(x, y, z, x, y, z);
+		}
 	}
 
 	@Override
@@ -163,7 +171,7 @@ public class BlockEtherealLight extends Block {
 	public void breakBlock(World world, int x, int y, int z, Block b, int meta) {
 		super.breakBlock(world, x, y, z, b, meta);
 		if (Flags.MINEABLE.isPresent(meta)) {
-			ReikaItemHelper.dropItem(world, x, y, z, new ItemStack(b, 1, meta));
+			//ReikaItemHelper.dropItem(world, x, y, z, new ItemStack(b, 1, meta));
 		}
 	}
 

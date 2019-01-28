@@ -17,6 +17,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -621,6 +622,14 @@ public class CastingRecipe implements APICastingRecipe {
 
 		public int getRequiredCentralItemCount() {
 			return 1;
+		}
+
+		protected final void addAuxItems(MultiBlockCastingRecipe r) {
+			for (Entry<List<Integer>, ItemMatch> e : r.getAuxItems().entrySet()) {
+				Set<KeyedItemStack> set = e.getValue().getItemList();
+				ItemStack is = set.iterator().next().getItemStack();
+				this.addAuxItem(is, e.getKey().get(0), e.getKey().get(1));
+			}
 		}
 
 		@Override

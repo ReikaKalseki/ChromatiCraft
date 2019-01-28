@@ -725,7 +725,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance() && c.getBlockMetadata(arr.world) == BlockType.MOSS.metadata) {
 				Block b3 = c.offset(0, 1, 0).getBlock(arr.world);
 				if (b3 != b) {
-					for (int i = 1; i < 4; i++) {
+					for (int i = 1; i < 5; i++) {
 						for (int dx = -i; dx <= i; dx++) {
 							for (int dz = -i; dz <= i; dz++) {
 								Coordinate c2 = c.offset(dx, i, dz);

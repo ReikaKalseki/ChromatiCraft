@@ -1,20 +1,20 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Container;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.ICrafting;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.ICrafting;
 
 public class ContainerAutoEnchanter extends CoreContainer {
 
@@ -25,6 +25,7 @@ public class ContainerAutoEnchanter extends CoreContainer {
 		tile = te;
 
 		this.addSlot(0, 80, 35);
+		this.addSlot(1, 14, 51);
 
 		this.addPlayerInventoryWithOffset(player, 0, 15);
 	}

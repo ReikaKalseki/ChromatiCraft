@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,16 +12,6 @@ package Reika.ChromatiCraft;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-
-import net.minecraft.client.audio.SoundCategory;
-import net.minecraft.client.renderer.entity.RenderFireball;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.entity.RenderSlime;
-import net.minecraft.client.renderer.tileentity.RenderEnderCrystal;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.world.World;
-import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.input.Keyboard;
 
@@ -51,6 +41,7 @@ import Reika.ChromatiCraft.Entity.EntityDimensionFlare;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Entity.EntityGluon;
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
+import Reika.ChromatiCraft.Entity.EntityLightShot;
 import Reika.ChromatiCraft.Entity.EntityLumaBurst;
 import Reika.ChromatiCraft.Entity.EntityMeteorShot;
 import Reika.ChromatiCraft.Entity.EntityNukerBall;
@@ -79,6 +70,7 @@ import Reika.ChromatiCraft.Render.Entity.RenderDimensionFlare;
 import Reika.ChromatiCraft.Render.Entity.RenderGlowCloud;
 import Reika.ChromatiCraft.Render.Entity.RenderGluon;
 import Reika.ChromatiCraft.Render.Entity.RenderLaserPulse;
+import Reika.ChromatiCraft.Render.Entity.RenderLightShot;
 import Reika.ChromatiCraft.Render.Entity.RenderLumaBurst;
 import Reika.ChromatiCraft.Render.Entity.RenderMeteorShot;
 import Reika.ChromatiCraft.Render.Entity.RenderNukerBall;
@@ -155,6 +147,15 @@ import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
+import net.minecraft.client.audio.SoundCategory;
+import net.minecraft.client.renderer.entity.RenderFireball;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.RenderSlime;
+import net.minecraft.client.renderer.tileentity.RenderEnderCrystal;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.world.World;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 public class ChromaClient extends ChromaCommon {
 
@@ -243,6 +244,7 @@ public class ChromaClient extends ChromaCommon {
 		RenderingRegistry.registerEntityRenderingHandler(EntityTunnelNuker.class, new RenderTunnelNuker());
 		if (ModList.BOTANIA.isLoaded())
 			RenderingRegistry.registerEntityRenderingHandler(EntityChromaManaBurst.class, new RenderChromaManaBurst());
+		RenderingRegistry.registerEntityRenderingHandler(EntityLightShot.class, new RenderLightShot());
 
 		this.registerSpriteSheets();
 		this.registerBlockSheets();

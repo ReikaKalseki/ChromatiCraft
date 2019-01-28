@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -18,11 +18,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.LoggingLevel;
@@ -39,6 +34,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCreativeSource;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntitySkypeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntitySkypeater.NodeClass;
@@ -55,6 +51,11 @@ import Reika.DragonAPI.ModRegistry.InterfaceCache;
 import Reika.GeoStrata.Registry.GeoBlocks;
 import Reika.RotaryCraft.Registry.BlockRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 
 public class PylonFinder {
 
@@ -227,7 +228,7 @@ public class PylonFinder {
 
 
 	private boolean isSourceConnected(CrystalSource s) {
-		return target instanceof WrapperTile || !net.getNearbyReceivers(s, element).isEmpty();
+		return target instanceof WrapperTile || s instanceof TileEntityCreativeSource || !net.getNearbyReceivers(s, element).isEmpty();
 	}
 
 	private CrystalPath checkExistingPaths(int thresh) {

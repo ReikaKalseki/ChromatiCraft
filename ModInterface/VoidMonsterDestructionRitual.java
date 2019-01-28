@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2018
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -13,11 +13,6 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.util.Random;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.DamageSource;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -36,8 +31,14 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.VoidMonster.API.NonTeleportingDamage;
 import Reika.VoidMonster.API.VoidMonsterHook;
 import Reika.VoidMonster.Entity.EntityVoidMonster;
+import Reika.VoidMonster.World.MonsterGenerator;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.DamageSource;
+import net.minecraft.world.World;
 
 
 public class VoidMonsterDestructionRitual implements VoidMonsterHook {
@@ -71,6 +72,10 @@ public class VoidMonsterDestructionRitual implements VoidMonsterHook {
 		if (!arena.isInside(e)) {
 			e.moveTowards(arena.centerX, e.posY, arena.centerZ, 1);
 		}
+	}
+
+	private void onCompletion(EntityVoidMonster e) {
+		MonsterGenerator.instance.addCooldown(e, 20*60*ReikaRandomHelper.getRandomBetween(20, 45));
 	}
 
 	public static class MonsterArena {

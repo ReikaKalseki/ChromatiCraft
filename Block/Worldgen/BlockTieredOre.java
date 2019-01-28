@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,6 +15,23 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Base.BlockChromaTiered;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.DragonAPI.Instantiable.Data.StatisticalRandom;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Worldgen.ControllableOreVein;
+import Reika.DragonAPI.Instantiable.Worldgen.ControllableOreVein.BlockExcludingOreVein;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.particle.EffectRenderer;
@@ -31,24 +48,6 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.ChromatiCraft.Base.BlockChromaTiered;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
-import Reika.DragonAPI.Instantiable.Data.StatisticalRandom;
-import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
-import Reika.DragonAPI.Instantiable.Worldgen.ControllableOreVein;
-import Reika.DragonAPI.Instantiable.Worldgen.ControllableOreVein.BlockExcludingOreVein;
-import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
-import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-import Reika.RotaryCraft.API.ItemFetcher;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockTieredOre extends BlockChromaTiered {
 
@@ -80,10 +79,10 @@ public class BlockTieredOre extends BlockChromaTiered {
 		FIRAXITE(Blocks.stone, ProgressStage.NETHER,			1, 2, 8),
 		LUMA(Blocks.stone, ProgressStage.STRUCTCOMPLETE,		1, 1, 8),
 		ECHO(Blocks.stone, ProgressStage.CTM,					2, 1, 8),
-		FIRESTONE(Blocks.netherrack, ProgressStage.LINK,		1, 4, 16),
-		THERMITE(Blocks.netherrack, ProgressStage.END,			1, 4, 16),
+		FIRESTONE(Blocks.netherrack, ProgressStage.LINK,		3, 2, 16),
+		THERMITE(Blocks.netherrack, ProgressStage.END,			3, 2, 16),
 		RESO(Blocks.end_stone, ProgressStage.ABILITY,			1, 8, 8),
-		SPACERIFT(Blocks.end_stone, ProgressStage.KILLDRAGON,	1, 12, 8),
+		SPACERIFT(Blocks.end_stone, ProgressStage.KILLDRAGON,	2, 9, 8),
 		RAINBOW(Blocks.stone, ProgressStage.USEENERGY,			1, 2, 8),
 		AVOLITE(Blocks.stone, ProgressStage.POWERCRYSTAL,		2, 1, 18);
 
@@ -137,8 +136,6 @@ public class BlockTieredOre extends BlockChromaTiered {
 	public Collection<ItemStack> getHarvestResources(World world, int x, int y, int z, int fortune, EntityPlayer player) {
 		ArrayList li = new ArrayList();
 		int n = 1;
-		if (ItemFetcher.isPlayerHoldingBedrockPick(player))
-			fortune = 5;
 		switch(TieredOres.list[world.getBlockMetadata(x, y, z)]) {
 			case INFUSED:
 				n = Math.min(16, 1+rand.nextInt(5)*(1+rand.nextInt(1+fortune)));

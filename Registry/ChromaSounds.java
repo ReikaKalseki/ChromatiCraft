@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,15 +11,15 @@ package Reika.ChromatiCraft.Registry;
 
 import java.net.URL;
 
-import net.minecraft.client.audio.SoundCategory;
-import net.minecraft.entity.Entity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.Registry.SoundEnum;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import net.minecraft.client.audio.SoundCategory;
+import net.minecraft.entity.Entity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 
 public enum ChromaSounds implements SoundEnum {
 
@@ -97,7 +97,7 @@ public enum ChromaSounds implements SoundEnum {
 	DIMENSIONHUM("dimensionhum"),
 	DIMENSIONHUM_HI("dimensionhum_hi"),
 	RADIANCE("radiance2"),
-	ABILITYCOMPLETE("abilityfinish"),
+	ABILITYCOMPLETE("abilityfinish2"),
 	NETWORKOPT("networkopt"),
 	NETWORKOPTCHARGE("networkopt_charge2"),
 	;

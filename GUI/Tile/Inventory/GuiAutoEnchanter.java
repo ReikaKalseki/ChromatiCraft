@@ -23,7 +23,6 @@ import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -166,9 +165,25 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 			this.drawTexturedModelRectFromIcon(35, 68-h, ico, 16, h);
 		}
 
-		String display = this.getEnchantDisplayString();
-		ReikaGuiAPI.instance.drawCenteredString(fontRendererObj, display, xSize/2, 75, 0xffffff);
+		int amt = ench.getConsumedChroma();
+		String sg = String.valueOf(amt/1000F);
+		fontRendererObj.drawString("Cost:", 32-fontRendererObj.getStringWidth("Cost:"), 28, 0xffffff);
+		fontRendererObj.drawString(sg, 32-fontRendererObj.getStringWidth(sg), 38, amt > ench.getCapacity() ? 0xff0000 : amt > ench.getChroma() ? 0xffff00 : 0x00ff00);
 
+		String display = this.getEnchantDisplayString();
+		api.drawCenteredString(fontRendererObj, display, xSize/2, 75, 0xffffff);
+
+		float w = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
+		GL11.glLineWidth(5);
+		if (amt > ench.getCapacity()) {
+			api.drawLine(35, 68-54, 51, 68, 0xffff0000);
+			api.drawLine(35, 68, 51, 68-54, 0xffff0000);
+		}
+		else {
+			int a = 54*amt/ench.getCapacity();
+			api.drawLine(35, 68-a, 51, 68-a, 0xff707070);
+		}
+		GL11.glLineWidth(w);
 		GL11.glEnable(GL11.GL_BLEND);
 	}
 
@@ -184,7 +199,7 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 
 	@Override
 	public String getGuiTexture() {
-		return "enchanter";
+		return "enchanter2";
 	}
 
 }

@@ -1,23 +1,14 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Recipe;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.GameSettings;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.API.RitualCompletionEvent;
@@ -55,6 +46,15 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.GameSettings;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 
 public class TileEntityRitualTable extends InventoriedCrystalReceiver implements /*GuiController, */BreakAction, TriggerableAction, OwnedTile,
 OperationInterval, MultiBlockChromaTile, VariableTexture {
@@ -152,7 +152,7 @@ OperationInterval, MultiBlockChromaTile, VariableTexture {
 		//ReikaJavaLibrary.pConsole(box.maxX > ep.boundingBox.minX && box.minX < ep.boundingBox.maxX ? (box.maxY > ep.boundingBox.minY && box.minY < ep.boundingBox.maxY ? box.maxZ > ep.boundingBox.minZ && box.minZ < ep.boundingBox.maxZ : false) : false);
 
 		abilitySoundTick++;
-		if (abilitySoundTick >= 490) {
+		if (abilitySoundTick >= 490 && abilityTick > 120) {
 			abilitySoundTick = 0;
 			ChromaSounds.ABILITY.playSoundAtBlock(this);
 		}
@@ -185,6 +185,7 @@ OperationInterval, MultiBlockChromaTile, VariableTexture {
 		if (canTick)
 			abilityTick--;
 		if (abilityTick <= 0) {
+			ChromaSounds.ABILITYCOMPLETE.playSound(ep, 1, 1);
 			this.giveAbility(ep);
 			energy.subtract(tag);
 
@@ -273,7 +274,7 @@ OperationInterval, MultiBlockChromaTile, VariableTexture {
 		}
 		else {
 			Chromabilities.give(ep, ability);
-			ChromaSounds.ABILITYCOMPLETE.playSound(ep, 1, 1);
+			//ChromaSounds.ABILITYCOMPLETE.playSound(ep, 1, 1);
 			MinecraftForge.EVENT_BUS.post(new RitualCompletionEvent(ep, ability.getID()));
 			flag = true;
 		}

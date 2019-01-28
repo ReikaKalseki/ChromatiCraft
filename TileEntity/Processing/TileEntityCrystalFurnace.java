@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,20 +11,6 @@ package Reika.ChromatiCraft.TileEntity.Processing;
 
 import java.util.Locale;
 
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemFood;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
-import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
@@ -52,6 +38,20 @@ import Reika.RotaryCraft.Auxiliary.ItemStacks;
 import Reika.RotaryCraft.Auxiliary.RecipeManagers.ExtractorModOres;
 import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeTile.PipeType;
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemFood;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidHandler;
+import net.minecraftforge.oredict.OreDictionary;
 
 @Strippable(value = {"buildcraft.api.transport.IPipeConnection"})
 public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements IFluidHandler, IPipeConnection, OperationInterval,
@@ -208,17 +208,18 @@ VariableTexture {
 		else if (ModList.ROTARYCRAFT.isLoaded() && ReikaItemHelper.matchStacks(in, ItemStacks.ironscrap))
 			return 1;
 		else if (ModList.THAUMCRAFT.isLoaded() && in.getItem() == ThaumItemHelper.ItemEntry.NUGGETCLUSTER.getItem().getItem()) {
-			return 4;
+			return 2*MULTIPLY;
 		}
 		else if (ReikaBlockHelper.isOre(in)) {
-			int ret = 4;
+			int ret = 2*MULTIPLY;
 			OreType ore = ReikaOreHelper.getEntryByOreDict(in);
 			if (ore == null)
 				ore = ModOreList.getModOreFromOre(in);
 			if (ore != null) {
 				if (ore.getRarity() == OreRarity.RARE) {
-					ret = 8;
+					ret *= 2;
 				}
+				ret *= ore.getDropCount();
 			}
 			return ret;
 		}

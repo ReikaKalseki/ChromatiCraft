@@ -279,6 +279,7 @@ public enum ChromaResearch implements ProgressElement {
 	BOTTLENECK(			ChromaItems.BOTTLENECK,		ResearchLevel.NETWORKING,		ProgressStage.REPEATER),
 	SPAWNERBYPASS(		ChromaItems.SPAWNERBYPASS,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.FINDSPAWNER),
 	ENDEREYE(			ChromaItems.ENDEREYE,		ResearchLevel.ENERGYEXPLORE,	ProgressStage.NETHERROOF),
+	LIGHTGUN(			ChromaItems.LIGHTGUN,		ResearchLevel.BASICCRAFT,		ProgressStage.BEDROCK),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),

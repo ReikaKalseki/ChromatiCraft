@@ -1,19 +1,14 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2018
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Entity;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.Block.Decoration.BlockEtherealLight.Flags;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
@@ -25,6 +20,11 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 
 
 public class EntityTunnelNuker extends EntityLiving implements DestroyOnUnload {
@@ -47,7 +47,7 @@ public class EntityTunnelNuker extends EntityLiving implements DestroyOnUnload {
 			else if (worldObj.provider.dimensionId != ExtraChromaIDs.DIMID.getValue() && ticksExisted%64 == 0) {
 				int y = MathHelper.floor_double(posY);
 				if (worldObj.getBlock(x, y, z).isAir(worldObj, x, y, z)) {
-					worldObj.setBlock(x, y, z, ChromaBlocks.LIGHT.getBlockInstance(), Flags.DECAY.getFlag(), 3);
+					worldObj.setBlock(x, y, z, ChromaBlocks.LIGHT.getBlockInstance(), Flags.FASTDECAY.getFlag(), 3);
 				}
 			}
 		}

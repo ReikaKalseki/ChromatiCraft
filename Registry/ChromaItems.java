@@ -51,6 +51,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemEnderCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemFloatstoneBoots;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Items.Tools.ItemKillAuraGun;
+import Reika.ChromatiCraft.Items.Tools.ItemLightGun;
 import Reika.ChromatiCraft.Items.Tools.ItemManipulator;
 import Reika.ChromatiCraft.Items.Tools.ItemMultiTool;
 import Reika.ChromatiCraft.Items.Tools.ItemOrePick;
@@ -179,6 +180,7 @@ public enum ChromaItems implements ItemEnum {
 	BOTTLENECK(48, false,	"chroma.bottleneck",	ItemBottleneckFinder.class),
 	SPAWNERBYPASS(43, false,"chroma.spawnerbypass",	ItemSpawnerBypass.class),
 	ENDEREYE(0,	false,		"chroma.endereye",		ItemT2EnderEye.class),
+	LIGHTGUN(51, false,		"chroma.lightgun",		ItemLightGun.class),
 	;
 
 	private final int index;

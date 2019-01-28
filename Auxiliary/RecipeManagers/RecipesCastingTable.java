@@ -85,6 +85,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.Confi
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.DoubleJumpRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.EnchantmentRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.RepeaterTurboRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.RepeaterUpcraftRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.TinkerToolPartRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AdjacencyRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AspectFormerRecipe;
@@ -179,6 +180,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.Floatst
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.GrowthWandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.InventoryLinkRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.KillAuraRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.LightGunRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.LinkToolRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.MobSonarRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.MultiToolRecipe;
@@ -837,6 +839,12 @@ public class RecipesCastingTable {
 		this.addRecipe(new TrapFloorRecipe(is, 12, sr));
 
 		this.addRecipe(new EnderEyeRecipe(ChromaItems.ENDEREYE.getCraftedProduct(3), new ItemStack(Items.emerald)));
+
+		this.addRecipe(new RepeaterUpcraftRecipe(repeater));
+
+		is = ChromaItems.LIGHTGUN.getStackOf();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, " ba", "gGb", "sg ", 's', Items.stick, 'g', Items.redstone, 'G', Items.gold_ingot, 'a', ChromaStacks.auraDust, 'b', Blocks.obsidian);
+		this.addRecipe(new LightGunRecipe(is, sr));
 
 		this.addSpecialRecipes();
 	}
