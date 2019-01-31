@@ -107,7 +107,7 @@ public enum ChromaEntities implements EntityEnum {
 
 	@Override
 	public int getTrackingDistance() {
-		return this == AURORA || this == PYLONOVERLOAD ? 90000 : this == ENDEREYE ? 256 : 128;
+		return this == AURORA || this == PYLONOVERLOAD ? 90000 : this == ENDEREYE ? 512 : 128;
 	}
 
 	@Override

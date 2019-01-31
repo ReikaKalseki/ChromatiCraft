@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,14 +12,14 @@ package Reika.ChromatiCraft.ModInterface.Bees;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator.Acceleration;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.ModInteract.Bees.BeeEvent.BeeSetHealthEvent;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import forestry.api.apiculture.EnumBeeType;
 import forestry.api.apiculture.IBee;
 import forestry.api.apiculture.IBeeHousing;
@@ -27,6 +27,9 @@ import forestry.api.apiculture.IBeeHousingInventory;
 import forestry.api.apiculture.IBeeModifier;
 import forestry.api.apiculture.IBeekeepingLogic;
 import forestry.api.multiblock.IAlvearyController;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.MinecraftForge;
 
 public class ApiaryAcceleration extends Acceleration {
 
@@ -72,6 +75,14 @@ public class ApiaryAcceleration extends Acceleration {
 			ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.FORESTRY, e);
 			ChromatiCraft.logger.logError("Could not find BeeKeepingLogic internal members!");
 		}
+
+		MinecraftForge.EVENT_BUS.register(this);
+	}
+
+	@SubscribeEvent
+	public void setBeeHealth(BeeSetHealthEvent evt) throws Exception {
+		this.updateBeeHealthBar((TileEntity)evt.housing, evt.logic, evt.bee);
+		this.resetProgress(evt.logic);
 	}
 
 	@Override
@@ -118,9 +129,7 @@ public class ApiaryAcceleration extends Acceleration {
 	}
 
 	public void updateBeeHealthBar(IAlvearyController con, IBee bee) throws Exception {
-		beeLogicProgress.set(con.getBeekeepingLogic(), bee.getHealth());
-		tileProgressAlveary.set(con, (int)(bee.getHealth()*2.25));
-		//lgc.syncToClient();
+		this.updateBeeHealthBar((TileEntity)con, con.getBeekeepingLogic(), bee);
 	}
 
 	public void updateBeeHealthBar(TileEntity te, IBeekeepingLogic lgc, IBee bee) throws Exception {

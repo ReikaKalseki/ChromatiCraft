@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -17,18 +17,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
-
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
+import Reika.ChromatiCraft.Auxiliary.ElementEncodedNumber;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
@@ -58,8 +52,13 @@ import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.StatCollector;
 
 public class GuiBasicInfo extends GuiBookSection {
 
@@ -272,9 +271,9 @@ public class GuiBasicInfo extends GuiBookSection {
 					ReikaTextureHelper.bindTerrainTexture();
 
 					int pass = data.getPassword(player);
-					byte[] vals = ReikaJavaLibrary.splitIntToHexChars(pass);
-					for (int i = 0; i < vals.length; i++) {
-						CrystalElement e = CrystalElement.elements[vals[i]];
+					ElementEncodedNumber vals = new ElementEncodedNumber(pass);
+					for (int i = 0; i < vals.getLength(); i++) {
+						CrystalElement e = vals.getSlot(i);
 						IIcon ico = e.getGlowRune();
 						int dx = posX+35+i*24;
 						int dy = posY+189;

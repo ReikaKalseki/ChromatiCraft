@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -13,8 +13,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Random;
 
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.World;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Math.HexGrid;
 import Reika.DragonAPI.Instantiable.Math.HexGrid.Hex;
@@ -23,6 +22,9 @@ import Reika.DragonAPI.Instantiable.Math.HexGrid.Point;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.World;
 
 
 public enum Towers {
@@ -52,6 +54,8 @@ public enum Towers {
 	private static final EnumMap<Towers, Coordinate> towerCache = new EnumMap(Towers.class);
 	private static long lastWorldSeed;
 
+	private static final double TOWER_OFFSET_RADIUS = 2500;
+
 	private Towers(String s, int idx, int x, int y, int z) {
 		character = s;
 		textureIndex = idx;
@@ -73,13 +77,14 @@ public enum Towers {
 		towerChunkCache.clear();
 		towerCache.clear();
 
-		HexGrid grid = new HexGrid(9, radius, true, MapShape.HEXAGON).flower();
+		double r = radius*MathHelper.clamp_double(ChromaOptions.WORLDSIZE.getValue()/5000D, 0.5, 5);
+		HexGrid grid = new HexGrid(9, r, true, MapShape.HEXAGON).flower();
 
 		Random rand = new Random(world.getSeed()); // ^ world.getSaveHandler().getWorldDirectory().getAbsolutePath().toString().hashCode()
 
 		double a = rand.nextDouble()*360;
-		double dx = -2500+rand.nextDouble()*5000;
-		double dz = -2500+rand.nextDouble()*5000;
+		double dx = -TOWER_OFFSET_RADIUS+rand.nextDouble()*TOWER_OFFSET_RADIUS*2+ChromaOptions.WORLDCENTERX.getValue();
+		double dz = -TOWER_OFFSET_RADIUS+rand.nextDouble()*TOWER_OFFSET_RADIUS*2+ChromaOptions.WORLDCENTERZ.getValue();
 
 		for (int i = 0; i < towerList.length; i++) {
 			Towers t = towerList[i];

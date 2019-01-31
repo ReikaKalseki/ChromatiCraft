@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -21,6 +21,7 @@ import Reika.DragonAPI.Interfaces.Configuration.MatchingConfig;
 import Reika.DragonAPI.Interfaces.Configuration.StringConfig;
 import Reika.DragonAPI.Interfaces.Configuration.UserSpecificConfig;
 import Reika.DragonAPI.Interfaces.Registry.Dependency;
+import net.minecraft.world.ChunkCoordIntPair;
 
 
 public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig, StringConfig, MatchingConfig, CustomCategoryConfig, UserSpecificConfig, Dependency {
@@ -83,7 +84,10 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	MIDISIZE("Orchestra MIDI Size Limit (KB)", 80),
 	ALLOWSTRUCTPASS("Allow Structure Bypass Passwords", true),
 	SUPERBUILDKEYBIND("Superbuild Ability Activation", Key.LCTRL.toString()),
-	VILLAGERATE("Village Structure Frequency", 1F);
+	VILLAGERATE("Village Structure Frequency", 1F),
+	WORLDSIZE("Expected Approximate Maximum World Size (Radius)", 5000),
+	WORLDCENTERX("Expected Approximate World Center Location X", 0),
+	WORLDCENTERZ("Expected Approximate World Center Location Z", 0);
 
 	private String label;
 	private boolean defaultState;
@@ -239,6 +243,11 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	public static int getStructureDifficulty() {
 		int base = STRUCTDIFFICULTY.getValue();
 		return Math.min(3, Math.max(1, base));
+	}
+
+	/** In block coords */
+	public static ChunkCoordIntPair getWorldCenter() {
+		return new ChunkCoordIntPair(WORLDCENTERX.getValue(), WORLDCENTERZ.getValue());
 	}
 
 	@Override

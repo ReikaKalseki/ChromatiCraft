@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -14,14 +14,10 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Iterator;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ElementEncodedNumber;
 import Reika.ChromatiCraft.Magic.Lore.KeyAssemblyPuzzle;
 import Reika.ChromatiCraft.Magic.Lore.KeyAssemblyPuzzle.HexCell;
 import Reika.ChromatiCraft.Magic.Lore.KeyAssemblyPuzzle.TileGroup;
@@ -37,7 +33,10 @@ import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
 
 public class FullScreenOverlayRenderer {
@@ -181,8 +180,7 @@ public class FullScreenOverlayRenderer {
 	}
 
 	void addStructurePasswordNote(EntityPlayer ep, int hex) {
-		byte[] vals = ReikaJavaLibrary.splitIntToHexChars(hex);
-		renderingGroups.add(new StructurePasswordRender(vals));
+		renderingGroups.add(new StructurePasswordRender(new ElementEncodedNumber(hex)));
 	}
 
 	boolean renderLoreHexes(RenderGameOverlayEvent.Pre evt, int tick) {
@@ -275,9 +273,9 @@ public class FullScreenOverlayRenderer {
 
 	private static class StructurePasswordRender extends FullElementRender {
 
-		private final byte[] colors;
+		private final ElementEncodedNumber colors;
 
-		private StructurePasswordRender(byte[] c) {
+		private StructurePasswordRender(ElementEncodedNumber c) {
 			super(GROUP_LIFESPAN*7);
 			colors = c;
 		}
@@ -285,16 +283,15 @@ public class FullScreenOverlayRenderer {
 		@Override
 		protected void render() {
 			ReikaTextureHelper.bindTerrainTexture();
-			int l = Math.min(colors.length, age/5);
+			int l = Math.min(colors.getLength(), age/5);
 			boolean full = false;//age < colors.length*5;
 			for (int i = 0; i < l; i++) {
-				byte color = colors[i];
 				int x = (i%16-4)*24+12;
 				int y = 0;//(i/4)*32;
 				float f = full ? 1 : 1+(float)(0.625*Math.sin(System.currentTimeMillis()/300D-i));
 				f = Math.min(1, f);
 				GL11.glColor4f(f, f, f, this.getAlpha());
-				CrystalElement e = CrystalElement.elements[color];
+				CrystalElement e = colors.getSlot(i);
 				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y, e.getOutlineRune(), 16, 16);
 				GL11.glColor4f(1, 1, 1, 1);
 				float w = GL11.glGetFloat(GL11.GL_LINE_WIDTH);

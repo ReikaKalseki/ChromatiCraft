@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,19 +12,13 @@ package Reika.ChromatiCraft.Magic.Lore;
 import java.util.Collection;
 import java.util.Collections;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
 import Reika.ChromatiCraft.Magic.Lore.KeyAssemblyPuzzle.TileGroup;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
@@ -34,6 +28,13 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 
 
 public class LoreManager {
@@ -77,17 +78,20 @@ public class LoreManager {
 			Towers.loadPositions(world, 64*16*2);
 	}
 
-	/** In block coords */
-	public ChunkCoordIntPair getNearestTowerChunk(World world, int cx, int cz) {
+	/** Block coords */
+	public Towers getNearestTower(World world, double x, double z) {
 		this.initTowers(world);
-		ChunkCoordIntPair ret = null;
+		Towers ret = null;
 		double mind = Double.POSITIVE_INFINITY;
 		for (int i = 0; i < Towers.towerList.length; i++) {
 			Towers t = Towers.towerList[i];
 			ChunkCoordIntPair p = t.getRootPosition();
-			double d = ReikaMathLibrary.py3d(cx-p.chunkXPos, 0, cz-p.chunkZPos);
+			Coordinate p2 = t.getGeneratedLocation();
+			double d1 = ReikaMathLibrary.py3d(x-p.chunkXPos, 0, z-p.chunkZPos);
+			double d2 = p2 != null ? p2.getDistanceTo(x, p2.yCoord, z) : Double.POSITIVE_INFINITY;
+			double d = Math.min(d1, d2);
 			if (ret == null || d < mind) {
-				ret = p;
+				ret = t;
 				mind = d;
 			}
 		}

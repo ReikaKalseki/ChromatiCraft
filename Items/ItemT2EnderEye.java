@@ -9,17 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.UUID;
 
 import Reika.ChromatiCraft.Base.ItemChromaBasic;
 import Reika.ChromatiCraft.Entity.EntityEnderEyeT2;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Interfaces.Item.AnimatedSpritesheet;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -35,8 +31,6 @@ import net.minecraft.world.World;
 
 
 public class ItemT2EnderEye extends ItemChromaBasic implements AnimatedSpritesheet {
-
-	public static final int FUZZ = 440;
 
 	public ItemT2EnderEye(int tex) {
 		super(tex);
@@ -103,18 +97,7 @@ public class ItemT2EnderEye extends ItemChromaBasic implements AnimatedSpriteshe
 						is.stackTagCompound = new NBTTagCompound();
 						is.stackTagCompound.setString("owner", ep.getUniqueID().toString());
 					}
-					EntityEnderEyeT2 eye = new EntityEnderEyeT2(world, ep.posX, ep.posY + 1.62D - ep.yOffset, ep.posZ);
-					CrystalElement[] key = this.encodeLocation(ep, pos);
-					/*
-					int[] data = new int[key.length-1];
-					for (int i = 0; i < data.length; i++) {
-						data[i] = key[i+1].ordinal()-key[0].ordinal();
-						while(data[i] < 0)
-							data[i] += 16;
-					}
-					ReikaJavaLibrary.pConsole(pos.chunkPosX+":"+pos.chunkPosZ+" > "+Arrays.toString(data));*/
-					eye.readEntityFromNBT(is.stackTagCompound);
-					eye.setColorKey(key);
+					EntityEnderEyeT2 eye = EntityEnderEyeT2.create(world, ep.posX, ep.posY + 1.62D - ep.yOffset, ep.posZ, is.stackTagCompound);
 					eye.moveTowards(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
 					world.spawnEntityInWorld(eye);
 					world.playSoundAtEntity(ep, "random.bow", 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
@@ -131,35 +114,6 @@ public class ItemT2EnderEye extends ItemChromaBasic implements AnimatedSpriteshe
 
 			return is;
 		}
-	}
-
-	private static CrystalElement[] encodeLocation(EntityPlayer ep, ChunkPosition pos) {
-		int x = pos.chunkPosX;//ReikaRandomHelper.getRandomPlusMinus(pos.chunkPosX, FUZZ);
-		int z = pos.chunkPosZ;//ReikaRandomHelper.getRandomPlusMinus(pos.chunkPosZ, FUZZ);
-		x = ReikaMathLibrary.roundToNearestX(FUZZ, x);
-		z = ReikaMathLibrary.roundToNearestX(FUZZ, z);
-		byte[] valsX = ReikaJavaLibrary.splitIntToHexChars(x);
-		byte[] valsZ = ReikaJavaLibrary.splitIntToHexChars(z);
-		ArrayList<Byte> vx = ReikaJavaLibrary.makeIntListFromArray(valsX);
-		ArrayList<Byte> vz = ReikaJavaLibrary.makeIntListFromArray(valsZ);
-		Collections.reverse(vx);
-		while (vx.get(0) == 0 && vx.size() >= 1) //strip leading values
-			vx.remove(0);
-		Collections.reverse(vz);
-		while (vz.get(0) == 0 && vz.size() >= 1)
-			vz.remove(0);
-		int offset = ep.getUniqueID().hashCode()%16;
-		CrystalElement[] ret = new CrystalElement[1+vx.size()+vz.size()];
-		ret[0] = CrystalElement.elements[offset];
-		for (int i = 0; i < vx.size(); i++) {
-			int idx = (vx.get(i)+offset)%16;
-			ret[1+i] = CrystalElement.elements[idx];
-		}
-		for (int i = 0; i < vz.size(); i++) {
-			int idx = (vz.get(i)+offset)%16;
-			ret[1+i+vx.size()] = CrystalElement.elements[idx];
-		}
-		return ret;
 	}
 
 	@Override

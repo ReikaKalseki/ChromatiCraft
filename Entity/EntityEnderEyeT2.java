@@ -1,15 +1,20 @@
 package Reika.ChromatiCraft.Entity;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.UUID;
 
-import Reika.ChromatiCraft.Items.ItemT2EnderEye;
+import Reika.ChromatiCraft.Magic.Lore.LoreManager;
+import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Interpolation;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
@@ -30,21 +35,33 @@ import net.minecraft.world.World;
 
 public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdditionalSpawnData {
 
+	public static final int FUZZ = 440;
+	public static final double DEVIATION_CHANCE = 0.08;
+
 	public static final int ADDITIONAL_LIFE = 60;
 	public static final double RANGE = 36;//vanilla is 12
 
 	private UUID owner;
+	private int deviateTime;
+	private int deviationTick;
 
 	private CrystalElement[] colorData;
 
 	private Interpolation spiralColor;
-	private Interpolation distanceColor;
+	private static final Interpolation distanceColor = new Interpolation(true);
 
 	private double finalX;
 	private double finalZ;
 	private double spawnX;
 	private double spawnZ;
 	private double totalDistance;
+
+	static {
+		distanceColor.addPoint(0, 0x606060);
+		distanceColor.addPoint(FUZZ, 75);
+		distanceColor.addPoint(6000, 180);
+		distanceColor.addPoint(0, 0xffffff);
+	}
 
 	public EntityEnderEyeT2(World world, double x, double y, double z) {
 		super(world, x, y, z);
@@ -61,14 +78,26 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 		spawnX = posX;
 		spawnZ = posZ;
 
-		double d2 = x - posX;
-		double d3 = z - posZ;
-		float f = MathHelper.sqrt_double(d2 * d2 + d3 * d3);
-		totalDistance = f;
+		totalDistance = this.setTarget(x, y, z);
 
-		if (f > RANGE) {
-			targetX = posX + d2 / f * RANGE;
-			targetZ = posZ + d3 / f * RANGE;
+		despawnTimer = 0-ADDITIONAL_LIFE;
+		shatterOrDrop = false; //always die so never drops vanilla eye ([/rhyme])
+
+		if (totalDistance > FUZZ) {
+			CrystalElement[] key = this.encodeLocation(owner, MathHelper.floor_double(finalX), MathHelper.floor_double(finalZ));
+			this.setColorKey(key);
+		}
+
+		deviateTime = ReikaRandomHelper.doWithChance(DEVIATION_CHANCE) ? 10+rand.nextInt(80+ADDITIONAL_LIFE-40-10) : -1;
+	}
+
+	private double setTarget(double x, double y, double z) {
+		double dx = x - posX;
+		double dz = z - posZ;
+		double d = ReikaMathLibrary.py3d(dx, 0, dz);
+		if (d > RANGE) {
+			targetX = posX + dx / d * RANGE;
+			targetZ = posZ + dz / d * RANGE;
 			targetY = posY + 8.0D;
 		}
 		else {
@@ -76,9 +105,78 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 			targetY = y;
 			targetZ = z;
 		}
+		return d;
+	}
 
-		despawnTimer = 0-ADDITIONAL_LIFE;
-		shatterOrDrop = false; //always die so never drops vanilla eye ([/rhyme])
+	/** Only called server side, so it clears the entity and creates a new one */
+	private void deviate() {
+		Towers t = LoreManager.instance.getNearestTower(worldObj, posX, posZ);
+		if (t != null) {
+			int x;
+			int y;
+			int z;
+			Coordinate c = t.getGeneratedLocation();
+			if (c != null) {
+				x = c.xCoord;
+				y = c.yCoord+18;
+				z = c.zCoord;
+			}
+			else {
+				x = t.getRootPosition().chunkXPos;
+				z = t.getRootPosition().chunkZPos;
+				y = 96;
+			}
+			if (deviationTick > 30) {
+				NBTTagCompound data = new NBTTagCompound();
+				this.writeEntityToNBT(data);
+				EntityEnderEyeT2 repl = EntityEnderEyeT2.create(worldObj, posX, posY, posZ, data);
+				repl.moveTowards(x, y, z);
+				repl.deviateTime = -1;
+				worldObj.spawnEntityInWorld(repl);
+				this.setDead();
+			}
+			else {
+				deviationTick++;
+				double dx = x-posX;
+				double dz = z-posZ;
+				double d = ReikaMathLibrary.py3d(dx, 0, dz);
+				double f = deviationTick/30D;
+				//motionX += dx/d*f;
+				//motionZ += dz/d*f;
+				double tx = f*(x-posX)+(1-f)*(finalX-posX);
+				double tz = f*(z-posZ)+(1-f)*(finalZ-posZ);
+				this.setTarget(tx, targetY, tz);
+			}
+		}
+	}
+
+	private static CrystalElement[] encodeLocation(UUID uid, int x, int z) {
+		//x = ReikaRandomHelper.getRandomPlusMinus(x, FUZZ);
+		//z = ReikaRandomHelper.getRandomPlusMinus(z, FUZZ);
+		x = ReikaMathLibrary.roundToNearestX(FUZZ, x);
+		z = ReikaMathLibrary.roundToNearestX(FUZZ, z);
+		byte[] valsX = ReikaJavaLibrary.splitIntToHexChars(x);
+		byte[] valsZ = ReikaJavaLibrary.splitIntToHexChars(z);
+		ArrayList<Byte> vx = ReikaJavaLibrary.makeIntListFromArray(valsX);
+		ArrayList<Byte> vz = ReikaJavaLibrary.makeIntListFromArray(valsZ);
+		Collections.reverse(vx);
+		while (vx.get(0) == 0 && vx.size() >= 1) //strip leading values
+			vx.remove(0);
+		Collections.reverse(vz);
+		while (vz.get(0) == 0 && vz.size() >= 1)
+			vz.remove(0);
+		int offset = uid != null ? uid.hashCode()%16 : 0;
+		CrystalElement[] ret = new CrystalElement[1+vx.size()+vz.size()];
+		ret[0] = CrystalElement.elements[offset];
+		for (int i = 0; i < vx.size(); i++) {
+			int idx = (vx.get(i)+offset)%16;
+			ret[1+i] = CrystalElement.elements[idx];
+		}
+		for (int i = 0; i < vz.size(); i++) {
+			int idx = (vz.get(i)+offset)%16;
+			ret[1+i+vx.size()] = CrystalElement.elements[idx];
+		}
+		return ret;
 	}
 
 	@Override
@@ -86,10 +184,20 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 		if (worldObj.isRemote) {
 			this.doParticles();
 		}
+
+		boolean flag = deviateTime > 0 && ticksExisted >= deviateTime;
 		super.onUpdate();
-		motionX *= 0.7;
-		motionY *= 0.7;
-		motionZ *= 0.7;
+		if (flag) {
+			this.deviate();
+			motionX *= 0.85;
+			motionY *= 0.85;
+			motionZ *= 0.85;
+		}
+		else {
+			motionX *= 0.7;
+			motionY *= 0.7;
+			motionZ *= 0.7;
+		}
 		velocityChanged = true;
 		if (despawnTimer > 80 && !worldObj.isRemote) {
 			ItemStack is = ChromaItems.ENDEREYE.getStackOf();
@@ -119,7 +227,7 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 			}
 		}
 
-		if (colorData != null && spiralColor != null) {
+		if (colorData != null && spiralColor != null && (deviateTime < 0 || deviateTime > ticksExisted)) {
 			int t = ticksExisted;//this.despawnTimer;
 			int c = (int)spiralColor.getValue(t);
 			double lf = 80+ADDITIONAL_LIFE;
@@ -130,7 +238,7 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 			EntityBlurFX fx = new EntityBlurFX(worldObj, posX+vec.xCoord, posY+vec.yCoord, posZ+vec.zCoord);
 			float s = 7.5F;
 			fx.setLife(180).setScale(s).setColor(c);
-			fx.setRapidExpand().setAlphaFading().setIcon(ChromaIcons.FADE_GENTLE);
+			fx.setRapidExpand().setAlphaFading().setIcon(ChromaIcons.FADE_BASICBLEND).setBasicBlend();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
@@ -169,6 +277,7 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 		buf.writeDouble(finalZ);
 		buf.writeDouble(spawnX);
 		buf.writeDouble(spawnZ);
+		buf.writeInt(deviateTime);
 		if (colorData != null) {
 			buf.writeInt(colorData.length);
 			for (int i = 0; i < colorData.length; i++) {
@@ -186,12 +295,8 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 		finalZ = buf.readDouble();
 		spawnX = buf.readDouble();
 		spawnZ = buf.readDouble();
+		deviateTime = buf.readInt();
 		totalDistance = ReikaMathLibrary.py3d(finalX-spawnX, 0, finalZ-spawnZ);
-		distanceColor = new Interpolation(true);
-		distanceColor.addPoint(0, 0x606060);
-		distanceColor.addPoint(ItemT2EnderEye.FUZZ, 75);
-		distanceColor.addPoint(6000, 180);
-		distanceColor.addPoint(0, 0xffffff);
 		int amt = buf.readInt();
 		if (amt != -1) {
 			spiralColor = new Interpolation(true);
@@ -208,6 +313,12 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 				spiralColor.addPoint(t2, 0xffffff);
 			}
 		}
+	}
+
+	public static EntityEnderEyeT2 create(World world, double x, double y, double z, NBTTagCompound tag) {
+		EntityEnderEyeT2 eye = new EntityEnderEyeT2(world, x, y, z);
+		eye.readEntityFromNBT(tag);
+		return eye;
 	}
 
 }
