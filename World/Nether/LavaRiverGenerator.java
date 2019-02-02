@@ -83,7 +83,7 @@ public class LavaRiverGenerator implements IPopulate {
 	}
 
 	private static void addFluid(double weight, Block b) {
-		blockTypes.addMapping(weight+blockTypes.maxValue(), b);
+		blockTypes.addMapping(weight+blockTypes.lastValue(), b);
 	}
 
 	public void generate(World world, int chunkX, int chunkZ) {
@@ -130,7 +130,7 @@ public class LavaRiverGenerator implements IPopulate {
 	private Block getLiquid(double rx, double rz) {
 		if (fluidBlock != null)
 			return fluidBlock.blockID;
-		double t = ReikaMathLibrary.normalizeToBounds(blockNoise.getValue(rx, rz), 0, blockTypes.maxValue());
+		double t = ReikaMathLibrary.normalizeToBounds(blockNoise.getValue(rx, rz), 0, blockTypes.lastValue());
 		return blockTypes.getForValue(t, true);
 	}
 

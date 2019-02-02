@@ -135,12 +135,12 @@
 	<lightgun>
 		More than once during your cave expeditions, you have come across great fissures or hollows, and have had nothing but torches with which to (ineffectually) attempt to dispel the cavernous gloom. Sure, you have various constructs which can flood a large area with light, but most are either expensive, slow, or temporary, and at any rate none of those do any good when you venture into new regions without the requisite preparation. What you need is the ability to literally [i]fling[/i] light into the depths.
 	</lightgun>
-	<name>
-		
-	</name>
-	<name>
-		
-	</name>
+	<endereye>
+		You have determined that in a few places in the world lie abandoned structures buried deep underground, and within each lies some sort of gate. Having fashioned some strange-looking items to seek out these structures, you rapidly grew frustrated with their short range and propensity to burst in midair. Undaunted, you have devised an improved version, which is both far more reliable and more powerful, having a far greater range, indestructability, and the ability to return towards you under nearly any circumstance. However, that increased range has led it to occasionally pick up some sort of interference...
+	</endereye>
+	<spawnerbypass>
+		More than once, you have happened upon a location where you were on the other side of a wall from a spawner, and then, while fiddling through your pouch of tools to find the appropriate weaponry, found yourself face-to-face with a mob that appeared on your side of the wall. Never again must that be allowed to happen; once you enter the room and engage the spawner is one thing, but having it activate before you can even see it is neither fair nor enjoyable.
+	</spawnerbypass>
 	<name>
 		
 	</name>

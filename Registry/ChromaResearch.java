@@ -78,6 +78,7 @@ import forestry.api.apiculture.EnumBeeType;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -233,6 +234,7 @@ public enum ChromaResearch implements ProgressElement {
 	LUMA(			ChromaBlocks.LUMA,												ResearchLevel.RAWEXPLORE,	ProgressStage.LUMA),
 	//SPAWNERCONTROL(	ChromaBlocks.SPAWNERCONTROL,									ResearchLevel.RAWEXPLORE,	ProgressStage.BREAKSPAWNER),
 	TRAPFLOOR(		ChromaBlocks.TRAPFLOOR,											ResearchLevel.RAWEXPLORE,	ProgressStage.SNOWSTRUCT),
+	WARPNODE(		ChromaBlocks.WARPNODE,											ResearchLevel.RAWEXPLORE,	ProgressStage.WARPNODE),
 
 	TOOLDESC("Tools", ""),
 	WAND(				ChromaItems.TOOL,			ResearchLevel.ENTRY),
@@ -636,6 +638,31 @@ public enum ChromaResearch implements ProgressElement {
 			GL11.glPopAttrib();
 			return;
 		}
+		else if (this == WARPNODE) {
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/warpnode-small.png");
+			int idx = (int)(System.currentTimeMillis()/20%64);
+			double u = idx%8/8D;
+			double v = idx/8/8D;
+			double du = u+1/8D;
+			double dv = v+1/8D;
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glColor4f(1, 1, 1, 1);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.ADDITIVEDARK.apply();
+			int d = 2;
+			int w = 16;
+			int h = 16;
+			Tessellator tessellator = Tessellator.instance;
+			tessellator.startDrawingQuads();
+			tessellator.addVertexWithUV((x + 0 - d), (y + h + d), 0, u, dv);
+			tessellator.addVertexWithUV((x + w + d), (y + h + d), 0, du, dv);
+			tessellator.addVertexWithUV((x + w + d), (y + 0 - d), 0, du, v);
+			tessellator.addVertexWithUV((x + 0 - d), (y + 0 - d), 0, u, v);
+			tessellator.draw();
+			GL11.glPopAttrib();
+			return;
+		}
 		else if (this == APIRECIPES) {
 			ArrayList<ItemStack> ico = new ArrayList();
 			/*
@@ -784,6 +811,8 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == LUMA)
 			return false;
 		if (this == SPAWNERBYPASS)
+			return false;
+		if (this == WARPNODE)
 			return false;
 		if (this.requiresProgress(ProgressStage.TOWER) || this.requiresProgress(ProgressStage.ARTEFACT))
 			return false;

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -13,28 +13,25 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Magic.PylonLinkNetwork;
+import Reika.ChromatiCraft.Magic.PylonLinkNetwork.PylonNode;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
-import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
-import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityPylonLink extends TileEntityChromaticBase implements LocationCached, VariableTexture {
-
-	private static final MultiMap<UUID, PylonNode> links = new MultiMap(new HashSetFactory());
 
 	private PylonNode connection;
 
@@ -65,21 +62,19 @@ public class TileEntityPylonLink extends TileEntityChromaticBase implements Loca
 		this.link();
 	}
 
-	private void link() {
+	public void link() {
 		if (placerUUID == null)
 			return;
 		TileEntityCrystalPylon te = this.getPylon();
 
 		if (te != null) {
-			connection = new PylonNode(this, te);
-			links.addValue(placerUUID, connection);
-			te.link(this);
+			connection = PylonLinkNetwork.instance.addLocation(this, te);
 		}
 	}
 
 	@SideOnly(Side.CLIENT)
 	private void doFX(World world, int x, int y, int z) {
-		int c = connection.color.getColor();
+		int c = connection.getColor().getColor();
 
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 		double dd = ep.getDistanceSq(x+0.5, y+0.5, z+0.5);
@@ -133,13 +128,7 @@ public class TileEntityPylonLink extends TileEntityChromaticBase implements Loca
 	public Collection<WorldLocation> getLinkedPylons() {
 		if (placerUUID == null || connection == null)
 			return new ArrayList();
-		ArrayList<WorldLocation> li = new ArrayList();
-		Collection<PylonNode> c = links.get(placerUUID);
-		for (PylonNode pn : c) {
-			if (pn.color == connection.color)
-				li.add(pn.pylon);
-		}
-		return li;
+		return PylonLinkNetwork.instance.getLinkedPylons(worldObj, placerUUID, connection.getColor());
 	}
 
 	public TileEntityCrystalPylon getPylon() {
@@ -165,12 +154,7 @@ public class TileEntityPylonLink extends TileEntityChromaticBase implements Loca
 	private void unlink() {
 		if (placerUUID == null || connection == null)
 			return;
-		WorldLocation loc = new WorldLocation(this);
-		TileEntity te = connection.pylon.getTileEntity();
-		if (te instanceof TileEntityCrystalPylon) {
-			((TileEntityCrystalPylon)te).link(null);
-		}
-		links.remove(placerUUID, connection);
+		PylonLinkNetwork.instance.removeLocation(worldObj, connection);
 		connection = null;
 	}
 
@@ -179,67 +163,22 @@ public class TileEntityPylonLink extends TileEntityChromaticBase implements Loca
 		super.readSyncTag(NBT);
 
 		if (NBT.hasKey("link"))
-			connection = PylonNode.readFromNBT("link", NBT);
+			connection = PylonNode.fromSync(NBT.getCompoundTag("link"));
 	}
 
 	@Override
 	protected void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
 
-		if (connection != null)
-			connection.writeToNBT("link", NBT);
+		if (connection != null) {
+			NBTTagCompound tag = new NBTTagCompound();
+			connection.sync(tag);
+			NBT.setTag("link", tag);
+		}
 	}
 
 	public UUID getUUID() {
 		return placerUUID;
-	}
-
-	private static class PylonNode {
-
-		private final WorldLocation tile;
-		private final WorldLocation pylon;
-		private final CrystalElement color;
-
-		private PylonNode(TileEntityPylonLink te, TileEntityCrystalPylon p) {
-			this(new WorldLocation(te), new WorldLocation(p), p.getColor());
-		}
-
-		private PylonNode(WorldLocation loc, WorldLocation py, CrystalElement e) {
-			tile = loc;
-			pylon = py;
-			color = e;
-		}
-
-		private static PylonNode readFromNBT(String tag, NBTTagCompound NBT) {
-			NBTTagCompound c = NBT.getCompoundTag(tag);
-			WorldLocation loc = WorldLocation.readFromNBT("loc", c);
-			WorldLocation py = WorldLocation.readFromNBT("pylon", c);
-			CrystalElement e = CrystalElement.elements[c.getInteger("color")];
-			return new PylonNode(loc, py, e);
-		}
-
-		private void writeToNBT(String tag, NBTTagCompound NBT) {
-			NBTTagCompound c = new NBTTagCompound();
-			tile.writeToNBT("loc", c);
-			pylon.writeToNBT("pylon", c);
-			c.setInteger("color", color.ordinal());
-			NBT.setTag(tag, c);
-		}
-
-		@Override
-		public int hashCode() {
-			return tile.hashCode();
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (o instanceof PylonNode) {
-				PylonNode pn = (PylonNode)o;
-				return pn.tile.equals(tile) && pn.pylon.equals(pylon) && pn.color == color;
-			}
-			return false;
-		}
-
 	}
 
 }

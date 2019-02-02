@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,6 +12,12 @@ package Reika.ChromatiCraft.World.IWG;
 import java.util.HashSet;
 import java.util.Random;
 
+import Reika.ChromatiCraft.Magic.Lore.LoreManager;
+import Reika.ChromatiCraft.Magic.Lore.Towers;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.material.Material;
@@ -20,14 +26,12 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.BiomeGenOcean;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraftforge.common.BiomeDictionary;
+import net.minecraftforge.common.BiomeDictionary.Type;
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.Magic.Lore.LoreManager;
-import Reika.ChromatiCraft.Magic.Lore.Towers;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public class UnknownArtefactGenerator implements RetroactiveGenerator {
 
@@ -116,7 +120,10 @@ public class UnknownArtefactGenerator implements RetroactiveGenerator {
 	public static boolean canGenerateArtefactAt(World world, int x, int y, int z) { //the artefact would be at x, y-1, z
 		//ReikaJavaLibrary.pConsole("Attempting @ "+x+", "+y+", "+z);
 		Block b = world.getBlock(x, y, z);
-		if (b != Blocks.dirt && b != Blocks.grass) {
+		BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
+		if (biome instanceof BiomeGenOcean || BiomeDictionary.isBiomeOfType(biome, Type.WATER))
+			return false;
+		if (b != biome.topBlock && b != biome.fillerBlock) {
 			//ReikaJavaLibrary.pConsole("Invalid surface block");
 			return false;
 		}
@@ -124,7 +131,7 @@ public class UnknownArtefactGenerator implements RetroactiveGenerator {
 			//ReikaJavaLibrary.pConsole("Invalid cover block");
 			return false;
 		}
-		if (world.getBlock(x, y-1, z) != Blocks.dirt) {
+		if (world.getBlock(x, y-1, z) != biome.fillerBlock) {
 			//ReikaJavaLibrary.pConsole("Not dirt");
 			return false;
 		}

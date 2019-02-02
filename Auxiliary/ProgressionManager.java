@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -18,26 +18,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-
-import net.minecraft.block.Block;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.monster.EntitySpider;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.MinecraftForge;
 
 import org.lwjgl.opengl.GL11;
 
@@ -84,6 +64,26 @@ import Reika.DragonAPI.ModRegistry.ModWoodList;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.monster.EntitySpider;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.MinecraftForge;
 
 public class ProgressionManager implements ProgressRegistry {
 
@@ -163,6 +163,7 @@ public class ProgressionManager implements ProgressRegistry {
 		STRUCTCHEAT(							Blocks.tnt), //optional, just to rub it in
 		VOIDMONSTER(							(ItemStack)null, ModList.VOIDMONSTER.isLoaded()),
 		LUMA(									ChromaBlocks.LUMA.getBlockInstance()),
+		WARPNODE(								ChromaBlocks.WARPNODE.getBlockInstance()),
 		NEVER(									(ItemStack)null, false), //used as a no-trigger placeholder
 		;
 
@@ -257,17 +258,41 @@ public class ProgressionManager implements ProgressRegistry {
 				BlendMode.ADDITIVEDARK.apply();
 				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y, ChromaIcons.SPINFLARE.getIcon(), 16, 16); //render directly
 				GL11.glPopAttrib();
-				return;
 			}
-			if (this == VOIDMONSTER) {
+			else if (this == VOIDMONSTER) {
 				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 				GL11.glColor4f(1, 1, 1, 1);
 				GL11.glDisable(GL11.GL_LIGHTING);
 				ReikaGuiAPI.instance.renderStatic(x-1, y-1, x+16, y+16);
 				GL11.glPopAttrib();
-				return;
 			}
-			ReikaGuiAPI.instance.drawItemStack(ri, fr, icon, x, y);
+			else if (this == WARPNODE) {
+				ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/warpnode-small.png");
+				int idx = (int)(System.currentTimeMillis()/20%64);
+				double u = idx%8/8D;
+				double v = idx/8/8D;
+				double du = u+1/8D;
+				double dv = v+1/8D;
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				GL11.glColor4f(1, 1, 1, 1);
+				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glEnable(GL11.GL_BLEND);
+				BlendMode.ADDITIVEDARK.apply();
+				int d = 2;
+				int w = 16;
+				int h = 16;
+				Tessellator tessellator = Tessellator.instance;
+				tessellator.startDrawingQuads();
+				tessellator.addVertexWithUV((x + 0 - d), (y + h + d), 0, u, dv);
+				tessellator.addVertexWithUV((x + w + d), (y + h + d), 0, du, dv);
+				tessellator.addVertexWithUV((x + w + d), (y + 0 - d), 0, du, v);
+				tessellator.addVertexWithUV((x + 0 - d), (y + 0 - d), 0, u, v);
+				tessellator.draw();
+				GL11.glPopAttrib();
+			}
+			else {
+				ReikaGuiAPI.instance.drawItemStack(ri, fr, icon, x, y);
+			}
 		}
 
 		public boolean isGatedAfter(ProgressStage p) {

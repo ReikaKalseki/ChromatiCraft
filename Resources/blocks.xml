@@ -90,9 +90,9 @@
 	<luma>
 		In caves deep below the multi-level cliffs, you found a purple liquid of almost...nonexistent palpability. In fact, this liquid is so tenuous that it might grant a key to manipulating space or energy itself.
 	</luma>
-	<name>
-		
-	</name>
+	<trapfloor>
+		Sometimes you want to have the floor be made of a given material to convey some sort of status effect, but good luck making floors out of liquid chroma, and using lava as a mob farm floor destroys the drops as surely as it does the mobs. If you could make the floor out of a solid block that still...relayed the effects, you could solve both problems.
+	</trapfloor>
 	<name>
 		
 	</name>

@@ -687,7 +687,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 		boolean repeat = false;
 		NBTTagCompound NBTin = null;
 		int xpToAdd = 0;
-		while (activeRecipe == recipe && count*activeRecipe.getOutput().stackSize < activeRecipe.getOutput().getMaxStackSize()) {
+		while (activeRecipe == recipe && (count+(activeRecipe.getOutput().getMaxStackSize() == 1 ? 0 : 1))*activeRecipe.getOutput().stackSize < activeRecipe.getOutput().getMaxStackSize()) {
 			if (inv[4] != null)
 				NBTin = recipe.getOutputTag(craftingPlayer, inv[4].stackTagCompound);
 			xpToAdd += (int)(activeRecipe.getExperience()*this.getXPModifier(activeRecipe));

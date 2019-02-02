@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -51,6 +51,7 @@ public enum ChromaPackets {
 	AURAPOUCH(2),
 	FARMERHARVEST(3),
 	PYLONCACHE(-1),
+	PYLONLINKCACHE(-1),
 	PYLONCACHECLEAR(1),
 	TRANSITIONWAND(1),
 	TELEPORT(),

@@ -1,35 +1,44 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Nether;
 
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ChestGenHooks;
-import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.world.World;
+import net.minecraftforge.common.ChestGenHooks;
+import net.minecraftforge.common.util.ForgeDirection;
 
 
 public class NetherTemple {
 
 	private static Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
-	private static int ms = BlockType.STONE.ordinal();//.metadata;
+	private static int ms = BlockType.STONE.metadata;
 	private static Block ch = ChromaBlocks.LOOTCHEST.getBlockInstance();
 	private static int mc = BlockLootChest.getMeta(ForgeDirection.NORTH);
 
 	static void generateAt(World world, int i, int j, int k) {
+		//door
+		world.setBlock(i + 13, j + 2, k + 9, Blocks.sticky_piston, 11, 2);
+		world.setBlock(i + 13, j + 2, k + 10, Blocks.piston_head, 11, 2);
+		world.setBlock(i + 12, j + 2, k + 9, Blocks.sticky_piston, 11, 2);
+		world.setBlock(i + 12, j + 2, k + 10, Blocks.piston_head, 11, 2);
+
+		world.setBlock(i + 13, j + 2, k + 11, b, ms%8, 3);
+		world.setBlock(i + 12, j + 2, k + 11, b, ms%8, 3);
+
 		world.setBlock(i + 0, j + 0, k + 0, Blocks.bedrock);
 		world.setBlock(i + 0, j + 0, k + 1, Blocks.bedrock);
 		world.setBlock(i + 0, j + 0, k + 2, Blocks.bedrock);
@@ -1414,7 +1423,7 @@ public class NetherTemple {
 		world.setBlock(i + 5, j + 0, k + 2, Blocks.bedrock);
 		world.setBlock(i + 5, j + 0, k + 3, Blocks.bedrock);
 		world.setBlock(i + 5, j + 0, k + 4, Blocks.bedrock);
-		world.setBlock(i + 5, j + 0, k + 5, Blocks.sticky_piston, 3, 3);
+		world.setBlock(i + 5, j + 0, k + 5, Blocks.sticky_piston, 3, 2);
 		world.setBlock(i + 5, j + 0, k + 6, Blocks.redstone_block);
 		world.setBlock(i + 5, j + 0, k + 7, Blocks.air);
 		world.setBlock(i + 5, j + 0, k + 8, Blocks.bedrock);
@@ -1706,7 +1715,7 @@ public class NetherTemple {
 		world.setBlock(i + 6, j + 0, k + 4, Blocks.bedrock);
 		world.setBlock(i + 6, j + 0, k + 5, Blocks.air);
 		world.setBlock(i + 6, j + 0, k + 6, Blocks.air);
-		world.setBlock(i + 6, j + 0, k + 7, Blocks.sticky_piston, 2, 3);
+		world.setBlock(i + 6, j + 0, k + 7, Blocks.sticky_piston, 2, 2);
 		world.setBlock(i + 6, j + 0, k + 8, Blocks.bedrock);
 		world.setBlock(i + 6, j + 0, k + 9, Blocks.bedrock);
 		world.setBlock(i + 6, j + 0, k + 10, Blocks.bedrock);
@@ -3451,9 +3460,6 @@ public class NetherTemple {
 		world.setBlock(i + 12, j + 2, k + 6, b, ms, 3);
 		world.setBlock(i + 12, j + 2, k + 7, b, ms, 3);
 		world.setBlock(i + 12, j + 2, k + 8, Blocks.air);
-		world.setBlock(i + 12, j + 2, k + 9, Blocks.sticky_piston, 11, 3);
-		world.setBlock(i + 12, j + 2, k + 10, Blocks.piston_head, 11, 3);
-		world.setBlock(i + 12, j + 2, k + 11, b, ms, 3);
 		world.setBlock(i + 12, j + 2, k + 12, b, ms, 3);
 		world.setBlock(i + 12, j + 2, k + 13, b, ms, 3);
 		world.setBlock(i + 12, j + 2, k + 14, b, ms, 3);
@@ -3729,9 +3735,6 @@ public class NetherTemple {
 		world.setBlock(i + 13, j + 2, k + 6, b, ms, 3);
 		world.setBlock(i + 13, j + 2, k + 7, b, ms, 3);
 		world.setBlock(i + 13, j + 2, k + 8, Blocks.air);
-		world.setBlock(i + 13, j + 2, k + 9, Blocks.sticky_piston, 11, 3);
-		world.setBlock(i + 13, j + 2, k + 10, Blocks.piston_head, 11, 3);
-		world.setBlock(i + 13, j + 2, k + 11, b, ms, 3);
 		world.setBlock(i + 13, j + 2, k + 12, b, ms, 3);
 		world.setBlock(i + 13, j + 2, k + 13, b, ms, 3);
 		world.setBlock(i + 13, j + 2, k + 14, b, ms, 3);
@@ -5370,8 +5373,8 @@ public class NetherTemple {
 		world.setBlock(i + 19, j + 0, k + 3, Blocks.bedrock);
 		world.setBlock(i + 19, j + 0, k + 4, Blocks.bedrock);
 		world.setBlock(i + 19, j + 0, k + 5, Blocks.air);
-		world.setBlock(i + 19, j + 0, k + 6, Blocks.piston_head, 10, 3);
-		world.setBlock(i + 19, j + 0, k + 7, Blocks.sticky_piston, 10, 3);
+		world.setBlock(i + 19, j + 0, k + 6, Blocks.piston_head, 10, 2);
+		world.setBlock(i + 19, j + 0, k + 7, Blocks.sticky_piston, 10, 2);
 		world.setBlock(i + 19, j + 0, k + 8, Blocks.bedrock);
 		world.setBlock(i + 19, j + 0, k + 9, Blocks.bedrock);
 		world.setBlock(i + 19, j + 0, k + 10, Blocks.bedrock);
@@ -5652,8 +5655,8 @@ public class NetherTemple {
 		world.setBlock(i + 20, j + 0, k + 2, Blocks.bedrock);
 		world.setBlock(i + 20, j + 0, k + 3, Blocks.bedrock);
 		world.setBlock(i + 20, j + 0, k + 4, Blocks.bedrock);
-		world.setBlock(i + 20, j + 0, k + 5, Blocks.sticky_piston, 11, 3);
-		world.setBlock(i + 20, j + 0, k + 6, Blocks.piston_head, 11, 3);
+		world.setBlock(i + 20, j + 0, k + 5, Blocks.sticky_piston, 11, 2);
+		world.setBlock(i + 20, j + 0, k + 6, Blocks.piston_head, 11, 2);
 		world.setBlock(i + 20, j + 0, k + 7, Blocks.redstone_block);
 		world.setBlock(i + 20, j + 0, k + 8, Blocks.bedrock);
 		world.setBlock(i + 20, j + 0, k + 9, Blocks.bedrock);

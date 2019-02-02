@@ -1,9 +1,10 @@
 package Reika.ChromatiCraft.Entity;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Random;
 import java.util.UUID;
 
+import Reika.ChromatiCraft.Auxiliary.ElementEncodedNumber;
+import Reika.ChromatiCraft.Auxiliary.ElementEncodedNumber.EncodedPosition;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -14,7 +15,6 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Interpolation;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
@@ -45,7 +45,7 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 	private int deviateTime;
 	private int deviationTick;
 
-	private CrystalElement[] colorData;
+	private EncodedPosition colorData;
 
 	private Interpolation spiralColor;
 	private static final Interpolation distanceColor = new Interpolation(true);
@@ -84,8 +84,10 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 		shatterOrDrop = false; //always die so never drops vanilla eye ([/rhyme])
 
 		if (totalDistance > FUZZ) {
-			CrystalElement[] key = this.encodeLocation(owner, MathHelper.floor_double(finalX), MathHelper.floor_double(finalZ));
-			this.setColorKey(key);
+			int offset = new Random(System.identityHashCode(worldObj)+worldObj.getTotalWorldTime()/24000).nextInt(16);
+			ElementEncodedNumber ex = new ElementEncodedNumber(MathHelper.floor_double(finalX), offset);
+			ElementEncodedNumber ez = new ElementEncodedNumber(MathHelper.floor_double(finalZ), offset);
+			colorData = new EncodedPosition(offset, ex, ez);
 		}
 
 		deviateTime = ReikaRandomHelper.doWithChance(DEVIATION_CHANCE) ? 10+rand.nextInt(80+ADDITIONAL_LIFE-40-10) : -1;
@@ -150,35 +152,6 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 		}
 	}
 
-	private static CrystalElement[] encodeLocation(UUID uid, int x, int z) {
-		//x = ReikaRandomHelper.getRandomPlusMinus(x, FUZZ);
-		//z = ReikaRandomHelper.getRandomPlusMinus(z, FUZZ);
-		x = ReikaMathLibrary.roundToNearestX(FUZZ, x);
-		z = ReikaMathLibrary.roundToNearestX(FUZZ, z);
-		byte[] valsX = ReikaJavaLibrary.splitIntToHexChars(x);
-		byte[] valsZ = ReikaJavaLibrary.splitIntToHexChars(z);
-		ArrayList<Byte> vx = ReikaJavaLibrary.makeIntListFromArray(valsX);
-		ArrayList<Byte> vz = ReikaJavaLibrary.makeIntListFromArray(valsZ);
-		Collections.reverse(vx);
-		while (vx.get(0) == 0 && vx.size() >= 1) //strip leading values
-			vx.remove(0);
-		Collections.reverse(vz);
-		while (vz.get(0) == 0 && vz.size() >= 1)
-			vz.remove(0);
-		int offset = uid != null ? uid.hashCode()%16 : 0;
-		CrystalElement[] ret = new CrystalElement[1+vx.size()+vz.size()];
-		ret[0] = CrystalElement.elements[offset];
-		for (int i = 0; i < vx.size(); i++) {
-			int idx = (vx.get(i)+offset)%16;
-			ret[1+i] = CrystalElement.elements[idx];
-		}
-		for (int i = 0; i < vz.size(); i++) {
-			int idx = (vz.get(i)+offset)%16;
-			ret[1+i+vx.size()] = CrystalElement.elements[idx];
-		}
-		return ret;
-	}
-
 	@Override
 	public void onUpdate() {
 		if (worldObj.isRemote) {
@@ -188,7 +161,8 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 		boolean flag = deviateTime > 0 && ticksExisted >= deviateTime;
 		super.onUpdate();
 		if (flag) {
-			this.deviate();
+			if (!worldObj.isRemote)
+				this.deviate();
 			motionX *= 0.85;
 			motionY *= 0.85;
 			motionZ *= 0.85;
@@ -267,10 +241,6 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 			owner = UUID.fromString(tag.getString("owner"));
 	}
 
-	public void setColorKey(CrystalElement[] key) {
-		colorData = key;
-	}
-
 	@Override
 	public void writeSpawnData(ByteBuf buf) {
 		buf.writeDouble(finalX);
@@ -279,10 +249,8 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 		buf.writeDouble(spawnZ);
 		buf.writeInt(deviateTime);
 		if (colorData != null) {
-			buf.writeInt(colorData.length);
-			for (int i = 0; i < colorData.length; i++) {
-				buf.writeInt(colorData[i].ordinal());
-			}
+			buf.writeInt(colorData.totalLength());
+			colorData.writeData(buf);
 		}
 		else {
 			buf.writeInt(-1);
@@ -299,18 +267,19 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 		totalDistance = ReikaMathLibrary.py3d(finalX-spawnX, 0, finalZ-spawnZ);
 		int amt = buf.readInt();
 		if (amt != -1) {
+			colorData = EncodedPosition.readData(buf);
 			spiralColor = new Interpolation(true);
-			colorData = new CrystalElement[amt];
-			for (int i = 0; i < amt; i++) {
-				colorData[i] = CrystalElement.elements[buf.readInt()];
+			for (int i = 0; i < colorData.totalLength(); i++) {
+				CrystalElement e = colorData.getColor(i);
 				int lf = 80+ADDITIONAL_LIFE;
 				int t = lf*i/amt;
 				int t2 = lf*(i+1)/amt;
 				int cr = 3;//2;
-				spiralColor.addPoint(t, 0xffffff);
-				spiralColor.addPoint(t+cr, colorData[i].getColor());
-				spiralColor.addPoint(t2-cr, colorData[i].getColor());
-				spiralColor.addPoint(t2, 0xffffff);
+				int c = colorData.isPartOfNegative(i) ? 0x000000 : 0xffffff;
+				spiralColor.addPoint(t, c);
+				spiralColor.addPoint(t+cr, e.getColor());
+				spiralColor.addPoint(t2-cr, e.getColor());
+				spiralColor.addPoint(t2, c);
 			}
 		}
 	}

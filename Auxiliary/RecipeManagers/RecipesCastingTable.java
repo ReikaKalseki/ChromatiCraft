@@ -965,7 +965,6 @@ public class RecipesCastingTable {
 	}
 
 	public CastingRecipe getRecipe(TileEntityCastingTable table, ArrayList<RecipeType> type) {
-		ItemStack main = table.getStackInSlot(0);
 		ArrayList<CastingRecipe> li = new ArrayList();
 		for (int i = 0; i < type.size(); i++) {
 			ArrayList<CastingRecipe> list = recipes.get(type.get(i));

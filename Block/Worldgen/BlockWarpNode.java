@@ -106,6 +106,9 @@ public class BlockWarpNode extends BlockContainer {
 		if (!ep.capabilities.isCreativeMode && !ProgressStage.LINK.isPlayerAtStage(ep) && ep.getRNG().nextInt(ProgressStage.USEENERGY.isPlayerAtStage(ep) ? 2 : ProgressStage.ALLCOLORS.isPlayerAtStage(ep) ? 3 : 6) > 0) {
 			ep.attackEntityFrom(DamageSource.magic, 1+ep.getRNG().nextInt(8));
 		}
+		if (!ep.worldObj.isRemote) {
+			ProgressStage.WARPNODE.stepPlayerTo(ep);
+		}
 	}
 
 	@Override
@@ -125,6 +128,10 @@ public class BlockWarpNode extends BlockContainer {
 		public void open() {
 			isOpen = true;
 			WarpNetwork.instance.addLocation(new WorldLocation(this));
+		}
+
+		public boolean isOpen() {
+			return isOpen;
 		}
 
 		@Override

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,20 +11,23 @@ package Reika.ChromatiCraft.Render.TESR;
 
 import java.util.Collection;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.client.MinecraftForgeClient;
-
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Models.ModelFluidRelay;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidRelay;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Effects.TruncatedCube;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 
 public class RenderFluidRelay extends ChromaRenderBase {
@@ -32,6 +35,9 @@ public class RenderFluidRelay extends ChromaRenderBase {
 	private final ModelFluidRelay model = new ModelFluidRelay();
 
 	private static final TruncatedCube cube = new TruncatedCube(0.045, 0.125);
+	private static long connectionAlphaTick;
+	private static float connectionAlphaPTick;
+	private static int connectionAlphaOverride = 0;
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
@@ -117,10 +123,22 @@ public class RenderFluidRelay extends ChromaRenderBase {
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 
 			Collection<Coordinate> set = te.getConnections();
+			ItemStack is = Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem();
+			if (connectionAlphaTick != te.getWorldObj().getTotalWorldTime() || connectionAlphaPTick != par8) {
+				if (ChromaItems.TOOL.matchWith(is) || ReikaItemHelper.matchStacks(is, ChromaTiles.FLUIDRELAY.getCraftedProduct())) {
+					if (connectionAlphaOverride < 255) {
+						connectionAlphaOverride = Math.min(255, connectionAlphaOverride+3);
+					}
+				}
+				else if (connectionAlphaOverride > 0)
+					connectionAlphaOverride -= 2;
+				connectionAlphaTick = te.worldObj.getTotalWorldTime();
+				connectionAlphaPTick = par8;
+			}
 			for (Coordinate c : set) {
 				TileEntity o = c.getTileEntity(te.worldObj);
 				if (o != null && o instanceof TileEntityFluidRelay && o.hashCode() > te.hashCode()) { //ensure only one renders of the two
-					int a = ((int)(240*Math.sin(te.getTicksExisted()/32D+te.hashCode()+System.identityHashCode(o)))-230)*24;
+					int a = Math.max(connectionAlphaOverride, ((int)(240*Math.sin(te.getTicksExisted()/32D+te.hashCode()+System.identityHashCode(o)))-230)*24);
 					if (a > 0) {
 						double d = 0.1875;
 						TileEntityFluidRelay te2 = (TileEntityFluidRelay)o;

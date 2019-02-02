@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -14,18 +14,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidHandler;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.FluidNetwork;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomHitbox;
@@ -45,6 +33,18 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidHandler;
 
 public class TileEntityFluidRelay extends TileEntityChromaticBase implements BreakAction, SidePlacedTile, CustomHitbox {
 
@@ -64,12 +64,12 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (!world.isRemote) {
-			cacheTimer.update();
-			if (cacheTimer.checkCap() || this.getTicksExisted() == 0) {
-				this.scanAndCache(world, x, y, z);
-			}
+		cacheTimer.update();
+		if (cacheTimer.checkCap() || this.getTicksExisted() == 0) {
+			this.scanAndCache(world, x, y, z);
+		}
 
+		if (!world.isRemote) {
 			network.update(world);
 		}
 	}
@@ -87,17 +87,23 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 	}
 
 	private void scanAndCache(World world, int x, int y, int z) {
+		connections.clear();
 		int r = RELAY_RANGE;
 		for (int i = -r; i <= r; i++) {
 			for (int k = -r; k <= r; k++) {
-				for (int j = -r; j <= 0; j++) {
-					int dx = x+i;
-					int dy = y+j;
-					int dz = z+k;
-					if (ChromaTiles.getTile(world, dx, dy, dz) == this.getTile() && ReikaMathLibrary.py3d(i, j, k) <= r) {
-						connections.add(new Coordinate(dx, dy, dz));
-						TileEntityFluidRelay te = (TileEntityFluidRelay)world.getTileEntity(dx, dy, dz);
-						network.merge(te.network, world);
+				for (int j = -r; j <= r; j++) {
+					if (i != 0 || k != 0 || j != 0) {
+						int dx = x+i;
+						int dy = y+j;
+						int dz = z+k;
+						if (ChromaTiles.getTile(world, dx, dy, dz) == this.getTile() && ReikaMathLibrary.py3d(i, j, k) <= r) {
+							connections.add(new Coordinate(dx, dy, dz));
+							TileEntityFluidRelay te = (TileEntityFluidRelay)world.getTileEntity(dx, dy, dz);
+							te.connections.add(new Coordinate(this));
+							if (!world.isRemote) {
+								network.merge(te.network, world);
+							}
+						}
 					}
 				}
 			}

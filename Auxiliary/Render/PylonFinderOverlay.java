@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,15 +12,6 @@ package Reika.ChromatiCraft.Auxiliary.Render;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.IIcon;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 
 import org.lwjgl.opengl.GL11;
 
@@ -42,6 +33,14 @@ import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaEngLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.IIcon;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 
 public class PylonFinderOverlay {
 
@@ -262,7 +261,9 @@ public class PylonFinderOverlay {
 
 				GL11.glShadeModel(GL11.GL_SMOOTH);
 
-				if (loc.playerLink != null && loc.playerLink.equals(ep.getUniqueID())) {
+				boolean link = loc.playerLink != null && loc.playerLink.equals(ep.getUniqueID());
+
+				if (link) {
 					v5.startDrawing(GL11.GL_LINE_LOOP);
 					v5.setBrightness(240);
 					double t = (System.currentTimeMillis()/250D)%360;
@@ -283,6 +284,11 @@ public class PylonFinderOverlay {
 					v5.setColorOpaque_I(c4);
 					v5.addVertex(cx-12, pos.cy-12, 0);
 					v5.draw();
+					GL11.glEnable(GL11.GL_TEXTURE_2D);
+					int count = loc.getLinkedPylons();
+					String s = String.valueOf(count);
+					int sw = ChromaFontRenderer.FontType.HUD.renderer.getStringWidth(s);
+					ChromaFontRenderer.FontType.HUD.drawString(s, (int)cx+1-sw/2, (int)pos.cy+16, 0xffffff);
 				}
 
 				ReikaTextureHelper.bindTerrainTexture();
@@ -334,8 +340,9 @@ public class PylonFinderOverlay {
 				String unit = ReikaEngLibrary.getSIPrefix(dist);
 				String s = String.format("%.0f%sm", ReikaMathLibrary.getThousandBase(dist), unit);
 				//ReikaJavaLibrary.pConsole(dl+" >> "+base+" = "+dist+" [[ "+s);
-				fr.drawString(s, (int)cx+11, (int)pos.cy+11, ReikaColorAPI.mixColors(0, e.getColor(), 0.67F));
-				fr.drawString(s, (int)cx+10, (int)pos.cy+10, ReikaColorAPI.mixColors(0xffffff, e.getColor(), 0.8F));
+				int d = link ? 4 : 0;
+				fr.drawString(s, (int)cx+11+d, (int)pos.cy+11-d, ReikaColorAPI.mixColors(0, e.getColor(), 0.67F));
+				fr.drawString(s, (int)cx+10+d, (int)pos.cy+10-d, ReikaColorAPI.mixColors(0xffffff, e.getColor(), 0.8F));
 
 				GL11.glDisable(GL11.GL_TEXTURE_2D);
 			}

@@ -71,7 +71,7 @@ public class BlockHeatLamp extends BlockAttachableMini {
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
 		blockIcon = ((BlockTieredOre)ChromaBlocks.TIEREDORE.getBlockInstance()).getGeodeIcon(6);
-		coldIcon = ((BlockTieredOre)ChromaBlocks.TIEREDORE.getBlockInstance()).getGeodeIcon(7);
+		coldIcon = ico.registerIcon("chromaticraft:coldlamp");
 	}
 
 	@Override

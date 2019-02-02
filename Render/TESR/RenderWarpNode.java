@@ -1,21 +1,13 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MathHelper;
-import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 
@@ -23,12 +15,20 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.Worldgen.BlockWarpNode.TileEntityWarpNode;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MathHelper;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 public class RenderWarpNode extends ChromaRenderBase {
 
@@ -62,6 +62,13 @@ public class RenderWarpNode extends ChromaRenderBase {
 			double t = (System.currentTimeMillis()/2000D+te.hashCode())%360;
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 			double sch = this.getDisplayDistance(ep);
+			if (te.isOpen() && ProgressStage.WARPNODE.isPlayerAtStage(ep)) {
+				sch *= 2;
+				if (ChromaItems.TOOL.matchWith(ep.getCurrentEquippedItem())) {
+					sch *= 2;
+					GL11.glDisable(GL11.GL_DEPTH_TEST);
+				}
+			}
 			double d = sch == Double.POSITIVE_INFINITY ? 0 : Math.max(0, ep.getDistance(te.xCoord+0.5, te.yCoord+0.5+1.62, te.zCoord+0.5)-sch);
 			float f = sch == Double.POSITIVE_INFINITY ? 1 : 0.5F+0.5F*(float)(1-d/8D);
 			f = MathHelper.clamp_float(f, 0, 1);
@@ -95,7 +102,9 @@ public class RenderWarpNode extends ChromaRenderBase {
 	}
 
 	private double getDisplayDistance(EntityPlayer ep) {
-		if (ProgressStage.ANYSTRUCT.isPlayerAtStage(ep))
+		if (ProgressStage.CTM.isPlayerAtStage(ep))
+			return Double.POSITIVE_INFINITY;
+		if (ProgressStage.STRUCTCOMPLETE.isPlayerAtStage(ep))
 			return 256;
 		else if (ProgressStage.DIMENSION.isPlayerAtStage(ep))
 			return 128;

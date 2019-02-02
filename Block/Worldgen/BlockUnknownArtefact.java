@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,16 +12,6 @@ package Reika.ChromatiCraft.Block.Worldgen;
 import java.util.ArrayList;
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact;
@@ -36,6 +26,16 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 
 
 public class BlockUnknownArtefact extends Block {
@@ -123,7 +123,7 @@ public class BlockUnknownArtefact extends Block {
 
 	@Override
 	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
-		return super.getDrops(world, x, y, z, metadata, fortune);
+		return new ArrayList();//super.getDrops(world, x, y, z, metadata, fortune);
 	}
 
 	@Override
@@ -132,18 +132,19 @@ public class BlockUnknownArtefact extends Block {
 	}
 
 	@Override
-	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean harvest) {
-		this.harvestBlock(world, player, x, y, z, world.getBlockMetadata(x, y, z));
+	public boolean removedByPlayer(World world, EntityPlayer ep, int x, int y, int z, boolean harvest) {
+		if (EnchantmentHelper.getSilkTouchModifier(ep)) {
+			ProgressStage.ARTEFACT.stepPlayerTo(ep);
+		}
 		return world.setBlockToAir(x, y, z);
 	}
 
 	@Override
 	public void harvestBlock(World world, EntityPlayer ep, int x, int y, int z, int meta) {
-		if (ep.capabilities.isCreativeMode)
+		if (ep.capabilities.isCreativeMode || world.isRemote)
 			return;
 		else if (EnchantmentHelper.getSilkTouchModifier(ep)) {
 			ReikaItemHelper.dropItem(world, x+world.rand.nextDouble(), y+world.rand.nextDouble(), z+world.rand.nextDouble(), ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.ARTIFACT.ordinal()));
-			ProgressStage.ARTEFACT.stepPlayerTo(ep);
 		}
 		else {
 			int n = 1+world.rand.nextInt(4);

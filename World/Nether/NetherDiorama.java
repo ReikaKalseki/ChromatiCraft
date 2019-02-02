@@ -1,14 +1,18 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Nether;
 
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityGhast;
 import net.minecraft.entity.monster.EntityMagmaCube;
@@ -16,10 +20,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
-import Reika.ChromatiCraft.Auxiliary.ChromaAux;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 
 public class NetherDiorama {
@@ -9208,6 +9208,9 @@ public class NetherDiorama {
 		world.setBlock(i + 16, j + 5, k + 7, Blocks.lava, 2, 3);
 		world.setBlock(i + 16, j + 5, k + 8, Blocks.lava, 4, 3);
 		world.setBlock(i + 16, j + 6, k + 6, Blocks.lava, 4, 3);
+
+		world.setBlock(i + 30, j + 6, k + 17, Blocks.flowing_lava, 0, 3);
+		world.setBlock(i + 30, j + 6, k + 8, Blocks.flowing_lava, 0, 3);
 
 		generateSpawner(world, i + 30, j + 5, k + 17, EntityBlaze.class);
 		generateSpawner(world, i + 30, j + 5, k + 8, EntityBlaze.class);
