@@ -1,20 +1,29 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.EssentiaNetwork.EssentiaMovement;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.EssentiaNetwork.EssentiaPath;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.Instantiable.StepTimer;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -22,23 +31,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
-import thaumcraft.api.aspects.IAspectContainer;
 import thaumcraft.api.aspects.IEssentiaTransport;
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
-import Reika.ChromatiCraft.ModInterface.ThaumCraft.EssentiaNetwork.EssentiaMovement;
-import Reika.ChromatiCraft.ModInterface.ThaumCraft.EssentiaNetwork.EssentiaPath;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.ASM.APIStripper.Strippable;
-import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
-import Reika.DragonAPI.Instantiable.StepTimer;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 
 @Strippable(value={"thaumcraft.api.aspects.IEssentiaTransport"})
@@ -48,15 +41,11 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 	public static final int SEARCH_RANGE = 8;
 	public static final int THROUGHPUT = 4;
 
-	private static Class jarClass;
-	private static Field filterField;
-
 	private final StepTimer scanTimer = new StepTimer(50);
 
 	EssentiaNetwork network;
 
 	private final Collection<EssentiaPath> activePaths = new ArrayList();
-	private final HashMap<Coordinate, Aspect> labelledJars = new HashMap();
 
 	@Override
 	public ChromaTiles getTile() {
@@ -73,32 +62,16 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 		}
 		activePaths.clear();
 
-		for (Coordinate c : labelledJars.keySet()) {
-			if (!activeTargets.contains(c)) {
-				Aspect a = labelledJars.get(c);
-				TileEntity te = c.getTileEntity(world);
-				if (te instanceof IAspectContainer) {
-					IAspectContainer ia = (IAspectContainer)te;
-					AspectList al = ia.getAspects();
-					if (al != null) {
-						int amt = Math.min(THROUGHPUT, 64-al.getAmount(a));
-						if (amt > 0) {
-							int found = this.collectEssentiaToTarget(a, amt, new WorldLocation(world, c));
-							//ReikaJavaLibrary.pConsole(a.getName()+">"+amt+">"+found);
-							if (found > 0) {
-								//ReikaJavaLibrary.pConsole(a.getName()+">"+amt+">"+found);
-								int ret = ia.addToContainer(a, found);
-							}
-						}
-					}
-				}
-			}
+		if (network != null) {
+			network.tick(world);
 		}
 
+		/*
 		scanTimer.update();
 		if (scanTimer.checkCap()) {
 			this.scan(world, x, y, z);
 		}
+		 */
 	}
 
 	@Override
@@ -109,9 +82,8 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 	void scan(World world, int x, int y, int z) {
 		if (world.isRemote)
 			return;
-		labelledJars.clear();
 		network = new EssentiaNetwork();
-		//network.addTile(this);
+		network.addNode(this);
 		for (int i = -SEARCH_RANGE; i <= SEARCH_RANGE; i++) {
 			for (int j = -SEARCH_RANGE; j <= SEARCH_RANGE; j++) {
 				for (int k = -SEARCH_RANGE; k <= SEARCH_RANGE; k++) {
@@ -126,18 +98,8 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 								if (tr.network != null)
 									network.merge(tr.network);
 							}
-							network.addTile(this, te);
-						}
-						if (jarClass != null && jarClass.isAssignableFrom(te.getClass())) {
-							Aspect a;
-							try {
-								a = (Aspect)filterField.get(te);
-								if (a != null) {
-									labelledJars.put(new Coordinate(te), a);
-								}
-							}
-							catch (Exception e) {
-								e.printStackTrace();
+							else {
+								network.addEndpoint(this, (IEssentiaTransport)te);
 							}
 						}
 					}
@@ -266,20 +228,6 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 
 	public final boolean canDrop(EntityPlayer ep) {
 		return ep.getUniqueID().equals(placerUUID);
-	}
-
-	static {
-		if (ModList.THAUMCRAFT.isLoaded()) {
-			try {
-				jarClass = Class.forName("thaumcraft.common.tiles.TileJarFillable");
-				filterField = jarClass.getField("aspectFilter");
-			}
-			catch (Exception e) {
-				ChromatiCraft.logger.logError("Could not fetch Warded Jar class");
-				e.printStackTrace();
-				ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.THAUMCRAFT, e);
-			}
-		}
 	}
 
 }

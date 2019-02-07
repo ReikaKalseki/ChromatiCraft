@@ -1,14 +1,15 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,57 +17,99 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
-import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
-import thaumcraft.api.aspects.IAspectContainer;
-import thaumcraft.api.aspects.IEssentiaTransport;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
-import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.aspects.IAspectContainer;
+import thaumcraft.api.aspects.IEssentiaTransport;
 
 
 public class EssentiaNetwork {
 
-	private final MultiMap<WorldLocation, WorldLocation> tiles = new MultiMap(new HashSetFactory());
-	private final MultiMap<WorldLocation, WorldLocation> nodes = new MultiMap(new MultiMap.ListFactory());
-	private final HashMap<ImmutablePair<WorldLocation, WorldLocation>, ArrayList<WorldLocation>> pathList = new HashMap();
+	private static Class jarClass;
+	private static Field filterField;
+
+	static {
+		if (ModList.THAUMCRAFT.isLoaded()) {
+			try {
+				jarClass = Class.forName("thaumcraft.common.tiles.TileJarFillable");
+				filterField = jarClass.getField("aspectFilter");
+			}
+			catch (Exception e) {
+				ChromatiCraft.logger.logError("Could not fetch Warded Jar class");
+				e.printStackTrace();
+				ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.THAUMCRAFT, e);
+			}
+		}
+	}
 
 	private static final Comparator<NetworkEndpoint> pullComparator = new SuctionComparator(true);
 	private static final Comparator<NetworkEndpoint> pushComparator = new SuctionComparator(false);
 
-	public void addTile(TileEntityEssentiaRelay caller, TileEntity te) {
-		if (te instanceof TileEntityEssentiaRelay) {
-			nodes.addValue(new WorldLocation(caller), new WorldLocation(te));
+	private final HashMap<WorldLocation, NetworkEndpoint> endpoints = new HashMap();
+	private final HashSet<ActiveEndpoint> activeLocations = new HashSet();
+	private final HashSet<WorldLocation> nodes = new HashSet();
+	private final HashMap<ImmutablePair<WorldLocation, WorldLocation>, ArrayList<WorldLocation>> pathList = new HashMap();
+
+	private long lastTick;
+
+	public void addNode(TileEntityEssentiaRelay te) {
+		nodes.add(new WorldLocation(te));
+	}
+
+	public void addEndpoint(TileEntityEssentiaRelay caller, IEssentiaTransport te) {
+		WorldLocation loc = new WorldLocation((TileEntity)te);
+		NetworkEndpoint n = endpoints.get(loc);
+		if (n == null) {
+			n = this.createEndpoint(loc, te);
+			if (n instanceof ActiveEndpoint) {
+				activeLocations.add((ActiveEndpoint)n);
+			}
+			endpoints.put(loc, n);
 		}
-		else {
-			tiles.addValue(new WorldLocation(caller), new WorldLocation(te));
-		}
-		//ReikaJavaLibrary.pConsole("Adding "+te+" @ "+new WorldLocation(te));
-		//this.recalculatePaths();
+		n.nodeAccesses.add(new WorldLocation(caller));
+	}
+
+	private NetworkEndpoint createEndpoint(WorldLocation loc, IEssentiaTransport te) {
+		Aspect a = isFilteredJar(te);
+		if (a != null)
+			return new LabelledJarEndpoint(loc, te, a);
+		return new NetworkEndpoint(loc, te);
 	}
 
 	public void merge(EssentiaNetwork m) {
-		tiles.putAll(m.tiles);
-		nodes.putAll(m.nodes);
+		for (NetworkEndpoint n : m.endpoints.values()) {
+			NetworkEndpoint at = endpoints.get(n.point);
+			if (at == null) {
+				endpoints.put(n.point, n);
+			}
+			else {
+				at.nodeAccesses.addAll(n.nodeAccesses);
+			}
+		}
+		nodes.addAll(m.nodes);
+		activeLocations.addAll(m.activeLocations);
 
-		for (WorldLocation loc : tiles.keySet()) {
+		for (WorldLocation loc : nodes) {
 			TileEntity te = loc.getTileEntity();
 			if (te instanceof TileEntityEssentiaRelay) {
 				((TileEntityEssentiaRelay)te).network = this;
@@ -75,8 +118,11 @@ public class EssentiaNetwork {
 
 		//this.recalculatePaths();
 
-		m.tiles.clear();
-		m.reset();
+		pathList.clear();
+
+		m.endpoints.clear();
+		m.nodes.clear();
+		m.pathList.clear();
 	}
 	/*
 	private void recalculatePaths() {
@@ -122,17 +168,36 @@ public class EssentiaNetwork {
 		return null;
 	}
 	 */
-	public void reset() {
-		Collection<WorldLocation> set = new ArrayList(tiles.keySet());
-		for (WorldLocation loc : set) {
-			TileEntity te = loc.getTileEntity();
-			if (te instanceof TileEntityEssentiaRelay) {
-				((TileEntityEssentiaRelay)te).scan(te.worldObj, te.xCoord, te.yCoord, te.zCoord);
+
+	public void tick(World world) {
+		if (lastTick == world.getTotalWorldTime())
+			return;
+		lastTick = world.getTotalWorldTime();
+		if (!activeLocations.isEmpty()) {
+			HashSet<WorldLocation> locs = new HashSet();
+			AspectList pushing = new AspectList();
+			for (ActiveEndpoint n : activeLocations) {
+				AspectList al = n.getPush();
+				if (al != null && !al.aspects.isEmpty()) {
+					for (Aspect a : al.aspects.keySet()) {
+						pushing.add(a, al.getAmount(a));
+						locs.add(n.point);
+					}
+				}
+			}
+			if (!pushing.aspects.isEmpty()) {
+				for (Aspect a : pushing.aspects.keySet()) {
+					for (NetworkEndpoint n : endpoints.values()) {
+						if (!locs.contains(n.point)) {
+							int rem = n.addAspect(a, pushing.getAmount(a));
+							pushing.reduce(a, rem);
+							if (pushing.getAmount(a) <= 0)
+								break;
+						}
+					}
+				}
 			}
 		}
-		tiles.clear();
-		nodes.clear();
-		pathList.clear();
 	}
 
 	public EssentiaMovement addEssentia(TileEntityEssentiaRelay caller, ForgeDirection callDir, Aspect aspect, int amount) {
@@ -142,56 +207,20 @@ public class EssentiaNetwork {
 	public EssentiaMovement addEssentia(TileEntityEssentiaRelay caller, Aspect aspect, int amount, WorldLocation src) {
 		ArrayList<EssentiaPath> li = new ArrayList();
 
-		ArrayList<NetworkEndpoint> list = this.collectAllTiles(src);
+		ArrayList<NetworkEndpoint> list = new ArrayList(endpoints.values());
 		Collections.sort(list, pushComparator);
 		for (NetworkEndpoint p : list) {
-			for (int i = 0; i < 6; i++) {
-				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-				if (p.tile.canInputFrom(dir)) {
-					int added = p.tile.addEssentia(aspect, amount, dir);
-					if (added > 0) {
-						amount -= added;
-						ArrayList<WorldLocation> pt = this.getPath(new WorldLocation(caller), p.relayNode);
-						if (pt.isEmpty()) {
-							//ChromatiCraft.logger.logError("Unable to find path for "+aspect.getName()+" from "+caller+" to "+loc);
-						}
-						else {
-
-						}
-						pt.add(p.point);
-						pt.add(0, src);
-						li.add(new EssentiaPath(aspect, added, pt)); //ReikaJavaLibrary.makeListFrom(new WorldLocation(caller), node, loc)
-						if (amount <= 0) {
-							break;
-						}
-					}
+			int added = p.addAspect(aspect, amount);
+			if (added > 0) {
+				amount -= added;
+				ArrayList<WorldLocation> pt = this.getPath(src, p.point);
+				li.add(new EssentiaPath(aspect, added, pt)); //ReikaJavaLibrary.makeListFrom(new WorldLocation(caller), node, loc)
+				if (amount <= 0) {
+					break;
 				}
-			}
-			if (amount <= 0) {
-				break;
 			}
 		}
 		return li.isEmpty() ? null : new EssentiaMovement(li);
-	}
-
-	private ArrayList<NetworkEndpoint> collectAllTiles(WorldLocation exclude) {
-		ArrayList<NetworkEndpoint> li = new ArrayList();
-		for (WorldLocation node : tiles.keySet()) {
-			Iterator<WorldLocation> it = tiles.get(node).iterator();
-			while (it.hasNext()) {
-				WorldLocation loc = it.next();
-				if (!loc.equals(exclude)) {
-					TileEntity te = loc.getTileEntity();
-					if (te instanceof IEssentiaTransport) {
-						li.add(new NetworkEndpoint(node, loc, (IEssentiaTransport)te));
-					}
-					else {
-						it.remove();
-					}
-				}
-			}
-		}
-		return li;
 	}
 
 	public EssentiaMovement removeEssentia(TileEntityEssentiaRelay caller, ForgeDirection callDir, Aspect aspect, int amount) {
@@ -201,33 +230,17 @@ public class EssentiaNetwork {
 	public EssentiaMovement removeEssentia(TileEntityEssentiaRelay caller, ForgeDirection callDir, Aspect aspect, int amount, WorldLocation tgt) {
 		TileEntity target = caller.getAdjacentTileEntity(callDir);
 		ArrayList<EssentiaPath> li = new ArrayList();
-		ArrayList<NetworkEndpoint> list = this.collectAllTiles(tgt);
+		ArrayList<NetworkEndpoint> list = new ArrayList(endpoints.values());
 		Collections.sort(list, pullComparator);
 		for (NetworkEndpoint p : list) {
-			for (int i = 0; i < 6; i++) {
-				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-				if (p.tile.canOutputTo(dir)) {
-					int rem = p.tile.takeEssentia(aspect, amount, dir);
-					if (rem > 0) {
-						amount -= rem;
-						ArrayList<WorldLocation> pt = this.getPath(p.relayNode, new WorldLocation(caller));
-						if (pt.isEmpty()) {
-							//ChromatiCraft.logger.logError("Unable to find path for "+aspect.getName()+" from "+loc+" to "+caller);
-						}
-						else {
-
-						}
-						pt.add(0, p.point);
-						pt.add(tgt);
-						li.add(new EssentiaPath(aspect, rem, pt)); //ReikaJavaLibrary.makeListFrom(loc, node, new WorldLocation(caller))
-						if (amount <= 0) {
-							break;
-						}
-					}
+			int rem = p.takeAspect(aspect, amount);
+			if (rem > 0) {
+				amount -= rem;
+				ArrayList<WorldLocation> pt = this.getPath(p.point, new WorldLocation(target));
+				li.add(new EssentiaPath(aspect, rem, pt)); //ReikaJavaLibrary.makeListFrom(loc, node, new WorldLocation(caller))
+				if (amount <= 0) {
+					break;
 				}
-			}
-			if (amount <= 0) {
-				break;
 			}
 		}
 		return li.isEmpty() ? null : new EssentiaMovement(li);
@@ -280,9 +293,9 @@ public class EssentiaNetwork {
 		//ArrayList<WorldLocation> li = (ArrayList<WorldLocation>)nodes.get(loc);
 		WorldLocation ret = null;
 		double d = Double.POSITIVE_INFINITY;
-		for (WorldLocation loc2 : /*li*/tiles.keySet()) {
+		for (WorldLocation loc2 : /*li*/endpoints.keySet()) {
 			if (!set.contains(loc2)) {
-				if (true || loc.isWithinDistOnAllCoords(loc2, TileEntityEssentiaRelay.SEARCH_RANGE)) {
+				if (loc.isWithinDistOnAllCoords(loc2, TileEntityEssentiaRelay.SEARCH_RANGE)) {
 					double dist = loc2.getDistanceTo(loc);
 					if (dist < d) {
 						d = dist;
@@ -297,38 +310,36 @@ public class EssentiaNetwork {
 
 	public int countEssentia(Aspect aspect) {
 		int sum = 0;
-		for (WorldLocation node : tiles.keySet()) {
-			Iterator<WorldLocation> it = tiles.get(node).iterator();
-			while (it.hasNext()) {
-				WorldLocation loc = it.next();
-				TileEntity te = loc.getTileEntity();
-				if (te instanceof IEssentiaTransport) {
-					IEssentiaTransport p = (IEssentiaTransport)te;
-					for (int i = 0; i < 6; i++) {
-						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-						if (p.canOutputTo(dir)) {
-							if (p instanceof IAspectContainer) {
-								AspectList al = ((IAspectContainer)p).getAspects();
-								if (al != null) {
-									for (Aspect a : al.aspects.keySet()) {
-										if (a == aspect) {
-											sum += p.getEssentiaAmount(dir);
-										}
+		Iterator<Entry<WorldLocation, NetworkEndpoint>> it = endpoints.entrySet().iterator();
+		while (it.hasNext()) {
+			Entry<WorldLocation, NetworkEndpoint> e = it.next();
+			TileEntity te = e.getKey().getTileEntity();
+			if (te instanceof IEssentiaTransport) {
+				IEssentiaTransport p = (IEssentiaTransport)te;
+				for (int i = 0; i < 6; i++) {
+					ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+					if (p.canOutputTo(dir)) {
+						if (p instanceof IAspectContainer) {
+							AspectList al = ((IAspectContainer)p).getAspects();
+							if (al != null) {
+								for (Aspect a : al.aspects.keySet()) {
+									if (a == aspect) {
+										sum += p.getEssentiaAmount(dir);
 									}
 								}
 							}
-							else {
-								Aspect a = p.getEssentiaType(dir);
-								if (a == aspect) {
-									sum += p.getEssentiaAmount(dir);
-								}
+						}
+						else {
+							Aspect a = p.getEssentiaType(dir);
+							if (a == aspect) {
+								sum += p.getEssentiaAmount(dir);
 							}
 						}
 					}
 				}
-				else {
-					it.remove();
-				}
+			}
+			else {
+				it.remove();
 			}
 		}
 		//ReikaJavaLibrary.pConsole(aspect.getName()+":"+sum);
@@ -337,7 +348,32 @@ public class EssentiaNetwork {
 
 	@Override
 	public String toString() {
-		return System.identityHashCode(this)+" "+tiles;
+		return System.identityHashCode(this)+" "+nodes;
+	}
+
+	public void reset() {
+		for (WorldLocation loc : nodes) {
+			TileEntity te = loc.getTileEntity();
+			if (te instanceof TileEntityEssentiaRelay)
+				((TileEntityEssentiaRelay)te).network = null;
+		}
+		endpoints.clear();
+		activeLocations.clear();
+		nodes.clear();
+	}
+
+	private static Aspect isFilteredJar(IEssentiaTransport te) {
+		if (jarClass != null && jarClass.isAssignableFrom(te.getClass())) {
+			Aspect a;
+			try {
+				a = (Aspect)filterField.get(te);
+				return a;
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
 	}
 
 	public static class EssentiaMovement {
@@ -446,16 +482,48 @@ public class EssentiaNetwork {
 
 	}
 
+	private static class LabelledJarEndpoint extends ActiveEndpoint {
+
+		private final Aspect filter;
+
+		private LabelledJarEndpoint(WorldLocation loc, IEssentiaTransport te, Aspect a) {
+			super(loc, te);
+			filter = a;
+		}
+
+		@Override
+		public AspectList getPull() {
+			return new AspectList().add(filter, 1);
+		}
+
+		@Override
+		public AspectList getPush() {
+			return null;
+		}
+
+	}
+
+	private static abstract class ActiveEndpoint extends NetworkEndpoint {
+
+		private ActiveEndpoint(WorldLocation loc, IEssentiaTransport te) {
+			super(loc, te);
+		}
+
+		public abstract AspectList getPull();
+
+		public abstract AspectList getPush();
+
+	}
+
 	private static class NetworkEndpoint {
 
-		public final WorldLocation relayNode;
+		public final HashSet<WorldLocation> nodeAccesses = new HashSet();
 		public final WorldLocation point;
 		private final IEssentiaTransport tile;
 
 		public final int suction;
 
-		private NetworkEndpoint(WorldLocation node, WorldLocation loc, IEssentiaTransport te) {
-			relayNode = node;
+		private NetworkEndpoint(WorldLocation loc, IEssentiaTransport te) {
 			point = loc;
 			tile = te;
 
@@ -463,7 +531,49 @@ public class EssentiaNetwork {
 			for (int i = 0; i < 6; i++) {
 				maxsuc = Math.max(maxsuc, te.getSuctionAmount(ForgeDirection.VALID_DIRECTIONS[i]));
 			}
+			if (isFilteredJar(te) != null)
+				maxsuc += 100;
 			suction = maxsuc;
+		}
+
+		public int addAspect(Aspect a, int amount) {
+			int ret = 0;
+			for (int i = 0; i < 6; i++) {
+				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+				if (tile.canInputFrom(dir)) {
+					int added = tile.addEssentia(a, amount, dir);
+					ret += added;
+					amount -= added;
+					if (amount <= 0)
+						break;
+				}
+			}
+			return ret;
+		}
+
+		public int takeAspect(Aspect a, int amount) {
+			int ret = 0;
+			for (int i = 0; i < 6; i++) {
+				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+				if (tile.canOutputTo(dir)) {
+					int rem = tile.takeEssentia(a, amount, dir);
+					ret += rem;
+					amount -= rem;
+					if (amount <= 0)
+						break;
+				}
+			}
+			return ret;
+		}
+
+		@Override
+		public int hashCode() {
+			return point.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o instanceof NetworkEndpoint && ((NetworkEndpoint)o).point.equals(point);
 		}
 
 	}
@@ -476,13 +586,37 @@ public class EssentiaNetwork {
 			suction = suck;
 		}
 
-		@Override
 		public int compare(NetworkEndpoint o1, NetworkEndpoint o2) {
-			int ret = Integer.compare(o1.suction, o2.suction);
-			if (!suction)
-				ret = -ret;
-			return ret;
+			if (o1 instanceof ActiveEndpoint && o2 instanceof ActiveEndpoint) {
+				ActiveEndpoint a1 = (ActiveEndpoint)o1;
+				ActiveEndpoint a2 = (ActiveEndpoint)o2;
+				AspectList p1 = suction ? a1.getPull() : a1.getPush();
+				AspectList p2 = suction ? a2.getPull() : a2.getPush();
+				if (p1 == null && p2 == null) {
+					return 0;
+				}
+				else if (p1 == null) {
+					return 1;
+				}
+				else if (p2 == null) {
+					return -1;
+				}
+				else {
+					return 0;
+				}
+			}
+			if (o1 instanceof ActiveEndpoint) {
+				return -1;
+			}
+			if (o2 instanceof ActiveEndpoint) {
+				return 1;
+			}
+			else {
+				int ret = Integer.compare(o1.suction, o2.suction);
+				if (!suction)
+					ret = -ret;
+				return ret;
+			}
 		}
-
 	}
 }
