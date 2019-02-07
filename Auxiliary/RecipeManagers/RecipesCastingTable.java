@@ -421,7 +421,9 @@ public class RecipesCastingTable {
 
 		is = ChromaBlocks.SELECTIVEGLASS.getStackOf();
 		sr = new ShapedOreRecipe(is, "GgG", "beb", "GvG", 'G', Blocks.glass, 'g', Items.glowstone_dust, 'e', ChromaStacks.teleDust, 'v', ChromaStacks.voidDust, 'b', ChromaStacks.icyDust);
-		this.addRecipe(new SelectiveGlassRecipe(is, sr));
+		this.addRecipe(new SelectiveGlassRecipe(is, sr, false));
+		sr = new ShapedOreRecipe(is, "GgG", "beb", "GvG", 'G', Blocks.glass, 'g', Blocks.glowstone, 'e', ChromaStacks.enderDust, 'v', ChromaStacks.spaceDust, 'b', ChromaStacks.bindingCrystal);
+		this.addRecipe(new SelectiveGlassRecipe(is, sr, true));
 
 		//sr = ReikaRecipeHelper.getShapedRecipeFor(ChromaStacks.crystalMirror, "GWI", "GWI", "GWI", 'G', Blocks.glass, 'I', Items.iron_ingot, 'W', ChromaItems.SHARD.getStackOfMetadata(15));
 		this.addRecipe(new CrystalMirrorRecipe(ChromaStacks.crystalMirror, new ItemStack(Blocks.glass)));

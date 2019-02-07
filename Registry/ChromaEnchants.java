@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,13 +11,12 @@ package Reika.ChromatiCraft.Registry;
 
 import java.util.Locale;
 
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.util.StatCollector;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAggroMask;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAirMiner;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAutoCollect;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentBossKill;
+import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentDataKeeper;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentEnderLock;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentFastSinking;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentHarvestLevel;
@@ -26,6 +25,8 @@ import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentRareLoot;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentUseRepair;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentWeaponAOE;
 import Reika.DragonAPI.Interfaces.Registry.EnchantmentEnum;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.util.StatCollector;
 
 
 public enum ChromaEnchants implements EnchantmentEnum {
@@ -40,7 +41,8 @@ public enum ChromaEnchants implements EnchantmentEnum {
 	AIRMINER(EnchantmentAirMiner.class, ExtraChromaIDs.AIRMINERID),
 	PHASING(EnchantmentPhasingSequence.class, ExtraChromaIDs.PHASINGID),
 	BOSSKILL(EnchantmentBossKill.class, ExtraChromaIDs.BOSSKILLID),
-	AUTOCOLLECT(EnchantmentAutoCollect.class, ExtraChromaIDs.AUTOCOLLECTID);
+	AUTOCOLLECT(EnchantmentAutoCollect.class, ExtraChromaIDs.AUTOCOLLECTID),
+	DATAKEEP(EnchantmentDataKeeper.class, ExtraChromaIDs.DATAKEEPERID);
 
 	private final Class enchantmentClass;
 	private final ExtraChromaIDs enchantmentID;

@@ -61,13 +61,11 @@ public class RenderWarpNode extends ChromaRenderBase {
 			GL11.glPushMatrix();
 			double t = (System.currentTimeMillis()/2000D+te.hashCode())%360;
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-			double sch = this.getDisplayDistance(ep);
-			if (te.isOpen() && ProgressStage.WARPNODE.isPlayerAtStage(ep)) {
+			boolean flag = te.isOpen() && ProgressStage.WARPNODE.isPlayerAtStage(ep);
+			double sch = this.getDisplayDistance(ep, flag);
+			if (flag && ChromaItems.TOOL.matchWith(ep.getCurrentEquippedItem())) {
 				sch *= 2;
-				if (ChromaItems.TOOL.matchWith(ep.getCurrentEquippedItem())) {
-					sch *= 2;
-					GL11.glDisable(GL11.GL_DEPTH_TEST);
-				}
+				GL11.glDisable(GL11.GL_DEPTH_TEST);
 			}
 			double d = sch == Double.POSITIVE_INFINITY ? 0 : Math.max(0, ep.getDistance(te.xCoord+0.5, te.yCoord+0.5+1.62, te.zCoord+0.5)-sch);
 			float f = sch == Double.POSITIVE_INFINITY ? 1 : 0.5F+0.5F*(float)(1-d/8D);
@@ -101,20 +99,20 @@ public class RenderWarpNode extends ChromaRenderBase {
 		}
 	}
 
-	private double getDisplayDistance(EntityPlayer ep) {
+	private double getDisplayDistance(EntityPlayer ep, boolean incr) {
 		if (ProgressStage.CTM.isPlayerAtStage(ep))
 			return Double.POSITIVE_INFINITY;
 		if (ProgressStage.STRUCTCOMPLETE.isPlayerAtStage(ep))
-			return 256;
+			return 864;
 		else if (ProgressStage.DIMENSION.isPlayerAtStage(ep))
-			return 128;
+			return 768;
 		else if (ProgressStage.LINK.isPlayerAtStage(ep))
-			return 64;
+			return incr ? 512 : 384;
 		else if (ProgressStage.ALLCOLORS.isPlayerAtStage(ep) || ProgressStage.CHARGE.isPlayerAtStage(ep))
-			return 32;
+			return incr ? 256 : 192;
 		else if (ProgressStage.PYLON.isPlayerAtStage(ep) || ProgressStage.CRYSTALS.isPlayerAtStage(ep) || ProgressStage.TOWER.isPlayerAtStage(ep))
-			return 16;
-		return 8;
+			return incr ? 128 : 96;
+		return incr ? 48 : 32;
 	}
 
 	@Override

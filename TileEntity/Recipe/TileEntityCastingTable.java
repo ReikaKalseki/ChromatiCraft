@@ -290,6 +290,16 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 			ChromaSounds s = isEnhanced ? ChromaSounds.CRAFTING_BOOST : ChromaSounds.CRAFTING;
 			s.playSoundAtBlock(this);
 		}
+		if (rand.nextInt(12) == 0) {
+			float[] fa = activeRecipe.getHarmonics();
+			if (fa != null) {
+				for (float f : fa) {
+					if (rand.nextInt(50) == 0) {
+						ChromaSounds.CASTHARMONIC.playSoundAtBlock(this, 0.5F, f);
+					}
+				}
+			}
+		}
 		//ReikaJavaLibrary.pConsole(craftingTick, Side.SERVER);
 		activeRecipe.onRecipeTick(this);
 		if (activeRecipe instanceof PylonCastingRecipe) {

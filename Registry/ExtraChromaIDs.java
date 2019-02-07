@@ -1,20 +1,20 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.DragonAPI.Interfaces.Registry.IDRegistry;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.potion.Potion;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.biome.BiomeGenBase;
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.Interfaces.Registry.IDRegistry;
 
 public enum ExtraChromaIDs implements IDRegistry {
 
@@ -52,6 +52,7 @@ public enum ExtraChromaIDs implements IDRegistry {
 	PHASINGID(		"Enchantment IDs", 		"Armor Breach ID",				98, 	Enchantment.class),
 	BOSSKILLID(		"Enchantment IDs", 		"Capital Strike ID",			99, 	Enchantment.class),
 	AUTOCOLLECTID(	"Enchantment IDs", 		"Inventory Insertion ID",		100, 	Enchantment.class),
+	DATAKEEPERID(	"Enchantment IDs",		"Identity Retention ID",		101,	Enchantment.class),
 	DIMID(			"Other IDs",			"Dimension ID",					60,		WorldProvider.class),
 	CHROMAMATID(	"Other IDs",			"Chromastone Material ID",		90,		null),
 	;

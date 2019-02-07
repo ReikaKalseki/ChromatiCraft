@@ -13,7 +13,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Random;
 
-import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Math.HexGrid;
 import Reika.DragonAPI.Instantiable.Math.HexGrid.Hex;
@@ -77,14 +77,14 @@ public enum Towers {
 		towerChunkCache.clear();
 		towerCache.clear();
 
-		double r = radius*MathHelper.clamp_double(ChromaOptions.WORLDSIZE.getValue()/5000D, 0.5, 5);
+		double r = radius*MathHelper.clamp_double(DragonOptions.WORLDSIZE.getValue()/5000D, 0.5, 5);
 		HexGrid grid = new HexGrid(9, r, true, MapShape.HEXAGON).flower();
 
 		Random rand = new Random(world.getSeed()); // ^ world.getSaveHandler().getWorldDirectory().getAbsolutePath().toString().hashCode()
 
 		double a = rand.nextDouble()*360;
-		double dx = -TOWER_OFFSET_RADIUS+rand.nextDouble()*TOWER_OFFSET_RADIUS*2+ChromaOptions.WORLDCENTERX.getValue();
-		double dz = -TOWER_OFFSET_RADIUS+rand.nextDouble()*TOWER_OFFSET_RADIUS*2+ChromaOptions.WORLDCENTERZ.getValue();
+		double dx = -TOWER_OFFSET_RADIUS+rand.nextDouble()*TOWER_OFFSET_RADIUS*2+DragonOptions.WORLDCENTERX.getValue();
+		double dz = -TOWER_OFFSET_RADIUS+rand.nextDouble()*TOWER_OFFSET_RADIUS*2+DragonOptions.WORLDCENTERZ.getValue();
 
 		for (int i = 0; i < towerList.length; i++) {
 			Towers t = towerList[i];

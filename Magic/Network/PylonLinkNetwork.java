@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Magic;
+package Reika.ChromatiCraft.Magic.Network;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,6 +24,8 @@ import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget.PlayerTarget;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -79,7 +81,7 @@ public class PylonLinkNetwork {
 	}
 
 	public Collection<WorldLocation> getLinkedPylons(World world, UUID uid, CrystalElement color) {
-		if (world.getTotalWorldTime()-lastUpdate > 30*20)
+		if (!world.isRemote && world.getTotalWorldTime()-lastUpdate > 30*20)
 			PylonLinkData.initNetworkData(world).setDirty(true);
 		ArrayList<WorldLocation> li = new ArrayList();
 		PylonWeb w = links.get(uid);
@@ -98,6 +100,7 @@ public class PylonLinkNetwork {
 	}
 
 	public void load(NBTTagCompound NBT) {
+		ChromatiCraft.logger.log("Reloading pylon link data...");
 		this.clear();
 		NBTTagList li = NBT.getTagList("entries", NBTTypes.COMPOUND.ID);
 		for (Object o : li.tagList) {
@@ -119,6 +122,8 @@ public class PylonLinkNetwork {
 	}
 
 	public void sync(EntityPlayerMP ep) {
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+			return;
 		PacketTarget pt = ep != null ? new PlayerTarget(ep) : PacketTarget.allPlayers;
 		NBTTagCompound nbt = this.save();
 		ReikaPacketHelper.sendNBTPacket(ChromatiCraft.packetChannel, ChromaPackets.PYLONLINKCACHE.ordinal(), nbt, pt);

@@ -1,18 +1,19 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 
-import net.minecraft.init.Blocks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
+import net.minecraft.init.Blocks;
 
 public class PotionCrystalRecipe extends PylonCastingRecipe {
 
@@ -35,6 +36,11 @@ public class PotionCrystalRecipe extends PylonCastingRecipe {
 	@Override
 	public int getDuration() {
 		return 4*super.getDuration();
+	}
+
+	@Override
+	public float[] getHarmonics() {
+		return new float[]{(float)MusicKey.A5.getRatio(MusicKey.D5), (float)MusicKey.Fs5.getRatio(MusicKey.D5)};
 	}
 
 }

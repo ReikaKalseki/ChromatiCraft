@@ -126,7 +126,8 @@ public class VoidMonsterDestructionRitual implements VoidMonsterHook {
 
 	public static enum Effects {
 		COLLAPSING_SPHERE(40),
-		RAYS(70);
+		RAYS(70),
+		EXPLOSION(200);
 
 		private final int effectChance;
 
@@ -145,6 +146,9 @@ public class VoidMonsterDestructionRitual implements VoidMonsterHook {
 					break;
 				case RAYS:
 					e.attackEntityFrom(src, 40);
+					break;
+				case EXPLOSION:
+					e.worldObj.newExplosion(e, e.posX, e.posY, e.posZ, 9, true, true);
 					break;
 			}
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.VOIDMONSTERRITUAL.ordinal(), new PacketTarget.RadiusTarget(e, 128), e.getEntityId(), this.ordinal());

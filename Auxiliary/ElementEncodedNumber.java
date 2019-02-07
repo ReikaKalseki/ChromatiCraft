@@ -18,6 +18,7 @@ public final class ElementEncodedNumber {
 	}
 
 	public ElementEncodedNumber(int value, int bitOffset) {
+		bitOffset = (bitOffset%16+16)%16;
 		originalValue = value;
 		offset = bitOffset;
 		encodedValue = encodeValue(Math.abs(value), bitOffset);
@@ -53,6 +54,7 @@ public final class ElementEncodedNumber {
 		private final ElementEncodedNumber z;
 
 		public EncodedPosition(int o, ElementEncodedNumber ex, ElementEncodedNumber ez) {
+			o = (o%16+16)%16;
 			offset = o;
 			x = ex;
 			z = ez;

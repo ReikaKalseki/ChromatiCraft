@@ -15,11 +15,13 @@ import java.util.UUID;
 
 import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
-import Reika.ChromatiCraft.Magic.PylonLinkNetwork;
-import Reika.ChromatiCraft.Magic.PylonLinkNetwork.PylonNode;
+import Reika.ChromatiCraft.Magic.Network.PylonLinkNetwork;
+import Reika.ChromatiCraft.Magic.Network.PylonLinkNetwork.PylonNode;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.Auxiliary.ChunkManager;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -29,9 +31,10 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
-public class TileEntityPylonLink extends TileEntityChromaticBase implements LocationCached, VariableTexture {
+public class TileEntityPylonLink extends TileEntityChromaticBase implements LocationCached, VariableTexture, ChunkLoadingTile {
 
 	private PylonNode connection;
 
@@ -44,6 +47,9 @@ public class TileEntityPylonLink extends TileEntityChromaticBase implements Loca
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (world.isRemote && connection != null) {
 			this.doFX(world, x, y, z);
+		}
+		if (!world.isRemote && connection == null && this.getTicksExisted()%40 == 35) {
+			this.syncAllData(true);
 		}
 	}
 
@@ -179,6 +185,11 @@ public class TileEntityPylonLink extends TileEntityChromaticBase implements Loca
 
 	public UUID getUUID() {
 		return placerUUID;
+	}
+
+	@Override
+	public Collection<ChunkCoordIntPair> getChunksToLoad() {
+		return ChunkManager.getChunkSquare(xCoord, zCoord, 1);
 	}
 
 }

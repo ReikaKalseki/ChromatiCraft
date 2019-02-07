@@ -9,8 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
-import Reika.ChromatiCraft.Magic.PylonLinkNetwork;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
+import Reika.ChromatiCraft.Magic.Network.PylonLinkNetwork;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler.PlayerTracker;
 import net.minecraft.entity.player.EntityPlayer;

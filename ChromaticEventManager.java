@@ -196,6 +196,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
@@ -262,6 +263,8 @@ public class ChromaticEventManager {
 		if (evt.entityPlayer.isSneaking())
 			return;
 		if (ChromaItems.BUCKET.matchWith(evt.entityPlayer.getCurrentEquippedItem()))
+			return;
+		if (evt.entityPlayer.getCurrentEquippedItem() != null && evt.entityPlayer.getCurrentEquippedItem().getItem() instanceof ItemBlock)
 			return;
 		if (evt.action == Action.RIGHT_CLICK_BLOCK) {
 			if (ChromaTiles.getTile(evt.world, evt.x, evt.y-1, evt.z) == ChromaTiles.ENCHANTER) {

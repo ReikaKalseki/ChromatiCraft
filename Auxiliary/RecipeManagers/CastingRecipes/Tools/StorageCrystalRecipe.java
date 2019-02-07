@@ -116,4 +116,9 @@ public class StorageCrystalRecipe extends MultiBlockCastingRecipe {
 		return 4;
 	}
 
+	@Override
+	public float[] getHarmonics() {
+		return new float[]{0.5F, 2};
+	}
+
 }

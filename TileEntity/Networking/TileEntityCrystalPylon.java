@@ -342,7 +342,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				world.spawnEntityInWorld(new EntityBallLightning(world, color, x+0.5, y+0.5, z+0.5).setPylon().setNoDrops());
 			}
 
-			if (energy >= this.getCapacity()*0.75) {
+			if (energy >= this.getCapacity()/2) {
 				TileEntityPylonLink te = this.getLinkTile();
 				if (te != null) {
 					Collection<WorldLocation> c = te.getLinkedPylons();
@@ -440,7 +440,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	}
 
 	private int getDonatedRecharge() {
-		return Math.min(energy/2, this.isEnhanced() ? 5000 : 1000);
+		return Math.min(energy/2, this.isEnhanced() ? 500 : 100);
 	}
 
 	private int getAttackRange() {

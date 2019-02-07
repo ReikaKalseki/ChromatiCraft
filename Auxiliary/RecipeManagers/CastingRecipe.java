@@ -347,6 +347,10 @@ public class CastingRecipe implements APICastingRecipe {
 		return 0.9375F;
 	}
 
+	public float[] getHarmonics() {
+		return null;
+	}
+
 	public final void setOwner(ItemStack crafted, EntityPlayer ep) {
 		if (crafted.getItem() instanceof ItemChromaTool) {
 			((ItemChromaTool)crafted.getItem()).setOwner(crafted, ep);

@@ -30,6 +30,7 @@ import Reika.DragonAPI.Instantiable.Worldgen.ControllableOreVein.BlockExcludingO
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.ReactorCraft.API.MagneticOreOverride;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
@@ -49,7 +50,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class BlockTieredOre extends BlockChromaTiered {
+public class BlockTieredOre extends BlockChromaTiered implements MagneticOreOverride {
 
 	public static final int ARR_LENGTH = 15;
 
@@ -329,6 +330,16 @@ public class BlockTieredOre extends BlockChromaTiered {
 	{
 		ReikaRenderHelper.spawnDropParticles(world, tg.blockX, tg.blockY, tg.blockZ, Blocks.stone, 0, 1);
 		return true;
+	}
+
+	@Override
+	public boolean showOnHUD(World world, int x, int y, int z) {
+		return world.getBlockMetadata(x, y, z) == TieredOres.AVOLITE.ordinal();
+	}
+
+	@Override
+	public IIcon[] getRenderIcons(IBlockAccess world, int x, int y, int z) {
+		return new IIcon[]{back[TieredOres.AVOLITE.ordinal()], overlay[TieredOres.AVOLITE.ordinal()]};
 	}
 
 }
