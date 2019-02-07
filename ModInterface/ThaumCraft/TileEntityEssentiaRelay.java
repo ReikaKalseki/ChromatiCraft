@@ -63,27 +63,32 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 		activePaths.clear();
 
 		if (network != null) {
-			network.tick(world);
+			EssentiaMovement mov = network.tick(world);
+			if (mov != null) {
+				for (EssentiaPath p : mov.paths()) {
+					this.addPath(p);
+				}
+			}
 		}
 
-		/*
 		scanTimer.update();
 		if (scanTimer.checkCap()) {
-			this.scan(world, x, y, z);
+			this.scan(world, x, y, z, false);
 		}
-		 */
 	}
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
-		this.scan(world, x, y, z);
+		this.scan(world, x, y, z, true);
 	}
 
-	void scan(World world, int x, int y, int z) {
+	void scan(World world, int x, int y, int z, boolean rebuild) {
 		if (world.isRemote)
 			return;
-		network = new EssentiaNetwork();
-		network.addNode(this);
+		if (rebuild || network == null) {
+			network = new EssentiaNetwork();
+			network.addNode(this);
+		}
 		for (int i = -SEARCH_RANGE; i <= SEARCH_RANGE; i++) {
 			for (int j = -SEARCH_RANGE; j <= SEARCH_RANGE; j++) {
 				for (int k = -SEARCH_RANGE; k <= SEARCH_RANGE; k++) {
@@ -95,7 +100,7 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 						if (te != this) {
 							if (te instanceof TileEntityEssentiaRelay) {
 								TileEntityEssentiaRelay tr = (TileEntityEssentiaRelay)te;
-								if (tr.network != null)
+								if (rebuild && tr.network != null)
 									network.merge(tr.network);
 							}
 							else {

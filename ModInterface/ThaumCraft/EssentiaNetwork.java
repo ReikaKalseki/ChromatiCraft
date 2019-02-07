@@ -46,13 +46,22 @@ import thaumcraft.api.aspects.IEssentiaTransport;
 public class EssentiaNetwork {
 
 	private static Class jarClass;
+	private static Class alembicClass;
 	private static Field filterField;
+	private static Field amountField;
+	private static Field alembicAspectField;
+	private static Field alembicAmountField;
 
 	static {
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			try {
 				jarClass = Class.forName("thaumcraft.common.tiles.TileJarFillable");
 				filterField = jarClass.getField("aspectFilter");
+				amountField = jarClass.getField("amount");
+
+				alembicClass = Class.forName("thaumcraft.common.tiles.TileAlembic");
+				alembicAspectField = alembicClass.getField("aspect");
+				alembicAmountField = alembicClass.getField("amount");
 			}
 			catch (Exception e) {
 				ChromatiCraft.logger.logError("Could not fetch Warded Jar class");
@@ -79,20 +88,27 @@ public class EssentiaNetwork {
 	public void addEndpoint(TileEntityEssentiaRelay caller, IEssentiaTransport te) {
 		WorldLocation loc = new WorldLocation((TileEntity)te);
 		NetworkEndpoint n = endpoints.get(loc);
-		if (n == null) {
-			n = this.createEndpoint(loc, te);
-			if (n instanceof ActiveEndpoint) {
-				activeLocations.add((ActiveEndpoint)n);
+		NetworkEndpoint n2 = this.createEndpoint(loc, te);
+		if (n == null || n.getClass() != n2.getClass()) {
+			activeLocations.remove(n);
+			if (n2 instanceof ActiveEndpoint) {
+				activeLocations.add((ActiveEndpoint)n2);
 			}
-			endpoints.put(loc, n);
+			endpoints.put(loc, n2);
+			n2.nodeAccesses.add(new WorldLocation(caller));
 		}
-		n.nodeAccesses.add(new WorldLocation(caller));
+		else {
+			n.nodeAccesses.add(new WorldLocation(caller));
+		}
 	}
 
 	private NetworkEndpoint createEndpoint(WorldLocation loc, IEssentiaTransport te) {
 		Aspect a = isFilteredJar(te);
 		if (a != null)
 			return new LabelledJarEndpoint(loc, te, a);
+		if (te.getClass() == alembicClass) {
+			return new AlembicEndpoint(loc, te);
+		}
 		return new NetworkEndpoint(loc, te);
 	}
 
@@ -169,35 +185,78 @@ public class EssentiaNetwork {
 	}
 	 */
 
-	public void tick(World world) {
+	public EssentiaMovement tick(World world) {
 		if (lastTick == world.getTotalWorldTime())
-			return;
+			return null;
 		lastTick = world.getTotalWorldTime();
+		Iterator<WorldLocation> it = endpoints.keySet().iterator();
+		while (it.hasNext()) {
+			WorldLocation loc = it.next();
+			TileEntity te = loc.getTileEntity();
+			if (te != endpoints.get(loc).tile)
+				it.remove();
+		}
 		if (!activeLocations.isEmpty()) {
-			HashSet<WorldLocation> locs = new HashSet();
-			AspectList pushing = new AspectList();
-			for (ActiveEndpoint n : activeLocations) {
-				AspectList al = n.getPush();
+			ArrayList<EssentiaPath> li = new ArrayList();
+			for (ActiveEndpoint from : activeLocations) {
+				AspectList al = from.getPush();
 				if (al != null && !al.aspects.isEmpty()) {
-					for (Aspect a : al.aspects.keySet()) {
-						pushing.add(a, al.getAmount(a));
-						locs.add(n.point);
+					for (NetworkEndpoint to : endpoints.values()) {
+						if (to != from && to.canReceive()) {
+							this.transferEssentia(from, to, al);
+							if (al.aspects.isEmpty())
+								break;
+						}
 					}
 				}
-			}
-			if (!pushing.aspects.isEmpty()) {
-				for (Aspect a : pushing.aspects.keySet()) {
-					for (NetworkEndpoint n : endpoints.values()) {
-						if (!locs.contains(n.point)) {
-							int rem = n.addAspect(a, pushing.getAmount(a));
-							pushing.reduce(a, rem);
-							if (pushing.getAmount(a) <= 0)
+				al = from.getPull();
+				if (al != null && !al.aspects.isEmpty()) {
+					for (NetworkEndpoint to : endpoints.values()) {
+						if (to != from && from.canReceive()) {
+							this.transferEssentia(to, from, al);
+							if (al.aspects.isEmpty())
 								break;
 						}
 					}
 				}
 			}
+			return li.isEmpty() ? null : new EssentiaMovement(li);
 		}
+		return null;
+	}
+
+	private ArrayList<EssentiaPath> transferEssentia(NetworkEndpoint from, NetworkEndpoint to, AspectList al) {
+		//ReikaJavaLibrary.pConsole("Attempting transfer of "+ReikaThaumHelper.aspectsToString(al)+" from "+from+" to "+to);
+		ArrayList<EssentiaPath> ret = new ArrayList();
+		Iterator<Entry<Aspect, Integer>> it = al.aspects.entrySet().iterator();
+		while (it.hasNext()) {
+			Entry<Aspect, Integer> e = it.next();
+			Aspect a = e.getKey();
+			int amt = e.getValue();
+			EssentiaPath p = this.transferEssentia(from, to, a, Math.min(amt, TileEntityEssentiaRelay.THROUGHPUT));
+			if (p != null) {
+				ret.add(p);
+				e.setValue(amt-p.amount);
+				if (e.getValue() <= 0)
+					it.remove();
+			}
+		}
+		return ret;
+	}
+
+	private EssentiaPath transferEssentia(NetworkEndpoint from, NetworkEndpoint to, Aspect a, int amount) {
+		int has = from.getContents(a);
+		int amt = Math.min(amount, has);
+		int put = to.addAspect(a, amt);
+		int put2 = from.takeAspect(a, put);
+		if (put2 < put) {
+			to.takeAspect(a, put-put2);
+		}
+		if (put2 <= 0)
+			return null;
+		//ReikaJavaLibrary.pConsole("Transferred "+put+" & "+put2+" / "+amount+" of "+a.getTag()+" from "+from+" to "+to);
+		ArrayList<WorldLocation> pt = this.getPath(from.point, to.point);
+		return new EssentiaPath(a, put2, pt);
 	}
 
 	public EssentiaMovement addEssentia(TileEntityEssentiaRelay caller, ForgeDirection callDir, Aspect aspect, int amount) {
@@ -482,6 +541,41 @@ public class EssentiaNetwork {
 
 	}
 
+	private static class AlembicEndpoint extends ActiveEndpoint {
+
+		private AlembicEndpoint(WorldLocation loc, IEssentiaTransport te) {
+			super(loc, te);
+		}
+
+		@Override
+		public AspectList getPull() {
+			return null;
+		}
+
+		@Override
+		public AspectList getPush() {
+			try {
+				Aspect a = (Aspect)alembicAspectField.get(tile);
+				return a != null ? new AspectList().add(a, alembicAmountField.getInt(tile)) : null;
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+
+		@Override
+		public int addAspect(Aspect a, int amount) { //never allow fill
+			return 0;
+		}
+
+		@Override
+		public boolean canReceive() {
+			return false;
+		}
+
+	}
+
 	private static class LabelledJarEndpoint extends ActiveEndpoint {
 
 		private final Aspect filter;
@@ -493,7 +587,13 @@ public class EssentiaNetwork {
 
 		@Override
 		public AspectList getPull() {
-			return new AspectList().add(filter, 1);
+			try {
+				return new AspectList().add(filter, amountField.getInt(tile));
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				return new AspectList().add(filter, 1);
+			}
 		}
 
 		@Override
@@ -513,13 +613,23 @@ public class EssentiaNetwork {
 
 		public abstract AspectList getPush();
 
+		@Override
+		public boolean canReceive() {
+			return this.getPush() == null && this.getPull() != null;
+		}
+
+		@Override
+		public boolean canEmit() {
+			return this.getPull() == null && this.getPush() != null;
+		}
+
 	}
 
 	private static class NetworkEndpoint {
 
 		public final HashSet<WorldLocation> nodeAccesses = new HashSet();
 		public final WorldLocation point;
-		private final IEssentiaTransport tile;
+		protected final IEssentiaTransport tile;
 
 		public final int suction;
 
@@ -536,6 +646,16 @@ public class EssentiaNetwork {
 			suction = maxsuc;
 		}
 
+		public int getContents(Aspect a) {
+			int ret = 0;
+			for (int i = 0; i < 6; i++) {
+				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+				if (a == tile.getEssentiaType(dir))
+					ret += tile.getEssentiaAmount(dir);
+			}
+			return ret;
+		}
+
 		public int addAspect(Aspect a, int amount) {
 			int ret = 0;
 			for (int i = 0; i < 6; i++) {
@@ -548,6 +668,7 @@ public class EssentiaNetwork {
 						break;
 				}
 			}
+			//ReikaJavaLibrary.pConsole("Added "+ret+" of "+a.getTag()+" to "+tile+" @ "+point, ret > 0);
 			return ret;
 		}
 
@@ -563,7 +684,16 @@ public class EssentiaNetwork {
 						break;
 				}
 			}
+			//ReikaJavaLibrary.pConsole("Took "+ret+" of "+a.getTag()+" from "+tile+" @ "+point, ret > 0);
 			return ret;
+		}
+
+		public boolean canReceive() {
+			return true;
+		}
+
+		public boolean canEmit() {
+			return true;
 		}
 
 		@Override
@@ -574,6 +704,11 @@ public class EssentiaNetwork {
 		@Override
 		public boolean equals(Object o) {
 			return o instanceof NetworkEndpoint && ((NetworkEndpoint)o).point.equals(point);
+		}
+
+		@Override
+		public String toString() {
+			return tile+" @ "+point+" suc="+suction;
 		}
 
 	}
