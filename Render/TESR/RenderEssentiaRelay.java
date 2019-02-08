@@ -1,19 +1,16 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
 
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
-import net.minecraftforge.client.MinecraftForgeClient;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -21,13 +18,26 @@ import org.lwjgl.opengl.GL12;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityEssentiaRelay;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 
 public class RenderEssentiaRelay extends ChromaRenderBase {
+
+	private long lastNetworkRenderTick;
+	private float lastNetworkRenderPTick;
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
@@ -45,11 +55,22 @@ public class RenderEssentiaRelay extends ChromaRenderBase {
 		BlendMode.ADDITIVEDARK.apply();
 		ReikaRenderHelper.disableEntityLighting();
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GL11.glTranslatef((float)par2, (float)par4 + 1.0F, (float)par6 + 1.0F);
+		GL11.glTranslated(par2, par4, par6);
+
+		if (te.isInWorld() && !StructureRenderer.isRenderingTiles() && ChromaItems.TOOL.matchWith(Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem())) {
+			if (par8 != lastNetworkRenderPTick || lastNetworkRenderTick != te.worldObj.getTotalWorldTime()) {
+				lastNetworkRenderPTick = par8;
+				lastNetworkRenderTick = te.worldObj.getTotalWorldTime();
+				this.renderNetwork(te, par8);
+			}
+		}
+
+		GL11.glTranslatef(0, 1, 1);
 		GL11.glScalef(1.0F, -1.0F, -1.0F);
 
-		if (MinecraftForgeClient.getRenderPass() == 1 || !te.isInWorld())
+		if (MinecraftForgeClient.getRenderPass() == 1 || !te.isInWorld()) {
 			this.drawInner(te, par8);
+		}
 
 		GL11.glDisable(GL11.GL_BLEND);
 		if (te.hasWorldObj())
@@ -57,6 +78,59 @@ public class RenderEssentiaRelay extends ChromaRenderBase {
 		GL11.glPopMatrix();
 		GL11.glPopAttrib();
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+	}
+
+	private void renderNetwork(TileEntityEssentiaRelay te, float par8) {
+		Map<Coordinate, Boolean> map = te.getNetworkTiles();
+		if (map.isEmpty())
+			return;
+		BlendMode.DEFAULT.apply();
+		GL11.glColor4f(1, 1, 1, 1);
+		float w = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
+		GL11.glLineWidth(3);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		Tessellator v5 = Tessellator.instance;
+		v5.setBrightness(240);
+		v5.startDrawing(GL11.GL_LINES);
+		double o = 0.125;
+		for (Entry<Coordinate, Boolean> e : map.entrySet()) {
+			Coordinate c = e.getKey();
+			float f = (float)(0.5+0.5*Math.sin((te.getTicksExisted()+par8)/10D+System.identityHashCode(c)));
+			int c1 = e.getValue() ? 0x0000e0 : 0x00e000;
+			int c2 = e.getValue() ? 0x7f7fff : 0x7fff7f;
+			int clr = ReikaColorAPI.mixColors(c1, c2, f);
+			v5.setColorRGBA_I(clr, 255);
+			v5.addVertex(c.xCoord-te.xCoord+o, c.yCoord-te.yCoord+o, c.zCoord-te.zCoord+o);
+			v5.addVertex(c.xCoord-te.xCoord+o, c.yCoord-te.yCoord+1-o, c.zCoord-te.zCoord+o);
+			v5.addVertex(c.xCoord-te.xCoord+1-o, c.yCoord-te.yCoord+o, c.zCoord-te.zCoord+o);
+			v5.addVertex(c.xCoord-te.xCoord+1-o, c.yCoord-te.yCoord+1-o, c.zCoord-te.zCoord+o);
+			v5.addVertex(c.xCoord-te.xCoord+o, c.yCoord-te.yCoord+o, c.zCoord-te.zCoord+1-o);
+			v5.addVertex(c.xCoord-te.xCoord+o, c.yCoord-te.yCoord+1-o, c.zCoord-te.zCoord+1-o);
+			v5.addVertex(c.xCoord-te.xCoord+1-o, c.yCoord-te.yCoord+o, c.zCoord-te.zCoord+1-o);
+			v5.addVertex(c.xCoord-te.xCoord+1-o, c.yCoord-te.yCoord+1-o, c.zCoord-te.zCoord+1-o);
+
+			v5.addVertex(c.xCoord-te.xCoord+o, c.yCoord-te.yCoord+o, c.zCoord-te.zCoord+o);
+			v5.addVertex(c.xCoord-te.xCoord+1-o, c.yCoord-te.yCoord+o, c.zCoord-te.zCoord+o);
+			v5.addVertex(c.xCoord-te.xCoord+o, c.yCoord-te.yCoord+1-o, c.zCoord-te.zCoord+o);
+			v5.addVertex(c.xCoord-te.xCoord+1-o, c.yCoord-te.yCoord+1-o, c.zCoord-te.zCoord+o);
+			v5.addVertex(c.xCoord-te.xCoord+o, c.yCoord-te.yCoord+o, c.zCoord-te.zCoord+1-o);
+			v5.addVertex(c.xCoord-te.xCoord+1-o, c.yCoord-te.yCoord+o, c.zCoord-te.zCoord+1-o);
+			v5.addVertex(c.xCoord-te.xCoord+o, c.yCoord-te.yCoord+1-o, c.zCoord-te.zCoord+1-o);
+			v5.addVertex(c.xCoord-te.xCoord+1-o, c.yCoord-te.yCoord+1-o, c.zCoord-te.zCoord+1-o);
+
+			v5.addVertex(c.xCoord-te.xCoord+o, c.yCoord-te.yCoord+o, c.zCoord-te.zCoord+o);
+			v5.addVertex(c.xCoord-te.xCoord+o, c.yCoord-te.yCoord+o, c.zCoord-te.zCoord+1-o);
+			v5.addVertex(c.xCoord-te.xCoord+1-o, c.yCoord-te.yCoord+o, c.zCoord-te.zCoord+o);
+			v5.addVertex(c.xCoord-te.xCoord+1-o, c.yCoord-te.yCoord+o, c.zCoord-te.zCoord+1-o);
+			v5.addVertex(c.xCoord-te.xCoord+o, c.yCoord-te.yCoord+1-o, c.zCoord-te.zCoord+o);
+			v5.addVertex(c.xCoord-te.xCoord+o, c.yCoord-te.yCoord+1-o, c.zCoord-te.zCoord+1-o);
+			v5.addVertex(c.xCoord-te.xCoord+1-o, c.yCoord-te.yCoord+1-o, c.zCoord-te.zCoord+o);
+			v5.addVertex(c.xCoord-te.xCoord+1-o, c.yCoord-te.yCoord+1-o, c.zCoord-te.zCoord+1-o);
+		}
+		v5.draw();
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glLineWidth(w);
+		BlendMode.ADDITIVEDARK.apply();
 	}
 
 	private void drawInner(TileEntityEssentiaRelay te, float par8) {

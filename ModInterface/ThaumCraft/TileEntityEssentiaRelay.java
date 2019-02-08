@@ -11,7 +11,10 @@ package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
@@ -21,12 +24,13 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -46,6 +50,37 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 	EssentiaNetwork network;
 
 	private final Collection<EssentiaPath> activePaths = new ArrayList();
+	final HashMap<Coordinate, Boolean> networkCoords = new HashMap();
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		NBTTagList li = new NBTTagList();
+		for (Coordinate c : networkCoords.keySet()) {
+			NBTTagCompound tag = c.writeToTag();
+			tag.setBoolean("node", networkCoords.get(c));
+			li.appendTag(tag);
+		}
+		NBT.setTag("points", li);
+	}
+
+	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		networkCoords.clear();
+		NBTTagList li = NBT.getTagList("points", NBTTypes.COMPOUND.ID);
+		for (Object o : li.tagList) {
+			NBTTagCompound n = (NBTTagCompound)o;
+			Coordinate c = Coordinate.readTag(n);
+			networkCoords.put(c, n.getBoolean("node"));
+		}
+	}
+
+	public Map<Coordinate, Boolean> getNetworkTiles() {
+		return Collections.unmodifiableMap(networkCoords);
+	}
 
 	@Override
 	public ChromaTiles getTile() {
@@ -58,7 +93,7 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 		for (EssentiaPath p : activePaths) {
 			p.update(world, x, y, z);
 			if (p.target != null)
-				activeTargets.add(new Coordinate(p.target));
+				activeTargets.add(p.target);
 		}
 		activePaths.clear();
 
@@ -101,7 +136,7 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 							if (te instanceof TileEntityEssentiaRelay) {
 								TileEntityEssentiaRelay tr = (TileEntityEssentiaRelay)te;
 								if (rebuild && tr.network != null)
-									network.merge(tr.network);
+									network.merge(world, tr.network);
 							}
 							else {
 								network.addEndpoint(this, (IEssentiaTransport)te);
@@ -166,7 +201,7 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 		return 0;
 	}
 
-	private int collectEssentiaToTarget(Aspect a, int amt, WorldLocation tgt) {
+	private int collectEssentiaToTarget(Aspect a, int amt, Coordinate tgt) {
 		amt = Math.min(THROUGHPUT, amt);
 		EssentiaMovement r = network != null ? network.removeEssentia(this, ForgeDirection.DOWN, a, amt, tgt) : null;
 		if (r != null) {
@@ -200,7 +235,7 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 	@Override
 	public int getEssentiaAmount(ForgeDirection face) {
 		Aspect a = this.getEssentiaType(face);
-		return a != null && network != null ? network.countEssentia(a) : 0;
+		return a != null && network != null ? network.countEssentia(worldObj, a) : 0;
 	}
 
 	@Override
@@ -216,7 +251,7 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 	@Override
 	public void breakBlock() {
 		if (network != null)
-			network.reset();
+			network.reset(worldObj);
 	}
 
 	@Override

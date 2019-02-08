@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,15 +12,9 @@ package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ResourceLocation;
-
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -35,11 +29,18 @@ import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
+import thaumcraft.api.aspects.Aspect;
 
 public class GuiAspectFormer extends GuiChromaBase {
 
 	private int index = 0;
 	private ArrayList<Aspect> list = new ArrayList();
+	private HashMap<Character, Integer> charIndex = new HashMap();
 
 	private TileEntityAspectFormer tile;
 
@@ -51,11 +52,26 @@ public class GuiAspectFormer extends GuiChromaBase {
 
 	public GuiAspectFormer(EntityPlayer ep, TileEntityAspectFormer te) {
 		super(new CoreContainer(ep, te), ep, te);
-		list.addAll(ReikaThaumHelper.getAllDiscoveredAspects(ep));
-		ReikaThaumHelper.sortAspectList(list);
+		this.buildAspectList(ep);
 		ySize = 74;
 		tile = te;
 		mode = te.getMode();
+	}
+
+	private void buildAspectList(EntityPlayer ep) {
+		list.addAll(ReikaThaumHelper.getAllDiscoveredAspects(ep));
+		ReikaThaumHelper.sortAspectList(list);
+		char c = 0;
+		for (int i = 0; i < list.size(); i++) {
+			Aspect a = list.get(i);
+			if (!a.isPrimal()) {
+				char c2 = a.getTag().charAt(0);
+				if (c2 != c) {
+					c = c2;
+					charIndex.put(c2, i);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -84,6 +100,10 @@ public class GuiAspectFormer extends GuiChromaBase {
 
 	private Aspect getActive() {
 		return list.get(index);
+	}
+
+	private char getAlphaKeyAt(int idx) {
+		return list.get(idx).getTag().charAt(0);
 	}
 
 	@Override
@@ -138,6 +158,47 @@ public class GuiAspectFormer extends GuiChromaBase {
 		for (int i = 0; i < buttonList.size(); i++) {
 			GuiButton b2 = (GuiButton)buttonList.get(i);
 			b2.visible = on;
+		}
+	}
+
+	@Override
+	protected void keyTyped(char c, int idx) {
+		if (idx == Keyboard.KEY_HOME) {
+			index = 0;
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 0.6F);
+		}
+		else if (idx == Keyboard.KEY_UP) {
+			char at = this.getAlphaKeyAt(index);
+			char next = at;
+			while (next == at && index > 0) {
+				index--;
+				at = this.getAlphaKeyAt(index);
+			}
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 0.85F);
+		}
+		else if (idx == Keyboard.KEY_DOWN) {
+			char at = this.getAlphaKeyAt(index);
+			char next = at;
+			while (next == at) {
+				index++;
+				if (index == list.size())
+					index = 0;
+				at = this.getAlphaKeyAt(index);
+			}
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 0.85F);
+		}
+		else if (Character.isLetter(c)) {
+			Integer seek = charIndex.get(c);
+			if (seek != null) {
+				if (this.getAlphaKeyAt(index) == c && index < list.size()-1 && this.getAlphaKeyAt(index+1) == c)
+					index++;
+				else
+					index = seek;
+				ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 0.7F);
+			}
+		}
+		else {
+			super.keyTyped(c, idx);
 		}
 	}
 
