@@ -275,7 +275,7 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 				int t = lf*i/amt;
 				int t2 = lf*(i+1)/amt;
 				int cr = 3;//2;
-				int c = colorData.isPartOfNegative(i) ? 0x000000 : 0xffffff;
+				int c = colorData.isVariableChange(i) ? 0x22aaff : colorData.isPartOfNegative(i) ? 0x000000 : 0xffffff;
 				spiralColor.addPoint(t, c);
 				spiralColor.addPoint(t+cr, e.getColor());
 				spiralColor.addPoint(t2-cr, e.getColor());

@@ -88,6 +88,10 @@ public final class ElementEncodedNumber {
 			}
 		}
 
+		public boolean isVariableChange(int idx) {
+			return idx == 0 || idx == x.getLength();
+		}
+
 		public boolean isPartOfNegative(int idx) {
 			if (idx == 0) {
 				return false;

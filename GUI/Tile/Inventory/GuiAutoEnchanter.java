@@ -10,13 +10,14 @@
 package Reika.ChromatiCraft.GUI.Tile.Inventory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.GuiChromaBase;
+import Reika.ChromatiCraft.Base.GuiLetterSearchable;
 import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
@@ -34,11 +35,9 @@ import net.minecraft.util.StatCollector;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
-public class GuiAutoEnchanter extends GuiChromaBase {
+public class GuiAutoEnchanter extends GuiLetterSearchable<Enchantment> {
 
 	private final TileEntityAutoEnchanter ench;
-	private int selectedEnchant = 0;
-	private final ArrayList<Enchantment> visibleEnchants = new ArrayList();
 
 	private static final ArrayList<Enchantment> validEnchants = new ArrayList();
 
@@ -60,11 +59,6 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 		player = ep;
 		ench = tile;
 		ySize = 181;
-
-		for (Enchantment e : validEnchants) {
-			if (TileEntityAutoEnchanter.canPlayerGetEnchantment(e, ep))
-				visibleEnchants.add(e);
-		}
 	}
 
 	@Override
@@ -96,7 +90,7 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 				break;
 			case 10:
 				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.ENCHANTERRESET.ordinal(), ench);
-				selectedEnchant = 0;
+				index = 0;
 				break;
 			case 2:
 				this.decrementEnchant(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT));
@@ -109,35 +103,31 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 	}
 
 	private void incrementEnchant(boolean newType) {
-		Enchantment pre = this.getHighlightedEnchantment();
-		if (selectedEnchant < visibleEnchants.size()-1) {
+		Enchantment pre = this.getActive();
+		if (index < list.size()-1) {
 			do {
-				selectedEnchant++;
-			} while(newType && selectedEnchant < visibleEnchants.size()-1 && this.getHighlightedEnchantment().type != pre.type);
+				index++;
+			} while(newType && index < list.size()-1 && this.getActive().type != pre.type);
 		}
 	}
 
 	private void decrementEnchant(boolean newType) {
-		Enchantment pre = this.getHighlightedEnchantment();
-		if (selectedEnchant > 0) {
+		Enchantment pre = this.getActive();
+		if (index > 0) {
 			do {
-				selectedEnchant--;
-			} while(newType && selectedEnchant > 0 && this.getHighlightedEnchantment().type != pre.type);
+				index--;
+			} while(newType && index > 0 && this.getActive().type != pre.type);
 		}
 	}
 
-	private Enchantment getHighlightedEnchantment() {
-		return visibleEnchants.get(selectedEnchant);
-	}
-
 	private String getEnchantDisplayString() {
-		Enchantment e = this.getHighlightedEnchantment();
+		Enchantment e = this.getActive();
 		int level = ench.getEnchantment(e);
 		return level > 0 ? e.getTranslatedName(level) : StatCollector.translateToLocal(e.getName())+" 0";
 	}
 
 	private int getID() {
-		return this.getHighlightedEnchantment().effectId;
+		return this.getActive().effectId;
 	}
 
 	@Override
@@ -200,6 +190,31 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 	@Override
 	public String getGuiTexture() {
 		return "enchanter2";
+	}
+
+	@Override
+	protected String getString(Enchantment val) {
+		return val.getTranslatedName(1);
+	}
+
+	@Override
+	protected boolean isIndexable(Enchantment val) {
+		return true;
+	}
+
+	@Override
+	protected Collection<Enchantment> getAllEntries(EntityPlayer ep) {
+		Collection<Enchantment> c = new ArrayList();
+		for (Enchantment e : validEnchants) {
+			if (TileEntityAutoEnchanter.canPlayerGetEnchantment(e, ep))
+				c.add(e);
+		}
+		return c;
+	}
+
+	@Override
+	protected void sortEntries(ArrayList<Enchantment> li) {
+		Collections.sort(li, ReikaEnchantmentHelper.enchantmentNameSorter);
 	}
 
 }

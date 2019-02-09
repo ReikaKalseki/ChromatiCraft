@@ -82,6 +82,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.VoidCor
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.VoidStorageRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.BeeConversionRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.ConfigRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.DivisionSigilActivationRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.DoubleJumpRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.EnchantmentRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.RepeaterTurboRecipe;
@@ -902,6 +903,10 @@ public class RecipesCastingTable {
 					this.addRecipe(new TinkerToolPartRecipe(WeaponParts.partList[i]));
 				}
 			}
+		}
+
+		if (ModList.EXTRAUTILS.isLoaded()) {
+			this.addRecipe(new DivisionSigilActivationRecipe());
 		}
 
 		for (Object o : Item.itemRegistry.getKeys()) {
