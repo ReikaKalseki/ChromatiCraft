@@ -47,8 +47,6 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 
 	private final StepTimer scanTimer = new StepTimer(50);
 
-	EssentiaNetwork network;
-
 	private final Collection<EssentiaPath> activePaths = new ArrayList();
 	final HashMap<Coordinate, Boolean> networkCoords = new HashMap();
 
@@ -97,8 +95,8 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 		}
 		activePaths.clear();
 
-		if (network != null) {
-			EssentiaMovement mov = network.tick(world);
+		if (!world.isRemote) {
+			EssentiaMovement mov = this.getNetwork().tick(world);
 			if (mov != null) {
 				for (EssentiaPath p : mov.paths()) {
 					this.addPath(p);
@@ -120,9 +118,8 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 	void scan(World world, int x, int y, int z, boolean rebuild) {
 		if (world.isRemote)
 			return;
-		if (rebuild || network == null) {
-			network = new EssentiaNetwork();
-			network.addNode(this);
+		if (rebuild) {
+			this.getNetwork().addNode(this);
 		}
 		for (int i = -SEARCH_RANGE; i <= SEARCH_RANGE; i++) {
 			for (int j = -SEARCH_RANGE; j <= SEARCH_RANGE; j++) {
@@ -134,12 +131,13 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 					if (te instanceof IEssentiaTransport) {
 						if (te != this) {
 							if (te instanceof TileEntityEssentiaRelay) {
+								/*
 								TileEntityEssentiaRelay tr = (TileEntityEssentiaRelay)te;
 								if (rebuild && tr.network != null)
-									network.merge(world, tr.network);
+									network.merge(world, tr.network);*/
 							}
 							else {
-								network.addEndpoint(this, (IEssentiaTransport)te);
+								this.getNetwork().addEndpoint(this, (IEssentiaTransport)te);
 							}
 						}
 					}
@@ -191,7 +189,7 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 	@Override
 	public int takeEssentia(Aspect aspect, int amount, ForgeDirection face) {
 		amount = Math.min(THROUGHPUT, amount);
-		EssentiaMovement r = network != null ? network.removeEssentia(this, face, aspect, amount) : null;
+		EssentiaMovement r = this.getNetwork().removeEssentia(this, face, aspect, amount);
 		if (r != null) {
 			for (EssentiaPath p : r.paths()) {
 				this.addPath(p);
@@ -203,7 +201,7 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 
 	private int collectEssentiaToTarget(Aspect a, int amt, Coordinate tgt) {
 		amt = Math.min(THROUGHPUT, amt);
-		EssentiaMovement r = network != null ? network.removeEssentia(this, ForgeDirection.DOWN, a, amt, tgt) : null;
+		EssentiaMovement r = this.getNetwork().removeEssentia(this, ForgeDirection.DOWN, a, amt, tgt);
 		if (r != null) {
 			for (EssentiaPath p : r.paths()) {
 				this.addPath(p);
@@ -216,7 +214,7 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 	@Override
 	public int addEssentia(Aspect aspect, int amount, ForgeDirection face) {
 		amount = Math.min(THROUGHPUT, amount);
-		EssentiaMovement s = network != null ? network.addEssentia(this, face, aspect, amount) : null;
+		EssentiaMovement s = this.getNetwork().addEssentia(this, face, aspect, amount);
 		if (s != null) {
 			for (EssentiaPath p : s.paths()) {
 				this.addPath(p);
@@ -235,7 +233,7 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 	@Override
 	public int getEssentiaAmount(ForgeDirection face) {
 		Aspect a = this.getEssentiaType(face);
-		return a != null && network != null ? network.countEssentia(worldObj, a) : 0;
+		return a != null ? this.getNetwork().countEssentia(worldObj, a) : 0;
 	}
 
 	@Override
@@ -250,8 +248,11 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 
 	@Override
 	public void breakBlock() {
-		if (network != null)
-			network.reset(worldObj);
+		this.getNetwork().removeNode(this);
+	}
+
+	private EssentiaNetwork getNetwork() {
+		return EssentiaNetwork.getNetwork(worldObj);
 	}
 
 	@Override
