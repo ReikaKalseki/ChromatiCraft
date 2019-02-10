@@ -757,6 +757,8 @@ public class AbilityCalls {
 	public static boolean doLightCast(EntityPlayer ep) {
 		Coordinate c = new Coordinate(ep).offset(0, 1, 0);
 		ProgressiveBreaker b = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(ep.worldObj, c.xCoord, c.yCoord, c.zCoord, 200);
+		for (Block bk : LightCast.getPassthroughBlocks())
+			b.passthrough.add(new BlockKey(bk));
 		b.call = new LightCast(ep);
 		b.player = ep;
 		b.hungerFactor = 0;

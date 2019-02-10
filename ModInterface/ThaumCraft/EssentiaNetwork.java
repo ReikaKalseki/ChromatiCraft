@@ -26,9 +26,11 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
+import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -52,6 +54,11 @@ public class EssentiaNetwork {
 	private static Field alembicAspectField;
 	private static Field alembicAmountField;
 
+	private static final Comparator<NetworkEndpoint> pullComparator = new SuctionComparator(true);
+	private static final Comparator<NetworkEndpoint> pushComparator = new SuctionComparator(false);
+
+	private static final RayTracer tracer = new RayTracer(0, 0, 0, 0, 0, 0);
+
 	static {
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			try {
@@ -69,15 +76,14 @@ public class EssentiaNetwork {
 				ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.THAUMCRAFT, e);
 			}
 		}
-	}
 
-	private static final Comparator<NetworkEndpoint> pullComparator = new SuctionComparator(true);
-	private static final Comparator<NetworkEndpoint> pushComparator = new SuctionComparator(false);
+		tracer.airOnly = true;
+	}
 
 	private final HashMap<Coordinate, NetworkEndpoint> endpoints = new HashMap();
 	private final HashMap<Coordinate, ActiveEndpoint> activeLocations = new HashMap();
 	private final HashSet<Coordinate> nodes = new HashSet();
-	private final HashMap<ImmutablePair<Coordinate, Coordinate>, ArrayList<Coordinate>> pathList = new HashMap();
+	private final HashMap<ImmutablePair<Coordinate, Coordinate>, EssentiaPathCache> pathList = new HashMap();
 
 	private long lastTick;
 
@@ -221,7 +227,7 @@ public class EssentiaNetwork {
 				if (al != null && !al.aspects.isEmpty()) {
 					for (NetworkEndpoint to : endpoints.values()) {
 						if (this.canTransfer(world, from, to)) {
-							li.addAll(this.transferEssentia(from, to, al));
+							li.addAll(this.transferEssentia(world, from, to, al));
 							if (al.aspects.isEmpty())
 								break;
 						}
@@ -231,7 +237,7 @@ public class EssentiaNetwork {
 				if (al != null && !al.aspects.isEmpty()) {
 					for (NetworkEndpoint to : endpoints.values()) {
 						if (this.canTransfer(world, to, from)) {
-							li.addAll(this.transferEssentia(to, from, al));
+							li.addAll(this.transferEssentia(world, to, from, al));
 							if (al.aspects.isEmpty())
 								break;
 						}
@@ -254,7 +260,7 @@ public class EssentiaNetwork {
 		return from.canEmit() && to.canReceive() && from.isValid(world) && to.isValid(world);
 	}
 
-	private ArrayList<EssentiaPath> transferEssentia(NetworkEndpoint from, NetworkEndpoint to, AspectList al) {
+	private ArrayList<EssentiaPath> transferEssentia(World world, NetworkEndpoint from, NetworkEndpoint to, AspectList al) {
 		//ReikaJavaLibrary.pConsole("Attempting transfer of "+ReikaThaumHelper.aspectsToString(al)+" from "+from+" to "+to);
 		ArrayList<EssentiaPath> ret = new ArrayList();
 		Iterator<Entry<Aspect, Integer>> it = al.aspects.entrySet().iterator();
@@ -262,7 +268,7 @@ public class EssentiaNetwork {
 			Entry<Aspect, Integer> e = it.next();
 			Aspect a = e.getKey();
 			int amt = e.getValue();
-			EssentiaPath p = this.transferEssentia(from, to, a, Math.min(amt, TileEntityEssentiaRelay.THROUGHPUT));
+			EssentiaPath p = this.transferEssentia(world, from, to, a, Math.min(amt, TileEntityEssentiaRelay.THROUGHPUT));
 			if (p != null) {
 				ret.add(p);
 				e.setValue(amt-p.amount);
@@ -270,11 +276,14 @@ public class EssentiaNetwork {
 					it.remove();
 			}
 		}
-		//ReikaJavaLibrary.pConsole(ret, !ret.isEmpty());
+		ReikaJavaLibrary.pConsole(ret, !ret.isEmpty());
 		return ret;
 	}
 
-	private EssentiaPath transferEssentia(NetworkEndpoint from, NetworkEndpoint to, Aspect a, int amount) {
+	private EssentiaPath transferEssentia(World world, NetworkEndpoint from, NetworkEndpoint to, Aspect a, int amount) {
+		EssentiaPathCache pt = this.getPath(world, from, to);
+		if (pt == null || pt.isEmpty())
+			return null;
 		int has = from.getContents(a);
 		int amt = Math.min(amount, has);
 		int put = to.addAspect(a, amt);
@@ -285,7 +294,6 @@ public class EssentiaNetwork {
 		if (put2 <= 0)
 			return null;
 		//ReikaJavaLibrary.pConsole("Transferred "+put+" & "+put2+" / "+amount+" of "+a.getTag()+" from "+from+" to "+to);
-		ArrayList<Coordinate> pt = this.getPath(from, to);
 		//ReikaJavaLibrary.pConsole(pt+" of "+from+" , "+to);
 		return new EssentiaPath(a, put2, pt);
 	}
@@ -300,13 +308,15 @@ public class EssentiaNetwork {
 		ArrayList<NetworkEndpoint> list = new ArrayList(endpoints.values());
 		Collections.sort(list, pushComparator);
 		for (NetworkEndpoint p : list) {
-			int added = p.addAspect(aspect, amount);
-			if (added > 0) {
-				amount -= added;
-				ArrayList<Coordinate> pt = this.getPath(endpoints.get(src), p);
-				li.add(new EssentiaPath(aspect, added, pt)); //ReikaJavaLibrary.makeListFrom(new Coordinate(caller), node, loc)
-				if (amount <= 0) {
-					break;
+			EssentiaPathCache pt = this.getPath(caller.worldObj, endpoints.get(src), p);
+			if (pt != null && !pt.isEmpty()) {
+				int added = p.addAspect(aspect, amount);
+				if (added > 0) {
+					amount -= added;
+					li.add(new EssentiaPath(aspect, added, pt)); //ReikaJavaLibrary.makeListFrom(new Coordinate(caller), node, loc)
+					if (amount <= 0) {
+						break;
+					}
 				}
 			}
 		}
@@ -324,13 +334,15 @@ public class EssentiaNetwork {
 		ArrayList<NetworkEndpoint> list = new ArrayList(endpoints.values());
 		Collections.sort(list, pullComparator);
 		for (NetworkEndpoint p : list) {
-			int rem = p.takeAspect(aspect, amount);
-			if (rem > 0) {
-				amount -= rem;
-				ArrayList<Coordinate> pt = this.getPath(p, endpoints.get(new Coordinate(target)));
-				li.add(new EssentiaPath(aspect, rem, pt)); //ReikaJavaLibrary.makeListFrom(loc, node, new Coordinate(caller))
-				if (amount <= 0) {
-					break;
+			EssentiaPathCache pt = this.getPath(caller.worldObj, p, endpoints.get(new Coordinate(target)));
+			if (pt != null && !pt.isEmpty()) {
+				int rem = p.takeAspect(aspect, amount);
+				if (rem > 0) {
+					amount -= rem;
+					li.add(new EssentiaPath(aspect, rem, pt)); //ReikaJavaLibrary.makeListFrom(loc, node, new Coordinate(caller))
+					if (amount <= 0) {
+						break;
+					}
 				}
 			}
 		}
@@ -344,18 +356,27 @@ public class EssentiaNetwork {
 	}
 	 */
 
-	private ArrayList<Coordinate> getPath(NetworkEndpoint loc, NetworkEndpoint loc2) {
+	private EssentiaPathCache getPath(World world, NetworkEndpoint loc, NetworkEndpoint loc2) {
 		pathList.clear();
 		ImmutablePair<Coordinate, Coordinate> key = new ImmutablePair(loc.point, loc2.point);
-		ArrayList<Coordinate> path = pathList.get(key);
-		if (path != null)
-			return path;
-		path = this.calculatePath(loc, loc2);
-		pathList.put(key, path);
+		EssentiaPathCache path = pathList.get(key);
+		if (path != null) {
+			if (!path.validate(world)) {
+				pathList.remove(key);
+			}
+			else {
+				return path;
+			}
+		}
+		ArrayList<Coordinate> li = this.calculatePath(world, loc, loc2);
+		if (li != null && !li.isEmpty() && li.get(0).equals(loc.point) && li.get(li.size()-1).equals(loc2.point)) {
+			path = new EssentiaPathCache(li);
+			pathList.put(key, path);
+		}
 		return path;
 	}
 
-	private ArrayList<Coordinate> calculatePath(NetworkEndpoint loc, NetworkEndpoint loc2) {
+	private ArrayList<Coordinate> calculatePath(World world, NetworkEndpoint loc, NetworkEndpoint loc2) {
 		if (loc.point.isWithinDistOnAllCoords(loc2.point, TileEntityEssentiaRelay.SEARCH_RANGE)) {
 			ArrayList<Coordinate> li = new ArrayList();
 			li.add(loc.point);
@@ -374,19 +395,20 @@ public class EssentiaNetwork {
 		HashSet<Coordinate> set = new HashSet();
 		s.path.add(loc.point);
 		s.looked.add(loc.point);
-		s.looked.addAll(loc.nodeAccesses);
 		for (Coordinate n : loc.nodeAccesses) {
-			this.recurseTo(n, loc2, s);
+			//if (LOS(world, loc, n))
+			this.recurseTo(world, n, loc2, s);
 		}
 		return s.path;
 	}
 
-	private void recurseTo(Coordinate loc, NetworkEndpoint seek, EssentiaPathSearch s) {
+	private void recurseTo(World world, Coordinate loc, NetworkEndpoint seek, EssentiaPathSearch s) {
 		if (s.isComplete)
 			return;
 		s.path.add(loc);
 		s.looked.add(loc);
 		ArrayList<Coordinate> li = this.getNextLocations(loc, s);
+		//ReikaJavaLibrary.pConsole(li+" from "+loc+" S="+s.looked);
 		for (Coordinate n2 : li) {
 			if (seek.nodeAccesses.contains(n2)) {
 				s.path.add(n2);
@@ -395,13 +417,21 @@ public class EssentiaNetwork {
 			}
 		}
 		for (Coordinate n2 : li) {
-			this.recurseTo(n2, seek, s);
+			if (this.LOS(world, loc, n2))
+				this.recurseTo(world, n2, seek, s);
 		}
+		s.path.remove(s.path.size()-1);
+	}
+
+	private static boolean LOS(World world, Coordinate c1, Coordinate c2) {
+		tracer.setOrigins(c1.xCoord, c1.yCoord, c1.zCoord, c2.xCoord, c2.yCoord, c2.zCoord);
+		return tracer.isClearLineOfSight(world) || true;
 	}
 
 	private ArrayList<Coordinate> getNextLocations(Coordinate loc, EssentiaPathSearch s) {
 		ArrayList<Coordinate> li = new ArrayList();
 		for (Coordinate loc2 : nodes) {
+			//ReikaJavaLibrary.pConsole(loc2, loc.equals(new Coordinate(499, 4, 549)));
 			if (!s.looked.contains(loc2)) {
 				if (loc.isWithinDistOnAllCoords(loc2, TileEntityEssentiaRelay.SEARCH_RANGE)) {
 					li.add(loc2);
@@ -513,6 +543,30 @@ public class EssentiaNetwork {
 
 	}
 
+	private static class EssentiaPathCache {
+
+		private final ArrayList<Coordinate> path;
+
+		private EssentiaPathCache(ArrayList<Coordinate> li) {
+			path = li;
+		}
+
+		public boolean validate(World world) {
+			for (int i = 0; i < path.size()-1; i++) {
+				Coordinate loc1 = path.get(i);
+				Coordinate loc2 = path.get(i+1);
+				if (!LOS(world, loc1, loc2))
+					return false;
+			}
+			return true;
+		}
+
+		public boolean isEmpty() {
+			return path.isEmpty();
+		}
+
+	}
+
 	public static class EssentiaPath {
 
 		private final ArrayList<Coordinate> path;
@@ -523,13 +577,13 @@ public class EssentiaNetwork {
 		public final Aspect aspect;
 		public final int amount;
 
-		private EssentiaPath(Aspect a, int amt, ArrayList<Coordinate> li) {
+		private EssentiaPath(Aspect a, int amt, EssentiaPathCache p) {
 			aspect = a;
 			amount = amt;
-			path = li;
+			path = p.path;
 
-			target = li.isEmpty() ? null : li.get(0);
-			source = li.isEmpty() ? null : li.get(li.size()-1);
+			target = path.isEmpty() ? null : path.get(0);
+			source = path.isEmpty() ? null : path.get(path.size()-1);
 		}
 
 		public void update(World world, int x, int y, int z) {

@@ -49,6 +49,7 @@ import Reika.ChromatiCraft.Container.ContainerBookPages;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
 import Reika.ChromatiCraft.Entity.EntityDimensionFlare;
+import Reika.ChromatiCraft.Entity.EntityEnderEyeT2;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Entity.EntityMeteorShot;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
@@ -942,11 +943,12 @@ public class ChromatiPackets implements PacketHandler {
 				case FERTILITYSEED:
 					ItemFertilitySeed.doFertilizeFX(world, x, y, z);
 					break;
-				case NUKERLOC:
+				case NUKERLOC: {
 					Entity e = world.getEntityByID(data[3]);
 					if (e instanceof EntityPlayer)
 						AbilityCalls.doNukerFX(world, data[0], data[1], data[2], (EntityPlayer)e);
 					break;
+				}
 				case BURNERINV:
 					if (data[0] > 0) {
 						ep.closeScreen();
@@ -987,6 +989,13 @@ public class ChromatiPackets implements PacketHandler {
 				case OPTIMIZE:
 					TileEntityNetworkOptimizer.runOptimizationStepFX(world, x, y, z, data[0]);
 					break;
+				case ENDEREYESYNC: {
+					Entity e = world.getEntityByID(data[0]);
+					if (e instanceof EntityEnderEyeT2) {
+						((EntityEnderEyeT2)e).doSync(data[1]);
+					}
+					break;
+				}
 			}
 		}
 		catch (NullPointerException e) {

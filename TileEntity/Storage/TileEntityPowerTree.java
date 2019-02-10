@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -16,15 +16,6 @@ import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
 
-import net.minecraft.block.Block;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
@@ -61,6 +52,15 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import net.minecraft.block.Block;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalBattery, OwnedTile, WirelessSource, MultiBlockChromaTile {
 
@@ -261,7 +261,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 				for (int i = 0; i < 16; i++) {
 					CrystalElement e = CrystalElement.elements[i];
 					boolean acc = this.growAndTickBoost(e);
-					int base = acc ? 40 : 150;
+					int base = acc ? 30 : 150;
 					if (rand.nextInt(base*16) == 0) {
 						this.grow(e);
 					}
@@ -628,6 +628,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 			CrystalElement e = CrystalElement.elements[i];
 			steps.put(e, NBT.getInteger("step"+i));
 			growth.put(e, NBT.getInteger("grow"+i));
+			boost.put(e, NBT.getInteger("boost"+i));
 		}
 
 		targets = new ArrayList();
@@ -649,6 +650,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 			CrystalElement e = CrystalElement.elements[i];
 			NBT.setInteger("step"+i, steps.containsKey(e) ? steps.get(e) : 0);
 			NBT.setInteger("grow"+i, growth.containsKey(e) ? growth.get(e) : 0);
+			NBT.setInteger("boost"+i, boost.containsKey(e) ? boost.get(e) : 0);
 		}
 
 		NBT.setInteger("targetcount", targets.size());

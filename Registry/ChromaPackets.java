@@ -182,6 +182,7 @@ public enum ChromaPackets {
 	ALVEARYEFFECT(2),
 	SUPERBUILD(1),
 	OPTIMIZE(1),
+	ENDEREYESYNC(2),
 	;
 
 	public final int numInts;

@@ -3,18 +3,22 @@ package Reika.ChromatiCraft.Entity;
 import java.util.Random;
 import java.util.UUID;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ElementEncodedNumber;
 import Reika.ChromatiCraft.Auxiliary.ElementEncodedNumber.EncodedPosition;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Interpolation;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
@@ -157,6 +161,9 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 		if (worldObj.isRemote) {
 			this.doParticles();
 		}
+		else if (ticksExisted%8 == 0) {
+			this.sync();
+		}
 
 		boolean flag = deviateTime > 0 && ticksExisted >= deviateTime;
 		super.onUpdate();
@@ -190,7 +197,7 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 				double dx = ReikaRandomHelper.getRandomPlusMinus(posX, r);
 				double dy = ReikaRandomHelper.getRandomPlusMinus(posY, r);
 				double dz = ReikaRandomHelper.getRandomPlusMinus(posZ, r);
-				int l = 80-despawnTimer+DragonAPICore.rand.nextInt(40);
+				int l = 80-ticksExisted+DragonAPICore.rand.nextInt(40);
 				float s = (float)ReikaRandomHelper.getRandomBetween(1.5, 3);
 				int c = ReikaColorAPI.getModifiedHue(0xff0000, ReikaRandomHelper.getRandomBetween(75, 180));
 				if (rand.nextInt(6) > 0)
@@ -202,8 +209,9 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 		}
 
 		if (colorData != null && spiralColor != null && (deviateTime < 0 || deviateTime > ticksExisted)) {
-			int t = ticksExisted;//this.despawnTimer;
+			int t = ticksExisted;
 			int c = (int)spiralColor.getValue(t);
+			//ReikaJavaLibrary.pConsole(c+" @ "+t);
 			double lf = 80+ADDITIONAL_LIFE;
 			double ang = t*360D/lf*2;
 			double r = 3;
@@ -276,12 +284,22 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 				int t2 = lf*(i+1)/amt;
 				int cr = 3;//2;
 				int c = colorData.isVariableChange(i) ? 0x22aaff : colorData.isPartOfNegative(i) ? 0x000000 : 0xffffff;
+				//ReikaJavaLibrary.pConsole(i+" > "+e+" > "+t+"-"+t2);
 				spiralColor.addPoint(t, c);
 				spiralColor.addPoint(t+cr, e.getColor());
 				spiralColor.addPoint(t2-cr, e.getColor());
 				spiralColor.addPoint(t2, c);
 			}
 		}
+	}
+
+	public void sync() {
+		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ENDEREYESYNC.ordinal(), new PacketTarget.RadiusTarget(this, 200), this.getEntityId(), ticksExisted);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void doSync(int t) {
+		ticksExisted = t;
 	}
 
 	public static EntityEnderEyeT2 create(World world, double x, double y, double z, NBTTagCompound tag) {

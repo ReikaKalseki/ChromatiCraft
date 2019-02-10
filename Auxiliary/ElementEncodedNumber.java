@@ -36,6 +36,7 @@ public final class ElementEncodedNumber {
 			ret[i] = CrystalElement.elements[idx];
 			//ReikaJavaLibrary.pConsole(v.get(i)+" + "+offset+" = "+idx+" ("+ret[i]+")");
 		}
+		//ReikaJavaLibrary.pConsole(value+" > "+Arrays.toString(vals)+" > "+Arrays.toString(ret));
 		return ret;
 	}
 
@@ -89,7 +90,7 @@ public final class ElementEncodedNumber {
 		}
 
 		public boolean isVariableChange(int idx) {
-			return idx == 0 || idx == x.getLength();
+			return idx == 1 || idx == x.getLength()+1;
 		}
 
 		public boolean isPartOfNegative(int idx) {

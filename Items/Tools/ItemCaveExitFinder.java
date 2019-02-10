@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,13 +12,6 @@ package Reika.ChromatiCraft.Items.Tools;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Block.BlockChromaTrail.TileChromaTrail;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -30,6 +23,13 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 
 public class ItemCaveExitFinder extends ItemChromaTool {
@@ -48,7 +48,7 @@ public class ItemCaveExitFinder extends ItemChromaTool {
 		@Override
 		public boolean isValidLocation(IBlockAccess world, int x, int y, int z) {
 			Block b = world.getBlock(x, y, z);
-			return b.isAir(world, x, y, z) || b == ChromaBlocks.HOVER.getBlockInstance() || b == Blocks.iron_bars || b == ChromaBlocks.TRAIL.getBlockInstance() || ReikaBlockHelper.isLiquid(b) || ReikaWorldHelper.softBlocks(world, x, y, z) || ReikaBlockHelper.isLeaf(world, x, y, z);
+			return b.isAir(world, x, y, z) || b == ChromaBlocks.HOVER.getBlockInstance() || b == Blocks.wooden_door || b == Blocks.iron_door || b == Blocks.iron_bars || b == ChromaBlocks.TRAIL.getBlockInstance() || ReikaBlockHelper.isLiquid(b) || ReikaWorldHelper.softBlocks(world, x, y, z) || ReikaBlockHelper.isLeaf(world, x, y, z);
 		}
 
 	};
