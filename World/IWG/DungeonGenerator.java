@@ -13,10 +13,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
@@ -90,7 +90,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 
 	private final ArrayList<Structures> structs = new ArrayList();
 
-	private final EnumMap<Structures, TileEntityCache<Coordinate>> generatedStructures;
+	private final ConcurrentHashMap<Structures, TileEntityCache<Coordinate>> generatedStructures;
 
 	private String baseFilepath;
 
@@ -103,7 +103,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		structs.add(Structures.DESERT);
 		structs.add(Structures.SNOWSTRUCT);
 
-		generatedStructures = new EnumMap(Structures.class);
+		generatedStructures = new ConcurrentHashMap();
 
 		for (Structures s : structs) {
 			generatedStructures.put(s, new TileEntityCache());

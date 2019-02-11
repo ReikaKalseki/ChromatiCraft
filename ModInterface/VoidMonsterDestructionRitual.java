@@ -199,6 +199,8 @@ public class VoidMonsterDestructionRitual implements VoidMonsterHook {
 					}
 					f = 0.5F;
 					break;
+				case EXPLOSION:
+					break;
 			}
 			ReikaSoundHelper.playClientSound(ChromaSounds.FLAREATTACK, e, 1, f, false);
 		}
