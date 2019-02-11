@@ -371,33 +371,41 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			}
 		}
 
-		if (ModList.THAUMCRAFT.isLoaded() && te instanceof TileEntityAspectJar && is != null && is.getItem() instanceof IEssentiaContainerItem && is.stackSize == 1) {
-			IEssentiaContainerItem ieci = (IEssentiaContainerItem)is.getItem();
+		if (ModList.THAUMCRAFT.isLoaded() && te instanceof TileEntityAspectJar && is != null) {
 			TileEntityAspectJar jar = (TileEntityAspectJar)te;
-			AspectList al = ieci.getAspects(is);
-			if (al != null && al.size() > 0) {
-				Aspect a = al.getAspects()[0];
-				int left = jar.addToContainer(a, al.getAmount(a));
-				int added = al.getAmount(a)-left;
-				ReikaSoundHelper.playSoundAtBlock(world, x, y, z, "game.neutral.swim", 0.6F, (float)ReikaRandomHelper.getRandomPlusMinus(1, 1F));
-				if (!ep.capabilities.isCreativeMode) {
-					al.remove(a, added);
-					ieci.setAspects(is, al);
-					if (ieci == ThaumItemHelper.ItemEntry.PHIAL.getItem().getItem())
-						is.setItemDamage(al.size() == 0 ? 0 : 1);
-				}
-				return true;
-			}
-			else {
-				Aspect a = jar.getFirstAspect();
-				if (a != null && jar.takeFromContainer(a, 8)) {
-					al = new AspectList();
-					al.add(a, 8);
-					ieci.setAspects(is, al);
-					if (ieci == ThaumItemHelper.ItemEntry.PHIAL.getItem().getItem())
-						is.setItemDamage(al.size() == 0 ? 0 : 1);
+			if (is.getItem() instanceof IEssentiaContainerItem && is.stackSize == 1) {
+				IEssentiaContainerItem ieci = (IEssentiaContainerItem)is.getItem();
+				AspectList al = ieci.getAspects(is);
+				if (al != null && al.size() > 0) {
+					Aspect a = al.getAspects()[0];
+					int left = jar.addToContainer(a, al.getAmount(a));
+					int added = al.getAmount(a)-left;
 					ReikaSoundHelper.playSoundAtBlock(world, x, y, z, "game.neutral.swim", 0.6F, (float)ReikaRandomHelper.getRandomPlusMinus(1, 1F));
+					if (!ep.capabilities.isCreativeMode) {
+						al.remove(a, added);
+						ieci.setAspects(is, al);
+						if (ieci == ThaumItemHelper.ItemEntry.PHIAL.getItem().getItem())
+							is.setItemDamage(al.size() == 0 ? 0 : 1);
+					}
 					return true;
+				}
+				else {
+					Aspect a = jar.getFirstAspect();
+					if (a != null && jar.takeFromContainer(a, 8)) {
+						al = new AspectList();
+						al.add(a, 8);
+						ieci.setAspects(is, al);
+						if (ieci == ThaumItemHelper.ItemEntry.PHIAL.getItem().getItem())
+							is.setItemDamage(al.size() == 0 ? 0 : 1);
+						ReikaSoundHelper.playSoundAtBlock(world, x, y, z, "game.neutral.swim", 0.6F, (float)ReikaRandomHelper.getRandomPlusMinus(1, 1F));
+						return true;
+					}
+				}
+			}
+			else if (ReikaItemHelper.matchStacks(is, ChromaStacks.glowChunk)) {
+				if (jar.upgradeForDirectDrain()) {
+					if (!ep.capabilities.isCreativeMode)
+						is.stackSize--;
 				}
 			}
 		}
@@ -584,7 +592,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 		ChromaTiles m = ChromaTiles.getTile(world, x, y, z);
 		if (m != null) {
 			ItemStack is = m.getCraftedProduct();
-			List li;
+			ArrayList li = new ArrayList();
 			/*
 			if (m.isEnchantable()) {
 				HashMap<Enchantment,Integer> map = ((EnchantableMachine)te).getEnchantments();
@@ -601,8 +609,10 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 				is = null;
 			if (is != null) {
 				li = ReikaJavaLibrary.makeListFrom(is);
-				ReikaItemHelper.dropItems(world, x+par5Random.nextDouble(), y+par5Random.nextDouble(), z+par5Random.nextDouble(), li);
 			}
+			if (m == ChromaTiles.ASPECTJAR && ((TileEntityAspectJar)te).hasDirectDrainUpgrade())
+				li.add(ChromaStacks.glowChunk.copy());
+			ReikaItemHelper.dropItems(world, x+par5Random.nextDouble(), y+par5Random.nextDouble(), z+par5Random.nextDouble(), li);
 		}
 	}
 
@@ -689,7 +699,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 		//	return currenttip;
 		TileEntityChromaticBase te = (TileEntityChromaticBase)acc.getTileEntity();
 		if (te.getTile() != ChromaTiles.MUSIC) //to prevent lag, and has nothing to sync anywyas
-			te.syncAllData(false);
+			te.syncAllData(te.getTile() == ChromaTiles.CHROMACRAFTER);
 		if (te instanceof TileEntityRift) {
 			WorldLocation loc = ((TileEntityRift)te).getLinkTarget();
 			if (loc != null) {

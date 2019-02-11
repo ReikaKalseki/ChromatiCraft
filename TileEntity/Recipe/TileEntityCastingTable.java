@@ -165,6 +165,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 
 		if (DragonAPICore.debugtest) {
 			this.addXP(800000);
+			isEnhanced = false;
 
 			for (CastingRecipe cr : RecipesCastingTable.instance.getAllRecipes()) {
 				completedRecipes.add(new KeyedItemStack(cr.getOutput()));
@@ -294,9 +295,14 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 			float[] fa = activeRecipe.getHarmonics();
 			if (fa != null) {
 				for (float f : fa) {
-					if (rand.nextInt(50) == 0) {
-						ChromaSounds.CASTHARMONIC.playSoundAtBlock(this, 0.5F, f);
+					if (f != 1) {
+						if (rand.nextInt(50) == 0) {
+							ChromaSounds.CASTHARMONIC.playSoundAtBlock(this, 1, f);
+						}
 					}
+				}
+				if (rand.nextInt(25) == 0) {
+					ChromaSounds.CASTHARMONIC.playSoundAtBlock(this, 1, 1);
 				}
 			}
 		}

@@ -1,20 +1,21 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools;
 
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
+import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 
 public class PendantRecipe extends MultiBlockCastingRecipe {
 
@@ -43,5 +44,15 @@ public class PendantRecipe extends MultiBlockCastingRecipe {
 	@Override
 	public int getDuration() {
 		return 4*super.getDuration();
+	}
+
+	@Override
+	public float[] getHarmonics() {
+		CrystalElement e = CrystalElement.elements[this.getOutput().getItemDamage()%16];
+		float[] ret = new float[3];
+		for (int i = 0; i <= 2; i++) {
+			ret[i] = CrystalMusicManager.instance.getScaledDing(e, i);
+		}
+		return ret;
 	}
 }

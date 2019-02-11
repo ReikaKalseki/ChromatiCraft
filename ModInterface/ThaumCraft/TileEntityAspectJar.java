@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,17 +12,6 @@ package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
-import thaumcraft.api.aspects.IAspectSource;
-import thaumcraft.api.aspects.IEssentiaTransport;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -39,6 +28,17 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.aspects.IAspectSource;
+import thaumcraft.api.aspects.IEssentiaTransport;
 
 @Strippable(value={"thaumcraft.api.aspects.IAspectSource", "thaumcraft.api.aspects.IEssentiaTransport"})
 public class TileEntityAspectJar extends TileEntityChromaticBase implements IAspectSource, IEssentiaTransport, NBTTile, HitAction {
@@ -57,6 +57,8 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	private final int[] hits = new int[HITS_TO_SPILL];
 
 	private ForgeDirection spilled;
+
+	private boolean directDrainUpgrade;
 
 	public TileEntityAspectJar() {
 		if (ModList.THAUMCRAFT.isLoaded())
@@ -120,6 +122,14 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 			return false;
 		}
 
+	}
+
+	public boolean upgradeForDirectDrain() {
+		if (!directDrainUpgrade) {
+			directDrainUpgrade = true;
+			return true;
+		}
+		return false;
 	}
 
 	public JarTilt getAngle() {
@@ -201,6 +211,10 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 
 	}
 
+	public boolean hasDirectDrainUpgrade() {
+		return directDrainUpgrade;
+	}
+
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public AspectList getAspects() {
@@ -255,6 +269,8 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public boolean takeFromContainer(Aspect tag, int amount) {
+		if (!this.hasDirectDrainUpgrade())
+			return false;
 		if (tank.getLevel(tag) >= amount) {
 			tank.drainAspect(tag, amount);
 			return true;
@@ -272,7 +288,7 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public boolean doesContainerContainAmount(Aspect tag, int amount) {
-		return tank.getLevel(tag) >= amount;
+		return this.hasDirectDrainUpgrade() && tank.getLevel(tag) >= amount;
 	}
 
 	@Override
@@ -366,6 +382,8 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 
 		if (ModList.THAUMCRAFT.isLoaded())
 			tank.writeToNBT(NBT);
+
+		NBT.setBoolean("direct", directDrainUpgrade);
 	}
 
 	@Override
@@ -374,6 +392,8 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 
 		if (ModList.THAUMCRAFT.isLoaded())
 			tank.readFromNBT(NBT);
+
+		directDrainUpgrade = NBT.getBoolean("direct");
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -10,12 +10,8 @@
 package Reika.ChromatiCraft.GUI.Tile.Inventory;
 
 import java.util.ArrayList;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.IIcon;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidContainerRegistry;
+import java.util.Collections;
+import java.util.Comparator;
 
 import org.lwjgl.opengl.GL11;
 
@@ -27,6 +23,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
+import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -35,6 +32,11 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.Libraries.MathSci.ReikaEngLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.IIcon;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidContainerRegistry;
 
 public class GuiTelePump extends GuiChromaBase {
 
@@ -48,6 +50,7 @@ public class GuiTelePump extends GuiChromaBase {
 		player = ep;
 		pump = tile;
 		list.addAll(tile.getFluids());
+		Collections.sort(list, new FluidListSorter(tile));
 		xSize = 194;
 		ySize = 168;
 	}
@@ -185,6 +188,21 @@ public class GuiTelePump extends GuiChromaBase {
 	@Override
 	public String getGuiTexture() {
 		return "telepump3";
+	}
+
+	private static class FluidListSorter implements Comparator<Fluid> {
+
+		private final TileEntityTeleportationPump tile;
+
+		private FluidListSorter(TileEntityTeleportationPump te) {
+			tile = te;
+		}
+
+		@Override
+		public int compare(Fluid o1, Fluid o2) {
+			return -1000000*Integer.compare(tile.getFluidCount(o1), tile.getFluidCount(o2))+ReikaFluidHelper.fluidComparator.compare(o1, o2); //less fluid -> end of list
+		}
+
 	}
 
 }

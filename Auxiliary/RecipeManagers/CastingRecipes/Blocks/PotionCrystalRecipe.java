@@ -9,10 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 
+import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import net.minecraft.init.Blocks;
 
 public class PotionCrystalRecipe extends PylonCastingRecipe {
@@ -40,7 +40,12 @@ public class PotionCrystalRecipe extends PylonCastingRecipe {
 
 	@Override
 	public float[] getHarmonics() {
-		return new float[]{(float)MusicKey.A5.getRatio(MusicKey.D5), (float)MusicKey.Fs5.getRatio(MusicKey.D5)};
+		CrystalElement e = CrystalElement.elements[this.getOutput().getItemDamage()%16];
+		float[] ret = new float[3];
+		for (int i = 0; i <= 2; i++) {
+			ret[i] = CrystalMusicManager.instance.getScaledDing(e, i);
+		}
+		return ret;
 	}
 
 }

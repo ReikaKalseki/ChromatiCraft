@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,6 +12,12 @@ package Reika.ChromatiCraft.Block;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Entity.EntityVacuum;
+import Reika.ChromatiCraft.Render.ISBRH.SelectiveGlassRenderer;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
+import Reika.DragonAPI.ModRegistry.InterfaceCache;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -25,12 +31,6 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Entity.EntityVacuum;
-import Reika.ChromatiCraft.Render.ISBRH.SelectiveGlassRenderer;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
-import Reika.DragonAPI.ModRegistry.InterfaceCache;
 
 
 public class BlockSelectiveGlass extends Block implements ConnectedTextureGlass {
@@ -111,6 +111,11 @@ public class BlockSelectiveGlass extends Block implements ConnectedTextureGlass 
 		return super.collisionRayTrace(world, x, y, z, vec1, vec2);
 	}
 	 */
+	@Override
+	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection dir) {
+		return true;
+	}
+
 	@Override
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity e) {
 		if (!this.canEntityPass(world, x, y, z, e)) {

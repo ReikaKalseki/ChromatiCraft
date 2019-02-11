@@ -353,7 +353,7 @@
 	</lampcontrol>
 	<aspectjar>
 		<desc>
-			This fabrication process gives you nightmares. Not only is it incredibly unstable - more than once the thing has exploded, sent items flying, or done other nasty things - and to top it off it draws liquid essence out of jars that must be placed around the construct. This would be fine, were it not for the small capacity of these jars, meaning filling them - another tedious process - is a constant necessity. Being able to store more essentia in a jar - perhaps even multiple types! - would be of enormous convenience.
+			This fabrication process is a nightmare. It is incredibly unstable - having exploded, sent items flying, hit you with lightning, and more - and worse yet needs liquid essence out of jars, which, having a small capacity, constantly necessitate tedious filling. Being able to store more in a jar - perhaps even multiple types! - would be of enormous convenience. However, storing essentia in this way seems to have broken the ability of some of your devices to draw from it at a distance; fortunately, things that use tubes (or their replacements) do still work. Perhaps you will find a way to restore full functionality later.
 		</desc>
 		<note>
 			Primal Aspect Capacity: %d

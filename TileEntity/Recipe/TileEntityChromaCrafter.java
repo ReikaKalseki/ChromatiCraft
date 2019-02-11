@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -13,18 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
@@ -43,6 +31,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.HybridTank;
+import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
@@ -54,6 +43,18 @@ import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeTile.PipeType;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidHandler;
 
 
 @Strippable(value={"buildcraft.api.transport.IPipeConnection"})
@@ -86,6 +87,18 @@ public class TileEntityChromaCrafter extends InventoriedRelayPowered implements 
 
 	public PoolRecipe getActiveRecipe() {
 		return recipe;
+	}
+
+	public ItemHashMap<Integer> getCurrentItems() {
+		ItemHashMap<Integer> ret = new ItemHashMap();
+		for (ItemStack is : recipeItems) {
+			ret.add(is, is.stackSize);
+		}
+		return ret;
+	}
+
+	public int getBerryCount() {
+		return hasEtherBerries;
 	}
 
 	@Override
@@ -238,7 +251,20 @@ public class TileEntityChromaCrafter extends InventoriedRelayPowered implements 
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack is) {
-		return slot == 0 && this.hasStructure();
+		return slot == 0 && this.hasStructure() && this.canAcceptMoreOf(is);
+	}
+
+	private boolean canAcceptMoreOf(ItemStack is) {
+		return ReikaItemHelper.matchStacks(is, ChromaStacks.etherBerries) ? this.getBerryCount()+is.stackSize <= 512 : this.getItemCount(is)+is.stackSize <= 64;
+	}
+
+	private int getItemCount(ItemStack is) {
+		int ret = 0;
+		for (ItemStack in : recipeItems) {
+			if (ReikaItemHelper.matchStacks(in, is))
+				ret += in.stackSize;
+		}
+		return ret;
 	}
 
 	@Override

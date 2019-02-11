@@ -1,28 +1,25 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.Render;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MovingObjectPosition;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval.OperationState;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
+import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer.FontType;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenRequestingTile;
@@ -32,26 +29,39 @@ import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.ConditionalProduct
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.ProductCondition;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityChromaCrafter;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
 import forestry.api.apiculture.EnumBeeChromosome;
 import forestry.api.apiculture.IAlleleBeeSpecies;
 import forestry.api.apiculture.IBee;
 import forestry.api.apiculture.IBeeHousing;
 import forestry.api.genetics.AlleleManager;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MovingObjectPosition;
 
 
 
 public class MouseoverOverlayRenderer {
 
 	static final MouseoverOverlayRenderer instance = new MouseoverOverlayRenderer();
+
+	private final RenderItem itemRender = new RenderItem();
 
 	private MouseoverOverlayRenderer() {
 
@@ -79,6 +89,13 @@ public class MouseoverOverlayRenderer {
 				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 				GL11.glPushMatrix();
 				this.renderStatusOverlay(ep, gsc, (OperationInterval)te);
+				GL11.glPopMatrix();
+				GL11.glPopAttrib();
+			}
+			if (te instanceof TileEntityChromaCrafter) {
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				GL11.glPushMatrix();
+				this.renderItemContents(ep, gsc, (TileEntityChromaCrafter)te);
 				GL11.glPopMatrix();
 				GL11.glPopAttrib();
 			}
@@ -270,6 +287,54 @@ public class MouseoverOverlayRenderer {
 				Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(s, ox, oy+r/2, ReikaColorAPI.mixColors(e.getColor(), 0xffffff, 0.5F));
 		 */
 
+	}
+
+	private void renderItemContents(EntityPlayer ep, int gsc, TileEntityChromaCrafter te) {
+		ItemHashMap<Integer> c = te.getCurrentItems();
+		if (c == null || c.isEmpty())
+			return;
+		int ar = 16;
+		int ox = Minecraft.getMinecraft().displayWidth/(gsc*2)+ar-8;
+		int oy = Minecraft.getMinecraft().displayHeight/(gsc*2)-ar-8;
+		int i = 0;
+		int h = 3;
+		int mx = ox;
+		int my = oy;
+		ReikaRenderHelper.disableLighting();
+		ReikaRenderHelper.disableEntityLighting();
+		GL11.glColor4f(1, 1, 1, 1);
+		Tessellator.instance.setBrightness(240);
+		Tessellator.instance.setColorOpaque_I(0xffffff);
+		for (ItemStack is : c.keySet()) {
+			int x = ox+(i/h)*18;
+			int y = oy-(i%h)*16;
+			mx = x;
+			my = Math.min(my, y);
+			ReikaGuiAPI.instance.drawItemStack(itemRender, Minecraft.getMinecraft().fontRenderer, ReikaItemHelper.getSizedItemStack(is, c.get(is)), x, y);
+			i++;
+		}
+		int berries = te.getBerryCount();
+		if (berries > 0) {
+			int r = 2;
+			int clr = ReikaColorAPI.mixColors(0xffff0000, 0xffffff, Math.min(1, berries/(float)TileEntityChroma.ETHER_SATURATION));
+			ReikaGuiAPI.instance.drawRectFrame(ox-r, my-r+1, mx-ox+18+r*2, oy-my+16+r*2, clr);
+			String s = String.valueOf(berries)+" "+ChromaStacks.etherBerries.getDisplayName();
+			int ds = 1;
+			FontType.GUI.renderer.drawString(s, mx+19-FontType.GUI.renderer.getStringWidth(s)+ds, oy+21+ds, ReikaColorAPI.getColorWithBrightnessMultiplier(clr, 0.65F));
+			FontType.GUI.renderer.drawString(s, mx+19-FontType.GUI.renderer.getStringWidth(s), oy+21, ReikaColorAPI.mixColors(clr, 0xffffffff, 0.45F));
+		}
+		PoolRecipe r = te.getActiveRecipe();
+		if (r != null) {
+			ItemStack out = r.getOutput();
+			if (r.allowDoubling() && berries >= TileEntityChroma.ETHER_SATURATION) {
+				out.stackSize *= 2;
+			}
+			String s = "Crafting: "+out.getDisplayName();
+			int x = Minecraft.getMinecraft().displayWidth/(gsc*2);
+			int y = Minecraft.getMinecraft().displayHeight/(gsc*2)+40;
+			ReikaGuiAPI.instance.drawCenteredString(FontType.GUI.renderer, s, x-3, y, 0xffffff);
+			ReikaGuiAPI.instance.drawItemStack(itemRender, FontType.GUI.renderer, out, x+FontType.GUI.renderer.getStringWidth(s)/2+3, y-4);
+		}
 	}
 
 	@ModDependent(ModList.FORESTRY)

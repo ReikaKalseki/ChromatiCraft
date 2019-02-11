@@ -1,17 +1,14 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.EnergyLinkingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
@@ -21,6 +18,10 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 
 public abstract class RepeaterRecipe extends MultiBlockCastingRecipe implements EnergyLinkingRecipe {
@@ -50,6 +51,16 @@ public abstract class RepeaterRecipe extends MultiBlockCastingRecipe implements 
 		this.addRune(CrystalElement.GREEN, 4, -1, 5);
 		this.addRune(CrystalElement.YELLOW, 4, -1, -5);
 		this.addRune(CrystalElement.YELLOW, -4, -1, 5);
+	}
+
+	@Override
+	public int getDuration() {
+		return (int)(2.4*super.getDuration());
+	}
+
+	@Override
+	public float[] getHarmonics() {
+		return new float[]{(float)MusicKey.A5.getRatio(MusicKey.D5), (float)MusicKey.Fs5.getRatio(MusicKey.D5)};
 	}
 
 	@Override

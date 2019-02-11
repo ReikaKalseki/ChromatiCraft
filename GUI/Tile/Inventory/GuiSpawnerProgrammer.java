@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -10,21 +10,13 @@
 package Reika.ChromatiCraft.GUI.Tile.Inventory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.monster.EntityEnderman;
-import net.minecraft.entity.monster.EntityPigZombie;
-import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumChatFormatting;
 
 import org.lwjgl.input.Keyboard;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.GuiChromaBase;
+import Reika.ChromatiCraft.Base.GuiLetterSearchable;
 import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -36,11 +28,19 @@ import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.monster.EntityEnderman;
+import net.minecraft.entity.monster.EntityPigZombie;
+import net.minecraft.entity.passive.EntityAnimal;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumChatFormatting;
 
-public class GuiSpawnerProgrammer extends GuiChromaBase {
+public class GuiSpawnerProgrammer extends GuiLetterSearchable<String> {
 
 	private TileEntitySpawnerReprogrammer prog;
-	private int selectedMob;
 	private static final ArrayList<String> validMobs = new ArrayList();
 	private Pages page = Pages.MOBTYPE;
 
@@ -73,8 +73,9 @@ public class GuiSpawnerProgrammer extends GuiChromaBase {
 		spawnCount.currentValue = data[3];
 		spawnRange.currentValue = data[4];
 		activationRange.currentValue = data[5];
-		selectedMob = Math.max(validMobs.indexOf(tile.getSelectedMob()), 0);
-		ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.SPAWNERPROGRAM.ordinal(), this.getMobLabel(), prog);
+		ReikaJavaLibrary.pConsole(list);
+		index = Math.max(list.indexOf(tile.getSelectedMob()), 0);
+		ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.SPAWNERPROGRAM.ordinal(), this.getActive(), prog);
 	}
 
 	@Override
@@ -161,14 +162,14 @@ public class GuiSpawnerProgrammer extends GuiChromaBase {
 	protected void actionPerformed(GuiButton b) {
 		switch (b.id) {
 			case 0:
-				if (selectedMob > 0)
-					selectedMob--;
-				ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.SPAWNERPROGRAM.ordinal(), this.getMobLabel(), prog);
+				if (index > 0)
+					index--;
+				ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.SPAWNERPROGRAM.ordinal(), this.getActive(), prog);
 				break;
 			case 1:
-				if (selectedMob < validMobs.size()-1)
-					selectedMob++;
-				ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.SPAWNERPROGRAM.ordinal(), this.getMobLabel(), prog);
+				if (index < list.size()-1)
+					index++;
+				ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.SPAWNERPROGRAM.ordinal(), this.getActive(), prog);
 				break;
 			case 2:
 			case 3:
@@ -180,12 +181,8 @@ public class GuiSpawnerProgrammer extends GuiChromaBase {
 		this.initGui();
 	}
 
-	private String getMobLabel() {
-		return validMobs.get(selectedMob);
-	}
-
 	private String getMobDisplayName() {
-		String label = this.getMobLabel();
+		String label = this.getActive();
 		Class c = (Class)EntityList.stringToClassMapping.get(label);
 		String f = EnumChatFormatting.WHITE.toString();
 		if (EntityEnderman.class.isAssignableFrom(c) || EntityPigZombie.class.isAssignableFrom(c)) {
@@ -218,8 +215,9 @@ public class GuiSpawnerProgrammer extends GuiChromaBase {
 		}*/
 
 		if (page == Pages.MOBTYPE) {
-			String display = Keyboard.isKeyDown(DragonOptions.DEBUGKEY.getValue()) ? this.getMobLabel() : this.getMobDisplayName();
-			ReikaGuiAPI.instance.drawCenteredString(fontRendererObj, display, xSize/2, 47, 0xffffff);
+			boolean debug = Keyboard.isKeyDown(DragonOptions.DEBUGKEY.getValue());
+			String display = debug ? this.getActive() : this.getMobDisplayName();
+			ReikaGuiAPI.instance.drawCenteredString(fontRendererObj, display, xSize/2, 47, debug ? 0xffff00 : 0xffffff);
 		}
 	}
 
@@ -260,6 +258,26 @@ public class GuiSpawnerProgrammer extends GuiChromaBase {
 	@Override
 	public String getGuiTexture() {
 		return "spawnerprogrammer2";
+	}
+
+	@Override
+	protected String getString(String val) {
+		return ReikaEntityHelper.getEntityDisplayName(val);
+	}
+
+	@Override
+	protected boolean isIndexable(String val) {
+		return true;
+	}
+
+	@Override
+	protected Collection<String> getAllEntries(EntityPlayer ep) {
+		return validMobs;
+	}
+
+	@Override
+	protected void sortEntries(ArrayList<String> li) {
+		Collections.sort(li, ReikaEntityHelper.entityByDisplayComparator);
 	}
 
 	private static enum Pages {

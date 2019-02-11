@@ -1,14 +1,31 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Acquisition;
 
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes.FabricationRecipe;
+import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.InertItem;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -19,23 +36,6 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidHandler;
-
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-
-import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes.FabricationRecipe;
-import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
-import Reika.ChromatiCraft.Magic.ElementTagCompound;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Instantiable.InertItem;
-import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityItemFabricator extends InventoriedCrystalReceiver implements OperationInterval {
 
@@ -96,6 +96,8 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 
 	private void onRecipeChanged() {
 		craftingTick = recipe != null ? recipe.duration : 0;
+		CrystalNetworker.instance.breakPaths(this);
+		checkTimer.reset();
 	}
 
 	public ElementTagCompound getCurrentRequirements() {
@@ -130,10 +132,11 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 	}
 
 	private void checkAndRequest() {
-		for (int i = 0; i < CrystalElement.elements.length; i++) {
-			CrystalElement e = CrystalElement.elements[i];
-			int capacity = this.getMaxStorage(e);
-			int space = capacity-this.getEnergy(e);
+		if (recipe == null)
+			return;
+		for (CrystalElement e : recipe.energy.elementSet()) {
+			int total = Math.min(this.getMaxStorage(e), 24*recipe.energy.getValue(e));
+			int space = total-this.getEnergy(e);
 			if (space > 0) {
 				this.requestEnergy(e, space);
 			}

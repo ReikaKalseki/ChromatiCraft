@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,26 +12,32 @@ package Reika.ChromatiCraft.Render.TESR;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import net.minecraft.block.Block;
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
-import net.minecraftforge.common.util.ForgeDirection;
-
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
-import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectJar;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectJar.JarTilt;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
+import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
+import net.minecraft.block.Block;
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
+import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.common.util.ForgeDirection;
+import thaumcraft.api.aspects.Aspect;
 
 public class AspectJarRenderer extends ChromaRenderBase {
 
@@ -40,6 +46,8 @@ public class AspectJarRenderer extends ChromaRenderBase {
 	private static Field liquidIcon;
 
 	private ModelBase model;
+
+	private final ColorBlendList primalAspectColors = new ColorBlendList(20);
 
 	public AspectJarRenderer() {
 
@@ -52,6 +60,9 @@ public class AspectJarRenderer extends ChromaRenderBase {
 			e.printStackTrace();
 			throw new RegistrationException(ChromatiCraft.instance, "Could not create ThaumCraft jar model instance to use for ChromatiCraft jar!");
 		}
+
+		for (Aspect a : Aspect.getPrimalAspects())
+			primalAspectColors.addColor(a.getColor());
 	}
 
 	static {
@@ -85,6 +96,8 @@ public class AspectJarRenderer extends ChromaRenderBase {
 		GL11.glTranslated(par2, par4, par6);
 		GL11.glTranslated(0.5, 0.01, 0.5);
 		GL11.glScalef(1.0F, -1.0F, -1.0F);
+		if (te.isInWorld() && te.hasDirectDrainUpgrade() && MinecraftForgeClient.getRenderPass() == 1)
+			this.renderUpgradeFlare(te, par8);
 		try {
 			ForgeDirection sp = te.getSpill();
 			if (sp != null) {
@@ -109,6 +122,52 @@ public class AspectJarRenderer extends ChromaRenderBase {
 			throw new RuntimeException("Could not render ThaumCraft jar model!");
 		}
 		GL11.glPopMatrix();
+	}
+
+	private void renderUpgradeFlare(TileEntityAspectJar te, float par8) {
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glDisable(GL11.GL_LIGHTING);
+		BlendMode.ADDITIVEDARK.apply();
+		ReikaRenderHelper.disableEntityLighting();
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+
+		ReikaTextureHelper.bindTerrainTexture();
+		IIcon ico = ChromaIcons.SIDEDFLOW.getIcon();
+		float u = ico.getMinU();
+		float dv = ico.getMinV();
+		float du = ico.getMaxU();
+		float v = ico.getMaxV();
+
+		Tessellator v5 = Tessellator.instance;
+		GL11.glDisable(GL11.GL_CULL_FACE);
+
+		double s1 = 0.45+0.2*Math.sin((2.3+te.getTicksExisted()+par8)/11D);
+		double s2 = 0.75+0.125*Math.sin((6.7+te.getTicksExisted()+par8)/17D);
+		double[] ss = {s1, s2};
+		for (double s : ss) {
+			GL11.glPushMatrix();
+			GL11.glTranslated(0, -0.85, 0);
+			GL11.glScaled(s, s, s);
+			RenderManager rm = RenderManager.instance;
+			GL11.glRotatef(rm.playerViewY, 0.0F, 1.0F, 0.0F);
+			GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
+
+			v5.startDrawingQuads();
+			v5.setBrightness(240);
+			v5.setColorOpaque_I(s == s1 ? 0xffffff : primalAspectColors.getColor(te.getTicksExisted()+par8));
+			v5.addVertexWithUV(-1, -1, 0, u, v);
+			v5.addVertexWithUV(1, -1, 0, du, v);
+			v5.addVertexWithUV(1, 1, 0, du, dv);
+			v5.addVertexWithUV(-1, 1, 0, u, dv);
+			v5.draw();
+			GL11.glPopMatrix();
+		}
+
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		BlendMode.DEFAULT.apply();
+		GL11.glPopAttrib();
 	}
 
 	private void renderJar(TileEntityAspectJar te) throws Exception {

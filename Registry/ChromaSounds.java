@@ -97,7 +97,7 @@ public enum ChromaSounds implements SoundEnum {
 	DIMENSIONHUM("dimensionhum"),
 	DIMENSIONHUM_HI("dimensionhum_hi"),
 	RADIANCE("radiance2"),
-	CASTHARMONIC("castingharmonic"),
+	CASTHARMONIC("castingharmonic2"),
 	ABILITYCOMPLETE("abilityfinish2"),
 	NETWORKOPT("networkopt"),
 	NETWORKOPTCHARGE("networkopt_charge2"),
