@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -13,19 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagInt;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.IIcon;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
@@ -41,8 +28,22 @@ import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagInt;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.IIcon;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 
 public class BlockRotatingLock extends Block {
@@ -105,6 +106,7 @@ public class BlockRotatingLock extends Block {
 		private int level;
 		private int lockX;
 		private int lockY;
+		private boolean isEndpoint;
 		private boolean isCheckpoint;
 
 		private Collection<ForgeDirection> openEndsAtZero = new HashSet();
@@ -158,13 +160,14 @@ public class BlockRotatingLock extends Block {
 			return direction != null ? direction : ForgeDirection.EAST;
 		}
 
-		public void setData(ForgeDirection dir, int lvl, int x, int y, boolean check, Collection<ForgeDirection> c) {
+		public void setData(ForgeDirection dir, int lvl, int x, int y, boolean check, boolean end, Collection<ForgeDirection> c) {
 			direction = dir;
 			level = lvl;
 			lockX = x;
 			lockY = y;
 			openEndsAtZero = c;
 			isCheckpoint = check;
+			isEndpoint = end;
 		}
 
 		public int getRotationProgress() {
@@ -175,8 +178,14 @@ public class BlockRotatingLock extends Block {
 			return isCheckpoint;
 		}
 
+		public boolean isEndpoint() {
+			return isEndpoint;
+		}
+
 		private void startRotating(boolean reverse) {
 			if (rotatingAmount != 0)
+				return;
+			if (worldObj.isRemote)
 				return;
 			rotatingAmount = reverse ? -1 : 1;
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
@@ -210,6 +219,8 @@ public class BlockRotatingLock extends Block {
 		}
 
 		private void finishRotating(boolean reverse) {
+			if (worldObj.isRemote)
+				return;
 			direction = reverse ? ReikaDirectionHelper.getLeftBy90(direction) : ReikaDirectionHelper.getRightBy90(direction);
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 			ReikaSoundHelper.playBreakSound(worldObj, xCoord, yCoord, zCoord, Blocks.stone, 2, 0);
@@ -219,6 +230,10 @@ public class BlockRotatingLock extends Block {
 				if (f != null) {
 					f.rotateLock(lockX, lockY, reverse);
 				}
+			}
+			if (lockState == null) {
+				Thread.dumpStack();
+				return;
 			}
 			//if (gen == null || worldObj.provider.dimensionId == 0) { //debug testing
 			lockState = (FilledBlockArray)lockState.rotate90Degrees(xCoord, zCoord, reverse);
@@ -274,12 +289,15 @@ public class BlockRotatingLock extends Block {
 			NBT.setInteger("lockX", lockX);
 			NBT.setInteger("lockY", lockY);
 			NBT.setBoolean("check", isCheckpoint);
+			NBT.setBoolean("end", isEndpoint);
 
 			NBTTagList li = new NBTTagList();
 			for (ForgeDirection dir : openEndsAtZero) {
 				li.appendTag(new NBTTagInt(dir.ordinal()));
 			}
 			NBT.setTag("ends", li);
+
+			NBT.setInteger("rotation", rotatingAmount);
 		}
 
 		@Override
@@ -290,11 +308,16 @@ public class BlockRotatingLock extends Block {
 			lockX = NBT.getInteger("lockX");
 			lockY = NBT.getInteger("lockY");
 			isCheckpoint = NBT.getBoolean("check");
+			isEndpoint = NBT.getBoolean("end");
 
 			openEndsAtZero.clear();
 			NBTTagList li = NBT.getTagList("ends", NBTTypes.INT.ID);
 			for (Object o : li.tagList) {
 				openEndsAtZero.add(ForgeDirection.VALID_DIRECTIONS[((NBTTagInt)o).func_150287_d()]);
+			}
+
+			if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+				rotatingAmount = NBT.getInteger("rotation");
 			}
 		}
 

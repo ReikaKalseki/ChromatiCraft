@@ -16,7 +16,9 @@ import Reika.ChromatiCraft.Entity.EntityEnderEyeT2;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Interfaces.Item.AnimatedSpritesheet;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -38,7 +40,17 @@ public class ItemT2EnderEye extends ItemChromaBasic implements AnimatedSpriteshe
 
 	@Override
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float a, float b, float c) {
-		return Items.ender_eye.onItemUse(is, ep, world, x, y, z, s, a, b, c);
+		boolean ret = Items.ender_eye.onItemUse(is, ep, world, x, y, z, s, a, b, c);
+		if (ret) {
+			if (ReikaWorldHelper.checkForAdjBlock(world, x, y, z, Blocks.end_portal) != null) {
+				is.stackSize = 12;
+				is.animationsToGo = 5;
+				ReikaSoundHelper.playSoundAtEntity(ep.worldObj, ep, "random.pop", 1, 1.35F);
+				if (world.isRemote)
+					ReikaSoundHelper.playClientSound("random.pop", ep.posX, ep.posY, ep.posZ, 1, 1.35F, true);
+			}
+		}
+		return ret;
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -10,14 +10,6 @@
 package Reika.ChromatiCraft.Render.TESR.Dimension;
 
 import java.util.Collection;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MathHelper;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
@@ -33,6 +25,13 @@ import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MathHelper;
+import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.common.util.ForgeDirection;
 
 
 public class RenderWaterLock extends ChromaRenderBase {
@@ -75,7 +74,7 @@ public class RenderWaterLock extends ChromaRenderBase {
 			this.postRenderModel(tile);
 		}
 
-		if (te.isCheckpoint() && MinecraftForgeClient.getRenderPass() == 1) {
+		if ((te.isCheckpoint() || te.isEndpoint()) && MinecraftForgeClient.getRenderPass() == 1) {
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glDisable(GL11.GL_ALPHA_TEST);
@@ -98,9 +97,17 @@ public class RenderWaterLock extends ChromaRenderBase {
 
 			double h = 2.5;
 			double f = 0.5+0.5*Math.sin(tick/8D)+0.125*Math.sin((tick+300)/3D)+0.25*Math.cos((tick+20)/7D);
-			boolean fluid = te.worldObj.getBlock(te.xCoord, te.yCoord+1, te.zCoord) == ChromaBlocks.EVERFLUID.getBlockInstance();
-			int c1 = fluid ? 0x00ff00 : 0xff0000;//0x22aaff;
-			int c2 = fluid ? 0x44aa44 : 0xaa4444;//0x5588ff;
+			int c1;
+			int c2;
+			if (te.isEndpoint()) {
+				c1 = 0xffff00;
+				c2 = 0xaaaa44;
+			}
+			else {
+				boolean fluid = te.worldObj.getBlock(te.xCoord, te.yCoord+1, te.zCoord) == ChromaBlocks.EVERFLUID.getBlockInstance();
+				c1 = fluid ? 0x00ff00 : 0xff0000;//0x22aaff;
+				c2 = fluid ? 0x44aa44 : 0xaa4444;//0x5588ff;
+			}
 			int c = ReikaColorAPI.mixColors(c1, c2, (float)MathHelper.clamp_double(f, 0, 1));
 
 			//for (double a = 0; a < 360; a += 120) {

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,12 +12,6 @@ package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
@@ -27,6 +21,12 @@ import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import thaumcraft.api.aspects.Aspect;
 
 
 public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
@@ -199,7 +199,7 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 		protected void tick(TileEntity te, int tier, EntityPlayer ep) throws Exception {
 			Aspect a = (Aspect)aspectOutput.get(te);
 			if (a != null) {
-				ReikaThaumHelper.giveResearchPoint(a, 1, ep);
+				ReikaThaumHelper.giveResearchPoint(a, (short)1, ep);
 				aspectOutput.set(te, null);
 			}
 		}

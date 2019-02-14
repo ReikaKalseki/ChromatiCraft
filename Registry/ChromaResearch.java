@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.RepeaterTurboRecipe;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
+import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
@@ -572,6 +573,10 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == ACCEL) {
 			return ChromaItems.ADJACENCY.getStackOfMetadata(CrystalElement.LIGHTBLUE.ordinal());
 		}
+		if (item != null && item.getItemInstance() instanceof ItemPoweredChromaTool) {
+			ItemPoweredChromaTool i = (ItemPoweredChromaTool)item.getItemInstance();
+			return i.getChargedItem(i.getMaxCharge());
+		}
 		return iconItem;
 	}
 
@@ -1006,6 +1011,13 @@ public enum ChromaResearch implements ProgressElement {
 			return li;
 		}
 		if (item != null) {
+			if (item.getItemInstance() instanceof ItemPoweredChromaTool) {
+				ItemPoweredChromaTool it = (ItemPoweredChromaTool)item.getItemInstance();
+				ArrayList<ItemStack> li = new ArrayList();
+				for (int i = 0; i < it.getChargeStates(); i++)
+					li.add(item.getStackOfMetadata(i));
+				return li;
+			}
 			if (item.getItemInstance() instanceof ItemCrystalBasic) {
 				ArrayList<ItemStack> li = new ArrayList();
 				for (int i = 0; i < 16; i++) {

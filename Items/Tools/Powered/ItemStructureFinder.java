@@ -172,12 +172,12 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 	}
 
 	@Override
-	protected int getMaxCharge() {
+	public int getMaxCharge() {
 		return 36000; //half hour
 	}
 
 	@Override
-	protected int getChargeStates() {
+	public int getChargeStates() {
 		return 2;
 	}
 

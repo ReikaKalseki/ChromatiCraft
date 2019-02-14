@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,16 +11,6 @@ package Reika.ChromatiCraft.Base;
 
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.TemporaryCrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
@@ -38,6 +28,16 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 
 
 public abstract class ItemPoweredChromaTool extends ItemChromaTool {
@@ -49,8 +49,8 @@ public abstract class ItemPoweredChromaTool extends ItemChromaTool {
 
 
 	protected abstract CrystalElement getColor();
-	protected abstract int getMaxCharge();
-	protected abstract int getChargeStates();
+	public abstract int getMaxCharge();
+	public abstract int getChargeStates();
 
 	protected abstract boolean isActivated(EntityPlayer e, boolean held);
 	protected abstract int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is);

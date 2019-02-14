@@ -369,6 +369,9 @@ public class TileEntityChromaCrafter extends InventoriedRelayPowered implements 
 	@Override
 	public void breakBlock() {
 		ReikaItemHelper.dropItems(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, recipeItems);
+		for (int i = 0; i < hasEtherBerries; i++) {
+			ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, ChromaStacks.etherBerries);
+		}
 	}
 
 }

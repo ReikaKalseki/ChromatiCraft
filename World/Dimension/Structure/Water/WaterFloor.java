@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,11 +15,6 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.UUID;
 
-import net.minecraft.init.Blocks;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ChestGenHooks;
-import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.BlockChromaDoor.TileEntityChromaDoor;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Water.BlockRotatingLock.TileEntityRotatingLock;
@@ -30,6 +25,11 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.common.ChestGenHooks;
+import net.minecraftforge.common.util.ForgeDirection;
 
 
 public class WaterFloor extends StructurePiece {
@@ -235,7 +235,7 @@ public class WaterFloor extends StructurePiece {
 		for (int i = 0; i < flowGrid.length; i++) {
 			for (int k = 0; k < flowGrid[i].length; k++) {
 				Lock l = flowGrid[i][k];
-				world.setTileEntity(l.centerLocation.xCoord, l.centerLocation.yCoord, l.centerLocation.zCoord, ChromaBlocks.WATERLOCK.getBlockInstance(), 0, new LockCallback(parent.id, level, i-r0, k-r0, l.facing, checkpoints.contains(l), l.openEnds));
+				world.setTileEntity(l.centerLocation.xCoord, l.centerLocation.yCoord, l.centerLocation.zCoord, ChromaBlocks.WATERLOCK.getBlockInstance(), 0, new LockCallback(parent.id, level, i-r0, k-r0, l.facing, checkpoints.contains(l), path.endsAt(l.location), l.openEnds));
 				for (int n = 2; n < 6; n++) {
 					ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[n];
 					for (int d = 0; d <= Lock.SIZE; d++) {
@@ -343,8 +343,9 @@ public class WaterFloor extends StructurePiece {
 		private final int lockY;
 		private final Collection<ForgeDirection> ends;
 		private final boolean isCheckpoint;
+		private final boolean isEndpoint;
 
-		private LockCallback(UUID id, int lvl, int lx, int ly, ForgeDirection dir, boolean check, Collection<ForgeDirection> c) {
+		private LockCallback(UUID id, int lvl, int lx, int ly, ForgeDirection dir, boolean check, boolean end, Collection<ForgeDirection> c) {
 			uid = id;
 			level = lvl;
 			lockX = lx;
@@ -352,12 +353,13 @@ public class WaterFloor extends StructurePiece {
 			direction = dir;
 			ends = c;
 			isCheckpoint = check;
+			isEndpoint = end;
 		}
 
 		@Override
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			if (te instanceof TileEntityRotatingLock) {
-				((TileEntityRotatingLock)te).setData(direction, level, lockX, lockY, isCheckpoint, ends);
+				((TileEntityRotatingLock)te).setData(direction, level, lockX, lockY, isCheckpoint, isEndpoint, ends);
 				((TileEntityRotatingLock)te).uid = uid;
 				//while (world.rand.nextInt(4) > 0) cannot do this since gens chunk by chunk
 				//	((TileEntityRotatingLock)te).rotate();

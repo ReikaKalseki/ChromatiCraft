@@ -1,11 +1,11 @@
 package Reika.ChromatiCraft.Items.Tools.Powered;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 
 public class ItemSpawnerBypass extends ItemPoweredChromaTool {
@@ -20,12 +20,12 @@ public class ItemSpawnerBypass extends ItemPoweredChromaTool {
 	}
 
 	@Override
-	protected int getMaxCharge() {
+	public int getMaxCharge() {
 		return 72000*1; //1h, 5 min in TF
 	}
 
 	@Override
-	protected int getChargeStates() {
+	public int getChargeStates() {
 		return 1;
 	}
 

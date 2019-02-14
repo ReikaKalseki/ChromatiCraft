@@ -891,7 +891,7 @@ public class ChromaticEventManager {
 	private boolean isPlayerNotTargetable(EntityPlayer ep, double x, double y, double z) {
 		if (Chromabilities.COMMUNICATE.enabledOn(ep)) {
 			//evt.setCanceled(true);
-			return true;
+			return ep.worldObj.getTotalWorldTime()-ep.getEntityData().getLong("lastCommunicateLie") > AbilityHelper.LYING_DURATION;
 		}
 		else if (TileEntityCloakingTower.isPlayerCloaked(ep)) {
 			if (ep.getDistanceSq(x, y, z) >= 4) {

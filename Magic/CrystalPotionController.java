@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,6 +15,14 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Items.Tools.Powered.ItemPurifyCrystal;
+import Reika.ChromatiCraft.ModInterface.MystPages;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Libraries.ReikaPotionHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
@@ -25,14 +33,6 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Items.Tools.Powered.ItemPurifyCrystal;
-import Reika.ChromatiCraft.ModInterface.MystPages;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Libraries.ReikaPotionHelper;
-import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
-import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
 
 public class CrystalPotionController {
 
@@ -221,7 +221,11 @@ public class CrystalPotionController {
 	}
 
 	public static void applyEffectFromColor(int dura, int level, EntityLivingBase e, CrystalElement color, boolean doFX) {
-		if (CrystalPotionController.shouldBeHostile(e, e.worldObj)) {
+		applyEffectFromColor(dura, level, e, color, doFX, false, false);
+	}
+
+	public static void applyEffectFromColor(int dura, int level, EntityLivingBase e, CrystalElement color, boolean doFX, boolean forceGood, boolean forceBad) {
+		if (forceBad || (!forceGood && CrystalPotionController.shouldBeHostile(e, e.worldObj))) {
 			switch(color) {
 				case ORANGE:
 					e.setFire(2);
@@ -250,7 +254,7 @@ public class CrystalPotionController {
 					break;
 				default:
 					PotionEffect eff = CrystalPotionController.getNetherEffectFromColor(color, dura, level);
-					if (CrystalPotionController.isPotionAllowed(eff, e))
+					if (forceBad || CrystalPotionController.isPotionAllowed(eff, e))
 						addPotionEffect(e, eff);
 			}
 		}
@@ -278,7 +282,7 @@ public class CrystalPotionController {
 				default:
 					PotionEffect eff = CrystalPotionController.getEffectFromColor(color, dura, level);
 					if (eff != null) {
-						if (CrystalPotionController.isPotionAllowed(eff, e)) {
+						if (forceGood || CrystalPotionController.isPotionAllowed(eff, e)) {
 							addPotionEffect(e, eff);
 						}
 					}

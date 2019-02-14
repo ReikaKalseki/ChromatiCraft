@@ -1,20 +1,14 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Items.Tools.Powered;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -25,6 +19,12 @@ import Reika.DragonAPI.Instantiable.ParticleController.OrbitMotionController;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 
 public class ItemPurifyCrystal extends ItemPoweredChromaTool {
@@ -78,12 +78,12 @@ public class ItemPurifyCrystal extends ItemPoweredChromaTool {
 	}
 
 	@Override
-	protected int getMaxCharge() {
+	public int getMaxCharge() {
 		return MAX_CHARGE;
 	}
 
 	@Override
-	protected int getChargeStates() {
+	public int getChargeStates() {
 		return CHARGE_STATES;
 	}
 

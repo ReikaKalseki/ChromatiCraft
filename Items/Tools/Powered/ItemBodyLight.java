@@ -1,10 +1,10 @@
 package Reika.ChromatiCraft.Items.Tools.Powered;
 
+import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 
 
 public class ItemBodyLight extends ItemPoweredChromaTool {
@@ -19,13 +19,13 @@ public class ItemBodyLight extends ItemPoweredChromaTool {
 	}
 
 	@Override
-	protected int getMaxCharge() {
+	public int getMaxCharge() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	protected int getChargeStates() {
+	public int getChargeStates() {
 		// TODO Auto-generated method stub
 		return 0;
 	}

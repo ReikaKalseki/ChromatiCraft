@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,13 +12,6 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 import java.util.Collection;
 import java.util.Random;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.entity.effect.EntityLightningBolt;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
@@ -41,16 +34,23 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.effect.EntityLightningBolt;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 
 public class PortalRecipe extends PylonCastingRecipe implements CoreRecipe {
 
 	public PortalRecipe(ItemStack out, ItemStack main, RecipeCrystalRepeater repeater) {
 		super(out, main);
 
-		this.addAuxItem(ChromaStacks.enderDust, -2, 0);
-		this.addAuxItem(ChromaStacks.enderDust, 2, 0);
-		this.addAuxItem(ChromaStacks.enderDust, 0, 2);
-		this.addAuxItem(ChromaStacks.enderDust, 0, -2);
+		this.addAuxItem(ChromaStacks.energyPowder, -2, 0);
+		this.addAuxItem(ChromaStacks.energyPowder, 2, 0);
+		this.addAuxItem(ChromaStacks.energyPowder, 0, 2);
+		this.addAuxItem(ChromaStacks.energyPowder, 0, -2);
 
 		this.addAuxItem(ChromaStacks.spaceDust, -2, -2);
 		this.addAuxItem(ChromaStacks.spaceDust, 2, -2);
