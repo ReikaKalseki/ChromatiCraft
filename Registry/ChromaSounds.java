@@ -87,6 +87,7 @@ public enum ChromaSounds implements SoundEnum {
 	CLIFFSOUND("cliffambience"),
 	CLIFFSOUND2("cliffambience2"),
 	CLIFFSOUND3("cliffambience3"),
+	CLIFFSOUND4("cliffambience4"),
 	INSCRIBE("inscribe"),
 	LOREHEX("lore"),
 	LORECOMPLETE("lorecomplete2"),
@@ -101,6 +102,8 @@ public enum ChromaSounds implements SoundEnum {
 	ABILITYCOMPLETE("abilityfinish2"),
 	NETWORKOPT("networkopt"),
 	NETWORKOPTCHARGE("networkopt_charge2"),
+	TUNNELNUKERAMBIENT("nukerfly2"),
+	TUNNELNUKERCALL("nukercall"),
 	;
 
 	public static final ChromaSounds[] soundList = values();

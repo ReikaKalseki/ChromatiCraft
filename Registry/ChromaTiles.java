@@ -763,6 +763,7 @@ public enum ChromaTiles implements TileEnum {
 			case DIMENSIONCORE:
 			case AURAPOINT:
 			case MANABOOSTER:
+			case OPTIMIZER:
 				return true;
 			default:
 				return false;

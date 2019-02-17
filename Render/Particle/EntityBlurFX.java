@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -13,11 +13,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomRenderFX;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -33,6 +28,11 @@ import Reika.DragonAPI.Interfaces.PositionController;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 
 @SideOnly(Side.CLIENT)
 public class EntityBlurFX extends EntityFX implements CustomRenderFX {
@@ -70,6 +70,8 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 
 	private boolean renderOverLimit = false;
 
+	private RenderMode renderMode;
+
 	private MotionController motionController;
 	private PositionController positionController;
 	private ColorController colorController;
@@ -100,6 +102,7 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 		if (!c.isTransparent()) {
 			alphaTest = false;
 			additiveBlend = true;
+			renderMode = null;
 		}
 		return this;
 	}
@@ -207,16 +210,19 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 
 	public final EntityBlurFX setBasicBlend() {
 		additiveBlend = false;
+		renderMode = null;
 		return this;
 	}
 
 	public final EntityBlurFX setNoDepthTest() {
 		depthTest = false;
+		renderMode = null;
 		return this;
 	}
 
 	public final EntityBlurFX enableAlphaTest() {
 		alphaTest = true;
+		renderMode = null;
 		return this;
 	}
 
@@ -475,7 +481,9 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 
 	@Override
 	public final RenderMode getRenderMode() {
-		return new RenderMode().setFlag(RenderModeFlags.ADDITIVE, additiveBlend).setFlag(RenderModeFlags.DEPTH, depthTest).setFlag(RenderModeFlags.LIGHT, false).setFlag(RenderModeFlags.ALPHACLIP, alphaTest && additiveBlend);//additiveBlend ? RenderMode.ADDITIVEDARK : RenderMode.LIT;
+		if (renderMode == null)
+			renderMode = new RenderMode().setFlag(RenderModeFlags.ADDITIVE, additiveBlend).setFlag(RenderModeFlags.DEPTH, depthTest).setFlag(RenderModeFlags.LIGHT, false).setFlag(RenderModeFlags.ALPHACLIP, alphaTest && additiveBlend);//additiveBlend ? RenderMode.ADDITIVEDARK : RenderMode.LIT;
+		return renderMode;
 	}
 
 	@Override
@@ -485,6 +493,11 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 
 	public boolean rendersOverLimit() {
 		return renderOverLimit;
+	}
+
+	@Override
+	public double getRenderRange() {
+		return scale*96;
 	}
 
 }

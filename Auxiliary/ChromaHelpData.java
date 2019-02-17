@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -13,19 +13,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
 
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Maps.BlockMap;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 
 public class ChromaHelpData {
 
@@ -67,6 +69,8 @@ public class ChromaHelpData {
 		for (int i = 0; i < Flowers.list.length; i++) {
 			this.addKey(ChromaBlocks.DECOFLOWER, i, "flower_"+Flowers.list[i].name().toLowerCase(Locale.ENGLISH));
 		}
+
+		data.put(Blocks.bedrock, new DimBedrockHelpKey());
 	}
 
 	private void addKey(ChromaBlocks b, String s) {
@@ -85,13 +89,9 @@ public class ChromaHelpData {
 		return data.get(b, meta);
 	}
 
-	public String getText(Block b, int meta) {
-		HelpKey key = this.getKey(b, meta);
-		return key != null ? key.getText() : null;
-	}
-
 	public String getText(World world, int x, int y, int z) {
-		return this.getText(world.getBlock(x, y, z), world.getBlockMetadata(x, y, z));
+		HelpKey hk = this.getKey(world.getBlock(x, y, z), world.getBlockMetadata(x, y, z));
+		return hk != null && hk.isValid(world, x, y, z) ? hk.getText() : null;
 	}
 	/*
 	public String getText(World world, MovingObjectPosition mov) {
@@ -108,15 +108,32 @@ public class ChromaHelpData {
 		return c;
 	}
 
+	private static class DimBedrockHelpKey extends HelpKey {
+
+		protected DimBedrockHelpKey() {
+			super("dimbedrock");
+		}
+
+		@Override
+		public boolean isValid(World world, int x, int y, int z) {
+			return world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue() && y <= 24;
+		}
+
+	}
+
 	private static class HelpKey {
 
-		private final String key;
+		protected final String key;
 
-		private HelpKey(String xml) {
+		protected HelpKey(String xml) {
 			key = xml;
 		}
 
-		public String getText() {
+		public boolean isValid(World world, int x, int y, int z) {
+			return true;
+		}
+
+		public final String getText() {
 			return ChromaDescriptions.getHoverText(key);
 		}
 

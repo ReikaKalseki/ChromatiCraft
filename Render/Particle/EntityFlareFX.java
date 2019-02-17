@@ -1,32 +1,37 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.Particle;
 
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.world.World;
-
 import org.lwjgl.opengl.GL11;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomRenderFX;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.ParticleEngine.RenderMode;
+import Reika.ChromatiCraft.Render.ParticleEngine.RenderModeFlags;
+import Reika.ChromatiCraft.Render.ParticleEngine.TextureMode;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.world.World;
 
 @SideOnly(Side.CLIENT)
-public class EntityFlareFX extends EntityFX {
+public class EntityFlareFX extends EntityFX implements CustomRenderFX {
 
 	private final CrystalElement color;
+
+	private static final RenderMode rm = new RenderMode().setFlag(RenderModeFlags.ADDITIVE, true).setFlag(RenderModeFlags.LIGHT, false).setFlag(RenderModeFlags.ALPHACLIP, false);
 
 	public EntityFlareFX(CrystalElement e, World world, double x, double y, double z) {
 		super(world, x, y, z);
@@ -94,6 +99,26 @@ public class EntityFlareFX extends EntityFX {
 	public int getFXLayer()
 	{
 		return 2;
+	}
+
+	@Override
+	public final RenderMode getRenderMode() {
+		return rm;
+	}
+
+	@Override
+	public TextureMode getTexture() {
+		return null;
+	}
+
+	@Override
+	public boolean rendersOverLimit() {
+		return false;
+	}
+
+	@Override
+	public double getRenderRange() {
+		return particleScale*96*2;
 	}
 
 

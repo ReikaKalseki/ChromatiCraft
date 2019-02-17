@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,11 +12,7 @@ package Reika.ChromatiCraft.World.Dimension.Generators;
 import java.util.ArrayList;
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
+import Reika.ChromatiCraft.API.Event.DimensionAltarLootItemEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
@@ -27,6 +23,12 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.common.MinecraftForge;
 
 
 public class WorldGenMiniAltar extends ChromaWorldGenerator {
@@ -121,8 +123,10 @@ public class WorldGenMiniAltar extends ChromaWorldGenerator {
 		for (int i = 0; i < n; i++) {
 			int idx = rand.nextInt(li.size());
 			ItemStack in = li.get(idx);
+			if (MinecraftForge.EVENT_BUS.post(new DimensionAltarLootItemEvent(te, in)))
+				continue;
 			ElementTagCompound value = ItemMagicRegistry.instance.getItemValue(in);
-			int max = Math.min(16, 24/value.getMaximumValue());
+			int max = Math.min(16, Math.max(1, 24/value.getMaximumValue()));
 			int num = Math.min(1+rand.nextInt(max), in.getMaxStackSize());
 			ItemStack is = ReikaItemHelper.getSizedItemStack(in, num);
 

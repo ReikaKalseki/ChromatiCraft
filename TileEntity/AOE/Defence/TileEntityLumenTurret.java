@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
@@ -168,7 +169,7 @@ public class TileEntityLumenTurret extends TileEntityChromaticBase {
 
 	private void doAttackEntity(World world, int x, int y, int z, EntityLivingBase e) {
 		attackCooldown.put(e.getUniqueID(), this.getAttackCooldown(e));
-		e.attackEntityFrom(new LumenTurretDamage(this, TurretUpgrades.NONPLAYER.check(this)), this.getAttackDamage(e));
+		e.attackEntityFrom(new LumenTurretDamage(this, TurretUpgrades.NONPLAYER.check(this) || Chromabilities.COMMUNICATE.enabledOn(this.getPlacer())), this.getAttackDamage(e));
 		if (e instanceof EntityCreature) {
 			EntityCreature em = (EntityCreature)e;
 			em.setTarget(null); //de-aggro

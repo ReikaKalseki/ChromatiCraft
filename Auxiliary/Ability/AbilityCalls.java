@@ -38,6 +38,7 @@ import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFireFX;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
@@ -755,6 +756,9 @@ public class AbilityCalls {
 	}
 
 	public static boolean doLightCast(EntityPlayer ep) {
+		if (ep.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
+			if (ChromaDimensionManager.getStructurePlayerIsIn(ep) != null)
+				return false;
 		Coordinate c = new Coordinate(ep).offset(0, 1, 0);
 		ProgressiveBreaker b = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(ep.worldObj, c.xCoord, c.yCoord, c.zCoord, 200);
 		for (Block bk : LightCast.getPassthroughBlocks())

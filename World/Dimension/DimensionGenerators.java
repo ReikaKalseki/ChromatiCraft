@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFireJet;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFissure;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFloatstone;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenGlassCliffs;
+import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenGlowCave;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenGlowingCracks;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenIslandArch;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenLightedShrub;
@@ -68,6 +69,7 @@ public enum DimensionGenerators {
 	GLASSCLIFFS(WorldGenGlassCliffs.class,			GeneratorType.FEATURE,		GeneratorTheme.GEOHISTORICAL,	Integer.MIN_VALUE),
 	CRACKS(WorldGenGlowingCracks.class,				GeneratorType.FEATURE,		GeneratorTheme.ENERGY,			Integer.MAX_VALUE),
 	CHUNKLOADER(WorldGenChunkloaderBlocks.class,	GeneratorType.FEATURE,		GeneratorTheme.PRECURSORS,		Integer.MAX_VALUE),
+	GLOWCAVE(WorldGenGlowCave.class,				GeneratorType.TERRAIN,		GeneratorTheme.GEOHISTORICAL,	Integer.MIN_VALUE),
 	;
 
 	private final Class genClass;
@@ -145,6 +147,8 @@ public enum DimensionGenerators {
 				//	return b == Biomes.SPARKLE.getBiome();
 			case CRACKS:
 				return b.getExactType().isReasonablyFlat() && !b.getExactType().isWaterBiome();
+			case GLOWCAVE:
+				return b.biomeType == Biomes.CENTER || b.biomeType == Biomes.FOREST || b.getExactType() == Biomes.PLAINS;
 			default:
 				return true;
 		}

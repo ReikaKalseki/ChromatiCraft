@@ -1,22 +1,13 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.Render;
-
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 
 import org.lwjgl.opengl.GL11;
 
@@ -29,6 +20,14 @@ import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 
 @SideOnly(Side.CLIENT)
 public class ChromaHelpHUD {
@@ -100,7 +99,7 @@ public class ChromaHelpHUD {
 			posZ = look.blockZ;
 			block = ep.worldObj.getBlock(posX, posY, posZ);
 			metadata = ep.worldObj.getBlockMetadata(posX, posY, posZ);
-			text = ChromaHelpData.instance.getText(block, metadata);
+			text = ChromaHelpData.instance.getText(ep.worldObj, posX, posY, posZ);
 			tierView = block instanceof BlockTieredResource ? ((BlockTieredResource)block).isPlayerSufficientTier(Minecraft.getMinecraft().theWorld, posX, posY, posZ, ep) : false;
 		}
 		else {

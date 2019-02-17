@@ -2,6 +2,23 @@ package Reika.ChromatiCraft.Block;
 
 import java.util.List;
 
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Interfaces.Block.CollisionDelegate;
+import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
@@ -22,25 +39,10 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.ASM.APIStripper.Strippable;
-import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
-import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Interfaces.Block.CollisionDelegate;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
 
 
 @Strippable(value = {"mcp.mobius.waila.api.IWailaDataProvider"})
-public class BlockTrapFloor extends Block implements CollisionDelegate, IWailaDataProvider {
+public class BlockTrapFloor extends Block implements CollisionDelegate, SemiUnbreakable, IWailaDataProvider {
 
 	public BlockTrapFloor(Material mat) {
 		super(mat);
@@ -181,6 +183,22 @@ public class BlockTrapFloor extends Block implements CollisionDelegate, IWailaDa
 	@ModDependent(ModList.WAILA)
 	public final NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, int x, int y, int z) {
 		return tag;
+	}
+
+	@Override
+	public float getBlockHardness(World world, int x, int y, int z) {
+		return this.isUnbreakable(world, x, y, z, world.getBlockMetadata(x, y, z)) ? -1 : super.getBlockHardness(world, x, y, z);
+	}
+
+	@Override
+	public boolean isUnbreakable(World world, int x, int y, int z, int meta) {
+		int dy = y-1;
+		Block b = world.getBlock(x, dy, z);
+		while (dy > y-5 && b != ChromaBlocks.STRUCTSHIELD.getBlockInstance()) {
+			dy--;
+			b = world.getBlock(x, dy, z);
+		}
+		return b == ChromaBlocks.STRUCTSHIELD.getBlockInstance() && ((BlockStructureShield)b).isUnbreakable(world, x, dy, z, world.getBlockMetadata(x, dy, z));//meta >= 8;
 	}
 
 }

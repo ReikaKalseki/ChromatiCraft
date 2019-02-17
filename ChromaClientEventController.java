@@ -317,7 +317,7 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 		//if (evt.sound.getYPosF() >= GlowingCliffsColumnShaper.SEA_LEVEL) {
 		if (Minecraft.getMinecraft().theWorld != null && BiomeGlowingCliffs.isGlowingCliffs(Minecraft.getMinecraft().theWorld.getBiomeGenForCoords(MathHelper.floor_float(evt.sound.getXPosF()), MathHelper.floor_float(evt.sound.getZPosF())))) {
 			if (evt.name.contains("ambient.cave.cave")) {
-				int n = rand.nextInt(3);
+				int n = rand.nextInt(4);
 				ChromaSounds s = null;
 				switch(n) {
 					case 0:
@@ -328,6 +328,9 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 						break;
 					case 2:
 						s = ChromaSounds.CLIFFSOUND3;
+						break;
+					case 3:
+						s = ChromaSounds.CLIFFSOUND4;
 						break;
 				}
 				evt.result = new EnumSound(s, evt.sound, false);

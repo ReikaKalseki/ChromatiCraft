@@ -883,8 +883,8 @@ public class ChromatiCraft extends DragonAPIMod {
 	@EventHandler
 	public void serverShutdown(FMLServerStoppingEvent evt) {
 		ProgressionCacher.instance.saveAll();
-		if (MinecraftServer.getServer().isDedicatedServer())
-			ChromaDimensionManager.serverStopping = true;
+		//if (MinecraftServer.getServer().isDedicatedServer())
+		ChromaDimensionManager.serverStopping = true;
 	}
 
 	private void setupClassFiles() {

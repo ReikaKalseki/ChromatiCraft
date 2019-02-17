@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,17 +15,6 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EffectRenderer;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.client.renderer.ActiveRenderInfo;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
 
 import org.lwjgl.opengl.GL11;
 
@@ -52,6 +41,16 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EffectRenderer;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.renderer.ActiveRenderInfo;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 
 @SideOnly(Side.CLIENT)
 public class ParticleEngine extends EffectRenderer implements CustomEffectRenderer {
@@ -131,13 +130,15 @@ public class ParticleEngine extends EffectRenderer implements CustomEffectRender
 
 				for (EntityFX fx : parts) {
 					if (ThrottleableEffectRenderer.isParticleVisible(fx)) {
-						if (rm.mode.flags[RenderModeFlags.LIGHT.ordinal()]) {
-							v5.setBrightness(fx.getBrightnessForRender(frame));
+						if (ThrottleableEffectRenderer.isEntityCloseEnough(fx, EntityFX.interpPosX, EntityFX.interpPosY, EntityFX.interpPosZ)) {
+							if (rm.mode.flags[RenderModeFlags.LIGHT.ordinal()]) {
+								v5.setBrightness(fx.getBrightnessForRender(frame));
+							}
+							else {
+								v5.setBrightness(240);
+							}
+							fx.renderParticle(v5, frame, yaw, f5, pitch, f3, f4);
 						}
-						else {
-							v5.setBrightness(240);
-						}
-						fx.renderParticle(v5, frame, yaw, f5, pitch, f3, f4);
 					}
 				}
 

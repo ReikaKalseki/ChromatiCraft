@@ -1,16 +1,14 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.Particle;
 
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomRenderFX;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -21,6 +19,8 @@ import Reika.ChromatiCraft.Render.ParticleEngine.TextureMode;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.world.World;
 
 @SideOnly(Side.CLIENT)
 public class EntityLaserFX extends EntityFX implements CustomRenderFX {
@@ -131,6 +131,11 @@ public class EntityLaserFX extends EntityFX implements CustomRenderFX {
 	@Override
 	public boolean rendersOverLimit() {
 		return false;
+	}
+
+	@Override
+	public double getRenderRange() {
+		return particleScale*96;
 	}
 
 }
