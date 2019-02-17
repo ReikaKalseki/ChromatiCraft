@@ -64,6 +64,7 @@ import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverManagerClient;
+import Reika.ChromatiCraft.World.Dimension.Rendering.ChromaCloudRenderer;
 import Reika.ChromatiCraft.World.Dimension.Rendering.SkyRiverRenderer;
 import Reika.ChromatiCraft.World.Dimension.Structure.AntFarmGenerator;
 import Reika.DragonAPI.ModList;
@@ -475,6 +476,8 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 		if (MinecraftForgeClient.getRenderPass() == 1 && Minecraft.getMinecraft().theWorld.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
 			SkyRiverRenderer.instance.render();
 			ChromaDimensionManager.renderAurorae();
+			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+			ChromaCloudRenderer.instance.drawVoidFog(Tessellator.instance, 0xffffff, ep.posX, ep.posZ, 512, 0);
 		}
 	}
 

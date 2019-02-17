@@ -59,17 +59,18 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 		int dy = ReikaWorldHelper.findTopBlockBelowY(world, x, 255, z);
 		Block bk = world.getBlock(x, dy, z);
 		if (bk == Blocks.grass || bk == Blocks.sand) {
-			HashSet<Coordinate>  set = new HashSet();
+			HashSet<Coordinate> set1 = new HashSet();
+			HashSet<Coordinate> set2 = new HashSet();
 			double x0 = x+0.5;
 			double y0 = y+0.5;
 			double z0 = z+0.5;
-			this.growFrom(world, rand, x0, y0, z0, MAX_RADIUS, set, set, 0);
-			ReikaJavaLibrary.pConsole(set.size()+" @ "+x+", "+z);
-			for (Coordinate c : set) {
+			this.growFrom(world, rand, x0, y0, z0, MAX_RADIUS, set1, set2, 0);
+			ReikaJavaLibrary.pConsole(set1.size()+" @ "+x+", "+z);
+			for (Coordinate c : set1) {
 				if (c.getBlock(world).getMaterial() == Material.water || ReikaWorldHelper.checkForAdjMaterial(world, c.xCoord, c.yCoord, c.zCoord, Material.water) != null || ReikaWorldHelper.checkForAdjBlock(world, c.xCoord, c.yCoord, c.zCoord, ChromaBlocks.STRUCTSHIELD.getBlockInstance()) != null)
 					return false;
 			}
-			this.generate(world, rand, set, dy);
+			this.generate(world, rand, set1, dy);
 			return true;
 		}
 
@@ -81,10 +82,11 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 		double r0 = ReikaRandomHelper.getRandomBetween(MIN_RADIUS, maxr);
 		li0.add(new CavePoint(x0, y0, z0, r0));
 		boolean first = true;
-		while (y0 >= 16) {
+		while (y0 > 0) {
 			double x2 = ReikaRandomHelper.getRandomPlusMinus(x0, first ? 6 : 32);
 			double z2 = ReikaRandomHelper.getRandomPlusMinus(z0, first ? 6 : 32);
 			double y2 = first ? y0-8-rand.nextInt(5) : y0-rand.nextInt(16);
+			y2 = Math.max(y2, 0);
 			x0 = x2;
 			y0 = y2;
 			z0 = z2;
@@ -112,7 +114,7 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 			DecimalPosition pos2 = li.get(i+1);
 			if (this.getLine(world, rand, pos1, pos2, rVar.getValue(i), rVar.getValue(i+1), i, parent, path) && forkDepth > 0) //prevent overtangling
 				;//break;
-			if (forkDepth <= 4 && rand.nextInt(36) == 0) {
+			if (forkDepth <= 4 && rand.nextInt(Math.max(10, (int)pos1.yCoord)) == 0) {
 				this.fork(world, rand, pos1, pos2, rVar, i, path, forkDepth);
 			}
 		}
@@ -136,11 +138,13 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 			int meta = 0;
 			if (!top) {
 				if (edge) {
-					if (c.yCoord <= 24) {
-						b = Blocks.bedrock;
-					}
-					else if (c.yCoord <= 30 && ReikaRandomHelper.doWithChance((30-c.yCoord)/6D)) {
-						b = Blocks.bedrock;
+					if (c.yCoord <= 27 && ReikaRandomHelper.doWithChance((28-c.yCoord)/28D)) {
+						if (ReikaRandomHelper.doWithChance((28-c.yCoord)/28D)) {
+							b = Blocks.bedrock;
+						}
+						else {
+							b = Blocks.stone;
+						}
 					}
 					else {
 						if (rand.nextInt(20) == 0) {
@@ -153,10 +157,19 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 						}
 					}
 				}
+				if (c.yCoord <= 10 && ReikaRandomHelper.doWithChance((11-c.yCoord)/10D)) {
+					b = Blocks.air;
+				}
+				if (c.yCoord == 0) {
+					b = Blocks.air;
+				}
 			}
-			if (b == Blocks.air && rand.nextInt(360) == 0) {
+			if (b == Blocks.air && rand.nextInt(180) == 0) {
 				b = ChromaBlocks.LIGHT.getBlockInstance();
 				meta = Flags.PARTICLES.getFlag();
+			}
+			if (b == Blocks.stone) {
+
 			}
 			c.setBlock(world, b, meta);
 		}

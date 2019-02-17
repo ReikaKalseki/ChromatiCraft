@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,21 +11,21 @@ package Reika.ChromatiCraft.World.Dimension.Rendering;
 
 import java.util.Random;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraftforge.client.IRenderHandler;
-
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraftforge.client.IRenderHandler;
 
 public class ChromaSkyRenderer extends IRenderHandler {
 
@@ -87,13 +87,18 @@ public class ChromaSkyRenderer extends IRenderHandler {
 		GL11.glDepthMask(false);
 
 		double t = System.currentTimeMillis();
+		float f = mc.thePlayer.posY <= 18 ? 0 : mc.thePlayer.posY >= 30 ? 1 : (float)((mc.thePlayer.posY-18)/12F);
+		if (ReikaEntityHelper.canEntitySeeTheSky(mc.thePlayer))
+			f = 1;
+		//if (mc.thePlayer.posY > 0 && mc.thePlayer.rotationPitch < -30 && ReikaEntityHelper.canEntitySeeTheSky(mc.thePlayer))
+		//	f = Math.min(1, f-mc.thePlayer.rotationPitch/90F);
 
 		GL11.glPushMatrix();
-		this.renderStars(t);
+		this.renderStars(t, f);
 		GL11.glPopMatrix();
 
 		GL11.glPushMatrix();
-		this.renderPlanets(t);
+		this.renderPlanets(t, f);
 		GL11.glPopMatrix();
 
 		BlendMode.DEFAULT.apply();
@@ -103,7 +108,9 @@ public class ChromaSkyRenderer extends IRenderHandler {
 		//GL11.glPopAttrib();
 	}
 
-	private void renderNebulae(double t) {
+	private void renderNebulae(double t, float f) {
+		if (f == 0)
+			return;
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/stars2.png");
 
 		Tessellator v5 = Tessellator.instance;
@@ -123,7 +130,7 @@ public class ChromaSkyRenderer extends IRenderHandler {
 
 				v5.startDrawingQuads();
 				v5.setBrightness(240);
-				v5.setColorOpaque_I(0xffffff);
+				v5.setColorOpaque_I(ReikaColorAPI.GStoHex((int)(255*f)));
 
 				neb.render(380, 1, t);
 
@@ -135,12 +142,13 @@ public class ChromaSkyRenderer extends IRenderHandler {
 		}
 	}
 
-	private void renderPlanets(double t) {
+	private void renderPlanets(double t, float f) {
+		if (f == 0)
+			return;
 
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/planets2.png");
 
 		Tessellator v5 = Tessellator.instance;
-
 		for (int k = 0; k < planets.length; k++) {
 			TexturedQuad planet = planets[k];
 			if (planet != null) {
@@ -159,7 +167,7 @@ public class ChromaSkyRenderer extends IRenderHandler {
 
 				v5.startDrawingQuads();
 				v5.setBrightness(240);
-				v5.setColorOpaque_I(0xffffff);
+				v5.setColorOpaque_I(ReikaColorAPI.GStoHex((int)(255*f)));
 
 				planet.render(380, 1, t);
 
@@ -215,7 +223,9 @@ public class ChromaSkyRenderer extends IRenderHandler {
 		}
 	}
 
-	private void renderStars(double t) {
+	private void renderStars(double t, float f) {
+		if (f == 0)
+			return;
 
 		double f1 = 0.125;//+0.0625*rand.nextDouble();
 		double f2 = 0.125;//+0.0625*rand.nextDouble();
@@ -226,7 +236,7 @@ public class ChromaSkyRenderer extends IRenderHandler {
 
 		GL11.glRotated(t/12000D%360D, 0, 0, 1);
 
-		this.renderNebulae(t);
+		this.renderNebulae(t, f);
 
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/stars.png");
 		int nstar = this.getStarCount(t);
@@ -242,7 +252,7 @@ public class ChromaSkyRenderer extends IRenderHandler {
 
 				double dl = i/10D/nstar;
 				//200-dl
-				s.render(320-dl, dt, t);
+				s.render(320-dl, Math.min(dt, 24*f), t);
 			}
 		}
 
@@ -293,6 +303,8 @@ public class ChromaSkyRenderer extends IRenderHandler {
 
 		@Override
 		protected void render(double d, float brightness, double time) {
+			if (brightness <= 0)
+				return;
 			double td = 500D;//+500*Math.sin((time/100000D)%360);
 			double tb = 1-twinkleAmplitude;
 			int c2 = ReikaColorAPI.getColorWithBrightnessMultiplier(color, (float)(tb+twinkleAmplitude*Math.sin(twinkleOffset+time*twinkleSpeed/td)));

@@ -1,31 +1,34 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Rendering;
 
+import org.lwjgl.opengl.GL11;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.IRenderHandler;
-
-import org.lwjgl.opengl.GL11;
-
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 public class ChromaCloudRenderer extends IRenderHandler {
 
@@ -102,7 +105,86 @@ public class ChromaCloudRenderer extends IRenderHandler {
 			}
 		}
 
+		GL11.glPopAttrib();
+		GL11.glPopMatrix();
+	}
 
+	public static void drawVoidFog(Tessellator v5, int color, double nx, double nz, double w, double h0) {
+		if (MinecraftForgeClient.getRenderPass() != 1)
+			return;
+
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		if (ep.posY > 100)
+			return;
+
+		float f = ReikaRenderHelper.getPartialTickTime();
+
+		double ox = ep.posX+(ep.posX-ep.lastTickPosX)*f;
+		double oy = ep.posY+(ep.posY-ep.lastTickPosY)*f;
+		double oz = ep.posZ+(ep.posZ-ep.lastTickPosZ)*f;
+
+		if (oy < 0) {
+			h0 += oy;
+		}
+
+		color = ReikaColorAPI.getModifiedHue(0xff0000, 190+(int)(10*Math.sin((ep.ticksExisted+f)/83F)));
+		color = ReikaColorAPI.getModifiedSat(color, 0.25F+(float)(0.125*Math.cos((ep.ticksExisted+f)/57F)));
+
+		double r = w*2;
+		double tx = ox%r/r;
+		double tz = oz%r/r;
+
+		GL11.glPushMatrix();
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		GL11.glEnable(GL11.GL_BLEND);
+		//GL11.glDisable(GL11.GL_CULL_FACE);
+		GL11.glDisable(GL11.GL_ALPHA_TEST);
+		//BlendMode.ADDITIVEDARK.apply();
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glDisable(GL11.GL_CULL_FACE);
+		ReikaRenderHelper.disableEntityLighting();
+		GL11.glDepthMask(false);
+
+		GL11.glTranslated(-RenderManager.renderPosX, -RenderManager.renderPosY, -RenderManager.renderPosZ);
+
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/clouds/dimfog.png");
+
+		v5.startDrawingQuads();
+
+		float a = 1F;
+		double dx = 0;
+		double dz = 0;
+		double h1 = 0.125+0.0625*Math.cos((ep.ticksExisted+f)/71D);
+		double h = 0.05;
+		while (a > 0.125) {
+			h += h1+h/3D;
+			//v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(color, a));
+			v5.setColorRGBA_I(color, (int)(a*255));
+			v5.addVertexWithUV(ox+dx-w, h0+h, oz+dz-w, tx, tz);
+			v5.addVertexWithUV(ox+dx+w, h0+h, oz+dz-w, tx+6, tz);
+			v5.addVertexWithUV(ox+dx+w, h0+h, oz+dz+w, tx+6, tz+6);
+			v5.addVertexWithUV(ox+dx-w, h0+h, oz+dz+w, tx, tz+6);
+			dx += Math.sin(ep.hashCode()/117D+h*11+(ep.ticksExisted+f)/47D);
+			dz += Math.sin(ep.hashCode()/153D+h*13+(ep.ticksExisted+f)/53D);
+			a *= 0.75;
+		}
+
+		if (oy < 2) {
+			a = Math.min(1, 1-(float)(oy/2F));
+			dx = 0;
+			dz = 0;
+			//v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(color, a));
+			v5.setColorRGBA_I(color, (int)(a*255));
+			v5.addVertexWithUV(ox+dx-w, oy-4, oz+dz-w, tx, tz);
+			v5.addVertexWithUV(ox+dx+w, oy-4, oz+dz-w, tx+3, tz);
+			v5.addVertexWithUV(ox+dx+w, oy-4, oz+dz+w, tx+3, tz+3);
+			v5.addVertexWithUV(ox+dx-w, oy-4, oz+dz+w, tx, tz+3);
+		}
+
+		v5.draw();
+
+		ReikaRenderHelper.enableEntityLighting();
+		BlendMode.DEFAULT.apply();
 		GL11.glPopAttrib();
 		GL11.glPopMatrix();
 	}

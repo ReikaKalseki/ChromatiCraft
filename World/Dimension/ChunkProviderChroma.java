@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,6 +15,19 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
+import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenCanyons;
+import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenTendrils;
+import Reika.ChromatiCraft.World.Dimension.Structure.MonumentGenerator;
+import Reika.ChromatiCraft.World.IWG.TieredWorldGenerator;
+import Reika.DragonAPI.Instantiable.Data.BumpMap;
+import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayList;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.entity.EnumCreatureType;
@@ -30,19 +43,6 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.NoiseGeneratorOctaves;
 import net.minecraft.world.gen.NoiseGeneratorPerlin;
-import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
-import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
-import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
-import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenCanyons;
-import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenTendrils;
-import Reika.ChromatiCraft.World.Dimension.Structure.MonumentGenerator;
-import Reika.ChromatiCraft.World.IWG.TieredWorldGenerator;
-import Reika.DragonAPI.Instantiable.Data.BumpMap;
-import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayList;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class ChunkProviderChroma implements IChunkProvider {
 
@@ -465,7 +465,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 		double sxz1 = d3*Math.sin(Math.toRadians(x*z/8D))*Math.cos(Math.toRadians(x*z/16D));
 		double sxz2 = d4*Math.cos(Math.toRadians(x*z*z/128D))*Math.sin(Math.toRadians(x*x*z/256D));
 		double maxBedrockY = 2.25+sx+sz+sxz1+sxz2;
-		if (maxBedrockY > 0)
+		if (true || maxBedrockY > 0)
 			columnData[posIndex] = Blocks.bedrock;
 		for (int i = 0; i < 4; i++) {
 			if (1+i <= maxBedrockY && (rand.nextInt(4) > 0 || rand.nextInt(4-i) > 0))
