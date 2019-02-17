@@ -120,7 +120,10 @@ public class EntityTunnelNuker extends EntityLiving implements DestroyOnUnload {
 
 	@Override
 	public boolean getCanSpawnHere() {
-		return !ReikaEntityHelper.existsAnotherValidEntityWithin(this, 32, new ReikaEntityHelper.ClassEntitySelector(this.getClass()));
+		int y = MathHelper.floor_double(posY);
+		int x = MathHelper.floor_double(posX);
+		int z = MathHelper.floor_double(posZ);
+		return worldObj.canBlockSeeTheSky(x, y+1, z) && !ReikaEntityHelper.existsAnotherValidEntityWithin(this, 32, new ReikaEntityHelper.ClassEntitySelector(this.getClass()));
 	}
 
 	@Override
