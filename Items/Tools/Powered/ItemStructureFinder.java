@@ -18,6 +18,7 @@ import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.World.IWG.DungeonGenerator;
 import Reika.DragonAPI.DragonAPICore;
@@ -74,6 +75,11 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 			}
 
 			int type = this.getStructureType(is);
+			if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+				this.sendParticle(e, e.posX, -50, e.posZ, TYPES[type], false);
+				return false;
+			}
+
 			WorldLocation loc = DungeonGenerator.instance.getNearestStructure(TYPES[type], world, e.posX, e.posY, e.posZ, RANGE);
 			if (loc != null) {
 				double dist = loc.getDistanceTo(e);
@@ -131,6 +137,11 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 			fx.motionZ *= 0.375;
 		}
 		fx.setLife(10).setScale(sc).setColor(c);
+		if (sy == -50) {
+			fx.setLife(20+rand.nextInt(21));
+			fx.setColliding();
+			fx.motionY *= 0.7;
+		}
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 

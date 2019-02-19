@@ -358,6 +358,7 @@ public enum ChromaResearch implements ProgressElement {
 	BURROW(			Structures.BURROW,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.BURROW),
 	OCEAN(			Structures.OCEAN,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.OCEAN),
 	DESERT(			Structures.DESERT,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.DESERTSTRUCT),
+	SNOW(			Structures.SNOWSTRUCT,	7,	ResearchLevel.RAWEXPLORE,		ProgressStage.SNOWSTRUCT),
 	PORTALSTRUCT(	Structures.PORTAL,		0,	ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
 	MINIPYLON(		Structures.PERSONAL,	9,	ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
 	BROADCASTER(	Structures.BROADCAST,	15,	ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK, ProgressStage.REPEATER),
@@ -818,6 +819,8 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == SPAWNERBYPASS)
 			return false;
 		if (this == WARPNODE)
+			return false;
+		if (this == TRAPFLOOR)
 			return false;
 		if (this.requiresProgress(ProgressStage.TOWER) || this.requiresProgress(ProgressStage.ARTEFACT))
 			return false;

@@ -16,10 +16,12 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes.FabricationRecipe;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -73,9 +75,10 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 	private EntityItem entity;
 
 	private void setRecipe(ItemStack out) {
+		Recipe last = recipe;
 		if (out == null) {
 			recipe = null;
-			this.onRecipeChanged();
+			this.onRecipeChanged(last);
 		}
 		else if (recipe == null || !ReikaItemHelper.matchStacks(recipe.output, out) || craftingTick == 0) {
 			FabricationRecipe rec = FabricationRecipes.recipes().getItemRecipe(out);
@@ -87,17 +90,19 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 			if (rec != null) {
 				if (rec.hasProgress(this.getPlacer())) {
 					recipe = f != null ? new FluidRecipe(rec.getCost(), out, f) : new Recipe(rec.getCost(), out);
-					this.onRecipeChanged();
+					this.onRecipeChanged(last);
 				}
 			}
 		}
 		entity = recipe != null ? new InertItem(worldObj, recipe.output) : null;
 	}
 
-	private void onRecipeChanged() {
+	private void onRecipeChanged(Recipe last) {
 		craftingTick = recipe != null ? recipe.duration : 0;
-		CrystalNetworker.instance.breakPaths(this);
-		checkTimer.reset();
+		if (recipe != last) {
+			CrystalNetworker.instance.breakPaths(this);
+			checkTimer.reset();
+		}
 	}
 
 	public ElementTagCompound getCurrentRequirements() {
@@ -134,8 +139,12 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 	private void checkAndRequest() {
 		if (recipe == null)
 			return;
+		int n = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.LIGHTBLUE);
+		if (n > 0)
+			n = TileEntityAccelerator.getAccelFromTier(n-1);
+		n++;
 		for (CrystalElement e : recipe.energy.elementSet()) {
-			int total = Math.min(this.getMaxStorage(e), 24*recipe.energy.getValue(e));
+			int total = Math.min(this.getMaxStorage(e), 24*recipe.energy.getValue(e)*n);
 			int space = total-this.getEnergy(e);
 			if (space > 0) {
 				this.requestEnergy(e, space);

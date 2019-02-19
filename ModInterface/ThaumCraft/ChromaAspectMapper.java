@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,16 +12,16 @@ package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import net.minecraft.item.ItemStack;
-import thaumcraft.api.ThaumcraftApiHelper;
-import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
+import net.minecraft.item.ItemStack;
+import thaumcraft.api.ThaumcraftApiHelper;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
 
 public class ChromaAspectMapper {
 
@@ -320,6 +320,29 @@ public class ChromaAspectMapper {
 		this.addAspect(ChromaTiles.CHROMACRAFTER, Aspect.WATER, 4);
 		this.addAspect(ChromaTiles.CHROMACRAFTER, Aspect.METAL, 6);
 		this.addAspect(ChromaTiles.CHROMACRAFTER, Aspect.MAGIC, 8);
+
+		this.addAspect(ChromaTiles.MULTIBUILDER, Aspect.CRAFT, 6);
+		this.addAspect(ChromaTiles.MULTIBUILDER, Aspect.MINE, 6);
+		this.addAspect(ChromaTiles.MULTIBUILDER, Aspect.TRAVEL, 3);
+
+		this.addAspect(ChromaTiles.EXPLOSIONSHIELD, Aspect.ARMOR, 10);
+		this.addAspect(ChromaTiles.EXPLOSIONSHIELD, Aspect.SENSES, 5);
+
+		this.addAspect(ChromaTiles.PROGRESSLINK, Aspect.MIND, 6);
+		this.addAspect(ChromaTiles.PROGRESSLINK, Aspect.EXCHANGE, 5);
+		this.addAspect(ChromaTiles.PROGRESSLINK, ChromaAspectManager.instance.PRECURSOR, 2);
+
+		this.addAspect(ChromaTiles.MANABOOSTER, Aspect.MAGIC, 6);
+		this.addAspect(ChromaTiles.MANABOOSTER, Aspect.ENERGY, 6);
+		this.addAspect(ChromaTiles.MANABOOSTER, Aspect.TRAVEL, 4);
+		this.addAspect(ChromaTiles.MANABOOSTER, Aspect.EXCHANGE, 3);
+
+		this.addAspect(ChromaTiles.DEATHFOG, Aspect.DEATH, 8);
+		this.addAspect(ChromaTiles.DEATHFOG, Aspect.AURA, 5);
+
+		this.addAspect(ChromaTiles.OPTIMIZER, ChromaAspectManager.instance.SIGNAL, 6);
+		this.addAspect(ChromaTiles.OPTIMIZER, ChromaAspectManager.instance.PUZZLE, 5);
+		this.addAspect(ChromaTiles.OPTIMIZER, Aspect.ORDER, 4);
 	}
 
 	private void addAspect(ChromaTiles m, Aspect a, int amt) {

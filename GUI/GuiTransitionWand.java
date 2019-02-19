@@ -1,17 +1,13 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.opengl.GL11;
 
@@ -28,12 +24,15 @@ import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class GuiTransitionWand extends GuiScreen implements CustomSoundGui {
 
 	private final EntityPlayer player;
 
-	private final int xSize = 176;
+	private final int xSize = 228;
 	private final int ySize = 52;
 
 	public GuiTransitionWand(EntityPlayer ep) {
@@ -78,7 +77,7 @@ public class GuiTransitionWand extends GuiScreen implements CustomSoundGui {
 		GL11.glTranslated(0, 0, -500);
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/GUIs/transition.png");
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/GUIs/transition2.png");
 		ReikaGuiAPI.instance.drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 		int tx = j+xSize/2;
 		int ty = k+4;

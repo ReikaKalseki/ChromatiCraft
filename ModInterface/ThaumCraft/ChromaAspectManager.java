@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -14,11 +14,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import thaumcraft.api.ThaumcraftApiHelper;
-import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
@@ -35,6 +30,11 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.ReversibleMultiMap;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import thaumcraft.api.ThaumcraftApiHelper;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
 
 public class ChromaAspectManager {
 
@@ -318,6 +318,9 @@ public class ChromaAspectManager {
 		ReikaThaumHelper.addAspects(ChromaStacks.lumenGem, Aspect.ENERGY, 4);
 		ReikaThaumHelper.addAspects(ChromaStacks.lumenGem, SIGNAL, 4);
 
+		ReikaThaumHelper.addAspects(ChromaStacks.avolite, Aspect.ENERGY, 4);
+		ReikaThaumHelper.addAspects(ChromaStacks.avolite, Aspect.CRYSTAL, 4);
+
 		for (PoolRecipe r : PoolRecipes.instance.getAllPoolRecipes()) {
 			Collection<ItemStack> ins = r.getInputs();
 			ItemStack main = r.getMainInput();
@@ -457,6 +460,8 @@ public class ChromaAspectManager {
 					break;
 			}
 		}
+
+		ReikaThaumHelper.addAspects(ChromaBlocks.WARPNODE.getStackOf(), Aspect.TRAVEL, 20, Aspect.AURA, 5, Aspect.ENERGY, 4, Aspect.VOID, 2);
 	}
 
 	public ElementTagCompound getElementCost(Aspect a, float depthcost) {

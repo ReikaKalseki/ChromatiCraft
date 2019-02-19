@@ -9,9 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Rendering;
 
+import java.util.Random;
+
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -34,8 +37,16 @@ public class ChromaCloudRenderer extends IRenderHandler {
 
 	public static final ChromaCloudRenderer instance = new ChromaCloudRenderer();
 
-	private ChromaCloudRenderer() {
+	private static final int FOG_STAR_SECTIONS = 8;
 
+	private final FogStarBrightness[][] fogStarBrightness = new FogStarBrightness[1+FOG_STAR_SECTIONS][1+FOG_STAR_SECTIONS];
+
+	private ChromaCloudRenderer() {
+		for (int i = 0; i < fogStarBrightness.length; i++) {
+			for (int k = 0; k < fogStarBrightness.length; k++) {
+				fogStarBrightness[i][k] = new FogStarBrightness(DragonAPICore.rand);
+			}
+		}
 	}
 
 	@Override
@@ -109,13 +120,14 @@ public class ChromaCloudRenderer extends IRenderHandler {
 		GL11.glPopMatrix();
 	}
 
-	public static void drawVoidFog(Tessellator v5, int color, double nx, double nz, double w, double h0) {
-		if (MinecraftForgeClient.getRenderPass() != 1)
+	public static void drawVoidFog(EntityPlayer ep) {
+		if (MinecraftForgeClient.getRenderPass() != 0)
 			return;
 
-		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-		if (ep.posY > 100)
+		if (ep.posY > 80)
 			return;
+
+		Tessellator v5 = Tessellator.instance;
 
 		float f = ReikaRenderHelper.getPartialTickTime();
 
@@ -123,11 +135,14 @@ public class ChromaCloudRenderer extends IRenderHandler {
 		double oy = ep.posY+(ep.posY-ep.lastTickPosY)*f;
 		double oz = ep.posZ+(ep.posZ-ep.lastTickPosZ)*f;
 
+		double h0 = 0;
 		if (oy < 0) {
 			h0 += oy;
 		}
 
-		color = ReikaColorAPI.getModifiedHue(0xff0000, 190+(int)(10*Math.sin((ep.ticksExisted+f)/83F)));
+		double w = 512;
+
+		int color = ReikaColorAPI.getModifiedHue(0xff0000, 190+(int)(10*Math.sin((ep.ticksExisted+f)/83F)));
 		color = ReikaColorAPI.getModifiedSat(color, 0.25F+(float)(0.125*Math.cos((ep.ticksExisted+f)/57F)));
 
 		double r = w*2;
@@ -137,9 +152,10 @@ public class ChromaCloudRenderer extends IRenderHandler {
 		GL11.glPushMatrix();
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glShadeModel(GL11.GL_SMOOTH);
 		//GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
-		//BlendMode.ADDITIVEDARK.apply();
+		//
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		ReikaRenderHelper.disableEntityLighting();
@@ -147,15 +163,18 @@ public class ChromaCloudRenderer extends IRenderHandler {
 
 		GL11.glTranslated(-RenderManager.renderPosX, -RenderManager.renderPosY, -RenderManager.renderPosZ);
 
+		double t = ep.ticksExisted+f;
+
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/clouds/dimfog.png");
 
 		v5.startDrawingQuads();
 
+		double h1 = 0.125+0.0625*Math.cos(t/71D);
+		double h = 0.05;
 		float a = 1F;
 		double dx = 0;
 		double dz = 0;
-		double h1 = 0.125+0.0625*Math.cos((ep.ticksExisted+f)/71D);
-		double h = 0.05;
+		double maxh = h0;
 		while (a > 0.125) {
 			h += h1+h/3D;
 			//v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(color, a));
@@ -164,9 +183,10 @@ public class ChromaCloudRenderer extends IRenderHandler {
 			v5.addVertexWithUV(ox+dx+w, h0+h, oz+dz-w, tx+6, tz);
 			v5.addVertexWithUV(ox+dx+w, h0+h, oz+dz+w, tx+6, tz+6);
 			v5.addVertexWithUV(ox+dx-w, h0+h, oz+dz+w, tx, tz+6);
-			dx += Math.sin(ep.hashCode()/117D+h*11+(ep.ticksExisted+f)/47D);
-			dz += Math.sin(ep.hashCode()/153D+h*13+(ep.ticksExisted+f)/53D);
+			dx += Math.sin(ep.hashCode()/117D+h*11+t/47D);
+			dz += Math.sin(ep.hashCode()/153D+h*13+t/53D);
 			a *= 0.75;
+			maxh = h0+h;
 		}
 
 		if (oy < 2) {
@@ -181,6 +201,47 @@ public class ChromaCloudRenderer extends IRenderHandler {
 			v5.addVertexWithUV(ox+dx-w, oy-4, oz+dz+w, tx, tz+3);
 		}
 
+		v5.draw();
+
+		BlendMode.ADDITIVEDARK.apply();
+
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/clouds/dimfog-stars.png");
+		v5.startDrawingQuads();
+		//v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(color, a));
+		v5.setColorOpaque_I(ReikaColorAPI.mixColors(color, 0xffffff, 0.5F));
+		double x0 = ox-w;
+		double z0 = oz-w;
+		double sz = w*2/FOG_STAR_SECTIONS;
+		double dt = 12;
+		double st = dt/FOG_STAR_SECTIONS;
+		double d = 36;
+		double y = Math.min(h0+0.05, oy-d);//h0+0.05;//maxh;//oy-d;
+		for (int i = 0; i < FOG_STAR_SECTIONS; i++) {
+			for (int k = 0; k < FOG_STAR_SECTIONS; k++) {
+				double x1 = x0+i*sz;
+				double z1 = z0+k*sz;
+				double u = tx+0.35+st*i;
+				double v = tz+0.5+st*k;
+				/*
+				double b1 = 0.5+0.5*Math.sin((i+k*FOG_STAR_SECTIONS)*5.3D+t/17D);
+				double b2 = 0.5+0.5*Math.sin((i+1+k*FOG_STAR_SECTIONS)*5.3D+t/17D);
+				double b3 = 0.5+0.5*Math.sin((i+1+(k+1)*FOG_STAR_SECTIONS)*5.3D+t/17D);
+				double b4 = 0.5+0.5*Math.sin((i+(k+1)*FOG_STAR_SECTIONS)*5.3D+t/17D);
+				 */
+				double b1 = instance.fogStarBrightness[i][k].getBrightness(t);
+				double b2 = instance.fogStarBrightness[i+1][k].getBrightness(t);
+				double b3 = instance.fogStarBrightness[i+1][k+1].getBrightness(t);
+				double b4 = instance.fogStarBrightness[i][k+1].getBrightness(t);
+				v5.setColorOpaque_I(ReikaColorAPI.GStoHex((int)(255*b1)));
+				v5.addVertexWithUV(x1, 		y, z1, 		u, v);
+				v5.setColorOpaque_I(ReikaColorAPI.GStoHex((int)(255*b2)));
+				v5.addVertexWithUV(x1+sz, 	y, z1, 		u+st, v);
+				v5.setColorOpaque_I(ReikaColorAPI.GStoHex((int)(255*b3)));
+				v5.addVertexWithUV(x1+sz, 	y, z1+sz, 	u+st, v+st);
+				v5.setColorOpaque_I(ReikaColorAPI.GStoHex((int)(255*b4)));
+				v5.addVertexWithUV(x1, 		y, z1+sz, 	u, v+st);
+			}
+		}
 		v5.draw();
 
 		ReikaRenderHelper.enableEntityLighting();
@@ -460,6 +521,26 @@ public class ChromaCloudRenderer extends IRenderHandler {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_CULL_FACE);
+
+	}
+
+	private static class FogStarBrightness {
+
+		private final double period;
+		private final double offset;
+
+		private FogStarBrightness(Random rand) {
+			this(8+rand.nextDouble()*18, rand.nextDouble()*Math.PI*2);
+		}
+
+		private FogStarBrightness(double p, double o) {
+			period = 1D/p;
+			offset = o;
+		}
+
+		public double getBrightness(double t) {
+			return 0.5+0.5*Math.sin(offset+t*period);
+		}
 
 	}
 

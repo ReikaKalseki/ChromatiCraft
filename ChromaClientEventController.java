@@ -473,11 +473,13 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 
 	@SubscribeEvent
 	public void renderDimensionSkyriver(EntityRenderingLoopEvent evt) {
-		if (MinecraftForgeClient.getRenderPass() == 1 && Minecraft.getMinecraft().theWorld.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
-			SkyRiverRenderer.instance.render();
-			ChromaDimensionManager.renderAurorae();
+		if (Minecraft.getMinecraft().theWorld.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			if (MinecraftForgeClient.getRenderPass() == 1) {
+				SkyRiverRenderer.instance.render();
+				ChromaDimensionManager.renderAurorae();
+			}
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-			ChromaCloudRenderer.instance.drawVoidFog(Tessellator.instance, 0xffffff, ep.posX, ep.posZ, 512, 0);
+			ChromaCloudRenderer.instance.drawVoidFog(ep);
 		}
 	}
 

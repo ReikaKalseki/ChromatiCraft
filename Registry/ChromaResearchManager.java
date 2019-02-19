@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -19,18 +19,8 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Random;
 
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagInt;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.StatCollector;
-import net.minecraftforge.common.MinecraftForge;
+import com.google.common.collect.HashBiMap;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.ResearchFetcher;
 import Reika.ChromatiCraft.API.ResearchFetcher.ResearchRegistry;
@@ -52,11 +42,20 @@ import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-
-import com.google.common.collect.HashBiMap;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagInt;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.StatCollector;
+import net.minecraftforge.common.MinecraftForge;
 
 public final class ChromaResearchManager implements ResearchRegistry {
 
@@ -486,7 +485,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 				case ENERGYEXPLORE:
 					return ProgressStage.PYLON.isPlayerAtStage(ep);
 				case BASICCRAFT:
-					return ProgressStage.CRYSTALS.isPlayerAtStage(ep); //for now
+					return ProgressStage.ANYSTRUCT.isPlayerAtStage(ep);
 				case RUNECRAFT:
 					return RecipesCastingTable.playerHasCrafted(ep, RecipeType.CRAFTING);
 				case MULTICRAFT:

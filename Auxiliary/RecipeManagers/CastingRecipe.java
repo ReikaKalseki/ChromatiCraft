@@ -40,6 +40,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
@@ -168,6 +169,16 @@ public class CastingRecipe implements APICastingRecipe {
 	}
 
 	public boolean crafts(ItemStack is) {
+		if (is == null)
+			return false;
+		if (is.stackTagCompound != null) {
+			is = is.copy();
+			ChromaTiles c = ChromaTiles.getTileByCraftedItem(is);
+			if (c != null) {
+				if (c.isLumenTile())
+					is.stackTagCompound.removeTag("energy");
+			}
+		}
 		return ReikaItemHelper.matchStacks(is, out) && ItemStack.areItemStackTagsEqual(is, out);
 	}
 	/*

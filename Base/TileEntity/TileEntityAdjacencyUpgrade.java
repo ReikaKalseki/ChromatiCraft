@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,13 +11,6 @@ package Reika.ChromatiCraft.Base.TileEntity;
 
 import java.util.HashMap;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -33,6 +26,13 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 
 
@@ -104,9 +104,10 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 			long time = System.nanoTime();
 			for (int i = 0; i < 6; i++) {
 				ForgeDirection dir = dirs[i];
-				if (this.tickDirection(world, x, y, z, dir, time) && rand.nextInt(4) == 0) {
-					if (world.isRemote)
-						this.spawnActionParticles(world, x, y, z, dir);
+				if (this.tickDirection(world, x, y, z, dir, time)) {
+					if (rand.nextInt(4) == 0)
+						if (world.isRemote)
+							this.spawnActionParticles(world, x, y, z, dir);
 				}
 				else {
 					break;

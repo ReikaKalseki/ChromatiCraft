@@ -1,19 +1,52 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Entity;
 
-import ic2.api.energy.tile.IEnergySink;
-
 import java.awt.Color;
 import java.util.List;
 
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
+import Reika.ChromatiCraft.Auxiliary.PylonDamage;
+import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.Chromabilities;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.Data.SphericalVector;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.IO.PacketTarget;
+import Reika.DragonAPI.Instantiable.ParticleController.CollectingPositionController;
+import Reika.DragonAPI.Interfaces.Entity.DestroyOnUnload;
+import Reika.DragonAPI.Interfaces.Entity.EtherealEntity;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import cofh.api.energy.IEnergyHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import ic2.api.energy.tile.IEnergySink;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -36,40 +69,8 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
-import Reika.ChromatiCraft.Auxiliary.PylonDamage;
-import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaPackets;
-import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.ChromatiCraft.Registry.Chromabilities;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Instantiable.Data.SphericalVector;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Instantiable.IO.PacketTarget;
-import Reika.DragonAPI.Instantiable.ParticleController.CollectingPositionController;
-import Reika.DragonAPI.Interfaces.Entity.EtherealEntity;
-import Reika.DragonAPI.Libraries.ReikaAABBHelper;
-import Reika.DragonAPI.Libraries.ReikaEntityHelper;
-import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
-import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-import cofh.api.energy.IEnergyHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
-public class EntityGlowCloud extends EntityLiving implements EtherealEntity, IMob {
+public class EntityGlowCloud extends EntityLiving implements EtherealEntity, IMob, DestroyOnUnload {
 
 	private SphericalVector velocity;
 	private double targetTheta = rand.nextInt(360);
@@ -231,7 +232,7 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity, IMo
 					velocity.magnitude -= 0.01D;
 			}
 
-			if (onGround) {
+			if (onGround || posY <= -18) {
 				velocity.inclination = 90;
 				velocity.magnitude *= 2;
 				posY += 1;//velocity.magnitude;
@@ -540,7 +541,13 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity, IMo
 
 	@Override
 	public boolean getCanSpawnHere() {
-		return rand.nextInt(5) == 0/* && spawnedEntities < SPAWN_LIMIT*/ && !ReikaEntityHelper.existsAnotherValidEntityWithin(this, 32, naturalSpawnedSelector);// && worldObj.getClosestPlayer(posX, posY, posZ, 64) != null;
+		int n = 5;
+		if (worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			if (posY > 4)
+				return false;
+			n = 3;
+		}
+		return rand.nextInt(n) == 0/* && spawnedEntities < SPAWN_LIMIT*/ && !ReikaEntityHelper.existsAnotherValidEntityWithin(this, 32, naturalSpawnedSelector);// && worldObj.getClosestPlayer(posX, posY, posZ, 64) != null;
 	}
 
 	@Override
@@ -617,6 +624,8 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity, IMo
 
 	@Override
 	public boolean attackEntityFrom(DamageSource src, float dmg) {
+		if (worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
+			return false;
 		Entity e = src.getEntity();
 		if (src.getClass().getName().equals("tconstruct.smeltery.SmelteryDamageSource")) {
 			return false;
@@ -666,6 +675,12 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity, IMo
 	public IEntityLivingData onSpawnWithEgg(IEntityLivingData dat) {
 		isNaturalSpawn = false;
 		return dat;
+	}
+
+	@Override
+	public void destroy() {
+		if (worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
+			this.setDead();
 	}
 
 }

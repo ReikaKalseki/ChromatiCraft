@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PlantDropManager;
 import Reika.ChromatiCraft.Base.BlockChromaTiered;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -487,7 +488,7 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 			case BULB:
 				return b.getMaterial() == Material.leaves;
 			case CAVE:
-				return b == Blocks.stone || ReikaBlockHelper.isOre(b, meta);
+				return b == Blocks.stone || ReikaBlockHelper.isOre(b, meta) || (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance() && world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue());
 			case LILY:
 				return b == Blocks.water || b == Blocks.flowing_water;
 			case DESERT:

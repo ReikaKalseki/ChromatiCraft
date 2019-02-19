@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,6 +12,23 @@ package Reika.ChromatiCraft.Items.Tools.Wands;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.ItemWandBase;
+import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
+import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
+import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
+import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.ReikaChiselHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -21,20 +38,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.ItemWandBase;
-import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
-import Reika.ChromatiCraft.Registry.ChromaGuis;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
-import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
-import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
-import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
-import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
-import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public class ItemTransitionWand extends ItemWandBase implements BreakerCallback {
 
@@ -76,7 +79,7 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 					if (!this.setOrGetBlockBox(is, x, y, z))
 						return false;
 				}
-				int depth = mode == TransitionMode.VOLUMETRIC ? Integer.MAX_VALUE : getDepth(ep);
+				int depth = mode == TransitionMode.VOLUMETRIC || mode == TransitionMode.COLUMN ? Integer.MAX_VALUE : getDepth(ep);
 				ProgressiveBreaker br = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, depth);
 				br.call = this;
 				br.drops = false;
@@ -91,6 +94,9 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 					br.bounds = this.getStoredBox(is);
 					br.isOmni = true;
 					br.pathTracking = true;
+				}
+				if (mode == TransitionMode.COLUMN) {
+					br.bounds = new BlockBox(x, 0, z, x, 256, z);
 				}
 				is.stackTagCompound.removeTag("bbox");
 				breakers.put(br.hashCode(), brp);
@@ -193,7 +199,14 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 				world.setBlock(x, y, z, r.place, r.placeM, 3);
 				ReikaSoundHelper.playPlaceSound(world, x, y, z, r.place);
 				this.drainPlayer(r.player);
-				ReikaPlayerAPI.findAndDecrItem(r.player, r.place, r.placeM);
+				if (!ReikaPlayerAPI.findAndDecrItem(r.player, r.place, r.placeM)) {
+					if (ModList.CHISEL.isLoaded()) {
+						int ret = ReikaChiselHandler.getChiselableSource(r.player.inventory, r.place, r.placeM);
+						if (ret != -1) {
+							ReikaInventoryHelper.decrStack(ret, r.player.inventory, 1);
+						}
+					}
+				}
 			}
 			else {
 				b.terminate();
@@ -216,7 +229,7 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 		if (r != null) {
 			boolean exists = world.getPlayerEntityByName(r.player.getCommandSenderName()) != null;
 			if (exists) {
-				if (this.sufficientEnergy(r.player) && ReikaPlayerAPI.playerHasOrIsCreative(r.player, r.place, r.placeM)) {
+				if (this.sufficientEnergy(r.player) && this.playerHas(r.player, r.place, r.placeM)) {
 					boolean perm = world.isRemote || (ReikaPlayerAPI.playerCanBreakAt((WorldServer)world, x, y, z, (EntityPlayerMP)r.player));
 					switch(r.mode) {
 						case CONTIGUOUS:
@@ -225,11 +238,22 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 							return perm && ReikaWorldHelper.checkForAdjNonCube(world, x, y, z) != null;
 						case VOLUMETRIC:
 							return perm;
-						default:
-							return false;
+						case COLUMN:
+							return perm;
 					}
 				}
 			}
+		}
+		return false;
+	}
+
+	private boolean playerHas(EntityPlayer ep, Block b, int m) {
+		if (ReikaPlayerAPI.playerHasOrIsCreative(ep, b, m))
+			return true;
+		if (ModList.CHISEL.isLoaded()) {
+			int ret = ReikaChiselHandler.getChiselableSource(ep.inventory, b, m);
+			if (ret != -1)
+				return true;
 		}
 		return false;
 	}
@@ -268,7 +292,8 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 	public static enum TransitionMode {
 		CONTIGUOUS("Contiguous"),
 		AIRONLY("Exposed Contiguous"),
-		VOLUMETRIC("Volumetric");
+		VOLUMETRIC("Volumetric"),
+		COLUMN("Columnar");
 
 		public final String desc;
 

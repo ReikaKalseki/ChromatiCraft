@@ -19,15 +19,19 @@ import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Block.Decoration.BlockEtherealLight.Flags;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
+import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
+import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
+import Reika.ChromatiCraft.World.IWG.GlowingCliffsAuxGenerator;
 import Reika.DragonAPI.Instantiable.Interpolation;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
+import Reika.DragonAPI.Interfaces.Registry.OreType;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -35,6 +39,7 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
@@ -62,7 +67,7 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 			HashSet<Coordinate> set1 = new HashSet();
 			HashSet<Coordinate> set2 = new HashSet();
 			double x0 = x+0.5;
-			double y0 = y+0.5;
+			double y0 = y+0.5+1;
 			double z0 = z+0.5;
 			this.growFrom(world, rand, x0, y0, z0, MAX_RADIUS, set1, set2, 0);
 			ReikaJavaLibrary.pConsole(set1.size()+" @ "+x+", "+z);
@@ -112,9 +117,9 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 		for (int i = 0; i < li.size()-1; i++) {
 			DecimalPosition pos1 = li.get(i);
 			DecimalPosition pos2 = li.get(i+1);
-			if (this.getLine(world, rand, pos1, pos2, rVar.getValue(i), rVar.getValue(i+1), i, parent, path) && forkDepth > 0) //prevent overtangling
-				;//break;
-			if (forkDepth <= 4 && rand.nextInt(Math.max(10, (int)pos1.yCoord)) == 0) {
+			if (i > 10 && this.getLine(world, rand, pos1, pos2, rVar.getValue(i), rVar.getValue(i+1), i, parent, path) && forkDepth > 0) //prevent overtangling
+				break;
+			if (forkDepth <= 3 && rand.nextInt(Math.max(30, (int)pos1.yCoord)) == 0) {
 				this.fork(world, rand, pos1, pos2, rVar, i, path, forkDepth);
 			}
 		}
@@ -131,6 +136,8 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 	private void generate(World world, Random rand, HashSet<Coordinate> set, int upper) {
 		for (Coordinate c : set) {
 			if (c.yCoord > upper)
+				continue;
+			if (c.yCoord < 0)
 				continue;
 			boolean top = c.yCoord == upper;
 			boolean edge = !set.containsAll(c.getAdjacentCoordinates());
@@ -157,19 +164,37 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 						}
 					}
 				}
-				if (c.yCoord <= 10 && ReikaRandomHelper.doWithChance((11-c.yCoord)/10D)) {
+				if (/*!edge && */c.yCoord <= 10 && ReikaRandomHelper.doWithChance((11-c.yCoord)/10D)) {
 					b = Blocks.air;
 				}
 				if (c.yCoord == 0) {
 					b = Blocks.air;
 				}
 			}
-			if (b == Blocks.air && rand.nextInt(180) == 0) {
+			if (b == Blocks.air && rand.nextInt(c.yCoord >= 16 ? 160 : 10+10*c.yCoord) == 0) {
 				b = ChromaBlocks.LIGHT.getBlockInstance();
-				meta = Flags.PARTICLES.getFlag();
+				meta = c.yCoord > 12 ? Flags.PARTICLES.getFlag() : 0;
+			}
+			if (b == Blocks.air && rand.nextInt(50) == 0 && !set.contains(c.offset(0, 2, 0))) {
+				b = ChromaBlocks.TIEREDPLANT.getBlockInstance();
+				meta = TieredPlants.CAVE.ordinal();
 			}
 			if (b == Blocks.stone) {
+				if (rand.nextInt(3) == 0) {
+					OreType ore = GlowingCliffsAuxGenerator.instance.oreRand.getRandomEntry();
+					ItemStack is = ore.getFirstOreBlock();
+					b = Block.getBlockFromItem(is.getItem());
+					meta = is.getItemDamage();
+				}
+				else if (rand.nextInt(4) == 0) {
+					b = ChromaBlocks.TIEREDORE.getBlockInstance();
+					meta = rand.nextInt(TieredOres.list.length);
+					while (TieredOres.list[meta].genBlock != Blocks.stone)
+						meta = rand.nextInt(TieredOres.list.length);
+				}
+				else {
 
+				}
 			}
 			c.setBlock(world, b, meta);
 		}

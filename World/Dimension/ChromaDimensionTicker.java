@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,27 +12,31 @@ package Reika.ChromatiCraft.World.Dimension;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Random;
 
-import net.minecraft.client.audio.ISound;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeChunkManager;
-import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.MusicLoader;
+import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionalAudioHandler.DimensionMusic;
 import Reika.DragonAPI.Auxiliary.Trackers.RemoteAssetLoader.RemoteAssetsDownloadCompleteEvent;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.IO.DirectResourceManager;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.audio.ISound;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.common.ForgeChunkManager.Ticket;
 
 public class ChromaDimensionTicker implements TickHandler {
 
@@ -81,6 +85,13 @@ public class ChromaDimensionTicker implements TickHandler {
 					world.setAllowedSpawnTypes(false, true);
 					if (!world.playerEntities.isEmpty()) {
 						ChromaDimensionManager.dimensionAge++;
+						if (!world.isRemote) {
+							for (EntityPlayer ep : ((List<EntityPlayer>)world.playerEntities)) {
+								if (ep.posY < 30 && !ReikaEntityHelper.canEntitySeeTheSky(ep) && ChromaDimensionManager.getStructurePlayerIsIn(ep) == null) {
+									this.spawnVoidLumaFog(ep);
+								}
+							}
+						}
 					}
 				}
 				break;
@@ -109,6 +120,16 @@ public class ChromaDimensionTicker implements TickHandler {
 				break;
 			default:
 				break;
+		}
+	}
+
+	private void spawnVoidLumaFog(EntityPlayer ep) {
+		double x = ReikaRandomHelper.getRandomPlusMinus(ep.posX, 32);
+		double z = ReikaRandomHelper.getRandomPlusMinus(ep.posZ, 32);
+		double y = ReikaRandomHelper.getRandomBetween(-10, 0);
+		EntityGlowCloud e = new EntityGlowCloud(ep.worldObj, x, y, z);
+		if (e.getCanSpawnHere()) {
+			ep.worldObj.spawnEntityInWorld(e);
 		}
 	}
 

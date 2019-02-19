@@ -56,6 +56,7 @@ public class PylonLinkNetwork {
 		PylonNode connection = sw.addNode(te, p);
 		p.link(te);
 		this.sync(null);
+		ChromatiCraft.logger.log("Updating pylon link network: added a tile @ "+te);
 		return connection;
 	}
 
@@ -68,6 +69,7 @@ public class PylonLinkNetwork {
 			((TileEntityCrystalPylon)te).link(null);
 		}
 		connection.parent.remove(connection);
+		ChromatiCraft.logger.log("Updating pylon link network: removed a tile @ "+connection);
 		this.sync(null);
 	}
 
@@ -108,6 +110,7 @@ public class PylonLinkNetwork {
 			PylonWeb pw = PylonWeb.readFromNBT(tag);
 			links.put(pw.owner, pw);
 		}
+		ChromatiCraft.logger.log("Updating pylon link network from disk");
 		this.sync(null);
 	}
 
@@ -122,6 +125,8 @@ public class PylonLinkNetwork {
 	}
 
 	public void sync(EntityPlayerMP ep) {
+		if (ep != null)
+			ChromatiCraft.logger.log("Updating pylon link network for "+ep);
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
 			return;
 		PacketTarget pt = ep != null ? new PlayerTarget(ep) : PacketTarget.allPlayers;
@@ -282,6 +287,11 @@ public class PylonLinkNetwork {
 			tile.writeToNBT("loc", NBT);
 			pylon.writeToNBT("pylon", NBT);
 			return NBT;
+		}
+
+		@Override
+		public String toString() {
+			return this.getColor()+" : "+tile.toString();
 		}
 
 		@Override

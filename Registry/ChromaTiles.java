@@ -130,6 +130,7 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.Maps.BlockMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
 import Reika.DragonAPI.Interfaces.TileEntity.RedstoneTile;
 import Reika.DragonAPI.Interfaces.TileEntity.SidePlacedTile;
@@ -257,6 +258,7 @@ public enum ChromaTiles implements TileEnum {
 	public static final ChromaTiles[] TEList = values();
 
 	private static final BlockMap<ChromaTiles> chromaMappings = new BlockMap();
+	private static final ItemHashMap<ChromaTiles> craftMap = new ItemHashMap();
 
 	private ChromaTiles(String n, ChromaBlocks b, Class <? extends TileEntityChromaticBase> c, int meta) {
 		this(n, b, c, meta, null, null);
@@ -461,6 +463,9 @@ public enum ChromaTiles implements TileEnum {
 			if (chromaMappings.containsKey(id, meta))
 				throw new RegistrationException(ChromatiCraft.instance, "ID/Meta conflict @ "+id+"/"+meta+": "+r+" & "+chromaMappings.get(id, meta));
 			chromaMappings.put(id, meta, r);
+			ItemStack is = r.getCraftedProduct();
+			if (is != null)
+				craftMap.put(is, r);
 		}
 	}
 
@@ -841,6 +846,10 @@ public enum ChromaTiles implements TileEnum {
 
 	public boolean hasTextureVariants() {
 		return VariableTexture.class.isAssignableFrom(tile);
+	}
+
+	public static ChromaTiles getTileByCraftedItem(ItemStack is) {
+		return craftMap.get(is);
 	}
 
 }
