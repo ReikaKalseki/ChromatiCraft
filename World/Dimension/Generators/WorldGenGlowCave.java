@@ -19,19 +19,17 @@ import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Block.Decoration.BlockEtherealLight.Flags;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
-import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
-import Reika.ChromatiCraft.World.IWG.GlowingCliffsAuxGenerator;
 import Reika.DragonAPI.Instantiable.Interpolation;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
+import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
 import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
-import Reika.DragonAPI.Interfaces.Registry.OreType;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -39,7 +37,6 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
@@ -49,8 +46,11 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 	private static final double MAX_RADIUS = 4.5;
 	private static final double MAX_RADIUS_CHANGE_PER_SEGMENT = 0.5;
 
+	private final SimplexNoiseGenerator wallSelectionNoise;
+
 	public WorldGenGlowCave(DimensionGenerators g, Random rand, long seed) {
 		super(g, rand, seed);
+		wallSelectionNoise = new SimplexNoiseGenerator(seed).setFrequency(1/3D).addOctave(2, 0.5);
 	}
 
 	@Override
@@ -67,14 +67,14 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 			HashSet<Coordinate> set1 = new HashSet();
 			HashSet<Coordinate> set2 = new HashSet();
 			double x0 = x+0.5;
-			double y0 = y+0.5+1;
+			double y0 = dy+0.5+1;
 			double z0 = z+0.5;
 			this.growFrom(world, rand, x0, y0, z0, MAX_RADIUS, set1, set2, 0);
-			ReikaJavaLibrary.pConsole(set1.size()+" @ "+x+", "+z);
 			for (Coordinate c : set1) {
 				if (c.getBlock(world).getMaterial() == Material.water || ReikaWorldHelper.checkForAdjMaterial(world, c.xCoord, c.yCoord, c.zCoord, Material.water) != null || ReikaWorldHelper.checkForAdjBlock(world, c.xCoord, c.yCoord, c.zCoord, ChromaBlocks.STRUCTSHIELD.getBlockInstance()) != null)
 					return false;
 			}
+			ReikaJavaLibrary.pConsole(set1.size()+" @ "+x+", "+z);
 			this.generate(world, rand, set1, dy);
 			return true;
 		}
@@ -119,7 +119,7 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 			DecimalPosition pos2 = li.get(i+1);
 			if (i > 10 && this.getLine(world, rand, pos1, pos2, rVar.getValue(i), rVar.getValue(i+1), i, parent, path) && forkDepth > 0) //prevent overtangling
 				break;
-			if (forkDepth <= 3 && rand.nextInt(Math.max(30, (int)pos1.yCoord)) == 0) {
+			if (forkDepth <= 3 && rand.nextInt(Math.max(24, (int)pos1.yCoord)) == 0) {
 				this.fork(world, rand, pos1, pos2, rVar, i, path, forkDepth);
 			}
 		}
@@ -135,23 +135,16 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 
 	private void generate(World world, Random rand, HashSet<Coordinate> set, int upper) {
 		for (Coordinate c : set) {
-			if (c.yCoord > upper)
-				continue;
 			if (c.yCoord < 0)
 				continue;
 			boolean top = c.yCoord == upper;
-			boolean edge = !set.containsAll(c.getAdjacentCoordinates());
+			boolean edge = c.yCoord <= upper && !set.containsAll(c.getAdjacentCoordinates());
 			Block b = Blocks.air;
 			int meta = 0;
 			if (!top) {
 				if (edge) {
-					if (c.yCoord <= 27 && ReikaRandomHelper.doWithChance((28-c.yCoord)/28D)) {
-						if (ReikaRandomHelper.doWithChance((28-c.yCoord)/28D)) {
-							b = Blocks.bedrock;
-						}
-						else {
-							b = Blocks.stone;
-						}
+					if (this.isBedrockWall(world, rand, c)) {
+						b = Blocks.bedrock;
 					}
 					else {
 						if (rand.nextInt(20) == 0) {
@@ -163,10 +156,10 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 							meta = ReikaRandomHelper.doWithChance(20) ? BlockType.MOSS.metadata : BlockType.STONE.metadata;
 						}
 					}
-				}
-				if (/*!edge && */c.yCoord <= 10 && ReikaRandomHelper.doWithChance((11-c.yCoord)/10D)) {
+				}/*
+				if (/*!edge && *//*c.yCoord <= 10 && ReikaRandomHelper.doWithChance((11-c.yCoord)/10D)) {
 					b = Blocks.air;
-				}
+				}*/
 				if (c.yCoord == 0) {
 					b = Blocks.air;
 				}
@@ -179,6 +172,7 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 				b = ChromaBlocks.TIEREDPLANT.getBlockInstance();
 				meta = TieredPlants.CAVE.ordinal();
 			}
+			/*
 			if (b == Blocks.stone) {
 				if (rand.nextInt(3) == 0) {
 					OreType ore = GlowingCliffsAuxGenerator.instance.oreRand.getRandomEntry();
@@ -195,9 +189,21 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 				else {
 
 				}
+			}*/
+			if (b == Blocks.bedrock) {
+
 			}
 			c.setBlock(world, b, meta);
 		}
+	}
+
+	private boolean isBedrockWall(World world, Random rand, Coordinate c) {
+		//was c.yCoord <= 27 && ReikaRandomHelper.doWithChance((28-c.yCoord)/28D)
+		if (c.yCoord >= 24)
+			return false;
+		if (c.yCoord <= 8)
+			return true;
+		return c.yCoord <= ReikaMathLibrary.normalizeToBounds(wallSelectionNoise.getValue(c.xCoord, c.zCoord), 8, 24);
 	}
 
 	private boolean getLine(World world, Random rand, DecimalPosition pos1, DecimalPosition pos2, double r1, double r2, int i, HashSet<Coordinate> main, HashSet<Coordinate> line) {

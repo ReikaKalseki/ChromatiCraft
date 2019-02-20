@@ -138,7 +138,7 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 		}
 		fx.setLife(10).setScale(sc).setColor(c);
 		if (sy == -50) {
-			fx.setLife(20+rand.nextInt(21));
+			fx.setLife(40+rand.nextInt(21));
 			fx.setColliding();
 			fx.motionY *= 0.7;
 		}

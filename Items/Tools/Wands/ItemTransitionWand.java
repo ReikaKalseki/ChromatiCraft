@@ -199,11 +199,13 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 				world.setBlock(x, y, z, r.place, r.placeM, 3);
 				ReikaSoundHelper.playPlaceSound(world, x, y, z, r.place);
 				this.drainPlayer(r.player);
-				if (!ReikaPlayerAPI.findAndDecrItem(r.player, r.place, r.placeM)) {
-					if (ModList.CHISEL.isLoaded()) {
-						int ret = ReikaChiselHandler.getChiselableSource(r.player.inventory, r.place, r.placeM);
-						if (ret != -1) {
-							ReikaInventoryHelper.decrStack(ret, r.player.inventory, 1);
+				if (!r.player.capabilities.isCreativeMode) {
+					if (!ReikaPlayerAPI.findAndDecrItem(r.player, r.place, r.placeM)) {
+						if (ModList.CHISEL.isLoaded()) {
+							int ret = ReikaChiselHandler.getChiselableSource(r.player.inventory, r.place, r.placeM);
+							if (ret != -1) {
+								ReikaInventoryHelper.decrStack(ret, r.player.inventory, 1);
+							}
 						}
 					}
 				}

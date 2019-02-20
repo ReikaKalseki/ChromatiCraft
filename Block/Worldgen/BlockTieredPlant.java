@@ -488,7 +488,7 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 			case BULB:
 				return b.getMaterial() == Material.leaves;
 			case CAVE:
-				return b == Blocks.stone || ReikaBlockHelper.isOre(b, meta) || (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance() && world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue());
+				return b == Blocks.stone || b == Blocks.bedrock || ReikaBlockHelper.isOre(b, meta) || (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance() && world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue());
 			case LILY:
 				return b == Blocks.water || b == Blocks.flowing_water;
 			case DESERT:

@@ -35,7 +35,14 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 	private static final Acceleration blacklistKey = new Acceleration() {
 		@Override
 		public void tick(TileEntity te, int factor) {}
+
+		@Override
+		public boolean usesParentClasses() {
+			return false;
+		}
 	};
+
+	private static boolean doRecursiveChecks = false;
 
 	static {
 		blacklistTile("icbm.sentry.turret.Blocks.TileTurret", ModList.ICBM, BlacklistReason.BUGS); //by request
@@ -60,6 +67,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 
 	public static void customizeTile(Class c, Acceleration a) {
 		actions.put(c, a);
+		doRecursiveChecks = a.usesParentClasses();
 	}
 
 	private static void blacklistTile(String name, ModList mod, BlacklistReason r) {
@@ -102,6 +110,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 			int max = this.getAccel();
 			if (a != null) {
 				try {
+					te = a.getActingTileEntity(te);
 					a.tick(te, max);
 				}
 				catch (Exception e) {
@@ -134,6 +143,10 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 		while (c.isAnonymousClass())
 			c = c.getSuperclass();
 		Acceleration a = actions.get(c);
+		while (a == null && c != TileEntity.class) {
+			c = c.getSuperclass();
+			a = actions.get(c);
+		}
 		if (a != null)
 			return a;
 		if (!te.canUpdate())
@@ -186,6 +199,8 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 
 		protected abstract void tick(TileEntity te, int factor) throws Exception;
 
+		public abstract boolean usesParentClasses();
+
 		protected final void registerClass(String sg) {
 			Class c = null;
 			try {
@@ -196,6 +211,10 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 			}
 			if (c != null)
 				TileEntityAccelerator.customizeTile(c, this);
+		}
+
+		protected TileEntity getActingTileEntity(TileEntity root) throws Exception {
+			return root;
 		}
 
 	}
@@ -211,6 +230,11 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 		@Override
 		protected void tick(TileEntity te, int factor) {
 			accel.tick(factor);
+		}
+
+		@Override
+		public boolean usesParentClasses() {
+			return accel.usesParentClasses();
 		}
 
 	}

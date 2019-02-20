@@ -538,6 +538,15 @@ public class EssentiaNetwork {
 		pathList.clear();
 	}
 
+	public Collection<Coordinate> getAllFilteredJars() {
+		Collection<Coordinate> ret = new HashSet();
+		for (NetworkEndpoint n : endpoints.values()) {
+			if (n instanceof LabelledJarEndpoint)
+				ret.add(n.point);
+		}
+		return ret;
+	}
+
 	private static Aspect isFilteredJar(IEssentiaTransport te) {
 		if (isJar(te)) {
 			Aspect a;

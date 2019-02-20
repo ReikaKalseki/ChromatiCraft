@@ -15,47 +15,46 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator.Acceleration;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
-import ic2.api.reactor.IReactorChamber;
 import net.minecraft.tileentity.TileEntity;
 
-public class IC2ReactorAcceleration extends Acceleration {
+public class IEMultiblockAcceleration extends Acceleration {
 
-	public static final IC2ReactorAcceleration instance = new IC2ReactorAcceleration();
+	public static final IEMultiblockAcceleration instance = new IEMultiblockAcceleration();
 
-	private Method tick;
+	private Method getMaster;
 
 	public void register() {
-		String s = "ic2.core.block.reactor.tileentity.TileEntityNuclearReactorElectric";
-		String s2 = "ic2.core.block.reactor.tileentity.TileEntityReactorChamberElectric";
+		String s = "blusunrize.immersiveengineering.common.blocks.metal";
 		this.registerClass(s);
-		this.registerClass(s2);
 
 		try {
 			Class c = Class.forName(s);
-			tick = c.getDeclaredMethod("updateEntityServer");
-			tick.setAccessible(true);
+			getMaster = c.getDeclaredMethod("master");
+			getMaster.setAccessible(true);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.IC2, e);
-			ChromatiCraft.logger.logError("Could not find IC2 reactor internal members!");
+			ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.IMMERSIVEENG, e);
+			ChromatiCraft.logger.logError("Could not find IE Multiblock internal members!");
 		}
 	}
 
 	@Override
 	protected void tick(TileEntity te, int factor) throws Exception {
-		if (te.worldObj.isRemote)
-			return;
-		if (te instanceof IReactorChamber) {
-			te = (TileEntity)((IReactorChamber)te).getReactor();
+		for (int k = 0; k < factor; k++) {
+			te.updateEntity();
 		}
-		for (int i = 0; i < factor; i++)
-			tick.invoke(te);
+	}
+
+	@Override
+	protected TileEntity getActingTileEntity(TileEntity root) throws Exception {
+		TileEntity relay = (TileEntity)getMaster.invoke(root);
+		return relay != null ? relay : root;
 	}
 
 	@Override
 	public boolean usesParentClasses() {
-		return false;
+		return true;
 	}
 
 }

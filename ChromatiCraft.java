@@ -73,6 +73,7 @@ import Reika.ChromatiCraft.Magic.Artefact.UABombingEffects;
 import Reika.ChromatiCraft.Magic.Lore.RosettaStone;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.IC2ReactorAcceleration;
+import Reika.ChromatiCraft.ModInterface.IEMultiblockAcceleration;
 import Reika.ChromatiCraft.ModInterface.ModInteraction;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.ChromaPrepHandler;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.PoolRecipeHandler;
@@ -779,6 +780,9 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		if (ModList.IC2.isLoaded()) {
 			IC2ReactorAcceleration.instance.register();
+		}
+		if (ModList.IMMERSIVEENG.isLoaded()) {
+			IEMultiblockAcceleration.instance.register();
 		}
 
 		if (ModList.TWILIGHT.isLoaded()) {

@@ -139,4 +139,9 @@ public class ApiaryAcceleration extends Acceleration {
 		//te.worldObj.markBlockForUpdate(te.xCoord, te.yCoord, te.zCoord);
 	}
 
+	@Override
+	public boolean usesParentClasses() {
+		return false;
+	}
+
 }

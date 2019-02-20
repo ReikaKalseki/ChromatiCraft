@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -10,20 +10,7 @@
 package Reika.ChromatiCraft.TileEntity;
 
 import java.util.HashSet;
-import java.util.Iterator;
 
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
@@ -44,6 +31,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Maps.ProximityMap;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer.StructureRenderingParticleSpawner;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
@@ -57,6 +45,18 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
 
 
 public class TileEntityDataNode extends TileEntityChromaticBase implements OperationInterval, StructureRenderingParticleSpawner {
@@ -88,7 +88,7 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 
 	private Towers tower;
 	private final HashSet<String> scannedPlayers = new HashSet(); //not uuid since written to NBT
-	private final HashSet<Coordinate> metaAlloyPlants = new HashSet();
+	private final ProximityMap metaAlloyPlants = new ProximityMap(64, 1);
 
 	@Override
 	public ChromaTiles getTile() {
@@ -154,15 +154,10 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 		}
 
 		if (tower != null && !world.isRemote && rand.nextInt(800) == 0) {
-			if (metaAlloyPlants.size() < 4) {
-				this.spawnMetaAlloy(world, x, y, z);
-			}
-			else { //verify all flowers
-				Iterator<Coordinate> it = metaAlloyPlants.iterator();
-				while (it.hasNext()) {
-					Coordinate c = it.next();
+			if (!this.spawnMetaAlloy(world, x, y, z)) {
+				for (Coordinate c : metaAlloyPlants.getLocations()) { //verify all flowers
 					if (c.getBlock(world) != ChromaBlocks.METAALLOYLAMP.getBlockInstance())
-						it.remove();
+						metaAlloyPlants.remove(c);
 				}
 			}
 		}
@@ -173,20 +168,23 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 		//this.doParticles(worldObj, xCoord, yCoord, zCoord);
 	}
 
-	private void spawnMetaAlloy(World world, int x, int y, int z) {
+	private boolean spawnMetaAlloy(World world, int x, int y, int z) {
 		int dx = ReikaRandomHelper.getRandomPlusMinus(x, 256);
 		int dz = ReikaRandomHelper.getRandomPlusMinus(z, 256);
 		int dy = world.getTopSolidOrLiquidBlock(x, z)+1;
 		Block b = world.getBlock(dx, dy, dz);
-		while (dy >= 0 && (b.isAir(world, dx, dy, dz) || ReikaBlockHelper.isLeaf(world, dx, dy, dz))) {
+		while (dy >= 0 && (b.isAir(world, dx, dy, dz) || ReikaBlockHelper.isLeaf(world, dx, dy, dz)) || ReikaBlockHelper.isWood(world, dx, dy, dz)) {
 			dy--;
 			b = world.getBlock(dx, dy, dz);
 		}
 		if (b == Blocks.grass && world.getBlock(dx, dy+1, dz).isAir(world, dx, dy, dz)) {
-			world.setBlock(dx, dy+1, dz, ChromaBlocks.METAALLOYLAMP.getBlockInstance());
-			metaAlloyPlants.add(new Coordinate(dx, dy+1, dz));
-			//ReikaJavaLibrary.spamConsole(dx+":"+dz);
+			if (metaAlloyPlants.add(new Coordinate(dx, dy+1, dz))) {
+				world.setBlock(dx, dy+1, dz, ChromaBlocks.METAALLOYLAMP.getBlockInstance());
+				//ReikaJavaLibrary.spamConsole(dx+":"+dz);
+				return true;
+			}
 		}
+		return false;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -401,7 +399,7 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 		super.writeToNBT(NBT);
 
 		NBTTagList li = new NBTTagList();
-		for (Coordinate c : metaAlloyPlants) {
+		for (Coordinate c : metaAlloyPlants.getLocations()) {
 			li.appendTag(c.writeToTag());
 		}
 		NBT.setTag("plants", li);

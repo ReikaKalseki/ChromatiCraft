@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -55,6 +56,10 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 			duration = this.duration(energy);
 		}
 
+		public boolean craftsSame(Recipe r) {
+			return ReikaItemHelper.matchStacks(output, r.output);
+		}
+
 		private static int duration(ElementTagCompound energy) {
 			return ReikaMathLibrary.roundUpToX(20, (int)Math.sqrt(energy.getTotalEnergy()));
 		}
@@ -67,6 +72,11 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 		private FluidRecipe(ElementTagCompound tag, ItemStack is, Fluid f) {
 			super(tag, is);
 			fluid = f;
+		}
+
+		@Override
+		public boolean craftsSame(Recipe r) {
+			return r instanceof FluidRecipe && ((FluidRecipe)r).fluid == fluid;
 		}
 	}
 
@@ -97,9 +107,18 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 		entity = recipe != null ? new InertItem(worldObj, recipe.output) : null;
 	}
 
+	private static boolean areRecipesDifferent(Recipe r1, Recipe r2) {
+		if (r1 == r2)
+			return false;
+		if (r1 == null || r2 == null)
+			return true;
+		return !r1.craftsSame(r2);
+	}
+
 	private void onRecipeChanged(Recipe last) {
 		craftingTick = recipe != null ? recipe.duration : 0;
-		if (recipe != last) {
+		if (areRecipesDifferent(last, recipe)) {
+			ReikaJavaLibrary.pConsole("Changing recipe from "+last+" to "+recipe);
 			CrystalNetworker.instance.breakPaths(this);
 			checkTimer.reset();
 		}

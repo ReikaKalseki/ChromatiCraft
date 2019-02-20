@@ -525,6 +525,11 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 			return false;
 		}
 
+		@Override
+		public CropFormat getShape() {
+			return CropFormat.BLOCK;
+		}
+
 	}
 
 }

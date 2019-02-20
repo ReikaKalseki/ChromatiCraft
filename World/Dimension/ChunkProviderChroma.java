@@ -403,7 +403,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 				BiomeGenBase biome = biomeData[d];
 				int posIndex = d*columnData.length/256;
 
-				this.generateBedrockLayer(x, z, posIndex, columnData, metaData);
+				this.generateBedrockLayer(x, z, posIndex, columnData, metaData, biome);
 				this.generateSandBeaches(x, z, posIndex, columnData, metaData, dy, biome);
 				this.generateSurfaceGrass(x, z, posIndex, columnData, metaData, dy, biome);
 			}
@@ -455,7 +455,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 		}
 	}
 
-	private void generateBedrockLayer(int x, int z, int posIndex, Block[] columnData, byte[] metaData) {
+	private void generateBedrockLayer(int x, int z, int posIndex, Block[] columnData, byte[] metaData, BiomeGenBase biome) {
 		double d1 = 1.5-0.1875+rand.nextDouble()*0.1875;
 		double d2 = 1-0.125+rand.nextDouble()*0.125;
 		double d3 = 0.5-0.0625+rand.nextDouble()*0.0625;
@@ -465,12 +465,16 @@ public class ChunkProviderChroma implements IChunkProvider {
 		double sxz1 = d3*Math.sin(Math.toRadians(x*z/8D))*Math.cos(Math.toRadians(x*z/16D));
 		double sxz2 = d4*Math.cos(Math.toRadians(x*z*z/128D))*Math.sin(Math.toRadians(x*x*z/256D));
 		double maxBedrockY = 2.25+sx+sz+sxz1+sxz2;
-		if (true || maxBedrockY > 0)
+		if (maxBedrockY > 0 || !this.canSpawnBedrockHoles(biome))
 			columnData[posIndex] = Blocks.bedrock;
 		for (int i = 0; i < 4; i++) {
 			if (1+i <= maxBedrockY && (rand.nextInt(4) > 0 || rand.nextInt(4-i) > 0))
 				columnData[posIndex+1+i] = Blocks.bedrock;
 		}
+	}
+
+	private boolean canSpawnBedrockHoles(BiomeGenBase biome) {
+		return ((ChromaDimensionBiome)biome).biomeType.isFarRegions();
 	}
 
 	/**
