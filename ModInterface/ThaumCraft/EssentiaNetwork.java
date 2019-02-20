@@ -547,6 +547,59 @@ public class EssentiaNetwork {
 		return ret;
 	}
 
+	public HashSet<Coordinate> getDirectlyAccessibleEndpoints(TileEntityEssentiaRelay te) {
+		return this.getDirectlyAccessibleEndpoints(new Coordinate(te));
+	}
+
+	private HashSet<Coordinate> getDirectlyAccessibleEndpoints(Coordinate c) {
+		HashSet<Coordinate> ret = new HashSet();
+		for (NetworkEndpoint n : endpoints.values()) {
+			if (n.nodeAccesses.contains(c)) {
+				ret.add(n.point);
+			}
+		}
+		return ret;
+	}
+
+	public Collection<Coordinate> getAllAccessibleEndpoints(TileEntityEssentiaRelay te, boolean los) {
+		Coordinate loc = new Coordinate(te);
+		HashSet<Coordinate> ret = this.getDirectlyAccessibleEndpoints(loc);
+		/*
+		for (Coordinate c : ret) {
+			NetworkEndpoint n = endpoints.get(c);
+			for (NetworkEndpoint n2 : endpoints.values()) {
+				if (!ret.contains(n2)) {
+					if (this.getPath(te.worldObj, n, n2) != null) {
+						ret.add(n2.point);
+					}
+				}
+			}
+		}*/
+		HashSet<Coordinate> path = new HashSet();
+		this.recursiveFind(te.worldObj, loc, ret, path, los);
+
+		return ret;
+	}
+
+	private void recursiveFind(World world, Coordinate from, HashSet<Coordinate> ret, HashSet<Coordinate> path, boolean los) {
+		path.add(from);
+		for (Coordinate c : nodes) {
+			if (!path.contains(c)) {
+				if (c.isWithinDistOnAllCoords(from, TileEntityEssentiaRelay.SEARCH_RANGE)) {
+					if (!los || LOS(world, from, c)) {
+						ret.addAll(this.getDirectlyAccessibleEndpoints(c));
+						//ReikaJavaLibrary.pConsole(c);
+						this.recursiveFind(world, c, ret, path, los);
+					}
+				}
+			}
+		}
+	}
+
+	public boolean isFilteredJar(Coordinate c) {
+		return endpoints.get(c) instanceof LabelledJarEndpoint;
+	}
+
 	private static Aspect isFilteredJar(IEssentiaTransport te) {
 		if (isJar(te)) {
 			Aspect a;

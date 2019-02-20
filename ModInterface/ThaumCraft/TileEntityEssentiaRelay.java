@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,12 +17,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.EssentiaNetwork.EssentiaMovement;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.EssentiaNetwork.EssentiaPath;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
@@ -34,6 +38,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import thaumcraft.api.WorldCoordinates;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.IEssentiaTransport;
 
@@ -49,6 +54,24 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 
 	private final Collection<EssentiaPath> activePaths = new ArrayList();
 	final HashMap<Coordinate, Boolean> networkCoords = new HashMap();
+
+	private static Class infusionMatrix;
+	private static Class essentiaHandler;
+	private static HashMap<WorldCoordinates, ArrayList<WorldCoordinates>> essentiaHandlerData;
+
+	static {
+		if (ModList.THAUMCRAFT.isLoaded()) {
+			try {
+				infusionMatrix = Class.forName("thaumcraft.common.tiles.TileInfusionMatrix");
+				essentiaHandler = Class.forName("thaumcraft.common.lib.events.EssentiaHandler");
+			}
+			catch (Exception e) {
+				ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.THAUMCRAFT, e);
+				ChromatiCraft.logger.logError("Could not access infusion matrix classes!");
+				e.printStackTrace();
+			}
+		}
+	}
 
 	@Override
 	protected void writeSyncTag(NBTTagCompound NBT) {
@@ -118,9 +141,11 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 	void scan(World world, int x, int y, int z, boolean rebuild) {
 		if (world.isRemote)
 			return;
+		EssentiaNetwork ew = this.getNetwork();
 		if (rebuild) {
-			this.getNetwork().addNode(this);
+			ew.addNode(this);
 		}
+		HashSet<Coordinate> matrices = new HashSet();
 		for (int i = -SEARCH_RANGE; i <= SEARCH_RANGE; i++) {
 			for (int j = -SEARCH_RANGE; j <= SEARCH_RANGE; j++) {
 				for (int k = -SEARCH_RANGE; k <= SEARCH_RANGE; k++) {
@@ -137,14 +162,52 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 									network.merge(world, tr.network);*/
 							}
 							else {
-								this.getNetwork().addEndpoint(this, (IEssentiaTransport)te);
+								ew.addEndpoint(this, (IEssentiaTransport)te);
 							}
 						}
+					}
+					else if (te != null && te.getClass() == infusionMatrix) {
+						matrices.add(new Coordinate(te));
+					}
+				}
+			}
+		}
+		if (!matrices.isEmpty()) {
+			for (Coordinate loc : matrices) {
+				Collection<Coordinate> li = ew.getAllAccessibleEndpoints(this, false);
+				for (Coordinate c : li) {
+					if (ew.isFilteredJar(c)) {
+						this.injectFilteredJar(loc, c);
 					}
 				}
 			}
 		}
 		//ReikaJavaLibrary.pConsole(network, !world.isRemote);
+	}
+
+	private void injectFilteredJar(Coordinate loc, Coordinate c) {
+		if (essentiaHandlerData == null) {
+			try {
+				Field f = essentiaHandler.getDeclaredField("sources");
+				f.setAccessible(true);
+				essentiaHandlerData = (HashMap<WorldCoordinates, ArrayList<WorldCoordinates>>)f.get(null);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		if (essentiaHandlerData != null) {
+			WorldCoordinates key = new WorldCoordinates(loc.xCoord, loc.yCoord, loc.zCoord, worldObj.provider.dimensionId);
+			ArrayList<WorldCoordinates> li = essentiaHandlerData.get(key);
+			if (li == null) {
+				li = new ArrayList();
+				essentiaHandlerData.put(key, li);
+			}
+			WorldCoordinates add = new WorldCoordinates(c.xCoord, c.yCoord, c.zCoord, worldObj.provider.dimensionId);
+			if (!li.contains(add)) {
+				li.add(add);
+			}
+		}
 	}
 
 	@Override
