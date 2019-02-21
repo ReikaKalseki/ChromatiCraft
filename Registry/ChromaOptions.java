@@ -83,7 +83,8 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	MIDISIZE("Orchestra MIDI Size Limit (KB)", 80),
 	ALLOWSTRUCTPASS("Allow Structure Bypass Passwords", true),
 	SUPERBUILDKEYBIND("Superbuild Ability Activation", Key.LCTRL.toString()),
-	VILLAGERATE("Village Structure Frequency", 1F);
+	VILLAGERATE("Village Structure Frequency", 1F),
+	NODECHARGESPEED("Crystal-Network-Integrated ThaumCraft Node Improvement Speed", 1F);
 
 	private String label;
 	private boolean defaultState;
@@ -239,6 +240,11 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	public static int getStructureDifficulty() {
 		int base = STRUCTDIFFICULTY.getValue();
 		return Math.min(3, Math.max(1, base));
+	}
+
+	public static float getNodeGrowthSpeed() {
+		float base = NODECHARGESPEED.getFloat();
+		return Math.min(6F, Math.max(0.2F, base));
 	}
 
 	@Override

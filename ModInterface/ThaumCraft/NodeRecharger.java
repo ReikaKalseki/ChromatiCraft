@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,15 +12,8 @@ package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
 
-import net.minecraft.block.Block;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldSavedData;
-import net.minecraftforge.event.world.WorldEvent;
-import thaumcraft.api.nodes.INode;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
@@ -31,12 +24,24 @@ import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldSavedData;
+import net.minecraftforge.event.world.WorldEvent;
+import thaumcraft.api.nodes.INode;
 
 public class NodeRecharger implements TickHandler {
 
 	public static final NodeRecharger instance = new NodeRecharger();
 
 	private static final String NBT_TAG = "PYLON_RECHARGE_DATA";
+	private static final String EXTRA_TAG = "EXTRA_NODE_DATA";
 
 	private final HashMap<Integer, HashMap<WorldLocation, NodeReceiverWrapper>> nodes = new HashMap();
 
@@ -55,7 +60,8 @@ public class NodeRecharger implements TickHandler {
 		if (blacklist.contains(new BlockKey(te.getBlockType(), te.getBlockMetadata())))
 			return false;
 		WorldLocation loc = new WorldLocation(te);
-		return this.addLocation(loc, n, true);
+		this.addLocation(loc, n);
+		return true;
 	}
 
 	private HashMap<WorldLocation, NodeReceiverWrapper> getOrCreateMap(int id) {
@@ -101,17 +107,45 @@ public class NodeRecharger implements TickHandler {
 		ticked.remove(evt.world.provider.dimensionId);
 	}
 
-	private boolean addLocation(WorldLocation loc, INode n, boolean save) {
-		HashMap<WorldLocation, NodeReceiverWrapper> map = this.getOrCreateMap(loc.dimensionID);
-		//if (!map.containsKey(loc)) {
+	private void loadLocation(NBTTagCompound tag) {
+		WorldLocation loc = WorldLocation.readFromNBT(tag);
+		TileEntity te = loc.getTileEntity();
+		if (!(te instanceof INode)) {
+			ChromatiCraft.logger.logError("Data saved a TC aura node at "+loc+", but the node was deleted between world save and reload?!");
+			return;
+		}
+		INode n = (INode)te;
 		NodeReceiverWrapper wrap = new NodeReceiverWrapper(n);
-		//CrystalNetworker.instance.addTile(wrap);
+		if (tag.hasKey(EXTRA_TAG))
+			wrap.load(tag.getCompoundTag(EXTRA_TAG));
+		this.register(loc, wrap);
+	}
+
+	private void addLocation(WorldLocation loc, INode n) {
+		NodeReceiverWrapper wrap = new NodeReceiverWrapper(n);
+		this.register(loc, wrap);
+		NodeRechargeData.initNetworkData(((TileEntity)n).worldObj).setDirty(true);
+	}
+
+	private void register(WorldLocation loc, NodeReceiverWrapper wrap) {
+		HashMap<WorldLocation, NodeReceiverWrapper> map = this.getOrCreateMap(loc.dimensionID);
 		map.put(loc, wrap);
-		if (save)
-			NodeRechargeData.initNetworkData(((TileEntity)n).worldObj).setDirty(true);
-		return true;
-		//}
-		//return false;
+	}
+
+	public boolean hasLocation(WorldLocation loc) {
+		HashMap<WorldLocation, NodeReceiverWrapper> map = nodes.get(loc.dimensionID);
+		return map != null && map.containsKey(loc);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void renderNodeOverlay(EntityPlayer ep, int gsc, INode te) {
+		HashMap<WorldLocation, NodeReceiverWrapper> map = nodes.get(ep.worldObj.provider.dimensionId);
+		if (map == null)
+			return;
+		NodeReceiverWrapper w = map.get(new WorldLocation((TileEntity)te));
+		if (w != null) {
+			w.renderOverlay(ep, gsc);
+		}
 	}
 
 	private boolean removeLocation(WorldLocation loc, World world, boolean save) {
@@ -132,7 +166,7 @@ public class NodeRecharger implements TickHandler {
 		if (wrap == null) {
 			TileEntity te = loc.getTileEntity();
 			if (te instanceof INode) {
-				this.addLocation(loc, (INode)te, true);
+				this.addLocation(loc, (INode)te);
 			}
 		}
 		return wrap;
@@ -158,9 +192,12 @@ public class NodeRecharger implements TickHandler {
 
 		NBTTagList li = new NBTTagList();
 		for (HashMap<WorldLocation, NodeReceiverWrapper> map : nodes.values()) {
-			for (WorldLocation loc : map.keySet()) {
+			for (Entry<WorldLocation, NodeReceiverWrapper> e : map.entrySet()) {
 				NBTTagCompound nbt = new NBTTagCompound();
-				loc.writeToNBT(nbt);
+				e.getKey().writeToNBT(nbt);
+				NBTTagCompound meta = new NBTTagCompound();
+				e.getValue().write(meta);
+				nbt.setTag(EXTRA_TAG, meta);
 				li.appendTag(nbt);
 
 				//ReikaJavaLibrary.pConsole("Saving node at "+loc);
@@ -179,15 +216,8 @@ public class NodeRecharger implements TickHandler {
 		NBTTagList li = tag.getTagList("list", NBTTypes.COMPOUND.ID);
 		for (Object o : li.tagList) {
 			NBTTagCompound nbt = (NBTTagCompound)o;
-			WorldLocation loc = WorldLocation.readFromNBT(nbt);
-			TileEntity te = loc.getTileEntity();
-			if (te instanceof INode) {
-				this.addLocation(loc, (INode)te, false);
-				//ReikaJavaLibrary.pConsole("Loading node at "+loc);
-			}
-			else {
-				ChromatiCraft.logger.logError("Data saved a TC aura node at "+loc+", but the node was deleted between world save and reload?!");
-			}
+			this.loadLocation(nbt);
+			//ReikaJavaLibrary.pConsole("Loading node at "+loc);
 		}
 		//ReikaJavaLibrary.pConsole("Loaded nodes "+nodes+" from "+li);
 	}

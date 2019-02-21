@@ -524,11 +524,11 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 		public boolean neverDropsSecondSeed() {
 			return false;
 		}
-
+		/*
 		@Override
 		public CropFormat getShape() {
 			return CropFormat.BLOCK;
-		}
+		}*/
 
 	}
 

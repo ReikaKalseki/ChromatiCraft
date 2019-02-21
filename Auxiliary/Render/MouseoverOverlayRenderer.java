@@ -27,12 +27,14 @@ import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.ConditionalProductBee;
 import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.ConditionalProductProvider;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.ProductCondition;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeRecharger;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityChromaCrafter;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Base.TileEntityBase;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -54,6 +56,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
+import thaumcraft.api.nodes.INode;
 
 
 
@@ -105,6 +108,15 @@ public class MouseoverOverlayRenderer {
 				this.renderConditionalBeeProductOverlay(ep, gsc, (IBeeHousing)te);
 				GL11.glPopMatrix();
 				GL11.glPopAttrib();
+			}
+			if (ModList.THAUMCRAFT.isLoaded() && InterfaceCache.NODE.instanceOf(te)) {
+				if (NodeRecharger.instance.hasLocation(new WorldLocation(te))) {
+					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+					GL11.glPushMatrix();
+					NodeRecharger.instance.renderNodeOverlay(ep, gsc, (INode)te);
+					GL11.glPopMatrix();
+					GL11.glPopAttrib();
+				}
 			}
 		}
 	}

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,16 +11,16 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.ArrayList;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.CustomCropHandler;
 import Reika.DragonAPI.Interfaces.Registry.ModEntry;
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 
 public class CrystalPlantHandler implements CustomCropHandler {
 
@@ -115,5 +115,10 @@ public class CrystalPlantHandler implements CustomCropHandler {
 	public boolean neverDropsSecondSeed() {
 		return false;
 	}
+	/*
+	@Override
+	public CropFormat getShape() {
+		return CropFormat.PLANT;
+	}*/
 
 }

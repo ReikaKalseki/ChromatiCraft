@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -10,34 +10,28 @@
 package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.UUID;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.effect.EntityLightningBolt;
-import net.minecraft.init.Blocks;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
-import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
-import thaumcraft.api.nodes.INode;
-import thaumcraft.api.nodes.NodeModifier;
-import thaumcraft.api.nodes.NodeType;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
+import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.Magic.Interfaces.NotifiedNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.WrapperTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Network.CrystalPath;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -56,8 +50,21 @@ import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper.EffectType;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.effect.EntityLightningBolt;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.nodes.INode;
+import thaumcraft.api.nodes.NodeModifier;
+import thaumcraft.api.nodes.NodeType;
 
-public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetworkTile, WrapperTile {
+public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetworkTile, WrapperTile, LumenTile {
 
 	private static final int DELAY = 600;
 	private static final int MIN_DELAY = 200;
@@ -74,12 +81,15 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	public final WorldLocation location;
 	private final UUID uid = UUID.randomUUID();
 
+	private long age = 0;
 	private int fulltick = MIN_DELAY;
 	private int tick = DELAY;
 
 	private final ElementTagCompound baseVis = new ElementTagCompound();
 
 	private final WeightedRandom<Aspect> newAspectWeight = new WeightedRandom();
+
+	private final ElementTagCompound storedEnergy = new ElementTagCompound();
 
 	static {
 		ModularLogger.instance.addLogger(ChromatiCraft.instance, LOGGER_ID);
@@ -91,7 +101,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 
 		AspectList al = n.getAspectsBase();
 
-		for (Aspect a : Aspect.aspects.values()) {
+		for (Aspect a : ReikaThaumHelper.getAllAspects()) {
 			if (!al.aspects.containsKey(a)) {
 				double wt = a.isPrimal() ? 100 : 10/ReikaThaumHelper.decompose(a).size();
 				newAspectWeight.addEntry(a, wt);
@@ -218,7 +228,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		if (rand.nextInt(20) == 0)
 			this.playSound("thaumcraft:runicShieldCharge", 1, 0.5F);
 
-		if (rand.nextInt(180) == 0)
+		if (rand.nextInt(this.modifyChanceByAge(180)) == 0)
 			this.healNode();
 
 		ModularLogger.instance.log(LOGGER_ID, "Node "+location+" recharge");
@@ -227,6 +237,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	}
 
 	public void tick() {
+		age++;
 		tick++;
 		fulltick++;
 
@@ -235,7 +246,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.CHARGINGNODE.ordinal(), (TileEntity)node, 32);
 		}
 
-		if (rand.nextInt(1000) == 0)
+		if (rand.nextInt(this.modifyChanceByAge(750)) == 0)
 			this.healNode();
 
 		if (tick >= DELAY && fulltick >= MIN_DELAY) {
@@ -261,7 +272,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 			}
 		}
 
-		if (rand.nextInt(8000) == 0 && !newAspectWeight.isEmpty()) {
+		if (!newAspectWeight.isEmpty() && rand.nextInt(this.modifyChanceByAge(6000)) == 0) {
 			AspectList al = node.getAspectsBase();
 			Aspect a = newAspectWeight.getRandomEntry();
 			newAspectWeight.remove(a);
@@ -273,13 +284,23 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		}
 	}
 
+	private int modifyChanceByAge(int base) {
+		return (int)Math.max(5, Math.max(base/10, base/(1+age/1.2F*ChromaOptions.getNodeGrowthSpeed()/(double)base)));
+	}
+
 	private boolean tryToAddAspect(Aspect a, AspectList base) {
 		ElementTagCompound tag = this.getTagValue(a);
 		boolean flag = true;
+		EnumMap<CrystalElement, CrystalSource> sources = new EnumMap(CrystalElement.class);
 		for (CrystalElement e : tag.elementSet()) {
-			flag &= CrystalNetworker.instance.findSourceWithX(this, e, NEW_ASPECT_COST, this.getReceiveRange(), true) != null;
+			CrystalSource src = CrystalNetworker.instance.findSourceWithX(this, e, NEW_ASPECT_COST, this.getReceiveRange(), true);
+			flag &= src != null;
+			sources.put(e, src);
 		}
 		if (flag) {
+			for (Entry<CrystalElement, CrystalSource> e : sources.entrySet()) {
+				e.getValue().drain(e.getKey(), NEW_ASPECT_COST);
+			}
 			base.add(a, 1);
 			node.addToContainer(a, 1);
 			baseVis.addTag(this.getTagValue(a));
@@ -362,7 +383,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		ChromaSounds.CAST.playSoundAtBlock(location);
 		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.HEALNODE.ordinal(), (TileEntity)node, 32);
 
-		if (rand.nextInt(90) == 0) {
+		if (rand.nextInt(this.modifyChanceByAge(90)) == 0) {
 			if (node.getNodeModifier() != null) {
 				switch(node.getNodeModifier()) {
 					case BRIGHT:
@@ -382,7 +403,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 			ModularLogger.instance.log(LOGGER_ID, "Node "+location+" brightness change");
 		}
 
-		if (rand.nextInt(360) == 0) {
+		if (rand.nextInt(this.modifyChanceByAge(360)) == 0) {
 			switch(node.getNodeType()) {
 				case PURE:
 					break;
@@ -409,7 +430,8 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		AspectList al = node.getAspectsBase();
 		for (Aspect a : al.aspects.keySet()) {
 			int amt = al.getAmount(a);
-			int newamt = Math.min(720, Math.max(amt+1, (int)(amt+rand.nextDouble()*Math.sqrt(amt))));//(int)(amt*(1+rand.nextFloat()/5F));
+			double f = rand.nextDouble()*MathHelper.clamp_double(age/15000D*ChromaOptions.getNodeGrowthSpeed(), 1, 4);
+			int newamt = Math.min(720, Math.max(amt+1, (int)(amt+f*Math.sqrt(amt))));//(int)(amt*(1+rand.nextFloat()/5F));
 			al.merge(a, newamt);
 			ModularLogger.instance.log(LOGGER_ID, "Node "+location+" aspect '"+a.getName()+"' cap increased to "+newamt);
 		}
@@ -644,6 +666,42 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	@Override
 	public void triggerBottleneckDisplay(int duration) {
 
+	}
+
+	public void load(NBTTagCompound tag) {
+		age = tag.getLong("age");
+		tick = tag.getInteger("tick");
+		fulltick = tag.getInteger("ftick");
+
+		storedEnergy.readFromNBT("energy", tag);
+	}
+
+	public void write(NBTTagCompound tag) {
+		tag.setLong("age", age);
+		tag.setInteger("tick", tick);
+		tag.setInteger("ftick", fulltick);
+
+		storedEnergy.writeToNBT("energy", tag);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void renderOverlay(EntityPlayer ep, int gsc) {
+
+	}
+
+	@Override
+	public int getEnergy(CrystalElement e) {
+		return storedEnergy.getValue(e);
+	}
+
+	@Override
+	public ElementTagCompound getEnergy() {
+		return storedEnergy.copy();
+	}
+
+	@Override
+	public int getMaxStorage(CrystalElement e) {
+		return NEW_ASPECT_COST;
 	}
 
 }
