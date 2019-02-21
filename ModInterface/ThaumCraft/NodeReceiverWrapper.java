@@ -10,27 +10,27 @@
 package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 
 import java.util.Collection;
-import java.util.EnumMap;
 import java.util.Locale;
-import java.util.Map.Entry;
 import java.util.Random;
 import java.util.UUID;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
+import Reika.ChromatiCraft.Auxiliary.Render.MouseoverOverlayRenderer;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
-import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
-import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
+import Reika.ChromatiCraft.Magic.Interfaces.LumenRequestingTile;
 import Reika.ChromatiCraft.Magic.Interfaces.NotifiedNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.WrapperTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Network.CrystalPath;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -42,21 +42,28 @@ import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.IO.PacketTarget;
+import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper.EffectType;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
@@ -64,7 +71,7 @@ import thaumcraft.api.nodes.INode;
 import thaumcraft.api.nodes.NodeModifier;
 import thaumcraft.api.nodes.NodeType;
 
-public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetworkTile, WrapperTile, LumenTile {
+public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetworkTile, WrapperTile, LumenRequestingTile {
 
 	private static final int DELAY = 600;
 	private static final int MIN_DELAY = 200;
@@ -72,6 +79,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	private static final int NEW_ASPECT_COST = 240000;
 
 	private static final float LOSS_FACTOR = 0.6F;
+	private static final float LOSS_FACTOR_JAR = 0.4F;
 
 	private static final String LOGGER_ID = "chromanodes";
 
@@ -84,12 +92,21 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	private long age = 0;
 	private int fulltick = MIN_DELAY;
 	private int tick = DELAY;
+	private int ticksSinceEnergyInput = 0;
+
+	private Aspect requestingAspect;
+	private ElementTagCompound requestingAspectSet;
 
 	private final ElementTagCompound baseVis = new ElementTagCompound();
 
 	private final WeightedRandom<Aspect> newAspectWeight = new WeightedRandom();
 
 	private final ElementTagCompound storedEnergy = new ElementTagCompound();
+
+	private final boolean isJarred;
+	private final boolean isClient;
+
+	private boolean needsSync = true;
 
 	static {
 		ModularLogger.instance.addLogger(ChromatiCraft.instance, LOGGER_ID);
@@ -98,6 +115,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	NodeReceiverWrapper(INode n) {
 		node = n;
 		location = new WorldLocation((TileEntity)n);
+		isClient = FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT;
 
 		AspectList al = n.getAspectsBase();
 
@@ -113,6 +131,8 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 			ElementTagCompound tag = this.getTagValue(a).scale(amt);
 			baseVis.addTag(tag);
 		}
+
+		isJarred = n.getClass().getSimpleName().contains("Jar");
 
 		ModularLogger.instance.log(LOGGER_ID, "Node wrapper created for node "+location);
 	}
@@ -169,7 +189,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 
 	@Override
 	public int maxThroughput() {
-		return 50;
+		return isJarred ? 40 : 60;
 	}
 
 	@Override
@@ -191,21 +211,31 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	public int receiveElement(CrystalElement e, int amt) {
 		if (!this.isConductingElement(e))
 			return 0;
-		Collection<Aspect> li = ChromaAspectManager.instance.getAspects(e, true);
-		AspectList al = new AspectList();
-		for (Aspect a : li) {
-			if (node.getAspectsBase().aspects.containsKey(a)) {
-				al.add(a, (int)Math.ceil(amt*LOSS_FACTOR/baseVis.getValue(e)));
-			}
-		}
 		//ReikaJavaLibrary.pConsole(e+":"+amt+" @ "+baseVis.getValue(e)+" > "+ReikaThaumHelper.aspectsToString(al));
 		//ReikaJavaLibrary.pConsole(ReikaThaumHelper.aspectsToString(node.getAspectsBase()));
-		this.recharge(al);
-		tick = 0;
+		if (requestingAspectSet != null && requestingAspectSet.contains(e)) {
+			storedEnergy.addValueToColor(e, amt);
+		}
+		else {
+			Collection<Aspect> li = ChromaAspectManager.instance.getAspects(e, true);
+			AspectList al = new AspectList();
+			for (Aspect a : li) {
+				if (node.getAspectsBase().aspects.containsKey(a)) {
+					al.add(a, (int)Math.ceil(amt*this.getLossFactor()/baseVis.getValue(e)));
+				}
+			}
+			this.recharge(al);
+			tick = 0;
+		}
+		ticksSinceEnergyInput = 0;
+		needsSync = true;
 		return this.isFull(e) ? 0 : amt;
 	}
 
 	private boolean isFull(CrystalElement e) {
+		if (requestingAspectSet != null && requestingAspectSet.contains(e) && storedEnergy.getValue(e) < NEW_ASPECT_COST) {
+			return false;
+		}
 		Collection<Aspect> li = ChromaAspectManager.instance.getAspects(e, true);
 		for (Aspect a : li) {
 			if (!this.isFull(a))
@@ -237,9 +267,12 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	}
 
 	public void tick() {
+		if (isClient)
+			return;
 		age++;
 		tick++;
 		fulltick++;
+		ticksSinceEnergyInput++;
 
 		if (rand.nextInt(240) == 0) {
 			this.playSound("thaumcraft:zap");
@@ -249,7 +282,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		if (rand.nextInt(this.modifyChanceByAge(750)) == 0)
 			this.healNode();
 
-		if (tick >= DELAY && fulltick >= MIN_DELAY) {
+		if (requestingAspect == null && tick >= DELAY && fulltick >= MIN_DELAY) {
 			ElementTagCompound req = new ElementTagCompound();
 			for (Aspect a : node.getAspectsBase().aspects.keySet()) {
 				if (a == null) //WHY, AZANOR!?
@@ -259,7 +292,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 				//	ReikaJavaLibrary.pConsole(a.getName()+":"+space+":"+this.getTagValue(a).scale(space*space));
 				req.addTag(this.getTagValue(a).scale(space*space));
 			}
-			req.scale(1.25F/LOSS_FACTOR);
+			req.scale(1.25F/this.getLossFactor());
 			boolean flag = false;
 			for (CrystalElement e : req.elementSet()) {
 				ModularLogger.instance.log(LOGGER_ID, "Node "+location+" requesting "+req.getValue(e)+" of "+e.displayName);
@@ -272,44 +305,87 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 			}
 		}
 
-		if (!newAspectWeight.isEmpty() && rand.nextInt(this.modifyChanceByAge(6000)) == 0) {
+		if (!newAspectWeight.isEmpty() && requestingAspect == null && rand.nextInt(this.modifyChanceByAge(6000)) == 0) {
 			AspectList al = node.getAspectsBase();
 			Aspect a = newAspectWeight.getRandomEntry();
 			newAspectWeight.remove(a);
+			requestingAspect = a;
 			ModularLogger.instance.log(LOGGER_ID, "Node "+location+" attempting to gain aspect '"+a.getName()+"'");
-			if (this.tryToAddAspect(a, al)) {
-				ModularLogger.instance.log(LOGGER_ID, "Node "+location+" gained aspect '"+a.getName()+"'");
-			}
 			location.triggerBlockUpdate(false);
 		}
+
+		if (requestingAspect != null) {
+			if (this.tryToAddAspect(requestingAspect)) {
+				ModularLogger.instance.log(LOGGER_ID, "Node "+location+" gained aspect '"+requestingAspect.getName()+"'");
+			}
+			if (age%48 == 0)
+				ChromaSounds.CASTHARMONIC.playSound(this.getWorld(), this.getX()+0.5, this.getY()+0.5, this.getZ()+0.5, 0.6F, 0.5F);
+		}
+
+		needsSync |= age%64 == 0;
+
+		if (needsSync)
+			this.sync();
+	}
+
+	private void sync() {
+		NBTTagCompound tag = new NBTTagCompound();
+		location.writeToNBT("location", tag);
+		this.write(tag);
+		ReikaPacketHelper.sendNBTPacket(ChromatiCraft.packetChannel, ChromaPackets.NODERECEIVERSYNC.ordinal(), tag, new PacketTarget.RadiusTarget(location, 64));
+	}
+
+	private float getLossFactor() {
+		return isJarred ? LOSS_FACTOR_JAR : LOSS_FACTOR;
 	}
 
 	private int modifyChanceByAge(int base) {
-		return (int)Math.max(5, Math.max(base/10, base/(1+age/1.2F*ChromaOptions.getNodeGrowthSpeed()/(double)base)));
+		long t = age;
+		if (isJarred)
+			t *= 0.75;
+		return (int)Math.max(5, Math.max(base/10, base/(1+t/1.2F*ChromaOptions.getNodeGrowthSpeed()/(double)base)));
 	}
 
-	private boolean tryToAddAspect(Aspect a, AspectList base) {
-		ElementTagCompound tag = this.getTagValue(a);
+	private boolean tryToAddAspect(Aspect a) {
+		if (requestingAspectSet == null) {
+			requestingAspectSet = this.getTagValue(a);
+		}
 		boolean flag = true;
-		EnumMap<CrystalElement, CrystalSource> sources = new EnumMap(CrystalElement.class);
-		for (CrystalElement e : tag.elementSet()) {
-			CrystalSource src = CrystalNetworker.instance.findSourceWithX(this, e, NEW_ASPECT_COST, this.getReceiveRange(), true);
-			flag &= src != null;
-			sources.put(e, src);
+		for (CrystalElement e : requestingAspectSet.elementSet()) {
+			flag &= storedEnergy.getValue(e) >= NEW_ASPECT_COST;
 		}
 		if (flag) {
-			for (Entry<CrystalElement, CrystalSource> e : sources.entrySet()) {
-				e.getValue().drain(e.getKey(), NEW_ASPECT_COST);
-			}
-			base.add(a, 1);
-			node.addToContainer(a, 1);
-			baseVis.addTag(this.getTagValue(a));
-			this.playSound("thaumcraft:hhon");
-			this.playSound("thaumcraft:hhoff");
-			ReikaPacketHelper.sendStringPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.NEWASPECTNODE.ordinal(), (TileEntity)node, 32, a.getName().toLowerCase(Locale.ENGLISH));
+			this.doAddAspect(a);
 			return true;
 		}
-		return false;
+		else {
+			this.requestForNewAspect(a, requestingAspectSet);
+			return false;
+		}
+	}
+
+	private void requestForNewAspect(Aspect a, ElementTagCompound tag) {
+		if (ticksSinceEnergyInput < 300)
+			return;
+		for (CrystalElement e : tag.elementSet()) {
+			int amt = Math.min(NEW_ASPECT_COST, this.getRemainingSpace(e));
+			boolean flag = CrystalNetworker.instance.makeRequest(this, e, amt, this.getReceiveRange());
+		}
+	}
+
+	private int getRemainingSpace(CrystalElement e) {
+		return this.getMaxStorage(e)-storedEnergy.getValue(e);
+	}
+
+	private void doAddAspect(Aspect a) {
+		requestingAspect = null;
+		requestingAspectSet = null;
+		node.getAspectsBase().add(a, 1);
+		node.addToContainer(a, 1);
+		baseVis.addTag(this.getTagValue(a));
+		this.playSound("thaumcraft:hhon");
+		this.playSound("thaumcraft:hhoff");
+		ReikaPacketHelper.sendStringPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.NEWASPECTNODE.ordinal(), (TileEntity)node, 32, a.getName().toLowerCase(Locale.ENGLISH));
 	}
 
 	@Override
@@ -674,6 +750,11 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		fulltick = tag.getInteger("ftick");
 
 		storedEnergy.readFromNBT("energy", tag);
+
+		if (tag.hasKey("request"))
+			requestingAspect = Aspect.getAspect(tag.getString("request"));
+
+		ticksSinceEnergyInput = tag.getInteger("receiveTime");
 	}
 
 	public void write(NBTTagCompound tag) {
@@ -682,11 +763,43 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		tag.setInteger("ftick", fulltick);
 
 		storedEnergy.writeToNBT("energy", tag);
+		tag.setInteger("receiveTime", ticksSinceEnergyInput);
+
+		if (requestingAspect != null) {
+			tag.setString("request", requestingAspect.getTag());
+		}
 	}
 
 	@SideOnly(Side.CLIENT)
 	public void renderOverlay(EntityPlayer ep, int gsc) {
-
+		MouseoverOverlayRenderer.instance.renderStorageOverlay(ep, gsc, this);
+		if (requestingAspect != null) {
+			ResourceLocation loc = requestingAspect.getImage();
+			Tessellator v5 = Tessellator.instance;
+			Minecraft.getMinecraft().renderEngine.bindTexture(loc);
+			v5.startDrawingQuads();
+			v5.setColorOpaque_I(requestingAspect.getColor());
+			int s = 24;
+			int ar = 8;
+			int ox = Minecraft.getMinecraft().displayWidth/(gsc*2)+ar;
+			int oy = Minecraft.getMinecraft().displayHeight/(gsc*2)+ar;
+			v5.addVertexWithUV(ox, oy+s, 0, 0, 1);
+			v5.addVertexWithUV(ox+s, oy+s, 0, 1, 1);
+			v5.addVertexWithUV(ox+s, oy, 0, 1, 0);
+			v5.addVertexWithUV(ox, oy, 0, 0, 0);
+			v5.draw();
+			int s2 = 53;
+			int ds = s2-s;
+			BlendMode.ADDITIVEDARK.apply();
+			ReikaTextureHelper.bindTerrainTexture();
+			int dx = ox-ds/2;
+			int dy = oy-ds/2;
+			GL11.glTranslated(dx, dy, 0);
+			GL11.glTranslated(s2/2, s2/2, 0);
+			GL11.glRotated((System.currentTimeMillis()/9D)%360D, 0, 0, 1);
+			GL11.glTranslated(-s2/2, -s2/2, 0);
+			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(0, 0, ChromaIcons.BLACKHOLE.getIcon(), s2, s2);
+		}
 	}
 
 	@Override
@@ -701,7 +814,17 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
-		return NEW_ASPECT_COST;
+		return NEW_ASPECT_COST*2;
+	}
+
+	@Override
+	public ElementTagCompound getRequestedTotal() {
+		return requestingAspectSet != null ? requestingAspectSet.copy().scale(NEW_ASPECT_COST) : null;
+	}
+
+	@Override
+	public int getTicksExisted() {
+		return (int)(age%Integer.MAX_VALUE);
 	}
 
 }

@@ -75,6 +75,7 @@ import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.CrystalWand;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.EssentiaNetwork.EssentiaPath;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeReceiverWrapper;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeRecharger;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectFormer;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -996,6 +997,10 @@ public class ChromatiPackets implements PacketHandler {
 					}
 					break;
 				}
+				case NODERECEIVERSYNC:
+					WorldLocation loc = WorldLocation.readFromNBT("location", NBT);
+					NodeRecharger.instance.updateClient(loc, NBT);
+					break;
 			}
 		}
 		catch (NullPointerException e) {

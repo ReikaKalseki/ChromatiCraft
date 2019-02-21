@@ -33,7 +33,6 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityChromaCrafter;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
-import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -62,7 +61,7 @@ import thaumcraft.api.nodes.INode;
 
 public class MouseoverOverlayRenderer {
 
-	static final MouseoverOverlayRenderer instance = new MouseoverOverlayRenderer();
+	public static final MouseoverOverlayRenderer instance = new MouseoverOverlayRenderer();
 
 	private final RenderItem itemRender = new RenderItem();
 
@@ -174,7 +173,7 @@ public class MouseoverOverlayRenderer {
 		}
 	}
 
-	private void renderStorageOverlay(EntityPlayer ep, int gsc, LumenTile lt) {
+	public void renderStorageOverlay(EntityPlayer ep, int gsc, LumenTile lt) {
 		ElementTagCompound tag = lt.getEnergy();
 		if (lt instanceof LumenRequestingTile) {
 			LumenRequestingTile lrt = (LumenRequestingTile)lt;
@@ -193,7 +192,7 @@ public class MouseoverOverlayRenderer {
 		int oy = Minecraft.getMinecraft().displayHeight/(gsc*2)-ar-8;
 
 		int hash = System.identityHashCode(lt);
-		double oa = hash+2*((TileEntityBase)lt).getTicksExisted()*(hash%2 == 0 ? 1 : -1);
+		double oa = hash+2*lt.getTicksExisted()*(hash%2 == 0 ? 1 : -1);
 
 		int n = tag.tagCount();
 		int i = 0;

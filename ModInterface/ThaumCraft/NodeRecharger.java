@@ -27,6 +27,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -62,6 +63,23 @@ public class NodeRecharger implements TickHandler {
 		WorldLocation loc = new WorldLocation(te);
 		this.addLocation(loc, n);
 		return true;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void updateClient(WorldLocation loc, NBTTagCompound data) {
+		World world = Minecraft.getMinecraft().theWorld;
+		HashMap<WorldLocation, NodeReceiverWrapper> map = this.getOrCreateMap(world.provider.dimensionId);
+		NodeReceiverWrapper wrap = map.get(loc);
+		if (wrap == null) {
+			TileEntity te = loc.getTileEntity(world);
+			if (te instanceof INode) {
+				wrap = new NodeReceiverWrapper((INode)te);
+				map.put(loc, wrap);
+			}
+		}
+		if (wrap != null) {
+			wrap.load(data);
+		}
 	}
 
 	private HashMap<WorldLocation, NodeReceiverWrapper> getOrCreateMap(int id) {

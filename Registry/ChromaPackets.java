@@ -183,6 +183,7 @@ public enum ChromaPackets {
 	SUPERBUILD(1),
 	OPTIMIZE(1),
 	ENDEREYESYNC(2),
+	NODERECEIVERSYNC(),
 	;
 
 	public final int numInts;
