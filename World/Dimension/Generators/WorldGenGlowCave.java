@@ -69,7 +69,7 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 			double x0 = x+0.5;
 			double y0 = dy+0.5+1;
 			double z0 = z+0.5;
-			this.growFrom(world, rand, x0, y0, z0, MAX_RADIUS, set1, set2, 0);
+			this.growFrom(world, rand, x0, y0, z0, MAX_RADIUS, set1, set2, 0, 0);
 			for (Coordinate c : set1) {
 				if (c.getBlock(world).getMaterial() == Material.water || ReikaWorldHelper.checkForAdjMaterial(world, c.xCoord, c.yCoord, c.zCoord, Material.water) != null || ReikaWorldHelper.checkForAdjBlock(world, c.xCoord, c.yCoord, c.zCoord, ChromaBlocks.STRUCTSHIELD.getBlockInstance()) != null)
 					return false;
@@ -82,12 +82,13 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 		return false;
 	}
 
-	private void growFrom(World world, Random rand, double x0, double y0, double z0, double maxr, HashSet<Coordinate> parent, HashSet<Coordinate> path, int forkDepth) {
+	private void growFrom(World world, Random rand, double x0, double y0, double z0, double maxr, HashSet<Coordinate> parent, HashSet<Coordinate> path, int forkDepth, double minY) {
+		minY = Math.max(0, Math.min(minY, y0-4));
 		List<CavePoint> li0 = new ArrayList();
 		double r0 = ReikaRandomHelper.getRandomBetween(MIN_RADIUS, maxr);
 		li0.add(new CavePoint(x0, y0, z0, r0));
 		boolean first = true;
-		while (y0 > 0) {
+		while (y0 > minY) {
 			double x2 = ReikaRandomHelper.getRandomPlusMinus(x0, first ? 6 : 32);
 			double z2 = ReikaRandomHelper.getRandomPlusMinus(z0, first ? 6 : 32);
 			double y2 = first ? y0-8-rand.nextInt(5) : y0-rand.nextInt(16);
@@ -117,7 +118,7 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 		for (int i = 0; i < li.size()-1; i++) {
 			DecimalPosition pos1 = li.get(i);
 			DecimalPosition pos2 = li.get(i+1);
-			if (i > 10 && this.getLine(world, rand, pos1, pos2, rVar.getValue(i), rVar.getValue(i+1), i, parent, path) && forkDepth > 0) //prevent overtangling
+			if (this.getLine(world, rand, pos1, pos2, rVar.getValue(i), rVar.getValue(i+1), i, parent, path) && forkDepth > 0 && i > 10) //prevent overtangling
 				break;
 			if (forkDepth <= 3 && rand.nextInt(Math.max(24, (int)pos1.yCoord)) == 0) {
 				this.fork(world, rand, pos1, pos2, rVar, i, path, forkDepth);
@@ -129,7 +130,7 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 	private void fork(World world, Random rand, DecimalPosition p1, DecimalPosition p2, Interpolation rVar, int idx, HashSet<Coordinate> set, int depth) {
 		double f = rand.nextDouble();
 		HashSet<Coordinate> ret = new HashSet();
-		this.growFrom(world, rand, p1.xCoord+(p2.xCoord-p1.xCoord)*f, p1.yCoord+(p2.yCoord-p1.yCoord)*f, p1.zCoord+(p2.zCoord-p1.zCoord)*f, rVar.getValue(idx+f), set, ret, depth+1);
+		this.growFrom(world, rand, p1.xCoord+(p2.xCoord-p1.xCoord)*f, p1.yCoord+(p2.yCoord-p1.yCoord)*f, p1.zCoord+(p2.zCoord-p1.zCoord)*f, rVar.getValue(idx+f), set, ret, depth+1, rand.nextInt(3) == 0 ? 0 : ReikaRandomHelper.getRandomBetween(6, 20));
 		set.addAll(ret);
 	}
 

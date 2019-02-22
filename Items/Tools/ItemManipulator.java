@@ -1,27 +1,17 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Items.Tools;
 
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.EnumAction;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import thaumcraft.api.IScribeTools;
-import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.nodes.INode;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
@@ -83,6 +73,19 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.IBeeHousing;
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.EnumAction;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import thaumcraft.api.IScribeTools;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.nodes.INode;
 
 @Strippable("thaumcraft.api.IScribeTools")
 public class ItemManipulator extends ItemChromaTool implements IScribeTools {
@@ -388,18 +391,17 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 		if (ModList.THAUMCRAFT.isLoaded() && !(tile instanceof CrystalNetworkTile) && InterfaceCache.NODE.instanceOf(tile)) {
 			if (ProgressStage.CTM.isPlayerAtStage(ep) && ReikaThaumHelper.isResearchComplete(ep, "NODESTABILIZERADV")) { //CC and TC progression
 				if (!world.isRemote) {
-					NodeRecharger.instance.addNode((INode)tile);
 					ReikaSoundHelper.playSoundFromServer(world, x+0.5, y+0.5, z+0.5, "thaumcraft:runicShieldEffect", 1, 1, false);
-					for (Aspect asp : ((INode)tile).getAspects().aspects.keySet()) {
+					Collection<Aspect> li = new ArrayList(((INode)tile).getAspects().aspects.keySet());
+					for (Aspect asp : li) {
 						int color = asp.getColor();
 						int rd = ReikaColorAPI.getRed(color);
 						int gn = ReikaColorAPI.getGreen(color);
 						int bl = ReikaColorAPI.getBlue(color);
 						ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), tile, 64, rd, gn, bl, 8, 2);
-					}
-					for (Aspect asp : ((INode)tile).getAspects().aspects.keySet()) {
 						((INode)tile).takeFromContainer(asp, 1);
 					}
+					NodeRecharger.instance.addNode((INode)tile);
 				}
 			}
 		}

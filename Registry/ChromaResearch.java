@@ -48,6 +48,7 @@ import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeTypes;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
+import Reika.ChromatiCraft.Render.TESR.RenderDataNode;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.CrystalTier;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
@@ -354,11 +355,11 @@ public enum ChromaResearch implements ProgressElement {
 	TREE(			Structures.TREE,		14,	ResearchLevel.ENDGAME,			ProgressStage.POWERCRYSTAL),
 	REPEATERSTRUCT(	Structures.REPEATER,	0,	ResearchLevel.NETWORKING,		ProgressStage.RUNEUSE, ProgressStage.BLOWREPEATER),
 	COMPOUNDSTRUCT(	Structures.COMPOUND,	13,	ResearchLevel.NETWORKING,		ProgressStage.REPEATER),
-	CAVERN(			Structures.CAVERN,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.CAVERN),
-	BURROW(			Structures.BURROW,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.BURROW),
-	OCEAN(			Structures.OCEAN,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.OCEAN),
-	DESERT(			Structures.DESERT,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.DESERTSTRUCT),
-	SNOW(			Structures.SNOWSTRUCT,	7,	ResearchLevel.RAWEXPLORE,		ProgressStage.SNOWSTRUCT),
+	CAVERN(			Structures.CAVERN,		ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.CAVERN),
+	BURROW(			Structures.BURROW,		ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.BURROW),
+	OCEAN(			Structures.OCEAN,		ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.MOSS.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.OCEAN),
+	DESERT(			Structures.DESERT,		ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.COBBLE.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.DESERTSTRUCT),
+	SNOW(			Structures.SNOWSTRUCT,	ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.LIGHT.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.SNOWSTRUCT),
 	PORTALSTRUCT(	Structures.PORTAL,		0,	ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
 	MINIPYLON(		Structures.PERSONAL,	9,	ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
 	BROADCASTER(	Structures.BROADCAST,	15,	ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK, ProgressStage.REPEATER),
@@ -376,7 +377,7 @@ public enum ChromaResearch implements ProgressElement {
 	PYLONTURBORING(	Structures.PYLONTURBO,	5,	ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.TURBOCHARGE)),
 	WIRELESSPED(	Structures.WIRELESSPEDESTAL, 13, ResearchLevel.ENDGAME),
 	WIRELESSPED2(	Structures.WIRELESSPEDESTAL2, 13, ResearchLevel.CTM),
-	DATATOWER(		Structures.DATANODE,	ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.MOSS.metadata, ResearchLevel.RAWEXPLORE,	ProgressStage.TOWER),
+	DATATOWER(		Structures.DATANODE,	0,	ResearchLevel.RAWEXPLORE,		ProgressStage.TOWER),
 	PROGLINKSTRUCT(	Structures.PROGRESSLINK,6,	ResearchLevel.BASICCRAFT),
 	OPTIMISTRUCT(	Structures.OPTIMIZER,	15,	ResearchLevel.ENDGAME,			TieredOres.LUMA.level),
 	;
@@ -667,6 +668,24 @@ public enum ChromaResearch implements ProgressElement {
 			tessellator.addVertexWithUV((x + 0 - d), (y + 0 - d), 0, u, v);
 			tessellator.draw();
 			GL11.glPopAttrib();
+			return;
+		}
+		else if (this == DATATOWER) {
+			ReikaGuiAPI.instance.drawItemStack(ri, ChromaItems.DATACRYSTAL.getStackOf(), x, y);
+			GL11.glPushMatrix();
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glColor4f(1, 1, 1, 1);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.ADDITIVEDARK.apply();
+			double s = 0.75;
+			double d = 16;
+			GL11.glTranslated(x-d, y-d, 0);
+			GL11.glScaled(s, s, 0);
+			RenderDataNode.renderFlare(Tessellator.instance, (float)(0.75+0.25*Math.sin(System.currentTimeMillis()/500D)), false);
+			GL11.glPopAttrib();
+			GL11.glPopMatrix();
 			return;
 		}
 		else if (this == APIRECIPES) {

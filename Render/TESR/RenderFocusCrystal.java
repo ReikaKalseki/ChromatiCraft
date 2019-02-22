@@ -1,22 +1,13 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
-
-import java.util.Collection;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
-import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 
@@ -36,6 +27,12 @@ import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 
 public class RenderFocusCrystal extends ChromaRenderBase {
@@ -79,7 +76,7 @@ public class RenderFocusCrystal extends ChromaRenderBase {
 			GL11.glPopAttrib();
 		}
 
-		if (StructureRenderer.isRenderingTiles() || (te.isInWorld() && te.canFunction() && MinecraftForgeClient.getRenderPass() == 1)) {
+		if (StructureRenderer.isRenderingTiles() || (te.isInWorld() && MinecraftForgeClient.getRenderPass() == 1)) {
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glDisable(GL11.GL_LIGHTING);
@@ -195,11 +192,11 @@ public class RenderFocusCrystal extends ChromaRenderBase {
 		v5.draw();
 		GL11.glPopAttrib();
 		 */
-		Collection<FocusConnection> li = te.getConnections();
-		for (FocusConnection c : li) {
-			double x2 = -c.location.relativeLocation.xCoord+0.5;
-			double y2 = -c.location.relativeLocation.yCoord;//+0.125;
-			double z2 = -c.location.relativeLocation.zCoord+0.5;
+		FocusConnection c = te.getConnection();
+		if (c != null) {
+			double x2 = -c.relativeLocation.relativeLocation().xCoord+0.5;
+			double y2 = -c.relativeLocation.relativeLocation().yCoord;//+0.125;
+			double z2 = -c.relativeLocation.relativeLocation().zCoord+0.5;
 			ChromaFX.renderBeam(0.5, 0.25, 0.5, x2, y2, z2, tick, 255, 0.375F+(float)(0.25*Math.sin(System.identityHashCode(te)+System.currentTimeMillis()/800D)));
 		}
 	}

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.Auxiliary.Ability;
 import java.util.Collection;
 import java.util.EnumSet;
 
-import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
@@ -24,6 +23,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class ChromabilityHandler implements TickHandler {
 
@@ -68,7 +68,7 @@ public class ChromabilityHandler implements TickHandler {
 		if (ep.worldObj != null && ModList.MYSTCRAFT.isLoaded() && MystPages.Pages.BUFFERDRAIN.existsInWorld(ep.worldObj)) {
 			PlayerElementBuffer.instance.removeFromPlayer(ep, CrystalElement.randomElement(), 1);
 		}
-		ep.noClip = Chromabilities.ORECLIP.enabledOn(ep);
+		//ep.noClip = Chromabilities.ORECLIP.enabledOn(ep);
 	}
 
 	@Override

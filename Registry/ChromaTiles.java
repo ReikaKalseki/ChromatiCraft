@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomHitbox;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.FocusAcceleratable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
@@ -484,13 +485,13 @@ public enum ChromaTiles implements TileEnum {
 	public boolean allowsAcceleration() {
 		if (this.isRepeater())
 			return false;
+		if (FocusAcceleratable.class.isAssignableFrom(tile))
+			return false;
 		switch(this) {
-			case TABLE:
 			case RITUAL:
 			case POWERTREE:
 			case PYLON:
 			case AUTOMATOR:
-			case INFUSER:
 			case AURAPOINT:
 			case RELAYSOURCE:
 			case PERSONAL:

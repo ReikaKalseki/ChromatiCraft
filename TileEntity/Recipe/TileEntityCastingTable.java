@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import Reika.ChromatiCraft.API.Event.CastingEvent;
@@ -49,6 +50,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.FocusLocation;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
@@ -572,7 +574,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 		if (r.canBeStacked())
 			t *= r.getRecipeStackedTimeFactor(this, craftingAmount);
 		if (t > 20 && r instanceof MultiBlockCastingRecipe) {
-			t = Math.max(20, (int)(t/TileEntityFocusCrystal.getSummedFocusFactor(this)));
+			t = Math.max(20, (int)(t/this.getAccelerationFactor()));
 		}
 		craftingTick = t;
 	}
@@ -1156,7 +1158,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 		if (isEnhanced)
 			denom /= activeRecipe.getEnhancedTableAccelerationFactor();
 		if (denom > 20 && activeRecipe instanceof MultiBlockCastingRecipe) {
-			denom = Math.max(20, denom/TileEntityFocusCrystal.getSummedFocusFactor(this));
+			denom = Math.max(20, denom/this.getAccelerationFactor());
 		}
 		float f = 1F-craftingTick/denom;
 		return f;
@@ -1180,6 +1182,54 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 				te.syncAllData(true);
 			}
 		}
+	}
+
+	@Override
+	public float getAccelerationFactor() {
+		return TileEntityFocusCrystal.getSummedFocusFactor(this, CastingFocusLocation.set);
+	}
+
+	@Override
+	public float getMaximumAcceleratability() {
+		return TileEntityFocusCrystal.CrystalTier.EXQUISITE.efficiencyFactor*CastingFocusLocation.list.length;
+	}
+
+	@Override
+	public float getProgressToNextStep() {
+		return 0;
+	}
+
+	public static enum CastingFocusLocation implements FocusLocation {
+
+		N1(-1, 1, -3),
+		N2(1, 1, -3),
+		E1(3, 1, -1),
+		E2(3, 1, 1),
+		S1(1, 1, 3),
+		S2(-1, 1, 3),
+		W1(-3, 1, 1),
+		W2(-3, 1, -1);
+
+		public final Coordinate relativeLocation;
+
+		private static final CastingFocusLocation[] list = values();
+		private static final Set<FocusLocation> set = new HashSet();
+
+		private CastingFocusLocation(int x, int y, int z) {
+			relativeLocation = new Coordinate(x, y, z);
+		}
+
+		@Override
+		public Coordinate relativeLocation() {
+			return relativeLocation;
+		}
+
+		static {
+			for (CastingFocusLocation cf : list) {
+				set.add(cf);
+			}
+		}
+
 	}
 
 }

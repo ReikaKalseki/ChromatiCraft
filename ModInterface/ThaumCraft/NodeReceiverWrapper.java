@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Random;
@@ -43,10 +44,10 @@ import Reika.DragonAPI.Auxiliary.ModularLogger;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
-import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -62,6 +63,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -153,7 +155,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 
 	@Override
 	public boolean isConductingElement(CrystalElement e) {
-		return baseVis.contains(e);
+		return baseVis.contains(e) || (requestingAspectSet != null && requestingAspectSet.contains(e));
 	}
 
 	@Override
@@ -279,6 +281,9 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.CHARGINGNODE.ordinal(), (TileEntity)node, 32);
 		}
 
+		if (age < 10)
+			return;
+
 		if (rand.nextInt(this.modifyChanceByAge(750)) == 0)
 			this.healNode();
 
@@ -317,6 +322,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		if (requestingAspect != null) {
 			if (this.tryToAddAspect(requestingAspect)) {
 				ModularLogger.instance.log(LOGGER_ID, "Node "+location+" gained aspect '"+requestingAspect.getName()+"'");
+				requestingAspect = null;
 			}
 			if (age%48 == 0)
 				ChromaSounds.CASTHARMONIC.playSound(this.getWorld(), this.getX()+0.5, this.getY()+0.5, this.getZ()+0.5, 0.6F, 0.5F);
@@ -332,7 +338,17 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		NBTTagCompound tag = new NBTTagCompound();
 		location.writeToNBT("location", tag);
 		this.write(tag);
+		this.writeSync(tag);
+
 		ReikaPacketHelper.sendNBTPacket(ChromatiCraft.packetChannel, ChromaPackets.NODERECEIVERSYNC.ordinal(), tag, new PacketTarget.RadiusTarget(location, 64));
+	}
+
+	private void writeSync(NBTTagCompound tag) {
+		if (requestingAspectSet != null) {
+			tag.setInteger("requestSet", ReikaArrayHelper.booleanToBitflags(requestingAspectSet.flagSet()));
+		}
+		baseVis.writeToNBT("baseVis", tag);
+		newAspectWeight.writeToNBT("newAspects", tag, ReikaThaumHelper.aspectSerializer);
 	}
 
 	private float getLossFactor() {
@@ -378,7 +394,6 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	}
 
 	private void doAddAspect(Aspect a) {
-		requestingAspect = null;
 		requestingAspectSet = null;
 		node.getAspectsBase().add(a, 1);
 		node.addToContainer(a, 1);
@@ -754,6 +769,17 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		if (tag.hasKey("request"))
 			requestingAspect = Aspect.getAspect(tag.getString("request"));
 
+		if (tag.hasKey("requestSet"))
+			requestingAspectSet = ElementTagCompound.createFromFlags(ReikaArrayHelper.booleanFromBitflags(tag.getInteger("requestSet"), 16), 1);
+
+		if (tag.hasKey("baseVis")) {
+			baseVis.readFromNBT("baseVis", tag);
+		}
+
+		if (tag.hasKey("newAspects")) {
+			newAspectWeight.readFromNBT("newAspects", tag, ReikaThaumHelper.aspectSerializer);
+		}
+
 		ticksSinceEnergyInput = tag.getInteger("receiveTime");
 	}
 
@@ -773,9 +799,44 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	@SideOnly(Side.CLIENT)
 	public void renderOverlay(EntityPlayer ep, int gsc) {
 		MouseoverOverlayRenderer.instance.renderStorageOverlay(ep, gsc, this);
+		Tessellator v5 = Tessellator.instance;
+		{
+			int ox = Minecraft.getMinecraft().displayWidth/(gsc*2)+12;
+			int oy = Minecraft.getMinecraft().displayHeight/(gsc*2)-12;
+			int x = ox;
+			int y = oy;
+			int i = 0;
+			double t = (0.75*System.currentTimeMillis())%360D;
+			int s = 8;
+			int d = s+2;
+			ArrayList<Aspect> li = new ArrayList(newAspectWeight.getValues());
+			ReikaThaumHelper.sortAspectList(li);
+			for (Aspect a : li) {
+				if (a != requestingAspect) {
+					ResourceLocation loc = a.getImage();
+					Minecraft.getMinecraft().renderEngine.bindTexture(loc);
+					double offset = a.getTag().hashCode()*360D/Integer.MAX_VALUE;
+					int ap = (int)(255*(0.625+0.375*Math.sin(Math.toRadians(offset+t))));
+					if (ap > 0) {
+						v5.startDrawingQuads();
+						v5.setColorRGBA_I(a.getColor(), ap);
+						v5.addVertexWithUV(x, y+s, 0, 0, 1);
+						v5.addVertexWithUV(x+s, y+s, 0, 1, 1);
+						v5.addVertexWithUV(x+s, y, 0, 1, 0);
+						v5.addVertexWithUV(x, y, 0, 0, 0);
+						v5.draw();
+					}
+					i++;
+					x += d;
+					if (x-ox >= d*8) {
+						x = ox;
+						y -= d;
+					}
+				}
+			}
+		}
 		if (requestingAspect != null) {
 			ResourceLocation loc = requestingAspect.getImage();
-			Tessellator v5 = Tessellator.instance;
 			Minecraft.getMinecraft().renderEngine.bindTexture(loc);
 			v5.startDrawingQuads();
 			v5.setColorOpaque_I(requestingAspect.getColor());
@@ -788,17 +849,43 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 			v5.addVertexWithUV(ox+s, oy, 0, 1, 0);
 			v5.addVertexWithUV(ox, oy, 0, 0, 0);
 			v5.draw();
-			int s2 = 53;
+			int s2 = 55;
 			int ds = s2-s;
-			BlendMode.ADDITIVEDARK.apply();
 			ReikaTextureHelper.bindTerrainTexture();
 			int dx = ox-ds/2;
 			int dy = oy-ds/2;
-			GL11.glTranslated(dx, dy, 0);
-			GL11.glTranslated(s2/2, s2/2, 0);
-			GL11.glRotated((System.currentTimeMillis()/9D)%360D, 0, 0, 1);
-			GL11.glTranslated(-s2/2, -s2/2, 0);
-			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(0, 0, ChromaIcons.BLACKHOLE.getIcon(), s2, s2);
+
+			if (requestingAspect.isPrimal()) {
+				GL11.glTranslated(dx, dy, 0);
+				GL11.glTranslated(s2/2D, s2/2D, 0);
+				GL11.glRotated((System.currentTimeMillis()/9D)%360D, 0, 0, 1);
+				GL11.glTranslated(-s2/2D, -s2/2D, 0);
+			}
+
+			int x = 0;
+			int y = 0;
+			IIcon ico;
+
+			if (requestingAspect.isPrimal()) {
+				int blend = requestingAspect.getBlend();
+				ico = blend == GL11.GL_ONE_MINUS_SRC_ALPHA ? ChromaIcons.ALPHAHOLE.getIcon() : ChromaIcons.WHITEHOLE.getIcon();
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, blend);
+			}
+			else {
+				BlendMode.ADDITIVEDARK.apply();
+				ico = ChromaIcons.ECLIPSEFLARE.getIcon();
+				x = dx;
+				y = dy;
+			}
+			v5.startDrawingQuads();
+			v5.setColorOpaque_I(requestingAspect.getColor());
+			v5.addVertexWithUV((x + 0), (y + s2), 0, ico.getMinU(), ico.getMaxV());
+			v5.addVertexWithUV((x + s2), (y + s2), 0, ico.getMaxU(), ico.getMaxV());
+			v5.addVertexWithUV((x + s2), (y + 0), 0, ico.getMaxU(), ico.getMinV());
+			v5.addVertexWithUV((x + 0), (y + 0), 0, ico.getMinU(), ico.getMinV());
+			v5.draw();
+
+			//ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(0, 0, ico, s2, s2);
 		}
 	}
 

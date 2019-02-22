@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -10,13 +10,6 @@
 package Reika.ChromatiCraft.Render.TESR;
 
 import java.util.ArrayList;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
-import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 
@@ -38,6 +31,12 @@ import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 
 public class RenderDataNode extends ChromaRenderBase {
@@ -624,28 +623,33 @@ public class RenderDataNode extends ChromaRenderBase {
 		d /= te.EXTENSION_LIMIT_1+te.EXTENSION_LIMIT_2;
 		float f = 0.125F+0.875F*(float)d;
 
-		renderFlare(v5, f);
+		renderFlare(v5, f, true);
 	}
 
-	public static void renderFlare(Tessellator v5, float colorFactor) {
+	public static void renderFlare(Tessellator v5, float colorFactor, boolean inWorld) {
 		ReikaTextureHelper.bindTerrainTexture();
-		double s = 3;
+		double s = inWorld ? 3 : 32;
 		GL11.glPushMatrix();
 
 		GL11.glDepthMask(false);
 		//GL11.glDisable(GL11.GL_DEPTH_TEST);
 
-		GL11.glTranslated(0, 0.75, 0);
 
 		IIcon ico = ChromaIcons.FLARE7.getIcon();
-		RenderManager rm = RenderManager.instance;
-		if (StructureRenderer.isRenderingTiles()) {
-			GL11.glRotated(-StructureRenderer.getRenderRY(), 0, 1, 0);
-			GL11.glRotated(-StructureRenderer.getRenderRX(), 1, 0, 0);
+		if (inWorld) {
+			GL11.glTranslated(0, 0.75, 0);
+			RenderManager rm = RenderManager.instance;
+			if (StructureRenderer.isRenderingTiles()) {
+				GL11.glRotated(-StructureRenderer.getRenderRY(), 0, 1, 0);
+				GL11.glRotated(-StructureRenderer.getRenderRX(), 1, 0, 0);
+			}
+			else {
+				GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
+				GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
+			}
 		}
 		else {
-			GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
-			GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
+
 		}
 		//GL11.glRotated(-(System.currentTimeMillis()/20D)%360D, 0, 0, 1);
 		float u = ico.getMinU();
@@ -661,10 +665,10 @@ public class RenderDataNode extends ChromaRenderBase {
 
 		double z = 0;//-0.5;
 
-		v5.addVertexWithUV(-s, s, z, u, dv);
-		v5.addVertexWithUV(+s, s, z, du, dv);
-		v5.addVertexWithUV(+s, -s, z, du, v);
-		v5.addVertexWithUV(-s, -s, z, u, v);
+		v5.addVertexWithUV(inWorld ? -s : 0, inWorld ? s : s*2, z, u, dv);
+		v5.addVertexWithUV(inWorld ? s : s*2, inWorld ? s : s*2, z, du, dv);
+		v5.addVertexWithUV(inWorld ? s : s*2, inWorld ? -s : 0, z, du, v);
+		v5.addVertexWithUV(inWorld ? -s : 0, inWorld ? -s : 0, z, u, v);
 		v5.draw();
 
 		GL11.glPopMatrix();

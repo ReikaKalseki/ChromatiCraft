@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,10 +15,10 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Iterator;
 
-import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Proportionality;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
+import net.minecraft.nbt.NBTTagCompound;
 
 public final class ElementTagCompound {
 
@@ -76,7 +76,7 @@ public final class ElementTagCompound {
 	}
 
 	public boolean contains(CrystalElement e) {
-		return data.containsKey(e);
+		return data.get(e) != null;
 	}
 
 	public void addValueToColor(CrystalElement e, int value) {
@@ -433,6 +433,24 @@ public final class ElementTagCompound {
 	@Override
 	public boolean equals(Object o) {
 		return o instanceof ElementTagCompound && ((ElementTagCompound)o).data.equals(data);
+	}
+
+	public boolean[] flagSet() {
+		boolean[] ret = new boolean[16];
+		for (CrystalElement e : this.elementSet()) {
+			ret[e.ordinal()] = true;
+		}
+		return ret;
+	}
+
+	public static ElementTagCompound createFromFlags(boolean[] flags, int amt) {
+		ElementTagCompound tag = new ElementTagCompound();
+		for (int i = 0; i < 16; i++) {
+			if (flags[i]) {
+				tag.addTag(CrystalElement.elements[i], amt);
+			}
+		}
+		return tag;
 	}
 
 }

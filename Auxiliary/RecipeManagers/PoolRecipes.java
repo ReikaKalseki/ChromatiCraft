@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,20 +15,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MathHelper;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ItemChromaBasic;
 import Reika.ChromatiCraft.Block.BlockActiveChroma;
+import Reika.ChromatiCraft.Items.ItemUnknownArtefact.ArtefactTypes;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
+import Reika.ChromatiCraft.Magic.Artefact.ArtefactWithDataCrystalAlloyingEffect;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayList;
@@ -41,6 +36,13 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MathHelper;
 
 public class PoolRecipes {
 
@@ -63,6 +65,10 @@ public class PoolRecipes {
 		//pr.allowDoubling = false;
 
 		pr = this.addRecipe(ChromaItems.DATACRYSTAL.getCraftedProduct(2), ChromaItems.DATACRYSTAL.getStackOf(), ReikaItemHelper.getSizedItemStack(ChromaStacks.crystalPowder, 18)).addProgress(ProgressStage.TOWER);
+		pr.allowDoubling = false;
+
+		pr = this.addRecipe(ChromaItems.STRUCTMAP.getStackOf(), ChromaItems.DATACRYSTAL.getStackOf(), ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.ARTIFACT.ordinal()), ChromaBlocks.METAALLOYLAMP.getStackOf(), ReikaItemHelper.getSizedItemStack(ChromaStacks.crysleaf, 12)).addProgress(ProgressStage.TOWER).addProgress(ProgressStage.ARTEFACT);
+		pr.effects.add(ArtefactWithDataCrystalAlloyingEffect.instance);
 		pr.allowDoubling = false;
 	}
 
@@ -150,6 +156,9 @@ public class PoolRecipes {
 		for (int i = 0; i < n2; i++) {
 			EntityItem newitem = ReikaItemHelper.dropItem(ei, ReikaItemHelper.getSizedItemStack(pr.getOutput(), 1));
 			newitem.lifespan = Integer.MAX_VALUE;
+			for (AlloyingEffect e : pr.effects) {
+				e.onFinish(ei, newitem);
+			}
 			//newitem.getEntityData().setBoolean("ccalloy", true);
 		}
 		if (flag) {
@@ -222,6 +231,8 @@ public class PoolRecipes {
 
 		private boolean allowDoubling = true;
 		private boolean isCustom = false;
+
+		private ArrayList<AlloyingEffect> effects = new ArrayList();
 
 		private PoolRecipe(String id, ItemStack out, ItemStack m, ItemStack... input) {
 			ID = id;
@@ -329,6 +340,12 @@ public class PoolRecipes {
 		public boolean allowDoubling() {
 			return allowDoubling;
 		}
+
+		public void doFX(EntityItem ei) {
+			for (AlloyingEffect c : effects) {
+				c.doEffect(ei);
+			}
+		}
 	}
 
 	public Collection<PoolRecipe> getRecipesForItem(ItemStack is) {
@@ -375,6 +392,13 @@ public class PoolRecipes {
 			}
 		}
 		return false;
+	}
+
+	public static interface AlloyingEffect {
+
+		void doEffect(EntityItem ei);
+		void onFinish(EntityItem ei, EntityItem result);
+
 	}
 
 }

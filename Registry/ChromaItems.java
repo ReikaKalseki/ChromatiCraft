@@ -61,6 +61,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemPendant;
 import Reika.ChromatiCraft.Items.Tools.ItemPylonFinder;
 import Reika.ChromatiCraft.Items.Tools.ItemSplashGun;
 import Reika.ChromatiCraft.Items.Tools.ItemSplineAttack;
+import Reika.ChromatiCraft.Items.Tools.ItemStructureMap;
 import Reika.ChromatiCraft.Items.Tools.ItemThrowableGem;
 import Reika.ChromatiCraft.Items.Tools.ItemVacuumGun;
 import Reika.ChromatiCraft.Items.Tools.ItemWarpCapsule;
@@ -181,6 +182,7 @@ public enum ChromaItems implements ItemEnum {
 	SPAWNERBYPASS(43, false,"chroma.spawnerbypass",	ItemSpawnerBypass.class),
 	ENDEREYE(0,	false,		"chroma.endereye",		ItemT2EnderEye.class),
 	LIGHTGUN(51, false,		"chroma.lightgun",		ItemLightGun.class),
+	STRUCTMAP(52, false,	"chroma.structmap",		ItemStructureMap.class),
 	;
 
 	private final int index;

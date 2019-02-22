@@ -515,7 +515,9 @@
 			So you have a cauldron full of water, in which you need to dump various ingredients to fabricate your desired target. As that process more often fails than not, producing copious amounts of noxious gas in the process, you created an odd construct to help automate the process. However, you need to actually transport the essentia there, and the piping you tried at first...leaves much to be desired. A longer-range and more flexible solution - ideally more consistently functional as well - would fare far better. Simply attach one to each end, as well as some at regular intervals in between.
 		</desc>
 		<note>
-
+			Will continuously attempt to fill labelled jars and empty alembics
+			
+			Also expands the range of the Infusion Matrix aspect source search
 		</note>
 	</essentiarelay>
 	<glowfire>

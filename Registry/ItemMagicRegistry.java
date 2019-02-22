@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -14,14 +14,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -30,7 +22,16 @@ import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Interfaces.Registry.OreType;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.DragonAPI.ModRegistry.ModOreList;
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.oredict.OreDictionary;
 
 /** Specifies the magic elements present in each "fundamental" item. */
 public class ItemMagicRegistry {
@@ -246,6 +247,17 @@ public class ItemMagicRegistry {
 		this.addElement("rodBasalz", CrystalElement.BROWN, 4);
 		this.addElement("rodBasalz", CrystalElement.GREEN, 1);
 		this.addElement("rodBasalz", CrystalElement.PINK, 2);
+
+		if (ModList.THAUMCRAFT.isLoaded()) {
+			this.addElement(ThaumItemHelper.ItemEntry.ZOMBIEBRAIN.getItem(), CrystalElement.PINK, 4);
+			this.addElement(ThaumItemHelper.ItemEntry.ZOMBIEBRAIN.getItem(), CrystalElement.GREEN, 1);
+			this.addElement(ThaumItemHelper.ItemEntry.ZOMBIEBRAIN.getItem(), CrystalElement.LIGHTGRAY, 1);
+
+			this.addElement(ThaumItemHelper.ItemEntry.GOO.getItem(), CrystalElement.LIGHTGRAY, 3);
+			this.addElement(ThaumItemHelper.ItemEntry.GOO.getItem(), CrystalElement.GREEN, 1);
+			this.addElement(ThaumItemHelper.ItemEntry.GOO.getItem(), CrystalElement.CYAN, 1);
+			this.addElement(ThaumItemHelper.ItemEntry.GOO.getItem(), CrystalElement.BLACK, 1);
+		}
 
 		this.addElement(Items.nether_star, CrystalElement.PINK, 8);
 		this.addElement(Items.nether_star, CrystalElement.BLACK, 4);

@@ -760,6 +760,7 @@ public class AbilityHelper {
 	}
 
 	public boolean isBlockOreclippable(World world, int x, int y, int z, Block b, int meta) {
+		//ReikaJavaLibrary.pConsole(b);
 		if (b == Blocks.stone || b == Blocks.grass || b == Blocks.dirt || b == Blocks.sandstone || b == Blocks.sand || b == Blocks.gravel)
 			return false;
 		if (b == Blocks.netherrack || b == Blocks.end_stone)
@@ -781,10 +782,8 @@ public class AbilityHelper {
 		return !b.isReplaceableOreGen(world, x, y, z, Blocks.stone);
 	}
 
-	public ArrayList<AxisAlignedBB> getNoclipBlockBoxes(EntityPlayer ep) {
+	public ArrayList<AxisAlignedBB> getNoclipBlockBoxes(EntityPlayer ep, AxisAlignedBB box) {
 		ArrayList<AxisAlignedBB> li = new ArrayList();
-
-		AxisAlignedBB box = ep.boundingBox.addCoord(ep.motionX, ep.motionY, ep.motionZ);
 
 		int i = MathHelper.floor_double(box.minX);
 		int j = MathHelper.floor_double(box.maxX + 1.0D);

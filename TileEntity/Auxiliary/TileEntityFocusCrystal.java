@@ -1,18 +1,31 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Auxiliary;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.Set;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.FocusAcceleratable;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Block.BlockPylonStructure;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.item.ItemStack;
@@ -20,21 +33,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.FocusAcceleratable;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
-import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Libraries.ReikaAABBHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class TileEntityFocusCrystal extends TileEntityChromaticBase implements NBTTile {
+public class TileEntityFocusCrystal extends TileEntityChromaticBase implements NBTTile, BreakAction {
 
 	public static enum CrystalTier {
 		FLAWED(0.0625F),
@@ -90,56 +91,57 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 		}
 	}
 
-	public static enum FocusLocation {
+	public static interface FocusLocation {
 
-		N1(-1, 1, -3),
-		N2(1, 1, -3),
-		E1(3, 1, -1),
-		E2(3, 1, 1),
-		S1(1, 1, 3),
-		S2(-1, 1, 3),
-		W1(-3, 1, 1),
-		W2(-3, 1, -1);
+		Coordinate relativeLocation();
 
-		public final Coordinate relativeLocation;
+	}
 
-		public static final FocusLocation[] list = values();
+	private static class SimpleFocusLocation implements FocusLocation {
 
-		private FocusLocation(int x, int y, int z) {
-			relativeLocation = new Coordinate(x, y, z);
+		public final Coordinate offset;
+
+		private SimpleFocusLocation(FocusAcceleratable src, TileEntityFocusCrystal te) {
+			offset = new Coordinate(te).offset(new Coordinate((TileEntity)src).negate());
+		}
+
+		@Override
+		public Coordinate relativeLocation() {
+			return offset;
 		}
 
 	}
 
 	public static class FocusConnection {
 
-		public final FocusLocation location;
+		public final FocusLocation relativeLocation;
 		public final Coordinate target;
 		public final Class tileClass;
 
 		private FocusConnection(FocusLocation loc, TileEntity te) {
-			location = loc;
+			relativeLocation = loc;
 			target = new Coordinate(te);
 			tileClass = te.getClass();
 		}
 
 	}
 
-	private final HashSet<FocusConnection> connections = new HashSet();
+	private FocusConnection connection;
 	private CrystalTier tier = CrystalTier.FLAWED;
 
-	public static float getSummedFocusFactor(TileEntity te) {
-		return getSummedFocusFactor(te.worldObj, te.xCoord, te.yCoord, te.zCoord);
+	public static float getSummedFocusFactor(FocusAcceleratable f, Set<FocusLocation> locations) {
+		TileEntity te = (TileEntity)f;
+		return getSummedFocusFactor(f, te.worldObj, te.xCoord, te.yCoord, te.zCoord, locations);
 	}
 
-	public static float getSummedFocusFactor(World world, int x, int y, int z) {
+	public static float getSummedFocusFactor(FocusAcceleratable acc, World world, int x, int y, int z, Set<FocusLocation> locations) {
 		float sum = 1;
-		for (int i = 0; i < FocusLocation.list.length; i++) {
-			Coordinate c = FocusLocation.list[i].relativeLocation.offset(x, y, z);
+		for (FocusLocation f : locations) {
+			Coordinate c = f.relativeLocation().offset(x, y, z);
 			if (ChromaTiles.getTile(world, c.xCoord, c.yCoord, c.zCoord) == ChromaTiles.FOCUSCRYSTAL) {
 				TileEntityFocusCrystal te = (TileEntityFocusCrystal)c.getTileEntity(world);
-				if (te.canFunction())
-					sum += te.getTier().efficiencyFactor;
+				sum += te.getTier().efficiencyFactor;
+				te.addConnection(acc);
 			}
 		}
 		return sum;
@@ -153,10 +155,12 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
-
-		this.scanConnections(world, x, y, z);
+		if (world.getBlock(x, y-1, z) == ChromaBlocks.PYLONSTRUCT.getBlockInstance())
+			BlockPylonStructure.triggerAddCheck(world, x, y-1, z);
+		//this.scanConnections(world, x, y, z);
 	}
 
+	/*
 	private void scanConnections(World world, int x, int y, int z) {
 		connections.clear();
 
@@ -169,11 +173,25 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 			}
 		}
 	}
+	 */
+	public void addConnection(FocusAcceleratable src) {
+		connection = new FocusConnection(new SimpleFocusLocation(src, this), (TileEntity)src);
+		this.syncAllData(true);
+	}
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (this.getTier() == CrystalTier.EXQUISITE && world.isRemote) {
 			this.doParticles(world, x, y, z);
+		}
+
+		if (connection != null && this.getTicksExisted()%8 == 0) {
+			if (this.getConnection().target.getTileEntity(world) instanceof FocusAcceleratable) {
+
+			}
+			else {
+				connection = null;
+			}
 		}
 	}
 
@@ -192,10 +210,6 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 		}
 	}
 
-	public boolean canFunction() {
-		return true;
-	}
-
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
 
@@ -205,8 +219,8 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 		return tier;
 	}
 
-	public Collection<FocusConnection> getConnections() {
-		return Collections.unmodifiableCollection(connections);
+	public FocusConnection getConnection() {
+		return connection;
 	}
 
 	@Override
@@ -229,6 +243,9 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 		super.writeToNBT(NBT);
 
 		NBT.setInteger("tier", this.getTier().ordinal());
+		if (connection != null) {
+			connection.target.writeToNBT("connection", NBT);
+		}
 	}
 
 	@Override
@@ -236,11 +253,24 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 		super.readFromNBT(NBT);
 
 		tier = CrystalTier.tierList[NBT.getInteger("tier")];
+		if (NBT.hasKey("connection") && worldObj != null) {
+			Coordinate c = Coordinate.readFromNBT("connection", NBT);
+			TileEntity te = c.getTileEntity(worldObj);
+			if (te instanceof FocusAcceleratable)
+				this.addConnection((FocusAcceleratable)te);
+		}
 	}
 
 	@Override
 	public AxisAlignedBB getRenderBoundingBox() {
 		return ReikaAABBHelper.getBlockAABB(this).expand(4, 2, 4);
+	}
+
+	@Override
+	public void breakBlock() {
+		if (worldObj.getBlock(xCoord, yCoord-1, zCoord) == ChromaBlocks.PYLONSTRUCT.getBlockInstance()) {
+			BlockPylonStructure.triggerAddCheck(worldObj, xCoord, yCoord-1, zCoord);
+		}
 	}
 
 }

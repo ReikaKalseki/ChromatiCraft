@@ -503,11 +503,11 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 		super.onBlockAdded(world, x, y, z);
 	}
 
-	void triggerAddCheck(World world, int x, int y, int z) {
+	public static void triggerAddCheck(World world, int x, int y, int z) {
 		StructuredBlockArray blocks = new StructuredBlockArray(world);
 
 		blocks.extraSpread = true;
-		blocks.recursiveAddWithBounds(world, x, y, z, this, x-16, y-32, z-16, x+16, y+32, z+16);
+		blocks.recursiveAddWithBounds(world, x, y, z, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), x-16, y-32, z-16, x+16, y+32, z+16);
 
 		int mx = blocks.getMidX();
 		int my = blocks.getMinY(); //intentionally bottom

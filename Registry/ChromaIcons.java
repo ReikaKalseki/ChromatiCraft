@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,13 +11,13 @@ package Reika.ChromatiCraft.Registry;
 
 import java.util.Calendar;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.util.IIcon;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaIcon;
 import Reika.DragonAPI.DragonOptions;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.util.IIcon;
 
 public enum ChromaIcons implements ChromaIcon {
 
@@ -86,6 +86,8 @@ public enum ChromaIcons implements ChromaIcon {
 	WEAKREPEATER("weakrepeater"),
 	SMOKE("smoke"),
 	BLACKHOLE("blackhole"),
+	WHITEHOLE("blackhole_white"),
+	ALPHAHOLE("blackhole_alpha"),
 	BLURFLARE("blurflare2"),
 	HOLE("hole"),
 	PINWHEEL("pinwheel"),

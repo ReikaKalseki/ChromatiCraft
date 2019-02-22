@@ -14,6 +14,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.FocusAcceleratable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval.OperationState;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
@@ -94,6 +95,13 @@ public class MouseoverOverlayRenderer {
 				GL11.glPopMatrix();
 				GL11.glPopAttrib();
 			}
+			if (te instanceof FocusAcceleratable) {
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				GL11.glPushMatrix();
+				this.renderAccelerationOverlay(ep, gsc, (FocusAcceleratable)te);
+				GL11.glPopMatrix();
+				GL11.glPopAttrib();
+			}
 			if (te instanceof TileEntityChromaCrafter) {
 				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 				GL11.glPushMatrix();
@@ -171,6 +179,68 @@ public class MouseoverOverlayRenderer {
 			}
 			v5.draw();
 		}
+	}
+
+	private void renderAccelerationOverlay(EntityPlayer ep, int gsc, FocusAcceleratable te) {
+		int ar = 32;
+		int ox = Minecraft.getMinecraft().displayWidth/(gsc*2)-ar-8;
+		int oy = Minecraft.getMinecraft().displayHeight/(gsc*2)-ar-8;
+
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/infoicons.png");
+		double u = 0.125*5;
+		double v = 0.25;
+
+		double s = 0.125;
+		double r = 32;
+
+		Tessellator v5 = Tessellator.instance;
+
+		v5.startDrawingQuads();
+		v5.addVertexWithUV(ox+0, oy+r, 0, u, v+s);
+		v5.addVertexWithUV(ox+r, oy+r, 0, u+s, v+s);
+		v5.addVertexWithUV(ox+r, oy+0, 0, u+s, v);
+		v5.addVertexWithUV(ox+0, oy+0, 0, u, v);
+		v5.draw();
+
+		u = 0.125*7;
+		v = 0.25;
+		v5.startDrawing(GL11.GL_TRIANGLE_FAN);
+		v5.addVertexWithUV(ox+r/2, oy+r/2, 0, u+0.0625, v+0.0625);
+		float f = te.getAccelerationFactor()/te.getMaximumAcceleratability();
+		double ma = 360*f;
+		double da = 0.25;
+		for (double a = 0; a < ma; a += da) {
+			double dx = Math.sin(Math.toRadians(a+90));
+			double dy = Math.cos(Math.toRadians(a+90));
+			double x = ox+r/2+r/2*dx;
+			double y = oy+r/2+r/2*dy;
+			double du = u+0.0625+dx*s/2;
+			double dv = v+0.0625+dy*s/2;
+			//ReikaJavaLibrary.pConsole(a+">"+x+","+y+" @ "+du+","+dv+" from "+u+","+v);
+			v5.addVertexWithUV(x, y, 0, du, dv);
+		}
+		v5.draw();
+
+		float p = te.getProgressToNextStep();
+		if (p > 0) {
+			u = 0.125*6;
+			v = 0.25;
+			v5.startDrawing(GL11.GL_TRIANGLE_FAN);
+			v5.addVertexWithUV(ox+r/2, oy+r/2, 0, u+0.0625, v+0.0625);
+			double ma2 = ma+(360-ma)*p;
+			for (double a = ma; a < ma2; a += da) {
+				double dx = Math.sin(Math.toRadians(a+90));
+				double dy = Math.cos(Math.toRadians(a+90));
+				double x = ox+r/2+r/2*dx;
+				double y = oy+r/2+r/2*dy;
+				double du = u+0.0625+dx*s/2;
+				double dv = v+0.0625+dy*s/2;
+				//ReikaJavaLibrary.pConsole(a+">"+x+","+y+" @ "+du+","+dv+" from "+u+","+v);
+				v5.addVertexWithUV(x, y, 0, du, dv);
+			}
+			v5.draw();
+		}
+
 	}
 
 	public void renderStorageOverlay(EntityPlayer ep, int gsc, LumenTile lt) {

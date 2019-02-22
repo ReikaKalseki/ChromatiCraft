@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
@@ -170,6 +171,7 @@ public class NodeRecharger implements TickHandler {
 		//CrystalNetworker.instance.removeTile(nodes.get(loc));
 		HashMap<WorldLocation, NodeReceiverWrapper> map = nodes.get(world.provider.dimensionId);
 		if (map != null) {
+			CrystalNetworker.instance.breakPaths(map.get(loc));
 			map.remove(loc);
 			if (save)
 				NodeRechargeData.initNetworkData(world).setDirty(false);

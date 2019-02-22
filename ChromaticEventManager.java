@@ -1581,6 +1581,7 @@ public class ChromaticEventManager {
 			if (PoolRecipes.instance.canAlloyItem(ei)) {
 				PoolRecipe out = PoolRecipes.instance.getPoolRecipe(ei);
 				if (out != null) {
+					out.doFX(ei);
 					if (ei.worldObj.isRemote) {
 						ChromaFX.poolRecipeParticles(ei);
 					}

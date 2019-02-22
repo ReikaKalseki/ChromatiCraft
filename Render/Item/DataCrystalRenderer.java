@@ -1,19 +1,13 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.Item;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 
 import org.lwjgl.opengl.GL11;
 
@@ -23,6 +17,11 @@ import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Rendering.MultiSheetItemRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 
 
 public class DataCrystalRenderer extends MultiSheetItemRenderer {
@@ -90,7 +89,7 @@ public class DataCrystalRenderer extends MultiSheetItemRenderer {
 			if (this.checkRayTrace(ei)) {
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
 				GL11.glTranslated(0, -0.75, 0);
-				RenderDataNode.renderFlare(Tessellator.instance, 1);
+				RenderDataNode.renderFlare(Tessellator.instance, 1, true);
 			}
 
 			GL11.glPopAttrib();

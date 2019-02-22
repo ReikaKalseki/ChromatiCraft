@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.CrystalTier;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
@@ -37,6 +38,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeTile.PipeType;
@@ -66,6 +68,9 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 
 	private static final int DURATION = 608;
 
+	private int focusCrystalTotal;
+	private boolean allExquisite = false;
+
 	static {
 		required.addTag(CrystalElement.PURPLE, 500);
 		required.addTag(CrystalElement.BLACK, 2500);
@@ -92,8 +97,35 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 	}
 
 	public void validateStructure() {
-		hasStructure = ChromaStructures.getInfusionStructure(worldObj, xCoord, yCoord, zCoord).matchInWorld();
-		if (!hasStructure) {
+		focusCrystalTotal = 0;
+		allExquisite = true;
+		FilledBlockArray arr = ChromaStructures.getInfusionStructure(worldObj, xCoord, yCoord, zCoord);
+		hasStructure = arr.matchInWorld();
+		if (hasStructure) {
+			for (Coordinate c : arr.keySet()) {
+				if (c.yCoord == yCoord-1 && c.getTaxicabDistanceTo(new Coordinate(this)) > 2) {
+					if (arr.getBlockAt(c.xCoord, c.yCoord, c.zCoord) == ChromaBlocks.PYLONSTRUCT.getBlockInstance()) {
+						if (ChromaTiles.getTile(worldObj, c.xCoord, c.yCoord+1, c.zCoord) == ChromaTiles.FOCUSCRYSTAL) {
+							TileEntityFocusCrystal te = (TileEntityFocusCrystal)c.offset(0, 1, 0).getTileEntity(worldObj);
+							CrystalTier ct = te.getTier();
+							if (ct.ordinal() > 0) {
+								int power = ReikaMathLibrary.intpow2(2, ct.ordinal()-1);
+								focusCrystalTotal += power;
+								if (ct != CrystalTier.EXQUISITE)
+									allExquisite = false;
+								te.addConnection(this);
+							}
+							else {
+								focusCrystalTotal = 0;
+								allExquisite = false;
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		else {
 			if (craftingTick > 0) {
 				this.killCrafting();
 			}
@@ -118,6 +150,9 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		hasStructure = NBT.getBoolean("struct");
 
 		craftingTick = NBT.getInteger("craft");
+
+		focusCrystalTotal = NBT.getInteger("focus");
+		allExquisite = NBT.getBoolean("exq");
 	}
 
 	@Override
@@ -127,16 +162,22 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		NBT.setBoolean("struct", hasStructure);
 
 		NBT.setInteger("craft", craftingTick);
+
+		NBT.setBoolean("exq", allExquisite);
+		NBT.setInteger("focus", focusCrystalTotal);
 	}
 
 	private void onCraftingTick(World world, int x, int y, int z) {
 		if (world.isRemote)
 			this.spawnParticles(world, x, y, z);
 
-		if (craftingTick%304 == 0) {
+		int sp = this.getCraftSpeed();
+		if (sp == 4 && craftingTick%152 == 0)
+			ChromaSounds.INFUSION_SHORT.playSoundAtBlock(this);
+		else if (craftingTick%304 == 0)
 			ChromaSounds.INFUSION.playSoundAtBlock(this);
-		}
-		craftingTick--;
+
+		craftingTick -= 1;
 
 		if (craftingTick == 0) {
 			;//this.drainEnergy(required);
@@ -146,6 +187,14 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 			}
 			craftingPlayer = null;
 		}
+	}
+
+	private int getCraftSpeed() {
+		if (allExquisite && focusCrystalTotal >= 16)
+			return 4;
+		else if (focusCrystalTotal >= 8)
+			return 2;
+		return 1;
 	}
 
 	private void craft() {
@@ -195,7 +244,7 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 
 		if (this.canCraft()) {
 			if (craftingTick == 0)
-				craftingTick = (int)(DURATION/TileEntityFocusCrystal.getSummedFocusFactor(this));
+				craftingTick = DURATION/this.getCraftSpeed();
 		}
 		else {
 			if (craftingTick > 0) {
@@ -332,12 +381,34 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 
 	@Override
 	public float getOperationFraction() {
-		return 1F-craftingTick/(float)DURATION;
+		return 1F-craftingTick/(float)(DURATION/this.getCraftSpeed());
 	}
 
 	@Override
 	public OperationState getState() {
 		return this.canCraft() ? hasStructure ? OperationState.RUNNING : OperationState.PENDING : OperationState.INVALID;
+	}
+
+	@Override
+	public float getAccelerationFactor() {
+		return this.getCraftSpeed() == 1 ? 0 : this.getCraftSpeed();
+	}
+
+	@Override
+	public float getMaximumAcceleratability() {
+		return 4;
+	}
+
+	@Override
+	public float getProgressToNextStep() {
+		if (focusCrystalTotal < 8) {
+			return focusCrystalTotal/8F;
+		}
+		if (focusCrystalTotal >= 16)
+			return 0;
+		if (!allExquisite)
+			return 0;
+		return (focusCrystalTotal-8)/8F;
 	}
 
 }

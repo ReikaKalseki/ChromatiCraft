@@ -36,6 +36,7 @@ public enum ChromaSounds implements SoundEnum {
 	ERROR("error"),
 	INFUSE("infuse"),
 	INFUSION("infuse2"),
+	INFUSION_SHORT("infuse2s"),
 	USE("use2"),
 	TRAP("slam2"),
 	DING("ding2"),

@@ -55,8 +55,10 @@ public class PylonLinkNetwork {
 		PylonSubweb sw = web.getSubweb(p.getColor());
 		PylonNode connection = sw.addNode(te, p);
 		p.link(te);
-		this.sync(null);
-		ChromatiCraft.logger.log("Updating pylon link network: added a tile @ "+te);
+		if (web.needsSync) {
+			this.sync(null);
+			ChromatiCraft.logger.log("Updating pylon link network: added a tile @ "+te);
+		}
 		return connection;
 	}
 
@@ -170,6 +172,7 @@ public class PylonLinkNetwork {
 
 		private final UUID owner;
 		private final PylonSubweb[] data = new PylonSubweb[16];
+		private boolean needsSync = false;
 
 		private PylonWeb(UUID uid) {
 			owner = uid;
@@ -231,12 +234,14 @@ public class PylonLinkNetwork {
 			ret = new PylonNode(this, loc, py);
 			linkSet.put(loc, ret);
 			pylonSet.put(py, ret);
+			parent.needsSync = true;
 			return ret;
 		}
 
 		private void remove(PylonNode pn) {
 			pylonSet.remove(pn.pylon);
 			linkSet.remove(pn.tile);
+			parent.needsSync = true;
 		}
 
 		private static PylonSubweb readFromNBT(PylonWeb pw, NBTTagCompound NBT) {

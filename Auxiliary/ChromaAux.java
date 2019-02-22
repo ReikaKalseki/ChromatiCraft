@@ -501,7 +501,7 @@ public class ChromaAux {
 
 	public static List<AxisAlignedBB> interceptEntityCollision(World world, Entity e, AxisAlignedBB box) {
 		if (e instanceof EntityPlayer && Chromabilities.ORECLIP.enabledOn((EntityPlayer)e)) {
-			return AbilityHelper.instance.getNoclipBlockBoxes((EntityPlayer)e);
+			return AbilityHelper.instance.getNoclipBlockBoxes((EntityPlayer)e, box);
 		}
 		else {
 			return getSurrogateCollidingAABBs(world, e, box);//e.worldObj.getCollidingBoundingBoxes(e, box);
