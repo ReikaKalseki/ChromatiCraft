@@ -102,7 +102,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 	}
 
 	@Override
-	protected boolean tickDirection(World world, int x, int y, int z, ForgeDirection dir, long time) {
+	protected EffectResult tickDirection(World world, int x, int y, int z, ForgeDirection dir, long time) {
 		TileEntity te = this.getAdjacentTileEntity(dir);
 		Acceleration a = this.getAccelerate(te);
 		//ReikaJavaLibrary.pConsole(te+": "+(a != null ? a.getClass() : null));
@@ -118,18 +118,18 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 					this.writeError(e);
 				}
 				if (System.nanoTime()-time >= MAX_LAG)
-					return false;
+					return EffectResult.FINAL_ACTION;
 			}
 			else {
 				for (int k = 0; k < max; k++) {
 					te.updateEntity();
 					if (System.nanoTime()-time >= MAX_LAG)
-						return false;
+						return EffectResult.FINAL_ACTION;
 				}
 			}
-			return true;
+			return EffectResult.ACTION;
 		}
-		return true;
+		return EffectResult.CONTINUE;
 	}
 
 	private Acceleration getAccelerate(TileEntity te) {

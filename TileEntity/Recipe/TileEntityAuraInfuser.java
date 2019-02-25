@@ -102,28 +102,7 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		FilledBlockArray arr = ChromaStructures.getInfusionStructure(worldObj, xCoord, yCoord, zCoord);
 		hasStructure = arr.matchInWorld();
 		if (hasStructure) {
-			for (Coordinate c : arr.keySet()) {
-				if (c.yCoord == yCoord-1 && c.getTaxicabDistanceTo(new Coordinate(this)) > 2) {
-					if (arr.getBlockAt(c.xCoord, c.yCoord, c.zCoord) == ChromaBlocks.PYLONSTRUCT.getBlockInstance()) {
-						if (ChromaTiles.getTile(worldObj, c.xCoord, c.yCoord+1, c.zCoord) == ChromaTiles.FOCUSCRYSTAL) {
-							TileEntityFocusCrystal te = (TileEntityFocusCrystal)c.offset(0, 1, 0).getTileEntity(worldObj);
-							CrystalTier ct = te.getTier();
-							if (ct.ordinal() > 0) {
-								int power = ReikaMathLibrary.intpow2(2, ct.ordinal()-1);
-								focusCrystalTotal += power;
-								if (ct != CrystalTier.EXQUISITE)
-									allExquisite = false;
-								te.addConnection(this);
-							}
-							else {
-								focusCrystalTotal = 0;
-								allExquisite = false;
-								break;
-							}
-						}
-					}
-				}
-			}
+			this.countFocusCrystals(arr);
 		}
 		else {
 			if (craftingTick > 0) {
@@ -133,6 +112,31 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		}
 		this.markDirty();
 		this.syncAllData(false);
+	}
+
+	private void countFocusCrystals(FilledBlockArray arr) {
+		for (Coordinate c : arr.keySet()) {
+			if (c.yCoord == yCoord-1 && c.getTaxicabDistanceTo(new Coordinate(this)) > 2) {
+				if (arr.getBlockAt(c.xCoord, c.yCoord, c.zCoord) == ChromaBlocks.PYLONSTRUCT.getBlockInstance()) {
+					if (ChromaTiles.getTile(worldObj, c.xCoord, c.yCoord+1, c.zCoord) == ChromaTiles.FOCUSCRYSTAL) {
+						TileEntityFocusCrystal te = (TileEntityFocusCrystal)c.offset(0, 1, 0).getTileEntity(worldObj);
+						CrystalTier ct = te.getTier();
+						if (ct.ordinal() > 0) {
+							int power = ReikaMathLibrary.intpow2(2, ct.getEffectiveOrdinal()-1);
+							focusCrystalTotal += power;
+							if (!ct.isMaxPower())
+								allExquisite = false;
+							te.addConnection(this);
+						}
+						else {
+							focusCrystalTotal = 0;
+							allExquisite = false;
+							break;
+						}
+					}
+				}
+			}
+		}
 	}
 
 	private void killCrafting() {
@@ -409,6 +413,11 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		if (!allExquisite)
 			return 0;
 		return (focusCrystalTotal-8)/8F;
+	}
+
+	@Override
+	public void recountFocusCrystals() {
+		this.validateStructure();
 	}
 
 }

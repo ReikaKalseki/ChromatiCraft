@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,10 +11,10 @@ package Reika.ChromatiCraft.API;
 
 import java.lang.reflect.Method;
 
-import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class AbilityAPI {
 
@@ -98,6 +98,9 @@ public class AbilityAPI {
 
 		/** If the energy cost for this ability is per-tick as opposed to on-trigger or on-toggle. Usually true. */
 		public boolean costsPerTick();
+
+		/** Whether the ability is currently doing anything, irrespective of being enabled/disabled. Controls energy consumption and function. */
+		public boolean isFunctioningOn(EntityPlayer ep);
 
 	}
 

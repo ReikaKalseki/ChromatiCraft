@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.Auxiliary.Ability.ChromabilityHandler;
 import Reika.ChromatiCraft.Auxiliary.Command.CrystalNetCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.DimensionGeneratorCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.GuardianCommand;
+import Reika.ChromatiCraft.Auxiliary.Command.NodeWrapperInspectionCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.PlaceStructureCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.ProgressModifyCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.PylonCacheCommand;
@@ -593,6 +594,8 @@ public class ChromatiCraft extends DragonAPIMod {
 			FurnaceFuelRegistry.instance.registerItemSimple(sapling, 0.5F);
 		}
 
+		FurnaceFuelRegistry.instance.registerItemSimple(ChromaStacks.firaxite, 24);
+
 		this.addDyeCompat();
 
 		VanillaIntegrityTracker.instance.addWatchedBlock(instance, Blocks.leaves);
@@ -863,6 +866,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		evt.registerServerCommand(new ReshufflePylonCommand());
 		evt.registerServerCommand(new RedecorateCommand());
 		evt.registerServerCommand(new PlaceStructureCommand());
+		evt.registerServerCommand(new NodeWrapperInspectionCommand());
 
 		if (MinecraftServer.getServer() != null && !MinecraftServer.getServer().isServerInOnlineMode()) {
 			isOfflineMode = true;

@@ -99,6 +99,8 @@ import Reika.ChromatiCraft.World.Dimension.ChromaDimensionTicker;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.ChromatiCraft.World.Dimension.WorldProviderChroma;
 import Reika.ChromatiCraft.World.Dimension.Structure.BridgeGenerator;
+import Reika.DragonAPI.APIPacketHandler.PacketIDs;
+import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ClassDependent;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
@@ -149,6 +151,7 @@ import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -175,6 +178,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.boss.EntityDragon;
@@ -522,10 +526,11 @@ public class ChromaticEventManager {
 	public void preventCliffStackedGrass(BlockDeathEvent evt) {
 		if (evt.getClass() != BlockDeathEvent.class)
 			return;
-		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord))) {
-			//ReikaJavaLibrary.pConsole(evt.x+","+evt.y+","+evt.z+": "+evt.world.getBlock(evt.x, evt.y+1, evt.z).isOpaqueCube());
-			if (evt.world.getBlock(evt.xCoord, evt.yCoord+1, evt.zCoord).isOpaqueCube())
+		if (evt.world.getBlock(evt.xCoord, evt.yCoord+1, evt.zCoord).isOpaqueCube()) {
+			if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord)) || evt.world.getBlock(evt.xCoord, evt.yCoord-1, evt.zCoord) == ChromaBlocks.CLIFFSTONE.getBlockInstance()) {
+				//ReikaJavaLibrary.pConsole(evt.x+","+evt.y+","+evt.z+": "+evt.world.getBlock(evt.x, evt.y+1, evt.z).isOpaqueCube());
 				evt.setResult(Result.ALLOW);
+			}
 		}
 	}
 
@@ -533,10 +538,11 @@ public class ChromaticEventManager {
 	public void preventCliffStackedGrass(BlockSpreadEvent evt) {
 		if (evt.getClass() != BlockSpreadEvent.class)
 			return;
-		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord))) {
-			//ReikaJavaLibrary.pConsole(evt.x+","+evt.y+","+evt.z+": "+evt.world.getBlock(evt.x, evt.y+1, evt.z).isOpaqueCube());
-			if (evt.world.getBlock(evt.xCoord, evt.yCoord+1, evt.zCoord).isOpaqueCube())
+		if (evt.world.getBlock(evt.xCoord, evt.yCoord+1, evt.zCoord).isOpaqueCube()) {
+			if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord)) || evt.world.getBlock(evt.xCoord, evt.yCoord-1, evt.zCoord) == ChromaBlocks.CLIFFSTONE.getBlockInstance()) {
+				//ReikaJavaLibrary.pConsole(evt.x+","+evt.y+","+evt.z+": "+evt.world.getBlock(evt.x, evt.y+1, evt.z).isOpaqueCube());
 				evt.setResult(Result.DENY);
+			}
 		}
 	}
 
@@ -865,6 +871,23 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
+	public void showLiedParticles(LivingUpdateEvent evt) {
+		if (evt.entityLiving instanceof EntityCreature && !evt.entityLiving.worldObj.isRemote) {
+			EntityCreature ec = (EntityCreature)evt.entityLiving;
+			Entity tgt = ec.getEntityToAttack();
+			if (tgt instanceof EntityPlayer) {
+				EntityPlayer ep = (EntityPlayer)tgt;
+				if (Chromabilities.COMMUNICATE.enabledOn(ep)) {
+					if (!AbilityHelper.instance.isPeaceActive(ep)) {
+						if (rand.nextInt(6) == 0)
+							ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.PARTICLE.ordinal(), ec.worldObj, MathHelper.floor_double(ec.posX), (int)ec.posY+1, MathHelper.floor_double(ec.posZ), new PacketTarget.RadiusTarget(ec, 24), ReikaJavaLibrary.makeListFrom(ReikaParticleHelper.ANGRY.ordinal(), 1));
+					}
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
 	public void noTargeting(LivingSetAttackTargetEvent evt) {
 		if (!ReikaEntityHelper.tameMobTargeting) {
 			if (evt.target instanceof EntityPlayer) {
@@ -891,7 +914,7 @@ public class ChromaticEventManager {
 	private boolean isPlayerNotTargetable(EntityPlayer ep, double x, double y, double z) {
 		if (Chromabilities.COMMUNICATE.enabledOn(ep)) {
 			//evt.setCanceled(true);
-			return ep.worldObj.getTotalWorldTime()-ep.getEntityData().getLong("lastCommunicateLie") > AbilityHelper.LYING_DURATION;
+			return AbilityHelper.instance.isPeaceActive(ep);
 		}
 		else if (TileEntityCloakingTower.isPlayerCloaked(ep)) {
 			if (ep.getDistanceSq(x, y, z) >= 4) {

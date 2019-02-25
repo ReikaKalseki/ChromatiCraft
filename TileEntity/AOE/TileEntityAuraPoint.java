@@ -265,7 +265,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 						c.updateTick(world, rand);
 					}
 					if (state != type.getGrowthState(world, c.xCoord, c.yCoord, c.zCoord)) {
-						ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.AURAGROW.ordinal(), this, 64, c.xCoord, c.yCoord, c.zCoord);
+						ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.AURAGROW.ordinal(), world, c.xCoord, c.yCoord, c.zCoord, 64);
 					}
 				}
 			}
@@ -293,7 +293,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 
 	@SideOnly(Side.CLIENT)
 	public void doGrowFX(int x, int y, int z) {
-		ReikaParticleHelper.BONEMEAL.spawnAroundBlock(worldObj, x, y, z, 4);
+		ReikaParticleHelper.BONEMEAL.spawnAroundBlockWithOutset(worldObj, x, y, z, 4, 0.0625);
 	}
 
 	private CropType getCropAt(World world, Coordinate c) {

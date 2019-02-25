@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -79,7 +80,7 @@ public class NodeRecharger implements TickHandler {
 			}
 		}
 		if (wrap != null) {
-			wrap.load(data);
+			wrap.load(data, true);
 		}
 	}
 
@@ -136,7 +137,7 @@ public class NodeRecharger implements TickHandler {
 		INode n = (INode)te;
 		NodeReceiverWrapper wrap = new NodeReceiverWrapper(n);
 		if (tag.hasKey(EXTRA_TAG))
-			wrap.load(tag.getCompoundTag(EXTRA_TAG));
+			wrap.load(tag.getCompoundTag(EXTRA_TAG), false);
 		this.register(loc, wrap);
 	}
 
@@ -180,10 +181,10 @@ public class NodeRecharger implements TickHandler {
 		return false;
 	}
 
-	public NodeReceiverWrapper getWrapper(WorldLocation loc) {
-		HashMap<WorldLocation, NodeReceiverWrapper> map = this.getOrCreateMap(loc.dimensionID);
+	public NodeReceiverWrapper getWrapper(WorldLocation loc, boolean create) {
+		HashMap<WorldLocation, NodeReceiverWrapper> map = create ? this.getOrCreateMap(loc.dimensionID) : nodes.get(loc.dimensionID);
 		NodeReceiverWrapper wrap = map.get(loc);
-		if (wrap == null) {
+		if (wrap == null && create) {
 			TileEntity te = loc.getTileEntity();
 			if (te instanceof INode) {
 				this.addLocation(loc, (INode)te);
@@ -240,6 +241,15 @@ public class NodeRecharger implements TickHandler {
 			//ReikaJavaLibrary.pConsole("Loading node at "+loc);
 		}
 		//ReikaJavaLibrary.pConsole("Loaded nodes "+nodes+" from "+li);
+	}
+
+	public ArrayList<String> debug(WorldLocation loc) {
+		ArrayList<String> li = new ArrayList();
+		NodeReceiverWrapper wrap = this.getWrapper(loc, false);
+		if (wrap != null) {
+			wrap.debug(li);
+		}
+		return li;
 	}
 
 	/*

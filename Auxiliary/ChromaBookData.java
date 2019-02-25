@@ -101,7 +101,7 @@ public class ChromaBookData {
 				int ty = Math.abs(k) == 2 ? 38 : 63;
 				int dx = posX+120+sx*tx;
 				int dy = posY+94+sy*ty;
-				ItemStack out = items.get(key).getCycledItem().copy();
+				ItemStack out = items.get(key).getCycledItem();
 				if (out.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
 					List<ItemStack> dmg = ReikaItemHelper.getAllMetadataPermutations(out.getItem());
 					if (System.currentTimeMillis()%1000 == 0) {

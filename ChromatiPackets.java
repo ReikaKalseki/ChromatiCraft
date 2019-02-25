@@ -626,7 +626,7 @@ public class ChromatiPackets implements PacketHandler {
 					((TileEntityAuraPoint)tile).doHealFX(world.getEntityByID(data[0]));
 					break;
 				case AURAGROW:
-					((TileEntityAuraPoint)tile).doGrowFX(data[0], data[1], data[2]);
+					((TileEntityAuraPoint)tile).doGrowFX(x, y, z);
 					break;
 				case DESTROYNODE:
 					NodeReceiverWrapper.triggerDestroyFX(world, x, y, z);

@@ -182,8 +182,8 @@ public class MouseoverOverlayRenderer {
 	}
 
 	private void renderAccelerationOverlay(EntityPlayer ep, int gsc, FocusAcceleratable te) {
-		int ar = 32;
-		int ox = Minecraft.getMinecraft().displayWidth/(gsc*2)-ar-8;
+		int ar = 30;
+		int ox = Minecraft.getMinecraft().displayWidth/(gsc*2)+ar+8;
 		int oy = Minecraft.getMinecraft().displayHeight/(gsc*2)-ar-8;
 
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/infoicons.png");

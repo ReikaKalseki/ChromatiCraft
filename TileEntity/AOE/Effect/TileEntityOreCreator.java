@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -13,11 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -37,6 +32,11 @@ import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.RailcraftHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerBlockHandler;
 import Reika.DragonAPI.ModRegistry.ModOreList;
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 
 public class TileEntityOreCreator extends TileEntityAdjacencyUpgrade {
@@ -44,14 +44,14 @@ public class TileEntityOreCreator extends TileEntityAdjacencyUpgrade {
 	private static final ArrayList<OreType>[][] oreLists = new ArrayList[OreRarity.values().length][3];
 
 	private static final OreRarity[] rarities = {
-		OreRarity.EVERYWHERE,
-		OreRarity.EVERYWHERE,
-		OreRarity.COMMON,
-		OreRarity.AVERAGE,
-		OreRarity.SCATTERED,
-		OreRarity.SCARCE,
-		OreRarity.SCARCE,
-		OreRarity.RARE,
+			OreRarity.EVERYWHERE,
+			OreRarity.EVERYWHERE,
+			OreRarity.COMMON,
+			OreRarity.AVERAGE,
+			OreRarity.SCATTERED,
+			OreRarity.SCARCE,
+			OreRarity.SCARCE,
+			OreRarity.RARE,
 	};
 
 	public static void initOreMap() {
@@ -95,9 +95,9 @@ public class TileEntityOreCreator extends TileEntityAdjacencyUpgrade {
 	}
 
 	@Override
-	protected boolean tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime) {
+	protected EffectResult tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime) {
 		if (world.isRemote)
-			return false;
+			return EffectResult.ACTION;
 		int dx = x+dir.offsetX;
 		int dy = y+dir.offsetY;
 		int dz = z+dir.offsetZ;
@@ -106,10 +106,10 @@ public class TileEntityOreCreator extends TileEntityAdjacencyUpgrade {
 		if (idx != null) {
 			OreType type = this.tryCreateOre(world, dx, dy, dz, idx);
 			if (type != null) {
-
+				return EffectResult.ACTION;
 			}
 		}
-		return true;
+		return EffectResult.CONTINUE;
 	}
 
 	private OreType tryCreateOre(World world, int x, int y, int z, OreLocation loc) {

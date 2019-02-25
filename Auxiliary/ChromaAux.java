@@ -56,6 +56,7 @@ import Reika.DragonAPI.Interfaces.Entity.CustomProjectile;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
@@ -602,15 +603,15 @@ public class ChromaAux {
 		if (iba instanceof World) {
 			World w = (World)iba;
 			if (!ReikaWorldHelper.isChunkPastNoiseGen(w, x >> 4, z >> 4)) {
-				return 255;
+				return b.getLightOpacity();
 			}
 		}
 		Block b2 = b;
-		while(y >= 0 && (b2 == b || b2 == Blocks.dirt)) {
+		while(y >= 0 && (b2 == b || b2 == Blocks.dirt || ReikaBlockHelper.isLiquid(b2))) {
 			y--;
 			b2 = iba.getBlock(x, y, z);
 		}
-		return b2 == ChromaBlocks.CLIFFSTONE.getBlockInstance() && BlockCliffStone.isTransparent(iba, x, y, z) ? 0 : 255;
+		return b2 == ChromaBlocks.CLIFFSTONE.getBlockInstance() && BlockCliffStone.isTransparent(iba, x, y, z) ? 0 : b.getLightOpacity();
 	}
 
 	@SideOnly(Side.CLIENT)

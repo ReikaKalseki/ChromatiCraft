@@ -572,6 +572,9 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == ENDERCRYS) {
 			return item.getStackOfMetadata(1);
 		}
+		if (this == FOCUSCRYSTALS) {
+			return CrystalTier.REFINED.getCraftedItem();
+		}
 		if (this == ACCEL) {
 			return ChromaItems.ADJACENCY.getStackOfMetadata(CrystalElement.LIGHTBLUE.ordinal());
 		}

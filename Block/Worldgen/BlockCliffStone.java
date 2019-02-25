@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,6 +12,19 @@ package Reika.ChromatiCraft.Block.Worldgen;
 import java.util.Locale;
 import java.util.Random;
 
+import com.carpentersblocks.api.IWrappableBlock;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
+import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
+import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.GeoStrata.API.RockProofStone;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -24,15 +37,6 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.ASM.APIStripper.Strippable;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.GeoStrata.API.RockProofStone;
-
-import com.carpentersblocks.api.IWrappableBlock;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 
 @Strippable(value={"com.carpentersblocks.api.IWrappableBlock"})
@@ -50,6 +54,32 @@ public class BlockCliffStone extends Block implements RockProofStone, IWrappable
 	private IIcon farmlandTop;
 
 	private final IIcon[][] stoneTextures = new IIcon[2][2];
+
+	private static final BreakerCallback cliffStoneTransparifier = new BreakerCallback() {
+
+		public void onPostBreak(ProgressiveBreaker b, World world, int x, int y, int z, Block id, int meta) {
+			world.setBlock(x, y, z, id, Variants.STONE.getMeta(false, true), 2);
+			for (int i = -1; i <= 4; i++)
+				world.func_147451_t(x, y+i, z);
+			ReikaSoundHelper.playPlaceSound(world, x, y, z, id);
+		}
+
+		@Override
+		public boolean canBreak(ProgressiveBreaker b, World world, int x, int y, int z, Block id, int meta) {
+			return id == ChromaBlocks.CLIFFSTONE.getBlockInstance() && meta == Variants.STONE.getMeta(false, false);
+		}
+
+		@Override
+		public void onPreBreak(ProgressiveBreaker b, World world, int x, int y, int z, Block id, int meta) {
+
+		}
+
+		@Override
+		public void onFinish(ProgressiveBreaker b) {
+
+		}
+
+	};
 
 	public BlockCliffStone(Material m) {
 		super(m);
@@ -72,6 +102,24 @@ public class BlockCliffStone extends Block implements RockProofStone, IWrappable
 		return Variants.getVariant(meta).proxy.getDrops(world, x, y, z, 0, fortune);
 	}
 	 */
+
+	public static boolean transparify(World world, int x, int y, int z, EntityPlayer ep) {
+		if (world.isRemote)
+			return false;
+		Block id = world.getBlock(x, y, z);
+		int meta = world.getBlockMetadata(x, y, z);
+		if (id == ChromaBlocks.CLIFFSTONE.getBlockInstance() && meta == Variants.STONE.getMeta(false, false)) {
+			int depth = 30;
+			ProgressiveBreaker br = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, depth);
+			br.call = cliffStoneTransparifier;
+			br.drops = false;
+			br.extraSpread = true;
+			br.player = ep;
+			br.causeUpdates = false;
+			return true;
+		}
+		return false;
+	}
 
 	@Override
 	public int damageDropped(int meta) {

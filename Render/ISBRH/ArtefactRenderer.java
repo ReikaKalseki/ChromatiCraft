@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,19 +12,18 @@ package Reika.ChromatiCraft.Render.ISBRH;
 import java.util.ArrayList;
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.IIcon;
-import net.minecraft.world.IBlockAccess;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList.TessellatorVertex;
 import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.IIcon;
+import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.IBlockAccess;
 
 
 public class ArtefactRenderer implements ISBRH {
@@ -39,33 +38,51 @@ public class ArtefactRenderer implements ISBRH {
 	@Override
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks rb) {
 		rand.setSeed(this.calcSeed(x, y, z));
+		rand.nextBoolean();
 		Tessellator.instance.setBrightness(block.getMixedBrightnessForBlock(world, x, y, z));
-		this.renderDirtChunks(world, x, y, z, rb);
+		if (world.getBlockMetadata(x, y, z) == 0) {
+			this.renderDirtChunks(world, x, y, z, rb);
+		}
+		else {
+			this.renderPedestal(world, x, y, z, rb);
+		}
 		this.renderArtefactSimple(world, x, y, z, block);
 		return true;
+	}
+
+	private void renderPedestal(IBlockAccess world, int x, int y, int z, RenderBlocks rb) {
+		ReikaRenderHelper.renderBlockSubCube(x, y, z, 1, 1, 1, 14, 2, 14, Tessellator.instance, rb, Blocks.stonebrick, 0);
+		ReikaRenderHelper.renderBlockSubCube(x, y, z, 2, 12, 2, 12, 2, 12, Tessellator.instance, rb, Blocks.stonebrick, 0);
+		ReikaRenderHelper.renderBlockSubCube(x, y, z, 4, 2, 4, 8, 11, 8, Tessellator.instance, rb, Blocks.stonebrick, 0);
+		ReikaRenderHelper.renderBlockSubCube(x, y, z, 3, 2, 3, 10, 5, 10, Tessellator.instance, rb, Blocks.stonebrick, 0);
 	}
 
 	private void renderArtefactSimple(IBlockAccess world, int x, int y, int z, Block b) {
 		Tessellator.instance.setColorOpaque_I(0xffffff);
 
-		double ang1 = 90-60+rand.nextDouble()*120;
-		double ang2 = -45+rand.nextDouble()*90;//rand.nextDouble()*360;
-		double ang3 = rand.nextDouble()*360;
+		boolean natural = world.getBlockMetadata(x, y, z) == 0;
+
+		double ang1 = natural ? 90-60+rand.nextDouble()*120 : 85+rand.nextDouble()*10;
+		double ang2 = natural ? -45+rand.nextDouble()*90 : -5+rand.nextDouble()*10;
+		double ang3 = natural ? rand.nextDouble()*360 : rand.nextDouble()*360;
 
 		TessellatorVertexList tv5 = new TessellatorVertexList(0, 0, 0);
 		ReikaRenderHelper.renderIconIn3D(tv5, b.getIcon(0, 0), x, y, z);
 		tv5.rotateNonOrthogonal(ang1, ang2, ang3);
 		tv5.center();
 		tv5.offset(x+0.5, y+0.5, z+0.5);
+		if (!natural)
+			tv5.offset(0, 0.4, 0);
 		tv5.render();
 	}
 
 	private void renderArtefact(IBlockAccess world, int x, int y, int z, Block b) {
 		Tessellator.instance.setColorOpaque_I(0xffffff);
+		boolean natural = world.getBlockMetadata(x, y, z) == 0;
 
-		double ang1 = rand.nextDouble()*360;
-		double ang2 = rand.nextDouble()*360;
-		double ang3 = rand.nextDouble()*360;
+		double ang1 = natural ? rand.nextDouble()*360 : 0;
+		double ang2 = natural ? rand.nextDouble()*360 : 0;
+		double ang3 = natural ? rand.nextDouble()*360 : 0;
 
 		IIcon ico = b.getIcon(0, 0);
 		double u = ico.getMinU();
@@ -156,16 +173,19 @@ public class ArtefactRenderer implements ISBRH {
 	}
 
 	private long calcSeed(int x, int y, int z) {
-		return Minecraft.getMinecraft().theWorld.getSeed() ^ new Coordinate(x, y, z).hashCode();
+		return ChunkCoordIntPair.chunkXZ2Int(x, z) ^ y;
 	}
 
 	private void renderDirtChunks(IBlockAccess world, int x, int y, int z, RenderBlocks rb) {
 		int n = 6+rand.nextInt(7);
 		for (int i = 0; i < n; i++) {
 			int s = 4+rand.nextInt(5);
-			int dx = rand.nextInt(16-s+1);
-			int dy = rand.nextInt(/*16*/Math.max(8-s, 0)+1);
-			int dz = rand.nextInt(16-s+1);
+			double dx = rand.nextInt(16-s+1);
+			double dy = rand.nextInt(/*16*/Math.max(8-s, 0)+1);
+			double dz = rand.nextInt(16-s+1);
+			dx += i*0.001;
+			dy += i*0.001;
+			dz += i*0.001;
 			ReikaRenderHelper.renderBlockSubCube(x, y, z, dx, dy, dz, s, Tessellator.instance, rb, Blocks.dirt, 0);
 		}
 	}

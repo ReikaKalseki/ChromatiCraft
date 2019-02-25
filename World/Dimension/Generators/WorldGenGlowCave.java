@@ -46,6 +46,9 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 	private static final double MAX_RADIUS = 4.5;
 	private static final double MAX_RADIUS_CHANGE_PER_SEGMENT = 0.5;
 
+	private static final double MAX_CRACK_CHANCE = 0.08;
+	private static final int MAX_CRACK_Y = 14;
+
 	private final SimplexNoiseGenerator wallSelectionNoise;
 
 	public WorldGenGlowCave(DimensionGenerators g, Random rand, long seed) {
@@ -83,7 +86,7 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 	}
 
 	private void growFrom(World world, Random rand, double x0, double y0, double z0, double maxr, HashSet<Coordinate> parent, HashSet<Coordinate> path, int forkDepth, double minY) {
-		minY = Math.max(0, Math.min(minY, y0-4));
+		minY = Math.max(0, Math.min(minY, y0-1));
 		List<CavePoint> li0 = new ArrayList();
 		double r0 = ReikaRandomHelper.getRandomBetween(MIN_RADIUS, maxr);
 		li0.add(new CavePoint(x0, y0, z0, r0));
@@ -92,7 +95,7 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 			double x2 = ReikaRandomHelper.getRandomPlusMinus(x0, first ? 6 : 32);
 			double z2 = ReikaRandomHelper.getRandomPlusMinus(z0, first ? 6 : 32);
 			double y2 = first ? y0-8-rand.nextInt(5) : y0-rand.nextInt(16);
-			y2 = Math.max(y2, 0);
+			y2 = Math.max(y2, minY);
 			x0 = x2;
 			y0 = y2;
 			z0 = z2;
@@ -169,7 +172,7 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 				b = ChromaBlocks.LIGHT.getBlockInstance();
 				meta = c.yCoord > 12 ? Flags.PARTICLES.getFlag() : 0;
 			}
-			if (b == Blocks.air && rand.nextInt(50) == 0 && !set.contains(c.offset(0, 2, 0))) {
+			if (b == Blocks.air && rand.nextInt(60) == 0 && c.yCoord < upper-10 && !set.contains(c.offset(0, 2, 0))) {
 				b = ChromaBlocks.TIEREDPLANT.getBlockInstance();
 				meta = TieredPlants.CAVE.ordinal();
 			}
@@ -192,10 +195,31 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 				}
 			}*/
 			if (b == Blocks.bedrock) {
-
+				if (c.yCoord < MAX_CRACK_Y) {
+					double f = this.getBedrockCrackChance(c);
+					if (rand.nextDouble() < f) {
+						b = ChromaBlocks.BEDROCKCRACK.getBlockInstance();
+						meta = this.getRandomCrackMeta(rand, c);
+					}
+				}
 			}
 			c.setBlock(world, b, meta);
 		}
+	}
+
+	private int getRandomCrackMeta(Random rand, Coordinate c) {
+		int max = 8;
+		if (c.yCoord > 8) {
+			max *= 1D-((c.yCoord-8)/(MAX_CRACK_Y-8D));
+		}
+		return rand.nextInt(1+max);
+	}
+
+	private double getBedrockCrackChance(Coordinate c) {
+		if (c.yCoord <= 8)
+			return MAX_CRACK_CHANCE;
+		double f = (c.yCoord-8)/(MAX_CRACK_Y-8D);
+		return (1-f)*MAX_CRACK_CHANCE;
 	}
 
 	private boolean isBedrockWall(World world, Random rand, Coordinate c) {

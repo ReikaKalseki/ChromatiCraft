@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,9 +12,6 @@ package Reika.ChromatiCraft.Auxiliary;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
-
-import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraftforge.classloading.FMLForgePlugin;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -37,6 +34,8 @@ import Reika.DragonAPI.Libraries.Java.ReikaASMHelper;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.MCVersion;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.SortingIndex;
+import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraftforge.classloading.FMLForgePlugin;
 
 @SortingIndex(1001)
 @MCVersion("1.7.10")
@@ -88,6 +87,8 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 			STOPSLOWFALL("net.minecraft.entity.EntityLivingBase", "sv"),
 			TRANSPARENCY1("net.minecraft.block.BlockDirt", "akl"),
 			TRANSPARENCY2("net.minecraft.block.BlockGrass", "alh"),
+			TRANSPARENCY3("net.minecraft.block.BlockLiquid", "alw"),
+			TRANSPARENCY4("net.minecraftforge.fluids.BlockFluidBase"),
 			UPDATEDCLIMATE("climateControl.biomeSettings.ReikasPackage"),
 			//FLOWERCACHE("Reika.ChromatiCraft.ModInterface.Bees.EfficientFlowerCache"),
 			TEXTURELOAD("net.minecraft.client.renderer.texture.TextureAtlasSprite", "bqd"),
@@ -337,7 +338,9 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						break;
 					}
 					case TRANSPARENCY1:
-					case TRANSPARENCY2: {
+					case TRANSPARENCY2:
+					case TRANSPARENCY3:
+					case TRANSPARENCY4: {
 						InsnList li = new InsnList();
 
 						li.add(new VarInsnNode(Opcodes.ALOAD, 1));

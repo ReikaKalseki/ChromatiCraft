@@ -1,23 +1,17 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.EnumSkyBlock;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
+import Reika.ChromatiCraft.Auxiliary.RangeTracker;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.Decoration.BlockEtherealLight;
 import Reika.ChromatiCraft.Block.Decoration.BlockEtherealLight.Flags;
@@ -38,6 +32,13 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.EnumSkyBlock;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
 
 
 public class TileEntityCaveLighter extends TileEntityChromaticBase implements RangeUpgradeable {
@@ -51,7 +52,7 @@ public class TileEntityCaveLighter extends TileEntityChromaticBase implements Ra
 	private int idleTicks;
 	//private boolean complete = false;
 
-	private int range;
+	private final RangeTracker range = new RangeTracker(BASE_RANGE);
 
 	@Override
 	public ChromaTiles getTile() {
@@ -60,6 +61,9 @@ public class TileEntityCaveLighter extends TileEntityChromaticBase implements Ra
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
+		if (range.update(this)) {
+			this.initSpirals(world, x, y, z);
+		}
 		if (world.isRemote) {
 			this.doParticles(world, x, y, z);
 		}
@@ -75,7 +79,6 @@ public class TileEntityCaveLighter extends TileEntityChromaticBase implements Ra
 
 		//NBT.setBoolean("finished", complete);
 		NBT.setInteger("idle", idleTicks);
-		NBT.setInteger("range", range);
 	}
 
 	@Override
@@ -85,7 +88,6 @@ public class TileEntityCaveLighter extends TileEntityChromaticBase implements Ra
 
 		//complete = NBT.getBoolean("finished");
 		idleTicks = NBT.getInteger("idle");
-		range = NBT.getInteger("range");
 	}
 
 	private void placeLights(World world, int x, int y, int z) {
@@ -183,14 +185,15 @@ public class TileEntityCaveLighter extends TileEntityChromaticBase implements Ra
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
+		range.initialize(this);
 		//if (!complete)
-		range = BASE_RANGE;
 		this.initSpirals(world, x, y, z);
 	}
 
 	private void initSpirals(World world, int x, int y, int z) {
+		int r = this.getRange();
 		for (int i = 0; i < spiral.length; i++) {
-			spiral[i] = new BlockSpiral(x, i*ZONE_SIZE, z, range/ZONE_SIZE).setRightHanded().setGridSize(ZONE_SIZE).calculate();
+			spiral[i] = new BlockSpiral(x, i*ZONE_SIZE, z, r/ZONE_SIZE).setRightHanded().setGridSize(ZONE_SIZE).calculate();
 		}
 	}
 
@@ -214,16 +217,12 @@ public class TileEntityCaveLighter extends TileEntityChromaticBase implements Ra
 
 	@Override
 	public void upgradeRange(double r) {
-		int last = range;
-		range = (int)(BASE_RANGE*r);
-		if (range != last) {
-			this.initSpirals(worldObj, xCoord, yCoord, zCoord);
-		}
+
 	}
 
 	@Override
 	public int getRange() {
-		return range;
+		return range.getRange();
 	}
 
 }

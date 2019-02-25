@@ -20,8 +20,10 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import cpw.mods.fml.relauncher.Side;
@@ -37,11 +39,25 @@ import net.minecraft.world.World;
 
 public class TileEntityFocusCrystal extends TileEntityChromaticBase implements NBTTile, BreakAction {
 
+	private static ColorBlendList turboBlend = new ColorBlendList(70);
+
+	static {
+		int n = 3;
+		for (int i = 0; i < n; i++)
+			turboBlend.addColor(CrystalTier.EXQUISITE.getRenderColor(0));
+		turboBlend.addColor(0x7010ff);
+		turboBlend.addColor(0x7010ff);
+		for (int i = 0; i < n; i++)
+			turboBlend.addColor(CrystalTier.EXQUISITE.getRenderColor(0));
+	}
+
 	public static enum CrystalTier {
-		FLAWED(0.0625F),
-		DEFAULT(0.125F),
-		REFINED(0.375F),
-		EXQUISITE(0.875F);
+		FLAWED(0.0625F), //total 1.5x
+		DEFAULT(0.125F), //total 2x
+		REFINED(0.375F), //total 4x
+		EXQUISITE(0.875F), //total 8x
+		TURBOCHARGED(1.375F), //total 12x
+		;
 
 		public final float efficiencyFactor;
 
@@ -56,6 +72,7 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 				case FLAWED:
 					return "_cracked";
 				case EXQUISITE:
+				case TURBOCHARGED:
 					return "_sparkle";
 				default:
 					return "";
@@ -63,7 +80,7 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 		}
 
 		public boolean useOrganizedModel() {
-			return this == REFINED || this == EXQUISITE;
+			return this.ordinal() >= REFINED.ordinal();
 		}
 
 		public int getRenderColor(float tick) {
@@ -75,6 +92,8 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 					return 0xe06060;
 				case EXQUISITE:
 					return 0x22aaff;
+				case TURBOCHARGED:
+					return turboBlend.getColor(tick);
 			}
 			return 0xffffff;
 		}
@@ -87,7 +106,22 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 		}
 
 		public String getDisplayName() {
-			return this == DEFAULT ? "" : ReikaStringParser.capFirstChar(this.name());
+			switch(this) {
+				case DEFAULT:
+					return "";
+				case TURBOCHARGED:
+					return EXQUISITE.getDisplayName();
+				default:
+					return ReikaStringParser.capFirstChar(this.name());
+			}
+		}
+
+		public boolean isMaxPower() {
+			return this.ordinal() >= EXQUISITE.ordinal();
+		}
+
+		public int getEffectiveOrdinal() {
+			return this == TURBOCHARGED ? EXQUISITE.getEffectiveOrdinal() : this.ordinal();
 		}
 	}
 
@@ -181,7 +215,7 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (this.getTier() == CrystalTier.EXQUISITE && world.isRemote) {
+		if (this.getTier().isMaxPower() && world.isRemote) {
 			this.doParticles(world, x, y, z);
 		}
 
@@ -204,7 +238,7 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 			double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, hr/2);
 			double py = ReikaRandomHelper.getRandomPlusMinus(y+0.375, vr/2);
 			int l = 6+rand.nextInt(6);
-			int c = this.getTier().getRenderColor(this.getTicksExisted());
+			int c = this.getTier().getRenderColor(this.getTicksExisted()+ReikaRenderHelper.getPartialTickTime()+this.hashCode());
 			EntityFX fx = new EntityBlurFX(world, px, py, pz).setIcon(ChromaIcons.FLARE).setLife(l).setColor(c);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
@@ -270,6 +304,12 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 	public void breakBlock() {
 		if (worldObj.getBlock(xCoord, yCoord-1, zCoord) == ChromaBlocks.PYLONSTRUCT.getBlockInstance()) {
 			BlockPylonStructure.triggerAddCheck(worldObj, xCoord, yCoord-1, zCoord);
+		}
+		if (connection != null) {
+			TileEntity tgt = connection.target.getTileEntity(worldObj);
+			if (tgt instanceof FocusAcceleratable) {
+				((FocusAcceleratable)tgt).recountFocusCrystals();
+			}
 		}
 	}
 

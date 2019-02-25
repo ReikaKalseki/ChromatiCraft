@@ -66,6 +66,9 @@ public class ChromaHelpHUD {
 				this.closePanel();
 			}
 			else {
+				this.openPanel();
+			}
+			if (rollx > 0) {
 				boolean flag = true;
 				if (block instanceof BlockTieredResource) {
 					flag = tierView;
@@ -74,7 +77,6 @@ public class ChromaHelpHUD {
 				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 				GL11.glPushMatrix();
 				GL11.glTranslated(0, 0, ChromaOverlays.FRONT_TRANSLATE);
-				this.openPanel();
 				this.renderPanel(gsc);
 				if (this.isPanelOpen()) {
 					this.renderText(text, gsc, flag);
@@ -195,7 +197,10 @@ public class ChromaHelpHUD {
 	}
 
 	private void closePanel() {
-		rollx = rolly = 0;
+		if (rolly > 0)
+			rolly -= Math.min(4, rolly);
+		else if (rollx > 0)
+			rollx -= Math.min(3, rollx);
 	}
 	/*
 	private boolean isDifferent(MovingObjectPosition look) {

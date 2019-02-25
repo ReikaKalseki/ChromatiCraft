@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,10 +11,6 @@ package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
 import java.util.HashMap;
 
-import net.minecraft.init.Blocks;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
@@ -30,6 +26,10 @@ import Reika.RotaryCraft.TileEntities.Processing.TileEntityCompactor;
 import Reika.RotaryCraft.TileEntities.Processing.TileEntityCrystallizer;
 import Reika.RotaryCraft.TileEntities.Production.TileEntityBlastFurnace;
 import Reika.RotaryCraft.TileEntities.Production.TileEntityFermenter;
+import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 
 public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade {
@@ -42,14 +42,14 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade {
 	private static final int reactorHeat = 10;
 
 	private static final double[] factors = {
-		0.03125,
-		0.0625,
-		0.125,
-		0.25,
-		0.375,
-		0.5,
-		0.75,
-		1,
+			0.03125,
+			0.0625,
+			0.125,
+			0.25,
+			0.375,
+			0.5,
+			0.75,
+			1,
 	};
 
 	static {
@@ -132,8 +132,8 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade {
 	}
 
 	@Override
-	protected boolean tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime) {
-		return false;
+	protected EffectResult tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime) {
+		return EffectResult.STOP;
 	}
 
 	@Override

@@ -437,7 +437,7 @@ public class PylonFinder {
 			return ((TileEntityCrystalMusic)te).createTemporaryReceiver();
 		}
 		if (ModList.THAUMCRAFT.isLoaded() && InterfaceCache.NODE.instanceOf(te)) {
-			NodeReceiverWrapper wrap = NodeRecharger.instance.getWrapper(loc);
+			NodeReceiverWrapper wrap = NodeRecharger.instance.getWrapper(loc, true);
 			if (wrap != null) {
 				return wrap;
 			}
@@ -479,7 +479,7 @@ public class PylonFinder {
 			return ((TileEntityCrystalMusic)te).createTemporaryReceiver();
 		}
 		if (ModList.THAUMCRAFT.isLoaded() && InterfaceCache.NODE.instanceOf(te)) {
-			NodeReceiverWrapper wrap = NodeRecharger.instance.getWrapper(loc);
+			NodeReceiverWrapper wrap = NodeRecharger.instance.getWrapper(loc, true);
 			if (wrap != null) {
 				return wrap;
 			}

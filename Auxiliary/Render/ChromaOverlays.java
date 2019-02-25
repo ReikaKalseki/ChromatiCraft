@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -16,22 +16,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.MathHelper;
-import net.minecraftforge.client.GuiIngameForge;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -71,6 +55,21 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
+import net.minecraftforge.client.GuiIngameForge;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 
 @SideOnly(Side.CLIENT)
 public class ChromaOverlays {
@@ -646,7 +645,8 @@ public class ChromaOverlays {
 		GL11.glColor4f(1, 1, 1, 1);
 		int i = 0;
 		for (Ability c : li) {
-			ReikaTextureHelper.bindTexture(c.getTextureReferenceClass(), c.getTexturePath(false));
+			boolean flag = c.isFunctioningOn(ep);
+			ReikaTextureHelper.bindTexture(c.getTextureReferenceClass(), c.getTexturePath(!flag));
 			Tessellator v5 = Tessellator.instance;
 			v5.startDrawingQuads();
 			v5.setColorOpaque_I(0xffffff);
@@ -657,45 +657,51 @@ public class ChromaOverlays {
 			v5.addVertexWithUV(x+16, y+0, 0, 1, 0);
 			v5.addVertexWithUV(x+0, y+0, 0, 0, 0);
 			v5.draw();
-			ElementTagCompound tag = Chromabilities.getTickCost(c, ep);
-			if (tag != null) {
+			if (!flag) {
 				ReikaTextureHelper.bindTerrainTexture();
-				int k = 0;
+				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y, ChromaIcons.NOENTER.getIcon(), 16, 16);
+			}
+			else {
+				ElementTagCompound tag = Chromabilities.getTickCost(c, ep);
+				if (tag != null) {
+					ReikaTextureHelper.bindTerrainTexture();
+					int k = 0;
 
-				int s = tag.tagCount();
-				GL11.glDisable(GL11.GL_TEXTURE_2D);
-				v5.startDrawingQuads();
-				v5.setColorOpaque_I(0x666666);
-				int px = x-s*8;
-				int py = y+4;
-				v5.addVertex(px-1, py+8+1, 0);
-				v5.addVertex(x, py+8+1, 0);
-				v5.addVertex(x, py-1, 0);
-				v5.addVertex(px-1, py-1, 0);
-
-				v5.setColorOpaque_I(0x000000);
-				v5.addVertex(px, py+8, 0);
-				v5.addVertex(x, py+8, 0);
-				v5.addVertex(x, py, 0);
-				v5.addVertex(px, py, 0);
-				v5.draw();
-				GL11.glEnable(GL11.GL_TEXTURE_2D);
-
-				for (CrystalElement e : tag.elementSet()) {
-					IIcon ico = e.getFaceRune();
-					float u = ico.getMinU();
-					float v = ico.getMinV();
-					float du = ico.getMaxU();
-					float dv = ico.getMaxV();
+					int s = tag.tagCount();
+					GL11.glDisable(GL11.GL_TEXTURE_2D);
 					v5.startDrawingQuads();
-					int dx = x-(k+1)*8;
-					int dy = y+4;
-					v5.addVertexWithUV(dx+0, dy+8, 0, u, dv);
-					v5.addVertexWithUV(dx+8, dy+8, 0, du, dv);
-					v5.addVertexWithUV(dx+8, dy+0, 0, du, v);
-					v5.addVertexWithUV(dx+0, dy+0, 0, u, v);
+					v5.setColorOpaque_I(0x666666);
+					int px = x-s*8;
+					int py = y+4;
+					v5.addVertex(px-1, py+8+1, 0);
+					v5.addVertex(x, py+8+1, 0);
+					v5.addVertex(x, py-1, 0);
+					v5.addVertex(px-1, py-1, 0);
+
+					v5.setColorOpaque_I(0x000000);
+					v5.addVertex(px, py+8, 0);
+					v5.addVertex(x, py+8, 0);
+					v5.addVertex(x, py, 0);
+					v5.addVertex(px, py, 0);
 					v5.draw();
-					k++;
+					GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+					for (CrystalElement e : tag.elementSet()) {
+						IIcon ico = e.getFaceRune();
+						float u = ico.getMinU();
+						float v = ico.getMinV();
+						float du = ico.getMaxU();
+						float dv = ico.getMaxV();
+						v5.startDrawingQuads();
+						int dx = x-(k+1)*8;
+						int dy = y+4;
+						v5.addVertexWithUV(dx+0, dy+8, 0, u, dv);
+						v5.addVertexWithUV(dx+8, dy+8, 0, du, dv);
+						v5.addVertexWithUV(dx+8, dy+0, 0, du, v);
+						v5.addVertexWithUV(dx+0, dy+0, 0, u, v);
+						v5.draw();
+						k++;
+					}
 				}
 			}
 			i++;

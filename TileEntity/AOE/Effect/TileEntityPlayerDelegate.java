@@ -38,7 +38,7 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 	}
 
 	@Override
-	protected boolean tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime) {
+	protected EffectResult tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime) {
 		TileEntity te = this.getAdjacentTileEntity(dir);
 		if (te != null) {
 			DelegateInterface s = this.getInterface(te);
@@ -50,6 +50,7 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 					ChromatiCraft.logger.logError("Could not tick Delegate interface "+s+" for "+te+" @ "+this);
 					this.writeError(ex);
 				}
+				return EffectResult.ACTION;
 			}
 		}
 		else if (!world.isRemote) {
@@ -66,9 +67,10 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 				else if (c.shouldGiveEffects(e) && c.performEffect(e)) {
 					c.updateEffects(world, dx, dy, dz);
 				}
+				return EffectResult.ACTION;
 			}
 		}
-		return true;
+		return EffectResult.CONTINUE;
 	}
 
 	private DelegateInterface getInterface(TileEntity te) {

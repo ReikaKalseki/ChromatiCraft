@@ -55,7 +55,7 @@ public class RenderFocusCrystal extends ChromaRenderBase {
 		GL11.glTranslated(par2, par4, par6);
 		GL11.glDepthMask(true);
 		TileEntityFocusCrystal te = (TileEntityFocusCrystal)tile;
-		float t = te.getTicksExisted()+par8;
+		float t = te.getTicksExisted()+par8+System.identityHashCode(te)%512000;
 		if (MinecraftForgeClient.getRenderPass() == 0 || StructureRenderer.isRenderingTiles() || !te.isInWorld()) {
 			this.renderBase(te, par8);
 
@@ -96,8 +96,8 @@ public class RenderFocusCrystal extends ChromaRenderBase {
 
 	private void renderBase(TileEntityFocusCrystal te, float tick) {
 		IIcon ico = FocusCrystalRecipes.getBaseRenderIcon(te.getTier());
-		double h = 0.125;
 		if (ico != null) {
+			double h = 0.125;
 			ReikaTextureHelper.bindTerrainTexture();
 			Tessellator v5 = Tessellator.instance;
 			v5.startDrawingQuads();
@@ -108,6 +108,8 @@ public class RenderFocusCrystal extends ChromaRenderBase {
 			float v = ico.getMinV();
 			float du = ico.getMaxU();
 			float dv = ico.getMaxV();
+			float u2 = ico.getInterpolatedU(1);
+			float du2 = ico.getInterpolatedU(3);
 
 			v5.addVertexWithUV(0, h, 1, u, dv);
 			v5.addVertexWithUV(1, h, 1, du, dv);
@@ -123,27 +125,27 @@ public class RenderFocusCrystal extends ChromaRenderBase {
 
 			v5.setColorOpaque_F(0.625F, 0.625F, 0.625F);
 			v5.setNormal(0, 0.625F, 0);
-			v5.addVertexWithUV(0, 0, 1, u, dv);
-			v5.addVertexWithUV(0, h, 1, du, dv);
-			v5.addVertexWithUV(0, h, 0, du, v);
-			v5.addVertexWithUV(0, 0, 0, u, v);
+			v5.addVertexWithUV(0, 0, 1, u2, dv);
+			v5.addVertexWithUV(0, h, 1, du2, dv);
+			v5.addVertexWithUV(0, h, 0, du2, v);
+			v5.addVertexWithUV(0, 0, 0, u2, v);
 
-			v5.addVertexWithUV(1, 0, 0, u, v);
-			v5.addVertexWithUV(1, h, 0, du, v);
-			v5.addVertexWithUV(1, h, 1, du, dv);
-			v5.addVertexWithUV(1, 0, 1, u, dv);
+			v5.addVertexWithUV(1, 0, 0, u2, v);
+			v5.addVertexWithUV(1, h, 0, du2, v);
+			v5.addVertexWithUV(1, h, 1, du2, dv);
+			v5.addVertexWithUV(1, 0, 1, u2, dv);
 
 			v5.setColorOpaque_F(0.75F, 0.75F, 0.75F);
 			v5.setNormal(0, 0.75F, 0);
-			v5.addVertexWithUV(0, 0, 0, u, v);
-			v5.addVertexWithUV(0, h, 0, du, v);
-			v5.addVertexWithUV(1, h, 0, du, dv);
-			v5.addVertexWithUV(1, 0, 0, u, dv);
+			v5.addVertexWithUV(0, 0, 0, u2, v);
+			v5.addVertexWithUV(0, h, 0, du2, v);
+			v5.addVertexWithUV(1, h, 0, du2, dv);
+			v5.addVertexWithUV(1, 0, 0, u2, dv);
 
-			v5.addVertexWithUV(1, 0, 1, u, dv);
-			v5.addVertexWithUV(1, h, 1, du, dv);
-			v5.addVertexWithUV(0, h, 1, du, v);
-			v5.addVertexWithUV(0, 0, 1, u, v);
+			v5.addVertexWithUV(1, 0, 1, u2, dv);
+			v5.addVertexWithUV(1, h, 1, du2, dv);
+			v5.addVertexWithUV(0, h, 1, du2, v);
+			v5.addVertexWithUV(0, 0, 1, u2, v);
 
 			v5.draw();
 		}
@@ -209,7 +211,7 @@ public class RenderFocusCrystal extends ChromaRenderBase {
 		GL11.glRotated((100*tick/(n*n))%360D, 1, 0, 0);
 		GL11.glRotated((100*tick/(n*n))%360D, 0, 1, 0);
 		GL11.glRotated((100*tick/(n*n))%360D, 0, 0, 1);
-		double s = (1+te.getTier().ordinal())/4D;
+		double s = (1+te.getTier().getEffectiveOrdinal())/4D;
 		GL11.glScaled(s, s, s);
 		int c0 = te.getTier().getRenderColor(tick);
 		float pdist = (float)Minecraft.getMinecraft().thePlayer.getDistance(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);

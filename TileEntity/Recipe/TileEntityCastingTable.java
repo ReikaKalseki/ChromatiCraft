@@ -517,6 +517,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 			}
 			activeRecipe = null;
 		}
+		this.recountFocusCrystals();
 		this.syncAllData(true);
 	}
 
@@ -1185,13 +1186,18 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 	}
 
 	@Override
+	public void recountFocusCrystals() {
+		this.getAccelerationFactor();
+	}
+
+	@Override
 	public float getAccelerationFactor() {
-		return TileEntityFocusCrystal.getSummedFocusFactor(this, CastingFocusLocation.set);
+		return TileEntityFocusCrystal.getSummedFocusFactor(this, CastingFocusLocation.set)-1;
 	}
 
 	@Override
 	public float getMaximumAcceleratability() {
-		return TileEntityFocusCrystal.CrystalTier.EXQUISITE.efficiencyFactor*CastingFocusLocation.list.length;
+		return TileEntityFocusCrystal.CrystalTier.TURBOCHARGED.efficiencyFactor*CastingFocusLocation.list.length;
 	}
 
 	@Override

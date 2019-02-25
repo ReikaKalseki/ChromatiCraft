@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,15 +12,6 @@ package Reika.ChromatiCraft.Registry;
 import java.util.HashMap;
 import java.util.Locale;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockSapling;
-import net.minecraft.block.material.Material;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
@@ -73,6 +64,7 @@ import Reika.ChromatiCraft.Block.Decoration.BlockMetaAlloyLamp;
 import Reika.ChromatiCraft.Block.Decoration.BlockMusicTrigger;
 import Reika.ChromatiCraft.Block.Decoration.BlockRangedLamp;
 import Reika.ChromatiCraft.Block.Decoration.BlockRepeaterLight;
+import Reika.ChromatiCraft.Block.Dimension.BlockBedrockCrack;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionChunkloader;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDecoTile;
@@ -151,6 +143,15 @@ import Reika.DragonAPI.Interfaces.Registry.BlockEnum;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockSapling;
+import net.minecraft.block.material.Material;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.StatCollector;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.oredict.OreDictionary;
 
 public enum ChromaBlocks implements BlockEnum {
 
@@ -260,6 +261,7 @@ public enum ChromaBlocks implements BlockEnum {
 	CHUNKLOADER(BlockDimensionChunkloader.class,								"chroma.chunkloader"),
 	//SPAWNERCONTROL(BlockSpawnerShutdown.class,	ItemBlockSidePlaced.class,		"chroma.spawnershutdown"),
 	TRAPFLOOR(BlockTrapFloor.class,												"chroma.trapfloor"),
+	BEDROCKCRACK(BlockBedrockCrack.class,										"chroma.bedrockcrack"),
 	;
 
 	private Class blockClass;
@@ -554,6 +556,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case CHUNKLOADER:
 				//case SPAWNERCONTROL:
 			case TRAPFLOOR:
+			case BEDROCKCRACK:
 				return false;
 			default:
 				return true;

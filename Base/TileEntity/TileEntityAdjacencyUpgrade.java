@@ -104,14 +104,13 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 			long time = System.nanoTime();
 			for (int i = 0; i < 6; i++) {
 				ForgeDirection dir = dirs[i];
-				if (this.tickDirection(world, x, y, z, dir, time)) {
-					if (rand.nextInt(4) == 0)
-						if (world.isRemote)
-							this.spawnActionParticles(world, x, y, z, dir);
+				EffectResult res = this.tickDirection(world, x, y, z, dir, time);
+				if (res.didAction) {
+					if (world.isRemote && rand.nextInt(4) == 0)
+						this.spawnActionParticles(world, x, y, z, dir);
 				}
-				else {
+				if (!res.shouldContinue)
 					break;
-				}
 			}
 		}
 		else {
@@ -159,8 +158,7 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 		}
 	}
 
-	/** Return false to prevent further ticking! */
-	protected abstract boolean tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime);
+	protected abstract EffectResult tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime);
 
 	public boolean canRun(World world, int x, int y, int z) {
 		return !this.hasRedstoneSignal();//world.getBlockPowerInput(x, y, z) < 15;
@@ -279,6 +277,21 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 			}
 		}
 		return set;
+	}
+
+	protected static enum EffectResult {
+		ACTION(true, true),
+		FINAL_ACTION(true, false),
+		CONTINUE(false, true),
+		STOP(false, false);
+
+		public boolean didAction;
+		public boolean shouldContinue;
+
+		private EffectResult(boolean act, boolean con) {
+			didAction = act;
+			shouldContinue = con;
+		}
 	}
 
 }

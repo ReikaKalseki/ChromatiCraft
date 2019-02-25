@@ -18,4 +18,6 @@ public interface FocusAcceleratable {
 
 	public float getProgressToNextStep();
 
+	public void recountFocusCrystals();
+
 }

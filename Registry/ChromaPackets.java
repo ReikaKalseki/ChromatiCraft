@@ -79,7 +79,7 @@ public enum ChromaPackets {
 	HOVERWAND(1),
 	AURATTACK(1),
 	AURAHEAL(1),
-	AURAGROW(3),
+	AURAGROW(0),
 	DESTROYNODE(),
 	HURTNODE(),
 	CHARGINGNODE(),

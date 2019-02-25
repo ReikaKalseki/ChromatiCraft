@@ -112,6 +112,7 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.monster.EntityGhast;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -187,6 +188,7 @@ public class AbilityHelper {
 
 	private final PlayerMap<ItemStack> refillItem = new PlayerMap();
 	private static final String AE_LOC_TAG = "AELoc";
+	private static final String LYING_TAG = "lastCommunicateLie";
 
 	public static final int LYING_DURATION = 1200;
 
@@ -1509,22 +1511,43 @@ public class AbilityHelper {
 	}
 
 	@SubscribeEvent
-	public void applyAOE(LivingAttackEvent evt) {
+	public void applyLyingCancel(LivingAttackEvent evt) {
 		DamageSource src = evt.source;
 		if (src.getEntity() instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)src.getEntity();
 			if (Chromabilities.COMMUNICATE.enabledOn(ep)) {
 				EntityLivingBase mob = evt.entityLiving;
-				if (mob instanceof EntityCreature && ((EntityCreature)mob).getEntityToAttack() != ep) {
-					ep.getEntityData().setLong("lastCommunicateLie", ep.worldObj.getTotalWorldTime());
-					AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(ep, 16).expand(16, 0, 16);
-					List<EntityCreature> li = ep.worldObj.getEntitiesWithinAABB(ReikaEntityHelper.getEntityCategoryClass(mob), box);
-					HashSet<Class> played = new HashSet();
-					for (EntityCreature ec : li) {
-						ec.setAttackTarget(ep);
-						if (!played.contains(ec.getClass())) {
-							played.add(ec.getClass());
-							ReikaEntityHelper.playAggroSound(ec);
+				if (ReikaEntityHelper.isHostile(mob) && !ReikaEntityHelper.isBossMob(mob)) {
+					boolean flag = true;
+					if (mob instanceof EntityCreature)
+						flag = ((EntityCreature)mob).getEntityToAttack() != ep;
+					if (flag) {
+						ep.getEntityData().setLong(LYING_TAG, ep.worldObj.getTotalWorldTime());
+						AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(ep, 16).expand(16, 0, 16);
+						List<EntityLivingBase> li = ep.worldObj.selectEntitiesWithinAABB(EntityLivingBase.class, box, ReikaEntityHelper.hostileSelector);
+						HashSet<Class> played = new HashSet();
+						for (EntityLivingBase e : li) {
+							if (e instanceof EntityCreature) {
+								EntityCreature ec = (EntityCreature)e;
+								ec.setAttackTarget(ep);
+								if (!played.contains(ec.getClass())) {
+									played.add(ec.getClass());
+									ReikaEntityHelper.playAggroSound(ec);
+								}
+							}
+							else if (e instanceof EntityGhast) {
+								((EntityGhast)e).targetedEntity = ep;
+								if (!played.contains(e.getClass())) {
+									played.add(e.getClass());
+									ReikaEntityHelper.playHurtSound(e);
+								}
+							}
+							else {
+								if (!played.contains(e.getClass())) {
+									played.add(e.getClass());
+									ReikaEntityHelper.playHurtSound(e);
+								}
+							}
 						}
 					}
 				}
@@ -1650,6 +1673,10 @@ public class AbilityHelper {
 			EntityFX fx = new EntityBlurFX(ep.worldObj, px, py, pz, 0, v, 0).setColor(clr).setGravity(0).setScale(s);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
+	}
+
+	public boolean isPeaceActive(EntityPlayer ep) {
+		return ep.worldObj.getTotalWorldTime()-ep.getEntityData().getLong(LYING_TAG) > AbilityHelper.LYING_DURATION;
 	}
 
 }

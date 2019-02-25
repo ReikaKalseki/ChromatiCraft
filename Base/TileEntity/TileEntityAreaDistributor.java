@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,19 +12,20 @@ package Reika.ChromatiCraft.Base.TileEntity;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
+import Reika.ChromatiCraft.Auxiliary.RangeTracker;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.TimerMap;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 
 
 public abstract class TileEntityAreaDistributor extends TileEntityChromaticBase implements RangeUpgradeable {
 
 	public static final int SCAN_RADIUS_XZ = 16;
 
-	private int scanRange;
+	private final RangeTracker range = new RangeTracker(SCAN_RADIUS_XZ);
 
 	private final StepTimer cacheTimer = new StepTimer(40);
 
@@ -36,6 +37,7 @@ public abstract class TileEntityAreaDistributor extends TileEntityChromaticBase 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		cacheTimer.update();
+		range.update(this);
 
 		if (cacheTimer.checkCap() || this.getTicksExisted() == 0) {
 			this.scanAndCache(world, x, y, z);
@@ -44,6 +46,11 @@ public abstract class TileEntityAreaDistributor extends TileEntityChromaticBase 
 		if (world.isRemote) {
 			particleCooldowns.tick();
 		}
+	}
+
+	@Override
+	protected final void onFirstTick(World world, int x, int y, int z) {
+		range.initialize(this);
 	}
 
 	protected final void addInput(WorldLocation loc) {
@@ -62,7 +69,7 @@ public abstract class TileEntityAreaDistributor extends TileEntityChromaticBase 
 	}
 
 	private void scanAndCache(World world, int x, int y, int z) {
-		int r = scanRange;
+		int r = this.getRange();
 		int r2 = r/2;
 		for (int i = -r; i <= r; i++) {
 			for (int k = -r; k <= r; k++) {
@@ -74,7 +81,6 @@ public abstract class TileEntityAreaDistributor extends TileEntityChromaticBase 
 				}
 			}
 		}
-		scanRange = SCAN_RADIUS_XZ;
 	}
 
 	protected abstract boolean isValidTarget(TileEntity te);
@@ -88,11 +94,11 @@ public abstract class TileEntityAreaDistributor extends TileEntityChromaticBase 
 	}
 
 	public final void upgradeRange(double r) {
-		scanRange = (int)(SCAN_RADIUS_XZ*r);
+
 	}
 
 	public final int getRange() {
-		return scanRange;
+		return range.getRange();
 	}
 
 }

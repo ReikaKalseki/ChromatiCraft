@@ -1,38 +1,38 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 
 
 public class TileEntityProtectionUpgrade extends TileEntityAdjacencyUpgrade {
 
 	private static double[] MAX_BLAST = {
-		0.5,
-		1,
-		2,
-		4,
-		6,
-		12,
-		48,
-		Double.POSITIVE_INFINITY
+			0.5,
+			1,
+			2,
+			4,
+			6,
+			12,
+			48,
+			Double.POSITIVE_INFINITY
 	};
 
 	@Override
-	protected boolean tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime) {
-		return false;
+	protected EffectResult tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime) {
+		return EffectResult.STOP;
 	}
 
 	@Override

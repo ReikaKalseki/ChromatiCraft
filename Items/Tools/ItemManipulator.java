@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Block.BlockCrystalFence.CrystalFenceAuxTile;
 import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.TileEntityCrystalGlow;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree.TileEntityPowerTreeAux;
+import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
@@ -98,6 +99,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float a, float b, float c) {
 		if (ReikaPlayerAPI.isFakeOrNotInteractable(ep, x+0.5, y+0.5, z+0.5, 8))
 			return false;
+		BlockCliffStone.transparify(world, x, y, z, ep);
 		ChromaTiles t = ChromaTiles.getTile(world, x, y, z);
 		TileEntity tile = world.getTileEntity(x, y, z);
 		if (tile instanceof SneakPop && ep.isSneaking()) {
@@ -399,7 +401,8 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 						int gn = ReikaColorAPI.getGreen(color);
 						int bl = ReikaColorAPI.getBlue(color);
 						ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), tile, 64, rd, gn, bl, 8, 2);
-						((INode)tile).takeFromContainer(asp, 1);
+						if (((INode)tile).getAspects().getAmount(asp) > 1)
+							((INode)tile).takeFromContainer(asp, 1);
 					}
 					NodeRecharger.instance.addNode((INode)tile);
 				}

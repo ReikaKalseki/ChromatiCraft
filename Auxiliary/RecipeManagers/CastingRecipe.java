@@ -45,6 +45,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -406,6 +407,10 @@ public class CastingRecipe implements APICastingRecipe {
 				ChromatiCraft.logger.log("WARNING! Recipe "+this.toString()+" contains no runes!");
 			}
 		}
+	}
+
+	public boolean isModded() {
+		return !this.getClass().getName().contains("CastingRecipes.Special") && !ReikaItemHelper.getRegistrantMod(this.getOutput()).equals(ModList.CHROMATICRAFT.modLabel);
 	}
 
 	public static class TempleCastingRecipe extends CastingRecipe implements RuneRecipe {

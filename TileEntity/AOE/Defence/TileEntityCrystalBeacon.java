@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,18 +11,14 @@ package Reika.ChromatiCraft.TileEntity.AOE.Defence;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Random;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.DamageSource;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
+import Reika.ChromatiCraft.Auxiliary.RangeTracker;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -31,11 +27,22 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.DamageSource;
+import net.minecraft.world.World;
 
-public class TileEntityCrystalBeacon extends CrystalReceiverBase implements LocationCached, RangeUpgradeable, MultiBlockChromaTile {
+public class TileEntityCrystalBeacon extends CrystalReceiverBase implements LocationCached, RangeUpgradeable, MultiBlockChromaTile, OwnedTile {
 
 	private static final Collection<WorldLocation> cache = new ArrayList();
 
@@ -50,7 +57,7 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 
 	private boolean hasStructure;
 
-	private int range;
+	private final RangeTracker range = new RangeTracker(MAXRANGE);
 
 	@Override
 	public ChromaTiles getTile() {
@@ -60,6 +67,7 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
+		range.update(this);
 		if (world.isRemote)
 			this.spawnParticles(world, x, y, z);
 
@@ -70,13 +78,12 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 		//if (!world.isRemote) {
 		//	playerCooldowns.tick();
 		//}
-
-		range = MAXRANGE;
 	}
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
+		range.initialize(this);
 		this.validateStructure();
 		WorldLocation loc = new WorldLocation(this);
 		if (!cache.contains(loc))
@@ -157,6 +164,41 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 			}
 			//}
+
+			int rg = this.getRange();
+			double pt = ReikaRenderHelper.getPartialTickTime();
+			for (EntityPlayer ep : this.getOwners(false)) {
+				long dur = ep.worldObj.getTotalWorldTime()-ep.getEntityData().getCompoundTag(NBT_TAG).getLong("time");
+				if (dur < 60) {
+					float ap = dur < 30 ? 1 : 1-((dur-30)/30F);
+					double dx = ep.posX+(ep.posX-ep.lastTickPosX)*pt-x-0.5;
+					double dy = ep.posY+(ep.posY-ep.lastTickPosY)*pt-y-0.5;
+					double dz = ep.posZ+(ep.posZ-ep.lastTickPosZ)*pt-z-0.5;
+					if (dx <= rg && dz <= rg && dy <= rg/2) {
+						Random rand = new Random(ep.hashCode());
+						double a0 = ep.hashCode()%360D;
+						double dt = 0;
+						for (int n = 0; n < 8; n++) {
+							v = 0.5+1.5*rand.nextDouble();
+							for (double dt2 = 0; dt2 <= 3; dt2 += 1.5) {
+								double t = (ep.ticksExisted+pt+dt+dt2)*v;
+								double ang = a0+t*6;
+								r = 1+0.25*Math.sin(t*0.06D);
+								ang = Math.toRadians(ang);
+								px = ep.posX+r*Math.cos(ang);
+								pz = ep.posZ+r*Math.sin(ang);
+								py = ep.posY-0.6+0.6*Math.sin(t*0.017);
+
+								fx = new EntityBlurFX(world, px, py, pz).setScale(0.7F).setLife(8).setIcon(ChromaIcons.CENTER);
+								int clr = ReikaColorAPI.getColorWithBrightnessMultiplier(CrystalElement.RED.getColor(), ap);
+								fx.setColor(clr);
+								Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+							}
+							dt += rand.nextDouble()*90;
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -165,7 +207,6 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 		super.readSyncTag(NBT);
 
 		hasStructure = NBT.getBoolean("struct");
-		range = NBT.getInteger("range");
 	}
 
 	@Override
@@ -173,7 +214,6 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 		super.writeSyncTag(NBT);
 
 		NBT.setBoolean("struct", hasStructure);
-		NBT.setInteger("range", range);
 	}
 
 	private void checkAndRequest() {
@@ -204,10 +244,13 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 		for (WorldLocation loc : cache) {
 			if (loc.dimensionID == ep.worldObj.provider.dimensionId) {
 				TileEntityCrystalBeacon te = (TileEntityCrystalBeacon)loc.getTileEntity(ep.worldObj);
-				if (Math.abs(ep.posY-loc.yCoord) <= te.range/2) {
-					if (loc.getDistanceTo(ep) <= te.range) {
-						if (te.isPlacer(ep) && te.prevent(dmg))
+				int r = te.getRange();
+				if (Math.abs(ep.posY-loc.yCoord) <= r/2) {
+					if (loc.getDistanceTo(ep) <= r) {
+						if (te.isPlacer(ep) && te.prevent(dmg)) {
+							ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 							return true;
+						}
 					}
 				}
 			}
@@ -268,12 +311,12 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 
 	@Override
 	public void upgradeRange(double r) {
-		range = (int)(MAXRANGE*r);
+
 	}
 
 	@Override
 	public int getRange() {
-		return range;
+		return range.getRange();
 	}
 
 	public static void clearCache() {

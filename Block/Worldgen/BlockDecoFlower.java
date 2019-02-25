@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -13,33 +13,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemShears;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.IIcon;
-import net.minecraft.world.ColorizerGrass;
-import net.minecraft.world.EnumSkyBlock;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.biome.BiomeGenHills;
-import net.minecraft.world.biome.BiomeGenSwamp;
-import net.minecraftforge.common.BiomeDictionary;
-import net.minecraftforge.common.BiomeDictionary.Type;
-import net.minecraftforge.common.IShearable;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.IFluidBlock;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LoadRegistry;
@@ -68,6 +41,33 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemShears;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.IIcon;
+import net.minecraft.world.ColorizerGrass;
+import net.minecraft.world.EnumSkyBlock;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.BiomeGenHills;
+import net.minecraft.world.biome.BiomeGenSwamp;
+import net.minecraftforge.common.BiomeDictionary;
+import net.minecraftforge.common.BiomeDictionary.Type;
+import net.minecraftforge.common.IShearable;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.IFluidBlock;
 
 
 public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
@@ -411,20 +411,23 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 		}
 
 		public Coordinate grow(World world, int x, int y, int z, Block b, Random rand) {
+			boolean active = this.onActiveGrass(world, x, y, z);
 			switch(this) {
 				case ENDERFLOWER:
 				case SANOBLOOM: {
-					int n = this.onActiveGrass(world, x, y, z) ? 8 : 32;
+					int n = active ? 8 : 32;
 					if (rand.nextInt(n) > 0)
 						return null;
 					if (this == ENDERFLOWER && rand.nextInt(12) > 0)
 						return null;
-					for (int i = 2; i < 6; i++) {
-						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-						int dx = x+dir.offsetX;
-						int dz = z+dir.offsetZ;
-						if (this.matchAt(world, dx, y, dz))
-							return null;
+					if (!active) {
+						for (int i = 2; i < 6; i++) {
+							ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+							int dx = x+dir.offsetX;
+							int dz = z+dir.offsetZ;
+							if (this.matchAt(world, dx, y, dz))
+								return null;
+						}
 					}
 					int rx = ReikaRandomHelper.getRandomPlusMinus(x, 4);
 					int rz = ReikaRandomHelper.getRandomPlusMinus(z, 4);
@@ -440,23 +443,25 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 				case LUMALILY:
 				case RESOCLOVER:
 				case GLOWDAISY: {
-					int n = this.onActiveGrass(world, x, y, z) ? 5 : 20;
+					int n = active ? 5 : 20;
 					if (this == LUMALILY)
 						n *= 4;
 					if (this == GLOWDAISY)
 						n *= 12;
 					int c = 0;
-					for (int i = 2; i < 6; i++) {
-						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-						int dx = x+dir.offsetX;
-						int dz = z+dir.offsetZ;
-						if (this.matchAt(world, dx, y, dz))
-							c++;
+					if (!active) {
+						for (int i = 2; i < 6; i++) {
+							ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+							int dx = x+dir.offsetX;
+							int dz = z+dir.offsetZ;
+							if (this.matchAt(world, dx, y, dz))
+								c++;
+						}
+						if (c >= 2)
+							return null;
+						else if (c == 1 && rand.nextBoolean())
+							return null;
 					}
-					if (c >= 2)
-						return null;
-					else if (c == 1 && rand.nextBoolean())
-						return null;
 					if (rand.nextInt(n) == 0) {
 						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[2+rand.nextInt(4)];
 						int dx = x+dir.offsetX;
@@ -489,7 +494,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 				}
 				case VOIDREED: {
 					int n = this.isChromaPool(world, x, y, z) ? 20 : 40;
-					if (this.onActiveGrass(world, x, y, z))
+					if (active)
 						n = n*3/4;
 					if (rand.nextInt(n) == 0) {
 						if (world.getBlock(x, y+1, z).isAir(world, x, y+1, z)) {
@@ -588,6 +593,8 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 			while (world.getBlock(x, y, z) == ChromaBlocks.DECOFLOWER.getBlockInstance())
 				y--;
 			if (world.getBlock(x, y, z) != Blocks.grass && world.getBlock(x, y, z) != Blocks.leaves)
+				return false;
+			if (world.getBlockMetadata(x, y, z) != 0)
 				return false;
 			Block b = world.getBlock(x, y-1, z);
 			return b instanceof IFluidBlock && ((IFluidBlock)b).getFluid() == FluidRegistry.getFluid("ender");

@@ -142,4 +142,9 @@ public class BeeConversionRecipe extends PylonCastingRecipe {
 		return false;
 	}
 
+	@Override
+	public boolean isModded() {
+		return true;
+	}
+
 }

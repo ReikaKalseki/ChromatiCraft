@@ -773,6 +773,7 @@ public class RecipesCastingTable {
 		this.addRecipe(fr);
 		this.addRecipe(new FocusCrystalRecipes.RefinedFocusCrystalRecipe(fr));
 		this.addRecipe(new FocusCrystalRecipes.ExquisiteFocusCrystalRecipe(fr));
+		this.addRecipe(new FocusCrystalRecipes.TurboFocusCrystalRecipe(fr));
 
 		is = ChromaItems.STRUCTUREFINDER.getStackOf();
 		sr = new ShapedOreRecipe(is, "IAs", "ASA", "sAO", 'A', ChromaStacks.auraDust, 'I', Items.iron_ingot, 'O', Blocks.obsidian, 'S', "stone", 's', ChromaItems.SHARD.getAnyMetaStack());
@@ -930,7 +931,7 @@ public class RecipesCastingTable {
 		}
 		li.add(r);
 
-		if (!r.getClass().getName().contains("CastingRecipes.Special") && !ReikaItemHelper.getRegistrantMod(r.getOutput()).equals(ModList.CHROMATICRAFT.modLabel))
+		if (r.isModded())
 			moddedItemRecipes.add(r);
 
 		recipeIDs.put(maxID, r);

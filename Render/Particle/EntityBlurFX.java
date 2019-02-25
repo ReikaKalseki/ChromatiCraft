@@ -99,11 +99,15 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 
 	public final EntityBlurFX setIcon(ChromaIcons c) {
 		particleIcon = c.getIcon();
-		if (!c.isTransparent()) {
+		if (c.isTransparent()) {
+			this.setBasicBlend();
+			additiveBlend = false;
+		}
+		else {
 			alphaTest = false;
 			additiveBlend = true;
-			renderMode = null;
 		}
+		renderMode = null;
 		return this;
 	}
 

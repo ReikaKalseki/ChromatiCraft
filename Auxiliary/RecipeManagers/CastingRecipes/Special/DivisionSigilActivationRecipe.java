@@ -41,4 +41,9 @@ public class DivisionSigilActivationRecipe extends MultiBlockCastingRecipe {
 		return is;
 	}
 
+	@Override
+	public boolean isModded() {
+		return true;
+	}
+
 }

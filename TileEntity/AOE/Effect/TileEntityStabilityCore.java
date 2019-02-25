@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,14 +12,14 @@ package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 
 public class TileEntityStabilityCore extends TileEntityAdjacencyUpgrade {
@@ -31,7 +31,7 @@ public class TileEntityStabilityCore extends TileEntityAdjacencyUpgrade {
 	}
 
 	@Override
-	protected boolean tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime) {
+	protected EffectResult tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime) {
 		TileEntity te = this.getAdjacentTileEntity(dir);
 		if (te != null) {
 			StabilityInterface s = this.getInterface(te);
@@ -43,9 +43,10 @@ public class TileEntityStabilityCore extends TileEntityAdjacencyUpgrade {
 					ChromatiCraft.logger.logError("Could not tick stability interface "+s+" for "+te+" @ "+this);
 					this.writeError(ex);
 				}
+				return EffectResult.ACTION;
 			}
 		}
-		return true;
+		return EffectResult.CONTINUE;
 	}
 
 	private StabilityInterface getInterface(TileEntity te) {
