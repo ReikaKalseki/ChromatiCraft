@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
+import org.lwjgl.input.Keyboard;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.SoundCategory;
@@ -11,17 +13,16 @@ import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
 
-import org.lwjgl.input.Keyboard;
-
-import paulscode.sound.StreamThread;
 import Reika.ChromatiCraft.Auxiliary.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.Instantiable.IO.CustomMusic;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import paulscode.sound.StreamThread;
 
 
 public class ChromaDimensionalAudioHandler {

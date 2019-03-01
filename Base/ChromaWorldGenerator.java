@@ -13,6 +13,7 @@ import java.util.Random;
 
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
+
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 
 public abstract class ChromaWorldGenerator extends WorldGenerator {

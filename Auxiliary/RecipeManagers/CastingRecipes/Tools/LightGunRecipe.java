@@ -1,8 +1,9 @@
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools;
 
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 
 public class LightGunRecipe extends CastingRecipe {
 

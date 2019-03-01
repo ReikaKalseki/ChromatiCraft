@@ -11,14 +11,6 @@ package Reika.ChromatiCraft.Items.Tools;
 
 import java.util.List;
 
-import Reika.ChromatiCraft.Base.ItemChromaTool;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEnchantmentTable;
 import net.minecraft.block.material.Material;
@@ -29,6 +21,16 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+
+import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemChromaBucket extends ItemChromaTool {
 

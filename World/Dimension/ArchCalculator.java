@@ -14,6 +14,7 @@ import java.util.Random;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Base.ThreadedGenerator;
 import Reika.ChromatiCraft.World.Dimension.Terrain.TerrainGenChromaIslands;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;

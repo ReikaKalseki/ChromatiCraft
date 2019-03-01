@@ -11,16 +11,17 @@ package Reika.ChromatiCraft.World.IWG;
 
 import java.util.Random;
 
+import net.minecraft.world.World;
+import net.minecraft.world.WorldType;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.chunk.IChunkProvider;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.GlowingCliffsColumnShaper;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.chunk.IChunkProvider;
 
 public class WarpNodeGenerator implements RetroactiveGenerator {
 

@@ -20,6 +20,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.IO.ReikaFileReader;

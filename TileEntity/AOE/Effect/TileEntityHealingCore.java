@@ -12,12 +12,6 @@ package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.API.Interfaces.Repairable;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAnvil;
 import net.minecraft.inventory.IInventory;
@@ -26,10 +20,22 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.Interfaces.Repairable;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+
 
 public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 
 	private static final HashMap<Class, RepairInterface> interactions = new HashMap();
+
+	static {
+		new DecalcificationInterface();
+	}
 
 	@Override
 	protected EffectResult tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime) {
@@ -52,19 +58,6 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 		}
 
 		TileEntity te = this.getAdjacentTileEntity(dir);
-		if (te instanceof Repairable) {
-			((Repairable)te).repair(world, dx, dy, dz, tier);
-			ret = EffectResult.ACTION;
-		}
-		else if (te instanceof IInventory) {
-			IInventory ii = (IInventory)te;
-			int slot = rand.nextInt(ii.getSizeInventory());
-			ItemStack is = ii.getStackInSlot(slot);
-			if (this.canRepair(is)) {
-				this.repair(is);
-				ret = EffectResult.ACTION;
-			}
-		}
 		if (te != null) {
 			RepairInterface s = this.getInterface(te);
 			if (s != NoInterface.instance) {
@@ -75,7 +68,26 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 					ChromatiCraft.logger.logError("Could not tick repair interface "+s+" for "+te+" @ "+this);
 					this.writeError(ex);
 				}
-				ret = EffectResult.ACTION;
+				return EffectResult.ACTION;
+			}
+		}
+
+		if (te instanceof Repairable) {
+			((Repairable)te).repair(world, dx, dy, dz, tier);
+			ret = EffectResult.ACTION;
+		}
+		else if (te instanceof IInventory) {
+			IInventory ii = (IInventory)te;
+			if (ii.getSizeInventory() == 0) {
+				ChromatiCraft.logger.log("Found an inventory '"+te+"' with zero size!?");
+			}
+			else {
+				int slot = rand.nextInt(ii.getSizeInventory());
+				ItemStack is = ii.getStackInSlot(slot);
+				if (this.canRepair(is)) {
+					this.repair(is);
+					ret = EffectResult.ACTION;
+				}
 			}
 		}
 		return ret;
@@ -215,7 +227,7 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 
 	private static class DecalcificationInterface extends FieldSetRepairInterface {
 
-		private Field calcification;
+		private Field calcification; //ranges from 0 at 0.00% to 100k at 100% -> each 1000 is 1%
 
 		@Override
 		protected void init() throws Exception {
@@ -241,11 +253,19 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 
 		@Override
 		protected double getReplacedValue(TileEntity te, int tier, Number original) throws Exception {
-			return calcification.getInt(te)*this.getReductionFactor(tier);
+			int current = calcification.getInt(te);
+			double rem = current*this.getReductionFactor(tier);
+			if (rem >= 1 || ReikaRandomHelper.doWithChance(rem)) {
+				int rem2 = (int)Math.max(1, rem);
+				return Math.max(0, current-rem2);
+			}
+			else {
+				return current;
+			}
 		}
 
 		private double getReductionFactor(int tier) {
-			return Math.pow(0.95, 1+tier);
+			return 1D-Math.pow(0.999997, 1+tier); //was 0.98, then 0.999
 		}
 
 	}

@@ -1,11 +1,12 @@
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items;
 
-import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 
 
 public class EnderEyeRecipe extends MultiBlockCastingRecipe {

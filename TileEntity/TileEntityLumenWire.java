@@ -11,8 +11,6 @@ package Reika.ChromatiCraft.TileEntity;
 
 import java.util.UUID;
 
-import li.cil.oc.api.Network;
-import li.cil.oc.api.network.Node;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -26,6 +24,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.API.Event.LumenWireToggleEvent;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomHitbox;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
@@ -49,8 +48,11 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import li.cil.oc.api.Network;
+import li.cil.oc.api.network.Node;
 
 
 public class TileEntityLumenWire extends TileEntityChromaticBase implements BreakAction, SidePlacedTile, CustomHitbox, RedstoneTile {

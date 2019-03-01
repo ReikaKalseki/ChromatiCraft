@@ -12,6 +12,10 @@ package Reika.ChromatiCraft.ModInterface.Bees;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.MinecraftForge;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator.Acceleration;
 import Reika.DragonAPI.ModList;
@@ -19,6 +23,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.ModInteract.Bees.BeeEvent.BeeSetHealthEvent;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
+
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import forestry.api.apiculture.EnumBeeType;
 import forestry.api.apiculture.IBee;
@@ -27,9 +32,6 @@ import forestry.api.apiculture.IBeeHousingInventory;
 import forestry.api.apiculture.IBeeModifier;
 import forestry.api.apiculture.IBeekeepingLogic;
 import forestry.api.multiblock.IAlvearyController;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.MinecraftForge;
 
 public class ApiaryAcceleration extends Acceleration {
 

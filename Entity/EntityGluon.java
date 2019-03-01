@@ -9,11 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Entity;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
+import io.netty.buffer.ByteBuf;
 
 public class EntityGluon extends Entity implements IEntityAdditionalSpawnData {
 

@@ -11,13 +11,15 @@ package Reika.ChromatiCraft.Registry;
 
 import java.util.Calendar;
 
-import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaIcon;
-import Reika.DragonAPI.DragonOptions;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.IIcon;
+
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaIcon;
+import Reika.DragonAPI.DragonOptions;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public enum ChromaIcons implements ChromaIcon {
 

@@ -17,6 +17,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.MathHelper;
+
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.World.Dimension.BiomeTerrainProvider;
 import Reika.ChromatiCraft.World.Dimension.BiomeTerrainProvider.ForcedBiomeTerrainProvider;

@@ -14,6 +14,7 @@ import java.util.Random;
 
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.World.Dimension.Structure.Altar.AltarCenter;

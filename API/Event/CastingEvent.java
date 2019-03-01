@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.API.Event;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.DragonAPI.Instantiable.Event.TileEntityEvent;

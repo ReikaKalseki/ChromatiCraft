@@ -11,6 +11,11 @@ package Reika.ChromatiCraft.Items;
 
 import java.util.List;
 
+import com.bioxx.tfc.api.Enums.EnumItemReach;
+import com.bioxx.tfc.api.Enums.EnumSize;
+import com.bioxx.tfc.api.Enums.EnumWeight;
+import com.bioxx.tfc.api.Interfaces.ISize;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -22,6 +27,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
@@ -36,11 +42,6 @@ import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-
-import com.bioxx.tfc.api.Enums.EnumItemReach;
-import com.bioxx.tfc.api.Enums.EnumSize;
-import com.bioxx.tfc.api.Enums.EnumWeight;
-import com.bioxx.tfc.api.Interfaces.ISize;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

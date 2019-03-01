@@ -16,6 +16,14 @@ import java.util.Collections;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.StatCollector;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiLetterSearchable;
 import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
@@ -27,13 +35,6 @@ import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 
 public class GuiAutoEnchanter extends GuiLetterSearchable<Enchantment> {
 

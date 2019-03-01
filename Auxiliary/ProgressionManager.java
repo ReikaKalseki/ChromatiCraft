@@ -21,6 +21,27 @@ import java.util.UUID;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.block.Block;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.monster.EntitySpider;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.MinecraftForge;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.API.ResearchFetcher;
@@ -49,6 +70,7 @@ import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap.Topology;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
@@ -61,29 +83,10 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.block.Block;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.monster.EntitySpider;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.MinecraftForge;
 
 public class ProgressionManager implements ProgressRegistry {
 
@@ -96,7 +99,7 @@ public class ProgressionManager implements ProgressRegistry {
 
 	private final SequenceMap<ProgressStage> progressMap = new SequenceMap();
 
-	private final MultiMap<String, ProgressStage> playerMap = new MultiMap(new MultiMap.HashSetFactory());
+	private final MultiMap<String, ProgressStage> playerMap = new MultiMap(CollectionType.HASHSET);
 
 	private final EnumMap<CrystalElement, ColorDiscovery> colorDiscoveries = new EnumMap(CrystalElement.class);
 	private final EnumMap<CrystalElement, StructureComplete> structureFlags = new EnumMap(CrystalElement.class);

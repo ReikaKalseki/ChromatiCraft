@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.TileEntity.AOE;
 
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 

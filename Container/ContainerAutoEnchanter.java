@@ -9,12 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Container;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.ICrafting;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.ICrafting;
 
 public class ContainerAutoEnchanter extends CoreContainer {
 

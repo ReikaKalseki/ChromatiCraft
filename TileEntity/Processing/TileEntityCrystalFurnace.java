@@ -11,6 +11,21 @@ package Reika.ChromatiCraft.TileEntity.Processing;
 
 import java.util.Locale;
 
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemFood;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidHandler;
+import net.minecraftforge.oredict.OreDictionary;
+
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
@@ -36,22 +51,9 @@ import Reika.DragonAPI.ModRegistry.ModWoodList;
 import Reika.GeoStrata.Registry.RockTypes;
 import Reika.RotaryCraft.Auxiliary.ItemStacks;
 import Reika.RotaryCraft.Auxiliary.RecipeManagers.ExtractorModOres;
+
 import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeTile.PipeType;
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemFood;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
-import net.minecraftforge.oredict.OreDictionary;
 
 @Strippable(value = {"buildcraft.api.transport.IPipeConnection"})
 public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements IFluidHandler, IPipeConnection, OperationInterval,

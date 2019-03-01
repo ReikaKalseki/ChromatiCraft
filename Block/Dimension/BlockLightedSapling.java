@@ -20,9 +20,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenLightedTree;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenLightedTree.TreeGen;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

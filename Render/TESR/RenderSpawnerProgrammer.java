@@ -9,12 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
-
-import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Models.ModelSpawnerProgram;

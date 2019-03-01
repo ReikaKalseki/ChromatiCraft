@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Magic.Network;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;

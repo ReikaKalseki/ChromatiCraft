@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import net.minecraft.init.Blocks;
+
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;

@@ -9,11 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 
+import net.minecraft.init.Blocks;
+
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import net.minecraft.init.Blocks;
 
 public class PotionCrystalRecipe extends PylonCastingRecipe {
 

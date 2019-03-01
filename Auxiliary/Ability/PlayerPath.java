@@ -11,13 +11,13 @@ package Reika.ChromatiCraft.Auxiliary.Ability;
 
 import java.util.LinkedList;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IIcon;
-
-import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
@@ -25,6 +25,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

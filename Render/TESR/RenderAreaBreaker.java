@@ -12,14 +12,14 @@ package Reika.ChromatiCraft.Render.TESR;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.client.MinecraftForgeClient;
-
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;

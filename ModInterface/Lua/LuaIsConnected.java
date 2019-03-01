@@ -10,10 +10,12 @@
 package Reika.ChromatiCraft.ModInterface.Lua;
 
 import net.minecraft.tileentity.TileEntity;
+
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModInteract.Lua.LuaMethod;
+
 import dan200.computercraft.api.lua.LuaException;
 
 public class LuaIsConnected extends LuaMethod {

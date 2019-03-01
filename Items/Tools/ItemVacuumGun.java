@@ -13,6 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Base.ItemProjectileFiringTool.ProgressGatedProjectileFiringTool;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;

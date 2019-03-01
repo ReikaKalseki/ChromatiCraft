@@ -24,15 +24,17 @@ import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
-import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
@@ -43,8 +45,8 @@ public class GuardianStoneManager {
 
 	private final ArrayList<ProtectionZone> zones = new ArrayList();
 
-	private final MultiMap<BlockKey, Action> blockExceptions = new MultiMap(new HashSetFactory());
-	private final MultiMap<KeyedItemStack, Action> itemExceptions = new MultiMap(new HashSetFactory());
+	private final MultiMap<BlockKey, Action> blockExceptions = new MultiMap(CollectionType.HASHSET);
+	private final MultiMap<KeyedItemStack, Action> itemExceptions = new MultiMap(CollectionType.HASHSET);
 
 	private GuardianStoneManager() {
 		for (String s : ChromatiCraft.config.getGuardianExceptions()) {

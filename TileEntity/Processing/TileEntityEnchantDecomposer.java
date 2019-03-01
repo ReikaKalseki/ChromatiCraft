@@ -23,6 +23,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
@@ -39,6 +40,7 @@ import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+
 import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeTile.PipeType;
 

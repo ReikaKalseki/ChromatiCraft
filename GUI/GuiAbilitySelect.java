@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,15 +11,15 @@ package Reika.ChromatiCraft.GUI;
 
 import java.util.ArrayList;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -267,7 +267,8 @@ public class GuiAbilitySelect extends GuiScreen {
 
 	private void selectAbility() {
 		if (selectAbility(player, ability, data)) {
-			player.closeScreen();
+			if (mc.currentScreen.getClass() == this.getClass())
+				player.closeScreen();
 		}
 	}
 

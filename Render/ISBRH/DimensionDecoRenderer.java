@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,6 +12,8 @@ package Reika.ChromatiCraft.Render.ISBRH;
 import java.util.List;
 import java.util.Random;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -19,8 +21,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
-
-import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.DecoType;
@@ -221,6 +221,9 @@ public class DimensionDecoRenderer implements ISBRH {
 			case OCEANSTONE:
 				break;
 			case CLIFFGLASS:
+				break;
+			case GLOWCAVE:
+				//rb.renderStandardBlockWithAmbientOcclusion(this.getGlowCaveUnderlay(world, x, y, z), x, y, z, 1, 1, 1);
 				break;
 		}
 	}
@@ -556,7 +559,7 @@ public class DimensionDecoRenderer implements ISBRH {
 				v5.addVertexWithUV(0, 0, 1, u, v2);
 				break;
 			}
-			case LATTICE:
+			case LATTICE: {
 				v5.setBrightness(240);
 				v5.setColorOpaque_I(0xffffff);
 				IIcon ico = ChromaIcons.WIDEBAR.getIcon();
@@ -623,6 +626,7 @@ public class DimensionDecoRenderer implements ISBRH {
 
 				}
 				break;
+			}
 			case GEMSTONE:
 				break;
 			case CRYSTALLEAF:
@@ -631,8 +635,33 @@ public class DimensionDecoRenderer implements ISBRH {
 				break;
 			case CLIFFGLASS:
 				break;
+			case GLOWCAVE: {/*
+				IIcon ico = this.getGlowCaveOverlay(world, x, y, z);
+				Tessellator.instance.setBrightness(240);
+				Tessellator.instance.setColorOpaque_I(0xffffff);
+				if (b.shouldSideBeRendered(world, x, y-1, z, ForgeDirection.DOWN.ordinal()))
+					rb.renderFaceYNeg(b, x, y, z, ico);
+				if (b.shouldSideBeRendered(world, x, y+1, z, ForgeDirection.UP.ordinal()))
+					rb.renderFaceYPos(b, x, y, z, ico);
+				if (b.shouldSideBeRendered(world, x, y, z-1, ForgeDirection.NORTH.ordinal()))
+					rb.renderFaceZNeg(b, x, y, z, ico);
+				if (b.shouldSideBeRendered(world, x, y, z+1, ForgeDirection.SOUTH.ordinal()))
+					rb.renderFaceZPos(b, x, y, z, ico);
+				if (b.shouldSideBeRendered(world, x-1, y, z, ForgeDirection.WEST.ordinal()))
+					rb.renderFaceXNeg(b, x, y, z, ico);
+				if (b.shouldSideBeRendered(world, x+1, y, z, ForgeDirection.EAST.ordinal()))
+					rb.renderFaceXPos(b, x, y, z, ico);*/
+				break;
+			}
 		}
 	}
+	/*
+	private IIcon getGlowCaveOverlay(IBlockAccess world, int x, int y, int z) {
+		int idx = new Coordinate(x, y, z).hashCode();
+		int len = crackOverlay.length;
+		idx = ((idx%len)+len)%len;
+		return crackOverlay[idx];
+	}*/
 
 	@Override
 	public boolean shouldRender3DInInventory(int modelId) {

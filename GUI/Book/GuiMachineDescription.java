@@ -11,16 +11,16 @@ package Reika.ChromatiCraft.GUI.Book;
 
 import java.util.ArrayList;
 
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 import Reika.ChromatiCraft.Base.GuiDescription;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;

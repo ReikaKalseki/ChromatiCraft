@@ -11,11 +11,14 @@ package Reika.ChromatiCraft.World.Nether;
 
 import java.util.Random;
 
+import com.xcompwiz.mystcraft.api.world.logic.IPopulate;
+
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
+
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
@@ -25,8 +28,6 @@ import Reika.DragonAPI.Instantiable.Data.Maps.ThresholdMapping;
 import Reika.DragonAPI.Instantiable.Event.SetBlockEvent;
 import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-
-import com.xcompwiz.mystcraft.api.world.logic.IPopulate;
 
 @Strippable(value="com.xcompwiz.mystcraft.api.world.logic.IPopulate")
 public class LavaRiverGenerator implements IPopulate {

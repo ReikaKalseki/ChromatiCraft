@@ -13,6 +13,7 @@ import java.awt.Point;
 import java.util.HashSet;
 
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 

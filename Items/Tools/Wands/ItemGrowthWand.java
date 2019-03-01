@@ -20,6 +20,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -34,6 +35,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
 public class ItemGrowthWand extends ItemWandBase {

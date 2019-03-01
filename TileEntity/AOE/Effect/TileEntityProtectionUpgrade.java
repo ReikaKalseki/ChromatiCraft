@@ -9,12 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import net.minecraft.util.MathHelper;
-import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 
 
 public class TileEntityProtectionUpgrade extends TileEntityAdjacencyUpgrade {
@@ -45,17 +45,42 @@ public class TileEntityProtectionUpgrade extends TileEntityAdjacencyUpgrade {
 
 	}
 
-	public static boolean canExplode(World world, Explosion e) {
-		int x = MathHelper.floor_double(e.explosionX);
-		int y = MathHelper.floor_double(e.explosionY);
-		int z = MathHelper.floor_double(e.explosionZ);
+	public static boolean canExplode(World world, double dx, double dy, double dz, double power, boolean ic2Nuke) {
+		int x = MathHelper.floor_double(dx);
+		int y = MathHelper.floor_double(dy);
+		int z = MathHelper.floor_double(dz);
 		Integer get = getAdjacentUpgrades(world, x, y, z).get(CrystalElement.RED);
+		if (ic2Nuke) {
+			if (get == null || get.intValue() == 0) {
+				get = checkForStep2(world, x, y, z);
+			}
+		}
 		if (get == null || get.intValue() == 0) {
 			return true;
 		}
 		else {
-			return e.explosionSize > getMaxProtectedPower(get.intValue()-1);
+			return power > getMaxProtectedPower(get.intValue()-1);
 		}
+	}
+
+	private static Integer checkForStep2(World world, int x, int y, int z) {
+		Integer ret = null;
+		for (int i = 0; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			int dx = x+dir.offsetX;
+			int dy = y+dir.offsetY;
+			int dz = z+dir.offsetZ;
+			Integer at = getAdjacentUpgrades(world, dx, dy, dz).get(CrystalElement.RED);
+			if (at != null) {
+				if (ret == null) {
+					ret = at;
+				}
+				else {
+					ret = Math.max(ret, at);
+				}
+			}
+		}
+		return ret;
 	}
 
 	public static double getMaxProtectedPower(int tier) {

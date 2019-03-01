@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ICrafting;
+
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Base.CoreContainer;
 

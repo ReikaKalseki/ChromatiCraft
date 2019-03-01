@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
@@ -17,9 +19,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.client.MinecraftForgeClient;
 
-import org.lwjgl.opengl.GL11;
-
-import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectFormer;
 import Reika.ChromatiCraft.Models.ModelAspectFormer;
@@ -29,6 +28,8 @@ import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+
+import thaumcraft.api.aspects.Aspect;
 
 public class RenderAspectFormer extends ChromaRenderBase {
 

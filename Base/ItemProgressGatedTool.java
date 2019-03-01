@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Base;
 
 import net.minecraft.entity.player.EntityPlayer;
+
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 

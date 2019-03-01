@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.crafting.IRecipe;
+
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;

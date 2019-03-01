@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 
 

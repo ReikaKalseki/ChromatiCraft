@@ -11,6 +11,8 @@ package Reika.ChromatiCraft.TileEntity.Storage;
 
 import java.util.Set;
 
+import org.lwjgl.input.Keyboard;
+
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -21,8 +23,6 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
-
-import org.lwjgl.input.Keyboard;
 
 import Reika.ChromatiCraft.Auxiliary.Render.TankRunes;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
@@ -43,6 +43,7 @@ import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

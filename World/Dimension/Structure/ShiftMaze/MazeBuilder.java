@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
+
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock.Passability;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;

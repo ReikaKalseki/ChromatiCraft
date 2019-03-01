@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;

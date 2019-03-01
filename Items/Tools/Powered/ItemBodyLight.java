@@ -1,10 +1,11 @@
 package Reika.ChromatiCraft.Items.Tools.Powered;
 
-import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+
+import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 
 
 public class ItemBodyLight extends ItemPoweredChromaTool {

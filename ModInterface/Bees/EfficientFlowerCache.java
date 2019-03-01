@@ -18,13 +18,15 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
+
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
-import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Interfaces.BlockCheck;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.BeeManager;
@@ -53,7 +55,7 @@ public class EfficientFlowerCache extends HasFlowersCache {
 	private static int lastAssignedID;
 
 	private static final HashSet<String> blacklistedAcceptanceCaching = new HashSet();
-	private static final MultiMap<String, BlockKey> cachedAcceptedBlocks = new MultiMap(new HashSetFactory()).setNullEmpty();
+	private static final MultiMap<String, BlockKey> cachedAcceptedBlocks = new MultiMap(CollectionType.HASHSET).setNullEmpty();
 	private static final MutableBlockKey blockKey = new MutableBlockKey();
 
 	public EfficientFlowerCache() {

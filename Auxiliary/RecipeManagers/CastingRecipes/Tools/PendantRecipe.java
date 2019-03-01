@@ -9,13 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools;
 
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 
 public class PendantRecipe extends MultiBlockCastingRecipe {
 

@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
+import net.minecraft.entity.Entity;
+
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Entity.EntityAurora;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
@@ -34,7 +36,6 @@ import Reika.ChromatiCraft.Items.Tools.ItemDataCrystal.EntityDataCrystal;
 import Reika.ChromatiCraft.ModInterface.EntityChromaManaBurst;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.Registry.EntityEnum;
-import net.minecraft.entity.Entity;
 
 public enum ChromaEntities implements EntityEnum {
 

@@ -13,6 +13,7 @@ import java.awt.Color;
 
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.ChromaDimensionBiomeType;

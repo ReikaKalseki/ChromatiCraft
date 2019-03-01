@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Magic;
 
 import net.minecraft.nbt.NBTTagCompound;
+
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.Registry.CrystalElement;

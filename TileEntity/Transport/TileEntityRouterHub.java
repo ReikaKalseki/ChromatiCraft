@@ -26,6 +26,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockRouterNode.RouterFilter;
@@ -52,6 +53,7 @@ import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.ExtractedItem;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.MatchMode;
+
 import appeng.api.AEApi;
 import appeng.api.networking.IGridBlock;
 import appeng.api.networking.IGridNode;

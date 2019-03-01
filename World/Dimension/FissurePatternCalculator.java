@@ -22,6 +22,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.Base.ThreadedGenerator;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;

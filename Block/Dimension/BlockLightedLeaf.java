@@ -26,6 +26,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LightedTreeBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -34,6 +35,7 @@ import Reika.ChromatiCraft.Render.ISBRH.GlowTreeRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

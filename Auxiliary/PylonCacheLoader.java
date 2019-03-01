@@ -9,12 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Network.PylonLinkNetwork;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler.PlayerTracker;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 
 
 public class PylonCacheLoader implements PlayerTracker {

@@ -16,6 +16,35 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Random;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor.ArmorMaterial;
+import net.minecraft.item.ItemStack;
+import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraft.potion.Potion;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.common.BiomeDictionary;
+import net.minecraftforge.common.BiomeManager;
+import net.minecraftforge.common.BiomeManager.BiomeEntry;
+import net.minecraftforge.common.BiomeManager.BiomeType;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.EnumHelper;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.oredict.OreDictionary;
+
 import Reika.ChromatiCraft.Auxiliary.ChromaASMHandler;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookSpawner;
@@ -74,8 +103,8 @@ import Reika.ChromatiCraft.Magic.Artefact.UABombingEffects;
 import Reika.ChromatiCraft.Magic.Lore.RosettaStone;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.IC2ReactorAcceleration;
-import Reika.ChromatiCraft.ModInterface.IEMultiblockAcceleration;
 import Reika.ChromatiCraft.ModInterface.ModInteraction;
+import Reika.ChromatiCraft.ModInterface.MultiblockAcceleration;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.ChromaPrepHandler;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.PoolRecipeHandler;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.ShardBoostingHandler;
@@ -174,6 +203,7 @@ import Reika.DragonAPI.ModRegistry.ModCropList;
 import Reika.MeteorCraft.API.MeteorSpawnAPI;
 import Reika.RotaryCraft.API.ReservoirAPI;
 import Reika.VoidMonster.API.DimensionAPI;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
@@ -193,34 +223,6 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.VillagerRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemArmor.ArmorMaterial;
-import net.minecraft.item.ItemStack;
-import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraft.potion.Potion;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.common.BiomeDictionary;
-import net.minecraftforge.common.BiomeManager;
-import net.minecraftforge.common.BiomeManager.BiomeEntry;
-import net.minecraftforge.common.BiomeManager.BiomeType;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.EnumHelper;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidContainerRegistry;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.oredict.OreDictionary;
 import ttftcuts.atg.api.ATGBiomes;
 
 
@@ -784,9 +786,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (ModList.IC2.isLoaded()) {
 			IC2ReactorAcceleration.instance.register();
 		}
-		if (ModList.IMMERSIVEENG.isLoaded()) {
-			IEMultiblockAcceleration.instance.register();
-		}
+		MultiblockAcceleration.instance.register();
 
 		if (ModList.TWILIGHT.isLoaded()) {
 			ModInteraction.addTFLoot();

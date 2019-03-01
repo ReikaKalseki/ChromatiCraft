@@ -23,6 +23,7 @@ package Reika.ChromatiCraft.Models;
 import java.util.ArrayList;
 
 import net.minecraft.tileentity.TileEntity;
+
 import Reika.ChromatiCraft.Base.ChromaModelBase;
 import Reika.DragonAPI.Instantiable.Rendering.LODModelPart;
 

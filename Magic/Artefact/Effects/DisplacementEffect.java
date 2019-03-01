@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Magic.Artefact.Effects;
 
 import net.minecraft.entity.Entity;
+
 import Reika.ChromatiCraft.Magic.Artefact.UABombingEffect;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 

@@ -12,9 +12,9 @@ package Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze;
 import java.awt.Point;
 import java.util.List;
 
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-
 import com.google.common.collect.Lists;
+
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 public class ShiftMazeState {
 

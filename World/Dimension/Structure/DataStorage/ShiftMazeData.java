@@ -14,6 +14,7 @@ import java.util.HashMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;

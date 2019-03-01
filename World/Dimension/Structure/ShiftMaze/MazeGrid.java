@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.Generation.SegmentRestriction;
 
 public class MazeGrid implements SegmentRestriction {

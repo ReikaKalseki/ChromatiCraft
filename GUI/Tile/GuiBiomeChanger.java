@@ -14,6 +14,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -21,9 +24,6 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Registry.ChromaSounds;

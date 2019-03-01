@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.World.Dimension.Structure.NonEuclid;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 

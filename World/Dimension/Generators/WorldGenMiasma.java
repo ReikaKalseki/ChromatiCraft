@@ -13,12 +13,13 @@ import java.util.Random;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.SubBiomes;
 import Reika.ChromatiCraft.World.Dimension.BiomeDistributor;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.SubBiomes;
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.ChromatiCraft.World.Dimension.Terrain.TerrainGenSkylandCanyons;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;

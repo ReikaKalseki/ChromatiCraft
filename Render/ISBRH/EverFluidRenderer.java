@@ -19,6 +19,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.IFluidBlock;
+
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class EverFluidRenderer implements ISimpleBlockRenderingHandler

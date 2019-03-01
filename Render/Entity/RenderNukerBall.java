@@ -9,14 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.Entity;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Entity.EntityNukerBall;
 import Reika.ChromatiCraft.Registry.ChromaIcons;

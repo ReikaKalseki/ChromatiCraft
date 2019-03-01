@@ -23,12 +23,13 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+import com.google.common.collect.Lists;
+
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.MazeGrid;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.ShiftMazeState;
-
-import com.google.common.collect.Lists;
 
 public class MazeCalculator {
 

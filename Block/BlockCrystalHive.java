@@ -12,20 +12,6 @@ package Reika.ChromatiCraft.Block;
 import java.util.ArrayList;
 import java.util.Random;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.API.Interfaces.MinerBlock;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
-import Reika.DragonAPI.ModInteract.Bees.BeeSpecies;
-import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import forestry.api.apiculture.EnumBeeType;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -38,6 +24,22 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.Interfaces.MinerBlock;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
+import Reika.DragonAPI.ModInteract.Bees.BeeSpecies;
+import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import forestry.api.apiculture.EnumBeeType;
 
 public class BlockCrystalHive extends Block implements MinerBlock {
 

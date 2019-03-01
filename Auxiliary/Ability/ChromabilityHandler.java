@@ -12,6 +12,8 @@ package Reika.ChromatiCraft.Auxiliary.Ability;
 import java.util.Collection;
 import java.util.EnumSet;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
@@ -22,8 +24,8 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import net.minecraft.entity.player.EntityPlayer;
 
 public class ChromabilityHandler implements TickHandler {
 

@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Base;
 
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.DragonAPICore;
 

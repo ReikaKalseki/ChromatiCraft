@@ -15,6 +15,11 @@ import java.util.TreeMap;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.entity.player.EntityPlayer;
+
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ColorDiscovery;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.StructureComplete;
@@ -28,10 +33,6 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.entity.player.EntityPlayer;
 
 
 public class ProgressOverlayRenderer {

@@ -21,6 +21,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;

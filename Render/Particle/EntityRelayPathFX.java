@@ -11,11 +11,11 @@ package Reika.ChromatiCraft.Render.Particle;
 
 import java.util.ArrayList;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
-
-import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;

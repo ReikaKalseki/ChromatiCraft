@@ -11,6 +11,14 @@ package Reika.ChromatiCraft.TileEntity.Auxiliary;
 
 import java.util.Set;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Auxiliary.Interfaces.FocusAcceleratable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
@@ -26,15 +34,9 @@ import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
 
 
 public class TileEntityFocusCrystal extends TileEntityChromaticBase implements NBTTile, BreakAction {
@@ -238,7 +240,7 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 			double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, hr/2);
 			double py = ReikaRandomHelper.getRandomPlusMinus(y+0.375, vr/2);
 			int l = 6+rand.nextInt(6);
-			int c = this.getTier().getRenderColor(this.getTicksExisted()+ReikaRenderHelper.getPartialTickTime()+this.hashCode());
+			int c = this.getTier().getRenderColor(this.getTicksExisted()+ReikaRenderHelper.getPartialTickTime()+System.identityHashCode(this));
 			EntityFX fx = new EntityBlurFX(world, px, py, pz).setIcon(ChromaIcons.FLARE).setLife(l).setColor(c);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}

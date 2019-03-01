@@ -12,6 +12,17 @@ package Reika.ChromatiCraft.Items.Tools.Wands;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockStairs;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Block.Decoration.BlockEtherealLight.Flags;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
@@ -31,16 +42,6 @@ import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 import Reika.GeoStrata.Registry.GeoBlocks;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockStairs;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 
 public class ItemExcavationWand extends ItemWandBase implements BreakerCallback {
 

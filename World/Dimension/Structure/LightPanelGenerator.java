@@ -17,6 +17,7 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
@@ -28,6 +29,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.LightPanel.LightPanelLoot;
 import Reika.ChromatiCraft.World.Dimension.Structure.LightPanel.LightPanelRoom;
 import Reika.ChromatiCraft.World.Dimension.Structure.LightPanel.LightType;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 
 

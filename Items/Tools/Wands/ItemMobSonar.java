@@ -12,11 +12,13 @@ package Reika.ChromatiCraft.Items.Tools.Wands;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Auxiliary.Render.MobSonarRenderer;
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

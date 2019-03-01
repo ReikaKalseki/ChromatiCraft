@@ -13,6 +13,7 @@ import java.util.Collection;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ResearchDependentName;
 import Reika.ChromatiCraft.Base.ItemChromaMulti;
 import Reika.ChromatiCraft.Registry.ChromaItems;

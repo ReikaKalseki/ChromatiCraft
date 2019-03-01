@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.ModInterface;
 
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;

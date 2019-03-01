@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Magic.Interfaces;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 

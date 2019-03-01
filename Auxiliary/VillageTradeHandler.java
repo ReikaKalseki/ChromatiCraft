@@ -13,8 +13,10 @@ import java.util.Random;
 
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.village.MerchantRecipeList;
+
 import Reika.ChromatiCraft.Magic.Artefact.UATrades;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+
 import cpw.mods.fml.common.registry.VillagerRegistry.IVillageTradeHandler;
 
 

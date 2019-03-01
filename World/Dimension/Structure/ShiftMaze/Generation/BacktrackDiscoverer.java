@@ -9,13 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.Generation;
 
-import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.MazeGrid;
-import net.minecraftforge.common.util.ForgeDirection;
-
 import java.awt.Point;
 import java.util.LinkedList;
-import java.util.Random;
 import java.util.List;
+import java.util.Random;
+
+import net.minecraftforge.common.util.ForgeDirection;
+
+import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.MazeGrid;
 
 public class BacktrackDiscoverer {
 

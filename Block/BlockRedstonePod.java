@@ -22,6 +22,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LinkedTile;
 import Reika.ChromatiCraft.Base.BlockAttachableMini;
 import Reika.ChromatiCraft.Base.TileEntity.LinkedTileDedicated;
@@ -30,6 +31,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

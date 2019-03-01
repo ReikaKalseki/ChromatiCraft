@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.ModInterface;
 
 import net.minecraft.item.ItemStack;
+
 import Reika.ChromatiCraft.Base.ItemChromaMulti;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;

@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
@@ -23,8 +25,6 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.MinecraftForgeClient;
-
-import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
@@ -43,6 +43,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
+
 import forestry.api.apiculture.IAlleleBeeSpecies;
 
 

@@ -16,6 +16,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import com.mojang.authlib.GameProfile;
+
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,6 +26,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.ProductCondition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -33,8 +36,6 @@ import Reika.DragonAPI.Instantiable.GUI.StatusLogger;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
-
-import com.mojang.authlib.GameProfile;
 
 import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.IBeeGenome;

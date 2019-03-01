@@ -27,6 +27,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.OreDictionary;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
@@ -64,6 +65,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.ExtractedItem;
+
 import appeng.api.AEApi;
 import appeng.api.config.FuzzyMode;
 import appeng.api.networking.IGridBlock;

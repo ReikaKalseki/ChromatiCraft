@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerFirstTimeTracker.PlayerTracker;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;

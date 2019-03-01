@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.API.Event;
 import java.util.UUID;
 
 import net.minecraft.world.World;
+
 import cpw.mods.fml.common.eventhandler.Event;
 
 public class LumenWireToggleEvent extends Event {

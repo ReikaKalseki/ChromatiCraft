@@ -9,13 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.Generation;
 
-import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.MazeGrid;
-import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.ShiftMazeState;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.MazeGrid;
+import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.ShiftMazeState;
 
 /**
 * This class is part of the Gadomancy Mod

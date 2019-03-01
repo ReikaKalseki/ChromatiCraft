@@ -11,9 +11,11 @@ package Reika.ChromatiCraft.Magic.Artefact.Effects;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
+
 import Reika.ChromatiCraft.Magic.Artefact.UABombingEffect;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.ModInteract.Power.ReikaRFHelper;
+
 import cofh.api.energy.IEnergyHandler;
 
 

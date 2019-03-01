@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -30,6 +30,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
@@ -60,10 +61,12 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldChunk;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.TileEntityCache;
 import Reika.DragonAPI.Instantiable.Event.SetBlockEvent;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
@@ -80,9 +83,9 @@ public class CrystalNetworker implements TickHandler {
 	private final TileEntityCache<CrystalNetworkTile> tiles = new TileEntityCache();
 	private final EnumMap<CrystalElement, TileEntityCache<TileEntityCrystalPylon>> pylons = new EnumMap(CrystalElement.class);
 	//private final MultiMap<CrystalElement, WorldLocation> sourceCounts = new MultiMap(new MultiMap.HashSetFactory());
-	private final MultiMap<Integer, CrystalFlow> flows = new MultiMap(new MultiMap.HashSetFactory());
+	private final MultiMap<Integer, CrystalFlow> flows = new MultiMap(CollectionType.HASHSET);
 	private final HashMap<UUID, WorldLocation> verifier = new HashMap();
-	private final MultiMap<WorldChunk, CrystalLink> losCache = new MultiMap(new MultiMap.HashSetFactory()).setNullEmpty();
+	private final MultiMap<WorldChunk, CrystalLink> losCache = new MultiMap(CollectionType.HASHSET).setNullEmpty();
 	private final PluralMap<CrystalLink> links = new PluralMap(2).setBidirectional();
 	private final HashSet<CrystalFlow> toBreak = new HashSet();
 	private final ArrayList<NotifiedNetworkTile> notifyCache = new ArrayList();
@@ -468,7 +471,7 @@ public class CrystalNetworker implements TickHandler {
 
 	public ArrayList<TileEntityCrystalPylon> getAllNearbyPylons(World world, int x, int y, int z, double range, boolean excludeSelf) {
 		ArrayList<TileEntityCrystalPylon> li = new ArrayList();
-		//MultiMap<CrystalElement, WorldLocation> remove = new MultiMap(new HashSetFactory());
+		//MultiMap<CrystalElement, WorldLocation> remove = new MultiMap(CollectionType.HASHSET);
 		for (CrystalElement e : pylons.keySet()) {
 			TileEntityCache<TileEntityCrystalPylon> c = pylons.get(e);
 			if (c != null) {

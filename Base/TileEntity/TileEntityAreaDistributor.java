@@ -12,13 +12,14 @@ package Reika.ChromatiCraft.Base.TileEntity;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
 import Reika.ChromatiCraft.Auxiliary.RangeTracker;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.TimerMap;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 
 
 public abstract class TileEntityAreaDistributor extends TileEntityChromaticBase implements RangeUpgradeable {

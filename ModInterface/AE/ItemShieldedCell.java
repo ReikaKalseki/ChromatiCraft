@@ -14,6 +14,7 @@ import java.util.List;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.ModList;
@@ -21,6 +22,7 @@ import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.BasicInventory;
 import Reika.DragonAPI.Instantiable.ModInteract.AECellFormat;
+
 import appeng.api.config.FuzzyMode;
 import appeng.api.implementations.items.IStorageCell;
 import appeng.api.storage.data.IAEItemStack;

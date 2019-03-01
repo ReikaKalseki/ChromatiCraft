@@ -11,14 +11,14 @@ package Reika.ChromatiCraft.ModInterface.AE;
 
 import java.util.List;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer.ItemRenderType;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -30,6 +30,7 @@ import Reika.DragonAPI.Instantiable.ModInteract.AECellFormat;
 import Reika.DragonAPI.Interfaces.Item.SpriteRenderCallback;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+
 import appeng.api.AEApi;
 import appeng.api.config.FuzzyMode;
 import appeng.api.implementations.items.IStorageCell;

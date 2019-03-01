@@ -18,6 +18,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
+
 import Reika.ChromatiCraft.Items.Tools.ItemDoorKey;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;

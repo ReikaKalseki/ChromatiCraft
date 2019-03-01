@@ -20,6 +20,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
@@ -38,11 +39,12 @@ import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
-import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+
 import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeTile.PipeType;
 import cpw.mods.fml.relauncher.Side;
@@ -55,7 +57,7 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 	private Coordinate tile;
 	private boolean locked;
 
-	private static final MultiMap<UUID, WorldLocation> spreadSet = new MultiMap(new HashSetFactory());
+	private static final MultiMap<UUID, WorldLocation> spreadSet = new MultiMap(CollectionType.HASHSET);
 
 	@Override
 	public int getSizeInventory() {

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;

@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Items.Tools;
 import java.util.ArrayList;
 
 import net.minecraft.item.ItemStack;
+
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole.TileControl;
 

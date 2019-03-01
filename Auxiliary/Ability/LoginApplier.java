@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary.Ability;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler.PlayerTracker;
 

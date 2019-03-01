@@ -11,6 +11,9 @@ package Reika.ChromatiCraft.Registry;
 
 import java.util.Locale;
 
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.util.StatCollector;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAggroMask;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAirMiner;
@@ -25,8 +28,6 @@ import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentRareLoot;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentUseRepair;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentWeaponAOE;
 import Reika.DragonAPI.Interfaces.Registry.EnchantmentEnum;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.util.StatCollector;
 
 
 public enum ChromaEnchants implements EnchantmentEnum {

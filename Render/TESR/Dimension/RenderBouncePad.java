@@ -9,9 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR.Dimension;
 
-import net.minecraft.tileentity.TileEntity;
-
 import org.lwjgl.opengl.GL11;
+
+import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Pinball.BlockPinballTile.TileBouncePad;

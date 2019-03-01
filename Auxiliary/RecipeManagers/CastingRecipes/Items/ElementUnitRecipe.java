@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;

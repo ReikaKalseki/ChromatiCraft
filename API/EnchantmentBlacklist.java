@@ -13,6 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import net.minecraft.enchantment.Enchantment;
+
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class EnchantmentBlacklist {

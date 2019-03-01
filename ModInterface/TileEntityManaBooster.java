@@ -20,12 +20,7 @@ import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import vazkii.botania.api.internal.IManaBurst;
-import vazkii.botania.api.mana.IManaPool;
-import vazkii.botania.api.mana.spark.ISparkAttachable;
-import vazkii.botania.api.subtile.ISubTileContainer;
-import vazkii.botania.api.subtile.SubTileEntity;
-import vazkii.botania.api.subtile.SubTileGenerating;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityWirelessPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -47,6 +42,13 @@ import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+
+import vazkii.botania.api.internal.IManaBurst;
+import vazkii.botania.api.mana.IManaPool;
+import vazkii.botania.api.mana.spark.ISparkAttachable;
+import vazkii.botania.api.subtile.ISubTileContainer;
+import vazkii.botania.api.subtile.SubTileEntity;
+import vazkii.botania.api.subtile.SubTileGenerating;
 
 @Injectable(value = {"vazkii.botania.api.mana.IManaCollector"})
 public class TileEntityManaBooster extends TileEntityWirelessPowered {

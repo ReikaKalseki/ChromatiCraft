@@ -20,12 +20,19 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
+
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact.ArtefactTypes;
@@ -36,12 +43,6 @@ import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.IO.ReikaFileReader.ConnectionErrorHandler;
 import Reika.DragonAPI.Interfaces.PlayerSpecificTrade;
 import Reika.DragonAPI.Libraries.Java.ReikaJVMParser;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
 
 
 public class UATrades implements ConnectionErrorHandler {

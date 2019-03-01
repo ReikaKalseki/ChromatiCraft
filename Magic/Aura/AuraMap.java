@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.AuraSource;
 import Reika.ChromatiCraft.Registry.CrystalElement;

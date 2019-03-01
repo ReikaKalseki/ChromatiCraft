@@ -9,18 +9,20 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.ModInterface.TileEntityManaBooster.ManaPath;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Base.ParticleEntity;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
+
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
+import io.netty.buffer.ByteBuf;
 
 
 

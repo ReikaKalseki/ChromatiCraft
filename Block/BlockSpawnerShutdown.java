@@ -21,10 +21,12 @@ import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.Base.BlockAttachableMini;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

@@ -18,7 +18,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import vazkii.botania.api.mana.ILaputaImmobile;
+
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Magic.Interfaces.NaturalNetworkTile;
@@ -35,6 +35,8 @@ import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Interfaces.TileEntity.PlayerBreakHook;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+
+import vazkii.botania.api.mana.ILaputaImmobile;
 
 @Strippable(value = {"vazkii.botania.api.mana.ILaputaImmobile"})
 public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTrigger, SemiUnbreakable, ILaputaImmobile {

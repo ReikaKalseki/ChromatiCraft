@@ -12,6 +12,7 @@ package Reika.ChromatiCraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Base.ChromaBookGui;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
@@ -143,6 +144,7 @@ import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Base.OneSlotContainer;
 import Reika.DragonAPI.Base.OneSlotMachine;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
+
 import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

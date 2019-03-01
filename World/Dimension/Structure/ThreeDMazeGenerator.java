@@ -20,6 +20,7 @@ import java.util.Random;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -29,7 +30,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.TDMaze.TDMazeEntrance;
 import Reika.ChromatiCraft.World.Dimension.Structure.TDMaze.TunnelPiece;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
-import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
@@ -39,7 +40,7 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 	private final LinkedList<Coordinate> pathLocs = new LinkedList();
 	private final HashSet<Coordinate> coordCache = new HashSet();
 	//private final HashSet<Coordinate> coordCacheInverse = new HashSet();
-	private final MultiMap<Coordinate, ForgeDirection> locationCache = new MultiMap(new HashSetFactory());
+	private final MultiMap<Coordinate, ForgeDirection> locationCache = new MultiMap(CollectionType.HASHSET);
 	//private final HashSet<Coordinate> currentStep = new HashSet();
 	//private final HashSet<Coordinate> currentStepTemp = new HashSet();
 	//private final MultiMap<Coordinate, ForgeDirection> next = new MultiMap();

@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.World.Dimension.Structure.Bridge;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Base.DynamicStructurePiece;
 import Reika.ChromatiCraft.Block.BlockHoverBlock.HoverType;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;

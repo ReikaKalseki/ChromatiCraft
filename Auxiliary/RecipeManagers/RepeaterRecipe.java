@@ -9,6 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.EnergyLinkingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
@@ -19,9 +23,6 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 
 
 public abstract class RepeaterRecipe extends MultiBlockCastingRecipe implements EnergyLinkingRecipe {

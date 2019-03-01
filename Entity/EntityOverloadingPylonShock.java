@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Entity;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.ArrayList;
 
 import net.minecraft.client.Minecraft;
@@ -18,6 +16,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalFuse;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
@@ -28,9 +27,11 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import io.netty.buffer.ByteBuf;
 
 
 public class EntityOverloadingPylonShock extends InertEntity implements IEntityAdditionalSpawnData {

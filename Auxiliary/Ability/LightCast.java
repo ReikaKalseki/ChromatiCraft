@@ -13,14 +13,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
-import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
+
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
+import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
 
 public class LightCast implements BreakerCallback {
 

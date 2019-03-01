@@ -7,11 +7,12 @@ import java.util.Locale;
 
 import org.lwjgl.input.Keyboard;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
+
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
 
 public abstract class GuiLetterSearchable<E> extends GuiChromaBase {
 

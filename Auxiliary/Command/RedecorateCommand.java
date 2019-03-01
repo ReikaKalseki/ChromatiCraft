@@ -25,18 +25,19 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderServer;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaDecorator;
 import Reika.DragonAPI.Command.DragonCommandBase;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
-import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 
 public class RedecorateCommand extends DragonCommandBase {
 
-	private static final MultiMap<String, ChunkCoordIntPair> generatedChunks = new MultiMap(new HashSetFactory());
+	private static final MultiMap<String, ChunkCoordIntPair> generatedChunks = new MultiMap(CollectionType.HASHSET);
 
 	@Override
 	public void processCommand(ICommandSender ics, String[] args) {

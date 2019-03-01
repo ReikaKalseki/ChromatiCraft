@@ -12,13 +12,15 @@ package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import net.minecraft.item.ItemStack;
+
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
-import net.minecraft.item.ItemStack;
+
 import thaumcraft.api.ThaumcraftApiHelper;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;

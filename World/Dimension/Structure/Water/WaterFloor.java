@@ -15,6 +15,12 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.UUID;
 
+import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.common.ChestGenHooks;
+import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.BlockChromaDoor.TileEntityChromaDoor;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Water.BlockRotatingLock.TileEntityRotatingLock;
@@ -25,11 +31,6 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import net.minecraft.init.Blocks;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ChestGenHooks;
-import net.minecraftforge.common.util.ForgeDirection;
 
 
 public class WaterFloor extends StructurePiece {

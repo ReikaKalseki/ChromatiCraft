@@ -9,14 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block.Worldgen;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.ChromatiCraft.Magic.WarpNetwork;
-import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
@@ -30,6 +22,15 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Magic.WarpNetwork;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
 
 public class BlockWarpNode extends BlockContainer {

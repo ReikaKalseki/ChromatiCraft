@@ -12,10 +12,12 @@ package Reika.ChromatiCraft.Auxiliary.Tab;
 import java.util.Comparator;
 
 import net.minecraft.item.ItemStack;
+
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.DragonAPI.Instantiable.GUI.SortedCreativeTab;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

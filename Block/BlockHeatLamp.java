@@ -12,29 +12,6 @@ package Reika.ChromatiCraft.Block;
 import java.util.List;
 import java.util.Random;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.BlockAttachableMini;
-import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaGuis;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
-import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
-import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
-import Reika.DragonAPI.Interfaces.TileEntity.ThermalTile;
-import Reika.DragonAPI.Libraries.ReikaAABBHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.ModInteract.DeepInteract.TinkerSmelteryHandler;
-import Reika.DragonAPI.ModInteract.DeepInteract.TinkerSmelteryHandler.SmelteryWrapper;
-import Reika.DragonAPI.ModInteract.Power.ReikaRailCraftHelper;
-import Reika.DragonAPI.ModInteract.Power.ReikaRailCraftHelper.FireboxWrapper;
-import Reika.ReactorCraft.Auxiliary.ReactorCoreTE;
-import Reika.RotaryCraft.API.Interfaces.BasicTemperatureMachine;
-import Reika.RotaryCraft.Auxiliary.Interfaces.TemperatureTE;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -53,6 +30,32 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.BlockAttachableMini;
+import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
+import Reika.DragonAPI.Interfaces.TileEntity.ThermalTile;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.MultiblockControllerFinder;
+import Reika.DragonAPI.ModInteract.DeepInteract.TinkerSmelteryHandler;
+import Reika.DragonAPI.ModInteract.DeepInteract.TinkerSmelteryHandler.SmelteryWrapper;
+import Reika.DragonAPI.ModInteract.Power.ReikaRailCraftHelper;
+import Reika.DragonAPI.ModInteract.Power.ReikaRailCraftHelper.FireboxWrapper;
+import Reika.ReactorCraft.Auxiliary.ReactorCoreTE;
+import Reika.RotaryCraft.API.Interfaces.BasicTemperatureMachine;
+import Reika.RotaryCraft.Auxiliary.Interfaces.TemperatureTE;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockHeatLamp extends BlockAttachableMini {
 
@@ -170,6 +173,7 @@ public class BlockHeatLamp extends BlockAttachableMini {
 				//TinkerSmelteryHandler.tick(te, temperature*1500/MAXTEMP);
 			}
 			else if (!this.isCold() && ReikaRailCraftHelper.isFirebox(te)) {
+				te = MultiblockControllerFinder.instance.getController(te);
 				FireboxWrapper s = new FireboxWrapper(te);
 				double temp = 80+25*Math.sin(worldObj.getTotalWorldTime()/350D); //not enough to be sustainable, but enough to prevent total blackout
 				s.temperature = Math.max(s.temperature, temp);

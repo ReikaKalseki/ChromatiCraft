@@ -16,15 +16,6 @@ import java.util.List;
 
 import org.lwjgl.input.Keyboard;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.ItemChromaTool;
-import Reika.ChromatiCraft.Registry.ChromaGuis;
-import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
-import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
-import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
-import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -35,6 +26,16 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 
 public class ItemInventoryLinker extends ItemChromaTool {
 

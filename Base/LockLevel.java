@@ -18,6 +18,7 @@ import java.util.UUID;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.UUIDPlace;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockColoredLock.TileEntityColorLock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockLockKey;

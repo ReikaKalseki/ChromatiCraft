@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.API;
 import java.lang.reflect.Method;
 
 import net.minecraft.entity.EntityLiving;
+
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 /** Use this to blacklist entity types from the spawner reprogrammer, to prevent progression skips, rendering glitches, crashes, or similar.

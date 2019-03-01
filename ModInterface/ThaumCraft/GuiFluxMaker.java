@@ -9,9 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 
-import net.minecraft.entity.player.EntityPlayer;
-
 import org.lwjgl.opengl.GL11;
+
+import net.minecraft.entity.player.EntityPlayer;
 
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Registry.CrystalElement;

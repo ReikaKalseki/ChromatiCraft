@@ -15,14 +15,15 @@ import java.util.HashSet;
 import java.util.List;
 
 import net.minecraft.util.MathHelper;
+
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.World.Dimension.Structure.AntFarmGenerator;
-import Reika.DragonAPI.Instantiable.Math.Spline;
-import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
-import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
+import Reika.DragonAPI.Instantiable.Math.Spline;
+import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
+import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 

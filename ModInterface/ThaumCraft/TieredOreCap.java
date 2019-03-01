@@ -16,11 +16,7 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import net.minecraft.item.ItemStack;
-import thaumcraft.api.ThaumcraftApi;
-import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
-import thaumcraft.api.crafting.ShapedArcaneRecipe;
-import thaumcraft.api.wands.WandCap;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
@@ -29,9 +25,15 @@ import Reika.DragonAPI.IO.DirectResourceManager;
 import Reika.DragonAPI.Instantiable.Formula.MathExpression;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import thaumcraft.api.ThaumcraftApi;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.crafting.ShapedArcaneRecipe;
+import thaumcraft.api.wands.WandCap;
 
 public class TieredOreCap extends WandCap {
 

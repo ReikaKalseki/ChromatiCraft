@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 
 

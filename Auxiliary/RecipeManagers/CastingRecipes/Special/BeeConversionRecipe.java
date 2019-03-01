@@ -11,6 +11,11 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special;
 
 import java.util.Collection;
 
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -18,13 +23,10 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRe
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.EnumBeeType;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 
 
 public class BeeConversionRecipe extends PylonCastingRecipe {

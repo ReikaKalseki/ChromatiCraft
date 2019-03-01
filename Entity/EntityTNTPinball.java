@@ -9,16 +9,18 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Entity;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.Block.Dimension.Structure.Pinball.BlockPinballTile.PinballRerouteType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Base.ParticleEntity;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
+
+import io.netty.buffer.ByteBuf;
 
 
 public class EntityTNTPinball extends ParticleEntity {

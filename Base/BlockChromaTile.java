@@ -15,6 +15,29 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidHandler;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
@@ -49,6 +72,8 @@ import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.CrystalTier;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityEnchantDecomposer;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityGlowFire;
@@ -87,31 +112,10 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.DartItemHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.DragonRealmCore.DragonRealmCore;
+
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Items;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidContainerRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IEssentiaContainerItem;
@@ -712,6 +716,11 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 		}
 		if (te instanceof TileEntityAccelerator) {
 			currenttip.add(String.format("Time Acceleration Factor: %dx", 1+((TileEntityAccelerator)te).getAccel()));
+		}
+		if (te instanceof TileEntityFocusCrystal) {
+			CrystalTier ct = ((TileEntityFocusCrystal)te).getTier();
+			if (ct == CrystalTier.TURBOCHARGED)
+				currenttip.add("Turbocharged");
 		}
 		if (te instanceof TileEntityCrystalTank) {
 			TileEntityCrystalTank tank = (TileEntityCrystalTank)te;

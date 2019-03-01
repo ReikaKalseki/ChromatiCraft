@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.StatCollector;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
@@ -32,6 +33,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityStabilityCore;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityTankCapacityUpgrade;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

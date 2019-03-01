@@ -28,14 +28,16 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
+import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraftforge.classloading.FMLForgePlugin;
+
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.ASMEnum;
 import Reika.DragonAPI.Libraries.Java.ReikaASMHelper;
+
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.MCVersion;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.SortingIndex;
-import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraftforge.classloading.FMLForgePlugin;
 
 @SortingIndex(1001)
 @MCVersion("1.7.10")

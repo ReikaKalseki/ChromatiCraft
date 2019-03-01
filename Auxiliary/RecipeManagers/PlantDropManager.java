@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -17,10 +17,11 @@ import java.util.Iterator;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+
 import Reika.ChromatiCraft.Base.BlockChromaTiered;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
-import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Instantiable.Data.Maps.ReversibleMultiMap;
 
 
@@ -28,7 +29,7 @@ public class PlantDropManager {
 
 	public static final PlantDropManager instance = new PlantDropManager();
 
-	private final ReversibleMultiMap<BlockKey, KeyedItemStack> data = new ReversibleMultiMap(new HashSetFactory());
+	private final ReversibleMultiMap<BlockKey, KeyedItemStack> data = new ReversibleMultiMap(CollectionType.HASHSET);
 
 	private PlantDropManager() {
 

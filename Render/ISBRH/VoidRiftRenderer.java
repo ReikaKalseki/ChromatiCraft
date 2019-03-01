@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Render.ISBRH;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.world.IBlockAccess;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Interfaces.ISBRH;

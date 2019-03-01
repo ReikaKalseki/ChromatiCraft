@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Magic.Artefact.Effects;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.EntityLightningBolt;
+
 import Reika.ChromatiCraft.Magic.Artefact.UABombingEffect;
 
 

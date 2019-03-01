@@ -16,6 +16,7 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.Teleporter;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 
 public class ChromaTeleporter extends Teleporter {

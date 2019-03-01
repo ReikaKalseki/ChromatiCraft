@@ -26,13 +26,14 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkCoordIntPair;
+
 import Reika.ChromatiCraft.Base.ThreadedGenerator;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
-import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
-import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;

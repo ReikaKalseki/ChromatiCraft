@@ -21,6 +21,16 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.oredict.OreDictionary;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.CastingAPI.FXCallback;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
@@ -55,17 +65,9 @@ import Reika.DragonAPI.Instantiable.Recipe.ItemMatch;
 import Reika.DragonAPI.Instantiable.Recipe.RecipePattern;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.oredict.OreDictionary;
 
 
 public class CastingRecipe implements APICastingRecipe {

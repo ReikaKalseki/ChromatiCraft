@@ -13,16 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
-import net.minecraft.world.World;
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.World.Nether.LavaRiverGenerator;
-import Reika.DragonAPI.IO.DirectResourceManager;
-import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
-import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper.APISegment;
-import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper.MystcraftPageRegistry;
-
 import com.xcompwiz.mystcraft.api.hook.SymbolValuesAPI;
 import com.xcompwiz.mystcraft.api.hook.WordAPI;
 import com.xcompwiz.mystcraft.api.symbol.BlockCategory;
@@ -31,6 +21,17 @@ import com.xcompwiz.mystcraft.api.symbol.IAgeSymbol;
 import com.xcompwiz.mystcraft.api.symbol.ModifierUtils;
 import com.xcompwiz.mystcraft.api.word.DrawableWord;
 import com.xcompwiz.mystcraft.api.world.AgeDirector;
+
+import net.minecraft.world.World;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.World.Nether.LavaRiverGenerator;
+import Reika.DragonAPI.IO.DirectResourceManager;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper.APISegment;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper.MystcraftPageRegistry;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;

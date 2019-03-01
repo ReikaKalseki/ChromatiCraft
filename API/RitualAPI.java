@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 
 import net.minecraft.entity.player.EntityPlayer;
+
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 
 /** Use this class to add new rituals or test the activity state on existing ones. */

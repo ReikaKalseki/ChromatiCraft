@@ -12,12 +12,6 @@ package Reika.ChromatiCraft.World.IWG;
 import java.util.HashSet;
 import java.util.Random;
 
-import Reika.ChromatiCraft.Magic.Lore.LoreManager;
-import Reika.ChromatiCraft.Magic.Lore.Towers;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.material.Material;
@@ -32,6 +26,13 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeDictionary.Type;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import Reika.ChromatiCraft.Magic.Lore.LoreManager;
+import Reika.ChromatiCraft.Magic.Lore.Towers;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public class UnknownArtefactGenerator implements RetroactiveGenerator {
 

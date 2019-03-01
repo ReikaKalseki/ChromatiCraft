@@ -9,10 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.Render;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.player.EntityPlayer;
-
-import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;

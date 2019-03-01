@@ -17,6 +17,7 @@ import java.util.UUID;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 

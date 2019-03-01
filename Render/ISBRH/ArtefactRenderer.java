@@ -12,11 +12,6 @@ package Reika.ChromatiCraft.Render.ISBRH;
 import java.util.ArrayList;
 import java.util.Random;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
-import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList.TessellatorVertex;
-import Reika.DragonAPI.Interfaces.ISBRH;
-import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
@@ -24,6 +19,12 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.IBlockAccess;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
+import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList.TessellatorVertex;
+import Reika.DragonAPI.Interfaces.ISBRH;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 
 
 public class ArtefactRenderer implements ISBRH {

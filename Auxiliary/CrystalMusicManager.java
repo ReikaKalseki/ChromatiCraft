@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -21,6 +21,7 @@ import java.util.Set;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.KeySignature;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.Note;
@@ -31,7 +32,7 @@ public class CrystalMusicManager {
 
 	private final EnumMap<CrystalElement, MusicKey> baseKeys = new EnumMap(CrystalElement.class);
 	private final EnumMap<CrystalElement, ArrayList<MusicKey>> allKeys = new EnumMap(CrystalElement.class);
-	private final MultiMap<MusicKey, CrystalElement> sourceElements = new MultiMap(new MultiMap.HashSetFactory());
+	private final MultiMap<MusicKey, CrystalElement> sourceElements = new MultiMap(CollectionType.HASHSET);
 
 	private static final Random rand = new Random();
 

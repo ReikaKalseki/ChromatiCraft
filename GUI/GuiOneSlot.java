@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.GUI;
 
 import net.minecraft.entity.player.EntityPlayer;
+
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.DragonAPI.Base.OneSlotContainer;

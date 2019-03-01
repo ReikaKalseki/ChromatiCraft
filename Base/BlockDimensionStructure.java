@@ -11,12 +11,13 @@ package Reika.ChromatiCraft.Base;
 
 import java.util.ArrayList;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.DragonAPICore;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.DragonAPI.DragonAPICore;
 
 
 public abstract class BlockDimensionStructure extends Block {

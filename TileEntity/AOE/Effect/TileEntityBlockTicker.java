@@ -9,16 +9,17 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Instantiable.Event.BlockTickEvent;
-import Reika.DragonAPI.Instantiable.Event.BlockTickEvent.UpdateFlags;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRedstoneDiode;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Event.BlockTickEvent;
+import Reika.DragonAPI.Instantiable.Event.BlockTickEvent.UpdateFlags;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 
 public class TileEntityBlockTicker extends TileEntityAdjacencyUpgrade {

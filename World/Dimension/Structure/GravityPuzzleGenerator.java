@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.World.Dimension.Structure;
 import java.util.Random;
 
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
 

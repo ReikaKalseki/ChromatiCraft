@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Base;
 
 import net.minecraft.item.ItemStack;
+
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class ItemCrystalBasic extends ItemChromaMulti {

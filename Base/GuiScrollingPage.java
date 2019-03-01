@@ -9,10 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import org.lwjgl.input.Keyboard;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-
-import org.lwjgl.input.Keyboard;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaGuis;

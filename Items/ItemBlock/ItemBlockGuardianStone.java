@@ -17,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
 
 public class ItemBlockGuardianStone extends ItemBlock {

@@ -9,13 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Entity;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.ColorData;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.LaserEffectType;
@@ -28,9 +28,11 @@ import Reika.DragonAPI.Base.ParticleEntity;
 import Reika.DragonAPI.Interfaces.Registry.SoundEnum;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper.CubeDirections;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import io.netty.buffer.ByteBuf;
 
 
 public class EntityLaserPulse extends ParticleEntity implements IEntityAdditionalSpawnData {

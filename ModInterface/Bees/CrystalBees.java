@@ -26,6 +26,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
@@ -90,6 +91,7 @@ import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler.Combs;
 import Reika.DragonAPI.ModInteract.ItemHandlers.OreBerryBushHandler.BerryTypes;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;

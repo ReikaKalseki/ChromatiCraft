@@ -11,17 +11,18 @@ package Reika.ChromatiCraft.GUI.Book;
 
 import java.util.ArrayList;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-
-import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.GuiDescription;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies;
+
 import forestry.api.apiculture.EnumBeeType;
 
 public class GuiCraftableDesc extends GuiDescription {

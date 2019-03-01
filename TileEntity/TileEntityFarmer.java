@@ -11,6 +11,13 @@ package Reika.ChromatiCraft.TileEntity;
 
 import java.util.ArrayList;
 
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -31,15 +38,9 @@ import Reika.DragonAPI.Libraries.Registry.ReikaCropHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModRegistry.ModCropList;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityFarmer extends TileEntityRelayPowered {
 
@@ -111,7 +112,8 @@ public class TileEntityFarmer extends TileEntityRelayPowered {
 		double vx = v*(tx-xCoord);
 		double vy = v*(ty-yCoord);
 		double vz = v*(tz-zCoord);
-		EntityFX fx = new EntityBlurFX(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, vx, vy, vz).setColor(0, 192, 0).setScale(4).setLife(10);
+		EntityBlurFX fx = new EntityBlurFX(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, vx, vy, vz).setColor(0, 192, 0);
+		fx.setScale(4).setLife(10).forceIgnoreLimits();
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 

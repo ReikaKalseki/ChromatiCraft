@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Auxiliary.Potions;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.StatCollector;
+
 import Reika.ChromatiCraft.Base.ChromaPotion;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;

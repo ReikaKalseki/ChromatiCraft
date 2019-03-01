@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,6 +15,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
@@ -26,6 +27,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Maps.CountMap;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -119,6 +121,9 @@ public class PlayerElementBuffer {
 		int has = tag.getInteger(e.name());
 		tag.setInteger(e.name(), Math.max(0, has-amt));
 		this.checkAndWarnPlayer(ep, e, has);
+
+		if (ep instanceof EntityPlayerMP)
+			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 	}
 
 	private void checkAndWarnPlayer(EntityPlayer ep, CrystalElement e, int prev) {

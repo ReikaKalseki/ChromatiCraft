@@ -14,6 +14,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.IChatComponent;
+
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public final class PylonDamage extends DamageSource {

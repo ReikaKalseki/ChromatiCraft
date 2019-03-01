@@ -11,9 +11,9 @@ package Reika.ChromatiCraft.World.Dimension.Rendering;
 
 import java.util.List;
 
-import net.minecraft.client.renderer.Tessellator;
-
 import org.lwjgl.opengl.GL11;
+
+import net.minecraft.client.renderer.Tessellator;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
@@ -26,6 +26,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

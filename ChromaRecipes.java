@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
+
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.DoorKeyCopyingRecipe;
 import Reika.ChromatiCraft.Auxiliary.LegacyTileAcceleratorRecipe;
@@ -41,6 +42,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.RecipeHandlers.ThermalRecipeHelper;
 import Reika.RotaryCraft.API.BlockColorInterface;
 import Reika.RotaryCraft.API.RecipeInterface;
+
 import cpw.mods.fml.common.registry.GameRegistry;
 import forestry.api.recipes.RecipeManagers;
 

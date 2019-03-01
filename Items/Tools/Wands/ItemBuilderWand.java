@@ -20,6 +20,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher;

@@ -11,17 +11,6 @@ package Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze;
 
 import java.util.List;
 
-import Reika.ChromatiCraft.Base.BlockDimensionStructure;
-import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.ASM.APIStripper.Strippable;
-import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
-import Reika.DragonAPI.Libraries.ReikaAABBHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-import mcp.mobius.waila.api.IWailaDataProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -37,6 +26,19 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import Reika.ChromatiCraft.Base.BlockDimensionStructure;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+
+import mcp.mobius.waila.api.IWailaConfigHandler;
+import mcp.mobius.waila.api.IWailaDataAccessor;
+import mcp.mobius.waila.api.IWailaDataProvider;
 
 @Strippable(value = {"mcp.mobius.waila.api.IWailaDataProvider"})
 public class BlockShiftLock extends BlockDimensionStructure implements IWailaDataProvider {

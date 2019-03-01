@@ -11,15 +11,6 @@ package Reika.ChromatiCraft.Auxiliary.Render;
 
 import org.lwjgl.opengl.GL11;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ChromaHelpData;
-import Reika.DragonAPI.Base.BlockTieredResource;
-import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
-import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -28,6 +19,17 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaHelpData;
+import Reika.DragonAPI.Base.BlockTieredResource;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class ChromaHelpHUD {

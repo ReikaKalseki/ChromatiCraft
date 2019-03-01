@@ -15,6 +15,16 @@ import java.lang.reflect.Method;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import net.minecraft.block.Block;
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
+import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectJar;
@@ -28,15 +38,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
-import net.minecraft.block.Block;
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.util.ForgeDirection;
+
 import thaumcraft.api.aspects.Aspect;
 
 public class AspectJarRenderer extends ChromaRenderBase {

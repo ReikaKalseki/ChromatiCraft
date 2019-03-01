@@ -11,9 +11,9 @@ package Reika.ChromatiCraft.GUI.Book;
 
 import java.util.Locale;
 
-import net.minecraft.entity.player.EntityPlayer;
-
 import org.lwjgl.opengl.GL11;
+
+import net.minecraft.entity.player.EntityPlayer;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiDescription;

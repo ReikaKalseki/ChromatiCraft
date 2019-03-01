@@ -18,6 +18,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.World.RainbowForestGenerator;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;

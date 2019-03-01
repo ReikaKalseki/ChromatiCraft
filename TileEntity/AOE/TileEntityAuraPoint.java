@@ -14,6 +14,23 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityEnderman;
+import net.minecraft.entity.monster.EntityPigZombie;
+import net.minecraft.entity.passive.EntityAnimal;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
@@ -42,25 +59,10 @@ import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModRegistry.ModCropList;
 import Reika.VoidMonster.Entity.EntityVoidMonster;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityEnderman;
-import net.minecraft.entity.monster.EntityPigZombie;
-import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
 import vazkii.botania.api.boss.IBotaniaBoss;
 
 
@@ -292,8 +294,8 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void doGrowFX(int x, int y, int z) {
-		ReikaParticleHelper.BONEMEAL.spawnAroundBlockWithOutset(worldObj, x, y, z, 4, 0.0625);
+	public static void doGrowFX(World world, int x, int y, int z) {
+		ReikaParticleHelper.BONEMEAL.spawnAroundBlockWithOutset(world, x, y, z, 4, 0.0625);
 	}
 
 	private CropType getCropAt(World world, Coordinate c) {

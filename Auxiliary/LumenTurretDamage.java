@@ -9,10 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
-import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityLumenTurret;
-import Reika.DragonAPI.Instantiable.CustomStringDamageSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityLumenTurret;
+import Reika.DragonAPI.Instantiable.CustomStringDamageSource;
 
 
 public class LumenTurretDamage extends CustomStringDamageSource {

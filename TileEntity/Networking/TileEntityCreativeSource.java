@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.TileEntity.Networking;
 import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
+
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;

@@ -13,6 +13,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
 
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
@@ -23,11 +29,6 @@ import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Maps.BlockMap;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
 
 public class ChromaHelpData {
 

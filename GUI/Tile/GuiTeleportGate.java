@@ -11,15 +11,15 @@ package Reika.ChromatiCraft.GUI.Tile;
 
 import java.awt.image.BufferedImage;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
-
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiChromaBase;

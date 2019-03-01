@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,6 +15,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.Decoration.BlockRangedLamp.TileEntityRangedLamp;
@@ -24,18 +25,20 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityRangeBoost;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.ModRegistry.PowerTypes;
 import Reika.RotaryCraft.API.Power.PowerTransferHelper;
 import Reika.RotaryCraft.API.Power.SimpleShaftPowerReceiver;
+
 import cofh.api.energy.IEnergyHandler;
 
 public class TileEntityLampController extends TileEntityChromaticBase implements LocationCached, GuiController, SimpleShaftPowerReceiver {
 
-	private static final MultiMap<Integer, LightSource> map = new MultiMap(new MultiMap.HashSetFactory());
-	private static final MultiMap<Integer, WorldLocation> lights = new MultiMap(new MultiMap.HashSetFactory());
+	private static final MultiMap<Integer, LightSource> map = new MultiMap(CollectionType.HASHSET);
+	private static final MultiMap<Integer, WorldLocation> lights = new MultiMap(CollectionType.HASHSET);
 
 	public static final int MAXRANGE = 64;
 	public static final int MAXCHANNEL = 999;

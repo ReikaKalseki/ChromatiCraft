@@ -18,6 +18,7 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.World.Dimension.Structure.Monument.MonumentHighlighter;
 import Reika.ChromatiCraft.World.Dimension.Structure.Monument.MonumentMineralBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.Monument.MonumentStructure;

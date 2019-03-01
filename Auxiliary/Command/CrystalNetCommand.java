@@ -14,6 +14,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.DragonAPI.Command.DragonCommandBase;
 

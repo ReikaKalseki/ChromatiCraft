@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import net.minecraft.client.renderer.Tessellator;
-
 import org.lwjgl.opengl.GL11;
+
+import net.minecraft.client.renderer.Tessellator;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;

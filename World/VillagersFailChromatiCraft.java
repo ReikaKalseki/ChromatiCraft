@@ -12,19 +12,6 @@ package Reika.ChromatiCraft.World;
 import java.util.ArrayList;
 import java.util.Random;
 
-import Reika.ChromatiCraft.Auxiliary.ChromaAux;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
-import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
-import Reika.DragonAPI.Instantiable.Worldgen.VillageBuilding.PerVillageStructureEntry;
-import Reika.DragonAPI.Instantiable.Worldgen.VillageBuilding.StructureEntry;
-import Reika.DragonAPI.Instantiable.Worldgen.VillageBuilding.VillagePiece;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
-import cpw.mods.fml.common.registry.VillagerRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -40,6 +27,21 @@ import net.minecraft.world.gen.structure.StructureVillagePieces.Start;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeDictionary.Type;
 import net.minecraftforge.common.ChestGenHooks;
+
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Worldgen.VillageBuilding.PerVillageStructureEntry;
+import Reika.DragonAPI.Instantiable.Worldgen.VillageBuilding.StructureEntry;
+import Reika.DragonAPI.Instantiable.Worldgen.VillageBuilding.VillagePiece;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
+
+import cpw.mods.fml.common.registry.VillagerRegistry;
 
 
 

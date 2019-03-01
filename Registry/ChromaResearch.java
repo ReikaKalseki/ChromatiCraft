@@ -20,6 +20,22 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
@@ -57,7 +73,7 @@ import Reika.DragonAPI.Exception.InstallationException;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
-import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Interfaces.Configuration.ConfigList;
 import Reika.DragonAPI.Interfaces.Registry.Dependency;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
@@ -74,24 +90,10 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler.ToolParts;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler.WeaponParts;
 import Reika.DragonAPI.ModRegistry.PowerTypes;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.EnumBeeType;
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.world.World;
 
 public enum ChromaResearch implements ProgressElement {
 
@@ -396,7 +398,7 @@ public enum ChromaResearch implements ProgressElement {
 	private int sectionIndex = 0;
 
 	public static final ChromaResearch[] researchList = values();
-	static final MultiMap<ResearchLevel, ChromaResearch> levelMap = new MultiMap(new HashSetFactory());
+	static final MultiMap<ResearchLevel, ChromaResearch> levelMap = new MultiMap(CollectionType.HASHSET);
 	private static final ItemHashMap<ChromaResearch> itemMap = new ItemHashMap();
 	private static final HashMap<Ability, ChromaResearch> abilityMap = new HashMap();
 	private static final List<ChromaResearch> parents = new ArrayList();

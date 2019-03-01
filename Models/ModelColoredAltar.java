@@ -17,10 +17,10 @@ package Reika.ChromatiCraft.Models;
 
 import java.util.ArrayList;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.MinecraftForgeClient;
-
-import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.ChromaModelBase;
 import Reika.ChromatiCraft.Registry.CrystalElement;

@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Render.Particle;
 
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 

@@ -14,6 +14,8 @@ import java.util.HashSet;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraftforge.client.event.GuiOpenEvent;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.IO.DelegateFontRenderer;
 import Reika.DragonAPI.IO.ReikaImageLoader;
@@ -21,10 +23,10 @@ import Reika.DragonAPI.Instantiable.Rendering.BasicFontRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
+
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraftforge.client.event.GuiOpenEvent;
 
 @SideOnly(Side.CLIENT)
 public class ChromaFontRenderer extends BasicFontRenderer {

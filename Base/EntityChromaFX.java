@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Base;
 
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public abstract class EntityChromaFX extends EntityFX {

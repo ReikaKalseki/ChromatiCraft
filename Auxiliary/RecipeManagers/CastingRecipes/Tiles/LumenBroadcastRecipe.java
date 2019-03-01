@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles;
 
 import net.minecraft.item.ItemStack;
+
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RepeaterRecipe;
 import Reika.ChromatiCraft.Registry.ChromaTiles;

@@ -11,15 +11,16 @@ package Reika.ChromatiCraft.Registry;
 
 import java.net.URL;
 
+import net.minecraft.client.audio.SoundCategory;
+import net.minecraft.entity.Entity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.Registry.SoundEnum;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import net.minecraft.client.audio.SoundCategory;
-import net.minecraft.entity.Entity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 
 public enum ChromaSounds implements SoundEnum {
 
@@ -105,6 +106,9 @@ public enum ChromaSounds implements SoundEnum {
 	NETWORKOPTCHARGE("networkopt_charge2"),
 	TUNNELNUKERAMBIENT("nukerfly2"),
 	TUNNELNUKERCALL("nukercall"),
+	TOWEREXTEND1("tower_extend_1"),
+	TOWEREXTEND2("tower_extend_2b"),
+	TOWERAMBIENT("tower_ambient2"),
 	;
 
 	public static final ChromaSounds[] soundList = values();

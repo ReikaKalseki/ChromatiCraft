@@ -10,7 +10,9 @@
 package Reika.ChromatiCraft.Auxiliary.Ability;
 
 import net.minecraft.entity.player.EntityPlayer;
+
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledEvent;
+
 import cpw.mods.fml.relauncher.Side;
 
 class ResetWalkSpeedEvent implements ScheduledEvent {

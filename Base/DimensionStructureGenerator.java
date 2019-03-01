@@ -24,6 +24,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage.StructureInterfaceTile;
@@ -58,6 +59,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
+
 import cpw.mods.fml.common.Loader;
 
 public abstract class DimensionStructureGenerator implements TileCallback {

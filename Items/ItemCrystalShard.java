@@ -22,7 +22,7 @@ import net.minecraft.potion.PotionHelper;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
-import vazkii.botania.api.recipe.IFlowerComponent;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
@@ -44,6 +44,8 @@ import Reika.DragonAPI.Interfaces.Item.AnimatedSpritesheet;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+
+import vazkii.botania.api.recipe.IFlowerComponent;
 
 @Strippable(value={"vazkii.botania.api.recipe.IFlowerComponent"})
 public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSpritesheet, TieredItem, IFlowerComponent {

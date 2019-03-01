@@ -9,10 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 
 
 public class TileEntityDamageBoost extends TileEntityAdjacencyUpgrade {

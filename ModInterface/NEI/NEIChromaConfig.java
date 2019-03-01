@@ -12,10 +12,12 @@ package Reika.ChromatiCraft.ModInterface.NEI;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.DragonAPICore;
+
 import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;
 

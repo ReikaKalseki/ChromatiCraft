@@ -13,10 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import Reika.ChromatiCraft.Base.ItemChromaTool;
-import Reika.ChromatiCraft.Magic.Lore.Towers;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.ChunkPosition;
@@ -24,6 +20,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.gen.ChunkProviderGenerate;
 import net.minecraft.world.gen.structure.MapGenStronghold;
+
+import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Magic.Lore.Towers;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 
 
 public class ItemStructureMap extends ItemChromaTool {

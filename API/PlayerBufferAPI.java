@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.API;
 import java.lang.reflect.Method;
 
 import net.minecraft.entity.player.EntityPlayer;
+
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 /** Use this to add custom recipe objects that ChromatiCraft can use for item element value calculation. */

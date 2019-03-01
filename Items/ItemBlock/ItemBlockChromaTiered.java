@@ -22,8 +22,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
+
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Base.BlockChromaTiered;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
@@ -33,6 +34,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Base.BlockTieredResource;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

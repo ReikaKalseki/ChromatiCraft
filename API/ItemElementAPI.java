@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
+
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 /** Use this to add custom recipe objects that ChromatiCraft can use for item element value calculation. */

@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.particle.EntityFX;
@@ -24,8 +26,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
-
-import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
@@ -57,6 +57,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.Note;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.Bees.BasicGene;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

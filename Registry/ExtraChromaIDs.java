@@ -9,12 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.Interfaces.Registry.IDRegistry;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.potion.Potion;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.biome.BiomeGenBase;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.DragonAPI.Interfaces.Registry.IDRegistry;
 
 public enum ExtraChromaIDs implements IDRegistry {
 

@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionHelper;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;

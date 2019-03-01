@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Magic.Artefact;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
+
 import Reika.ChromatiCraft.Magic.Artefact.UABombingEffect.BlockEffect;
 
 

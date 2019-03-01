@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaIcon;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
@@ -29,6 +30,7 @@ import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Interfaces.TileEntity.NBTCopyable;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

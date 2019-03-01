@@ -11,12 +11,14 @@ package Reika.ChromatiCraft.ModInterface;
 
 import java.lang.reflect.Method;
 
+import net.minecraft.tileentity.TileEntity;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator.Acceleration;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
+
 import ic2.api.reactor.IReactorChamber;
-import net.minecraft.tileentity.TileEntity;
 
 public class IC2ReactorAcceleration extends Acceleration {
 

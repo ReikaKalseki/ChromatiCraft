@@ -11,6 +11,8 @@ package Reika.ChromatiCraft.GUI.Book;
 
 import java.util.ArrayList;
 
+import org.lwjgl.input.Keyboard;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
@@ -19,8 +21,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
-
-import org.lwjgl.input.Keyboard;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;

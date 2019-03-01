@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+
 import io.netty.buffer.ByteBuf;
 
 public final class ElementEncodedNumber {

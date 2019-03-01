@@ -11,6 +11,11 @@ package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
 import java.util.HashMap;
 
+import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
@@ -26,10 +31,6 @@ import Reika.RotaryCraft.TileEntities.Processing.TileEntityCompactor;
 import Reika.RotaryCraft.TileEntities.Processing.TileEntityCrystallizer;
 import Reika.RotaryCraft.TileEntities.Production.TileEntityBlastFurnace;
 import Reika.RotaryCraft.TileEntities.Production.TileEntityFermenter;
-import net.minecraft.init.Blocks;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 
 public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade {

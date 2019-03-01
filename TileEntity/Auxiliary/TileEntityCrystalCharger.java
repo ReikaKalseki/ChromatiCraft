@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.TileEntity.Auxiliary;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;

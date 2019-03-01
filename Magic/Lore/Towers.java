@@ -13,6 +13,10 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Random;
 
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.World;
+
 import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Math.HexGrid;
@@ -20,11 +24,9 @@ import Reika.DragonAPI.Instantiable.Math.HexGrid.Hex;
 import Reika.DragonAPI.Instantiable.Math.HexGrid.MapShape;
 import Reika.DragonAPI.Instantiable.Math.HexGrid.Point;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.World;
 
 
 public enum Towers {

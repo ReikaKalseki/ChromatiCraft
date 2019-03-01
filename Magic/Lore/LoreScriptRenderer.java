@@ -11,9 +11,9 @@ package Reika.ChromatiCraft.Magic.Lore;
 
 import java.util.HashMap;
 
-import net.minecraft.client.renderer.Tessellator;
-
 import org.lwjgl.opengl.GL11;
+
+import net.minecraft.client.renderer.Tessellator;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -21,6 +21,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

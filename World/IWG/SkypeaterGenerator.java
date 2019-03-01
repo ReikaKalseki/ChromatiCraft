@@ -17,6 +17,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.MinecraftForge;
+
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntitySkypeater;
@@ -26,6 +27,7 @@ import Reika.ChromatiCraft.World.GlowingCliffsColumnShaper;
 import Reika.ChromatiCraft.World.GlowingCliffsColumnShaper.GlowCliffRegion;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 
 

@@ -11,9 +11,9 @@ package Reika.ChromatiCraft.Render;
 
 import java.util.Random;
 
-import net.minecraft.client.renderer.Tessellator;
-
 import org.lwjgl.opengl.GL11;
+
+import net.minecraft.client.renderer.Tessellator;
 
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Math.Spline;

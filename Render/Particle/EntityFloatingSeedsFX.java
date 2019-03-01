@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Render.Particle;
 
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;

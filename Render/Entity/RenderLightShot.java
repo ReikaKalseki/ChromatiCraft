@@ -11,6 +11,13 @@ package Reika.ChromatiCraft.Render.Entity;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.ResourceLocation;
+
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Entity.EntityLightShot;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -19,12 +26,6 @@ import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.ResourceLocation;
 
 public class RenderLightShot extends Render {
 

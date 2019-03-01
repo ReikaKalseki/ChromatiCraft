@@ -15,6 +15,12 @@ import java.util.HashMap;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiLetterSearchable;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -29,11 +35,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ResourceLocation;
+
 import thaumcraft.api.aspects.Aspect;
 
 public class GuiAspectFormer extends GuiLetterSearchable<Aspect> {

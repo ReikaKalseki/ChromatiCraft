@@ -12,6 +12,17 @@ package Reika.ChromatiCraft.Items.Tools;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.EnumAction;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
@@ -26,7 +37,6 @@ import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree.TileEntityPowerTreeAux;
 import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
-import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeRecharger;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -70,20 +80,11 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.IBeeHousing;
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.EnumAction;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 import thaumcraft.api.IScribeTools;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.nodes.INode;
@@ -390,21 +391,23 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			ReikaSoundHelper.playBreakSound(world, x, y, z, Blocks.stone, 0.35F, 0.05F);
 		}
 
-		if (ModList.THAUMCRAFT.isLoaded() && !(tile instanceof CrystalNetworkTile) && InterfaceCache.NODE.instanceOf(tile)) {
-			if (ProgressStage.CTM.isPlayerAtStage(ep) && ReikaThaumHelper.isResearchComplete(ep, "NODESTABILIZERADV")) { //CC and TC progression
-				if (!world.isRemote) {
-					ReikaSoundHelper.playSoundFromServer(world, x+0.5, y+0.5, z+0.5, "thaumcraft:runicShieldEffect", 1, 1, false);
-					Collection<Aspect> li = new ArrayList(((INode)tile).getAspects().aspects.keySet());
-					for (Aspect asp : li) {
-						int color = asp.getColor();
-						int rd = ReikaColorAPI.getRed(color);
-						int gn = ReikaColorAPI.getGreen(color);
-						int bl = ReikaColorAPI.getBlue(color);
-						ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), tile, 64, rd, gn, bl, 8, 2);
-						if (((INode)tile).getAspects().getAmount(asp) > 1)
-							((INode)tile).takeFromContainer(asp, 1);
+		if (!world.isRemote) {
+			if (ModList.THAUMCRAFT.isLoaded() && InterfaceCache.NODE.instanceOf(tile)) {
+				if (ProgressStage.CTM.isPlayerAtStage(ep) && ReikaThaumHelper.isResearchComplete(ep, "NODESTABILIZERADV")) { //CC and TC progression
+					if (NodeRecharger.instance.isValidNode((INode)tile)) {
+						ReikaSoundHelper.playSoundFromServer(world, x+0.5, y+0.5, z+0.5, "thaumcraft:runicShieldEffect", 1, 1, false);
+						Collection<Aspect> li = new ArrayList(((INode)tile).getAspects().aspects.keySet());
+						for (Aspect asp : li) {
+							int color = asp.getColor();
+							int rd = ReikaColorAPI.getRed(color);
+							int gn = ReikaColorAPI.getGreen(color);
+							int bl = ReikaColorAPI.getBlue(color);
+							ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), tile, 64, rd, gn, bl, 8, 2);
+							if (((INode)tile).getAspects().getAmount(asp) > 1)
+								((INode)tile).takeFromContainer(asp, 1);
+						}
+						NodeRecharger.instance.addNode((INode)tile);
 					}
-					NodeRecharger.instance.addNode((INode)tile);
 				}
 			}
 		}

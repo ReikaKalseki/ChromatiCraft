@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary.Command;
 
 import net.minecraft.command.ICommandSender;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.DragonAPI.Command.DragonCommandBase;

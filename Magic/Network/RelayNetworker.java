@@ -20,6 +20,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Relay.BlockRelayBase;
 import Reika.ChromatiCraft.Block.Relay.BlockRelayBase.TileRelayBase;

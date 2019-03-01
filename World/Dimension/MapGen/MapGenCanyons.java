@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.World.Dimension.MapGen;
 
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Base.ChromaFeatureBase;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 

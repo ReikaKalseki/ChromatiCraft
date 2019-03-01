@@ -12,6 +12,8 @@ package Reika.ChromatiCraft.Render.ISBRH;
 import java.util.HashSet;
 import java.util.Random;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -21,8 +23,6 @@ import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-
-import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;

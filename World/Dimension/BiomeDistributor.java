@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -26,6 +26,7 @@ import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
@@ -39,12 +40,12 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Maps.CountMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
-import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.ListFactory;
 import Reika.DragonAPI.Instantiable.Math.LobulatedCurve;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -63,7 +64,7 @@ public class BiomeDistributor extends ThreadedGenerator {
 	private static final EnumMap<CrystalElement, LobulatedCurve> structureBlobs = new EnumMap(CrystalElement.class);
 
 	private final Collection<Spreader> spreaders = new ArrayList();
-	private final MultiMap<ChromaDimensionBiomeType, Point> blobLocations = new MultiMap(new ListFactory());
+	private final MultiMap<ChromaDimensionBiomeType, Point> blobLocations = new MultiMap();
 
 	public BiomeDistributor(long seed) {
 		super(seed);

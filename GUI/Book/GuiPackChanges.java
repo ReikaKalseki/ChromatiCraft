@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.GUI.Book;
 
 import net.minecraft.entity.player.EntityPlayer;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiDescription;
 import Reika.ChromatiCraft.Registry.ChromaGuis;

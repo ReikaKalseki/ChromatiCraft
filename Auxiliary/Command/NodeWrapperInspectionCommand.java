@@ -9,15 +9,16 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.Command;
 
+import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MovingObjectPosition;
+
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeRecharger;
 import Reika.DragonAPI.Command.DragonCommandBase;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MovingObjectPosition;
 
 
 public class NodeWrapperInspectionCommand extends DragonCommandBase {

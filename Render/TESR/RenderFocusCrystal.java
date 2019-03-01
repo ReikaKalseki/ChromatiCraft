@@ -11,6 +11,13 @@ package Reika.ChromatiCraft.Render.TESR;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
+import net.minecraftforge.client.MinecraftForgeClient;
+
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FocusCrystalRecipes;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
@@ -27,12 +34,6 @@ import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
-import net.minecraftforge.client.MinecraftForgeClient;
 
 
 public class RenderFocusCrystal extends ChromaRenderBase {
@@ -55,7 +56,10 @@ public class RenderFocusCrystal extends ChromaRenderBase {
 		GL11.glTranslated(par2, par4, par6);
 		GL11.glDepthMask(true);
 		TileEntityFocusCrystal te = (TileEntityFocusCrystal)tile;
-		float t = te.getTicksExisted()+par8+System.identityHashCode(te)%512000;
+		boolean world = te.isInWorld() && !StructureRenderer.isRenderingTiles();
+		float t = world ? te.getTicksExisted() : Minecraft.getMinecraft().theWorld.getTotalWorldTime();
+		t += par8;
+		t += System.identityHashCode(te)%512000+te.getTier().ordinal()*15;
 		if (MinecraftForgeClient.getRenderPass() == 0 || StructureRenderer.isRenderingTiles() || !te.isInWorld()) {
 			this.renderBase(te, par8);
 

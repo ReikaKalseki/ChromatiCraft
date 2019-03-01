@@ -14,17 +14,6 @@ import java.util.Random;
 
 import com.carpentersblocks.api.IWrappableBlock;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.DragonAPI.ASM.APIStripper.Strippable;
-import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
-import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
-import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.GeoStrata.API.RockProofStone;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -37,6 +26,19 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
+import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
+import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.GeoStrata.API.RockProofStone;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 @Strippable(value={"com.carpentersblocks.api.IWrappableBlock"})

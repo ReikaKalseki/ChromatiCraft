@@ -26,6 +26,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -44,6 +45,7 @@ import Reika.DragonAPI.Instantiable.ParticleController.BlendListColorController;
 import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Interfaces.ColorController;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

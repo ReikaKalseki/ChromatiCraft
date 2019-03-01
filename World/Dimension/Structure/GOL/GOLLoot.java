@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.World.Dimension.Structure.GOL;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;

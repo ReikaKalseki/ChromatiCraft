@@ -14,6 +14,7 @@ import net.minecraft.entity.projectile.EntityLargeFireball;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public class EntityAbilityFireball extends EntityLargeFireball {

@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Container;
 
 import net.minecraft.entity.player.EntityPlayer;
+
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityInventoryTicker;
 import Reika.DragonAPI.Base.CoreContainer;
 

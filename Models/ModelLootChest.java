@@ -12,8 +12,10 @@ package Reika.ChromatiCraft.Models;
 import java.util.ArrayList;
 
 import net.minecraft.tileentity.TileEntity;
+
 import Reika.ChromatiCraft.Base.ChromaModelBase;
 import Reika.DragonAPI.Instantiable.Rendering.LODModelPart;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

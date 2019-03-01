@@ -39,12 +39,7 @@ import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-import thaumcraft.api.ThaumcraftApi;
-import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.crafting.CrucibleRecipe;
-import thaumcraft.api.crafting.InfusionRecipe;
-import thaumcraft.api.crafting.ShapedArcaneRecipe;
-import thaumcraft.api.crafting.ShapelessArcaneRecipe;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.API.ItemElementAPI.ItemInOutHandler;
@@ -69,7 +64,14 @@ import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.RotaryCraft.Auxiliary.RecipeManagers.WorktableRecipes;
 import Reika.RotaryCraft.Auxiliary.RecipeManagers.WorktableRecipes.WorktableRecipe;
+
 import cpw.mods.fml.common.registry.GameRegistry;
+import thaumcraft.api.ThaumcraftApi;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.crafting.CrucibleRecipe;
+import thaumcraft.api.crafting.InfusionRecipe;
+import thaumcraft.api.crafting.ShapedArcaneRecipe;
+import thaumcraft.api.crafting.ShapelessArcaneRecipe;
 
 public class ItemElementCalculator {
 

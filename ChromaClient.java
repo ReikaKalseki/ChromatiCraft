@@ -15,6 +15,16 @@ import java.util.HashMap;
 
 import org.lwjgl.input.Keyboard;
 
+import net.minecraft.client.audio.SoundCategory;
+import net.minecraft.client.renderer.entity.RenderFireball;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.RenderSlime;
+import net.minecraft.client.renderer.tileentity.RenderEnderCrystal;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.world.World;
+import net.minecraftforge.client.MinecraftForgeClient;
+
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHotkeys;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaRenderList;
 import Reika.ChromatiCraft.Auxiliary.Render.DonatorPylonRender;
@@ -144,18 +154,10 @@ import Reika.DragonAPI.Instantiable.Rendering.ItemSpriteSheetRenderer;
 import Reika.DragonAPI.Instantiable.Rendering.MultiSheetItemRenderer;
 import Reika.DragonAPI.Instantiable.Rendering.TESRItemRenderer;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
+
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
-import net.minecraft.client.audio.SoundCategory;
-import net.minecraft.client.renderer.entity.RenderFireball;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.entity.RenderSlime;
-import net.minecraft.client.renderer.tileentity.RenderEnderCrystal;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.world.World;
-import net.minecraftforge.client.MinecraftForgeClient;
 
 public class ChromaClient extends ChromaCommon {
 

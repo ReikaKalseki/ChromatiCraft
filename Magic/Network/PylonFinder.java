@@ -18,6 +18,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.LoggingLevel;
@@ -45,17 +51,14 @@ import Reika.DragonAPI.Auxiliary.ModularLogger;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerBlockHandler;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
 import Reika.GeoStrata.Registry.GeoBlocks;
 import Reika.RotaryCraft.Registry.BlockRegistry;
+
 import cpw.mods.fml.common.registry.GameRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 
 public class PylonFinder {
 
@@ -63,7 +66,7 @@ public class PylonFinder {
 
 	private final LinkedList<WorldLocation> nodes = new LinkedList();
 	private final Collection<WorldLocation> blacklist = new HashSet();
-	private final MultiMap<WorldLocation, WorldLocation> duplicates = new MultiMap(new MultiMap.HashSetFactory());
+	private final MultiMap<WorldLocation, WorldLocation> duplicates = new MultiMap(CollectionType.HASHSET);
 
 	private final CrystalNetworker net;
 

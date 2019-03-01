@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Render.TESR;
 
 import net.minecraft.tileentity.TileEntity;
+
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 

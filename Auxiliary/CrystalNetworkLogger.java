@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Auxiliary;
 import java.util.Locale;
 
 import net.minecraft.command.ICommandSender;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;

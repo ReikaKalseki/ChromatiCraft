@@ -13,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Entity.EntityFlyingLight;
 import Reika.ChromatiCraft.Registry.CrystalElement;

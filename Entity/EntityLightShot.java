@@ -11,15 +11,6 @@ package Reika.ChromatiCraft.Entity;
 
 import java.util.HashSet;
 
-import Reika.ChromatiCraft.Block.Decoration.BlockEtherealLight.Flags;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,6 +20,17 @@ import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import Reika.ChromatiCraft.Block.Decoration.BlockEtherealLight.Flags;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class EntityLightShot extends EntityFireball {
 

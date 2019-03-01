@@ -9,12 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Tile;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
-
-import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerCollector;

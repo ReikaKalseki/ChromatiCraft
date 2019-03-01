@@ -14,6 +14,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
@@ -27,19 +30,18 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Instantiable.Data.Maps.ReversibleMultiMap;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+
 import thaumcraft.api.ThaumcraftApiHelper;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 
 public class ChromaAspectManager {
 
-	private final ReversibleMultiMap<CrystalElement, Aspect> aspectsColor = new ReversibleMultiMap(new MultiMap.HashSetFactory());
-	private final ReversibleMultiMap<CrystalElement, Aspect> aspectsThematic = new ReversibleMultiMap(new MultiMap.HashSetFactory());
+	private final ReversibleMultiMap<CrystalElement, Aspect> aspectsColor = new ReversibleMultiMap(CollectionType.HASHSET);
+	private final ReversibleMultiMap<CrystalElement, Aspect> aspectsThematic = new ReversibleMultiMap(CollectionType.HASHSET);
 
 	public final Aspect PUZZLE = new Aspect("perplexus", 0x90ffb0, new Aspect[]{Aspect.MIND, Aspect.TRAP}, new ResourceLocation("chromaticraft", "textures/aspects/puzzle.png"), 1);
 	public final Aspect SIGNAL = new Aspect("signum", 0xffff00, new Aspect[]{Aspect.ENERGY, Aspect.AURA}, new ResourceLocation("chromaticraft", "textures/aspects/signal.png"), 1);

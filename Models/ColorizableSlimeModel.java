@@ -11,17 +11,18 @@ package Reika.ChromatiCraft.Models;
 
 import java.awt.Color;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.model.ModelSlime;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
-import org.lwjgl.opengl.GL11;
-
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

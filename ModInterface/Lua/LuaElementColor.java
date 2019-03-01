@@ -10,8 +10,10 @@
 package Reika.ChromatiCraft.ModInterface.Lua;
 
 import net.minecraft.tileentity.TileEntity;
+
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModInteract.Lua.LibraryLuaMethod;
+
 import dan200.computercraft.api.lua.LuaException;
 
 

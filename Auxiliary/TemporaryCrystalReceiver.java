@@ -11,9 +11,9 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.UUID;
 
-import net.minecraft.world.World;
-
 import org.apache.commons.lang3.tuple.ImmutableTriple;
+
+import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;

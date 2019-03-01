@@ -14,6 +14,7 @@ import java.util.Locale;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
+
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Command.DragonCommandBase;

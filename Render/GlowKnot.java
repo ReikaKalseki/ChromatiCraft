@@ -11,11 +11,11 @@ package Reika.ChromatiCraft.Render;
 
 import java.util.Random;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.IIcon;
-
-import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;

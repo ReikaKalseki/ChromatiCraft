@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.API.Interfaces;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 
 /** The world rift implements this; this is a hook for you to make your systems interact with the rift accordingly. For a sample implementation,

@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.World.Dimension.Structure.Bridge;
 
 import net.minecraft.init.Blocks;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.BridgeGenerator;

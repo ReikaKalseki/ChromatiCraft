@@ -13,6 +13,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.Network.PylonLinkNetwork;
@@ -24,15 +32,9 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.World;
 
 public class TileEntityPylonLink extends TileEntityChromaticBase implements LocationCached, VariableTexture, ChunkLoadingTile {
 

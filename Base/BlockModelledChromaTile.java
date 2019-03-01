@@ -9,18 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomHitbox;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemCollision;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityAvoLaser;
-import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityCrystalCharger;
-import Reika.DragonAPI.Libraries.ReikaAABBHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -33,6 +21,20 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomHitbox;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemCollision;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityAvoLaser;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityCrystalCharger;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockModelledChromaTile extends BlockChromaTile {
 

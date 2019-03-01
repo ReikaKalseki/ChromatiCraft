@@ -9,13 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.Generation;
 
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.DynamicStructurePiece;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.world.World;
 
 public class ShiftMazeEntranceV2 extends DynamicStructurePiece {
 

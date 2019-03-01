@@ -16,14 +16,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import Reika.ChromatiCraft.API.CastingAPI;
-import Reika.ChromatiCraft.API.CrystalElementProxy;
-import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
+import Reika.ChromatiCraft.API.CastingAPI;
+import Reika.ChromatiCraft.API.CrystalElementProxy;
+import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 /** Use this to fetch registered casting table recipes. This allows you to query various properties, but take note that recipes are read-only. */

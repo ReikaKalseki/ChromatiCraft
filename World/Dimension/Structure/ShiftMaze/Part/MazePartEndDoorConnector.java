@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.Part;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;

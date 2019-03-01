@@ -9,10 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.Generation;
 
-import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.MazeGrid;
-
-import java.awt.*;
+import java.awt.Point;
 import java.util.List;
+
+import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.MazeGrid;
 
 public class GridSegment implements SegmentRestriction {
 

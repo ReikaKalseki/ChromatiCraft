@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.World.Dimension.Structure.Altar;
 
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.DynamicStructurePiece;
 

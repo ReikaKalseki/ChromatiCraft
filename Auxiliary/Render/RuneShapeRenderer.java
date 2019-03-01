@@ -11,13 +11,13 @@ package Reika.ChromatiCraft.Auxiliary.Render;
 
 import java.util.Map;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.util.IIcon;
-
-import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Magic.RuneShape;
 import Reika.ChromatiCraft.Magic.RuneShape.RuneViewer;
@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

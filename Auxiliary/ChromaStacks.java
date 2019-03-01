@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact.ArtefactTypes;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;

@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.World.Dimension.Structure.Music;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;

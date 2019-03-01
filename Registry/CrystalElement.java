@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -20,13 +20,16 @@ import java.util.Random;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
+
 import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaIcon;
 import Reika.ChromatiCraft.Magic.ElementMixer;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -65,7 +68,7 @@ public enum CrystalElement implements ChromaIcon {
 	private static final Random rand = new Random();
 
 	public static final CrystalElement[] elements = values();
-	private static final MultiMap<Integer, CrystalElement> levelMap = new MultiMap(new MultiMap.HashSetFactory());
+	private static final MultiMap<Integer, CrystalElement> levelMap = new MultiMap(CollectionType.HASHSET);
 	private static final HashMap<String, CrystalElement> nameMap = new HashMap();
 	private static final HashMap<CrystalElement, Integer> colorMap = new HashMap();
 

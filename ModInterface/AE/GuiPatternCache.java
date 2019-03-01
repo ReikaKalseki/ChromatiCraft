@@ -10,7 +10,9 @@
 package Reika.ChromatiCraft.ModInterface.AE;
 
 import net.minecraft.entity.player.EntityPlayer;
+
 import Reika.ChromatiCraft.Base.GuiChromaBase;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

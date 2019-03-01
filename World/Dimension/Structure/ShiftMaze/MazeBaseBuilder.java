@@ -13,6 +13,7 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;

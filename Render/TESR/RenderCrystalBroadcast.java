@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Render.TESR;
 
 import net.minecraft.tileentity.TileEntity;
+
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 
 public class RenderCrystalBroadcast extends RenderCrystalRepeater {

@@ -11,15 +11,16 @@ package Reika.ChromatiCraft.ModInterface;
 
 import java.lang.reflect.Method;
 
+import net.minecraft.tileentity.TileEntity;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator.Acceleration;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
-import net.minecraft.tileentity.TileEntity;
 
-public class IEMultiblockAcceleration extends Acceleration {
+public class RailCraftMultiBlockAcceleration extends Acceleration {
 
-	public static final IEMultiblockAcceleration instance = new IEMultiblockAcceleration();
+	public static final RailCraftMultiBlockAcceleration instance = new RailCraftMultiBlockAcceleration();
 
 	private Method getMaster;
 

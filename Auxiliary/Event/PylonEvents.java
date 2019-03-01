@@ -10,7 +10,9 @@
 package Reika.ChromatiCraft.Auxiliary.Event;
 
 import net.minecraft.entity.player.EntityPlayer;
+
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+
 import cpw.mods.fml.common.eventhandler.Event;
 
 public class PylonEvents {

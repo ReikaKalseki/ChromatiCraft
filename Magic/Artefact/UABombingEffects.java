@@ -16,6 +16,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact.ArtefactTypes;
 import Reika.ChromatiCraft.Magic.Artefact.Effects.DisplacementEffect;
 import Reika.ChromatiCraft.Magic.Artefact.Effects.DrainPowerEffect;
@@ -31,6 +32,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.ItemInSystemEffect;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.MESystemEffect;
+
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;

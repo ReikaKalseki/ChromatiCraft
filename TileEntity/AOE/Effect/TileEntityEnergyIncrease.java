@@ -13,6 +13,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -20,13 +24,11 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
+
 import buildcraft.core.lib.engines.TileEngineBase;
 import cofh.api.energy.EnergyStorage;
 import ic2.api.reactor.IReactor;
 import ic2.api.reactor.IReactorChamber;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 
 public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade implements BreakAction {

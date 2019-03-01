@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.ModInterface.AE;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
+
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 
 public class GuiRemoteTerminal extends GuiContainer {

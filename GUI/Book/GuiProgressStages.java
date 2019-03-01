@@ -14,14 +14,14 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumChatFormatting;
-
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Point;
 import org.lwjgl.util.Rectangle;
+
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumChatFormatting;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;

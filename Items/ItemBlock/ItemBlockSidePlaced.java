@@ -18,6 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SidedBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 

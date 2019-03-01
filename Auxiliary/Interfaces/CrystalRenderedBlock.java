@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary.Interfaces;
 
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 
 public interface CrystalRenderedBlock {

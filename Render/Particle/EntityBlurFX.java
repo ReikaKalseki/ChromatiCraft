@@ -13,6 +13,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomRenderFX;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -26,13 +32,9 @@ import Reika.DragonAPI.Interfaces.ColorController;
 import Reika.DragonAPI.Interfaces.MotionController;
 import Reika.DragonAPI.Interfaces.PositionController;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
 
 @SideOnly(Side.CLIENT)
 public class EntityBlurFX extends EntityFX implements CustomRenderFX {

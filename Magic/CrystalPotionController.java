@@ -15,14 +15,6 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Items.Tools.Powered.ItemPurifyCrystal;
-import Reika.ChromatiCraft.ModInterface.MystPages;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Libraries.ReikaPotionHelper;
-import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
-import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
@@ -33,6 +25,15 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Items.Tools.Powered.ItemPurifyCrystal;
+import Reika.ChromatiCraft.ModInterface.MystPages;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Libraries.ReikaPotionHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
 
 public class CrystalPotionController {
 

@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+
 import Reika.ChromatiCraft.Auxiliary.Interfaces.EnergyLinkingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;

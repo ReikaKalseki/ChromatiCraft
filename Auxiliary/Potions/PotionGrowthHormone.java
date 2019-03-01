@@ -15,6 +15,7 @@ import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.util.StatCollector;
+
 import Reika.ChromatiCraft.Base.ChromaPotion;
 
 public class PotionGrowthHormone extends ChromaPotion {

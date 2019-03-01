@@ -9,9 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic.Enchantment;
 
-import Reika.ChromatiCraft.Base.ChromaticEnchantment;
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.player.EntityPlayer;
+
+import Reika.ChromatiCraft.Base.ChromaticEnchantment;
 
 
 public class EnchantmentDataKeeper extends ChromaticEnchantment {

@@ -17,9 +17,9 @@ package Reika.ChromatiCraft.Models;
 
 import java.util.ArrayList;
 
-import net.minecraft.tileentity.TileEntity;
-
 import org.lwjgl.opengl.GL11;
+
+import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.Base.ChromaModelBase;
 import Reika.DragonAPI.Instantiable.Rendering.LODModelPart;

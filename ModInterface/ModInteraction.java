@@ -16,18 +16,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import mekanism.api.MekanismAPI;
+import com.chocolate.chocolateQuest.API.RegisterChestItem;
+
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
-import thaumcraft.api.ThaumcraftApi;
-import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
-import thaumcraft.api.crafting.InfusionRecipe;
-import vazkii.botania.api.BotaniaAPI;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
@@ -68,10 +65,14 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler.Potions;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.RotaryCraft.API.BlockColorInterface;
 
-import com.chocolate.chocolateQuest.API.RegisterChestItem;
-
 import cpw.mods.fml.common.event.FMLInterModComms;
 import forestry.api.apiculture.FlowerManager;
+import mekanism.api.MekanismAPI;
+import thaumcraft.api.ThaumcraftApi;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.crafting.InfusionRecipe;
+import vazkii.botania.api.BotaniaAPI;
 
 
 public class ModInteraction {

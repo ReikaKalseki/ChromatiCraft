@@ -13,14 +13,6 @@ import java.util.Random;
 
 import org.lwjgl.opengl.GL11;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.DragonAPICore;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.EntityRenderer;
@@ -32,6 +24,16 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.IRenderHandler;
 import net.minecraftforge.client.MinecraftForgeClient;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ChromaCloudRenderer extends IRenderHandler {
 

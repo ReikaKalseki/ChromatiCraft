@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Container;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage.TileEntityStructurePassword;
 import Reika.DragonAPI.Base.CoreContainer;
 

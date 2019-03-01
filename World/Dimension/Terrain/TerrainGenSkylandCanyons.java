@@ -15,6 +15,7 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Base.ChromaDimensionBiomeTerrainShaper;
 import Reika.ChromatiCraft.World.Dimension.BiomeDistributor;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;

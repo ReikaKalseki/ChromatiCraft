@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -18,6 +18,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -33,27 +34,27 @@ import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Collections.ItemCollection;
 import Reika.DragonAPI.Instantiable.ModInteract.BasicAEInterface;
 import Reika.DragonAPI.Instantiable.ModInteract.DirectionalAEInterface;
+import Reika.DragonAPI.Instantiable.ModInteract.MEWorkTracker;
 import Reika.DragonAPI.Interfaces.TileEntity.SidePlacedTile;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
-import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.ChangeCallback;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.ExtractedItem;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.MatchMode;
+
 import appeng.api.AEApi;
 import appeng.api.networking.IGridBlock;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.IActionHost;
-import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AECableType;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @Strippable(value={"appeng.api.networking.IActionHost"})
-public class TileEntityMEDistributor extends TileEntityChromaticBase implements IActionHost, SidePlacedTile, ChangeCallback {
+public class TileEntityMEDistributor extends TileEntityChromaticBase implements IActionHost, SidePlacedTile {
 
 	@ModDependent(ModList.APPENG)
 	private MESystemReader network;
@@ -72,7 +73,7 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 	private int[] threshold = new int[NSLOTS];
 	private MatchMode[] match = new MatchMode[NSLOTS];
 
-	private boolean hasWork = true;
+	private MEWorkTracker hasWork = new MEWorkTracker();
 
 	public TileEntityMEDistributor() {
 		if (ModList.APPENG.isLoaded()) {
@@ -115,8 +116,9 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 				AEPowerCost -= Math.max(1, AEPowerCost/40);
 
 			if (network != null) {
+				hasWork.tick();
 				checkTimer.update();
-				if (hasWork) {
+				if (hasWork.hasWork()) {
 					if (checkTimer.checkCap()) {
 						checkTimer.setCap(Math.min(40, checkTimer.getCap()+2));
 						output.clear();
@@ -130,7 +132,7 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 							if (f1 != null && f2 != null) {
 								int fit = f2.getMaxStackSize()-output.addItemsToUnderlyingInventories(ReikaItemHelper.getSizedItemStack(f2, f2.getMaxStackSize()), true);
 								if (fit > 0) {
-									hasWork = false;
+									hasWork.reset();
 									MatchMode mode = this.getMode(i);
 									long has = mode.countItems(network, f1);//this.isFuzzy(i) ? network.getFuzzyItemCount(f1, FuzzyMode.IGNORE_ALL, this.useOreDict(i)) : network.getItemCount(f1);
 									int missing = this.getThreshold(i)-(has > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)has);
@@ -183,11 +185,11 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 			for (int i = 0; i < filter.length; i++) {
 				ItemStack pattern = filter[i];
 				if (pattern != null) {
-					network.addCallback(pattern, this);
+					network.addCallback(pattern, hasWork);
 				}
 			}
 		}
-		hasWork = true;
+		hasWork.markDirty();
 	}
 
 	private void transferItem(ItemStack is, IInventory ii, MatchMode mode) {
@@ -374,12 +376,6 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 	public void drop() {
 		ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, this.getTile().getCraftedProduct());
 		this.delete();
-	}
-
-
-	@Override
-	public void onItemChange(IAEItemStack iae) {
-		hasWork = true;
 	}
 
 }

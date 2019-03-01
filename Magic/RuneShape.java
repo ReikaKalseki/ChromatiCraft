@@ -15,6 +15,7 @@ import java.util.Map;
 
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;

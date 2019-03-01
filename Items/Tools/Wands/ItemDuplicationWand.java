@@ -37,6 +37,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Interfaces.UnCopyableBlock;
 import Reika.ChromatiCraft.Base.ItemWandBase;
@@ -65,6 +66,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaCropHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.RotaryCraft.Registry.BlockRegistry;
 import Reika.RotaryCraft.Registry.ItemRegistry;
+
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
 public class ItemDuplicationWand extends ItemWandBase {

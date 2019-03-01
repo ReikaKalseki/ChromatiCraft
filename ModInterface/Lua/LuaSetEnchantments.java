@@ -11,8 +11,10 @@ package Reika.ChromatiCraft.ModInterface.Lua;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.tileentity.TileEntity;
+
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.DragonAPI.ModInteract.Lua.LuaMethod;
+
 import dan200.computercraft.api.lua.LuaException;
 
 public class LuaSetEnchantments extends LuaMethod {

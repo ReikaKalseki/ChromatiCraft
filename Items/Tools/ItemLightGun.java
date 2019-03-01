@@ -9,12 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items.Tools;
 
-import Reika.ChromatiCraft.Base.ItemProjectileFiringTool;
-import Reika.ChromatiCraft.Entity.EntityLightShot;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+
+import Reika.ChromatiCraft.Base.ItemProjectileFiringTool;
+import Reika.ChromatiCraft.Entity.EntityLightShot;
 
 public class ItemLightGun extends ItemProjectileFiringTool {
 

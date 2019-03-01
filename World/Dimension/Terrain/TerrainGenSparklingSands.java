@@ -15,6 +15,7 @@ import java.util.Random;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Base.ChromaDimensionBiomeTerrainShaper;
 import Reika.ChromatiCraft.Block.Worldgen.BlockSparkle.BlockTypes;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;

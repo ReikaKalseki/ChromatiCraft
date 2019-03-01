@@ -12,12 +12,12 @@ package Reika.ChromatiCraft.TileEntity;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import mrtjp.projectred.api.IBundledTile;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.Auxiliary.CompoundConsole;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Items.Tools.ItemCrystalCard;
@@ -33,6 +33,8 @@ import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.ToggleTile;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
+
+import mrtjp.projectred.api.IBundledTile;
 
 @Strippable(value={"mrtjp.projectred.api.IBundledTile"})
 public class TileEntityCrystalConsole extends InventoriedChromaticBase implements BreakAction, IBundledTile {

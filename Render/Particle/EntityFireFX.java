@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Render.Particle;
 
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.World;
+
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;

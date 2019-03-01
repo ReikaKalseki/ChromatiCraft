@@ -15,19 +15,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
-import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
-import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
-import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -37,6 +24,22 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
 import net.minecraftforge.event.world.WorldEvent;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
+import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
+import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
+
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import thaumcraft.api.nodes.INode;
 
 public class NodeRecharger implements TickHandler {
@@ -91,6 +94,10 @@ public class NodeRecharger implements TickHandler {
 			nodes.put(id, map);
 		}
 		return map;
+	}
+
+	public boolean isValidNode(INode tile) { //energized nodes do not implement INode
+		return !(tile instanceof CrystalNetworkTile) && !tile.getAspectsBase().aspects.isEmpty();
 	}
 
 	@Override

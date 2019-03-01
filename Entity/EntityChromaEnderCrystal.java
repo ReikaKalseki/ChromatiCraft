@@ -16,6 +16,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 
 public final class EntityChromaEnderCrystal extends EntityEnderCrystal {

@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Random;
 
 import net.minecraft.item.ItemStack;
+
 import cpw.mods.fml.common.eventhandler.Event;
 
 /** Fired when a chest generates in a "prefab" ChromatiCraft structure. You can use it to add custom loot; note that if you fill the inventory,

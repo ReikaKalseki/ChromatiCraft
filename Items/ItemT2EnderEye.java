@@ -11,14 +11,6 @@ package Reika.ChromatiCraft.Items;
 
 import java.util.UUID;
 
-import Reika.ChromatiCraft.Base.ItemChromaBasic;
-import Reika.ChromatiCraft.Entity.EntityEnderEyeT2;
-import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.DragonAPI.Interfaces.Item.AnimatedSpritesheet;
-import Reika.DragonAPI.Libraries.ReikaEntityHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -30,6 +22,15 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
+
+import Reika.ChromatiCraft.Base.ItemChromaBasic;
+import Reika.ChromatiCraft.Entity.EntityEnderEyeT2;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.DragonAPI.Interfaces.Item.AnimatedSpritesheet;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 
 public class ItemT2EnderEye extends ItemChromaBasic implements AnimatedSpritesheet {

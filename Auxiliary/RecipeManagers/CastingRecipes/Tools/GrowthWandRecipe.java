@@ -9,11 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools;
 
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
 
 public class GrowthWandRecipe extends MultiBlockCastingRecipe {
 

@@ -11,11 +11,11 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.lang.reflect.Field;
 
-import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.network.NetHandlerPlayClient;
+
+import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 
 /** This class is a temporary workaround until the PlayerControllerMP class can be ASM'ed directly */
 public class ControllableReachPlayer extends PlayerControllerMP {

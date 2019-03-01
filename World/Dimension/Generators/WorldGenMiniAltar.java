@@ -12,6 +12,13 @@ package Reika.ChromatiCraft.World.Dimension.Generators;
 import java.util.ArrayList;
 import java.util.Random;
 
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.common.MinecraftForge;
+
 import Reika.ChromatiCraft.API.Event.DimensionAltarLootItemEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
@@ -23,12 +30,6 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraftforge.common.MinecraftForge;
 
 
 public class WorldGenMiniAltar extends ChromaWorldGenerator {

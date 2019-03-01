@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -24,6 +24,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
@@ -44,6 +45,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.BlockMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Instantiable.Effects.EntityFluidFX;
 import Reika.DragonAPI.Instantiable.ParticleController.AttractiveMotionController;
 import Reika.DragonAPI.Interfaces.MotionController;
@@ -56,13 +58,14 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class TileEntityCobbleGen extends TileEntityMagicPlant implements OperationInterval {
 
-	private final MultiMap<String, Coordinate> fluidLocations = new MultiMap(new MultiMap.HashSetFactory());
+	private final MultiMap<String, Coordinate> fluidLocations = new MultiMap(CollectionType.HASHSET);
 
 	private final StepTimer areaScan = new StepTimer(100);
 	//private final StepTimer growthTimer = new StepTimer(7200);

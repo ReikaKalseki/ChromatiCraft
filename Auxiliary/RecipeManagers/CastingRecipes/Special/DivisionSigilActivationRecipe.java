@@ -1,14 +1,16 @@
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special;
 
-import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
-import Reika.DragonAPI.ModList;
-import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
+import Reika.DragonAPI.ModList;
+
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class DivisionSigilActivationRecipe extends MultiBlockCastingRecipe {
 

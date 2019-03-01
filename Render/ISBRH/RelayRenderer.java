@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.Block.Relay.BlockFloatingRelay;
 import Reika.ChromatiCraft.Block.Relay.BlockLumenRelay;
 import Reika.ChromatiCraft.Block.Relay.BlockRelayBase.TileRelayBase;

@@ -9,6 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface;
 
+import com.xcompwiz.mystcraft.api.hook.SymbolAPI;
+import com.xcompwiz.mystcraft.api.linking.ILinkInfo;
+import com.xcompwiz.mystcraft.api.symbol.IAgeSymbol;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,6 +20,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
@@ -32,10 +37,6 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper.APISegment;
-
-import com.xcompwiz.mystcraft.api.hook.SymbolAPI;
-import com.xcompwiz.mystcraft.api.linking.ILinkInfo;
-import com.xcompwiz.mystcraft.api.symbol.IAgeSymbol;
 
 
 public class TileEntityPageExtractor extends InventoriedRelayPowered implements ItemOnRightClick, OperationInterval {

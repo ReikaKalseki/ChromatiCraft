@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -24,6 +24,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
+
 import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux;
 import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux.Flags;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
@@ -44,6 +45,7 @@ import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.CarpenterBlockHandler;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

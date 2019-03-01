@@ -9,6 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.Particle;
 
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomRenderFX;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -16,10 +19,9 @@ import Reika.ChromatiCraft.Render.ParticleEngine.CustomTextureMode;
 import Reika.ChromatiCraft.Render.ParticleEngine.RenderMode;
 import Reika.ChromatiCraft.Render.ParticleEngine.RenderModeFlags;
 import Reika.ChromatiCraft.Render.ParticleEngine.TextureMode;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.world.World;
 
 @SideOnly(Side.CLIENT)
 public class EntityGlobeFX extends EntityFX implements CustomRenderFX {

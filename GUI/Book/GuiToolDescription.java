@@ -13,12 +13,13 @@ import java.util.ArrayList;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+
 import Reika.ChromatiCraft.Base.GuiDescription;
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 
 public class GuiToolDescription extends GuiDescription {
 

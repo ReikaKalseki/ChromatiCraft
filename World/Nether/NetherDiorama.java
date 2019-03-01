@@ -9,10 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Nether;
 
-import Reika.ChromatiCraft.Auxiliary.ChromaAux;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityGhast;
 import net.minecraft.entity.monster.EntityMagmaCube;
@@ -20,6 +16,11 @@ import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
+
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 
 public class NetherDiorama {

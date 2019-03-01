@@ -12,6 +12,16 @@ package Reika.ChromatiCraft.Registry;
 import java.util.HashMap;
 import java.util.Locale;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockSapling;
+import net.minecraft.block.material.Material;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.StatCollector;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.oredict.OreDictionary;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
@@ -143,15 +153,6 @@ import Reika.DragonAPI.Interfaces.Registry.BlockEnum;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockSapling;
-import net.minecraft.block.material.Material;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.oredict.OreDictionary;
 
 public enum ChromaBlocks implements BlockEnum {
 

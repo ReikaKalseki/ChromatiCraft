@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.ModInterface;
 import java.io.File;
 
 import net.minecraftforge.common.config.Configuration;
+
 import climateControl.api.BiomeSettings;
 import climateControl.api.ClimateControlRules;
 import climateControl.utils.Mutable;

@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.World.Dimension.MapGen;
 
 import net.minecraft.world.gen.structure.StructureStart;
+
 import Reika.ChromatiCraft.Base.ChromaStructureBase;
 
 public class MapGenMines extends ChromaStructureBase {

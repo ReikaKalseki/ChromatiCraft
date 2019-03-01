@@ -11,6 +11,10 @@ package Reika.ChromatiCraft.Render.Particle;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomRenderFX;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -20,11 +24,9 @@ import Reika.ChromatiCraft.Render.ParticleEngine.TextureMode;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.world.World;
 
 @SideOnly(Side.CLIENT)
 public class EntityFlareFX extends EntityFX implements CustomRenderFX {

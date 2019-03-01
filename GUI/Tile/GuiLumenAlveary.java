@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import net.minecraft.entity.player.EntityPlayer;
-
 import org.lwjgl.opengl.GL11;
+
+import net.minecraft.entity.player.EntityPlayer;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiChromaBase;

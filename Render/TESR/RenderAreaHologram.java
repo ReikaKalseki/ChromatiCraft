@@ -9,10 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
 
-import net.minecraft.tileentity.TileEntity;
-
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+
+import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityAreaHologram;

@@ -10,14 +10,27 @@
 package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.lwjgl.opengl.GL11;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.effect.EntityLightningBolt;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
@@ -42,6 +55,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
+import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -53,20 +67,10 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper.EffectType;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.effect.EntityLightningBolt;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.nodes.INode;
@@ -103,8 +107,8 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	private Aspect activeAspect;
 	private ElementTagCompound currentRequestSet;
 
-	private final HashSet<Aspect> candidateRefillAspects = new HashSet();
-	private final HashSet<Aspect> candidateNextAspects = new HashSet();
+	private final WeightedRandom<Aspect> candidateRefillAspects = new WeightedRandom();
+	private final WeightedRandom<Aspect> candidateNextAspects = new WeightedRandom();
 
 	private final ElementTagCompound storedEnergy = new ElementTagCompound();
 
@@ -188,7 +192,15 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 
 	@Override
 	public int maxThroughput() {
-		return isJarred ? 40 : 60;
+		int base = isJarred ? 40 : 60;
+		return this.getAgeModifiedThroughput(base);
+	}
+
+	private int getAgeModifiedThroughput(int base) {
+		if (age < 24000) //1h
+			return base;
+		float f = 1+2F*(age-24000)/408000F; //reaches max of 3x at 18h
+		return (int)(base*f);
 	}
 
 	@Override
@@ -321,7 +333,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		this.recalculateRefillAspects();
 		if (!candidateRefillAspects.isEmpty()) {
 			this.setStatus(NodeImprovementStatus.REFILLING);
-			activeAspect = ReikaJavaLibrary.getRandomCollectionEntry(rand, candidateRefillAspects);
+			activeAspect = candidateRefillAspects.getRandomEntry();
 			this.playSound("thaumcraft:runicShieldCharge", 1, 0.5F);
 			this.tryAspectRefill(activeAspect);
 			ModularLogger.instance.log(LOGGER_ID, "Node "+location+" recharge begin");
@@ -349,7 +361,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 			node.addToContainer(a, 1);
 			location.triggerBlockUpdate(false);
 		}
-		if (node.getAspects().getAmount(a) >= node.getAspects().getAmount(a)) {
+		if (node.getAspects().getAmount(a) >= node.getAspectsBase().getAmount(a)) {
 			ModularLogger.instance.log(LOGGER_ID, "Node "+location+" recharge finish "+activeAspect.getName());
 			activeAspect = null;
 			this.setStatus(NodeImprovementStatus.IDLE);
@@ -360,7 +372,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		this.recalculateCandidateAspects();
 		if (!candidateNextAspects.isEmpty()) {
 			this.setStatus(NodeImprovementStatus.NEWASPECT);
-			activeAspect = ReikaJavaLibrary.getRandomCollectionEntry(rand, candidateNextAspects);
+			activeAspect = candidateNextAspects.getRandomEntry();
 			ModularLogger.instance.log(LOGGER_ID, "Node "+location+" attempting to gain aspect '"+activeAspect.getName()+"'");
 		}
 	}
@@ -904,7 +916,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 					}
 				}
 				if (prereqs)
-					candidateNextAspects.add(a);
+					candidateNextAspects.addEntry(a, 1+ReikaThaumHelper.getMaxAspectTier()-ReikaThaumHelper.getAspectTier(a));
 			}
 		}
 	}
@@ -913,11 +925,23 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		candidateRefillAspects.clear();
 		AspectList base = node.getAspectsBase();
 		AspectList in = node.getAspects();
+		HashMap<Aspect, Integer> significant = new HashMap();
 		for (Aspect a : base.aspects.keySet()) {
 			int cap = base.getAmount(a);
 			int has = in.getAmount(a);
-			if (has < cap)
-				candidateRefillAspects.add(a);
+			int diff = cap-has;
+			if (diff > 0) {
+				candidateRefillAspects.addEntry(a, diff);
+				if (has == 0 || (cap-has >= 10 && cap/has > 3)) {
+					significant.put(a, diff);
+				}
+			}
+		}
+		if (!significant.isEmpty()) {
+			candidateRefillAspects.clear();
+			for (Entry<Aspect, Integer> e : significant.entrySet()) {
+				candidateRefillAspects.addEntry(e.getKey(), e.getValue());
+			}
 		}
 	}
 
@@ -1066,7 +1090,8 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 			case HEALING:
 				return typeCost.copy();
 			case REFILLING:
-				return activeAspect != null ? this.getTagValue(activeAspect).scale(720) : null;
+				int amt = node.getAspectsBase().getAmount(activeAspect)-node.getAspects().getAmount(activeAspect);
+				return activeAspect != null ? this.getTagValue(activeAspect).scale(amt) : null;
 			default:
 				return null;
 		}

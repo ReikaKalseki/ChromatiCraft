@@ -12,9 +12,11 @@ package Reika.ChromatiCraft.Container;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiItemInserter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemInserter;
 import Reika.DragonAPI.Base.CoreContainer;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

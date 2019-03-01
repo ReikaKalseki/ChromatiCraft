@@ -13,6 +13,7 @@ import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

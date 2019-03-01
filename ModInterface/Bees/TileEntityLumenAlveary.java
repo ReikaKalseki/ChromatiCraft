@@ -18,6 +18,9 @@ import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashSet;
 
+import com.google.common.base.Strings;
+import com.mojang.authlib.GameProfile;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.item.EntityItem;
@@ -28,9 +31,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
-import thaumcraft.api.visnet.VisNetHandler;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -59,9 +60,6 @@ import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Speeds;
 import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Territory;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 
-import com.google.common.base.Strings;
-import com.mojang.authlib.GameProfile;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.EnumBeeChromosome;
@@ -89,6 +87,9 @@ import forestry.api.multiblock.IMultiblockComponent;
 import forestry.api.multiblock.IMultiblockController;
 import forestry.api.multiblock.IMultiblockLogicAlveary;
 import forestry.api.multiblock.MultiblockManager;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.visnet.VisNetHandler;
 
 //@SmartStrip
 @Strippable(value={"forestry.api.multiblock.IAlvearyComponent", "forestry.api.multiblock.IAlvearyComponent$BeeModifier",

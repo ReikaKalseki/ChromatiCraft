@@ -9,9 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Networking;
 
-import net.minecraft.nbt.NBTTagCompound;
-
 import org.apache.commons.lang3.tuple.ImmutableTriple;
+
+import net.minecraft.nbt.NBTTagCompound;
 
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;

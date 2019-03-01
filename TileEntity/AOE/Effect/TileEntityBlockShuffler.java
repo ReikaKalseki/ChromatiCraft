@@ -13,6 +13,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import net.minecraft.block.Block;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
@@ -22,9 +26,6 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
-import net.minecraft.block.Block;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 
 public class TileEntityBlockShuffler extends TileEntityAdjacencyUpgrade {

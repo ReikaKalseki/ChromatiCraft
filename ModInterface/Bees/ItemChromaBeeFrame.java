@@ -11,9 +11,11 @@ package Reika.ChromatiCraft.ModInterface.Bees;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
+
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
+
 import forestry.api.apiculture.IBee;
 import forestry.api.apiculture.IBeeGenome;
 import forestry.api.apiculture.IBeeHousing;

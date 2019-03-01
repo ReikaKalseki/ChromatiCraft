@@ -15,6 +15,7 @@ import java.util.HashMap;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
+
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;

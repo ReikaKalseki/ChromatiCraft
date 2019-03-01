@@ -15,24 +15,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.ChromatiCraft.Base.BlockChromaTiered;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
-import Reika.DragonAPI.Instantiable.Data.StatisticalRandom;
-import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
-import Reika.DragonAPI.Instantiable.Worldgen.ControllableOreVein;
-import Reika.DragonAPI.Instantiable.Worldgen.ControllableOreVein.BlockExcludingOreVein;
-import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
-import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-import Reika.ReactorCraft.API.MagneticOreOverride;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.particle.EffectRenderer;
@@ -49,6 +31,26 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Base.BlockChromaTiered;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.DragonAPI.Instantiable.Data.StatisticalRandom;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Worldgen.ControllableOreVein;
+import Reika.DragonAPI.Instantiable.Worldgen.ControllableOreVein.BlockExcludingOreVein;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.ReactorCraft.API.MagneticOreOverride;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockTieredOre extends BlockChromaTiered implements MagneticOreOverride {
 

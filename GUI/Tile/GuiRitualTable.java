@@ -11,10 +11,10 @@ package Reika.ChromatiCraft.GUI.Tile;
 
 import java.util.Iterator;
 
+import org.lwjgl.input.Keyboard;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
-
-import org.lwjgl.input.Keyboard;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;

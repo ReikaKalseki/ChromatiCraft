@@ -9,12 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.Item;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
-
-import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Block.Decoration.BlockColoredAltar.TileEntityColoredAltar;
 import Reika.ChromatiCraft.Registry.CrystalElement;

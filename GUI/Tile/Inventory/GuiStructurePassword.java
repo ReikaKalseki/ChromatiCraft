@@ -9,10 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Tile.Inventory;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
-
-import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage.TileEntityStructurePassword;

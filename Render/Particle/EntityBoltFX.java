@@ -11,11 +11,11 @@ package Reika.ChromatiCraft.Render.Particle;
 
 import java.util.LinkedList;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.World;
-
-import org.lwjgl.opengl.GL11;
 
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;

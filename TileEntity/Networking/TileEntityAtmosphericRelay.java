@@ -9,11 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Networking;
 
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-
-import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;

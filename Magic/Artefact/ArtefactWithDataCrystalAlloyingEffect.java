@@ -1,11 +1,13 @@
 package Reika.ChromatiCraft.Magic.Artefact;
 
+import net.minecraft.entity.item.EntityItem;
+
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.AlloyingEffect;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.entity.item.EntityItem;
 
 public class ArtefactWithDataCrystalAlloyingEffect implements AlloyingEffect {
 

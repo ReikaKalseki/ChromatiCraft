@@ -9,12 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.Part;
 
+import net.minecraft.block.Block;
+
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
-import net.minecraft.block.Block;
 
 public class MazePartEndCore extends StructurePiece {
 

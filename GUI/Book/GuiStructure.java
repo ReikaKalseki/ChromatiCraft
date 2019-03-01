@@ -14,6 +14,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -23,9 +26,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidRegistry;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;

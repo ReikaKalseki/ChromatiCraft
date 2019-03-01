@@ -11,6 +11,9 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 
 import java.util.Collection;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.ShapedRecipes;
+
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
@@ -18,8 +21,6 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ShapedRecipes;
 
 public class RuneRecipe extends CastingRecipe implements CoreRecipe {
 

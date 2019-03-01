@@ -15,10 +15,11 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Iterator;
 
+import net.minecraft.nbt.NBTTagCompound;
+
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Proportionality;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
-import net.minecraft.nbt.NBTTagCompound;
 
 public final class ElementTagCompound {
 

@@ -9,15 +9,16 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.Particle;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import org.lwjgl.opengl.GL11;
-
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

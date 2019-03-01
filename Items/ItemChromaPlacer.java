@@ -16,6 +16,23 @@ import com.bioxx.tfc.api.Enums.EnumSize;
 import com.bioxx.tfc.api.Enums.EnumWeight;
 import com.bioxx.tfc.api.Interfaces.ISize;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
@@ -45,24 +62,9 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaEngLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.world.World;
 
 @Strippable(value = {"com.bioxx.tfc.api.Interfaces.ISize"})
 public class ItemChromaPlacer extends Item implements ISize {
@@ -296,6 +298,10 @@ public class ItemChromaPlacer extends Item implements ISize {
 		}
 		if (r == ChromaTiles.ASPECTJAR && is.stackTagCompound != null && ModList.THAUMCRAFT.isLoaded()) {
 			li.addAll(TileEntityAspectJar.parseNBT(is.stackTagCompound));
+		}
+		if (r == ChromaTiles.FOCUSCRYSTAL) {
+			if (ItemStack.areItemStackTagsEqual(is, CrystalTier.TURBOCHARGED.getCraftedItem()))
+				li.add("Turbocharged");
 		}
 		if (r.isRepeater() && is.stackTagCompound != null && is.stackTagCompound.getBoolean("boosted")) {
 			li.add(EnumChatFormatting.GOLD+"Turbocharged");

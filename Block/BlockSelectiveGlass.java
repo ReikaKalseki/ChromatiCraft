@@ -12,12 +12,6 @@ package Reika.ChromatiCraft.Block;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Entity.EntityVacuum;
-import Reika.ChromatiCraft.Render.ISBRH.SelectiveGlassRenderer;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
-import Reika.DragonAPI.ModRegistry.InterfaceCache;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -31,6 +25,13 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Entity.EntityVacuum;
+import Reika.ChromatiCraft.Render.ISBRH.SelectiveGlassRenderer;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
+import Reika.DragonAPI.ModRegistry.InterfaceCache;
 
 
 public class BlockSelectiveGlass extends Block implements ConnectedTextureGlass {

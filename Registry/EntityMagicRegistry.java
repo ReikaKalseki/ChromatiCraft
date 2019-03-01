@@ -16,6 +16,7 @@ import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.monster.EntityZombie;
+
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 
 public class EntityMagicRegistry {

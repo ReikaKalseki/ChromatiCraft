@@ -11,10 +11,10 @@ package Reika.ChromatiCraft.GUI.Book;
 
 import java.util.Locale;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
-
-import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;

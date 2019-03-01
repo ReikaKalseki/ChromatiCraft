@@ -11,11 +11,11 @@ package Reika.ChromatiCraft.Render;
 
 import java.util.Collection;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
-
-import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
@@ -25,6 +25,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.BlockPolygonizer;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

@@ -16,6 +16,7 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.MinecraftForgeClient;
+
 import Reika.DragonAPI.Interfaces.TileModel;
 
 public abstract class ChromaModelBase extends ModelBase implements TileModel {

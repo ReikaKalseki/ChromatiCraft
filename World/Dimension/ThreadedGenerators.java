@@ -17,6 +17,7 @@ import java.util.Locale;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ThreadedGenerator;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 
 

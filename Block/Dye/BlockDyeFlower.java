@@ -20,10 +20,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.EnumPlantType;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

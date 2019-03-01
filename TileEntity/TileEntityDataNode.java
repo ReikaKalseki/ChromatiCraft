@@ -9,7 +9,22 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -34,29 +49,20 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.ProximityMap;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer.StructureRenderingParticleSpawner;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
 
 
 public class TileEntityDataNode extends TileEntityChromaticBase implements OperationInterval, StructureRenderingParticleSpawner {
@@ -65,11 +71,21 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 	private double extension1;
 	private double extension2;
 
-	private static final double EXTENSION_SPEED = 0.03125;
+	private double lastLowerHeight;
+	private double lastUpperHeight;
+
+	//private static final double EXTENSION_SPEED = 0.03125;
+	private static final int EXTENSION_TIME_0 = 24;
+	private static final int EXTENSION_TIME_1 = 50;
+	private static final int EXTENSION_TIME_2 = 36;
 
 	public static final double EXTENSION_LIMIT_0 = 0.75;//1.75;
 	public static final double EXTENSION_LIMIT_1 = 1.375;//2.5;
 	public static final double EXTENSION_LIMIT_2 = 1.125;//1.25;
+
+	private static final double EXTENSION_SPEED_0 = EXTENSION_LIMIT_0/EXTENSION_TIME_0;
+	private static final double EXTENSION_SPEED_1 = EXTENSION_LIMIT_1/EXTENSION_TIME_1;
+	private static final double EXTENSION_SPEED_2 = EXTENSION_LIMIT_2/EXTENSION_TIME_2;
 
 	private double rotation;
 	private double rotationSpeed;
@@ -98,26 +114,55 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		EntityPlayer ep = world.getClosestPlayer(x+0.5, y+0.5, z+0.5, 16);
-		if (ep != null && !(ReikaObfuscationHelper.isDeObfEnvironment() && KeyWatcher.instance.isKeyDown(ep, Key.LCTRL))) {
+		lastLowerHeight = extension0+extension1;
+		lastUpperHeight = extension2;
+		if (ep != null || (ReikaObfuscationHelper.isDeObfEnvironment() && KeyWatcher.instance.isKeyDown(world.getPlayerEntityByName("Reika"), Key.LCTRL))) {
 			if (extension0 < EXTENSION_LIMIT_0) {
-				extension0 = Math.min(extension0+EXTENSION_SPEED, EXTENSION_LIMIT_0);
+				extension0 = Math.min(extension0+EXTENSION_SPEED_0, EXTENSION_LIMIT_0);
 			}
 			else if (extension1 < EXTENSION_LIMIT_1) {
-				extension1 = Math.min(extension1+EXTENSION_SPEED, EXTENSION_LIMIT_1);
+				extension1 = Math.min(extension1+EXTENSION_SPEED_1, EXTENSION_LIMIT_1);
 			}
 			else {
-				extension2 = Math.min(extension2+EXTENSION_SPEED, EXTENSION_LIMIT_2);
+				extension2 = Math.min(extension2+EXTENSION_SPEED_2, EXTENSION_LIMIT_2);
 			}
 		}
 		else {
 			if (extension1 == 0) {
-				extension0 = Math.max(extension0-EXTENSION_SPEED, 0);
+				extension0 = Math.max(extension0-EXTENSION_SPEED_0, 0);
 			}
 			else if (extension2 == 0) {
-				extension1 = Math.max(extension1-EXTENSION_SPEED, 0);
+				extension1 = Math.max(extension1-EXTENSION_SPEED_1, 0);
 			}
 			else {
-				extension2 = Math.max(extension2-EXTENSION_SPEED, 0);
+				extension2 = Math.max(extension2-EXTENSION_SPEED_2, 0);
+			}
+		}
+
+		if (extension0 > 0 && !world.isRemote) {
+			List<ChromaSounds> snd = new ArrayList();
+			if (extension0+extension1 > lastLowerHeight || extension2 > lastUpperHeight) {
+				if (this.getTicksExisted()%5 == 0 || lastLowerHeight <= 0)
+					snd.add(ChromaSounds.TOWEREXTEND1);
+			}
+			if (extension1 >= EXTENSION_LIMIT_1) {
+				if (lastLowerHeight < EXTENSION_LIMIT_0+EXTENSION_LIMIT_1) {
+					snd.add(ChromaSounds.TOWEREXTEND2);
+				}
+			}
+			if (extension2 == EXTENSION_LIMIT_2) {
+				if (this.getTicksExisted()%50 == 0 || lastUpperHeight < EXTENSION_LIMIT_2)
+					snd.add(ChromaSounds.TOWERAMBIENT);
+			}
+
+			ReikaJavaLibrary.pConsole(snd, !snd.isEmpty());
+			for (ChromaSounds s : snd) {
+				s.playSoundAtBlock(world, x, y+3, z, 2, 1);
+				List<EntityPlayer> li = world.getEntitiesWithinAABB(EntityPlayer.class, ReikaAABBHelper.getBlockAABB(this).expand(30, 18, 30));
+				for (EntityPlayer ep2 : li) {
+					float f = (float)Math.max(0.4, 2-ep2.getDistance(x+0.5, y+2.5, z+0.5)/15D);
+					s.playSound(ep2, f, 1);
+				}
 			}
 		}
 

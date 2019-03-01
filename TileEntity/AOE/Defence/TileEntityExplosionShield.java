@@ -13,6 +13,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.DamageSource;
+import net.minecraft.world.ChunkPosition;
+import net.minecraft.world.Explosion;
+import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.RangeTracker;
@@ -24,15 +32,9 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.DamageSource;
-import net.minecraft.world.ChunkPosition;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.World;
 
 public class TileEntityExplosionShield extends CrystalReceiverBase implements LocationCached, RangeUpgradeable {
 

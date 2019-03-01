@@ -15,9 +15,12 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Locale;
 
+import com.google.common.base.Strings;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.Language;
 import net.minecraftforge.common.MinecraftForge;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
@@ -58,8 +61,6 @@ import Reika.DragonAPI.Instantiable.Event.Client.ResourceReloadEvent;
 import Reika.DragonAPI.Instantiable.IO.XMLInterface;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
-
-import com.google.common.base.Strings;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;

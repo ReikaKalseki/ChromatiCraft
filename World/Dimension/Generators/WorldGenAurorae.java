@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Random;
 
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Entity.EntityAurora;

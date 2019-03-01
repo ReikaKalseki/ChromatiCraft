@@ -9,9 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.Generation;
 
-import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.MazeGrid;
-import net.minecraftforge.common.util.ForgeDirection;
-
 import java.awt.Point;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,6 +16,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import net.minecraftforge.common.util.ForgeDirection;
+
+import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.MazeGrid;
 
 //Based on 'Randomly' removing/carving walls
 public class KruskalDiscoverer {

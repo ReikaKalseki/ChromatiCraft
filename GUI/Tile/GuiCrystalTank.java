@@ -9,11 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Tile;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fluids.Fluid;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fluids.Fluid;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiChromaBase;

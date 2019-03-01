@@ -16,6 +16,7 @@ import static net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.Ev
 import static net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.REED;
 import static net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.SAND;
 import static net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.SAND_PASS2;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.init.Blocks;
@@ -27,6 +28,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.terraingen.DecorateBiomeEvent;
 import net.minecraftforge.event.terraingen.TerrainGen;
 import net.minecraftforge.fluids.BlockFluidBase;
+
 import Reika.ChromatiCraft.Block.Worldgen.BlockSparkle;
 import Reika.ChromatiCraft.Block.Worldgen.BlockSparkle.BlockTypes;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;

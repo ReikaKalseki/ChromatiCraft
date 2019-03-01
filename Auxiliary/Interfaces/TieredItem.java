@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary.Interfaces;
 
 import net.minecraft.item.ItemStack;
+
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 
 public interface TieredItem {

@@ -13,10 +13,6 @@ import java.awt.Color;
 import java.util.Collection;
 import java.util.List;
 
-import li.cil.oc.api.Network;
-import li.cil.oc.api.network.Environment;
-import li.cil.oc.api.network.Node;
-import li.cil.oc.api.network.Visibility;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,13 +30,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
-import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
-import thaumcraft.api.aspects.IAspectContainer;
-import thaumcraft.api.aspects.IEssentiaTransport;
-import vazkii.botania.api.internal.IManaBurst;
-import vazkii.botania.api.mana.IManaCollisionGhost;
-import vazkii.botania.api.mana.IManaReceiver;
+
 import Reika.ChromatiCraft.API.Interfaces.WorldRift;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LinkedTile;
 import Reika.ChromatiCraft.Base.TileEntity.LinkedTileBase;
@@ -57,6 +47,7 @@ import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+
 import cofh.api.energy.IEnergyHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -64,6 +55,17 @@ import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
+import li.cil.oc.api.Network;
+import li.cil.oc.api.network.Environment;
+import li.cil.oc.api.network.Node;
+import li.cil.oc.api.network.Visibility;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.aspects.IAspectContainer;
+import thaumcraft.api.aspects.IEssentiaTransport;
+import vazkii.botania.api.internal.IManaBurst;
+import vazkii.botania.api.mana.IManaCollisionGhost;
+import vazkii.botania.api.mana.IManaReceiver;
 
 @Strippable(value = {"cofh.api.energy.IEnergyHandler", "thaumcraft.api.aspects.IEssentiaTransport",
 		"thaumcraft.api.aspects.IAspectContainer", "vazkii.botania.api.mana.IManaCollisionGhost", "vazkii.botania.api.mana.IManaReceiver"})

@@ -17,6 +17,7 @@ import java.util.Iterator;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.CrystalTarget.TickingCrystalTarget;

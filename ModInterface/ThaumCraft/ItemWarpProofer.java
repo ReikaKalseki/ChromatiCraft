@@ -17,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 
