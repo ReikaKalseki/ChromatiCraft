@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -29,6 +29,7 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
@@ -84,6 +85,8 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 
 	private RunningAverage averageIngredientValue = new RunningAverage();
 	private RunningAverage averageOutputValue = new RunningAverage();
+
+	private int temperatureBoost;
 	private boolean smothered;
 
 	//private ItemStack output;
@@ -120,6 +123,16 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 				this.doParticles(world, x, y, z);
 		}
 		else {
+			if (temperatureBoost > 0) {
+				if (rand.nextInt(6) == 0)
+					temperatureBoost--;
+			}
+			else {
+				CrystalElement e = energy.asWeightedRandom().getRandomEntry();
+				int has = energy.getValue(e);
+				if (has > 1 && rand.nextFloat() < has/(float)this.getMaxStorage(e))
+					energy.subtract(e, 1);
+			}
 			this.consumeItems(world, x, y, z);
 
 			this.doOverloadShocks();
@@ -128,20 +141,22 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 
 	private void doOverloadShocks() {
 		CrystalElement e = energy.asWeightedRandom().getRandomEntry();
-		if (energy.getValue(e) >= this.getMaxStorage(e)) {
-			float f = 0.03125F*0.75F*energy.getValue(e)/this.getMaxStorage(e);
-			if (ReikaRandomHelper.doWithChance(f)) {
-				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(this).expand(6, 3, 6);
-				List<EntityPlayer> li = worldObj.getEntitiesWithinAABB(EntityPlayer.class, box);
-				for (EntityPlayer ep : li) {
-					this.dischargeIntoPlayer(this, ep, e, 1);
-				}
+		float f = 0.03125F*0.75F*0.25F*energy.getValue(e)/this.getMaxStorage(e);
+		if (ReikaRandomHelper.doWithChance(f)) {
+			AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(this).expand(6, 3, 6);
+			List<EntityPlayer> li = worldObj.getEntitiesWithinAABB(EntityPlayer.class, box);
+			for (EntityPlayer ep : li) {
+				this.dischargeIntoPlayer(this, ep, e, 1);
 			}
 		}
 	}
 
 	public boolean isSmothered() {
 		return smothered;
+	}
+
+	public int getTemperatureBoost() {
+		return temperatureBoost;
 	}
 
 	public boolean craft() {
@@ -158,7 +173,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 			flag = this.craftAndDrop(in);
 			flag2 |= flag;
 		}
-		double over = averageOutputValue.getAverage()/averageIngredientValue.getAverage();
+		double over = (averageOutputValue.getAverage()-temperatureBoost)/averageIngredientValue.getAverage();
 		if (averageIngredientValue.getAverage() > 0 && over >= 1) {
 			if (ReikaRandomHelper.doWithChance(Math.min(0.25, over/16D))) {
 				smothered = true;
@@ -194,15 +209,40 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 				}
 			}
 		}
+		remove = this.getModulatedCost(remove);
 		for (CrystalElement e : remove.elementSet()) {
 			int val = remove.getValue(e);
 			if (energy.getValue(e) < val)
 				return false;
 		}
 		//ReikaJavaLibrary.pConsole(in+" costs "+cost+", rem "+remove);
-		averageOutputValue.addValue(remove.getTotalEnergy());
+		int amt = remove.getTotalEnergy();
+		averageOutputValue.addValue(amt);
+		temperatureBoost = Math.max(temperatureBoost-amt, 0);
 		energy.subtract(remove);
 		return true;
+	}
+
+	private ElementTagCompound getModulatedCost(ElementTagCompound value) {
+		if (temperatureBoost <= 0)
+			return value;
+		ElementTagCompound ret = new ElementTagCompound();
+		for (CrystalElement e : value.elementSet()) {
+			float f = value.getFraction(e);
+			float val = value.getValue(e);
+			float boost = temperatureBoost*f;
+			if (boost < val) {
+				val -= boost;
+			}
+			else if (val > 1) {
+				val = 1F/(boost-val+2);
+			}
+			else {
+				val = 1F/(boost+1);
+			}
+			ret.addTag(e, (int)Math.max(1, val));
+		}
+		return ret;
 	}
 
 	public static ElementTagCompound getCompositionCost(CrystalElement e, int amt) {
@@ -271,7 +311,14 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 					return null;
 				}
 			}
+			if (ReikaItemHelper.matchStacks(is, ChromaStacks.glowcavedust)) {
+				tag.intersectWith(energy);
+				if (!tag.isEmpty())
+					temperatureBoost++;
+			}
 		}
+		if (tag != null && tag.isEmpty())
+			tag = null;
 		return tag;
 	}
 
@@ -373,6 +420,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 				}
 			}
 			energy.clear();
+			temperatureBoost = 0;
 		}
 	}
 
@@ -433,9 +481,10 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 
 	@SideOnly(Side.CLIENT)
 	private void addParticle(World world, int x, int y, int z, double phi, double theta, boolean primary, double timer) {
-		int l = primary ? 10+rand.nextInt(30) : 10+rand.nextInt(10);
+		int l0 = primary ? 10+rand.nextInt(30) : 10+rand.nextInt(10);
+		int l = (int)(l0+temperatureBoost/5F);
 		float s = primary ? 2.2F : 1.25F;
-		double[] v = ReikaPhysicsHelper.polarToCartesian(0.125/l*6D, theta, phi);
+		double[] v = ReikaPhysicsHelper.polarToCartesian(0.125/l0*6D, theta, phi);
 		int c = ReikaColorAPI.getModifiedHue(0x1070ff, (int)(215+70*Math.sin(timer/40D)));
 		if (this.isSmothered()) {
 			c = ReikaColorAPI.getModifiedHue(c, rand.nextInt(60));
@@ -486,7 +535,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
-		return 10000;
+		return 10000+Math.min(10000, 50*temperatureBoost);
 	}
 
 	@Override
@@ -535,6 +584,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 
 		energy.readFromNBT("energy", NBT);
 		smothered = NBT.getBoolean("smother");
+		temperatureBoost = NBT.getInteger("temp");
 	}
 
 	@Override
@@ -543,6 +593,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 
 		energy.writeToNBT("energy", NBT);
 		NBT.setBoolean("smother", smothered);
+		NBT.setInteger("temp", temperatureBoost);
 	}
 
 	@Override

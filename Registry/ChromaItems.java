@@ -22,7 +22,6 @@ import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.ChromaNames;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
-import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco;
 import Reika.ChromatiCraft.Items.ItemAdjacencyPlacer;
 import Reika.ChromatiCraft.Items.ItemChromaBerry;
 import Reika.ChromatiCraft.Items.ItemChromaCrafting;
@@ -426,7 +425,7 @@ public enum ChromaItems implements ItemEnum {
 			case ORESILK:
 				return 180;
 			case DIMGEN:
-				return BlockDimensionDeco.DimDecoTypes.list.length;
+				return ChromaNames.dimGenNames.length;
 			case PURIFY:
 				return ItemPurifyCrystal.CHARGE_STATES;
 				//case FADETORCH:

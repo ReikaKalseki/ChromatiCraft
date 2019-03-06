@@ -47,8 +47,10 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 	private static final double MAX_RADIUS = 4.5;
 	private static final double MAX_RADIUS_CHANGE_PER_SEGMENT = 0.5;
 
-	private static final double MAX_CRACK_CHANCE = 0.08;
-	private static final int MAX_CRACK_Y = 14;
+	private static final double MAX_CRACK_CHANCE = 0.066;//0.08;
+	private static final int MAX_CRACK_Y = 20;//16;//14;
+	private static final int FULL_BEDROCK_Y = 8;
+	private static final int MAX_BEDROCK_Y = 32;//28;//24;
 
 	private final SimplexNoiseGenerator wallSelectionNoise;
 
@@ -209,7 +211,7 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 	}
 
 	private int getRandomCrackMeta(Random rand, Coordinate c) {
-		int max = 8;
+		int max = 10;
 		if (c.yCoord > 8) {
 			max *= 1D-((c.yCoord-8)/(MAX_CRACK_Y-8D));
 		}
@@ -225,11 +227,11 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 
 	private boolean isBedrockWall(World world, Random rand, Coordinate c) {
 		//was c.yCoord <= 27 && ReikaRandomHelper.doWithChance((28-c.yCoord)/28D)
-		if (c.yCoord >= 24)
+		if (c.yCoord >= MAX_BEDROCK_Y)
 			return false;
-		if (c.yCoord <= 8)
+		if (c.yCoord <= FULL_BEDROCK_Y)
 			return true;
-		return c.yCoord <= ReikaMathLibrary.normalizeToBounds(wallSelectionNoise.getValue(c.xCoord, c.zCoord), 8, 24);
+		return c.yCoord <= ReikaMathLibrary.normalizeToBounds(wallSelectionNoise.getValue(c.xCoord, c.zCoord), FULL_BEDROCK_Y, MAX_BEDROCK_Y);
 	}
 
 	private boolean getLine(World world, Random rand, DecimalPosition pos1, DecimalPosition pos2, double r1, double r2, int i, HashSet<Coordinate> main, HashSet<Coordinate> line) {

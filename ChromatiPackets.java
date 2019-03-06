@@ -86,6 +86,7 @@ import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Magic.Network.PylonLinkNetwork;
+import Reika.ChromatiCraft.ModInterface.RFWeb;
 import Reika.ChromatiCraft.ModInterface.VoidMonsterDestructionRitual;
 import Reika.ChromatiCraft.ModInterface.AE.TileEntityMEDistributor;
 import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
@@ -865,9 +866,9 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case COLLECTORRANGE:
 					if (data[0] > 0)
-						((TileEntityItemCollector)tile).increaseRange();
+						((TileEntityItemCollector)tile).increaseRange(data[1]);
 					else
-						((TileEntityItemCollector)tile).decreaseRange();
+						((TileEntityItemCollector)tile).decreaseRange(data[1]);
 					break;
 				case LEAVEDIM:
 					ChromaDimensionManager.resetDimensionClient();
@@ -899,6 +900,12 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case RELAYPRESSURE:
 					((TileEntityFluidRelay)tile).changePressure(data[0]);
+					break;
+				case RELAYCLEAR:
+					((TileEntityFluidRelay)tile).clearFilters();
+					break;
+				case RELAYCOPY:
+					((TileEntityFluidRelay)tile).copyFilters();
 					break;
 				case RELAYFLUID:
 					((TileEntityFluidRelay)tile).sendFluidParticles(world, x, y, z, FluidRegistry.getFluid(data[0]));
@@ -1002,6 +1009,9 @@ public class ChromatiPackets implements PacketHandler {
 				case NODERECEIVERSYNC:
 					WorldLocation loc = WorldLocation.readFromNBT("location", NBT);
 					NodeRecharger.instance.updateClient(loc, NBT);
+					break;
+				case RFWEBSEND:
+					RFWeb.doSendParticle(world, x, y, z, data[0], data[1], data[2], data[3]);
 					break;
 			}
 		}

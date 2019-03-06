@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,21 +11,23 @@ package Reika.ChromatiCraft.Render.Particle;
 
 import java.util.ArrayList;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
-import net.minecraft.client.renderer.Tessellator;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomRenderFX;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.ParticleEngine;
+import Reika.ChromatiCraft.Render.ParticleEngine.RenderMode;
+import Reika.ChromatiCraft.Render.ParticleEngine.RenderModeFlags;
+import Reika.ChromatiCraft.Render.ParticleEngine.TextureMode;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 /** Traverses the relay path */
-public class EntityRelayPathFX extends EntityFX {
+public class EntityRelayPathFX extends EntityFX implements CustomRenderFX {
+
+	private static final RenderMode renderMode = new RenderMode().setFlag(RenderModeFlags.ADDITIVE, true).setFlag(RenderModeFlags.DEPTH, true).setFlag(RenderModeFlags.LIGHT, false).setFlag(RenderModeFlags.ALPHACLIP, false);
 
 	private ArrayList<Coordinate> targets;
 	private int index = 0;
@@ -104,7 +106,7 @@ public class EntityRelayPathFX extends EntityFX {
 	private void die() {
 		this.setDead();
 	}
-
+	/*
 	@Override
 	public void renderParticle(Tessellator v5, float par2, float par3, float par4, float par5, float par6, float par7)
 	{
@@ -119,7 +121,7 @@ public class EntityRelayPathFX extends EntityFX {
 		BlendMode.DEFAULT.apply();
 		v5.startDrawingQuads();
 	}
-
+	 */
 	@Override
 	public int getBrightnessForRender(float par1)
 	{
@@ -130,6 +132,26 @@ public class EntityRelayPathFX extends EntityFX {
 	public int getFXLayer()
 	{
 		return 2;
+	}
+
+	@Override
+	public final RenderMode getRenderMode() {
+		return renderMode;
+	}
+
+	@Override
+	public final TextureMode getTexture() {
+		return ParticleEngine.instance.blockTex;
+	}
+
+	@Override
+	public boolean rendersOverLimit() {
+		return true;
+	}
+
+	@Override
+	public double getRenderRange() {
+		return 120;
 	}
 
 }

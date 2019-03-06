@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2018
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -16,9 +16,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -31,6 +29,7 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.ASM.InterfaceInjector.Injectable;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.StepTimer;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.OpenPathFinder;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.Search;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.Search.LocationTerminus;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.Search.PropagationCondition;
@@ -41,7 +40,6 @@ import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
 import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 import vazkii.botania.api.internal.IManaBurst;
 import vazkii.botania.api.mana.IManaPool;
@@ -186,11 +184,11 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 
 	private ManaPath calculateManaPath(World world, Coordinate from, Coordinate to) {
 		Coordinate mid = new Coordinate(this);
-		PropagationCondition f = new ManaPathFinder(from, mid);
+		PropagationCondition f = new OpenPathFinder(from, mid, 40);
 		TerminationCondition t = new LocationTerminus(mid);
 		//Search s = new Search(from.xCoord, from.yCoord, from.zCoord);
 		LinkedList<Coordinate> li = Search.getPath(world, from.xCoord, from.yCoord, from.zCoord, t, f);
-		f = new ManaPathFinder(mid, to);
+		f = new OpenPathFinder(mid, to, 40);
 		t = new LocationTerminus(to);
 		LinkedList<Coordinate> li2 = Search.getPath(world, mid.xCoord, mid.yCoord, mid.zCoord, t, f);
 		if (li != null && li2 != null) {
@@ -358,26 +356,6 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 	public int getMaxMana() {
 		return Integer.MAX_VALUE;
 	}
-
-	private static class ManaPathFinder implements PropagationCondition {
-
-		private final Coordinate startLocation;
-		private final Coordinate endLocation;
-
-		private ManaPathFinder(Coordinate c1, Coordinate c2) {
-			startLocation = c1;
-			endLocation = c2;
-		}
-
-		@Override
-		public boolean isValidLocation(IBlockAccess world, int x, int y, int z) {
-			if (startLocation.equals(x, y, z) || endLocation.equals(x, y, z))
-				return true;
-			Block b = world.getBlock(x, y, z);
-			return b.isAir(world, x, y, z) || ReikaWorldHelper.softBlocks(world, x, y, z);
-		}
-
-	};
 
 	public static class ManaPath {
 

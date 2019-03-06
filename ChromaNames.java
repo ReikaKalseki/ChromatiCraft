@@ -42,12 +42,13 @@ public class ChromaNames {
 			"chromacraft.beacondust", "chromacraft.bindingcrystal", "chromacraft.resodust", "chromacraft.enderdust", "chromacraft.waterdust",
 			"chromacraft.firaxite", "chromacraft.lumadust", "chromacraft.echocrystal", "chromacraft.cavern", "chromacraft.burrow",
 			"chromacraft.ocean", "chromacraft.fireessence", "chromacraft.thermiticcrystal", "chromacraft.endcrystal", "chromacraft.spacedust",
-			"chromacraft.desert", "chromacraft.glowbeans", "chromacraft.boostroot", "chromacraft.lumengem", "chromacraft.avolite", "chromacraft.snowstruct",
+			"chromacraft.desert", "chromacraft.glowbeans", "chromacraft.boostroot", "chromacraft.lumengem", "chromacraft.avolite",
+			"chromacraft.snowstruct", "chromacraft.bedrockloot", "chromacraft.bedrockloot2"
 	};
 
 	public static final String[] dimGenNames = {
 			"chromaitem.dimgen.miasma", "chromaitem.dimgen.floatstone", "chromaitem.dimgen.aqua", "chromaitem.dimgen.lifewater", "chromaitem.dimgen.tubes",
-			"chromaitem.dimgen.geode", "chromaitem.dimgen.crysleaf", "chromaitem.dimgen.oceanstone", "chromaitem.dimgen.cliffshard", "chromaitem.dimgen.caveglow"
+			"chromaitem.dimgen.geode", "chromaitem.dimgen.crysleaf", "chromaitem.dimgen.oceanstone", "chromaitem.dimgen.cliffshard", "chromaitem.dimgen.glowcave",
 	};
 
 	public static final String[] storageNames = {

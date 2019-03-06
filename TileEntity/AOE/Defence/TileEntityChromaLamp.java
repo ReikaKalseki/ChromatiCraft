@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -14,6 +14,8 @@ import java.util.HashMap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
+import Reika.ChromatiCraft.Auxiliary.RangeTracker;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -21,13 +23,15 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 
-public class TileEntityChromaLamp extends TileEntityChromaticBase implements LocationCached {
+public class TileEntityChromaLamp extends TileEntityChromaticBase implements LocationCached, RangeUpgradeable {
 
 	private static final HashMap<WorldLocation, Integer> cache = new HashMap();
 
 	public static final int FACTOR = 8;
 
 	private final ElementTagCompound colors = new ElementTagCompound();
+
+	private RangeTracker range;
 
 	@Override
 	public ChromaTiles getTile() {
@@ -36,15 +40,23 @@ public class TileEntityChromaLamp extends TileEntityChromaticBase implements Loc
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-
+		if (range.update(this)) {
+			this.cacheTile();
+		}
 	}
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
+		this.initRange();
+	}
+
+	private void initRange() {
+		range = new RangeTracker(this.getMaxRange());
+		range.initialize(this);
 		this.cacheTile();
 	}
 
-	public int getRange() {
+	private int getMaxRange() {
 		return FACTOR*colors.tagCount();
 	}
 
@@ -95,12 +107,22 @@ public class TileEntityChromaLamp extends TileEntityChromaticBase implements Loc
 		if (colors.contains(e))
 			return false;
 		colors.addValueToColor(e, 1);
-		this.cacheTile();
+		this.initRange();
 		return true;
 	}
 
 	public static void clearCache() {
 		cache.clear();
+	}
+
+	@Override
+	public void upgradeRange(double r) {
+
+	}
+
+	@Override
+	public int getRange() {
+		return range.getRange();
 	}
 
 }

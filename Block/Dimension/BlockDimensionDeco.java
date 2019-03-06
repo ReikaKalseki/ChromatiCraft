@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Block.Dimension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -22,7 +23,6 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
@@ -40,6 +40,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Render.ISBRH.DimensionDecoRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -65,7 +66,7 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 		CRYSTALLEAF(3),
 		OCEANSTONE(2),
 		CLIFFGLASS(2),
-		GLOWCAVE(1);
+		GLOWCAVE(10);
 
 		public final int numIcons;
 
@@ -83,7 +84,18 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 			return this == FLOATSTONE || this == GEMSTONE || this == CRYSTALLEAF || this == OCEANSTONE || this == CLIFFGLASS || this == GLOWCAVE;
 		}
 
-		public List<IIcon> getIcons(int pass) {
+		public List<IIcon> getIcons(IBlockAccess iba, int x, int y, int z, int pass) {
+			List<IIcon> li = this.getItemIcons(pass);
+			if (this == GLOWCAVE) {
+				li.clear();
+				int idx = new Coordinate(x, y, z).hashCode();
+				idx = ((idx%10)+10)%10;
+				li.add(icons[this.ordinal()].get(idx));
+			}
+			return li;
+		}
+
+		public List<IIcon> getItemIcons(int pass) {
 			if (icons[this.ordinal()] == null) {
 				ChromatiCraft.logger.logError("Dimension Deco Type "+this+" is missing icons!");
 				return ReikaJavaLibrary.makeListFrom(Blocks.bedrock.blockIcon, Blocks.emerald_block.blockIcon, Blocks.obsidian.blockIcon, Blocks.mob_spawner.blockIcon);
@@ -122,6 +134,17 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 					return false;
 				default:
 					return true;
+			}
+		}
+
+		private void addDrops(ArrayList<ItemStack> li) {
+			int n = 1;
+			switch(this) {
+				case GLOWCAVE:
+					n = ReikaRandomHelper.getRandomBetween(1, 6); //no break
+				default:
+					for (int i = 0; i < n; i++)
+						li.add(ChromaItems.DIMGEN.getStackOfMetadata(this.ordinal()));
 			}
 		}
 	}
@@ -200,11 +223,12 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
 		for (int i = 0; i < DimDecoTypes.list.length; i++) {
-			//if (DimDecoTypes.list[i].hasBlockRender()) {
-			int n = DimDecoTypes.list[i].numIcons;
+			DimDecoTypes deco = DimDecoTypes.list[i];
+			//if (deco.hasBlockRender()) {
+			int n = deco.numIcons;
 			icons[i] = new ArrayList();
 			for (int k = 0; k < n; k++) {
-				icons[i].add(ico.registerIcon("chromaticraft:dimgen/"+i+"_layer_"+k));
+				icons[i].add(ico.registerIcon("chromaticraft:dimgen/"+deco.name().toLowerCase(Locale.ENGLISH)+"/layer_"+k));
 			}
 			//}
 		}
@@ -229,7 +253,7 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 	public final int getRenderBlockPass() {
 		return 1;
 	}
-
+	/*
 	@Override
 	public Item getItemDropped(int meta, Random r, int fortune) {
 		return ChromaItems.DIMGEN.getItemInstance();
@@ -240,6 +264,11 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 		return meta;
 	}
 
+	@Override
+	public int quantityDropped(Random rand) {
+		return 1;
+	}
+	 */
 	@Override
 	public boolean canSilkHarvest(World world, EntityPlayer player, int x, int y, int z, int metadata) {
 		return DimDecoTypes.list[metadata].canSilkTouch();
@@ -260,6 +289,13 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		int meta = world.getBlockMetadata(x, y, z);
 		return DimDecoTypes.list[meta].hasBlockRender() ? ReikaAABBHelper.getBlockAABB(x, y, z) : null;
+	}
+
+	@Override
+	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
+		ArrayList<ItemStack> li = new ArrayList();
+		DimDecoTypes.list[metadata].addDrops(li);
+		return li;
 	}
 
 	@Override

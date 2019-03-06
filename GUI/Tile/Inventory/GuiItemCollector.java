@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.GUI.Tile.Inventory;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -21,7 +22,7 @@ import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerItemCollector;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
-import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButtonSneakIcon;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
@@ -54,19 +55,20 @@ public class GuiItemCollector extends GuiChromaBase
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 		String tex = "Textures/GUIs/buttons.png";
-		buttonList.add(new CustomSoundImagedGuiButton(0, j+11, k+75, 10, 10, 100, 66, tex, ChromatiCraft.class, this));
-		buttonList.add(new CustomSoundImagedGuiButton(1, j+83, k+75, 10, 10, 100, 56, tex, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButtonSneakIcon(0, j+11, k+75, 10, 10, 100, 66, tex, ChromatiCraft.class, this, 100, 86));
+		buttonList.add(new CustomSoundImagedGuiButtonSneakIcon(1, j+83, k+75, 10, 10, 100, 56, tex, ChromatiCraft.class, this, 100, 76));
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton b) {
 		super.actionPerformed(b);
 		if (b.id <= 1) {
-			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.COLLECTORRANGE.ordinal(), vac, b.id);
+			int amt = GuiScreen.isShiftKeyDown() ? 10 : 1;
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.COLLECTORRANGE.ordinal(), vac, b.id, amt);
 			if (b.id > 0)
-				vac.increaseRange();
+				vac.increaseRange(amt);
 			else
-				vac.decreaseRange();
+				vac.decreaseRange(amt);
 		}
 	}
 	/*

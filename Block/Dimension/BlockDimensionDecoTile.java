@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -95,7 +95,11 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 			return itemIcon;
 		}
 
-		public List<IIcon> getIcons(int pass) {
+		public List<IIcon> getIcons(IBlockAccess iba, int x, int y, int z, int pass) {
+			return this.getItemIcons(pass);
+		}
+
+		public List<IIcon> getItemIcons(int pass) {
 			return pass == 0 ? ReikaJavaLibrary.makeListFrom(icons[1][this.ordinal()]) : new ArrayList();
 		}
 
@@ -180,7 +184,7 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 			icons[0][i] = ico.registerIcon("chromaticraft:dimgen2/underlay_"+i);
 			icons[1][i] = ico.registerIcon("chromaticraft:dimgen2/overlay_"+i);
 			//if (DimDecoTileTypes.list[i].isMineable())
-				DimDecoTileTypes.list[i].itemIcon = ico.registerIcon("chromaticraft:dimgen/"+DimDecoTileTypes.list[i].itemTex);
+			DimDecoTileTypes.list[i].itemIcon = ico.registerIcon("chromaticraft:dimgen/"+DimDecoTileTypes.list[i].itemTex);
 		}
 	}
 

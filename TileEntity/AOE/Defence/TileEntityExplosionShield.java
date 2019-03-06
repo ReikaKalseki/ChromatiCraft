@@ -13,10 +13,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
@@ -111,6 +113,13 @@ public class TileEntityExplosionShield extends CrystalReceiverBase implements Lo
 			double px = ReikaRandomHelper.getRandomBetween(mx2, ax2);
 			double py = ReikaRandomHelper.getRandomBetween(my, ay);
 			double pz = ReikaRandomHelper.getRandomBetween(mz2, az2);
+			int pix = MathHelper.floor_double(px);
+			int piy = MathHelper.floor_double(py);
+			int piz = MathHelper.floor_double(pz);
+			Block b = world.getBlock(pix, piy, piz);
+			if (b.isOpaqueCube() && b.renderAsNormalBlock() && b.getRenderType() == 0) { //skip ones inside the ground/walls/etc
+				continue;
+			}
 			EntityBlurFX fx = new EntityBlurFX(world, px, py, pz);
 			fx.setLife(ReikaRandomHelper.getRandomBetween(5, 100)).setScale(1+rand.nextFloat()).setColor(CrystalElement.RED.getColor());
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);

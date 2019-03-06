@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -18,6 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -32,6 +33,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaTeleporter;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
@@ -130,6 +132,7 @@ public class BlockChromaPortal extends Block {
 
 	@Override
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity e) {
+		boolean teleport = false;
 		portalCheck.add(new Coordinate(x, y, z));
 		for (int i = 2; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
@@ -153,20 +156,22 @@ public class BlockChromaPortal extends Block {
 				if (te.complete) {
 					EntityPlayer ep = (EntityPlayer)e;
 					if (te.canPlayerUse(ep)) {
-						int dim = te.getTargetDimension();
-						ReikaEntityHelper.transferEntityToDimension(e, dim, new ChromaTeleporter(dim));
-						if (ProgressStage.DIMENSION.stepPlayerTo(ep)) {
-							ReikaSoundHelper.broadcastSound(ChromaSounds.GOTODIM, ChromatiCraft.packetChannel, 1, 1);
-						}
-						else {
-							ChromaSounds.GOTODIM.playSoundAtBlockNoAttenuation(te, 1, 1, 32);
-							ReikaSoundHelper.playSound(ChromaSounds.GOTODIM, ChromatiCraft.packetChannel, ep.worldObj, 0, 1024, 0, 1, 1, false);
-							ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.DIMSOUND.ordinal(), PacketTarget.allPlayers);
-						}
+						te.teleportPlayer(ep);
 					}
 					else {
 						this.denyEntity(e);
 					}
+				}
+				else {
+					this.denyEntity(e);
+				}
+			}
+			else if (e instanceof EntityItem) {
+				EntityItem ei = (EntityItem)e;
+				ItemStack is = ei.getEntityItem();
+				if (ReikaItemHelper.matchStacks(is, ChromaStacks.bedrockloot) || ReikaItemHelper.matchStacks(is, ChromaStacks.bedrockloot2)) {
+					te.addTuningEnergy(is);
+					ei.setDead();
 				}
 				else {
 					this.denyEntity(e);
@@ -197,6 +202,8 @@ public class BlockChromaPortal extends Block {
 		public final int MINCHARGE = 300;
 		private int ticks = 0;
 		private UUID placerUUID;
+
+		private int tuning = 0;
 
 		@Override
 		public void updateEntity() {
@@ -235,10 +242,35 @@ public class BlockChromaPortal extends Block {
 			if (pos == 5 && this.isFull9x9()) {
 				if (ticks%20 == 0)
 					this.validateStructure(worldObj, xCoord, yCoord, zCoord);
-				if (complete && ticks%90 == 0) {
-					ChromaSounds.PORTAL.playSoundAtBlock(this);
+				if (complete) {
+					if (ticks%90 == 0)
+						ChromaSounds.PORTAL.playSoundAtBlock(this);
+					if (tuning > 0)
+						if (DragonAPICore.rand.nextInt(80) == 0)
+							tuning--;
 				}
 			}
+		}
+
+		private void teleportPlayer(EntityPlayer ep) {
+			int dim = this.getTargetDimension();
+			ep.getEntityData().setInteger("dimensionTuning", tuning);
+			ReikaEntityHelper.transferEntityToDimension(ep, dim, new ChromaTeleporter(dim));
+			if (ProgressStage.DIMENSION.stepPlayerTo(ep)) {
+				ReikaSoundHelper.broadcastSound(ChromaSounds.GOTODIM, ChromatiCraft.packetChannel, 1, 1);
+			}
+			else {
+				ChromaSounds.GOTODIM.playSoundAtBlockNoAttenuation(this, 1, 1, 32);
+				ReikaSoundHelper.playSound(ChromaSounds.GOTODIM, ChromatiCraft.packetChannel, ep.worldObj, 0, 1024, 0, 1, 1, false);
+				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.DIMSOUND.ordinal(), PacketTarget.allPlayers);
+			}
+			tuning = 0;
+		}
+
+		public void addTuningEnergy(ItemStack is) {
+			boolean tier2 = ReikaItemHelper.matchStacks(is, ChromaStacks.bedrockloot2);
+			int amt = (int)((tier2 ? 3 : 1)*Math.pow(is.stackSize, tier2 ? 0.85 : 0.5));
+			tuning += amt;
 		}
 
 		public boolean ownedBy(EntityPlayer ep) {
@@ -401,6 +433,7 @@ public class BlockChromaPortal extends Block {
 			NBT.setBoolean("built", complete);
 
 			NBT.setInteger("charge", charge);
+			NBT.setInteger("tuning", tuning);
 
 			if (placerUUID != null) {
 				NBT.setString("owner", placerUUID.toString());
@@ -414,6 +447,7 @@ public class BlockChromaPortal extends Block {
 			complete = NBT.getBoolean("built");
 
 			charge = NBT.getInteger("charge");
+			tuning = NBT.getInteger("tuning");
 
 			String s = NBT.getString("owner");
 			if (s != null && !s.isEmpty()) {

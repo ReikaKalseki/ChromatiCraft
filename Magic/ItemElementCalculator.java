@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -136,6 +136,9 @@ public class ItemElementCalculator {
 		cache.put(ChromaStacks.avolite, new ElementTagCompound(0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0));
 		cache.put(ChromaStacks.fireEssence, new ElementTagCompound(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0));
 		cache.put(ChromaStacks.thermiticCrystal, new ElementTagCompound(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0));
+		cache.put(ChromaStacks.bedrockloot, new ElementTagCompound(3, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 3, 1, 0, 0, 2));
+		cache.put(ChromaStacks.bedrockloot2, new ElementTagCompound(6, 0, 0, 2, 1, 1, 0, 0, 0, 0, 3, 5, 1, 0, 0, 4));
+
 
 		cache.put(ChromaStacks.voidDust, new ElementTagCompound(2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		cache.put(ChromaStacks.energyPowder, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0));
@@ -157,6 +160,8 @@ public class ItemElementCalculator {
 		cache.put(ChromaStacks.crysleaf, new ElementTagCompound(1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1));
 		cache.put(ChromaStacks.oceanrock, new ElementTagCompound(1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		cache.put(ChromaStacks.cliffshard, new ElementTagCompound(1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1));
+
+		cache.put(ChromaStacks.glowcavedust, ElementTagCompound.getUniformTag(3));
 
 		cache.put(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 

@@ -60,6 +60,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.MusicT
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.PathRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.PortalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.PotionCrystalRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RFNodeRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RecipeEnderTNT;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RecipeTankBlock;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RedstonePodRecipe;
@@ -595,10 +596,24 @@ public class RecipesCastingTable {
 			int n = (int)metal[i+1];
 			this.addRecipe(new HeatLampRecipe(metal[i], n, hr, false));
 			this.addRecipe(new HeatLampRecipe(metal[i], n, hr, true));
+		}
 
+		metal = new Object[]{Items.iron_ingot, 1, Items.gold_ingot, 4, "ingotCopper", 1, "ingotSilver", 2, ChromaStacks.conductiveIngot, 6, "ingotRedAlloy", 4};
+		for (int i = 0; i < metal.length; i += 2) {
+			if (metal[i] instanceof String && !ReikaItemHelper.oreItemExists((String)metal[i]))
+				continue;
 			is = ReikaItemHelper.getSizedItemStack(ChromaBlocks.REDSTONEPOD.getStackOf(), (int)metal[i+1]);
 			sr = new ShapedOreRecipe(is, "fbf", "dad", "fbf", 'f', Items.redstone, 'a', metal[i], 'd', ChromaStacks.auraDust, 'b', ChromaStacks.beaconDust);
 			this.addRecipe(new RedstonePodRecipe(is, sr));
+		}
+
+		metal = new Object[]{Items.iron_ingot, 1, Items.gold_ingot, 4, "ingotCopper", 1, "ingotSilver", 2, ChromaStacks.conductiveIngot, 6, "ingotEnderium", 6, "ingotVibrantAlloy", 8, "RotaryCraft:ingotTungstenAlloy", 12, "ingotSuperconducting", 12};
+		for (int i = 0; i < metal.length; i += 2) {
+			if (metal[i] instanceof String && !ReikaItemHelper.oreItemExists((String)metal[i]))
+				continue;
+			is = ReikaItemHelper.getSizedItemStack(ChromaBlocks.RFPOD.getStackOf(), (int)metal[i+1]);
+			sr = new ShapedOreRecipe(is, "bfb", "faf", "dad", 'f', Items.redstone, 'a', metal[i], 'd', ChromaStacks.auraDust, 'b', ChromaStacks.beaconDust);
+			this.addRecipe(new RFNodeRecipe(is, sr));
 		}
 
 		this.addRecipe(new EnderCrystalRecipe(ChromaItems.ENDERCRYSTAL.getStackOf(), ChromaStacks.crystalStar));

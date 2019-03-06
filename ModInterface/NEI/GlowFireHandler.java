@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -23,6 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -158,13 +159,22 @@ public class GlowFireHandler extends TemplateRecipeHandler {
 		if (fr.cost == null) {
 			throw new IllegalStateException(this.getRecipeName()+" recipe "+fr.item+" has null cost?!");
 		}
+		ElementTagCompound tag = fr.cost;
+		if ( ReikaItemHelper.matchStacks(fr.item, ChromaStacks.glowcavedust)) {
+			int lim = tag.getMaximumValue();
+			tag = new ElementTagCompound();
+			for (CrystalElement e : fr.cost.elementSet()) {
+				int amt = (int)(lim/2+(lim/2+1)*Math.sin(System.identityHashCode(e)*System.identityHashCode(fr)+System.currentTimeMillis()/2400D));
+				tag.addTag(e, amt);
+			}
+		}
 		//Minecraft.getMinecraft().fontRenderer.drawString(fr.item.getDisplayName(), 46, 9, 0xffffff);
-		int r = 60-6;
-		int ox = 81;
-		int oy = 70-2;
-		int ir = 12;
-		int o = 2;
-		double max = Math.log(fr.cost.getMaximumValue()+o);
+		double r = 60-6;
+		double ox = 81;
+		double oy = 70-2;
+		double ir = 12;
+		double o = 2;
+		double max = Math.log(tag.getMaximumValue()+o);
 
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 
@@ -178,7 +188,7 @@ public class GlowFireHandler extends TemplateRecipeHandler {
 		Tessellator.instance.addVertex(ox, oy, 0);
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[15-i];
-			double val = Math.log(fr.cost.getValue(e)+o);
+			double val = Math.log(tag.getValue(e)+o);
 			double a = Math.toRadians(e.ordinal()*22.5-90);
 			int dx = ox+(int)((r+2)*Math.cos(a));
 			int dy = oy+(int)((r+2)*Math.sin(a));
@@ -208,10 +218,10 @@ public class GlowFireHandler extends TemplateRecipeHandler {
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];
 			double a = Math.toRadians(e.ordinal()*22.5-90);
-			int dx = ox+(int)(r*Math.cos(a));
-			int dy = oy+(int)(r*Math.sin(a));
-			int dx2 = ox+(int)(r*Math.cos(a+Math.toRadians(22.5)));
-			int dy2 = oy+(int)(r*Math.sin(a+Math.toRadians(22.5)));
+			double dx = ox+(r*Math.cos(a));
+			double dy = oy+(r*Math.sin(a));
+			double dx2 = ox+(r*Math.cos(a+Math.toRadians(22.5)));
+			double dy2 = oy+(r*Math.sin(a+Math.toRadians(22.5)));
 			Tessellator.instance.addVertex(ox, oy, 0);
 			Tessellator.instance.addVertex(dx, dy, 0);
 
@@ -221,18 +231,18 @@ public class GlowFireHandler extends TemplateRecipeHandler {
 		Tessellator.instance.draw();
 
 		GL11.glColor4f(1, 1, 1, 1);
-		int er2 = Math.max(ir, (int)(r*Math.log(fr.cost.getValue(CrystalElement.BLACK)+o)/max));
+		double er2 = Math.max(ir, (r*Math.log(tag.getValue(CrystalElement.BLACK)+o)/max));
 		Tessellator.instance.startDrawing(GL11.GL_TRIANGLE_FAN);
 		Tessellator.instance.setColorOpaque_I(!fr.output ? 0xffffff : 0x202020);
 		Tessellator.instance.addVertex(ox, oy, 0);
 		Tessellator.instance.setColorOpaque_I(fr.output ? 0xffffff : 0x6a6a6a);
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[15-i];
-			double val = Math.log(fr.cost.getValue(e)+o);
+			double val = Math.log(tag.getValue(e)+o);
 			double a = Math.toRadians(e.ordinal()*22.5-90);
-			int er = Math.max(ir, (int)(r*val/max));
-			int dx = ox+(int)(er*Math.cos(a));
-			int dy = oy+(int)(er*Math.sin(a));
+			double er = Math.max(ir, r*val/max);
+			double dx = ox+er*Math.cos(a);
+			double dy = oy+er*Math.sin(a);
 			Tessellator.instance.setBrightness(240);
 			if (i == 0) {
 				Tessellator.instance.addVertex(ox, oy-er2, 0);
@@ -250,12 +260,12 @@ public class GlowFireHandler extends TemplateRecipeHandler {
 		Tessellator.instance.setColorOpaque_I(0);
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];
-			double val = Math.log(fr.cost.getValue(e)+o);
+			double val = Math.log(tag.getValue(e)+o);
 			//ReikaJavaLibrary.pConsole(e+":"+val+"/"+max);
 			double a = Math.toRadians(e.ordinal()*22.5-90);
-			int er = Math.max(ir, (int)(r*val/max));
-			int dx = ox+(int)(er*Math.cos(a));
-			int dy = oy+(int)(er*Math.sin(a));
+			double er = Math.max(ir, r*val/max);
+			double dx = ox+er*Math.cos(a);
+			double dy = oy+er*Math.sin(a);
 			Tessellator.instance.setColorOpaque_I(e.getColor());
 			Tessellator.instance.addVertex(dx, dy, 0);
 			//IIcon ico = e.getGlowRune();
@@ -269,13 +279,13 @@ public class GlowFireHandler extends TemplateRecipeHandler {
 
 		GL11.glPopAttrib();
 
-		int r2 = r+6;
+		double r2 = r+6;
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];
-			double val = Math.log(fr.cost.getValue(e)+o);
+			double val = Math.log(tag.getValue(e)+o);
 			double a = Math.toRadians(e.ordinal()*22.5-90);
-			int dx = ox+(int)(r2*Math.cos(a))-4;
-			int dy = oy+(int)(r2*Math.sin(a))-4;
+			int dx = (int)(ox+r2*Math.cos(a))-4;
+			int dy = (int)(oy+r2*Math.sin(a))-4;
 			Tessellator.instance.setColorOpaque_I(e.getColor());
 			Tessellator.instance.addVertex(dx, dy, 0);
 			IIcon ico = e.getGlowRune();
@@ -283,9 +293,9 @@ public class GlowFireHandler extends TemplateRecipeHandler {
 			ReikaTextureHelper.bindTerrainTexture();
 			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(dx, dy, ico, 8, 8);
 
-			if (fr.cost.getValue(e) > 0) {
+			if (tag.getValue(e) > 0) {
 				int c = ReikaColorAPI.mixColors(e.getColor(), 0xffffff, 0.5F);
-				String s = String.valueOf(fr.cost.getValue(e));
+				String s = String.valueOf(tag.getValue(e));
 				int tx = dx > ox ? dx+9 : dx-Minecraft.getMinecraft().fontRenderer.getStringWidth(s);
 				int ty = dy+1;
 				Minecraft.getMinecraft().fontRenderer.drawString(s, tx, ty, c);

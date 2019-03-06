@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -94,6 +94,8 @@ public class ChromaStacks {
 	public static final ItemStack lumenGem			= ChromaItems.TIERED.getStackOfMetadata(23);
 	public static final ItemStack avolite			= ChromaItems.TIERED.getStackOfMetadata(24);
 	public static final ItemStack snowLoot	 		= ChromaItems.TIERED.getStackOfMetadata(25);
+	public static final ItemStack bedrockloot		= ChromaItems.TIERED.getStackOfMetadata(26);
+	public static final ItemStack bedrockloot2		= ChromaItems.TIERED.getStackOfMetadata(27);
 
 	public static final ItemStack miasma			= ChromaItems.DIMGEN.getStackOfMetadata(0);
 	public static final ItemStack floatstone		= ChromaItems.DIMGEN.getStackOfMetadata(1);
@@ -104,6 +106,7 @@ public class ChromaStacks {
 	public static final ItemStack crysleaf			= ChromaItems.DIMGEN.getStackOfMetadata(6);
 	public static final ItemStack oceanrock			= ChromaItems.DIMGEN.getStackOfMetadata(7);
 	public static final ItemStack cliffshard		= ChromaItems.DIMGEN.getStackOfMetadata(8);
+	public static final ItemStack glowcavedust		= ChromaItems.DIMGEN.getStackOfMetadata(9);
 	//public static final ItemStack forestloot		= ChromaItems.DIMGEN.getStackOfMetadata(16);
 	//public static final ItemStack islandloot		= ChromaItems.DIMGEN.getStackOfMetadata(17);
 	//public static final ItemStack plainsloot		= ChromaItems.DIMGEN.getStackOfMetadata(18);
@@ -177,22 +180,22 @@ public class ChromaStacks {
 	}
 
 	private static final ItemStack[] shards = {
-		ChromaItems.SHARD.getStackOfMetadata(0),
-		ChromaItems.SHARD.getStackOfMetadata(1),
-		ChromaItems.SHARD.getStackOfMetadata(2),
-		ChromaItems.SHARD.getStackOfMetadata(3),
-		ChromaItems.SHARD.getStackOfMetadata(4),
-		ChromaItems.SHARD.getStackOfMetadata(5),
-		ChromaItems.SHARD.getStackOfMetadata(6),
-		ChromaItems.SHARD.getStackOfMetadata(7),
-		ChromaItems.SHARD.getStackOfMetadata(8),
-		ChromaItems.SHARD.getStackOfMetadata(9),
-		ChromaItems.SHARD.getStackOfMetadata(10),
-		ChromaItems.SHARD.getStackOfMetadata(11),
-		ChromaItems.SHARD.getStackOfMetadata(12),
-		ChromaItems.SHARD.getStackOfMetadata(13),
-		ChromaItems.SHARD.getStackOfMetadata(14),
-		ChromaItems.SHARD.getStackOfMetadata(15),
+			ChromaItems.SHARD.getStackOfMetadata(0),
+			ChromaItems.SHARD.getStackOfMetadata(1),
+			ChromaItems.SHARD.getStackOfMetadata(2),
+			ChromaItems.SHARD.getStackOfMetadata(3),
+			ChromaItems.SHARD.getStackOfMetadata(4),
+			ChromaItems.SHARD.getStackOfMetadata(5),
+			ChromaItems.SHARD.getStackOfMetadata(6),
+			ChromaItems.SHARD.getStackOfMetadata(7),
+			ChromaItems.SHARD.getStackOfMetadata(8),
+			ChromaItems.SHARD.getStackOfMetadata(9),
+			ChromaItems.SHARD.getStackOfMetadata(10),
+			ChromaItems.SHARD.getStackOfMetadata(11),
+			ChromaItems.SHARD.getStackOfMetadata(12),
+			ChromaItems.SHARD.getStackOfMetadata(13),
+			ChromaItems.SHARD.getStackOfMetadata(14),
+			ChromaItems.SHARD.getStackOfMetadata(15),
 	};
 
 }

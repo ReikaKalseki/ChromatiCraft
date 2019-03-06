@@ -564,7 +564,7 @@ public class ChromaAux {
 		return ep.noClip || Chromabilities.ORECLIP.enabledOn(ep);
 	}
 
-	public static AxisAlignedBB getInterceptedCollisionBox(Entity e, World world, int x, int y, int z) {
+	public static AxisAlignedBB getInterceptedCollisionBox(Entity e, World world, int x, int y, int z, AxisAlignedBB def) {
 		Block b = world.getBlock(x, y, z);
 		if (b == ChromaBlocks.SELECTIVEGLASS.getBlockInstance() && (e instanceof IProjectile || e instanceof EntityFireball || e instanceof CustomProjectile)) {
 			if (BlockSelectiveGlass.canEntityPass(world, x, y, z, e)) {
@@ -574,20 +574,20 @@ public class ChromaAux {
 		else if ((e instanceof IProjectile || e instanceof EntityFireball || e instanceof CustomProjectile) && AbilityHelper.instance.canProjectilePenetrateBlock(world, x, y, z, b, e)) {
 			return null;
 		}
-		return b.getCollisionBoundingBoxFromPool(world, x, y, z);
+		return def;
 	}
-
+	/*
 	public static MovingObjectPosition getInterceptedRaytrace(Entity e, Vec3 vec1, Vec3 vec2) {
 		return getInterceptedRaytrace(e, vec1, vec2, false, false, false);
 	}
-
-	public static MovingObjectPosition getInterceptedRaytrace(Entity e, Vec3 vec1, Vec3 vec2, boolean b1, boolean b2, boolean b3) {
+	 */
+	public static MovingObjectPosition getInterceptedRaytrace(Entity e, Vec3 vec1, Vec3 vec2, boolean b1, boolean b2, boolean b3, MovingObjectPosition def) {
 		if (e instanceof IProjectile || e instanceof EntityFireball || e instanceof CustomProjectile) {
 			if (AbilityHelper.instance.canProjectilePenetrateBlocks(e)) {
 				return AbilityHelper.instance.getProjectileRayTrace(e, vec1, vec2, b1, b2, b3);
 			}
 		}
-		return e.worldObj.func_147447_a(vec1, vec2, b1, b2, b3);
+		return def;
 	}
 
 	public static TileEntityLootChest generateLootChest(World world, int x, int y, int z, int m, String s, int bonus) {

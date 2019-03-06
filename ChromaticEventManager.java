@@ -188,6 +188,8 @@ import Reika.DragonAPI.Instantiable.Event.BlockTillEvent;
 import Reika.DragonAPI.Instantiable.Event.CanSeeSkyEvent;
 import Reika.DragonAPI.Instantiable.Event.ChunkPopulationEvent;
 import Reika.DragonAPI.Instantiable.Event.EnderAttackTPEvent;
+import Reika.DragonAPI.Instantiable.Event.EntityCollisionEvents.CollisionBoxEvent;
+import Reika.DragonAPI.Instantiable.Event.EntityCollisionEvents.RaytraceEvent;
 import Reika.DragonAPI.Instantiable.Event.EntitySpawnerCheckEvent;
 import Reika.DragonAPI.Instantiable.Event.FarmlandTrampleEvent;
 import Reika.DragonAPI.Instantiable.Event.FireSpreadEvent;
@@ -262,6 +264,16 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	public void overrideCollision(CollisionBoxEvent evt) {
+		evt.box = ChromaAux.getInterceptedCollisionBox(evt.entity, evt.world, evt.xCoord, evt.yCoord, evt.zCoord, evt.box);
+	}
+
+	@SubscribeEvent
+	public void overrideRaytrace(RaytraceEvent evt) {
+		evt.result = ChromaAux.getInterceptedRaytrace(evt.entity, evt.pos1, evt.pos2, evt.flag1, evt.flag2, evt.flag3, evt.result);
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)

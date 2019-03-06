@@ -431,6 +431,10 @@ public final class ElementTagCompound {
 		}
 	}
 
+	public float getFraction(CrystalElement e) {
+		return this.getValue(e)/(float)this.getTotalEnergy();
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		return o instanceof ElementTagCompound && ((ElementTagCompound)o).data.equals(data);

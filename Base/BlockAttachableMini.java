@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -62,7 +62,42 @@ public abstract class BlockAttachableMini extends Block implements SidedBlock {
 	}
 
 	public final boolean canPlaceOn(World world, int x, int y, int z, int side) {
-		return world.getBlock(x, y, z).isSideSolid(world, x, y, z, ForgeDirection.VALID_DIRECTIONS[side]);
+		Block b = world.getBlock(x, y, z);
+		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[side];
+		if (b.isSideSolid(world, x, y, z, dir))
+			return true;
+		if (b.getMaterial().isSolid()) {
+			b.setBlockBoundsBasedOnState(world, x, y, z);
+			switch(dir) {
+				case DOWN:
+					if (b.getBlockBoundsMinY() == 0)
+						return true;
+					break;
+				case UP:
+					if (b.getBlockBoundsMaxY() == 1)
+						return true;
+					break;
+				case EAST:
+					if (b.getBlockBoundsMinX() == 0)
+						return true;
+					break;
+				case WEST:
+					if (b.getBlockBoundsMaxX() == 1)
+						return true;
+					break;
+				case NORTH:
+					if (b.getBlockBoundsMinZ() == 0)
+						return true;
+					break;
+				case SOUTH:
+					if (b.getBlockBoundsMaxZ() == 1)
+						return true;
+					break;
+				default:
+					break;
+			}
+		}
+		return false;
 	}
 
 	public final void setSide(World world, int x, int y, int z, int side) {

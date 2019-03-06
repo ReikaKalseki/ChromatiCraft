@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -48,6 +48,10 @@ public class GuiFluidRelay extends GuiChromaBase {
 		int iny = 45;
 		buttonList.add(new ImagedGuiButton(0, j+in, k+iny, 10, 10, 100, 66, tex, ChromatiCraft.class));
 		buttonList.add(new ImagedGuiButton(1, j+xSize-10-in, k+iny, 10, 10, 100, 56, tex, ChromatiCraft.class));
+
+		int d = 14;
+		buttonList.add(new ImagedGuiButton(2, j+in-d, k+iny, 10, 10, 90, 56, tex, ChromatiCraft.class));
+		buttonList.add(new ImagedGuiButton(3, j+xSize-10-in+d, k+iny, 10, 10, 90, 76, tex, ChromatiCraft.class));
 	}
 
 	@Override
@@ -61,6 +65,12 @@ public class GuiFluidRelay extends GuiChromaBase {
 				break;
 			case 1:
 				delta = n;
+				break;
+			case 2:
+				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.RELAYCLEAR.ordinal(), relay);
+				break;
+			case 3:
+				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.RELAYCOPY.ordinal(), relay);
 				break;
 		}
 		if (delta != 0) {

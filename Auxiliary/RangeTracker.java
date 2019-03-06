@@ -1,5 +1,7 @@
 package Reika.ChromatiCraft.Auxiliary;
 
+import net.minecraft.nbt.NBTTagCompound;
+
 import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -8,10 +10,10 @@ import Reika.DragonAPI.Base.TileEntityBase;
 
 public class RangeTracker {
 
-	private final int baseRange;
+	protected final int baseRange;
 	private final int stepSpeed;
 
-	private int currentRange;
+	protected int currentRange;
 
 	public RangeTracker(int r) {
 		this(r, 1);
@@ -27,7 +29,7 @@ public class RangeTracker {
 		return currentRange;
 	}
 
-	private int getMaxUpgradedRange(RangeUpgradeable te) {
+	protected final int getMaxUpgradedRange(RangeUpgradeable te) {
 		int max = baseRange;
 		int boost = TileEntityAdjacencyUpgrade.getAdjacentUpgrade((TileEntityBase)te, CrystalElement.LIME);
 		if (boost > 0) {
@@ -41,7 +43,7 @@ public class RangeTracker {
 		currentRange = this.getMaxUpgradedRange(te);
 	}
 
-	public boolean update(RangeUpgradeable te) {
+	public final boolean update(RangeUpgradeable te) {
 		int max = this.getMaxUpgradedRange(te);
 		if (max > currentRange) {
 			currentRange = Math.min(max, currentRange+stepSpeed);
@@ -52,6 +54,60 @@ public class RangeTracker {
 			return true;
 		}
 		return false;
+	}
+
+	public static final class ConfigurableRangeTracker extends RangeTracker {
+
+		private final int minimumRange;
+
+		private int configuredRange;
+
+		public ConfigurableRangeTracker(int r, int min) {
+			super(r);
+			minimumRange = min;
+			configuredRange = baseRange;
+		}
+
+		public ConfigurableRangeTracker(int r, int s, int min) {
+			super(r, s);
+			minimumRange = min;
+			configuredRange = baseRange;
+		}
+
+		@Override
+		public void initialize(RangeUpgradeable te) {
+			currentRange = configuredRange;
+		}
+
+		public boolean decrement(RangeUpgradeable te, int amt) {
+			return this.setRange(Math.max(configuredRange-amt, minimumRange));
+		}
+
+		public boolean increment(RangeUpgradeable te, int amt) {
+			return this.setRange(Math.min(configuredRange+amt, this.getMaxUpgradedRange(te)));
+		}
+
+		private boolean setRange(int r) {
+			if (r != configuredRange) {
+				configuredRange = r;
+				return true;
+			}
+			return false;
+		}
+
+		@Override
+		public int getRange() {
+			return Math.min(super.getRange(), configuredRange);
+		}
+
+		public void writeToNBT(NBTTagCompound tag) {
+			tag.setInteger("range", configuredRange);
+		}
+
+		public void readFromNBT(NBTTagCompound tag) {
+			configuredRange = tag.getInteger("range");
+		}
+
 	}
 
 }

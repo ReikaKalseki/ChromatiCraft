@@ -83,9 +83,9 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 			//ENTITYCOLLISION("net.minecraft.entity.Entity", "sa"),
 			COLLISIONBOXES("net.minecraft.world.World", "ahb"),
 			ENTITYPUSHOUT("net.minecraft.client.entity.EntityPlayerSP", "blk"),
-			RAYTRACEHOOK1("net.minecraft.entity.projectile.EntityArrow", "zc"),
-			RAYTRACEHOOK2("net.minecraft.entity.projectile.EntityThrowable", "zk"),
-			RAYTRACEHOOK3("net.minecraft.entity.projectile.EntityFireball", "ze"),
+			//RAYTRACEHOOK1("net.minecraft.entity.projectile.EntityArrow", "zc"),
+			//RAYTRACEHOOK2("net.minecraft.entity.projectile.EntityThrowable", "zk"),
+			//RAYTRACEHOOK3("net.minecraft.entity.projectile.EntityFireball", "ze"),
 			STOPSLOWFALL("net.minecraft.entity.EntityLivingBase", "sv"),
 			TRANSPARENCY1("net.minecraft.block.BlockDirt", "akl"),
 			TRANSPARENCY2("net.minecraft.block.BlockGrass", "alh"),
@@ -277,7 +277,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						m.instructions.remove(ain);
 						ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");
 						break;
-					}
+					}/*
 					case RAYTRACEHOOK1:
 					case RAYTRACEHOOK2:
 					case RAYTRACEHOOK3: {
@@ -324,7 +324,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						//ReikaJavaLibrary.pConsole(ReikaASMHelper.clearString(m.instructions));
 						ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");
 						break;
-					}
+					}*/
 					case STOPSLOWFALL: {
 						MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_70612_e", "moveEntityWithHeading", "(FF)V");
 

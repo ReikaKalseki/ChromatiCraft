@@ -142,8 +142,7 @@ public class AbilityCalls {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public
-	static void doNukerFX(World world, int x, int y, int z, EntityPlayer ep) {
+	public static void doNukerFX(World world, int x, int y, int z, EntityPlayer ep) {
 		double lx = x+0.5-ep.posX;
 		double ly = y+0.5-ep.posY;
 		double lz = z+0.5-ep.posZ;

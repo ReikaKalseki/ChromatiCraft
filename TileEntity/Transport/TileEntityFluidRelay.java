@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -25,6 +26,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -259,7 +261,7 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 		return Arrays.copyOf(fluidAccess, fluidAccess.length);
 	}
 
-	private IFluidHandler getTank() {
+	public IFluidHandler getTank() {
 		TileEntity te = this.getAdjacentTileEntity(this.getFacing());
 		return te instanceof IFluidHandler ? (IFluidHandler)te : null;
 	}
@@ -307,7 +309,28 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 
 	@Override
 	public boolean checkLocationValidity() {
-		return worldObj.getBlock(xCoord+facing.offsetX, yCoord+facing.offsetY, zCoord+facing.offsetZ).getMaterial().isSolid();
+		ForgeDirection dir = this.getFacing();
+		Block b = worldObj.getBlock(xCoord+dir.offsetX, yCoord+dir.offsetY, zCoord+dir.offsetZ);
+		if (b.getMaterial().isSolid()) {
+			b.setBlockBoundsBasedOnState(worldObj, xCoord+dir.offsetX, yCoord+dir.offsetY, zCoord+dir.offsetZ);
+			switch(dir.getOpposite()) {
+				case DOWN:
+					return b.getBlockBoundsMinY() == 0;
+				case UP:
+					return b.getBlockBoundsMaxY() == 1;
+				case WEST:
+					return b.getBlockBoundsMinX() == 0;
+				case EAST:
+					return b.getBlockBoundsMaxX() == 1;
+				case NORTH:
+					return b.getBlockBoundsMinZ() == 0;
+				case SOUTH:
+					return b.getBlockBoundsMaxZ() == 1;
+				default:
+					break;
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -336,18 +359,49 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 		network.updateState(this);
 	}
 
+	public void clearFilters() {
+		for (int i = 0; i < 7; i++) {
+			fluidAccess[i] = null;
+		}
+		this.rebuildFluidLists();
+	}
+
+	public void copyFilters() {
+		for (int i = 0; i < 7; i++) {
+			fluidAccess[i] = null;
+		}
+		IFluidHandler ifl = this.getTank();
+		if (ifl != null) {
+			int idx = 0;
+			FluidTankInfo[] info = ifl.getTankInfo(this.getFacing().getOpposite());
+			for (int i = 0; i < info.length; i++) {
+				if (info[i] != null && info[i].fluid != null) {
+					fluidAccess[idx] = info[i].fluid.getFluid();
+					idx++;
+					if (idx >= 7)
+						break;
+				}
+			}
+		}
+		this.rebuildFluidLists();
+	}
+
 	public void setFluid(int slot, Fluid f) {
 		if (fluidAccess[slot] != f) {
 			fluidAccess[slot] = f;
-			fluidTypes.clear();
-			for (int i = 0; i < fluidAccess.length; i++) {
-				Fluid in = fluidAccess[i];
-				if (in != null)
-					fluidTypes.add(in);
-			}
-			if (network != null)
-				network.updateState(this);
+			this.rebuildFluidLists();
 		}
+	}
+
+	private void rebuildFluidLists() {
+		fluidTypes.clear();
+		for (int i = 0; i < fluidAccess.length; i++) {
+			Fluid in = fluidAccess[i];
+			if (in != null)
+				fluidTypes.add(in);
+		}
+		if (network != null)
+			network.updateState(this);
 	}
 
 	@Override

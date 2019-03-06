@@ -170,7 +170,13 @@ public class ItemChromaPlacer extends Item implements ISize {
 		else
 			te.setBlockMetadata(ChromaAux.get4SidedMetadataFromPlayerLook(ep));
 		if (m.isSidePlaced()) {
-			((SidePlacedTile)te).placeOnSide(side);
+			SidePlacedTile s = (SidePlacedTile)te;
+			s.placeOnSide(side);
+			if (!s.checkLocationValidity()) {
+				world.setBlock(x, y, z, Blocks.air);
+				is.stackSize++;
+				return false;
+			}
 		}
 		if (m == ChromaTiles.AURAPOINT) {
 			((TileEntityAuraPoint)te).savePoint();

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -452,7 +452,7 @@ public class TieredOreRenderer implements ISBRH {
 
 	@Override
 	public int getRenderId() {
-		return ChromatiCraft.proxy.runeRender;
+		return ChromatiCraft.proxy.oreRender;
 	}
 
 

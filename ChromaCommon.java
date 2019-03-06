@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -43,6 +43,7 @@ public class ChromaCommon {
 	public static int everfluidRender;
 	public static int cliffstoneRender;
 	public static int caveIndicatorRender;
+	public static int bedrockCrackRender;
 
 	public static int armor;
 

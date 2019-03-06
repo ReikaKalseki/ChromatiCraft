@@ -92,6 +92,7 @@ import Reika.ChromatiCraft.Render.Entity.RenderThrownGem;
 import Reika.ChromatiCraft.Render.Entity.RenderTunnelNuker;
 import Reika.ChromatiCraft.Render.Entity.RenderVacuum;
 import Reika.ChromatiCraft.Render.ISBRH.ArtefactRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.BedrockCrackRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CaveIndicatorRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CliffStoneRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.ColorLockRenderer;
@@ -201,6 +202,7 @@ public class ChromaClient extends ChromaCommon {
 	public static final EverFluidRenderer everfluid = new EverFluidRenderer();
 	public static final CliffStoneRenderer cliffstone = new CliffStoneRenderer();
 	public static final CaveIndicatorRenderer indicator = new CaveIndicatorRenderer();
+	private static final BedrockCrackRenderer bedrockcrack = new BedrockCrackRenderer();
 
 	private static final EnderCrystalRenderer csr = new EnderCrystalRenderer();
 
@@ -425,6 +427,7 @@ public class ChromaClient extends ChromaCommon {
 
 		oreRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(oreRender, ore);
+
 		plantRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(plantRender, plant);
 
@@ -445,6 +448,9 @@ public class ChromaClient extends ChromaCommon {
 
 		caveIndicatorRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(caveIndicatorRender, indicator);
+
+		bedrockCrackRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(bedrockCrackRender, bedrockcrack);
 	}
 
 	private void registerBlockSheets() {

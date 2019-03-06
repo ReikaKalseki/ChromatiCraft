@@ -91,7 +91,7 @@ public class DimensionDecoRenderer implements ISBRH {
 			Tessellator.instance.setBrightness(240);
 			Tessellator.instance.addTranslation(0, -0.08F, 0);
 			for (int pass = 0; pass <= 1; pass++) {
-				List<IIcon> li = type.getIcons(pass);
+				List<IIcon> li = type.getItemIcons(pass);
 				for (IIcon ico : li) {
 					float f = 0.5F;
 					Tessellator.instance.setColorOpaque_F(f, f, f);
@@ -123,7 +123,7 @@ public class DimensionDecoRenderer implements ISBRH {
 		if (renderPass == 0) {
 			if (type.hasBlockRender()) {
 				rb.renderStandardBlockWithAmbientOcclusion(b, x, y, z, 1, 1, 1);
-				List<IIcon> li = type.getIcons(0);
+				List<IIcon> li = type.getIcons(world, x, y, z, 0);
 				int idx = 0;
 				for (IIcon ico : li) {
 					Tessellator.instance.setBrightness(240);
@@ -157,7 +157,7 @@ public class DimensionDecoRenderer implements ISBRH {
 		}
 		else if (renderPass == 1) {
 			if (type.hasBlockRender()) {
-				List<IIcon> li = type.getIcons(1);
+				List<IIcon> li = type.getIcons(world, x, y, z, 1);
 				int idx = 0;
 				for (IIcon ico : li) {
 					Tessellator.instance.setBrightness(240);
@@ -316,7 +316,7 @@ public class DimensionDecoRenderer implements ISBRH {
 				v5.setBrightness(240);
 				int c = ReikaColorAPI.getModifiedHue(0x0000ff, 220+(int)(80*Math.sin((x*x*2+y*y+z*z*8)/(100000D*20))));
 				v5.setColorOpaque_I(c);
-				IIcon ico = type.getIcons(1).get(0);
+				IIcon ico = type.getIcons(world, x, y, z, 1).get(0);
 				float u = ico.getMinU();
 				float v = ico.getMinV();
 				float du = ico.getMaxU();
@@ -492,7 +492,7 @@ public class DimensionDecoRenderer implements ISBRH {
 			case LIFEWATER: {
 				v5.setBrightness(240);
 				v5.setColorOpaque_I(0xffffff);
-				IIcon ico = type.getIcons(1).get(0);
+				IIcon ico = type.getIcons(world, x, y, z, 1).get(0);
 				float u = ico.getMinU();
 				float v = ico.getMinV();
 				float du = ico.getMaxU();

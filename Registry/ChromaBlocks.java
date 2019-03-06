@@ -54,6 +54,7 @@ import Reika.ChromatiCraft.Block.BlockPath;
 import Reika.ChromatiCraft.Block.BlockPath.PathType;
 import Reika.ChromatiCraft.Block.BlockPolyCrystal;
 import Reika.ChromatiCraft.Block.BlockPylonStructure;
+import Reika.ChromatiCraft.Block.BlockRFNode;
 import Reika.ChromatiCraft.Block.BlockRedstonePod;
 import Reika.ChromatiCraft.Block.BlockRift;
 import Reika.ChromatiCraft.Block.BlockRouterNode;
@@ -263,6 +264,7 @@ public enum ChromaBlocks implements BlockEnum {
 	//SPAWNERCONTROL(BlockSpawnerShutdown.class,	ItemBlockSidePlaced.class,		"chroma.spawnershutdown"),
 	TRAPFLOOR(BlockTrapFloor.class,												"chroma.trapfloor"),
 	BEDROCKCRACK(BlockBedrockCrack.class,										"chroma.bedrockcrack"),
+	RFPOD(BlockRFNode.class,					ItemBlockSidePlaced.class,		"chroma.rfpod");
 	;
 
 	private Class blockClass;
@@ -558,6 +560,7 @@ public enum ChromaBlocks implements BlockEnum {
 				//case SPAWNERCONTROL:
 			case TRAPFLOOR:
 			case BEDROCKCRACK:
+			case RFPOD:
 				return false;
 			default:
 				return true;

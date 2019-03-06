@@ -145,7 +145,7 @@ public enum ChromaPackets {
 	FLAREATTACK(1),
 	ASPECTMODE(),
 	FLUIDSEND(5),
-	COLLECTORRANGE(1),
+	COLLECTORRANGE(2),
 	LEAVEDIM(),
 	DIMSOUND(),
 	SKYRIVER_SYNC(),
@@ -156,6 +156,8 @@ public enum ChromaPackets {
 	TELEPORTCONFIRM(1),
 	BIOMELOCS(),
 	RELAYPRESSURE(1),
+	RELAYCOPY(),
+	RELAYCLEAR(),
 	RELAYFLUID(1),
 	RELAYFILTER(2),
 	ROUTERFILTERFLAG(1),
@@ -184,6 +186,7 @@ public enum ChromaPackets {
 	OPTIMIZE(1),
 	ENDEREYESYNC(2),
 	NODERECEIVERSYNC(),
+	RFWEBSEND(4),
 	;
 
 	public final int numInts;

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -55,7 +55,12 @@ public class CrystalTankRecipe extends PylonCastingRecipe {
 	}
 
 	@Override
+	public int getNumberProduced() {
+		return 2;
+	}
+
+	@Override
 	public int getTypicalCraftedAmount() {
-		return 16;
+		return 12;
 	}
 }

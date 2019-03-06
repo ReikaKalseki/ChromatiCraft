@@ -239,6 +239,7 @@ public enum ChromaResearch implements ProgressElement {
 	//SPAWNERCONTROL(	ChromaBlocks.SPAWNERCONTROL,									ResearchLevel.RAWEXPLORE,	ProgressStage.BREAKSPAWNER),
 	TRAPFLOOR(		ChromaBlocks.TRAPFLOOR,											ResearchLevel.RAWEXPLORE,	ProgressStage.SNOWSTRUCT),
 	WARPNODE(		ChromaBlocks.WARPNODE,											ResearchLevel.RAWEXPLORE,	ProgressStage.WARPNODE),
+	RFPOD	(		ChromaBlocks.RFPOD,												ResearchLevel.RUNECRAFT),
 
 	TOOLDESC("Tools", ""),
 	WAND(				ChromaItems.TOOL,			ResearchLevel.ENTRY),
@@ -909,6 +910,8 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == HEATLAMP)
 			return true;
 		if (this == REDSTONEPOD)
+			return true;
+		if (this == RFPOD)
 			return true;
 		if (this == COLORALTAR)
 			return true;
