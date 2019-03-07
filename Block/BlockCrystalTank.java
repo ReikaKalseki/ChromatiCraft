@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Render.ISBRH.TankBlockRenderer;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
@@ -162,6 +163,17 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 	}
 
 	@Override
+	public int getRenderBlockPass() {
+		return 1;
+	}
+
+	@Override
+	public boolean canRenderInPass(int pass) {
+		TankBlockRenderer.renderPass = pass;
+		return pass <= 1;
+	}
+
+	@Override
 	public void onBlockAdded(World world, int x, int y, int z) {
 		CrystalTankAuxTile te = new CrystalTankAuxTile();
 		world.setTileEntity(x, y, z, te);
@@ -245,7 +257,7 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 	public void breakBlock(World world, int x, int y, int z, Block old, int oldmeta) {
 		CrystalTankAuxTile te = (CrystalTankAuxTile)world.getTileEntity(x, y, z);
 		if (te != null) {
-			te.removeFromTank();
+			te.removeFromTank(oldmeta);
 		}
 		for (int i = 0; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
@@ -282,13 +294,17 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 		public void addToTank() {
 			TileEntityCrystalTank te = this.getTankController();
 			if (te != null)
-				te.addCoordinate(xCoord, yCoord, zCoord);
+				te.addCoordinate(xCoord, yCoord, zCoord, this.getBaseMetadata());
 		}
 
 		public void removeFromTank() {
+			this.removeFromTank(this.getBaseMetadata());
+		}
+
+		public void removeFromTank(int oldmeta) {
 			TileEntityCrystalTank te = this.getTankController();
 			if (te != null)
-				te.removeCoordinate(xCoord, yCoord, zCoord);
+				te.removeCoordinate(xCoord, yCoord, zCoord, oldmeta-oldmeta%2);
 			this.reset();
 		}
 
@@ -301,7 +317,7 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, this.getBaseMetadata(), 3);
 		}
 
-		private int getBaseMetadata() {
+		public int getBaseMetadata() {
 			return this.getBlockMetadata()-this.getBlockMetadata()%2;
 		}
 

@@ -910,6 +910,9 @@ public class ChromatiPackets implements PacketHandler {
 				case RELAYCOPY:
 					((TileEntityFluidRelay)tile).copyFilters();
 					break;
+				case RELAYAUTO:
+					((TileEntityFluidRelay)tile).autoFilter = !((TileEntityFluidRelay)tile).autoFilter;
+					break;
 				case RELAYFLUID:
 					((TileEntityFluidRelay)tile).sendFluidParticles(world, x, y, z, FluidRegistry.getFluid(data[0]));
 					break;

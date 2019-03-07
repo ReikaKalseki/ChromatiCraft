@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidRelay;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Effects.TruncatedCube;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
@@ -35,7 +36,7 @@ public class RenderFluidRelay extends ChromaRenderBase {
 
 	private final ModelFluidRelay model = new ModelFluidRelay();
 
-	private static final TruncatedCube cube = new TruncatedCube(0.045, 0.125);
+	private static final TruncatedCube cube = new TruncatedCube(0.01, 0.125);
 	private static long connectionAlphaTick;
 	private static float connectionAlphaPTick;
 	private static int connectionAlphaOverride = 0;
@@ -100,9 +101,13 @@ public class RenderFluidRelay extends ChromaRenderBase {
 			int c1 = 0x90909090;
 			int c2 = 0xffffffff;
 
+			if (te.autoFilter) {
+				int t = (int)(((te.getTicksExisted()+par8)*2.4)%360);
+				c1 = 0x90000000 | ReikaColorAPI.getModifiedHue(0xffa0a0, t);
+			}
+
 			GL11.glColor4f(1, 1, 1, 1);
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
-			TruncatedCube cube = new TruncatedCube(0.01, 0.125);
 			GL11.glEnable(GL11.GL_BLEND);
 			BlendMode.ADDITIVEDARK.apply();
 			GL11.glDisable(GL11.GL_LIGHTING);

@@ -72,6 +72,8 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 	private int lastPressure;
 	private int currentPressure;
 
+	public boolean autoFilter = false;
+
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		cacheTimer.update();
@@ -80,14 +82,19 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 		}
 
 		if (!world.isRemote) {
+			currentPressure = this.getBasePressure()+this.getDynamicPressure();
 			if (this.getFunctionPressure() != 0) {
 				pressureUpdate.update();
 				if (pressureUpdate.checkCap()) {
 					lastPressure = currentPressure;
-					currentPressure = this.getBasePressure()+this.getDynamicPressure();
 					if (currentPressure != lastPressure) {
 						network.updateState(this);
 					}
+				}
+			}
+			if (autoFilter) {
+				if (this.getTicksExisted()%10 == 0) {
+					this.copyFilters();
 				}
 			}
 			network.update(world);
@@ -152,6 +159,8 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 		NBT.setInteger("press", basePressure);
 		NBT.setInteger("func", pressureFunction);
 
+		NBT.setBoolean("auto", autoFilter);
+
 		NBTTagList li = new NBTTagList();
 		for (int i = 0; i < fluidAccess.length; i++) {
 			Fluid f = fluidAccess[i];
@@ -175,6 +184,8 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 		basePressure = NBT.getInteger("press");
 		pressureFunction = NBT.getInteger("func");
 		facing = dirs[NBT.getInteger("face")];
+
+		autoFilter = NBT.getBoolean("auto");
 
 		fluidTypes.clear();
 		NBTTagList li = NBT.getTagList("fluids", NBTTypes.STRING.ID);
@@ -441,13 +452,14 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 	}
 
 	private void rebuildFluidLists() {
+		HashSet<Fluid> old = new HashSet(fluidTypes);
 		fluidTypes.clear();
 		for (int i = 0; i < fluidAccess.length; i++) {
 			Fluid in = fluidAccess[i];
 			if (in != null)
 				fluidTypes.add(in);
 		}
-		if (network != null)
+		if (network != null && !old.equals(fluidTypes))
 			network.updateState(this);
 	}
 

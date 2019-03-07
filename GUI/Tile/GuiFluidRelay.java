@@ -57,7 +57,9 @@ public class GuiFluidRelay extends GuiChromaBase {
 
 		int dx = 14;
 		buttonList.add(new CustomSoundImagedGuiButton(4, j+in-dx, k+iny, 10, 10, 90, 56, tex, ChromatiCraft.class, this));
-		buttonList.add(new CustomSoundImagedGuiButton(5, j+xSize-10-in+dx, k+iny, 10, 10, 90, 76, tex, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(5, j+xSize-10-in+dx, k+iny-dy, 10, 10, 90, 76, tex, ChromatiCraft.class, this));
+
+		buttonList.add(new CustomSoundImagedGuiButton(6, j+xSize-10-in+dx, k+iny+dy, 10, 10, 90, relay.autoFilter ? 86 : 56, tex, ChromatiCraft.class, this));
 	}
 
 	@Override
@@ -85,6 +87,10 @@ public class GuiFluidRelay extends GuiChromaBase {
 			case 5:
 				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.RELAYCOPY.ordinal(), relay);
 				break;
+			case 6:
+				relay.autoFilter = !relay.autoFilter;
+				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.RELAYAUTO.ordinal(), relay);
+				break;
 		}
 		if (delta1 != 0) {
 			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.RELAYPRESSUREBASE.ordinal(), relay, delta1);
@@ -92,6 +98,7 @@ public class GuiFluidRelay extends GuiChromaBase {
 		if (delta2 != 0) {
 			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.RELAYPRESSUREVAR.ordinal(), relay, delta2);
 		}
+		this.initGui();
 	}
 
 	@Override

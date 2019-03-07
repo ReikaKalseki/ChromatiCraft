@@ -1,15 +1,15 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.ISBRH;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 import org.lwjgl.opengl.GL11;
 
@@ -22,6 +22,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.BlockCrystalTank.CrystalTankAuxTile;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
 import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
@@ -31,7 +32,7 @@ public class TankBlockRenderer implements ISBRH {
 
 	private static final ForgeDirection[] dirs = ForgeDirection.values();
 
-	public int renderPass = 0;
+	public static int renderPass = 0;
 
 	@Override
 	public void renderInventoryBlock(Block block, int metadata, int modelID, RenderBlocks rb) {
@@ -43,9 +44,11 @@ public class TankBlockRenderer implements ISBRH {
 		ConnectedTextureGlass b = (ConnectedTextureGlass)block;
 
 		boolean render5 = b.renderCentralTextureForItem(metadata);
+		boolean expand = metadata == 2;
 
 		IIcon ico = b.getIconForEdge(metadata, 0);
 		IIcon ico2 = b.getIconForEdge(metadata, 5);
+		IIcon ico3 = ChromaIcons.CAUSTICS_TINY_ALPHA.getIcon();
 		float u = ico.getMinU();
 		float du = ico.getMaxU();
 		float v = ico.getMinV();
@@ -56,12 +59,17 @@ public class TankBlockRenderer implements ISBRH {
 		float v2 = ico2.getMinV();
 		float dv2 = ico2.getMaxV();
 
+		float u3 = ico3.getMinU();
+		float du3 = ico3.getMaxU();
+		float v3 = ico3.getMinV();
+		float dv3 = ico3.getMaxV();
+
 		float dx = -0.5F;
 		float dy = -0.5F;
 		float dz = -0.5F;
 		v5.addTranslation(dx, dy, dz);
 
-		this.setFaceBrightness(v5, ForgeDirection.UP);
+		this.setFaceBrightness(v5, ForgeDirection.UP, 240);
 		v5.setNormal(0, 1, 0);
 		v5.addVertexWithUV(1, 1, 0, u, v);
 		v5.addVertexWithUV(0, 1, 0, du, v);
@@ -74,8 +82,14 @@ public class TankBlockRenderer implements ISBRH {
 			v5.addVertexWithUV(0, 1, 1, du2, dv2);
 			v5.addVertexWithUV(1, 1, 1, u2, dv2);
 		}
+		if (expand) {
+			v5.addVertexWithUV(1, 1, 0, u3, v3);
+			v5.addVertexWithUV(0, 1, 0, du3, v3);
+			v5.addVertexWithUV(0, 1, 1, du3, dv3);
+			v5.addVertexWithUV(1, 1, 1, u3, dv3);
+		}
 
-		this.setFaceBrightness(v5, ForgeDirection.DOWN);
+		this.setFaceBrightness(v5, ForgeDirection.DOWN, 240);
 		v5.addVertexWithUV(0, 0, 0, du, v);
 		v5.addVertexWithUV(1, 0, 0, u, v);
 		v5.addVertexWithUV(1, 0, 1, u, dv);
@@ -87,8 +101,14 @@ public class TankBlockRenderer implements ISBRH {
 			v5.addVertexWithUV(1, 0, 1, u2, dv2);
 			v5.addVertexWithUV(0, 0, 1, du2, dv2);
 		}
+		if (expand) {
+			v5.addVertexWithUV(0, 0, 0, du3, v3);
+			v5.addVertexWithUV(1, 0, 0, u3, v3);
+			v5.addVertexWithUV(1, 0, 1, u3, dv3);
+			v5.addVertexWithUV(0, 0, 1, du3, dv3);
+		}
 
-		this.setFaceBrightness(v5, ForgeDirection.EAST);
+		this.setFaceBrightness(v5, ForgeDirection.EAST, 240);
 		v5.addVertexWithUV(1, 0, 0, du, v);
 		v5.addVertexWithUV(1, 1, 0, u, v);
 		v5.addVertexWithUV(1, 1, 1, u, dv);
@@ -100,8 +120,14 @@ public class TankBlockRenderer implements ISBRH {
 			v5.addVertexWithUV(1, 1, 1, u2, dv2);
 			v5.addVertexWithUV(1, 0, 1, du2, dv2);
 		}
+		if (expand) {
+			v5.addVertexWithUV(1, 0, 0, du3, v3);
+			v5.addVertexWithUV(1, 1, 0, u3, v3);
+			v5.addVertexWithUV(1, 1, 1, u3, dv3);
+			v5.addVertexWithUV(1, 0, 1, du3, dv3);
+		}
 
-		this.setFaceBrightness(v5, ForgeDirection.WEST);
+		this.setFaceBrightness(v5, ForgeDirection.WEST, 240);
 		v5.addVertexWithUV(0, 1, 0, u, v);
 		v5.addVertexWithUV(0, 0, 0, du, v);
 		v5.addVertexWithUV(0, 0, 1, du, dv);
@@ -113,8 +139,14 @@ public class TankBlockRenderer implements ISBRH {
 			v5.addVertexWithUV(0, 0, 1, du2, dv2);
 			v5.addVertexWithUV(0, 1, 1, u2, dv2);
 		}
+		if (expand) {
+			v5.addVertexWithUV(0, 1, 0, u3, v3);
+			v5.addVertexWithUV(0, 0, 0, du3, v3);
+			v5.addVertexWithUV(0, 0, 1, du3, dv3);
+			v5.addVertexWithUV(0, 1, 1, u3, dv3);
+		}
 
-		this.setFaceBrightness(v5, ForgeDirection.SOUTH);
+		this.setFaceBrightness(v5, ForgeDirection.SOUTH, 240);
 		v5.addVertexWithUV(0, 1, 1, u, v);
 		v5.addVertexWithUV(0, 0, 1, du, v);
 		v5.addVertexWithUV(1, 0, 1, du, dv);
@@ -126,8 +158,14 @@ public class TankBlockRenderer implements ISBRH {
 			v5.addVertexWithUV(1, 0, 1, du2, dv2);
 			v5.addVertexWithUV(1, 1, 1, u2, dv2);
 		}
+		if (expand) {
+			v5.addVertexWithUV(0, 1, 1, u3, v3);
+			v5.addVertexWithUV(0, 0, 1, du3, v3);
+			v5.addVertexWithUV(1, 0, 1, du3, dv3);
+			v5.addVertexWithUV(1, 1, 1, u3, dv3);
+		}
 
-		this.setFaceBrightness(v5, ForgeDirection.NORTH);
+		this.setFaceBrightness(v5, ForgeDirection.NORTH, 240);
 		v5.addVertexWithUV(0, 0, 0, du, v);
 		v5.addVertexWithUV(0, 1, 0, u, v);
 		v5.addVertexWithUV(1, 1, 0, u, dv);
@@ -138,6 +176,12 @@ public class TankBlockRenderer implements ISBRH {
 			v5.addVertexWithUV(0, 1, 0, u2, v2);
 			v5.addVertexWithUV(1, 1, 0, u2, dv2);
 			v5.addVertexWithUV(1, 0, 0, du2, dv2);
+		}
+		if (expand) {
+			v5.addVertexWithUV(0, 0, 0, du3, v3);
+			v5.addVertexWithUV(0, 1, 0, u3, v3);
+			v5.addVertexWithUV(1, 1, 0, u3, dv3);
+			v5.addVertexWithUV(1, 0, 0, du3, dv3);
 		}
 
 		v5.addTranslation(-dx, -dy, -dz);
@@ -152,142 +196,152 @@ public class TankBlockRenderer implements ISBRH {
 		v5.addTranslation(x, y, z);
 
 		int mix = block.getMixedBrightnessForBlock(world, x, y, z);
-		v5.setBrightness(mix);
+		if (renderPass == 1) {
+			v5.setBrightness(240);
+		}
+		else {
+			v5.setBrightness(mix);
+		}
 		v5.setNormal(0, 1, 0);
 
 		CrystalTankAuxTile te = (CrystalTankAuxTile)world.getTileEntity(x, y, z);
+		int meta = te.getBaseMetadata();
 		TileEntityCrystalTank te2 = te.getTankController();
 		if (te2 != null) {
 			te2.lighting.update(te2.worldObj, x, y, z);
 		}
 
-		if (renderPass == 0) {
-			HashSet<Integer> li = null;
+		int d = 2;
+		int dx = ((x%d)+d)%d;
+		int dy = ((y%d)+d)%d;
+		int dz = ((z%d)+d)%d;
 
-			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.UP.ordinal())) {
-				li = b.getEdgesForFace(world, x, y, z, ForgeDirection.UP);
-				this.setFaceBrightness(v5, ForgeDirection.UP);
-				for (int edge : li) {
-					IIcon ico = b.getIconForEdge(world, x, y, z, edge);
-					float u = ico.getMinU();
-					float du = ico.getMaxU();
-					float v = ico.getMinV();
-					float dv = ico.getMaxV();
-					float uu = du-u;
-					float vv = dv-v;
-					float dx = uu/16F;
-					float dz = vv/16F;
+		ArrayList<IIcon> li = new ArrayList();
 
-					v5.addVertexWithUV(1, 1, 0, u, v);
-					v5.addVertexWithUV(0, 1, 0, du, v);
-					v5.addVertexWithUV(0, 1, 1, du, dv);
-					v5.addVertexWithUV(1, 1, 1, u, dv);
+		if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.UP.ordinal())) {
+			this.buildIconList(world, x, y, z, b, meta, ForgeDirection.UP, li);
+			this.setFaceBrightness(v5, ForgeDirection.UP, mix);
+			for (IIcon ico : li) {
+				float u = ico.getMinU();
+				float du = ico.getMaxU();
+				float v = ico.getMinV();
+				float dv = ico.getMaxV();
+				if (renderPass == 1) {
+					u = ico.getInterpolatedU(16D*dx/d);
+					v = ico.getInterpolatedV(16D*dz/d);
+					du = ico.getInterpolatedU(16D*(dx+1)/d);
+					dv = ico.getInterpolatedV(16D*(dz+1)/d);
+					//ReikaJavaLibrary.pConsole(dx+">"+(u-ico.getMinU())/(ico.getMaxU()-ico.getMinU()));
 				}
+				v5.addVertexWithUV(1, 1, 0, u, v);
+				v5.addVertexWithUV(0, 1, 0, du, v);
+				v5.addVertexWithUV(0, 1, 1, du, dv);
+				v5.addVertexWithUV(1, 1, 1, u, dv);
 			}
+		}
 
-			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.DOWN.ordinal())) {
-				li = b.getEdgesForFace(world, x, y, z, ForgeDirection.DOWN);
-				this.setFaceBrightness(v5, ForgeDirection.DOWN);
-				for (int edge : li) {
-					IIcon ico = b.getIconForEdge(world, x, y, z, edge);
-					float u = ico.getMinU();
-					float du = ico.getMaxU();
-					float v = ico.getMinV();
-					float dv = ico.getMaxV();
-					float uu = du-u;
-					float vv = dv-v;
-					float dx = uu/16F;
-					float dz = vv/16F;
-
-					v5.addVertexWithUV(0, 0, 0, du, v);
-					v5.addVertexWithUV(1, 0, 0, u, v);
-					v5.addVertexWithUV(1, 0, 1, u, dv);
-					v5.addVertexWithUV(0, 0, 1, du, dv);
+		if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.DOWN.ordinal())) {
+			this.buildIconList(world, x, y, z, b, meta, ForgeDirection.DOWN, li);
+			this.setFaceBrightness(v5, ForgeDirection.DOWN, mix);
+			for (IIcon ico : li) {
+				float u = ico.getMinU();
+				float du = ico.getMaxU();
+				float v = ico.getMinV();
+				float dv = ico.getMaxV();
+				if (renderPass == 1) {
+					u = ico.getInterpolatedU(16D*dx/d);
+					v = ico.getInterpolatedV(16D*dz/d);
+					du = ico.getInterpolatedU(16D*(dx+1)/d);
+					dv = ico.getInterpolatedV(16D*(dz+1)/d);
 				}
+				v5.addVertexWithUV(0, 0, 0, du, v);
+				v5.addVertexWithUV(1, 0, 0, u, v);
+				v5.addVertexWithUV(1, 0, 1, u, dv);
+				v5.addVertexWithUV(0, 0, 1, du, dv);
 			}
+		}
 
-			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.EAST.ordinal())) {
-				li = b.getEdgesForFace(world, x, y, z, ForgeDirection.EAST);
-				this.setFaceBrightness(v5, ForgeDirection.EAST);
-				for (int edge : li) {
-					IIcon ico = b.getIconForEdge(world, x, y, z, edge);
-					float u = ico.getMinU();
-					float du = ico.getMaxU();
-					float v = ico.getMinV();
-					float dv = ico.getMaxV();
-					float uu = du-u;
-					float vv = dv-v;
-					float dx = uu/16F;
-					float dz = vv/16F;
-
-					v5.addVertexWithUV(1, 0, 0, du, v);
-					v5.addVertexWithUV(1, 1, 0, u, v);
-					v5.addVertexWithUV(1, 1, 1, u, dv);
-					v5.addVertexWithUV(1, 0, 1, du, dv);
+		if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.EAST.ordinal())) {
+			this.buildIconList(world, x, y, z, b, meta, ForgeDirection.EAST, li);
+			this.setFaceBrightness(v5, ForgeDirection.EAST, mix);
+			for (IIcon ico : li) {
+				float u = ico.getMinU();
+				float du = ico.getMaxU();
+				float v = ico.getMinV();
+				float dv = ico.getMaxV();
+				if (renderPass == 1) {
+					u = ico.getInterpolatedU(16D*dy/d);
+					v = ico.getInterpolatedV(16D*dz/d);
+					du = ico.getInterpolatedU(16D*(dy+1)/d);
+					dv = ico.getInterpolatedV(16D*(dz+1)/d);
 				}
+				v5.addVertexWithUV(1, 0, 0, du, v);
+				v5.addVertexWithUV(1, 1, 0, u, v);
+				v5.addVertexWithUV(1, 1, 1, u, dv);
+				v5.addVertexWithUV(1, 0, 1, du, dv);
 			}
+		}
 
-			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.WEST.ordinal())) {
-				li = b.getEdgesForFace(world, x, y, z, ForgeDirection.WEST);
-				this.setFaceBrightness(v5, ForgeDirection.WEST);
-				for (int edge : li) {
-					IIcon ico = b.getIconForEdge(world, x, y, z, edge);
-					float u = ico.getMinU();
-					float du = ico.getMaxU();
-					float v = ico.getMinV();
-					float dv = ico.getMaxV();
-					float uu = du-u;
-					float vv = dv-v;
-					float dx = uu/16F;
-					float dz = vv/16F;
-
-					v5.addVertexWithUV(0, 1, 0, u, v);
-					v5.addVertexWithUV(0, 0, 0, du, v);
-					v5.addVertexWithUV(0, 0, 1, du, dv);
-					v5.addVertexWithUV(0, 1, 1, u, dv);
+		if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.WEST.ordinal())) {
+			this.buildIconList(world, x, y, z, b, meta, ForgeDirection.WEST, li);
+			this.setFaceBrightness(v5, ForgeDirection.WEST, mix);
+			for (IIcon ico : li) {
+				float u = ico.getMinU();
+				float du = ico.getMaxU();
+				float v = ico.getMinV();
+				float dv = ico.getMaxV();
+				if (renderPass == 1) {
+					u = ico.getInterpolatedU(16D*dy/d);
+					v = ico.getInterpolatedV(16D*dz/d);
+					du = ico.getInterpolatedU(16D*(dy+1)/d);
+					dv = ico.getInterpolatedV(16D*(dz+1)/d);
 				}
+				v5.addVertexWithUV(0, 1, 0, u, v);
+				v5.addVertexWithUV(0, 0, 0, du, v);
+				v5.addVertexWithUV(0, 0, 1, du, dv);
+				v5.addVertexWithUV(0, 1, 1, u, dv);
 			}
+		}
 
-			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.SOUTH.ordinal())) {
-				li = b.getEdgesForFace(world, x, y, z, ForgeDirection.SOUTH);
-				this.setFaceBrightness(v5, ForgeDirection.SOUTH);
-				for (int edge : li) {
-					IIcon ico = b.getIconForEdge(world, x, y, z, edge);
-					float u = ico.getMinU();
-					float du = ico.getMaxU();
-					float v = ico.getMinV();
-					float dv = ico.getMaxV();
-					float uu = du-u;
-					float vv = dv-v;
-					float dx = uu/16F;
-					float dz = vv/16F;
-
-					v5.addVertexWithUV(0, 1, 1, u, v);
-					v5.addVertexWithUV(0, 0, 1, du, v);
-					v5.addVertexWithUV(1, 0, 1, du, dv);
-					v5.addVertexWithUV(1, 1, 1, u, dv);
+		if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.SOUTH.ordinal())) {
+			this.buildIconList(world, x, y, z, b, meta, ForgeDirection.SOUTH, li);
+			this.setFaceBrightness(v5, ForgeDirection.SOUTH, mix);
+			for (IIcon ico : li) {
+				float u = ico.getMinU();
+				float du = ico.getMaxU();
+				float v = ico.getMinV();
+				float dv = ico.getMaxV();
+				if (renderPass == 1) {
+					u = ico.getInterpolatedU(16D*dx/d);
+					v = ico.getInterpolatedV(16D*dy/d);
+					du = ico.getInterpolatedU(16D*(dx+1)/d);
+					dv = ico.getInterpolatedV(16D*(dy+1)/d);
 				}
+				v5.addVertexWithUV(0, 1, 1, u, v);
+				v5.addVertexWithUV(0, 0, 1, du, v);
+				v5.addVertexWithUV(1, 0, 1, du, dv);
+				v5.addVertexWithUV(1, 1, 1, u, dv);
 			}
+		}
 
-			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.NORTH.ordinal())) {
-				li = b.getEdgesForFace(world, x, y, z, ForgeDirection.NORTH);
-				this.setFaceBrightness(v5, ForgeDirection.NORTH);
-				for (int edge : li) {
-					IIcon ico = b.getIconForEdge(world, x, y, z, edge);
-					float u = ico.getMinU();
-					float du = ico.getMaxU();
-					float v = ico.getMinV();
-					float dv = ico.getMaxV();
-					float uu = du-u;
-					float vv = dv-v;
-					float dx = uu/16F;
-					float dz = vv/16F;
-
-					v5.addVertexWithUV(0, 0, 0, du, v);
-					v5.addVertexWithUV(0, 1, 0, u, v);
-					v5.addVertexWithUV(1, 1, 0, u, dv);
-					v5.addVertexWithUV(1, 0, 0, du, dv);
+		if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.NORTH.ordinal())) {
+			this.buildIconList(world, x, y, z, b, meta, ForgeDirection.NORTH, li);
+			this.setFaceBrightness(v5, ForgeDirection.NORTH, mix);
+			for (IIcon ico : li) {
+				float u = ico.getMinU();
+				float du = ico.getMaxU();
+				float v = ico.getMinV();
+				float dv = ico.getMaxV();
+				if (renderPass == 1) {
+					u = ico.getInterpolatedU(16D*dx/d);
+					v = ico.getInterpolatedV(16D*dy/d);
+					du = ico.getInterpolatedU(16D*(dx+1)/d);
+					dv = ico.getInterpolatedV(16D*(dy+1)/d);
 				}
+				v5.addVertexWithUV(0, 0, 0, du, v);
+				v5.addVertexWithUV(0, 1, 0, u, v);
+				v5.addVertexWithUV(1, 1, 0, u, dv);
+				v5.addVertexWithUV(1, 0, 0, du, dv);
 			}
 		}
 
@@ -297,6 +351,20 @@ public class TankBlockRenderer implements ISBRH {
 		v5.addVertex(0, 0, 0);
 		v5.addTranslation(-x, -y, -z);
 		return true;
+	}
+
+	private void buildIconList(IBlockAccess world, int x, int y, int z, ConnectedTextureGlass b, int meta, ForgeDirection side, ArrayList<IIcon> li) {
+		li.clear();
+		if (renderPass == 0) {
+			for (int edge : b.getEdgesForFace(world, x, y, z, side)) {
+				li.add(b.getIconForEdge(world, x, y, z, edge));
+			}
+		}
+		if (renderPass == 1) {
+			if (meta == 2) {
+				li.add(ChromaIcons.CAUSTICS_TINY_ALPHA.getIcon());
+			}
+		}
 	}
 
 	@Override
@@ -309,7 +377,7 @@ public class TankBlockRenderer implements ISBRH {
 		return ChromatiCraft.proxy.tankRender;
 	}
 
-	private void setFaceBrightness(Tessellator v5, ForgeDirection dir) {
+	private void setFaceBrightness(Tessellator v5, ForgeDirection dir, int mix) {
 		float f = 1;
 		switch(dir) {
 			case DOWN:

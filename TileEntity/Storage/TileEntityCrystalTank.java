@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -230,9 +230,9 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 		return blocks;//.copy();
 	}
 
-	public void addCoordinate(int x, int y, int z) {
+	public void addCoordinate(int x, int y, int z, int meta) {
 		if (blocks.addBlockCoordinate(x, y, z)) {
-			size++;
+			size += meta == 2 ? 2 : 1;
 
 			if (worldObj.isRemote)
 				lighting.setArray(blocks);
@@ -240,10 +240,10 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 		this.updateBoostFactor();
 	}
 
-	public void removeCoordinate(int x, int y, int z) {
+	public void removeCoordinate(int x, int y, int z, int meta) {
 		if (blocks.hasBlock(x, y, z)) {
 			blocks.remove(x, y, z);
-			size--;
+			size -= meta == 2 ? 2 : 1;
 
 			if (worldObj.isRemote)
 				lighting.setArray(blocks);
