@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -32,11 +32,6 @@ public class RecipeTankBlock extends MultiBlockCastingRecipe {
 	@Override
 	public int getTypicalCraftedAmount() {
 		return 256;
-	}
-
-	@Override
-	public int getPenaltyThreshold() {
-		return super.getPenaltyThreshold()*2/3;
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -81,6 +81,11 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 	}
 
 	@Override
+	public int damageDropped(int meta) {
+		return meta-meta%2;
+	}
+
+	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
 		ItemStack is = ep.getCurrentEquippedItem();
 		CrystalTankAuxTile te = (CrystalTankAuxTile)world.getTileEntity(x, y, z);
@@ -124,8 +129,7 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 	@Override
 	public int getLightValue(IBlockAccess world, int x, int y, int z) {
 		CrystalTankAuxTile tile = (CrystalTankAuxTile)world.getTileEntity(x, y, z);
-		TileEntityCrystalTank te = tile.getTankController();
-		return te != null && te.getFluid() != null ? te.getFluid().getLuminosity() : 0;
+		return tile.getLightValue();
 	}
 
 	@Override
@@ -172,7 +176,7 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 			if (c == ChromaTiles.TANK) {
 				TileEntityCrystalTank tank = (TileEntityCrystalTank)world.getTileEntity(dx, dy, dz);
 				te.setTile(tank);
-				world.setBlockMetadataWithNotify(x, y, z, 1, 3);
+				te.markComplete();
 				te.addToTank();
 				con = tank;
 			}
@@ -180,7 +184,7 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 				CrystalTankAuxTile tile = (CrystalTankAuxTile)world.getTileEntity(dx, dy, dz);
 				if (tile.hasTile()) {
 					te.setTile(tile.getTankController());
-					world.setBlockMetadataWithNotify(x, y, z, 1, 3);
+					tile.markComplete();
 					te.addToTank();
 					con = tile.getTankController();
 				}
@@ -197,7 +201,7 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 				int dz = c.zCoord;
 				CrystalTankAuxTile tile = (CrystalTankAuxTile)world.getTileEntity(dx, dy, dz);
 				tile.setTile(con);
-				world.setBlockMetadataWithNotify(dx, dy, dz, 1, 3);
+				tile.markComplete();
 				tile.addToTank();
 			}
 		}
@@ -255,19 +259,24 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 
 	public static class CrystalTankAuxTile extends TileEntity implements IFluidHandler {
 
-		private int tileX = Integer.MIN_VALUE;
-		private int tileY = Integer.MIN_VALUE;
-		private int tileZ = Integer.MIN_VALUE;
+		private boolean isLit;
+
+		private Coordinate controller = null;
 
 		@Override
 		public boolean canUpdate() {
 			return false;
 		}
 
+		public int getLightValue() {
+			if (isLit)
+				return 15;
+			TileEntityCrystalTank te = this.getTankController();
+			return te != null && te.getFluid() != null ? te.getFluid().getLuminosity() : 0;
+		}
+
 		public void setTile(TileEntityCrystalTank te) {
-			tileX = te.xCoord;
-			tileY = te.yCoord;
-			tileZ = te.zCoord;
+			controller = new Coordinate(te);
 		}
 
 		public void addToTank() {
@@ -283,17 +292,32 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 			this.reset();
 		}
 
+		public void markComplete() {
+			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, this.getBaseMetadata()+1, 3);
+		}
+
 		public void reset() {
-			tileX = tileY = tileZ = Integer.MIN_VALUE;
-			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 3);
+			controller = null;
+			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, this.getBaseMetadata(), 3);
+		}
+
+		private int getBaseMetadata() {
+			return this.getBlockMetadata()-this.getBlockMetadata()%2;
+		}
+
+		@Override
+		public int getBlockMetadata() {
+			return worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
 		}
 
 		public boolean hasTile() {
-			return tileY != Integer.MIN_VALUE && this.getTankController() != null;
+			return controller != null && this.getTankController() != null;
 		}
 
 		public TileEntityCrystalTank getTankController() {
-			TileEntity te = worldObj.getTileEntity(tileX, tileY, tileZ);
+			if (controller == null)
+				return null;
+			TileEntity te = controller.getTileEntity(worldObj);
 			return te instanceof TileEntityCrystalTank ? (TileEntityCrystalTank)te : null;
 		}
 
@@ -337,18 +361,27 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 		public void writeToNBT(NBTTagCompound NBT) {
 			super.writeToNBT(NBT);
 
-			NBT.setInteger("tx", tileX);
-			NBT.setInteger("ty", tileY);
-			NBT.setInteger("tz", tileZ);
+			if (controller != null) {
+				NBT.setInteger("tx", controller.xCoord);
+				NBT.setInteger("ty", controller.yCoord);
+				NBT.setInteger("tz", controller.zCoord);
+				controller.writeToNBT("controller", NBT);
+			}
 		}
 
 		@Override
 		public void readFromNBT(NBTTagCompound NBT) {
 			super.readFromNBT(NBT);
 
-			tileX = NBT.getInteger("tx");
-			tileY = NBT.getInteger("ty");
-			tileZ = NBT.getInteger("tz");
+			if (NBT.hasKey("controller")) {
+				controller = Coordinate.readFromNBT("controller", NBT);
+			}
+			else if (NBT.hasKey("tx")) {
+				int x = NBT.getInteger("tx");
+				int y = NBT.getInteger("ty");
+				int z = NBT.getInteger("tz");
+				controller = new Coordinate(x, y, z);
+			}
 		}
 
 		@Override
@@ -362,6 +395,12 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 		@Override
 		public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity p)  {
 			this.readFromNBT(p.field_148860_e);
+		}
+
+		public void setFlags(ItemStack is) {
+			if (is.stackTagCompound == null)
+				return;
+			isLit = is.stackTagCompound.getBoolean("lit");
 		}
 
 	}
@@ -440,7 +479,7 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 		HashSet<Integer> li = new HashSet();
 		li.addAll(allDirs);
 
-		if (world.getBlockMetadata(x, y, z) == 0)
+		if (world.getBlockMetadata(x, y, z)%2 == 0)
 			return li;
 
 		if (face.offsetX != 0) { //test YZ

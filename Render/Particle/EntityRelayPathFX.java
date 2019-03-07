@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.Render.ParticleEngine.RenderMode;
 import Reika.ChromatiCraft.Render.ParticleEngine.RenderModeFlags;
 import Reika.ChromatiCraft.Render.ParticleEngine.TextureMode;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 /** Traverses the relay path */
@@ -59,7 +60,7 @@ public class EntityRelayPathFX extends EntityFX implements CustomRenderFX {
 	private EntityRelayPathFX(CrystalElement e, double x, double y, double z) {
 		super(Minecraft.getMinecraft().theWorld, x, y, z);
 		particleMaxAge = Integer.MAX_VALUE;
-		particleScale = 4F;
+		particleScale = (float)ReikaRandomHelper.getRandomBetween(2.5, 4);
 		particleGravity = 0;
 		noClip = true;
 
@@ -67,7 +68,20 @@ public class EntityRelayPathFX extends EntityFX implements CustomRenderFX {
 		particleGreen = e.getGreen()/255F;
 		particleBlue = e.getBlue()/255F;
 
-		particleIcon = ChromaIcons.BIGFLARE.getIcon();
+		switch(rand.nextInt(4)) {
+			case 0:
+				particleIcon = ChromaIcons.BIGFLARE.getIcon();
+				break;
+			case 1:
+				particleIcon = ChromaIcons.SPINFLARE.getIcon();
+				break;
+			case 2:
+				particleIcon = ChromaIcons.BLURFLARE.getIcon();
+				break;
+			case 3:
+				particleIcon = ChromaIcons.FLARE7.getIcon();
+				break;
+		}
 	}
 
 	@Override
@@ -86,7 +100,7 @@ public class EntityRelayPathFX extends EntityFX implements CustomRenderFX {
 		double dy = c.yCoord-posY+0.5;
 		double dz = c.zCoord-posZ+0.5;
 		double d = ReikaMathLibrary.py3d(dx, dy, dz);
-		double v = 0.5;//1;
+		double v = 0.5+0.125*Math.sin(this.hashCode());//1;
 		if (d < 0.125) {
 			if (index == targets.size()-1) {
 				this.die();

@@ -64,7 +64,13 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 
 	private final HashSet<Fluid> fluidTypes = new HashSet();
 	private final Fluid[] fluidAccess = new Fluid[7];
-	private int pressure;
+
+	private int basePressure;
+	private int pressureFunction;
+
+	private final StepTimer pressureUpdate = new StepTimer(8);
+	private int lastPressure;
+	private int currentPressure;
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -74,6 +80,16 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 		}
 
 		if (!world.isRemote) {
+			if (this.getFunctionPressure() != 0) {
+				pressureUpdate.update();
+				if (pressureUpdate.checkCap()) {
+					lastPressure = currentPressure;
+					currentPressure = this.getBasePressure()+this.getDynamicPressure();
+					if (currentPressure != lastPressure) {
+						network.updateState(this);
+					}
+				}
+			}
 			network.update(world);
 		}
 	}
@@ -133,7 +149,8 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 		super.writeSyncTag(NBT);
 
 		NBT.setInteger("face", this.getFacing().ordinal());
-		NBT.setInteger("press", pressure);
+		NBT.setInteger("press", basePressure);
+		NBT.setInteger("func", pressureFunction);
 
 		NBTTagList li = new NBTTagList();
 		for (int i = 0; i < fluidAccess.length; i++) {
@@ -155,7 +172,8 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 
-		pressure = NBT.getInteger("press");
+		basePressure = NBT.getInteger("press");
+		pressureFunction = NBT.getInteger("func");
 		facing = dirs[NBT.getInteger("face")];
 
 		fluidTypes.clear();
@@ -176,8 +194,28 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 		}
 	}
 
-	public int getPressure() {
-		return pressure;
+	public int getBasePressure() {
+		return basePressure;
+	}
+
+	public int getFunctionPressure() {
+		return pressureFunction;
+	}
+
+	private int getDynamicPressure() {
+		IFluidHandler ifl = this.getTank();
+		if (ifl == null)
+			return 0;
+		FluidTankInfo[] info = ifl.getTankInfo(this.getFacing().getOpposite());
+		int sum = 0;
+		for (int i = 0; i < info.length; i++) {
+			if (info[i] != null && info[i].fluid != null) {
+				if (fluidTypes.contains(info[i].fluid.getFluid())) {
+					sum += info[i].fluid.amount;
+				}
+			}
+		}
+		return this.getFunctionPressure()*sum/1000;
 	}
 
 	private void renderFluid(Fluid f) {
@@ -351,11 +389,20 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 	}
 
 	public int getThroughput() {
-		return Math.min(MAX_THROUGHPUT, 200+Math.abs(4*pressure));
+		return Math.min(MAX_THROUGHPUT, 200+Math.abs(4*this.getCurrentPressure()));
 	}
 
-	public void changePressure(int p) {
-		pressure += p;
+	public int getCurrentPressure() {
+		return currentPressure;
+	}
+
+	public void changeBasePressure(int dp) {
+		basePressure += dp;
+		network.updateState(this);
+	}
+
+	public void changeFunctionPressure(int dp) {
+		pressureFunction += dp;
 		network.updateState(this);
 	}
 

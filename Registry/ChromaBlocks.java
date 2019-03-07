@@ -136,6 +136,7 @@ import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalColors;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalGlow;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalHive;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalPlant;
+import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalTank;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDecoFlower;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeTypes;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockHover;
@@ -182,7 +183,7 @@ public enum ChromaBlocks implements BlockEnum {
 	DYEGRASS(BlockDyeGrass.class,				ItemBlockDyeTypes.class,		"dye.grass"),
 	PYLONSTRUCT(BlockPylonStructure.class,		ItemBlockMultiType.class,		"block.pylon"),
 	PYLON(BlockCrystalPylon.class,				ItemBlockMultiType.class,		"crystal.pylon"),
-	TANK(BlockCrystalTank.class,												"crystal.tank"),
+	TANK(BlockCrystalTank.class,				ItemBlockCrystalTank.class,		"crystal.tank"),
 	FENCE(BlockCrystalFence.class,												"chroma.fencerelay"),
 	TIEREDPLANT(BlockTieredPlant.class,			ItemBlockChromaTiered.class,	"chroma.tieredplant"),
 	TIEREDORE(BlockTieredOre.class,				ItemBlockChromaTiered.class,	"chroma.tieredore"),

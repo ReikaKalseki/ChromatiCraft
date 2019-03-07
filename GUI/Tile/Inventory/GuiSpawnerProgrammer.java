@@ -37,7 +37,6 @@ import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class GuiSpawnerProgrammer extends GuiLetterSearchable<String> {
 
@@ -74,7 +73,6 @@ public class GuiSpawnerProgrammer extends GuiLetterSearchable<String> {
 		spawnCount.currentValue = data[3];
 		spawnRange.currentValue = data[4];
 		activationRange.currentValue = data[5];
-		ReikaJavaLibrary.pConsole(list);
 		index = Math.max(list.indexOf(tile.getSelectedMob()), 0);
 		ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.SPAWNERPROGRAM.ordinal(), this.getActive(), prog);
 	}

@@ -898,8 +898,11 @@ public class ChromatiPackets implements PacketHandler {
 				case BIOMELOCS:
 					BiomeDistributor.fillFromPacket(NBT.getTagList("data", NBTTypes.BYTE.ID));
 					break;
-				case RELAYPRESSURE:
-					((TileEntityFluidRelay)tile).changePressure(data[0]);
+				case RELAYPRESSUREBASE:
+					((TileEntityFluidRelay)tile).changeBasePressure(data[0]);
+					break;
+				case RELAYPRESSUREVAR:
+					((TileEntityFluidRelay)tile).changeFunctionPressure(data[0]);
 					break;
 				case RELAYCLEAR:
 					((TileEntityFluidRelay)tile).clearFilters();

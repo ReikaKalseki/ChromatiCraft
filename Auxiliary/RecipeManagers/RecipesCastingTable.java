@@ -103,6 +103,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.Doubl
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.EnchantmentRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.RepeaterTurboRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.RepeaterUpcraftRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.TankExpandingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.TinkerToolPartRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AdjacencyRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AspectFormerRecipe;
@@ -874,6 +875,8 @@ public class RecipesCastingTable {
 		this.addRecipe(new RepeaterTurboRecipe(ChromaTiles.REPEATER, 5000));
 		this.addRecipe(new RepeaterTurboRecipe(ChromaTiles.COMPOUND, 12500));
 		this.addRecipe(new RepeaterTurboRecipe(ChromaTiles.BROADCAST, 30000));
+
+		this.addRecipe(new TankExpandingRecipe());
 	}
 
 	public void addPostLoadRecipes() {

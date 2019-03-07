@@ -19,7 +19,8 @@ import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerFluidRelay;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidRelay;
-import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButtonSneakIcon;
 import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -46,35 +47,50 @@ public class GuiFluidRelay extends GuiChromaBase {
 		String tex = "Textures/GUIs/buttons.png";
 		int in = 22;
 		int iny = 45;
-		buttonList.add(new ImagedGuiButton(0, j+in, k+iny, 10, 10, 100, 66, tex, ChromatiCraft.class));
-		buttonList.add(new ImagedGuiButton(1, j+xSize-10-in, k+iny, 10, 10, 100, 56, tex, ChromatiCraft.class));
+		int dy = 5;
+		buttonList.add(new CustomSoundImagedGuiButtonSneakIcon(0, j+in, k+iny-dy, 10, 10, 100, 66, tex, ChromatiCraft.class, this, 100, 86));
+		buttonList.add(new CustomSoundImagedGuiButtonSneakIcon(1, j+xSize-10-in, k+iny-dy, 10, 10, 100, 56, tex, ChromatiCraft.class, this, 100, 76));
 
-		int d = 14;
-		buttonList.add(new ImagedGuiButton(2, j+in-d, k+iny, 10, 10, 90, 56, tex, ChromatiCraft.class));
-		buttonList.add(new ImagedGuiButton(3, j+xSize-10-in+d, k+iny, 10, 10, 90, 76, tex, ChromatiCraft.class));
+		buttonList.add(new CustomSoundImagedGuiButtonSneakIcon(2, j+in, k+iny+dy, 10, 10, 100, 66, tex, ChromatiCraft.class, this, 100, 86));
+		buttonList.add(new CustomSoundImagedGuiButtonSneakIcon(3, j+xSize-10-in, k+iny+dy, 10, 10, 100, 56, tex, ChromatiCraft.class, this, 100, 76));
+
+
+		int dx = 14;
+		buttonList.add(new CustomSoundImagedGuiButton(4, j+in-dx, k+iny, 10, 10, 90, 56, tex, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(5, j+xSize-10-in+dx, k+iny, 10, 10, 90, 76, tex, ChromatiCraft.class, this));
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton b) {
 		super.actionPerformed(b);
-		int delta = 0;
+		int delta1 = 0;
+		int delta2 = 0;
 		int n = GuiScreen.isCtrlKeyDown() ? 1 : (GuiScreen.isShiftKeyDown() ? 100 : 10);
 		switch(b.id) {
 			case 0:
-				delta = -n;
+				delta1 = -n;
 				break;
 			case 1:
-				delta = n;
+				delta1 = n;
 				break;
 			case 2:
-				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.RELAYCLEAR.ordinal(), relay);
+				delta2 = -n;
 				break;
 			case 3:
+				delta2 = n;
+				break;
+			case 4:
+				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.RELAYCLEAR.ordinal(), relay);
+				break;
+			case 5:
 				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.RELAYCOPY.ordinal(), relay);
 				break;
 		}
-		if (delta != 0) {
-			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.RELAYPRESSURE.ordinal(), relay, delta);
+		if (delta1 != 0) {
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.RELAYPRESSUREBASE.ordinal(), relay, delta1);
+		}
+		if (delta2 != 0) {
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.RELAYPRESSUREVAR.ordinal(), relay, delta2);
 		}
 	}
 
@@ -102,7 +118,7 @@ public class GuiFluidRelay extends GuiChromaBase {
 			}
 		}
 
-		String s = String.format("Pressure: %d", relay.getPressure());
+		String s = String.format("Pressure: %d + %d/B", relay.getBasePressure(), relay.getFunctionPressure());
 		api.drawCenteredStringNoShadow(fontRendererObj, s, j+xSize/2, k+45, 0xffffff);
 	}
 

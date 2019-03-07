@@ -38,6 +38,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityFireSmokeFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityGlobeFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
+import Reika.ChromatiCraft.Render.Particle.EntityRelayPathFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Extras.ThrottleableEffectRenderer;
 import Reika.DragonAPI.Extras.ThrottleableEffectRenderer.CustomEffectRenderer;
@@ -88,6 +89,7 @@ public class ParticleEngine extends EffectRenderer implements CustomEffectRender
 		ThrottleableEffectRenderer.getRegisteredInstance().registerDelegateRenderer(EntityLaserFX.class, this);
 		ThrottleableEffectRenderer.getRegisteredInstance().registerDelegateRenderer(EntityCenterBlurFX.class, this);
 		ThrottleableEffectRenderer.getRegisteredInstance().registerDelegateRenderer(EntityGlobeFX.class, this);
+		ThrottleableEffectRenderer.getRegisteredInstance().registerDelegateRenderer(EntityRelayPathFX.class, this);
 	}
 
 	@Override

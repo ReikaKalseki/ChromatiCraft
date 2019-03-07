@@ -1198,6 +1198,10 @@ public enum ChromaResearch implements ProgressElement {
 
 			return li;
 		}
+		if (this == TANKAUX)
+			return ReikaJavaLibrary.makeListFrom(ChromaBlocks.TANK.getStackOf(), ChromaBlocks.TANK.getStackOfMetadata(2));
+		if (this == FENCEAUX || this == TNT)
+			return ReikaJavaLibrary.makeListFrom(iconItem);
 		if (block != null) {
 			Item item = Item.getItemFromBlock(block.getBlockInstance());
 			ArrayList<ItemStack> li = new ArrayList();
@@ -1211,8 +1215,6 @@ public enum ChromaResearch implements ProgressElement {
 			}
 			return li;
 		}
-		if (this == FENCEAUX || this == TNT || this == TANKAUX)
-			return ReikaJavaLibrary.makeListFrom(iconItem);
 		if (this == APIRECIPES) {
 			ArrayList<ItemStack> li = new ArrayList();
 			for (CastingRecipe c : RecipesCastingTable.instance.getAllAPIRecipes()) {
