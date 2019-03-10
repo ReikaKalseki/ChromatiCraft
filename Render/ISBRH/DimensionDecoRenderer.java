@@ -19,6 +19,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -42,6 +43,7 @@ public class DimensionDecoRenderer implements ISBRH {
 	//private final ISBRHModel latticeModel = new LatticeModel();
 
 	private static double[][][] latticeRotations = new double[3][4][6];
+	private static Random rand = new Random();
 
 	static {
 		for (int i = 0; i < latticeRotations.length; i++) {
@@ -117,13 +119,14 @@ public class DimensionDecoRenderer implements ISBRH {
 
 	@Override
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block b, int modelId, RenderBlocks rb) {
-
+		rand.setSeed(ChunkCoordIntPair.chunkXZ2Int(x, z) ^ y);
+		rand.nextBoolean();
 		int meta = world.getBlockMetadata(x, y, z);
 		DecoType type = b instanceof BlockDimensionDecoTile ? DimDecoTileTypes.list[meta] : DimDecoTypes.list[meta];
 		if (renderPass == 0) {
 			if (type.hasBlockRender()) {
 				rb.renderStandardBlockWithAmbientOcclusion(b, x, y, z, 1, 1, 1);
-				List<IIcon> li = type.getIcons(world, x, y, z, 0);
+				List<IIcon> li = type.getIcons(world, x, y, z, 0, rand);
 				int idx = 0;
 				for (IIcon ico : li) {
 					Tessellator.instance.setBrightness(240);
@@ -157,7 +160,7 @@ public class DimensionDecoRenderer implements ISBRH {
 		}
 		else if (renderPass == 1) {
 			if (type.hasBlockRender()) {
-				List<IIcon> li = type.getIcons(world, x, y, z, 1);
+				List<IIcon> li = type.getIcons(world, x, y, z, 1, rand);
 				int idx = 0;
 				for (IIcon ico : li) {
 					Tessellator.instance.setBrightness(240);
@@ -316,7 +319,7 @@ public class DimensionDecoRenderer implements ISBRH {
 				v5.setBrightness(240);
 				int c = ReikaColorAPI.getModifiedHue(0x0000ff, 220+(int)(80*Math.sin((x*x*2+y*y+z*z*8)/(100000D*20))));
 				v5.setColorOpaque_I(c);
-				IIcon ico = type.getIcons(world, x, y, z, 1).get(0);
+				IIcon ico = type.getIcons(world, x, y, z, 1, rand).get(0);
 				float u = ico.getMinU();
 				float v = ico.getMinV();
 				float du = ico.getMaxU();
@@ -492,7 +495,7 @@ public class DimensionDecoRenderer implements ISBRH {
 			case LIFEWATER: {
 				v5.setBrightness(240);
 				v5.setColorOpaque_I(0xffffff);
-				IIcon ico = type.getIcons(world, x, y, z, 1).get(0);
+				IIcon ico = type.getIcons(world, x, y, z, 1, rand).get(0);
 				float u = ico.getMinU();
 				float v = ico.getMinV();
 				float du = ico.getMaxU();

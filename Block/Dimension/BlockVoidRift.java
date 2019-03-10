@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -50,6 +51,8 @@ public class BlockVoidRift extends Block {
 
 	@Override
 	public float getPlayerRelativeBlockHardness(EntityPlayer ep, World world, int x, int y, int z) {
+		if (!DimensionTuningManager.TuningThresholds.DECOHARVEST.isSufficientlyTuned(ep))
+			return -1;
 		return ProgressStage.CTM.isPlayerAtStage(ep) ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z) : -1;
 	}
 

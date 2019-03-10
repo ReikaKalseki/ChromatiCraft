@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary.Interfaces;
 
 import java.util.List;
+import java.util.Random;
 
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
@@ -17,7 +18,7 @@ import net.minecraft.world.IBlockAccess;
 public interface DecoType {
 
 	List<IIcon> getItemIcons(int pass);
-	List<IIcon> getIcons(IBlockAccess iba, int x, int y, int z, int pass);
+	List<IIcon> getIcons(IBlockAccess iba, int x, int y, int z, int pass, Random rand);
 
 	boolean hasBlockRender();
 

@@ -117,6 +117,8 @@ import Reika.ChromatiCraft.Render.TESR.RenderAlveary;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
+import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverManagerClient;
 import Reika.ChromatiCraft.World.Dimension.Rendering.ChromaCloudRenderer;
 import Reika.ChromatiCraft.World.Dimension.Rendering.SkyRiverRenderer;
@@ -225,6 +227,69 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 					Minecraft.getMinecraft().gameSettings.hideGUI = false;
 				}
 				break;
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void handleUntunedDimension(RenderBlockAtPosEvent evt) {
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		float f = 1;
+		/*
+		int tuning = DimensionTuningManager.instance.getPlayerTuning(ep);
+		if (tuning == 0) {
+			f = 0.7F;
+			if (evt.block instanceof BlockDimensionDeco) {
+				f = 0.5F;
+			}
+		}
+		 */
+		if (evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord) == Biomes.STRUCTURE.getBiome()) {
+			f = DimensionTuningManager.TuningThresholds.STRUCTUREBIOMES.getTuningFraction(ep);
+		}
+		Random r = new Random(new Coordinate(evt.xCoord, evt.yCoord, evt.zCoord).hashCode());
+		r.nextBoolean();
+		if (r.nextFloat() > f) {
+			evt.setCanceled(true);
+
+			Block b = evt.block;
+			for (int i = 0; i < 6; i++) {
+				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+				IIcon ico = evt.render.getIconSafe(ChromaIcons.BLANK.getIcon());
+				Tessellator.instance.setColorOpaque_I(0xffffff);
+				Tessellator.instance.setBrightness(evt.block.getMixedBrightnessForBlock(evt.world, evt.xCoord, evt.yCoord, evt.zCoord));
+				boolean side = b.shouldSideBeRendered(evt.world, evt.xCoord+dir.offsetX, evt.yCoord+dir.offsetY, evt.zCoord+dir.offsetZ, i);
+				if (side) {
+					//ChromatiCraft.logger.debug("Rendering side "+dir);
+					switch(dir) {
+						case DOWN:
+							Tessellator.instance.setColorOpaque_F(0.5F, 0.5F, 0.5F);
+							evt.render.renderFaceYNeg(b, evt.xCoord, evt.yCoord, evt.zCoord, ico);
+							break;
+						case UP:
+							Tessellator.instance.setColorOpaque_F(1, 1, 1);
+							evt.render.renderFaceYPos(b, evt.xCoord, evt.yCoord, evt.zCoord, ico);
+							break;
+						case WEST:
+							Tessellator.instance.setColorOpaque_F(0.65F, 0.65F, 0.65F);
+							evt.render.renderFaceXNeg(b, evt.xCoord, evt.yCoord, evt.zCoord, ico);
+							break;
+						case EAST:
+							Tessellator.instance.setColorOpaque_F(0.65F, 0.65F, 0.65F);
+							evt.render.renderFaceXPos(b, evt.xCoord, evt.yCoord, evt.zCoord, ico);
+							break;
+						case NORTH:
+							Tessellator.instance.setColorOpaque_F(0.8F, 0.8F, 0.8F);
+							evt.render.renderFaceZNeg(b, evt.xCoord, evt.yCoord, evt.zCoord, ico);
+							break;
+						case SOUTH:
+							Tessellator.instance.setColorOpaque_F(0.8F, 0.8F, 0.8F);
+							evt.render.renderFaceZPos(b, evt.xCoord, evt.yCoord, evt.zCoord, ico);
+							break;
+						default:
+							break;
+					}
+				}
 			}
 		}
 	}

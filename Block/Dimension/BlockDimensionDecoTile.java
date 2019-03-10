@@ -94,7 +94,7 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 			return itemIcon;
 		}
 
-		public List<IIcon> getIcons(IBlockAccess iba, int x, int y, int z, int pass) {
+		public List<IIcon> getIcons(IBlockAccess iba, int x, int y, int z, int pass, Random rand) {
 			return this.getItemIcons(pass);
 		}
 

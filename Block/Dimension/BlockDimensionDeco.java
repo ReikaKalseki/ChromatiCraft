@@ -41,7 +41,6 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Render.ISBRH.DimensionDecoRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -85,13 +84,16 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 			return this == FLOATSTONE || this == GEMSTONE || this == CRYSTALLEAF || this == OCEANSTONE || this == CLIFFGLASS || this == GLOWCAVE;
 		}
 
-		public List<IIcon> getIcons(IBlockAccess iba, int x, int y, int z, int pass) {
+		public List<IIcon> getIcons(IBlockAccess iba, int x, int y, int z, int pass, Random rand) {
 			List<IIcon> li = this.getItemIcons(pass);
 			if (this == GLOWCAVE) {
 				li.clear();
-				int idx = new Coordinate(x, y, z).hashCode();
-				idx = ((idx%10)+10)%10;
-				li.add(icons[this.ordinal()].get(idx));
+				if (pass == 1) {
+					//int idx = new Coordinate(x, y, z).hashCode();
+					//idx = ((idx%16)+16)%16;
+					int idx = rand.nextInt(16);
+					li.add(icons[this.ordinal()].get(2+idx));
+				}
 			}
 			return li;
 		}
@@ -113,12 +115,18 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 		}
 
 		private boolean renderIconInPass(int idx, int pass) {
-			if (this == CRYSTALLEAF || this == CLIFFGLASS) {
-				return idx >= 1 ? pass == 1 : pass == 0;
+			switch(this) {
+				case CRYSTALLEAF:
+				case CLIFFGLASS:
+					return idx >= 1 ? pass == 1 : pass == 0;
+				case MIASMA:
+				case LIFEWATER:
+					return pass == 1;
+				case GLOWCAVE:
+					return idx == pass*2;
+				default:
+					return pass == 0;
 			}
-			if (this == MIASMA || this == LIFEWATER)
-				return pass == 1;
-			return pass == 0;
 		}
 
 		public boolean requiresPickaxe() {
@@ -166,6 +174,15 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 					return 2;
 				default:
 					return 1;
+			}
+		}
+
+		public boolean hasSecondaryIcons() {
+			switch(this) {
+				case GLOWCAVE:
+					return true;
+				default:
+					return false;
 			}
 		}
 	}
@@ -257,6 +274,9 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 			icons[i] = new ArrayList();
 			for (int k = 0; k < n; k++) {
 				icons[i].add(ico.registerIcon("chromaticraft:dimgen/"+deco.name().toLowerCase(Locale.ENGLISH)+"/layer_"+k));
+				if (deco.hasSecondaryIcons()) {
+					icons[i].add(ico.registerIcon("chromaticraft:dimgen/"+deco.name().toLowerCase(Locale.ENGLISH)+"/layer_"+k+"b"));
+				}
 			}
 			//}
 		}
@@ -442,5 +462,17 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 	public boolean isBeaconBase(IBlockAccess world, int x, int y, int z, int beaconX, int beaconY, int beaconZ) {
 		return world.getBlockMetadata(x, y, z) == DimDecoTypes.FLOATSTONE.ordinal();
 	}
+	/*
+	@SideOnly(Side.CLIENT)
+	public static void setGlowCaveAnimationData(TextureAtlasSprite icon) {
+		if (icon.animationMetadata == null) {
+			ChromatiCraft.logger.logError("Animation "+icon.getIconName()+" has no data?!");
+		}
+		else {
+			String s = icon.getIconName();
+			int idx = Integer.parseInt(s.substring(s.lastIndexOf('/')+1));
+			icon.animationMetadata = new ShuffledIconControl(idx, icon.animationMetadata, ShuffledIconControl.ANIMATION_SECTIONS_GLOWCAVE, ShuffledIconControl.ANIMATION_SECTION_LENGTH_GLOWCAVE);
+		}
+	}*/
 
 }

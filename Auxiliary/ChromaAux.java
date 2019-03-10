@@ -625,5 +625,8 @@ public class ChromaAux {
 		if (tex.getIconName().startsWith("chromaticraft:dimgen/glowleaf")) {
 			BlockLightedLeaf.setAnimationData(tex);
 		}
+		//else if (tex.getIconName().startsWith("chromaticraft:dimgen/glowcave/layer_1")) {
+		//	BlockDimensionDeco.setGlowCaveAnimationData(tex);
+		//}
 	}
 }

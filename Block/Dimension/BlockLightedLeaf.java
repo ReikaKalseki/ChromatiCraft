@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -30,7 +30,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LightedTreeBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Render.LightedTreeIconControl;
+import Reika.ChromatiCraft.Render.ShuffledIconControl;
 import Reika.ChromatiCraft.Render.ISBRH.GlowTreeRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
@@ -159,7 +159,7 @@ public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBloc
 		else {
 			String s = icon.getIconName();
 			int idx = Integer.parseInt(s.substring(s.lastIndexOf('/')+1));
-			icon.animationMetadata = new LightedTreeIconControl(idx, icon.animationMetadata);
+			icon.animationMetadata = new ShuffledIconControl(idx, icon.animationMetadata, ShuffledIconControl.ANIMATION_SECTIONS_GLOWLEAF, ShuffledIconControl.ANIMATION_SECTION_LENGTH_GLOWLEAF);
 		}
 	}
 

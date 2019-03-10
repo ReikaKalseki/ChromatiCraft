@@ -82,11 +82,11 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 		}
 
 		if (!world.isRemote) {
+			lastPressure = currentPressure;
 			currentPressure = this.getBasePressure()+this.getDynamicPressure();
 			if (this.getFunctionPressure() != 0) {
 				pressureUpdate.update();
 				if (pressureUpdate.checkCap()) {
-					lastPressure = currentPressure;
 					if (currentPressure != lastPressure) {
 						network.updateState(this);
 					}
