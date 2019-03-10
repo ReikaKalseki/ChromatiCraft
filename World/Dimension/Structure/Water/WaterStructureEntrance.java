@@ -47,7 +47,7 @@ public class WaterStructureEntrance extends DynamicStructurePiece {
 							world.setBlock(dx, dy, dz, ChromaBlocks.HOVER.getBlockInstance(), HoverType.DAMPER.getPermanentMeta(), 2);
 						}
 						else {
-							world.setBlock(dx, dy, dz, STRUCTURE_AIR);
+							world.setBlock(dx, dy, dz, Blocks.air);
 						}
 					}
 				}

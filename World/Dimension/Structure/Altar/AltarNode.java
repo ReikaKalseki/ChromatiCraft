@@ -47,7 +47,7 @@ public class AltarNode extends StructurePiece {
 					boolean edge = Math.abs(i) == r || Math.abs(k) == r || j == 0 || j == h-1;
 					boolean dry = j > 0 && j < 6 || (Yshunt && j >= 11 && j < 16);
 					boolean door = dry && ((Math.abs(i) <= 2 && Math.abs(k) == r) || (Math.abs(k) <= 2 && Math.abs(i) == r));
-					Block b = edge && !door ? b1 : STRUCTURE_AIR;
+					Block b = edge && !door ? b1 : Blocks.air;
 					int m = edge && !door ? m1 : 0;
 					world.setBlock(dx, dy, dz, b, m);
 				}

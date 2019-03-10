@@ -101,11 +101,11 @@ public class AntFarmTunnel_Old extends StructurePiece {
 						int ddy = dy+j;
 						int ddz = dz+k;
 						Coordinate c = new Coordinate(ddx, ddy, ddz);
-						BlockKey b = dd <= r-0.5 ? new BlockKey(STRUCTURE_AIR) : new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+						BlockKey b = dd <= r-0.5 ? new BlockKey(Blocks.air) : new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
 						if (air.contains(c) || airSpaces.contains(c))
-							b = new BlockKey(STRUCTURE_AIR);
+							b = new BlockKey(Blocks.air);
 						blocks.put(c, b);
-						if (b.blockID == STRUCTURE_AIR)
+						if (b.blockID == Blocks.air)
 							air.add(c);
 					}
 				}

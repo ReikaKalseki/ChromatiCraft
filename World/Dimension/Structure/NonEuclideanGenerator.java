@@ -181,7 +181,7 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 				int dy = c.yCoord+i;
 				int dz = c.zCoord;
 				if (!world.hasBlock(dx, dy, dz))
-					world.setBlock(dx, dy, dz, STRUCTURE_AIR);
+					world.setBlock(dx, dy, dz, Blocks.air);
 			}
 		}
 	}

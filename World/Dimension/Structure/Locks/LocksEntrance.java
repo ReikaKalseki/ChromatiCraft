@@ -58,7 +58,7 @@ public class LocksEntrance extends DynamicStructurePiece {
 					boolean enter = step*sign == -radius && j > 0 && j < h-1 && d < radius-1;
 					boolean wall = !enter && (Math.abs(i) == radius || Math.abs(k) == radius || j == 0 || j == h);
 					boolean window = j == h && (radius == 6 ? d == 1 : h == this.getHeight(0)-1 && h == hm && h == hp) && d2 > 0 && d2 < radius-1;
-					world.setBlock(dx, dy, dz, wall ? bk : STRUCTURE_AIR, wall ? window ? BlockType.GLASS.metadata : BlockType.STONE.metadata : 0, 3);
+					world.setBlock(dx, dy, dz, wall ? bk : Blocks.air, wall ? window ? BlockType.GLASS.metadata : BlockType.STONE.metadata : 0, 3);
 				}
 			}
 		}
@@ -72,7 +72,7 @@ public class LocksEntrance extends DynamicStructurePiece {
 			int h = Math.abs(a) == w ? 3 : 4;
 			for (int b = 1; b <= h; b++) {
 				int dy = y+b;
-				world.setBlock(dx2, dy, dz2, STRUCTURE_AIR);
+				world.setBlock(dx2, dy, dz2, Blocks.air);
 			}
 		}
 

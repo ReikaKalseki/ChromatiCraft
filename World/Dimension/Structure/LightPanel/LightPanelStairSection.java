@@ -40,7 +40,7 @@ public class LightPanelStairSection extends BasicStructurePiece {
 		for (int i = 0; i <= 16; i++) {
 			for (int j = 0; j <= HEIGHT; j++) {
 				for (int k = 0; k <= 16; k++) {
-					world.setBlock(x+i, y+j, z+k, STRUCTURE_AIR);
+					world.setBlock(x+i, y+j, z+k, Blocks.air);
 				}
 			}
 		}

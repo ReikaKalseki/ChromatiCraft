@@ -44,7 +44,7 @@ public class TDMazeEntrance extends DynamicStructurePiece {
 				world.setBlock(x+n, dy, z-2, sh, ms, 3);
 				for (int a = -1; a <= 1; a++) {
 					for (int b = -1; b <= 1; b++) {
-						world.setBlock(x+a, dy, z+b, STRUCTURE_AIR);
+						world.setBlock(x+a, dy, z+b, Blocks.air);
 					}
 				}
 			}
@@ -59,7 +59,7 @@ public class TDMazeEntrance extends DynamicStructurePiece {
 				if (Math.abs(a) > 1 || Math.abs(b) > 1) {
 					world.setBlock(dx, y-1, dz, sh, ms, 3);
 					for (int h = y-2; h > posY; h--) {
-						if (world.getBlock(dx, h, dz) == STRUCTURE_AIR) {
+						if (world.getBlock(dx, h, dz) == Blocks.air) {
 							world.setBlock(dx, h, dz, Blocks.dirt);
 						}
 					}
@@ -69,7 +69,7 @@ public class TDMazeEntrance extends DynamicStructurePiece {
 		for (int a = 0; a <= 12; a++) {
 			for (int b = 0; b <= 5; b++) {
 				for (int c = 0; c <= 12; c++) {
-					world.setBlock(x+a, y+b, z+c, STRUCTURE_AIR);
+					world.setBlock(x+a, y+b, z+c, Blocks.air);
 				}
 			}
 		}

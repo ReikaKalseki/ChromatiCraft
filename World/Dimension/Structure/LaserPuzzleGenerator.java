@@ -86,7 +86,7 @@ public class LaserPuzzleGenerator extends DimensionStructureGenerator {
 								world.setBlock(ddx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
 							}
 							else {
-								world.setBlock(ddx, dy, dz, STRUCTURE_AIR);
+								world.setBlock(ddx, dy, dz, Blocks.air);
 							}
 						}
 					}

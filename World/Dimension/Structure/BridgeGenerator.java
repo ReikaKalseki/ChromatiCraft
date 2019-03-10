@@ -51,7 +51,7 @@ public class BridgeGenerator extends DimensionStructureGenerator {
 				for (int k = -SIZE; k <= SIZE; k++) {
 					if (ReikaMathLibrary.isPointInsidePowerEllipse(i, j, k, SIZE, SIZE/4D, SIZE/2D, 1.5)) {
 						if (ReikaMathLibrary.isPointInsidePowerEllipse(i, j, k, SIZE-1.5, SIZE/4D-1.5, SIZE/2D-1.5, 1.5)) {
-							world.setBlock(x+i, y+j, z+k, j < -1 ? Blocks.water : STRUCTURE_AIR);
+							world.setBlock(x+i, y+j, z+k, j < -1 ? Blocks.water : Blocks.air);
 						}
 						else {
 							world.setBlock(x+i, y+j, z+k, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata);

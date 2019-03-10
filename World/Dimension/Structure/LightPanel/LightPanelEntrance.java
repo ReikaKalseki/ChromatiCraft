@@ -87,7 +87,7 @@ public class LightPanelEntrance extends DynamicStructurePiece {
 								if (y == dy)
 									b = Blocks.grass;
 								if (y > dy)
-									b = STRUCTURE_AIR;
+									b = Blocks.air;
 								world.setBlock(dx, dy, dz, b);
 							}
 						}

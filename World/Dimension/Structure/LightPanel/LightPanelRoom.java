@@ -290,7 +290,7 @@ public class LightPanelRoom extends StructurePiece {
 						world.setBlock(dx, y+j, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
 					}
 					else {
-						world.setBlock(dx, y+j, dz, STRUCTURE_AIR);
+						world.setBlock(dx, y+j, dz, Blocks.air);
 					}
 				}
 			}
@@ -368,8 +368,8 @@ public class LightPanelRoom extends StructurePiece {
 
 		for (int i = -2; i <= 2; i++) {
 			for (int k = 1; k <= 3; k++) {
-				world.setBlock(x, y+k, z+i, STRUCTURE_AIR);
-				world.setBlock(x+DEPTH, y+k, z+i, STRUCTURE_AIR);
+				world.setBlock(x, y+k, z+i, Blocks.air);
+				world.setBlock(x+DEPTH, y+k, z+i, Blocks.air);
 			}
 		}
 		world.setBlock(x, y+4, z+1, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.LIGHT.metadata);

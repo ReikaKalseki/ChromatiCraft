@@ -49,7 +49,7 @@ public class LaserEntrance extends DynamicStructurePiece {
 							world.setBlock(dx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata, 3);
 					}
 					else {
-						world.setBlock(dx, dy, dz, STRUCTURE_AIR);
+						world.setBlock(dx, dy, dz, Blocks.air);
 					}
 				}
 			}
@@ -74,7 +74,7 @@ public class LaserEntrance extends DynamicStructurePiece {
 							world.setBlock(dx, dy, dz, ChromaBlocks.HOVER.getBlockInstance(), HoverType.DAMPER.getPermanentMeta(), 3);
 						}
 						else {
-							world.setBlock(dx, dy, dz, STRUCTURE_AIR);
+							world.setBlock(dx, dy, dz, Blocks.air);
 						}
 					}
 				}

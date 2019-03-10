@@ -68,14 +68,14 @@ public class MazeRoom extends StructurePiece {
 						int dz = z+c.zCoord*size+k;
 						if (j == 0) {
 							BlockKey bk = world.getBlock(dx, dy, dz);
-							if (bk != null && bk.blockID == STRUCTURE_AIR) {
+							if (bk != null && bk.blockID == Blocks.air) {
 								world.setBlock(dx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CRACKS.metadata);
 								openCells.addValue(c, ForgeDirection.DOWN);
 							}
 						}
 						else if (j == size) {
 							BlockKey bk = world.getBlock(dx, dy, dz);
-							if (bk != null && bk.blockID == STRUCTURE_AIR) {
+							if (bk != null && bk.blockID == Blocks.air) {
 								world.setBlock(dx, dy, dz, ChromaBlocks.HOVER.getBlockInstance(), HoverType.DAMPER.getPermanentMeta());
 								openCells.addValue(c, ForgeDirection.UP);
 							}
@@ -86,7 +86,7 @@ public class MazeRoom extends StructurePiece {
 								if (c.xCoord < cellRadius || i < size) {
 									if (c.zCoord > -cellRadius || k > 0) {
 										if (c.zCoord < cellRadius || k < size) {
-											world.setBlock(dx, dy, dz, STRUCTURE_AIR);
+											world.setBlock(dx, dy, dz, Blocks.air);
 											flag = true;
 										}
 									}
@@ -94,7 +94,7 @@ public class MazeRoom extends StructurePiece {
 							}
 							if (!flag) {
 								BlockKey bk = world.getBlock(dx, dy, dz);
-								if (bk != null && bk.blockID == STRUCTURE_AIR) {
+								if (bk != null && bk.blockID == Blocks.air) {
 									world.setBlock(dx, dy, dz, Blocks.iron_bars);
 								}
 							}

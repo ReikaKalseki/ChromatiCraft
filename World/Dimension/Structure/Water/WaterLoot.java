@@ -41,7 +41,7 @@ public class WaterLoot extends StructurePiece {
 						parent.addBreakable(dx, dy, dz);
 					}
 					else {
-						world.setBlock(dx, dy, dz, STRUCTURE_AIR);
+						world.setBlock(dx, dy, dz, Blocks.air);
 					}
 				}
 			}
