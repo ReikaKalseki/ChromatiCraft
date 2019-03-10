@@ -39,7 +39,7 @@ public class LightPanelLoot extends StructurePiece {
 				for (int j = 0; j <= maxh; j++) {
 					int dy = y+j;
 					if (!wall && j > h && j < h+HEIGHT) {
-						world.setBlock(dx, dy, dz, Blocks.air);
+						world.setBlock(dx, dy, dz, STRUCTURE_AIR);
 					}
 					else {
 						int m = j > h && j < maxh && !wall ? BlockType.CLOAK.metadata : BlockType.STONE.metadata;
@@ -59,7 +59,7 @@ public class LightPanelLoot extends StructurePiece {
 
 		for (int i = -2; i <= 2; i++) {
 			for (int k = 1; k <= 3; k++) {
-				world.setBlock(x-WIDTH, y+k, z+i, Blocks.air);
+				world.setBlock(x-WIDTH, y+k, z+i, STRUCTURE_AIR);
 			}
 		}
 		world.setBlock(x-WIDTH, y+4, z+1, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.LIGHT.metadata);

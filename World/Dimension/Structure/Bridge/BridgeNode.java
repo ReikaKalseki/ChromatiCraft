@@ -51,7 +51,7 @@ public class BridgeNode extends StructurePiece {
 					int dx = x+dir.offsetX*radius+k*dir.offsetZ;
 					int dz = z+dir.offsetZ*radius+k*dir.offsetX;
 					world.setBlock(dx, y, dz, ChromaBlocks.BRIDGE.getBlockInstance());
-					world.setBlock(dx, y+1, dz, Blocks.air);
+					world.setBlock(dx, y+1, dz, STRUCTURE_AIR);
 				}
 			}
 		}
@@ -60,7 +60,7 @@ public class BridgeNode extends StructurePiece {
 				boolean flag = true;
 				for (int h = 2; flag || h >= -1; h--) {
 					BlockKey bk = world.getBlock(x, y+h, z);
-					flag = bk == null || bk.blockID == Blocks.water || bk.blockID == Blocks.air;
+					flag = bk == null || bk.blockID == Blocks.water || bk.blockID == STRUCTURE_AIR;
 					if (flag || h >= -1)
 						world.setBlock(x+i, y+h, z+k, Blocks.planks);
 				}

@@ -51,7 +51,7 @@ public class NonEuclidEntrance extends DynamicStructurePiece {
 				world.setBlock(dx, dy+dh, dz, b, m1, 3);
 				boolean wall = Math.abs(i) == 2;
 				for (int f = 1; f < dh; f++)
-					world.setBlock(dx, dy+f, dz, wall ? b : Blocks.air, wall ? m1 : 0, 3);
+					world.setBlock(dx, dy+f, dz, wall ? b : STRUCTURE_AIR, wall ? m1 : 0, 3);
 			}
 
 			localmax = world.getTopSolidOrLiquidBlock(x, dz)-1;
@@ -73,7 +73,7 @@ public class NonEuclidEntrance extends DynamicStructurePiece {
 				world.setBlock(dx, dy+dh, dz, b, m1, 3);
 				boolean wall = Math.abs(i) == 2;
 				for (int f = 1; f < dh; f++)
-					world.setBlock(dx, dy+f, dz, wall ? b : Blocks.air, wall ? m1 : 0, 3);
+					world.setBlock(dx, dy+f, dz, wall ? b : STRUCTURE_AIR, wall ? m1 : 0, 3);
 			}
 
 			dz = z+k+dd+1+2;
@@ -84,7 +84,7 @@ public class NonEuclidEntrance extends DynamicStructurePiece {
 				world.setBlock(dx, dy+dh, dz, b, m1, 3);
 				boolean wall = Math.abs(i) == 2;
 				for (int f = 1; f < dh; f++)
-					world.setBlock(dx, dy+f, dz, wall ? b : Blocks.air, wall ? m1 : 0, 3);
+					world.setBlock(dx, dy+f, dz, wall ? b : STRUCTURE_AIR, wall ? m1 : 0, 3);
 			}
 		}
 

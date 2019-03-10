@@ -34,7 +34,7 @@ public class AltarCenter extends StructurePiece {
 		for (int h = 0; h < 12; h++) {
 			int r2 = h < 2 ? r : h < 9 ? r+2-h : r-7-2*h;
 			double d = h < 9 ? 1.75 : 1.75-(h-9)/4D;
-			Block b = h == 0 ? b1 : Blocks.air;
+			Block b = h == 0 ? b1 : STRUCTURE_AIR;
 			int m = h == 0 ? m1 : 0;
 			for (int i = -r2; i <= r2; i++) {
 				for (int k = -r2; k <= r2; k++) {

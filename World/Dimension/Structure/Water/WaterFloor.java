@@ -102,7 +102,7 @@ public class WaterFloor extends StructurePiece {
 							if (h <= 2)
 								world.setBlock(x+i, y+h, z+k, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.COBBLE.metadata);
 							else
-								world.setBlock(x+i, y+h, z+k, Blocks.air);
+								world.setBlock(x+i, y+h, z+k, STRUCTURE_AIR);
 						else {
 							if (h == 2)
 								if (Math.abs(i) > r-4 && Math.abs(k) > r-4) {
@@ -112,7 +112,7 @@ public class WaterFloor extends StructurePiece {
 								else
 									world.setBlock(x+i, y+h, z+k, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), bottom ? BlockType.STONE.metadata : BlockType.GLASS.metadata);
 							else
-								world.setBlock(x+i, y+h, z+k, Blocks.air);
+								world.setBlock(x+i, y+h, z+k, STRUCTURE_AIR);
 						}
 					}
 					else if ((h >= 0 || Math.abs(i) < r-4 || Math.abs(k) < r-4) && (Math.abs(i) == r || Math.abs(k) == r || (h == 0 && bottom) || h == HEIGHT))
@@ -128,7 +128,7 @@ public class WaterFloor extends StructurePiece {
 						}
 					else if (h >= 0 || (Math.abs(i) < r-4 && Math.abs(k) < r-4))
 						if (h > 0)
-							world.setBlock(x+i, y+h, z+k, Blocks.air);
+							world.setBlock(x+i, y+h, z+k, STRUCTURE_AIR);
 						else
 							world.setBlock(x+i, y+h, z+k, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.COBBLE.metadata);
 				}
@@ -140,10 +140,10 @@ public class WaterFloor extends StructurePiece {
 			for (int h = HEIGHT+1; h <= HEIGHT+4; h++) {
 				for (int i = r2-3; i <= r; i++) {
 					for (int k = r2-3; k <= r; k++) {
-						world.setBlock(x+i, y+h, z+k, Blocks.air);
-						world.setBlock(x-i, y+h, z+k, Blocks.air);
-						world.setBlock(x+i, y+h, z-k, Blocks.air);
-						world.setBlock(x-i, y+h, z-k, Blocks.air);
+						world.setBlock(x+i, y+h, z+k, STRUCTURE_AIR);
+						world.setBlock(x-i, y+h, z+k, STRUCTURE_AIR);
+						world.setBlock(x+i, y+h, z-k, STRUCTURE_AIR);
+						world.setBlock(x-i, y+h, z-k, STRUCTURE_AIR);
 					}
 				}
 				for (int i = -2; i <= 2; i++) {
@@ -155,10 +155,10 @@ public class WaterFloor extends StructurePiece {
 							world.setBlock(x+r-2+i, y+h, z+r-2+k, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
 						}
 						else {
-							world.setBlock(x-r+2+i, y+h, z-r+2+k, Blocks.air);
-							world.setBlock(x-r+2+i, y+h, z+r-2+k, Blocks.air);
-							world.setBlock(x+r-2+i, y+h, z-r+2+k, Blocks.air);
-							world.setBlock(x+r-2+i, y+h, z+r-2+k, Blocks.air);
+							world.setBlock(x-r+2+i, y+h, z-r+2+k, STRUCTURE_AIR);
+							world.setBlock(x-r+2+i, y+h, z+r-2+k, STRUCTURE_AIR);
+							world.setBlock(x+r-2+i, y+h, z-r+2+k, STRUCTURE_AIR);
+							world.setBlock(x+r-2+i, y+h, z+r-2+k, STRUCTURE_AIR);
 						}
 					}
 				}
@@ -203,14 +203,14 @@ public class WaterFloor extends StructurePiece {
 			}
 			for (int h = HEIGHT+1; h < HEIGHT+4; h++) {
 				for (int i = 1; i <= 3; i++) {
-					world.setBlock(x+r-i, y+h, z+r-4, Blocks.air);
-					world.setBlock(x-r+i, y+h, z+r-4, Blocks.air);
-					world.setBlock(x+r-i, y+h, z-r+4, Blocks.air);
-					world.setBlock(x-r+i, y+h, z-r+4, Blocks.air);
-					world.setBlock(x-r+4, y+h, z+r-i, Blocks.air);
-					world.setBlock(x-r+4, y+h, z-r+i, Blocks.air);
-					world.setBlock(x+r-4, y+h, z+r-i, Blocks.air);
-					world.setBlock(x+r-4, y+h, z-r+i, Blocks.air);
+					world.setBlock(x+r-i, y+h, z+r-4, STRUCTURE_AIR);
+					world.setBlock(x-r+i, y+h, z+r-4, STRUCTURE_AIR);
+					world.setBlock(x+r-i, y+h, z-r+4, STRUCTURE_AIR);
+					world.setBlock(x-r+i, y+h, z-r+4, STRUCTURE_AIR);
+					world.setBlock(x-r+4, y+h, z+r-i, STRUCTURE_AIR);
+					world.setBlock(x-r+4, y+h, z-r+i, STRUCTURE_AIR);
+					world.setBlock(x+r-4, y+h, z+r-i, STRUCTURE_AIR);
+					world.setBlock(x+r-4, y+h, z-r+i, STRUCTURE_AIR);
 				}
 			}
 			parent.generateLootChest(x+r2+1, y+HEIGHT+1, z+r2, ForgeDirection.EAST, ChestGenHooks.DUNGEON_CHEST, 0);
@@ -243,10 +243,10 @@ public class WaterFloor extends StructurePiece {
 						int dx = l.centerLocation.xCoord+d*dir.offsetX;
 						int dz = l.centerLocation.zCoord+d*dir.offsetZ;
 						if (l.isDirectionOpen(dir))
-							world.setBlock(dx, y+2, dz, Blocks.air);
+							world.setBlock(dx, y+2, dz, STRUCTURE_AIR);
 						//padCoordinates.remove(new Coordinate(dx, y+2, dz));
 					}
-					world.setBlock(l.centerLocation.xCoord+(Lock.SIZE+1)*dir.offsetX, y+2, l.centerLocation.zCoord+(Lock.SIZE+1)*dir.offsetZ, Blocks.air);
+					world.setBlock(l.centerLocation.xCoord+(Lock.SIZE+1)*dir.offsetX, y+2, l.centerLocation.zCoord+(Lock.SIZE+1)*dir.offsetZ, STRUCTURE_AIR);
 				}
 			}
 		}
@@ -261,7 +261,7 @@ public class WaterFloor extends StructurePiece {
 		int lx = x+path.startLoc.x*(Lock.SIZE*2+1+1);
 		int lz = z+path.startLoc.y*(Lock.SIZE*2+1+1);
 		for (int i = 0; i <= 4; i++)
-			world.setBlock(lx, y+HEIGHT+i, lz, Blocks.air);
+			world.setBlock(lx, y+HEIGHT+i, lz, STRUCTURE_AIR);
 
 		//ReikaJavaLibrary.pConsole("Level "+level+": Path from "+path.startLoc+" to "+path.endLoc+", end at "+lx+","+lz);
 

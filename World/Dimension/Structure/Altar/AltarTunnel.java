@@ -50,7 +50,7 @@ public class AltarTunnel extends StructurePiece {
 				int dz2 = dz+left.offsetZ*i;
 				int dy2 = dy+k;
 				boolean edge = k == 0 || k == h-1 || i == w || i == -w;
-				Block b = edge ? ChromaBlocks.STRUCTSHIELD.getBlockInstance() : Blocks.air;
+				Block b = edge ? ChromaBlocks.STRUCTSHIELD.getBlockInstance() : STRUCTURE_AIR;
 				int mt = edge ? BlockType.STONE.metadata : 0;
 				world.setBlock(dx2, dy2, dz2, b, mt);
 			}

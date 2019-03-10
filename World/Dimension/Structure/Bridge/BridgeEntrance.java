@@ -29,7 +29,7 @@ public class BridgeEntrance extends DynamicStructurePiece {
 	public void generate(World world, int x, int z) {
 		int top = world.getTopSolidOrLiquidBlock(x, z);
 		int y = parent.getPosY()+1;
-		while (world.getBlock(x, y, z) == Blocks.air) {
+		while (world.getBlock(x, y, z) == STRUCTURE_AIR) {
 			y++;
 		}
 		y -= 2;
@@ -43,7 +43,7 @@ public class BridgeEntrance extends DynamicStructurePiece {
 					int dz = z+k;
 					if (Math.abs(i) <= r2 && Math.abs(k) <= r2) {
 						if (Math.abs(i) != r || Math.abs(k) != r) {
-							world.setBlock(dx, dy, dz, dy <= y+1 ? ChromaBlocks.HOVER.getBlockInstance() : Blocks.air, dy <= y+1 ? HoverType.DAMPER.getPermanentMeta() : 0, 3);
+							world.setBlock(dx, dy, dz, dy <= y+1 ? ChromaBlocks.HOVER.getBlockInstance() : STRUCTURE_AIR, dy <= y+1 ? HoverType.DAMPER.getPermanentMeta() : 0, 3);
 						}
 						else {
 							world.setBlock(dx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), m, 3);

@@ -109,7 +109,7 @@ public class WaterPuzzleGenerator extends DimensionStructureGenerator {
 						world.setBlock(dx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), (Math.abs(i)+Math.abs(k))%6 == 0 ? BlockType.LIGHT.metadata : BlockType.STONE.metadata);
 					}
 					else {
-						world.setBlock(dx, dy, dz, Blocks.air);
+						world.setBlock(dx, dy, dz, STRUCTURE_AIR);
 					}
 				}
 			}
@@ -119,7 +119,7 @@ public class WaterPuzzleGenerator extends DimensionStructureGenerator {
 		int dx = posX+p.x*(Lock.SIZE*2+1+1);
 		int dz = posZ+p.y*(Lock.SIZE*2+1+1);
 		for (int i = 0; i <= 4; i++) {
-			world.setBlock(dx, y+WaterFloor.HEIGHT+i, dz, Blocks.air);
+			world.setBlock(dx, y+WaterFloor.HEIGHT+i, dz, STRUCTURE_AIR);
 			if (i > 0) {
 				world.setBlock(dx+1, y+WaterFloor.HEIGHT+i, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.ordinal());
 				world.setBlock(dx-1, y+WaterFloor.HEIGHT+i, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.ordinal());

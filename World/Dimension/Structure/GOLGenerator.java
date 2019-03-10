@@ -68,7 +68,7 @@ public class GOLGenerator extends DimensionStructureGenerator {
 				int dz = z+k;
 				this.placeTile(dx, dz, false);
 				for (int h = 1; h < ROOM_HEIGHT; h++) {
-					world.setBlock(dx, floorY+h, dz, Blocks.air);
+					world.setBlock(dx, floorY+h, dz, STRUCTURE_AIR);
 				}
 				world.setBlock(dx, floorY-1, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata);
 				world.setBlock(dx, floorY+ROOM_HEIGHT+1, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata);

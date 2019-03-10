@@ -44,7 +44,7 @@ public class AntFarmEntrance extends DynamicStructurePiece {
 					if (d <= r+0.5) {
 						int dx = x+i;
 						int dz = z+k;
-						BlockKey b = d <= r-0.75 ? new BlockKey(Blocks.air) : new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+						BlockKey b = d <= r-0.75 ? new BlockKey(STRUCTURE_AIR) : new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
 						world.setBlock(dx, y, dz, b.blockID, b.metadata, 3);
 					}
 				}

@@ -51,7 +51,7 @@ public class LaserLevel extends StructurePiece implements PlacementCallback, NBT
 	public LaserLevel(LaserPuzzleGenerator s, String name) {
 		super(s);
 
-		data = new StructureExport(name, PATH, ChromatiCraft.class).addIgnoredBlock(new BlockKey(Blocks.stone)).addIgnoredBlock(new BlockKey(Blocks.air));
+		data = new StructureExport(name, PATH, ChromatiCraft.class).addIgnoredBlock(new BlockKey(Blocks.stone)).addIgnoredBlock(new BlockKey(STRUCTURE_AIR));
 		this.name = name;
 		try {
 			data.encryptData = true;
@@ -107,7 +107,7 @@ public class LaserLevel extends StructurePiece implements PlacementCallback, NBT
 						world.setBlock(dx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
 					}
 					else {
-						world.setBlock(dx, dy, dz, Blocks.air);
+						world.setBlock(dx, dy, dz, STRUCTURE_AIR);
 					}
 				}
 			}
@@ -123,7 +123,7 @@ public class LaserLevel extends StructurePiece implements PlacementCallback, NBT
 			int dy = y+i;
 			int d = i == 6 ? 1 : 2;
 			for (int k = -d; k <= d; k++) {
-				world.setBlock(def.minX-w, dy, z+k, Blocks.air);
+				world.setBlock(def.minX-w, dy, z+k, STRUCTURE_AIR);
 				world.setBlock(def.maxX+w, dy, z+k, ChromaBlocks.DOOR.getBlockInstance(), BlockChromaDoor.getMetadata(false, false, false, true));
 			}
 		}
@@ -220,7 +220,7 @@ public class LaserLevel extends StructurePiece implements PlacementCallback, NBT
 
 		for (int dx = def.minX+1; dx <= def.maxX-1; dx++) {
 			int dz = def.maxZ+2;
-			world.setBlock(dx, y+1, dz, Blocks.air);
+			world.setBlock(dx, y+1, dz, STRUCTURE_AIR);
 		}
 
 		world.setBlock(def.minX-2, y+1, def.minZ-2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.LIGHT.metadata);

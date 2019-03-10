@@ -175,11 +175,11 @@ public class AntFarmGenerator extends DimensionStructureGenerator {
 	}
 
 	public void cutBlock(Coordinate c, boolean air) {
-		BlockKey b = air ? new BlockKey(Blocks.air) : new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+		BlockKey b = air ? new BlockKey(STRUCTURE_AIR) : new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
 		if (airSpaces.contains(c))
-			b = new BlockKey(Blocks.air);
+			b = new BlockKey(STRUCTURE_AIR);
 		blocks.put(c, b);
-		if (b.blockID == Blocks.air) {
+		if (b.blockID == STRUCTURE_AIR) {
 			airSpaces.add(c);
 		}
 	}

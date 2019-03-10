@@ -82,7 +82,7 @@ public class LockRoomConnector extends StructurePiece {
 				world.setBlock(dx, y+5, dz, b, ms);
 
 				for (int h = 1; h <= 4; h++) {
-					world.setBlock(dx, y+h, dz, Blocks.air);
+					world.setBlock(dx, y+h, dz, STRUCTURE_AIR);
 				}
 			}
 		}
@@ -119,9 +119,9 @@ public class LockRoomConnector extends StructurePiece {
 						world.setBlock(dx+2*left.offsetX, y+h, dz+2*left.offsetZ, b, ms);
 						world.setBlock(dx-2*left.offsetX, y+h, dz-2*left.offsetZ, b, ms);
 
-						world.setBlock(dx, y+h, dz, Blocks.air);
-						world.setBlock(dx+1*left.offsetX, y+h, dz+1*left.offsetZ, Blocks.air);
-						world.setBlock(dx-1*left.offsetX, y+h, dz-1*left.offsetZ, Blocks.air);
+						world.setBlock(dx, y+h, dz, STRUCTURE_AIR);
+						world.setBlock(dx+1*left.offsetX, y+h, dz+1*left.offsetZ, STRUCTURE_AIR);
+						world.setBlock(dx-1*left.offsetX, y+h, dz-1*left.offsetZ, STRUCTURE_AIR);
 					}
 				}
 			}
@@ -142,7 +142,7 @@ public class LockRoomConnector extends StructurePiece {
 				for (int k = -1; k <= 1; k++) {
 					int dx = x+i;
 					int dz = z+k;
-					world.setBlock(dx, y+5, dz, window ? b : Blocks.air, window ? mg : 0);
+					world.setBlock(dx, y+5, dz, window ? b : STRUCTURE_AIR, window ? mg : 0);
 				}
 			}
 		}
@@ -155,7 +155,7 @@ public class LockRoomConnector extends StructurePiece {
 						int dy = y-j;
 						int dz = z+k;
 						boolean air = Math.abs(i) <= 1 && Math.abs(k) <= 1;
-						world.setBlock(dx, dy, dz, air ? Blocks.air : b, air ? 0 : j%8 == 2 && (i == 0 || k == 0) ? ml : ms);
+						world.setBlock(dx, dy, dz, air ? STRUCTURE_AIR : b, air ? 0 : j%8 == 2 && (i == 0 || k == 0) ? ml : ms);
 						if (air && j >= -openFloor+5 && j%8 == 5) {
 							world.setBlock(dx, dy, dz, ChromaBlocks.HOVER.getBlockInstance(), HoverType.DAMPER.getPermanentMeta());
 						}
@@ -167,7 +167,7 @@ public class LockRoomConnector extends StructurePiece {
 				for (int k = -1; k <= 1; k++) {
 					int dx = x+i;
 					int dz = z+k;
-					world.setBlock(dx, y, dz, Blocks.air);
+					world.setBlock(dx, y, dz, STRUCTURE_AIR);
 				}
 			}
 		}

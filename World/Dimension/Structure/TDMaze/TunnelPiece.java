@@ -144,7 +144,7 @@ public class TunnelPiece extends StructurePiece {
 					fill = fill || crack;
 					 */
 
-					Block b = fill ? ChromaBlocks.STRUCTSHIELD.getBlockInstance() : Blocks.air;
+					Block b = fill ? ChromaBlocks.STRUCTSHIELD.getBlockInstance() : STRUCTURE_AIR;
 					int meta = fill ? (light ? BlockType.LIGHT.metadata : BlockType.STONE.metadata) : 0;
 					if (window)
 						meta = BlockType.GLASS.metadata;

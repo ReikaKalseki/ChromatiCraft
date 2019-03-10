@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -17,7 +17,9 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -63,6 +65,8 @@ import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCal
 import cpw.mods.fml.common.Loader;
 
 public abstract class DimensionStructureGenerator implements TileCallback {
+
+	public static final Block STRUCTURE_AIR = Blocks.air;
 
 	protected final ChunkSplicedGenerationCache world = new ChunkSplicedGenerationCache();
 	private DimensionStructureType structureType;
