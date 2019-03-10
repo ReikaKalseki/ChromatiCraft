@@ -45,7 +45,6 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Magic.ElementMixer;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -61,7 +60,6 @@ import Reika.DragonAPI.Interfaces.TileEntity.PlayerBreakHook;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -300,9 +298,8 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 		for (EntityPlayerMP ep : ((List<EntityPlayerMP>)world.getEntitiesWithinAABB(EntityPlayerMP.class, box))) {
 			UUID uid = ep.getUniqueID();
 			if (!sentPlayers.contains(uid)) {
-				sentPlayers.add(uid);
-				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.STRUCTUREENTRY.ordinal(), ep, structure.ordinal());
-				ChromaDimensionManager.addPlayerToStructure(ep, this.getStructure());
+				if (ChromaDimensionManager.addPlayerToStructure(ep, this.getStructure()))
+					sentPlayers.add(uid);
 			}
 		}
 	}

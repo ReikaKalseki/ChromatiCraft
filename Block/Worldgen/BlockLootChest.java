@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -52,6 +52,8 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
@@ -160,9 +162,14 @@ public class BlockLootChest extends BlockContainer {
 		TileEntity te = world.getTileEntity(x, y, z);
 		if (!(te instanceof TileEntityLootChest))
 			return false;
+		TileEntityLootChest tc = (TileEntityLootChest)te;
+		if (ep != null && world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue() && !tc.isOwnedBy(ep)) {
+			if (!DimensionTuningManager.TuningThresholds.CHESTS.isSufficientlyTuned(ep))
+				return false;
+		}
 		if (world.getBlockMetadata(x, y, z) >= 8 || (world.isSideSolid(x, y+1, z, DOWN) && !CarpenterBlockHandler.getInstance().isCarpenterBlock(world.getBlock(x, y+1, z))))
-			return ep == null || ((TileEntityLootChest)te).isOwnedBy(ep);
-		return ep == null || ((TileEntityLootChest)te).isUseableByPlayer(ep);
+			return ep == null || tc.isOwnedBy(ep);
+		return ep == null || tc.isUseableByPlayer(ep);
 	}
 
 	public TileEntity createNewTileEntity(World world, int meta)

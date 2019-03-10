@@ -186,9 +186,13 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 		return (int)(Math.min(1+this.getTileEntityAge()/128, CROP_RANGE));
 	}
 
+	private int getLootingLevel() {
+		return (int)Math.min(6, this.getTileEntityAge()/288000); //1 per 4h, max 6 @ 24h
+	}
+
 	private void attack(World world, int x, int y, int z, EntityLivingBase e) {
 		float dmg = this.getAttackDamage(e);
-		ChromaAux.doPylonAttack(CrystalElement.WHITE, e, dmg, false);
+		ChromaAux.doPylonAttack(CrystalElement.WHITE, e, dmg, false, this.getLootingLevel());
 		ChromaSounds.DISCHARGE.playSound(e.worldObj, e.posX, e.posY, e.posZ, 1, 1);
 		ChromaSounds.DISCHARGE.playSound(e, 0.5F, 1);
 

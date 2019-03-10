@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -45,7 +45,7 @@ public class LocksGenerator extends DimensionStructureGenerator {
 	private HashSet<Coordinate> lockCache = new HashSet();
 
 	@Override
-	public void calculate(int x, int z, Random rand) {
+	protected void calculate(int x, int z, Random rand) {
 		posY = 70;
 
 		this.resetColorCaches();

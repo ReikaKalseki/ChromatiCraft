@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -49,6 +49,8 @@ public class SkyRiverManager {
 				if (!(objPl instanceof EntityPlayer) || ((EntityPlayer)objPl).isDead)
 					continue;
 				EntityPlayer pl = (EntityPlayer)objPl;
+				if (!DimensionTuningManager.TuningThresholds.SKYRIVER.isSufficientlyTuned(pl))
+					continue;
 				if (recentlyLeftSkyRiver.containsKey(pl)) {
 					int delay = recentlyLeftSkyRiver.get(pl);
 					delay--;

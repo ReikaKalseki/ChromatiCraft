@@ -316,6 +316,10 @@ public class ChromaAux {
 	}
 
 	public static void doPylonAttack(CrystalElement color, EntityLivingBase e, float amt, boolean taperNew) {
+		doPylonAttack(color, e, amt, taperNew, 0);
+	}
+
+	public static void doPylonAttack(CrystalElement color, EntityLivingBase e, float amt, boolean taperNew, int looting) {
 
 		final float originalAmt = amt;
 

@@ -40,6 +40,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.DragonAPI.Instantiable.Data.StatisticalRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Worldgen.ControllableOreVein;
@@ -142,11 +143,13 @@ public class BlockTieredOre extends BlockChromaTiered implements MagneticOreOver
 		switch(TieredOres.list[world.getBlockMetadata(x, y, z)]) {
 			case INFUSED:
 				n = Math.min(16, 1+rand.nextInt(5)*(1+rand.nextInt(1+fortune)));
+				n = DimensionTuningManager.instance.getTunedDropCount(player, n, 0, 512);
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.chromaDust.copy());
 				break;
 			case STONES:
 				n = Math.min(4, 1+fortune/2);
+				n = DimensionTuningManager.instance.getTunedDropCount(player, n, 0, 512);
 				NBTTagCompound tag = getStoneHistory(player);
 				StatisticalRandom<CrystalElement> sr = new StatisticalRandom(CrystalElement.class);
 				sr.readFromNBT(tag);
@@ -158,66 +161,79 @@ public class BlockTieredOre extends BlockChromaTiered implements MagneticOreOver
 				break;
 			case BINDING:
 				n = Math.min(8, 1+rand.nextInt(3)*(1+rand.nextInt(1+fortune/2)));
+				n = DimensionTuningManager.instance.getTunedDropCount(player, n, 0, 512);
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.bindingCrystal.copy());
 				break;
 			case FOCAL:
 				n = Math.min(32, 1+rand.nextInt(6)*(1+rand.nextInt(1+fortune*3/2)));
+				n = DimensionTuningManager.instance.getTunedDropCount(player, n, 0, 512);
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.focusDust.copy());
 				break;
 			case TELEPORT:
 				n = Math.min(32, 1+rand.nextInt(1+fortune)+fortune*fortune/2);
+				n = DimensionTuningManager.instance.getTunedDropCount(player, n, 0, 512);
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.enderDust.copy());
 				break;
 			case WATERY:
 				n = Math.min(32, 1+rand.nextInt(6)+rand.nextInt(1+3*fortune));
+				n = DimensionTuningManager.instance.getTunedDropCount(player, n, 0, 512);
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.waterDust.copy());
 				break;
 			case FIRAXITE:
 				n = Math.min(32, 1+rand.nextInt(8)+rand.nextInt(1+fortune)*4);
+				n = DimensionTuningManager.instance.getTunedDropCount(player, n, 0, 512);
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.firaxite.copy());
 				break;
 			case LUMA:
 				n = Math.min(32, (1+fortune)*(1+4*rand.nextInt(5)));
+				n = DimensionTuningManager.instance.getTunedDropCount(player, n, 0, 512);
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.lumaDust.copy());
 				break;
 			case ECHO:
 				n = Math.min(32, (1+fortune*fortune/2)*(1+rand.nextInt(8)+rand.nextInt(8)));
+				n = DimensionTuningManager.instance.getTunedDropCount(player, n, 0, 512);
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.echoCrystal.copy());
 				break;
 			case FIRESTONE:
 				n = 1+rand.nextInt(6)*(1+fortune/2);
+				n = DimensionTuningManager.instance.getTunedDropCount(player, n, 0, 512);
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.fireEssence.copy());
 				break;
 			case THERMITE:
 				n = 1+rand.nextInt(1+fortune*fortune);
+				n = DimensionTuningManager.instance.getTunedDropCount(player, n, 0, 512);
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.thermiticCrystal.copy());
 				break;
 			case RESO:
 				n = 1+fortune*4;
+				n = DimensionTuningManager.instance.getTunedDropCount(player, n, 0, 512);
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.resocrystal.copy());
 				break;
 			case SPACERIFT:
 				n = 1+fortune+rand.nextInt(1+fortune)*3/2;
+				n = DimensionTuningManager.instance.getTunedDropCount(player, n, 0, 512);
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.spaceDust.copy());
 				break;
 			case RAINBOW:
 				n = 1+fortune+rand.nextInt(1+fortune)/2;
+				n = DimensionTuningManager.instance.getTunedDropCount(player, n, 0, 512);
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.lumenGem.copy());
 				break;
 			case AVOLITE:
 				n = 1+rand.nextInt(1+fortune/2)/2;
+				n = DimensionTuningManager.instance.getTunedDropCount(player, n, 0, 512);
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.avolite.copy());
 				break;

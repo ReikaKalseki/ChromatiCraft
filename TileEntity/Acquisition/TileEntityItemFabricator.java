@@ -35,7 +35,6 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
@@ -120,7 +119,7 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 	private void onRecipeChanged(Recipe last) {
 		craftingTick = recipe != null ? recipe.duration : 0;
 		if (areRecipesDifferent(last, recipe)) {
-			ReikaJavaLibrary.pConsole("Changing recipe from "+last+" to "+recipe);
+			//ReikaJavaLibrary.pConsole("Changing recipe from "+last+" to "+recipe);
 			CrystalNetworker.instance.breakPaths(this);
 			checkTimer.reset();
 		}

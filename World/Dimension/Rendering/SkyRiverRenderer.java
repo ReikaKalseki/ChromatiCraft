@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverGenerator;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverGenerator.RiverPoint;
 import Reika.DragonAPI.Instantiable.ParticleController.CollectingPositionController;
@@ -45,6 +46,9 @@ public class SkyRiverRenderer {
 	}
 
 	public void render() {
+		float f = DimensionTuningManager.TuningThresholds.SKYRIVER.getTuningFraction(Minecraft.getMinecraft().thePlayer);
+		if (f <= 0)
+			return;
 		GL11.glPushMatrix();
 		GL11.glTranslated(-RenderManager.renderPosX, -RenderManager.renderPosY, -RenderManager.renderPosZ);
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
@@ -75,6 +79,10 @@ public class SkyRiverRenderer {
 			int clr = ReikaColorAPI.getModifiedHue(0xff0000, (int)((p.positionID*4-System.currentTimeMillis()/500D)%360D));
 			int c1 = clr;
 			int c2 = ReikaColorAPI.getModifiedHue(0xff0000, (int)(((p.positionID+1)*4-System.currentTimeMillis()/500D)%360D));
+
+			c1 = ReikaColorAPI.getColorWithBrightnessMultiplier(c1, f);
+			c2 = ReikaColorAPI.getColorWithBrightnessMultiplier(c2, f);
+
 			if (p.positionID == 1) {
 				c1 = ReikaColorAPI.getColorWithBrightnessMultiplier(c1, 0.01F);
 			}

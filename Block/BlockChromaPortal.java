@@ -49,6 +49,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
+import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -254,7 +255,7 @@ public class BlockChromaPortal extends Block {
 
 		private void teleportPlayer(EntityPlayer ep) {
 			int dim = this.getTargetDimension();
-			ep.getEntityData().setInteger("dimensionTuning", tuning);
+			DimensionTuningManager.instance.tunePlayer(ep, tuning);
 			ReikaEntityHelper.transferEntityToDimension(ep, dim, new ChromaTeleporter(dim));
 			if (ProgressStage.DIMENSION.stepPlayerTo(ep)) {
 				ReikaSoundHelper.broadcastSound(ChromaSounds.GOTODIM, ChromatiCraft.packetChannel, 1, 1);
@@ -269,7 +270,7 @@ public class BlockChromaPortal extends Block {
 
 		public void addTuningEnergy(ItemStack is) {
 			boolean tier2 = ReikaItemHelper.matchStacks(is, ChromaStacks.bedrockloot2);
-			int amt = (int)((tier2 ? 3 : 1)*Math.pow(is.stackSize, tier2 ? 0.85 : 0.5));
+			int amt = (int)((tier2 ? 150 : 1)*Math.pow(is.stackSize, tier2 ? 0.85 : 0.5));
 			tuning += amt;
 		}
 

@@ -60,17 +60,12 @@ public class ItemStructureMap extends ItemChromaTool {
 			Collection<Coordinate> li = new ArrayList();
 			switch(this) {
 				case STRONGHOLD:
-					try {
-						MapGenStronghold mg = ((ChunkProviderGenerate)world.theChunkProviderServer.currentChunkProvider).strongholdGenerator;
-						List li0 = (List)ReikaObfuscationHelper.getMethod("getCoordList").invoke(mg);
-						if (li0 != null) {
-							for (Object o : li) {
-								li.add(new Coordinate((ChunkPosition)o));
-							}
+					MapGenStronghold mg = ((ChunkProviderGenerate)world.theChunkProviderServer.currentChunkProvider).strongholdGenerator;
+					List li0 = (List)ReikaObfuscationHelper.invoke("getCoordList", mg);
+					if (li0 != null) {
+						for (Object o : li) {
+							li.add(new Coordinate((ChunkPosition)o));
 						}
-					}
-					catch (Exception e) {
-						throw new RuntimeException(e);
 					}
 					break;
 				case TOWERS:

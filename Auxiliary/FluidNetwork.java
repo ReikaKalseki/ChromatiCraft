@@ -204,7 +204,7 @@ public class FluidNetwork {
 
 		@Override
 		public String toString() {
-			return location.toString()+": "+pressure;
+			return "P = "+pressure+" @ "+location.toString();
 		}
 
 	}

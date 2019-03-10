@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -91,12 +91,13 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 
 		for (Ray r : rays) {
 			RiverPoint prev = null;
-			for (int i = 1; i < r.points.size() - 1; i++) {
+			int n = r.points.size();
+			for (int i = 1; i < n - 1; i++) {
 				DecimalPosition pos = r.points.get(i);
 				DecimalPosition nextPos = r.points.get(i + 1);
 				DecimalPosition prevPos = r.points.get(i - 1);
 				ChunkCoordIntPair ch = new ChunkCoordIntPair(MathHelper.floor_double(pos.xCoord) / 16, MathHelper.floor_double(pos.zCoord) / 16);
-				RiverPoint p = new RiverPoint(i, ch, pos, prevPos, nextPos);
+				RiverPoint p = new RiverPoint(i, n, ch, pos, prevPos, nextPos);
 				if (prev != null) {
 					prev.nextRiverPoint = p;
 				}
@@ -320,11 +321,14 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 		public final DecimalPosition prev;
 
 		public final int positionID;
+		public final int totalPathLength;
 
 		public RiverPoint nextRiverPoint; // Util nextNode.
 
-		public RiverPoint(int id, ChunkCoordIntPair ch, DecimalPosition pos, DecimalPosition prev, DecimalPosition next) {
+		public RiverPoint(int id, int len, ChunkCoordIntPair ch, DecimalPosition pos, DecimalPosition prev, DecimalPosition next) {
 			positionID = id;
+			totalPathLength = len;
+
 			chunk = ch;
 			position = pos;
 			this.next = next;
@@ -336,22 +340,26 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 			return prev + " > " + position + " > " + next;
 		}
 
+		public float getFractionalPosition() {
+			return positionID/(float)totalPathLength;
+		}
+
 		/* public static RiverPoint readFromNBT(NBTTagCompound tag) {
 		 * ChunkCoordIntPair ch = new ChunkCoordIntPair(tag.getInteger("cx"),
 		 * tag.getInteger("cz")); return new RiverPoint(ch,
 		 * DecimalPosition.readFromNBT("pos", tag),
 		 * DecimalPosition.readFromNBT("pre", tag),
 		 * DecimalPosition.readFromNBT("next", tag)); }
-		 * 
+		 *
 		 * public void writeToNBT(NBTTagCompound tag) { tag.setInteger("cx",
 		 * chunk.chunkXPos); tag.setInteger("cz", chunk.chunkZPos);
 		 * position.writeToNBT("pos", tag); next.writeToNBT("next", tag);
 		 * prev.writeToNBT("prev", tag); }
-		 * 
+		 *
 		 * public void writeToBuf(ByteBuf buf) { buf.writeInt(chunk.chunkXPos);
 		 * buf.writeInt(chunk.chunkZPos); position.writeToBuf(buf);
 		 * next.writeToBuf(buf); prev.writeToBuf(buf); }
-		 * 
+		 *
 		 * public static RiverPoint readFromBuf(ByteBuf buf) { int cx =
 		 * buf.readInt(); int cz = buf.readInt(); DecimalPosition pos =
 		 * DecimalPosition.readFromBuf(buf); DecimalPosition nex =

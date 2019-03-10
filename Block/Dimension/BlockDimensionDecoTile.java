@@ -16,7 +16,6 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -292,7 +291,8 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 								ico = ChromaIcons.NODE2;
 								break;
 						}
-						EntityFX fx = new EntityBlurFX(worldObj, xCoord+0.5, yCoord+0.9, zCoord+0.5, 0, vy, 0).setRapidExpand().setScale(4).setColor(c).setIcon(ico);
+						EntityBlurFX fx = new EntityBlurFX(worldObj, xCoord+0.5, yCoord+0.9, zCoord+0.5, 0, vy, 0);
+						fx.setRapidExpand().setScale(4).setColor(c).setIcon(ico).forceIgnoreLimits();
 						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					}
 					break;

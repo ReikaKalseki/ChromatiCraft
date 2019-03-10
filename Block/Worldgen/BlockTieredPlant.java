@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
@@ -338,6 +339,7 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 				n = 1+rand.nextInt(1+fortune)/2;
 				break;
 		}
+		n = DimensionTuningManager.instance.getTunedDropCount(player, n, 0, 384);
 		for (int i = 0; i < n; i++) {
 			li.add(is.copy());
 		}

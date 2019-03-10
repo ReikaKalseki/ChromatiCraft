@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -64,6 +65,9 @@ public class BlockCaveCrystal extends CrystalBlock implements ProgressionTrigger
 	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int meta, int fortune) {
 		ArrayList<ItemStack> li = new ArrayList();
 		int num = this.getNumberDrops(meta, fortune);
+		EntityPlayer ep = harvesters.get();
+		if (ep != null)
+			num = DimensionTuningManager.instance.getTunedDropCount(ep, num, 1, Integer.MAX_VALUE);
 		for (int i = 0; i < num; i++)
 			li.add(ChromaItems.SHARD.getStackOfMetadata(meta));
 		return li;

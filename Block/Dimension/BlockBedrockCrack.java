@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Render.ISBRH.BedrockCrackRenderer;
+import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.DragonAPI.DragonAPICore;
 
 public class BlockBedrockCrack extends Block {
@@ -42,18 +43,31 @@ public class BlockBedrockCrack extends Block {
 
 	@Override
 	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
+		return this.getDrops(world, x, y, z, metadata, fortune, harvesters.get());
+	}
+
+	private ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune, EntityPlayer ep) {
 		ArrayList<ItemStack> li = new ArrayList();
 		int n = 1+Math.min(metadata, DragonAPICore.rand.nextInt(1+metadata+fortune));
+		if (ep != null)
+			n = DimensionTuningManager.instance.getTunedDropCount(ep, n, 1, Integer.MAX_VALUE);
 		for (int i = 0; i < n; i++)
 			li.add(ChromaStacks.bedrockloot.copy());
 		if (metadata == 9) {
-			li.add(ChromaStacks.bedrockloot2.copy());
+			n = ep != null ? DimensionTuningManager.instance.getTunedDropCount(ep, n, 1, 3) : 1;
+			for (int i = 0; i < n; i++)
+				li.add(ChromaStacks.bedrockloot2.copy());
 		}
 		else {
 
 		}
 		return li;
 	}
+	/*
+	@Override
+	public void harvestBlock(World world, EntityPlayer ep, int x, int y, int z, int meta) {
+		//ReikaBlockHelper.doBlockHarvest(world, ep, x, y, z, meta, this, this.harvesters);
+	}*/
 
 	@Override
 	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest) {

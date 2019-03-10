@@ -21,6 +21,7 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
@@ -406,13 +407,17 @@ public class ChromaDimensionManager {
 		return playersInStructures.get(ep);
 	}
 
-	public static void addPlayerToStructure(EntityPlayer ep, DimensionStructureGenerator structure) {
+	public static boolean addPlayerToStructure(EntityPlayerMP ep, DimensionStructureGenerator structure) {
+		if (!DimensionTuningManager.TuningThresholds.STRUCTURES.isSufficientlyTuned(ep))
+			return false;
 		playersInStructures.put(ep, structure);
 		/*
 		if (ProgressionManager.instance.hasPlayerCompletedStructureColor(ep, structure.getCoreColor(ep.worldObj))) {
 			structure.forceOpen(ep.worldObj, ep);
 		}
 		 */
+		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.STRUCTUREENTRY.ordinal(), ep, structure.getType().ordinal());
+		return true;
 	}
 
 	@SideOnly(Side.CLIENT)

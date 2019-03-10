@@ -40,6 +40,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Render.ISBRH.DimensionDecoRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -137,14 +138,34 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 			}
 		}
 
-		private void addDrops(ArrayList<ItemStack> li) {
+		private void addDrops(World world, int x, int y, int z, int metadata, int fortune, ArrayList<ItemStack> li, EntityPlayer ep) {
 			int n = 1;
 			switch(this) {
 				case GLOWCAVE:
 					n = ReikaRandomHelper.getRandomBetween(1, 6); //no break
 				default:
+					//float f = ep == null ? 1 : DimensionTuningManager.instance.getTunedDropRates(ep);
+					if (ep != null)
+						n = DimensionTuningManager.instance.getTunedDropCount(ep, n, 1, this.getMaxDrops());
 					for (int i = 0; i < n; i++)
 						li.add(ChromaItems.DIMGEN.getStackOfMetadata(this.ordinal()));
+			}
+		}
+
+		private int getMaxDrops() {
+			switch(this) {
+				case AQUA:
+					return 24;
+				case CRYSTALLEAF:
+					return 12;
+				case FLOATSTONE:
+					return 3;
+				case GLOWCAVE:
+					return 18;
+				case OCEANSTONE:
+					return 2;
+				default:
+					return 1;
 			}
 		}
 	}
@@ -162,6 +183,13 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 	{
 		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[s];
 		return iba.getBlock(x, y, z) != this || iba.getBlockMetadata(x, y, z) != iba.getBlockMetadata(x-dir.offsetX, y-dir.offsetY, z-dir.offsetZ);
+	}
+
+	@Override
+	public float getPlayerRelativeBlockHardness(EntityPlayer ep, World world, int x, int y, int z) {
+		if (!DimensionTuningManager.TuningThresholds.DECOHARVEST.isSufficientlyTuned(ep))
+			return -1;
+		return super.getPlayerRelativeBlockHardness(ep, world, x, y, z);
 	}
 
 	@Override
@@ -294,7 +322,7 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 	@Override
 	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
 		ArrayList<ItemStack> li = new ArrayList();
-		DimDecoTypes.list[metadata].addDrops(li);
+		DimDecoTypes.list[metadata].addDrops(world, x, y, z, metadata, fortune, li, harvesters.get());
 		return li;
 	}
 

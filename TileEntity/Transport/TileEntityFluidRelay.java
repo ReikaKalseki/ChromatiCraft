@@ -409,11 +409,13 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 
 	public void changeBasePressure(int dp) {
 		basePressure += dp;
+		currentPressure = this.getBasePressure()+this.getDynamicPressure();
 		network.updateState(this);
 	}
 
 	public void changeFunctionPressure(int dp) {
 		pressureFunction += dp;
+		currentPressure = this.getBasePressure()+this.getDynamicPressure();
 		network.updateState(this);
 	}
 
@@ -459,8 +461,10 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 			if (in != null)
 				fluidTypes.add(in);
 		}
-		if (network != null && !old.equals(fluidTypes))
+		if (network != null && !old.equals(fluidTypes)) {
+			currentPressure = this.getBasePressure()+this.getDynamicPressure();
 			network.updateState(this);
+		}
 	}
 
 	@Override

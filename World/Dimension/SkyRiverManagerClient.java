@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -65,12 +65,13 @@ public class SkyRiverManagerClient {
 		SkyRiverGenerator.Ray r = SkyRiverGenerator.Ray.readFromPktNBT(cmp);
 		List<DecimalPosition> points = r.getPoints();
 		SkyRiverGenerator.RiverPoint prev = null;
-		for (int i = 1; i < points.size() - 1; i++) {
+		int n = points.size();
+		for (int i = 1; i < n - 1; i++) {
 			DecimalPosition p1 = points.get(i);
 			DecimalPosition pb = points.get(i + 1);
 			DecimalPosition pa = points.get(i - 1);
 			ChunkCoordIntPair ch = new ChunkCoordIntPair(MathHelper.floor_double(p1.xCoord) / 16, MathHelper.floor_double(p1.zCoord) / 16);
-			SkyRiverGenerator.RiverPoint p = new SkyRiverGenerator.RiverPoint(i, ch, p1, pa, pb);
+			SkyRiverGenerator.RiverPoint p = new SkyRiverGenerator.RiverPoint(i, n, ch, p1, pa, pb);
 			if (prev != null) {
 				prev.nextRiverPoint = p;
 			}

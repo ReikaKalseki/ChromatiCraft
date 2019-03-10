@@ -763,20 +763,13 @@ public class ChromaticEventManager {
 					EntityLivingBase e = ev.entityLiving;
 					ArrayList<EntityItem> li = ev.drops;
 					e.captureDrops = true;
-					try {
-						int sum = 100+100*level*level;
-						ReikaObfuscationHelper.getMethod("dropEquipment").invoke(e, true, sum);
-						if (rand.nextInt(sum) >= 100) {
-							ReikaObfuscationHelper.getMethod("dropRareDrop").invoke(e, 1);
-							if (rand.nextBoolean()) {
-								ReikaEntityHelper.dropHead(e);
-							}
+					int sum = 100+100*level*level;
+					ReikaObfuscationHelper.invoke("dropEquipment", e, true, sum);
+					if (rand.nextInt(sum) >= 100) {
+						ReikaObfuscationHelper.invoke("dropRareDrop", e, 1);
+						if (rand.nextBoolean()) {
+							ReikaEntityHelper.dropHead(e);
 						}
-					}
-					catch (Exception ex) {
-						ChromatiCraft.logger.debug("Could not process rare loot drops event!");
-						if (ChromatiCraft.logger.shouldDebug())
-							ex.printStackTrace();
 					}
 					e.captureDrops = false;
 				}
@@ -1686,18 +1679,12 @@ public class ChromaticEventManager {
 				evt.entityLiving.capturedDrops.clear();
 				boolean cap = evt.entityLiving.captureDrops;
 				evt.entityLiving.captureDrops = true;
-				try {
-					Entity e = evt.entityLiving;
-					ReikaObfuscationHelper.getMethod("dropFewItems").invoke(e, true, looting);
-					ReikaObfuscationHelper.getMethod("dropEquipment").invoke(e, true, looting);
-					int rem = rand.nextInt(200) - looting*2;
-					if (rem <= 5)
-						ReikaObfuscationHelper.getMethod("dropRareDrop").invoke(e, 1);
-				}
-				catch (Exception e) {
-					ChromatiCraft.logger.logError("Could not ability bonus drops!");
-					e.printStackTrace();
-				}
+				Entity e = evt.entityLiving;
+				ReikaObfuscationHelper.invoke("dropFewItems", e, true, looting);
+				ReikaObfuscationHelper.invoke("dropEquipment", e, true, looting);
+				int rem = rand.nextInt(200) - looting*2;
+				if (rem <= 5)
+					ReikaObfuscationHelper.invoke("dropRareDrop", e, 1);
 				for (EntityItem ei : evt.entityLiving.capturedDrops) {
 					if (!MinecraftForge.EVENT_BUS.post(new EntityItemPickupEvent(ep, ei))) {
 						ItemStack is = ei.getEntityItem();
@@ -1768,7 +1755,7 @@ public class ChromaticEventManager {
 			}
 			try {
 				for (int i = 0; i < 2; i++)
-					ReikaObfuscationHelper.getMethod("dropFewItems").invoke(evt.entityLiving, false, 0);
+					ReikaObfuscationHelper.invoke("dropFewItems", evt.entityLiving, false, 0);
 			}
 			catch (Exception e) {
 				ChromatiCraft.logger.logError("Could not perform pylon-void monster bonus drops interaction!");
