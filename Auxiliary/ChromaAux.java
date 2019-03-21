@@ -70,6 +70,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.WorldGenInterceptionRegistry.BlockSetData;
@@ -507,6 +508,9 @@ public class ChromaAux {
 	}
 
 	public static List<AxisAlignedBB> interceptEntityCollision(World world, Entity e, AxisAlignedBB box) {
+		if (e instanceof EntityPlayer && world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+
+		}
 		if (e instanceof EntityPlayer && Chromabilities.ORECLIP.enabledOn((EntityPlayer)e)) {
 			return AbilityHelper.instance.getNoclipBlockBoxes((EntityPlayer)e, box);
 		}
@@ -538,7 +542,13 @@ public class ChromaAux {
 							block = Blocks.stone;
 						}
 
-						block.addCollisionBoxesToList(world, k1, i2, l1, box, li, ep);
+						if (ChromaDimensionManager.isBlockedAir(world, k1, i2, l1, block, ep)) {
+							Blocks.stone.addCollisionBoxesToList(world, k1, i2, l1, box, li, ep);
+							ChromaDimensionManager.onPlayerBlockedFromBiome(world, k1, i2, l1, ep);
+						}
+						else {
+							block.addCollisionBoxesToList(world, k1, i2, l1, box, li, ep);
+						}
 					}
 				}
 			}

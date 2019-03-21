@@ -237,7 +237,7 @@ public class CastingRecipe implements APICastingRecipe {
 		return true;
 	}
 
-	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep, int amount) {
+	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep, ItemStack output, int amount) {
 		if (!te.worldObj.isRemote) {
 			ChromaResearchManager.instance.givePlayerRecipe(ep, this);
 			te.giveRecipe(ep, this);

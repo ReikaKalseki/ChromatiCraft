@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBallLightningFX;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
@@ -245,7 +246,7 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 	}
 
 	private boolean canSafelySupply(CrystalReceiver r) {
-		return r instanceof TileEntityRelaySource || r instanceof TileEntityRitualTable;
+		return r instanceof TileEntityRelaySource || r instanceof TileEntityRitualTable || r instanceof TileEntityPersonalCharger;
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -61,8 +61,8 @@ public class IridescentCrystalRecipe extends PylonCastingRecipe {
 	}
 
 	@Override
-	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep, int amount) {
-		super.onCrafted(te, ep, amount);
+	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep, ItemStack output, int amount) {
+		super.onCrafted(te, ep, output, amount);
 		//ProgressStage.POWERCRYSTAL.stepPlayerTo(ep);
 	}
 

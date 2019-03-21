@@ -136,10 +136,16 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	public static final int RANGE = 48;
 
-	public static boolean TUNED_PYLONS = true;
+	public static final boolean TUNED_PYLONS = true;
 
 	public boolean enhancing = false;
 	private boolean destabilized = false;
+
+	public static final int MAX_ATTACK_DELAY = 80;
+	public static final int MIN_ATTACK_DELAY = 12;
+
+	private long lastAttackTime = -1;
+	private int minTicksBetweenAttack = MAX_ATTACK_DELAY;
 
 	private WorldLocation linkTile;
 
@@ -303,27 +309,35 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			if (!world.isRemote && ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world) && MystPages.Pages.UNSTABLEPYLONS.existsInWorld(world) && rand.nextInt(2000) == 0)
 				this.destabilize();
 
-			if (!world.isRemote && rand.nextInt(this.getAttackRate(world)) == 0) {
-				int r = this.getAttackRange();
-				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).expand(r, r, r);
-				List<EntityLivingBase> li = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
-				for (EntityLivingBase e : li) {
-					boolean attack = !e.isDead && e.getHealth() > 0;
-					if (e instanceof EntityPlayer) {
-						EntityPlayer ep = (EntityPlayer)e;
-						attack = attack && !ep.capabilities.isCreativeMode && !Chromabilities.PYLON.enabledOn(ep);
-					}
-					else if (e instanceof EntityBallLightning) {
-						attack = ((EntityBallLightning)e).getElement() != color;
-					}
-					else if (e.getClass().getName().equals("openblocks.common.entity.EntityLuggage")) {
-						attack = false;
-					}
-					if (attack) {
-						this.attackEntity(e);
-						this.sendClientAttack(this, e);
+			if (!world.isRemote) {
+				int rate = this.getAttackRate(world);
+				if (rand.nextInt(rate) == 0) {
+					boolean canAttack = world.getTotalWorldTime()-lastAttackTime >= minTicksBetweenAttack;
+					if (canAttack) {
+						int r = this.getAttackRange();
+						AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).expand(r, r, r);
+						List<EntityLivingBase> li = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
+						for (EntityLivingBase e : li) {
+							boolean attack = !e.isDead && e.getHealth() > 0;
+							if (e instanceof EntityPlayer) {
+								EntityPlayer ep = (EntityPlayer)e;
+								attack = attack && !ep.capabilities.isCreativeMode && !Chromabilities.PYLON.enabledOn(ep);
+							}
+							else if (e instanceof EntityBallLightning) {
+								attack = ((EntityBallLightning)e).getElement() != color;
+							}
+							else if (e.getClass().getName().equals("openblocks.common.entity.EntityLuggage")) {
+								attack = false;
+							}
+							if (attack) {
+								this.attackEntity(e);
+								this.sendClientAttack(this, e);
+							}
+						}
 					}
 				}
+
+				minTicksBetweenAttack = Math.min(minTicksBetweenAttack+1, MAX_ATTACK_DELAY);
 			}
 
 			float f = this.isEnhanced() ? 1.125F : 1;
@@ -727,6 +741,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		PotionEffect eff = CrystalPotionController.getEffectFromColor(color, 200, 2);
 		if (eff != null) {
 			e.addPotionEffect(eff);
+		}
+
+		if (e instanceof EntityPlayer) {
+			minTicksBetweenAttack = Math.max(minTicksBetweenAttack-ReikaRandomHelper.getRandomBetween(8, 18), MIN_ATTACK_DELAY);
 		}
 	}
 

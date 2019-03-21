@@ -125,6 +125,7 @@ public enum ChromaResearch implements ProgressElement {
 	MYSTPAGE("World Authoring",				new ItemStack(Items.map),								ResearchLevel.RAWEXPLORE),
 	ENCHANTING("Crystal Enchanting",		new ItemStack(Items.enchanted_book),					ResearchLevel.MULTICRAFT,	ProgressStage.MULTIBLOCK),
 	STRUCTUREPASSWORDS("Structure Keys",	ChromaBlocks.DIMDATA.getStackOfMetadata(1),				ResearchLevel.ENDGAME,		ProgressStage.STRUCTCOMPLETE),
+	DIMTUNING("Portal Tuning",				ChromaStacks.bedrockloot2,								ResearchLevel.ENDGAME,		ProgressStage.DIMENSION),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING,		ProgressStage.BLOWREPEATER),

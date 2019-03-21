@@ -94,8 +94,8 @@ public class PortalRecipe extends PylonCastingRecipe implements CoreRecipe {
 	}
 
 	@Override
-	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep, int amount) {
-		super.onCrafted(te, ep, amount);
+	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep, ItemStack output, int amount) {
+		super.onCrafted(te, ep, output, amount);
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -14,7 +14,6 @@ import java.util.Random;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -69,14 +68,15 @@ public class RepeaterTurboRecipe extends PylonCastingRecipe implements EnergyLin
 		this.addAuxItem(ChromaStacks.lumenGem, 0, 4);
 		this.addAuxItem(ChromaStacks.lumenGem, -4, 0);
 
-		this.addAuxItem(Items.glowstone_dust, -2, -4);
-		this.addAuxItem(Items.glowstone_dust, 2, -4);
-		this.addAuxItem(Items.glowstone_dust, 4, -2);
-		this.addAuxItem(Items.glowstone_dust, 4, 2);
-		this.addAuxItem(Items.glowstone_dust, 2, 4);
-		this.addAuxItem(Items.glowstone_dust, -2, 4);
-		this.addAuxItem(Items.glowstone_dust, -4, 2);
-		this.addAuxItem(Items.glowstone_dust, -4, -2);
+		this.addAuxItem(ChromaStacks.glowcavedust, 4, -2);
+		this.addAuxItem(ChromaStacks.glowcavedust, -2, -4);
+		this.addAuxItem(ChromaStacks.glowcavedust, -4, 2);
+		this.addAuxItem(ChromaStacks.glowcavedust, 2, 4);
+
+		this.addAuxItem(ChromaStacks.bedrockloot, 4, 2);
+		this.addAuxItem(ChromaStacks.bedrockloot, -2, 4);
+		this.addAuxItem(ChromaStacks.bedrockloot, -4, -2);
+		this.addAuxItem(ChromaStacks.bedrockloot, 2, -4);
 	}
 
 	private static ItemStack getOutputItem(ChromaTiles rpt) {
@@ -123,8 +123,8 @@ public class RepeaterTurboRecipe extends PylonCastingRecipe implements EnergyLin
 	}
 
 	@Override
-	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep, int amount) {
-		super.onCrafted(te, ep, amount);
+	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep, ItemStack output, int amount) {
+		super.onCrafted(te, ep, output, amount);
 		if (te.worldObj.isRemote) {
 			for (int i = 0; i < 16; i++) {
 				int x = ReikaRandomHelper.getRandomPlusMinus(te.xCoord, 8);

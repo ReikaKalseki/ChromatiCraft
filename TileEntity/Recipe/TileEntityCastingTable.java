@@ -30,6 +30,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Event.CastingEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
@@ -324,7 +325,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 		craftingTick--;
 		if (craftingTick <= 0) {
 			if (world.isRemote) {
-				activeRecipe.onCrafted(this, craftingPlayer, 1);
+				activeRecipe.onCrafted(this, craftingPlayer, inv[9], 1);
 			}
 			else {
 				this.craft();
@@ -776,7 +777,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 		}
 		if (count > 0) {
 			CastingRecipe temp = activeRecipe;
-			activeRecipe.onCrafted(this, craftingPlayer, count); //this resets the recipe
+			activeRecipe.onCrafted(this, craftingPlayer, inv[9], count); //this resets the recipe
 			activeRecipe = temp;
 			ProgressStage.CASTING.stepPlayerTo(craftingPlayer);
 			if (activeRecipe instanceof PylonCastingRecipe) {
@@ -827,6 +828,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 		this.addXP(xpToAdd);
 		if (inv[9] != null)
 			repeat = false;
+		ChromatiCraft.logger.log("Player "+craftingPlayer+" crafted "+cachedRecipe);
 		RecipesCastingTable.setPlayerHasCrafted(craftingPlayer, cachedRecipe.type);
 		if (!repeat) {
 			activeRecipe = null;

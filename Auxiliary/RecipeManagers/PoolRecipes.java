@@ -20,6 +20,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 
@@ -40,6 +41,7 @@ import Reika.DragonAPI.Instantiable.IO.CustomRecipeList;
 import Reika.DragonAPI.Instantiable.IO.LuaBlock;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -233,7 +235,8 @@ public class PoolRecipes {
 		private boolean allowDoubling = true;
 		private boolean isCustom = false;
 
-		private ArrayList<AlloyingEffect> effects = new ArrayList();
+		private final ItemHashMap<NBTTagCompound> NBTMatches = new ItemHashMap().setOneWay();
+		private final ArrayList<AlloyingEffect> effects = new ArrayList();
 
 		private PoolRecipe(String id, ItemStack out, ItemStack m, ItemStack... input) {
 			ID = id;
@@ -245,8 +248,18 @@ public class PoolRecipes {
 			}
 		}
 
-		private PoolRecipe addProgress(ProgressStage p) {
+		public PoolRecipe addProgress(ProgressStage p) {
 			progress.add(p);
+			return this;
+		}
+
+		public PoolRecipe disallowDoubling() {
+			allowDoubling = false;
+			return this;
+		}
+
+		public PoolRecipe addNBTMatch(ItemStack is) {
+			NBTMatches.put(is, (NBTTagCompound)is.stackTagCompound.copy());
 			return this;
 		}
 
@@ -262,7 +275,7 @@ public class PoolRecipes {
 			ItemHashMap<Integer> map = inputs.clone();
 			for (EntityItem ei : li) {
 				ItemStack is = ei.getEntityItem();
-				Integer get = map.get(is);
+				Integer get = this.countNeeded(map, is);
 				if (get != null && get > 0) {
 					int rem = Math.min(is.stackSize, get);
 					get -= rem;
@@ -276,11 +289,23 @@ public class PoolRecipes {
 			}
 		}
 
+		private Integer countNeeded(ItemHashMap<Integer> map, ItemStack is) {
+			Integer get = map.get(is);
+			if (get != null && get > 0 && !NBTMatches.isEmpty()) {
+				NBTTagCompound tag = NBTMatches.get(is);
+				if (tag != null) {
+					if (!ReikaNBTHelper.areNBTTagsEqual(tag, is.stackTagCompound))
+						get = null;
+				}
+			}
+			return get;
+		}
+
 		private boolean canBeMadeFrom(Collection<EntityItem> li) {
 			ItemHashMap<Integer> map = inputs.clone();
 			for (EntityItem ei : li) {
 				ItemStack is = ei.getEntityItem();
-				Integer get = map.get(is);
+				Integer get = this.countNeeded(map, is);
 				if (get != null && get > 0) {
 					int rem = Math.min(is.stackSize, get);
 					get -= rem;
@@ -297,7 +322,7 @@ public class PoolRecipes {
 		private boolean canBeMadeFromItems(Collection<ItemStack> li) {
 			ItemHashMap<Integer> map = inputs.clone();
 			for (ItemStack is : li) {
-				Integer get = map.get(is);
+				Integer get = this.countNeeded(map, is);
 				if (get != null && get > 0) {
 					int rem = Math.min(is.stackSize, get);
 					get -= rem;
@@ -318,7 +343,12 @@ public class PoolRecipes {
 		public Collection<ItemStack> getInputs() {
 			Collection<ItemStack> c = new ArrayList();
 			for (ItemStack is : inputs.keySet()) {
-				c.add(ReikaItemHelper.getSizedItemStack(is, inputs.get(is)));
+				ItemStack in = ReikaItemHelper.getSizedItemStack(is, inputs.get(is));
+				NBTTagCompound tag = NBTMatches.get(in);
+				if (tag != null) {
+					in.stackTagCompound = (NBTTagCompound)tag.copy();
+				}
+				c.add(in);
 			}
 			return c;
 		}

@@ -14,23 +14,29 @@ import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.UUID;
 
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeDictionary.Type;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -39,8 +45,12 @@ import Reika.ChromatiCraft.Base.ChromaDimensionBiome.ChromaDimensionSubBiome;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Entity.EntityAurora;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager.TuningThresholds;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenCentral;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenChromaMountains;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenChromaOcean;
@@ -65,9 +75,11 @@ import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -490,6 +502,123 @@ public class ChromaDimensionManager {
 			}
 		}
 		GL11.glPopAttrib();
+	}
+
+	public static void onPlayerBlockedFromBiome(World world, int x, int y, int z, Entity ep) {
+		if (world.isRemote) {
+			onPlayerBlockedFromBiomeClient(world, x, y, z, ep);
+		}
+		else {
+			if (world.rand.nextInt(5) == 0)
+				ChromaSounds.LOREHEX.playSound(ep, 0.05F, 0.75F);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void onPlayerBlockedFromBiomeClient(World world, int x, int y, int z, Entity ep) {
+		Random rand = world.rand;
+		//EntityBlurFX fx = new EntityBlurFX(world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble());
+
+		/*
+		int r = 1;
+		for (int j = -r; j <= r; j++) {
+			int dy = y+j;
+			if (world.getBlock(x, dy, z) != Blocks.air)
+				continue;
+			AxisAlignedBB box1 = ep.boundingBox.expand(0, 4, 0);
+			AxisAlignedBB box2 = ReikaAABBHelper.getBlockAABB(x, dy, z);
+			double d = 0.0;
+			while (!box1.intersectsWith(box2)) {
+				box1 = box1.expand(d, d, d);
+				box2 = box2.expand(d, d, d);
+				d += 0.025;
+			}
+			double nx = Math.max(box1.minX, box2.minX);
+			double ny = Math.max(box1.minY, box2.minY);
+			double nz = Math.max(box1.minZ, box2.minZ);
+			double px = Math.min(box1.maxX, box2.maxX);
+			double py = Math.min(box1.maxY, box2.maxY);
+			double pz = Math.min(box1.maxZ, box2.maxZ);
+			//AxisAlignedBB result = AxisAlignedBB.getBoundingBox(nx, ny, nz, px, py, pz);
+			double sx = ReikaRandomHelper.getRandomBetween(nx, px);
+			double sy = ReikaRandomHelper.getRandomBetween(ny, py);
+			double sz = ReikaRandomHelper.getRandomBetween(nz, pz);
+		 */
+
+		if (rand.nextBoolean())
+			return;
+		int r = 6;
+		double dr0 = r-0.5;
+		double dr1 = r-0.35;
+		double dr2 = r-2;
+		for (int i = -r; i <= r; i++) {
+			for (int j = -r; j <= r; j++) {
+				for (int k = -r; k <= r; k++) {
+					if (i*i+j*j+k*k > dr0*dr0)
+						continue;
+					int dx = x+i;
+					int dy = y+j;
+					int dz = z+k;
+					if (world.getBlock(dx, dy, dz) != Blocks.air)
+						continue;
+					if (isStructureBiome(world.getBiomeGenForCoords(dx, dz)))
+						continue;
+					for (int d = 2; d < 6; d++) {
+						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[d];
+						int ddx = dx+dir.offsetX;
+						int ddz = dz+dir.offsetZ;
+						if (world.getBlock(ddx, dy, ddz) != Blocks.air)
+							continue;
+						if (isStructureBiome(world.getBiomeGenForCoords(ddx, ddz)))
+							continue;
+						double sx = dx+rand.nextDouble();
+						double sy = dy+rand.nextDouble();
+						double sz = dz+rand.nextDouble();
+						switch(dir) {
+							case NORTH:
+								sz = dz;
+								break;
+							case SOUTH:
+								sz = dz+1;
+								break;
+							case EAST:
+								sx = dx+1;
+								break;
+							case WEST:
+								sx = dx;
+								break;
+							default:
+								break;
+						}
+						if (ReikaMathLibrary.py3d(sx-ep.posX, sy-ep.posY, sz-ep.posZ) > dr1)
+							continue;
+
+						EntityBlurFX fx = new EntityBlurFX(world, sx, sy, sz);
+						float sc = 3.5F;//2;
+						float br = 0.08F;//0.2F;
+						if (ReikaMathLibrary.py3d(sx-ep.posX, sy-ep.posY, sz-ep.posZ) > dr2) {
+							double dd = ReikaMathLibrary.py3d(sx-ep.posX, sy-ep.posY, sz-ep.posZ)-dr2;
+							br -= dd/20D;
+						}
+						if (br <= 0)
+							continue;
+						int l = ReikaRandomHelper.getRandomBetween(80, 180);
+						fx.setAlphaFading().setScale(sc).setColor(ReikaColorAPI.getColorWithBrightnessMultiplier(0x22aaff, br)).setRapidExpand().setLife(l).setIcon(ChromaIcons.FADE_GENTLE);
+						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+
+					}
+				}
+			}
+		}
+	}
+
+	public static boolean isBlockedAir(World world, int x, int y, int z, Block b, Entity ep) {
+		return b == Blocks.air && ep instanceof EntityPlayer && isStructureBiome(world.getBiomeGenForCoords(x, z)) && !TuningThresholds.STRUCTUREBIOMES.isSufficientlyTuned((EntityPlayer)ep);
+	}
+
+	public static boolean isStructureBiome(BiomeGenBase b) {
+		ChromaDimensionBiomeType type = Biomes.getFromID(b.biomeID);
+		return type == Biomes.STRUCTURE || type == Biomes.MONUMENT;
 	}
 
 }
