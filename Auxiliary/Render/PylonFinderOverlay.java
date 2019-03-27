@@ -304,6 +304,55 @@ public class PylonFinderOverlay {
 				v5.addVertexWithUV(cx-8, pos.cy-8, 0, u, v);
 				v5.draw();
 
+				if (!loc.hasStructure) {
+					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+					GL11.glDepthMask(false);
+					BlendMode.DEFAULT.apply();
+					/*
+					IIcon ico = ChromaIcons.NOENTER.getIcon();
+					u = ico.getMinU();
+					v = ico.getMinV();
+					du = ico.getMaxU();
+					dv = ico.getMaxV();
+
+					v5.startDrawingQuads();
+					v5.setColorRGBA_I(0xffffff, 72);
+					v5.setBrightness(240);
+					int d = 18;
+					v5.addVertexWithUV(cx-d, pos.cy+d, 1, u, dv);
+					v5.addVertexWithUV(cx+d, pos.cy+d, 1, du, dv);
+					v5.addVertexWithUV(cx+d, pos.cy-d, 1, du, v);
+					v5.addVertexWithUV(cx-d, pos.cy-d, 1, u, v);
+					v5.draw();
+					 */
+
+					float lw = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
+					GL11.glLineWidth(3.5F*resolution.getScaleFactor());
+
+					ReikaRenderHelper.prepareGeoDraw(true);
+					v5.startDrawing(GL11.GL_LINE_LOOP);
+					v5.setColorRGBA_I(0xff0000, 72);
+					v5.setBrightness(240);
+					double r = 15;
+					for (double d = 0; d <= 360; d += 5) {
+						double a = Math.toRadians(d);
+						double dx = cx+r*Math.cos(a);
+						double dy = pos.cy+r*Math.sin(a);
+						v5.addVertex(dx, dy, 1);
+					}
+					v5.draw();
+
+					double r2 = r*0.707;
+					v5.startDrawing(GL11.GL_LINES);
+					v5.setColorRGBA_I(0xff0000, 72);
+					v5.setBrightness(240);
+					v5.addVertex(cx-r2, pos.cy-r2, 1);
+					v5.addVertex(cx+r2, pos.cy+r2, 1);
+					v5.draw();
+					GL11.glLineWidth(lw);
+					GL11.glPopAttrib();
+				}
+
 				if (loc.isTurboCharged) {
 					GL11.glDepthMask(false);
 					BlendMode.ADDITIVEDARK.apply();

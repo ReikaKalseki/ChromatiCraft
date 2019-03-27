@@ -337,6 +337,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 					}
 				}
 
+				//ReikaJavaLibrary.pConsole(minTicksBetweenAttack, worldObj.getClosestPlayer(x, y, z, 12) != null);
 				minTicksBetweenAttack = Math.min(minTicksBetweenAttack+1, MAX_ATTACK_DELAY);
 			}
 
@@ -461,6 +462,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	private int getAttackRange() {
 		return (this.isEnhancing() ? 16 : this.isEnhanced() ? 12 : 8)+rand.nextInt(this.isEnhancing() ? 16 : 8);
+	}
+
+	private float getAttackDensity() {
+		return 1F-(minTicksBetweenAttack-MIN_ATTACK_DELAY)/(float)(MAX_ATTACK_DELAY-MIN_ATTACK_DELAY);
 	}
 
 	private boolean isEnhancing() {
@@ -744,7 +749,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		}
 
 		if (e instanceof EntityPlayer) {
-			minTicksBetweenAttack = Math.max(minTicksBetweenAttack-ReikaRandomHelper.getRandomBetween(8, 18), MIN_ATTACK_DELAY);
+			minTicksBetweenAttack = Math.max(minTicksBetweenAttack-ReikaRandomHelper.getRandomBetween(18, 60), MIN_ATTACK_DELAY);
 		}
 	}
 
@@ -774,6 +779,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		this.clearTargets(false);
 		energy = 0;
 		this.syncAllData(true);
+		PylonGenerator.instance.cachePylon(this);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -798,6 +804,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		broadcast = !worldObj.isRemote && ChromaStructures.getPylonBroadcastStructure(worldObj, xCoord, yCoord, zCoord, color).matchInWorld();
 
 		this.syncAllData(true);
+		PylonGenerator.instance.cachePylon(this);
 	}
 
 	public boolean hasStructure() {
@@ -808,12 +815,20 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	private void spawnParticle(World world, int x, int y, int z) {
 		int p = Minecraft.getMinecraft().gameSettings.particleSetting;
 		if (rand.nextInt(1+p/2) == 0) {
-			double d = 1.25;
-			double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, d);
-			double ry = ReikaRandomHelper.getRandomPlusMinus(y+0.5, d);
-			double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, d);
-			EntityFlareFX fx = new EntityFlareFX(color, world, rx, ry, rz);
-			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			float dt = this.getAttackDensity();
+			float n = 1+dt*2F;
+			while (n > 0) {
+				if (rand.nextFloat() > n)
+					break;
+				double d = 1.25;
+				double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, d);
+				double ry = ReikaRandomHelper.getRandomPlusMinus(y+0.5, d);
+				double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, d);
+				EntityFlareFX fx = new EntityFlareFX(color, world, rx, ry, rz, 0.6F+dt*0.15F);
+				fx.setScale(3+dt*1.5F);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				n--;
+			}
 		}
 
 		if (this.isEnhanced()) {
@@ -840,6 +855,8 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		enhanced = NBT.getBoolean("enhance");
 		broadcast = NBT.getBoolean("broadcast");
 		destabilized = NBT.getBoolean("unstable");
+
+		minTicksBetweenAttack = NBT.getInteger("attackDelay");
 	}
 
 	@Override
@@ -852,6 +869,8 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		NBT.setBoolean("enhance", enhanced);
 		NBT.setBoolean("broadcast", broadcast);
 		NBT.setBoolean("unstable", destabilized);
+
+		NBT.setInteger("attackDelay", minTicksBetweenAttack);
 	}
 
 	@Override
@@ -1270,6 +1289,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		enhancing = false;
 		energy = Math.min(energy, this.getMaxStorage(color));
 		this.syncAllData(true);
+		PylonGenerator.instance.cachePylon(this);
 	}
 
 	@Override

@@ -519,22 +519,22 @@ public class ChromatiPackets implements PacketHandler {
 				case PYLONCACHE: {
 					ArrayList<Coordinate> li = new ArrayList();
 					UUID uid = null;
-					if (data[5] == -1 && data[6] == -1 && data[7] == -1 && data[8] == -1) {
+					if (data[6] == -1 && data[7] == -1 && data[8] == -1 && data[9] == -1) {
 
 					}
 					else {
-						long least = ReikaJavaLibrary.buildLong(data[5], data[6]);
-						long most = ReikaJavaLibrary.buildLong(data[7], data[8]);
+						long least = ReikaJavaLibrary.buildLong(data[6], data[7]);
+						long most = ReikaJavaLibrary.buildLong(data[8], data[9]);
 						uid = new UUID(most, least);
 					}
-					for (int i = 9; i < data.length; i += 3) {
+					for (int i = 10; i < data.length; i += 3) {
 						int cx = data[i];
 						int cy = data[i+1];
 						int cz = data[i+2];
 						Coordinate c = new Coordinate(cx, cy, cz);
 						li.add(c);
 					}
-					PylonGenerator.instance.cachePylonLocation(world, data[0], data[1], data[2], CrystalElement.elements[data[3]], li, data[4] > 0, uid);
+					PylonGenerator.instance.cachePylonLocation(world, data[0], data[1], data[2], CrystalElement.elements[data[3]], li, data[4] > 0, uid, data[5] > 0);
 					break;
 				}
 				case PYLONLINKCACHE: {

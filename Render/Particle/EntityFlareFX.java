@@ -36,13 +36,17 @@ public class EntityFlareFX extends EntityFX implements CustomRenderFX {
 	private static final RenderMode rm = new RenderMode().setFlag(RenderModeFlags.ADDITIVE, true).setFlag(RenderModeFlags.LIGHT, false).setFlag(RenderModeFlags.ALPHACLIP, false);
 
 	public EntityFlareFX(CrystalElement e, World world, double x, double y, double z) {
+		this(e, world, x, y, z, 0.6F);
+	}
+
+	public EntityFlareFX(CrystalElement e, World world, double x, double y, double z, float gv) {
 		super(world, x, y, z);
 		particleMaxAge = 30+rand.nextInt(30);
 		noClip = true;
 		particleIcon = ChromaIcons.FLARE.getIcon();
 		particleScale = 3F;
 		color = e;
-		particleGravity = rand.nextInt(3) == 0 ? 0.6F : -0.6F;
+		particleGravity = rand.nextInt(3) == 0 ? gv : -gv;
 	}
 
 	public EntityFlareFX(CrystalElement e, World world, double x, double y, double z, double vx, double vy, double vz) {

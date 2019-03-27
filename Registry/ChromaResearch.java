@@ -302,7 +302,7 @@ public enum ChromaResearch implements ProgressElement {
 	SEED("Crystal Seeds",			ChromaItems.SEED.getStackOf(CrystalElement.MAGENTA),	ResearchLevel.RUNECRAFT),
 	FRAGMENT("Fragments",			ChromaItems.FRAGMENT, 									ResearchLevel.ENTRY),
 	AUGMENT("Upgrades",				ChromaStacks.speedUpgrade,								ResearchLevel.PYLONCRAFT,	ProgressStage.STORAGE),
-	ALLOYS("Alloying",				ChromaStacks.chromaIngot,								ResearchLevel.MULTICRAFT,	ProgressionManager.instance.getPrereqsArray(ProgressStage.ALLOY)),
+	ALLOYS("Alloying",				ChromaStacks.chromaIngot,								ResearchLevel.ENERGYEXPLORE,ProgressionManager.instance.getPrereqsArray(ProgressStage.ALLOY)),
 	INSCRIPTION("Inscription",		ChromaItems.DATACRYSTAL.getStackOf(),					ResearchLevel.RAWEXPLORE,	ProgressStage.TOWER),
 	BEES("Crystal Bees",			new ItemStack(Blocks.dirt),								ResearchLevel.RAWEXPLORE,	ProgressStage.HIVE),
 	TINKERTOOLS("Mix-And-Magic Tools",	new ItemStack(Blocks.dirt),							ResearchLevel.MULTICRAFT),
@@ -1070,6 +1070,7 @@ public enum ChromaResearch implements ProgressElement {
 			for (int i = 0; i < 13; i++) {
 				li.add(ChromaItems.CLUSTER.getStackOfMetadata(i));
 			}
+			li.add(ChromaStacks.elementUnit);
 			return li;
 		}
 		if (this == ALLOYS) {
@@ -1124,7 +1125,6 @@ public enum ChromaResearch implements ProgressElement {
 			li.add(ChromaStacks.energyCore);
 			li.add(ChromaStacks.transformCore);
 			li.add(ChromaStacks.voidCore);
-			li.add(ChromaStacks.elementUnit);
 			li.add(ChromaStacks.crystalLens);
 			return li;
 		}

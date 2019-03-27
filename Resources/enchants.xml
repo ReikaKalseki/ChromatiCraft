@@ -45,9 +45,9 @@
 	<bosskill>
 		Over the course of your exploits, you have run across a small handful of creatures - often found deep in mysterious structures or guarding over some alien realm - that are an enormous hassle to kill as they seem to be able to soak up inordinate amounts of damage. You might be able to specialize a tool to take these creatures down, at the cost of utility on more ordinary creatures.
 	</bosskill>
-	<name>
-		
-	</name>
+	<minetime>
+		The efficiency enchantment is useful for mining obsidian and the green stone from which some sadist carved a maze, but in accelerating the mining of those materials, your tool is now unusuably powerful for more mundane terrain. Indeed, a simple tap on a wall of limestone, netherrack, or sandstone and you have a hole that looks like you tried decorating with live TNT. With some refinement, that effect can be mitigated.
+	</minetime>
 	<name>
 		
 	</name>

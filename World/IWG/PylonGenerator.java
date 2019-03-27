@@ -114,6 +114,7 @@ public final class PylonGenerator implements RetroactiveGenerator {
 				loc.location.writeToNBT("pos", tag);
 				tag.setInteger("color", e.ordinal());
 				tag.setBoolean("turbo", loc.isTurboCharged);
+				tag.setBoolean("struct", loc.hasStructure);
 				if (loc.playerLink != null) {
 					tag.setString("link", loc.playerLink.toString());
 				}
@@ -139,6 +140,7 @@ public final class PylonGenerator implements RetroactiveGenerator {
 			boolean turbo = tag.getBoolean("turbo");
 			String uids = tag.hasKey("link") ? tag.getString("link") : null;
 			UUID uid = uids != null ? UUID.fromString(uids) : null;
+			boolean struct = tag.getBoolean("struct");
 			NBTTagList crystals = tag.getTagList("crystals", NBTTypes.COMPOUND.ID);
 			ArrayList<Coordinate> li2 = new ArrayList();
 			for (Object o : crystals.tagList) {
@@ -147,7 +149,7 @@ public final class PylonGenerator implements RetroactiveGenerator {
 				li2.add(c);
 			}
 			if (this.validateCachedLocation(loc, e)) {
-				this.addLocation(loc, e, li2, turbo, uid);
+				this.addLocation(loc, e, li2, turbo, uid, struct);
 			}
 			else {
 				it.remove();
@@ -170,6 +172,7 @@ public final class PylonGenerator implements RetroactiveGenerator {
 				if (loc.location.dimensionID == dim) {
 					ArrayList<Integer> li = ReikaJavaLibrary.makeIntListFromArray(loc.location.xCoord, loc.location.yCoord, loc.location.zCoord, e.ordinal());
 					li.add(loc.isTurboCharged ? 1 : 0);
+					li.add(loc.hasStructure ? 1 : 0);
 					if (loc.playerLink != null) {
 						long l1 = loc.playerLink.getLeastSignificantBits();
 						long l2 = loc.playerLink.getMostSignificantBits();
@@ -610,6 +613,7 @@ public final class PylonGenerator implements RetroactiveGenerator {
 		this.addLocation(e);
 		List<Integer> li = ReikaJavaLibrary.makeIntListFromArray(e.location.xCoord, e.location.yCoord, e.location.zCoord, e.color.ordinal());
 		li.add(e.isTurboCharged ? 1 : 0);
+		li.add(e.hasStructure ? 1 : 0);
 		if (e.playerLink != null) {
 			long l1 = e.playerLink.getLeastSignificantBits();
 			long l2 = e.playerLink.getMostSignificantBits();
@@ -635,13 +639,13 @@ public final class PylonGenerator implements RetroactiveGenerator {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void cachePylonLocation(World world, int x, int y, int z, CrystalElement e, ArrayList<Coordinate> li, boolean turbo, UUID link) {
+	public void cachePylonLocation(World world, int x, int y, int z, CrystalElement e, ArrayList<Coordinate> li, boolean turbo, UUID link, boolean struct) {
 		//ReikaJavaLibrary.pConsole("Receive for cache in DIM"+world.provider.dimensionId+": "+x+","+y+","+z+"="+e);
-		this.addLocation(new WorldLocation(world, x, y, z), e, li, turbo, link);
+		this.addLocation(new WorldLocation(world, x, y, z), e, li, turbo, link, struct);
 	}
 
-	private void addLocation(WorldLocation loc, CrystalElement e, ArrayList<Coordinate> li, boolean turbo, UUID link) {
-		this.addLocation(new PylonEntry(e, loc, li, turbo, link));
+	private void addLocation(WorldLocation loc, CrystalElement e, ArrayList<Coordinate> li, boolean turbo, UUID link, boolean struct) {
+		this.addLocation(new PylonEntry(e, loc, li, turbo, link, struct));
 	}
 
 	private void addLocation(PylonEntry pe) {
@@ -692,12 +696,13 @@ public final class PylonGenerator implements RetroactiveGenerator {
 		private final ArrayList<Coordinate> powerCrystals = new ArrayList();
 		public final boolean isTurboCharged;
 		public final UUID playerLink;
+		public final boolean hasStructure;
 
 		private PylonEntry(TileEntityCrystalPylon te) {
-			this(te.getColor(), new WorldLocation(te), te.getBoosterCrystals(te.worldObj, te.xCoord, te.yCoord, te.zCoord, false), te.isEnhanced(), te.getLinkTileUUID());
+			this(te.getColor(), new WorldLocation(te), te.getBoosterCrystals(te.worldObj, te.xCoord, te.yCoord, te.zCoord, false), te.isEnhanced(), te.getLinkTileUUID(), te.hasStructure());
 		}
 
-		public PylonEntry(CrystalElement e, WorldLocation loc, ArrayList li, boolean turbo, UUID link) {
+		public PylonEntry(CrystalElement e, WorldLocation loc, ArrayList li, boolean turbo, UUID link, boolean struct) {
 			color = e;
 			location = loc;
 			for (Object o : li) {
@@ -708,6 +713,7 @@ public final class PylonGenerator implements RetroactiveGenerator {
 			}
 			isTurboCharged = turbo;
 			playerLink = link;
+			hasStructure = struct;
 		}
 
 		@Override
@@ -722,7 +728,7 @@ public final class PylonGenerator implements RetroactiveGenerator {
 
 		@Override
 		public String toString() {
-			return color.name()+" @ "+location.toString()+" [CRY = "+powerCrystals.size()+"x/TRB = "+isTurboCharged+"/LNK = "+playerLink+"]";
+			return color.name()+" @ "+location.toString()+" [CRY = "+powerCrystals.size()+"x/TRB = "+isTurboCharged+"/LNK = "+playerLink+"/STR = "+hasStructure+"]";
 		}
 
 		public Collection<Coordinate> getCrystals() {

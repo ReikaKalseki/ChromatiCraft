@@ -177,7 +177,7 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 			if (ChromaTiles.getTile(world, c.xCoord, c.yCoord, c.zCoord) == ChromaTiles.FOCUSCRYSTAL) {
 				TileEntityFocusCrystal te = (TileEntityFocusCrystal)c.getTileEntity(world);
 				sum += te.getTier().efficiencyFactor;
-				te.addConnection(acc);
+				te.addConnection(acc, true);
 			}
 		}
 		return sum;
@@ -210,9 +210,11 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 		}
 	}
 	 */
-	public void addConnection(FocusAcceleratable src) {
+	public void addConnection(FocusAcceleratable src, boolean sync) {
 		connection = new FocusConnection(new SimpleFocusLocation(src, this), (TileEntity)src);
-		this.syncAllData(true);
+		//ReikaJavaLibrary.pConsole("Add connection"+src);
+		if (sync)
+			this.syncAllData(true);
 	}
 
 	@Override
@@ -293,7 +295,7 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 			Coordinate c = Coordinate.readFromNBT("connection", NBT);
 			TileEntity te = c.getTileEntity(worldObj);
 			if (te instanceof FocusAcceleratable)
-				this.addConnection((FocusAcceleratable)te);
+				this.addConnection((FocusAcceleratable)te, false);
 		}
 	}
 

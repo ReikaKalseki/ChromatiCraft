@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -19,6 +19,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Magic.Interfaces.NaturalNetworkTile;
@@ -180,6 +181,13 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 	@Override
 	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection dir) {
 		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
+		if (c == null) {
+			ChromatiCraft.logger.logError("Something requested isSideSolid with invalid positions:");
+			ChromatiCraft.logger.log("Location: "+x+", "+y+", "+z);
+			ChromatiCraft.logger.log("Block: "+world.getBlock(x, y, z));
+			ChromatiCraft.logger.log("TileEntity: "+world.getTileEntity(x, y, z));
+			return false;
+		}
 		switch(c) {
 			case REPEATER:
 			case COMPOUND:

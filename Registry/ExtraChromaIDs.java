@@ -54,6 +54,7 @@ public enum ExtraChromaIDs implements IDRegistry {
 	BOSSKILLID(		"Enchantment IDs", 		"Capital Strike ID",			99, 	Enchantment.class),
 	AUTOCOLLECTID(	"Enchantment IDs", 		"Inventory Insertion ID",		100, 	Enchantment.class),
 	DATAKEEPERID(	"Enchantment IDs",		"Identity Retention ID",		101,	Enchantment.class),
+	MINETIMEID(		"Enchantment IDs",		"Consistent Efficiency ID",		102,	Enchantment.class),
 	DIMID(			"Other IDs",			"Dimension ID",					60,		WorldProvider.class),
 	CHROMAMATID(	"Other IDs",			"Chromastone Material ID",		90,		null),
 	;

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -93,7 +93,7 @@ public class BlockColoredLock extends BlockDimensionStructureTile {
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
+	public boolean onRightClicked(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
 		ItemStack is = ep.getCurrentEquippedItem();
 		if (is != null && ReikaItemHelper.matchStackWithBlock(is, this))
 			return false;

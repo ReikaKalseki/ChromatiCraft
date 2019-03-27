@@ -1245,15 +1245,17 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
-	public void forceExcavatorSpeed(BreakSpeed evt) {
+	public void forceConstantMiningSpeed(BreakSpeed evt) {
 		ItemStack is = evt.entityPlayer.getCurrentEquippedItem();
-		if (ChromaItems.EXCAVATOR.matchWith(is)) {
-			if (ReikaEnchantmentHelper.getEnchantmentLevel(Enchantment.efficiency, is) == 1) {
-				float h = evt.block.getBlockHardness(evt.entityPlayer.worldObj, evt.x, evt.y, evt.z);
-				if (h > 0) {
-					evt.newSpeed = 2*h; //force same speed on everything, even superhard blocks
-					evt.setCanceled(false);
-				}
+		Enchantment e = ChromaEnchants.MINETIME.getEnchantment();
+		int lvl = ReikaEnchantmentHelper.getEnchantmentLevel(e, is);
+		if (lvl > 0) {
+			float h = evt.block.getBlockHardness(evt.entityPlayer.worldObj, evt.x, evt.y, evt.z);
+			if (h > 0) {
+				float f = (float)Math.pow(lvl/(float)e.getMaxLevel(), 1.5);
+				float best = 2*h; //force same speed on everything, even superhard blocks
+				evt.newSpeed = best*f+evt.originalSpeed*(1-f);
+				evt.setCanceled(false);
 			}
 		}
 	}

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -89,6 +89,10 @@ public class BlockPath extends Block {
 			EntityLivingBase el = (EntityLivingBase)e;
 			double max = 2.5;
 			int meta = world.getBlockMetadata(x, y, z);
+			if (meta != PathType.EMERALD.ordinal())
+				max = 1.75;
+			if (meta == PathType.BASIC.ordinal())
+				max = 1.25;
 			el.motionX = MathHelper.clamp_double(el.motionX*Math.abs(Math.sin(Math.toRadians(el.rotationYawHead))), -max, max);
 			el.motionZ = MathHelper.clamp_double(el.motionZ*Math.abs(Math.cos(Math.toRadians(el.rotationYawHead))), -max, max);
 			for (int d = 1; d <= 8; d++) {

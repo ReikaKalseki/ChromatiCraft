@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -80,7 +80,7 @@ public class BlockStructureDataStorage extends BlockDimensionStructureTile {
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
+	public boolean onRightClicked(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
 		if (!world.isRemote) {
 			((StructureInterfaceTile)world.getTileEntity(x, y, z)).onRightClick(ep, s);
 		}

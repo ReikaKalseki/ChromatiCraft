@@ -84,7 +84,8 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	ALLOWSTRUCTPASS("Allow Structure Bypass Passwords", true),
 	SUPERBUILDKEYBIND("Superbuild Ability Activation", Key.LCTRL.toString()),
 	VILLAGERATE("Village Structure Frequency", 1F),
-	NODECHARGESPEED("Crystal-Network-Integrated ThaumCraft Node Improvement Speed", 1F);
+	NODECHARGESPEED("Crystal-Network-Integrated ThaumCraft Node Improvement Speed", 1F),
+	METEORFIRE("Meteor Tower Projectiles Start Fires On Impact", true);
 
 	private String label;
 	private boolean defaultState;

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -71,7 +71,7 @@ public class BlockAntKey extends BlockDimensionStructureTile {
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
+	public boolean onRightClicked(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
 		ItemStack is = ((AntKeyTile)world.getTileEntity(x, y, z)).onRightClickWith(ep.getCurrentEquippedItem(), ep);
 		ep.setCurrentItemOrArmor(0, is);
 		ReikaSoundHelper.playSoundAtBlock(world, x, y, z, "random.pop", 1, 1);

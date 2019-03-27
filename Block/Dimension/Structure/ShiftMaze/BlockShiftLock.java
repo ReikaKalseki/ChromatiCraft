@@ -202,7 +202,7 @@ public class BlockShiftLock extends BlockDimensionStructure implements IWailaDat
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
+	public boolean onRightClicked(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
 		ItemStack is = ep.getCurrentEquippedItem();
 		if (is != null && ReikaItemHelper.matchStackWithBlock(is, this))
 			return false;

@@ -128,7 +128,7 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 							focusCrystalTotal += power;
 							if (!ct.isMaxPower())
 								allExquisite = false;
-							te.addConnection(this);
+							te.addConnection(this, true);
 						}
 						else {
 							focusCrystalTotal = 0;

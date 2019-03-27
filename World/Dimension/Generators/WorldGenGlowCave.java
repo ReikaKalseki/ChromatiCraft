@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLeavesBase;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
@@ -37,6 +38,7 @@ import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -67,21 +69,62 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 	@Override
 	public boolean generate(World world, Random rand, int x, int y, int z) {
 
-		int dy = ReikaWorldHelper.findTopBlockBelowY(world, x, 255, z);
-		Block bk = world.getBlock(x, dy, z);
+		int oy = ReikaWorldHelper.findTopBlockBelowY(world, x, 255, z);
+		Block bk = world.getBlock(x, oy, z);
 		if (bk == Blocks.grass || bk == Blocks.sand) {
 			HashSet<Coordinate> set1 = new HashSet();
 			HashSet<Coordinate> set2 = new HashSet();
 			double x0 = x+0.5;
-			double y0 = dy+0.5+1;
+			double y0 = oy+0.5+1;
 			double z0 = z+0.5;
 			this.growFrom(world, rand, x0, y0, z0, MAX_RADIUS, set1, set2, 0, 0);
 			for (Coordinate c : set1) {
 				if (c.getBlock(world).getMaterial() == Material.water || ReikaWorldHelper.checkForAdjMaterial(world, c.xCoord, c.yCoord, c.zCoord, Material.water) != null || ReikaWorldHelper.checkForAdjBlock(world, c.xCoord, c.yCoord, c.zCoord, ChromaBlocks.STRUCTSHIELD.getBlockInstance()) != null)
 					return false;
 			}
-			ReikaJavaLibrary.pConsole(set1.size()+" @ "+x+", "+z);
-			this.generate(world, rand, set1, dy);
+			if (ReikaObfuscationHelper.isDeObfEnvironment())
+				ReikaJavaLibrary.pConsole(set1.size()+" @ "+x+", "+z);
+			this.generate(world, rand, set1, oy);
+
+			int r = 16;
+			int spokes = ReikaRandomHelper.getRandomBetween(2, 6);
+			double da = 360D/spokes;
+			double a0 = rand.nextDouble()*360;
+			double va = ReikaRandomHelper.getRandomBetween(2.5, 15);
+			/*
+			for (int i = -r; i <= r; i++) {
+				for (int k = -r; k <= r; k++) {
+					int dx = x+i;
+					int dz = z+k;
+					int d = Math.abs(i)+Math.abs(k);
+					int dy = ReikaWorldHelper.findTopBlockBelowY(world, dx, oy+20, dz);
+					double a = Math.atan2(k, i);
+					double ang = Math.toDegrees(a)%da;
+					double ta = (a0+va*d/2D)%da;
+					boolean spoke = Math.abs(ang-ta) <= 10;
+				}
+			}*/
+			for (int i = -r; i <= r; i++) {
+				for (int k = -r; k <= r; k++) {
+					int dx = x+i;
+					int dz = z+k;
+					double d = ReikaMathLibrary.py3d(i, 0, k);
+					if (d <= r) {
+						double f = Math.sqrt(1-d/r);
+						if (rand.nextDouble() < f) {
+							int dy = ReikaWorldHelper.findTopBlockBelowY(world, dx, oy+20, dz);
+							Block b = world.getBlock(dx, dy, dz);
+							while (b instanceof BlockLeavesBase || b == Blocks.air) {
+								dy--;
+								b = world.getBlock(dx, dy, dz);
+							}
+							if (b == Blocks.grass || b == Blocks.sand)
+								world.setBlock(dx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), rand.nextBoolean() ? BlockType.MOSS.metadata : BlockType.STONE.metadata, 3);
+						}
+					}
+				}
+			}
+
 			return true;
 		}
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -22,6 +22,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
@@ -168,7 +169,8 @@ public class EntityMeteorShot extends Entity implements IEntityAdditionalSpawnDa
 		}
 		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.METEORIMPACT.ordinal(), new PacketTarget.RadiusTarget(this, 96), this.getEntityId());
 		motionX = motionY = motionZ = 0;
-		ReikaWorldHelper.ignite(worldObj, MathHelper.floor_double(posX), MathHelper.floor_double(posY), MathHelper.floor_double(posZ));
+		if (ChromaOptions.METEORFIRE.getState())
+			ReikaWorldHelper.ignite(worldObj, MathHelper.floor_double(posX), MathHelper.floor_double(posY), MathHelper.floor_double(posZ));
 	}
 
 	@SideOnly(Side.CLIENT)

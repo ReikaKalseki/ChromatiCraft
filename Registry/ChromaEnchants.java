@@ -18,6 +18,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAggroMask;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAirMiner;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAutoCollect;
+import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentBetterEfficiency;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentBossKill;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentDataKeeper;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentEnderLock;
@@ -43,7 +44,8 @@ public enum ChromaEnchants implements EnchantmentEnum {
 	PHASING(EnchantmentPhasingSequence.class, ExtraChromaIDs.PHASINGID),
 	BOSSKILL(EnchantmentBossKill.class, ExtraChromaIDs.BOSSKILLID),
 	AUTOCOLLECT(EnchantmentAutoCollect.class, ExtraChromaIDs.AUTOCOLLECTID),
-	DATAKEEP(EnchantmentDataKeeper.class, ExtraChromaIDs.DATAKEEPERID);
+	DATAKEEP(EnchantmentDataKeeper.class, ExtraChromaIDs.DATAKEEPERID),
+	MINETIME(EnchantmentBetterEfficiency.class, ExtraChromaIDs.MINETIMEID);
 
 	private final Class enchantmentClass;
 	private final ExtraChromaIDs enchantmentID;

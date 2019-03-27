@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -51,7 +51,7 @@ public class BlockLightSwitch extends BlockDimensionStructureTile {
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
+	public boolean onRightClicked(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
 		int meta = ReikaMathLibrary.toggleBit(world.getBlockMetadata(x, y, z), 0);
 		world.setBlockMetadataWithNotify(x, y, z, meta, 3);
 		if (!world.isRemote)

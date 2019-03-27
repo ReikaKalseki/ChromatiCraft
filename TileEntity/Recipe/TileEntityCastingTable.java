@@ -83,6 +83,7 @@ import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -709,7 +710,8 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 		boolean repeat = false;
 		NBTTagCompound NBTin = null;
 		int xpToAdd = 0;
-		while (activeRecipe == recipe && (count+(activeRecipe.getOutput().getMaxStackSize() == 1 ? 0 : 1))*activeRecipe.getOutput().stackSize < activeRecipe.getOutput().getMaxStackSize()) {
+		int max = Math.max(1, activeRecipe.getOutput().getMaxStackSize()/activeRecipe.getOutput().stackSize);
+		while (activeRecipe == recipe && count < max) {
 			if (inv[4] != null)
 				NBTin = recipe.getOutputTag(craftingPlayer, inv[4].stackTagCompound);
 			xpToAdd += (int)(activeRecipe.getExperience()*this.getXPModifier(activeRecipe));
@@ -828,6 +830,10 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 		this.addXP(xpToAdd);
 		if (inv[9] != null)
 			repeat = false;
+		if (this.getValidRecipe() == cachedRecipe && inv[9] == null) {
+			repeat = true;
+			this.setRecipeTickDuration(activeRecipe);
+		}
 		ChromatiCraft.logger.log("Player "+craftingPlayer+" crafted "+cachedRecipe);
 		RecipesCastingTable.setPlayerHasCrafted(craftingPlayer, cachedRecipe.type);
 		if (!repeat) {
@@ -1192,11 +1198,12 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 	@Override
 	public void recountFocusCrystals() {
 		this.getAccelerationFactor();
+		ReikaJavaLibrary.pConsole(this.getAccelerationFactor());
 	}
 
 	@Override
 	public float getAccelerationFactor() {
-		return TileEntityFocusCrystal.getSummedFocusFactor(this, CastingFocusLocation.set)-1;
+		return TileEntityFocusCrystal.getSummedFocusFactor(this, CastingFocusLocation.set);
 	}
 
 	@Override

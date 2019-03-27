@@ -218,15 +218,15 @@ public class ParticleEngine extends EffectRenderer implements CustomEffectRender
 				for (ParticleEntry p : particles) {
 					EntityFX fx = p.effect;
 					if (ThrottleableEffectRenderer.isParticleVisible(fx)) {
-						if (ThrottleableEffectRenderer.isEntityCloseEnough(fx, EntityFX.interpPosX, EntityFX.interpPosY, EntityFX.interpPosZ)) {
-							if (key.mode.flags[RenderModeFlags.LIGHT.ordinal()]) {
-								v5.setBrightness(fx.getBrightnessForRender(frame));
-							}
-							else {
-								v5.setBrightness(240);
-							}
-							fx.renderParticle(v5, frame, yaw, f5, pitch, f3, f4);
+						//if (ThrottleableEffectRenderer.isEntityCloseEnough(fx, EntityFX.interpPosX, EntityFX.interpPosY, EntityFX.interpPosZ)) {
+						if (key.mode.flags[RenderModeFlags.LIGHT.ordinal()]) {
+							v5.setBrightness(fx.getBrightnessForRender(frame));
 						}
+						else {
+							v5.setBrightness(240);
+						}
+						fx.renderParticle(v5, frame, yaw, f5, pitch, f3, f4);
+						//}
 					}
 				}
 
