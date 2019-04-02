@@ -491,7 +491,7 @@ OperationInterval, MultiBlockChromaTile, VariableTexture {
 
 	@Override
 	public OperationState getState() {
-		return ability != null ? (energy.containsAtLeast(AbilityRituals.instance.getAura(ability)) ? OperationState.RUNNING : OperationState.PENDING) : OperationState.INVALID;
+		return ability != null && hasStructure ? (energy.containsAtLeast(AbilityRituals.instance.getAura(ability)) ? OperationState.RUNNING : OperationState.PENDING) : OperationState.INVALID;
 	}
 
 }

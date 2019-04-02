@@ -63,7 +63,7 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 
 	@Override
 	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
-		return biome == Biomes.CENTER.getBiome() ? 0.005F : 0.0025F;
+		return biome == Biomes.CENTER.getBiome() ? 0.0025F : 0.00125F;
 	}
 
 	@Override

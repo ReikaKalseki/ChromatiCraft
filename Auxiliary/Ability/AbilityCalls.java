@@ -1140,6 +1140,8 @@ public class AbilityCalls {
 	}
 
 	public static void doChestCollection(EntityPlayerMP ep) {
+		if (ep.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
+			return;
 		int x = MathHelper.floor_double(ep.posX);
 		int y = MathHelper.floor_double(ep.posY);
 		int z = MathHelper.floor_double(ep.posZ);

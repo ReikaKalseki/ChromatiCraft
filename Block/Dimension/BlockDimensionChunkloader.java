@@ -1,14 +1,15 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2018
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Block.Dimension;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 import java.util.UUID;
@@ -29,6 +30,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.Interfaces.MinerBlock;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.Auxiliary.ChunkManager;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -38,7 +40,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 
 
-public class BlockDimensionChunkloader extends Block {
+public class BlockDimensionChunkloader extends Block implements MinerBlock {
 
 	private final IIcon[][] textures = new IIcon[2][2];
 
@@ -196,6 +198,26 @@ public class BlockDimensionChunkloader extends Block {
 			return ReikaJavaLibrary.makeListFrom(new ChunkCoordIntPair(xCoord >> 4, zCoord >> 4));
 		}
 
+	}
+
+	@Override
+	public boolean isMineable(int meta) {
+		return true;
+	}
+
+	@Override
+	public ArrayList<ItemStack> getHarvestItems(World world, int x, int y, int z, int meta, int fortune) {
+		return this.getDrops(world, x, y, z, meta, fortune);
+	}
+
+	@Override
+	public MineralCategory getCategory() {
+		return MineralCategory.MISC_UNDERGROUND_VALUABLE;
+	}
+
+	@Override
+	public Block getReplacedBlock(World world, int x, int y, int z) {
+		return Blocks.air;
 	}
 
 }

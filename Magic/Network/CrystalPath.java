@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -209,7 +209,7 @@ public class CrystalPath implements Comparable<CrystalPath> {
 
 	@Override
 	public int compareTo(CrystalPath o) {
-		return o.transmitter.getSourcePriority()-transmitter.getSourcePriority();
+		return PylonFinder.getSourcePriority(o.transmitter, element)-PylonFinder.getSourcePriority(transmitter, element);
 	}
 
 	@Override

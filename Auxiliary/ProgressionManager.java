@@ -146,6 +146,7 @@ public class ProgressionManager implements ProgressRegistry {
 		CHARGECRYSTAL(	Shareability.ALWAYS,	ChromaTiles.CHARGER.getCraftedProduct()),
 		BALLLIGHTNING(							ChromaStacks.auraDust),
 		POWERCRYSTAL(	Shareability.PROXIMITY,	ChromaTiles.CRYSTAL.getCraftedProduct()),
+		POWERTREE(		Shareability.PROXIMITY,	ChromaBlocks.POWERTREE.getStackOfMetadata(CrystalElement.YELLOW.ordinal())),
 		TURBOCHARGE(	Shareability.PROXIMITY,	ChromaTiles.PYLONTURBO.getCraftedProduct()),
 		FINDSPAWNER(	Shareability.PROXIMITY,	new ItemStack(Blocks.mob_spawner)),
 		BREAKSPAWNER(	Shareability.ALWAYS,	new ItemStack(Items.spawn_egg, 1, (int)EntityList.classToIDMapping.get(EntitySpider.class))),
@@ -408,6 +409,8 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.CHARGE);
 		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.ALLOY);
 
+		progressMap.addParent(ProgressStage.POWERTREE, 	ProgressStage.POWERCRYSTAL);
+
 		progressMap.addParent(ProgressStage.DIE,		ProgressStage.CHARGE);
 
 		progressMap.addParent(ProgressStage.KILLDRAGON,	ProgressStage.END);
@@ -429,6 +432,7 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.SNOWSTRUCT);
 
 		progressMap.addParent(ProgressStage.TURBOCHARGE,	ProgressStage.DIMENSION);
+		progressMap.addParent(ProgressStage.TURBOCHARGE,	ProgressStage.POWERTREE);
 		progressMap.addParent(ProgressStage.TURBOCHARGE,	ProgressStage.STRUCTCOMPLETE);
 
 		progressMap.addParent(ProgressStage.STRUCTCOMPLETE,	ProgressStage.ABILITY);

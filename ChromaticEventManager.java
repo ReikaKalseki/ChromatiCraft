@@ -1832,6 +1832,7 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent(priority=EventPriority.LOWEST)
+	@ModDependent(ModList.IC2)
 	public void explosionProtectionByRedCore(ic2.api.event.ExplosionEvent evt) {
 		if (!TileEntityProtectionUpgrade.canExplode(evt.world, evt.x, evt.y, evt.z, evt.power, true)) {
 			evt.world.playSoundEffect(evt.x, evt.y, evt.z, "random.fizz", 2, 0.5F);

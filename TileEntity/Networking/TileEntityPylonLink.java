@@ -77,7 +77,21 @@ public class TileEntityPylonLink extends TileEntityChromaticBase implements Loca
 
 		if (te != null) {
 			connection = PylonLinkNetwork.instance.addLocation(this, te);
+			ChunkManager.instance.loadChunks(this);
 		}
+	}
+
+	@Override
+	protected final void onInvalidateOrUnload(World world, int x, int y, int z, boolean invalid) {
+		if (!world.isRemote) {
+			if (invalid) {
+				this.unload();
+			}
+		}
+	}
+
+	private void unload() {
+		ChunkManager.instance.unloadChunks(this);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -164,6 +178,7 @@ public class TileEntityPylonLink extends TileEntityChromaticBase implements Loca
 			return;
 		PylonLinkNetwork.instance.removeLocation(worldObj, connection);
 		connection = null;
+		this.unload();
 	}
 
 	@Override

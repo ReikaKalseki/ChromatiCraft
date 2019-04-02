@@ -78,6 +78,8 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 			return false;
 		if (world.provider.dimensionId == 1 && (b == Blocks.end_stone || b == Blocks.obsidian))
 			return false;
+		if (b == ChromaBlocks.BEDROCKCRACK.getBlockInstance())
+			return false;
 		TileEntity te = world.getTileEntity(x, y, z);
 		return !(te instanceof CrystalNetworkTile) && !(te instanceof TileEntityStructControl);
 	}

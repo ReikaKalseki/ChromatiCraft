@@ -68,6 +68,7 @@ import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRouterHub;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTeleportGate;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
+import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager.TuningThresholds;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.DragonAPIInit;
@@ -321,10 +322,13 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 					TileEntityStructControl te = (TileEntityStructControl)tile;
 					if (te.isMonument()) {
 						ChromatiCraft.logger.debug("Tile is a monument. Side="+FMLCommonHandler.instance().getEffectiveSide());
-						if (te.triggerMonument(ep)) {
-							ChromatiCraft.logger.debug("Monument triggered. Side="+FMLCommonHandler.instance().getEffectiveSide());
-							ChromaSounds.USE.playSoundAtBlockNoAttenuation(te, 1, 1, 128);
-							return true;
+						if (TuningThresholds.MONUMENT.isSufficientlyTuned(ep)) {
+							ChromatiCraft.logger.debug("Player is tuned. Side="+FMLCommonHandler.instance().getEffectiveSide());
+							if (te.triggerMonument(ep)) {
+								ChromatiCraft.logger.debug("Monument triggered. Side="+FMLCommonHandler.instance().getEffectiveSide());
+								ChromaSounds.USE.playSoundAtBlockNoAttenuation(te, 1, 1, 128);
+								return true;
+							}
 						}
 					}
 				}

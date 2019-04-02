@@ -188,7 +188,7 @@ public class PylonFinder {
 						CrystalNetworkTile te1 = getNetTileAt(loc, true);
 						CrystalNetworkTile te2 = getNetTileAt(loc2, true);
 						if (te1 instanceof CrystalReceiver && te2 instanceof CrystalTransmitter && joc.canDirectLink(te1, te2)) {
-							double d = ((CrystalReceiver)te1).getReceiveRange();
+							double d = Math.min(((CrystalReceiver)te1).getReceiveRange(), ((CrystalTransmitter)te2).getSendRange());
 							if (te1.getDistanceSqTo(te2.getX(), te2.getY(), te2.getZ()) <= d*d && net.checkLOS((CrystalTransmitter)te2, (CrystalReceiver)te1)) {
 								while (k > i+1) {
 									li.remove(k-1);
@@ -359,7 +359,7 @@ public class PylonFinder {
 		if (ChromaOptions.SHORTPATH.getState() || skypeaterEntry != null) {
 			Collections.sort(li, new TransmitterDistanceSorter(r)); //basic "start with closest and work outwards" logic; A* too complex and expensive
 		}
-		Collections.sort(li, NetworkSorters.prioritizer);
+		Collections.sort(li, NetworkSorters.prioritizer[element.ordinal()]);
 		//ReikaJavaLibrary.pConsole("Found "+li.size()+" for "+r+": "+li);
 		for (CrystalTransmitter te : li) {
 			if (this.isComplete())
@@ -716,4 +716,8 @@ static class ChunkRequest {
 
 }
 	  */
+
+	public static int getSourcePriority(CrystalSource src, CrystalElement e) {
+		return src.getEnergy(e);
+	}
 }

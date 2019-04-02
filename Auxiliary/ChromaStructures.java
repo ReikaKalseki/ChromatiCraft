@@ -60,6 +60,7 @@ public class ChromaStructures {
 		RITUAL2(false),
 		INFUSION(false),
 		TREE(false),
+		TREE_SENDER(false),
 		TREE_BOOSTED(false),
 		REPEATER(true),
 		COMPOUND(false),
@@ -112,9 +113,11 @@ public class ChromaStructures {
 				case INFUSION:
 					return getInfusionStructure(world, x, y, z);
 				case TREE:
-					return getTreeStructure(world, x, y, z);
+					return getTreeStructure(world, x, y, z, false);
+				case TREE_SENDER:
+					return getTreeSendFocus(world, x, y, z);
 				case TREE_BOOSTED:
-					return getBoostedTreeStructure(world, x, y, z);
+					return getBoostedTreeStructure(world, x, y, z, false);
 				case REPEATER:
 					return getRepeaterStructure(world, x, y, z, e);
 				case COMPOUND:
@@ -188,9 +191,11 @@ public class ChromaStructures {
 				case INFUSION:
 					return getInfusionStructure(w, 0, 0, 0);
 				case TREE:
-					return getTreeStructure(w, 0, 0, 0);
+					return getTreeStructure(w, 0, 0, 0, false);
+				case TREE_SENDER:
+					return getTreeStructure(w, 0, 0, 0, true);//getTreeSendFocus(w, 0, 0, 0);
 				case TREE_BOOSTED:
-					return getBoostedTreeStructure(w, 0, 0, 0);
+					return getBoostedTreeStructure(w, 0, 0, 0, false);
 				case REPEATER:
 					return getRepeaterStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/4000)%16]);
 				case COMPOUND:
@@ -1884,7 +1889,7 @@ public class ChromaStructures {
 		}
 	}
 
-	public static FilledBlockArray getTreeStructure(World world, int x, int y, int z) {
+	public static FilledBlockArray getTreeStructure(World world, int x, int y, int z, boolean addSend) {
 		FilledBlockArray array = new FilledBlockArray(world);
 		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
 		for (int i = 0; i <= 12; i++) {
@@ -1944,11 +1949,24 @@ public class ChromaStructures {
 		array.setBlock(x, y-1, z+1, b, 14);
 		array.setBlock(x+1, y-1, z+1, b, 14);
 
+		if (addSend) {
+			array.addAll(getTreeSendFocus(world, x, y, z));
+		}
+		else {
+			FilledBlockArray arr = getTreeSendFocus(world, x, y, z);
+			for (Coordinate c : arr.keySet()) {
+				array.addEmpty(c.xCoord, c.yCoord, c.zCoord, false, false);
+				Block bk = arr.getBlockAt(c.xCoord, c.yCoord, c.zCoord);
+				int meta = arr.getMetaAt(c.xCoord, c.yCoord, c.zCoord);
+				array.addBlock(c.xCoord, c.yCoord, c.zCoord, bk, meta);
+			}
+		}
+
 		return array;
 	}
 
-	public static FilledBlockArray getBoostedTreeStructure(World world, int x, int y, int z) {
-		FilledBlockArray array = getTreeStructure(world, x, y, z);
+	public static FilledBlockArray getBoostedTreeStructure(World world, int x, int y, int z, boolean addSend) {
+		FilledBlockArray array = getTreeStructure(world, x, y, z, addSend);
 
 		for (int dy = y-12; dy <= y-10; dy++) {
 			for (int dx = x-1; dx <= x+2; dx++) {
@@ -2082,6 +2100,23 @@ public class ChromaStructures {
 
 		array.setBlock(x+4, y-13, z-1, c, 0);
 		array.setBlock(x+4, y-13, z, c, 0);
+
+		return array;
+	}
+
+	public static FilledBlockArray getTreeSendFocus(World world, int x, int y, int z) {
+		FilledBlockArray array = new FilledBlockArray(world);
+		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
+
+		for (int i = -2; i <= 3; i += 5) {
+			for (int k = -2; k <= 3; k += 5) {
+				int dx = x+i;
+				int dz = z+k-1;
+				int dy = y-12;
+				array.setBlock(dx, dy, dz, b, StoneTypes.COLUMN.ordinal());
+				array.setBlock(dx, dy+1, dz, b, StoneTypes.FOCUS.ordinal());
+			}
+		}
 
 		return array;
 	}

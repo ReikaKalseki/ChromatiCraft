@@ -82,6 +82,8 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	private boolean enhanced = false;
 	private boolean hadEnhancedProgress = false;
 
+	private boolean canSendEnergy = true;
+
 	public static final int BASE = 1000;
 	public static final int RATIO = 4000;
 	public static final int POWER = 3;
@@ -380,7 +382,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	}
 
 	public void validateStructure() {
-		FilledBlockArray f = ChromaStructures.getTreeStructure(worldObj, xCoord, yCoord, zCoord);
+		FilledBlockArray f = ChromaStructures.getTreeStructure(worldObj, xCoord, yCoord, zCoord, false);
 		boolean flag = f.matchInWorld();
 		if (!flag && hasMultiblock) {
 			this.onBreakMultiblock();
@@ -390,7 +392,8 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		if (ep != null && !ReikaPlayerAPI.isFake(ep)) {
 			hadEnhancedProgress = ProgressStage.CTM.isPlayerAtStage(ep);
 		}
-		enhanced = hasMultiblock && hadEnhancedProgress && ChromaStructures.getBoostedTreeStructure(worldObj, xCoord, yCoord, zCoord).matchInWorld();
+		enhanced = hasMultiblock && hadEnhancedProgress && ChromaStructures.getBoostedTreeStructure(worldObj, xCoord, yCoord, zCoord, false).matchInWorld();
+		canSendEnergy = hasMultiblock && ChromaStructures.getTreeSendFocus(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 		for (int i = 0; i < 16; i++)
 			this.clamp(CrystalElement.elements[i]);
 		this.syncAllData(true);
@@ -481,6 +484,17 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 			}
 		}
 		this.syncAllData(true);
+		boolean flag = true;
+		for (int i = 0; i < 16; i++) {
+			CrystalElement e2 = CrystalElement.elements[i];
+			if (growth.get(e2) <= locations.get(e2).size()/2) {
+				flag = false;
+				break;
+			}
+		}
+		if (flag) {
+			ProgressStage.POWERTREE.stepPlayerTo(this.getPlacer());
+		}
 	}
 
 	@Override
@@ -687,12 +701,9 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	}
 
 	@Override
-	public int getSourcePriority() {
-		return 500;
-	}
-
-	@Override
 	public boolean canSupply(CrystalReceiver te, CrystalElement e) {
+		if (!canSendEnergy)
+			return false;
 		return !(te instanceof TileEntityPowerTree) && this.getEnergy(e) >= 60000;
 	}
 
@@ -792,7 +803,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	@Override
 	public int getPathPriority() {
-		return this.getSourcePriority();
+		return 500;
 	}
 
 }

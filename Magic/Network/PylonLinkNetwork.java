@@ -131,6 +131,8 @@ public class PylonLinkNetwork {
 	public void sync(EntityPlayerMP ep) {
 		if (ep != null)
 			ChromatiCraft.logger.log("Updating pylon link network for "+ep);
+		else
+			ChromatiCraft.logger.log("Updating pylon link network for all players");
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
 			return;
 		PacketTarget pt = ep != null ? new PlayerTarget(ep) : PacketTarget.allPlayers;

@@ -1193,11 +1193,6 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	}
 
 	@Override
-	public int getSourcePriority() {
-		return 0;
-	}
-
-	@Override
 	public boolean canSupply(CrystalReceiver te, CrystalElement e) {
 		if (!placedByHand)
 			return true;
@@ -1299,7 +1294,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	@Override
 	public int getPathPriority() {
-		return this.getSourcePriority();
+		return 0;
 	}
 
 	public boolean hasBroadcastUpgrade() {

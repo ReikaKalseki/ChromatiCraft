@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -114,6 +114,8 @@ public class BlockRedstonePod extends BlockAttachableMini {
 					int dx = te2.xCoord+dir2.offsetX;
 					int dy = te2.yCoord+dir2.offsetY;
 					int dz = te2.zCoord+dir2.offsetZ;
+					if (dx == x && dy == y && dz == z)
+						return 0;
 					return loc.getWorld().getBlockPowerInput(dx, dy, dz);
 				}
 			}

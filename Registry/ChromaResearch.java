@@ -350,40 +350,41 @@ public enum ChromaResearch implements ProgressElement {
 	CHESTCLEAR	(	Chromabilities.CHESTCLEAR, 					ResearchLevel.ENERGYEXPLORE),
 
 	STRUCTUREDESC("Structures", ""),
-	PYLON(			Structures.PYLON,		5,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),
-	CASTING1(		Structures.CASTING1,	0,	ResearchLevel.BASICCRAFT,		ProgressStage.CRYSTALS),
-	CASTING2(		Structures.CASTING2,	1,	ResearchLevel.RUNECRAFT,		ProgressStage.RUNEUSE),
-	CASTING3(		Structures.CASTING3,	2,	ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK, ProgressStage.BLOWREPEATER),
-	RITUAL	(		Structures.RITUAL,		7,	ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
-	INFUSION(		Structures.INFUSION,	12,	ResearchLevel.MULTICRAFT,		ProgressStage.CHROMA),
-	TREE(			Structures.TREE,		14,	ResearchLevel.ENDGAME,			ProgressStage.POWERCRYSTAL),
-	REPEATERSTRUCT(	Structures.REPEATER,	0,	ResearchLevel.NETWORKING,		ProgressStage.RUNEUSE, ProgressStage.BLOWREPEATER),
-	COMPOUNDSTRUCT(	Structures.COMPOUND,	13,	ResearchLevel.NETWORKING,		ProgressStage.REPEATER),
-	CAVERN(			Structures.CAVERN,		ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.CAVERN),
-	BURROW(			Structures.BURROW,		ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.BURROW),
-	OCEAN(			Structures.OCEAN,		ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.MOSS.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.OCEAN),
-	DESERT(			Structures.DESERT,		ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.COBBLE.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.DESERTSTRUCT),
-	SNOW(			Structures.SNOWSTRUCT,	ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.LIGHT.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.SNOWSTRUCT),
-	PORTALSTRUCT(	Structures.PORTAL,		0,	ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
-	MINIPYLON(		Structures.PERSONAL,	9,	ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
-	BROADCASTER(	Structures.BROADCAST,	15,	ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK, ProgressStage.REPEATER),
-	CLOAKTOWER(		Structures.CLOAKTOWER,	3,	ResearchLevel.MULTICRAFT,		ProgressStage.KILLMOB),
-	BOOSTTREE(		Structures.TREE_BOOSTED,14,	ResearchLevel.CTM,				ProgressStage.TURBOCHARGE),
-	BEACONSTRUCT(	Structures.PROTECT,		6,	ResearchLevel.ENDGAME),
-	MINIREPEATER(	Structures.WEAKREPEATER,Blocks.log, 0, ResearchLevel.ENERGYEXPLORE, ProgressStage.PYLON),
-	METEOR1(		Structures.METEOR1,		12,	ResearchLevel.PYLONCRAFT),
-	METEOR2(		Structures.METEOR2,		12,	ResearchLevel.ENDGAME),
-	METEOR3(		Structures.METEOR3,		12,	ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
-	RITUAL2	(		Structures.RITUAL2,		7,	ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
-	GATESTRUCT(		Structures.TELEGATE,	2,	ResearchLevel.ENDGAME,			ProgressStage.END),
-	RELAYSTRUCT(	Structures.RELAY,		9,	ResearchLevel.ENDGAME,			ProgressStage.POWERCRYSTAL),
-	PYLONBROADCAST(	Structures.PYLONBROADCAST,5,ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
-	PYLONTURBORING(	Structures.PYLONTURBO,	5,	ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.TURBOCHARGE)),
-	WIRELESSPED(	Structures.WIRELESSPEDESTAL, 13, ResearchLevel.ENDGAME),
-	WIRELESSPED2(	Structures.WIRELESSPEDESTAL2, 13, ResearchLevel.CTM),
-	DATATOWER(		Structures.DATANODE,	0,	ResearchLevel.RAWEXPLORE,		ProgressStage.TOWER),
-	PROGLINKSTRUCT(	Structures.PROGRESSLINK,6,	ResearchLevel.BASICCRAFT),
-	OPTIMISTRUCT(	Structures.OPTIMIZER,	15,	ResearchLevel.ENDGAME,			TieredOres.LUMA.level),
+	PYLON(			Structures.PYLON,			StoneTypes.FOCUS.ordinal(),				ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),
+	CASTING1(		Structures.CASTING1,		StoneTypes.SMOOTH.ordinal(),			ResearchLevel.BASICCRAFT,		ProgressStage.CRYSTALS),
+	CASTING2(		Structures.CASTING2,		StoneTypes.BEAM.ordinal(),				ResearchLevel.RUNECRAFT,		ProgressStage.RUNEUSE),
+	CASTING3(		Structures.CASTING3,		StoneTypes.COLUMN.ordinal(),			ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK, ProgressStage.BLOWREPEATER),
+	RITUAL	(		Structures.RITUAL,			StoneTypes.ENGRAVED.ordinal(),			ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
+	INFUSION(		Structures.INFUSION,		StoneTypes.BRICKS.ordinal(),			ResearchLevel.MULTICRAFT,		ProgressStage.CHROMA),
+	TREE(			Structures.TREE,			StoneTypes.STABILIZER.ordinal(),		ResearchLevel.ENDGAME,			ProgressStage.POWERCRYSTAL),
+	TREESEND(		Structures.TREE_SENDER,			StoneTypes.FOCUSFRAME.ordinal(),		ResearchLevel.ENDGAME,			ProgressStage.POWERTREE),
+	REPEATERSTRUCT(	Structures.REPEATER,		StoneTypes.SMOOTH.ordinal(),			ResearchLevel.NETWORKING,		ProgressStage.RUNEUSE, ProgressStage.BLOWREPEATER),
+	COMPOUNDSTRUCT(	Structures.COMPOUND,		StoneTypes.MULTICHROMIC.ordinal(),		ResearchLevel.NETWORKING,		ProgressStage.REPEATER),
+	CAVERN(			Structures.CAVERN,			ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.CAVERN),
+	BURROW(			Structures.BURROW,			ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.BURROW),
+	OCEAN(			Structures.OCEAN,			ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.MOSS.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.OCEAN),
+	DESERT(			Structures.DESERT,			ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.COBBLE.metadata,ResearchLevel.RAWEXPLORE,		ProgressStage.DESERTSTRUCT),
+	SNOW(			Structures.SNOWSTRUCT,		ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.LIGHT.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.SNOWSTRUCT),
+	PORTALSTRUCT(	Structures.PORTAL,			StoneTypes.SMOOTH.ordinal(),			ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
+	MINIPYLON(		Structures.PERSONAL,		StoneTypes.FOCUSFRAME.ordinal(),		ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
+	BROADCASTER(	Structures.BROADCAST,		StoneTypes.RESORING.ordinal(),			ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK, ProgressStage.REPEATER),
+	CLOAKTOWER(		Structures.CLOAKTOWER,		StoneTypes.GLOWCOL.ordinal(),			ResearchLevel.MULTICRAFT,		ProgressStage.KILLMOB),
+	BOOSTTREE(		Structures.TREE_BOOSTED,	StoneTypes.STABILIZER.ordinal(),		ResearchLevel.CTM,				ProgressStage.TURBOCHARGE),
+	BEACONSTRUCT(	Structures.PROTECT,			StoneTypes.CORNER.ordinal(),			ResearchLevel.ENDGAME),
+	MINIREPEATER(	Structures.WEAKREPEATER,	Blocks.log, 0, 							ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),
+	METEOR1(		Structures.METEOR1,			StoneTypes.BRICKS.ordinal(),			ResearchLevel.PYLONCRAFT),
+	METEOR2(		Structures.METEOR2,			StoneTypes.BRICKS.ordinal(),			ResearchLevel.ENDGAME),
+	METEOR3(		Structures.METEOR3,			StoneTypes.BRICKS.ordinal(),			ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
+	RITUAL2	(		Structures.RITUAL2,			StoneTypes.ENGRAVED.ordinal(),			ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
+	GATESTRUCT(		Structures.TELEGATE,		StoneTypes.COLUMN.ordinal(),			ResearchLevel.ENDGAME,			ProgressStage.END),
+	RELAYSTRUCT(	Structures.RELAY,			StoneTypes.FOCUSFRAME.ordinal(),		ResearchLevel.ENDGAME,			ProgressStage.POWERCRYSTAL),
+	PYLONBROADCAST(	Structures.PYLONBROADCAST,	StoneTypes.FOCUS.ordinal(),				ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
+	PYLONTURBORING(	Structures.PYLONTURBO,		StoneTypes.FOCUS.ordinal(),				ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.TURBOCHARGE)),
+	WIRELESSPED(	Structures.WIRELESSPEDESTAL, StoneTypes.MULTICHROMIC.ordinal(), 	ResearchLevel.ENDGAME),
+	WIRELESSPED2(	Structures.WIRELESSPEDESTAL2, StoneTypes.MULTICHROMIC.ordinal(),	ResearchLevel.CTM),
+	DATATOWER(		Structures.DATANODE,		StoneTypes.SMOOTH.ordinal(),			ResearchLevel.RAWEXPLORE,		ProgressStage.TOWER),
+	PROGLINKSTRUCT(	Structures.PROGRESSLINK,	StoneTypes.CORNER.ordinal(),			ResearchLevel.BASICCRAFT),
+	OPTIMISTRUCT(	Structures.OPTIMIZER,		StoneTypes.RESORING.ordinal(),			ResearchLevel.ENDGAME,			TieredOres.LUMA.level),
 	;
 
 	private final ItemStack iconItem;
@@ -1317,9 +1318,9 @@ public enum ChromaResearch implements ProgressElement {
 		return rec;
 	}
 
-	public int getRecipeIndex(ItemStack is) {
+	public int getRecipeIndex(ItemStack is, EntityPlayer ep) {
 		if (this == ALLOYS) {
-			return new ArrayList(PoolRecipes.instance.getAllPoolRecipes()).indexOf(PoolRecipes.instance.getPoolRecipeByOutput(is));
+			return new ArrayList(PoolRecipes.instance.getAllPoolRecipesForPlayer(ep)).indexOf(PoolRecipes.instance.getPoolRecipeByOutput(is));
 		}
 		if (this == METEOR && is.stackTagCompound != null) {
 			return is.stackTagCompound.getInteger("tier");

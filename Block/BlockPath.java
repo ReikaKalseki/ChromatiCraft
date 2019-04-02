@@ -23,6 +23,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class BlockPath extends Block {
 
@@ -87,23 +88,66 @@ public class BlockPath extends Block {
 	public void onEntityWalking(World world, int x, int y, int z, Entity e) {
 		if (e instanceof EntityLivingBase) {
 			EntityLivingBase el = (EntityLivingBase)e;
-			double max = 2.5;
+			float max = 2.5F;
 			int meta = world.getBlockMetadata(x, y, z);
 			if (meta != PathType.EMERALD.ordinal())
-				max = 1.75;
+				max = 1.75F;
 			if (meta == PathType.BASIC.ordinal())
-				max = 1.25;
+				max = 1.25F;
+
 			el.motionX = MathHelper.clamp_double(el.motionX*Math.abs(Math.sin(Math.toRadians(el.rotationYawHead))), -max, max);
 			el.motionZ = MathHelper.clamp_double(el.motionZ*Math.abs(Math.cos(Math.toRadians(el.rotationYawHead))), -max, max);
-			for (int d = 1; d <= 8; d++) {
-				int nx = x+d*(int)Math.signum(e.motionX);
-				int nz = z+d*(int)Math.signum(e.motionZ);
-				double fac = d > 1 ? 0.8 : 0;
-				if (world.getBlock(nx, y, z) != this)
+			for (double d = 0.5; d <= 2; d += 0.5) {
+				int nx = MathHelper.floor_double(e.posX+d*Math.signum(e.motionX));
+				int nz = MathHelper.floor_double(e.posZ+d*Math.signum(e.motionZ));
+				double fac = d > 2 ? 0.8 : d > 1 ? 0.4 : 0;
+				fac = 0;
+				boolean flag = false;
+				if (world.getBlock(nx, y, z) != this) {
 					el.motionX *= fac;
-				if (world.getBlock(x, y, nz) != this)
+					flag = true;
+					ReikaJavaLibrary.pConsole(world.getBlock(nx, y, z));
+				}
+				if (world.getBlock(x, y, nz) != this) {
 					el.motionZ *= fac;
+					ReikaJavaLibrary.pConsole(world.getBlock(x, y, nz));
+					flag = true;
+				}
+				if (flag)
+					break;
 			}
+			el.moveForward = 0;
+			el.moveStrafing = 0;
+			//el.velocityChanged = true;
+
+			//el.moveForward = Math.min(el.moveForward+0.1F, max);
+			//el.moveStrafing *= 0.6;
+			/*
+			float avg = 0;
+			int c = 0;
+			float move = ((e.rotationYaw-90)+360F)%360F;
+
+			int r = 3;
+			for (int i = -r; i <= r; i++) {
+				for (int k = -r; k <= r; k++) {
+					int dx = x+i;
+					int dz = z+k;
+					if (world.getBlock(dx, y, dz) == this && world.getBlockMetadata(dx, y, dz) == meta) {
+						float ang = (float)(Math.toDegrees(Math.atan2(k, i))+360F)%360F;
+						float da = (move-ang+180F+360F)%360F-180F;
+						if (da <= 90 && da >= -90) { //not behind the player
+							avg += ang;
+							c++;
+						}
+					}
+				}
+			}
+			if (c > 0) {
+				avg /= c;
+				ReikaJavaLibrary.pConsole(e.rotationYaw+" > "+avg, Side.SERVER);
+				e.rotationYaw = avg;
+			}*/
+
 			el.addPotionEffect(new PotionEffect(Potion.jump.id, 1, 2));
 			if (meta == PathType.FIRE.ordinal())
 				el.extinguish();

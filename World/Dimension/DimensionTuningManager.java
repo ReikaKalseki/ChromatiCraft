@@ -55,7 +55,8 @@ public class DimensionTuningManager {
 		SKYRIVER(384, 256),
 		FARREGIONS(512),
 		DECOHARVEST(4),
-		CHESTS(16);
+		CHESTS(16),
+		MONUMENT(224);
 
 		public final int minimumTuning;
 		public final int minimumEffect;

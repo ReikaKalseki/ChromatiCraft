@@ -13,12 +13,13 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.Interfaces.MinerBlock;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Render.ISBRH.BedrockCrackRenderer;
 import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.DragonAPI.DragonAPICore;
 
-public class BlockBedrockCrack extends Block {
+public class BlockBedrockCrack extends Block implements MinerBlock {
 
 	private static final IIcon[] crackOverlay = new IIcon[10];
 
@@ -116,6 +117,35 @@ public class BlockBedrockCrack extends Block {
 	@Override
 	public int getRenderType() {
 		return ChromatiCraft.proxy.bedrockCrackRender;
+	}
+
+	@Override
+	public boolean isMineable(int meta) {
+		return true;
+	}
+
+	@Override
+	public ArrayList<ItemStack> getHarvestItems(World world, int x, int y, int z, int meta, int fortune) {
+		ArrayList<ItemStack> li = new ArrayList();
+		if (meta == 9) {
+			li.add(ChromaStacks.bedrockloot2);
+		}
+		int m = meta;
+		while (m >= 0) {
+			li.addAll(this.getDrops(world, x, y, z, m, fortune));
+			m--;
+		}
+		return li;
+	}
+
+	@Override
+	public MineralCategory getCategory() {
+		return MineralCategory.MISC_UNDERGROUND_VALUABLE;
+	}
+
+	@Override
+	public Block getReplacedBlock(World world, int x, int y, int z) {
+		return Blocks.bedrock;
 	}
 
 }

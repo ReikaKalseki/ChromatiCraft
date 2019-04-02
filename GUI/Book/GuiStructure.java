@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.GUI.Book;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -27,6 +28,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidRegistry;
 
+import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.GuiBookSection;
@@ -83,7 +85,7 @@ public class GuiStructure extends GuiBookSection {
 			array.setBlock(array.getMidX(), array.getMinY()+1, array.getMidZ()+1, Blocks.air);
 			array.setBlock(array.getMidX(), array.getMinY()+1, array.getMidZ()-1, Blocks.air);
 		}
-		if (page == ChromaResearch.TREE || page == ChromaResearch.BOOSTTREE) {
+		if (page == ChromaResearch.TREE || page == ChromaResearch.TREESEND || page == ChromaResearch.BOOSTTREE) {
 			array.setBlock(array.getMidX()-1, array.getMaxY(), array.getMidZ(), ChromaTiles.POWERTREE.getBlock(), ChromaTiles.POWERTREE.getBlockMetadata());
 		}
 		if (page == ChromaResearch.INFUSION) {
@@ -104,7 +106,25 @@ public class GuiStructure extends GuiBookSection {
 		if (page == ChromaResearch.CLOAKTOWER) {
 			array.setBlock(array.getMidX(), array.getMinY()+5, array.getMidZ(), ChromaTiles.CLOAKING.getBlock(), ChromaTiles.CLOAKING.getBlockMetadata());
 		}
-		render = new StructureRenderer(array);
+		HashSet<Coordinate> set = new HashSet();
+		switch(page) {
+			case TREESEND:
+				set.addAll(ChromaStructures.Structures.TREE.getStructureForDisplay().keySet());
+				break;
+			case PYLONBROADCAST:
+			case PYLONTURBO:
+				set.addAll(ChromaStructures.Structures.PYLON.getStructureForDisplay().keySet());
+				break;
+			case METEOR2:
+				set.addAll(ChromaStructures.Structures.METEOR1.getStructureForDisplay().keySet());
+				break;
+			case METEOR3:
+				set.addAll(ChromaStructures.Structures.METEOR2.getStructureForDisplay().keySet());
+				break;
+			default:
+				break;
+		}
+		render = new StructureRenderer(array, set);
 		if (page == ChromaResearch.PYLON || page == ChromaResearch.PYLONTURBO) {
 			render.addOverride(array.getMidX(), array.getMinY()+9, array.getMidZ(), ChromaTiles.PYLON.getCraftedProduct());
 		}
