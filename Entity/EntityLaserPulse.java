@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.ColorData;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.LaserEffectType;
+import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonTapeBit;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -41,6 +42,9 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 	public CubeDirections direction;
 	//private String level = "";
 
+	public boolean silentImpact = false;
+	private double moveSpeed = 0.1875;
+
 	public EntityLaserPulse(World world) {
 		super(world);
 	}
@@ -50,6 +54,12 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 		direction = dir;
 		color = c.copy();
 		//level = l;
+	}
+
+	public void setSpeedFactor(double f) {
+		moveSpeed *= f;
+		moveSpeed = Math.min(moveSpeed, 0.2); //any faster and it might clip
+		this.setDirection(direction, true);
 	}
 
 	@Override
@@ -120,15 +130,17 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 			s.playSound(worldObj, posX, posY, posZ, vol, p*0.5F);
 		}
 		if (color.green) {
-			s.playSound(worldObj, posX, posY, posZ, vol, p);
+			s.playSound(worldObj, posX, posY, posZ, vol, p*0.75F);
 		}
 		if (color.blue) {
-			s.playSound(worldObj, posX, posY, posZ, vol, p*2F);
+			s.playSound(worldObj, posX, posY, posZ, vol, p*1F);
 		}
 	}
 
 	@SideOnly(Side.CLIENT)
 	private void spawnDeathParticle() {
+		if (silentImpact)
+			return;
 		int l = 10+rand.nextInt(15);
 		int n = 8+rand.nextInt(24);
 		for (int i = 0; i < n; i++) {
@@ -152,11 +164,15 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 			this.playTonalSound(ChromaSounds.USE, 0.5F, 2);
 			return e.affectPulse(world, x, y, z, this);
 		}
+		if (b == ChromaBlocks.PISTONBIT.getBlockInstance()) {
+			return BlockPistonTapeBit.affectPulse(this, world, x, y, z);
+		}
 
 		if (worldObj.isRemote) {
 			this.spawnDeathParticle();
 		}
-		this.playTonalSound(ChromaSounds.POWERDOWN, 0.5F, 2);
+		if (!silentImpact)
+			this.playTonalSound(ChromaSounds.POWERDOWN, 0.5F, 2);
 
 		return true;
 	}
@@ -196,6 +212,8 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 		color = new ColorData(true);
 		color.readFromNBT(tag);
 		direction = CubeDirections.list[tag.getInteger("dir")];
+		silentImpact = tag.getBoolean("silent");
+		moveSpeed = tag.getDouble("speed");
 	}
 
 	@Override
@@ -203,6 +221,8 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 		super.writeEntityToNBT(tag);
 		color.writeToNBT(tag);
 		tag.setInteger("dir", direction.ordinal());
+		tag.setBoolean("silent", silentImpact);
+		tag.setDouble("speed", moveSpeed);
 	}
 
 	@Override
@@ -210,6 +230,8 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 		super.writeSpawnData(data);
 		color.writeBuf(data);
 		data.writeInt(direction.ordinal());
+		data.writeBoolean(silentImpact);
+		data.writeDouble(moveSpeed);
 		//ReikaPacketHelper.writeString(data, level);
 	}
 
@@ -219,6 +241,8 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 		color = new ColorData(true);
 		color.readBuf(data);
 		direction = CubeDirections.list[data.readInt()];
+		silentImpact = data.readBoolean();
+		moveSpeed = data.readDouble();
 		//level = ReikaPacketHelper.readString(data);
 	}
 
@@ -229,7 +253,7 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 
 	@Override
 	public double getSpeed() {
-		return 0.1875;
+		return moveSpeed;
 	}
 
 	@Override

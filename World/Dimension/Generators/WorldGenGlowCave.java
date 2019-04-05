@@ -254,7 +254,7 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 	}
 
 	private int getRandomCrackMeta(Random rand, Coordinate c) {
-		int max = 10;
+		int max = 9;
 		if (c.yCoord > 8) {
 			max *= 1D-((c.yCoord-8)/(MAX_CRACK_Y-8D));
 		}

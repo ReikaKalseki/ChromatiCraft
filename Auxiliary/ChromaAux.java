@@ -55,6 +55,7 @@ import Reika.ChromatiCraft.Block.Dimension.BlockLightedLeaf;
 import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
+import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
@@ -588,6 +589,9 @@ public class ChromaAux {
 		else if ((e instanceof IProjectile || e instanceof EntityFireball || e instanceof CustomProjectile) && AbilityHelper.instance.canProjectilePenetrateBlock(world, x, y, z, b, e)) {
 			return null;
 		}
+		if (e instanceof EntityLaserPulse && b == ChromaBlocks.LASEREFFECT.getBlockInstance()) {
+			return null;
+		}
 		return def;
 	}
 	/*
@@ -600,6 +604,9 @@ public class ChromaAux {
 			if (AbilityHelper.instance.canProjectilePenetrateBlocks(e)) {
 				return AbilityHelper.instance.getProjectileRayTrace(e, vec1, vec2, b1, b2, b3);
 			}
+		}
+		if (e instanceof EntityLaserPulse) {
+			return null;
 		}
 		return def;
 	}

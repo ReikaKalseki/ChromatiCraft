@@ -97,7 +97,7 @@ public class GuiStructure extends GuiBookSection {
 		if (page == ChromaResearch.PYLON) {
 			array.setBlock(array.getMidX(), array.getMinY()+1, array.getMidZ(), Blocks.air);
 		}
-		if (page == ChromaResearch.PYLON || page == ChromaResearch.PYLONTURBO) {
+		if (page == ChromaResearch.PYLON || page == ChromaResearch.PYLONTURBORING) {
 			array.setBlock(array.getMidX(), array.getMinY()+9, array.getMidZ(), ChromaTiles.PYLON.getBlock(), ChromaTiles.PYLON.getBlockMetadata());
 		}
 		if (page == ChromaResearch.PYLONBROADCAST) {
@@ -109,23 +109,83 @@ public class GuiStructure extends GuiBookSection {
 		HashSet<Coordinate> set = new HashSet();
 		switch(page) {
 			case TREESEND:
-				set.addAll(ChromaStructures.Structures.TREE.getStructureForDisplay().keySet());
+			case BOOSTTREE: {
+				FilledBlockArray arr = ChromaStructures.Structures.TREE.getStructureForDisplay();
+				for (Coordinate c : arr.keySet()) {
+					BlockKey key = arr.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord);
+					if (key.blockID != Blocks.air && key.equals(array.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord)))
+						set.add(c);
+				}
 				break;
+			}
 			case PYLONBROADCAST:
-			case PYLONTURBO:
-				set.addAll(ChromaStructures.Structures.PYLON.getStructureForDisplay().keySet());
+			case PYLONTURBORING: {
+				FilledBlockArray arr = ChromaStructures.Structures.PYLON.getStructureForDisplay();
+				for (Coordinate c : arr.keySet()) {
+					if (arr.getBlockAt(c.xCoord, c.yCoord, c.zCoord) != Blocks.air)
+						set.add(c);
+				}
 				break;
-			case METEOR2:
-				set.addAll(ChromaStructures.Structures.METEOR1.getStructureForDisplay().keySet());
+			}
+			case METEOR2: {
+				FilledBlockArray arr = ChromaStructures.Structures.METEOR1.getStructureForDisplay();
+				for (Coordinate c : arr.keySet()) {
+					BlockKey key = arr.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord);
+					if (key.blockID != Blocks.air && key.equals(array.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord)))
+						set.add(c);
+				}
 				break;
-			case METEOR3:
-				set.addAll(ChromaStructures.Structures.METEOR2.getStructureForDisplay().keySet());
+			}
+			case METEOR3: {
+				FilledBlockArray arr = ChromaStructures.Structures.METEOR2.getStructureForDisplay();
+				for (Coordinate c : arr.keySet()) {
+					BlockKey key = arr.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord);
+					if (key.blockID != Blocks.air && key.equals(array.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord)))
+						set.add(c);
+				}
 				break;
+			}
+			case RITUAL2: {
+				FilledBlockArray arr = ChromaStructures.Structures.RITUAL.getStructureForDisplay();
+				for (Coordinate c : arr.keySet()) {
+					BlockKey key = arr.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord);
+					if (key.blockID != Blocks.air && key.equals(array.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord)))
+						set.add(c);
+				}
+				break;
+			}
+			case WIRELESSPED2: {
+				FilledBlockArray arr = ChromaStructures.Structures.WIRELESSPEDESTAL.getStructureForDisplay();
+				for (Coordinate c : arr.keySet()) {
+					BlockKey key = arr.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord);
+					if (key.blockID != Blocks.air && key.equals(array.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord)))
+						set.add(c);
+				}
+				break;
+			}
+			case CASTING2: {
+				FilledBlockArray arr = ChromaStructures.Structures.CASTING1.getStructureForDisplay();
+				for (Coordinate c : arr.keySet()) {
+					BlockKey key = arr.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord);
+					if (key.blockID != Blocks.air && key.equals(array.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord)))
+						set.add(c);
+				}
+				break;
+			}
+			case CASTING3: {
+				FilledBlockArray arr = ChromaStructures.Structures.CASTING2.getStructureForDisplay();
+				for (Coordinate c : arr.keySet()) {
+					BlockKey key = arr.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord);
+					if (key.blockID != Blocks.air && key.equals(array.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord)))
+						set.add(c);
+				}
+				break;
+			}
 			default:
 				break;
 		}
 		render = new StructureRenderer(array, set);
-		if (page == ChromaResearch.PYLON || page == ChromaResearch.PYLONTURBO) {
+		if (page == ChromaResearch.PYLON || page == ChromaResearch.PYLONTURBORING) {
 			render.addOverride(array.getMidX(), array.getMinY()+9, array.getMidZ(), ChromaTiles.PYLON.getCraftedProduct());
 		}
 		else if (page == ChromaResearch.PYLONBROADCAST) {

@@ -80,6 +80,8 @@ public class DimensionTuningManager {
 		}
 
 		public boolean isSufficientlyTuned(EntityPlayer ep) {
+			if (ep.worldObj.provider.dimensionId != ExtraChromaIDs.DIMID.getValue())
+				return true;
 			return instance.getPlayerTuning(ep) >= minimumTuning;
 		}
 	}

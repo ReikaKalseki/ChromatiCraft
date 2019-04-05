@@ -1,12 +1,3 @@
-/*******************************************************************************
- * @author Reika Kalseki
- *
- * Copyright 2017
- *
- * All rights reserved.
- * Distribution of the software in any form is only allowed with
- * explicit, prior permission from the owner.
- ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure;
 
 import java.util.Random;
@@ -17,7 +8,7 @@ import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
 
 
-public class TessellationGenerator extends DimensionStructureGenerator {
+public class RayBlendGenerator extends DimensionStructureGenerator {
 
 	@Override
 	protected void calculate(int chunkX, int chunkZ, Random rand) {
@@ -40,12 +31,12 @@ public class TessellationGenerator extends DimensionStructureGenerator {
 	}
 
 	@Override
-	public boolean hasBeenSolved(World world) {
+	protected boolean hasBeenSolved(World world) {
 		return false;
 	}
 
 	@Override
-	public void openStructure(World world) {
+	protected void openStructure(World world) {
 
 	}
 

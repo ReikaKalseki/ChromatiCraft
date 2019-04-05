@@ -9,15 +9,22 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block.Dimension.Structure.Laser;
 
+import java.util.List;
+import java.util.Locale;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -51,6 +58,8 @@ import io.netty.buffer.ByteBuf;
 
 public class BlockLaserEffector extends BlockDimensionStructureTile {
 
+	public static IIcon baseTexture;
+
 	public BlockLaserEffector(Material mat) {
 		super(mat);
 	}
@@ -70,6 +79,8 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 			case TARGET:
 			case TARGET_THRU:
 				return new TargetTile();
+			case EMITTER:
+				return new EmitterTile();
 			default:
 				return new LaserEffectTile();
 		}
@@ -108,7 +119,10 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 
 	@Override
 	public void setBlockBoundsBasedOnState(IBlockAccess iba, int x, int y, int z) {
-		this.setBlockBounds(0, 0, 0, 1, 0.5F, 1);
+		if (((LaserEffectTile)iba.getTileEntity(x, y, z)).renderAsFullBlock)
+			this.setBlockBounds(0, 0, 0, 1, 1, 1);
+		else
+			this.setBlockBounds(0, 0, 0, 1, 0.5F, 1);
 	}
 
 	@Override
@@ -130,6 +144,29 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 		}
 	}
 
+	private static Entity currentCollisionEntity;
+
+	@Override
+	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+		return currentCollisionEntity instanceof EntityPlayer ? super.getCollisionBoundingBoxFromPool(world, x, y, z): null;
+	}
+
+	@Override
+	public void addCollisionBoxesToList(World world, int x, int y, int z, AxisAlignedBB mask, List li, Entity e) {
+		currentCollisionEntity = e;
+		super.addCollisionBoxesToList(world, x, y, z, mask, li, e);
+		currentCollisionEntity = null;
+	}
+
+	@Override
+	public void registerBlockIcons(IIconRegister ico) {
+		baseTexture = ico.registerIcon("chromaticraft:dimstruct/laser_block_base");
+		for (LaserEffectType e : LaserEffectType.list) {
+			e.frontTexture = ico.registerIcon("chromaticraft:dimstruct/laser_front/"+e.name().toLowerCase(Locale.ENGLISH)+"_back");
+			e.frontOverlay = ico.registerIcon("chromaticraft:dimstruct/laser_front/"+e.name().toLowerCase(Locale.ENGLISH)+"_front");
+		}
+	}
+
 	public static enum LaserEffectType {
 		EMITTER(),
 		TARGET(),
@@ -143,6 +180,9 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 		PRISM(),
 		COLORIZER(),
 		POLARIZER();
+
+		public IIcon frontTexture;
+		public IIcon frontOverlay;
 
 		public static final LaserEffectType[] list = values();
 
@@ -308,12 +348,76 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 		}
 	}
 
+	public static class EmitterTile extends LaserEffectTile {
+
+		public boolean keepFiring = false;
+		public boolean silent = false;
+		public double speedFactor = 1;
+
+		@Override
+		public void updateEntity() {
+			if (keepFiring) {
+				if (DragonAPICore.rand.nextInt(4) == 0)
+					this.fire();
+			}
+		}
+
+		@Override
+		public boolean canUpdate() {
+			return true;
+		}
+
+		@Override
+		protected void affect(EntityLaserPulse ea) {
+			ea.silentImpact = silent;
+			ea.setSpeedFactor(speedFactor);
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound tag) {
+			super.readFromNBT(tag);
+			keepFiring = tag.getBoolean("firing");
+			silent = tag.getBoolean("silent");
+			speedFactor = tag.getDouble("speed");
+		}
+
+		@Override
+		public void writeToNBT(NBTTagCompound tag) {
+			super.writeToNBT(tag);
+			tag.setBoolean("firing", keepFiring);
+			tag.setBoolean("silent", silent);
+			tag.setDouble("speed", speedFactor);
+		}
+
+	}
+
 	public static class TargetTile extends LaserEffectTile {
 
 		private boolean triggered = false;
+		public int autoReset = 0;
+		private int resetTick;
 
 		public boolean isTriggered() {
 			return triggered;
+		}
+
+		@Override
+		public void updateEntity() {
+			if (resetTick > 0) {
+				resetTick--;
+				if (resetTick == 0) {
+					this.reset();
+				}
+			}
+		}
+
+		private void reset() {
+			this.trigger(false, false, false);
+		}
+
+		@Override
+		public boolean canUpdate() {
+			return true;
 		}
 
 		public void trigger(boolean set, boolean doFX, boolean triggerCompletion) {
@@ -334,6 +438,9 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 					gen.completeTrigger(level, worldObj, new Coordinate(this), set);
 				}
 			}
+			if (autoReset > 0) {
+				resetTick = autoReset;
+			}
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
@@ -353,12 +460,14 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 		public void readFromNBT(NBTTagCompound tag) {
 			super.readFromNBT(tag);
 			triggered = tag.getBoolean("trigger");
+			autoReset = tag.getInteger("reset");
 		}
 
 		@Override
 		public void writeToNBT(NBTTagCompound tag) {
 			super.writeToNBT(tag);
 			tag.setBoolean("trigger", triggered);
+			tag.setInteger("reset", autoReset);
 		}
 
 	}
@@ -414,6 +523,8 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 		private boolean fixed = false;
 		private int rotateableDifficulty = 0;
 
+		public boolean renderAsFullBlock = false;
+
 		protected String level = "none";
 
 		public static final boolean PARTIAL_ROTATEABILITY = false;
@@ -421,6 +532,16 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 		@Override
 		public boolean canUpdate() {
 			return false;
+		}
+
+		public final void setDirection(CubeDirections dir) {
+			facing = dir;
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		}
+
+		public final void setColor(ColorData c) {
+			color = c;
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
 		@Override
@@ -435,6 +556,8 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 			rotateableDifficulty = tag.getInteger("mindiff");
 
 			level = tag.getString("level");
+
+			renderAsFullBlock = tag.getBoolean("fullblock");
 		}
 
 		@Override
@@ -448,6 +571,8 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 			tag.setInteger("mindiff", rotateableDifficulty);
 
 			tag.setString("level", level);
+
+			tag.setBoolean("fullblock", renderAsFullBlock);
 		}
 
 		@Override
@@ -483,14 +608,19 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 				if (ChromaOptions.getStructureDifficulty() < rotateableDifficulty)
 					return false;
 			}
-			return PARTIAL_ROTATEABILITY ? rotateable : !(this instanceof TargetTile) && this.getBlockMetadata() != LaserEffectType.EMITTER.ordinal() && !fixed;
+			return PARTIAL_ROTATEABILITY ? rotateable : !(this instanceof TargetTile) && (this.getBlockMetadata() != LaserEffectType.EMITTER.ordinal() || DragonAPICore.isReikasComputer()) && !fixed;
 		}
 
-		public void fire() {
+		public final void fire() {
 			if (!worldObj.isRemote) {
 				EntityLaserPulse ea = new EntityLaserPulse(worldObj, xCoord, yCoord, zCoord, facing, color, level);
+				this.affect(ea);
 				worldObj.spawnEntityInWorld(ea);
 			}
+		}
+
+		protected void affect(EntityLaserPulse ea) {
+
 		}
 
 	}
@@ -532,7 +662,7 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 		}
 
 		public int getRenderColor() {
-			return ReikaColorAPI.RGBtoHex(red ? 255 : 0, green ? 255 : 0, blue ? 255 : 0);
+			return this.isBlack() ? 0x101010 : ReikaColorAPI.RGBtoHex(red ? 255 : 0, green ? 255 : 0, blue ? 255 : 0);
 		}
 
 		public void readFromNBT(NBTTagCompound tag) {

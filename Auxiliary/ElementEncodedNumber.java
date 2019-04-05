@@ -3,6 +3,8 @@ package Reika.ChromatiCraft.Auxiliary;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import net.minecraft.util.MathHelper;
+
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
@@ -13,23 +15,29 @@ public final class ElementEncodedNumber {
 	private final int offset;
 	public final int originalValue;
 	private final CrystalElement[] encodedValue;
+	private final int minimumLength;
 
 	public ElementEncodedNumber(int value) {
-		this(value, 0);
+		this(value, 1);
 	}
 
-	public ElementEncodedNumber(int value, int bitOffset) {
+	public ElementEncodedNumber(int value, int len) {
+		this(value, 0, len);
+	}
+
+	public ElementEncodedNumber(int value, int bitOffset, int minLength) {
 		bitOffset = (bitOffset%16+16)%16;
 		originalValue = value;
 		offset = bitOffset;
-		encodedValue = encodeValue(Math.abs(value), bitOffset);
+		minimumLength = minLength;
+		encodedValue = encodeValue(Math.abs(value), bitOffset, minLength);
 	}
 
-	private static CrystalElement[] encodeValue(int value, int offset) {
+	private static CrystalElement[] encodeValue(int value, int offset, int len) {
 		byte[] vals = ReikaJavaLibrary.splitIntToHexChars(value);
 		ArrayList<Byte> v = ReikaJavaLibrary.makeIntListFromArray(vals);
 		Collections.reverse(v);
-		while (v.get(0) == 0 && v.size() >= 1) //strip leading values
+		while (v.get(0) == 0 && v.size() > len) //strip leading values
 			v.remove(0);
 		CrystalElement[] ret = new CrystalElement[v.size()];
 		for (int i = 0; i < v.size(); i++) {
@@ -55,23 +63,21 @@ public final class ElementEncodedNumber {
 		private final ElementEncodedNumber x;
 		private final ElementEncodedNumber z;
 
-		public EncodedPosition(int o, ElementEncodedNumber ex, ElementEncodedNumber ez) {
+		public EncodedPosition(int o, int xVal, int zVal) {
 			o = (o%16+16)%16;
 			offset = o;
-			x = ex;
-			z = ez;
+			x = new ElementEncodedNumber(MathHelper.floor_double(xVal), offset, 1);
+			z = new ElementEncodedNumber(MathHelper.floor_double(zVal), offset, 1);
 		}
 
 		public void writeData(ByteBuf buf) {
 			buf.writeInt(offset);
 			buf.writeInt(x.originalValue);
-			buf.writeInt(x.offset);
 			buf.writeInt(z.originalValue);
-			buf.writeInt(z.offset);
 		}
 
 		public static EncodedPosition readData(ByteBuf buf) {
-			return new EncodedPosition(buf.readInt(), new ElementEncodedNumber(buf.readInt(), buf.readInt()), new ElementEncodedNumber(buf.readInt(), buf.readInt()));
+			return new EncodedPosition(buf.readInt(), buf.readInt(), buf.readInt());
 		}
 
 		public int totalLength() {

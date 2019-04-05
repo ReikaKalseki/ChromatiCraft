@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -174,6 +174,7 @@ public class BlockEverFluid extends BlockContainer {
 		world.scheduleBlockUpdate(x, y, z, this, tickRate);
 		if (!(world.getTileEntity(x, y, z) instanceof TileEntityEverFluid))
 			world.setTileEntity(x, y, z, new TileEntityEverFluid());
+		world.playSoundEffect(x, y, z, "liquid.water", world.rand.nextFloat() * 0.25F + 0.75F, world.rand.nextFloat() * 1.0F + 0.5F);
 	}
 
 	@Override

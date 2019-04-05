@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -47,6 +47,8 @@ import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.NonEuclideanGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.PinballGenerator;
+import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
+import Reika.ChromatiCraft.World.Dimension.Structure.RayBlendGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.TessellationGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.ThreeDMazeGenerator;
@@ -220,9 +222,7 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 	protected abstract int getCenterXOffset();
 	protected abstract int getCenterZOffset();
 
-	protected void clearCaches() {
-
-	}
+	protected abstract void clearCaches();
 
 	public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 		if (te instanceof TileEntityDimensionCore) {
@@ -358,8 +358,11 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		BRIDGE(BridgeGenerator.class, "Dynamic Bridges"),
 		WATER(WaterPuzzleGenerator.class, "Channeled Flow"),
 		TESSELLATION(TessellationGenerator.class, "Spatial Satisfaction"),
-		LIGHTPANEL(LightPanelGenerator.class, "Glowing Logic");
-		//TRACES();//http://www.cross-plus-a.com/data/arukone.gif
+		LIGHTPANEL(LightPanelGenerator.class, "Glowing Logic"),
+		PISTONTAPE(PistonTapeGenerator.class, "?"),
+		RAYBLEND(RayBlendGenerator.class, "?"),
+		//TRACES(),//http://www.cross-plus-a.com/data/arukone.gif
+		;
 
 		private final Class generatorClass;
 		//private DimensionStructureGenerator generator;

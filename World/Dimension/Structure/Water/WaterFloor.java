@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Block.BlockChromaDoor.TileEntityChromaDoor;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Water.BlockRotatingLock.TileEntityRotatingLock;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.World.Dimension.Structure.WaterPuzzleGenerator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
@@ -318,6 +319,8 @@ public class WaterFloor extends StructurePiece {
 		this.getLock(i, k).hasFluid = fluid;
 		boolean flag2 = this.hasBeenSolved();
 		if (flag != flag2) {
+			if (flag2)
+				ChromaSounds.CASTHARMONIC.playSoundNoAttenuation(world, origin.xCoord, origin.yCoord, origin.zCoord, 0.4F, 2F, 512);
 			this.setDoorStates(world, flag2);
 		}
 	}

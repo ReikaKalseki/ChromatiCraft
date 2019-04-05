@@ -13,10 +13,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -43,11 +45,13 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalBattery;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.WirelessSource;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.DragonAPIInit;
@@ -57,11 +61,16 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalBattery, OwnedTile, WirelessSource, MultiBlockChromaTile {
 
@@ -255,6 +264,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 				//this.spawnBeamParticles(world, x, y, z);
 				ChromaFX.drawLeyLineParticles(world, x, y, z, this.getOutgoingBeamRadius(), targets);
 			}
+			this.doParticles(world, x, y, z);
 		}
 
 		//ChromaStructures.getTreeStructure(world, x, y, z).place();
@@ -283,6 +293,9 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 						}
 					}
 				}
+
+				if (this.getTicksExisted()%40 == 0)
+					this.checkHasSendFocus();
 			}
 
 			for (EntityPlayer ep : this.getOwners(false)) {
@@ -304,6 +317,24 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		}
 
 		this.tickTargets();
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void doParticles(World world, int x, int y, int z) {
+		if (canSendEnergy) {
+			double dx = x+rand.nextDouble()*2;
+			double dy = y+0.9375+rand.nextDouble()*0.125;
+			double dz = z+rand.nextDouble()*2-1;
+			EntityBlurFX fx = new EntityBlurFX(world, dx, dy, dz);
+			int c = CrystalElement.getBlendedColor(this.getTicksExisted(), 40);
+			float g = -(float)ReikaRandomHelper.getRandomBetween(0.03125, 0.0625);
+			float s = (float)ReikaRandomHelper.getRandomBetween(1.5, 3);
+			fx.setColor(c).setIcon(ChromaIcons.FLARE).setGravity(g).setScale(s);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			EntityBlurFX fx2 = new EntityBlurFX(world, dx, dy, dz);
+			fx2.setColor(ReikaColorAPI.getColorWithBrightnessMultiplier(c, 0.7F)).setIcon(ChromaIcons.FADE_GENTLE).setGravity(g).setScale(s).lockTo(fx);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
+		}
 	}
 
 	private void tickTargets() {
@@ -393,10 +424,14 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 			hadEnhancedProgress = ProgressStage.CTM.isPlayerAtStage(ep);
 		}
 		enhanced = hasMultiblock && hadEnhancedProgress && ChromaStructures.getBoostedTreeStructure(worldObj, xCoord, yCoord, zCoord, false).matchInWorld();
-		canSendEnergy = hasMultiblock && ChromaStructures.getTreeSendFocus(worldObj, xCoord, yCoord, zCoord).matchInWorld();
+		this.checkHasSendFocus();
 		for (int i = 0; i < 16; i++)
 			this.clamp(CrystalElement.elements[i]);
 		this.syncAllData(true);
+	}
+
+	private void checkHasSendFocus() {
+		canSendEnergy = hasMultiblock && ChromaStructures.getTreeSendFocus(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 	}
 
 	public boolean hasMultiBlock() {
@@ -484,15 +519,14 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 			}
 		}
 		this.syncAllData(true);
-		boolean flag = true;
+		HashSet<CrystalElement> set = new HashSet();
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e2 = CrystalElement.elements[i];
-			if (growth.get(e2) <= locations.get(e2).size()/2) {
-				flag = false;
-				break;
+			if (growth.get(e2) > locations.get(e2).size()/2) {
+				set.add(e2);
 			}
 		}
-		if (flag) {
+		if (set.size() >= 12 && set.contains(CrystalElement.BLACK) && set.contains(CrystalElement.YELLOW) && set.contains(CrystalElement.PURPLE) && set.contains(CrystalElement.LIGHTBLUE)) {
 			ProgressStage.POWERTREE.stepPlayerTo(this.getPlacer());
 		}
 	}
@@ -624,6 +658,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		hasMultiblock = NBT.getBoolean("multi");
 
 		enhanced = NBT.getBoolean("boosted");
+		canSendEnergy = NBT.getBoolean("send");
 	}
 
 	@Override
@@ -633,6 +668,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		NBT.setBoolean("multi", hasMultiblock);
 
 		NBT.setBoolean("boosted", enhanced);
+		NBT.setBoolean("send", canSendEnergy);
 	}
 
 	@Override

@@ -14,7 +14,6 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ElementEncodedNumber;
 import Reika.ChromatiCraft.Auxiliary.ElementEncodedNumber.EncodedPosition;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
@@ -91,9 +90,7 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 
 		if (totalDistance > FUZZ) {
 			int offset = new Random(System.identityHashCode(worldObj)+worldObj.getTotalWorldTime()/24000).nextInt(16);
-			ElementEncodedNumber ex = new ElementEncodedNumber(MathHelper.floor_double(finalX), offset);
-			ElementEncodedNumber ez = new ElementEncodedNumber(MathHelper.floor_double(finalZ), offset);
-			colorData = new EncodedPosition(offset, ex, ez);
+			colorData = new EncodedPosition(offset, MathHelper.floor_double(finalX), MathHelper.floor_double(finalZ));
 		}
 
 		deviateTime = ReikaRandomHelper.doWithChance(DEVIATION_CHANCE) ? 10+rand.nextInt(80+ADDITIONAL_LIFE-40-10) : -1;

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,7 +15,9 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.LaserEffectTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.LaserEffectType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -38,9 +40,15 @@ public class LaserEffectorRenderer implements ISBRH {
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks rb) {
 		int meta = world.getBlockMetadata(x, y, z);
 		LaserEffectType type = LaserEffectType.list[meta];
+		LaserEffectTile te = (LaserEffectTile)world.getTileEntity(x, y, z);
 		Tessellator v5 = Tessellator.instance;
 		v5.setColorOpaque_I(0xffffff);
 		v5.setBrightness(block.getMixedBrightnessForBlock(world, x, y, z));
+		if (te.renderAsFullBlock) {
+			rb.renderMaxY = 1;
+			this.renderFullBlock(world, x, y, z, block, meta, type, te, rb, v5);
+			return true;
+		}
 		double slab = 0.33;
 		double h = slab+(type == LaserEffectType.TARGET || type == LaserEffectType.TARGET_THRU ? 0.55 : 0.33);
 		double w = 0.0625;
@@ -122,7 +130,7 @@ public class LaserEffectorRenderer implements ISBRH {
 				}
 			}
 
-			this.renderCentralItem(world, x, y, z, meta, v5, slab, h, out);
+			this.renderCentralItem(world, x, y, z, meta, te, v5, slab, h, out);
 
 			v5.addTranslation(-0.5F, 0, -0.5F);
 
@@ -148,8 +156,100 @@ public class LaserEffectorRenderer implements ISBRH {
 		return true;
 	}
 
-	private void renderCentralItem(IBlockAccess world, int x, int y, int z, int meta, Tessellator v5, double slab, double h, double out) {
-		LaserEffectTile te = (LaserEffectTile)world.getTileEntity(x, y, z);
+	private void renderFullBlock(IBlockAccess world, int x, int y, int z, Block block, int meta, LaserEffectType type, LaserEffectTile te, RenderBlocks rb, Tessellator v5) {
+		ForgeDirection face = te.getFacing().isCardinal() ? te.getFacing().getCardinal() : null;
+		if (type == LaserEffectType.TARGET)
+			face = face.getOpposite();
+		for (int i = 0; i < 6; i++) {
+			boolean side = face != null && face.ordinal() == i;
+			boolean color = renderPass == 1 && side;
+			IIcon ico = side ? (renderPass == 1 ? type.frontOverlay : type.frontTexture) : BlockLaserEffector.baseTexture;
+			float f = 1F;
+			int c = te.getRenderColor();
+			switch(i) {
+				case 0:
+					f = 0.4F;
+					if (color) {
+						int r = (int)(f*ReikaColorAPI.getRed(c));
+						int g = (int)(f*ReikaColorAPI.getGreen(c));
+						int b = (int)(f*ReikaColorAPI.getBlue(c));
+						v5.setColorOpaque(r, g, b);
+					}
+					else {
+						v5.setColorOpaque_F(f, f, f);
+					}
+					rb.renderFaceYNeg(block, x, y, z, ico);
+					break;
+				case 1:
+					f = 1;
+					if (color) {
+						int r = (int)(f*ReikaColorAPI.getRed(c));
+						int g = (int)(f*ReikaColorAPI.getGreen(c));
+						int b = (int)(f*ReikaColorAPI.getBlue(c));
+						v5.setColorOpaque(r, g, b);
+					}
+					else {
+						v5.setColorOpaque_F(f, f, f);
+					}
+					rb.renderFaceYPos(block, x, y, z, ico);
+					break;
+				case 2:
+					f = 0.7F;
+					if (color) {
+						int r = (int)(f*ReikaColorAPI.getRed(c));
+						int g = (int)(f*ReikaColorAPI.getGreen(c));
+						int b = (int)(f*ReikaColorAPI.getBlue(c));
+						v5.setColorOpaque(r, g, b);
+					}
+					else {
+						v5.setColorOpaque_F(f, f, f);
+					}
+					rb.renderFaceZNeg(block, x, y, z, ico);
+					break;
+				case 3:
+					f = 0.7F;
+					if (color) {
+						int r = (int)(f*ReikaColorAPI.getRed(c));
+						int g = (int)(f*ReikaColorAPI.getGreen(c));
+						int b = (int)(f*ReikaColorAPI.getBlue(c));
+						v5.setColorOpaque(r, g, b);
+					}
+					else {
+						v5.setColorOpaque_F(f, f, f);
+					}
+					rb.renderFaceZPos(block, x, y, z, ico);
+					break;
+				case 4:
+					f = 0.55F;
+					if (color) {
+						int r = (int)(f*ReikaColorAPI.getRed(c));
+						int g = (int)(f*ReikaColorAPI.getGreen(c));
+						int b = (int)(f*ReikaColorAPI.getBlue(c));
+						v5.setColorOpaque(r, g, b);
+					}
+					else {
+						v5.setColorOpaque_F(f, f, f);
+					}
+					rb.renderFaceXNeg(block, x, y, z, ico);
+					break;
+				case 5:
+					f = 0.55F;
+					if (color) {
+						int r = (int)(f*ReikaColorAPI.getRed(c));
+						int g = (int)(f*ReikaColorAPI.getGreen(c));
+						int b = (int)(f*ReikaColorAPI.getBlue(c));
+						v5.setColorOpaque(r, g, b);
+					}
+					else {
+						v5.setColorOpaque_F(f, f, f);
+					}
+					rb.renderFaceXPos(block, x, y, z, ico);
+					break;
+			}
+		}
+	}
+
+	private void renderCentralItem(IBlockAccess world, int x, int y, int z, int meta, LaserEffectTile te, Tessellator v5, double slab, double h, double out) {
 		//v5.setBrightness(240);
 		int a = 255;
 		out += 0.03125;

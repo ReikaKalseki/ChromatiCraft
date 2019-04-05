@@ -272,7 +272,7 @@ public class GuiBasicInfo extends GuiBookSection {
 					ReikaTextureHelper.bindTerrainTexture();
 
 					int pass = data.getPassword(player);
-					ElementEncodedNumber vals = new ElementEncodedNumber(pass);
+					ElementEncodedNumber vals = new ElementEncodedNumber(pass, 8);
 					for (int i = 0; i < vals.getLength(); i++) {
 						CrystalElement e = vals.getSlot(i);
 						IIcon ico = e.getGlowRune();

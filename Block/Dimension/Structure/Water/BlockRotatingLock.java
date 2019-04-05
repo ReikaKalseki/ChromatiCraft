@@ -152,6 +152,7 @@ public class BlockRotatingLock extends Block {
 						fluid = te.uid == uid && te.getLevel() == level;
 					}
 					 */
+					ChromaSounds.CAST.playSoundAtBlockNoAttenuation(this, 0.4F, 2F, 512);
 					//ReikaJavaLibrary.pConsole(level+">"+fluid);
 					f.updateFluid(worldObj, lockX, lockY, fluid);
 				}

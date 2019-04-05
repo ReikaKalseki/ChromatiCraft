@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,6 +15,7 @@ import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockLog;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
@@ -46,6 +47,9 @@ public class DimensionJoinHandler implements PlayerTracker {
 	public void onPlayerLogin(EntityPlayer ep) {
 		this.clearAreaForPlayer(ep);
 		SkyRiverManager.startSendingRiverPackets(ep);
+		if (ep instanceof EntityPlayerMP) {
+			StructureCalculator.sendSeed(ep);
+		}
 	}
 
 	@Override

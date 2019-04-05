@@ -181,7 +181,7 @@ public class FullScreenOverlayRenderer {
 	}
 
 	void addStructurePasswordNote(EntityPlayer ep, int hex) {
-		renderingGroups.add(new StructurePasswordRender(new ElementEncodedNumber(hex)));
+		renderingGroups.add(new StructurePasswordRender(new ElementEncodedNumber(hex, 8)));
 	}
 
 	boolean renderLoreHexes(RenderGameOverlayEvent.Pre evt, int tick) {

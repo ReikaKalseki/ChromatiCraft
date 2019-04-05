@@ -145,6 +145,7 @@ import Reika.ChromatiCraft.World.Dimension.BiomeDistributor;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.OuterRegionsEvents;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverManagerClient;
+import Reika.ChromatiCraft.World.Dimension.StructureCalculator;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -1018,6 +1019,10 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case RFWEBSEND:
 					RFWeb.doSendParticle(world, x, y, z, data[0], data[1], data[2], data[3]);
+					break;
+				case STRUCTSEED:
+					long s = ReikaJavaLibrary.buildLong(data[0], data[1]);
+					StructureCalculator.assignSeed(s);
 					break;
 			}
 		}

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -39,10 +39,12 @@ public class RenderLaserTarget extends ChromaRenderBase {
 
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
+		TargetTile te = (TargetTile)tile;
+		if (te.renderAsFullBlock)
+			return;
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		GL11.glPushMatrix();
 
-		TargetTile te = (TargetTile)tile;
 		GL11.glTranslated(par2, par4, par6);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -79,6 +81,8 @@ public class RenderLaserTarget extends ChromaRenderBase {
 
 		if (te.isTriggered()) {
 			GL11.glTranslated(0.5, 0.5+dy, 0.5);
+			//if (te.renderAsFullBlock)
+			//	s *= 3;
 			GL11.glScaled(s, s, s);
 			RenderManager rm = RenderManager.instance;
 			GL11.glRotatef(180-rm.playerViewY, 0.0F, 1.0F, 0.0F);

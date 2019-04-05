@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
+import java.util.HashSet;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -18,12 +20,13 @@ import net.minecraft.init.Blocks;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
 public class BlockPath extends Block {
 
@@ -86,72 +89,67 @@ public class BlockPath extends Block {
 
 	@Override
 	public void onEntityWalking(World world, int x, int y, int z, Entity e) {
+		slipperiness = 0.95F;
 		if (e instanceof EntityLivingBase) {
 			EntityLivingBase el = (EntityLivingBase)e;
-			float max = 2.5F;
+			float max = 0.6F;
 			int meta = world.getBlockMetadata(x, y, z);
 			if (meta != PathType.EMERALD.ordinal())
-				max = 1.75F;
+				max = 0.8F;
 			if (meta == PathType.BASIC.ordinal())
-				max = 1.25F;
+				max = 0.3F;
 
-			el.motionX = MathHelper.clamp_double(el.motionX*Math.abs(Math.sin(Math.toRadians(el.rotationYawHead))), -max, max);
-			el.motionZ = MathHelper.clamp_double(el.motionZ*Math.abs(Math.cos(Math.toRadians(el.rotationYawHead))), -max, max);
-			for (double d = 0.5; d <= 2; d += 0.5) {
-				int nx = MathHelper.floor_double(e.posX+d*Math.signum(e.motionX));
-				int nz = MathHelper.floor_double(e.posZ+d*Math.signum(e.motionZ));
-				double fac = d > 2 ? 0.8 : d > 1 ? 0.4 : 0;
-				fac = 0;
-				boolean flag = false;
-				if (world.getBlock(nx, y, z) != this) {
-					el.motionX *= fac;
-					flag = true;
-					ReikaJavaLibrary.pConsole(world.getBlock(nx, y, z));
-				}
-				if (world.getBlock(x, y, nz) != this) {
-					el.motionZ *= fac;
-					ReikaJavaLibrary.pConsole(world.getBlock(x, y, nz));
-					flag = true;
-				}
-				if (flag)
-					break;
-			}
-			el.moveForward = 0;
-			el.moveStrafing = 0;
-			//el.velocityChanged = true;
+			HashSet<ForgeDirection> set = this.getPathDirectionsAt(world, x, y, z, meta);
+			//ReikaJavaLibrary.pConsole(set);
 
-			//el.moveForward = Math.min(el.moveForward+0.1F, max);
-			//el.moveStrafing *= 0.6;
-			/*
-			float avg = 0;
-			int c = 0;
-			float move = ((e.rotationYaw-90)+360F)%360F;
-
-			int r = 3;
-			for (int i = -r; i <= r; i++) {
-				for (int k = -r; k <= r; k++) {
-					int dx = x+i;
-					int dz = z+k;
-					if (world.getBlock(dx, y, dz) == this && world.getBlockMetadata(dx, y, dz) == meta) {
-						float ang = (float)(Math.toDegrees(Math.atan2(k, i))+360F)%360F;
-						float da = (move-ang+180F+360F)%360F-180F;
-						if (da <= 90 && da >= -90) { //not behind the player
-							avg += ang;
-							c++;
-						}
-					}
-				}
-			}
-			if (c > 0) {
-				avg /= c;
-				ReikaJavaLibrary.pConsole(e.rotationYaw+" > "+avg, Side.SERVER);
-				e.rotationYaw = avg;
-			}*/
+			double curV = ReikaMathLibrary.py3d(el.motionX, 0, el.motionZ);
+			double v = Math.min(curV+0.125, max)*2;
+			double[] xz = ReikaPhysicsHelper.polarToCartesian(1, 0, el.rotationYawHead+90);
+			if (xz[0] < 0 && !set.contains(ForgeDirection.WEST))
+				xz[0] = 0;
+			if (xz[0] > 0 && !set.contains(ForgeDirection.EAST))
+				xz[0] = 0;
+			if (xz[1] < 0 && !set.contains(ForgeDirection.NORTH))
+				xz[1] = 0;
+			if (xz[1] > 0 && !set.contains(ForgeDirection.SOUTH))
+				xz[1] = 0;
+			el.motionX = xz[0]*v;
+			el.motionZ = xz[2]*v;
+			el.velocityChanged = true;
 
 			el.addPotionEffect(new PotionEffect(Potion.jump.id, 1, 2));
 			if (meta == PathType.FIRE.ordinal())
 				el.extinguish();
 		}
+	}
+
+	private HashSet<ForgeDirection> getPathDirectionsAt(World world, int x, int y, int z, int meta) {
+		HashSet<ForgeDirection> set = new HashSet();
+		for (int d = 0; d < 12; d++) {
+			for (int i = 2; i < 6; i++) {
+				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+				int dx = x+d*dir.offsetX;
+				int dz = z+d*dir.offsetZ;
+				if (world.getBlock(dx, y, dz) == this && world.getBlockMetadata(dx, y, dz) == meta) {
+					set.add(dir);
+				}
+			}
+			if (set.size() == 4) {
+				if (world.getBlock(x-d, y, z-d) == this && world.getBlockMetadata(x-d, y, z-d) == meta) {
+					if (world.getBlock(x+d, y, z-d) == this && world.getBlockMetadata(x+d, y, z-d) == meta) {
+						if (world.getBlock(x-d, y, z+d) == this && world.getBlockMetadata(x-d, y, z+d) == meta) {
+							if (world.getBlock(x+d, y, z+d) == this && world.getBlockMetadata(x+d, y, z+d) == meta) {
+								set.clear();
+							}
+						}
+					}
+				}
+			}
+			if (!set.isEmpty()) {
+				break;
+			}
+		}
+		return set;
 	}
 
 }

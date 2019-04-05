@@ -310,6 +310,17 @@ public class BlockStructureDataStorage extends BlockDimensionStructureTile {
 		}
 
 		@Override
+		public boolean canUpdate() {
+			return true;
+		}
+
+		@Override
+		public void updateEntity() {
+			if (data != null)
+				data.onTileTick(this);
+		}
+
+		@Override
 		protected void onRightClick(EntityPlayer ep, int s) {
 			if (data != null)
 				data.onInteract(worldObj, xCoord, yCoord, zCoord, ep, s, extraData);

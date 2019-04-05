@@ -189,6 +189,7 @@ public enum ChromaPackets {
 	ENDEREYESYNC(2),
 	NODERECEIVERSYNC(),
 	RFWEBSEND(4),
+	STRUCTSEED(2),
 	;
 
 	public final int numInts;

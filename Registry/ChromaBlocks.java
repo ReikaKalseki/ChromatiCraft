@@ -102,6 +102,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockLockKey;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Music.BlockMusicMemory;
 import Reika.ChromatiCraft.Block.Dimension.Structure.NonEuclid.BlockTeleport;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Pinball.BlockPinballTile;
+import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonTapeBit;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftKey;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock.Passability;
@@ -265,7 +266,8 @@ public enum ChromaBlocks implements BlockEnum {
 	//SPAWNERCONTROL(BlockSpawnerShutdown.class,	ItemBlockSidePlaced.class,		"chroma.spawnershutdown"),
 	TRAPFLOOR(BlockTrapFloor.class,												"chroma.trapfloor"),
 	BEDROCKCRACK(BlockBedrockCrack.class,										"chroma.bedrockcrack"),
-	RFPOD(BlockRFNode.class,					ItemBlockSidePlaced.class,		"chroma.rfpod");
+	RFPOD(BlockRFNode.class,					ItemBlockSidePlaced.class,		"chroma.rfpod"),
+	PISTONBIT(BlockPistonTapeBit.class,			ItemBlockMultiType.class,		"chroma.pistonbit"),
 	;
 
 	private Class blockClass;
@@ -562,6 +564,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case TRAPFLOOR:
 			case BEDROCKCRACK:
 			case RFPOD:
+			case PISTONBIT:
 				return false;
 			default:
 				return true;

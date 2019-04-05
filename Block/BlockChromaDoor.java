@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -80,6 +80,13 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 	@Override
 	public TileEntity createNewTileEntity(World world, int meta) {
 		return new TileEntityChromaDoor();
+	}
+
+	public static void setOpen(World world, int x, int y, int z, boolean open) {
+		if (open)
+			world.setBlockMetadataWithNotify(x, y, z, world.getBlockMetadata(x, y, z) | 1, 3);
+		else
+			world.setBlockMetadataWithNotify(x, y, z, world.getBlockMetadata(x, y, z) & ~1, 3);
 	}
 
 	public static boolean isOpen(IBlockAccess iba, int x, int y, int z) {

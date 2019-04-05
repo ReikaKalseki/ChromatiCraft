@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -16,18 +16,26 @@ import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.Random;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructureTypeData;
 import Reika.ChromatiCraft.Base.ThreadedGenerator;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.IO.ReikaFileReader;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
 
 public class StructureCalculator extends ThreadedGenerator {
 
@@ -45,6 +53,8 @@ public class StructureCalculator extends ThreadedGenerator {
 
 	public static final int BASE_RADIUS = 5000;
 	public static final int RADIUS_VARIATION = 3000; //was +/- 4000, then 2000
+
+	private static long clientDimensionSeed;
 
 	public StructureCalculator(long seed) {
 		this(seed, 10);
@@ -74,7 +84,19 @@ public class StructureCalculator extends ThreadedGenerator {
 		return positionsDetermined;
 	}
 
-	private long generateOrGetGenSeed() {
+	public static void assignSeed(long s) {
+		clientDimensionSeed = s;
+	}
+
+	public static void sendSeed(EntityPlayer ep) {
+		int[] spl = ReikaJavaLibrary.splitLong(generateOrGetGenSeed());
+		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.STRUCTSEED.ordinal(), (EntityPlayerMP)ep, spl[0], spl[1]);
+	}
+
+	private static long generateOrGetGenSeed() {
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+			return clientDimensionSeed;
+		}
 		File f = new File(DragonAPICore.getMinecraftDirectoryString()+"/ChromatiCraft_Data/DimensionGen.dat");
 		try {
 			if (f.exists()) {
