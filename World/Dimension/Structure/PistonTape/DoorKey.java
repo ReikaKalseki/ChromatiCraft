@@ -13,9 +13,9 @@ public class DoorKey {
 
 	private final boolean[] bits;
 
-	final ColorData color1;
-	final ColorData color2;
-	final ColorData color3;
+	private final ColorData color1;
+	private final ColorData color2;
+	private final ColorData color3;
 
 	public final int ID;
 
@@ -42,6 +42,18 @@ public class DoorKey {
 		for (Coordinate c : door) {
 			BlockChromaDoor.setOpen(world, c.xCoord, c.yCoord, c.zCoord, open);
 		}
+	}
+
+	public ColorData getColor1() {
+		return color1;
+	}
+
+	public ColorData getColor2() {
+		return color2;
+	}
+
+	public ColorData getColor3() {
+		return color3;
 	}
 
 }

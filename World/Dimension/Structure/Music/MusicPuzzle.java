@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -20,11 +20,11 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
-import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Music.BlockMusicMemory.TileMusicMemory;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator.MelodyPrefab;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
@@ -32,7 +32,7 @@ import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCal
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.KeySignature;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 
-public class MusicPuzzle extends StructurePiece implements TileCallback {
+public class MusicPuzzle extends StructurePiece<MusicPuzzleGenerator> implements TileCallback {
 
 	private final LinkedList<MusicKey> melody = new LinkedList();
 
@@ -52,7 +52,7 @@ public class MusicPuzzle extends StructurePiece implements TileCallback {
 
 	public Coordinate controllerLocation;
 
-	public MusicPuzzle(DimensionStructureGenerator s, int len, int idx) {
+	public MusicPuzzle(MusicPuzzleGenerator s, int len, int idx) {
 		super(s);
 		length = len;
 		index = idx;

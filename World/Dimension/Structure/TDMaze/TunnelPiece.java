@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -14,13 +14,13 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.Dimension.Structure.ThreeDMazeGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 
-public class TunnelPiece extends StructurePiece {
+public class TunnelPiece extends StructurePiece<ThreeDMazeGenerator> {
 
 	private boolean[] connections = new boolean[6];
 	private boolean lights = false;
@@ -29,7 +29,7 @@ public class TunnelPiece extends StructurePiece {
 
 	public final int size;
 
-	public TunnelPiece(DimensionStructureGenerator g, int size) {
+	public TunnelPiece(ThreeDMazeGenerator g, int size) {
 		super(g);
 		this.size = size;
 	}
@@ -59,7 +59,7 @@ public class TunnelPiece extends StructurePiece {
 		return this;
 	}
 	 */
-	public static TunnelPiece omni(DimensionStructureGenerator g, int size) {
+	public static TunnelPiece omni(ThreeDMazeGenerator g, int size) {
 		TunnelPiece tp = new TunnelPiece(g, size);
 		for (int i = 0; i < 6; i++)
 			tp.connect(ForgeDirection.VALID_DIRECTIONS[i]);

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -13,14 +13,14 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.DynamicStructurePiece;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;
 
-public class ShiftMazeEntrance extends DynamicStructurePiece {
+public class ShiftMazeEntrance extends DynamicStructurePiece<ShiftMazeGenerator> {
 
-	public ShiftMazeEntrance(DimensionStructureGenerator s) {
+	public ShiftMazeEntrance(ShiftMazeGenerator s) {
 		super(s);
 	}
 
@@ -62,10 +62,11 @@ public class ShiftMazeEntrance extends DynamicStructurePiece {
 		}
 	}
 
-	private int generateEntrance(World world, int x, int y, int z, int top) { // generate
-																				// in
-																				// +X
-																				// direction
+	private int generateEntrance(World world, int x, int y, int z, int top) {
+		// generate
+		// in
+		// +X
+		// direction
 		int d = 0;
 		int dy = top - y + 1;
 		int h = y;

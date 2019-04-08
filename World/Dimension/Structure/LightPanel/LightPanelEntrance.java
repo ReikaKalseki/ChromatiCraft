@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -18,7 +18,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.LightPanelGenerator;
 
 
-public class LightPanelEntrance extends DynamicStructurePiece {
+public class LightPanelEntrance extends DynamicStructurePiece<LightPanelGenerator> {
 
 	//private int verticalDisplacement = 0;
 

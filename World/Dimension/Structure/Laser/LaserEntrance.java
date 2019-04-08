@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -19,7 +19,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.LaserPuzzleGenerator;
 
 
-public class LaserEntrance extends DynamicStructurePiece {
+public class LaserEntrance extends DynamicStructurePiece<LaserPuzzleGenerator> {
 
 	public LaserEntrance(LaserPuzzleGenerator s) {
 		super(s);

@@ -146,6 +146,7 @@ import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.OuterRegionsEvents;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverManagerClient;
 import Reika.ChromatiCraft.World.Dimension.StructureCalculator;
+import Reika.ChromatiCraft.World.Dimension.Structure.RayBlend.RayBlendPuzzle;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -1023,6 +1024,9 @@ public class ChromatiPackets implements PacketHandler {
 				case STRUCTSEED:
 					long s = ReikaJavaLibrary.buildLong(data[0], data[1]);
 					StructureCalculator.assignSeed(s);
+					break;
+				case RAYBLENDPING:
+					RayBlendPuzzle.spawnPingParticle(world, CrystalElement.elements[data[0]], x, y, z);
 					break;
 			}
 		}

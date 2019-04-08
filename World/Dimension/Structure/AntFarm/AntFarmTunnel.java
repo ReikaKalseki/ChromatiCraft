@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -28,7 +28,7 @@ import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 
-public class AntFarmTunnel extends StructurePiece {
+public class AntFarmTunnel extends StructurePiece<AntFarmGenerator> {
 
 	public final Coordinate point1;
 	public final Coordinate point2;

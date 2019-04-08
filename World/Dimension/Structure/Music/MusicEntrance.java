@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -14,18 +14,18 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.DynamicStructurePiece;
 import Reika.ChromatiCraft.Block.BlockHoverBlock.HoverType;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator;
 
 
-public class MusicEntrance extends DynamicStructurePiece {
+public class MusicEntrance extends DynamicStructurePiece<MusicPuzzleGenerator> {
 
 	private final MusicFunnel funnel = new MusicFunnel();
 
-	public MusicEntrance(DimensionStructureGenerator s) {
+	public MusicEntrance(MusicPuzzleGenerator s) {
 		super(s);
 	}
 

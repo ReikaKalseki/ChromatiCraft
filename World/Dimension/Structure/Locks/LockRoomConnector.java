@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -21,11 +21,12 @@ import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.BlockHoverBlock.HoverType;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
-public class LockRoomConnector extends StructurePiece {
+public class LockRoomConnector extends StructurePiece<LocksGenerator> {
 
 	private final int[] length;
 	private boolean window;
@@ -33,12 +34,12 @@ public class LockRoomConnector extends StructurePiece {
 	private boolean openCeiling;
 	private boolean forceLoot;
 
-	public LockRoomConnector(DimensionStructureGenerator s, int[] len) {
+	public LockRoomConnector(LocksGenerator s, int[] len) {
 		super(s);
 		length = len;
 	}
 
-	public LockRoomConnector(DimensionStructureGenerator s, int lenn, int lens, int lenw, int lene) {
+	public LockRoomConnector(LocksGenerator s, int lenn, int lens, int lenw, int lene) {
 		this(s, new int[]{lenn, lens, lenw, lene});
 	}
 

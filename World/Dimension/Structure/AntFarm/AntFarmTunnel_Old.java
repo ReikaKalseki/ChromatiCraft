@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -28,7 +28,7 @@ import Reika.DragonAPI.Libraries.ReikaDirectionHelper.CubeDirections;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 
-public class AntFarmTunnel_Old extends StructurePiece {
+public class AntFarmTunnel_Old extends StructurePiece<AntFarmGenerator> {
 
 	public final CubeDirections direction;
 	public final int slope;

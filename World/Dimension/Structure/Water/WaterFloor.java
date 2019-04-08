@@ -34,7 +34,7 @@ import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCal
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 
-public class WaterFloor extends StructurePiece {
+public class WaterFloor extends StructurePiece<WaterPuzzleGenerator> {
 
 	public static final int HEIGHT = 7;
 
@@ -87,7 +87,7 @@ public class WaterFloor extends StructurePiece {
 	@Override
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
 		origin = new Coordinate(x, y, z);
-		boolean bottom = level == ((WaterPuzzleGenerator)parent).levelCount()-1;
+		boolean bottom = level == parent.levelCount()-1;
 		int r0 = (gridSize-1)/2;
 		for (int i = 0; i < flowGrid.length; i++) {
 			for (int k = 0; k < flowGrid[i].length; k++) {
@@ -136,7 +136,7 @@ public class WaterFloor extends StructurePiece {
 			}
 		}
 		if (level > 0) {
-			WaterFloor f = ((WaterPuzzleGenerator)parent).getLevel(level-1);
+			WaterFloor f = parent.getLevel(level-1);
 			int r2 = f.getWidth();
 			for (int h = HEIGHT+1; h <= HEIGHT+4; h++) {
 				for (int i = r2-3; i <= r; i++) {

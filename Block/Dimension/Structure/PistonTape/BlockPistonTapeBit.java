@@ -52,11 +52,11 @@ public class BlockPistonTapeBit extends BlockDimensionStructure {
 	public int getLightOpacity(IBlockAccess iba, int x, int y, int z) {
 		return iba.getBlockMetadata(x, y, z)%2 == 1 ? 127 : 0;
 	}
-	/*
+
 	@Override
 	public int getMobilityFlag() {
 		return 0;
-	}*/
+	}
 
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {

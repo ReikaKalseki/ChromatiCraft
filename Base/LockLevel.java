@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -32,7 +32,7 @@ import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCal
 import Reika.DragonAPI.Instantiable.Worldgen.OriginBlockCache;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
-public abstract class LockLevel extends StructurePiece implements Comparable<LockLevel> {
+public abstract class LockLevel extends StructurePiece<LocksGenerator> implements Comparable<LockLevel> {
 
 	public final LockChannel level;
 	private boolean[] mirror;
@@ -89,11 +89,11 @@ public abstract class LockLevel extends StructurePiece implements Comparable<Loc
 		for (int i = 0; i < colors.length; i++) {
 			elements[i] = shuffleMap.get(colors[i]);
 		}
-		currentGenerator.setTileEntity(x, y, z, ChromaBlocks.COLORLOCK.getBlockInstance(), 0, new LockColorSet((LocksGenerator)parent, level.ordinal(), parent.id, elements));
+		currentGenerator.setTileEntity(x, y, z, ChromaBlocks.COLORLOCK.getBlockInstance(), 0, new LockColorSet(parent, level.ordinal(), parent.id, elements));
 	}
 
 	protected final void generateGate(int x, int y, int z) {
-		currentGenerator.setTileEntity(x, y, z, ChromaBlocks.COLORLOCK.getBlockInstance(), 1, new LockColorSet((LocksGenerator)parent, level.ordinal(), parent.id));
+		currentGenerator.setTileEntity(x, y, z, ChromaBlocks.COLORLOCK.getBlockInstance(), 1, new LockColorSet(parent, level.ordinal(), parent.id));
 	}
 
 	public final LockLevel mirrorX() {

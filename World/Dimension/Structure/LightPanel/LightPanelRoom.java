@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -42,7 +42,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.Note;
 
 
-public class LightPanelRoom extends StructurePiece {
+public class LightPanelRoom extends StructurePiece<LightPanelGenerator> {
 
 	public static final int DEPTH = 18;
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,11 +12,11 @@ package Reika.ChromatiCraft.Base;
 import net.minecraft.world.World;
 
 
-public abstract class StructureElement {
+public abstract class StructureElement<V extends DimensionStructureGenerator> {
 
-	protected final DimensionStructureGenerator parent;
+	protected final V parent;
 
-	protected StructureElement(DimensionStructureGenerator s) {
+	protected StructureElement(V s) {
 		parent = s;
 	}
 
@@ -24,9 +24,9 @@ public abstract class StructureElement {
 		parent.placeCore(x, y, z);
 	}
 
-	public static abstract class BasicStructurePiece extends StructureElement {
+	public static abstract class BasicStructurePiece<V extends DimensionStructureGenerator> extends StructureElement<V> {
 
-		protected BasicStructurePiece(DimensionStructureGenerator s) {
+		protected BasicStructurePiece(V s) {
 			super(s);
 		}
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -19,7 +19,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.BridgeGenerator;
 
 
-public class BridgeEntrance extends DynamicStructurePiece {
+public class BridgeEntrance extends DynamicStructurePiece<BridgeGenerator> {
 
 	public BridgeEntrance(BridgeGenerator s) {
 		super(s);

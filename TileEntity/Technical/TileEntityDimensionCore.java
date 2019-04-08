@@ -364,6 +364,10 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 				break;
 			case WATER:
 				break;
+			case RAYBLEND:
+				break;
+			case PISTONTAPE:
+				break;
 		}
 	}
 

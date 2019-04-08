@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -37,7 +37,7 @@ import Reika.DragonAPI.Libraries.ReikaDirectionHelper.CubeDirections;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 
-public class LaserLevel extends StructurePiece implements PlacementCallback, NBTCallback {
+public class LaserLevel extends StructurePiece<LaserPuzzleGenerator> implements PlacementCallback, NBTCallback {
 
 	private final String name;
 	private static final String PATH = "Structure Data/Laser";
@@ -262,10 +262,10 @@ public class LaserLevel extends StructurePiece implements PlacementCallback, NBT
 	public void onPlace(Coordinate c, BlockKey bk, NBTTagCompound data) {
 		if (bk.blockID == ChromaBlocks.LASEREFFECT.getBlockInstance()) {
 			if (bk.metadata == LaserEffectType.EMITTER.ordinal()) {
-				((LaserPuzzleGenerator)parent).addEmitter(name, c);
+				parent.addEmitter(name, c);
 			}
 			else if (bk.metadata == LaserEffectType.TARGET.ordinal() || bk.metadata == LaserEffectType.TARGET_THRU.ordinal()) {
-				((LaserPuzzleGenerator)parent).addTarget(name, c);
+				parent.addTarget(name, c);
 			}
 		}
 	}

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -21,7 +21,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 
-public class MazePartEndDoor extends StructurePieceChainable implements ChunkSplicedGenerationCache.TileCallback {
+public class MazePartEndDoor extends StructurePieceChainable<ShiftMazeGenerator> implements ChunkSplicedGenerationCache.TileCallback {
 
 	private static Block door = ChromaBlocks.DOOR.getBlockInstance();
 	private static int doorMeta = BlockChromaDoor.getMetadata(false, false, true, true);

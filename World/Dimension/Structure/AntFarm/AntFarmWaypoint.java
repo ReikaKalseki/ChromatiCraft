@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,7 +15,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.AntFarmGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 
 
-public class AntFarmWaypoint extends StructurePiece {
+public class AntFarmWaypoint extends StructurePiece<AntFarmGenerator> {
 
 	protected AntFarmWaypoint(AntFarmGenerator s) {
 		super(s);

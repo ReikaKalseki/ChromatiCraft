@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -16,7 +16,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.BlockChromaDoor.TileEntityChromaDoor;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
@@ -26,9 +25,9 @@ import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 
 
-public class GOLDoors extends StructurePiece {
+public class GOLDoors extends StructurePiece<GOLGenerator> {
 
-	public GOLDoors(DimensionStructureGenerator s) {
+	public GOLDoors(GOLGenerator s) {
 		super(s);
 	}
 

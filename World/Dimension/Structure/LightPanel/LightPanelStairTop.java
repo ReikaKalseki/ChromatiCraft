@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -13,17 +13,17 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureElement.BasicStructurePiece;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.Dimension.Structure.LightPanelGenerator;
 
 
-public class LightPanelStairTop extends BasicStructurePiece {
+public class LightPanelStairTop extends BasicStructurePiece<LightPanelGenerator> {
 
 	public static final int HEIGHT = 28;
 
-	LightPanelStairTop(DimensionStructureGenerator s) {
+	LightPanelStairTop(LightPanelGenerator s) {
 		super(s);
 	}
 

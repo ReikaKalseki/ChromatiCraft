@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -13,19 +13,19 @@ package Reika.ChromatiCraft.World.Dimension.Structure.AntFarm;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.DynamicStructurePiece;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.Dimension.Structure.AntFarmGenerator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 
-public class AntFarmEntrance extends DynamicStructurePiece {
+public class AntFarmEntrance extends DynamicStructurePiece<AntFarmGenerator> {
 
 	public final int startY;
 
-	public AntFarmEntrance(DimensionStructureGenerator s, int y) {
+	public AntFarmEntrance(AntFarmGenerator s, int y) {
 		super(s);
 
 		startY = y;

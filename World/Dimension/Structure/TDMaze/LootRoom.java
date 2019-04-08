@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -14,18 +14,18 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 
-import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.Dimension.Structure.ThreeDMazeGenerator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 
-public class LootRoom extends StructurePiece {
+public class LootRoom extends StructurePiece<ThreeDMazeGenerator> {
 
 	private final Random rand;
 
-	public LootRoom(DimensionStructureGenerator g, Random r) {
+	public LootRoom(ThreeDMazeGenerator g, Random r) {
 		super(g);
 		rand = r;
 	}

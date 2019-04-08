@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -16,14 +16,14 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.BlockFluidBase;
 
-import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.DynamicStructurePiece;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.Dimension.Structure.ThreeDMazeGenerator;
 
-public class TDMazeEntrance extends DynamicStructurePiece {
+public class TDMazeEntrance extends DynamicStructurePiece<ThreeDMazeGenerator> {
 
-	public TDMazeEntrance(DimensionStructureGenerator g) {
+	public TDMazeEntrance(ThreeDMazeGenerator g) {
 		super(g);
 	}
 

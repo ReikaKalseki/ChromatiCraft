@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -13,15 +13,15 @@ package Reika.ChromatiCraft.World.Dimension.Structure.Altar;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 
-import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.Dimension.Structure.AltarGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 
-public class AltarCenter extends StructurePiece {
+public class AltarCenter extends StructurePiece<AltarGenerator> {
 
-	public AltarCenter(DimensionStructureGenerator g) {
+	public AltarCenter(AltarGenerator g) {
 		super(g);
 	}
 

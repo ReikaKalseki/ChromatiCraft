@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -14,21 +14,21 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.DynamicStructurePiece;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 
-public class LocksEntrance extends DynamicStructurePiece {
+public class LocksEntrance extends DynamicStructurePiece<LocksGenerator> {
 
 	public final int radius;
 	public final ForgeDirection facing;
 	private final ForgeDirection left;
 	public final int length;
 
-	public LocksEntrance(DimensionStructureGenerator s, ForgeDirection dir, int r, int len) {
+	public LocksEntrance(LocksGenerator s, ForgeDirection dir, int r, int len) {
 		super(s);
 		radius = r;
 		facing = dir;

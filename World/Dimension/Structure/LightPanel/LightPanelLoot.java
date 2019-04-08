@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -18,7 +18,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.LightPanelGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 
 
-public class LightPanelLoot extends StructurePiece {
+public class LightPanelLoot extends StructurePiece<LightPanelGenerator> {
 
 	public static final int WIDTH = 10;
 	public static final int HEIGHT = 6;
