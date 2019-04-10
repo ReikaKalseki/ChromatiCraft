@@ -105,16 +105,13 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 			}
 		}
 		for (GridCage g : cages.values()) {
-			int n = 6+rand.nextInt(8);
-			for (int i = 0; i < n; i++) {
-				GridSlot gs = ReikaJavaLibrary.getRandomCollectionEntry(rand, g.slots);
-				GridSlot gs2 = gs.getNeighbor(ReikaDirectionHelper.getRandomDirection(false, rand));
-				while (gs2 == null || g.slots.contains(gs2)) {
-					gs2 = gs.getNeighbor(ReikaDirectionHelper.getRandomDirection(false, rand));
-				}
-				if (g.canAbsorb(gs2) && cages.get(gs2.positionKey()) == null) {
-					g.addSlot(gs2);
-					cages.put(gs2.positionKey(), g);
+			HashSet<GridSlot> set = g.getNeighbors();
+			while (!set.isEmpty()) {
+				GridSlot gs = ReikaJavaLibrary.getRandomCollectionEntry(rand, set);
+				set.remove(gs);
+				if (g.canAbsorb(gs) && cages.get(gs.positionKey()) == null) {
+					g.addSlot(gs);
+					cages.put(gs.positionKey(), g);
 					break;
 				}
 			}
@@ -252,6 +249,7 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 				if (gs.isBlocked) {
 					world.setBlock(dx, y, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.LIGHT.metadata);
 					world.setBlock(dx, y+1, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.metadata);
+					world.setBlock(dx, y+2, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.metadata);
 				}
 				else if (gs.color != null) {
 					if (gs.appearsAtStart)
@@ -363,6 +361,16 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 			blendedColor = e;
 		}
 
+		public HashSet<GridSlot> getNeighbors() {
+			HashSet<GridSlot> set = new HashSet();
+			for (GridSlot gs : slots) {
+				set.addAll(gs.getNeighbors());
+			}
+			set.removeAll(slots);
+			set.remove(null);
+			return set;
+		}
+
 		public boolean isExpandable() {
 			return ElementMixer.instance.getChildrenOf(blendedColor) != null;
 		}
@@ -395,6 +403,16 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 			parent = s;
 			xPos = x;
 			zPos = z;
+		}
+
+		public HashSet<GridSlot> getNeighbors() {
+			HashSet<GridSlot> set = new HashSet();
+			set.add(this.getNeighbor(ForgeDirection.EAST));
+			set.add(this.getNeighbor(ForgeDirection.WEST));
+			set.add(this.getNeighbor(ForgeDirection.NORTH));
+			set.add(this.getNeighbor(ForgeDirection.SOUTH));
+			set.remove(null);
+			return set;
 		}
 
 		public Point positionKey() {

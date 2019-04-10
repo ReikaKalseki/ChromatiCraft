@@ -82,7 +82,7 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 		b = world.getBlock(x, y+1, z);
 		RayBlendPuzzle p = this.getPuzzleFromCrystalPos(x, y+1, z);
 		if (p != null) {
-			if (b instanceof CrystalTypeBlock && world.getBlockMetadata(x, y, z) <= 1) {
+			if (b instanceof CrystalTypeBlock && world.getBlockMetadata(x, y-1, z) <= 1) {
 				p.addCrystal(world, CrystalElement.elements[world.getBlockMetadata(x, y+1, z)], x, z);
 			}
 			else {

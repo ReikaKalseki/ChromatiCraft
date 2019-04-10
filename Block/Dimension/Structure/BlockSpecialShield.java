@@ -152,6 +152,8 @@ public class BlockSpecialShield extends BlockStructureShield {
 	}
 
 	private static boolean matchMetas(int meta, int meta2) {
+		if (true)
+			return true;
 		if (meta <= 1)
 			return true;
 		return meta == meta2;
