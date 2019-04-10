@@ -17,6 +17,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -582,6 +583,10 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 				}
 			}
 		}
+
+	}
+
+	public void onBlockUpdate(World world, int x, int y, int z, Block b) {
 
 	}
 

@@ -3,11 +3,14 @@ package Reika.ChromatiCraft.World.Dimension.Structure;
 import java.util.ArrayList;
 import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.RayBlend.RayBlendPuzzle;
 
 
@@ -70,6 +73,31 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 	@Override
 	protected void clearCaches() {
 		puzzles.clear();
+	}
+
+	@Override
+	public void onBlockUpdate(World world, int x, int y, int z, Block b) {
+		//if (!isDoneGenerating)
+		//	return;
+		b = world.getBlock(x, y+1, z);
+		RayBlendPuzzle p = this.getPuzzleFromCrystalPos(x, y+1, z);
+		if (p != null) {
+			if (b instanceof CrystalTypeBlock && world.getBlockMetadata(x, y, z) <= 1) {
+				p.addCrystal(world, CrystalElement.elements[world.getBlockMetadata(x, y+1, z)], x, z);
+			}
+			else {
+				p.removeCrystal(world, x, z);
+			}
+		}
+	}
+
+	private RayBlendPuzzle getPuzzleFromCrystalPos(int x, int y, int z) {
+		for (RayBlendPuzzle rp : puzzles) {
+			if (rp.containsCrystalPosition(x, y, z)) {
+				return rp;
+			}
+		}
+		return null;
 	}
 
 }
