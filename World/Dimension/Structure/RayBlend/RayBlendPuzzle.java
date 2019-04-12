@@ -6,15 +6,18 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Base.StructurePiece;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockRayblendFloor.TileEntityRayblendFloor;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Magic.ElementMixer;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -27,6 +30,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.RayBlendGenerator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget.RadiusTarget;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
+import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -39,7 +43,7 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 	private final int gridSize;
 	private final float initialFillFraction;
 
-	private final Subgrid[][] grids;
+	private final HashMap<Point, Subgrid> grids = new HashMap();
 	private final HashMap<Point, GridCage> cages = new HashMap();
 
 	private final HashSet<Subgrid> unfinished = new HashSet();
@@ -48,20 +52,52 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 	private Coordinate generatorOrigin;
 	private boolean isComplete;
 
+	public final UUID ID = UUID.randomUUID();
+
 	public RayBlendPuzzle(RayBlendGenerator s, int sz, float f, Random rand) {
 		super(s);
 		gridSize = sz;
 		initialFillFraction = f;
-		grids = new Subgrid[sz][sz];
-		for (int i = 0; i < grids.length; i++) {
-			for (int k = 0; k < grids[i].length; k++) {
-				Subgrid sg = new Subgrid(this, i, k, sz);
-				uncaged.addAll(sg.unpopulated);
-				unfinished.add(sg);
-				grids[i][k] = sg;
+
+		//this.generateGrids();
+
+		for (int i = 0; i < gridSize; i++) {
+			for (int k = 0; k < gridSize; k++) {
+				Subgrid sg = new Subgrid(this);
+				for (int i2 = 0; i2 < gridSize; i2++) {
+					for (int k2 = 0; k2 < gridSize; k2++) {
+						int x = i*gridSize+i2;
+						int z = k*gridSize+k2;
+						sg.createSlot(x, z);
+					}
+				}
 			}
 		}
+
 		this.randomize(rand);
+	}
+
+	private Subgrid getOrCreateSubgridFor(int x, int z) {
+		Subgrid sg = grids.get(new Point(x, z));
+		if (sg == null) {
+			sg = new Subgrid(this);
+		}
+		sg.createSlot(x, z);
+		return sg;
+	}
+
+	private void generateGrids() {
+		Subgrid sg = new Subgrid(this);
+		this.populate(sg);
+		uncaged.addAll(sg.slots.values());
+		unfinished.add(sg);
+		for (GridSlot gs : sg.slots.values()) {
+			grids.put(gs.positionKey(), sg);
+		}
+	}
+
+	private void populate(Subgrid sg) {
+
 	}
 
 	private void randomize(Random rand) {
@@ -104,7 +140,7 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 				uncaged.remove(slot);
 			}
 		}
-		for (GridCage g : cages.values()) {
+		for (GridCage g : new ArrayList<GridCage>(cages.values())) {
 			HashSet<GridSlot> set = g.getNeighbors();
 			while (!set.isEmpty()) {
 				GridSlot gs = ReikaJavaLibrary.getRandomCollectionEntry(rand, set);
@@ -133,8 +169,8 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 	private boolean pickRandomColorForSlot(Random rand, GridSlot gs) {
 		HashSet<CrystalElement> set = ReikaJavaLibrary.makeSetFromArray(CrystalElement.elements);
 		set.removeAll(gs.parent.presentColors);
-		int x = gs.getTrueX();
-		int z = gs.getTrueZ();
+		int x = gs.xPos;
+		int z = gs.zPos;
 		for (int p = 0; p < gridSize*gridSize; p++) {
 			GridSlot g1 = this.getAt(x, p);
 			GridSlot g2 = this.getAt(p, z);
@@ -157,49 +193,44 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 	}
 
 	private GridSlot getAt(int x, int z) {
-		int gx = x/4;
-		int gz = z/4;
-		int ox = x%4;
-		int oz = z%4;
-		if (gx < 0 || gz < 0 || gx >= gridSize || gz >= gridSize)
+		if (x < 0 || z < 0 || x >= gridSize*gridSize || z >= gridSize*gridSize)
 			return null;
-		if (ox < 0 || oz < 0 || ox >= gridSize || oz >= gridSize)
-			return null;
-		return grids[gx][gz].slots[ox][oz];
+		return grids.get(new Point(x, z)).slots.get(new Point(x, z));
 	}
 
 	public void addCrystal(World world, CrystalElement e, int x, int z) {
-		GridSlot gs = this.getAt(x-generatorOrigin.xCoord, z-generatorOrigin.zCoord);
+		GridSlot gs = this.getAt(x, z);
+		if (gs == null)
+			return;
 		gs.currentCrystal = e;
 		this.ping(world, x, z);
 		isComplete = this.isValid();
 	}
 
 	public void removeCrystal(World world, int x, int z) {
-		GridSlot gs = this.getAt(x-generatorOrigin.xCoord, z-generatorOrigin.zCoord);
+		GridSlot gs = this.getAt(x, z);
+		if (gs == null)
+			return;
 		gs.currentCrystal = null;
 		isComplete = false;
 	}
 
 	public void ping(World world, int x, int z) {
-		GridSlot gs = this.getAt(x-generatorOrigin.xCoord, z-generatorOrigin.zCoord);
+		GridSlot gs = this.getAt(x, z);
 		HashSet<GridSlot> pinged = new HashSet();
 		if (gs != null && gs.currentCrystal != null) {
 			double f = CrystalMusicManager.instance.getDingPitchScale(gs.currentCrystal);
-			ChromaSounds.DING.playSoundAtBlock(world, x, generatorOrigin.yCoord+2, z, 1, (float)f);
+			ChromaSounds.DING.playSoundAtBlock(world, gs.getWorldX(), generatorOrigin.yCoord+2, gs.getWorldZ(), 1, (float)f);
 
-			for (int i = 0; i < gridSize; i++) {
-				for (int k = 0; k < gridSize; k++) {
-					GridSlot gs2 = gs.parent.slots[i][k];
-					if (gs != gs2 && !pinged.contains(gs2)) {
-						this.colorExclusionPing(world, gs.currentCrystal, gs2);
-						pinged.add(gs2);
-					}
+			for (GridSlot gs2 : gs.parent.slots.values()) {
+				if (gs != gs2 && !pinged.contains(gs2)) {
+					this.colorExclusionPing(world, gs.currentCrystal, gs2);
+					pinged.add(gs2);
 				}
 			}
 			for (int p = 0; p < gridSize*gridSize; p++) {
-				GridSlot g1 = this.getAt(x-generatorOrigin.xCoord, p);
-				GridSlot g2 = this.getAt(p, z-generatorOrigin.zCoord);
+				GridSlot g1 = this.getAt(x, p);
+				GridSlot g2 = this.getAt(p, z);
 				if (g1 != null && g1 != gs && !pinged.contains(g1)) {
 					this.colorExclusionPing(world, gs.currentCrystal, g1);
 					pinged.add(g1);
@@ -236,6 +267,10 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		}
 	}
 
+	public boolean allowsCrystalAt(CrystalElement e) {
+
+	}
+
 	@Override
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
 		generatorOrigin = new Coordinate(x, y, z);
@@ -256,27 +291,25 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 						world.setBlock(dx, y+2, dz, ChromaBlocks.CRYSTAL.getBlockInstance(), gs.color.ordinal());
 					else
 						world.setBlock(dx, y+2, dz, Blocks.air);
-					world.setBlock(dx, y+1, dz, ChromaBlocks.SPECIALSHIELD.getBlockInstance(), BlockType.GLASS.metadata);
+					world.setTileEntity(dx, y+1, dz, ChromaBlocks.RAYBLEND.getBlockInstance(), 0, new RayblendFloorCallback(parent.id, ID, gs.parent.ID, gs.xPos, gs.zPos));
 				}
 				else {
 					world.setBlock(dx, y+1, dz, Blocks.brick_block);
 				}
 			}
 		}
+		/*
 		for (GridCage g : cages.values()) {
 			for (GridSlot gs : g.slots) {
 				world.setBlock(gs.getWorldX(), y+1, gs.getWorldZ(), ChromaBlocks.GLASS.getBlockInstance(), g.blendedColor.ordinal());
 			}
-		}
-		parent.generateDataTile(x, y-1, z);
+		}*/
 	}
 
 	public boolean isValid() {
-		for (int i = 0; i < grids.length; i++) {
-			for (int k = 0; k < grids[i].length; k++) {
-				if (!grids[i][k].isValid())
-					return false;
-			}
+		for (Subgrid g : grids.values()) {
+			if (!g.isValid())
+				return false;
 		}
 		return true;
 	}
@@ -294,44 +327,41 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		return y == generatorOrigin.yCoord+2 && this.getAt(x-generatorOrigin.xCoord, z-generatorOrigin.zCoord) != null;
 	}
 
+	public CrystalElement getCageColor(int x, int z) {
+		GridCage gc = cages.get(new Point(x, z));
+		return gc != null ? gc.blendedColor : null;
+	}
+
 	private static class Subgrid {
 
+		private final UUID ID = UUID.randomUUID();
 		private final RayBlendPuzzle parent;
-		public final int xPos;
-		public final int zPos;
-		private final GridSlot[][] slots;
+		private final HashMap<Point, GridSlot> slots = new HashMap();
 		private final HashSet<CrystalElement> presentColors = new HashSet();
-		private final int gridSize;
 
 		private final HashSet<GridSlot> unpopulated = new HashSet();
 
-		private Subgrid(RayBlendPuzzle p, int x, int z, int s) {
+		private Subgrid(RayBlendPuzzle p) {
 			parent = p;
-			xPos = x;
-			zPos = z;
-			gridSize = s;
-			slots = new GridSlot[s][s];
+			parent.unfinished.add(this);
+		}
 
-			for (int i = 0; i < slots.length; i++) {
-				for (int k = 0; k < slots[i].length; k++) {
-					GridSlot gs = new GridSlot(this, i, k);
-					slots[i][k] = gs;
-					unpopulated.add(gs);
-				}
-			}
-
+		private void createSlot(int x, int z) {
+			GridSlot gs = new GridSlot(this, x, z);
+			slots.put(gs.positionKey(), gs);
+			unpopulated.add(gs);
+			parent.uncaged.add(gs);
+			parent.grids.put(gs.positionKey(), this);
 		}
 
 		public boolean isValid() {
-			for (int i = 0; i < slots.length; i++) {
-				for (int k = 0; k < slots[i].length; k++) {
-					if (!slots[i][k].isValid())
-						return false;
-				}
+			for (GridSlot gs : slots.values()) {
+				if (!gs.isValid())
+					return false;
 			}
 			return true;
 		}
-
+		/*
 		private Subgrid getNeighbor(ForgeDirection dir) {
 			int x = xPos+dir.offsetX;
 			int z = zPos+dir.offsetZ;
@@ -348,7 +378,7 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 				return null;
 			}
 			return parent.grids[x][z];
-		}
+		}*/
 
 	}
 
@@ -420,46 +450,43 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		}
 
 		private GridSlot getNeighbor(ForgeDirection dir) {
-			Subgrid g = parent;
-			int x = xPos+dir.offsetX;
-			int z = zPos+dir.offsetZ;
-			if (x >= parent.gridSize) {
-				g = g.getNeighbor(ForgeDirection.EAST);
-				x -= parent.gridSize;
-			}
-			else if (x < 0) {
-				g = g.getNeighbor(ForgeDirection.WEST);
-				x += parent.gridSize;
-			}
-			if (z >= parent.gridSize) {
-				g = g.getNeighbor(ForgeDirection.SOUTH);
-				z -= parent.gridSize;
-			}
-			else if (z < 0) {
-				g = g.getNeighbor(ForgeDirection.NORTH);
-				z += parent.gridSize;
-			}
-			return g != null ? g.slots[x][z] : null;
+			return parent.parent.getAt(xPos+dir.offsetX, zPos+dir.offsetZ);
 		}
 
 		public boolean isValid() {
 			return isBlocked ? true : currentCrystal == color;
 		}
 
-		public int getTrueX() {
-			return parent.xPos*parent.gridSize+xPos;
-		}
-
-		public int getTrueZ() {
-			return parent.zPos*parent.gridSize+zPos;
-		}
-
 		public int getWorldX() {
-			return parent.parent.generatorOrigin.xCoord+this.getTrueX();
+			return parent.parent.generatorOrigin.xCoord+xPos;
 		}
 
 		public int getWorldZ() {
-			return parent.parent.generatorOrigin.zCoord+this.getTrueZ();
+			return parent.parent.generatorOrigin.zCoord+zPos;
+		}
+
+	}
+
+	private static class RayblendFloorCallback implements TileCallback {
+
+		private final UUID parent;
+		private final UUID uid;
+		private final UUID grid;
+		private final int xPos;
+		private final int zPos;
+
+		public RayblendFloorCallback(UUID p, UUID id, UUID grid, int x, int z) {
+			parent = p;
+			uid = id;
+			this.grid = grid;
+			xPos = x;
+			zPos = z;
+		}
+
+		@Override
+		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
+			((TileEntityRayblendFloor)te).uid = parent;
+			((TileEntityRayblendFloor)te).populate(uid, grid, xPos, zPos);
 		}
 
 	}

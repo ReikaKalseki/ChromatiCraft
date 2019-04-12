@@ -111,6 +111,7 @@ import Reika.ChromatiCraft.Render.ISBRH.LampRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.LaserEffectorRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.MetaAlloyRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.PowerTreeRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.RayBlendFloorRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.RelayRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.RuneRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.SelectiveGlassRenderer;
@@ -183,12 +184,14 @@ public class ChromaClient extends ChromaCommon {
 	private static final DimensionDecoRenderer dimgen = new DimensionDecoRenderer();
 	private static final GlowTreeRenderer glowtree = new GlowTreeRenderer();
 	private static final ColorLockRenderer colorlock = new ColorLockRenderer();
-	private SpecialShieldRenderer specialshield;
+	private static SpecialShieldRenderer specialshield;
 	private static final CrystalGlassRenderer glass = new CrystalGlassRenderer();
 	private static final ConsoleRenderer console = new ConsoleRenderer();
 	private static final CrystalFenceRenderer fence = new CrystalFenceRenderer();
 	private static final SelectiveGlassRenderer selective = new SelectiveGlassRenderer();
 	private static final LaserEffectorRenderer lasereffect = new LaserEffectorRenderer();
+	private static RayBlendFloorRenderer rayblendfloor;
+
 	private static final ArtefactRenderer artefact = new ArtefactRenderer();
 	private static final MetaAlloyRenderer metaalloy = new MetaAlloyRenderer();
 
@@ -414,6 +417,10 @@ public class ChromaClient extends ChromaCommon {
 
 		lasereffectRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(lasereffectRender, lasereffect);
+
+		rayblendFloorRender = RenderingRegistry.getNextAvailableRenderId();
+		rayblendfloor = new RayBlendFloorRenderer();
+		RenderingRegistry.registerBlockHandler(rayblendFloorRender, rayblendfloor);
 
 		artefactRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(artefactRender, artefact);

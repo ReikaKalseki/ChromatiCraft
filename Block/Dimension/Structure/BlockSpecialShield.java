@@ -20,6 +20,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
@@ -78,7 +79,8 @@ public class BlockSpecialShield extends BlockStructureShield {
 
 	@Override
 	public boolean shouldSideBeRendered(IBlockAccess iba, int dx, int dy, int dz, int s) {
-		return super.shouldSideBeRendered(iba, dx, dy, dz, s);// && iba.getBlock(dx, dy, dz) != this;
+		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[s];
+		return iba.getBlock(dx, dy, dz) != this || iba.getBlockMetadata(dx, dy, dz) != iba.getBlockMetadata(dx-dir.offsetX, dy-dir.offsetY, dz-dir.offsetZ);
 	}
 
 	@Override

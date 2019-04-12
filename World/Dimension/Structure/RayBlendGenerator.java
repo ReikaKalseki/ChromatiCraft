@@ -1,12 +1,11 @@
 package Reika.ChromatiCraft.World.Dimension.Structure;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
+import java.util.UUID;
 
-import net.minecraft.block.Block;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -16,7 +15,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.RayBlend.RayBlendPuzzle;
 
 public class RayBlendGenerator extends DimensionStructureGenerator {
 
-	private final ArrayList<RayBlendPuzzle> puzzles = new ArrayList();
+	private final HashMap<UUID, RayBlendPuzzle> puzzles = new HashMap();
 
 	@Override
 	protected void calculate(int chunkX, int chunkZ, Random rand) {
@@ -25,7 +24,7 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 		int y = 10+rand.nextInt(70);
 		posY = y;
 		RayBlendPuzzle rb = new RayBlendPuzzle(this, 4, this.getInitialFillFraction(), rand);
-		puzzles.add(rb);
+		puzzles.put(rb.ID, rb);
 		rb.generate(world, x, y, z);
 	}
 
@@ -58,7 +57,7 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 
 	@Override
 	protected boolean hasBeenSolved(World world) {
-		for (RayBlendPuzzle rb : puzzles) {
+		for (RayBlendPuzzle rb : puzzles.values()) {
 			if (!rb.isComplete())
 				return false;
 		}
@@ -74,7 +73,7 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 	protected void clearCaches() {
 		puzzles.clear();
 	}
-
+	/*
 	@Override
 	public void onBlockUpdate(World world, int x, int y, int z, Block b) {
 		//if (!isDoneGenerating)
@@ -92,12 +91,27 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 	}
 
 	private RayBlendPuzzle getPuzzleFromCrystalPos(int x, int y, int z) {
-		for (RayBlendPuzzle rp : puzzles) {
+		for (RayBlendPuzzle rp : puzzles.values()) {
 			if (rp.containsCrystalPosition(x, y, z)) {
 				return rp;
 			}
 		}
 		return null;
 	}
+	 */
 
+	public void setCrystal(World world, UUID id, int x, int z, CrystalElement e) {
+		RayBlendPuzzle p = puzzles.get(id);
+		if (p != null) {
+			if (e != null)
+				p.addCrystal(world, e, x, z);
+			else
+				p.removeCrystal(world, x, z);
+		}
+	}
+
+	public CrystalElement getCageColor(UUID id, int x, int z) {
+		RayBlendPuzzle p = puzzles.get(id);
+		return p != null ? p.getCageColor(x, z) : null;
+	}
 }

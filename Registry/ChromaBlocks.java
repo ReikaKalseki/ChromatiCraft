@@ -84,6 +84,7 @@ import Reika.ChromatiCraft.Block.Dimension.BlockLightedLog;
 import Reika.ChromatiCraft.Block.Dimension.BlockLightedSapling;
 import Reika.ChromatiCraft.Block.Dimension.BlockLiquidLumen;
 import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockRayblendFloor;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockSpecialShield;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage;
 import Reika.ChromatiCraft.Block.Dimension.Structure.AntFarm.BlockAntKey;
@@ -268,6 +269,7 @@ public enum ChromaBlocks implements BlockEnum {
 	BEDROCKCRACK(BlockBedrockCrack.class,										"chroma.bedrockcrack"),
 	RFPOD(BlockRFNode.class,					ItemBlockSidePlaced.class,		"chroma.rfpod"),
 	PISTONBIT(BlockPistonTapeBit.class,			ItemBlockMultiType.class,		"chroma.pistonbit"),
+	RAYBLEND(BlockRayblendFloor.class,											"chroma.rayblend"),
 	;
 
 	private Class blockClass;
@@ -565,6 +567,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case BEDROCKCRACK:
 			case RFPOD:
 			case PISTONBIT:
+			case RAYBLEND:
 				return false;
 			default:
 				return true;
