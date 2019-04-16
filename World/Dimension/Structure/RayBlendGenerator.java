@@ -23,9 +23,17 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 		int z = chunkZ;
 		int y = 10+rand.nextInt(70);
 		posY = y;
-		RayBlendPuzzle rb = new RayBlendPuzzle(this, 4, this.getInitialFillFraction(), rand);
+		RayBlendPuzzle rb = this.createPuzzle(rand);
 		puzzles.put(rb.ID, rb);
 		rb.generate(world, x, y, z);
+	}
+
+	private RayBlendPuzzle createPuzzle(Random rand) {
+		RayBlendPuzzle ret = new RayBlendPuzzle(this, 4, this.getInitialFillFraction(), rand);
+		while (!ret.prepare(rand)) {
+			ret = new RayBlendPuzzle(this, 4, this.getInitialFillFraction(), rand);
+		}
+		return ret;
 	}
 
 	private float getInitialFillFraction() {

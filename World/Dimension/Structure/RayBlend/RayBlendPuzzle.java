@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.World.Dimension.Structure.RayBlendGenerator;
+import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget.RadiusTarget;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
@@ -46,11 +47,16 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 	private final HashMap<Point, Subgrid> grids = new HashMap();
 	private final HashMap<Point, GridCage> cages = new HashMap();
 
+	private final HashSet<Point> unGriddedPoints = new HashSet();
+
 	private final HashSet<Subgrid> unfinished = new HashSet();
 	private final HashSet<GridSlot> uncaged = new HashSet();
 
 	private Coordinate generatorOrigin;
 	private boolean isComplete;
+
+	private final int totalCellCount;
+	private final int cellsPerSubgrid;
 
 	public final UUID ID = UUID.randomUUID();
 
@@ -58,9 +64,12 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		super(s);
 		gridSize = sz;
 		initialFillFraction = f;
+		totalCellCount = gridSize*gridSize*gridSize*gridSize;
+		cellsPerSubgrid = gridSize*gridSize;
+	}
 
-		//this.generateGrids();
-
+	public boolean prepare(Random rand) {
+		/*
 		for (int i = 0; i < gridSize; i++) {
 			for (int k = 0; k < gridSize; k++) {
 				Subgrid sg = new Subgrid(this);
@@ -72,9 +81,13 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 					}
 				}
 			}
-		}
+		}*/
 
-		this.randomize(rand);
+		boolean flag = this.generateGrids(rand);
+		if (flag)
+			this.randomize(rand);
+		return flag;
+
 	}
 
 	private Subgrid getOrCreateSubgridFor(int x, int z) {
@@ -86,18 +99,87 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		return sg;
 	}
 
-	private void generateGrids() {
+	private boolean generateGrids(Random rand) {
 		Subgrid sg = new Subgrid(this);
-		this.populate(sg);
+		if (!this.populate(sg, rand))
+			return false;
 		uncaged.addAll(sg.slots.values());
 		unfinished.add(sg);
 		for (GridSlot gs : sg.slots.values()) {
 			grids.put(gs.positionKey(), sg);
 		}
+		return true;
 	}
 
-	private void populate(Subgrid sg) {
+	private boolean populate(Subgrid sg, Random rand) {
+		Point start = this.getWeightedRandomStart(rand);
+		if (start == null) {
+			return false;
+		}
+		while (sg.size() < cellsPerSubgrid) {
+			Point p = this.getCandidateNextPoint(sg, rand);
+			if (p == null) {
+				sg.clear();
+				return false;
+			}
+			sg.createSlot(p.x, p.y);
+		}
+		return true;
+	}
 
+	private Point getWeightedRandomStart(Random rand) {
+		WeightedRandom<Point> wr = new WeightedRandom();
+		for (Point p : unGriddedPoints) {
+			wr.addEntry(p, this.getFilledNeighbors(p));
+		}
+		return wr.isEmpty() ? null : wr.getRandomEntry();
+	}
+
+	private int getFilledNeighbors(Point p) {
+		Collection<Point> c = this.getNeighbors(p);
+		int ret = c.size();
+		for (Point p2 : c) {
+			if (unGriddedPoints.contains(p2))
+				ret--;
+		}
+		return ret;
+	}
+
+	private Collection<Point> getNeighbors(Point p) {
+		Collection<Point> c = new ArrayList();
+		c.add(new Point(p.x-1, p.y));
+		c.add(new Point(p.x+1, p.y));
+		c.add(new Point(p.x, p.y-1));
+		c.add(new Point(p.x, p.y+1));
+		return c;
+	}
+
+	private Point getCandidateNextPoint(Subgrid sg, Random rand) {
+		HashSet<Point> set = new HashSet();
+		for (Point p : sg.slots.keySet()) {
+			set.addAll(this.getNeighbors(p));
+		}
+		set.retainAll(unGriddedPoints);
+		while (!set.isEmpty()) {
+			Point p = ReikaJavaLibrary.getRandomCollectionEntry(rand, set);
+			if (this.canExpandInto(p)) {
+				return p;
+			}
+			else {
+				set.remove(p);
+			}
+		}
+		return null;
+	}
+
+	private boolean canExpandInto(Point p) {
+
+	}
+
+	public void createNewSlot(GridSlot gs, Subgrid g) {
+		uncaged.add(gs);
+		grids.put(gs.positionKey(), g);
+		unGriddedPoints.remove(gs.positionKey());
 	}
 
 	private void randomize(Random rand) {
@@ -346,12 +428,21 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 			parent.unfinished.add(this);
 		}
 
+		public void clear() {
+			slots.clear();
+			presentColors.clear();
+			unpopulated.clear();
+		}
+
+		public int size() {
+			return slots.size();
+		}
+
 		private void createSlot(int x, int z) {
 			GridSlot gs = new GridSlot(this, x, z);
 			slots.put(gs.positionKey(), gs);
 			unpopulated.add(gs);
-			parent.uncaged.add(gs);
-			parent.grids.put(gs.positionKey(), this);
+			parent.createNewSlot(gs, this);
 		}
 
 		public boolean isValid() {
