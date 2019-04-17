@@ -88,11 +88,41 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 			}
 		}*/
 
+		for (int i = 0; i < edgeLength; i++) {
+			for (int k = 0; k < edgeLength; k++) {
+				unGriddedPoints.add(new Point(i, k));
+			}
+		}
+
 		boolean flag = this.generateGrids(rand);
-		if (flag)
+		if (flag) {
+			this.debugPrint();
+
 			this.randomize(rand);
+		}
 		return flag;
 
+	}
+
+	private void debugPrint() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{");
+		for (int i = 0; i < edgeLength; i++) {
+			sb.append("[");
+			for (int k = 0; k < edgeLength; k++) {
+				Subgrid gs = grids.get(new Point(i, k));
+				if (gs == null) {
+					sb.append("0");
+				}
+				else {
+					char c = (char)('A'+gs.index);
+					sb.append(c);
+				}
+			}
+			sb.append("]\n");
+		}
+		sb.append("}\n");
+		ReikaJavaLibrary.pConsole(sb.toString());
 	}
 
 	private Subgrid getOrCreateSubgridFor(int x, int z) {
@@ -108,6 +138,7 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		Subgrid sg = new Subgrid(this);
 		if (!this.populate(sg, rand))
 			return false;
+
 		uncaged.addAll(sg.slots.values());
 		unfinished.add(sg);
 		for (GridSlot gs : sg.slots.values()) {
@@ -117,10 +148,28 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 	}
 
 	private boolean populate(Subgrid sg, Random rand) {
-		Point start = this.getWeightedRandomStart(rand);
-		if (start == null) {
-			return false;
+
+		int attempts0 = 0;
+		HashSet<Point> starts = new HashSet(unGriddedPoints);
+		while (attempts0 < 20) {
+			attempts0++;
+			Point start = this.getWeightedRandomStart(rand, starts);
+			starts.remove(start);
+			if (start == null) {
+				return false;
+			}
+
+			boolean valid = unGriddedPoints.size() == totalCellCount || this.canExpandInto(sg, start);
+			if (valid) {
+				sg.createSlot(start.x, start.y);
+				break;
+			}
+			else {
+				if (starts.isEmpty())
+					return false;
+			}
 		}
+
 		int attempts = 0;
 		while (attempts < 20) {
 			attempts++;
@@ -138,9 +187,12 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		return false;
 	}
 
-	private Point getWeightedRandomStart(Random rand) {
+	private Point getWeightedRandomStart(Random rand, HashSet<Point> starts) {
+		if (starts.isEmpty())
+			return null;
 		WeightedRandom<Point> wr = new WeightedRandom();
-		for (Point p : unGriddedPoints) {
+		for (Point p : starts) {
+			//ReikaJavaLibrary.pConsole(p+" > "+this.getFilledNeighbors(p));
 			wr.addEntry(p, this.getFilledNeighbors(p));
 		}
 		return wr.isEmpty() ? null : wr.getRandomEntry();
@@ -153,6 +205,14 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 			if (unGriddedPoints.contains(p2))
 				ret--;
 		}
+		if (p.x == 0)
+			ret++;
+		if (p.y == 0)
+			ret++;
+		if (p.x == edgeLength-1)
+			ret++;
+		if (p.y == edgeLength-1)
+			ret++;
 		return ret;
 	}
 
@@ -506,9 +566,15 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 
 		private final HashSet<GridSlot> unpopulated = new HashSet();
 
+		private final int index;
+
+		private static int CURRENTINDEX = 0;
+
 		private Subgrid(RayBlendPuzzle p) {
 			parent = p;
 			parent.unfinished.add(this);
+			index = CURRENTINDEX;
+			CURRENTINDEX++;
 		}
 
 		public void clear() {

@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -31,6 +32,7 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 	private RayBlendPuzzle createPuzzle(Random rand) {
 		RayBlendPuzzle ret = new RayBlendPuzzle(this, 4, this.getInitialFillFraction(), rand);
 		while (!ret.prepare(rand)) {
+			ChromatiCraft.logger.log("Puzzle population failed; generating a new rayblend puzzle");
 			ret = new RayBlendPuzzle(this, 4, this.getInitialFillFraction(), rand);
 		}
 		return ret;
