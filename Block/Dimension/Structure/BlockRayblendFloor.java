@@ -15,9 +15,11 @@ import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.RayBlendGenerator;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -106,6 +108,13 @@ public class BlockRayblendFloor extends BlockDimensionStructureTile {
 			if (g == null)
 				return;
 			CrystalElement e = world.getBlock(x, y+1, z) instanceof CrystalTypeBlock ? CrystalElement.elements[world.getBlockMetadata(x, y+1, z)] : null;
+			if (e != null) {
+				if (!g.allowsCrystalAt(puzzleID, x, z, e)) {
+					ReikaWorldHelper.dropAndDestroyBlockAt(world, x, y+1, z, null, true, true);
+					ChromaSounds.ERROR.playSoundAtBlock(this);
+					return;
+				}
+			}
 			g.setCrystal(world, puzzleID, tileX, tileZ, e);
 		}
 

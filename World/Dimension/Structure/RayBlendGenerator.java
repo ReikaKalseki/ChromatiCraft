@@ -108,6 +108,14 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 	}
 	 */
 
+	public boolean allowsCrystalAt(UUID id, int x, int z, CrystalElement e) {
+		RayBlendPuzzle p = puzzles.get(id);
+		if (p != null) {
+			return p.allowsCrystalAt(x, z, e);
+		}
+		return true;
+	}
+
 	public void setCrystal(World world, UUID id, int x, int z, CrystalElement e) {
 		RayBlendPuzzle p = puzzles.get(id);
 		if (p != null) {

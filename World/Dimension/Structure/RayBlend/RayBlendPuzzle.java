@@ -3,8 +3,11 @@ package Reika.ChromatiCraft.World.Dimension.Structure.RayBlend;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.UUID;
 
@@ -55,6 +58,7 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 	private Coordinate generatorOrigin;
 	private boolean isComplete;
 
+	private final int edgeLength;
 	private final int totalCellCount;
 	private final int cellsPerSubgrid;
 
@@ -64,8 +68,9 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		super(s);
 		gridSize = sz;
 		initialFillFraction = f;
-		totalCellCount = gridSize*gridSize*gridSize*gridSize;
-		cellsPerSubgrid = gridSize*gridSize;
+		edgeLength = gridSize*gridSize;
+		totalCellCount = edgeLength*edgeLength;
+		cellsPerSubgrid = edgeLength;
 	}
 
 	public boolean prepare(Random rand) {
@@ -116,15 +121,21 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		if (start == null) {
 			return false;
 		}
-		while (sg.size() < cellsPerSubgrid) {
-			Point p = this.getCandidateNextPoint(sg, rand);
-			if (p == null) {
-				sg.clear();
-				return false;
+		int attempts = 0;
+		while (attempts < 20) {
+			attempts++;
+			while (sg.size() < cellsPerSubgrid) {
+				Point p = this.getCandidateNextPoint(sg, rand);
+				if (p == null) {
+					sg.clear();
+					break;
+				}
+				sg.createSlot(p.x, p.y);
 			}
-			sg.createSlot(p.x, p.y);
+			if (sg.size() == cellsPerSubgrid)
+				return true;
 		}
-		return true;
+		return false;
 	}
 
 	private Point getWeightedRandomStart(Random rand) {
@@ -147,10 +158,14 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 
 	private Collection<Point> getNeighbors(Point p) {
 		Collection<Point> c = new ArrayList();
-		c.add(new Point(p.x-1, p.y));
-		c.add(new Point(p.x+1, p.y));
-		c.add(new Point(p.x, p.y-1));
-		c.add(new Point(p.x, p.y+1));
+		if (p.x > 0)
+			c.add(new Point(p.x-1, p.y));
+		if (p.x < edgeLength-1)
+			c.add(new Point(p.x+1, p.y));
+		if (p.y > 0)
+			c.add(new Point(p.x, p.y-1));
+		if (p.y < edgeLength-1)
+			c.add(new Point(p.x, p.y+1));
 		return c;
 	}
 
@@ -162,7 +177,7 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		set.retainAll(unGriddedPoints);
 		while (!set.isEmpty()) {
 			Point p = ReikaJavaLibrary.getRandomCollectionEntry(rand, set);
-			if (this.canExpandInto(p)) {
+			if (this.canExpandInto(sg, p)) {
 				return p;
 			}
 			else {
@@ -172,8 +187,59 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		return null;
 	}
 
-	private boolean canExpandInto(Point p) {
+	private boolean canExpandInto(Subgrid sg, Point p) { //determines whether the cell splits the remaining cells into 2+ isolated regions
+		Collection<Point> c = this.getNeighbors(p);
+		c.retainAll(unGriddedPoints);
+		if (c.isEmpty())
+			return true;
+		HashSet<Point> visited = new HashSet();
+		ArrayList<LinkedList<Point>> groups = new ArrayList();
+		for (Point p2 : unGriddedPoints) {
+			if (visited.contains(p2))
+				continue;
+			LinkedList<Point> li = new LinkedList();
+			LinkedList<Point> li2 = new LinkedList();
+			groups.add(li);
+			li2.add(p2);
+			while (!li2.isEmpty()) {
+				Point p3 = li2.removeLast();
+				if (visited.contains(p3))
+					continue;
+				visited.add(p3);
+				li.add(p3);
+				for (Point np3 : this.getNeighbors(p3)) {
+					if (!visited.contains(np3)) {
+						li2.add(np3);
+					}
+				}
+			}
+		}
+		if (groups.size() == 1) {
+			return true;
+		}
+		else {
+			Collections.sort(groups, new Comparator<LinkedList>() {
 
+				@Override
+				public int compare(LinkedList o1, LinkedList o2) {
+					return Integer.compare(o1.size(), o2.size());
+				}
+
+			});
+			groups.remove(groups.size()-1);
+			ArrayList<Point> merge = new ArrayList();
+			for (LinkedList<Point> li : groups) {
+				merge.addAll(li);
+			}
+			if (cellsPerSubgrid-sg.size() > merge.size()) {
+				for (Point in : merge)
+					sg.createSlot(in.x, in.y);
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
 	}
 
 	public void createNewSlot(GridSlot gs, Subgrid g) {
@@ -253,7 +319,7 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		set.removeAll(gs.parent.presentColors);
 		int x = gs.xPos;
 		int z = gs.zPos;
-		for (int p = 0; p < gridSize*gridSize; p++) {
+		for (int p = 0; p < edgeLength; p++) {
 			GridSlot g1 = this.getAt(x, p);
 			GridSlot g2 = this.getAt(p, z);
 			if (g1 != null && g1 != gs) {
@@ -275,7 +341,7 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 	}
 
 	private GridSlot getAt(int x, int z) {
-		if (x < 0 || z < 0 || x >= gridSize*gridSize || z >= gridSize*gridSize)
+		if (x < 0 || z < 0 || x >= edgeLength || z >= edgeLength)
 			return null;
 		return grids.get(new Point(x, z)).slots.get(new Point(x, z));
 	}
@@ -310,7 +376,7 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 					pinged.add(gs2);
 				}
 			}
-			for (int p = 0; p < gridSize*gridSize; p++) {
+			for (int p = 0; p < edgeLength; p++) {
 				GridSlot g1 = this.getAt(x, p);
 				GridSlot g2 = this.getAt(p, z);
 				if (g1 != null && g1 != gs && !pinged.contains(g1)) {
@@ -349,15 +415,32 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		}
 	}
 
-	public boolean allowsCrystalAt(CrystalElement e) {
+	public boolean allowsCrystalAt(int x, int z, CrystalElement e) {
+		int dx = x-generatorOrigin.xCoord;
+		int dz = z-generatorOrigin.zCoord;
+		GridSlot gs = this.getAt(dx, dz);
+		return !gs.parent.presentColors.contains(e) && !this.rowOrColHas(dx, dz, e);
+	}
 
+	private boolean rowOrColHas(int x, int z, CrystalElement e) {
+		for (int i = 0; i < edgeLength; i++) {
+			GridSlot g1 = this.getAt(x, i);
+			GridSlot g2 = this.getAt(i, z);
+			if (g1 != null && g1.color != null && g1.color == e) {
+				return true;
+			}
+			if (g2 != null && g2.color != null && g2.color == e) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
 		generatorOrigin = new Coordinate(x, y, z);
-		for (int i = 0; i < gridSize*gridSize; i++) {
-			for (int k = 0; k < gridSize*gridSize; k++) {
+		for (int i = 0; i < edgeLength; i++) {
+			for (int k = 0; k < edgeLength; k++) {
 				int dx = x+i;
 				int dz = z+k;
 				boolean light = (i/4+k/4)%2 == 0;
@@ -402,8 +485,8 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 
 	public boolean containsCrystalPosition(int x, int y, int z) {
 		/*
-		boolean xr = x >= generatorOrigin.xCoord && x < generatorOrigin.xCoord+gridSize*gridSize;
-		boolean zr = z >= generatorOrigin.zCoord && z < generatorOrigin.zCoord+gridSize*gridSize;
+		boolean xr = x >= generatorOrigin.xCoord && x < generatorOrigin.xCoord+edgeLength;
+		boolean zr = z >= generatorOrigin.zCoord && z < generatorOrigin.zCoord+edgeLength;
 		return xr && zr && y == generatorOrigin.yCoord+1;
 		 */
 		return y == generatorOrigin.yCoord+2 && this.getAt(x-generatorOrigin.xCoord, z-generatorOrigin.zCoord) != null;
