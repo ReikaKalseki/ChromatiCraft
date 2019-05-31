@@ -4,19 +4,27 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.OverlayColor;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.World.Dimension.Structure.RayBlend.PuzzleProfile;
 import Reika.ChromatiCraft.World.Dimension.Structure.RayBlend.RayBlendPuzzle;
+import Reika.DragonAPI.Instantiable.Data.GappedRange;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 
 public class RayBlendGenerator extends DimensionStructureGenerator {
 
 	private final HashMap<UUID, RayBlendPuzzle> puzzles = new HashMap();
+	//private final HashMap<UUID, Coordinate> doors = new HashMap();
 
 	@Override
 	protected void calculate(int chunkX, int chunkZ, Random rand) {
@@ -24,29 +32,93 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 		int z = chunkZ;
 		int y = 10+rand.nextInt(70);
 		posY = y;
-		RayBlendPuzzle rb = this.createPuzzle(rand);
-		puzzles.put(rb.ID, rb);
-		rb.generate(world, x, y, z);
+
+		PuzzleProfile[] sz = this.getProfileList();
+		int extra = 5+RayBlendPuzzle.PADDING_LOWER*2+RayBlendPuzzle.PADDING_UPPER*2;
+		HashMap<Integer, UUID> doors = new HashMap();
+
+		int len = 0;
+		for (PuzzleProfile p : sz) {
+			len += p.gridSize*p.gridSize+extra;
+		}
+
+		GappedRange gr = new GappedRange();
+
+		int dx = x;
+		for (int i = 0; i < sz.length; i++) {
+			PuzzleProfile p = sz[i];
+			int sizePre = i == 0 ? 0 : sz[i-1].gridSize;
+			RayBlendPuzzle rb = this.createPuzzle(rand, p);
+			puzzles.put(rb.ID, rb);
+			dx += extra+sizePre*sizePre;
+			int dz = z-p.gridSize*p.gridSize/2;
+			rb.generate(world, dx, y, dz);
+			gr.addGap(rb.getGenerationBounds().minX+1, rb.getGenerationBounds().maxX);
+			doors.put(rb.getGenerationBounds().maxX+2, rb.ID);
+		}
+
+		gr.addEndpoint(x-2, true);
+		gr.addEndpoint(x+len+2, true);
+
+		int h = 4;
+		for (int d = -2; d < len+2; d++) {
+			int odx = x+d;
+			if (!gr.isInGap(odx)) {
+				int w = 3;
+				for (int i = -w; i <= w; i++) {
+					for (int dh = -1; dh <= h; dh++) {
+						if (Math.abs(i) == w || dh == -1 || dh == h) {
+							world.setBlock(odx, y+3+dh, z+i, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+						}
+						else {
+							if (doors.containsKey(odx)) {
+								world.setBlock(odx, y+3+dh, z+i, ChromaBlocks.DOOR.getBlockInstance());
+								UUID id = doors.get(odx);
+								puzzles.get(id).addDoor(new Coordinate(odx, y+3+dh, z+i));
+							}
+							else {
+								world.setBlock(odx, y+3+dh, z+i, Blocks.air);
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
-	private RayBlendPuzzle createPuzzle(Random rand) {
-		RayBlendPuzzle ret = new RayBlendPuzzle(this, 4, this.getInitialFillFraction(), rand);
-		while (!ret.prepare(rand)) {
-			ChromatiCraft.logger.log("Puzzle population failed; generating a new rayblend puzzle");
-			ret = new RayBlendPuzzle(this, 4, this.getInitialFillFraction(), rand);
+	private RayBlendPuzzle createPuzzle(Random rand, PuzzleProfile p) {
+		int attempts = 1;
+		RayBlendPuzzle ret = new RayBlendPuzzle(this, p.gridSize, this.getInitialFillFraction(), rand);
+		while (!ret.prepare(p, rand)) {
+			//ChromatiCraft.logger.log("Puzzle population failed; generating a new rayblend puzzle");
+			ret = new RayBlendPuzzle(this, p.gridSize, this.getInitialFillFraction(), rand);
+			attempts++;
 		}
+		ChromatiCraft.logger.log("Successfully generated a puzzle in "+attempts+" attempts.");
 		return ret;
 	}
 
 	private float getInitialFillFraction() {
 		switch(ChromaOptions.getStructureDifficulty()) {
-			case 0:
-				return 0.33F;
 			case 1:
-				return 0.2F;
+				return 0.33F;
 			case 2:
+				return 0.2F;
+			case 3:
 			default:
 				return 0.1F;
+		}
+	}
+
+	private PuzzleProfile[] getProfileList() {
+		switch(ChromaOptions.getStructureDifficulty()) {
+			case 1:
+				return new PuzzleProfile[] {new PuzzleProfile(2), new PuzzleProfile(3), new PuzzleProfile(3, true), new PuzzleProfile(4, true)};
+			case 2:
+				return new PuzzleProfile[] {new PuzzleProfile(2), new PuzzleProfile(2, true), new PuzzleProfile(3), new PuzzleProfile(3, true), new PuzzleProfile(4, true)};
+			case 3:
+			default:
+				return new PuzzleProfile[] {new PuzzleProfile(2), new PuzzleProfile(2, true), new PuzzleProfile(3), new PuzzleProfile(3, true), new PuzzleProfile(3, true), new PuzzleProfile(4, true), new PuzzleProfile(4, true)};
 		}
 	}
 
@@ -110,10 +182,10 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 	}
 	 */
 
-	public boolean allowsCrystalAt(UUID id, int x, int z, CrystalElement e) {
+	public boolean allowsCrystalAt(World world, UUID id, int x, int z, CrystalElement e) {
 		RayBlendPuzzle p = puzzles.get(id);
 		if (p != null) {
-			return p.allowsCrystalAt(x, z, e);
+			return p.allowsCrystalAt(world, x, z, e);
 		}
 		return true;
 	}
@@ -125,10 +197,11 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 				p.addCrystal(world, e, x, z);
 			else
 				p.removeCrystal(world, x, z);
+			p.updateDoors(world);
 		}
 	}
 
-	public CrystalElement getCageColor(UUID id, int x, int z) {
+	public OverlayColor getCageColor(UUID id, int x, int z) {
 		RayBlendPuzzle p = puzzles.get(id);
 		return p != null ? p.getCageColor(x, z) : null;
 	}

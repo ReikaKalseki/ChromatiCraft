@@ -83,10 +83,17 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 	}
 
 	public static void setOpen(World world, int x, int y, int z, boolean open) {
-		if (open)
-			world.setBlockMetadataWithNotify(x, y, z, world.getBlockMetadata(x, y, z) | 1, 3);
-		else
-			world.setBlockMetadataWithNotify(x, y, z, world.getBlockMetadata(x, y, z) & ~1, 3);
+		setOpen(world, x, y, z, open, 0);
+	}
+
+	public static void setOpen(World world, int x, int y, int z, boolean open, int delay) {
+		TileEntity te = world.getTileEntity(x, y, z);
+		if (te instanceof TileEntityChromaDoor) {
+			if (open)
+				((TileEntityChromaDoor)te).open(delay);
+			else
+				((TileEntityChromaDoor)te).close();
+		}
 	}
 
 	public static boolean isOpen(IBlockAccess iba, int x, int y, int z) {

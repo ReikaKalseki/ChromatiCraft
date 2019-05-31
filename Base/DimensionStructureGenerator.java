@@ -164,6 +164,10 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		}
 	}
 
+	public boolean isChunkGenerated(int x, int z) {
+		return world.isChunkGenerated(x, z);
+	}
+
 	public final void generateAll(World w) {
 		world.generateAll(w);
 

@@ -5,12 +5,15 @@ import java.util.UUID;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.OverlayColor;
 import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
@@ -19,7 +22,6 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.RayBlendGenerator;
 import Reika.DragonAPI.DragonAPICore;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -69,7 +71,7 @@ public class BlockRayblendFloor extends BlockDimensionStructureTile {
 	@Override
 	public int colorMultiplier(IBlockAccess world, int x, int y, int z) {
 		TileEntityRayblendFloor te = (TileEntityRayblendFloor)world.getTileEntity(x, y, z);
-		CrystalElement e = te.getOverlayColor();
+		OverlayColor e = te.getOverlayColor();
 		return e != null ? e.getColor() : 0xffffff;
 	}
 
@@ -86,6 +88,24 @@ public class BlockRayblendFloor extends BlockDimensionStructureTile {
 		return world.getBlock(x, y, z) != this;
 	}
 
+	@Override
+	protected boolean onRightClicked(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
+		ItemStack held = ep.getCurrentEquippedItem();
+		Block bk = held != null ? Block.getBlockFromItem(held.getItem()) : null;
+		if (bk instanceof CrystalTypeBlock) {
+			CrystalElement e = CrystalElement.elements[held.getItemDamage()];
+			TileEntityRayblendFloor te = (TileEntityRayblendFloor)world.getTileEntity(x, y, z);
+			if (!te.allowsCrystalAt(x, z, e)) {
+				ChromaSounds.ERROR.playSoundAtBlock(te);
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public static class TileEntityRayblendFloor extends StructureBlockTile<RayBlendGenerator> {
 
 		private UUID puzzleID;
@@ -98,7 +118,12 @@ public class BlockRayblendFloor extends BlockDimensionStructureTile {
 			return DimensionStructureType.RAYBLEND;
 		}
 
-		public CrystalElement getOverlayColor() {
+		public boolean allowsCrystalAt(int x, int z, CrystalElement e) {
+			RayBlendGenerator g = this.getGenerator();
+			return g != null && g.allowsCrystalAt(worldObj, puzzleID, x, z, e);
+		}
+
+		public OverlayColor getOverlayColor() {
 			RayBlendGenerator g = this.getGenerator();
 			return g != null ? g.getCageColor(puzzleID, tileX, tileZ) : null;
 		}
@@ -107,13 +132,17 @@ public class BlockRayblendFloor extends BlockDimensionStructureTile {
 			RayBlendGenerator g = this.getGenerator();
 			if (g == null)
 				return;
-			CrystalElement e = world.getBlock(x, y+1, z) instanceof CrystalTypeBlock ? CrystalElement.elements[world.getBlockMetadata(x, y+1, z)] : null;
+			Block b = world.getBlock(x, y+1, z);
+			int meta = world.getBlockMetadata(x, y+1, z);
+			CrystalElement e = b instanceof CrystalTypeBlock ? CrystalElement.elements[meta] : null;
 			if (e != null) {
+				/*
 				if (!g.allowsCrystalAt(puzzleID, x, z, e)) {
-					ReikaWorldHelper.dropAndDestroyBlockAt(world, x, y+1, z, null, true, true);
+					ReikaItemHelper.dropItem(world, x+0.5, y+1.5, z+0.5, new ItemStack(b, 1, meta));
+					world.setBlockToAir(x, y+1, z);
 					ChromaSounds.ERROR.playSoundAtBlock(this);
 					return;
-				}
+				}*/
 			}
 			g.setCrystal(world, puzzleID, tileX, tileZ, e);
 		}
