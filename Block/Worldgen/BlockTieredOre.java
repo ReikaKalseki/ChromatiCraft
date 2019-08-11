@@ -351,8 +351,8 @@ public class BlockTieredOre extends BlockChromaTiered implements MagneticOreOver
 	}
 
 	@Override
-	public boolean showOnHUD(World world, int x, int y, int z) {
-		return world.getBlockMetadata(x, y, z) == TieredOres.AVOLITE.ordinal();
+	public boolean showOnHUD(World world, int x, int y, int z, EntityPlayer ep) {
+		return world.getBlockMetadata(x, y, z) == TieredOres.AVOLITE.ordinal() && TieredOres.AVOLITE.level.isPlayerAtStage(ep);
 	}
 
 	@Override

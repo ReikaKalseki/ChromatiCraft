@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -29,6 +29,7 @@ import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Instantiable.BoundedValue;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
+import Reika.DragonAPI.Instantiable.GUI.ScrollingButtonList;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -51,6 +52,11 @@ public class GuiParticleSpawner extends GuiChromaBase {
 
 	private static ArrayList<ChromaIcon> permittedIcons = new ArrayList();
 
+	public static final int MAX_ICON_ROWS = 6;
+	public static final int MAX_ICON_COLS = 7;
+
+	private static final ScrollingButtonList iconButtons = new ScrollingButtonList(MAX_ICON_ROWS, MAX_ICON_COLS);
+
 	public GuiParticleSpawner(EntityPlayer ep, TileEntityParticleSpawner te) {
 		super(new CoreContainer(ep, te), ep, te);
 		tile = te;
@@ -64,16 +70,27 @@ public class GuiParticleSpawner extends GuiChromaBase {
 		hue = (int)(hsv[0]*360);
 		saturation = hsv[1];
 		luminosity = hsv[2];
+
+		this.buildIconList();
 	}
 
 	static {
+		buildIconList();
+	}
+
+	private static void buildIconList() {
+		permittedIcons.clear();
+		iconButtons.reset();
 		for (int i = 0; i < 16; i++) {
 			permittedIcons.add(CrystalElement.elements[i]);
+			iconButtons.addButton();
 		}
 		for (int i = 0; i < ChromaIcons.iconList.length; i++) {
 			ChromaIcons ico = ChromaIcons.iconList[i];
 			if (isIconAllowed(ico)) {
 				permittedIcons.add(ico);
+				iconButtons.addButton();
+				//ReikaJavaLibrary.pConsole(ico);
 			}
 		}
 	}
@@ -105,6 +122,14 @@ public class GuiParticleSpawner extends GuiChromaBase {
 			case LATTICE:
 			case GLOWFRAME_TRANS:
 			case GLOWFRAMEDOT_TRANS:
+			case FAN:
+			case SIDEDFLOW:
+			case WIDEBAR:
+			case AVOLASER:
+			case AVOLASER_CORE:
+			case HIVE:
+			case HIVESPARKS:
+			case CAUSTICS_GENTLE_ALPHA:
 				return false;
 			default:
 				return true;
@@ -167,17 +192,21 @@ public class GuiParticleSpawner extends GuiChromaBase {
 				buttonList.add(new GuiButton(300, j+29+in, k+142, 143-in*2, 20, !RGBMode ? "HSV" : "RGB"));
 				break;
 			case ICON: {
+				buttonList.add(new GuiButton(50, j+27, k+144, 20, 20, "^"));
+				buttonList.add(new GuiButton(51, j+47, k+144, 20, 20, "v"));
 				int i = 0;
 				for (ChromaIcon ico : permittedIcons) {
-					int r = 7;
-					int x = j+29+(i%r)*21-2;
-					int y = k+18+(i/r)*21;
-					int u = 106;
-					int v = 213;
-					ImagedGuiButton b = new CustomSoundImagedGuiButton(i+100, x, y, 20, 20, u, v, file, ChromatiCraft.class, this);
-					b.icon = ico.getIcon();
-					b.iconHeight = b.iconWidth = 16;
-					buttonList.add(b);
+					if (i >= iconButtons.getBaseOffset() && i <= iconButtons.getHighestVisible()) {
+						int rowPos = (i/MAX_ICON_COLS)-iconButtons.getScroll();
+						int x = j+29+(i%MAX_ICON_COLS)*21-2;
+						int y = k+18+rowPos*21;
+						int u = 106;
+						int v = 213;
+						ImagedGuiButton b = new CustomSoundImagedGuiButton(i+100, x, y, 20, 20, u, v, file, ChromatiCraft.class, this);
+						b.icon = ico.getIcon();
+						b.iconHeight = b.iconWidth = 16;
+						buttonList.add(b);
+					}
 					i++;
 				}
 				break;
@@ -214,6 +243,7 @@ public class GuiParticleSpawner extends GuiChromaBase {
 		super.actionPerformed(b);
 		if (b.id < GuiPage.list.length) {
 			page = GuiPage.list[b.id];
+			iconButtons.reset();
 		}
 		else {
 			int n = 1;
@@ -236,8 +266,19 @@ public class GuiParticleSpawner extends GuiChromaBase {
 						this.handleColorButton(b.id);
 						break;
 					case ICON:
-						if (b.id >= 100) {
-							tile.particles.particleIcon = permittedIcons.get(b.id-100);
+						if (b.id == 50) {
+							if (iconButtons.scrollUp()) {
+								this.initGui();
+							}
+						}
+						else if (b.id == 51) {
+							if (iconButtons.scrollDown()) {
+								this.initGui();
+							}
+						}
+						else if (b.id >= 100) {
+							int idx = b.id-100;
+							tile.particles.particleIcon = permittedIcons.get(idx);
 						}
 						break;
 					case TIMING:

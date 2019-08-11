@@ -1096,6 +1096,9 @@ public class RecipesCastingTable {
 		moddedItemRecipes.clear();
 		recipeIDs.clear();
 		recipeStringIDs.clear();
+
+		DoubleJumpRecipe.clearCache();
+
 		maxID = 0;
 		maxEnergyCost = 0;
 		maxTotalEnergyCost = 0;

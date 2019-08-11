@@ -203,6 +203,17 @@ VariableTexture {
 			return 1;
 		else if (ModList.GENDUSTRY.isLoaded() && in.getDisplayName() != null && in.getDisplayName().toLowerCase(Locale.ENGLISH).contains("gene"))
 			return 1;
+		else if (ModList.GREGTECH.isLoaded() && ReikaItemHelper.getRegistrantMod(in).toLowerCase(Locale.ENGLISH).contains("gregapi")) {
+			if (in.getItem() instanceof ItemFood)
+				return MULTIPLY;
+			int[] ids = OreDictionary.getOreIDs(in);
+			for (int i = 0; i < ids.length; i++) {
+				String name = OreDictionary.getOreName(ids[i]);
+				if (name.startsWith("crushed") || name.startsWith("ore"))
+					return MULTIPLY;
+			}
+			return 1;
+		}
 		else if (ModList.GEOSTRATA.isLoaded() && RockTypes.getTypeFromID(Block.getBlockFromItem(in.getItem())) != null) {
 			//ReikaItemHelper.matchStacks(out, RockTypes.getTypeFromID(Block.getBlockFromItem(in.getItem())).getItem(RockShapes.SMOOTH)))
 			return 1;

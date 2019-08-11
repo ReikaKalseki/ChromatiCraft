@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special;
 
+import java.util.HashSet;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -21,14 +23,26 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingR
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 
+import cpw.mods.fml.common.registry.GameRegistry;
+
 
 public class DoubleJumpRecipe extends TempleCastingRecipe {
+
+	private static final HashSet<String> alreadyCreated = new HashSet();
 
 	public DoubleJumpRecipe(Item boot) {
 		super(getOutput(boot), getRecipe(boot));
 
 		this.addRune(CrystalElement.LIME, -5, -1, -3);
 		this.addRune(CrystalElement.LIGHTBLUE, 5, -1, 3);
+
+		if (!alreadyCreated.add(this.getIDString())) {
+			throw new RuntimeException("Cannot create second recipe for the same boots item "+boot+" / "+GameRegistry.findUniqueIdentifierFor(boot));
+		}
+	}
+
+	public static void clearCache() {
+		alreadyCreated.clear();
 	}
 
 	@Override

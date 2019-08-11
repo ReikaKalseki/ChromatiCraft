@@ -773,7 +773,7 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		}
 
 		public boolean isCongruent(Subgrid g) {
-
+			return false;
 		}
 
 		public int countColorPresence(World world, CrystalElement e) {
