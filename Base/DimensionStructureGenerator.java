@@ -365,7 +365,7 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		TESSELLATION(TessellationGenerator.class, "Spatial Satisfaction"),
 		LIGHTPANEL(LightPanelGenerator.class, "Glowing Logic"),
 		PISTONTAPE(PistonTapeGenerator.class, "?"),
-		RAYBLEND(RayBlendGenerator.class, "?"),
+		RAYBLEND(RayBlendGenerator.class, "Crystal Interference"),
 		//TRACES(),//http://www.cross-plus-a.com/data/arukone.gif
 		;
 

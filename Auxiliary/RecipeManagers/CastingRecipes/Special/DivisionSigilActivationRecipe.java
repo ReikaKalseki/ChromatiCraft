@@ -43,6 +43,10 @@ public class DivisionSigilActivationRecipe extends MultiBlockCastingRecipe {
 		return is;
 	}
 
+	public static boolean isLoadable() {
+		return sigil != null;
+	}
+
 	@Override
 	public boolean isModded() {
 		return true;

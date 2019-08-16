@@ -247,7 +247,7 @@ public class BlockChromaPortal extends Block {
 					if (ticks%90 == 0)
 						ChromaSounds.PORTAL.playSoundAtBlock(this);
 					if (tuning > 0)
-						if (DragonAPICore.rand.nextInt(80) == 0)
+						if (DragonAPICore.rand.nextInt(400) == 0)
 							tuning--;
 				}
 			}
@@ -265,7 +265,7 @@ public class BlockChromaPortal extends Block {
 				ReikaSoundHelper.playSound(ChromaSounds.GOTODIM, ChromatiCraft.packetChannel, ep.worldObj, 0, 1024, 0, 1, 1, false);
 				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.DIMSOUND.ordinal(), PacketTarget.allPlayers);
 			}
-			tuning = 0;
+			tuning *= 0.4;
 		}
 
 		public void addTuningEnergy(ItemStack is) {

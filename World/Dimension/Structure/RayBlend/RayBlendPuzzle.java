@@ -20,6 +20,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -49,6 +50,8 @@ import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCal
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary.CloneCallback;
+import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -78,7 +81,6 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 
 	public final UUID ID = UUID.randomUUID();
 
-	private static boolean DEBUG = false;
 	private static boolean GENERATE_SOLVED = false;
 
 	public static final int PADDING_LOWER = 3;
@@ -179,6 +181,7 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 	private boolean isNotUniform(Random rand) {
 		Subgrid g1 = ReikaJavaLibrary.getRandomCollectionEntry(rand, grids.values());
 		for (Subgrid g : grids.values()) {
+			//ReikaJavaLibrary.pConsole("Comparing "+g.slots.keySet()+" and "+g1.slots.keySet()+": "+g1.isCongruent(g));
 			if (!g1.isCongruent(g)) {
 				return true;
 			}
@@ -220,14 +223,14 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 				}
 				sg.createSlot(p.x, p.y);
 			}
-			if (sg.size() == cellsPerSubgrid && sg.getStringiness() < this.getMaxAllowedStringingness()) {
+			if (sg.size() == cellsPerSubgrid && sg.getStringiness() <= this.getMaxAllowedStringiness()) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	private double getMaxAllowedStringingness() {
+	private double getMaxAllowedStringiness() {
 		switch(gridSize) {
 			case 1:
 			case 2:
@@ -620,54 +623,58 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		int h = 8;
 		int min1 = -PADDING_LOWER-1;
 		int max1 = edgeLength+PADDING_LOWER;
-		for (int i = min1; i < max1; i++) {
-			for (int k = min1; k < max1; k++) {
-				int dx = x+i;
-				int dz = z+k;
-				int m = BlockType.CLOAK.metadata;
-				if (i >= -1 && i <= edgeLength && k >= -1 && k <= edgeLength) {
-					m = BlockType.STONE.metadata;
+		if (!RayBlendGenerator.DEBUG) {
+			for (int i = min1; i < max1; i++) {
+				for (int k = min1; k < max1; k++) {
+					int dx = x+i;
+					int dz = z+k;
+					int m = BlockType.CLOAK.metadata;
+					if (i >= -1 && i <= edgeLength && k >= -1 && k <= edgeLength) {
+						m = BlockType.STONE.metadata;
+					}
+					world.setBlock(dx, y-1, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+					world.setBlock(dx, y, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+					world.setBlock(dx, y+1, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), m);
 				}
-				world.setBlock(dx, y-1, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
-				world.setBlock(dx, y, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
-				world.setBlock(dx, y+1, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), m);
-			}
 
-			for (int d = 0; d < STEP_HEIGHT; d++) {
-				world.setBlock(x+min1, y+1+d, z+i, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
-				world.setBlock(x+max1, y+1+d, z+i, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
-				world.setBlock(x+i, y+1+d, z+min1, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
-				world.setBlock(x+i, y+1+d, z+max1, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+				for (int d = 0; d < STEP_HEIGHT; d++) {
+					world.setBlock(x+min1, y+1+d, z+i, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+					world.setBlock(x+max1, y+1+d, z+i, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+					world.setBlock(x+i, y+1+d, z+min1, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+					world.setBlock(x+i, y+1+d, z+max1, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+				}
 			}
 		}
 
 		int min2 = -PADDING_LOWER-PADDING_UPPER-1;
 		int max2 = edgeLength+PADDING_LOWER+PADDING_UPPER;
-		for (int i = min2; i < max2; i++) {
-			for (int k = min2; k < max2; k++) {
-				int dx = x+i;
-				int dz = z+k;
-				if (i <= min1 || i >= max1 || k <= min1 || k >= max1) {
-					int m = BlockType.STONE.metadata;
-					if (i > min2+1 && i < max2-1 && k > min2+1 && k < max2-1) {
-						if (i > max1 || i < min1 || k > max1 || k < min1) {
-							m = BlockType.CLOAK.metadata;
+		if (!RayBlendGenerator.DEBUG) {
+			for (int i = min2; i < max2; i++) {
+				for (int k = min2; k < max2; k++) {
+					int dx = x+i;
+					int dz = z+k;
+					if (i <= min1 || i >= max1 || k <= min1 || k >= max1) {
+						int m = BlockType.STONE.metadata;
+						if (i > min2+1 && i < max2-1 && k > min2+1 && k < max2-1) {
+							if (i > max1 || i < min1 || k > max1 || k < min1) {
+								m = BlockType.CLOAK.metadata;
+							}
 						}
+						boolean edgeI = i == min1 || i == max1 || i == max2-1 || i == min2+1;
+						boolean edgeK = k == min1 || k == max1 || k == max2-1 || k == min2+1;
+						if ((edgeI && edgeK) || (dx == MathHelper.floor_float(midX) && edgeK) || (dz == MathHelper.floor_float(midZ) && edgeI) && m == BlockType.STONE.metadata)
+							m = BlockType.LIGHT.metadata;
+						world.setBlock(dx, y+1+STEP_HEIGHT, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), m);
 					}
-					boolean edgeI = i == min1 || i == max1 || i == max2-1 || i == min2+1;
-					boolean edgeK = k == min1 || k == max1 || k == max2-1 || k == min2+1;
-					if ((edgeI && edgeK) || (dx == MathHelper.floor_float(midX) && edgeK) || (dz == MathHelper.floor_float(midZ) && edgeI) && m == BlockType.STONE.metadata)
-						m = BlockType.LIGHT.metadata;
-					world.setBlock(dx, y+1+STEP_HEIGHT, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), m);
+					world.setBlock(dx, y+h-1, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
 				}
-				world.setBlock(dx, y+h-1, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
-			}
 
-			for (int d = 0; d < h; d++) {
-				world.setBlock(x+min2, y-1+d, z+i, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
-				world.setBlock(x+max2, y-1+d, z+i, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
-				world.setBlock(x+i, y-1+d, z+min2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
-				world.setBlock(x+i+1, y-1+d, z+max2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+				for (int d = 0; d < h; d++) {
+					world.setBlock(x+min2, y-1+d, z+i, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+					world.setBlock(x+max2, y-1+d, z+i, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+					world.setBlock(x+i, y-1+d, z+min2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+					world.setBlock(x+i+1, y-1+d, z+max2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+				}
 			}
 		}
 
@@ -676,9 +683,10 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 				int dx = x+i;
 				int dz = z+k;
 				boolean light = (i/gridSize+k/gridSize)%2 == 0;
-				world.setBlock(dx, y, dz, ChromaBlocks.SPECIALSHIELD.getBlockInstance(), light ? 1 : 0);
+				if (!RayBlendGenerator.DEBUG)
+					world.setBlock(dx, y, dz, ChromaBlocks.SPECIALSHIELD.getBlockInstance(), light ? 1 : 0);
 				GridSlot gs = this.getAt(i, k);
-				if (DEBUG) {
+				if (RayBlendGenerator.DEBUG) {
 					world.setTileEntity(dx, y+1, dz, ChromaBlocks.RAYBLEND.getBlockInstance(), 0, new RayblendFloorCallback(parent.id, ID, gs.parent.ID, gs.xPos, gs.zPos));
 				}
 				else {
@@ -737,7 +745,7 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 	}
 
 	public OverlayColor getCageColor(int x, int z) {
-		if (DEBUG) {
+		if (RayBlendGenerator.DEBUG) {
 			int idx = this.getAt(x, z).parent.index;
 			float hue = idx/(float)(totalCellCount/cellsPerSubgrid);
 			return new IntOverlayColor(Color.HSBtoRGB(hue, 1, 1));
@@ -748,7 +756,7 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		}
 	}
 
-	private static class Subgrid {
+	private static class Subgrid implements CloneCallback<Point> {
 
 		private final UUID ID = UUID.randomUUID();
 		private final RayBlendPuzzle parent;
@@ -773,7 +781,44 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		}
 
 		public boolean isCongruent(Subgrid g) {
+			if (g == this)
+				return true;
+			if (g.slots.size() != slots.size())
+				return false;
+			Collection<Point> set1 = new ArrayList(ReikaJavaLibrary.cloneCollectionObjects(slots.keySet(), this));
+			Collection<Point> set2 = new ArrayList(ReikaJavaLibrary.cloneCollectionObjects(g.slots.keySet(), this));
+			this.normalizePoints(set1);
+			this.normalizePoints(set2);
+			if (ReikaJavaLibrary.collectionsHaveSameValues(set1, set2))
+				return true;
+			for (int i = 0; i < 3; i++) {
+				this.rotatePoints(set2);
+				this.normalizePoints(set2);
+				if (ReikaJavaLibrary.collectionsHaveSameValues(set1, set2))
+					return true;
+			}
 			return false;
+		}
+
+		private void rotatePoints(Collection<Point> set) {
+			for (Point p : set) {
+				Vec3 r = ReikaVectorHelper.rotateVector(Vec3.createVectorHelper(p.x, 0, p.y), 0, 90, 0);
+				p.x = MathHelper.floor_double(r.xCoord);
+				p.y = MathHelper.floor_double(r.zCoord);
+			}
+		}
+
+		private void normalizePoints(Collection<Point> set) {
+			int minX = Integer.MAX_VALUE;
+			int minY = Integer.MAX_VALUE;
+			for (Point p : set) {
+				minX = Math.min(minX, p.x);
+				minY = Math.min(minY, p.y);
+			}
+			for (Point p : set) {
+				p.x -= minX;
+				p.y -= minY;
+			}
 		}
 
 		public int countColorPresence(World world, CrystalElement e) {
@@ -878,6 +923,11 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		@Override
 		public String toString() {
 			return "Subgrid #"+index+" of size "+this.size();
+		}
+
+		@Override
+		public Point clone(Point o) {
+			return new Point(o.x, o.y);
 		}
 
 	}

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -75,7 +75,7 @@ public class LoreScriptRenderer {
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL11.glAlphaFunc(GL11.GL_GREATER, 1/255F);
 		int alpha = ReikaColorAPI.getAlpha(color);
-		if (alpha == 0)
+		if (alpha <= 0)
 			alpha = 255;
 		Tessellator.instance.startDrawingQuads();
 		Tessellator.instance.setColorRGBA_I(color, alpha);

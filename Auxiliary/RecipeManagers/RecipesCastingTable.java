@@ -926,7 +926,7 @@ public class RecipesCastingTable {
 			}
 		}
 
-		if (ModList.EXTRAUTILS.isLoaded()) {
+		if (ModList.EXTRAUTILS.isLoaded() && DivisionSigilActivationRecipe.isLoadable()) {
 			this.addRecipe(new DivisionSigilActivationRecipe());
 		}
 

@@ -16,12 +16,16 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.RayBlend.PuzzleProfile;
+import Reika.ChromatiCraft.World.Dimension.Structure.RayBlend.RayBlendEntrance;
+import Reika.ChromatiCraft.World.Dimension.Structure.RayBlend.RayBlendLoot;
 import Reika.ChromatiCraft.World.Dimension.Structure.RayBlend.RayBlendPuzzle;
 import Reika.DragonAPI.Instantiable.Data.GappedRange;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 
 public class RayBlendGenerator extends DimensionStructureGenerator {
+
+	public static boolean DEBUG = false;
 
 	private final HashMap<UUID, RayBlendPuzzle> puzzles = new HashMap();
 	//private final HashMap<UUID, Coordinate> doors = new HashMap();
@@ -50,40 +54,46 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 			int sizePre = i == 0 ? 0 : sz[i-1].gridSize;
 			RayBlendPuzzle rb = this.createPuzzle(rand, p);
 			puzzles.put(rb.ID, rb);
-			dx += extra+sizePre*sizePre;
+			dx += DEBUG ? 7 : extra+sizePre*sizePre;
 			int dz = z-p.gridSize*p.gridSize/2;
 			rb.generate(world, dx, y, dz);
 			gr.addGap(rb.getGenerationBounds().minX+1, rb.getGenerationBounds().maxX);
 			doors.put(rb.getGenerationBounds().maxX+2, rb.ID);
 		}
+		len += 7;
 
 		gr.addEndpoint(x-2, true);
 		gr.addEndpoint(x+len+2, true);
 
-		int h = 4;
-		for (int d = -2; d < len+2; d++) {
-			int odx = x+d;
-			if (!gr.isInGap(odx)) {
-				int w = 3;
-				for (int i = -w; i <= w; i++) {
-					for (int dh = -1; dh <= h; dh++) {
-						if (Math.abs(i) == w || dh == -1 || dh == h) {
-							world.setBlock(odx, y+3+dh, z+i, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
-						}
-						else {
-							if (doors.containsKey(odx)) {
-								world.setBlock(odx, y+3+dh, z+i, ChromaBlocks.DOOR.getBlockInstance());
-								UUID id = doors.get(odx);
-								puzzles.get(id).addDoor(new Coordinate(odx, y+3+dh, z+i));
+		if (!DEBUG) {
+			int h = 4;
+			for (int d = -2; d < len+4; d++) {
+				int odx = x+d;
+				if (!gr.isInGap(odx)) {
+					int w = 3;
+					for (int i = -w; i <= w; i++) {
+						for (int dh = -1; dh <= h; dh++) {
+							if (Math.abs(i) == w || dh == -1 || dh == h) {
+								world.setBlock(odx, y+3+dh, z+i, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
 							}
 							else {
-								world.setBlock(odx, y+3+dh, z+i, Blocks.air);
+								if (doors.containsKey(odx)) {
+									world.setBlock(odx, y+3+dh, z+i, ChromaBlocks.DOOR.getBlockInstance());
+									UUID id = doors.get(odx);
+									puzzles.get(id).addDoor(new Coordinate(odx, y+3+dh, z+i));
+								}
+								else {
+									world.setBlock(odx, y+3+dh, z+i, Blocks.air);
+								}
 							}
 						}
 					}
 				}
 			}
 		}
+
+		new RayBlendLoot(this).generate(world, x+len+3, y+2, z-7);
+		this.addDynamicStructure(new RayBlendEntrance(this), x-5, z);
 	}
 
 	private RayBlendPuzzle createPuzzle(Random rand, PuzzleProfile p) {
@@ -111,14 +121,16 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 	}
 
 	private PuzzleProfile[] getProfileList() {
+		if (DEBUG)
+			return new PuzzleProfile[] {new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(2)};
 		switch(ChromaOptions.getStructureDifficulty()) {
 			case 1:
-				return new PuzzleProfile[] {new PuzzleProfile(2), new PuzzleProfile(3), new PuzzleProfile(3, true), new PuzzleProfile(4, true)};
+				return new PuzzleProfile[] {new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(3), new PuzzleProfile(3, true), new PuzzleProfile(4, true)};
 			case 2:
-				return new PuzzleProfile[] {new PuzzleProfile(2), new PuzzleProfile(2, true), new PuzzleProfile(3), new PuzzleProfile(3, true), new PuzzleProfile(4, true)};
+				return new PuzzleProfile[] {new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(2, true), new PuzzleProfile(3), new PuzzleProfile(3, true), new PuzzleProfile(4, true)};
 			case 3:
 			default:
-				return new PuzzleProfile[] {new PuzzleProfile(2), new PuzzleProfile(2, true), new PuzzleProfile(3), new PuzzleProfile(3, true), new PuzzleProfile(3, true), new PuzzleProfile(4, true), new PuzzleProfile(4, true)};
+				return new PuzzleProfile[] {new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(2, true), new PuzzleProfile(2, true), new PuzzleProfile(3), new PuzzleProfile(3, true), new PuzzleProfile(3, true), new PuzzleProfile(4, true), new PuzzleProfile(4, true)};
 		}
 	}
 
