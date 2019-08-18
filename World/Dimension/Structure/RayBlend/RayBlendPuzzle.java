@@ -623,7 +623,18 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		int h = 8;
 		int min1 = -PADDING_LOWER-1;
 		int max1 = edgeLength+PADDING_LOWER;
+		int min2 = -PADDING_LOWER-PADDING_UPPER-1;
+		int max2 = edgeLength+PADDING_LOWER+PADDING_UPPER;
 		if (!RayBlendGenerator.DEBUG) {
+			for (int i = min2; i < max2; i++) {
+				for (int k = min2; k < max2; k++) {
+					int dx = x+i;
+					int dz = z+k;
+					for (int d = 0; d < h; d++) {
+						world.setBlock(dx, y+d, dz, Blocks.air);
+					}
+				}
+			}
 			for (int i = min1; i < max1; i++) {
 				for (int k = min1; k < max1; k++) {
 					int dx = x+i;
@@ -646,8 +657,6 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 			}
 		}
 
-		int min2 = -PADDING_LOWER-PADDING_UPPER-1;
-		int max2 = edgeLength+PADDING_LOWER+PADDING_UPPER;
 		if (!RayBlendGenerator.DEBUG) {
 			for (int i = min2; i < max2; i++) {
 				for (int k = min2; k < max2; k++) {

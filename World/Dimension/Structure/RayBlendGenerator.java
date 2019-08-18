@@ -62,7 +62,7 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 		}
 		len += 7;
 
-		gr.addEndpoint(x-2, true);
+		gr.addEndpoint(x-6, true);
 		gr.addEndpoint(x+len+2, true);
 
 		if (!DEBUG) {
@@ -93,7 +93,7 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 		}
 
 		new RayBlendLoot(this).generate(world, x+len+3, y+2, z-7);
-		this.addDynamicStructure(new RayBlendEntrance(this), x-5, z);
+		this.addDynamicStructure(new RayBlendEntrance(this), x-4, z);
 	}
 
 	private RayBlendPuzzle createPuzzle(Random rand, PuzzleProfile p) {

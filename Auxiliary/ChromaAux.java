@@ -41,6 +41,7 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.DimensionManager;
@@ -84,6 +85,7 @@ import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Interfaces.Entity.CustomProjectile;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
@@ -625,6 +627,8 @@ public class ChromaAux {
 	public static int groundOpacity(IBlockAccess iba, int x, int y, int z, Block b) {
 		if (iba instanceof World) {
 			World w = (World)iba;
+			if (w.getWorldInfo().getTerrainType() == WorldType.FLAT && ReikaObfuscationHelper.isDeObfEnvironment())
+				return b.getLightOpacity();
 			if (!ReikaWorldHelper.isChunkPastNoiseGen(w, x >> 4, z >> 4)) {
 				return b.getLightOpacity();
 			}
