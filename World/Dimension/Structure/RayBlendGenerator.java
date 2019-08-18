@@ -31,6 +31,15 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 	//private final HashMap<UUID, Coordinate> doors = new HashMap();
 
 	@Override
+	public void updateTick(World world) {
+		if (!world.isRemote) {
+			for (RayBlendPuzzle p : puzzles.values()) {
+				p.tick(world);
+			}
+		}
+	}
+
+	@Override
 	protected void calculate(int chunkX, int chunkZ, Random rand) {
 		int x = chunkX;
 		int z = chunkZ;
@@ -51,8 +60,10 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 		int dx = x;
 		for (int i = 0; i < sz.length; i++) {
 			PuzzleProfile p = sz[i];
-			int sizePre = i == 0 ? 0 : sz[i-1].gridSize;
 			RayBlendPuzzle rb = this.createPuzzle(rand, p);
+			if (rb == null)
+				continue;
+			int sizePre = i == 0 ? 0 : sz[i-1].gridSize;
 			puzzles.put(rb.ID, rb);
 			dx += DEBUG ? 7 : extra+sizePre*sizePre;
 			int dz = z-p.gridSize*p.gridSize/2;
@@ -103,8 +114,12 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 			//ChromatiCraft.logger.log("Puzzle population failed; generating a new rayblend puzzle");
 			ret = new RayBlendPuzzle(this, p.gridSize, this.getInitialFillFraction(), rand);
 			attempts++;
+			if (attempts > 40) {
+				ChromatiCraft.logger.logError("Failed to generate a "+p+" puzzle in a reasonable time!");
+				return null;
+			}
 		}
-		ChromatiCraft.logger.log("Successfully generated a puzzle in "+attempts+" attempts.");
+		ChromatiCraft.logger.log("Successfully generated a "+p+" puzzle in "+attempts+" attempts.");
 		return ret;
 	}
 
@@ -125,12 +140,12 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 			return new PuzzleProfile[] {new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(2)};
 		switch(ChromaOptions.getStructureDifficulty()) {
 			case 1:
-				return new PuzzleProfile[] {new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(3), new PuzzleProfile(3, true), new PuzzleProfile(4, true)};
+				return new PuzzleProfile[] {new PuzzleProfile(2), new PuzzleProfile(2, true, false), new PuzzleProfile(3), new PuzzleProfile(3, true, true), new PuzzleProfile(4, true, false)};
 			case 2:
-				return new PuzzleProfile[] {new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(2, true), new PuzzleProfile(3), new PuzzleProfile(3, true), new PuzzleProfile(4, true)};
+				return new PuzzleProfile[] {new PuzzleProfile(2), new PuzzleProfile(2, true, false), new PuzzleProfile(2, true, true), new PuzzleProfile(3), new PuzzleProfile(3, true, false), new PuzzleProfile(4, true, true)};
 			case 3:
 			default:
-				return new PuzzleProfile[] {new PuzzleProfile(2), new PuzzleProfile(2), new PuzzleProfile(2, true), new PuzzleProfile(2, true), new PuzzleProfile(3), new PuzzleProfile(3, true), new PuzzleProfile(3, true), new PuzzleProfile(4, true), new PuzzleProfile(4, true)};
+				return new PuzzleProfile[] {new PuzzleProfile(2), new PuzzleProfile(2, true, false), new PuzzleProfile(2, true, true), new PuzzleProfile(2, true, true), new PuzzleProfile(3), new PuzzleProfile(3, true, false), new PuzzleProfile(3, true, true), new PuzzleProfile(4, true, false), new PuzzleProfile(4, true, true)};
 		}
 	}
 

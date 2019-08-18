@@ -1,6 +1,7 @@
 package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 import net.minecraft.util.MathHelper;
@@ -55,6 +56,11 @@ public final class ElementEncodedNumber {
 
 	public CrystalElement getSlot(int idx) {
 		return encodedValue[idx];
+	}
+
+	@Override
+	public String toString() {
+		return originalValue+" = "+Arrays.deepToString(encodedValue);
 	}
 
 	public static class EncodedPosition {

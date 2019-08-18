@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -44,11 +45,13 @@ import Reika.ChromatiCraft.World.Dimension.Structure.RayBlendGenerator;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget.RadiusTarget;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary.CloneCallback;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
@@ -63,6 +66,7 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 
 	private final HashMap<Point, Subgrid> grids = new HashMap();
 	private final HashMap<Point, GridCage> cages = new HashMap();
+	private final HashMap<Point, CrystalMix> mixPoints = new HashMap();
 
 	private final HashSet<Point> unGriddedPoints = new HashSet();
 
@@ -459,6 +463,16 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 				gs.appearsAtStart = true; //force at least one cage to have at least one crystal per puzzle
 			}
 		}
+		if (p.markIntersections) {
+			HashSet<Point> set = new HashSet(grids.keySet());
+			while (!set.isEmpty() && mixPoints.size() < gridSize) {
+				Point mix = ReikaJavaLibrary.getRandomCollectionEntry(rand, set);
+				CrystalMix e = this.getValidMix(mix, rand);
+				if (e != null) {
+					mixPoints.put(mix, e);
+				}
+			}
+		}
 		int n = (int)(initialFillFraction*totalCellCount);
 		while (n > 0 && !candidateStarts.isEmpty()) {
 			GridSlot gs = ReikaJavaLibrary.getRandomCollectionEntry(rand, candidateStarts);
@@ -466,6 +480,46 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 			gs.appearsAtStart = true;
 			n--;
 		}
+	}
+
+	private CrystalMix getValidMix(Point p, Random rand) {
+		if (true)
+			return null;
+		//Point p1 = new Point(mix.x, mix.y);
+		//Point p2 = new Point(mix.x, mix.y);
+		//for (int i = 0; i < edgeLength; i++) {
+		//	for (int k = 0; k < edgeLength; k++) {
+		GridSlot at = this.getAt(p.x, p.y);
+		if (at.color == null || at.isBlocked)
+			return null;
+		GridSlot g1 = this.getRandomSlotExcluding(rand, p);//this.getAt(p.x, i);
+		GridSlot g2 = this.getRandomSlotExcluding(rand, p, g1.positionKey());//this.getAt(i, p.y);
+		int n = 0;
+		CrystalMix mix = this.getValidMix(p, at.color, g1, g2);
+		while (mix == null && n < 4) {
+			g1 = this.getRandomSlotExcluding(rand, p);
+			g2 = this.getRandomSlotExcluding(rand, p, g1.positionKey());
+			mix = this.getValidMix(p, at.color, g1, g2);
+			n++;
+		}
+		//	}
+		//}
+		return mix;
+	}
+
+
+	private GridSlot getRandomSlotExcluding(Random rand, Point... pts) {
+		Point p = ReikaJavaLibrary.getRandomCollectionEntry(rand, grids.keySet());
+		while (ReikaArrayHelper.contains(pts, p))
+			p = ReikaJavaLibrary.getRandomCollectionEntry(rand, grids.keySet());
+		return this.getAt(p.x, p.y);
+	}
+
+	private CrystalMix getValidMix(Point p, CrystalElement base, GridSlot g1, GridSlot g2) {
+		if (g1.color == null || g2.color == null)
+			return null;
+		CrystalElement e = g1.color.mixWith(g2.color);
+		return e == base ? new CrystalMix(e, p, g1, g2) : null;
 	}
 
 	private void cage(GridSlot slot, GridSlot slot2) {
@@ -587,6 +641,12 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 				fx.setColor(e.getColor()).setScale(5).setLife(60).setIcon(ChromaIcons.CENTER).setRapidExpand().setAlphaFading();
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
+		}
+	}
+
+	public void tick(World world) {
+		for (CrystalMix mix : mixPoints.values()) {
+			mix.sendParticles(world, generatorOrigin.xCoord, generatorOrigin.yCoord+2, generatorOrigin.zCoord);
 		}
 	}
 
@@ -735,6 +795,12 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 	public boolean isValid(World world) {
 		for (Subgrid g : grids.values()) {
 			if (!g.isValid(world))
+				return false;
+		}
+		for (Entry<Point, CrystalMix> en : mixPoints.entrySet()) {
+			Point p = en.getKey();
+			GridSlot gs = this.getAt(p.x, p.y);
+			if (gs.currentCrystal != en.getValue().color)
 				return false;
 		}
 		return true;
@@ -1049,6 +1115,48 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		@Override
 		public String toString() {
 			return "["+xPos+", "+zPos+"]; "+color+"/"+currentCrystal+"; "+isBlocked+"/"+isGoal+"/"+appearsAtStart;
+		}
+
+	}
+
+	public static class CrystalMix {
+
+		private final CrystalElement color;
+		private final Point position;
+		private final GridSlot pos1;
+		private final GridSlot pos2;
+
+		public CrystalMix(CrystalElement e, Point p, GridSlot g1, GridSlot g2) {
+			color = e;
+			position = p;
+			pos1 = g1;
+			pos2 = g2;
+		}
+
+		public void sendParticles(World world, int x0, int y0, int z0) {
+			if (world.rand.nextInt(5) == 0)
+				ReikaPacketHelper.sendPositionPacket(ChromatiCraft.packetChannel, ChromaPackets.RAYBLENDMIX.ordinal(), world, position.x+x0+0.5, y0+0.5, position.y+z0+0.5, new PacketTarget.RadiusTarget(world, x0, y0, z0, 32), color.ordinal(), 1);
+			if (world.rand.nextInt(5) == 0)
+				ReikaPacketHelper.sendPositionPacket(ChromatiCraft.packetChannel, ChromaPackets.RAYBLENDMIX.ordinal(), world, pos1.xPos+x0+0.5, y0+0.5, pos1.zPos+z0+0.5, new PacketTarget.RadiusTarget(world, x0, y0, z0, 32), color.ordinal(), 0);
+			if (world.rand.nextInt(5) == 0)
+				ReikaPacketHelper.sendPositionPacket(ChromatiCraft.packetChannel, ChromaPackets.RAYBLENDMIX.ordinal(), world, pos2.xPos+x0+0.5, y0+0.5, pos2.zPos+z0+0.5, new PacketTarget.RadiusTarget(world, x0, y0, z0, 32), color.ordinal(), 0);
+			//this.doParticle(world, position.x+x0+0.5, y0+0.5, position.y+z0+0.5, color, true);
+			//this.doParticle(world, pos1.xPos+x0+0.5, y0+0.5, pos1.zPos+z0+0.5, pos1.color, false);
+			//this.doParticle(world, pos2.xPos+x0+0.5, y0+0.5, pos2.zPos+z0+0.5, pos2.color, false);
+		}
+
+		@SideOnly(Side.CLIENT)
+		public static void doParticle(World world, double x, double y, double z, CrystalElement e, boolean mix) {
+			if (mix) {
+				EntityBlurFX fx = new EntityBlurFX(world, x, y, z);
+				fx.setColor(e.getColor()).setScale(3).setLife(60).setIcon(ChromaIcons.FADE).setRapidExpand().setAlphaFading();
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
+			else {
+				EntityBlurFX fx = new EntityBlurFX(world, x, y, z);
+				fx.setColor(e.getColor()).setScale(2).setLife(60).setIcon(ChromaIcons.FADE).setRapidExpand().setAlphaFading();
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
 		}
 
 	}

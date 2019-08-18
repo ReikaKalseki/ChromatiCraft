@@ -148,7 +148,11 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		posZ = chunkZ;
 		entryX = chunkX;
 		entryZ = chunkZ;
+		long time = System.currentTimeMillis();
+		ChromatiCraft.logger.log("Calculating a "+e+" "+this.getType());
 		this.calculate(chunkX, chunkZ, rand);
+		long dur = System.currentTimeMillis()-time;
+		ChromatiCraft.logger.log("Done in "+dur+" ms");
 	}
 
 	public final void generateChunk(World w, ChunkCoordIntPair cp) {
@@ -231,7 +235,9 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 	public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 		if (te instanceof TileEntityDimensionCore) {
-			((TileEntityDimensionCore)te).setStructure(new StructurePair(this, this.getCoreColor(world)));
+			StructurePair sp = new StructurePair(this, this.getCoreColor(world));
+			sp.generatedDimension = world.provider.dimensionId;
+			((TileEntityDimensionCore)te).setStructure(sp);
 		}
 		else {
 			ChromatiCraft.logger.logError(te+" instead of a Dimension Core at "+x+", "+y+", "+z+"!!");
@@ -290,6 +296,8 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 		public final DimensionStructureGenerator generator;
 		public final CrystalElement color;
+
+		public int generatedDimension = Integer.MIN_VALUE+1;
 
 		public StructurePair(DimensionStructureGenerator gen, CrystalElement e) {
 			generator = gen;
@@ -515,6 +523,14 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 	}
 
+	public void onBlockUpdate(World world, int x, int y, int z, Block b) {
+
+	}
+
+	public void updateTick(World world) {
+
+	}
+
 	private static final class StructureInterfaceCallback implements TileCallback {
 
 		private final DimensionStructureGenerator generator;
@@ -587,10 +603,6 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 				}
 			}
 		}
-
-	}
-
-	public void onBlockUpdate(World world, int x, int y, int z, Block b) {
 
 	}
 

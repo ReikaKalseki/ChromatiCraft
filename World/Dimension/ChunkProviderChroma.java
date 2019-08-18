@@ -789,6 +789,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 		ChunkCoordIntPair cp = new ChunkCoordIntPair(x, z);
 		for (StructurePair s : structures) {
 			//ReikaJavaLibrary.pConsole("Generating chunk "+x+", "+z+" for a "+s.color+" "+s.generator);
+			s.generatedDimension = worldObj.provider.dimensionId;
 			s.generator.generateChunk(worldObj, cp);
 		}
 		monument.generateChunk(worldObj, cp);

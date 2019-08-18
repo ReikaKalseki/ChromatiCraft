@@ -1028,6 +1028,9 @@ public class ChromatiPackets implements PacketHandler {
 				case RAYBLENDPING:
 					RayBlendPuzzle.spawnPingParticle(world, CrystalElement.elements[data[0]], x, y, z);
 					break;
+				case RAYBLENDMIX:
+					RayBlendPuzzle.CrystalMix.doParticle(world, dx, dy, dz, CrystalElement.elements[data[0]], data[1] > 0);
+					break;
 			}
 		}
 		catch (NullPointerException e) {

@@ -191,6 +191,7 @@ public enum ChromaPackets {
 	RFWEBSEND(4),
 	STRUCTSEED(2),
 	RAYBLENDPING(1),
+	RAYBLENDMIX(2, PacketTypes.POS),
 	;
 
 	public final int numInts;

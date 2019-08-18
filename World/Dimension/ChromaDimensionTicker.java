@@ -15,16 +15,19 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Random;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 
 import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.MusicLoader;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionalAudioHandler.DimensionMusic;
@@ -99,10 +102,7 @@ public class ChromaDimensionTicker implements TickHandler {
 				break;
 			}
 			case CLIENT:
-				if (!ChromaDimensionalAudioHandler.music.isEmpty())
-					ChromaDimensionalAudioHandler.playMusic();
-				ChromaDimensionalAudioHandler.ensureSoundOn();
-				SkyRiverManagerClient.handleSkyRiverMovementClient();
+				this.tickClient();
 				break;
 			case PLAYER:
 				EntityPlayer ep = (EntityPlayer)tickData[0];
@@ -120,8 +120,31 @@ public class ChromaDimensionTicker implements TickHandler {
 					}
 				}
 				break;
+			case SERVER: {
+				for (StructurePair sp : ChunkProviderChroma.structures) {
+					//ReikaJavaLibrary.pConsole(sp);
+					World w = DimensionManager.getWorld(sp.generatedDimension);
+					if (w != null && !w.playerEntities.isEmpty())
+						sp.generator.updateTick(w);
+				}
+			}
 			default:
 				break;
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void tickClient() {
+		World world = Minecraft.getMinecraft().theWorld;
+		if (world != null && !world.playerEntities.isEmpty()) {
+			if (!ChromaDimensionalAudioHandler.music.isEmpty())
+				ChromaDimensionalAudioHandler.playMusic();
+			ChromaDimensionalAudioHandler.ensureSoundOn();
+			SkyRiverManagerClient.handleSkyRiverMovementClient();
+			for (StructurePair sp : ChunkProviderChroma.structures) {
+				if (sp.generatedDimension == world.provider.dimensionId)
+					sp.generator.updateTick(world);
+			}
 		}
 	}
 

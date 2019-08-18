@@ -20,6 +20,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ElementEncodedNumber;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructureTypeData;
@@ -258,7 +259,7 @@ public class StructureCalculator extends ThreadedGenerator {
 		s.generator.startCalculate(s.color, x, z, rand);
 		double dt = (System.currentTimeMillis()-t)/1000D;
 		if ((DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) || DragonAPICore.debugtest) {
-			String sg = "CHROMATICRAFT: Generated a "+s.color+" "+s.generator+" at "+s.generator.getEntryPosX()+", "+s.generator.getEntryPosZ()+" with password "+s.generator.getPassword(null)+" in "+dt+" s";
+			String sg = "CHROMATICRAFT: Generated a "+s.color+" "+s.generator+" at "+s.generator.getEntryPosX()+", "+s.generator.getEntryPosZ()+" with password "+new ElementEncodedNumber(s.generator.getPassword(null))+" in "+dt+" s";
 			ReikaJavaLibrary.pConsole(sg);
 		}
 	}

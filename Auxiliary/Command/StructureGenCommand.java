@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -46,6 +46,7 @@ public class StructureGenCommand extends DragonCommandBase {
 				}
 				HashSet<DimensionStructureType> set = new HashSet();
 				for (StructurePair p : ChunkProviderChroma.getStructures()) {
+					p.generatedDimension = ep.worldObj.provider.dimensionId;
 					DimensionStructureType type = p.generator.getType();
 					if (set.contains(type)) //only gen one of each
 						continue;
