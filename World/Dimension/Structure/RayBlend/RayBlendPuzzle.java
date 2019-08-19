@@ -467,6 +467,7 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 			HashSet<Point> set = new HashSet(grids.keySet());
 			while (!set.isEmpty() && mixPoints.size() < gridSize) {
 				Point mix = ReikaJavaLibrary.getRandomCollectionEntry(rand, set);
+				set.remove(mix);
 				CrystalMix e = this.getValidMix(mix, rand);
 				if (e != null) {
 					mixPoints.put(mix, e);

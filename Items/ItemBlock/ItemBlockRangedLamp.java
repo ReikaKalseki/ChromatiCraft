@@ -25,7 +25,7 @@ public class ItemBlockRangedLamp extends ItemBlockDyeTypes {
 
 	@Override
 	public boolean placeBlockAt(ItemStack stack, EntityPlayer ep, World world, int x, int y, int z, int side, float a, float b, float c, int metadata) {
-		if (!world.setBlock(x, y, z, field_150939_a, metadata, 3))
+		if (!world.setBlock(x, y, z, field_150939_a, metadata%16, 3))
 			return false;
 
 		if (world.getBlock(x, y, z) == field_150939_a) {

@@ -19,6 +19,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Maps.BlockMap;
@@ -32,8 +33,10 @@ import Reika.RotaryCraft.TileEntities.Processing.TileEntityCrystallizer;
 import Reika.RotaryCraft.TileEntities.Production.TileEntityBlastFurnace;
 import Reika.RotaryCraft.TileEntities.Production.TileEntityFermenter;
 
+import ic2.api.energy.tile.IHeatSource;
 
-public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade {
+@Strippable(value = "ic2.api.energy.tile.IHeatSource")
+public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade implements IHeatSource {
 
 	private static final BlockMap<Integer> blockTemps = new BlockMap();
 	private static final HashMap<String, Integer> tileList = new HashMap();
@@ -149,6 +152,16 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade {
 
 	public static double getFactor(int tier) {
 		return factors[tier];
+	}
+
+	@Override
+	public int maxrequestHeatTick(ForgeDirection dir) {
+		return this.hasSufficientEnergy() ? (1+this.getTier())*20 : 0;
+	}
+
+	@Override
+	public int requestHeat(ForgeDirection dir, int amt) {
+		return Math.min(amt, this.maxrequestHeatTick(dir));
 	}
 
 }

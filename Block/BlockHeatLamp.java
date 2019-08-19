@@ -32,6 +32,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.SidedBlock;
 import Reika.ChromatiCraft.Base.BlockAttachableMini;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -40,6 +41,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Interfaces.TileEntity.ThermalTile;
@@ -56,6 +58,7 @@ import Reika.RotaryCraft.Auxiliary.Interfaces.TemperatureTE;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import ic2.api.energy.tile.IHeatSource;
 
 public class BlockHeatLamp extends BlockAttachableMini {
 
@@ -123,7 +126,8 @@ public class BlockHeatLamp extends BlockAttachableMini {
 		return iba.getBlockMetadata(x, y, z) >= 8;
 	}
 
-	public static class TileEntityHeatLamp extends TileEntity implements GuiController {
+	@Strippable(value = "ic2.api.energy.tile.IHeatSource")
+	public static class TileEntityHeatLamp extends TileEntity implements GuiController, IHeatSource {
 
 		public int temperature;
 		public static final int MAXTEMP = 615;
@@ -232,6 +236,16 @@ public class BlockHeatLamp extends BlockAttachableMini {
 		@Override
 		public AxisAlignedBB getRenderBoundingBox() {
 			return ReikaAABBHelper.getBlockAABB(xCoord, yCoord, zCoord);
+		}
+
+		@Override
+		public int maxrequestHeatTick(ForgeDirection dir) {
+			return !this.isCold() && ((SidedBlock)this.getBlockType()).getSide(worldObj, xCoord, yCoord, zCoord) == dir.getOpposite() ? Math.min(10, temperature/50) : 0;
+		}
+
+		@Override
+		public int requestHeat(ForgeDirection dir, int amt) {
+			return Math.min(this.maxrequestHeatTick(dir), amt);
 		}
 
 	}

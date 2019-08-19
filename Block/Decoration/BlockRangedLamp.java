@@ -19,6 +19,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -46,10 +47,22 @@ public class BlockRangedLamp extends Block {
 		blockResistance = 10;
 		stepSound = new SoundType("stone", 1.0F, 0.5F);
 		this.setCreativeTab(ChromatiCraft.tabChromaDeco);
+		this.setLightOpacity(0);
+	}
+
+	@Override
+	public final boolean isOpaqueCube() {
+		return false;
+	}
+
+	@Override
+	public final boolean renderAsNormalBlock() {
+		return false;
 	}
 
 	@Override
 	public int getLightValue(IBlockAccess iba, int x, int y, int z) {
+		this.setLightOpacity(0);
 		boolean lit = ((TileEntityRangedLamp)iba.getTileEntity(x, y, z)).isLit();
 		if (lit) {
 			if (ModList.COLORLIGHT.isLoaded()) {
@@ -61,6 +74,76 @@ public class BlockRangedLamp extends Block {
 			}
 		}
 		return 0;
+	}
+
+	@Override
+	public final AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+		this.setBlockBoundsBasedOnState(world, x, y, z);
+		return super.getCollisionBoundingBoxFromPool(world, x, y, z);
+	}
+
+	@Override
+	public final void setBlockBoundsForItemRender() {
+		this.setBounds(null);
+	}
+
+	@Override
+	public final void setBlockBoundsBasedOnState(IBlockAccess iba, int x, int y, int z) {
+		TileEntity te = iba.getTileEntity(x, y, z);
+		if (te instanceof TileEntityRangedLamp)
+			this.setBounds(((TileEntityRangedLamp)te).panel);
+		else
+			this.setBounds(null);
+	}
+
+	private void setBounds(ForgeDirection dir) {
+		if (dir == null) {
+			this.setBlockBounds(0, 0, 0, 1, 1, 1);
+			return;
+		}
+		float t = 0.125F;
+		float o = 0.0625F;
+		float x1 = 0;
+		float y1 = 0;
+		float z1 = 0;
+		float x2 = 1;
+		float y2 = 1;
+		float z2 = 1;
+		switch(dir) {
+			case DOWN:
+				y2 = t;
+				break;
+			case UP:
+				y1 = 1-t;
+				break;
+			case WEST:
+				x2 = t;
+				break;
+			case EAST:
+				x1 = 1-t;
+				break;
+			case NORTH:
+				z2 = t;
+				break;
+			case SOUTH:
+				z1 = 1-t;
+				break;
+			default:
+				break;
+		}
+		if (dir.offsetX == 0) {
+			x1 += o;
+			x2 -= o;
+		}
+		if (dir.offsetY == 0) {
+			y1 += o;
+			y2 -= o;
+		}
+		if (dir.offsetZ == 0) {
+			z1 += o;
+			z2 -= o;
+		}
+		this.setBlockBounds(x1, y1, z1, x2, y2, z2);
 	}
 
 	@Override
@@ -76,16 +159,6 @@ public class BlockRangedLamp extends Block {
 	@Override
 	public int damageDropped(int meta) {
 		return meta;
-	}
-
-	@Override
-	public boolean isOpaqueCube() {
-		return true;
-	}
-
-	@Override
-	public boolean renderAsNormalBlock() {
-		return true;
 	}
 
 	@Override
@@ -143,7 +216,7 @@ public class BlockRangedLamp extends Block {
 
 	@Override
 	public int getRenderColor(int meta) {
-		return ReikaColorAPI.getModifiedSat(CrystalElement.elements[meta].getColor(), 0.7F);
+		return ReikaColorAPI.getModifiedSat(CrystalElement.elements[meta%16].getColor(), 0.7F);
 	}
 
 	@Override

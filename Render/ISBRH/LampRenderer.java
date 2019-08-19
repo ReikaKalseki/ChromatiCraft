@@ -12,18 +12,18 @@ package Reika.ChromatiCraft.Render.ISBRH;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Decoration.BlockRangedLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 
 public class LampRenderer implements ISBRH {
 
@@ -42,6 +42,11 @@ public class LampRenderer implements ISBRH {
 
 		GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
 		GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
+
+
+		if (metadata >= 16) {
+			rb.setRenderBounds(0.0625, 0, 0.0625, 0.9375, 0.1875, 0.9375);
+		}
 		tessellator.startDrawingQuads();
 		tessellator.setNormal(0.0F, -1.0F, 0.0F);
 		rb.renderFaceYNeg(b, 0.0D, 0.0D, 0.0D, b.getIcon(0, metadata));
@@ -56,14 +61,17 @@ public class LampRenderer implements ISBRH {
 		tessellator.setNormal(0.0F, 0.0F, -1.0F);
 		rb.renderFaceZNeg(b, 0.0D, 0.0D, 0.0D, b.getIcon(2, metadata));
 		tessellator.draw();
+
 		tessellator.startDrawingQuads();
 		tessellator.setNormal(0.0F, 0.0F, 1.0F);
 		rb.renderFaceZPos(b, 0.0D, 0.0D, 0.0D, b.getIcon(3, metadata));
 		tessellator.draw();
+
 		tessellator.startDrawingQuads();
 		tessellator.setNormal(-1.0F, 0.0F, 0.0F);
 		rb.renderFaceXNeg(b, 0.0D, 0.0D, 0.0D, b.getIcon(4, metadata));
 		tessellator.draw();
+
 		tessellator.startDrawingQuads();
 		tessellator.setNormal(1.0F, 0.0F, 0.0F);
 		rb.renderFaceXPos(b, 0.0D, 0.0D, 0.0D, b.getIcon(5, metadata));
@@ -79,102 +87,70 @@ public class LampRenderer implements ISBRH {
 			float red = ReikaColorAPI.getRed(color)/255F;
 			float green = ReikaColorAPI.getGreen(color)/255F;
 			float blue = ReikaColorAPI.getBlue(color)/255F;
+			/*
 			if (te.isPanel()) {
-				double t = 2;
-				double o = 1;
-				ForgeDirection dir = te.getPanelSide();
-				double x1 = 0;
-				double y1 = 0;
-				double z1 = 0;
-				double x2 = 1;
-				double y2 = 1;
-				double z2 = 1;
-				switch(dir) {
-					case DOWN:
-						y2 = t;
-						break;
-					case UP:
-						y1 = 1-t;
-						break;
-					case WEST:
-						x2 = t;
-						break;
-					case EAST:
-						x1 = 1-t;
-						break;
-					case NORTH:
-						z2 = t;
-						break;
-					case SOUTH:
-						z1 = 1-t;
-						break;
-					default:
-						break;
-				}
-				if (dir.offsetX == 0) {
-					x1 += o;
-					x2 -= o;
-				}
-				if (dir.offsetY == 0) {
-					y1 += o;
-					y2 -= o;
-				}
-				if (dir.offsetZ == 0) {
-					z1 += o;
-					z2 -= o;
-				}
-				double sx = x2-x1;
-				double sy = y2-y1;
-				double sz = z2-z1;
-				ReikaRenderHelper.renderBlockSubCube(x, y, z, x1, y1, z1, sx, sy, sz, Tessellator.instance, rb, b, meta);
-			}
-			else {
+
+
+				boolean flag = rb.renderAllFaces;
+				rb.renderAllFaces = true;
+				rb.renderMinX = x1;
+				rb.renderMinY = y1;
+				rb.renderMinZ = z1;
+				rb.renderMaxX = x2;
+				rb.renderMaxY = y2;
+				rb.renderMaxZ = z2;
+				rb.partialRenderBounds = true;
 				rb.renderStandardBlockWithAmbientOcclusion(b, x, y, z, red, green, blue);
+				rb.setRenderBounds(0, 0, 0, 1, 1, 1);
+				rb.renderAllFaces = flag;
 			}
+			else {*/
+			rb.renderStandardBlockWithAmbientOcclusion(b, x, y, z, red, green, blue);
+			//}
 			return true;
 		}
 		else if (te.isLit()) {
 			Tessellator v5 = Tessellator.instance;
 			v5.setBrightness(240);
-			v5.addTranslation(x, y, z);
 			IIcon ico = ChromaIcons.BLANK.getIcon(); //since cannot turn off GLTexture in ISBRH
 			double u = ico.getMinU();
 			double v = ico.getMinV();
 			int color = b.colorMultiplier(world, x, y, z);
 			for (int step = 1; step < 4; step++) {
 				double out = step/40D;
+				AxisAlignedBB box = b.getCollisionBoundingBoxFromPool(Minecraft.getMinecraft().theWorld, x, y, z);
+				box = box.expand(out, out, out);
 				v5.setColorRGBA_I(color, 192-step*40);
-				v5.addVertexWithUV(0-out, 1+out, 0-out, u, v);
-				v5.addVertexWithUV(1+out, 1+out, 0-out, u, v);
-				v5.addVertexWithUV(1+out, 0-out, 0-out, u, v);
-				v5.addVertexWithUV(0-out, 0-out, 0-out, u, v);
+				v5.addVertexWithUV(box.minX, box.maxY, box.minZ, u, v);
+				v5.addVertexWithUV(box.maxX, box.maxY, box.minZ, u, v);
+				v5.addVertexWithUV(box.maxX, box.minY, box.minZ, u, v);
+				v5.addVertexWithUV(box.minX, box.minY, box.minZ, u, v);
 
-				v5.addVertexWithUV(0-out, 0-out, 1+out, u, v);
-				v5.addVertexWithUV(1+out, 0-out, 1+out, u, v);
-				v5.addVertexWithUV(1+out, 1+out, 1+out, u, v);
-				v5.addVertexWithUV(0-out, 1+out, 1+out, u, v);
+				v5.addVertexWithUV(box.minX, box.minY, box.maxZ, u, v);
+				v5.addVertexWithUV(box.maxX, box.minY, box.maxZ, u, v);
+				v5.addVertexWithUV(box.maxX, box.maxY, box.maxZ, u, v);
+				v5.addVertexWithUV(box.minX, box.maxY, box.maxZ, u, v);
 
-				v5.addVertexWithUV(0-out, 0-out, 0-out, u, v);
-				v5.addVertexWithUV(0-out, 0-out, 1+out, u, v);
-				v5.addVertexWithUV(0-out, 1+out, 1+out, u, v);
-				v5.addVertexWithUV(0-out, 1+out, 0-out, u, v);
+				v5.addVertexWithUV(box.minX, box.minY, box.minZ, u, v);
+				v5.addVertexWithUV(box.minX, box.minY, box.maxZ, u, v);
+				v5.addVertexWithUV(box.minX, box.maxY, box.maxZ, u, v);
+				v5.addVertexWithUV(box.minX, box.maxY, box.minZ, u, v);
 
-				v5.addVertexWithUV(1+out, 1+out, 0-out, u, v);
-				v5.addVertexWithUV(1+out, 1+out, 1+out, u, v);
-				v5.addVertexWithUV(1+out, 0-out, 1+out, u, v);
-				v5.addVertexWithUV(1+out, 0-out, 0-out, u, v);
+				v5.addVertexWithUV(box.maxX, box.maxY, box.minZ, u, v);
+				v5.addVertexWithUV(box.maxX, box.maxY, box.maxZ, u, v);
+				v5.addVertexWithUV(box.maxX, box.minY, box.maxZ, u, v);
+				v5.addVertexWithUV(box.maxX, box.minY, box.minZ, u, v);
 
-				v5.addVertexWithUV(0-out, 1+out, 0-out, u, v);
-				v5.addVertexWithUV(0-out, 1+out, 1+out, u, v);
-				v5.addVertexWithUV(1+out, 1+out, 1+out, u, v);
-				v5.addVertexWithUV(1+out, 1+out, 0-out, u, v);
+				v5.addVertexWithUV(box.minX, box.maxY, box.minZ, u, v);
+				v5.addVertexWithUV(box.minX, box.maxY, box.maxZ, u, v);
+				v5.addVertexWithUV(box.maxX, box.maxY, box.maxZ, u, v);
+				v5.addVertexWithUV(box.maxX, box.maxY, box.minZ, u, v);
 
-				v5.addVertexWithUV(1+out, 0-out, 0-out, u, v);
-				v5.addVertexWithUV(1+out, 0-out, 1+out, u, v);
-				v5.addVertexWithUV(0-out, 0-out, 1+out, u, v);
-				v5.addVertexWithUV(0-out, 0-out, 0-out, u, v);
+				v5.addVertexWithUV(box.maxX, box.minY, box.minZ, u, v);
+				v5.addVertexWithUV(box.maxX, box.minY, box.maxZ, u, v);
+				v5.addVertexWithUV(box.minX, box.minY, box.maxZ, u, v);
+				v5.addVertexWithUV(box.minX, box.minY, box.minZ, u, v);
 			}
-			v5.addTranslation(-x, -y, -z);
 			return true;
 		}
 		return false;
