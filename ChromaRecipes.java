@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -22,6 +22,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.DoorKeyCopyingRecipe;
 import Reika.ChromatiCraft.Auxiliary.LegacyTileAcceleratorRecipe;
+import Reika.ChromatiCraft.Auxiliary.RangedLampPanelingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
@@ -80,6 +81,7 @@ public class ChromaRecipes {
 
 		GameRegistry.addRecipe(new LegacyTileAcceleratorRecipe());
 		GameRegistry.addRecipe(new DoorKeyCopyingRecipe());
+		GameRegistry.addRecipe(new RangedLampPanelingRecipe());
 
 		loadSmelting();
 	}

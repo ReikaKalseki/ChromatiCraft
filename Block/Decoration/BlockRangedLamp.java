@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -22,6 +22,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
@@ -168,6 +169,16 @@ public class BlockRangedLamp extends Block {
 		private boolean inverted;
 		private int channel;
 
+		private ForgeDirection panel;
+
+		public boolean isPanel() {
+			return panel != null;
+		}
+
+		public ForgeDirection getPanelSide() {
+			return panel;
+		}
+
 		public boolean isLit() {
 			return lit;
 		}
@@ -181,6 +192,10 @@ public class BlockRangedLamp extends Block {
 			channel = ch;
 			TileEntityLampController.addLight(this);
 			this.setLit(TileEntityLampController.activeSourceInRange(this));
+		}
+
+		public void setPanel(ForgeDirection side) {
+			panel = side;
 		}
 
 		public void invert() {
@@ -204,6 +219,8 @@ public class BlockRangedLamp extends Block {
 
 			NBT.setBoolean("on", lit);
 			NBT.setInteger("ch", channel);
+			if (this.isPanel())
+				NBT.setInteger("side", panel.ordinal());
 		}
 
 		@Override
@@ -212,6 +229,8 @@ public class BlockRangedLamp extends Block {
 
 			lit = NBT.getBoolean("on");
 			channel = NBT.getInteger("ch");
+			if (NBT.hasKey("side"))
+				panel = ForgeDirection.VALID_DIRECTIONS[NBT.getInteger("side")];
 		}
 
 		@Override

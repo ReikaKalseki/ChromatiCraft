@@ -148,6 +148,7 @@ import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockMultiType;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockPath;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockRainbowLeaf;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockRainbowSapling;
+import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockRangedLamp;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockRouterNode;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockSidePlaced;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockStructShield;
@@ -192,7 +193,7 @@ public enum ChromaBlocks implements BlockEnum {
 	DECOPLANT(BlockDecoPlant.class, 			ItemBlockChromaFlower.class, 	"Chromatic Plant 2"),
 	POWERTREE(BlockPowerTree.class,				ItemBlockDyeTypes.class,		"chroma.powerleaf"),
 	TILEMODELLED2(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile 2"),
-	LAMPBLOCK(BlockRangedLamp.class,				ItemBlockDyeTypes.class,		"chroma.lampblock"),
+	LAMPBLOCK(BlockRangedLamp.class,			ItemBlockRangedLamp.class,		"chroma.lampblock"),
 	TNT(BlockEnderTNT.class,													"chroma.endertnt"),
 	PATH(BlockPath.class,						ItemBlockPath.class,			"chroma.path"),
 	STRUCTSHIELD(BlockStructureShield.class,	ItemBlockStructShield.class,	"chroma.shield"),

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -16,11 +16,14 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Block.Decoration.BlockRangedLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 
 public class LampRenderer implements ISBRH {
 
@@ -69,15 +72,68 @@ public class LampRenderer implements ISBRH {
 
 	@Override
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block b, int modelId, RenderBlocks rb) {
+		TileEntityRangedLamp te = (TileEntityRangedLamp)world.getTileEntity(x, y, z);
+		int meta = world.getBlockMetadata(x, y, z);
 		if (renderPass == 0) {
 			int color = b.colorMultiplier(world, x, y, z);
 			float red = ReikaColorAPI.getRed(color)/255F;
 			float green = ReikaColorAPI.getGreen(color)/255F;
 			float blue = ReikaColorAPI.getBlue(color)/255F;
-			rb.renderStandardBlockWithAmbientOcclusion(b, x, y, z, red, green, blue);
+			if (te.isPanel()) {
+				double t = 2;
+				double o = 1;
+				ForgeDirection dir = te.getPanelSide();
+				double x1 = 0;
+				double y1 = 0;
+				double z1 = 0;
+				double x2 = 1;
+				double y2 = 1;
+				double z2 = 1;
+				switch(dir) {
+					case DOWN:
+						y2 = t;
+						break;
+					case UP:
+						y1 = 1-t;
+						break;
+					case WEST:
+						x2 = t;
+						break;
+					case EAST:
+						x1 = 1-t;
+						break;
+					case NORTH:
+						z2 = t;
+						break;
+					case SOUTH:
+						z1 = 1-t;
+						break;
+					default:
+						break;
+				}
+				if (dir.offsetX == 0) {
+					x1 += o;
+					x2 -= o;
+				}
+				if (dir.offsetY == 0) {
+					y1 += o;
+					y2 -= o;
+				}
+				if (dir.offsetZ == 0) {
+					z1 += o;
+					z2 -= o;
+				}
+				double sx = x2-x1;
+				double sy = y2-y1;
+				double sz = z2-z1;
+				ReikaRenderHelper.renderBlockSubCube(x, y, z, x1, y1, z1, sx, sy, sz, Tessellator.instance, rb, b, meta);
+			}
+			else {
+				rb.renderStandardBlockWithAmbientOcclusion(b, x, y, z, red, green, blue);
+			}
 			return true;
 		}
-		else if (b.getLightValue(world, x, y, z) > 0) {
+		else if (te.isLit()) {
 			Tessellator v5 = Tessellator.instance;
 			v5.setBrightness(240);
 			v5.addTranslation(x, y, z);
