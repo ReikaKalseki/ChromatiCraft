@@ -561,9 +561,10 @@ public class PylonFinder {
 		if (ModList.EXTRAUTILS.isLoaded() && ExtraUtilsHandler.getInstance().initializedProperly()) {
 			Block b = ExtraUtilsHandler.getInstance().deco2ID;
 			if (b != null) {
+				tracer.addTransparentBlock(b, 0);
 				tracer.addTransparentBlock(b, 1);
-				tracer.addTransparentBlock(b, 2);
 				tracer.addTransparentBlock(b, 4);
+				tracer.addTransparentBlock(b, 7);
 			}
 
 			b = ExtraUtilsHandler.getInstance().etherealBlockID;

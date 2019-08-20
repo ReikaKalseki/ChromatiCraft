@@ -20,13 +20,18 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.BlockEncrustedCrystal.CrystalGrowth;
 import Reika.ChromatiCraft.Block.BlockEncrustedCrystal.TileCrystalEncrusted;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.CubePoints;
+import Reika.DragonAPI.Instantiable.GridDistortion;
+import Reika.DragonAPI.Instantiable.GridDistortion.OffsetGroup;
 import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 
 public class CrystalEncrustingRenderer implements ISBRH {
 
@@ -98,26 +103,27 @@ public class CrystalEncrustingRenderer implements ISBRH {
 	}
 
 	private void renderCrystalFace(IBlockAccess world, int x, int y, int z, Block bk, CrystalGrowth g, RenderBlocks rb, int color) {
-		int h1 = 1+g.getGrowth()/2;
-		int h2 = 1+g.getGrowth()*4;
+		int amt = g.getGrowth();
+		int h1 = 1+amt/2;
+		int h2 = 1+amt*4;
 		int n = 8;
 		double w = 1D/n;
+		GridDistortion grid = new GridDistortion(n);
+		grid.maxDeviation *= 0.66;
+		grid.randomize(rand);
 		for (int a = 0; a < n; a++) {
 			for (int b = 0; b < n; b++) {
+				if (rand.nextInt(2+amt) == 0)
+					continue;
 				int rh = h1+rand.nextInt(h2-h1+1);
 				double h = rh/96D;
-				this.renderCrystalPiece(world, x, y, z, bk, g, rb, color, a, b, w, h);
+				this.renderCrystalPiece(world, x, y, z, bk, g, rb, color, a, b, w, h, grid);
 			}
 		}
 	}
 
-	private void renderCrystalPiece(IBlockAccess world, int x, int y, int z, Block bk, CrystalGrowth g, RenderBlocks rb, int color, int a, int b, double w, double h) {
-		double x1 = 0;
-		double y1 = 0;
-		double z1 = 0;
-		double x2 = 0;
-		double y2 = 0;
-		double z2 = 0;
+	private void renderCrystalPiece(IBlockAccess world, int x, int y, int z, Block bk, CrystalGrowth g, RenderBlocks rb, int color, int a, int b, double w, double h, GridDistortion grid) {
+		CubePoints points = CubePoints.fullBlock();
 		//red = MathHelper.clamp_float((float)ReikaRandomHelper.getRandomPlusMinus(red, 0.2F), 0, 1);
 		//green = MathHelper.clamp_float((float)ReikaRandomHelper.getRandomPlusMinus(green, 0.2F), 0, 1);
 		//blue = MathHelper.clamp_float((float)ReikaRandomHelper.getRandomPlusMinus(blue, 0.2F), 0, 1);
@@ -128,73 +134,67 @@ public class CrystalEncrustingRenderer implements ISBRH {
 		int hue = ReikaColorAPI.getHue(color);
 		hue = hue-5+rand.nextInt(11);
 		color = ReikaColorAPI.getModifiedHue(color, hue);
-		float red = ReikaColorAPI.getRed(color)/255F;
-		float green = ReikaColorAPI.getGreen(color)/255F;
-		float blue = ReikaColorAPI.getBlue(color)/255F;
+		color = 0xffffff;
+		//float red = ReikaColorAPI.getRed(color)/255F;
+		//float green = ReikaColorAPI.getGreen(color)/255F;
+		//float blue = ReikaColorAPI.getBlue(color)/255F;
+		Tessellator.instance.setColorRGBA_I(color, 255);
+		OffsetGroup off = grid.getOffset(a, b);
 		switch(g.side) {
 			case DOWN:
-				x1 = a*w;
-				x2 = x1+w;
-				z1 = b*w;
-				z2 = z1+w;
-				y1 = 0;
-				y2 = h;
+				points.setSidePosition(ForgeDirection.DOWN, 0);
+				points.setSidePosition(ForgeDirection.UP, h);
+				points.setSidePosition(ForgeDirection.WEST, a*w);
+				points.setSidePosition(ForgeDirection.EAST, a*w+w);
+				points.setSidePosition(ForgeDirection.NORTH, b*w);
+				points.setSidePosition(ForgeDirection.SOUTH, b*w+w);
 				break;
 			case UP:
-				x1 = a*w;
-				x2 = x1+w;
-				z1 = b*w;
-				z2 = z1+w;
-				y1 = 1-h;
-				y2 = 1;
+				points.setSidePosition(ForgeDirection.DOWN, 1-h);
+				points.setSidePosition(ForgeDirection.UP, 1);
+				points.setSidePosition(ForgeDirection.WEST, a*w);
+				points.setSidePosition(ForgeDirection.EAST, a*w+w);
+				points.setSidePosition(ForgeDirection.NORTH, b*w);
+				points.setSidePosition(ForgeDirection.SOUTH, b*w+w);
 				break;
 			case WEST:
-				x1 = 0;
-				x2 = h;
-				y1 = b*w;
-				y2 = y1+w;
-				z1 = a*w;
-				z2 = z1+w;
+				points.setSidePosition(ForgeDirection.DOWN, b*w);
+				points.setSidePosition(ForgeDirection.UP, b*w+w);
+				points.setSidePosition(ForgeDirection.WEST, 0);
+				points.setSidePosition(ForgeDirection.EAST, h);
+				points.setSidePosition(ForgeDirection.NORTH, a*w);
+				points.setSidePosition(ForgeDirection.SOUTH, a*w+w);
 				break;
 			case EAST:
-				x1 = 1-h;
-				x2 = 1;
-				y1 = b*w;
-				y2 = y1+w;
-				z1 = a*w;
-				z2 = z1+w;
+				points.setSidePosition(ForgeDirection.DOWN, b*w);
+				points.setSidePosition(ForgeDirection.UP, b*w+w);
+				points.setSidePosition(ForgeDirection.WEST, 1-h);
+				points.setSidePosition(ForgeDirection.EAST, 1);
+				points.setSidePosition(ForgeDirection.NORTH, a*w);
+				points.setSidePosition(ForgeDirection.SOUTH, a*w+w);
 				break;
 			case NORTH:
-				z1 = 0;
-				z2 = h;
-				y1 = b*w;
-				y2 = y1+w;
-				x1 = a*w;
-				x2 = x1+w;
+				points.setSidePosition(ForgeDirection.DOWN, b*w);
+				points.setSidePosition(ForgeDirection.UP, b*w+w);
+				points.setSidePosition(ForgeDirection.WEST, a*w);
+				points.setSidePosition(ForgeDirection.EAST, a*w+w);
+				points.setSidePosition(ForgeDirection.NORTH, 0);
+				points.setSidePosition(ForgeDirection.SOUTH, h);
 				break;
 			case SOUTH:
-				z1 = 1-h;
-				z2 = 1;
-				y1 = b*w;
-				y2 = y1+w;
-				x1 = a*w;
-				x2 = x1+w;
+				points.setSidePosition(ForgeDirection.DOWN, b*w);
+				points.setSidePosition(ForgeDirection.UP, b*w+w);
+				points.setSidePosition(ForgeDirection.WEST, a*w);
+				points.setSidePosition(ForgeDirection.EAST, a*w+w);
+				points.setSidePosition(ForgeDirection.NORTH, 1-h);
+				points.setSidePosition(ForgeDirection.SOUTH, 1);
 				break;
 			default:
 				break;
 		}
-		boolean flag = rb.renderAllFaces;
-		rb.renderAllFaces = true;
-		rb.renderMinX = x1;
-		rb.renderMinY = y1;
-		rb.renderMinZ = z1;
-		rb.renderMaxX = x2;
-		rb.renderMaxY = y2;
-		rb.renderMaxZ = z2;
-		rb.partialRenderBounds = true;
-		rb.renderStandardBlockWithAmbientOcclusion(bk, x, y, z, red, green, blue);
-		rb.setRenderBounds(0, 0, 0, 1, 1, 1);
-		rb.renderAllFaces = flag;
+		points.applyOffset(ForgeDirection.DOWN, off);
+		points.applyOffset(ForgeDirection.UP, off);
+		ReikaRenderHelper.renderBlockPieceNonCuboid(world, x, y, z, points, Tessellator.instance, rb, bk);
 	}
 
 	private long calcSeed(int x, int y, int z) {
