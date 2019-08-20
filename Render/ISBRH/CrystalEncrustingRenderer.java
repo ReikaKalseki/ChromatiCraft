@@ -113,7 +113,7 @@ public class CrystalEncrustingRenderer implements ISBRH {
 		grid.randomize(rand);
 		for (int a = 0; a < n; a++) {
 			for (int b = 0; b < n; b++) {
-				if (rand.nextInt(2+amt) == 0)
+				if (amt < 12 && rand.nextInt(2+amt/2) == 0)
 					continue;
 				int rh = h1+rand.nextInt(h2-h1+1);
 				double h = rh/96D;
@@ -134,7 +134,6 @@ public class CrystalEncrustingRenderer implements ISBRH {
 		int hue = ReikaColorAPI.getHue(color);
 		hue = hue-5+rand.nextInt(11);
 		color = ReikaColorAPI.getModifiedHue(color, hue);
-		color = 0xffffff;
 		//float red = ReikaColorAPI.getRed(color)/255F;
 		//float green = ReikaColorAPI.getGreen(color)/255F;
 		//float blue = ReikaColorAPI.getBlue(color)/255F;
@@ -192,8 +191,9 @@ public class CrystalEncrustingRenderer implements ISBRH {
 			default:
 				break;
 		}
-		points.applyOffset(ForgeDirection.DOWN, off);
-		points.applyOffset(ForgeDirection.UP, off);
+		points.applyOffset(g.side, off);
+		points.applyOffset(g.side.getOpposite(), off);
+		points.clamp();
 		ReikaRenderHelper.renderBlockPieceNonCuboid(world, x, y, z, points, Tessellator.instance, rb, bk);
 	}
 

@@ -10,7 +10,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -134,8 +133,6 @@ public class BlockEncrustedCrystal extends CrystalTypeBlock {
 
 	@Override
 	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int side) {
-		if (true)
-			return Blocks.stone.getIcon(0, 0);
 		TileEntity te = iba.getTileEntity(x, y, z);
 		if (te instanceof TileCrystalEncrusted) {
 			TileCrystalEncrusted tile = (TileCrystalEncrusted)te;
