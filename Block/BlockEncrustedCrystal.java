@@ -32,8 +32,8 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class BlockEncrustedCrystal extends CrystalTypeBlock {
 
-	private IIcon basic;
-	private IIcon special;
+	public static IIcon basicIcon;
+	public static IIcon specialIcon;
 
 	public BlockEncrustedCrystal(Material mat) {
 		super(mat);
@@ -122,23 +122,25 @@ public class BlockEncrustedCrystal extends CrystalTypeBlock {
 
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
-		basic = ico.registerIcon("chromaticraft:crystal/encrusted");
-		special = ico.registerIcon("chromaticraft:crystal/encrusted_special");
+		basicIcon = ico.registerIcon("chromaticraft:crystal/encrusted");
+		specialIcon = ico.registerIcon("chromaticraft:crystal/encrusted_special");
 	}
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
-		return basic;
+		return basicIcon;
 	}
 
 	@Override
 	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int side) {
+		//if (true)
+		//	return specialIcon;
 		TileEntity te = iba.getTileEntity(x, y, z);
 		if (te instanceof TileCrystalEncrusted) {
 			TileCrystalEncrusted tile = (TileCrystalEncrusted)te;
-			return tile.isSpecial() ? special : basic;
+			return tile.isSpecial() ? specialIcon : basicIcon;
 		}
-		return basic;
+		return basicIcon;
 	}
 
 	@Override

@@ -23,8 +23,10 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Block.BlockEncrustedCrystal;
 import Reika.ChromatiCraft.Block.BlockEncrustedCrystal.CrystalGrowth;
 import Reika.ChromatiCraft.Block.BlockEncrustedCrystal.TileCrystalEncrusted;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.CubePoints;
 import Reika.DragonAPI.Instantiable.GridDistortion;
@@ -88,25 +90,24 @@ public class CrystalEncrustingRenderer implements ISBRH {
 			return false;
 		rand.setSeed(this.calcSeed(x, y, z));
 		rand.nextBoolean();
-		Tessellator v5 = Tessellator.instance;
+		rand.nextBoolean();
 		TileCrystalEncrusted te = (TileCrystalEncrusted)world.getTileEntity(x, y, z);
 		Collection<CrystalGrowth> c = te.getGrowths();
 		if (c.isEmpty())
 			return false;
 		int meta = world.getBlockMetadata(x, y, z);
 		//v5.setColorRGBA_I(CrystalElement.elements[meta].getColor(), 127);
-		v5.setBrightness(240);
 		for (CrystalGrowth g : c) {
-			this.renderCrystalFace(world, x, y, z, b, g, rb, CrystalElement.elements[meta].getColor());
+			this.renderCrystalFace(world, x, y, z, b, te, g, rb, CrystalElement.elements[meta].getColor());
 		}
 		return true;
 	}
 
-	private void renderCrystalFace(IBlockAccess world, int x, int y, int z, Block bk, CrystalGrowth g, RenderBlocks rb, int color) {
+	private void renderCrystalFace(IBlockAccess world, int x, int y, int z, Block bk, TileCrystalEncrusted te, CrystalGrowth g, RenderBlocks rb, int color) {
 		int amt = g.getGrowth();
 		int h1 = 1+amt/2;
 		int h2 = 1+amt*4;
-		int n = 8;
+		int n = 4+rand.nextInt(5);
 		double w = 1D/n;
 		GridDistortion grid = new GridDistortion(n);
 		grid.maxDeviation *= 0.66;
@@ -117,12 +118,12 @@ public class CrystalEncrustingRenderer implements ISBRH {
 					continue;
 				int rh = h1+rand.nextInt(h2-h1+1);
 				double h = rh/96D;
-				this.renderCrystalPiece(world, x, y, z, bk, g, rb, color, a, b, w, h, grid);
+				this.renderCrystalPiece(world, x, y, z, bk, te, g, rb, color, a, b, w, h, grid);
 			}
 		}
 	}
 
-	private void renderCrystalPiece(IBlockAccess world, int x, int y, int z, Block bk, CrystalGrowth g, RenderBlocks rb, int color, int a, int b, double w, double h, GridDistortion grid) {
+	private void renderCrystalPiece(IBlockAccess world, int x, int y, int z, Block bk, TileCrystalEncrusted te, CrystalGrowth g, RenderBlocks rb, int color, int a, int b, double w, double h, GridDistortion grid) {
 		CubePoints points = CubePoints.fullBlock();
 		//red = MathHelper.clamp_float((float)ReikaRandomHelper.getRandomPlusMinus(red, 0.2F), 0, 1);
 		//green = MathHelper.clamp_float((float)ReikaRandomHelper.getRandomPlusMinus(green, 0.2F), 0, 1);
@@ -137,7 +138,8 @@ public class CrystalEncrustingRenderer implements ISBRH {
 		//float red = ReikaColorAPI.getRed(color)/255F;
 		//float green = ReikaColorAPI.getGreen(color)/255F;
 		//float blue = ReikaColorAPI.getBlue(color)/255F;
-		Tessellator.instance.setColorRGBA_I(color, 255);
+		Tessellator.instance.setBrightness(240);
+		Tessellator.instance.setColorRGBA_I(color, te.isSpecial() ? 160 : 255);
 		OffsetGroup off = grid.getOffset(a, b);
 		switch(g.side) {
 			case DOWN:
@@ -194,7 +196,15 @@ public class CrystalEncrustingRenderer implements ISBRH {
 		points.applyOffset(g.side, off);
 		points.applyOffset(g.side.getOpposite(), off);
 		points.clamp();
-		ReikaRenderHelper.renderBlockPieceNonCuboid(world, x, y, z, points, Tessellator.instance, rb, bk);
+		ReikaRenderHelper.renderBlockPieceNonCuboid(world, x, y, z, bk, Tessellator.instance, points);
+
+		Tessellator.instance.setBrightness(240);
+		Tessellator.instance.setColorRGBA_I(ReikaColorAPI.mixColors(color, 0xffffff, 0.9F), te.isSpecial() ? 240 : 192);
+		points.renderIconOnSides(world, x, y, z, ChromaIcons.GLOWFRAME_TRANS.getIcon(), Tessellator.instance);
+
+		Tessellator.instance.setBrightness(240);
+		Tessellator.instance.setColorRGBA_I(0xffffff, te.isSpecial() ? 48 : 32);
+		points.renderIconOnSides(world, x, y, z, BlockEncrustedCrystal.specialIcon, Tessellator.instance);
 	}
 
 	private long calcSeed(int x, int y, int z) {
