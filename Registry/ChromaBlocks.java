@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.Block.BlockCrystalTile;
 import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
 import Reika.ChromatiCraft.Block.BlockDummyAux;
+import Reika.ChromatiCraft.Block.BlockEncrustedCrystal;
 import Reika.ChromatiCraft.Block.BlockEnderTNT;
 import Reika.ChromatiCraft.Block.BlockFakeSky;
 import Reika.ChromatiCraft.Block.BlockHeatLamp;
@@ -271,6 +272,7 @@ public enum ChromaBlocks implements BlockEnum {
 	RFPOD(BlockRFNode.class,					ItemBlockSidePlaced.class,		"chroma.rfpod"),
 	PISTONBIT(BlockPistonTapeBit.class,			ItemBlockMultiType.class,		"chroma.pistonbit"),
 	RAYBLEND(BlockRayblendFloor.class,											"chroma.rayblend"),
+	ENCRUSTED(BlockEncrustedCrystal.class,		ItemBlockDyeTypes.class,		"chroma.encrusted"),
 	;
 
 	private Class blockClass;

@@ -1,14 +1,15 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
+import java.util.HashSet;
 import java.util.UUID;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
@@ -35,6 +36,7 @@ public class TemporaryCrystalReceiver implements CrystalReceiver, WrapperTile {
 	public final ResearchLevel level;
 
 	private final UUID uid = UUID.randomUUID();
+	private final HashSet<CrystalElement> colorLimit = new HashSet();
 
 	public TemporaryCrystalReceiver(WorldLocation loc, int t, int r, double br, ResearchLevel rl) {
 		location = loc;
@@ -47,7 +49,7 @@ public class TemporaryCrystalReceiver implements CrystalReceiver, WrapperTile {
 
 	@Override
 	public boolean isConductingElement(CrystalElement e) {
-		return true;
+		return colorLimit.isEmpty() || colorLimit.contains(e);
 	}
 
 	@Override
@@ -169,6 +171,10 @@ public class TemporaryCrystalReceiver implements CrystalReceiver, WrapperTile {
 	@Override
 	public void triggerBottleneckDisplay(int duration) {
 
+	}
+
+	public void addColorRestriction(CrystalElement e) {
+		colorLimit.add(e);
 	}
 
 }

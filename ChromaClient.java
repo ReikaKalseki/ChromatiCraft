@@ -97,6 +97,7 @@ import Reika.ChromatiCraft.Render.ISBRH.CaveIndicatorRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CliffStoneRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.ColorLockRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.ConsoleRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.CrystalEncrustingRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalFenceRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalGlassRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalGlowRenderer;
@@ -191,6 +192,7 @@ public class ChromaClient extends ChromaCommon {
 	private static final SelectiveGlassRenderer selective = new SelectiveGlassRenderer();
 	private static final LaserEffectorRenderer lasereffect = new LaserEffectorRenderer();
 	private static RayBlendFloorRenderer rayblendfloor;
+	private static final CrystalEncrustingRenderer encrusted = new CrystalEncrustingRenderer();
 
 	private static final ArtefactRenderer artefact = new ArtefactRenderer();
 	private static final MetaAlloyRenderer metaalloy = new MetaAlloyRenderer();
@@ -421,6 +423,9 @@ public class ChromaClient extends ChromaCommon {
 		rayblendFloorRender = RenderingRegistry.getNextAvailableRenderId();
 		rayblendfloor = new RayBlendFloorRenderer();
 		RenderingRegistry.registerBlockHandler(rayblendFloorRender, rayblendfloor);
+
+		encrustedRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(encrustedRender, encrusted);
 
 		artefactRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(artefactRender, artefact);

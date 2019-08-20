@@ -35,6 +35,7 @@ public class ChromaCommon {
 	public static int rayblendFloorRender;
 	public static int artefactRender;
 	public static int metaAlloyRender;
+	public static int encrustedRender;
 
 	public static int oreRender;
 	public static int plantRender;
