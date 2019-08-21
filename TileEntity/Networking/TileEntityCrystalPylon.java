@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.EntityLivingBase;
@@ -28,6 +29,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -47,6 +49,7 @@ import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonDrainedEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonFullyChargedEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonRechargedEvent;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
+import Reika.ChromatiCraft.Block.BlockEncrustedCrystal.TileCrystalEncrusted;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityOverloadingPylonShock;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
@@ -62,6 +65,7 @@ import Reika.ChromatiCraft.Magic.Network.CrystalPath;
 import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.ChromaAspectManager;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -88,6 +92,8 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -112,6 +118,7 @@ import thaumcraft.api.wands.IWandable;
 @Strippable(value = {"thaumcraft.api.nodes.INode", "thaumcraft.api.wands.IWandable"})
 public class TileEntityCrystalPylon extends CrystalTransmitterBase implements NaturalCrystalSource, ChargingPoint, ChunkLoadingTile, INode, IWandable {
 
+	private FilledBlockArray structure;
 	private boolean hasMultiblock = false;
 	private boolean enhanced = false;
 	private boolean broadcast = false;
@@ -148,6 +155,8 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	private int minTicksBetweenAttack = MAX_ATTACK_DELAY;
 
 	private WorldLocation linkTile;
+
+	private final HashSet<Coordinate> encrustedBlocks = new HashSet();
 
 	static {
 		if (ModList.THAUMCRAFT.isLoaded()) {
@@ -263,6 +272,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
+		if (hasMultiblock && structure == null) {
+			structure = ChromaStructures.getPylonStructure(world, x, y, z, this.getColor());
+		}
+
 		if (DragonAPICore.debugtest) {
 			if (!hasMultiblock) {
 				CrystalElement e = CrystalElement.randomElement();
@@ -377,6 +390,74 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 						}
 					}
 				}
+			}
+
+			//if (world.getClosestPlayer(xCoord, y, z, 25) != null)
+			//	for (int i = 0; i < 500; i++)
+			if (!world.isRemote && hasMultiblock && energy == this.getCapacity() && !this.isEnhanced() && !this.isEnhancing() && !this.isUnstable() && this.getBoosterCrystals(world, max, y, z, false).isEmpty()) {
+				if (rand.nextInt(120) == 0)
+					this.tryGrowEncrusted(world, x, y, z);
+
+				int r = 12;
+				Coordinate c1 = new Coordinate(this).offset(0, -9, 0);
+				//for (int i = 0; i < 6; i++) {
+				Coordinate c = c1.offset(ReikaRandomHelper.getRandomPlusMinus(0, r), ReikaRandomHelper.getRandomPlusMinus(0, 2), ReikaRandomHelper.getRandomPlusMinus(0, r));
+				if (c.getTaxicabDistanceTo(c1) >= 4 && !structure.hasBlock(c) && c.getBlock(world) == ChromaBlocks.PYLONSTRUCT.getBlockInstance()) {
+					Coordinate c2 = c.offset(ReikaDirectionHelper.getRandomDirection(true, rand), 1);
+					this.tryGrowEncrustedAt(world, c, c2, false);
+				}
+			}
+		}
+	}
+
+	private void tryGrowEncrusted(World world, int x, int y, int z) {
+		Coordinate c = structure.getRandomBlock();
+		Coordinate c2 = c.offset(ReikaDirectionHelper.getRandomDirection(true, rand), 1);
+		this.tryGrowEncrustedAt(world, c, c2, c.getBlock(world) != ChromaBlocks.RUNE.getBlockInstance());
+		//}
+	}
+
+	private void tryGrowEncrustedAt(World world, Coordinate from, Coordinate c, boolean addToCount) {
+		if (!structure.hasBlock(c)) {
+			Block b = c.getBlock(world);
+			if (b.isAir(world, c.xCoord, c.yCoord, c.zCoord) && (!addToCount || encrustedBlocks.size() < 4))
+				this.growEncrustedAt(world, from, c.xCoord, c.yCoord, c.zCoord, true, addToCount);
+			else if (b == ChromaBlocks.ENCRUSTED.getBlockInstance() && c.getBlockMetadata(world) == this.getColor().ordinal())
+				this.growEncrustedAt(world, from, c.xCoord, c.yCoord, c.zCoord, false, addToCount);
+		}
+	}
+
+	private void growEncrustedAt(World world, Coordinate from, int x, int y, int z, boolean place, boolean addToCount) {
+		boolean special = x == xCoord && y == yCoord-8 && z == zCoord;
+		int growth = 1;
+		if (place) {
+			world.setBlock(x, y, z, ChromaBlocks.ENCRUSTED.getBlockInstance(), this.getColor().ordinal(), 3);
+			for (Coordinate c : crystalPositions) {
+				if (c.equals(x-xCoord, y-yCoord, z-zCoord)) {
+					special = true;
+					growth = 4;
+					break;
+				}
+			}
+			if (from.getBlock(world) == ChromaBlocks.RUNE.getBlockInstance())
+				growth = 2;
+			if (addToCount)
+				encrustedBlocks.add(new Coordinate(x, y, z));
+		}
+		TileCrystalEncrusted te = (TileCrystalEncrusted)world.getTileEntity(x, y, z);
+		if (te == null) {
+			world.setBlock(x, y, z, Blocks.air);
+			encrustedBlocks.remove(new Coordinate(x, y, z));
+			return;
+		}
+		if (special) {
+			te.makeSpecial();
+		}
+		if (!te.grow(world, x, y, z)) {
+			if (te.getGrowths().isEmpty()) {
+				world.setBlock(x, y, z, Blocks.air);
+				if (addToCount)
+					encrustedBlocks.remove(new Coordinate(te));
 			}
 		}
 	}
@@ -774,6 +855,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			if (worldObj.isRemote)
 				this.invalidatationParticles();
 		}
+		structure = null;
 		hasMultiblock = false;
 		this.unload();
 		this.clearTargets(false);
@@ -798,8 +880,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		}
 	}
 
-	public void validateMultiblock() {
+	public void validateMultiblock(FilledBlockArray struct) {
 		hasMultiblock = true;
+		structure = struct;
 
 		broadcast = !worldObj.isRemote && ChromaStructures.getPylonBroadcastStructure(worldObj, xCoord, yCoord, zCoord, color).matchInWorld();
 
@@ -882,6 +965,12 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 		if (linkTile != null)
 			linkTile.writeToNBT("link", NBT);
+
+		NBTTagList li = new NBTTagList();
+		for (Coordinate c : encrustedBlocks) {
+			li.appendTag(c.writeToTag());
+		}
+		NBT.setTag("encrusted", li);
 	}
 
 	@Override
@@ -893,6 +982,13 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 		if (NBT.hasKey("link"))
 			linkTile = WorldLocation.readFromNBT("link", NBT);
+
+		encrustedBlocks.clear();
+		NBTTagList li = NBT.getTagList("encrusted", NBTTypes.COMPOUND.ID);
+		for (Object o : li.tagList) {
+			NBTTagCompound tag = (NBTTagCompound)o;
+			encrustedBlocks.add(Coordinate.readTag(tag));
+		}
 	}
 
 	@Override

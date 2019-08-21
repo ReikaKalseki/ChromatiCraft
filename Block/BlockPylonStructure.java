@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityPowerTree;
 import Reika.DragonAPI.Base.TileEntityBase;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
@@ -518,8 +519,9 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 		for (int h = 9; h < 16; h++) {
 			TileEntity te = world.getTileEntity(mx, my+h, mz);
 			if (te instanceof TileEntityCrystalPylon) {
-				if (ChromaStructures.getPylonStructure(world, mx, my+h, mz, ((TileEntityCrystalPylon)te).getColor()).matchInWorld()) {
-					((TileEntityCrystalPylon)te).validateMultiblock();
+				FilledBlockArray f = ChromaStructures.getPylonStructure(world, mx, my+h, mz, ((TileEntityCrystalPylon)te).getColor());
+				if (f.matchInWorld()) {
+					((TileEntityCrystalPylon)te).validateMultiblock(f);
 					break;
 				}
 			}

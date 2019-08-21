@@ -69,7 +69,7 @@ public class BlockEverFluid extends BlockContainer {
 			BlockArray b = new BlockArray();
 			//b.recursiveMultiAddWithBounds(world, x, y, z, x-100, y-100, z-100, x+100, y+100, z+100, this, ChromaBlocks.WATERLOCK.getBlockInstance());
 			b.recursiveAdd(world, x, y, z, this);
-			if (!b.hasBlock(te.sourceLocation.xCoord, te.sourceLocation.yCoord, te.sourceLocation.zCoord)) {
+			if (!b.hasBlock(te.sourceLocation)) {
 				world.setBlock(x, y, z, Blocks.air);
 				if (world.getBlock(x, y-1, z) == ChromaBlocks.WATERLOCK.getBlockInstance() && world.getBlock(x, y-2, z) == this)
 					world.setBlock(x, y-2, z, Blocks.air);

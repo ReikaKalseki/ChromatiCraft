@@ -41,6 +41,13 @@ public class CrystalEncrustingRenderer implements ISBRH {
 
 	private final Random rand = new Random();
 
+	private static final int MIN_SEGMENTS = 4;
+	private static final int MAX_SEGMENTS = 8;
+
+	private final GridDistortion[] distortions = new GridDistortion[MAX_SEGMENTS-MIN_SEGMENTS+1];
+
+	private final CubePoints renderBlock = CubePoints.fullBlock();
+
 	@Override
 	public void renderInventoryBlock(Block b, int metadata, int modelId, RenderBlocks rb) {
 		Tessellator tessellator = Tessellator.instance;
@@ -53,30 +60,37 @@ public class CrystalEncrustingRenderer implements ISBRH {
 		rb.renderMaxY = 1;
 
 		IIcon ico = b.getIcon(0, metadata);
+		int c = ReikaColorAPI.mixColors(CrystalElement.elements[metadata].getColor(), 0xffffff, 0.85F);
 
 		GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
 		GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
 		tessellator.startDrawingQuads();
+		tessellator.setColorOpaque_I(c);
 		tessellator.setNormal(0.0F, -1.0F, 0.0F);
 		rb.renderFaceYNeg(b, 0.0D, 0.0D, 0.0D, ico);
 		tessellator.draw();
 		tessellator.startDrawingQuads();
+		tessellator.setColorOpaque_I(c);
 		tessellator.setNormal(0.0F, 1.0F, 0.0F);
 		rb.renderFaceYPos(b, 0.0D, 0.0D, 0.0D, ico);
 		tessellator.draw();
 		tessellator.startDrawingQuads();
+		tessellator.setColorOpaque_I(c);
 		tessellator.setNormal(0.0F, 0.0F, -1.0F);
 		rb.renderFaceZNeg(b, 0.0D, 0.0D, 0.0D, ico);
 		tessellator.draw();
 		tessellator.startDrawingQuads();
+		tessellator.setColorOpaque_I(c);
 		tessellator.setNormal(0.0F, 0.0F, 1.0F);
 		rb.renderFaceZPos(b, 0.0D, 0.0D, 0.0D, ico);
 		tessellator.draw();
 		tessellator.startDrawingQuads();
+		tessellator.setColorOpaque_I(c);
 		tessellator.setNormal(-1.0F, 0.0F, 0.0F);
 		rb.renderFaceXNeg(b, 0.0D, 0.0D, 0.0D, ico);
 		tessellator.draw();
 		tessellator.startDrawingQuads();
+		tessellator.setColorOpaque_I(c);
 		tessellator.setNormal(1.0F, 0.0F, 0.0F);
 		rb.renderFaceXPos(b, 0.0D, 0.0D, 0.0D, ico);
 		tessellator.draw();
@@ -103,28 +117,40 @@ public class CrystalEncrustingRenderer implements ISBRH {
 		return true;
 	}
 
+	private GridDistortion getDistortion(int n) {
+		int idx = n-MIN_SEGMENTS;
+		if (distortions[idx] == null) {
+			GridDistortion grid = new GridDistortion(n);
+			grid.maxDeviation *= 0.66;
+			distortions[idx] = grid;
+		}
+		return distortions[idx];
+	}
+
 	private void renderCrystalFace(IBlockAccess world, int x, int y, int z, Block bk, TileCrystalEncrusted te, CrystalGrowth g, RenderBlocks rb, int color) {
 		int amt = g.getGrowth();
+		amt = (z%12+12)%12;
 		int h1 = 1+amt/2;
 		int h2 = 1+amt*4;
-		int n = 4+rand.nextInt(5);
+		int n = MIN_SEGMENTS+rand.nextInt(MAX_SEGMENTS-MIN_SEGMENTS+1);
 		double w = 1D/n;
-		GridDistortion grid = new GridDistortion(n);
-		grid.maxDeviation *= 0.66;
+		GridDistortion grid = this.getDistortion(n);
+		grid.snapToEdges = false;
 		grid.randomize(rand);
+		boolean rendered = false;
 		for (int a = 0; a < n; a++) {
 			for (int b = 0; b < n; b++) {
-				if (amt < 12 && rand.nextInt(2+amt/2) == 0)
+				if (rendered && rand.nextDouble() > 0.05+amt/32D)
 					continue;
 				int rh = h1+rand.nextInt(h2-h1+1);
 				double h = rh/96D;
 				this.renderCrystalPiece(world, x, y, z, bk, te, g, rb, color, a, b, w, h, grid);
+				rendered = true;
 			}
 		}
 	}
 
 	private void renderCrystalPiece(IBlockAccess world, int x, int y, int z, Block bk, TileCrystalEncrusted te, CrystalGrowth g, RenderBlocks rb, int color, int a, int b, double w, double h, GridDistortion grid) {
-		CubePoints points = CubePoints.fullBlock();
 		//red = MathHelper.clamp_float((float)ReikaRandomHelper.getRandomPlusMinus(red, 0.2F), 0, 1);
 		//green = MathHelper.clamp_float((float)ReikaRandomHelper.getRandomPlusMinus(green, 0.2F), 0, 1);
 		//blue = MathHelper.clamp_float((float)ReikaRandomHelper.getRandomPlusMinus(blue, 0.2F), 0, 1);
@@ -143,68 +169,68 @@ public class CrystalEncrustingRenderer implements ISBRH {
 		OffsetGroup off = grid.getOffset(a, b);
 		switch(g.side) {
 			case DOWN:
-				points.setSidePosition(ForgeDirection.DOWN, 0);
-				points.setSidePosition(ForgeDirection.UP, h);
-				points.setSidePosition(ForgeDirection.WEST, a*w);
-				points.setSidePosition(ForgeDirection.EAST, a*w+w);
-				points.setSidePosition(ForgeDirection.NORTH, b*w);
-				points.setSidePosition(ForgeDirection.SOUTH, b*w+w);
+				renderBlock.setSidePosition(ForgeDirection.DOWN, 0);
+				renderBlock.setSidePosition(ForgeDirection.UP, h);
+				renderBlock.setSidePosition(ForgeDirection.WEST, a*w);
+				renderBlock.setSidePosition(ForgeDirection.EAST, a*w+w);
+				renderBlock.setSidePosition(ForgeDirection.NORTH, b*w);
+				renderBlock.setSidePosition(ForgeDirection.SOUTH, b*w+w);
 				break;
 			case UP:
-				points.setSidePosition(ForgeDirection.DOWN, 1-h);
-				points.setSidePosition(ForgeDirection.UP, 1);
-				points.setSidePosition(ForgeDirection.WEST, a*w);
-				points.setSidePosition(ForgeDirection.EAST, a*w+w);
-				points.setSidePosition(ForgeDirection.NORTH, b*w);
-				points.setSidePosition(ForgeDirection.SOUTH, b*w+w);
+				renderBlock.setSidePosition(ForgeDirection.DOWN, 1-h);
+				renderBlock.setSidePosition(ForgeDirection.UP, 1);
+				renderBlock.setSidePosition(ForgeDirection.WEST, a*w);
+				renderBlock.setSidePosition(ForgeDirection.EAST, a*w+w);
+				renderBlock.setSidePosition(ForgeDirection.NORTH, b*w);
+				renderBlock.setSidePosition(ForgeDirection.SOUTH, b*w+w);
 				break;
 			case WEST:
-				points.setSidePosition(ForgeDirection.DOWN, b*w);
-				points.setSidePosition(ForgeDirection.UP, b*w+w);
-				points.setSidePosition(ForgeDirection.WEST, 0);
-				points.setSidePosition(ForgeDirection.EAST, h);
-				points.setSidePosition(ForgeDirection.NORTH, a*w);
-				points.setSidePosition(ForgeDirection.SOUTH, a*w+w);
+				renderBlock.setSidePosition(ForgeDirection.DOWN, b*w);
+				renderBlock.setSidePosition(ForgeDirection.UP, b*w+w);
+				renderBlock.setSidePosition(ForgeDirection.WEST, 0);
+				renderBlock.setSidePosition(ForgeDirection.EAST, h);
+				renderBlock.setSidePosition(ForgeDirection.NORTH, a*w);
+				renderBlock.setSidePosition(ForgeDirection.SOUTH, a*w+w);
 				break;
 			case EAST:
-				points.setSidePosition(ForgeDirection.DOWN, b*w);
-				points.setSidePosition(ForgeDirection.UP, b*w+w);
-				points.setSidePosition(ForgeDirection.WEST, 1-h);
-				points.setSidePosition(ForgeDirection.EAST, 1);
-				points.setSidePosition(ForgeDirection.NORTH, a*w);
-				points.setSidePosition(ForgeDirection.SOUTH, a*w+w);
+				renderBlock.setSidePosition(ForgeDirection.DOWN, b*w);
+				renderBlock.setSidePosition(ForgeDirection.UP, b*w+w);
+				renderBlock.setSidePosition(ForgeDirection.WEST, 1-h);
+				renderBlock.setSidePosition(ForgeDirection.EAST, 1);
+				renderBlock.setSidePosition(ForgeDirection.NORTH, a*w);
+				renderBlock.setSidePosition(ForgeDirection.SOUTH, a*w+w);
 				break;
 			case NORTH:
-				points.setSidePosition(ForgeDirection.DOWN, b*w);
-				points.setSidePosition(ForgeDirection.UP, b*w+w);
-				points.setSidePosition(ForgeDirection.WEST, a*w);
-				points.setSidePosition(ForgeDirection.EAST, a*w+w);
-				points.setSidePosition(ForgeDirection.NORTH, 0);
-				points.setSidePosition(ForgeDirection.SOUTH, h);
+				renderBlock.setSidePosition(ForgeDirection.DOWN, b*w);
+				renderBlock.setSidePosition(ForgeDirection.UP, b*w+w);
+				renderBlock.setSidePosition(ForgeDirection.WEST, a*w);
+				renderBlock.setSidePosition(ForgeDirection.EAST, a*w+w);
+				renderBlock.setSidePosition(ForgeDirection.NORTH, 0);
+				renderBlock.setSidePosition(ForgeDirection.SOUTH, h);
 				break;
 			case SOUTH:
-				points.setSidePosition(ForgeDirection.DOWN, b*w);
-				points.setSidePosition(ForgeDirection.UP, b*w+w);
-				points.setSidePosition(ForgeDirection.WEST, a*w);
-				points.setSidePosition(ForgeDirection.EAST, a*w+w);
-				points.setSidePosition(ForgeDirection.NORTH, 1-h);
-				points.setSidePosition(ForgeDirection.SOUTH, 1);
+				renderBlock.setSidePosition(ForgeDirection.DOWN, b*w);
+				renderBlock.setSidePosition(ForgeDirection.UP, b*w+w);
+				renderBlock.setSidePosition(ForgeDirection.WEST, a*w);
+				renderBlock.setSidePosition(ForgeDirection.EAST, a*w+w);
+				renderBlock.setSidePosition(ForgeDirection.NORTH, 1-h);
+				renderBlock.setSidePosition(ForgeDirection.SOUTH, 1);
 				break;
 			default:
 				break;
 		}
-		points.applyOffset(g.side, off);
-		points.applyOffset(g.side.getOpposite(), off);
-		points.clamp();
-		ReikaRenderHelper.renderBlockPieceNonCuboid(world, x, y, z, bk, Tessellator.instance, points);
+		renderBlock.applyOffset(g.side, off);
+		renderBlock.applyOffset(g.side.getOpposite(), off);
+		renderBlock.clamp();
+		ReikaRenderHelper.renderBlockPieceNonCuboid(world, x, y, z, bk, Tessellator.instance, renderBlock);
 
 		Tessellator.instance.setBrightness(240);
 		Tessellator.instance.setColorRGBA_I(ReikaColorAPI.mixColors(color, 0xffffff, 0.9F), te.isSpecial() ? 240 : 192);
-		points.renderIconOnSides(world, x, y, z, ChromaIcons.GLOWFRAME_TRANS.getIcon(), Tessellator.instance);
+		renderBlock.renderIconOnSides(world, x, y, z, ChromaIcons.GLOWFRAME_TRANS.getIcon(), Tessellator.instance);
 
 		Tessellator.instance.setBrightness(240);
 		Tessellator.instance.setColorRGBA_I(0xffffff, te.isSpecial() ? 48 : 32);
-		points.renderIconOnSides(world, x, y, z, BlockEncrustedCrystal.specialIcon, Tessellator.instance);
+		renderBlock.renderIconOnSides(world, x, y, z, BlockEncrustedCrystal.specialIcon, Tessellator.instance);
 	}
 
 	private long calcSeed(int x, int y, int z) {

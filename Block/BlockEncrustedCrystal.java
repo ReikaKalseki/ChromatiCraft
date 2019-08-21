@@ -243,12 +243,15 @@ public class BlockEncrustedCrystal extends CrystalTypeBlock {
 			return isSpecial;
 		}
 
-		private void grow(World world, int x, int y, int z) {
-			for (int i = 0; i < 6; i++) {
-				CrystalGrowth g = sides[i];
-				if (g != null) {
-					if (g.grow(world, x, y, z))
-						return;
+		public boolean grow(World world, int x, int y, int z) {
+			ding(world, x, y, z);
+			if (world.rand.nextInt(4) > 0) {
+				for (int i = 0; i < 6; i++) {
+					CrystalGrowth g = sides[i];
+					if (g != null) {
+						if (g.grow(world, x, y, z))
+							return true;
+					}
 				}
 			}
 			for (int i = 0; i < 6; i++) {
@@ -257,10 +260,11 @@ public class BlockEncrustedCrystal extends CrystalTypeBlock {
 					ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 					if (CrystalGrowth.canExist(world, x, y, z, dir)) {
 						this.addGrowth(dir);
-						return;
+						return true;
 					}
 				}
 			}
+			return false;
 		}
 
 		public void updateSides(World world, int x, int y, int z) {
