@@ -45,6 +45,7 @@ public class CrystalEncrustingRenderer implements ISBRH {
 	private static final int MAX_SEGMENTS = 8;
 
 	private final GridDistortion[] distortions = new GridDistortion[MAX_SEGMENTS-MIN_SEGMENTS+1];
+	private final boolean[][][] renderedGrid = new boolean[distortions.length][][];
 
 	private final CubePoints renderBlock = CubePoints.fullBlock();
 
@@ -127,26 +128,37 @@ public class CrystalEncrustingRenderer implements ISBRH {
 		return distortions[idx];
 	}
 
+	private boolean[][] getRenderGrid(int n) {
+		int idx = n-MIN_SEGMENTS;
+		if (renderedGrid[idx] == null) {
+			boolean[][] grid = new boolean[n][n];
+			renderedGrid[idx] = grid;
+		}
+		return renderedGrid[idx];
+	}
+
 	private void renderCrystalFace(IBlockAccess world, int x, int y, int z, Block bk, TileCrystalEncrusted te, CrystalGrowth g, RenderBlocks rb, int color) {
 		int amt = g.getGrowth();
-		amt = (z%12+12)%12;
-		int h1 = 1+amt/2;
-		int h2 = 1+amt*4;
+		int h1 = 3+amt*2;
+		int h2 = 8+amt*4;
 		int n = MIN_SEGMENTS+rand.nextInt(MAX_SEGMENTS-MIN_SEGMENTS+1);
 		double w = 1D/n;
 		GridDistortion grid = this.getDistortion(n);
 		grid.snapToEdges = false;
 		grid.randomize(rand);
-		boolean rendered = false;
-		for (int a = 0; a < n; a++) {
-			for (int b = 0; b < n; b++) {
-				if (rendered && rand.nextDouble() > 0.05+amt/32D)
-					continue;
-				int rh = h1+rand.nextInt(h2-h1+1);
-				double h = rh/96D;
-				this.renderCrystalPiece(world, x, y, z, bk, te, g, rb, color, a, b, w, h, grid);
-				rendered = true;
-			}
+		int pieces = Math.min(n*n/2, 6+amt*amt/10);
+		if (te.isSpecial())
+			pieces *= 1.5;
+		boolean[][] rendered = this.getRenderGrid(n);
+		for (int i = 0; i < pieces; i++) {
+			int a = rand.nextInt(n);
+			int b = rand.nextInt(n);
+			if (rendered[a][b])
+				continue;
+			rendered[a][b] = true;
+			int rh = h1+rand.nextInt(h2-h1+1);
+			double h = rh/80D; //was 96D
+			this.renderCrystalPiece(world, x, y, z, bk, te, g, rb, color, a, b, w, h, grid);
 		}
 	}
 
