@@ -45,7 +45,6 @@ public class CrystalEncrustingRenderer implements ISBRH {
 	private static final int MAX_SEGMENTS = 8;
 
 	private final GridDistortion[] distortions = new GridDistortion[MAX_SEGMENTS-MIN_SEGMENTS+1];
-	private final boolean[][][] renderedGrid = new boolean[distortions.length][][];
 
 	private final CubePoints renderBlock = CubePoints.fullBlock();
 
@@ -128,15 +127,6 @@ public class CrystalEncrustingRenderer implements ISBRH {
 		return distortions[idx];
 	}
 
-	private boolean[][] getRenderGrid(int n) {
-		int idx = n-MIN_SEGMENTS;
-		if (renderedGrid[idx] == null) {
-			boolean[][] grid = new boolean[n][n];
-			renderedGrid[idx] = grid;
-		}
-		return renderedGrid[idx];
-	}
-
 	private void renderCrystalFace(IBlockAccess world, int x, int y, int z, Block bk, TileCrystalEncrusted te, CrystalGrowth g, RenderBlocks rb, int color) {
 		int amt = g.getGrowth();
 		int h1 = 3+amt*2;
@@ -149,7 +139,7 @@ public class CrystalEncrustingRenderer implements ISBRH {
 		int pieces = Math.min(n*n/2, 6+amt*amt/10);
 		if (te.isSpecial())
 			pieces *= 1.5;
-		boolean[][] rendered = this.getRenderGrid(n);
+		boolean[][] rendered = new boolean[n][n];
 		for (int i = 0; i < pieces; i++) {
 			int a = rand.nextInt(n);
 			int b = rand.nextInt(n);
@@ -157,7 +147,7 @@ public class CrystalEncrustingRenderer implements ISBRH {
 				continue;
 			rendered[a][b] = true;
 			int rh = h1+rand.nextInt(h2-h1+1);
-			double h = rh/80D; //was 96D
+			double h = rh/96D;
 			this.renderCrystalPiece(world, x, y, z, bk, te, g, rb, color, a, b, w, h, grid);
 		}
 	}
