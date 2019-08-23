@@ -793,20 +793,20 @@
 			A liquid of both energy and space
 		</desc>
 	</luma>
-	<name>
+	<warpnode>
 		<title>
-			
+			Energy Vortices
 		</title>
 		<hint>
-			
+			Some sort of hole in space.
 		</hint>
 		<reveal>
-			
+			Which may provide a method to travel between them.
 		</reveal>
 		<desc>
-			
+			Wormholes of a sort
 		</desc>
-	</name>
+	</warpnode>
 	<name>
 		<title>
 			

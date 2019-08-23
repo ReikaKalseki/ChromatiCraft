@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -14,13 +14,17 @@ import java.util.ArrayList;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiDescription;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies;
 
 import forestry.api.apiculture.EnumBeeType;
@@ -72,9 +76,41 @@ public class GuiCraftableDesc extends GuiDescription {
 	}
 
 	private void renderBlock(int posX, int posY) {
-		int mod = 2000;
-		int metas = page.getBlock().getNumberMetadatas();
-		int meta = (int)((System.currentTimeMillis()/mod)%metas);
-		this.drawBlockRender(posX, posY, page.getBlock().getBlockInstance(), meta);
+		if (page == ChromaResearch.WARPNODE) {
+			GL11.glPushMatrix();
+			double s = 4;
+			GL11.glScaled(s, s, 1);
+			GL11.glTranslated(-50, -8, 0);
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/warpnode-small.png");
+			int idx = (int)(System.currentTimeMillis()/20%64);
+			double u = idx%8/8D;
+			double v = idx/8/8D;
+			double du = u+1/8D;
+			double dv = v+1/8D;
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glColor4f(1, 1, 1, 1);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.ADDITIVEDARK.apply();
+			int d = 2;
+			int w = 16;
+			int h = 16;
+			Tessellator v5 = Tessellator.instance;
+			v5.startDrawingQuads();
+			v5.addVertexWithUV((posX + 0 - d), (posY + h + d), 0, u, dv);
+			v5.addVertexWithUV((posX + w + d), (posY + h + d), 0, du, dv);
+			v5.addVertexWithUV((posX + w + d), (posY + 0 - d), 0, du, v);
+			v5.addVertexWithUV((posX + 0 - d), (posY + 0 - d), 0, u, v);
+			v5.draw();
+			GL11.glPopAttrib();
+			GL11.glPopMatrix();
+			return;
+		}
+		else {
+			int mod = 2000;
+			int metas = page.getBlock().getNumberMetadatas();
+			int meta = (int)((System.currentTimeMillis()/mod)%metas);
+			this.drawBlockRender(posX, posY, page.getBlock().getBlockInstance(), meta);
+		}
 	}
 }

@@ -744,7 +744,7 @@ public class ChromatiPackets implements PacketHandler {
 					((TileEntityMiner)tile).doWarningParticles(world, x, y, z);
 					break;
 				case REPEATERCONN:
-					((TileEntityCrystalRepeater)tile).triggerConnectionRender();
+					((TileEntityCrystalRepeater)tile).refreshConnectionRender();
 					break;
 				case CHARGERTOGGLE:
 					((TileEntityCrystalCharger)tile).toggle(CrystalElement.elements[data[0]]);

@@ -16,6 +16,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Base.BlockAttachableMini;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
@@ -235,7 +236,14 @@ public class RFWeb {
 	}
 
 	@SideOnly(Side.CLIENT)
+	private static boolean shouldAcceptParticle(World world) {
+		return HoldingChecks.MANIPULATOR.isClientHolding() ? true : world.rand.nextInt(4) == 0;
+	}
+
+	@SideOnly(Side.CLIENT)
 	public static void doSendParticle(World world, int x1, int y1, int z1, int x2, int y2, int z2, int amt) {
+		if (!shouldAcceptParticle(world))
+			return;
 		ParticlePath p = getPath(world, new Coordinate(x1, y1, z1), new Coordinate(x2, y2, z2));
 		EntityBlurFX fx = new EntityBlurFX(world, x1+0.5, y1+0.5, z1+0.5);
 		int l = p != null ? Math.max(10, 3*p.path.size()/2) : 90;
@@ -367,8 +375,14 @@ public class RFWeb {
 			int mov = r.addEnergy(world, THROUGHPUT, false);
 			mov = this.takeEnergy(world, mov, true);
 			mov = r.addEnergy(world, mov, true);
-			if (mov > 0)
-				ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.RFWEBSEND.ordinal(), world, location.xCoord, location.yCoord, location.zCoord, 60, r.location.xCoord, r.location.yCoord, r.location.zCoord, mov);
+			if (mov > 0 && this.shouldCreateParticle(world)) {
+				int range = world.rand.nextInt(3) == 0 ? 60 : 30;
+				ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.RFWEBSEND.ordinal(), world, location.xCoord, location.yCoord, location.zCoord, range, r.location.xCoord, r.location.yCoord, r.location.zCoord, mov);
+			}
+		}
+
+		private boolean shouldCreateParticle(World world) {
+			return world.rand.nextInt(2) == 0;
 		}
 
 		private int addEnergy(World world, int amt, boolean doTake) {

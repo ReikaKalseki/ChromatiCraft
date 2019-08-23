@@ -47,6 +47,7 @@ import Reika.ChromatiCraft.API.Event.StructureChestPopulationEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
+import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -138,7 +139,7 @@ public class BlockLootChest extends BlockContainer {
 		if (world.isRemote)
 			return true;
 		else {
-			if (DragonAPICore.debugtest && ep.capabilities.isCreativeMode && ChromaItems.TOOL.matchWith(ep.getCurrentEquippedItem())) {
+			if (DragonAPICore.debugtest && ep.capabilities.isCreativeMode && HoldingChecks.MANIPULATOR.isHolding(ep)) {
 				int level = ep.isSneaking() ? 2 : 0;
 				String sg = level > 0 ? ChestGenHooks.PYRAMID_JUNGLE_CHEST : ChestGenHooks.DUNGEON_CHEST;
 				Structures str = level > 0 ? ChromaStructures.Structures.OCEAN : ChromaStructures.Structures.BURROW;

@@ -17,12 +17,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.ColorData;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.LaserEffectType;
 import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonTapeBit;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Base.ParticleEntity;
@@ -105,7 +105,7 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 	private void spawnParticle() {
 		Minecraft mc = Minecraft.getMinecraft();
 		int l = 10+rand.nextInt(15);
-		if (rand.nextInt(ChromaItems.TOOL.matchWith(mc.thePlayer.getCurrentEquippedItem()) ? 3 : 12) == 0)
+		if (rand.nextInt(HoldingChecks.MANIPULATOR.isClientHolding() ? 3 : 12) == 0)
 			l *= 16;
 		double[] r = {0.1875, 0.125, 0.0625};
 		for (int i = 0; i < r.length; i++) {

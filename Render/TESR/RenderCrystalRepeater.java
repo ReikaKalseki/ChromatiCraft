@@ -1,15 +1,13 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
-
-import java.util.HashSet;
 
 import org.lwjgl.opengl.GL11;
 
@@ -30,7 +28,6 @@ import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
-import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -144,8 +141,9 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 
 	}
 
+	/*
 	private void renderConnectivityLines(TileEntityCrystalRepeater te, float par8) {
-		int a = te.getConnectionRenderAlpha();
+		int a = te.updateAndGetConnectionRenderAlpha();
 		if (a != 0) {
 			HashSet<WorldLocation> c = te.getRenderedConnectableTiles();
 			//ReikaJavaLibrary.pConsole(c);
@@ -176,9 +174,9 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 			}
 		}
 	}
-
+	 */
 	private void renderPlayerConnectivityLine(TileEntityCrystalRepeater te, float par8) {
-		int a = te.getConnectionRenderAlpha();
+		int a = te.updateAndGetConnectionRenderAlpha();
 		if (a != 0) {
 			//ReikaJavaLibrary.pConsole(c);
 			MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlockClient(4.5, false);

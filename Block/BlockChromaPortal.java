@@ -36,10 +36,10 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaTeleporter;
+import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -107,7 +107,7 @@ public class BlockChromaPortal extends Block {
 
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
-		if (ChromaItems.TOOL.matchWith(ep.getCurrentEquippedItem())) {
+		if (HoldingChecks.MANIPULATOR.isHolding(ep)) {
 			TileEntityCrystalPortal te = (TileEntityCrystalPortal)world.getTileEntity(x, y, z);
 			if (te.ownedBy(ep)) {
 				//world.addWeatherEffect(new EntityLightningBolt(world, x+0.5, y+0.5, z+0.5));

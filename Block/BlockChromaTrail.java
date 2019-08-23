@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -19,7 +19,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -31,9 +30,9 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Block.Decoration.BlockEtherealLight;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
@@ -96,8 +95,7 @@ public class BlockChromaTrail extends BlockContainer {
 
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
-		ItemStack is = ep.getCurrentEquippedItem();
-		if (ChromaItems.TOOL.matchWith(is)) {
+		if (HoldingChecks.MANIPULATOR.isHolding(ep)) {
 			for (Coordinate loc : ((TileChromaTrail)world.getTileEntity(x, y, z)).getFullPath()) {
 				TileEntity te = loc.getTileEntity(world);
 				loc.setBlock(world, Blocks.air);
@@ -144,7 +142,7 @@ public class BlockChromaTrail extends BlockContainer {
 				fx.setAlphaFading().setRapidExpand().setPositionController(s).setColorController(BlockEtherealLight.colorController);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
-			if (ChromaItems.TOOL.matchWith(Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem())) {
+			if (HoldingChecks.MANIPULATOR.isClientHolding()) {
 				if (world.rand.nextInt(2) == 0) {
 					double px = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.0625);
 					double py = ReikaRandomHelper.getRandomPlusMinus(y+0.5, 0.0625);

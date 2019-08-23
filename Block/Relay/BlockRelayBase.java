@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.Block.Relay;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -24,7 +23,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.RelayRenderer;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -72,8 +71,7 @@ public abstract class BlockRelayBase extends Block {
 
 	@Override
 	public final boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
-		ItemStack is = ep.getCurrentEquippedItem();
-		if (ChromaItems.TOOL.matchWith(is)) {
+		if (HoldingChecks.MANIPULATOR.isHolding(ep)) {
 			TileRelayBase te = (TileRelayBase)world.getTileEntity(x, y, z);
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[s];
 			//if (dir.getOpposite().ordinal() != world.getBlockMetadata(x, y, z)) {

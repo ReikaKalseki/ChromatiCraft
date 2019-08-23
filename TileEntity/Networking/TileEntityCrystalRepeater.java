@@ -28,6 +28,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
+import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
@@ -76,8 +77,6 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	protected int connectionRenderTick = 0;
 
-	private HashSet<WorldLocation> connectableTiles;
-
 	public static final int RANGE = 32;
 
 	private boolean redstoneCache;
@@ -93,9 +92,6 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 		if (connectionRenderTick > 0) {
 			connectionRenderTick--;
-			if (connectionRenderTick == 0) {
-				connectableTiles = null;
-			}
 		}
 
 		if (world.isRemote && this.canConduct() && this.isTurbocharged() && this.isEnhancedStructure()) {
@@ -405,7 +401,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		return true;
 	}
 
-	public void triggerConnectionRender() {
+	public final void refreshConnectionRender() {
 		if (worldObj.isRemote) {
 			connectionRenderTick = 100;
 			//connectableTiles = this.getConnectableTilesForRender();
@@ -415,12 +411,13 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		}
 	}
 
-	public int getConnectionRenderAlpha() {
+	@SideOnly(Side.CLIENT)
+	public int updateAndGetConnectionRenderAlpha() {
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		if (HoldingChecks.REPEATER.isHolding(ep) && ep.getDistanceSq(xCoord+0.5, yCoord+0.5, zCoord+0.5) < 4+Math.min(this.getSendRange(), this.getReceiveRange())) {
+			this.refreshConnectionRender();
+		}
 		return connectionRenderTick > 0 ? (connectionRenderTick > 10 ? 255 : 25*connectionRenderTick) : 0;
-	}
-
-	public HashSet<WorldLocation> getRenderedConnectableTiles() {
-		return connectableTiles;
 	}
 
 	@SideOnly(Side.CLIENT)

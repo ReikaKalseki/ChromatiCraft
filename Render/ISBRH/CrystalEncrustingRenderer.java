@@ -15,6 +15,7 @@ import java.util.Random;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
@@ -49,8 +50,8 @@ public class CrystalEncrustingRenderer implements ISBRH {
 	private final CubePoints renderBlock = CubePoints.fullBlock();
 
 	@Override
-	public void renderInventoryBlock(Block b, int metadata, int modelId, RenderBlocks rb) {
-		Tessellator tessellator = Tessellator.instance;
+	public void renderInventoryBlock(Block bk, int metadata, int modelId, RenderBlocks rb) {
+		Tessellator v5 = Tessellator.instance;
 
 		rb.renderMaxX = 1;
 		rb.renderMinY = 0;
@@ -59,42 +60,56 @@ public class CrystalEncrustingRenderer implements ISBRH {
 		rb.renderMinZ = 0;
 		rb.renderMaxY = 1;
 
-		IIcon ico = b.getIcon(0, metadata);
+		IIcon ico = bk.getIcon(0, metadata);
 		int c = ReikaColorAPI.mixColors(CrystalElement.elements[metadata].getColor(), 0xffffff, 0.85F);
 
-		GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
-		GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
-		tessellator.startDrawingQuads();
-		tessellator.setColorOpaque_I(c);
-		tessellator.setNormal(0.0F, -1.0F, 0.0F);
-		rb.renderFaceYNeg(b, 0.0D, 0.0D, 0.0D, ico);
-		tessellator.draw();
-		tessellator.startDrawingQuads();
-		tessellator.setColorOpaque_I(c);
-		tessellator.setNormal(0.0F, 1.0F, 0.0F);
-		rb.renderFaceYPos(b, 0.0D, 0.0D, 0.0D, ico);
-		tessellator.draw();
-		tessellator.startDrawingQuads();
-		tessellator.setColorOpaque_I(c);
-		tessellator.setNormal(0.0F, 0.0F, -1.0F);
-		rb.renderFaceZNeg(b, 0.0D, 0.0D, 0.0D, ico);
-		tessellator.draw();
-		tessellator.startDrawingQuads();
-		tessellator.setColorOpaque_I(c);
-		tessellator.setNormal(0.0F, 0.0F, 1.0F);
-		rb.renderFaceZPos(b, 0.0D, 0.0D, 0.0D, ico);
-		tessellator.draw();
-		tessellator.startDrawingQuads();
-		tessellator.setColorOpaque_I(c);
-		tessellator.setNormal(-1.0F, 0.0F, 0.0F);
-		rb.renderFaceXNeg(b, 0.0D, 0.0D, 0.0D, ico);
-		tessellator.draw();
-		tessellator.startDrawingQuads();
-		tessellator.setColorOpaque_I(c);
-		tessellator.setNormal(1.0F, 0.0F, 0.0F);
-		rb.renderFaceXPos(b, 0.0D, 0.0D, 0.0D, ico);
-		tessellator.draw();
+		rand.setSeed(Minecraft.getMinecraft().thePlayer.getUniqueID().hashCode() ^ metadata);
+		rand.nextBoolean();
+		int pieces = 12;
+		int n = 6;
 
+		GL11.glRotatef(90F, 0F, 1F, 0F);
+		GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
+		v5.startDrawingQuads();
+		v5.setColorOpaque_I(c);
+
+		boolean[][] rendered = new boolean[n][n];
+		for (int i = 0; i < pieces; i++) {
+			int a = rand.nextInt(n);
+			int b = rand.nextInt(n);
+			double w = 1D/n;
+			double a1 = w*a;
+			double a2 = a1+w;
+			double b1 = w*b;
+			double b2 = b1+w;
+			if (rendered[a][b])
+				continue;
+			rendered[a][b] = true;
+			double h = 0.2+rand.nextDouble()*0.6;
+
+			rb.partialRenderBounds = true;
+			rb.renderAllFaces = true;
+			rb.setRenderBounds(a1, 0, b1, a2, h, b2);
+			v5.setNormal(0F, -1F, 0F);
+			rb.renderFaceYNeg(bk, 0D, 0D, 0D, ico);
+			v5.setColorOpaque_I(c);
+			v5.setNormal(0F, 1F, 0F);
+			rb.renderFaceYPos(bk, 0D, 0D, 0D, ico);
+			v5.setColorOpaque_I(c);
+			v5.setNormal(0F, 0F, -1F);
+			rb.renderFaceZNeg(bk, 0D, 0D, 0D, ico);
+			v5.setColorOpaque_I(c);
+			v5.setNormal(0F, 0F, 1F);
+			rb.renderFaceZPos(bk, 0D, 0D, 0D, ico);
+			v5.setColorOpaque_I(c);
+			v5.setNormal(-1F, 0F, 0F);
+			rb.renderFaceXNeg(bk, 0D, 0D, 0D, ico);
+			v5.setColorOpaque_I(c);
+			v5.setNormal(1F, 0F, 0F);
+			rb.renderFaceXPos(bk, 0D, 0D, 0D, ico);
+		}
+
+		v5.draw();
 		GL11.glTranslatef(0.5F, 0.5F, 0.5F);
 	}
 
@@ -230,9 +245,11 @@ public class CrystalEncrustingRenderer implements ISBRH {
 		Tessellator.instance.setColorRGBA_I(ReikaColorAPI.mixColors(color, 0xffffff, 0.9F), te.isSpecial() ? 240 : 192);
 		renderBlock.renderIconOnSides(world, x, y, z, ChromaIcons.GLOWFRAME_TRANS.getIcon(), Tessellator.instance);
 
-		Tessellator.instance.setBrightness(240);
-		Tessellator.instance.setColorRGBA_I(0xffffff, te.isSpecial() ? 48 : 32);
-		renderBlock.renderIconOnSides(world, x, y, z, BlockEncrustedCrystal.specialIcon, Tessellator.instance);
+		if (te.isSpecial()) {
+			Tessellator.instance.setBrightness(240);
+			Tessellator.instance.setColorRGBA_I(0xffffff, te.isSpecial() ? 48 : 32);
+			renderBlock.renderIconOnSides(world, x, y, z, BlockEncrustedCrystal.specialIcon, Tessellator.instance);
+		}
 	}
 
 	private long calcSeed(int x, int y, int z) {

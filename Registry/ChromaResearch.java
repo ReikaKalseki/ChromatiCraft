@@ -241,7 +241,8 @@ public enum ChromaResearch implements ProgressElement {
 	//SPAWNERCONTROL(	ChromaBlocks.SPAWNERCONTROL,									ResearchLevel.RAWEXPLORE,	ProgressStage.BREAKSPAWNER),
 	TRAPFLOOR(		ChromaBlocks.TRAPFLOOR,											ResearchLevel.RAWEXPLORE,	ProgressStage.SNOWSTRUCT),
 	WARPNODE(		ChromaBlocks.WARPNODE,											ResearchLevel.RAWEXPLORE,	ProgressStage.WARPNODE),
-	RFPOD	(		ChromaBlocks.RFPOD,												ResearchLevel.RUNECRAFT),
+	RFPOD(			ChromaBlocks.RFPOD,												ResearchLevel.RUNECRAFT),
+	ENCRUSTED(		ChromaBlocks.ENCRUSTED,		CrystalElement.RED.ordinal(),		ResearchLevel.RAWEXPLORE,	ProgressStage.PYLON),
 
 	TOOLDESC("Tools", ""),
 	WAND(				ChromaItems.TOOL,			ResearchLevel.ENTRY),
@@ -309,7 +310,8 @@ public enum ChromaResearch implements ProgressElement {
 	TINKERTOOLS("Mix-And-Magic Tools",	new ItemStack(Blocks.dirt),							ResearchLevel.MULTICRAFT),
 	BRANCHES("Magic Branches",		ItemMagicBranch.BranchTypes.CRYSTAL.getStack(),			ResearchLevel.ENERGYEXPLORE),
 	FERTILITYSEED("Fertility Seeds",ChromaItems.FERTILITYSEED.getStackOf(),					ResearchLevel.RAWEXPLORE),
-	ARTEFACT("Mysterious Artifacts",ChromaItems.ARTEFACT.getStackOf(),						ResearchLevel.RAWEXPLORE, ProgressStage.ARTEFACT),
+	ARTEFACT("Mysterious Artifacts",ChromaItems.ARTEFACT.getStackOf(),						ResearchLevel.RAWEXPLORE,	ProgressStage.ARTEFACT),
+	PROXESSENCE("Proximal Essence",	ChromaStacks.bedrockloot,								ResearchLevel.ENDGAME,		ProgressStage.DIMENSION),
 
 	ABILITYDESC("Abilities", ""),
 	REACH(			Chromabilities.REACH),
@@ -1205,6 +1207,8 @@ public enum ChromaResearch implements ProgressElement {
 			return ReikaJavaLibrary.makeListFrom(ChromaBlocks.TANK.getStackOf(), ChromaBlocks.TANK.getStackOfMetadata(2));
 		if (this == FENCEAUX || this == TNT)
 			return ReikaJavaLibrary.makeListFrom(iconItem);
+		if (this == PROXESSENCE)
+			return ReikaJavaLibrary.makeListFrom(ChromaStacks.bedrockloot, ChromaStacks.bedrockloot2);
 		if (block != null) {
 			Item item = Item.getItemFromBlock(block.getBlockInstance());
 			ArrayList<ItemStack> li = new ArrayList();

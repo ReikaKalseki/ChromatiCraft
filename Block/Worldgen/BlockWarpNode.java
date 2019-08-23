@@ -24,9 +24,9 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.WarpNetwork;
-import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -67,7 +67,7 @@ public class BlockWarpNode extends BlockContainer {
 
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
-		if (!world.isRemote && ChromaItems.TOOL.matchWith(ep.getCurrentEquippedItem())) {
+		if (!world.isRemote && HoldingChecks.MANIPULATOR.isHolding(ep)) {
 			TileEntityWarpNode te = (TileEntityWarpNode)world.getTileEntity(x, y, z);
 			te.open();
 			ChromaSounds.USE.playSoundAtBlock(te);

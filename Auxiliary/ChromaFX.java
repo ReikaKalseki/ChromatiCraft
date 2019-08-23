@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -28,6 +28,7 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.FocusAcceleratable;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
@@ -52,6 +53,7 @@ import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
 import Reika.DragonAPI.Instantiable.ParticleController.EntityLockMotionController;
+import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Interfaces.MotionController;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -59,6 +61,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -68,6 +71,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ChromaFX {
 
 	private static final Random rand = new Random();
+
+	private static final ColorBlendList FOCUS_CRYSTAL_PARTICLES = new ColorBlendList(6, 0x45ff45, 0x45ff45, 0x45ff45, 0xff4040, 0xff4040, 0xff4040, 0xff4040, 0xff4040, 0xff4040, 0x22aaff, 0x22aaff, 0x22aaff, 0x22aaff, 0xb220ff, 0xb220ff);
 
 	public static void drawFillBar(CrystalElement e, int x, int y, int w, int h, float f) {
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
@@ -737,6 +742,56 @@ public class ChromaFX {
 				DecimalPosition pos1 = b.getPosition(i);
 				DecimalPosition pos2 = b.getPosition(i+1);
 				renderBeam(pos1.xCoord, pos1.yCoord, pos1.zCoord, pos2.xCoord, pos2.yCoord, pos2.zCoord, par8, a, h, color);
+			}
+		}
+	}
+
+	public static void doFocusCrystalParticles(World world, int x, int y, int z, FocusAcceleratable fa) {
+		if (HoldingChecks.FOCUSCRYSTAL.isClientHolding()) {
+			Collection<Coordinate> set = fa.getRelativeFocusCrystalLocations();
+			for (Coordinate c : set) {
+				double dx = x+c.xCoord+0.5;
+				double dy = y+c.yCoord+0.125;
+				double dz = z+c.zCoord+0.5;
+				int n = ReikaRandomHelper.getRandomBetween(1, 3);
+				for (int i = 0; i < n; i++) {
+					boolean ctr = rand.nextInt(3) == 0;
+					double px = ReikaRandomHelper.getRandomPlusMinus(dx, 0.03125);
+					double py = ReikaRandomHelper.getRandomPlusMinus(dy, 0.03125);
+					double pz = ReikaRandomHelper.getRandomPlusMinus(dz, 0.03125);
+					double ang = (world.getTotalWorldTime()/2D)%360;
+					int split = 6;//3;
+					double dAng = 360D/split*rand.nextInt(split);
+					ang = (ang+dAng)%360D;
+					ang = ReikaRandomHelper.getRandomPlusMinus(ang, 6);
+					if (!ctr) {
+						double d = ReikaRandomHelper.getRandomBetween(0.15, 0.25);
+						double[] off = ReikaPhysicsHelper.polarToCartesian(d, 0, ang);
+						px += off[0];
+						pz += off[2];
+					}
+					double vel = ctr ? 0 : ReikaRandomHelper.getRandomBetween(0.015, 0.03);
+					double[] v = ReikaPhysicsHelper.polarToCartesian(vel, 0, ang);
+					float g = -(float)ReikaRandomHelper.getRandomBetween(0, 0.125);
+					int l = ReikaRandomHelper.getRandomBetween(8, 40);
+					float s = (float)ReikaRandomHelper.getRandomBetween(0.25, 1.25);
+					int clr = FOCUS_CRYSTAL_PARTICLES.getColor(world.getTotalWorldTime()/8D);
+					EntityBlurFX fx = new EntityBlurFX(world, px, py, pz, v[0], v[1], v[2]);
+					ChromaIcons ico = ChromaIcons.FADE;
+					switch(rand.nextInt(4)) {
+						case 0:
+							ico = ChromaIcons.NODE2;
+							break;
+						case 1:
+							ico = ChromaIcons.FLARE;
+							break;
+					}
+					fx.setColor(clr).setLife(l).setScale(s).setGravity(g).setRapidExpand().setAlphaFading().setIcon(ico);
+					EntityBlurFX fx2 = new EntityBlurFX(world, px, py, pz, v[0], v[1], v[2]);
+					fx2.setColor(0xffffff).setLife(l).setScale(s*0.6F).setGravity(g).setRapidExpand().setAlphaFading().setIcon(ico).lockTo(fx);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
+				}
 			}
 		}
 	}

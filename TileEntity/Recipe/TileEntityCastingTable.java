@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.TileEntity.Recipe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.UUID;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -32,6 +34,7 @@ import net.minecraftforge.fluids.FluidContainerRegistry;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Event.CastingEvent;
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -58,6 +61,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityGlobeFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
@@ -66,15 +70,20 @@ import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.FocusLocation;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
+import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray.BlockMatchFailCallback;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray.EmptyCheck;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Recipe.ItemMatch;
+import Reika.DragonAPI.Interfaces.BlockCheck;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.TriggerableAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -83,7 +92,7 @@ import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -92,7 +101,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityCastingTable extends InventoriedCrystalReceiver implements NBTTile, BreakAction, TriggerableAction, OwnedTile,
-OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
+OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, BlockMatchFailCallback {
 
 	private CastingRecipe activeRecipe = null;
 	private int craftingTick = 0;
@@ -100,6 +109,8 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 	private int craftingAmount;
 
 	private EntityPlayer craftingPlayer;
+
+	private StructureMismatch structureMismatch;
 
 	public boolean hasStructure = false;
 	public boolean hasStructure2 = false;
@@ -161,10 +172,19 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 			this.onCraftingTick(world, x, y, z);
 		}
 
+		if (structureMismatch != null && structureMismatch.isActive) {
+			if (structureMismatch.doEffect(this))
+				structureMismatch.isActive = false;
+		}
+
 		if (isEnhanced && hasPylonConnections) {
 			if (world.isRemote) {
 				this.doEnhancedParticles(world, x, y, z);
 			}
+		}
+
+		if (world.isRemote) {
+			ChromaFX.doFocusCrystalParticles(world, x, y, z, this);
 		}
 
 		//ChromaStructures.getCastingLevelThree(world, x, y-1, z).place();
@@ -467,11 +487,12 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 		int x = xCoord;
 		int y = yCoord-1;
 		int z = zCoord;
+		structureMismatch = null;
 		FilledBlockArray b = ChromaStructures.getCastingLevelOne(world, x, y, z);
 		FilledBlockArray b2 = ChromaStructures.getCastingLevelTwo(world, x, y, z);
 		FilledBlockArray b3 = ChromaStructures.getCastingLevelThree(world, x, y, z);
 		if (this.getTier().isAtLeast(RecipeType.PYLON)) {
-			if (b3.matchInWorld()) {
+			if (b3.matchInWorld(this)) {
 				hasStructure = hasStructure2 = hasPylonConnections = true;
 			}
 			else if (b2.matchInWorld()) {
@@ -487,7 +508,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 			}
 		}
 		else if (this.getTier().isAtLeast(RecipeType.MULTIBLOCK)) {
-			if (b2.matchInWorld()) {
+			if (b2.matchInWorld(this)) {
 				hasStructure = hasStructure2 = true;
 			}
 			else if (b.matchInWorld()) {
@@ -500,7 +521,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 			hasPylonConnections = false;
 		}
 		else if (this.getTier().isAtLeast(RecipeType.TEMPLE)) {
-			if (b.matchInWorld()) {
+			if (b.matchInWorld(this)) {
 				hasStructure = true;
 			}
 			else {
@@ -526,6 +547,8 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 	}
 
 	public boolean triggerCrafting(EntityPlayer ep) {
+		if (structureMismatch != null)
+			structureMismatch.isActive = true;
 		if (activeRecipe != null && craftingTick == 0) {
 			if (activeRecipe.canRunRecipe(ep) && this.isOwnedByPlayer(ep)) {
 				craftingPlayer = ep;
@@ -1198,7 +1221,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 	@Override
 	public void recountFocusCrystals() {
 		this.getAccelerationFactor();
-		ReikaJavaLibrary.pConsole(this.getAccelerationFactor());
+		//ReikaJavaLibrary.pConsole(this.getAccelerationFactor());
 	}
 
 	@Override
@@ -1214,6 +1237,22 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 	@Override
 	public float getProgressToNextStep() {
 		return 0;
+	}
+
+	@Override
+	public Collection<Coordinate> getRelativeFocusCrystalLocations() {
+		Collection<Coordinate> c = new ArrayList();
+		for (CastingFocusLocation f : CastingFocusLocation.list) {
+			c.add(f.relativeLocation());
+		}
+		return c;
+	}
+
+	@Override
+	public void onBlockFailure(World world, int x, int y, int z, BlockCheck seek) {
+		if (world.isRemote)
+			return;
+		structureMismatch = new StructureMismatch(x, y, z, seek);
 	}
 
 	public static enum CastingFocusLocation implements FocusLocation {
@@ -1244,6 +1283,67 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture {
 		static {
 			for (CastingFocusLocation cf : list) {
 				set.add(cf);
+			}
+		}
+
+	}
+
+	private static class StructureMismatch {
+
+		private static final int LIFESPAN = 50; //2.5s
+
+		private final BlockCheck seek;
+		private final Coordinate location;
+
+		private int age = LIFESPAN;
+		private boolean isActive;
+
+		private StructureMismatch(int x, int y, int z, BlockCheck bc) {
+			seek = bc;
+			location = new Coordinate(x, y, z);
+		}
+
+		private boolean doEffect(TileEntityCastingTable te) {
+			//ChromaSounds.ERROR.playSoundAtBlock(te);
+			//ChromaSounds.ERROR.playSoundAtBlock(world, x, y, z);
+
+			//ReikaJavaLibrary.pConsole(seek+" @ "+new Coordinate(x, y, z));
+
+			BlockKey bk = seek instanceof EmptyCheck ? null : seek.asBlockKey();
+			if (bk == null || bk.blockID == Blocks.air) {
+				bk = new BlockKey(Blocks.bedrock);
+			}
+
+			int r = 2;
+			int n = Math.max(4, r*r*r/3);
+			for (int i = 0; i < n; i++) {
+				int dx = ReikaRandomHelper.getRandomPlusMinus(location.xCoord, r);
+				int dy = ReikaRandomHelper.getRandomPlusMinus(location.yCoord, r);
+				int dz = ReikaRandomHelper.getRandomPlusMinus(location.zCoord, r);
+				//this.spawnMismatchParticles(world, dx, dy, dz);
+				int amt = ReikaRandomHelper.getRandomBetween(4, 12);
+				ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), te.worldObj, dx, dy, dz, amt, Block.getIdFromBlock(bk.blockID), bk.metadata);
+			}
+
+			age--;
+			return age <= 0;
+		}
+
+		@Deprecated
+		@SideOnly(Side.CLIENT)
+		private void spawnMismatchParticles(World world, int x, int y, int z) {
+			int n = 8+rand.nextInt(20);
+			for (int i = 0; i < n; i++) {
+				double dx = x+rand.nextDouble();
+				double dy = y+rand.nextDouble();
+				double dz = z+rand.nextDouble();
+				double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
+				double vy = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
+				double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
+				int c = ReikaColorAPI.getModifiedHue(0xff0000, rand.nextInt(360));
+				int l = ReikaRandomHelper.getRandomBetween(10, 40);
+				EntityBlurFX fx = new EntityBlurFX(world, dx, dy, dz, vx, vy, vz).setColor(c).setLife(l).setIcon(ChromaIcons.SPARKLEPARTICLE).setRapidExpand();
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}
 

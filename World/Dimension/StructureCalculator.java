@@ -37,6 +37,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class StructureCalculator extends ThreadedGenerator {
 
@@ -55,6 +56,7 @@ public class StructureCalculator extends ThreadedGenerator {
 	public static final int BASE_RADIUS = 5000;
 	public static final int RADIUS_VARIATION = 3000; //was +/- 4000, then 2000
 
+	private static boolean seedNeedsRecalc = false;
 	private static long clientDimensionSeed;
 
 	public StructureCalculator(long seed) {
@@ -87,6 +89,7 @@ public class StructureCalculator extends ThreadedGenerator {
 
 	public static void assignSeed(long s) {
 		clientDimensionSeed = s;
+		seedNeedsRecalc = true;
 	}
 
 	public static void sendSeed(EntityPlayer ep) {
@@ -95,6 +98,7 @@ public class StructureCalculator extends ThreadedGenerator {
 	}
 
 	private static long generateOrGetGenSeed() {
+		seedNeedsRecalc = false;
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			return clientDimensionSeed;
 		}
@@ -134,6 +138,7 @@ public class StructureCalculator extends ThreadedGenerator {
 	}
 
 	private void generate() throws OutOfMemoryError {
+		this.initSeed();
 		/*
 		ArrayList<CrystalElement> colors = ReikaJavaLibrary.makeListFromArray(CrystalElement.elements);
 		for (int i = 0; i < DimensionStructureType.types.length; i++) {
@@ -171,10 +176,17 @@ public class StructureCalculator extends ThreadedGenerator {
 		this.generateMonument();
 	}
 
+	private void initSeed() {
+		if (seedNeedsRecalc)
+			seededRand.setSeed(this.generateOrGetGenSeed());
+	}
+
+	@SideOnly(Side.CLIENT)
 	public static EnumMap<CrystalElement, StructureTypeData> getStructureColorTypes() {
 		EnumMap<CrystalElement, StructureTypeData> map = new EnumMap(CrystalElement.class);
 
 		StructureCalculator throwaway = new StructureCalculator(0, 0);
+		throwaway.seededRand.setSeed(clientDimensionSeed);
 
 		ArrayList<DimensionStructureType> structs = throwaway.getUsableStructures();
 		int idx = 0;

@@ -21,10 +21,10 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
@@ -82,7 +82,7 @@ public class BlockTrapFloor extends Block implements CollisionDelegate, SemiUnbr
 
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
-		if (ChromaItems.TOOL.matchWith(ep.getCurrentEquippedItem())) {
+		if (HoldingChecks.MANIPULATOR.isHolding(ep)) {
 			int meta = 1+(world.getBlockMetadata(x, y, z))%4;
 			world.setBlockMetadataWithNotify(x, y, z, meta, 3);
 			ReikaSoundHelper.playBreakSound(world, x, y, z, Blocks.stone);

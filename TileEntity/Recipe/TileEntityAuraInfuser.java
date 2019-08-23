@@ -9,6 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Recipe;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,6 +22,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.MultiBlockCheck;
@@ -73,6 +78,8 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 	private int focusCrystalTotal;
 	private boolean allExquisite = false;
 
+	private final HashSet<Coordinate> focusCrystalSpots = new HashSet();
+
 	static {
 		required.addTag(CrystalElement.PURPLE, 500);
 		required.addTag(CrystalElement.BLACK, 2500);
@@ -89,6 +96,10 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 			craftingTick = 0;
 		}
 
+		if (world.isRemote) {
+			ChromaFX.doFocusCrystalParticles(world, x, y, z, this);
+		}
+
 		if (DragonAPICore.debugtest)
 			ChromaStructures.getInfusionStructure(world, x, y, z).place();
 	}
@@ -101,6 +112,7 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 	public void validateStructure() {
 		focusCrystalTotal = 0;
 		allExquisite = true;
+		focusCrystalSpots.clear();
 		FilledBlockArray arr = ChromaStructures.getInfusionStructure(worldObj, xCoord, yCoord, zCoord);
 		hasStructure = arr.matchInWorld();
 		if (hasStructure) {
@@ -120,8 +132,10 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		for (Coordinate c : arr.keySet()) {
 			if (c.yCoord == yCoord-1 && c.getTaxicabDistanceTo(new Coordinate(this)) > 2) {
 				if (arr.getBlockAt(c.xCoord, c.yCoord, c.zCoord) == ChromaBlocks.PYLONSTRUCT.getBlockInstance()) {
-					if (ChromaTiles.getTile(worldObj, c.xCoord, c.yCoord+1, c.zCoord) == ChromaTiles.FOCUSCRYSTAL) {
-						TileEntityFocusCrystal te = (TileEntityFocusCrystal)c.offset(0, 1, 0).getTileEntity(worldObj);
+					Coordinate c2 = c.offset(0, 1, 0);
+					focusCrystalSpots.add(c2);
+					if (ChromaTiles.getTile(worldObj, c2.xCoord, c2.yCoord, c2.zCoord) == ChromaTiles.FOCUSCRYSTAL) {
+						TileEntityFocusCrystal te = (TileEntityFocusCrystal)c2.getTileEntity(worldObj);
 						CrystalTier ct = te.getTier();
 						if (ct.ordinal() > 0) {
 							int power = ReikaMathLibrary.intpow2(2, ct.getEffectiveOrdinal()-1);
@@ -420,6 +434,15 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 	@Override
 	public void recountFocusCrystals() {
 		this.validateStructure();
+	}
+
+	@Override
+	public Collection<Coordinate> getRelativeFocusCrystalLocations() {
+		Collection<Coordinate> ret = new ArrayList();
+		for (Coordinate c : focusCrystalSpots) {
+			ret.add(c.offset(-xCoord, -yCoord, -zCoord));
+		}
+		return ret;
 	}
 
 }

@@ -9,6 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.Interfaces;
 
+import java.util.Collection;
+
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 public interface FocusAcceleratable {
 
@@ -19,5 +22,7 @@ public interface FocusAcceleratable {
 	public float getProgressToNextStep();
 
 	public void recountFocusCrystals();
+
+	public Collection<Coordinate> getRelativeFocusCrystalLocations();
 
 }

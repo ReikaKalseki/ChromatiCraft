@@ -36,7 +36,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.DragonAPI.ModInteract.ItemHandlers.BotaniaBlockHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.BotaniaHandler;
 
 
 public class TileEntityHarvesterPlant extends TileEntityMagicPlant {
@@ -135,7 +135,7 @@ public class TileEntityHarvesterPlant extends TileEntityMagicPlant {
 	}
 
 	private boolean canHarvest(Block b, int meta, World world, int x, int y, int z) {
-		if (ModList.BOTANIA.isLoaded() && BotaniaBlockHandler.getInstance().flowerID == b)
+		if (ModList.BOTANIA.isLoaded() && BotaniaHandler.getInstance().flowerID == b)
 			return true;
 		return flowerCache.contains(new BlockKey(b, meta)) && ReikaWorldHelper.checkForAdjBlock(world, x, y, z, b, meta) != null && ReikaWorldHelper.checkForAdjBlock(world, x, y, z, this.getTile().getBlock(), this.getTile().getBlockMetadata()) == null;
 	}

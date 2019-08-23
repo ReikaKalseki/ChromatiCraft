@@ -15,17 +15,16 @@ import java.util.Map.Entry;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.client.MinecraftForgeClient;
 
+import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityEssentiaRelay;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
@@ -58,7 +57,7 @@ public class RenderEssentiaRelay extends ChromaRenderBase {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glTranslated(par2, par4, par6);
 
-		if (te.isInWorld() && !StructureRenderer.isRenderingTiles() && ChromaItems.TOOL.matchWith(Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem())) {
+		if (te.isInWorld() && !StructureRenderer.isRenderingTiles() && HoldingChecks.MANIPULATOR.isClientHolding()) {
 			if (par8 != lastNetworkRenderPTick || lastNetworkRenderTick != te.worldObj.getTotalWorldTime()) {
 				lastNetworkRenderPTick = par8;
 				lastNetworkRenderTick = te.worldObj.getTotalWorldTime();

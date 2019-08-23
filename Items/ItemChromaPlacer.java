@@ -20,7 +20,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -29,7 +28,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
@@ -39,8 +37,6 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityMagicPlant;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
-import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
-import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectJar;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -77,6 +73,7 @@ public class ItemChromaPlacer extends Item implements ISize {
 		this.setCreativeTab(ChromatiCraft.instance.isLocked() ? null : ChromatiCraft.tabChroma);
 	}
 
+	/*
 	@Override
 	public void onUpdate(ItemStack is, World world, Entity e, int slot, boolean select) {
 		if (select && !world.isRemote) {
@@ -87,12 +84,13 @@ public class ItemChromaPlacer extends Item implements ISize {
 					int y = MathHelper.floor_double(e.posY);
 					int z = MathHelper.floor_double(e.posZ);
 					for (CrystalNetworkTile te : CrystalNetworker.instance.getNearTilesOfType(world, x, y, z, TileEntityCrystalRepeater.class, r)) {
-						((TileEntityCrystalRepeater)te).triggerConnectionRender();
+						((TileEntityCrystalRepeater)te).refreshConnectionRender();
 					}
 				}
 			}
 		}
 	}
+	 */
 
 	@Override
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int side, float par8, float par9, float par10) {

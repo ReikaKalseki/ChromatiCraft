@@ -176,6 +176,7 @@ public class BlockColoredLock extends BlockDimensionStructureTile {
 			isOpen = true;
 			ReikaSoundHelper.playBreakSound(worldObj, xCoord, yCoord, zCoord, Blocks.stone, 2, 1);
 			ReikaSoundHelper.playBreakSound(worldObj, xCoord, yCoord, zCoord, Blocks.stone, 2, 1);
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
 		private void close() {
@@ -184,6 +185,7 @@ public class BlockColoredLock extends BlockDimensionStructureTile {
 			isOpen = false;
 			ReikaSoundHelper.playBreakSound(worldObj, xCoord, yCoord, zCoord, Blocks.stone, 2, 1);
 			ReikaSoundHelper.playBreakSound(worldObj, xCoord, yCoord, zCoord, Blocks.stone, 2, 1);
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
 		@Override

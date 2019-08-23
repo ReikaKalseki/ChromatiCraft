@@ -107,8 +107,10 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.BotaniaHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.DartItemHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.DragonRealmCore.DragonRealmCore;
@@ -333,6 +335,15 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 		if (m == ChromaTiles.STAND && ep.isSneaking() && is == null) {
 			if (!world.isRemote)
 				((TileEntityItemStand)te).spreadItemWith(ep, is);
+			return true;
+		}
+
+		if (m == ChromaTiles.TABLE && is != null && ModList.BOTANIA.isLoaded() && is.getItem() == BotaniaHandler.getInstance().wandID) {
+			if (world.isRemote) {
+				int[] colors = BotaniaHandler.getInstance().getWandColors(is);
+				ReikaDyeHelper dye1 = ReikaDyeHelper.dyes[15-colors[0]]; //compensate for reversed color order
+				ReikaDyeHelper dye2 = ReikaDyeHelper.dyes[15-colors[1]];
+			}
 			return true;
 		}
 
