@@ -61,6 +61,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.BotaniaPetalShower;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityGlobeFX;
@@ -73,6 +74,8 @@ import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.DragonAPIInit;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
@@ -82,6 +85,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
+import Reika.DragonAPI.Instantiable.Effects.EntityParticleEmitterFX;
 import Reika.DragonAPI.Instantiable.Recipe.ItemMatch;
 import Reika.DragonAPI.Interfaces.BlockCheck;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
@@ -93,8 +97,11 @@ import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -1347,6 +1354,24 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 			}
 		}
 
+	}
+
+	@SideOnly(Side.CLIENT)
+	@ModDependent(ModList.BOTANIA)
+	public void onClickedWithBotaniaWand(ReikaDyeHelper dye1, ReikaDyeHelper dye2) {
+		ReikaSoundHelper.playNormalClientSound(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, "botania:spreaderFire", 1, 1, true);
+		for (int i = 0; i < 8; i++) {
+			double ang = rand.nextDouble()*360;
+			double vy = ReikaRandomHelper.getRandomBetween(0.125, 0.375);
+			double vel = ReikaRandomHelper.getRandomBetween(0.0625, 0.25);
+			double[] v = ReikaPhysicsHelper.polarToCartesian(vel, 0, ang);
+			double g = ReikaRandomHelper.getRandomBetween(0.03125/4, 0.03125);
+			int l = ReikaRandomHelper.getRandomBetween(20, 80);
+			EntityParticleEmitterFX fx = new EntityParticleEmitterFX(worldObj, xCoord+0.5, yCoord+1, zCoord+0.5, v[0], vy, v[2], new BotaniaPetalShower(rand.nextBoolean() ? dye1 : dye2));
+			fx.setVelocityDeltas(0, -g, 0).setLife(l);
+			fx.noClip = true;
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
 	}
 
 }

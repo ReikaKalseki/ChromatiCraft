@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.Particle;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.World;
@@ -18,12 +16,11 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomRenderFX;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.ParticleEngine;
 import Reika.ChromatiCraft.Render.ParticleEngine.RenderMode;
 import Reika.ChromatiCraft.Render.ParticleEngine.RenderModeFlags;
 import Reika.ChromatiCraft.Render.ParticleEngine.TextureMode;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -83,16 +80,7 @@ public class EntityFlareFX extends EntityFX implements CustomRenderFX {
 	@Override
 	public void renderParticle(Tessellator v5, float par2, float par3, float par4, float par5, float par6, float par7)
 	{
-		v5.draw();
-		ReikaTextureHelper.bindTerrainTexture();
-		BlendMode.ADDITIVEDARK.apply();
-		GL11.glColor4f(1, 1, 1, 1);
-		v5.startDrawingQuads();
-		v5.setBrightness(this.getBrightnessForRender(0));
 		super.renderParticle(v5, par2, par3, par4, par5, par6, par7);
-		v5.draw();
-		BlendMode.DEFAULT.apply();
-		v5.startDrawingQuads();
 	}
 
 	@Override
@@ -104,7 +92,7 @@ public class EntityFlareFX extends EntityFX implements CustomRenderFX {
 	@Override
 	public int getFXLayer()
 	{
-		return 2;
+		return 1;
 	}
 
 	@Override
@@ -114,7 +102,7 @@ public class EntityFlareFX extends EntityFX implements CustomRenderFX {
 
 	@Override
 	public TextureMode getTexture() {
-		return null;
+		return ParticleEngine.instance.blockTex;
 	}
 
 	@Override

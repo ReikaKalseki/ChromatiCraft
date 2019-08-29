@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -20,8 +20,10 @@ import org.lwjgl.util.Point;
 import org.lwjgl.util.Rectangle;
 
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IIcon;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
@@ -35,6 +37,8 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap.Topology;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -195,8 +199,17 @@ public class GuiProgressStages extends GuiScrollingPage {
 		int color = 0xffffff;
 		boolean see = this.renderClearText(p, player);
 		drawRect(x, y, x+elementWidth, y+elementHeight, 0xff444444);
-		api.drawRectFrame(x, y, elementWidth, elementHeight, color); //temp
-		if (see || p.isOneStepAway(player)) {
+		Rectangle rect = new Rectangle(x, y, elementWidth, elementHeight);
+		boolean hover = rect.contains(api.getMouseRealX(), api.getMouseRealY());
+		boolean near = p.isOneStepAway(player);
+		int border = see ? 0xffff00 : 0xff0000;
+		boolean has = p.isPlayerAtStage(player);
+		if (has)
+			border = 0x00ff00;
+		double t = (System.currentTimeMillis()/5D+p.hashCode()*23)%360;
+		border = ReikaColorAPI.mixColors(border, 0xffffff, 0.5F+0.25F*(float)Math.sin(Math.toRadians(t)));
+		api.drawRectFrame(x, y, elementWidth, elementHeight, border); //temp
+		if (see || near) {
 			String s = see ? p.getTitleString() : EnumChatFormatting.OBFUSCATED.toString()+p.getTitleString();//p.name();
 			if (!see)
 				color = 0xb5b5b5;
@@ -209,8 +222,17 @@ public class GuiProgressStages extends GuiScrollingPage {
 		}
 
 		if (see) {
-			if (p.isPlayerAtStage(player)) {
+			if (has) {
 				p.renderIcon(itemRender, fontRendererObj, x+2, y+2);
+				/*
+				int d = -1;
+				double t = Math.toRadians(((System.currentTimeMillis()/12D)+p.hashCode())%360);
+				int c = ReikaColorAPI.mixColors(0x00ff00, 0x000000, 0.5F+0.49F*(float)(Math.sin(t)));
+				api.drawRectFrame(x-d, y-d, elementWidth+d*2, elementHeight+d*2, c); //temp
+				 */
+				if (hover) {
+					this.renderHoverOverlay(x, y, true);
+				}
 			}
 			else {
 				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
@@ -222,6 +244,9 @@ public class GuiProgressStages extends GuiScrollingPage {
 				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 				GL11.glColor4f(1, 1, 1, 1);
 				GL11.glPopAttrib();
+				if (hover) {
+					this.renderHoverOverlay(x, y, false);
+				}
 			}
 		}
 		else {
@@ -232,7 +257,32 @@ public class GuiProgressStages extends GuiScrollingPage {
 			api.drawTexturedModelRectFromIcon(x+2, y+2, ChromaIcons.QUESTION.getIcon(), 16, 16);
 			GL11.glPopAttrib();
 		}
-		locations.put(p, new Rectangle(x, y, elementWidth, elementHeight));
+		locations.put(p, rect);
+	}
+
+	private void renderHoverOverlay(int x, int y, boolean has) {
+		ReikaTextureHelper.bindTerrainTexture();
+		GL11.glColor4f(1, 1, 1, 1);
+		int d = 2;
+		api.drawRectFrame(x+d, y+d, elementWidth-d*2, elementHeight-d*2, 0xffffff);
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		GL11.glEnable(GL11.GL_BLEND);
+		BlendMode.DEFAULT.apply();
+		int z = 500;
+		ReikaGuiAPI.instance.setZLevel(z+250);
+		IIcon ico = has ? ChromaIcons.CHECK.getIcon() : ChromaIcons.X.getIcon();
+		api.drawTexturedModelRectFromIcon(x+elementWidth/2-2+d, y+elementHeight/2-2+d, ico, (elementWidth-d*2)/2, (elementHeight-d*2)/2);
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		Tessellator.instance.startDrawingQuads();
+		int a = 96+(int)(32*Math.sin(System.currentTimeMillis()/180D));
+		Tessellator.instance.setColorRGBA_I(0xffffff, a);
+		Tessellator.instance.addVertex(x+d, y+elementHeight-d, z);
+		Tessellator.instance.addVertex(x+elementWidth-d, y+elementHeight-d, z);
+		Tessellator.instance.addVertex(x+elementWidth-d, y+d, z);
+		Tessellator.instance.addVertex(x+d, y+d, z);
+		Tessellator.instance.draw();
+		GL11.glPopAttrib();
 	}
 
 	public static boolean renderClearText(ProgressStage p, EntityPlayer player) {

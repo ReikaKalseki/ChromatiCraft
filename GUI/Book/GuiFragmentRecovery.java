@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -50,10 +50,7 @@ public class GuiFragmentRecovery extends ChromaBookGui {
 
 		Collection<ChromaResearch> c = ChromaResearchManager.instance.getFragments(ep);
 		for (ChromaResearch r : c) {
-			if (ItemChromaBook.hasPage(player.getCurrentEquippedItem(), r)) {
-
-			}
-			else {
+			if (!ItemChromaBook.hasPage(player.getCurrentEquippedItem(), r)) {
 				missing.add(r);
 			}
 		}

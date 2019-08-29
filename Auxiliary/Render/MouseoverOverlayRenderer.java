@@ -39,6 +39,8 @@ import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.ProductCondition;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeRecharger;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
+import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire.CheckType;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityChromaCrafter;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
@@ -108,6 +110,13 @@ public class MouseoverOverlayRenderer {
 				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 				GL11.glPushMatrix();
 				this.renderItemContents(ep, gsc, (TileEntityChromaCrafter)te);
+				GL11.glPopMatrix();
+				GL11.glPopAttrib();
+			}
+			if (te instanceof TileEntityLumenWire) {
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				GL11.glPushMatrix();
+				this.renderDetectionMode(ep, gsc, (TileEntityLumenWire)te);
 				GL11.glPopMatrix();
 				GL11.glPopAttrib();
 			}
@@ -418,6 +427,32 @@ public class MouseoverOverlayRenderer {
 			ReikaGuiAPI.instance.drawCenteredString(FontType.GUI.renderer, s, x-3, y, 0xffffff);
 			ReikaGuiAPI.instance.drawItemStack(itemRender, FontType.GUI.renderer, out, x+FontType.GUI.renderer.getStringWidth(s)/2+3, y-4);
 		}
+	}
+
+	private void renderDetectionMode(EntityPlayer ep, int gsc, TileEntityLumenWire te) {
+		int ar = 12;
+		int ox = Minecraft.getMinecraft().displayWidth/(gsc*2)+ar-8;
+		int oy = Minecraft.getMinecraft().displayHeight/(gsc*2)+ar-8;
+		CheckType mode = te.getMode();
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/infoicons.png");
+		double u = 0.0625*mode.ordinal();
+		double v = 0.0625;
+
+		double s = 0.0625;
+		double r = 12;
+		Tessellator v5 = Tessellator.instance;
+		v5.startDrawingQuads();
+		float f = 0.75F+0.25F*(float)Math.sin(System.currentTimeMillis()/80D);
+		int c = ReikaColorAPI.mixColors(mode.renderColor, 0xffffff, f);
+		v5.setColorOpaque_I(c);
+		int sh = 3;
+
+		v5.addVertexWithUV(ox+0, oy+r, 0, u, v+s);
+		v5.addVertexWithUV(ox+r, oy+r, 0, u+s, v+s);
+		v5.addVertexWithUV(ox+r, oy+0, 0, u+s, v);
+		v5.addVertexWithUV(ox+0, oy+0, 0, u, v);
+
+		v5.draw();
 	}
 
 	@ModDependent(ModList.FORESTRY)

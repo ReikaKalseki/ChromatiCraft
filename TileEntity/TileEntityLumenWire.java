@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -147,6 +147,10 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 		if (connection != null) {
 			((TileEntityLumenWire)connection.getTileEntity(worldObj)).check = check;
 		}
+	}
+
+	public CheckType getMode() {
+		return check;
 	}
 
 	@Override
@@ -473,7 +477,7 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 		PASSIVE(0x00ff00),
 		LIVING(0x00ffff),
 		ITEM(0xffff00),
-		PROJECTILE(0x00ffff);
+		PROJECTILE(0xff00ff);
 
 		public final int renderColor;
 

@@ -1,28 +1,31 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.Particle;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomRenderFX;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.ChromatiCraft.Render.ParticleEngine;
+import Reika.ChromatiCraft.Render.ParticleEngine.RenderMode;
+import Reika.ChromatiCraft.Render.ParticleEngine.RenderModeFlags;
+import Reika.ChromatiCraft.Render.ParticleEngine.TextureMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
-public class EntityBallLightningFX extends EntityFX {
+public class EntityBallLightningFX extends EntityFX implements CustomRenderFX {
+
+	private static final RenderMode renderMode = new RenderMode().setFlag(RenderModeFlags.ADDITIVE, true).setFlag(RenderModeFlags.DEPTH, true).setFlag(RenderModeFlags.LIGHT, false).setFlag(RenderModeFlags.ALPHACLIP, false);
 
 	public double jitterX;
 	public double jitterY;
@@ -96,22 +99,26 @@ public class EntityBallLightningFX extends EntityFX {
 	}
 
 	@Override
-	public void renderParticle(Tessellator v5, float par2, float par3, float par4, float par5, float par6, float par7)
-	{
-		v5.draw();
-		//ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/Particle/64x.png");
-		ReikaTextureHelper.bindTerrainTexture();
-		BlendMode.ADDITIVEDARK.apply();
-		GL11.glColor4f(1, 1, 1, 1);
-		GL11.glPushMatrix();
-		GL11.glTranslated(jitterX, jitterY, jitterZ);
-		v5.startDrawingQuads();
-		v5.setBrightness(this.getBrightnessForRender(0));
+	public void renderParticle(Tessellator v5, float par2, float par3, float par4, float par5, float par6, float par7) {
+		double px = posX;
+		double py = posY;
+		double pz = posZ;
+		double ppx = prevPosX;
+		double ppy = prevPosY;
+		double ppz = prevPosZ;
+		posX += jitterX;
+		posY += jitterY;
+		posZ += jitterZ;
+		prevPosX += jitterX;
+		prevPosY += jitterY;
+		prevPosZ += jitterZ;
 		super.renderParticle(v5, par2, par3, par4, par5, par6, par7);
-		v5.draw();
-		GL11.glPopMatrix();
-		BlendMode.DEFAULT.apply();
-		v5.startDrawingQuads();
+		prevPosX = ppx;
+		prevPosY = ppy;
+		prevPosZ = ppz;
+		posX = px;
+		posY = py;
+		posZ = pz;
 	}
 
 	@Override
@@ -146,7 +153,27 @@ public class EntityBallLightningFX extends EntityFX {
 
 	@Override
 	public int getFXLayer() {
-		return 2;
+		return 1;
+	}
+
+	@Override
+	public RenderMode getRenderMode() {
+		return renderMode;
+	}
+
+	@Override
+	public final TextureMode getTexture() {
+		return ParticleEngine.instance.blockTex;
+	}
+
+	@Override
+	public boolean rendersOverLimit() {
+		return false;
+	}
+
+	@Override
+	public double getRenderRange() {
+		return 60;
 	}
 
 }

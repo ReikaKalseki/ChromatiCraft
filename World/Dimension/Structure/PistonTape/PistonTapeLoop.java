@@ -14,14 +14,16 @@ import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 public class PistonTapeLoop extends StructurePiece<PistonTapeGenerator> {
 
 	private final MultiMap<ForgeDirection, Coordinate> pistons = new MultiMap(CollectionType.HASHSET);
+	private final TapeStage level;
 
-	public PistonTapeLoop(PistonTapeGenerator s) {
+	public PistonTapeLoop(PistonTapeGenerator s, TapeStage t) {
 		super(s);
+		level = t;
 	}
 
 	@Override
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
-		int l = parent.getLength()+3;
+		int l = level.getLength()+3;
 		while (l%4 != 2) {
 			l++;
 		}

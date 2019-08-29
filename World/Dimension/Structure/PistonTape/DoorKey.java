@@ -1,5 +1,6 @@
 package Reika.ChromatiCraft.World.Dimension.Structure.PistonTape;
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 import net.minecraft.world.World;
@@ -13,21 +14,22 @@ public class DoorKey {
 
 	private final boolean[] bits;
 
-	private final ColorData color1;
-	private final ColorData color2;
-	private final ColorData color3;
+	private final ColorData[] colors;
 
+	public final int colorCount;
 	public final int ID;
 
-	private final HashSet<Coordinate> door;
+	private final HashSet<Coordinate> door = new HashSet();
 
-	public DoorKey(int id, HashSet<Coordinate> set) {
+	public DoorKey(int id, int n) {
 		ID = id;
-		bits = ReikaArrayHelper.booleanFromBitflags(ID, 9);
-		color1 = this.genColor(bits[0], bits[1], bits[2]);
-		color2 = this.genColor(bits[3], bits[4], bits[5]);
-		color3 = this.genColor(bits[6], bits[7], bits[8]);
-		door = set;
+		colorCount = n;
+		bits = ReikaArrayHelper.booleanFromBitflags(ID, n*3);
+		colors = new ColorData[colorCount];
+		for (int i = 0; i < colorCount; i++) {
+			int base = i*3;
+			colors[i] = this.genColor(bits[base], bits[base+1], bits[base+2]);
+		}
 	}
 
 	private ColorData genColor(boolean r, boolean g, boolean b) {
@@ -35,7 +37,15 @@ public class DoorKey {
 	}
 
 	public int[] getRenderColors() {
-		return new int[] {color1.getRenderColor(), color2.getRenderColor(), color3.getRenderColor()};
+		int[] ret = new int[colors.length];
+		for (int i = 0; i < ret.length; i++) {
+			ret[i] = colors[i].getRenderColor();
+		}
+		return ret;
+	}
+
+	public boolean verify(boolean[] bits) {
+		return Arrays.equals(this.bits, bits);
 	}
 
 	public void setOpen(World world, boolean open) {
@@ -44,16 +54,8 @@ public class DoorKey {
 		}
 	}
 
-	public ColorData getColor1() {
-		return color1;
-	}
-
-	public ColorData getColor2() {
-		return color2;
-	}
-
-	public ColorData getColor3() {
-		return color3;
+	public void addDoorLocation(int x, int y, int z) {
+		door.add(new Coordinate(x, y, z));
 	}
 
 }

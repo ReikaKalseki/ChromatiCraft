@@ -343,6 +343,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 				int[] colors = BotaniaHandler.getInstance().getWandColors(is);
 				ReikaDyeHelper dye1 = ReikaDyeHelper.dyes[15-colors[0]]; //compensate for reversed color order
 				ReikaDyeHelper dye2 = ReikaDyeHelper.dyes[15-colors[1]];
+				((TileEntityCastingTable)te).onClickedWithBotaniaWand(dye1, dye2);
 			}
 			return true;
 		}

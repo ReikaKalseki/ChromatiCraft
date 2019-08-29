@@ -1,50 +1,35 @@
 package Reika.ChromatiCraft.World.Dimension.Structure;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Random;
 
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
-import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.ColorData;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.EmitterTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.TargetTile;
-import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.DoorKey;
-import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.PistonTapeData;
-import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.PistonTapeLoop;
-import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.TapeAssemblyArea;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.TapeStage;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
-import Reika.DragonAPI.Libraries.ReikaDirectionHelper.CubeDirections;
 
 
 public class PistonTapeGenerator extends DimensionStructureGenerator {
 
-	private static final int MAX_ID = 511;
-	private static final int MIN_ID = 1;
-
-	private final HashSet<Integer> generatedIDs = new HashSet();
-	private ArrayList<TapeStage> doors;
+	private ArrayList<TapeStage> stages;
 
 	private Coordinate emitterColumnBase;
 	private Coordinate targetColumnBase;
-
-	private int length;
 
 	private boolean isActive = false;
 
 	@Override
 	protected void calculate(int chunkX, int chunkZ, Random rand) {
-		doors = new ArrayList();
+		stages = new ArrayList();
 		int x = chunkX;
 		int z = chunkZ;
-		int y = 10+rand.nextInt(70);
-		posY = y;
-		length = this.getDoorCount();
+		int y = 60+rand.nextInt(30);
+		posY = y;/*
 		new TapeAssemblyArea(this).generate(world, x, y, z);
 		x += length+2;
 		this.generateDataTile(x, y+1, z);
@@ -62,10 +47,15 @@ public class PistonTapeGenerator extends DimensionStructureGenerator {
 		}
 		PistonTapeLoop pl = new PistonTapeLoop(this);
 		pl.generate(world, x, y, z+12);
-	}
-
-	public int getLength() {
-		return length;
+		 */
+		PistonTapeParameters[] arr = this.getTapes();
+		for (PistonTapeParameters p : arr) {
+			TapeStage s = new TapeStage(this, p.busWidth, p.doorCount, rand);
+			s.generate(world, x, y, z);
+			stages.add(s);
+			//x += s.getLength();
+			y -= s.getHeight();
+		}
 	}
 
 	private EmitterTile getEmitter(World world, int i) {
@@ -76,13 +66,9 @@ public class PistonTapeGenerator extends DimensionStructureGenerator {
 		return (TargetTile)targetColumnBase.offset(0, i, 0).getTileEntity(world);
 	}
 
-	private int getDoorCount() {
-		return 12;
-	}
-
 	@Override
 	public StructureData createDataStorage() {
-		return new PistonTapeData(this, doors);
+		return null;//new PistonTapeData(this, stages);
 	}
 
 	@Override
@@ -107,8 +93,7 @@ public class PistonTapeGenerator extends DimensionStructureGenerator {
 
 	@Override
 	protected void clearCaches() {
-		generatedIDs.clear();
-		doors = null;
+		stages = null;
 	}
 
 	public void setActive(World world, boolean active) {
@@ -129,12 +114,36 @@ public class PistonTapeGenerator extends DimensionStructureGenerator {
 		}
 	}
 
+	private PistonTapeParameters[] getTapes() {
+		switch(ChromaOptions.getStructureDifficulty()) {
+			case 1:
+				return new PistonTapeParameters[] {new PistonTapeParameters(2, 5), new PistonTapeParameters(2, 8), new PistonTapeParameters(3, 6)};
+			case 2:
+				return new PistonTapeParameters[] {new PistonTapeParameters(2, 6), new PistonTapeParameters(3, 8), new PistonTapeParameters(3, 10)};
+			case 3:
+			default:
+				return new PistonTapeParameters[] {new PistonTapeParameters(2, 8), new PistonTapeParameters(3, 9), new PistonTapeParameters(3, 12), new PistonTapeParameters(4, 12)};
+		}
+	}
+
+	private static class PistonTapeParameters {
+
+		private final int busWidth;
+		private final int doorCount;
+
+		private PistonTapeParameters(int w, int l) {
+			busWidth = w;
+			doorCount = l;
+		}
+
+	}
+
 	/*
 	have only one set of emitters and targets, and move the bit blocks
 
 	MAKE THE PLAYER BUILD THE TAPE **NOT** IN FRONT OF THE READ HEAD - MAKE IT MOVE THERE LATER DURING PLAYBACK
 
-	ALSO, HAVE THE PLAYER BUILD IT INLINE, BUT THE MECHANISM SPLITS IT INTO THREE LINES OF THREE*/
+	ALSO, HAVE THE PLAYER BUILD IT INLINE, BUT THE MECHANISM SPLITS IT INTO THREE LINES OF THREE*//*
 
 	static abstract class PulseTileCallback implements TileCallback {
 
@@ -195,6 +204,6 @@ public class PistonTapeGenerator extends DimensionStructureGenerator {
 				((TargetTile)te).setColor(c);
 			}
 		}
-	}
+	}*/
 
 }

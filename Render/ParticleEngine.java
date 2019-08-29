@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Render;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -31,10 +32,12 @@ import net.minecraftforge.common.MinecraftForge;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomRenderFX;
+import Reika.ChromatiCraft.Render.Particle.EntityBallLightningFX;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFireFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFireSmokeFX;
+import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityGlobeFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
@@ -60,6 +63,7 @@ public class ParticleEngine extends EffectRenderer implements CustomEffectRender
 
 	private final HashMap<RenderKey, ParticleList> particles = new HashMap();
 	private final PluralMap<RenderKey> keyMap = new PluralMap(2);
+	private final Collection<EntityFX> queuedParticles = new ArrayList();
 
 	private Random rand = new Random();
 
@@ -90,6 +94,9 @@ public class ParticleEngine extends EffectRenderer implements CustomEffectRender
 		ThrottleableEffectRenderer.getRegisteredInstance().registerDelegateRenderer(EntityCenterBlurFX.class, this);
 		ThrottleableEffectRenderer.getRegisteredInstance().registerDelegateRenderer(EntityGlobeFX.class, this);
 		ThrottleableEffectRenderer.getRegisteredInstance().registerDelegateRenderer(EntityRelayPathFX.class, this);
+
+		ThrottleableEffectRenderer.getRegisteredInstance().registerDelegateRenderer(EntityBallLightningFX.class, this);
+		ThrottleableEffectRenderer.getRegisteredInstance().registerDelegateRenderer(EntityFlareFX.class, this);
 	}
 
 	@Override
@@ -128,8 +135,7 @@ public class ParticleEngine extends EffectRenderer implements CustomEffectRender
 			return;
 		}
 		if (isTicking) {
-			ChromatiCraft.logger.logError("Tried adding a particle mid-update!");
-			Thread.dumpStack();
+			queuedParticles.add(fx);
 			return;
 		}
 		RenderKey rm = DEFAULT_RENDER;
@@ -168,6 +174,12 @@ public class ParticleEngine extends EffectRenderer implements CustomEffectRender
 			li.tick();
 		}
 		isTicking = false;
+		if (!queuedParticles.isEmpty()) {
+			for (EntityFX fx : queuedParticles) {
+				this.addEffect(fx);
+			}
+			queuedParticles.clear();
+		}
 	}
 
 	@Override

@@ -203,9 +203,7 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 						return true;
 					//ReikaJavaLibrary.pConsole(e.direction+" & "+te.facing+" ("+Math.abs(e.direction.ordinal()-te.facing.ordinal())+")");
 					e.reflect(te.facing);
-					EntityLaserPulse eb = new EntityLaserPulse(world, x, y, z, e.direction, e.color, e.getLevel());
-					if (!world.isRemote)
-						world.spawnEntityInWorld(eb);
+					te.fireParticle(e.direction, e.color, e.getLevel());
 					return true;
 					//return false;
 				}
@@ -218,9 +216,7 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 						dir = dir.getOpposite();
 					//ReikaJavaLibrary.pConsole(e.direction+" & "+te.facing+" > "+dir+" ("+Math.abs(e.direction.ordinal()-te.facing.ordinal())+")");
 					e.reflect(dir);
-					EntityLaserPulse eb = new EntityLaserPulse(world, x, y, z, e.direction, e.color, e.getLevel());
-					if (!world.isRemote)
-						world.spawnEntityInWorld(eb);
+					te.fireParticle(e.direction, e.color, e.getLevel());
 					return true;
 					//return false;
 				}
@@ -254,17 +250,12 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 						((PrismTile)te).addPulse(dat);
 						return true;
 					}
-					EntityLaserPulse e1 = e.color.red ? new EntityLaserPulse(world, x, y, z, e.direction.getRotation(true, 2), new ColorData(true, false, false), e.getLevel()) : null;
-					EntityLaserPulse e2 = e.color.green ? new EntityLaserPulse(world, x, y, z, e.direction, new ColorData(false, true, false), e.getLevel()) : null;
-					EntityLaserPulse e3 = e.color.blue ? new EntityLaserPulse(world, x, y, z, e.direction.getRotation(false, 2), new ColorData(false, false, true), e.getLevel()) : null;
-					if (!world.isRemote) {
-						if (e1 != null)
-							world.spawnEntityInWorld(e1);
-						if (e2 != null)
-							world.spawnEntityInWorld(e2);
-						if (e3 != null)
-							world.spawnEntityInWorld(e3);
-					}
+					if (e.color.red)
+						te.fireParticle(e.direction.getRotation(true, 2), new ColorData(true, false, false), e.getLevel());
+					if (e.color.green)
+						te.fireParticle(e.direction, new ColorData(false, true, false), e.getLevel());
+					if (e.color.blue)
+						te.fireParticle(e.direction.getRotation(false, 2), new ColorData(false, false, true), e.getLevel());
 					return true;
 				}
 				case REFRACTOR:
@@ -281,12 +272,8 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 					return false;
 				case SPLITTER: {
 					if (e.direction == te.facing) {
-						EntityLaserPulse e1 = new EntityLaserPulse(world, x, y, z, e.direction.getRotation(true), e.color, e.getLevel());
-						EntityLaserPulse e2 = new EntityLaserPulse(world, x, y, z, e.direction.getRotation(false), e.color, e.getLevel());
-						if (!world.isRemote) {
-							world.spawnEntityInWorld(e1);
-							world.spawnEntityInWorld(e2);
-						}
+						te.fireParticle(e.direction.getRotation(true), e.color, e.getLevel());
+						te.fireParticle(e.direction.getRotation(false), e.color, e.getLevel());
 					}
 					else if (e.direction == te.facing.getOpposite().getRotation(true) || e.direction == te.facing.getOpposite().getRotation(false)) {
 						e.setDirection(te.facing.getOpposite(), true);
@@ -351,8 +338,6 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 	public static class EmitterTile extends LaserEffectTile {
 
 		public boolean keepFiring = false;
-		public boolean silent = false;
-		public double speedFactor = 1;
 
 		@Override
 		public void updateEntity() {
@@ -368,25 +353,15 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 		}
 
 		@Override
-		protected void affect(EntityLaserPulse ea) {
-			ea.silentImpact = silent;
-			ea.setSpeedFactor(speedFactor);
-		}
-
-		@Override
 		public void readFromNBT(NBTTagCompound tag) {
 			super.readFromNBT(tag);
 			keepFiring = tag.getBoolean("firing");
-			silent = tag.getBoolean("silent");
-			speedFactor = tag.getDouble("speed");
 		}
 
 		@Override
 		public void writeToNBT(NBTTagCompound tag) {
 			super.writeToNBT(tag);
 			tag.setBoolean("firing", keepFiring);
-			tag.setBoolean("silent", silent);
-			tag.setDouble("speed", speedFactor);
 		}
 
 	}
@@ -487,10 +462,7 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 		public void updateEntity() {
 			timer--;
 			if (timer == 0 && !nextPulse.isBlack()) {
-				EntityLaserPulse e = new EntityLaserPulse(worldObj, xCoord, yCoord, zCoord, facing, nextPulse, level);
-				if (!worldObj.isRemote) {
-					worldObj.spawnEntityInWorld(e);
-				}
+				this.fireParticle(facing, nextPulse, level);
 				nextPulse = new ColorData(false);
 			}
 		}
@@ -525,6 +497,9 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 
 		public boolean renderAsFullBlock = false;
 
+		public boolean silent = false;
+		public double speedFactor = 1;
+
 		protected String level = "none";
 
 		public static final boolean PARTIAL_ROTATEABILITY = false;
@@ -558,6 +533,9 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 			level = tag.getString("level");
 
 			renderAsFullBlock = tag.getBoolean("fullblock");
+
+			silent = tag.getBoolean("silent");
+			speedFactor = tag.getDouble("speed");
 		}
 
 		@Override
@@ -573,6 +551,9 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 			tag.setString("level", level);
 
 			tag.setBoolean("fullblock", renderAsFullBlock);
+
+			tag.setBoolean("silent", silent);
+			tag.setDouble("speed", speedFactor);
 		}
 
 		@Override
@@ -619,8 +600,17 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 			}
 		}
 
-		protected void affect(EntityLaserPulse ea) {
+		protected final void fireParticle(CubeDirections dir, ColorData clr, String lvl) {
+			if (!worldObj.isRemote) {
+				EntityLaserPulse ea = new EntityLaserPulse(worldObj, xCoord, yCoord, zCoord, dir, clr, lvl);
+				this.affect(ea);
+				worldObj.spawnEntityInWorld(ea);
+			}
+		}
 
+		protected final void affect(EntityLaserPulse ea) {
+			ea.silentImpact = silent;
+			ea.setSpeedFactor(speedFactor);
 		}
 
 	}
