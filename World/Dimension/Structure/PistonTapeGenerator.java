@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
@@ -22,6 +23,8 @@ public class PistonTapeGenerator extends DimensionStructureGenerator {
 	private Coordinate targetColumnBase;
 
 	private boolean isActive = false;
+
+	public static final ForgeDirection DIRECTION = ForgeDirection.EAST;
 
 	@Override
 	protected void calculate(int chunkX, int chunkZ, Random rand) {

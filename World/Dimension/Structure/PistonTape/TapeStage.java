@@ -17,13 +17,21 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 	private final HashSet<Integer> generatedIDs = new HashSet();
 
 	public final int doorCount;
+	public final int bitsPerDoor;
+	public final int totalBitWidth;
+
+	private int height;
 
 	public TapeStage(PistonTapeGenerator g, int bus, int n, Random rand) {
 		super(g);
 		doorCount = n;
+		bitsPerDoor = bus;
+		totalBitWidth = bus*n;
 
 		for (int i = 0; i < doorCount; i++) {
-			doors.add(new DoorSection(g, new DoorKey(this.generateID(rand), bus)));
+			DoorSection s = new DoorSection(g, this, PistonTapeGenerator.DIRECTION, new DoorKey(this.generateID(rand), bus));
+			doors.add(s);
+			height = Math.max(height, s.getHeight());
 		}
 	}
 
@@ -41,16 +49,12 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 		int dx = x;
 		for (DoorSection s : doors) {
 			s.generate(world, dx, y, z);
-			dx += DoorSection.LENGTH+1;
+			dx += s.getLength()+1;
 		}
 	}
 
-	public int getLength() {
-		return (doors.size()*DoorSection.LENGTH+1)+2;
-	}
-
 	public int getHeight() {
-		return 5;
+		return height;
 	}
 
 }

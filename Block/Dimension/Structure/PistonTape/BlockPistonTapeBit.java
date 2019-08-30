@@ -15,17 +15,19 @@ import Reika.ChromatiCraft.Base.BlockDimensionStructure;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.ColorData;
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 
-public class BlockPistonTapeBit extends BlockDimensionStructure {
+public class BlockPistonTapeBit extends BlockDimensionStructure implements SemiUnbreakable {
 
 	private final IIcon[] icons = new IIcon[2];
 
 	public BlockPistonTapeBit(Material mat) {
 		super(mat);
+		this.setHardness(0);
 	}
 
 	@Override
@@ -121,6 +123,11 @@ public class BlockPistonTapeBit extends BlockDimensionStructure {
 				break;
 		}
 		return new ColorData(r, g, b);
+	}
+
+	@Override
+	public boolean isUnbreakable(World world, int x, int y, int z, int meta) {
+		return true;
 	}
 
 }

@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.ColorData;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.LaserEffectType;
 import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonTapeBit;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -167,6 +168,8 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 		if (b == ChromaBlocks.PISTONBIT.getBlockInstance()) {
 			return BlockPistonTapeBit.affectPulse(this, world, x, y, z);
 		}
+		if (b == ChromaBlocks.SPECIALSHIELD.getBlockInstance() && world.getBlockMetadata(x, y, z) == BlockType.GLASS.metadata)
+			return false;
 
 		if (worldObj.isRemote) {
 			this.spawnDeathParticle();

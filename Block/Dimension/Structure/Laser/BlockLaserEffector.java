@@ -317,6 +317,11 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 					world.markBlockForUpdate(x, y, z);
 					return;
 				}
+				else if (!this.isOmniDirectional() && is != null && is.getItem() == Items.apple) {
+					te.rotate(false);
+					world.markBlockForUpdate(x, y, z);
+					return;
+				}
 				else if (te instanceof TargetTile && is != null && is.getItem() == Items.glowstone_dust) {
 					((TargetTile)te).trigger(!((TargetTile)te).isTriggered(), true, false);
 					return;
