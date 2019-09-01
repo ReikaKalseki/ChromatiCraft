@@ -535,9 +535,9 @@ public class AbilityCalls {
 		BlockArray toDel = new BlockArray();
 		toDel.setWorld(world);
 		int air = 0;
-		for (int i = 0; i < box.getSizeX(); i++) {
-			for (int j = 0; j < box.getSizeY(); j++) {
-				for (int k = 0; k < box.getSizeZ(); k++) {
+		for (int i = 0; i <= box.getSizeX(); i++) {
+			for (int j = 0; j <= box.getSizeY(); j++) {
+				for (int k = 0; k <= box.getSizeZ(); k++) {
 					int x = i+box.minX;
 					int y = j+box.minY;
 					int z = k+box.minZ;

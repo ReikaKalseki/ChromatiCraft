@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -139,8 +139,8 @@ public class RenderMultiBuilder extends ChromaRenderBase {
 		Tessellator v5 = Tessellator.instance;
 		GL11.glPushMatrix();
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/blockbox2.png"); //use diff tex, more geometric
-		double rx = (box.getSizeX()-1)/2D;
-		double rz = (box.getSizeZ()-1)/2D;
+		double rx = box.getSizeX()/2D;
+		double rz = box.getSizeZ()/2D;
 		v5.startDrawingQuads();
 		v5.setBrightness(240);
 
@@ -148,8 +148,8 @@ public class RenderMultiBuilder extends ChromaRenderBase {
 
 		Collection<Point> c = te.getRegionsForRender();
 		for (Point p : c) {
-			double dx = p.x*(box.getSizeX()-1);
-			double dz = p.y*(box.getSizeZ()-1);
+			double dx = p.x*box.getSizeX();
+			double dz = p.y*box.getSizeZ();
 
 			double u = 0;
 			double du = u+1;

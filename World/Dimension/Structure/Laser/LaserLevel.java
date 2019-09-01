@@ -82,12 +82,12 @@ public class LaserLevel extends StructurePiece<LaserPuzzleGenerator> implements 
 	}
 
 	public int getFullLengthX() {
-		return this.getLengthX()+7;
+		return this.getLengthX()+8;
 	}
 
 	@Override
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
-		Coordinate pos = new Coordinate(x, y, z-this.getLengthZ()/2);
+		Coordinate pos = new Coordinate(x, y, z-(this.getLengthZ()+1)/2);
 		data.offset(pos);
 		int dr = 1;
 		int w = 7;
@@ -129,8 +129,8 @@ public class LaserLevel extends StructurePiece<LaserPuzzleGenerator> implements 
 		}
 		doorLocation = new Coordinate(def.maxX+w, y+3, z);
 
-		int xc = x+this.getLengthX()/2;
-		int zp = z-this.getLengthZ()/2-3;
+		int xc = x+(this.getLengthX()+1)/2;
+		int zp = z-(this.getLengthZ()+1)/2-3;
 
 		for (int dz = zp; dz >= zp-4; dz--) {
 			for (int dx = def.minX; dx <= def.maxX; dx++) {

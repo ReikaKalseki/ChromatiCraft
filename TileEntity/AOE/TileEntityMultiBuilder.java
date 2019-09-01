@@ -160,9 +160,9 @@ public class TileEntityMultiBuilder extends TileEntityChromaticBase implements L
 		if (world.provider.dimensionId == worldObj.provider.dimensionId && bounds.isBlockInsideExclusive(x, y, z)) {
 			for (Point p : region.getRegions(xCoord, zCoord, bounds)) {
 				if (p.x != 0 || p.y != 0) {
-					int dx = x+(bounds.getSizeX()-1)*p.x;
+					int dx = x+bounds.getSizeX()*p.x;
 					int dy = y;
-					int dz = z+(bounds.getSizeZ()-1)*p.y;
+					int dz = z+bounds.getSizeZ()*p.y;
 					if (this.buildBlock((WorldServer)world, dx, dy, dz, b, meta, (EntityPlayerMP)ep, is))
 						break;
 				}
@@ -176,9 +176,9 @@ public class TileEntityMultiBuilder extends TileEntityChromaticBase implements L
 		if (world.provider.dimensionId == worldObj.provider.dimensionId && bounds.isBlockInsideExclusive(x, y, z)) {
 			for (Point p : region.getRegions(xCoord, zCoord, bounds)) {
 				if (p.x != 0 || p.y != 0) {
-					int dx = x+(bounds.getSizeX()-1)*p.x;
+					int dx = x+bounds.getSizeX()*p.x;
 					int dy = y;
-					int dz = z+(bounds.getSizeZ()-1)*p.y;
+					int dz = z+bounds.getSizeZ()*p.y;
 					this.mineBlock((WorldServer)world, dx, dy, dz, b, meta, (EntityPlayerMP)ep);
 				}
 			}

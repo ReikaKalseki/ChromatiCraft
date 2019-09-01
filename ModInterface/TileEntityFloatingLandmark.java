@@ -1,8 +1,11 @@
 package Reika.ChromatiCraft.ModInterface;
 
+import java.util.HashSet;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
@@ -13,6 +16,9 @@ import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.ProportionedBlockBox;
+import Reika.DragonAPI.Instantiable.Data.Immutable.ProportionedBlockBox.CubeEdge;
+import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
@@ -21,7 +27,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @Strippable(value = "buildcraft.api.tiles.ITileAreaProvider")
-public class TileEntityFloatingLandmark extends TileEntityChromaticBase implements ITileAreaProvider {
+public class TileEntityFloatingLandmark extends TileEntityChromaticBase implements ITileAreaProvider, BreakAction {
 
 	private static final int RANGE = 256;
 
@@ -29,6 +35,8 @@ public class TileEntityFloatingLandmark extends TileEntityChromaticBase implemen
 	private boolean isPrimary = true;
 	private Coordinate primary;
 	private boolean anchored;
+
+	private final HashSet<Coordinate> connections = new HashSet();
 
 	@Override
 	public ChromaTiles getTile() {
@@ -43,126 +51,123 @@ public class TileEntityFloatingLandmark extends TileEntityChromaticBase implemen
 			}
 		}
 		else {
-			/*
+			if (area == null)
+				this.findArea(world, x, y, z);
 			if (isPrimary) {
-				for (int dx = area.minX; dx < area.maxX; dx++) {
-					for (int dy = area.minY; dy < area.maxY; dy++) {
-						for (int dz = area.minZ; dz < area.maxZ; dz++) {
+				/*
+				for (int dx = area.volume.minX; dx < area.volume.maxX; dx++) {
+					for (int dy = area.volume.minY; dy < area.volume.maxY; dy++) {
+						for (int dz = area.volume.minZ; dz < area.volume.maxZ; dz++) {
 							if (world.getBlock(dx, dy, dz).isAir(world, dx, dy, dz))
 								world.setBlock(dx, dy, dz, Blocks.glass);
 						}
 					}
-				}
-			}*/
+				}*/
+			}
 		}
+	}
+
+	private void findArea(World world, int x, int y, int z) {
+		area = new ProportionedBlockBox(BlockBox.block(this));
+		if (world.isRemote)
+			return;
+		TileEntityFloatingLandmark te = this.findParent(world, x, y, z);
+		if (te != null) {
+			this.slaveTo(te);
+		}
+		this.syncAllData(false);
+	}
+
+	private void slaveTo(TileEntityFloatingLandmark te) {
+		isPrimary = false;
+		primary = new Coordinate(te);
+		te.addLink(this);
+		area = te.area;
+	}
+
+	private void addLink(TileEntityFloatingLandmark te) {
+		area = new ProportionedBlockBox(area.volume.addCoordinate(te.xCoord, te.yCoord, te.zCoord));
+		connections.add(new Coordinate(te));
+		this.syncAllData(false);
+	}
+
+	public void reset() {
+		area = null;
+		if (isPrimary) {
+			for (Coordinate c : connections) {
+				TileEntity te = c.getTileEntity(worldObj);
+				if (te instanceof TileEntityFloatingLandmark) {
+					((TileEntityFloatingLandmark)te).reset();
+				}
+			}
+			connections.clear();
+		}
+		else {
+			isPrimary = true;
+			primary = null;
+		}
+		this.syncAllData(false);
 	}
 
 	@SideOnly(Side.CLIENT)
 	private void doParticles(World world, int x, int y, int z) {
-		int n = 4*Math.min(40, Math.max(1, area.getVolume()/20));
+		int n = 18*Math.min(40, Math.max(1, area.volume.getSurfaceArea()/20));
 		for (int i = 0; i < n; i++) {
 			double dx = 0;
 			double dy = 0;
 			double dz = 0;
-			boolean edge = rand.nextInt(5) < 2;
-			if (edge) {
-				switch(rand.nextInt(12)) {
-					case 0:
-						dx = area.minX;
-						dz = area.minZ;
-						dy = ReikaRandomHelper.getRandomBetween(area.minY, (double)area.maxY);
-						break;
-					case 1:
-						dx = area.maxX;
-						dz = area.minZ;
-						dy = ReikaRandomHelper.getRandomBetween(area.minY, (double)area.maxY);
-						break;
-					case 2:
-						dx = area.minX;
-						dz = area.maxZ;
-						dy = ReikaRandomHelper.getRandomBetween(area.minY, (double)area.maxY);
-						break;
-					case 3:
-						dx = area.maxX;
-						dz = area.maxZ;
-						dy = ReikaRandomHelper.getRandomBetween(area.minY, (double)area.maxY);
-						break;
-					case 4:
-						dx = ReikaRandomHelper.getRandomBetween(area.minX, (double)area.maxX);
-						dz = area.minZ;
-						dy = area.minY;
-						break;
-					case 5:
-						dx = ReikaRandomHelper.getRandomBetween(area.minX, (double)area.maxX);
-						dz = area.minZ;
-						dy = area.maxY;
-						break;
-					case 6:
-						dx = ReikaRandomHelper.getRandomBetween(area.minX, (double)area.maxX);
-						dz = area.maxZ;
-						dy = area.minY;
-						break;
-					case 7:
-						dx = ReikaRandomHelper.getRandomBetween(area.minX, (double)area.maxX);
-						dz = area.maxZ;
-						dy = area.maxY;
-						break;
-					case 8:
-						dx = area.minX;
-						dz = ReikaRandomHelper.getRandomBetween(area.minZ, (double)area.maxZ);
-						dy = area.minY;
-						break;
-					case 9:
-						dx = area.maxX;
-						dz = ReikaRandomHelper.getRandomBetween(area.minZ, (double)area.maxZ);
-						dy = area.minY;
-						break;
-					case 10:
-						dx = area.minX;
-						dz = ReikaRandomHelper.getRandomBetween(area.minZ, (double)area.maxZ);
-						dy = area.maxY;
-						break;
-					case 11:
-						dx = area.maxX;
-						dz = ReikaRandomHelper.getRandomBetween(area.minZ, (double)area.maxZ);
-						dy = area.maxY;
-						break;
+			if (rand.nextInt(5) < 2) {
+				CubeEdge edge = area.getRandomEdge();
+				dx = ReikaRandomHelper.getRandomBetween(edge.root.xCoord, (double)edge.root.xCoord+(edge.length+0)*edge.axis.offsetX);
+				dy = ReikaRandomHelper.getRandomBetween(edge.root.yCoord, (double)edge.root.yCoord+(edge.length+0)*edge.axis.offsetY);
+				dz = ReikaRandomHelper.getRandomBetween(edge.root.zCoord, (double)edge.root.zCoord+(edge.length+0)*edge.axis.offsetZ);
+				if (edge.isPositiveX) {
+					dx++;
+				}
+				if (edge.isPositiveY) {
+					dy++;
+				}
+				if (edge.isPositiveZ) {
+					dz++;
 				}
 			}
 			else {
-				dx = ReikaRandomHelper.getRandomBetween(area.minX, (double)area.maxX);
-				dy = ReikaRandomHelper.getRandomBetween(area.minY, (double)area.maxY);
-				dz = ReikaRandomHelper.getRandomBetween(area.minZ, (double)area.maxZ);
-				switch(rand.nextInt(6)) {
-					case 0:
-						dx = area.minX;
+				dx = ReikaRandomHelper.getRandomBetween(area.volume.minX, (double)area.volume.maxX);
+				dy = ReikaRandomHelper.getRandomBetween(area.volume.minY, (double)area.volume.maxY);
+				dz = ReikaRandomHelper.getRandomBetween(area.volume.minZ, (double)area.volume.maxZ);
+				switch(area.getRandomFace()) {
+					case WEST:
+						dx = area.volume.minX;
 						break;
-					case 1:
-						dx = area.maxX;
+					case EAST:
+						dx = area.volume.maxX;
 						break;
-					case 2:
-						dy = area.minY;
+					case DOWN:
+						dy = area.volume.minY;
 						break;
-					case 3:
-						dy = area.maxY;
+					case UP:
+						dy = area.volume.maxY;
 						break;
-					case 4:
-						dz = area.minZ;
+					case NORTH:
+						dz = area.volume.minZ;
 						break;
-					case 5:
-						dz = area.maxZ;
+					case SOUTH:
+						dz = area.volume.maxZ;
+						break;
+					default:
 						break;
 				}
 			}
-			/*
-			boolean valid = world.getBlock(dx, dy, dz).isAir(world, dx, dy, dz) || ChromaTiles.getTile(world, dx, dy, dz) == this.getTile();
-if (!valid)
-	continue;
-			 */
-			//double px = dx+rand.nextDouble();
-			//double py = dy+rand.nextDouble();
-			//double pz = dz+rand.nextDouble();
-			EntityBlurFX fx = new EntityBlurFX(world, dx, dy, dz);
+			int ix = MathHelper.floor_double(dx);
+			int iy = MathHelper.floor_double(dy);
+			int iz = MathHelper.floor_double(dz);
+			boolean valid = world.getBlock(ix, iy, iz).isAir(world, ix, iy, iz) || ChromaTiles.getTile(world, ix, iy, iz) == this.getTile();
+			if (!valid)
+				continue;
+			double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125/8D);
+			double vy = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125/8D);
+			double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125/8D);
+			EntityBlurFX fx = new EntityBlurFX(world, dx, dy, dz, vx, vy, vz);
 			int hue = (int)((this.getTicksExisted()*2+dx*3+dy*1+dz*2)%360);
 			int c = ReikaColorAPI.getModifiedHue(0xff0000, hue);
 			int l = ReikaRandomHelper.getRandomBetween(10, 40);
@@ -197,17 +202,7 @@ if (!valid)
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
-		area = new ProportionedBlockBox(BlockBox.block(this));
-		if (world.isRemote)
-			return;
-		TileEntityFloatingLandmark te = this.findParent(world, x, y, z);
-		if (te != null) {
-			isPrimary = false;
-			primary = new Coordinate(te);
-			te.area = new ProportionedBlockBox(te.area.volume.addBlock(xCoord, yCoord, zCoord));
-			area = te.area;
-			this.syncAllData(false);
-		}
+		this.findArea(world, x, y, z);
 	}
 
 	private TileEntityFloatingLandmark findParent(World world, int x, int y, int z) {
@@ -255,6 +250,8 @@ if (!valid)
 		if (primary != null)
 			primary.writeToNBT("root", NBT);
 		NBT.setBoolean("anchor", anchored);
+
+		ReikaNBTHelper.writeCollectionToNBT(connections, NBT, "links", Coordinate.nbtHandler);
 	}
 
 	@Override
@@ -262,11 +259,13 @@ if (!valid)
 		super.readSyncTag(NBT);
 
 		isPrimary = NBT.getBoolean("primary");
-		if (NBT.hasKey("minX"))
+		if (NBT.hasKey("minx"))
 			area = new ProportionedBlockBox(BlockBox.readFromNBT(NBT));
 		if (NBT.hasKey("root"))
 			primary = Coordinate.readFromNBT("root", NBT);
 		anchored = NBT.getBoolean("anchor");
+
+		ReikaNBTHelper.readCollectionFromNBT(connections, NBT, "links", Coordinate.nbtHandler);
 	}
 
 	@Override
