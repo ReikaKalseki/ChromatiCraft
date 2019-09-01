@@ -8,9 +8,12 @@ import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.StructurePiece;
+import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonTarget.PistonDoorTile;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
+import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.DoorKey.DoorValue;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
@@ -21,8 +24,7 @@ public class DoorSection extends StructurePiece<PistonTapeGenerator> {
 	static final int WIDTH = 9;
 
 	private final ForgeDirection tunnelDir;
-	private final DoorKey doorData;
-	private final PistonTapeLoop tape;
+	final DoorKey doorData;
 	private final TapeStage level;
 
 	public DoorSection(PistonTapeGenerator s, TapeStage t, ForgeDirection dir, DoorKey d) {
@@ -30,15 +32,14 @@ public class DoorSection extends StructurePiece<PistonTapeGenerator> {
 		tunnelDir = dir;
 		doorData = d;
 		level = t;
-		tape = new PistonTapeLoop(s, ReikaDirectionHelper.getRightBy90(dir), level);
 	}
 
 	public int getLength() {
-		return Math.max(3, tape.busWidth+2);
+		return Math.max(3, level.bitsPerDoor+2);
 	}
 
 	public int getHeight() {
-		return tape.dimensions.totalHeight+6;
+		return level.tape.tape.dimensions.totalHeight+6;
 	}
 
 	@Override
@@ -65,7 +66,7 @@ public class DoorSection extends StructurePiece<PistonTapeGenerator> {
 				world.setBlock(x+d*tunnelDir.offsetX, y+h, z+d*tunnelDir.offsetZ, b, ms);
 				world.setBlock(x+d*tunnelDir.offsetX+1*left.offsetX, y+h, z+d*tunnelDir.offsetZ+1*left.offsetZ, b, ms);
 				world.setBlock(x+d*tunnelDir.offsetX+5*left.offsetX, y+h, z+d*tunnelDir.offsetZ+5*left.offsetZ, b, ms);
-				world.setBlock(x+d*tunnelDir.offsetX+WIDTH*left.offsetX, y+h, z+d*tunnelDir.offsetZ+WIDTH*left.offsetZ, b, ms);
+				//world.setBlock(x+d*tunnelDir.offsetX+WIDTH*left.offsetX, y+h, z+d*tunnelDir.offsetZ+WIDTH*left.offsetZ, b, ms);
 			}
 		}
 		for (int hw = 2; hw <= 4; hw++) {
@@ -80,9 +81,16 @@ public class DoorSection extends StructurePiece<PistonTapeGenerator> {
 		parent.generateLootChest(x+left.offsetX+2*tunnelDir.offsetX, y+1, z+left.offsetZ+2*tunnelDir.offsetZ, this.getChestFacing(), ChestGenHooks.MINESHAFT_CORRIDOR, 0);
 		world.setBlock(x+left.offsetX+2*tunnelDir.offsetX, y+2, z+left.offsetZ+2*tunnelDir.offsetZ, b, BlockType.CRACK.metadata);
 
-		world.setBlock(x+left.offsetX*WIDTH+2*tunnelDir.offsetX, y+2, z+left.offsetZ*WIDTH+2*tunnelDir.offsetZ, b, BlockType.LIGHT.metadata);
+		//world.setBlock(x+left.offsetX*WIDTH+2*tunnelDir.offsetX, y+2, z+left.offsetZ*WIDTH+2*tunnelDir.offsetZ, b, BlockType.LIGHT.metadata);
 
-		tape.generate(world, x+left.offsetX*(3+WIDTH), y, z+left.offsetZ*(3+WIDTH));
+		Coordinate door = new Coordinate(x+left.offsetX*3, y+1, z+left.offsetZ*3);
+		for (int i = 0; i < level.bitsPerDoor; i++) {
+			this.placeTarget(world, x+left.offsetX*5+(i-level.bitsPerDoor/2)*tunnelDir.offsetX, y+2, z+left.offsetZ*5+(i-level.bitsPerDoor/2)*tunnelDir.offsetZ, i, door);
+		}
+	}
+
+	private void placeTarget(ChunkSplicedGenerationCache world, int x, int y, int z, int idx, Coordinate door) {
+		world.setTileEntity(x, y, z, ChromaBlocks.PISTONTARGET.getBlockInstance(), 1, new DoorTargetCallback(doorData.getValue(idx), door));
 	}
 
 	private ForgeDirection getChestFacing() {
@@ -105,22 +113,26 @@ public class DoorSection extends StructurePiece<PistonTapeGenerator> {
 	}
 
 	private void placeDoorBlock(ChunkSplicedGenerationCache world, int x, int y, int z) {
-		//world.setBlock(x, y, z, ChromaBlocks.DOOR.getBlockInstance());
+		world.setBlock(x, y, z, ChromaBlocks.DOOR.getBlockInstance());
 		//world.setTileEntity(x, y, z, ChromaBlocks.COLORLOCK.getBlockInstance(), 0, new DoorKeySet(parent, level.ordinal(), parent.id, elements));
-		doorData.addDoorLocation(x, y, z);
+		//doorData.addDoorLocation(x, y, z);
 	}
 
-	private static class PistonDoorCallback implements TileCallback {
+	private static class DoorTargetCallback implements TileCallback {
 
-		private final int[] colors;
+		private final DoorValue data;
+		private final Coordinate door;
 
-		private PistonDoorCallback(DoorKey k) {
-			colors = k.getRenderColors();
+		private DoorTargetCallback(DoorValue d, Coordinate c) {
+			data = d;
+			door = c;
 		}
 
 		@Override
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
-
+			((PistonDoorTile)te).setColor(data.getColor());
+			((PistonDoorTile)te).setData(null, data.index, data.getParent().colorCount);
+			((PistonDoorTile)te).setTarget(door);
 		}
 
 	}

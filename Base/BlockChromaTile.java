@@ -56,6 +56,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
+import Reika.ChromatiCraft.ModInterface.TileEntityFloatingLandmark;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectJar;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
@@ -164,6 +165,8 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 		ChromaTiles t = ChromaTiles.getTile(world, x, y, z);
 		if (t == ChromaTiles.TABLE || t == ChromaTiles.DATANODE || t == ChromaTiles.EXPLOSIONSHIELD)
 			return Float.MAX_VALUE;
+		if (t == ChromaTiles.LANDMARK)
+			return 2.5F;
 		return super.getExplosionResistance(e, world, x, y, z, eX, eY, eZ);
 	}
 
@@ -178,6 +181,8 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 		if (te instanceof TileEntityDataNode)
 			return -1;
 		if (te instanceof TileEntityItemStand && ((TileEntityItemStand)te).isLocked())
+			return -1;
+		if (te instanceof TileEntityFloatingLandmark && ((TileEntityFloatingLandmark)te).isAnchored())
 			return -1;
 		return super.getPlayerRelativeBlockHardness(ep, world, x, y, z);
 	}
@@ -461,6 +466,11 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			TileEntityHoverPad h = (TileEntityHoverPad)te;
 			h.toggleMode();
 			return true;
+		}
+
+		if (m == ChromaTiles.LANDMARK && ChromaItems.TOOL.matchWith(is)) {
+			TileEntityFloatingLandmark tr = (TileEntityFloatingLandmark)te;
+			tr.anchor();
 		}
 
 		if (ChromaItems.SHARD.matchWith(is) && is.getItemDamage() >= 16 && m == ChromaTiles.LAMP) {

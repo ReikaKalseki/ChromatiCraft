@@ -18,9 +18,9 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.LaserPulseEffect;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.ColorData;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.LaserEffectType;
-import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonTapeBit;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -159,17 +159,18 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 		Block b = world.getBlock(x, y, z);
 		if (b.isAir(world, x, y, z))
 			return false;
+		if (b == ChromaBlocks.SPECIALSHIELD.getBlockInstance() && world.getBlockMetadata(x, y, z)%8 == BlockType.GLASS.metadata%8)
+			return false;
+
 		if (b == ChromaBlocks.LASEREFFECT.getBlockInstance()) {
 			int meta = world.getBlockMetadata(x, y, z);
 			LaserEffectType e = LaserEffectType.list[meta];
 			this.playTonalSound(ChromaSounds.USE, 0.5F, 2);
 			return e.affectPulse(world, x, y, z, this);
 		}
-		if (b == ChromaBlocks.PISTONBIT.getBlockInstance()) {
-			return BlockPistonTapeBit.affectPulse(this, world, x, y, z);
+		if (b instanceof LaserPulseEffect) {
+			return ((LaserPulseEffect)b).onImpact(world, x, y, z, this);
 		}
-		if (b == ChromaBlocks.SPECIALSHIELD.getBlockInstance() && world.getBlockMetadata(x, y, z) == BlockType.GLASS.metadata)
-			return false;
 
 		if (worldObj.isRemote) {
 			this.spawnDeathParticle();

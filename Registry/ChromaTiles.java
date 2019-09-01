@@ -37,6 +37,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
+import Reika.ChromatiCraft.ModInterface.TileEntityFloatingLandmark;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.ModInterface.TileEntityManaBooster;
 import Reika.ChromatiCraft.ModInterface.TileEntityPageExtractor;
@@ -248,7 +249,8 @@ public enum ChromaTiles implements TileEnum {
 	PROGRESSLINK("chroma.progresslink",	ChromaBlocks.TILEMODELLED4,	TileEntityProgressionLinker.class,	2, "RenderProgressionLinker"),
 	MANABOOSTER("chroma.manabooster",	ChromaBlocks.TILEMODELLED4,	TileEntityManaBooster.class,		3, "RenderManaBooster", ModList.BOTANIA),
 	DEATHFOG("chroma.deathfog",			ChromaBlocks.TILEENTITY2,	TileEntityDeathFogEmitter.class,	4),
-	OPTIMIZER("chroma.optimizer",		ChromaBlocks.TILEMODELLED4,	TileEntityNetworkOptimizer.class,	4, "RenderNetworkOptimizer");
+	OPTIMIZER("chroma.optimizer",		ChromaBlocks.TILEMODELLED4,	TileEntityNetworkOptimizer.class,	4, "RenderNetworkOptimizer"),
+	LANDMARK("chroma.landmark",			ChromaBlocks.TILEMODELLED4, TileEntityFloatingLandmark.class,	5, ModList.BUILDCRAFT);
 
 	private final Class tile;
 	private final String name;

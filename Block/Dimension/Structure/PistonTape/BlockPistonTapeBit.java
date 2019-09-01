@@ -11,6 +11,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.LaserPulseEffect;
 import Reika.ChromatiCraft.Base.BlockDimensionStructure;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.ColorData;
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
@@ -21,7 +22,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 
-public class BlockPistonTapeBit extends BlockDimensionStructure implements SemiUnbreakable {
+public class BlockPistonTapeBit extends BlockDimensionStructure implements SemiUnbreakable, LaserPulseEffect {
 
 	private final IIcon[] icons = new IIcon[2];
 
@@ -99,7 +100,7 @@ public class BlockPistonTapeBit extends BlockDimensionStructure implements SemiU
 		currentCollisionEntity = null;
 	}
 
-	public static boolean affectPulse(EntityLaserPulse e, World world, int x, int y, int z) {
+	public boolean onImpact(World world, int x, int y, int z, EntityLaserPulse e) {
 		e.color.intersect(getColor(world, x, y, z));
 		return false;//e.color.isBlack();
 	}

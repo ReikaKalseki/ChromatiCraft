@@ -1,17 +1,19 @@
 package Reika.ChromatiCraft.World.Dimension.Structure.PistonTape;
 
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 
 
 public class PistonTapeLoop extends StructurePiece<PistonTapeGenerator> {
 
-	private final ForgeDirection facing;
+	public final ForgeDirection facing;
 	public final int busWidth;
 
 	public final LoopDimensions dimensions;
@@ -27,7 +29,7 @@ public class PistonTapeLoop extends StructurePiece<PistonTapeGenerator> {
 		bits = new PistonTapeSlice[busWidth];
 		dimensions = LoopDimensions.createFor(level.doorCount);
 		for (int i = 0; i < bits.length; i++) {
-			bits[i] = new PistonTapeSlice(facing, s, this, dimensions);
+			bits[i] = new PistonTapeSlice(s, facing, i, this, dimensions);
 		}
 	}
 
@@ -44,16 +46,24 @@ public class PistonTapeLoop extends StructurePiece<PistonTapeGenerator> {
 		return level.doorCount;
 	}
 
-	public void cycle() {
+	public void cycle(World world) {
 		for (PistonTapeSlice s : bits) {
-			s.cycle();
+			s.cycle(world);
 		}
+	}
+
+	public Coordinate getEmitter(int idx) {
+		return bits[idx].emitter;
+	}
+
+	public Coordinate getTarget(int idx) {
+		return bits[idx].target;
 	}
 
 	static class LoopDimensions {
 
-		private static final int MIN_HEIGHT = 3;
-		private static final int MAX_HEIGHT = 5;
+		private static final int MIN_HEIGHT = 4; // was 3
+		private static final int MAX_HEIGHT = 6; // was 5
 
 		public final int totalHeight;
 		public final int totalDepth;

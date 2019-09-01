@@ -1,6 +1,6 @@
 package Reika.ChromatiCraft.World.Dimension.Structure.PistonTape;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
@@ -13,42 +13,75 @@ import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.ColorData;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.EmitterTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.LaserEffectType;
+import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonTarget.PistonEmitterTile;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.PistonTapeLoop.LoopDimensions;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
-import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper.CubeDirections;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 
 public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 
 	private final ForgeDirection facing;
 	public final int bitCount;
-	private PistonTapeLoop loop;
+
+	private final PistonTapeLoop loop;
 	private final LoopDimensions dimensions;
+	private final int busIndex;
 
-	private final MultiMap<ForgeDirection, Coordinate> pistons = new MultiMap(CollectionType.HASHSET);
-	private final HashSet<Coordinate> emitters = new HashSet();
+	private final HashMap<ForgeDirection, Coordinate> pistons = new HashMap();
+	Coordinate emitter;
+	Coordinate target;
 
-	protected PistonTapeSlice(ForgeDirection dir, PistonTapeGenerator g, PistonTapeLoop p, LoopDimensions size) {
+	private boolean firedVerticalLast;
+	private boolean needsReset;
+	private int cooldown;
+
+	protected PistonTapeSlice(PistonTapeGenerator g, ForgeDirection dir, int idx, PistonTapeLoop p, LoopDimensions size) {
 		super(g);
+		busIndex = idx;
 		facing = dir;
 		dimensions = size;
 		bitCount = dimensions.bitLength;
+		loop = p;
 	}
 
-	public void cycle() {
-
+	public void cycle(World world) {
+		if (cooldown > 0) {
+			cooldown--;
+			return;
+		}
+		cooldown = 6;
+		if (needsReset) {
+			for (Coordinate c : pistons.values()) {
+				c.triggerBlockUpdate(world, false);
+			}
+		}
+		else {
+			if (firedVerticalLast) {
+				Coordinate c = pistons.get(facing);
+				ReikaBlockHelper.extendPiston(world, c.xCoord, c.yCoord, c.zCoord);
+				c = pistons.get(facing.getOpposite());
+				ReikaBlockHelper.extendPiston(world, c.xCoord, c.yCoord, c.zCoord);
+			}
+			else {
+				Coordinate c = pistons.get(ForgeDirection.UP);
+				ReikaBlockHelper.extendPiston(world, c.xCoord, c.yCoord, c.zCoord);
+				c = pistons.get(ForgeDirection.DOWN);
+				ReikaBlockHelper.extendPiston(world, c.xCoord, c.yCoord, c.zCoord);
+			}
+			firedVerticalLast = !firedVerticalLast;
+		}
 	}
 
 	@Override
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
 		world.setBlock(x, y, z, Blocks.brick_block);
-		for (int d = -2; d <= dimensions.totalDepth+2; d++) {
+		for (int d = -1; d <= dimensions.totalDepth+2; d++) { //was from -2
 			for (int h = -2; h <= dimensions.totalHeight+2; h++) {
 				Block b = Blocks.air;
 				int m = 0;
@@ -88,6 +121,7 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 		this.placePiston(world, x-facing.offsetX*(dimensions.totalDepth+1), y, z-facing.offsetZ*(dimensions.totalDepth+1), facing);
 
 		this.placeEmitter(world, x-facing.offsetX*(dimensions.totalDepth+1), y+1, z-facing.offsetZ*(dimensions.totalDepth+1));
+		this.placeTarget(world, x+facing.offsetX*8, y+1, z+facing.offsetZ*8);
 	}
 
 	private void placeBit(ChunkSplicedGenerationCache world, int x, int y, int z) {
@@ -95,30 +129,60 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 	}
 
 	private void placePiston(ChunkSplicedGenerationCache world, int x, int y, int z, ForgeDirection dir) {
-		pistons.addValue(dir, new Coordinate(x, y, z));
+		pistons.put(dir, new Coordinate(x, y, z));
 		world.setBlock(x, y, z, Blocks.piston, dir.ordinal());
 	}
 
 	private void placeEmitter(ChunkSplicedGenerationCache world, int x, int y, int z) {
-		emitters.add(new Coordinate(x, y, z));
+		emitter = new Coordinate(x, y, z);
 		world.setTileEntity(x, y, z, ChromaBlocks.LASEREFFECT.getBlockInstance(), LaserEffectType.EMITTER.ordinal(), new PistonEmitterCallback(this));
+	}
+
+	private void placeTarget(ChunkSplicedGenerationCache world, int x, int y, int z) {
+		target = new Coordinate(x, y, z);
+		world.setTileEntity(x, y, z, ChromaBlocks.PISTONTARGET.getBlockInstance(), 0, new PistonTargetCallback(this));
+	}
+
+	private static class PistonTargetCallback implements TileCallback {
+
+		private final UUID uid;
+		private final ForgeDirection facing;
+		private final int index;
+		private final int width;
+
+		private PistonTargetCallback(PistonTapeSlice p) {
+			//ReikaJavaLibrary.spamConsole(p+" & "+p.facing);
+			uid = p.parent.id;
+			index = p.busIndex;
+			facing = p.facing;
+			width = p.loop.busWidth;
+		}
+
+		@Override
+		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
+			PistonEmitterTile e = (PistonEmitterTile)te;
+			e.setData(facing, index, width);
+		}
+
 	}
 
 	private static class PistonEmitterCallback implements TileCallback {
 
 		private final UUID uid;
-		private final ForgeDirection direction;
+		private final ForgeDirection facing;
+		//private final int index;
 
 		private PistonEmitterCallback(PistonTapeSlice p) {
-			direction = p.facing;
 			uid = p.parent.id;
+			//index = p.busIndex;
+			facing = p.facing;
 		}
 
 		@Override
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			EmitterTile e = (EmitterTile)te;
-			e.setDirection(CubeDirections.getFromForgeDirection(direction));
-			e.setColor(new ColorData(true, true, true));
+			e.setDirection(CubeDirections.getFromForgeDirection(facing));
+			e.setColor(new ColorData(true, true, true)); //always white, NOT colored
 			e.speedFactor = 1.25;
 			e.uid = uid;
 			e.silent = true;
