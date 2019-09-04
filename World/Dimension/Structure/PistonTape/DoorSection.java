@@ -21,7 +21,7 @@ import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 
 public class DoorSection extends StructurePiece<PistonTapeGenerator> {
 
-	static final int WIDTH = 9;
+	static final int WIDTH = 10;
 
 	private final ForgeDirection tunnelDir;
 	final DoorKey doorData;
@@ -44,6 +44,7 @@ public class DoorSection extends StructurePiece<PistonTapeGenerator> {
 
 	@Override
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
+		int HEIGHT = 4;
 		Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 		ForgeDirection left = ReikaDirectionHelper.getLeftBy90(tunnelDir);
 		int ms = BlockType.STONE.metadata;
@@ -52,17 +53,20 @@ public class DoorSection extends StructurePiece<PistonTapeGenerator> {
 		int len = this.getLength();
 		for (int d = 0; d <= len; d++) {
 			for (int i = 0; i <= WIDTH; i++) {
-				for (int h = 0; h <= 3; h++) {
+				for (int h = 0; h < HEIGHT; h++) {
 					world.setBlock(x+i*left.offsetX+d*tunnelDir.offsetX, y+h, z+i*left.offsetZ+d*tunnelDir.offsetZ, Blocks.air);
 				}
+			}
+			for (int h = 1; h < HEIGHT; h++) {
+				world.setBlock(x+left.offsetX*WIDTH+d*tunnelDir.offsetX, y+h, z+left.offsetZ*WIDTH+d*tunnelDir.offsetZ, b, ms);
 			}
 		}
 		for (int d = 0; d <= len; d++) {
 			for (int i = 0; i <= WIDTH; i++) {
 				world.setBlock(x+i*left.offsetX+d*tunnelDir.offsetX, y, z+i*left.offsetZ+d*tunnelDir.offsetZ, b, ms);
-				world.setBlock(x+i*left.offsetX+d*tunnelDir.offsetX, y+3, z+i*left.offsetZ+d*tunnelDir.offsetZ, b, ms);
+				world.setBlock(x+i*left.offsetX+d*tunnelDir.offsetX, y+HEIGHT, z+i*left.offsetZ+d*tunnelDir.offsetZ, b, ms);
 			}
-			for (int h = 1; h <= 2; h++) {
+			for (int h = 1; h < HEIGHT; h++) {
 				world.setBlock(x+d*tunnelDir.offsetX, y+h, z+d*tunnelDir.offsetZ, b, ms);
 				world.setBlock(x+d*tunnelDir.offsetX+1*left.offsetX, y+h, z+d*tunnelDir.offsetZ+1*left.offsetZ, b, ms);
 				world.setBlock(x+d*tunnelDir.offsetX+5*left.offsetX, y+h, z+d*tunnelDir.offsetZ+5*left.offsetZ, b, ms);
@@ -70,12 +74,14 @@ public class DoorSection extends StructurePiece<PistonTapeGenerator> {
 			}
 		}
 		for (int hw = 2; hw <= 4; hw++) {
-			this.placeDoorBlock(world, x+left.offsetX*hw, y+1, z+left.offsetZ*hw);
-			this.placeDoorBlock(world, x+left.offsetX*hw, y+2, z+left.offsetZ*hw);
+			for (int i = 1; i < HEIGHT; i++) {
+				this.placeDoorBlock(world, x+left.offsetX*hw, y+i, z+left.offsetZ*hw);
+			}
 		}
 
-		world.setBlock(x+left.offsetX*5+2*tunnelDir.offsetX, y+1, z+left.offsetZ*5+2*tunnelDir.offsetZ, escd, esc);
-		world.setBlock(x+left.offsetX*5+2*tunnelDir.offsetX, y+2, z+left.offsetZ*5+2*tunnelDir.offsetZ, escd, esc);
+		for (int i = 1; i < HEIGHT; i++) {
+			world.setBlock(x+left.offsetX*5+2*tunnelDir.offsetX, y+i, z+left.offsetZ*5+2*tunnelDir.offsetZ, escd, esc);
+		}
 
 		world.setBlock(x+left.offsetX+2*tunnelDir.offsetX, y, z+left.offsetZ+2*tunnelDir.offsetZ, b, BlockType.LIGHT.metadata);
 		parent.generateLootChest(x+left.offsetX+2*tunnelDir.offsetX, y+1, z+left.offsetZ+2*tunnelDir.offsetZ, this.getChestFacing(), ChestGenHooks.MINESHAFT_CORRIDOR, 0);
@@ -86,6 +92,12 @@ public class DoorSection extends StructurePiece<PistonTapeGenerator> {
 		Coordinate door = new Coordinate(x+left.offsetX*3, y+1, z+left.offsetZ*3);
 		for (int i = 0; i < level.bitsPerDoor; i++) {
 			this.placeTarget(world, x+left.offsetX*5+(i-level.bitsPerDoor/2)*tunnelDir.offsetX, y+2, z+left.offsetZ*5+(i-level.bitsPerDoor/2)*tunnelDir.offsetZ, i, door);
+		}
+
+		for (int d = 1; d <= HEIGHT-1; d++) {
+			int m = d == 2 ? BlockType.LIGHT.metadata : ms;
+			world.setBlock(x+left.offsetX*6+(-1-level.bitsPerDoor/2)*tunnelDir.offsetX, y+d, z+left.offsetZ*6+(-1-level.bitsPerDoor/2)*tunnelDir.offsetZ, b, m);
+			world.setBlock(x+left.offsetX*6+(level.bitsPerDoor-level.bitsPerDoor/2)*tunnelDir.offsetX, y+d, z+left.offsetZ*6+(level.bitsPerDoor-level.bitsPerDoor/2)*tunnelDir.offsetZ, b, m);
 		}
 	}
 

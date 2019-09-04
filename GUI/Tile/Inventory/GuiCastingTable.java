@@ -136,7 +136,7 @@ public class GuiCastingTable extends GuiChromaBase {
 
 			zLevel = 100;
 
-			if (!r.canRunRecipe(player)) {
+			if (!r.canRunRecipe(tile, player)) {
 				ReikaTextureHelper.bindTerrainTexture();
 				GL11.glEnable(GL11.GL_BLEND);
 				IIcon ico = ChromaIcons.NOENTER.getIcon();

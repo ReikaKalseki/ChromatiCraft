@@ -12,6 +12,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -36,7 +37,7 @@ public class TileEntityFloatingLandmark extends TileEntityChromaticBase implemen
 	private Coordinate primary;
 	private boolean anchored;
 
-	private final HashSet<Coordinate> connections = new HashSet();
+	private HashSet<Coordinate> connections = new HashSet();
 
 	@Override
 	public ChromaTiles getTile() {
@@ -46,8 +47,9 @@ public class TileEntityFloatingLandmark extends TileEntityChromaticBase implemen
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (world.isRemote) {
+			this.doBlockParticles(world, x, y, z);
 			if (isPrimary) {
-				this.doParticles(world, x, y, z);
+				this.doAreaParticles(world, x, y, z);
 			}
 		}
 		else {
@@ -67,12 +69,36 @@ public class TileEntityFloatingLandmark extends TileEntityChromaticBase implemen
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
+	private void doBlockParticles(World world, int x, int y, int z) {
+		double r = 0.0625;
+		double dx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, r);
+		double dy = ReikaRandomHelper.getRandomPlusMinus(y+0.5, r);
+		double dz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, r);
+		double a1 = rand.nextDouble()*360;
+		double a2 = rand.nextDouble()*360;
+		EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, dx, dy, dz, a1, a2);
+		fx.particleVelocity *= ReikaRandomHelper.getRandomBetween(0.25, 0.5);
+		fx.angleVelocity *= 4;
+		fx.freedom *= 1.6;
+		fx.tolerance *= 1.2;
+		int l = ReikaRandomHelper.getRandomBetween(25, 80);
+		float s = (float)ReikaRandomHelper.getRandomBetween(3.5, 4.5);
+		int c = ReikaColorAPI.mixColors(0xffffff, 0x000000, (float)ReikaRandomHelper.getRandomBetween(0.25, 0.75));
+		if (isPrimary)
+			c = ReikaColorAPI.mixColors(0x00ffff, 0x0000ff, (float)ReikaRandomHelper.getRandomBetween(0.25, 0.75));
+		fx.setIcon(ChromaIcons.FADE_GENTLE).setColor(c).setRapidExpand().setAlphaFading().setScale(s).setLife(l);
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+	}
+
 	private void findArea(World world, int x, int y, int z) {
+		isPrimary = true;
 		area = new ProportionedBlockBox(BlockBox.block(this));
 		if (world.isRemote)
 			return;
+		connections.add(new Coordinate(this));
 		TileEntityFloatingLandmark te = this.findParent(world, x, y, z);
-		if (te != null) {
+		if (te != null && te.area != null) {
 			this.slaveTo(te);
 		}
 		this.syncAllData(false);
@@ -82,35 +108,45 @@ public class TileEntityFloatingLandmark extends TileEntityChromaticBase implemen
 		isPrimary = false;
 		primary = new Coordinate(te);
 		te.addLink(this);
+		te.isPrimary = true;
 		area = te.area;
 	}
 
 	private void addLink(TileEntityFloatingLandmark te) {
 		area = new ProportionedBlockBox(area.volume.addCoordinate(te.xCoord, te.yCoord, te.zCoord));
+		connections.addAll(te.connections);
 		connections.add(new Coordinate(te));
+		te.connections = connections;
+		/*
+		for (Coordinate c : new HashSet<Coordinate>(connections)) {
+			TileEntity te2 = c.getTileEntity(worldObj);
+			if (te2 instanceof TileEntityFloatingLandmark) {
+				TileEntityFloatingLandmark t2 = (TileEntityFloatingLandmark)te2;
+				t2.connections.clear();
+				t2.connections.addAll(connections);
+			}
+		}*/
 		this.syncAllData(false);
 	}
 
-	public void reset() {
+	public void reset(boolean propagate) {
 		area = null;
-		if (isPrimary) {
-			for (Coordinate c : connections) {
+		isPrimary = true;
+		if (propagate) {
+			for (Coordinate c : new HashSet<Coordinate>(connections)) {
 				TileEntity te = c.getTileEntity(worldObj);
 				if (te instanceof TileEntityFloatingLandmark) {
-					((TileEntityFloatingLandmark)te).reset();
+					((TileEntityFloatingLandmark)te).reset(false);
 				}
 			}
-			connections.clear();
 		}
-		else {
-			isPrimary = true;
-			primary = null;
-		}
+		connections.clear();
+		primary = null;
 		this.syncAllData(false);
 	}
 
 	@SideOnly(Side.CLIENT)
-	private void doParticles(World world, int x, int y, int z) {
+	private void doAreaParticles(World world, int x, int y, int z) {
 		int n = 18*Math.min(40, Math.max(1, area.volume.getSurfaceArea()/20));
 		for (int i = 0; i < n; i++) {
 			double dx = 0;
@@ -306,6 +342,12 @@ public class TileEntityFloatingLandmark extends TileEntityChromaticBase implemen
 	@Override
 	public boolean isValidFromLocation(int x, int y, int z) {
 		return new Coordinate(x, y, z).getTaxicabDistanceTo(new Coordinate(this)) == 1;
+	}
+
+	public void breakBlock() {
+		if (worldObj.isRemote)
+			return;
+		this.reset(true);
 	}
 
 }

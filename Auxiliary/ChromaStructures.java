@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityMeteorTower;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger.Location;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
@@ -2376,6 +2377,10 @@ public class ChromaStructures {
 
 	public static FilledBlockArray getCastingLevelTwo(World world, int x, int y, int z) {
 		FilledBlockArray array = getCastingLevelOne(world, x, y, z);
+
+		for (Coordinate c : TileEntityCastingTable.getTuningKeys()) {
+			array.addBlock(x+c.xCoord, y+c.yCoord, z+c.zCoord, ChromaBlocks.RUNE.getBlockInstance());
+		}
 
 		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
 		for (int i = -5; i <= 5; i++) {

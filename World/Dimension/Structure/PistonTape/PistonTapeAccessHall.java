@@ -1,5 +1,6 @@
 package Reika.ChromatiCraft.World.Dimension.Structure.PistonTape;
 
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -8,7 +9,6 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
-import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 
 public class PistonTapeAccessHall extends StructurePiece<PistonTapeGenerator> {
 
@@ -16,14 +16,17 @@ public class PistonTapeAccessHall extends StructurePiece<PistonTapeGenerator> {
 	public static final int HEIGHT = 4;
 	public static final int DEPTH = 3;
 
-	public PistonTapeAccessHall(PistonTapeGenerator gen) {
+	private final TapeArea tape;
+
+	public PistonTapeAccessHall(PistonTapeGenerator gen, TapeArea t) {
 		super(gen);
+		tape = t;
 	}
 
 	@Override
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
 		ForgeDirection dir = PistonTapeGenerator.DIRECTION;
-		ForgeDirection left = ReikaDirectionHelper.getLeftBy90(dir);
+		ForgeDirection left = tape.tape.facing.getOpposite();
 		for (int i = 0; i <= DEPTH; i++) {
 			for (int l = 0; l <= WIDTH; l++) {
 				int dx = x+dir.offsetX*i+left.offsetX*l;
@@ -49,5 +52,23 @@ public class PistonTapeAccessHall extends StructurePiece<PistonTapeGenerator> {
 
 		world.setBlock(x+dir.offsetX, y+2, z+dir.offsetZ, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.LIGHT.metadata);
 		world.setBlock(x+dir.offsetX+left.offsetX*WIDTH, y+2, z+dir.offsetZ+left.offsetZ*WIDTH, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.LIGHT.metadata);
+
+		int h = HEIGHT;//-1;
+		int d = 1+tape.tape.busWidth/2+1;
+		for (int i = 1; i <= d; i++) {
+			int dx = x+dir.offsetX*(DEPTH+i);
+			int dz = z+dir.offsetZ*(DEPTH+i);
+			for (int l = 0; l <= WIDTH; l++) {
+				for (int dh = 0; dh <= h; dh++) {
+					Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
+					int m = BlockType.STONE.metadata;
+					if (dh != 0 && dh != h && l != 0 && l != WIDTH && l != 4) {
+						b = Blocks.air;
+						m = 0;
+					}
+					world.setBlock(x+left.offsetX*l+dir.offsetX*(i+DEPTH), y+dh, z+left.offsetZ*l+dir.offsetZ*(i+DEPTH), b, m);
+				}
+			}
+		}
 	}
 }

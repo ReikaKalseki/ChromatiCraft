@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -243,7 +243,7 @@ public class GuiCastingRecipe extends GuiBookSection {
 			}
 			 */
 		}
-		if (!this.getActiveRecipe().canRunRecipe(player)) {
+		if (!this.getActiveRecipe().canRunRecipe(null, player)) {
 			ReikaTextureHelper.bindTerrainTexture();
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glDisable(GL11.GL_LIGHTING);
@@ -273,7 +273,7 @@ public class GuiCastingRecipe extends GuiBookSection {
 
 	@Override
 	public String getPageTitle() {
-		String s = this.getActiveRecipe().canRunRecipe(player) ? "" : ChromaFontRenderer.FontType.OBFUSCATED.id;
+		String s = this.getActiveRecipe().canRunRecipe(null, player) ? "" : ChromaFontRenderer.FontType.OBFUSCATED.id;
 		return s+this.getActiveRecipe().getOutputForDisplay().getDisplayName();//+" Casting";
 	}
 

@@ -80,26 +80,31 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 
 	@Override
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
-		world.setBlock(x, y, z, Blocks.brick_block);
 		for (int d = -1; d <= dimensions.totalDepth+2; d++) { //was from -2
 			for (int h = -2; h <= dimensions.totalHeight+2; h++) {
+				if (d == -1 && h < dimensions.totalHeight)
+					continue;
 				Block b = Blocks.air;
 				int m = 0;
-				if (h == dimensions.totalHeight+2) {
+				if (h >= dimensions.totalHeight) {
 					b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 					m = BlockType.STONE.metadata;
 				}
-				if (h == -2) {
+				if (h < 0) {
 					b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 					m = BlockType.CLOAK.metadata;
 				}
-				if (d == -2 || d == dimensions.totalDepth+2) {
+				if (d == -2 || d > dimensions.totalDepth) {
 					b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 					m = BlockType.STONE.metadata;
 				}
 				if (d == -2 && h >= 0 && h <= dimensions.totalHeight-1) {
 					b = ChromaBlocks.SPECIALSHIELD.getBlockInstance();
 					m = BlockType.GLASS.metadata;
+				}
+				if (d == 0 && h == dimensions.totalHeight) {
+					b = Blocks.air;
+					m = 0;
 				}
 				world.setBlock(x-d*facing.offsetX, y+h, z-d*facing.offsetZ, b, m);
 			}
@@ -121,7 +126,7 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 		this.placePiston(world, x-facing.offsetX*(dimensions.totalDepth+1), y, z-facing.offsetZ*(dimensions.totalDepth+1), facing);
 
 		this.placeEmitter(world, x-facing.offsetX*(dimensions.totalDepth+1), y+1, z-facing.offsetZ*(dimensions.totalDepth+1));
-		this.placeTarget(world, x+facing.offsetX*8, y+1, z+facing.offsetZ*8);
+		this.placeTarget(world, x+facing.offsetX*7, y+1, z+facing.offsetZ*7);
 	}
 
 	private void placeBit(ChunkSplicedGenerationCache world, int x, int y, int z) {

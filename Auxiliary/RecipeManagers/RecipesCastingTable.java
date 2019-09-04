@@ -132,6 +132,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.Essenti
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ExplosionShieldRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FabricatorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FarmerRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FloatingLandmarkRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FluidDistributorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FluidRelayRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FluxMakerRecipe;
@@ -254,6 +255,7 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler.WeaponParts;
 import Reika.DragonAPI.ModRegistry.PowerTypes;
 import Reika.RotaryCraft.Registry.ItemRegistry;
 
+import buildcraft.BuildCraftCore;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class RecipesCastingTable {
@@ -928,6 +930,12 @@ public class RecipesCastingTable {
 
 		if (ModList.EXTRAUTILS.isLoaded() && DivisionSigilActivationRecipe.isLoadable()) {
 			this.addRecipe(new DivisionSigilActivationRecipe());
+		}
+
+		if (ModList.BUILDCRAFT.isLoaded()) {
+			ItemStack is = ChromaTiles.LANDMARK.getCraftedProduct();
+			IRecipe sr = ReikaRecipeHelper.getShapelessRecipeFor(is, ChromaStacks.beaconDust, ChromaStacks.beaconDust, new ItemStack(Items.redstone), ChromaStacks.auraDust, new ItemStack(BuildCraftCore.markerBlock), new ItemStack(Items.quartz));
+			this.addRecipe(new FloatingLandmarkRecipe(is, sr));
 		}
 
 		for (Object o : Item.itemRegistry.getKeys()) {

@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -26,10 +27,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.CastingAPI.FXCallback;
@@ -225,7 +229,7 @@ public class CastingRecipe implements APICastingRecipe {
 		c.add(ProgressStage.CRYSTALS);
 	}
 
-	public boolean canRunRecipe(EntityPlayer ep) {
+	public boolean canRunRecipe(TileEntity te, EntityPlayer ep) {
 		if (fragment != null && !ChromaResearchManager.instance.playerHasFragment(ep, fragment))
 			return false;
 		Collection<ProgressStage> c = new ArrayList();
@@ -415,6 +419,10 @@ public class CastingRecipe implements APICastingRecipe {
 		return !this.getClass().getName().contains("CastingRecipes.Special") && !ReikaItemHelper.getRegistrantMod(this.getOutput()).equals(ModList.CHROMATICRAFT.modLabel);
 	}
 
+	public boolean isShapeless() {
+		return recipe instanceof ShapelessRecipes || recipe instanceof ShapelessOreRecipe;
+	}
+
 	public static class TempleCastingRecipe extends CastingRecipe implements RuneRecipe {
 
 		private static final ArrayList<Coordinate> runeRing = new ArrayList();
@@ -449,10 +457,52 @@ public class CastingRecipe implements APICastingRecipe {
 			super(out, type, recipe);
 		}
 
-		protected boolean matchRunes(World world, int x, int y, int z) {
+		public boolean requiresTuningKey() {
+			return false;
+		}
+
+		protected final boolean matchRunes(TileEntityCastingTable te) {
 			//runes.place(world, x, y, z);
 			//ReikaJavaLibrary.pConsole(this.getOutput().getDisplayName());
-			return runes.matchAt(world, x, y, z, 0, 0, 0);
+			return runes.matchAt(te.worldObj, te.xCoord, te.yCoord, te.zCoord, 0, 0, 0);
+		}
+
+		@Override
+		public boolean canRunRecipe(TileEntity te, EntityPlayer ep) {
+			if (te != null && this.requiresTuningKey()) {
+				if (!this.checkForTuningKey(te, ep)) {
+					return false;
+				}
+			}
+			return super.canRunRecipe(te, ep);
+		}
+
+		private boolean checkForTuningKey(TileEntity te, EntityPlayer ep) {
+			HashMap<Coordinate, CrystalElement> key = this.calculateTuningKey(ep);
+			HashMap<Coordinate, CrystalElement> map = ((TileEntityCastingTable)te).getCurrentTuningMap();
+			return key.equals(map);
+		}
+
+		private final HashMap<Coordinate, CrystalElement> calculateTuningKey(EntityPlayer ep) {
+			HashMap<Coordinate, CrystalElement> map = new HashMap();
+			long seed = ep.getUniqueID().getLeastSignificantBits() ^ ep.getUniqueID().getLeastSignificantBits();
+			if (ep.capabilities.isCreativeMode)
+				seed ^= ep.getUniqueID().hashCode();
+			Random rand = new Random(seed);
+			rand.nextBoolean();
+			rand.nextBoolean();
+			int n = 12;//8+rand.nextInt(5);
+			int i = 0;
+			ArrayList<Coordinate> li = new ArrayList(TileEntityCastingTable.getTuningKeys());
+			Collections.sort(li);
+			Collections.shuffle(li, rand);
+			for (Coordinate c : li) {
+				map.put(c, CrystalElement.elements[rand.nextInt(16)]);
+				i++;
+				if (i >= n)
+					break;
+			}
+			return map;
 		}
 
 		protected TempleCastingRecipe addRuneRingRune(CrystalElement e) {
@@ -529,7 +579,7 @@ public class CastingRecipe implements APICastingRecipe {
 
 		@Override
 		public boolean match(TileEntityCastingTable table) {
-			return super.match(table) && this.matchRunes(table.worldObj, table.xCoord, table.yCoord, table.zCoord);
+			return super.match(table) && this.matchRunes(table);
 		}
 
 		@Override
@@ -684,7 +734,7 @@ public class CastingRecipe implements APICastingRecipe {
 					}
 				}
 				//ReikaJavaLibrary.pConsole(this.matchRunes(table.worldObj, table.xCoord, table.yCoord, table.zCoord));
-				if (this.matchRunes(table.worldObj, table.xCoord, table.yCoord, table.zCoord)) {
+				if (this.matchRunes(table)) {
 					return true;
 				}
 			}
@@ -837,6 +887,11 @@ public class CastingRecipe implements APICastingRecipe {
 
 		@Override
 		public boolean canBeStacked() {
+			return false;
+		}
+
+		@Override
+		public boolean requiresTuningKey() {
 			return false;
 		}
 

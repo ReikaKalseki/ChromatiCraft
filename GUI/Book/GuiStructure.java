@@ -32,12 +32,14 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.GuiBookSection;
+import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -78,6 +80,9 @@ public class GuiStructure extends GuiBookSection {
 							array.setBlock(dx, dy, dz, ChromaTiles.STAND.getBlock(), ChromaTiles.STAND.getBlockMetadata());
 						}
 					}
+				}
+				for (Coordinate c : TileEntityCastingTable.getTuningKeys()) { //hide tuning runes from the lexicon
+					array.setBlock(c.xCoord, c.yCoord, c.zCoord, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.SMOOTH.ordinal());
 				}
 			}
 			array.setBlock(array.getMidX()+1, array.getMinY()+1, array.getMidZ(), Blocks.air);

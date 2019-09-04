@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Random;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -37,7 +38,6 @@ import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 
 public class BlockPistonTarget extends BlockDimensionStructureTile implements LaserPulseEffect {
@@ -208,13 +208,38 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 			}
 		}
 
-		public void setTarget(int door, Coordinate c) {
+		public void setTarget(int door, Coordinate c, ForgeDirection hallDir, ArrayList<Coordinate> hall) {
+			ForgeDirection dir = ReikaDirectionHelper.getLeftBy90(hallDir);
+			Random rand = new Random(new Coordinate(this).hashCode());
+			rand.nextBoolean();
 			doorIndex = door;
 			target = c;
-			path = new Spline(SplineType.CHORDAL);
+			path = new Spline(SplineType.CENTRIPETAL);
 			DecimalPosition p1 = new DecimalPosition(this);
 			DecimalPosition p2 = new DecimalPosition(c);
 			path.addPoint(new BasicSplinePoint(p1));
+			for (Coordinate c2 : hall) {
+				DecimalPosition p = DecimalPosition.getRandomWithin(c2, rand);
+				path.addPoint(new BasicSplinePoint(p));
+			}
+			Coordinate last = hall.get(hall.size()-1);
+			int dl = 3+this.getDoorBusWidth();
+			int dx = last.xCoord+dl*hallDir.offsetX;
+			int dz = last.zCoord+dl*hallDir.offsetZ;
+			int tx = c.xCoord+dir.offsetX*3;
+			int tz = c.zCoord+dir.offsetZ*3;
+			int diff = hallDir.offsetX*(tx-dx)+hallDir.offsetZ*(tz-dz);
+			while (diff >= 0) {
+				double rx = dx+0.5-1+rand.nextDouble()*2;
+				double rz = dz+0.5-1+rand.nextDouble()*2;
+				double ry = c.yCoord+0.5-1+rand.nextDouble()*2;
+				DecimalPosition p = new DecimalPosition(rx, ry, rz);
+				path.addPoint(new BasicSplinePoint(p));
+				dx += hallDir.offsetX*dl;
+				dz += hallDir.offsetZ*dl;
+				diff = hallDir.offsetX*(tx-dx)+hallDir.offsetZ*(tz-dz);
+			}
+			/*
 			int n = 3+doorIndex;
 			for (int i = 0; i < n; i++) {
 				double f = (i+1D)/(n+1D);
@@ -231,6 +256,7 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 				}
 				path.addPoint(new BasicSplinePoint(p));
 			}
+			 */
 			path.addPoint(new BasicSplinePoint(p2));
 		}
 

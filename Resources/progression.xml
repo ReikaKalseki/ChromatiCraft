@@ -807,20 +807,20 @@
 			Wormholes of a sort
 		</desc>
 	</warpnode>
-	<name>
+	<powertree>
 		<title>
-			
+			Stockpiling Energy
 		</title>
 		<hint>
-			
+			A construct which has the ability to draw lumens into itself...for what?
 		</hint>
 		<reveal>
-			
+			Apparently to act as a large buffer or storage.
 		</reveal>
 		<desc>
-			
+			Arboriform Battery
 		</desc>
-	</name>
+	</powertree>
 	<name>
 		<title>
 			

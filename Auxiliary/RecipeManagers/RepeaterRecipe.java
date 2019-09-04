@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.EnergyLinkingRecipe;
@@ -65,8 +66,8 @@ public abstract class RepeaterRecipe extends MultiBlockCastingRecipe implements 
 	}
 
 	@Override
-	public final boolean canRunRecipe(EntityPlayer ep) {
-		return super.canRunRecipe(ep) && ChromaResearchManager.instance.getPlayerResearchLevel(ep).ordinal() >= ResearchLevel.NETWORKING.ordinal() && ProgressStage.BLOWREPEATER.isPlayerAtStage(ep);
+	public final boolean canRunRecipe(TileEntity te, EntityPlayer ep) {
+		return super.canRunRecipe(te, ep) && ChromaResearchManager.instance.getPlayerResearchLevel(ep).ordinal() >= ResearchLevel.NETWORKING.ordinal() && ProgressStage.BLOWREPEATER.isPlayerAtStage(ep);
 	}
 
 	@Override
@@ -75,6 +76,11 @@ public abstract class RepeaterRecipe extends MultiBlockCastingRecipe implements 
 			if (tag == null)
 				tag = new NBTTagCompound();
 			tag.setBoolean("boosted", false);
+		}
+		if (tile.getFragment().level.ordinal() > ResearchLevel.NETWORKING.ordinal()) {
+			if (tag == null)
+				tag = new NBTTagCompound();
+			tag.setString("caster", ep.getUniqueID().toString());
 		}
 		return tag;
 	}
@@ -116,5 +122,10 @@ public abstract class RepeaterRecipe extends MultiBlockCastingRecipe implements 
 			default:
 				return 1;
 		}
+	}
+
+	@Override
+	public final boolean requiresTuningKey() {
+		return true;
 	}
 }

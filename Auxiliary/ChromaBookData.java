@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Auxiliary;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.lwjgl.opengl.GL11;
 
@@ -25,6 +26,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
@@ -39,6 +41,7 @@ import Reika.DragonAPI.Instantiable.Recipe.ItemMatch;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -48,6 +51,7 @@ public class ChromaBookData {
 	private static final ReikaGuiAPI gui = ReikaGuiAPI.instance;
 
 	private static final int[][] permuOffset = new int[5][5];
+	private static final Random rand = new Random();
 
 	public static void drawPage(FontRenderer fr, RenderItem ri, ChromaResearch h, int subpage, int recipe, int posX, int posY) {
 		if (h.isCrafting()) {
@@ -63,6 +67,8 @@ public class ChromaBookData {
 	}
 
 	public static void drawCastingRecipe(FontRenderer fr, RenderItem ri, CastingRecipe c, int subpage, int posX, int posY) {
+		rand.setSeed(System.currentTimeMillis()/1000);
+		rand.nextBoolean();
 		ItemStack isout = c.getOutputForDisplay();
 		ItemStack ctr = c instanceof MultiBlockCastingRecipe ? ((MultiBlockCastingRecipe)c).getMainInput() : c.getArrayForDisplay()[4];
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
@@ -72,6 +78,9 @@ public class ChromaBookData {
 		GL11.glDisable(GL11.GL_LIGHTING);
 		if (subpage == 0 || subpage == 2) {
 			ItemStack[] arr = c.getArrayForDisplay();
+			if (c.type == RecipeType.CRAFTING && c.isShapeless()) {
+				ReikaArrayHelper.shuffleArray(arr, rand);
+			}
 			for (int i = 0; i < 9; i++) {
 				ItemStack in = arr[i];
 				if (in != null) {

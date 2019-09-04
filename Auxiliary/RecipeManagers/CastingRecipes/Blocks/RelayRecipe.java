@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.Auxiliary.Interfaces.EnergyLinkingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
@@ -32,8 +33,8 @@ public class RelayRecipe extends MultiBlockCastingRecipe implements EnergyLinkin
 	}
 
 	@Override
-	public boolean canRunRecipe(EntityPlayer ep) {
-		return super.canRunRecipe(ep);// && RecipesCastingTable.playerHasCrafted(ep, RecipeType.PYLON);
+	public boolean canRunRecipe(TileEntity te, EntityPlayer ep) {
+		return super.canRunRecipe(te, ep);// && RecipesCastingTable.playerHasCrafted(ep, RecipeType.PYLON);
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -14,6 +14,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
@@ -67,8 +68,8 @@ public class WeakRepeaterRecipe extends TempleCastingRecipe implements CoreRecip
 	}
 
 	@Override
-	public boolean canRunRecipe(EntityPlayer ep) {
-		return super.canRunRecipe(ep) && ChromaResearchManager.instance.getPlayerResearchLevel(ep).ordinal() >= ResearchLevel.ENERGYEXPLORE.ordinal();
+	public boolean canRunRecipe(TileEntity te, EntityPlayer ep) {
+		return super.canRunRecipe(te, ep) && ChromaResearchManager.instance.getPlayerResearchLevel(ep).ordinal() >= ResearchLevel.ENERGYEXPLORE.ordinal();
 	}
 
 	@Override

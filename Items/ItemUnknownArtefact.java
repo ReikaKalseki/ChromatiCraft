@@ -139,6 +139,8 @@ public class ItemUnknownArtefact extends ItemChromaMulti implements AnimatedSpri
 
 	@Override
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int side, float par8, float par9, float par10) {
+		if (is.getItemDamage() != ArtefactTypes.ARTIFACT.ordinal())
+			return false;
 		if (!ReikaWorldHelper.softBlocks(world, x, y, z) && ReikaWorldHelper.getMaterial(world, x, y, z) != Material.water && ReikaWorldHelper.getMaterial(world, x, y, z) != Material.lava) {
 			if (side == 0)
 				--y;

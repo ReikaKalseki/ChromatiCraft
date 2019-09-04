@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Block;
 
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
@@ -28,6 +29,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntitySkypeater;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityWeakRepeater;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.DragonAPI.ModList;
@@ -41,6 +43,9 @@ import vazkii.botania.api.mana.ILaputaImmobile;
 
 @Strippable(value = {"vazkii.botania.api.mana.ILaputaImmobile"})
 public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTrigger, SemiUnbreakable, ILaputaImmobile {
+
+	private IIcon burnedWeakRepeater;
+	private IIcon weakRepeaterFrame;
 
 	public BlockCrystalPylon(Material mat) {
 		super(mat);
@@ -100,8 +105,22 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 	}
 
 	@Override
+	public void registerBlockIcons(IIconRegister ico) {
+		super.registerBlockIcons(ico);
+		weakRepeaterFrame = ico.registerIcon("chromaticraft:basic/weakrepeater_frame");
+		burnedWeakRepeater = ico.registerIcon("chromaticraft:basic/weakrepeater_frame_burned");
+	}
+
+	@Override
 	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int s) {
-		return this.getIcon(s, iba.getBlockMetadata(x, y, z));
+		int meta = iba.getBlockMetadata(x, y, z);
+		if (ChromaTiles.getTileFromIDandMetadata(this, meta) == ChromaTiles.WEAKREPEATER) {
+			TileEntityWeakRepeater te = (TileEntityWeakRepeater)iba.getTileEntity(x, y, z);
+			if (te.isRuptured()) {
+				return s == 0 ? weakRepeaterFrame : s == 1 ? ChromaIcons.TRANSPARENT.getIcon() : burnedWeakRepeater;
+			}
+		}
+		return this.getIcon(s, meta);
 	}
 
 	@Override

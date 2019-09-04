@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -22,8 +22,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
@@ -36,6 +38,7 @@ import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Base.BlockTieredResource;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockSpiral;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
@@ -50,6 +53,9 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
+import Reika.DragonAPI.ModRegistry.InterfaceCache;
+
+import buildcraft.api.core.IAreaProvider;
 
 
 public class TileEntityAreaBreaker extends ChargedCrystalPowered implements BreakAction, ItemOnRightClick {
@@ -66,6 +72,7 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 	private int newloctick = 0;
 	private int activeIndex = 0;
 	private BreakShape shape = BreakShape.CUBOID;
+	private BlockBox areaOverride = null;;
 	private int range = MAX_RANGE;
 
 	private static final ElementTagCompound required = new ElementTagCompound();
@@ -145,7 +152,7 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 	}
 
 	private boolean isCoordValid(Coordinate c, Block b, World world, int x, int y, int z) {
-		return c != null && this.shouldTryBreaking(world, c.xCoord, c.yCoord, c.zCoord, b) && !c.equals(x, y, z) && c.getTileEntity(world) == null && shape.isBlockInShape(c.xCoord-x, c.yCoord-y, c.zCoord-z, range);
+		return c != null && this.shouldTryBreaking(world, c.xCoord, c.yCoord, c.zCoord, b) && !c.equals(x, y, z) && c.getTileEntity(world) == null && (areaOverride != null ? areaOverride.isBlockInside(c) : shape.isBlockInShape(c.xCoord-x, c.yCoord-y, c.zCoord-z, range));
 	}
 
 	private boolean shouldTryBreaking(World world, int x, int y, int z, Block b) {
@@ -171,6 +178,7 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
+		this.getCoordsFromIAP(world, x, y, z);
 		this.initArea();
 	}
 
@@ -226,6 +234,10 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 		//breakLocs.putAll(ReikaNBTHelper.readMapFromNBT(NBT, "locs"));
 
 		shape = BreakShape.list[NBT.getInteger("shape")];
+		if (NBT.hasKey("override")) {
+			NBTTagCompound tag = NBT.getCompoundTag("override");
+			areaOverride = BlockBox.readFromNBT(tag);
+		}
 		range = NBT.getInteger("range");
 	}
 
@@ -235,6 +247,11 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 
 		//ReikaNBTHelper.writeMapToNBT(NBT, "locs", breakLocs);
 
+		if (areaOverride != null) {
+			NBTTagCompound tag = new NBTTagCompound();
+			areaOverride.writeToNBT(tag);
+			NBT.setTag("override", tag);
+		}
 		NBT.setInteger("shape", shape.ordinal());
 		NBT.setInteger("range", range);
 	}
@@ -316,6 +333,24 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 	@Override
 	public AxisAlignedBB getRenderBoundingBox() {
 		return this.isRunning() ? ReikaAABBHelper.getBlockAABB(this).expand(MAX_RANGE, MAX_RANGE, MAX_RANGE) : super.getRenderBoundingBox();
+	}
+
+	private void getCoordsFromIAP(World world, int x, int y, int z) {
+		for (int i = 0; i < 6; i++) {
+			ForgeDirection dir = dirs[i];
+			int dx = x+dir.offsetX;
+			int dy = y+dir.offsetY;
+			int dz = z+dir.offsetZ;
+			TileEntity te = world.getTileEntity(dx, dy, dz);
+			if (InterfaceCache.AREAPROVIDER.instanceOf(te)) {
+				IAreaProvider iap = (IAreaProvider)te;
+				areaOverride = new BlockBox(iap.xMin(), iap.yMin(), iap.zMin(), iap.xMax()+1, iap.yMax()+1, iap.zMax()+1);
+				range = areaOverride.getLongestEdge()+2;
+				iap.removeFromWorld();
+				this.syncAllData(false);
+				return;
+			}
+		}
 	}
 
 	public static enum BreakShape {

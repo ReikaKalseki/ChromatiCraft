@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.TileEntity.Networking;
 
 import java.util.HashSet;
+import java.util.UUID;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
@@ -80,6 +81,8 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	public static final int RANGE = 32;
 
 	private boolean redstoneCache;
+
+	private UUID casterID;
 
 	@Override
 	public ChromaTiles getTile() {
@@ -246,6 +249,8 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		surgeColor = CrystalElement.elements[NBT.getInteger("surge_c")];
 
 		redstoneCache = NBT.getBoolean("redstone");
+		if (NBT.hasKey("caster"))
+			casterID = UUID.fromString("caster");
 	}
 
 	@Override
@@ -265,6 +270,9 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 			NBT.setInteger("surge_c", surgeColor.ordinal());
 
 		NBT.setBoolean("redstone", redstoneCache);
+
+		if (casterID != null)
+			NBT.setString("caster", casterID.toString());
 	}
 
 	public final boolean isTurbocharged() {
@@ -347,11 +355,13 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	@Override
 	public void getTagsToWriteToStack(NBTTagCompound NBT) {
 		NBT.setBoolean("boosted", isTurbo);
+		NBT.setString("caster", casterID.toString());
 	}
 
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
 		isTurbo = ReikaItemHelper.matchStacks(is, this.getTile().getCraftedProduct()) && is.stackTagCompound != null && is.stackTagCompound.getBoolean("boosted");
+		casterID = ReikaItemHelper.matchStacks(is, this.getTile().getCraftedProduct()) && is.stackTagCompound != null ? UUID.fromString(is.stackTagCompound.getString("caster")) : null;
 	}
 
 	@Override

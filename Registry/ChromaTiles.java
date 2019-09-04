@@ -853,6 +853,10 @@ public enum ChromaTiles implements TileEnum {
 		return VariableTexture.class.isAssignableFrom(tile);
 	}
 
+	public ChromaResearch getFragment() {
+		return ChromaResearch.getPageFor(this);
+	}
+
 	public static ChromaTiles getTileByCraftedItem(ItemStack is) {
 		return craftMap.get(is);
 	}

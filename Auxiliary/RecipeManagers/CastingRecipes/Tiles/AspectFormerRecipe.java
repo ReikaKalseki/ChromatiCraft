@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
@@ -41,8 +42,8 @@ public class AspectFormerRecipe extends MultiBlockCastingRecipe {
 	}
 
 	@Override
-	public boolean canRunRecipe(EntityPlayer ep) {
-		return super.canRunRecipe(ep) && (!ChromaOptions.HARDTHAUM.getState() || ReikaThaumHelper.isResearchComplete(ep, "INFUSION"));
+	public boolean canRunRecipe(TileEntity te, EntityPlayer ep) {
+		return super.canRunRecipe(te, ep) && (!ChromaOptions.HARDTHAUM.getState() || ReikaThaumHelper.isResearchComplete(ep, "INFUSION"));
 	}
 
 	@Override

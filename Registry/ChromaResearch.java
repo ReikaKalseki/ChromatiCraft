@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -209,6 +210,7 @@ public enum ChromaResearch implements ProgressElement {
 	PROGRESSLINK(	ChromaTiles.PROGRESSLINK,	ResearchLevel.BASICCRAFT),
 	MANABOOSTER(	ChromaTiles.MANABOOSTER,	ResearchLevel.PYLONCRAFT),
 	NETWORKOPT(		ChromaTiles.OPTIMIZER,		ResearchLevel.ENDGAME,			TieredOres.LUMA.level),
+	LANDMARK(		ChromaTiles.LANDMARK,		ResearchLevel.BASICCRAFT),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT,	ProgressStage.ALLCOLORS),
@@ -360,7 +362,7 @@ public enum ChromaResearch implements ProgressElement {
 	RITUAL	(		Structures.RITUAL,			StoneTypes.ENGRAVED.ordinal(),			ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
 	INFUSION(		Structures.INFUSION,		StoneTypes.BRICKS.ordinal(),			ResearchLevel.MULTICRAFT,		ProgressStage.CHROMA),
 	TREE(			Structures.TREE,			StoneTypes.STABILIZER.ordinal(),		ResearchLevel.ENDGAME,			ProgressStage.POWERCRYSTAL),
-	TREESEND(		Structures.TREE_SENDER,			StoneTypes.FOCUSFRAME.ordinal(),		ResearchLevel.ENDGAME,			ProgressStage.POWERTREE),
+	TREESEND(		Structures.TREE_SENDER,		StoneTypes.FOCUSFRAME.ordinal(),		ResearchLevel.ENDGAME,			ProgressStage.POWERTREE),
 	REPEATERSTRUCT(	Structures.REPEATER,		StoneTypes.SMOOTH.ordinal(),			ResearchLevel.NETWORKING,		ProgressStage.RUNEUSE, ProgressStage.BLOWREPEATER),
 	COMPOUNDSTRUCT(	Structures.COMPOUND,		StoneTypes.MULTICHROMIC.ordinal(),		ResearchLevel.NETWORKING,		ProgressStage.REPEATER),
 	CAVERN(			Structures.CAVERN,			ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.CAVERN),
@@ -406,6 +408,7 @@ public enum ChromaResearch implements ProgressElement {
 	public static final ChromaResearch[] researchList = values();
 	static final MultiMap<ResearchLevel, ChromaResearch> levelMap = new MultiMap(CollectionType.HASHSET);
 	private static final ItemHashMap<ChromaResearch> itemMap = new ItemHashMap();
+	private static final EnumMap<ChromaTiles, ChromaResearch> tileMap = new EnumMap(ChromaTiles.class);
 	private static final HashMap<Ability, ChromaResearch> abilityMap = new HashMap();
 	private static final List<ChromaResearch> parents = new ArrayList();
 	private static final List<ChromaResearch> nonParents = new ArrayList();
@@ -1458,6 +1461,17 @@ public enum ChromaResearch implements ProgressElement {
 			return this.ordinal(); //will never conflict
 	}
 
+	@Override
+	public boolean giveToPlayer(EntityPlayer ep, boolean notify) {
+		return ChromaResearchManager.instance.givePlayerFragment(ep, this, notify);
+	}
+
+	public boolean playerCanSeeRecipe(ItemStack is, EntityPlayer ep) {
+		if (this == ALLOYS)
+			return PoolRecipes.instance.getPoolRecipeByOutput(is).playerHasProgress(ep);
+		return true;
+	}
+
 	static {
 		int index = 0;
 		for (int i = 0; i < researchList.length; i++) {
@@ -1504,6 +1518,8 @@ public enum ChromaResearch implements ProgressElement {
 					}
 					if (r.ability != null)
 						abilityMap.put(r.ability, r);
+					if (r.machine != null)
+						tileMap.put(r.machine, r);
 				}
 				catch (Exception e) {
 					Dependency dep = r.getDependency();
@@ -1567,6 +1583,10 @@ public enum ChromaResearch implements ProgressElement {
 		return abilityMap.get(a);
 	}
 
+	public static ChromaResearch getPageFor(ChromaTiles c) {
+		return tileMap.get(c);
+	}
+
 	public static List<ChromaResearch> getAllParents() {
 		return Collections.unmodifiableList(parents);
 	}
@@ -1582,17 +1602,6 @@ public enum ChromaResearch implements ProgressElement {
 
 	public static ChromaResearch getByName(String s) {
 		return byName.get(s);
-	}
-
-	@Override
-	public boolean giveToPlayer(EntityPlayer ep, boolean notify) {
-		return ChromaResearchManager.instance.givePlayerFragment(ep, this, notify);
-	}
-
-	public boolean playerCanSeeRecipe(ItemStack is, EntityPlayer ep) {
-		if (this == ALLOYS)
-			return PoolRecipes.instance.getPoolRecipeByOutput(is).playerHasProgress(ep);
-		return true;
 	}
 
 }

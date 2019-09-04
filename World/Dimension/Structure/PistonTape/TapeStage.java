@@ -58,12 +58,12 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 
 	@Override
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
-		tape.generate(world, x, y, z);
-		int dx = x+(6+tape.tape.busWidth)*mainDirection.offsetX;
-		int dz = z+(6+tape.tape.busWidth)*mainDirection.offsetZ;
-		new PistonTapeAccessHall(parent).generate(world, dx, y, dz);
-		dx += (PistonTapeAccessHall.DEPTH+6)*mainDirection.offsetX;
-		dz += (PistonTapeAccessHall.DEPTH+6)*mainDirection.offsetZ;
+		tape.generate(world, x-tape.tape.facing.offsetX*6, y, z-tape.tape.facing.offsetZ*6);
+		int dx = x+(2+tape.tape.busWidth)*mainDirection.offsetX;
+		int dz = z+(2+tape.tape.busWidth)*mainDirection.offsetZ;
+		new PistonTapeAccessHall(parent, tape).generate(world, dx-tape.tape.facing.offsetX, y, dz-tape.tape.facing.offsetZ);
+		dx += (PistonTapeAccessHall.DEPTH+2+tape.tape.busWidth/2)*mainDirection.offsetX;
+		dz += (PistonTapeAccessHall.DEPTH+2+tape.tape.busWidth/2)*mainDirection.offsetZ;
 		for (DoorSection s : doors) {
 			s.generate(world, dx, y, z);
 			dx += (s.getLength()+1)*mainDirection.offsetX;
@@ -83,6 +83,17 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 			EmitterTile te = (EmitterTile)c.getTileEntity(world);
 			te.fire();
 		}
+	}
+
+	private ArrayList<Coordinate> getHallSplinePoints(Coordinate lastSplineEmitter) {
+		ArrayList<Coordinate> li = new ArrayList();
+		Coordinate c = lastSplineEmitter.offset(tape.tape.facing, -4);
+		li.add(c);
+		c = c.offset(mainDirection, 3);
+		li.add(c);
+		c = c.offset(tape.tape.facing, -5);
+		li.add(c);
+		return li;
 	}
 
 }

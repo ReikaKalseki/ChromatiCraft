@@ -19,6 +19,7 @@ import java.util.Set;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.API.CastingAPI;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
@@ -65,7 +66,7 @@ public class CastingRecipeViewer {
 		public ItemStack getOutput();
 
 		/** Whether a player is permitted to perform a given recipe, such as progression and other data. Null or fake players are not permitted. */
-		public boolean canRunRecipe(EntityPlayer ep);
+		public boolean canRunRecipe(TileEntity te, EntityPlayer ep);
 
 		/** The typical number of times a player runs this recipe. Some may go as large as Int.MAX (for recipes that have no upper bound), and others
 		 * may be as low as one. */

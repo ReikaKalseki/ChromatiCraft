@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.DynamicRepeater;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -31,12 +32,14 @@ import Reika.ChromatiCraft.Render.Particle.EntityBallLightningFX;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
+import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
@@ -59,6 +62,8 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 	public static final int WEAK_RANGE = 16;
 	public static final int WEAK_RECEIVE_RANGE = 24;
 
+	private boolean ruptured;
+
 	public TileEntityWeakRepeater() {
 		//originalUse = ReikaRandomHelper.getRandomBetween(MAX_LUMENS_MIN, MAX_LUMENS_MAX);
 		//remainingUse = originalUse;
@@ -69,9 +74,16 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 		return ChromaTiles.WEAKREPEATER;
 	}
 
+	public boolean isRuptured() {
+		return ruptured;
+	}
+
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
+
+		if (this.isRuptured())
+			return;
 
 		if (world.isRemote) {
 			this.doLifespanParticles(world, x, y, z);
@@ -86,11 +98,8 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 
 	private void doDestroyFX(World world, int x, int y, int z) {
 		if (eolTicks > 320) {
-			this.delete();
-			for (int i = 0; i < 6; i++) {
-				ReikaWorldHelper.ignite(world, x+dirs[i].offsetX, y+dirs[i].offsetY, z+dirs[i].offsetZ);
-			}
-			world.newExplosion(null, x+0.5, y+0.5, z+0.5, 2, true, true);
+			RepeaterFailures r = RepeaterFailures.failureModes.getRandomEntry();
+			r.doEffect(world, x, y, z, this);
 			ProgressStage.BLOWREPEATER.stepPlayerTo(this.getPlacer());
 			if (world.isRemote) {
 				this.doDestroyFXClient(world, x, y, z);
@@ -203,6 +212,8 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 
 		eolTicks = NBT.getInteger("eol");
 		overloadColor = CrystalElement.elements[NBT.getInteger("overload")];
+
+		ruptured = NBT.getBoolean("rupture");
 	}
 
 	@Override
@@ -215,6 +226,8 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 		if (overloadColor != null) {
 			NBT.setInteger("overload", overloadColor.ordinal());
 		}
+
+		NBT.setBoolean("rupture", ruptured);
 	}
 
 	@Override
@@ -274,6 +287,11 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 	}
 
 	@Override
+	public boolean canConduct() {
+		return super.canConduct() && !this.isRuptured();
+	}
+
+	@Override
 	public CrystalElement getActiveColor() {
 		return null;
 	}
@@ -301,7 +319,7 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 
 	@Override
 	protected boolean shouldDrop() {
-		return eolTicks == 0;//this.hasRemainingLife();
+		return eolTicks == 0 && !this.isRuptured();//this.hasRemainingLife();
 	}
 
 	@Override
@@ -344,6 +362,59 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 	@Override
 	public int getModifiedThoughput(int basethru, CrystalSource src, CrystalReceiver r) {
 		return !this.canSafelySupply(r) ? 0 : basethru;
+	}
+
+	private static enum RepeaterFailures {
+
+		EXPLOSION(50),
+		BURN(20),
+		RUPTURE(40);
+
+		private static final WeightedRandom<RepeaterFailures> failureModes = new WeightedRandom();
+
+		public final int weight;
+
+		private RepeaterFailures(int w) {
+			weight = w;
+		}
+
+		private void doEffect(World world, int x, int y, int z, TileEntityWeakRepeater te) {
+			switch(this) {
+				case BURN:
+					te.delete();
+					for (int i = 0; i < 6; i++) {
+						ReikaWorldHelper.ignite(world, x+te.dirs[i].offsetX, y+te.dirs[i].offsetY, z+te.dirs[i].offsetZ);
+					}
+					world.setBlock(x, y, z, ChromaBlocks.CHROMA.getBlockInstance());
+					ReikaSoundHelper.playSoundAtBlock(world, x, y, z, "random.fizz", 2, 0.5F);
+					break;
+				case EXPLOSION:
+					te.delete();
+					for (int i = 0; i < 6; i++) {
+						ReikaWorldHelper.ignite(world, x+te.dirs[i].offsetX, y+te.dirs[i].offsetY, z+te.dirs[i].offsetZ);
+					}
+					world.newExplosion(null, x+0.5, y+0.5, z+0.5, 2, true, true);
+					break;
+				case RUPTURE:
+					ReikaSoundHelper.playSoundAtBlock(world, x, y, z, "random.fizz", 2, 0.5F);
+					for (int m = 0; m < 40; m++) {
+						ReikaParticleHelper.LAVA.spawnAt(world, x+rand.nextDouble(), y+rand.nextDouble()*1.5, z+rand.nextDouble());
+					}
+					world.setBlock(x, y+1, z, Blocks.air);
+					world.newExplosion(null, x+0.5, y+0.5, z+0.5, 2, false, false);
+					te.ruptured = true;
+					te.triggerBlockUpdate();
+					break;
+			}
+		}
+
+		static {
+			RepeaterFailures[] list = values();
+			for (int i = 0; i < list.length; i++) {
+				failureModes.addEntry(list[i], list[i].weight);
+			}
+		}
+
 	}
 
 }

@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.TileEntity.Recipe;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -110,6 +111,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class TileEntityCastingTable extends InventoriedCrystalReceiver implements NBTTile, BreakAction, TriggerableAction, OwnedTile,
 OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, BlockMatchFailCallback {
 
+	private static final HashSet<Coordinate> tuningKeys = new HashSet();
+
 	private CastingRecipe activeRecipe = null;
 	private int craftingTick = 0;
 	private int craftSoundTimer = 20000;
@@ -129,6 +132,37 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 
 	private final HashSet<KeyedItemStack> completedRecipes = new HashSet();
 	private final ItemHashMap<Integer> craftedItems = new ItemHashMap();
+
+	static {
+		for (int i = -6; i <= 6; i += 3) {
+			if (i != 0) {
+				tuningKeys.add(new Coordinate(-6, 0, i));
+				tuningKeys.add(new Coordinate(6, 0, i));
+				tuningKeys.add(new Coordinate(i, 0, 6));
+				tuningKeys.add(new Coordinate(i, 0, -6));
+			}
+		}
+	}
+
+	public static Set<Coordinate> getTuningKeys() {
+		return Collections.unmodifiableSet(tuningKeys);
+	}
+
+	public Collection<Coordinate> getTuningBlocks() {
+		Collection<Coordinate> li = new ArrayList();
+		for (Coordinate c : tuningKeys) {
+			li.add(c.offset(xCoord, yCoord, zCoord));
+		}
+		return li;
+	}
+
+	public HashMap<Coordinate, CrystalElement> getCurrentTuningMap() {
+		HashMap<Coordinate, CrystalElement> map = new HashMap();
+		for (Coordinate c : this.getTuningBlocks()) {
+			map.put(c, c.getBlock(worldObj) == ChromaBlocks.RUNE.getBlockInstance() ? CrystalElement.elements[c.getBlockMetadata(worldObj)] : null);
+		}
+		return map;
+	}
 
 	public RecipeType getTier() {
 		return tier;
@@ -557,7 +591,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		if (structureMismatch != null)
 			structureMismatch.isActive = true;
 		if (activeRecipe != null && craftingTick == 0) {
-			if (activeRecipe.canRunRecipe(ep) && this.isOwnedByPlayer(ep)) {
+			if (activeRecipe.canRunRecipe(this, ep) && this.isOwnedByPlayer(ep)) {
 				craftingPlayer = ep;
 				if (worldObj.isRemote)
 					return true;
