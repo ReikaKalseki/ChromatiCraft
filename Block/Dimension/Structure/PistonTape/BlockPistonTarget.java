@@ -14,14 +14,17 @@ import java.util.Collection;
 import java.util.Random;
 
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LaserPulseEffect;
 import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
@@ -31,6 +34,8 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.Co
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.ChromatiCraft.Entity.EntityPistonSpline;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Render.ISBRH.PistonTargetRenderer;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
@@ -38,11 +43,16 @@ import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class BlockPistonTarget extends BlockDimensionStructureTile implements LaserPulseEffect {
 
-	private final IIcon[] icons = new IIcon[3];
+	private IIcon emitterOverlay;
+	private IIcon doorOverlay;
 
 	public BlockPistonTarget(Material mat) {
 		super(mat);
@@ -62,13 +72,14 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
-		return icons[0];
+		return blockIcon;
 	}
 
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
-		icons[0] = ico.registerIcon("chromaticraft:dimstruct/lightpanel");
-		icons[1] = ico.registerIcon("chromaticraft:dimstruct/lightpanel_switch_off");
+		blockIcon = ico.registerIcon("chromaticraft:dimstruct/piston_target");
+		doorOverlay = ico.registerIcon("chromaticraft:dimstruct/piston_emitter_overlay");
+		emitterOverlay = ico.registerIcon("chromaticraft:dimstruct/piston_target_overlay");
 	}
 
 	@Override
@@ -79,8 +90,8 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 	public boolean onImpact(World world, int x, int y, int z, EntityLaserPulse e) {
 		if (world.getBlockMetadata(x, y, z) == 0) {
 			PistonEmitterTile te = (PistonEmitterTile)world.getTileEntity(x, y, z);
-			if (te.getFacing() == e.direction.getCardinal() && te.color.matchColor(e.color)) {
-				te.fire();
+			if (te.getFacing() == e.direction.getCardinal()/* && te.color.matchColor(e.color)*/) {
+				te.fire(e.color);
 			}
 		}
 		return true;
@@ -96,16 +107,91 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 		return true;
 	}
 
+	public IIcon getOverlay(IBlockAccess world, int x, int y, int z, int meta) {
+		return meta == 0 ? emitterOverlay : doorOverlay;
+	}
+
+	@Override
+	public int getRenderType() {
+		return ChromatiCraft.proxy.pistonRender;
+	}
+	/*
+	@Override
+	public boolean renderAsNormalBlock() {
+		return false;
+	}
+
+	@Override
+	public boolean isOpaqueCube() {
+		return false;
+	}
+	 */
+	@Override
+	public int getRenderBlockPass() {
+		return 1;
+	}
+
+	@Override
+	public boolean canRenderInPass(int pass) {
+		PistonTargetRenderer.renderPass = pass;
+		return pass <= 1;
+	}
+
 	public static class PistonDoorTile extends PistonTargetTile {
 
 		private static final int DURATION = 50;
 
 		private Coordinate door = new Coordinate(0, 0, 0);
 		private int active;
+		protected ColorData color = new ColorData(true);
 
 		private void receive() {
-			this.setActive(true);
-			ChromaSounds.CAST.playSoundAtBlock(this);
+			if (this.getFacing() == null)
+				return;
+			if (worldObj.isRemote) {
+				this.receptionParticles();
+			}
+			else {
+				this.setActive(true);
+				ChromaSounds.CAST.playSoundAtBlock(this);
+			}
+		}
+
+		@SideOnly(Side.CLIENT)
+		private void receptionParticles() {
+			Random rand = new Random();
+			for (int i = 0; i < 16; i++) {
+				double x = xCoord+rand.nextDouble();
+				double y = yCoord+rand.nextDouble();
+				double z = zCoord+rand.nextDouble();
+				switch(this.getFacing()) {
+					case DOWN:
+						y = yCoord;
+						break;
+					case UP:
+						y = yCoord+1;
+						break;
+					case WEST:
+						x = xCoord;
+						break;
+					case EAST:
+						x = xCoord+1;
+						break;
+					case NORTH:
+						z = zCoord;
+						break;
+					case SOUTH:
+						z = zCoord+1;
+						break;
+					default:
+						break;
+				}
+				float s = (float)ReikaRandomHelper.getRandomBetween(0.8, 1.5);
+				int l = ReikaRandomHelper.getRandomBetween(10, 40);
+				EntityBlurFX fx = new EntityBlurFX(worldObj, x, y, z);
+				fx.setColor(color.getRenderColor()).setScale(s).setLife(l);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
 		}
 
 		private void setActive(boolean active) {
@@ -159,6 +245,7 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 		public void writeToNBT(NBTTagCompound NBT) {
 			super.writeToNBT(NBT);
 
+			color.writeToNBT(NBT);
 			door.writeToNBT("door", NBT);
 		}
 
@@ -166,11 +253,22 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 		public void readFromNBT(NBTTagCompound NBT) {
 			super.readFromNBT(NBT);
 
+			color.readFromNBT(NBT);
 			door = Coordinate.readFromNBT("door", NBT);
 		}
 
 		public void setTarget(Coordinate c) {
 			door = c;
+		}
+
+		public void setColor(ColorData c) {
+			color = c;
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		}
+
+		@Override
+		public int getRenderColor() {
+			return color.getRenderColor();
 		}
 
 	}
@@ -197,42 +295,42 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 			doorIndex = NBT.getInteger("door");
 		}
 
-		private void fire() {
+		private void fire(ColorData clr) {
 			if (path == null) {
 				ChromaSounds.ERROR.playSoundAtBlock(this);
 				return;
 			}
-			EntityPistonSpline e = new EntityPistonSpline(worldObj, path, color);
+			EntityPistonSpline e = new EntityPistonSpline(worldObj, path, clr);
 			if (!worldObj.isRemote) {
 				worldObj.spawnEntityInWorld(e);
 			}
 		}
 
-		public void setTarget(int door, Coordinate c, ForgeDirection hallDir, ArrayList<Coordinate> hall) {
+		public void setTarget(int door, Coordinate tgt, ForgeDirection hallDir, ArrayList<Coordinate> hall) {
 			ForgeDirection dir = ReikaDirectionHelper.getLeftBy90(hallDir);
 			Random rand = new Random(new Coordinate(this).hashCode());
 			rand.nextBoolean();
 			doorIndex = door;
-			target = c;
-			path = new Spline(SplineType.CENTRIPETAL);
+			target = tgt;
+			path = new Spline(SplineType.CHORDAL);
 			DecimalPosition p1 = new DecimalPosition(this);
-			DecimalPosition p2 = new DecimalPosition(c);
+			DecimalPosition p2 = new DecimalPosition(tgt);
 			path.addPoint(new BasicSplinePoint(p1));
-			for (Coordinate c2 : hall) {
-				DecimalPosition p = DecimalPosition.getRandomWithin(c2, rand);
+			for (Coordinate c : hall) {
+				DecimalPosition p = DecimalPosition.getRandomWithin(c, rand);
 				path.addPoint(new BasicSplinePoint(p));
 			}
 			Coordinate last = hall.get(hall.size()-1);
 			int dl = 3+this.getDoorBusWidth();
 			int dx = last.xCoord+dl*hallDir.offsetX;
 			int dz = last.zCoord+dl*hallDir.offsetZ;
-			int tx = c.xCoord+dir.offsetX*3;
-			int tz = c.zCoord+dir.offsetZ*3;
+			int tx = tgt.xCoord+dir.offsetX*3;
+			int tz = tgt.zCoord+dir.offsetZ*3;
 			int diff = hallDir.offsetX*(tx-dx)+hallDir.offsetZ*(tz-dz);
 			while (diff >= 0) {
-				double rx = dx+0.5-1+rand.nextDouble()*2;
-				double rz = dz+0.5-1+rand.nextDouble()*2;
-				double ry = c.yCoord+0.5-1+rand.nextDouble()*2;
+				double rx = dx+0.5-1.25+rand.nextDouble()*2.5;
+				double rz = dz+0.5-1.25+rand.nextDouble()*2.5;
+				double ry = tgt.yCoord+0.5-1.25+rand.nextDouble()*2.5;
 				DecimalPosition p = new DecimalPosition(rx, ry, rz);
 				path.addPoint(new BasicSplinePoint(p));
 				dx += hallDir.offsetX*dl;
@@ -258,33 +356,41 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 			}
 			 */
 			path.addPoint(new BasicSplinePoint(p2));
-		}
 
+			/*
+			List<DecimalPosition> li = path.get(32, false);
+			for (DecimalPosition p : li) {
+				Coordinate c = p.getCoordinate();
+				c.setBlock(worldObj, Blocks.brick_block);
+			}
+			 */
+		}
 	}
 
 	public static abstract class PistonTargetTile extends StructureBlockTile<PistonTapeGenerator> {
 
 		private int doorBusWidth;
 		private int doorColorIndex;
-		protected ColorData color = new ColorData(true);
 		private ForgeDirection facing;
 
 		@Override
 		public void writeToNBT(NBTTagCompound NBT) {
 			super.writeToNBT(NBT);
 
-			color.writeToNBT(NBT);
 			NBT.setInteger("index", doorColorIndex);
 			NBT.setInteger("bus", doorBusWidth);
+			if (facing != null)
+				NBT.setInteger("facing", facing.ordinal());
 		}
 
 		@Override
 		public void readFromNBT(NBTTagCompound NBT) {
 			super.readFromNBT(NBT);
 
-			color.readFromNBT(NBT);
 			doorColorIndex = NBT.getInteger("index");
 			doorBusWidth = NBT.getInteger("bus");
+			if (NBT.hasKey("facing"))
+				facing = ForgeDirection.VALID_DIRECTIONS[NBT.getInteger("facing")];
 		}
 
 		public ForgeDirection getFacing() {
@@ -299,11 +405,6 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 			return doorBusWidth;
 		}
 
-		public void setColor(ColorData c) {
-			color = c;
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-		}
-
 		public void setData(ForgeDirection dir, int idx, int w) {
 			doorColorIndex = idx;
 			facing = dir;
@@ -313,6 +414,10 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 		@Override
 		public DimensionStructureType getType() {
 			return DimensionStructureType.PISTONTAPE;
+		}
+
+		public int getRenderColor() {
+			return 0xffffff;
 		}
 
 	}

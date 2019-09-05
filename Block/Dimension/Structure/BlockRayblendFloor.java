@@ -62,6 +62,10 @@ public class BlockRayblendFloor extends BlockDimensionStructureTile {
 	public int getRenderBlockPass() {
 		return 1;
 	}
+	/*
+	public boolean canRenderInPass(int pass) {
+		RayBlendFloorRenderer.renderPass = pass;
+	}*/
 
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {

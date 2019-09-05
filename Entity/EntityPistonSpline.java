@@ -2,11 +2,9 @@ package Reika.ChromatiCraft.Entity;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.ColorData;
 import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonTarget;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -23,15 +21,23 @@ import io.netty.buffer.ByteBuf;
 
 public class EntityPistonSpline extends EntitySplineProjectile {
 
-	public ColorData color;
+	public ColorData color = new ColorData(true);
 
 	public EntityPistonSpline(World world, Spline s, ColorData clr) {
-		super(world, s, 60);
+		super(world, s, 20);
 		color = clr;
 	}
 
 	public EntityPistonSpline(World world) {
 		super(world);
+	}
+
+	@Override
+	protected void entityInit() {
+		super.entityInit();
+		dataWatcher.addObject(24, 0);
+		dataWatcher.addObject(25, 0);
+		dataWatcher.addObject(26, 0);
 	}
 
 	@Override
@@ -47,25 +53,34 @@ public class EntityPistonSpline extends EntitySplineProjectile {
 			color.green = dataWatcher.getWatchableObjectInt(25) > 0;
 			color.blue = dataWatcher.getWatchableObjectInt(26) > 0;
 			this.spawnParticle();
-			if (ticksExisted%2 == 0)
-				ReikaSoundHelper.playClientSound(ChromaSounds.METEOR, this, 0.3F, 2F);
+			if (ticksExisted%40 == 0)
+				ReikaSoundHelper.playClientSound(ChromaSounds.FIRE, this, 0.3F, 0.5F);
 		}
 	}
 
 	@SideOnly(Side.CLIENT)
 	private void spawnParticle() {
 		Minecraft mc = Minecraft.getMinecraft();
-		int l = 10+rand.nextInt(15);
-		if (rand.nextInt(HoldingChecks.MANIPULATOR.isClientHolding() ? 3 : 12) == 0)
-			l *= 16;
-		double[] r = {0.1875, 0.125, 0.0625};
-		for (int i = 0; i < r.length; i++) {
-			float s = (1+rand.nextFloat())/(i+1);
-			double px = ReikaRandomHelper.getRandomPlusMinus(posX, r[i]);
-			double py = ReikaRandomHelper.getRandomPlusMinus(posY, r[i]);
-			double pz = ReikaRandomHelper.getRandomPlusMinus(posZ, r[i]);
-			EntityFX fx = new EntityBlurFX(worldObj, px, py, pz).setColor(color.getRenderColor()).setIcon(ChromaIcons.FADE_GENTLE).setLife(l).setScale(s);
+		int n = ReikaRandomHelper.getRandomBetween(1, 3);
+		double r = 0.125;
+		for (int i = 0; i < n; i++) {
+			int l = ReikaRandomHelper.getRandomBetween(20, 60);
+			double px = ReikaRandomHelper.getRandomPlusMinus(posX, r);
+			double py = ReikaRandomHelper.getRandomPlusMinus(posY, r);
+			double pz = ReikaRandomHelper.getRandomPlusMinus(posZ, r);
+			float s = (float)ReikaRandomHelper.getRandomBetween(2.25, 3.75);
+			float g = rand.nextInt(3) > 0 ? 0 : (float)ReikaRandomHelper.getRandomBetween(0, 0.125);
+			int c = color.getRenderColor();//ReikaColorAPI.mixColors(color.getRenderColor(), 0xffffff, 0.75F);
+			EntityBlurFX fx = new EntityBlurFX(worldObj, px, py, pz);
+			fx.setColor(c).setLife(l).setScale(s).setGravity(g);
+			fx.setIcon(ChromaIcons.FADE_GENTLE).setAlphaFading().setRapidExpand();
 			mc.effectRenderer.addEffect(fx);
+
+			EntityBlurFX fx2 = new EntityBlurFX(worldObj, px, py, pz);
+			fx2.setColor(0xffffff).setLife(l).setScale(s*0.72F).setGravity(g);
+			fx2.setIcon(ChromaIcons.FADE).setAlphaFading().setRapidExpand();
+			fx2.lockTo(fx);
+			mc.effectRenderer.addEffect(fx2);
 		}
 	}
 
@@ -100,8 +115,9 @@ public class EntityPistonSpline extends EntitySplineProjectile {
 		Block b = world.getBlock(x, y, z);
 		if (b == ChromaBlocks.PISTONTARGET.getBlockInstance()) {
 			((BlockPistonTarget)b).receiveSplineParticle(world, x, y, z, this);
+			return true;
 		}
-		return !b.isAir(world, x, y, z);
+		return false;//!b.isAir(world, x, y, z);
 	}
 
 }

@@ -65,7 +65,7 @@ public class TapeArea extends StructurePiece<PistonTapeGenerator> {
 		}
 
 		for (int i = 2; i <= 4; i++) {
-			for (int dh = 1; dh <= 3; dh++) {
+			for (int dh = 1; dh <= tape.busWidth; dh++) {
 				world.setBlock(x+tape.facing.offsetX*i, y+dh, z+tape.facing.offsetZ*i, Blocks.air);
 				world.setBlock(x+tape.facing.offsetX*i+main.offsetX*w, y+dh, z+tape.facing.offsetZ*i+main.offsetZ*w, Blocks.air);
 			}

@@ -1,5 +1,7 @@
 package Reika.ChromatiCraft.World.Dimension.Structure.PistonTape;
 
+import java.util.UUID;
+
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
@@ -101,10 +103,6 @@ public class DoorSection extends StructurePiece<PistonTapeGenerator> {
 		}
 	}
 
-	private void placeTarget(ChunkSplicedGenerationCache world, int x, int y, int z, int idx, Coordinate door) {
-		world.setTileEntity(x, y, z, ChromaBlocks.PISTONTARGET.getBlockInstance(), 1, new DoorTargetCallback(doorData.getValue(idx), door));
-	}
-
 	private ForgeDirection getChestFacing() {
 		return ReikaDirectionHelper.getLeftBy90(tunnelDir);
 	}
@@ -124,6 +122,11 @@ public class DoorSection extends StructurePiece<PistonTapeGenerator> {
 		}
 	}
 
+	private void placeTarget(ChunkSplicedGenerationCache world, int x, int y, int z, int idx, Coordinate door) {
+		doorData.setTarget(idx, new Coordinate(x, y, z));
+		world.setTileEntity(x, y, z, ChromaBlocks.PISTONTARGET.getBlockInstance(), 1, new DoorTargetCallback(doorData.getValue(idx), ReikaDirectionHelper.getRightBy90(tunnelDir), door, parent.id));
+	}
+
 	private void placeDoorBlock(ChunkSplicedGenerationCache world, int x, int y, int z) {
 		world.setBlock(x, y, z, ChromaBlocks.DOOR.getBlockInstance());
 		//world.setTileEntity(x, y, z, ChromaBlocks.COLORLOCK.getBlockInstance(), 0, new DoorKeySet(parent, level.ordinal(), parent.id, elements));
@@ -132,18 +135,23 @@ public class DoorSection extends StructurePiece<PistonTapeGenerator> {
 
 	private static class DoorTargetCallback implements TileCallback {
 
+		private final UUID id;
 		private final DoorValue data;
 		private final Coordinate door;
+		private final ForgeDirection direction;
 
-		private DoorTargetCallback(DoorValue d, Coordinate c) {
+		private DoorTargetCallback(DoorValue d, ForgeDirection dir, Coordinate c, UUID uid) {
+			id = uid;
 			data = d;
 			door = c;
+			direction = dir;
 		}
 
 		@Override
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
+			((PistonDoorTile)te).uid = id;
 			((PistonDoorTile)te).setColor(data.getColor());
-			((PistonDoorTile)te).setData(null, data.index, data.getParent().colorCount);
+			((PistonDoorTile)te).setData(direction, data.index, data.getParent().colorCount);
 			((PistonDoorTile)te).setTarget(door);
 		}
 

@@ -57,6 +57,7 @@ import Reika.ChromatiCraft.Entity.EntityMeteorShot;
 import Reika.ChromatiCraft.Entity.EntityNukerBall;
 import Reika.ChromatiCraft.Entity.EntityOverloadingPylonShock;
 import Reika.ChromatiCraft.Entity.EntityParticleCluster;
+import Reika.ChromatiCraft.Entity.EntityPistonSpline;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityTNTPinball;
 import Reika.ChromatiCraft.Entity.EntityThrownGem;
@@ -86,6 +87,7 @@ import Reika.ChromatiCraft.Render.Entity.RenderMeteorShot;
 import Reika.ChromatiCraft.Render.Entity.RenderNukerBall;
 import Reika.ChromatiCraft.Render.Entity.RenderOverloadingPylonShock;
 import Reika.ChromatiCraft.Render.Entity.RenderParticleCluster;
+import Reika.ChromatiCraft.Render.Entity.RenderPistonSpline;
 import Reika.ChromatiCraft.Render.Entity.RenderSplashGunShot;
 import Reika.ChromatiCraft.Render.Entity.RenderTNTPinball;
 import Reika.ChromatiCraft.Render.Entity.RenderThrownGem;
@@ -111,6 +113,7 @@ import Reika.ChromatiCraft.Render.ISBRH.GlowTreeRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.LampRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.LaserEffectorRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.MetaAlloyRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.PistonTargetRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.PowerTreeRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.RayBlendFloorRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.RelayRenderer;
@@ -192,6 +195,7 @@ public class ChromaClient extends ChromaCommon {
 	private static final SelectiveGlassRenderer selective = new SelectiveGlassRenderer();
 	private static final LaserEffectorRenderer lasereffect = new LaserEffectorRenderer();
 	private static RayBlendFloorRenderer rayblendfloor;
+	private static final PistonTargetRenderer pistonRenderer = new PistonTargetRenderer();
 	private static final CrystalEncrustingRenderer encrusted = new CrystalEncrustingRenderer();
 
 	private static final ArtefactRenderer artefact = new ArtefactRenderer();
@@ -242,6 +246,7 @@ public class ChromaClient extends ChromaCommon {
 		RenderingRegistry.registerEntityRenderingHandler(EntityAurora.class, new RenderAurora());
 		RenderingRegistry.registerEntityRenderingHandler(EntityThrownGem.class, new RenderThrownGem());
 		RenderingRegistry.registerEntityRenderingHandler(EntityLaserPulse.class, new RenderLaserPulse());
+		RenderingRegistry.registerEntityRenderingHandler(EntityPistonSpline.class, new RenderPistonSpline());
 		RenderingRegistry.registerEntityRenderingHandler(EntityTNTPinball.class, new RenderTNTPinball());
 		RenderingRegistry.registerEntityRenderingHandler(EntityDimensionFlare.class, new RenderDimensionFlare());
 		RenderingRegistry.registerEntityRenderingHandler(EntityLumaBurst.class, new RenderLumaBurst());
@@ -423,6 +428,9 @@ public class ChromaClient extends ChromaCommon {
 		rayblendFloorRender = RenderingRegistry.getNextAvailableRenderId();
 		rayblendfloor = new RayBlendFloorRenderer();
 		RenderingRegistry.registerBlockHandler(rayblendFloorRender, rayblendfloor);
+
+		pistonRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(pistonRender, pistonRenderer);
 
 		encrustedRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(encrustedRender, encrusted);

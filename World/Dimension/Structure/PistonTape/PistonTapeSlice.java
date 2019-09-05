@@ -167,6 +167,7 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			PistonEmitterTile e = (PistonEmitterTile)te;
 			e.setData(facing, index, width);
+			e.uid = uid;
 		}
 
 	}
@@ -186,6 +187,7 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 		@Override
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			EmitterTile e = (EmitterTile)te;
+			e.uid = uid;
 			e.setDirection(CubeDirections.getFromForgeDirection(facing));
 			e.setColor(new ColorData(true, true, true)); //always white, NOT colored
 			e.speedFactor = 1.25;

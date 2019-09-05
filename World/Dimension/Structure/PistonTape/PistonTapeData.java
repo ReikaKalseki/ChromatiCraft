@@ -1,6 +1,5 @@
 package Reika.ChromatiCraft.World.Dimension.Structure.PistonTape;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,16 +15,11 @@ public class PistonTapeData extends StructureData {
 
 	public static final int STEP_DURATION = 80;
 
-	private final ArrayList<TapeStage> steps;
+	private boolean active = false;
+	private int tick = 0;
 
-	private int index = 0;
-	private boolean isPlaying = false;
-	private int ticksUntilStep = STEP_DURATION;
-
-	public PistonTapeData(DimensionStructureGenerator gen, ArrayList<TapeStage> doors) {
+	public PistonTapeData(DimensionStructureGenerator gen) {
 		super(gen);
-
-		steps = doors;
 	}
 
 	@Override
@@ -35,42 +29,28 @@ public class PistonTapeData extends StructureData {
 
 	@Override
 	public void onInteract(World world, int x, int y, int z, EntityPlayer ep, int s, HashMap<String, Object> extraData) {
-		isPlaying = true;
-		((PistonTapeGenerator)generator).setActive(world, true);
+		active = true;
+		tick = 0;
 	}
 
 	@Override
 	public void onTileTick(TileEntityStructureDataStorage te) {
-		if (isPlaying) {
-			if (ticksUntilStep > 0) {
-				ticksUntilStep--;
+		if (active) {
+			int d = 120;
+			TapeStage s = ((PistonTapeGenerator)generator).getStage(0);
+			int max = s.doorCount;
+			int t2 = tick/d;
+			if (t2 >= max) {
+				active = false;
+				tick = 0;
 			}
 			else {
-				this.step(te.worldObj);
+				if (tick%d == 0) {
+					//ReikaJavaLibrary.pConsole(t2);
+					s.fireEmitters(te.worldObj, t2);
+				}
+				tick++;
 			}
-			((PistonTapeGenerator)generator).tick(te.worldObj);
 		}
 	}
-
-	private void step(World world) {
-		ticksUntilStep = STEP_DURATION;
-		index++;
-		//((PistonTapeGenerator)generator).setDoorState(steps.get(index));
-
-		/*
-		for (int i = 0; i < steps.size(); i++) {
-			steps.get(i).setActive(world, i == index);
-		}
-		 */
-		if (index == 0) {
-			isPlaying = false;
-			//steps.get(0).setActive(world, false);
-			((PistonTapeGenerator)generator).setActive(world, false);
-		}
-	}
-
-	public boolean isCurrentStageCorrect(World world) {
-		return ((PistonTapeGenerator)generator).getTarget(world, 0).isTriggered() && ((PistonTapeGenerator)generator).getTarget(world, 1).isTriggered() && ((PistonTapeGenerator)generator).getTarget(world, 2).isTriggered();
-	}
-
 }

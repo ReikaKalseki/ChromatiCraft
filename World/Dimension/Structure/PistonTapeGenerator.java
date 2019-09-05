@@ -8,19 +8,14 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
-import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.EmitterTile;
-import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.TargetTile;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.PistonTapeData;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.TapeStage;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 
 public class PistonTapeGenerator extends DimensionStructureGenerator {
 
 	private ArrayList<TapeStage> stages;
-
-	private Coordinate emitterColumnBase;
-	private Coordinate targetColumnBase;
 
 	private boolean isActive = false;
 
@@ -51,6 +46,7 @@ public class PistonTapeGenerator extends DimensionStructureGenerator {
 		PistonTapeLoop pl = new PistonTapeLoop(this);
 		pl.generate(world, x, y, z+12);
 		 */
+		this.generateDataTile(x-DIRECTION.offsetX*5, y, z-DIRECTION.offsetZ*5);
 		PistonTapeParameters[] arr = this.getTapes();
 		for (PistonTapeParameters p : arr) {
 			TapeStage s = new TapeStage(this, p.busWidth, p.doorCount, rand);
@@ -61,17 +57,9 @@ public class PistonTapeGenerator extends DimensionStructureGenerator {
 		}
 	}
 
-	private EmitterTile getEmitter(World world, int i) {
-		return (EmitterTile)emitterColumnBase.offset(0, i, 0).getTileEntity(world);
-	}
-
-	public TargetTile getTarget(World world, int i) {
-		return (TargetTile)targetColumnBase.offset(0, i, 0).getTileEntity(world);
-	}
-
 	@Override
 	public StructureData createDataStorage() {
-		return null;//new PistonTapeData(this, stages);
+		return new PistonTapeData(this);
 	}
 
 	@Override
@@ -99,24 +87,6 @@ public class PistonTapeGenerator extends DimensionStructureGenerator {
 		stages = null;
 	}
 
-	public void setActive(World world, boolean active) {
-		isActive = active;
-
-		EmitterTile te1 = this.getEmitter(world, 0);
-		EmitterTile te2 = this.getEmitter(world, 1);
-		EmitterTile te3 = this.getEmitter(world, 2);
-
-		te1.keepFiring = isActive;
-		te2.keepFiring = isActive;
-		te3.keepFiring = isActive;
-	}
-
-	public void tick(World world) {
-		if (isActive) {
-			//door.setOpen(world, this.isCorrect(world));
-		}
-	}
-
 	private PistonTapeParameters[] getTapes() {
 		switch(ChromaOptions.getStructureDifficulty()) {
 			case 1:
@@ -139,6 +109,14 @@ public class PistonTapeGenerator extends DimensionStructureGenerator {
 			doorCount = l;
 		}
 
+	}
+
+	public TapeStage getStage(int i) {
+		return stages.get(i);
+	}
+
+	public int stageCount() {
+		return stages.size();
 	}
 
 	/*

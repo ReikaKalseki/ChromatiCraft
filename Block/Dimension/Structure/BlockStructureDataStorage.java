@@ -94,6 +94,8 @@ public class BlockStructureDataStorage extends BlockDimensionStructureTile {
 		protected abstract void onRightClick(EntityPlayer ep, int s);
 
 		public final void loadData(DimensionStructureGenerator gen, HashMap<String, Object> map) {
+			if (gen == null)
+				return;
 			structureUID = gen.id;
 			this.onDataLoad(gen, map);
 		}

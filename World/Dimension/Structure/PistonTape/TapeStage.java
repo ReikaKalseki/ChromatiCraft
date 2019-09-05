@@ -9,6 +9,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.EmitterTile;
+import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonTarget.PistonEmitterTile;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
@@ -19,7 +20,7 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 	private static final int MAX_ID = 511;
 	private static final int MIN_ID = 1;
 
-	private final ArrayList<DoorSection> doors = new ArrayList();
+	private final DoorSection[] doors;
 	private final HashSet<Integer> generatedIDs = new HashSet();
 	final TapeArea tape;
 	public final ForgeDirection mainDirection;
@@ -40,10 +41,10 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 
 		tape = new TapeArea(g, new PistonTapeLoop(g, ReikaDirectionHelper.getRightBy90(mainDirection), this));
 
+		doors = new DoorSection[doorCount];
 		for (int i = 0; i < doorCount; i++) {
-			DoorSection s = new DoorSection(g, this, mainDirection, new DoorKey(i, this.generateID(rand), bus));
-			doors.add(s);
-			height = Math.max(height, s.getHeight());
+			doors[i] = new DoorSection(g, this, mainDirection, new DoorKey(i, this.generateID(rand), bus));
+			height = Math.max(height, doors[i].getHeight());
 		}
 	}
 
@@ -77,17 +78,20 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 		return height;
 	}
 
-	public void fireEmitters(World world) {
+	public void fireEmitters(World world, int stage) {
 		for (int i = 0; i < bitsPerDoor; i++) {
 			Coordinate c = tape.tape.getEmitter(i);
 			EmitterTile te = (EmitterTile)c.getTileEntity(world);
 			te.fire();
+			c = tape.tape.getTarget(i);
+			PistonEmitterTile pt = (PistonEmitterTile)c.getTileEntity(world);
+			pt.setTarget(stage, doors[stage].doorData.getValue(i).getTargetLocation(), mainDirection, this.getHallSplinePoints(i));
 		}
 	}
 
-	private ArrayList<Coordinate> getHallSplinePoints(Coordinate lastSplineEmitter) {
+	private ArrayList<Coordinate> getHallSplinePoints(int idx) {
 		ArrayList<Coordinate> li = new ArrayList();
-		Coordinate c = lastSplineEmitter.offset(tape.tape.facing, -4);
+		Coordinate c = tape.tape.getTarget(idx).offset(tape.tape.facing, -4);
 		li.add(c);
 		c = c.offset(mainDirection, 3);
 		li.add(c);

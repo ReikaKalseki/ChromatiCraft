@@ -14,11 +14,13 @@ import java.util.List;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 
 import Reika.DragonAPI.Base.ParticleEntity;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Math.Spline;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
@@ -47,29 +49,54 @@ public class EntitySplineProjectile extends ParticleEntity implements IEntityAdd
 
 	@Override
 	protected void entityInit() {
-		dataWatcher.addObject(27, 0F);
-		dataWatcher.addObject(28, 0F);
-		dataWatcher.addObject(29, 0F);
+		//dataWatcher.addObject(27, 0F);
+		//dataWatcher.addObject(28, 0F);
+		//dataWatcher.addObject(29, 0F);
 	}
 
 	@Override
 	public void writeSpawnData(ByteBuf buf) {
 		super.writeSpawnData(buf);
+
+		buf.writeInt(path.size());
+		for (DecimalPosition p : path) {
+			p.writeToBuf(buf);
+		}
 	}
 
 	@Override
 	public void readSpawnData(ByteBuf buf) {
 		super.readSpawnData(buf);
+
+		path.clear();
+		int n = buf.readInt();
+		for (int i = 0; i < n; i++) {
+			DecimalPosition p = DecimalPosition.readFromBuf(buf);
+			path.add(p);
+		}
 	}
 
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound tag) {
 		super.readEntityFromNBT(tag);
+
+		path.clear();
+		NBTTagList li = tag.getTagList("path", NBTTypes.COMPOUND.ID);
+		for (Object o : li.tagList) {
+			DecimalPosition p = DecimalPosition.readTag((NBTTagCompound)o);
+			path.add(p);
+		}
 	}
 
 	@Override
 	protected void writeEntityToNBT(NBTTagCompound tag) {
 		super.writeEntityToNBT(tag);
+
+		NBTTagList li = new NBTTagList();
+		for (DecimalPosition p : path) {
+			li.appendTag(p.writeToTag());
+		}
+		tag.setTag("path", li);
 	}
 
 	@Override
@@ -79,48 +106,50 @@ public class EntitySplineProjectile extends ParticleEntity implements IEntityAdd
 
 	@Override
 	protected void onTick() {
-		if (!worldObj.isRemote) {
-			if (path != null) {
-				if (hitTarget) {
-					this.setDead();
-				}
-				else {
-					DecimalPosition p = path.get(pathTick);
-					this.setPosition(p);
-					pathTick = Math.min(pathTick+1, path.size()-1);
-				}
-				velocityChanged = true;
-
-				dataWatcher.updateObject(27, (float)posX);
-				dataWatcher.updateObject(28, (float)posY);
-				dataWatcher.updateObject(29, (float)posZ);
-			}
-			else {
-				ReikaJavaLibrary.pConsole("Clearing pulse, no path");
+		//if (!worldObj.isRemote) {
+		if (path != null) {
+			if (hitTarget) {
 				this.setDead();
 			}
+			else {
+				DecimalPosition p = path.get(pathTick);
+				this.setPosition(p);
+				pathTick = Math.min(pathTick+1, path.size()-1);
+			}
+			velocityChanged = true;
+
+			//dataWatcher.updateObject(27, (float)posX);
+			//dataWatcher.updateObject(28, (float)posY);
+			//dataWatcher.updateObject(29, (float)posZ);
+		}
+		else {
+			ReikaJavaLibrary.pConsole("Clearing pulse, no path");
+			this.setDead();
+		}/*
 		}
 		else {
 			posX = dataWatcher.getWatchableObjectFloat(27);
 			posY = dataWatcher.getWatchableObjectFloat(28);
 			posZ = dataWatcher.getWatchableObjectFloat(29);
-		}
+		}*/
 	}
 
 	private void setPosition(DecimalPosition p) {
-		double v = 0.125;
+		double v = 0.0625;
 		motionX = (p.xCoord-posX)*v;
 		motionY = (p.yCoord-posY)*v;
 		motionZ = (p.zCoord-posZ)*v;
 		posX = p.xCoord;
 		posY = p.yCoord;
 		posZ = p.zCoord;
-		lastTickPosX = posX;
-		lastTickPosY = posY;
-		lastTickPosZ = posZ;
-		prevPosX = posX;
-		prevPosY = posY;
-		prevPosZ = posZ;
+
+		p = pathTick == 0 ? path.get(0) : path.get(pathTick-1);
+		lastTickPosX = p.xCoord;
+		lastTickPosY = p.yCoord;
+		lastTickPosZ = p.zCoord;
+		prevPosX = p.xCoord;
+		prevPosY = p.yCoord;
+		prevPosZ = p.zCoord;
 	}
 
 	public float getRenderSize() {

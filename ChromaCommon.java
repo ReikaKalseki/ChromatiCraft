@@ -33,6 +33,7 @@ public class ChromaCommon {
 	public static int selectiveRender;
 	public static int lasereffectRender;
 	public static int rayblendFloorRender;
+	public static int pistonRender;
 	public static int artefactRender;
 	public static int metaAlloyRender;
 	public static int encrustedRender;
