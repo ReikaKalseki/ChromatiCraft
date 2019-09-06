@@ -76,7 +76,7 @@ public class PistonTapeLoop extends StructurePiece<PistonTapeGenerator> {
 			totalHeight = h;
 			totalDepth = d;
 
-			bitLength = (totalHeight-2)*2+(totalDepth-2)*2+2;
+			bitLength = (totalHeight-1)*2+(totalDepth-1)*2+2;
 		}
 
 		private static LoopDimensions createFor(int stages) {

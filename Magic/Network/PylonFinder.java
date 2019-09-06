@@ -24,6 +24,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.BiomeGenDesert;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger;
@@ -45,6 +47,7 @@ import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCreativeSource;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntitySkypeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntitySkypeater.NodeClass;
+import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
@@ -548,10 +551,14 @@ public class PylonFinder {
 
 	private static boolean canRainOn(World world, Set<Coordinate> set) {
 		for (Coordinate c : set) {
-			if (world.getPrecipitationHeight(c.xCoord, c.zCoord) <= c.yCoord)
+			if (isRainableBiome(world.getBiomeGenForCoords(c.xCoord, c.zCoord)) && world.getPrecipitationHeight(c.xCoord, c.zCoord) <= c.yCoord)
 				return true;
 		}
 		return false;
+	}
+
+	public static boolean isRainableBiome(BiomeGenBase b) {
+		return !BiomeGlowingCliffs.isGlowingCliffs(b) && (b instanceof BiomeGenDesert || b.getEnableSnow() || b.canSpawnLightningBolt()); //deserts because sandstorms
 	}
 
 	static {

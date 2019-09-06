@@ -634,7 +634,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	@Override
 	public final void onLinkRecalculated(CrystalLink l) {
-		if (l.isRainable()) {
+		if (l.isRainable() && PylonFinder.isRainableBiome(worldObj.getBiomeGenForCoords(xCoord, zCoord))) {
 			rainable = true;
 		}
 	}

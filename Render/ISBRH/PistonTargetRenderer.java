@@ -86,15 +86,15 @@ public class PistonTargetRenderer implements ISBRH {
 			v5.setBrightness(240);
 			v5.setColorOpaque_I(te.getRenderColor());
 			ForgeDirection dir = te.getFacing();
-			if (dir.offsetX != 0) {
+			if (dir == null || dir.offsetX != 0) {
 				rb.renderFaceXNeg(b, x, y, z, ico);
 				rb.renderFaceXPos(b, x, y, z, ico);
 			}
-			if (dir.offsetY != 0) {
+			if (dir == null || dir.offsetY != 0) {
 				rb.renderFaceYNeg(b, x, y, z, ico);
 				rb.renderFaceYPos(b, x, y, z, ico);
 			}
-			if (dir.offsetZ != 0) {
+			if (dir == null || dir.offsetZ != 0) {
 				rb.renderFaceZNeg(b, x, y, z, ico);
 				rb.renderFaceZPos(b, x, y, z, ico);
 			}

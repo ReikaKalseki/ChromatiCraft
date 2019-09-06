@@ -25,7 +25,6 @@ import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.TapeStage;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class BlockPistonController extends BlockDimensionStructureTile {
 
@@ -94,6 +93,7 @@ public class BlockPistonController extends BlockDimensionStructureTile {
 
 		@Override
 		public void updateEntity() {
+			//ReikaJavaLibrary.pConsole(this.getStage().doorCount, yCoord == 87);
 			if (isPlaying) {
 				if (tickUntilNextDoor > 0) {
 					tickUntilNextDoor--;
@@ -102,18 +102,20 @@ public class BlockPistonController extends BlockDimensionStructureTile {
 					//ReikaJavaLibrary.pConsole("Attempting cycle of "+currentDoor);
 					if (this.getStage().cycle(worldObj)) {
 						currentDoor++;
-						ReikaJavaLibrary.pConsole("Cycled to "+currentDoor);
+						//ReikaJavaLibrary.pConsole("Cycled to "+currentDoor);
+						if (currentDoor == this.getStage().doorCount)
+							tickUntilNextDoor = DELAY;
 						if (currentDoor >= this.getStage().doorCount) {
 							if (currentDoor >= this.getStage().getTotalLength()) {
 								isPlaying = false;
-								ReikaJavaLibrary.pConsole("Done");
+								//ReikaJavaLibrary.pConsole("Done");
 							}
 							else {
-								ReikaJavaLibrary.pConsole("Returning...");
+								//ReikaJavaLibrary.pConsole("Returning...");
 							}
 						}
 						else {
-							ReikaJavaLibrary.pConsole("Firing "+currentDoor);
+							//ReikaJavaLibrary.pConsole("Firing "+currentDoor);
 							this.fire();
 							tickUntilNextDoor = DELAY;
 						}
