@@ -119,7 +119,7 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 				return null;
 			}
 		}
-		ChromatiCraft.logger.log("Successfully generated a "+p+" puzzle in "+attempts+" attempts.");
+		//ChromatiCraft.logger.log("Successfully generated a "+p+" puzzle in "+attempts+" attempts.");
 		return ret;
 	}
 

@@ -39,10 +39,11 @@ import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalFuse;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
-import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
+import Reika.ChromatiCraft.Magic.Interfaces.LinkWatchingRepeater;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
+import Reika.ChromatiCraft.Magic.Network.CrystalLink;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Network.CrystalPath;
 import Reika.ChromatiCraft.Magic.Network.PylonFinder;
@@ -53,8 +54,10 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -65,13 +68,16 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements CrystalRepeater, CrystalFuse, NBTTile, SneakPop, OwnedTile, MultiBlockChromaTile {
+public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements LinkWatchingRepeater, CrystalFuse, NBTTile, SneakPop, OwnedTile, MultiBlockChromaTile {
 
 	protected ForgeDirection facing = ForgeDirection.DOWN;
 	protected boolean hasMultiblock;
 	private int depth = -1;
 	private boolean isTurbo = false;
 	private boolean enhancedStructure = false;
+
+	private boolean rainable = false;
+	private boolean isRainLossy = false;
 
 	private CrystalElement surgeColor;
 	private int surgeTicks = 0;
@@ -90,6 +96,11 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	}
 
 	@Override
+	public void onAdjacentBlockUpdate() {
+		redstoneCache = worldObj.isBlockIndirectlyGettingPowered(xCoord+facing.offsetX, yCoord+facing.offsetY, zCoord+facing.offsetZ);
+	}
+
+	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
@@ -97,8 +108,15 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 			connectionRenderTick--;
 		}
 
-		if (world.isRemote && this.canConduct() && this.isTurbocharged() && this.isEnhancedStructure()) {
-			this.doEnhancedStructureParticles(world, x, y, z);
+		if (!world.isRemote)
+			isRainLossy = rainable && world.isRaining();
+
+		if (world.isRemote && this.canConduct()) {
+			if (this.isRainAffected())
+				this.doRainParticles(world, x, y, z);
+			if (this.isTurbocharged() && this.isEnhancedStructure()) {
+				this.doEnhancedStructureParticles(world, x, y, z);
+			}
 		}
 
 		if (surgeTicks > 0) {
@@ -112,9 +130,28 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		}
 	}
 
-	@Override
-	public void onAdjacentBlockUpdate() {
-		redstoneCache = worldObj.isBlockIndirectlyGettingPowered(xCoord+facing.offsetX, yCoord+facing.offsetY, zCoord+facing.offsetZ);
+	@SideOnly(Side.CLIENT)
+	private void doRainParticles(World world, int x, int y, int z) {
+		int n = 3-Minecraft.getMinecraft().gameSettings.particleSetting;
+		double ds = Minecraft.getMinecraft().thePlayer.getDistanceSq(x+0.5, y+0.5, z+0.5);
+		if (ds > 1024)
+			n = Math.min(n, 2);
+		else if (ds > 256)
+			n = 1;
+		for (int i = 0; i < n; i++) {
+			double dx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 1.25);
+			double dy = ReikaRandomHelper.getRandomPlusMinus(y+0.5, 1.25);
+			double dz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 1.25);
+			int l = ReikaRandomHelper.getRandomBetween(4, 10);
+			int c = ReikaColorAPI.mixColors(this.getActiveColor().getColor(), 0xffffff, (float)ReikaRandomHelper.getRandomPlusMinus(0.5, 0.2));
+			float s = (float)ReikaRandomHelper.getRandomBetween(1.25, 2);
+			EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, dx, dy, dz, rand.nextDouble()*360, rand.nextDouble()*360);
+			fx.angleVelocity *= 2;
+			fx.freedom *= 2;
+			fx.particleVelocity *= 1.5;
+			fx.setLife(l).setRapidExpand().setIcon(ChromaIcons.FLARE).setColor(c).setScale(s);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -244,6 +281,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		depth = NBT.getInteger("depth");
 		isTurbo = NBT.getBoolean("turbo");
 		enhancedStructure = NBT.getBoolean("enhance");
+		isRainLossy = NBT.getBoolean("rainy");
 
 		surgeTicks = NBT.getInteger("surge");
 		surgeColor = CrystalElement.elements[NBT.getInteger("surge_c")];
@@ -264,6 +302,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		NBT.setInteger("depth", depth);
 		NBT.setBoolean("turbo", isTurbo);
 		NBT.setBoolean("enhance", enhancedStructure);
+		NBT.setBoolean("rainy", isRainLossy);
 
 		NBT.setInteger("surge", surgeTicks);
 		if (surgeColor != null)
@@ -587,6 +626,17 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	@SideOnly(Side.CLIENT)
 	protected void doBottleneckDisplay() {
 		super.doBottleneckDisplay();
+	}
+
+	public boolean isRainAffected() {
+		return isRainLossy;
+	}
+
+	@Override
+	public final void onLinkRecalculated(CrystalLink l) {
+		if (l.isRainable()) {
+			rainable = true;
+		}
 	}
 
 }

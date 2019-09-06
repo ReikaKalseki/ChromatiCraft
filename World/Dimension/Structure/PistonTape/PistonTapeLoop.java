@@ -46,10 +46,12 @@ public class PistonTapeLoop extends StructurePiece<PistonTapeGenerator> {
 		return level.doorCount;
 	}
 
-	public void cycle(World world) {
+	public boolean cycle(World world) {
+		boolean flag = true;
 		for (PistonTapeSlice s : bits) {
-			s.cycle(world);
+			flag &= s.cycle(world);
 		}
+		return flag;
 	}
 
 	public Coordinate getEmitter(int idx) {

@@ -44,6 +44,16 @@ public class DoorKey {
 		colors[idx].target = c;
 	}
 
+	public boolean isValid(boolean allowBlack) {
+		if (allowBlack)
+			return true;
+		for (int i = 0; i < colors.length; i++) {
+			if (colors[i].color.isBlack())
+				return false;
+		}
+		return true;
+	}
+
 	public class DoorValue {
 
 		public final int index;

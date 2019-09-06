@@ -91,6 +91,24 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 				this.renderHalo(te, par8);
 			}
 
+			if (te.canConduct() && te.isRainAffected()) {
+				//GL11.glDisable(GL11.GL_DEPTH_TEST);
+				GL11.glDepthMask(false);
+				ico = ChromaIcons.RAINFLARE.getIcon();
+				u = ico.getMinU();
+				v = ico.getMinV();
+				du = ico.getMaxU();
+				dv = ico.getMaxV();
+				s = 2.75+0.125*Math.sin(te.getTicksExisted()/40D);
+				v5.startDrawingQuads();
+				v5.setColorOpaque_I(this.getHaloRenderColor(te));
+				v5.addVertexWithUV(-s, -s, 0, u, v);
+				v5.addVertexWithUV(s, -s, 0, du, v);
+				v5.addVertexWithUV(s, s, 0, du, dv);
+				v5.addVertexWithUV(-s, s, 0, u, dv);
+				v5.draw();
+			}
+
 			GL11.glPopMatrix();
 			GL11.glPopAttrib();
 		}

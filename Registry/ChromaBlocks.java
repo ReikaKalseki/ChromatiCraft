@@ -104,6 +104,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockLockKey;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Music.BlockMusicMemory;
 import Reika.ChromatiCraft.Block.Dimension.Structure.NonEuclid.BlockTeleport;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Pinball.BlockPinballTile;
+import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonController;
 import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonTapeBit;
 import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonTarget;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftKey;
@@ -273,6 +274,7 @@ public enum ChromaBlocks implements BlockEnum {
 	RFPOD(BlockRFNode.class,					ItemBlockSidePlaced.class,		"chroma.rfpod"),
 	PISTONBIT(BlockPistonTapeBit.class,			ItemBlockMultiType.class,		"chroma.pistonbit"),
 	PISTONTARGET(BlockPistonTarget.class,										"chroma.pistontarget"),
+	PISTONCONTROL(BlockPistonController.class,									"chroma.pistoncontrol"),
 	RAYBLEND(BlockRayblendFloor.class,											"chroma.rayblend"),
 	ENCRUSTED(BlockEncrustedCrystal.class,		ItemBlockDyeTypes.class,		"chroma.encrusted"),
 	;

@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -49,6 +50,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
 import Reika.DragonAPI.Instantiable.RayTracer;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
@@ -540,7 +542,16 @@ public class PylonFinder {
 		tracer.setOrigins(x1, y1, z1, x2, y2, z2);
 		tracer.offset(0.5, 0.5, 0.5);
 		boolean los = tracer.isClearLineOfSight(world);
-		return new LOSData(los, tracer.getRayBlocks());
+		Set<Coordinate> set = tracer.getRayBlocks();
+		return new LOSData(los, canRainOn(world, set), set);
+	}
+
+	private static boolean canRainOn(World world, Set<Coordinate> set) {
+		for (Coordinate c : set) {
+			if (world.getPrecipitationHeight(c.xCoord, c.zCoord) <= c.yCoord)
+				return true;
+		}
+		return false;
 	}
 
 	static {

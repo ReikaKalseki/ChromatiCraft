@@ -9,12 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic.Interfaces;
 
-import Reika.ChromatiCraft.Magic.Network.CrystalPath;
+import Reika.ChromatiCraft.Magic.Network.CrystalLink;
 
+public interface LinkWatchingRepeater extends CrystalRepeater {
 
-public interface ConnectivityAction extends LinkWatchingRepeater {
-
-	public void notifySendingTo(CrystalPath p, CrystalReceiver r);
-	public void notifyReceivingFrom(CrystalPath p, CrystalTransmitter t);
+	public void onLinkRecalculated(CrystalLink l);
 
 }

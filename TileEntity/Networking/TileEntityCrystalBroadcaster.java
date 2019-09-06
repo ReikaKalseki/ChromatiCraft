@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -324,6 +324,11 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 			fx.setGravity(g).setAlphaFading().setColliding().setRapidExpand();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
+	}
+
+	@Override
+	public boolean isRainAffected() {
+		return false;
 	}
 
 }

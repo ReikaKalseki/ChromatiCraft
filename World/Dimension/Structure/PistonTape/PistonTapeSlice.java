@@ -40,6 +40,7 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 	private boolean firedVerticalLast;
 	private boolean needsReset;
 	private int cooldown;
+	private boolean isHalfCycled = false;
 
 	protected PistonTapeSlice(PistonTapeGenerator g, ForgeDirection dir, int idx, PistonTapeLoop p, LoopDimensions size) {
 		super(g);
@@ -50,31 +51,42 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 		loop = p;
 	}
 
-	public void cycle(World world) {
+	/** Returns true if ready to handle another pulse */
+	public boolean cycle(World world) {
 		if (cooldown > 0) {
 			cooldown--;
-			return;
-		}
-		cooldown = 6;
-		if (needsReset) {
-			for (Coordinate c : pistons.values()) {
-				c.triggerBlockUpdate(world, false);
-			}
+			return false;
 		}
 		else {
-			if (firedVerticalLast) {
-				Coordinate c = pistons.get(facing);
-				ReikaBlockHelper.extendPiston(world, c.xCoord, c.yCoord, c.zCoord);
-				c = pistons.get(facing.getOpposite());
-				ReikaBlockHelper.extendPiston(world, c.xCoord, c.yCoord, c.zCoord);
+			cooldown = 6;
+			if (needsReset) {
+				for (Coordinate c : pistons.values()) {
+					c.triggerBlockUpdate(world, false);
+				}
+				//ReikaJavaLibrary.pConsole("Resetting; "+isHalfCycled);
+				needsReset = false;
+				return !isHalfCycled;
 			}
 			else {
-				Coordinate c = pistons.get(ForgeDirection.UP);
-				ReikaBlockHelper.extendPiston(world, c.xCoord, c.yCoord, c.zCoord);
-				c = pistons.get(ForgeDirection.DOWN);
-				ReikaBlockHelper.extendPiston(world, c.xCoord, c.yCoord, c.zCoord);
+				needsReset = true;
+				if (firedVerticalLast) {
+					Coordinate c = pistons.get(facing);
+					ReikaBlockHelper.extendPiston(world, c.xCoord, c.yCoord, c.zCoord);
+					c = pistons.get(facing.getOpposite());
+					ReikaBlockHelper.extendPiston(world, c.xCoord, c.yCoord, c.zCoord);
+					//ReikaJavaLibrary.pConsole("Fired horizontal");
+				}
+				else {
+					Coordinate c = pistons.get(ForgeDirection.UP);
+					ReikaBlockHelper.extendPiston(world, c.xCoord, c.yCoord, c.zCoord);
+					c = pistons.get(ForgeDirection.DOWN);
+					ReikaBlockHelper.extendPiston(world, c.xCoord, c.yCoord, c.zCoord);
+					//ReikaJavaLibrary.pConsole("Fired vertical");
+				}
+				firedVerticalLast = !firedVerticalLast;
+				isHalfCycled = !isHalfCycled;
+				return false;
 			}
-			firedVerticalLast = !firedVerticalLast;
 		}
 	}
 

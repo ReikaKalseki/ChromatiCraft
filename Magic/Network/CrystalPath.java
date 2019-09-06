@@ -63,13 +63,17 @@ public class CrystalPath implements Comparable<CrystalPath> {
 		for (int i = 1; i < nodes.size(); i++) {
 			WorldLocation loc = nodes.get(i);
 			WorldLocation prev = nodes.get(i-1);
+			CrystalLink l = network.getLink(prev, loc);
 			CrystalNetworkTile te = PylonFinder.getNetTileAt(loc, true); //transmitter
 			CrystalNetworkTile teprev = PylonFinder.getNetTileAt(prev, true); //receiver
 			range += Math.min(((CrystalReceiver)teprev).getReceiveRange(), ((CrystalTransmitter)te).getSendRange());
 			dist += Math.sqrt(te.getDistanceSqTo(teprev.getX()+0.5, teprev.getY()+0.5, teprev.getZ()+0.5));
 			if (i < nodes.size()-1) {
 				if (te instanceof CrystalRepeater) {
-					loss += ((CrystalRepeater)te).getSignalDegradation();
+					int atten = ((CrystalRepeater)te).getSignalDegradation();
+					if (l.isRainable() && transmitter.getWorld().isRaining())
+						atten *= 1.15;
+					loss += atten;
 					if (te instanceof ConnectivityAction) {
 						WorldLocation next = nodes.get(i+1);
 						CrystalNetworkTile tenext = PylonFinder.getNetTileAt(next, true);
@@ -79,7 +83,7 @@ public class CrystalPath implements Comparable<CrystalPath> {
 					}
 				}
 			}
-			links.add(network.getLink(prev, loc));
+			links.add(l);
 		}
 		attenuation = loss;
 		totalDistance = dist;

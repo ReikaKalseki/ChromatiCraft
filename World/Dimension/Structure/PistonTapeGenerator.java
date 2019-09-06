@@ -1,6 +1,5 @@
 package Reika.ChromatiCraft.World.Dimension.Structure;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import net.minecraft.world.World;
@@ -15,7 +14,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.TapeStage;
 
 public class PistonTapeGenerator extends DimensionStructureGenerator {
 
-	private ArrayList<TapeStage> stages;
+	private TapeStage[] stages;
 
 	private boolean isActive = false;
 
@@ -23,7 +22,6 @@ public class PistonTapeGenerator extends DimensionStructureGenerator {
 
 	@Override
 	protected void calculate(int chunkX, int chunkZ, Random rand) {
-		stages = new ArrayList();
 		int x = chunkX;
 		int z = chunkZ;
 		int y = 60+rand.nextInt(30);
@@ -46,12 +44,14 @@ public class PistonTapeGenerator extends DimensionStructureGenerator {
 		PistonTapeLoop pl = new PistonTapeLoop(this);
 		pl.generate(world, x, y, z+12);
 		 */
-		this.generateDataTile(x-DIRECTION.offsetX*5, y, z-DIRECTION.offsetZ*5);
+		//this.generateDataTile(x-DIRECTION.offsetX*5, y, z-DIRECTION.offsetZ*5);
 		PistonTapeParameters[] arr = this.getTapes();
-		for (PistonTapeParameters p : arr) {
-			TapeStage s = new TapeStage(this, p.busWidth, p.doorCount, rand);
+		stages = new TapeStage[arr.length];
+		for (int i = 0; i < arr.length; i++) {
+			PistonTapeParameters p = arr[i];
+			TapeStage s = new TapeStage(this, i, p.busWidth, p.doorCount, rand);
 			s.generate(world, x, y, z);
-			stages.add(s);
+			stages[i] = s;
 			//x += s.getLength();
 			y -= s.getHeight();
 		}
@@ -112,11 +112,11 @@ public class PistonTapeGenerator extends DimensionStructureGenerator {
 	}
 
 	public TapeStage getStage(int i) {
-		return stages.get(i);
+		return stages[i];
 	}
 
 	public int stageCount() {
-		return stages.size();
+		return stages.length;
 	}
 
 	/*

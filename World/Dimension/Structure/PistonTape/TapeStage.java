@@ -3,21 +3,29 @@ package Reika.ChromatiCraft.World.Dimension.Structure.PistonTape;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.UUID;
 
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.EmitterTile;
+import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonController.TilePistonController;
 import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonTarget.PistonEmitterTile;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
+import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 
-	private static final int MAX_ID = 511;
+	private static final boolean ALLOW_BLACK_KEYS = false;
+
+	//private static final int MAX_ID = 511;
 	private static final int MIN_ID = 1;
 
 	private final DoorSection[] doors;
@@ -25,14 +33,16 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 	final TapeArea tape;
 	public final ForgeDirection mainDirection;
 
+	public final int index;
 	public final int doorCount;
 	public final int bitsPerDoor;
 	public final int totalBitWidth;
 
 	private int height;
 
-	public TapeStage(PistonTapeGenerator g, int bus, int n, Random rand) {
+	public TapeStage(PistonTapeGenerator g, int idx, int bus, int n, Random rand) {
 		super(g);
+		index = idx;
 		doorCount = n;
 		bitsPerDoor = bus;
 		totalBitWidth = bus*n;
@@ -43,14 +53,19 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 
 		doors = new DoorSection[doorCount];
 		for (int i = 0; i < doorCount; i++) {
-			doors[i] = new DoorSection(g, this, mainDirection, new DoorKey(i, this.generateID(rand), bus));
+			DoorKey dk = new DoorKey(i, this.generateID(rand), bus);
+			while (!dk.isValid(ALLOW_BLACK_KEYS)) {
+				dk = new DoorKey(i, this.generateID(rand), bus);
+			}
+			doors[i] = new DoorSection(g, this, mainDirection, dk);
 			height = Math.max(height, doors[i].getHeight());
 		}
 	}
 
 	private int generateID(Random rand) {
+		int MAX_ID = ReikaMathLibrary.intpow2(2, 3*bitsPerDoor);
 		int id = MIN_ID+rand.nextInt(MAX_ID-MIN_ID+1);
-		while (generatedIDs.contains(id)) {
+		while (generatedIDs.contains(id) && generatedIDs.size() < MAX_ID-MIN_ID) {
 			id = MIN_ID+rand.nextInt(MAX_ID-MIN_ID+1);
 		}
 		generatedIDs.add(id);
@@ -59,6 +74,8 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 
 	@Override
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
+		world.setTileEntity(x+mainDirection.offsetX*-3, y, z+mainDirection.offsetZ*-3, ChromaBlocks.PISTONCONTROL.getBlockInstance(), 0, new PistonControlCallback(this));
+		world.setTileEntity(x+mainDirection.offsetX*-3, y+1, z+mainDirection.offsetZ*-3, ChromaBlocks.PISTONCONTROL.getBlockInstance(), 1, new PistonControlCallback(this));
 		tape.generate(world, x-tape.tape.facing.offsetX*6, y, z-tape.tape.facing.offsetZ*6);
 		int dx = x+(2+tape.tape.busWidth)*mainDirection.offsetX;
 		int dz = z+(2+tape.tape.busWidth)*mainDirection.offsetZ;
@@ -98,6 +115,34 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 		c = c.offset(tape.tape.facing, -5);
 		li.add(c);
 		return li;
+	}
+
+	public boolean cycle(World world) {
+		return tape.tape.cycle(world);
+	}
+
+	public int getTotalLength() {
+		return tape.tape.dimensions.bitLength;
+	}
+
+	private static class PistonControlCallback implements TileCallback {
+
+		private final UUID uid;
+		private final int index;
+		private final ForgeDirection direction;
+
+		private PistonControlCallback(TapeStage t) {
+			uid = t.parent.id;
+			index = t.index;
+			direction = t.mainDirection.getOpposite();
+		}
+
+		@Override
+		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
+			((TilePistonController)te).setData(index, direction);
+			((TilePistonController)te).uid = uid;
+		}
+
 	}
 
 }
