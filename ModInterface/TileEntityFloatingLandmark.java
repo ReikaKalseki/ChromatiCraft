@@ -2,6 +2,7 @@ package Reika.ChromatiCraft.ModInterface;
 
 import java.util.HashSet;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -10,6 +11,7 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
@@ -18,17 +20,20 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.ProportionedBlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.ProportionedBlockBox.CubeEdge;
+import Reika.DragonAPI.Interfaces.TileEntity.AdjacentUpdateWatcher;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 import buildcraft.api.tiles.ITileAreaProvider;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @Strippable(value = "buildcraft.api.tiles.ITileAreaProvider")
-public class TileEntityFloatingLandmark extends TileEntityChromaticBase implements ITileAreaProvider, BreakAction {
+public class TileEntityFloatingLandmark extends TileEntityChromaticBase implements ITileAreaProvider, BreakAction, AdjacentUpdateWatcher {
 
 	private static final int RANGE = 256;
 
@@ -274,6 +279,7 @@ public class TileEntityFloatingLandmark extends TileEntityChromaticBase implemen
 
 	public void anchor() {
 		anchored = true;
+		ChromaSounds.USE.playSoundAtBlock(this);
 	}
 
 	@Override
@@ -348,6 +354,15 @@ public class TileEntityFloatingLandmark extends TileEntityChromaticBase implemen
 		if (worldObj.isRemote)
 			return;
 		this.reset(true);
+	}
+
+	@Override
+	public void onAdjacentUpdate(World world, int x, int y, int z, Block b) {
+		if (!this.isAnchored() && !ReikaWorldHelper.checkForAdjSolidBlock(world, x, y, z)) {
+			ChromaSounds.RIFT.playSoundAtBlock(this);
+			this.delete();
+			ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, this.getTile().getCraftedProduct());
+		}
 	}
 
 }

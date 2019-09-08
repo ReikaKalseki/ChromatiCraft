@@ -19,7 +19,6 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 
@@ -50,6 +49,7 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 		mainDirection = PistonTapeGenerator.DIRECTION;
 
 		tape = new TapeArea(g, new PistonTapeLoop(g, ReikaDirectionHelper.getRightBy90(mainDirection), this));
+		tape.tape.randomize(rand);
 
 		doors = new DoorSection[doorCount];
 		for (int i = 0; i < doorCount; i++) {
@@ -61,7 +61,7 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 			height = Math.max(height, doors[i].getHeight());
 		}
 	}
-
+	/*
 	private int generateID(Random rand) {
 		int MAX_ID = ReikaMathLibrary.intpow2(2, 3*bitsPerDoor);
 		int id = MIN_ID+rand.nextInt(MAX_ID-MIN_ID+1);
@@ -71,7 +71,7 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 		generatedIDs.add(id);
 		return id;
 	}
-
+	 */
 	@Override
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
 		world.setTileEntity(x+mainDirection.offsetX*-3, y, z+mainDirection.offsetZ*-3, ChromaBlocks.PISTONCONTROL.getBlockInstance(), 0, new PistonControlCallback(this));

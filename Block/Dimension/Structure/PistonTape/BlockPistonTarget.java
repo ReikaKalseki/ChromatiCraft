@@ -30,13 +30,13 @@ import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Block.BlockChromaDoor;
-import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.ColorData;
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.ChromatiCraft.Entity.EntityPistonSpline;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.ISBRH.PistonTargetRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
+import Reika.DragonAPI.Instantiable.RGBColorData;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Math.Spline;
@@ -143,7 +143,7 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 
 		private Coordinate door = new Coordinate(0, 0, 0);
 		private int active;
-		protected ColorData color = new ColorData(true);
+		protected RGBColorData color = RGBColorData.white();
 
 		private void receive() {
 			if (this.getFacing() == null)
@@ -261,7 +261,7 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 			door = c;
 		}
 
-		public void setColor(ColorData c) {
+		public void setColor(RGBColorData c) {
 			color = c;
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
@@ -295,7 +295,7 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 			doorIndex = NBT.getInteger("door");
 		}
 
-		private void fire(ColorData clr) {
+		private void fire(RGBColorData clr) {
 			if (path == null) {
 				ChromaSounds.ERROR.playSoundAtBlock(this);
 				return;

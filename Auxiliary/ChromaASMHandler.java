@@ -110,10 +110,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 				deobfName = deobf;
 			}
 
-			public byte[] apply(byte[] data) {
-				ClassNode cn = new ClassNode();
-				ClassReader classReader = new ClassReader(data);
-				classReader.accept(cn, 0);
+			public void apply(ClassNode cn) {
 				switch(this) {
 					case ENDPROVIDER: { //THIS WORKS
 						if (ModList.ENDEREXPANSION.isLoaded())
@@ -411,9 +408,6 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 					}
 				}
 
-				ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS/* | ClassWriter.COMPUTE_FRAMES*/);
-				cn.accept(writer);
-				return writer.toByteArray();
 			}
 		}
 
@@ -424,7 +418,14 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 				if (p != null) {
 					ReikaASMHelper.activeMod = "ChromatiCraft";
 					ReikaASMHelper.log("Patching class "+p.deobfName);
-					opcodes = p.apply(opcodes);
+
+					ClassNode cn = new ClassNode();
+					ClassReader classReader = new ClassReader(opcodes);
+					classReader.accept(cn, 0);
+					p.apply(cn);
+					ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS/* | ClassWriter.COMPUTE_FRAMES*/);
+					cn.accept(writer);
+					opcodes = writer.toByteArray();
 					classes.remove(className); //for maximizing performance
 					ReikaASMHelper.activeMod = null;
 				}

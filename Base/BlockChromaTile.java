@@ -29,6 +29,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -288,6 +289,20 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 	}
 
 	@Override
+	public void onBlockExploded(World world, int x, int y, int z, Explosion e) {
+		ChromaTiles t = ChromaTiles.getTile(world, x, y, z);
+		if (t == ChromaTiles.LANDMARK) {
+			ReikaItemHelper.dropItem(world, x+par5Random.nextDouble(), y+par5Random.nextDouble(), z+par5Random.nextDouble(), t.getCraftedProduct());
+		}
+		super.onBlockExploded(world, x, y, z, e);
+	}
+
+	@Override
+	public boolean canDropFromExplosion(Explosion e) {
+		return false;
+	}
+
+	@Override
 	public int isProvidingStrongPower(IBlockAccess world, int x, int y, int z, int s) {
 		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
 		TileEntityChromaticBase te = (TileEntityChromaticBase)world.getTileEntity(x, y, z);
@@ -466,11 +481,6 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			TileEntityHoverPad h = (TileEntityHoverPad)te;
 			h.toggleMode();
 			return true;
-		}
-
-		if (m == ChromaTiles.LANDMARK && ChromaItems.TOOL.matchWith(is)) {
-			TileEntityFloatingLandmark tr = (TileEntityFloatingLandmark)te;
-			tr.anchor();
 		}
 
 		if (ChromaItems.SHARD.matchWith(is) && is.getItemDamage() >= 16 && m == ChromaTiles.LAMP) {

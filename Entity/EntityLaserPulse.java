@@ -19,7 +19,6 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LaserPulseEffect;
-import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.ColorData;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.LaserEffectType;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -27,6 +26,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Base.ParticleEntity;
+import Reika.DragonAPI.Instantiable.RGBColorData;
 import Reika.DragonAPI.Interfaces.Registry.SoundEnum;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper.CubeDirections;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -39,7 +39,7 @@ import io.netty.buffer.ByteBuf;
 
 public class EntityLaserPulse extends ParticleEntity implements IEntityAdditionalSpawnData {
 
-	public ColorData color;
+	public RGBColorData color;
 	public CubeDirections direction;
 	//private String level = "";
 
@@ -50,7 +50,7 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 		super(world);
 	}
 
-	public EntityLaserPulse(World world, int x, int y, int z, CubeDirections dir, ColorData c, String l) {
+	public EntityLaserPulse(World world, int x, int y, int z, CubeDirections dir, RGBColorData c, String l) {
 		super(world, x, y, z, dir);
 		direction = dir;
 		color = c.copy();
@@ -213,7 +213,7 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound tag) {
 		super.readEntityFromNBT(tag);
-		color = new ColorData(true);
+		color = RGBColorData.white();
 		color.readFromNBT(tag);
 		direction = CubeDirections.list[tag.getInteger("dir")];
 		silentImpact = tag.getBoolean("silent");
@@ -242,7 +242,7 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 	@Override
 	public void readSpawnData(ByteBuf data) {
 		super.readSpawnData(data);
-		color = new ColorData(true);
+		color = RGBColorData.white();
 		color.readBuf(data);
 		direction = CubeDirections.list[data.readInt()];
 		silentImpact = data.readBoolean();

@@ -215,6 +215,8 @@ public class BlockPistonController extends BlockDimensionStructureTile {
 		}
 
 		protected final void fire() {
+			if (this.getGenerator() == null)
+				return;
 			this.getStage().fireEmitters(worldObj, currentDoor);
 		}
 

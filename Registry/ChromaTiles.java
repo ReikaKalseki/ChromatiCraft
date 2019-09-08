@@ -250,7 +250,7 @@ public enum ChromaTiles implements TileEnum {
 	MANABOOSTER("chroma.manabooster",	ChromaBlocks.TILEMODELLED4,	TileEntityManaBooster.class,		3, "RenderManaBooster", ModList.BOTANIA),
 	DEATHFOG("chroma.deathfog",			ChromaBlocks.TILEENTITY2,	TileEntityDeathFogEmitter.class,	4),
 	OPTIMIZER("chroma.optimizer",		ChromaBlocks.TILEMODELLED4,	TileEntityNetworkOptimizer.class,	4, "RenderNetworkOptimizer"),
-	LANDMARK("chroma.landmark",			ChromaBlocks.TILEMODELLED4, TileEntityFloatingLandmark.class,	5, ModList.BUILDCRAFT);
+	LANDMARK("chroma.landmark",			ChromaBlocks.TILEMODELLED4, TileEntityFloatingLandmark.class,	5, "RenderFloatingLandmark", ModList.BUILDCRAFT);
 
 	private final Class tile;
 	private final String name;
@@ -362,6 +362,7 @@ public enum ChromaTiles implements TileEnum {
 			case MANABOOSTER:
 			case OPTIMIZER:
 			case ASPECTJAR:
+			case LANDMARK:
 				return true;
 			default:
 				return false;

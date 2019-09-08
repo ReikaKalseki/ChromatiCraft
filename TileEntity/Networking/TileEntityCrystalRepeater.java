@@ -400,7 +400,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
 		isTurbo = ReikaItemHelper.matchStacks(is, this.getTile().getCraftedProduct()) && is.stackTagCompound != null && is.stackTagCompound.getBoolean("boosted");
-		casterID = ReikaItemHelper.matchStacks(is, this.getTile().getCraftedProduct()) && is.stackTagCompound != null ? UUID.fromString(is.stackTagCompound.getString("caster")) : null;
+		casterID = ReikaItemHelper.matchStacks(is, this.getTile().getCraftedProduct()) && is.stackTagCompound != null && is.stackTagCompound.hasKey("caster") ? UUID.fromString(is.stackTagCompound.getString("caster")) : null;
 	}
 
 	@Override

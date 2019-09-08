@@ -37,6 +37,7 @@ import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree.TileEntityPowerTreeAux;
 import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
+import Reika.ChromatiCraft.ModInterface.TileEntityFloatingLandmark;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeRecharger;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -155,6 +156,11 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 		if (t == ChromaTiles.BIOMEPAINTER) {
 			TileEntityBiomePainter tb = (TileEntityBiomePainter)tile;
 			tb.safeMode = !tb.safeMode;
+			return true;
+		}
+		if (t == ChromaTiles.LANDMARK) {
+			TileEntityFloatingLandmark te = (TileEntityFloatingLandmark)tile;
+			te.anchor();
 			return true;
 		}
 		if (t == ChromaTiles.PYLONTURBO) {

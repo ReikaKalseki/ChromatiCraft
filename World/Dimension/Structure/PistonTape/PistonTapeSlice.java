@@ -1,6 +1,7 @@
 package Reika.ChromatiCraft.World.Dimension.Structure.PistonTape;
 
 import java.util.HashMap;
+import java.util.Random;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
@@ -10,18 +11,21 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.StructurePiece;
-import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.ColorData;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.EmitterTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.LaserEffectType;
+import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonTapeBit;
 import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonTarget.PistonEmitterTile;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.PistonTapeLoop.LoopDimensions;
+import Reika.DragonAPI.Instantiable.RGBColorData;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper.CubeDirections;
+import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 
 public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
@@ -30,12 +34,15 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 	public final int bitCount;
 
 	private final PistonTapeLoop loop;
-	private final LoopDimensions dimensions;
+	private final LoopSliceDimensions dimensions;
 	private final int busIndex;
 
 	private final HashMap<ForgeDirection, Coordinate> pistons = new HashMap();
 	Coordinate emitter;
 	Coordinate target;
+	Coordinate zeroBit;
+
+	private final RGBColorData[] colorCycle;
 
 	private boolean firedVerticalLast;
 	private boolean needsReset;
@@ -46,9 +53,10 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 		super(g);
 		busIndex = idx;
 		facing = dir;
-		dimensions = size;
+		dimensions = size.slice(busIndex);
 		bitCount = dimensions.bitLength;
 		loop = p;
+		colorCycle = new RGBColorData[bitCount];
 	}
 
 	/** Returns true if ready to handle another pulse */
@@ -90,6 +98,43 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 		}
 	}
 
+	void randomizeSolution(Random rand) {
+		for (int i = 0; i < loop.doorCount(); i++) { //not entire array
+			RGBColorData c = this.genRandomColor(i, rand);
+			colorCycle[i] = c;
+		}
+	}
+
+	RGBColorData getColor(int pos) {
+		return colorCycle[pos];
+	}
+
+	/** Assuming "zeroed" piston loop "read head" */
+	public Coordinate getNthBitBlock(int i) {
+		return dimensions.getNthBitPosition(i);
+	}
+
+	private RGBColorData genRandomColor(int i, Random rand) {
+		int i2 = i-this.getSecondFilterOffset();
+		while (i2 < 0) {
+			i2 += colorCycle.length;
+		}
+		RGBColorData mix = colorCycle[i2];
+		if (mix == null)
+			mix = RGBColorData.white();
+		RGBColorData c = ReikaJavaLibrary.getRandomCollectionEntry(rand, mix.getReductiveChildren(true, true));
+		if (c.matchColor(mix)) {
+			return ReikaJavaLibrary.getRandomCollectionEntry(rand, mix.getAdditiveChildren(true, true));
+		}
+		else {
+			return mix.getColorNeededToMake(c);
+		}
+	}
+
+	private int getSecondFilterOffset() {
+		return dimensions.totalDepth;
+	}
+
 	@Override
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
 		for (int d = -1; d <= dimensions.totalDepth+2; d++) { //was from -2
@@ -121,6 +166,22 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 				world.setBlock(x-d*facing.offsetX, y+h, z-d*facing.offsetZ, b, m);
 			}
 		}
+
+		this.generateTape(world, x, y, z);
+
+		this.placePiston(world, x, y-1, z, ForgeDirection.UP);
+		this.placePiston(world, x+facing.offsetX, y+dimensions.totalHeight, z+facing.offsetZ, facing.getOpposite());
+		this.placePiston(world, x-facing.offsetX*dimensions.totalDepth, y+dimensions.totalHeight+1, z-facing.offsetZ*dimensions.totalDepth, ForgeDirection.DOWN);
+		this.placePiston(world, x-facing.offsetX*(dimensions.totalDepth+1), y, z-facing.offsetZ*(dimensions.totalDepth+1), facing);
+
+		this.placeEmitter(world, x-facing.offsetX*(dimensions.totalDepth+1), y+1, z-facing.offsetZ*(dimensions.totalDepth+1));
+		this.placeTarget(world, x+facing.offsetX*7, y+1, z+facing.offsetZ*7);
+	}
+
+	private void generateTape(ChunkSplicedGenerationCache world, int x, int y, int z) {
+		zeroBit = new Coordinate(x, y, z);
+		dimensions.calculatePositions(zeroBit.xCoord, zeroBit.yCoord, zeroBit.zCoord, 1, facing, true);
+
 		for (int d = 0; d <= dimensions.totalDepth; d++) {
 			for (int h = 0; h <= dimensions.totalHeight; h++) {
 				if (d == 0 || d == dimensions.totalDepth || h == 0 || h == dimensions.totalHeight) {
@@ -132,13 +193,16 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 				}
 			}
 		}
-		this.placePiston(world, x, y-1, z, ForgeDirection.UP);
-		this.placePiston(world, x+facing.offsetX, y+dimensions.totalHeight, z+facing.offsetZ, facing.getOpposite());
-		this.placePiston(world, x-facing.offsetX*dimensions.totalDepth, y+dimensions.totalHeight+1, z-facing.offsetZ*dimensions.totalDepth, ForgeDirection.DOWN);
-		this.placePiston(world, x-facing.offsetX*(dimensions.totalDepth+1), y, z-facing.offsetZ*(dimensions.totalDepth+1), facing);
 
-		this.placeEmitter(world, x-facing.offsetX*(dimensions.totalDepth+1), y+1, z-facing.offsetZ*(dimensions.totalDepth+1));
-		this.placeTarget(world, x+facing.offsetX*7, y+1, z+facing.offsetZ*7);
+		if (true || false) {
+			for (int i = 0; i < dimensions.bitLength; i++) {
+				if (colorCycle[i] == null)
+					continue;
+				Coordinate c = dimensions.getNthBitPosition(i);
+				int m = BlockPistonTapeBit.getMetaFor(colorCycle[i], true);
+				world.setBlock(c.xCoord, c.yCoord, c.zCoord, ChromaBlocks.PISTONBIT.getBlockInstance(), m);
+			}
+		}
 	}
 
 	private void placeBit(ChunkSplicedGenerationCache world, int x, int y, int z) {
@@ -201,11 +265,72 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 			EmitterTile e = (EmitterTile)te;
 			e.uid = uid;
 			e.setDirection(CubeDirections.getFromForgeDirection(facing));
-			e.setColor(new ColorData(true, true, true)); //always white, NOT colored
+			e.setColor(new RGBColorData(true, true, true)); //always white, NOT colored
 			e.speedFactor = 1.25;
 			e.uid = uid;
 			e.silent = true;
 			e.renderAsFullBlock = true;
+		}
+
+	}
+
+	static class LoopSliceDimensions extends LoopDimensions {
+
+		public final int index;
+		private final Coordinate[] positions;
+		private Coordinate rootPosition;
+
+		LoopSliceDimensions(int idx, int d, int h) {
+			super(d, h);
+			index = idx;
+			positions = new Coordinate[bitLength];
+		}
+
+		public void calculatePositions(int x, int y, int z, int initialBitIndex, ForgeDirection facing, boolean skipFirstAndThirdCorners) {
+			rootPosition = new Coordinate(x, y, z);
+			Coordinate c = rootPosition;
+			ForgeDirection dir = facing.getOpposite();
+			int n = 0;
+			for (int i = 0; i < bitLength; i++) {
+				n++;
+				c = c.offset(dir, 1);
+				if (n == totalDepth) {
+					dir = ForgeDirection.UP;
+					if (skipFirstAndThirdCorners) {
+						i--;
+						continue;
+					}
+				}
+				else if (n == totalDepth+totalHeight) {
+					dir = facing;
+					if (!skipFirstAndThirdCorners) {
+						i--;
+						continue;
+					}
+				}
+				else if (n == totalDepth+totalHeight+totalDepth) {
+					dir = ForgeDirection.DOWN;
+					if (skipFirstAndThirdCorners) {
+						i--;
+						continue;
+					}
+				}
+				else if (n == totalDepth+totalHeight+totalDepth+totalHeight) {
+					dir = facing.getOpposite();
+					if (!skipFirstAndThirdCorners) {
+						i--;
+						continue;
+					}
+				}
+				positions[i] = c;
+			}
+			for (int i = 0; i <= initialBitIndex; i++) {
+				ReikaArrayHelper.cycleArray(positions, positions[positions.length-1]);
+			}
+		}
+
+		public Coordinate getNthBitPosition(int n) {
+			return positions[n];
 		}
 
 	}

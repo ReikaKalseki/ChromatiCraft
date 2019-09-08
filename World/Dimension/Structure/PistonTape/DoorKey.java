@@ -2,7 +2,7 @@ package Reika.ChromatiCraft.World.Dimension.Structure.PistonTape;
 
 import java.util.Arrays;
 
-import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.ColorData;
+import Reika.DragonAPI.Instantiable.RGBColorData;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 
@@ -28,8 +28,8 @@ public class DoorKey {
 		}
 	}
 
-	private ColorData genColor(boolean r, boolean g, boolean b) {
-		return new ColorData(r, g, b);
+	private RGBColorData genColor(boolean r, boolean g, boolean b) {
+		return new RGBColorData(r, g, b);
 	}
 
 	public DoorValue getValue(int idx) {
@@ -57,15 +57,15 @@ public class DoorKey {
 	public class DoorValue {
 
 		public final int index;
-		private ColorData color;
+		private RGBColorData color;
 		private Coordinate target;
 
-		private DoorValue(int i, ColorData clr) {
+		private DoorValue(int i, RGBColorData clr) {
 			index = i;
 			color = clr;
 		}
 
-		public ColorData getColor() {
+		public RGBColorData getColor() {
 			return color.copy();
 		}
 

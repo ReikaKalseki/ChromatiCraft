@@ -5,12 +5,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.ColorData;
 import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonTarget;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.Instantiable.RGBColorData;
 import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -21,9 +21,9 @@ import io.netty.buffer.ByteBuf;
 
 public class EntityPistonSpline extends EntitySplineProjectile {
 
-	public ColorData color = new ColorData(true);
+	public RGBColorData color = RGBColorData.white();
 
-	public EntityPistonSpline(World world, Spline s, ColorData clr) {
+	public EntityPistonSpline(World world, Spline s, RGBColorData clr) {
 		super(world, s, 20);
 		color = clr;
 	}
@@ -87,7 +87,7 @@ public class EntityPistonSpline extends EntitySplineProjectile {
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound tag) {
 		super.readEntityFromNBT(tag);
-		color = new ColorData(true);
+		color = RGBColorData.white();
 		color.readFromNBT(tag);
 	}
 
@@ -106,7 +106,7 @@ public class EntityPistonSpline extends EntitySplineProjectile {
 	@Override
 	public void readSpawnData(ByteBuf data) {
 		super.readSpawnData(data);
-		color = new ColorData(true);
+		color = RGBColorData.white();
 		color.readBuf(data);
 	}
 

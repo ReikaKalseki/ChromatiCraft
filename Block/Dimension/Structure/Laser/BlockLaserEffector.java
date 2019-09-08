@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.World.Dimension.Structure.LaserPuzzleGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.RGBColorData;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper.CubeDirections;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -53,7 +54,6 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import io.netty.buffer.ByteBuf;
 
 
 public class BlockLaserEffector extends BlockDimensionStructureTile {
@@ -237,7 +237,7 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 						boolean b1 = e.direction == te.facing.getRotation(true, 2);
 						boolean b2 = e.direction == te.facing;
 						boolean b3 = e.direction == te.facing.getRotation(false, 2);
-						ColorData dat = new ColorData(e.color.red && b1, e.color.green && b2, e.color.blue && b3);
+						RGBColorData dat = new RGBColorData(e.color.red && b1, e.color.green && b2, e.color.blue && b3);
 						//ReikaJavaLibrary.pConsole(dat.red+":"+dat.green+":"+dat.blue+" & "+b1+","+b2+","+b3);
 						/*
 						if (!dat.isBlack()) {
@@ -251,11 +251,11 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 						return true;
 					}
 					if (e.color.red)
-						te.fireParticle(e.direction.getRotation(true, 2), new ColorData(true, false, false), e.getLevel());
+						te.fireParticle(e.direction.getRotation(true, 2), new RGBColorData(true, false, false), e.getLevel());
 					if (e.color.green)
-						te.fireParticle(e.direction, new ColorData(false, true, false), e.getLevel());
+						te.fireParticle(e.direction, new RGBColorData(false, true, false), e.getLevel());
 					if (e.color.blue)
-						te.fireParticle(e.direction.getRotation(false, 2), new ColorData(false, false, true), e.getLevel());
+						te.fireParticle(e.direction.getRotation(false, 2), new RGBColorData(false, false, true), e.getLevel());
 					return true;
 				}
 				case REFRACTOR:
@@ -454,11 +454,11 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 
 	public static class PrismTile extends LaserEffectTile {
 
-		private ColorData nextPulse = new ColorData(false);
+		private RGBColorData nextPulse = RGBColorData.black();
 		private int timer;
 		private int timerLength = 2; //4 for the complex filter puzzle, as well as maybe complex prisms
 
-		public void addPulse(ColorData dat) {
+		public void addPulse(RGBColorData dat) {
 			nextPulse.add(dat);
 			timer = timerLength;
 		}
@@ -468,7 +468,7 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 			timer--;
 			if (timer == 0 && !nextPulse.isBlack()) {
 				this.fireParticle(facing, nextPulse, level);
-				nextPulse = new ColorData(false);
+				nextPulse = RGBColorData.black();
 			}
 		}
 
@@ -494,7 +494,7 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 	public static class LaserEffectTile extends StructureBlockTile<LaserPuzzleGenerator> {
 
 		protected CubeDirections facing = CubeDirections.NORTH;
-		protected ColorData color = new ColorData(true);
+		protected RGBColorData color = RGBColorData.white();
 
 		private boolean rotateable = true;
 		private boolean fixed = false;
@@ -519,7 +519,7 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
-		public final void setColor(ColorData c) {
+		public final void setColor(RGBColorData c) {
 			color = c;
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
@@ -527,7 +527,7 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 		@Override
 		public void readFromNBT(NBTTagCompound tag) {
 			super.readFromNBT(tag);
-			color = new ColorData(true);
+			color = RGBColorData.white();
 			color.readFromNBT(tag);
 			facing = CubeDirections.list[tag.getInteger("dir")];
 
@@ -605,7 +605,7 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 			}
 		}
 
-		protected final void fireParticle(CubeDirections dir, ColorData clr, String lvl) {
+		protected final void fireParticle(CubeDirections dir, RGBColorData clr, String lvl) {
 			if (!worldObj.isRemote) {
 				EntityLaserPulse ea = new EntityLaserPulse(worldObj, xCoord, yCoord, zCoord, dir, clr, lvl);
 				this.affect(ea);
@@ -616,91 +616,6 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 		protected final void affect(EntityLaserPulse ea) {
 			ea.silentImpact = silent;
 			ea.setSpeedFactor(speedFactor);
-		}
-
-	}
-
-	public static class ColorData {
-
-		public boolean red;
-		public boolean green;
-		public boolean blue;
-
-		public ColorData(boolean on) {
-			this(on, on, on);
-		}
-
-		public ColorData(boolean red, boolean green, boolean blue) {
-			this.red = red;
-			this.green = green;
-			this.blue = blue;
-		}
-
-		public void intersect(ColorData dat) {
-			red = red && dat.red;
-			green = green && dat.green;
-			blue = blue && dat.blue;
-		}
-
-		public void add(ColorData dat) {
-			red = red || dat.red;
-			green = green || dat.green;
-			blue = blue || dat.blue;
-		}
-
-		public boolean isBlack() {
-			return !red && !green && !blue;
-		}
-
-		public boolean matchColor(ColorData o) {
-			return o.red == red && o.green == green && o.blue == blue;
-		}
-
-		public int getRenderColor() {
-			return this.isBlack() ? 0x101010 : ReikaColorAPI.RGBtoHex(red ? 255 : 0, green ? 255 : 0, blue ? 255 : 0);
-		}
-
-		public void readFromNBT(NBTTagCompound tag) {
-			red = tag.getBoolean("red");
-			green = tag.getBoolean("green");
-			blue = tag.getBoolean("blue");
-		}
-
-		public void writeToNBT(NBTTagCompound tag) {
-			tag.setBoolean("red", red);
-			tag.setBoolean("green", green);
-			tag.setBoolean("blue", blue);
-		}
-
-		public void writeBuf(ByteBuf data) {
-			data.writeBoolean(red);
-			data.writeBoolean(green);
-			data.writeBoolean(blue);
-		}
-
-		public void readBuf(ByteBuf data) {
-			red = data.readBoolean();
-			green = data.readBoolean();
-			blue = data.readBoolean();
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			return o instanceof ColorData && this.matchColor((ColorData)o);
-		}
-
-		@Override
-		public int hashCode() {
-			return this.getRenderColor();
-		}
-
-		public ColorData copy() {
-			return new ColorData(red, green, blue);
-		}
-
-		@Override
-		public String toString() {
-			return red+"/"+green+"/"+blue+" : "+Integer.toHexString(this.getRenderColor()&0xffffff);
 		}
 
 	}

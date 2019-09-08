@@ -1,11 +1,15 @@
 package Reika.ChromatiCraft.World.Dimension.Structure.PistonTape;
 
+import java.util.HashMap;
+import java.util.Random;
+
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
+import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.PistonTapeSlice.LoopSliceDimensions;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
@@ -30,6 +34,12 @@ public class PistonTapeLoop extends StructurePiece<PistonTapeGenerator> {
 		dimensions = LoopDimensions.createFor(level.doorCount);
 		for (int i = 0; i < bits.length; i++) {
 			bits[i] = new PistonTapeSlice(s, facing, i, this, dimensions);
+		}
+	}
+
+	void randomize(Random rand) {
+		for (int i = 0; i < bits.length; i++) {
+			bits[i].randomizeSolution(rand);
 		}
 	}
 
@@ -72,11 +82,18 @@ public class PistonTapeLoop extends StructurePiece<PistonTapeGenerator> {
 
 		public final int bitLength;
 
-		private LoopDimensions(int d, int h) {
+		private final HashMap<Integer, LoopSliceDimensions> slices = new HashMap();
+
+		protected LoopDimensions(int d, int h) {
 			totalHeight = h;
 			totalDepth = d;
 
 			bitLength = (totalHeight-1)*2+(totalDepth-1)*2+2;
+		}
+
+		@Override
+		public final String toString() {
+			return totalDepth+"x"+totalHeight;
 		}
 
 		private static LoopDimensions createFor(int stages) {
@@ -94,6 +111,12 @@ public class PistonTapeLoop extends StructurePiece<PistonTapeGenerator> {
 				}
 			}
 			return new LoopDimensions(bestD, bestH);
+		}
+
+		public final LoopSliceDimensions slice(int idx) {
+			LoopSliceDimensions ret = new LoopSliceDimensions(idx, totalDepth, totalHeight);
+			slices.put(idx, ret);
+			return ret;
 		}
 
 	}

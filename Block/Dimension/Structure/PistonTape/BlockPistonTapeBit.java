@@ -13,9 +13,9 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LaserPulseEffect;
 import Reika.ChromatiCraft.Base.BlockDimensionStructure;
-import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.ColorData;
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Instantiable.RGBColorData;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
@@ -76,7 +76,9 @@ public class BlockPistonTapeBit extends BlockDimensionStructure implements SemiU
 	public boolean onRightClicked(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
 		int meta = world.getBlockMetadata(x, y, z);
 		if (ep.isSneaking() && ReikaObfuscationHelper.isDeObfEnvironment() && DragonAPICore.isReikasComputer()) {
-			meta = (meta+1)%6;
+			meta = (meta+2) | 1;
+			if (meta >= 7)
+				meta = 1;
 		}
 		else {
 			meta = ReikaMathLibrary.toggleBit(meta, 0);
@@ -105,10 +107,10 @@ public class BlockPistonTapeBit extends BlockDimensionStructure implements SemiU
 		return false;//e.color.isBlack();
 	}
 
-	private static ColorData getColor(IBlockAccess iba, int x, int y, int z) {
+	public static RGBColorData getColor(IBlockAccess iba, int x, int y, int z) {
 		int meta = iba.getBlockMetadata(x, y, z);
 		if (meta%2 == 0)
-			return new ColorData(true, true, true);
+			return new RGBColorData(true, true, true);
 		boolean r = true;
 		boolean g = true;
 		boolean b = true;
@@ -123,7 +125,21 @@ public class BlockPistonTapeBit extends BlockDimensionStructure implements SemiU
 				g = false;
 				break;
 		}
-		return new ColorData(r, g, b);
+		return new RGBColorData(r, g, b);
+	}
+
+	public static int getMetaFor(RGBColorData c, boolean active) {
+		int base = 0;
+		if (c.red && c.green) {
+			base = 0;
+		}
+		else if (c.green && c.blue) {
+			base = 2;
+		}
+		else if (c.red && c.blue) {
+			base = 4;
+		}
+		return active ? base+1 : base;
 	}
 
 	@Override
