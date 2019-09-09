@@ -43,7 +43,7 @@ public class BlockPistonTapeBit extends BlockDimensionStructure implements SemiU
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
-		return icons[meta%2];
+		return meta < 6 ? icons[meta%2] : icons[1];
 	}
 
 	@Override
@@ -109,7 +109,7 @@ public class BlockPistonTapeBit extends BlockDimensionStructure implements SemiU
 
 	public static RGBColorData getColor(IBlockAccess iba, int x, int y, int z) {
 		int meta = iba.getBlockMetadata(x, y, z);
-		if (meta%2 == 0)
+		if (meta < 6 && meta%2 == 0)
 			return new RGBColorData(true, true, true);
 		boolean r = true;
 		boolean g = true;
@@ -124,11 +124,17 @@ public class BlockPistonTapeBit extends BlockDimensionStructure implements SemiU
 			case 2:
 				g = false;
 				break;
+			default:
+				return RGBColorData.black();
 		}
 		return new RGBColorData(r, g, b);
 	}
 
 	public static int getMetaFor(RGBColorData c, boolean active) {
+		if (c.isWhite())
+			return 0;
+		if (c.isPrimary() || c.isBlack())
+			return 8; //error
 		int base = 0;
 		if (c.red && c.green) {
 			base = 0;

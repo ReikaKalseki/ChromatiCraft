@@ -15,14 +15,13 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonContr
 import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonTarget.PistonEmitterTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
+import Reika.DragonAPI.Instantiable.RGBColorData;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 
 public class TapeStage extends StructurePiece<PistonTapeGenerator> {
-
-	private static final boolean ALLOW_BLACK_KEYS = false;
 
 	//private static final int MAX_ID = 511;
 	private static final int MIN_ID = 1;
@@ -53,13 +52,18 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 
 		doors = new DoorSection[doorCount];
 		for (int i = 0; i < doorCount; i++) {
-			DoorKey dk = new DoorKey(i, this.generateID(rand), bus);
-			while (!dk.isValid(ALLOW_BLACK_KEYS)) {
-				dk = new DoorKey(i, this.generateID(rand), bus);
-			}
+			DoorKey dk = new DoorKey(i, bus, this.getColorList(i));
 			doors[i] = new DoorSection(g, this, mainDirection, dk);
 			height = Math.max(height, doors[i].getHeight());
 		}
+	}
+
+	private RGBColorData[] getColorList(int i) {
+		RGBColorData[] data = new RGBColorData[bitsPerDoor];
+		for (int d = 0; d < data.length; d++) {
+			data[d] = tape.tape.getColor(d, i);
+		}
+		return data;
 	}
 	/*
 	private int generateID(Random rand) {

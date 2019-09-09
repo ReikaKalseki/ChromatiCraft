@@ -66,7 +66,7 @@ public abstract class ItemPoweredChromaTool extends ItemChromaTool implements Sp
 	public abstract int getMaxCharge();
 	public abstract int getChargeStates();
 
-	protected abstract boolean isActivated(EntityPlayer e, boolean held);
+	protected abstract boolean isActivated(EntityPlayer e, ItemStack is, boolean held);
 	protected abstract int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is);
 	protected abstract boolean doTick(ItemStack is, World world, EntityPlayer e, boolean held);
 
@@ -92,7 +92,7 @@ public abstract class ItemPoweredChromaTool extends ItemChromaTool implements Sp
 	@Override
 	public final void onUpdate(ItemStack is, World world, Entity e, int slot, boolean held) {
 		if (e instanceof EntityPlayer) {
-			if (this.isActivated((EntityPlayer)e, held)) {
+			if (this.isActivated((EntityPlayer)e, is, held)) {
 				if (this.getCharge(is) > 0) {
 					if (this.doTick(is, world, (EntityPlayer)e, held))
 						this.removeCharge(is, this.getChargeConsumptionRate((EntityPlayer)e, world, is));

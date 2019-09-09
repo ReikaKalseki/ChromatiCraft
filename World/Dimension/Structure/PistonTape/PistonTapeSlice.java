@@ -42,7 +42,8 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 	Coordinate target;
 	Coordinate zeroBit;
 
-	private final RGBColorData[] colorCycle;
+	private final RGBColorData[] bitColors;
+	private final RGBColorData[] netColors;
 
 	private boolean firedVerticalLast;
 	private boolean needsReset;
@@ -56,7 +57,8 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 		dimensions = size.slice(busIndex);
 		bitCount = dimensions.bitLength;
 		loop = p;
-		colorCycle = new RGBColorData[bitCount];
+		bitColors = new RGBColorData[bitCount];
+		netColors = new RGBColorData[bitCount];
 	}
 
 	/** Returns true if ready to handle another pulse */
@@ -99,14 +101,13 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 	}
 
 	void randomizeSolution(Random rand) {
-		for (int i = 0; i < loop.doorCount(); i++) { //not entire array
-			RGBColorData c = this.genRandomColor(i, rand);
-			colorCycle[i] = c;
+		for (int i = 0; i < loop.doorCount(); i++) {
+			this.genRandomColor(i, rand);
 		}
 	}
 
 	RGBColorData getColor(int pos) {
-		return colorCycle[pos];
+		return netColors[pos];
 	}
 
 	/** Assuming "zeroed" piston loop "read head" */
@@ -114,20 +115,52 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 		return dimensions.getNthBitPosition(i);
 	}
 
-	private RGBColorData genRandomColor(int i, Random rand) {
-		int i2 = i-this.getSecondFilterOffset();
-		while (i2 < 0) {
-			i2 += colorCycle.length;
+	private void genRandomColor(int i, Random rand) {
+		int i2 = i+this.getSecondFilterOffset();
+		while (i2 >= bitColors.length) {
+			i2 -= bitColors.length;
 		}
-		RGBColorData mix = colorCycle[i2];
+		RGBColorData mix = bitColors[i2];
 		if (mix == null)
 			mix = RGBColorData.white();
-		RGBColorData c = ReikaJavaLibrary.getRandomCollectionEntry(rand, mix.getReductiveChildren(true, true));
+		RGBColorData c = ReikaJavaLibrary.getRandomCollectionEntry(rand, mix.getReductiveChildren(true, false));
 		if (c.matchColor(mix)) {
-			return ReikaJavaLibrary.getRandomCollectionEntry(rand, mix.getAdditiveChildren(true, true));
+			bitColors[i] = ReikaJavaLibrary.getRandomCollectionEntry(rand, mix.getAdditiveChildren(true, true));
+		}
+		else if (mix.isWhite() && c.isPrimary()) {
+			RGBColorData c1 = null;
+			RGBColorData c2 = null;
+			if (c.red) {
+				c1 = new RGBColorData(true, true, false);
+				c2 = new RGBColorData(true, false, true);
+			}
+			else if (c.green) {
+				c1 = new RGBColorData(true, true, false);
+				c2 = new RGBColorData(false, true, true);
+			}
+			else if (c.blue) {
+				c1 = new RGBColorData(false, true, true);
+				c2 = new RGBColorData(true, false, true);
+			}
+			if (rand.nextBoolean()) {
+				bitColors[i2] = c1;
+				bitColors[i] = c2;
+			}
+			else {
+				bitColors[i2] = c2;
+				bitColors[i] = c1;
+			}
+			mix = bitColors[i2];
 		}
 		else {
-			return mix.getColorNeededToMake(c);
+			bitColors[i] = mix.getColorNeededToMake(c);
+		}
+		RGBColorData net = mix.copy();
+		net.intersect(bitColors[i]);
+		netColors[i] = net;
+
+		if (i > 0 && i != this.getSecondFilterOffset()) {
+			netColors[i] = bitColors[i2] = bitColors[i] = RGBColorData.white();
 		}
 	}
 
@@ -189,17 +222,18 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 						continue;
 					if (d == dimensions.totalDepth && h == 0)
 						continue;
-					this.placeBit(world, x-d*facing.offsetX, y+h, z-d*facing.offsetZ);
+					//this.placeBit(world, x-d*facing.offsetX, y+h, z-d*facing.offsetZ);
 				}
 			}
 		}
 
 		if (true || false) {
 			for (int i = 0; i < dimensions.bitLength; i++) {
-				if (colorCycle[i] == null)
+				if (bitColors[i] == null || bitColors[i].isWhite())
 					continue;
 				Coordinate c = dimensions.getNthBitPosition(i);
-				int m = BlockPistonTapeBit.getMetaFor(colorCycle[i], true);
+				int m = BlockPistonTapeBit.getMetaFor(bitColors[i], true);
+				ReikaJavaLibrary.pConsole("Slice "+busIndex+" @ "+i+": "+bitColors[i]+" > "+m);
 				world.setBlock(c.xCoord, c.yCoord, c.zCoord, ChromaBlocks.PISTONBIT.getBlockInstance(), m);
 			}
 		}

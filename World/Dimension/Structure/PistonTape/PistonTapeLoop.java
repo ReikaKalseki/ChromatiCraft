@@ -10,6 +10,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.PistonTapeSlice.LoopSliceDimensions;
+import Reika.DragonAPI.Instantiable.RGBColorData;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
@@ -41,6 +42,10 @@ public class PistonTapeLoop extends StructurePiece<PistonTapeGenerator> {
 		for (int i = 0; i < bits.length; i++) {
 			bits[i].randomizeSolution(rand);
 		}
+	}
+
+	RGBColorData getColor(int subBit, int pos) {
+		return bits[subBit].getColor(pos);
 	}
 
 	@Override
