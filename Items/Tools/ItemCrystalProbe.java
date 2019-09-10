@@ -59,6 +59,8 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 	}
 
 	private void fire(ItemStack is, World world, EntityPlayer ep) {
+		if (world.isRemote)
+			return;
 		MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlock(ep, 5, false);
 		if (mov != null) {
 			int x = mov.blockX;
@@ -121,7 +123,7 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 
 	@Override
 	public int getMaxCharge() {
-		return 6000;
+		return 12000;
 	}
 
 	@Override
@@ -159,7 +161,7 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 	}
 	 */
 	private static enum Inspections {
-		REPEATER_CONNECTIVITY(150, ChromaTiles.REPEATER, ChromaTiles.COMPOUND, ChromaTiles.BROADCAST, ChromaTiles.WEAKREPEATER, ChromaTiles.SKYPEATER),
+		REPEATER_CONNECTIVITY(60, ChromaTiles.REPEATER, ChromaTiles.COMPOUND, ChromaTiles.BROADCAST, ChromaTiles.WEAKREPEATER, ChromaTiles.SKYPEATER),
 		STRUCTURE_CHECK(1000, ChromaTiles.TABLE, ChromaTiles.RITUAL);
 
 		public final int energyCost;
@@ -210,13 +212,13 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 								case CRAFTING:
 									break;
 								case TEMPLE:
-									arr = ChromaStructures.getCastingLevelOne(world, x, y, z);
+									arr = ChromaStructures.getCastingLevelOne(world, x, y-1, z);
 									break;
 								case MULTIBLOCK:
-									arr = ChromaStructures.getCastingLevelTwo(world, x, y, z);
+									arr = ChromaStructures.getCastingLevelTwo(world, x, y-1, z);
 									break;
 								case PYLON:
-									arr = ChromaStructures.getCastingLevelThree(world, x, y, z);
+									arr = ChromaStructures.getCastingLevelThree(world, x, y-1, z);
 									break;
 							}
 							break;

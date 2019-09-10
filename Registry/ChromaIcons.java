@@ -124,6 +124,7 @@ public enum ChromaIcons implements ChromaIcon {
 	COLORWHIRL("colorwhirl3"),
 	COLORWHIRLFLARE("colorwhirlflare"),
 	RAINFLARE("rainflare"),
+	STATIC("static"),
 	;
 
 	private IIcon icon;
