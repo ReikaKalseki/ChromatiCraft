@@ -49,6 +49,8 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.Portal
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.RepeaterTurboRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.PylonTurboRecipe;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
+import Reika.ChromatiCraft.Auxiliary.Render.ProbeInfoOverlayRenderer;
+import Reika.ChromatiCraft.Auxiliary.Render.StructureErrorOverlays;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityWirelessPowered;
@@ -149,6 +151,7 @@ import Reika.ChromatiCraft.World.Dimension.StructureCalculator;
 import Reika.ChromatiCraft.World.Dimension.Structure.RayBlend.RayBlendPuzzle;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.PacketHandler;
@@ -1030,6 +1033,12 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case RAYBLENDMIX:
 					RayBlendPuzzle.CrystalMix.doParticle(world, dx, dy, dz, CrystalElement.elements[data[0]], data[1] > 0);
+					break;
+				case CONNECTIVITY:
+					ProbeInfoOverlayRenderer.instance.markConnectivity(ep, CrystalElement.elements[data[0]], data[1] > 0, data[2] > 0);
+					break;
+				case STRUCTUREERROR:
+					StructureErrorOverlays.instance.onBlockFailure(world, x, y, z, new BlockKey(Block.getBlockById(data[0]), data[1]));
 					break;
 			}
 		}

@@ -93,6 +93,7 @@ import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.Render.MobSonarRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.OreOverlayRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.PylonFinderOverlay;
+import Reika.ChromatiCraft.Auxiliary.Render.StructureErrorOverlays;
 import Reika.ChromatiCraft.Auxiliary.Tab.FragmentTab;
 import Reika.ChromatiCraft.Auxiliary.Tab.TabChromatiCraft;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
@@ -467,8 +468,10 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			MinecraftForge.EVENT_BUS.register(ChromaOverlays.instance);
 			MinecraftForge.EVENT_BUS.register(OreOverlayRenderer.instance);
+			MinecraftForge.EVENT_BUS.register(StructureErrorOverlays.instance);
 			FMLCommonHandler.instance().bus().register(OreOverlayRenderer.instance);
 			FMLCommonHandler.instance().bus().register(MobSonarRenderer.instance);
+			FMLCommonHandler.instance().bus().register(StructureErrorOverlays.instance);
 			MinecraftForge.EVENT_BUS.register(MobSonarRenderer.instance);
 			ParticleEngine.instance.register();
 		}

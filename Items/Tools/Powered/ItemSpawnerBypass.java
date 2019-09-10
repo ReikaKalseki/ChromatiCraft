@@ -31,7 +31,7 @@ public class ItemSpawnerBypass extends ItemPoweredChromaTool {
 	}
 
 	@Override
-	protected boolean isActivated(EntityPlayer e, boolean held) {
+	protected boolean isActivated(EntityPlayer e, ItemStack is, boolean held) {
 		return true;
 	}
 

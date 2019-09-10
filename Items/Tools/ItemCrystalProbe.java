@@ -11,20 +11,25 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.Render.ProbeInfoOverlayRenderer;
+import Reika.ChromatiCraft.Auxiliary.Render.StructureErrorOverlays;
 import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.Networking.TileEntityWeakRepeater;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 
 public class ItemCrystalProbe extends ItemPoweredChromaTool {
 
+	private static final HashMap<BlockKey, Inspections> lookup = new HashMap();
 	private static final int MIN_CHARGE = Inspections.getMostExpensiveOperation().energyCost;
-	public static final int CHARGE_TIME = 30;
+	public static final int CHARGE_TIME = 50;
 
 	public ItemCrystalProbe(int index) {
 		super(index);
@@ -47,6 +52,7 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 	public void onPlayerStoppedUsing(ItemStack is, World world, EntityPlayer ep, int count) {
 		count = MathHelper.clamp_int(this.getMaxItemUseDuration(is)-count, 0, CHARGE_TIME);
 		//ReikaChatHelper.write(power+"  ->  "+charge);
+		//ReikaJavaLibrary.pConsole(count);
 		if (count >= CHARGE_TIME)
 			this.fire(is, world, ep);
 		ep.setItemInUse(null, 0);
@@ -76,7 +82,7 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 
 	@Override
 	public int getMaxItemUseDuration(ItemStack is) {
-		return CHARGE_TIME;
+		return 72000;
 	}
 
 	@Override
@@ -142,7 +148,7 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 	protected boolean doTick(ItemStack is, World world, EntityPlayer e, boolean held) {
 		return false;
 	}
-
+	/*
 	private static CrystalElement getTuning(ItemStack is) {
 		if (is.stackTagCompound != null && is.stackTagCompound.hasKey("tuned")) {
 			return CrystalElement.elements[is.stackTagCompound.getInteger("tuned")];
@@ -151,12 +157,10 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 			return null;
 		}
 	}
-
+	 */
 	private static enum Inspections {
-		REPEATER_CONNECTIVITY(150, ChromaTiles.WEAKREPEATER, ChromaTiles.SKYPEATER),
+		REPEATER_CONNECTIVITY(150, ChromaTiles.REPEATER, ChromaTiles.COMPOUND, ChromaTiles.BROADCAST, ChromaTiles.WEAKREPEATER, ChromaTiles.SKYPEATER),
 		STRUCTURE_CHECK(1000, ChromaTiles.TABLE, ChromaTiles.RITUAL);
-
-		private static final HashMap<BlockKey, Inspections> lookup = new HashMap();
 
 		public final int energyCost;
 		private final HashSet<BlockKey> trigger = new HashSet();
@@ -190,21 +194,34 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 		private boolean doEffect(World world, int x, int y, int z, int s, EntityPlayer ep, ItemStack is) {
 			switch(this) {
 				case REPEATER_CONNECTIVITY:
-					CrystalElement e = getTuning(is);
-					if (e != null) {
-						TileEntityWeakRepeater te = (TileEntityWeakRepeater)world.getTileEntity(x, y, z);
-						CrystalNetworker.instance.checkConnectivity(e, te);
-						return true;
+					for (CrystalElement e : CrystalElement.elements) {
+						CrystalRepeater te = (CrystalRepeater)world.getTileEntity(x, y, z);
+						boolean can = te.isConductingElement(e);
+						boolean flag = can && CrystalNetworker.instance.checkConnectivity(e, te);
+						ProbeInfoOverlayRenderer.instance.markConnectivity(ep, e, flag, can);
 					}
-					else {
-						return false;
-					}
+					return true;
 				case STRUCTURE_CHECK:
 					FilledBlockArray arr = null;
 					switch(ChromaTiles.getTile(world, x, y, z)) {
 						case TABLE:
+							TileEntityCastingTable te = (TileEntityCastingTable)world.getTileEntity(x, y, z);
+							switch(te.getTier()) {
+								case CRAFTING:
+									break;
+								case TEMPLE:
+									arr = ChromaStructures.getCastingLevelOne(world, x, y, z);
+									break;
+								case MULTIBLOCK:
+									arr = ChromaStructures.getCastingLevelTwo(world, x, y, z);
+									break;
+								case PYLON:
+									arr = ChromaStructures.getCastingLevelThree(world, x, y, z);
+									break;
+							}
 							break;
 						case RITUAL:
+							arr = ChromaStructures.getRitualStructure(world, x, y, z, true, false);
 							break;
 						default:
 							break;

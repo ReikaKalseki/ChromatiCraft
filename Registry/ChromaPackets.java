@@ -192,6 +192,8 @@ public enum ChromaPackets {
 	STRUCTSEED(2),
 	RAYBLENDPING(1),
 	RAYBLENDMIX(2, PacketTypes.POS),
+	CONNECTIVITY(3),
+	STRUCTUREERROR(2),
 	;
 
 	public final int numInts;

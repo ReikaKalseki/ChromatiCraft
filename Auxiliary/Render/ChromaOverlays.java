@@ -184,8 +184,10 @@ public class ChromaOverlays {
 			this.renderPingOverlays(ep, gsc);
 			GL11.glPushMatrix();
 			GL11.glTranslated(0, 0, FRONT_TRANSLATE);
-			if (!fullScreenRendersActive)
+			if (!fullScreenRendersActive) {
 				ProgressOverlayRenderer.instance.renderProgressOverlays(ep, gsc);
+				ProbeInfoOverlayRenderer.instance.renderConnectivityOverlays(ep, gsc);
+			}
 			this.renderStructureText(ep, gsc);
 			this.renderFlareMessages(gsc);
 			GL11.glPopMatrix();

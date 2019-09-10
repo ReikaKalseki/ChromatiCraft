@@ -61,6 +61,7 @@ public enum CrystalElement implements ChromaIcon, OverlayColor {
 	private IIcon engraving;
 	private IIcon outline;
 	private IIcon overbright;
+	//private IIcon overlay;
 	private final int rgb;
 	private final EnumChatFormatting chat;
 
@@ -167,6 +168,7 @@ public enum CrystalElement implements ChromaIcon, OverlayColor {
 		engraving = ico.registerIcon("chromaticraft:runes/engraved/tile"+this.ordinal()+"_0");
 		outline = ico.registerIcon("chromaticraft:runes/outline/tile"+this.ordinal()+"_0");
 		overbright = ico.registerIcon("chromaticraft:crystal/overbright/bloom_"+this.name().toLowerCase(Locale.ENGLISH));
+		//overlay = ico.registerIcon("chromaticraft:runes/overlay/tile"+this.ordinal()+"_0");
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -198,7 +200,12 @@ public enum CrystalElement implements ChromaIcon, OverlayColor {
 	public IIcon getOverbrightIcon() {
 		return overbright;
 	}
-
+	/*
+	@SideOnly(Side.CLIENT)
+	public IIcon getOverlayRune() {
+		return overlay;
+	}
+	 */
 	public static CrystalElement randomElement() {
 		return elements[ReikaDyeHelper.getRandomColor().ordinal()];
 	}

@@ -22,6 +22,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.ChromaNames;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
+import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
 import Reika.ChromatiCraft.Items.ItemAdjacencyPlacer;
 import Reika.ChromatiCraft.Items.ItemChromaBerry;
 import Reika.ChromatiCraft.Items.ItemChromaCrafting;
@@ -328,9 +329,6 @@ public enum ChromaItems implements ItemEnum {
 				return pre+this.getBasicName();
 			case DIMGEN:
 				return StatCollector.translateToLocal(ChromaNames.dimGenNames[meta]);
-			case PURIFY:
-			case EFFICIENCY:
-				return this.getBasicName();
 				//case FADETORCH:
 				//	return this.getBasicName();
 			case MAGICBRANCH:
@@ -366,7 +364,7 @@ public enum ChromaItems implements ItemEnum {
 	}
 
 	public boolean hasMultiValuedName() {
-		return hasSubtypes;
+		return hasSubtypes && !ItemPoweredChromaTool.class.isAssignableFrom(itemClass);
 	}
 
 	public boolean isTool() {
@@ -378,6 +376,8 @@ public enum ChromaItems implements ItemEnum {
 	}
 
 	public int getNumberMetadatas() {
+		if (ItemPoweredChromaTool.class.isAssignableFrom(itemClass))
+			return 1;//((ItemPoweredChromaTool)this.getItemInstance()).getChargeStates();
 		if (!hasSubtypes)
 			return 1;
 		switch(this) {
@@ -428,8 +428,6 @@ public enum ChromaItems implements ItemEnum {
 				return 180;
 			case DIMGEN:
 				return ChromaNames.dimGenNames.length;
-			case PURIFY:
-				return ItemPurifyCrystal.CHARGE_STATES;
 				//case FADETORCH:
 				//	return ItemFadingTorch.STATES;
 			case MAGICBRANCH:
