@@ -283,7 +283,19 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 		int meta = world.getBlockMetadata(x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ);
 		ReikaTreeHelper tree = ReikaTreeHelper.getTree(b, meta);
 		ModWoodList mod = ModWoodList.getModWood(b, meta);
-		return tree != null || (mod != null && (mod.canBePlacedSideways() || dir.offsetY != 0));
+		return tree != null || (mod != null && this.isValidWood(mod) &&  (mod.canBePlacedSideways() || dir.offsetY != 0));
+	}
+
+	public static boolean isValidWood(ModWoodList mod) {
+		switch(mod) {
+			case BLOODWOOD:
+			case BAMBOO:
+			case SLIME:
+			case TAINTED:
+				return false;
+			default:
+				return true;
+		}
 	}
 
 	@Override

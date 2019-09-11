@@ -25,6 +25,8 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.CubePoints;
 import Reika.DragonAPI.Instantiable.CubePoints.CubeVertex;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray.BlockMatchFailCallback;
@@ -35,7 +37,9 @@ import Reika.DragonAPI.Interfaces.BlockCheck;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -50,7 +54,7 @@ public class StructureErrorOverlays implements BlockMatchFailCallback {
 
 	private final ArrayList<ErrorOverlay> coords = new ArrayList();
 
-	private static final int DURATION = 720;
+	private static final int DURATION = 720*2;
 
 	private StructureErrorOverlays() {
 
@@ -139,6 +143,7 @@ public class StructureErrorOverlays implements BlockMatchFailCallback {
 		private final CubePoints renderBox;
 
 		private int age;
+		private String currentEdgeStretch;
 
 		private ErrorOverlay(WorldLocation loc) {
 			location = loc;
@@ -184,11 +189,24 @@ public class StructureErrorOverlays implements BlockMatchFailCallback {
 			 */
 			IIcon ico = ChromaIcons.STATIC.getIcon();
 			renderBox.renderIconOnSides(Minecraft.getMinecraft().theWorld, location.xCoord, location.yCoord, location.zCoord, ico, v5);
+			if (age%5 == 0) {
+				if (age%40 == 0)
+					currentEdgeStretch = null;
+				double r = 0.03125*1.5;
+				String off = ReikaRandomHelper.doWithChance(0.033) ? ReikaJavaLibrary.getRandomCollectionEntry(DragonAPICore.rand, box.getVertices()).ID : null;
+				if (off != null) {
+					currentEdgeStretch = off;
+					ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, location.xCoord, location.yCoord, location.zCoord, 0.5F, 2F);
+				}
+				this.jitter(off, r);
+			}
 		}
 
 		public void jitter(String bigOffset, double r) {
 			for (CubeVertex cv : renderBox.getVertices()) {
-				cv.setPosition(box.getVertex(cv.ID));
+				if (!cv.ID.equals(currentEdgeStretch)) {
+					cv.setPosition(box.getVertex(cv.ID));
+				}
 				double dr = cv.ID.equals(bigOffset) ? r*8 : r;
 				cv.offset(ReikaRandomHelper.getRandomPlusMinus(0, dr), ReikaRandomHelper.getRandomPlusMinus(0, dr), ReikaRandomHelper.getRandomPlusMinus(0, dr));
 			}

@@ -635,6 +635,8 @@ public enum ChromaTiles implements TileEnum {
 		switch(this) {
 			case RELAYSOURCE:
 				return 0.625;
+			case STAND:
+				return 0.75;
 			case INFUSER:
 				return 0.5;
 			case ASPECTJAR:

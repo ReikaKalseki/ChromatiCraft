@@ -207,6 +207,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.OrePick
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.OreSilkerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.OwnerKeyRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.PendantRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.ProbeRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.PurifyCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.PylonFinderRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.RecipeHoverWand;
@@ -869,6 +870,10 @@ public class RecipesCastingTable {
 		is = ChromaItems.LIGHTGUN.getStackOf();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, " ba", "gGb", "sg ", 's', Items.stick, 'g', Items.redstone, 'G', Items.gold_ingot, 'a', ChromaStacks.auraDust, 'b', Blocks.obsidian);
 		this.addRecipe(new LightGunRecipe(is, sr));
+
+		is = ChromaItems.PROBE.getStackOf();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, " sg", "sGs", "gs ", 'G', Blocks.glass, 'g', Items.glowstone_dust, 's', ChromaStacks.blackShard);
+		this.addRecipe(new ProbeRecipe(is, sr));
 
 		this.addSpecialRecipes();
 	}

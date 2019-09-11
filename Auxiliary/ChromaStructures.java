@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityMeteorTower;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger.Location;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityWeakRepeater;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
@@ -3420,7 +3421,7 @@ public class ChromaStructures {
 		}
 		for (int i = 0; i < ModWoodList.woodList.length; i++) {
 			ModWoodList tree = ModWoodList.woodList[i];
-			if (tree.exists() && tree != ModWoodList.SLIME) {
+			if (tree.exists() && TileEntityWeakRepeater.isValidWood(tree)) {
 				array.addBlock(x, y-1, z, tree.getLogID(), tree.getLogMetadatas().get(0));
 			}
 		}

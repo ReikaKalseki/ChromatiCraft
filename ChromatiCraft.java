@@ -110,7 +110,6 @@ import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.ChromaPrepHandler;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.PoolRecipeHandler;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.ShardBoostingHandler;
 import Reika.ChromatiCraft.ModInterface.TreeCapitatorHandler;
-import Reika.ChromatiCraft.ModInterface.Lua.ChromaLuaMethods;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.ChromaAspectManager;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeRecharger;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectFormer;
@@ -200,6 +199,7 @@ import Reika.DragonAPI.ModInteract.DeepInteract.TimeTorchHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThermalHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerBlockHandler.Pulses;
+import Reika.DragonAPI.ModInteract.Lua.LuaMethod;
 import Reika.DragonAPI.ModRegistry.ModCropList;
 import Reika.MeteorCraft.API.MeteorSpawnAPI;
 import Reika.RotaryCraft.API.ReservoirAPI;
@@ -620,7 +620,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			ModInteraction.blacklistGoldAppleUncrafting();
 		}
 
-		ReikaJavaLibrary.initClass(ChromaLuaMethods.class);
+		LuaMethod.registerMethods("Reika.ChromatiCraft.ModInterface.Lua");
 
 		//ReikaEEHelper.blacklistRegistry(ChromaBlocks.blockList);
 		//ReikaEEHelper.blacklistRegistry(ChromaItems.itemList);

@@ -35,6 +35,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Interpolation;
 import Reika.DragonAPI.Interfaces.Item.AnimatedSpritesheet;
+import Reika.DragonAPI.Interfaces.Item.MetadataSpecificTrade;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -46,7 +47,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class ItemUnknownArtefact extends ItemChromaMulti implements AnimatedSpritesheet {
+public class ItemUnknownArtefact extends ItemChromaMulti implements AnimatedSpritesheet, MetadataSpecificTrade {
 
 	//only directly obtainable when silk touched
 	//effects: hurt entities when in inv (slowly); too many in chest -> UA bombing

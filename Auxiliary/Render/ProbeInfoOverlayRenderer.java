@@ -24,8 +24,10 @@ import net.minecraft.util.IIcon;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
@@ -65,6 +67,8 @@ public class ProbeInfoOverlayRenderer {
 			while (it.hasNext()) {
 				Entry<CrystalElement, PylonConnection> e = it.next();
 				PylonConnection tick = e.getValue();
+				if (tick.age == CONNECTIVITY_DURATION-5)
+					ReikaSoundHelper.playClientSound(ChromaSounds.BOUNCE, ep, 0.25F, 2F);
 				if (tick.shouldRender()) {
 					this.renderConnectivityStatus(v5, ep, gsc, tick);
 				}
