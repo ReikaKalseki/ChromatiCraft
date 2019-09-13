@@ -211,6 +211,7 @@ public enum ChromaResearch implements ProgressElement {
 	MANABOOSTER(	ChromaTiles.MANABOOSTER,	ResearchLevel.PYLONCRAFT),
 	NETWORKOPT(		ChromaTiles.OPTIMIZER,		ResearchLevel.ENDGAME,			TieredOres.LUMA.level),
 	LANDMARK(		ChromaTiles.LANDMARK,		ResearchLevel.BASICCRAFT),
+	INJECTOR(		ChromaTiles.INJECTOR,		ResearchLevel.MULTICRAFT),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT,	ProgressStage.ALLCOLORS),
@@ -245,6 +246,7 @@ public enum ChromaResearch implements ProgressElement {
 	WARPNODE(		ChromaBlocks.WARPNODE,											ResearchLevel.RAWEXPLORE,	ProgressStage.WARPNODE),
 	RFPOD(			ChromaBlocks.RFPOD,												ResearchLevel.RUNECRAFT),
 	ENCRUSTED(		ChromaBlocks.ENCRUSTED,		CrystalElement.RED.ordinal(),		ResearchLevel.RAWEXPLORE,	ProgressStage.PYLON),
+	INJECTORAUX(	ChromaBlocks.INJECTORAUX,										ResearchLevel.MULTICRAFT),
 
 	TOOLDESC("Tools", ""),
 	WAND(				ChromaItems.TOOL,			ResearchLevel.ENTRY),
@@ -941,6 +943,8 @@ public enum ChromaResearch implements ProgressElement {
 		//if (this == SPAWNERCONTROL)
 		//	return true;
 		if (this == TRAPFLOOR)
+			return true;
+		if (this == INJECTORAUX)
 			return true;
 		return false;
 	}

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -23,13 +23,16 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.CastingAutomationBlock;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeComparator;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Container.ContainerCastingAuto;
 import Reika.ChromatiCraft.Items.ItemChromaPlacer;
 import Reika.ChromatiCraft.Items.Tools.ItemPendant;
@@ -38,7 +41,6 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButtonSneakIcon;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -68,10 +70,10 @@ public class GuiCastingAuto extends GuiChromaBase {
 	private final List<CastingRecipe> usableRecipes = new ArrayList();
 	private final List<CastingRecipe> visible = new ArrayList();
 
-	private final TileEntityCastingAuto tile;
+	private final CastingAutomationBlock tile;
 
-	public GuiCastingAuto(TileEntityCastingAuto te, EntityPlayer ep) {
-		super(new ContainerCastingAuto(te, ep), ep, te);
+	public GuiCastingAuto(CastingAutomationBlock te, EntityPlayer ep) {
+		super(new ContainerCastingAuto(te, ep), ep, (TileEntityChromaticBase)te);
 		xSize = 224;
 		ySize = 227;
 
@@ -90,7 +92,7 @@ public class GuiCastingAuto extends GuiChromaBase {
 		}
 
 		this.filterRecipes();
-		index = visible.contains(te.getCurrentRecipeOutput()) ? visible.indexOf(te.getCurrentRecipeOutput()) : 0;
+		index = visible.contains(te.getAutomationHandler().getCurrentRecipeOutput()) ? visible.indexOf(te.getAutomationHandler().getCurrentRecipeOutput()) : 0;
 	}
 
 	private CastingRecipe getRecipe() {
@@ -171,14 +173,14 @@ public class GuiCastingAuto extends GuiChromaBase {
 
 			case 4:
 				if (this.getRecipe() != null) {
-					ReikaPacketHelper.sendStringIntPacket(ChromatiCraft.packetChannel, ChromaPackets.AUTORECIPE.ordinal(), tile, RecipesCastingTable.instance.getStringIDForRecipe(this.getRecipe()), number, this.shouldCraftRecursive() ? 1 : 0);
+					ReikaPacketHelper.sendStringIntPacket(ChromatiCraft.packetChannel, ChromaPackets.AUTORECIPE.ordinal(), (TileEntity)tile, RecipesCastingTable.instance.getStringIDForRecipe(this.getRecipe()), number, this.shouldCraftRecursive() ? 1 : 0);
 					if (this.getRecipe() == lexiconSelectedRecipe)
 						lexiconSelectedRecipe = null;
 				}
 				break;
 
 			case 5:
-				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.AUTOCANCEL.ordinal(), tile);
+				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.AUTOCANCEL.ordinal(), (TileEntity)tile);
 				lexiconSelectedRecipe = null;
 				break;
 		}

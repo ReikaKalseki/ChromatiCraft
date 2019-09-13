@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -27,6 +27,11 @@ public class CrystalCoreRecipe extends MultiBlockCastingRecipe implements ShardG
 		this.addAuxItem(ChromaStacks.secondaryCluster, 0, 2);
 
 		//this.addRune(color, rx, ry, rz);
+	}
+
+	@Override
+	public boolean canBeSimpleAutomated() {
+		return true;
 	}
 
 	@Override

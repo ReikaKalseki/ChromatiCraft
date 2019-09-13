@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -37,6 +37,11 @@ public class CrystalGroupRecipe extends TempleCastingRecipe implements ShardGrou
 		this.addRune(items[3].get(0).getItemDamage()%16, -r, 0, 0-dl);
 		this.addRune(items[5].get(0).getItemDamage()%16, r, 0, 0+dl);
 		this.addRune(items[7].get(0).getItemDamage()%16, 0-dl, 0, r);
+	}
+
+	@Override
+	public boolean canBeSimpleAutomated() {
+		return true;
 	}
 
 	private static IRecipe getRecipe(ItemStack out, CrystalElement e1, CrystalElement e2, CrystalElement e3, CrystalElement e4, ItemStack ctr, boolean chg) {

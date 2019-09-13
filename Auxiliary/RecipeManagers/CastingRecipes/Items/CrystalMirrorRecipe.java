@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -31,6 +31,11 @@ public class CrystalMirrorRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(Items.iron_ingot, -2, 2);
 		this.addAuxItem(Items.iron_ingot, 0, 2);
 		this.addAuxItem(Items.iron_ingot, 2, 2);
+	}
+
+	@Override
+	public boolean canBeSimpleAutomated() {
+		return true;
 	}
 
 

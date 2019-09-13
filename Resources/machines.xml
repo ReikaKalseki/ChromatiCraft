@@ -370,7 +370,7 @@
 	</farmer>
 	<automator>
 		<desc>
-			Though less of a hassle than some other fabrication systems - that pyramidal altar nearly left you dead on the table - it can still be tedious, particularly with recursive crafting that can take quite a bit of time. This is where an idea hits you - you should be familiar enough with some of these recipes that you might be able to set up some sort of system to automatically perform them, reducing the amount of work by an enormous amount.
+			Though less of a hassle than some other fabrication systems - that pyramidal altar nearly left you dead on the table - your casting system can still be tedious, particularly with recursive crafting that can take quite a bit of time. You DID create a device for placing items in stands automatically, but it is slow, limited to a few recipes, and cannot actually start the crafting, meaning you are still forced to be involved. This is where an idea hits you - you should be familiar enough with some of these recipes that you might be able to build on that device, adding what is missing and finally achieving proper automation.
 		</desc>
 		<note>
 
@@ -739,22 +739,22 @@
 
 		</note>
 	</optimizer>
-	<name>
+	<injector>
 		<desc>
-
+			Despite having only recently begun using casting stands to enhance your table, you are thoroughly sick of stuffing items into them; those recipes involving shoving shards together in various combinations have proven particularly tedious. Some time ago, you designed a construct for placing items in devices; perhaps you could apply that knowledge and design something capable of being given a recipe and placing the ingredients in the stands automatically. That does not quite automate the process - you still need to place the central item, and trigger the actual crafting - but it is a start.
 		</desc>
 		<note>
 
 		</note>
-	</name>
-	<name>
+	</injector>
+	<landmark>
 		<desc>
-
+			#NULL!
 		</desc>
 		<note>
 
 		</note>
-	</name>
+	</landmark>
 	<name>
 		<desc>
 

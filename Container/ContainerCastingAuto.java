@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -14,23 +14,24 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.CastingAutomationBlock;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
-import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class ContainerCastingAuto extends CoreContainer {
 
-	private final TileEntityCastingAuto tile;
+	private final CastingAutomationBlock tile;
 
 	private ItemStack recipeFilter;
 
 	private final InventoryCrafting inventory = new InventoryCrafting(this, 1, 1);
 
-	public ContainerCastingAuto(TileEntityCastingAuto te, EntityPlayer player)
+	public ContainerCastingAuto(CastingAutomationBlock te, EntityPlayer player)
 	{
-		super(player, te);
+		super(player, (TileEntity)te);
 		int var6;
 		int var7;
 

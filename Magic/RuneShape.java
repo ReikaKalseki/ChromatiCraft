@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,12 +12,14 @@ package Reika.ChromatiCraft.Magic;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingInjector;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
@@ -52,15 +54,24 @@ public final class RuneShape {
 		}
 	}
 
-	public boolean matchAt(World world, int x, int y, int z, int xref, int yref, int zref) {
+	public boolean matchAt(World world, int x, int y, int z) {
+		Set<Coordinate> foci = TileEntityCastingInjector.getFoci();
 		for (Coordinate c : runes.keySet()) {
-			int dx = x+c.xCoord-xref;
-			int dy = y+c.yCoord-yref;
-			int dz = z+c.zCoord-zref;
+			int dx = x+c.xCoord;
+			int dy = y+c.yCoord;
+			int dz = z+c.zCoord;
 			Block b = world.getBlock(dx, dy, dz);
 			if (b == ChromaBlocks.RUNE.getBlockInstance()) {
 				int meta = world.getBlockMetadata(dx, dy, dz);
 				if (meta == runes.get(c).ordinal()) {
+
+				}
+				else {
+					return false;
+				}
+			}
+			else if (b == ChromaBlocks.INJECTORAUX.getBlockInstance()) {
+				if (foci.contains(c)) {
 
 				}
 				else {

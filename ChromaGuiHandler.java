@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -13,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.CastingAutomationBlock;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Base.ChromaBookGui;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
@@ -132,7 +133,6 @@ import Reika.ChromatiCraft.TileEntity.Processing.TileEntityCrystalFurnace;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityEnchantDecomposer;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityInventoryTicker;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
-import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCrystalBrewer;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
@@ -190,8 +190,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 					return new ContainerCrystalTank(player, (TileEntityCrystalTank)te);
 				if (te instanceof TileEntityInventoryTicker)
 					return new ContainerInventoryTicker(player, (TileEntityInventoryTicker)te);
-				if (te instanceof TileEntityCastingAuto)
-					return new ContainerCastingAuto((TileEntityCastingAuto)te, player);
+				if (te instanceof CastingAutomationBlock)
+					return new ContainerCastingAuto((CastingAutomationBlock)te, player);
 				if (te instanceof TileEntityMEDistributor)
 					return new ContainerMEDistributor(player, (TileEntityMEDistributor)te);
 				if (te instanceof TileEntityPatternCache)
@@ -294,8 +294,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 					return new GuiBiomeChanger(player, (TileEntityBiomePainter)te);
 				if (te instanceof TileEntityHeatLamp)
 					return new GuiHeatLamp((TileEntityHeatLamp)te, player);
-				if (te instanceof TileEntityCastingAuto)
-					return new GuiCastingAuto((TileEntityCastingAuto)te, player);
+				if (te instanceof CastingAutomationBlock)
+					return new GuiCastingAuto((CastingAutomationBlock)te, player);
 				if (te instanceof TileEntityMEDistributor)
 					return new GuiMEDistributor(player, (TileEntityMEDistributor)te);
 				if (te instanceof TileEntityCrystalMusic)

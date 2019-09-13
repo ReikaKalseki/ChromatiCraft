@@ -423,6 +423,10 @@ public class CastingRecipe implements APICastingRecipe {
 		return recipe instanceof ShapelessRecipes || recipe instanceof ShapelessOreRecipe;
 	}
 
+	public boolean canBeSimpleAutomated() {
+		return false;
+	}
+
 	public static class TempleCastingRecipe extends CastingRecipe implements RuneRecipe {
 
 		private static final ArrayList<Coordinate> runeRing = new ArrayList();
@@ -464,7 +468,7 @@ public class CastingRecipe implements APICastingRecipe {
 		protected final boolean matchRunes(TileEntityCastingTable te) {
 			//runes.place(world, x, y, z);
 			//ReikaJavaLibrary.pConsole(this.getOutput().getDisplayName());
-			return runes.matchAt(te.worldObj, te.xCoord, te.yCoord, te.zCoord, 0, 0, 0);
+			return runes.matchAt(te.worldObj, te.xCoord, te.yCoord, te.zCoord);
 		}
 
 		@Override

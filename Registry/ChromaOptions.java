@@ -85,7 +85,9 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	SUPERBUILDKEYBIND("Superbuild Ability Activation", Key.LCTRL.toString()),
 	VILLAGERATE("Village Structure Frequency", 1F),
 	NODECHARGESPEED("Crystal-Network-Integrated ThaumCraft Node Improvement Speed", 1F),
-	METEORFIRE("Meteor Tower Projectiles Start Fires On Impact", true);
+	METEORFIRE("Meteor Tower Projectiles Start Fires On Impact", true),
+	PANELLAMPCOLLISION("Panel-Form Lumen Lamps Have No Hitbox", false),
+	;
 
 	private String label;
 	private boolean defaultState;
@@ -258,6 +260,7 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 			case ENDERTNT:
 			case HARDTHAUM:
 			case MIDISIZE:
+			case PANELLAMPCOLLISION:
 				return true;
 			default:
 				return false;

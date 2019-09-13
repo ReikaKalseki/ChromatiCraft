@@ -42,6 +42,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityCalls;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.CastingAutomationBlock;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.InscriptionRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
@@ -134,7 +135,6 @@ import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityGlowFire;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityInventoryTicker;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
-import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
@@ -599,14 +599,14 @@ public class ChromatiPackets implements PacketHandler {
 					ItemBulkMover.setNumberToCarry(ep.getCurrentEquippedItem(), data[0]);
 					break;
 				case CASTAUTOUPDATE:
-					((TileEntityCastingAuto)tile).receiveUpdatePacket(data);
+					((CastingAutomationBlock)tile).getAutomationHandler().receiveUpdatePacket(world, data);
 					break;
 				case AUTORECIPE:
 					CastingRecipe cr = !Strings.isNullOrEmpty(stringdata) ? RecipesCastingTable.instance.getRecipeByStringID(stringdata) : null;
-					((TileEntityCastingAuto)tile).setRecipe(cr, data[0], data[1] > 0);
+					((CastingAutomationBlock)tile).getAutomationHandler().setRecipe(cr, data[0], data[1] > 0);
 					break;
 				case AUTOCANCEL:
-					((TileEntityCastingAuto)tile).cancelCrafting();
+					((CastingAutomationBlock)tile).getAutomationHandler().cancelCrafting();
 					break;
 				case CHAINGUNHURT:
 					EntityChainGunShot.doDamagingParticles(data[0]);

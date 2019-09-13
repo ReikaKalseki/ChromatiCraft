@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -26,6 +26,11 @@ public class CrystalClusterRecipe extends TempleCastingRecipe implements ShardGr
 
 		this.addRunes(r1.getRunes());
 		this.addRunes(r2.getRunes());
+	}
+
+	@Override
+	public boolean canBeSimpleAutomated() {
+		return true;
 	}
 
 	private static IRecipe getRecipe(ItemStack out) {

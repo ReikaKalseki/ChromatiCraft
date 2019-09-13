@@ -28,6 +28,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.LampRenderer;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
@@ -79,7 +80,7 @@ public class BlockRangedLamp extends Block {
 	@Override
 	public final AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		this.setBlockBoundsBasedOnState(world, x, y, z);
-		return super.getCollisionBoundingBoxFromPool(world, x, y, z);
+		return ChromaOptions.PANELLAMPCOLLISION.getState() ? null : super.getCollisionBoundingBoxFromPool(world, x, y, z);
 	}
 
 	@Override

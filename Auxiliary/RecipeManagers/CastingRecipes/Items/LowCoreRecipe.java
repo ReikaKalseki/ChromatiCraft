@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -47,6 +47,11 @@ public class LowCoreRecipe extends MultiBlockCastingRecipe implements ShardGroup
 
 		this.addRune(primary, rune1.xCoord, rune1.yCoord, rune1.zCoord);
 		this.addRune(primary, rune2.xCoord, rune2.yCoord, rune2.zCoord);
+	}
+
+	@Override
+	public final boolean canBeSimpleAutomated() {
+		return true;
 	}
 
 }

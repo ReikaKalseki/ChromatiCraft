@@ -41,6 +41,7 @@ import Reika.ChromatiCraft.Auxiliary.Event.CastingRecipesReloadEvent;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.AvoLampRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CastingInjectorFocusRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.ChromaFlowerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CompoundRelayRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CompoundRuneRecipe;
@@ -113,6 +114,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AvoLase
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.BatteryRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.BeaconRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.BiomePainterRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CastingInjectorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CaveLighterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ChromaCollectorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ChromaCrafterRecipe;
@@ -225,6 +227,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.WarpCap
 import Reika.ChromatiCraft.Base.ItemChromaBasic;
 import Reika.ChromatiCraft.Block.BlockPath;
 import Reika.ChromatiCraft.Block.BlockPath.PathType;
+import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.Bases;
 import Reika.ChromatiCraft.Block.Decoration.BlockRepeaterLight;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
@@ -297,7 +300,8 @@ public class RecipesCastingTable {
 		this.addRecipe(new CrystalClusterRecipe(ChromaStacks.primaryCluster, redgroup, greengroup));
 		this.addRecipe(new CrystalClusterRecipe(ChromaStacks.secondaryCluster, orangegroup, whitegroup));
 		this.addRecipe(new CrystalCoreRecipe(ChromaStacks.crystalCore, new ItemStack(Items.diamond)));
-		this.addRecipe(new CrystalStarRecipe(ChromaStacks.crystalStar, new ItemStack(Items.nether_star)));
+		CrystalStarRecipe star = new CrystalStarRecipe(ChromaStacks.crystalStar, new ItemStack(Items.nether_star));
+		this.addRecipe(star);
 
 		this.addRecipe(new VoidCoreRecipe(ChromaStacks.voidCore));
 		this.addRecipe(new EnergyCoreRecipe(ChromaStacks.energyCore));
@@ -874,6 +878,13 @@ public class RecipesCastingTable {
 		is = ChromaItems.PROBE.getStackOf();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, " sg", "sGs", "gs ", 'G', Blocks.glass, 'g', Items.glowstone_dust, 's', ChromaStacks.blackShard);
 		this.addRecipe(new ProbeRecipe(is, sr));
+
+		is = ChromaBlocks.INJECTORAUX.getStackOf();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "cbc", "ama", "ccc", 'c', ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(0), 'm', ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.MULTICHROMIC.ordinal()), 'b', ChromaStacks.bindingCrystal, 'a', ChromaStacks.spaceDust);
+		this.addRecipe(new CastingInjectorFocusRecipe(is, sr, redgroup, greengroup, orangegroup, whitegroup, star));
+
+		is = ChromaTiles.INJECTOR.getCraftedProduct();
+		this.addRecipe(new CastingInjectorRecipe(is, ChromaStacks.elementUnit));
 
 		this.addSpecialRecipes();
 	}

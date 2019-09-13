@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Block.BlockActiveChroma;
 import Reika.ChromatiCraft.Block.BlockAdjacencyUpgrade;
+import Reika.ChromatiCraft.Block.BlockCastingInjectorFocus;
 import Reika.ChromatiCraft.Block.BlockChromaDoor;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
 import Reika.ChromatiCraft.Block.BlockChromaPortal;
@@ -277,6 +278,7 @@ public enum ChromaBlocks implements BlockEnum {
 	PISTONCONTROL(BlockPistonController.class,									"chroma.pistoncontrol"),
 	RAYBLEND(BlockRayblendFloor.class,											"chroma.rayblend"),
 	ENCRUSTED(BlockEncrustedCrystal.class,		ItemBlockDyeTypes.class,		"chroma.encrusted"),
+	INJECTORAUX(BlockCastingInjectorFocus.class,								"chroma.injectorfocus"),
 	;
 
 	private Class blockClass;
@@ -575,6 +577,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case RFPOD:
 			case PISTONBIT:
 			case RAYBLEND:
+			case INJECTORAUX:
 				return false;
 			default:
 				return true;

@@ -89,6 +89,8 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
 		ItemStack is = ep.getCurrentEquippedItem();
+		if (ChromaBlocks.TANK.match(is))
+			return false;
 		CrystalTankAuxTile te = (CrystalTankAuxTile)world.getTileEntity(x, y, z);
 		TileEntityCrystalTank tk = te.getTankController();
 		if (tk == null)
@@ -121,8 +123,6 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 				return true;
 			}
 		}
-		if (ChromaBlocks.TANK.match(is))
-			return false;
 		ep.openGui(ChromatiCraft.instance, ChromaGuis.TILE.ordinal(), world, tk.xCoord, tk.yCoord, tk.zCoord);
 		return true;
 	}
@@ -267,158 +267,6 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 			this.confirmHasController(world, dx, dy, dz);
 		}
 		super.breakBlock(world, x, y, z, old, oldmeta);
-	}
-
-	public static class CrystalTankAuxTile extends TileEntity implements IFluidHandler {
-
-		private boolean isLit;
-
-		private Coordinate controller = null;
-
-		@Override
-		public boolean canUpdate() {
-			return false;
-		}
-
-		public int getLightValue() {
-			if (isLit)
-				return 15;
-			TileEntityCrystalTank te = this.getTankController();
-			return te != null && te.getFluid() != null ? te.getFluid().getLuminosity() : 0;
-		}
-
-		public void setTile(TileEntityCrystalTank te) {
-			controller = new Coordinate(te);
-		}
-
-		public void addToTank() {
-			TileEntityCrystalTank te = this.getTankController();
-			if (te != null)
-				te.addCoordinate(xCoord, yCoord, zCoord, this.getBaseMetadata());
-		}
-
-		public void removeFromTank() {
-			this.removeFromTank(this.getBaseMetadata());
-		}
-
-		public void removeFromTank(int oldmeta) {
-			TileEntityCrystalTank te = this.getTankController();
-			if (te != null)
-				te.removeCoordinate(xCoord, yCoord, zCoord, oldmeta-oldmeta%2);
-			this.reset();
-		}
-
-		public void markComplete() {
-			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, this.getBaseMetadata()+1, 3);
-		}
-
-		public void reset() {
-			controller = null;
-			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, this.getBaseMetadata(), 3);
-		}
-
-		public int getBaseMetadata() {
-			return this.getBlockMetadata()-this.getBlockMetadata()%2;
-		}
-
-		@Override
-		public int getBlockMetadata() {
-			return worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
-		}
-
-		public boolean hasTile() {
-			return controller != null && this.getTankController() != null;
-		}
-
-		public TileEntityCrystalTank getTankController() {
-			if (controller == null)
-				return null;
-			TileEntity te = controller.getTileEntity(worldObj);
-			return te instanceof TileEntityCrystalTank ? (TileEntityCrystalTank)te : null;
-		}
-
-		@Override
-		public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
-			TileEntityCrystalTank te = this.getTankController();
-			return te != null ? te.fill(from, resource, doFill) : 0;
-		}
-
-		@Override
-		public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
-			TileEntityCrystalTank te = this.getTankController();
-			return te != null ? te.drain(from, resource, doDrain) : null;
-		}
-
-		@Override
-		public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
-			TileEntityCrystalTank te = this.getTankController();
-			return te != null ? te.drain(from, maxDrain, doDrain) : null;
-		}
-
-		@Override
-		public boolean canFill(ForgeDirection from, Fluid fluid) {
-			TileEntityCrystalTank te = this.getTankController();
-			return te != null && te.canFill(from, fluid);
-		}
-
-		@Override
-		public boolean canDrain(ForgeDirection from, Fluid fluid) {
-			TileEntityCrystalTank te = this.getTankController();
-			return te != null && te.canDrain(from, fluid);
-		}
-
-		@Override
-		public FluidTankInfo[] getTankInfo(ForgeDirection from) {
-			TileEntityCrystalTank te = this.getTankController();
-			return te != null ? te.getTankInfo(from) : new FluidTankInfo[0];
-		}
-
-		@Override
-		public void writeToNBT(NBTTagCompound NBT) {
-			super.writeToNBT(NBT);
-
-			if (controller != null) {
-				NBT.setInteger("tx", controller.xCoord);
-				NBT.setInteger("ty", controller.yCoord);
-				NBT.setInteger("tz", controller.zCoord);
-				controller.writeToNBT("controller", NBT);
-			}
-		}
-
-		@Override
-		public void readFromNBT(NBTTagCompound NBT) {
-			super.readFromNBT(NBT);
-
-			if (NBT.hasKey("controller")) {
-				controller = Coordinate.readFromNBT("controller", NBT);
-			}
-			else if (NBT.hasKey("tx")) {
-				int x = NBT.getInteger("tx");
-				int y = NBT.getInteger("ty");
-				int z = NBT.getInteger("tz");
-				controller = new Coordinate(x, y, z);
-			}
-		}
-
-		@Override
-		public Packet getDescriptionPacket() {
-			NBTTagCompound NBT = new NBTTagCompound();
-			this.writeToNBT(NBT);
-			S35PacketUpdateTileEntity pack = new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, NBT);
-			return pack;
-		}
-
-		@Override
-		public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity p)  {
-			this.readFromNBT(p.field_148860_e);
-		}
-
-		public void setFlags(ItemStack is) {
-			if (is.stackTagCompound == null)
-				return;
-			isLit = is.stackTagCompound.getBoolean("lit");
-		}
-
 	}
 
 	@Override
@@ -592,6 +440,158 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 		CrystalTankAuxTile te = (CrystalTankAuxTile)world.getTileEntity(x, y, z);
 		TileEntityCrystalTank con = te.getTankController();
 		return con != null ? con.getRedstoneOverride() : 0;
+	}
+
+	public static class CrystalTankAuxTile extends TileEntity implements IFluidHandler {
+
+		private boolean isLit;
+
+		private Coordinate controller = null;
+
+		@Override
+		public boolean canUpdate() {
+			return false;
+		}
+
+		public int getLightValue() {
+			if (isLit)
+				return 15;
+			TileEntityCrystalTank te = this.getTankController();
+			return te != null && te.getFluid() != null ? te.getFluid().getLuminosity() : 0;
+		}
+
+		public void setTile(TileEntityCrystalTank te) {
+			controller = new Coordinate(te);
+		}
+
+		public void addToTank() {
+			TileEntityCrystalTank te = this.getTankController();
+			if (te != null)
+				te.addCoordinate(xCoord, yCoord, zCoord, this.getBaseMetadata());
+		}
+
+		public void removeFromTank() {
+			this.removeFromTank(this.getBaseMetadata());
+		}
+
+		public void removeFromTank(int oldmeta) {
+			TileEntityCrystalTank te = this.getTankController();
+			if (te != null)
+				te.removeCoordinate(xCoord, yCoord, zCoord, oldmeta-oldmeta%2);
+			this.reset();
+		}
+
+		public void markComplete() {
+			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, this.getBaseMetadata()+1, 3);
+		}
+
+		public void reset() {
+			controller = null;
+			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, this.getBaseMetadata(), 3);
+		}
+
+		public int getBaseMetadata() {
+			return this.getBlockMetadata()-this.getBlockMetadata()%2;
+		}
+
+		@Override
+		public int getBlockMetadata() {
+			return worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
+		}
+
+		public boolean hasTile() {
+			return controller != null && this.getTankController() != null;
+		}
+
+		public TileEntityCrystalTank getTankController() {
+			if (controller == null)
+				return null;
+			TileEntity te = controller.getTileEntity(worldObj);
+			return te instanceof TileEntityCrystalTank ? (TileEntityCrystalTank)te : null;
+		}
+
+		@Override
+		public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
+			TileEntityCrystalTank te = this.getTankController();
+			return te != null ? te.fill(from, resource, doFill) : 0;
+		}
+
+		@Override
+		public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
+			TileEntityCrystalTank te = this.getTankController();
+			return te != null ? te.drain(from, resource, doDrain) : null;
+		}
+
+		@Override
+		public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
+			TileEntityCrystalTank te = this.getTankController();
+			return te != null ? te.drain(from, maxDrain, doDrain) : null;
+		}
+
+		@Override
+		public boolean canFill(ForgeDirection from, Fluid fluid) {
+			TileEntityCrystalTank te = this.getTankController();
+			return te != null && te.canFill(from, fluid);
+		}
+
+		@Override
+		public boolean canDrain(ForgeDirection from, Fluid fluid) {
+			TileEntityCrystalTank te = this.getTankController();
+			return te != null && te.canDrain(from, fluid);
+		}
+
+		@Override
+		public FluidTankInfo[] getTankInfo(ForgeDirection from) {
+			TileEntityCrystalTank te = this.getTankController();
+			return te != null ? te.getTankInfo(from) : new FluidTankInfo[0];
+		}
+
+		@Override
+		public void writeToNBT(NBTTagCompound NBT) {
+			super.writeToNBT(NBT);
+
+			if (controller != null) {
+				NBT.setInteger("tx", controller.xCoord);
+				NBT.setInteger("ty", controller.yCoord);
+				NBT.setInteger("tz", controller.zCoord);
+				controller.writeToNBT("controller", NBT);
+			}
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound NBT) {
+			super.readFromNBT(NBT);
+
+			if (NBT.hasKey("controller")) {
+				controller = Coordinate.readFromNBT("controller", NBT);
+			}
+			else if (NBT.hasKey("tx")) {
+				int x = NBT.getInteger("tx");
+				int y = NBT.getInteger("ty");
+				int z = NBT.getInteger("tz");
+				controller = new Coordinate(x, y, z);
+			}
+		}
+
+		@Override
+		public Packet getDescriptionPacket() {
+			NBTTagCompound NBT = new NBTTagCompound();
+			this.writeToNBT(NBT);
+			S35PacketUpdateTileEntity pack = new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, NBT);
+			return pack;
+		}
+
+		@Override
+		public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity p)  {
+			this.readFromNBT(p.field_148860_e);
+		}
+
+		public void setFlags(ItemStack is) {
+			if (is.stackTagCompound == null)
+				return;
+			isLit = is.stackTagCompound.getBoolean("lit");
+		}
+
 	}
 
 }

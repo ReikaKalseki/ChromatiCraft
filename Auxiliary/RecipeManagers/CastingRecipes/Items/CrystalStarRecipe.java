@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -53,6 +53,11 @@ public class CrystalStarRecipe extends MultiBlockCastingRecipe implements ShardG
 		this.addRune(CrystalElement.BLACK, 3, -1, -3);
 		this.addRune(CrystalElement.BLACK, -3, -1, 3);
 		this.addRune(CrystalElement.BLACK, 3, -1, 3);
+	}
+
+	@Override
+	public boolean canBeSimpleAutomated() {
+		return true;
 	}
 
 	@Override

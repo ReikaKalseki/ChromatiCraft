@@ -117,6 +117,7 @@ import Reika.ChromatiCraft.TileEntity.Processing.TileEntityInventoryTicker;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityAuraInfuser;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingInjector;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityChromaCrafter;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCrystalBrewer;
@@ -145,6 +146,7 @@ import Reika.DragonAPI.Interfaces.Registry.TileEnum;
 import Reika.DragonAPI.Interfaces.TileEntity.RedstoneTile;
 import Reika.DragonAPI.Interfaces.TileEntity.SidePlacedTile;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -250,7 +252,8 @@ public enum ChromaTiles implements TileEnum {
 	MANABOOSTER("chroma.manabooster",	ChromaBlocks.TILEMODELLED4,	TileEntityManaBooster.class,		3, "RenderManaBooster", ModList.BOTANIA),
 	DEATHFOG("chroma.deathfog",			ChromaBlocks.TILEENTITY2,	TileEntityDeathFogEmitter.class,	4),
 	OPTIMIZER("chroma.optimizer",		ChromaBlocks.TILEMODELLED4,	TileEntityNetworkOptimizer.class,	4, "RenderNetworkOptimizer"),
-	LANDMARK("chroma.landmark",			ChromaBlocks.TILEMODELLED4, TileEntityFloatingLandmark.class,	5, "RenderFloatingLandmark", ModList.BUILDCRAFT);
+	LANDMARK("chroma.landmark",			ChromaBlocks.TILEMODELLED4, TileEntityFloatingLandmark.class,	5, "RenderFloatingLandmark", ModList.BUILDCRAFT),
+	INJECTOR("chroma.injector",			ChromaBlocks.TILEENTITY2,	TileEntityCastingInjector.class,	5);
 
 	private final Class tile;
 	private final String name;
@@ -858,6 +861,10 @@ public enum ChromaTiles implements TileEnum {
 
 	public ChromaResearch getFragment() {
 		return ChromaResearch.getPageFor(this);
+	}
+
+	public boolean match(ItemStack is) {
+		return ReikaItemHelper.matchStacks(is, this.getCraftedProduct());
 	}
 
 	public static ChromaTiles getTileByCraftedItem(ItemStack is) {

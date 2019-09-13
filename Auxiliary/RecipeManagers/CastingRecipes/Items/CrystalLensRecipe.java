@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -29,6 +29,11 @@ public class CrystalLensRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(this.getShard(CrystalElement.WHITE), 2, 0);
 		this.addAuxItem(this.getShard(CrystalElement.BLUE), 0, -2);
 		this.addAuxItem(this.getShard(CrystalElement.BLUE), 0, 2);
+	}
+
+	@Override
+	public boolean canBeSimpleAutomated() {
+		return true;
 	}
 
 	@Override
