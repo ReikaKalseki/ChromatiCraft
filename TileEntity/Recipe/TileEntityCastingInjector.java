@@ -234,4 +234,9 @@ public class TileEntityCastingInjector extends InventoriedChromaticBase implemen
 		return false;
 	}
 
+	@Override
+	public TileEntity getItemPool() {
+		return this.getAdjacentTileEntity(ForgeDirection.DOWN);
+	}
+
 }

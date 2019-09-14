@@ -398,7 +398,7 @@ public class CastingAutomationSystem {
 
 	private void buildCache() {
 		ingredients.clear();
-		TileEntity te = ((TileEntityBase)tile).getAdjacentTileEntity(ForgeDirection.UP);
+		TileEntity te = tile.getItemPool();
 		if (te instanceof IInventory) {
 			ingredients.addInventory((IInventory)te);
 		}

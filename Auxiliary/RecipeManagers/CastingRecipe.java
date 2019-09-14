@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -46,6 +45,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.ConfigRecipe;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Magic.CastingTuning;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.RuneShape;
@@ -481,32 +481,8 @@ public class CastingRecipe implements APICastingRecipe {
 			return super.canRunRecipe(te, ep);
 		}
 
-		private boolean checkForTuningKey(TileEntity te, EntityPlayer ep) {
-			HashMap<Coordinate, CrystalElement> key = this.calculateTuningKey(ep);
-			HashMap<Coordinate, CrystalElement> map = ((TileEntityCastingTable)te).getCurrentTuningMap();
-			return key.equals(map);
-		}
-
-		private final HashMap<Coordinate, CrystalElement> calculateTuningKey(EntityPlayer ep) {
-			HashMap<Coordinate, CrystalElement> map = new HashMap();
-			long seed = ep.getUniqueID().getLeastSignificantBits() ^ ep.getUniqueID().getLeastSignificantBits();
-			if (ep.capabilities.isCreativeMode)
-				seed ^= ep.getUniqueID().hashCode();
-			Random rand = new Random(seed);
-			rand.nextBoolean();
-			rand.nextBoolean();
-			int n = 12;//8+rand.nextInt(5);
-			int i = 0;
-			ArrayList<Coordinate> li = new ArrayList(TileEntityCastingTable.getTuningKeys());
-			Collections.sort(li);
-			Collections.shuffle(li, rand);
-			for (Coordinate c : li) {
-				map.put(c, CrystalElement.elements[rand.nextInt(16)]);
-				i++;
-				if (i >= n)
-					break;
-			}
-			return map;
+		protected final boolean checkForTuningKey(TileEntity te, EntityPlayer ep) {
+			return CastingTuning.instance.getTuningKey(ep).check((TileEntityCastingTable)te);
 		}
 
 		protected TempleCastingRecipe addRuneRingRune(CrystalElement e) {

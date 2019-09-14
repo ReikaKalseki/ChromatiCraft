@@ -65,7 +65,6 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityDataNode;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalLaser;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityHoverPad;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityMultiBuilder;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityChromaLamp;
@@ -470,12 +469,6 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			if (tr.isOwnedByPlayer(ep)) {
 				tr.initEnhancementCheck(ep);
 			}
-		}
-
-		if (m == ChromaTiles.HOVERPAD) {
-			TileEntityHoverPad h = (TileEntityHoverPad)te;
-			h.toggleMode();
-			return true;
 		}
 
 		if (ChromaItems.SHARD.matchWith(is) && is.getItemDamage() >= 16 && m == ChromaTiles.LAMP) {

@@ -112,6 +112,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityDataNode;
 import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCaveLighter;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityHoverPad;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemInserter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
@@ -1039,6 +1040,9 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case STRUCTUREERROR:
 					StructureErrorOverlays.instance.onBlockFailure(world, x, y, z, new BlockKey(Block.getBlockById(data[0]), data[1]));
+					break;
+				case CLEARHOVERBOX:
+					((TileEntityHoverPad)tile).clearBox();
 					break;
 			}
 		}

@@ -394,7 +394,8 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	@Override
 	public void getTagsToWriteToStack(NBTTagCompound NBT) {
 		NBT.setBoolean("boosted", isTurbo);
-		NBT.setString("caster", casterID.toString());
+		if (casterID != null)
+			NBT.setString("caster", casterID.toString());
 	}
 
 	@Override

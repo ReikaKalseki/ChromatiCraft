@@ -13,16 +13,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.HoverPadRecipe;
 
+public class HoverPadBlockRecipe extends TempleCastingRecipe {
 
-public class CastingInjectorFocusRecipe extends TempleCastingRecipe {
+	public HoverPadBlockRecipe(ItemStack out, IRecipe ir, HoverPadRecipe r) {
+		super(out, ir);
 
-	public CastingInjectorFocusRecipe(ItemStack out, IRecipe recipe, TempleCastingRecipe... groups) {
-		super(out, recipe);
-
-		for (TempleCastingRecipe cr : groups) {
-			this.addRunes(cr.getRunes());
-		}
+		this.addRunes(r.getRunes());
 	}
 
 	@Override
@@ -32,7 +30,7 @@ public class CastingInjectorFocusRecipe extends TempleCastingRecipe {
 
 	@Override
 	public int getTypicalCraftedAmount() {
-		return 8;
+		return 25;
 	}
 
 }

@@ -235,7 +235,7 @@ public enum ChromaBlocks implements BlockEnum {
 	DECOFLOWER(BlockDecoFlower.class,			ItemBlockDecoFlower.class,		"chroma.decoflower"),
 	SELECTIVEGLASS(BlockSelectiveGlass.class,									"chroma.selectiveglass"),
 	TILEMODELLED3(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile 3"),
-	PAD(BlockHoverPad.class,													"chroma.hoverpad"),
+	PAD(BlockHoverPad.class,					ItemBlockMultiType.class,		"chroma.hoverpadaux"),
 	ADJACENCY(BlockAdjacencyUpgrade.class,										"Adjacency Upgrade"),
 	ANTKEY(BlockAntKey.class,					ItemBlockMultiType.class,		"chroma.antkey"),
 	LASEREFFECT(BlockLaserEffector.class,		ItemBlockMultiType.class,		"chroma.lasereffect"),
@@ -517,6 +517,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return meta >= 8 ? "Freeze Lamp" : "Heat Lamp";
 			case SHIFTLOCK:
 				return ReikaObfuscationHelper.isDeObfEnvironment() ? this.getBasicName()+" ["+Passability.list[meta]+"]" : this.getBasicName();
+			case PAD:
+				return meta == 0 ? this.getBasicName() : this.getBasicName()+" (Decoration)";
 			default:
 				return "";
 		}
@@ -549,7 +551,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case CONSOLE:
 			case LIGHT:
 			case SELECTIVEGLASS:
-			case PAD:
+				//case PAD:
 			case TRAIL:
 			case BRIDGE:
 			case BRIDGECONTROL:
@@ -639,6 +641,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return 9;
 			case SHIFTLOCK:
 				return Passability.list.length;
+			case PAD:
+				return 2;
 			default:
 				return 1;
 		}

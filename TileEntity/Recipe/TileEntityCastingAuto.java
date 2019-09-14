@@ -243,4 +243,9 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements Castin
 		return true;
 	}
 
+	@Override
+	public TileEntity getItemPool() {
+		return this.getAdjacentTileEntity(ForgeDirection.UP);
+	}
+
 }

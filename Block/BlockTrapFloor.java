@@ -57,7 +57,7 @@ public class BlockTrapFloor extends Block implements CollisionDelegate, SemiUnbr
 
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
-		blockIcon = ico.registerIcon("chromaticraft:trapfloor");
+		blockIcon = ico.registerIcon("chromaticraft:basic/trapfloor");
 	}
 
 	@Override

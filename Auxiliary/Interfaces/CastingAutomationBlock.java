@@ -3,6 +3,7 @@ package Reika.ChromatiCraft.Auxiliary.Interfaces;
 import java.util.Collection;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Auxiliary.CastingAutomationSystem;
@@ -31,5 +32,7 @@ public interface CastingAutomationBlock extends GuiController, OwnedTile, IActio
 
 	public void consumeEnergy(CastingRecipe c, TileEntityCastingTable te, ItemStack is);
 	public boolean canCraft(World world, int x, int y, int z, TileEntityCastingTable te);
+
+	public TileEntity getItemPool();
 
 }

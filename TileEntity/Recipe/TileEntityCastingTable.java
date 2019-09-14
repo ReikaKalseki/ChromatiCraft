@@ -841,15 +841,14 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 				break;
 			}
 		}
+		boolean triggerCrafted = true;
 		if (count > 0) {
-			CastingRecipe temp = activeRecipe;
-			activeRecipe.onCrafted(this, craftingPlayer, inv[9], count); //this resets the recipe
-			activeRecipe = temp;
 			ProgressStage.CASTING.stepPlayerTo(craftingPlayer);
 			if (activeRecipe instanceof PylonCastingRecipe) {
 				ProgressStage.LINK.stepPlayerTo(craftingPlayer);
 			}
 		}
+		int ct = count;
 		ItemStack out = activeRecipe.getOutput();
 		while (count > 0) {
 			//ReikaJavaLibrary.pConsole("count="+count+", adding "+activeRecipe.getOutput().stackSize+" output");
@@ -869,6 +868,12 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 			//ReikaJavaLibrary.pConsole("post "+inv[9]);
 
 			this.addCrafted(out, 1);
+			if (triggerCrafted) {
+				triggerCrafted = false;
+				CastingRecipe temp = activeRecipe;
+				activeRecipe.onCrafted(this, craftingPlayer, inv[9], ct); //this resets the recipe
+				activeRecipe = temp;
+			}
 			if (inv[9] != null) {
 				MinecraftForge.EVENT_BUS.post(new CastingEvent(this, activeRecipe, craftingPlayer, inv[9].copy()));
 				int push = inv[9].stackSize;

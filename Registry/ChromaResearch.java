@@ -128,6 +128,7 @@ public enum ChromaResearch implements ProgressElement {
 	STRUCTUREPASSWORDS("Structure Keys",	ChromaBlocks.DIMDATA.getStackOfMetadata(1),				ResearchLevel.ENDGAME,		ProgressStage.STRUCTCOMPLETE),
 	DIMTUNING("Portal Tuning",				ChromaStacks.bedrockloot2,								ResearchLevel.ENDGAME,		ProgressStage.DIMENSION),
 	ABILITIES("Abilities",					ChromaTiles.RITUAL.getCraftedProduct(),					ResearchLevel.ENERGYEXPLORE),
+	CASTTUNING("Casting III",				CrystalTier.REFINED.getCraftedItem(),					ResearchLevel.NETWORKING),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING,		ProgressStage.BLOWREPEATER),
@@ -212,6 +213,7 @@ public enum ChromaResearch implements ProgressElement {
 	NETWORKOPT(		ChromaTiles.OPTIMIZER,		ResearchLevel.ENDGAME,			TieredOres.LUMA.level),
 	LANDMARK(		ChromaTiles.LANDMARK,		ResearchLevel.BASICCRAFT),
 	INJECTOR(		ChromaTiles.INJECTOR,		ResearchLevel.MULTICRAFT),
+	HOVERPAD(		ChromaTiles.HOVERPAD,		ResearchLevel.RUNECRAFT/*,		TieredOres.TELEPORT.level*/),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT,	ProgressStage.ALLCOLORS),
@@ -247,6 +249,7 @@ public enum ChromaResearch implements ProgressElement {
 	RFPOD(			ChromaBlocks.RFPOD,												ResearchLevel.RUNECRAFT),
 	ENCRUSTED(		ChromaBlocks.ENCRUSTED,		CrystalElement.RED.ordinal(),		ResearchLevel.RAWEXPLORE,	ProgressStage.PYLON),
 	INJECTORAUX(	ChromaBlocks.INJECTORAUX,										ResearchLevel.MULTICRAFT),
+	HOVERPADAUX(	ChromaBlocks.PAD,												ResearchLevel.RUNECRAFT/*,	TieredOres.TELEPORT.level*/),
 
 	TOOLDESC("Tools", ""),
 	WAND(				ChromaItems.TOOL,			ResearchLevel.ENTRY),
@@ -946,6 +949,8 @@ public enum ChromaResearch implements ProgressElement {
 			return true;
 		if (this == INJECTORAUX)
 			return true;
+		if (this == HOVERPADAUX)
+			return true;
 		return false;
 	}
 
@@ -1153,6 +1158,13 @@ public enum ChromaResearch implements ProgressElement {
 			ArrayList<ItemStack> li = new ArrayList();
 			for (int i = 0; i < ChromaBlocks.PATH.getNumberMetadatas(); i++) {
 				li.add(new ItemStack(ChromaBlocks.PATH.getBlockInstance(), 1, i));
+			}
+			return li;
+		}
+		if (this == HOVERPADAUX) {
+			ArrayList<ItemStack> li = new ArrayList();
+			for (int i = 0; i < ChromaBlocks.PAD.getNumberMetadatas(); i++) {
+				li.add(new ItemStack(ChromaBlocks.PAD.getBlockInstance(), 1, i));
 			}
 			return li;
 		}

@@ -56,6 +56,8 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.FakeSk
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.FenceAuxRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.FloatingRelayRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.HeatLampRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.HoverPadBlockRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.HoverPadLampRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.LumenLampRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.MusicTriggerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.PathRecipe;
@@ -145,6 +147,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.GlowFir
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.GuardianStoneRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.HarvestPlantRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.HeatLilyRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.HoverPadRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.InfuserRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.InvTickerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.IridescentCrystalRecipe;
@@ -885,6 +888,17 @@ public class RecipesCastingTable {
 
 		is = ChromaTiles.INJECTOR.getCraftedProduct();
 		this.addRecipe(new CastingInjectorRecipe(is, ChromaStacks.elementUnit));
+
+		is = ChromaTiles.HOVERPAD.getCraftedProduct();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "cac", "dmd", "crc", 'r', Blocks.redstone_torch, 'd', ChromaStacks.enderDust, 'a', ChromaStacks.auraDust, 'c', ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.STONE.ordinal()), 'm', Items.diamond);
+		HoverPadRecipe pad = new HoverPadRecipe(is, sr);
+		this.addRecipe(pad);
+
+		is = ChromaBlocks.PAD.getStackOf();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "cac", "ama", "clc", 'l', Blocks.redstone_lamp, 'a', ChromaStacks.auraDust, 'c', ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.STONE.ordinal()), 'm', Items.ender_pearl);
+		this.addRecipe(new HoverPadBlockRecipe(is, sr, pad));
+
+		this.addRecipe(new HoverPadLampRecipe(ChromaBlocks.PAD));
 
 		this.addSpecialRecipes();
 	}

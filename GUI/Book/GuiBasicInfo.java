@@ -13,12 +13,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.enchantment.Enchantment;
@@ -29,6 +32,7 @@ import net.minecraft.util.StatCollector;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
+import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ElementEncodedNumber;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
@@ -40,6 +44,8 @@ import Reika.ChromatiCraft.Auxiliary.Render.RuneShapeRenderer;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructureTypeData;
 import Reika.ChromatiCraft.Base.GuiBookSection;
+import Reika.ChromatiCraft.Magic.CastingTuning;
+import Reika.ChromatiCraft.Magic.CastingTuning.TuningKey;
 import Reika.ChromatiCraft.Magic.RuneShape;
 import Reika.ChromatiCraft.Magic.RuneShape.RuneViewer;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -48,12 +54,15 @@ import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.World.Dimension.StructureCalculator;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
+import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -168,6 +177,8 @@ public class GuiBasicInfo extends GuiBookSection {
 			return enchants.size()+1;
 		else if (page == ChromaResearch.STRUCTUREPASSWORDS)
 			return 1;
+		else if (page == ChromaResearch.CASTTUNING)
+			return 1;
 		return 0;
 	}
 
@@ -181,6 +192,8 @@ public class GuiBasicInfo extends GuiBookSection {
 			return PageType.MULTICAST;
 		else if (page == ChromaResearch.ENCHANTING && subpage == 1)
 			return PageType.RUNES;
+		else if (page == ChromaResearch.CASTTUNING && subpage == 1)
+			return PageType.STRUCT;
 		else if (page == ChromaResearch.STRUCTUREPASSWORDS && subpage == 1)
 			return PageType.STRUCTPASS;
 		return PageType.PLAIN;
@@ -229,12 +242,50 @@ public class GuiBasicInfo extends GuiBookSection {
 			else
 				this.renderEnchantment(posX, posY, enchants.get(subpage-2));
 		}
+		else if (page == ChromaResearch.CASTTUNING && subpage > 0) {
+			this.playerCastingTuning(posX, posY, f);
+		}
 		else if (page == ChromaResearch.ENCHANTS && subpage >= 1) {
 			this.renderEnchantDesc(posX, posY, px, c);
 		}
 		else if (page == ChromaResearch.STRUCTUREPASSWORDS && subpage >= 1) {
 			this.renderStructureKeys(posX, posY);
 		}
+	}
+
+	private void playerCastingTuning(int posX, int posY, float ptick) {
+		TuningKey tk = CastingTuning.instance.getTuningKey(player);
+		FilledBlockArray array = new FilledBlockArray(Minecraft.getMinecraft().theWorld);
+		array.setBlock(0, 1, 0, ChromaTiles.TABLE.getBlock(), ChromaTiles.TABLE.getBlockMetadata());
+		HashSet<Coordinate> set = new HashSet();
+		FilledBlockArray arr = ChromaStructures.getCastingLevelTwo(Minecraft.getMinecraft().theWorld, 0, 0, 0);
+		for (Coordinate c : arr.keySet()) {
+			//int t = (this.getGuiTick()/50)%arr.getSizeY();
+			//if (c.yCoord > t)
+			//	continue;
+			if (c.yCoord > 2)
+				continue;
+			if (c.yCoord != 0 && c.isWithinDistOnAllCoords(0, 0, 0, 5))
+				continue;
+			//set.add(c);
+			array.setBlock(c.xCoord, c.yCoord, c.zCoord, arr.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord));
+		}
+		for (Entry<Coordinate, CrystalElement> e : tk.getRunes().entrySet()) {
+			Coordinate c = e.getKey();
+			set.remove(c);
+			array.setBlock(c.xCoord, c.yCoord+1, c.zCoord, ChromaBlocks.RUNE.getBlockInstance(), e.getValue().ordinal());
+			/*
+			for (int i = 1; i <= 4; i++) {
+				Coordinate c2 = c.offset(0, i, 0);
+				set.add(c2);
+				array.setBlock(c2.xCoord, c2.yCoord, c2.zCoord, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.COLUMN.ordinal());
+			}
+			 */
+		}
+		StructureRenderer render = new StructureRenderer(array, set);
+		render.reset();
+		render.rotate(0, -this.getGuiTick()/2, 0);
+		render.draw3D(posX, posY, ptick, true);
 	}
 
 	private void renderStructureKeys(int posX, int posY) {

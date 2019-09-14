@@ -103,11 +103,11 @@
 		High above the ground lies an occasional swirling vortex of energy. Their appearance evokes a whirpool, or a wormhole, which brings to mind how you continue to lack a means to rapidly traverse large distances at will. Though to use these as such would require some way of choosing an endpoint, via...what? Looking in that direction and blindly hoping? Clearly this idea needs further development.
 	</warpnode>
 	<injectoraux>
-		Having devised a construct with which to insert items into casting stands automatically, you were immediately presented with a problem. You designed the thing to be placed underneath the table, so as to accept items pushed into it upon the completion of the casting process. This works fine, but you completely overlooked the fact that now that the thing is buried in the structure, it is inaccessible and thus unable to be given instructions on what to craft or when. That might have been the end of the idea, until you had a revelation: A ring of eight relays, placed under the outer stands, are both more accessible and more stable.
+		Having devised a construct with which to put items into casting stands automatically, you were presented with a problem. You designed it to be placed underneath the table, to accept items pushed into it upon the completion of the process. In doing so, you completely overlooked the fact that now that it is buried in the structure, it is inaccessible and thus unable to be given instructions on what to craft or when. That might have been the end of the idea, until you had a revelation: A ring of eight relays, placed under the outer stands, are both more accessible and more stable. Hopefully they also function as runes.
 	</injectoraux>
-	<name>
-		
-	</name>
+	<hoverpadaux>
+		A field in which you can freely float in three dimensions is all well and good, but not particularly useful if confined to a 1x1 column of air. And so you have created a sort of lamp, but one with a special property: The light from this lamp holds you aloft, and allows you to navigate easily through large regions of empty space. You could also just add some more glowstone and make it work as a simple decoration.
+	</hoverpadaux>
 	<name>
 		
 	</name>

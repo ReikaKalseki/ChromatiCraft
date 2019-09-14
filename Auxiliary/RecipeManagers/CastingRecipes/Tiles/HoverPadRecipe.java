@@ -7,32 +7,22 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
+package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 
 
-public class CastingInjectorFocusRecipe extends TempleCastingRecipe {
+public class HoverPadRecipe extends TempleCastingRecipe {
 
-	public CastingInjectorFocusRecipe(ItemStack out, IRecipe recipe, TempleCastingRecipe... groups) {
+	public HoverPadRecipe(ItemStack out, IRecipe recipe) {
 		super(out, recipe);
 
-		for (TempleCastingRecipe cr : groups) {
-			this.addRunes(cr.getRunes());
-		}
-	}
-
-	@Override
-	public int getNumberProduced() {
-		return 1;
-	}
-
-	@Override
-	public int getTypicalCraftedAmount() {
-		return 8;
+		this.addRune(CrystalElement.LIME, 1, -1, -3);
+		this.addRuneRingRune(CrystalElement.LIME);
 	}
 
 }
