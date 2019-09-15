@@ -26,6 +26,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -34,6 +35,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 
@@ -80,6 +82,7 @@ import Reika.DragonAPI.Interfaces.Registry.Dependency;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -128,7 +131,7 @@ public enum ChromaResearch implements ProgressElement {
 	STRUCTUREPASSWORDS("Structure Keys",	ChromaBlocks.DIMDATA.getStackOfMetadata(1),				ResearchLevel.ENDGAME,		ProgressStage.STRUCTCOMPLETE),
 	DIMTUNING("Portal Tuning",				ChromaStacks.bedrockloot2,								ResearchLevel.ENDGAME,		ProgressStage.DIMENSION),
 	ABILITIES("Abilities",					ChromaTiles.RITUAL.getCraftedProduct(),					ResearchLevel.ENERGYEXPLORE),
-	CASTTUNING("Casting III",				CrystalTier.REFINED.getCraftedItem(),					ResearchLevel.NETWORKING),
+	CASTTUNING("Personalized Casting",		new ItemStack(Blocks.skull, 1, 3),						ResearchLevel.NETWORKING,	ProgressionManager.instance.getPrereqsArray(ProgressStage.TUNECAST)),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING,		ProgressStage.BLOWREPEATER),
@@ -634,6 +637,34 @@ public enum ChromaResearch implements ProgressElement {
 		else if (this == PACKCHANGES) {
 			ReikaTextureHelper.bindTerrainTexture();
 			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y+1, ChromaIcons.QUESTION.getIcon(), 16, 14);
+			return;
+		}
+		else if (this == CASTTUNING) {
+			GL11.glPushMatrix();
+			/*
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			ReikaTextureHelper.bindTerrainTexture();
+			GL11.glColor4f(1, 1, 1, 1);
+			BlendMode.ADDITIVEDARK.apply();
+			GL11.glPushMatrix();
+			GL11.glTranslated(0, 0, 50);
+			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x-1, y-1, ChromaIcons.BIGFLARE.getIcon(), 18, 18);
+			GL11.glPopMatrix();
+			GL11.glPopAttrib();
+			 */
+			double s = 18;
+			GL11.glTranslated(x+2.5, y+13.5, 0);
+			GL11.glScaled(s, s, s);
+			GL11.glColor4f(1, 1, 1, 1);
+			TileEntitySkull te = new TileEntitySkull();
+			te.worldObj = Minecraft.getMinecraft().theWorld;
+			te.func_152106_a(Minecraft.getMinecraft().getSession().func_148256_e());
+			GL11.glRotated(180, 0, 0, 1);
+			GL11.glRotated(20, 1, 0, 0);
+			GL11.glRotated(-60, 0, 1, 0);
+			TileEntityRendererDispatcher.instance.renderTileEntityAt(te, 0, 0, 0, ReikaRenderHelper.getPartialTickTime());
+			GL11.glPopMatrix();
 			return;
 		}
 		else if (this == NODENET) {

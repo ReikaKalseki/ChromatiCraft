@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -156,7 +156,8 @@ public abstract class GuiBookSection extends ChromaBookGui {
 		RITUAL("ritual2"),
 		ELEMENT("element"),
 		POOL("pool"),
-		STRUCTPASS("password");
+		STRUCTPASS("password"),
+		COMPASS("compass");
 
 		private final String endString;
 

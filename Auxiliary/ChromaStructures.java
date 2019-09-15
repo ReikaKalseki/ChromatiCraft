@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux;
 import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux.Flags;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
+import Reika.ChromatiCraft.Magic.CastingTuning;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -37,7 +38,6 @@ import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger.Loca
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityWeakRepeater;
-import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
@@ -2379,7 +2379,7 @@ public class ChromaStructures {
 	public static FilledBlockArray getCastingLevelTwo(World world, int x, int y, int z) {
 		FilledBlockArray array = getCastingLevelOne(world, x, y, z);
 
-		for (Coordinate c : TileEntityCastingTable.getTuningKeys()) {
+		for (Coordinate c : CastingTuning.instance.getTuningKeyLocations()) {
 			array.addBlock(x+c.xCoord, y+c.yCoord, z+c.zCoord, ChromaBlocks.RUNE.getBlockInstance());
 		}
 

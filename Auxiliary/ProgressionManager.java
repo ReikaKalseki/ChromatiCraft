@@ -22,6 +22,7 @@ import java.util.UUID;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
@@ -168,6 +169,8 @@ public class ProgressionManager implements ProgressRegistry {
 		VOIDMONSTER(							(ItemStack)null, ModList.VOIDMONSTER.isLoaded()),
 		LUMA(									ChromaBlocks.LUMA.getBlockInstance()),
 		WARPNODE(								ChromaBlocks.WARPNODE.getBlockInstance()),
+		BYPASSWEAK(								(ItemStack)null),
+		TUNECAST(								(ItemStack)null),
 		NEVER(									(ItemStack)null, false), //used as a no-trigger placeholder
 		;
 
@@ -200,7 +203,7 @@ public class ProgressionManager implements ProgressRegistry {
 		}
 
 		public boolean stepPlayerTo(EntityPlayer ep) {
-			return instance.stepPlayerTo(ep, this);
+			return instance.stepPlayerTo(ep, this, true);
 		}
 
 		public boolean isPlayerAtStage(EntityPlayer ep) {
@@ -294,9 +297,37 @@ public class ProgressionManager implements ProgressRegistry {
 				tessellator.draw();
 				GL11.glPopAttrib();
 			}
+			else if (this == BYPASSWEAK) {
+				ReikaGuiAPI.instance.drawItemStack(ri, fr, ChromaTiles.WEAKREPEATER.getCraftedProduct(), x, y);
+				ReikaTextureHelper.bindTerrainTexture();
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				GL11.glColor4f(1, 1, 1, 1);
+				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glEnable(GL11.GL_BLEND);
+				boolean has = this.isPlayerAtStage(Minecraft.getMinecraft().thePlayer);
+				if (has)
+					BlendMode.DEFAULT.apply();
+				else
+					BlendMode.ADDITIVEDARK.apply();
+				ChromaIcons ico = has ? ChromaIcons.X : ChromaIcons.QUESTION;
+				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x+2, y+2, ico.getIcon(), 12, 12); //render directly
+				GL11.glPopAttrib();
+			}
+			else if (this == TUNECAST) {
+				ChromaResearch.CASTTUNING.renderIcon(ri, fr, x, y);
+				double s = 0.6;
+				GL11.glPushMatrix();
+				GL11.glScaled(s, s, s);
+				ReikaGuiAPI.instance.drawItemStack(ri, fr, ChromaTiles.TABLE.getCraftedProduct(), (int)(x/s+12), (int)(y/s+12));
+				GL11.glPopMatrix();
+			}
 			else {
 				ReikaGuiAPI.instance.drawItemStack(ri, fr, icon, x, y);
 			}
+		}
+
+		public boolean alwaysRenderFullBright() {
+			return this == BYPASSWEAK;
 		}
 
 		public boolean isGatedAfter(ProgressStage p) {
@@ -310,7 +341,7 @@ public class ProgressionManager implements ProgressRegistry {
 
 		@Override
 		public boolean giveToPlayer(EntityPlayer ep, boolean notify) {
-			return this.stepPlayerTo(ep);
+			return instance.stepPlayerTo(ep, this, notify);
 		}
 
 		public void forceOnPlayer(EntityPlayer ep, boolean notify) {
@@ -395,10 +426,15 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.END, 		ProgressStage.NETHER);
 
 		progressMap.addParent(ProgressStage.BLOWREPEATER, 	ProgressStage.USEENERGY);
+		progressMap.addParent(ProgressStage.BYPASSWEAK, 	ProgressStage.USEENERGY);
 
-		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.MULTIBLOCK);
+		progressMap.addParent(ProgressStage.TUNECAST,	ProgressStage.RUNEUSE);
+		progressMap.addParent(ProgressStage.TUNECAST,	ProgressStage.CHROMA);
+		progressMap.addParent(ProgressStage.TUNECAST,	ProgressStage.MULTIBLOCK);
+
 		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.BLOWREPEATER);
 		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.VILLAGECASTING);
+		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.TUNECAST);
 
 		progressMap.addParent(ProgressStage.STORAGE, 	ProgressStage.MULTIBLOCK);
 
@@ -591,18 +627,18 @@ public class ProgressionManager implements ProgressRegistry {
 		return li;
 	}
 
-	private boolean stepPlayerTo(EntityPlayer ep, ProgressStage s) {
+	private boolean stepPlayerTo(EntityPlayer ep, ProgressStage s, boolean notify) {
 		if (ep == null) {
 			ChromatiCraft.logger.logError("Tried to give progress '"+s+"' to null player???");
 			return false;
 		}
 		if (!this.canStepPlayerTo(ep, s))
 			return false;
-		this.setPlayerStage(ep, s, true, true);
+		this.setPlayerStage(ep, s, true, notify);
 		return true;
 	}
 
-	private boolean canStepPlayerTo(EntityPlayer ep, ProgressStage s) {
+	public boolean canStepPlayerTo(EntityPlayer ep, ProgressStage s) {
 		if (ReikaPlayerAPI.isFake(ep))
 			return false;
 		if (this.isPlayerAtStage(ep, s))
@@ -1100,6 +1136,14 @@ public class ProgressionManager implements ProgressRegistry {
 				c.add(CrystalElement.valueOf(tag));
 		}
 		return c;
+	}
+
+	public void bypassWeakRepeaters(EntityPlayer ep) {
+		if (!ProgressStage.BLOWREPEATER.isPlayerAtStage(ep)/* && !ProgressStage.USEENERGY.isPlayerAtStage(ep) && ProgressStage.CHARGE.isPlayerAtStage(ep)*/) {
+			ProgressStage.BLOWREPEATER.giveToPlayer(ep, false);
+			//ProgressStage.USEENERGY.giveToPlayer(ep, false);
+			ProgressStage.BYPASSWEAK.stepPlayerTo(ep);
+		}
 	}
 
 	private static class AlphabeticProgressComparator implements Comparator<ProgressStage> {

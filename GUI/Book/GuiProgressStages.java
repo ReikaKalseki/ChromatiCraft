@@ -222,7 +222,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 		}
 
 		if (see) {
-			if (has) {
+			if (has || p.alwaysRenderFullBright()) {
 				p.renderIcon(itemRender, fontRendererObj, x+2, y+2);
 				/*
 				int d = -1;

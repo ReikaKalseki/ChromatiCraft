@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.TileEntity.Recipe;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,6 +37,7 @@ import Reika.ChromatiCraft.API.Event.CastingEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.FocusAcceleratable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
@@ -52,6 +52,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
+import Reika.ChromatiCraft.Magic.CastingTuning;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
@@ -111,8 +112,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class TileEntityCastingTable extends InventoriedCrystalReceiver implements NBTTile, BreakAction, TriggerableAction, OwnedTile,
 OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, BlockMatchFailCallback {
 
-	private static final HashSet<Coordinate> tuningKeys = new HashSet();
-
 	private CastingRecipe activeRecipe = null;
 	private int craftingTick = 0;
 	private int craftSoundTimer = 20000;
@@ -133,24 +132,9 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 	private final HashSet<KeyedItemStack> completedRecipes = new HashSet();
 	private final ItemHashMap<Integer> craftedItems = new ItemHashMap();
 
-	static {
-		for (int i = -6; i <= 6; i += 3) {
-			if (i != 0) {
-				tuningKeys.add(new Coordinate(-6, 0, i));
-				tuningKeys.add(new Coordinate(6, 0, i));
-				tuningKeys.add(new Coordinate(i, 0, 6));
-				tuningKeys.add(new Coordinate(i, 0, -6));
-			}
-		}
-	}
-
-	public static Set<Coordinate> getTuningKeys() {
-		return Collections.unmodifiableSet(tuningKeys);
-	}
-
 	public Collection<Coordinate> getTuningBlocks() {
 		Collection<Coordinate> li = new ArrayList();
-		for (Coordinate c : tuningKeys) {
+		for (Coordinate c : CastingTuning.instance.getTuningKeyLocations()) {
 			li.add(c.offset(xCoord, yCoord, zCoord));
 		}
 		return li;
@@ -159,9 +143,14 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 	public HashMap<Coordinate, CrystalElement> getCurrentTuningMap() {
 		HashMap<Coordinate, CrystalElement> map = new HashMap();
 		for (Coordinate c : this.getTuningBlocks()) {
-			map.put(c, c.getBlock(worldObj) == ChromaBlocks.RUNE.getBlockInstance() ? CrystalElement.elements[c.getBlockMetadata(worldObj)] : null);
+			if (c.getBlock(worldObj) == ChromaBlocks.RUNE.getBlockInstance())
+				map.put(c, CrystalElement.elements[c.getBlockMetadata(worldObj)]);
 		}
 		return map;
+	}
+
+	public boolean hasTuningKey() {
+		return this.getCurrentTuningMap().size() == CastingTuning.instance.getTuningKeyLocations().size();
 	}
 
 	public RecipeType getTier() {
@@ -584,6 +573,18 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 			activeRecipe = null;
 		}
 		this.recountFocusCrystals();
+		if (hasStructure2 && !world.isRemote) {
+			for (UUID uid : owners) {
+				EntityPlayer ep = world.func_152378_a(uid);
+				if (ep != null && !ReikaPlayerAPI.isFake(ep)) {
+					boolean tuned = CastingTuning.instance.getTuningKey(ep).check(this);
+					if (tuned) {
+						ProgressionManager.instance.bypassWeakRepeaters(ep);
+						ProgressStage.TUNECAST.stepPlayerTo(ep);
+					}
+				}
+			}
+		}
 		this.syncAllData(true);
 	}
 
@@ -591,41 +592,50 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		if (structureMismatch != null)
 			structureMismatch.isActive = true;
 		if (activeRecipe != null && craftingTick == 0) {
-			if (activeRecipe.canRunRecipe(this, ep) && this.isOwnedByPlayer(ep)) {
-				craftingPlayer = ep;
-				if (worldObj.isRemote)
-					return true;
-				this.syncAllData(true);
-				ChromaSounds.CAST.playSoundAtBlock(this);
+			if (this.isOwnedByPlayer(ep)) {
+				if (activeRecipe.canRunRecipe(this, ep)) {
+					craftingPlayer = ep;
+					if (worldObj.isRemote)
+						return true;
+					this.syncAllData(true);
+					ChromaSounds.CAST.playSoundAtBlock(this);
 
-				this.setStandLock(true);
+					this.setStandLock(true);
 
-				if (activeRecipe.canBeStacked()) {
-					craftingAmount = 1;
-				}
-				else {
-					craftingAmount = inv[4].stackSize;
-					if (activeRecipe instanceof MultiBlockCastingRecipe) {
-						MultiBlockCastingRecipe mult = (MultiBlockCastingRecipe)activeRecipe;
-						HashMap<WorldLocation, ItemMatch> map = mult.getOtherInputs(worldObj, xCoord, yCoord, zCoord);
-						for (WorldLocation loc : map.keySet()) {
-							TileEntityItemStand te = (TileEntityItemStand)loc.getTileEntity(worldObj);//loc.getTileEntity();
-							if (te != null) {
-								craftingAmount = Math.min(craftingAmount, te.getStackInSlot(0).stackSize);
+					if (activeRecipe.canBeStacked()) {
+						craftingAmount = 1;
+					}
+					else {
+						craftingAmount = inv[4].stackSize;
+						if (activeRecipe instanceof MultiBlockCastingRecipe) {
+							MultiBlockCastingRecipe mult = (MultiBlockCastingRecipe)activeRecipe;
+							HashMap<WorldLocation, ItemMatch> map = mult.getOtherInputs(worldObj, xCoord, yCoord, zCoord);
+							for (WorldLocation loc : map.keySet()) {
+								TileEntityItemStand te = (TileEntityItemStand)loc.getTileEntity(worldObj);//loc.getTileEntity();
+								if (te != null) {
+									craftingAmount = Math.min(craftingAmount, te.getStackInSlot(0).stackSize);
+								}
 							}
 						}
 					}
-				}
 
-				this.setRecipeTickDuration(activeRecipe);
-				if (activeRecipe instanceof PylonCastingRecipe) {
-					this.requestEnergyDifference(this.getRequiredEnergy());
+					this.setRecipeTickDuration(activeRecipe);
+					if (activeRecipe instanceof PylonCastingRecipe) {
+						this.requestEnergyDifference(this.getRequiredEnergy());
+					}
+					return true;
 				}
-				return true;
+			}
+			else if (this.hasTuningKey()) {
+				this.triggerTuningMismatch(ep);
 			}
 		}
 		ChromaSounds.ERROR.playSoundAtBlock(this);
 		return false;
+	}
+
+	private void triggerTuningMismatch(EntityPlayer ep) {
+		//TODO
 	}
 
 	public ElementTagCompound getRequiredEnergy() {
