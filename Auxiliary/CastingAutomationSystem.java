@@ -13,7 +13,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.OreDictionary;
@@ -22,7 +21,6 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CastingAutomationBlock;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
@@ -42,7 +40,6 @@ import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Collections.ItemCollection;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.ModInteract.BasicAEInterface;
 import Reika.DragonAPI.Instantiable.Recipe.ItemMatch;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -62,9 +59,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class CastingAutomationSystem {
 
-	private final Random rand = new Random();
+	protected final Random rand = new Random();
 
-	private final CastingAutomationBlock tile;
+	protected final CastingAutomationBlock tile;
 
 	private CastingRecipe recipe;
 
@@ -90,30 +87,27 @@ public class CastingAutomationSystem {
 		}
 	}
 
-	public CastingRecipe getCurrentRecipeOutput() {
+	public final CastingRecipe getCurrentRecipeOutput() {
 		return recipe;
 	}
 
-	public void destroy() {
+	public final void destroy() {
 		if (ModList.APPENG.isLoaded() && aeGridNode != null)
 			((IGridNode)aeGridNode).destroy();
 	}
 
 	@ModDependent(ModList.APPENG)
-	public IGridNode getGridNode(ForgeDirection dir) {
+	public final IGridNode getGridNode(ForgeDirection dir) {
 		return (IGridNode)aeGridNode;
 	}
 
 	@ModDependent(ModList.APPENG)
-	public IGridNode getActionableNode() {
+	public final IGridNode getActionableNode() {
 		return (IGridNode)aeGridNode;
 	}
 
-	public void setRecipe(CastingRecipe c, int amt, boolean recurse) {
+	public void setRecipe(CastingRecipe c, int amt) {
 		//ReikaJavaLibrary.pConsole(amt+" x "+c);
-		if (recurse && tile.canRecursivelyRequest()) {
-			HashMap<CastingRecipe, Integer> li = this.determineMissingRecipes(tile.getTable(), c, amt);
-		}
 		recipe = c;
 		if (c != null && !tile.canTriggerCrafting()) {
 			amt = Math.min(amt, 64/c.getOutput().stackSize);
@@ -121,122 +115,11 @@ public class CastingAutomationSystem {
 		recipesToGo = amt;
 	}
 
-	private HashMap<CastingRecipe, Integer> determineMissingRecipes(TileEntityCastingTable te, CastingRecipe recipe, int amt) {
-		ItemHashMap<Integer> missing = new ItemHashMap();
-		HashMap<CastingRecipe, Integer> li = new HashMap();
-		if (recipe instanceof MultiBlockCastingRecipe) {
-			MultiBlockCastingRecipe mr = (MultiBlockCastingRecipe)recipe;
-			HashMap<List<Integer>, TileEntityItemStand> map = te.getOtherStands();
-			Map<List<Integer>, ItemMatch> items = mr.getAuxItems();
-			//ReikaJavaLibrary.pConsole("Need items "+items);
-			for (List<Integer> key : map.keySet()) {
-				ItemMatch item = items.get(key);
-				TileEntityItemStand stand = map.get(key);
-				if (stand != null) {
-					ItemStack in = stand.getStackInSlot(0);
-					if ((item == null && in != null) || (item != null && !item.match(in))) {
-						if (in != null) {
-
-						}
-						else {
-							ItemStack ret = this.findItem(item, amt, true);
-							//ReikaJavaLibrary.pConsole("Looking for "+item+", got "+ret);
-							if (ret == null || ret.stackSize < amt) {
-								if (item.getItemList().size() == 1)
-									missing.add(item.getItemList().iterator().next().getItemStack(), ret != null ? amt-ret.stackSize : amt);
-								else
-									return null;
-							}
-						}
-					}
-					else {
-						//matches
-					}
-				}
-			}
-			ItemStack ctr = mr.getMainInput();
-			for (int i = 0; i < 9; i++) {
-				ItemStack in = te.getStackInSlot(i);
-				if (i == 4) {
-					if (in != null) {
-						if (ReikaItemHelper.matchStacks(in, ctr) && (ctr.stackTagCompound == null || ItemStack.areItemStackTagsEqual(in, ctr))) {
-							//matches
-						}
-						else {
-
-						}
-					}
-					else {
-						ItemStack ret = this.findItem(ctr, amt, true);
-						//ReikaJavaLibrary.pConsole("Looking for center item "+ctr+", got "+ret);
-						if (ret == null || ret.stackSize < amt) {
-							missing.add(ctr, ret != null ? amt-ret.stackSize : amt);
-						}
-					}
-				}
-				else {
-
-				}
-			}
-		}
-		else {
-			Object[] arr = recipe.getInputArray();
-			//ReikaJavaLibrary.pConsole("Looking for "+Arrays.toString(arr));
-			for (int i = 0; i < 9; i++) {
-				Object item = arr[i];
-				ItemStack in = te.getStackInSlot(i);
-				if (this.matches(item, in)) {
-					//match
-				}
-				else {
-					if (in != null) {
-
-					}
-					else {
-						ItemStack ret = this.findItem(item, amt, true);
-						//ReikaJavaLibrary.pConsole("Looking for "+item+", got "+ret);
-						if (ret == null || ret.stackSize < amt) {
-							if (item instanceof ItemStack)
-								missing.add((ItemStack)item, ret != null ? amt-ret.stackSize : amt);
-							else
-								return null;
-						}
-					}
-				}
-			}
-		}
-
-		ItemHashMap<Integer> moreMissing = new ItemHashMap();
-
-		while (!missing.isEmpty()) {
-			for (ItemStack is : missing.keySet()) {
-				int req = missing.get(is);
-				ArrayList<CastingRecipe> li2 = RecipesCastingTable.instance.getAllRecipesMaking(is);
-				if (li2.size() != 1)
-					return null;
-				CastingRecipe c = li2.get(0);
-				for (ItemStack is2 : c.getAllInputs()) {
-					if (missing.containsKey(is2)) {
-						moreMissing.add(is2, 1);
-					}
-				}
-				int num = MathHelper.ceiling_float_int((float)req/c.getOutput().stackSize);
-				Integer get = li.get(c);
-				int has = get != null ? get.intValue() : 0;
-				li.put(c, has+num);
-			}
-
-			missing = moreMissing;
-		}
-
-		return li;
+	public final void cancelCrafting() {
+		this.setRecipe(null, 0);
 	}
 
-	public void cancelCrafting() {
-		this.setRecipe(null, 0, false);
-	}
-
-	private boolean matches(Object object, ItemStack is) {
+	protected final boolean matches(Object object, ItemStack is) {
 		if (object instanceof ItemStack) {
 			return ReikaItemHelper.matchStacks(is, (ItemStack)object) && ItemStack.areItemStackTagsEqual(is, (ItemStack)object);
 		}
@@ -248,7 +131,7 @@ public class CastingAutomationSystem {
 		return false;
 	}
 
-	private ItemStack findItem(Object item, int amt, boolean simulate) {
+	protected final ItemStack findItem(Object item, int amt, boolean simulate) {
 		List<ItemStack> li = new ArrayList();
 		if (item instanceof ItemStack)
 			li.add((ItemStack)item);
@@ -318,7 +201,7 @@ public class CastingAutomationSystem {
 		return left <= 0;
 	}
 
-	public int pushItemToME(ItemStack is) {
+	public final int pushItemToME(ItemStack is) {
 		if (DragonAPICore.debugtest)
 			return is.stackSize;
 		if (ModList.APPENG.isLoaded()) {
@@ -529,20 +412,20 @@ public class CastingAutomationSystem {
 		return te.getActiveRecipe() == recipe;
 	}
 
-	private int getX() {
+	public final int getX() {
 		return ((TileEntity)tile).xCoord;
 	}
 
-	private int getY() {
+	public final int getY() {
 		return ((TileEntity)tile).yCoord;
 	}
 
-	private int getZ() {
+	public final int getZ() {
 		return ((TileEntity)tile).zCoord;
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void receiveUpdatePacket(World world, int[] data) {
+	public final void receiveUpdatePacket(World world, int[] data) {
 		double x = data[0]+0.5;
 		double y = data[1]+0.5;
 		double z = data[2]+0.5;

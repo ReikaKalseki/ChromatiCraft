@@ -823,30 +823,30 @@
 	</powertree>
 	<tunecast>
 		<title>
-			
+			Casting Personalization
 		</title>
 		<hint>
-			
+			How to imprint yourself onto your casting structure?
 		</hint>
 		<reveal>
-			
+			That should have been rather obvious in hindsight.
 		</reveal>
 		<desc>
-			
+			Linking your crafting to your person
 		</desc>
 	</tunecast>
 	<bypassweak>
 		<title>
-			
+			Retroactive Recognition
 		</title>
 		<hint>
-			
+			This particular design seems somewhat familiar, and not in a good way.
 		</hint>
 		<reveal>
-			
+			Prediction of upcoming mistakes enables you to avoid them altogether.
 		</reveal>
 		<desc>
-			
+			Spotting disaster before it strikes
 		</desc>
 	</bypassweak>
 	<name>

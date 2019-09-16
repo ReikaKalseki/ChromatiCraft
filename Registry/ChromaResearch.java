@@ -37,6 +37,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
@@ -84,6 +85,7 @@ import Reika.DragonAPI.Interfaces.Registry.Dependency;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -660,15 +662,21 @@ public enum ChromaResearch implements ProgressElement {
 			GL11.glTranslated(x+2.5, y+13.5, 0);
 			GL11.glScaled(s, s, s);
 			GL11.glColor4f(1, 1, 1, 1);
-			TileEntitySkull te = new TileEntitySkull();
-			te.worldObj = Minecraft.getMinecraft().theWorld;
-			GameProfile p = ReikaPlayerAPI.getClientProfile();
-			if (p != null)
-				te.func_152106_a(p);
-			GL11.glRotated(180, 0, 0, 1);
-			GL11.glRotated(20, 1, 0, 0);
-			GL11.glRotated(-60, 0, 1, 0);
-			TileEntityRendererDispatcher.instance.renderTileEntityAt(te, 0, 0, 0, ReikaRenderHelper.getPartialTickTime());
+			try {
+				TileEntitySkull te = new TileEntitySkull();
+				te.worldObj = Minecraft.getMinecraft().theWorld;
+				GameProfile p = ReikaPlayerAPI.getClientProfile();
+				if (p != null && MinecraftServer.getServer() != null)
+					te.func_152106_a(p);
+				GL11.glRotated(180, 0, 0, 1);
+				GL11.glRotated(20, 1, 0, 0);
+				GL11.glRotated(-60, 0, 1, 0);
+				TileEntityRendererDispatcher.instance.renderTileEntityAt(te, 0, 0, 0, ReikaRenderHelper.getPartialTickTime());
+			}
+			catch (Exception e) {
+				ReikaChatHelper.write("Threw exception rendering fragment "+this+"! Check your console!");
+				e.printStackTrace();
+			}
 			GL11.glPopMatrix();
 			return;
 		}

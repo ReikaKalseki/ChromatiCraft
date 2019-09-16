@@ -22,6 +22,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Auxiliary.CastingAutomationSystem;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
+import Reika.ChromatiCraft.Auxiliary.RecursiveCastingAutomationSystem;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CastingAutomationBlock;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
@@ -49,10 +50,10 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements Castin
 		required.addTag(CrystalElement.WHITE, 20);
 	}
 
-	private CastingAutomationSystem handler;
+	private RecursiveCastingAutomationSystem handler;
 
 	public TileEntityCastingAuto() {
-		handler = new CastingAutomationSystem(this);
+		handler = new RecursiveCastingAutomationSystem(this);
 	}
 
 	public TileEntityCastingTable getTable() {

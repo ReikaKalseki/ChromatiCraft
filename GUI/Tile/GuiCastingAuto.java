@@ -173,7 +173,7 @@ public class GuiCastingAuto extends GuiChromaBase {
 
 			case 4:
 				if (this.getRecipe() != null) {
-					ReikaPacketHelper.sendStringIntPacket(ChromatiCraft.packetChannel, ChromaPackets.AUTORECIPE.ordinal(), (TileEntity)tile, RecipesCastingTable.instance.getStringIDForRecipe(this.getRecipe()), number, this.shouldCraftRecursive() ? 1 : 0);
+					ReikaPacketHelper.sendStringIntPacket(ChromatiCraft.packetChannel, ChromaPackets.AUTORECIPE.ordinal(), (TileEntity)tile, RecipesCastingTable.instance.getStringIDForRecipe(this.getRecipe()), number);
 					if (this.getRecipe() == lexiconSelectedRecipe)
 						lexiconSelectedRecipe = null;
 				}
@@ -184,10 +184,6 @@ public class GuiCastingAuto extends GuiChromaBase {
 				lexiconSelectedRecipe = null;
 				break;
 		}
-	}
-
-	private boolean shouldCraftRecursive() {
-		return GuiScreen.isShiftKeyDown();
 	}
 
 	@Override
