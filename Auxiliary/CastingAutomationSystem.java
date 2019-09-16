@@ -12,6 +12,7 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -459,6 +460,20 @@ public class CastingAutomationSystem {
 			fx.motionY = 0.03125+rand.nextDouble()*0.0625;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
+	}
+
+	public void writeToNBT(NBTTagCompound NBT) {
+		NBT.setInteger("recipes", recipesToGo);
+		NBT.setInteger("cycles", recipeCycles);
+	}
+
+	public void readFromNBT(NBTTagCompound NBT) {
+		recipesToGo = NBT.getInteger("recipes");
+		recipeCycles = NBT.getInteger("cycles");
+	}
+
+	public void onBreak(World world) {
+
 	}
 
 	private static class UpdateStep {

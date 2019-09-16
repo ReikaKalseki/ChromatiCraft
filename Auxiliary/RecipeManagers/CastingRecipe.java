@@ -269,9 +269,12 @@ public class CastingRecipe implements APICastingRecipe {
 		return map;
 	}
 
-	public ElementTagCompound getInputElements() {
+	public ElementTagCompound getInputElements(boolean sum) {
 		ElementTagCompound tag = new ElementTagCompound();
-		tag.addButMinimizeWith(ItemElementCalculator.instance.getIRecipeTotal(recipe));
+		if (sum)
+			tag.add(ItemElementCalculator.instance.getIRecipeTotal(recipe));
+		else
+			tag.addButMinimizeWith(ItemElementCalculator.instance.getIRecipeTotal(recipe));
 		return tag;
 	}
 
@@ -427,6 +430,10 @@ public class CastingRecipe implements APICastingRecipe {
 		return false;
 	}
 
+	public int getInputCount() {
+		return ReikaRecipeHelper.getRecipeIngredientCount(recipe);
+	}
+
 	public static class TempleCastingRecipe extends CastingRecipe implements RuneRecipe {
 
 		private static final ArrayList<Coordinate> runeRing = new ArrayList();
@@ -574,8 +581,8 @@ public class CastingRecipe implements APICastingRecipe {
 		}
 
 		@Override
-		public ElementTagCompound getInputElements() {
-			ElementTagCompound tag = super.getInputElements();
+		public ElementTagCompound getInputElements(boolean sum) {
+			ElementTagCompound tag = super.getInputElements(sum);
 			for (CrystalElement e : runes.getView().getRunes().values()) {
 				tag.addValueToColor(e, 1);
 			}
@@ -781,11 +788,14 @@ public class CastingRecipe implements APICastingRecipe {
 		}
 
 		@Override
-		public ElementTagCompound getInputElements() {
-			ElementTagCompound tag = super.getInputElements();
+		public ElementTagCompound getInputElements(boolean sum) {
+			ElementTagCompound tag = super.getInputElements(sum);
 			for (ItemMatch is : inputs.values()) {
 				for (KeyedItemStack ks : is.getItemList()) {
-					tag.addButMinimizeWith(ItemElementCalculator.instance.getValueForItem(ks.getItemStack()));
+					if (sum)
+						tag.add(ItemElementCalculator.instance.getValueForItem(ks.getItemStack()));
+					else
+						tag.addButMinimizeWith(ItemElementCalculator.instance.getValueForItem(ks.getItemStack()));
 				}
 			}
 			return tag;
@@ -806,6 +816,11 @@ public class CastingRecipe implements APICastingRecipe {
 		@Override
 		protected boolean matchRecipeData(CastingRecipe cr) {
 			return ItemStack.areItemStacksEqual(main, ((MultiBlockCastingRecipe)cr).main) && inputs.equals(((MultiBlockCastingRecipe)cr).inputs);
+		}
+
+		@Override
+		public int getInputCount() {
+			return this.getRequiredCentralItemCount()+inputs.size();
 		}
 	}
 
@@ -853,8 +868,8 @@ public class CastingRecipe implements APICastingRecipe {
 		}
 
 		@Override
-		public ElementTagCompound getInputElements() {
-			ElementTagCompound tag = super.getInputElements();
+		public ElementTagCompound getInputElements(boolean sum) {
+			ElementTagCompound tag = super.getInputElements(sum);
 			for (CrystalElement e : elements.elementSet()) {
 				tag.addValueToColor(e, Math.max(2, elements.getValue(e)/10000));
 			}

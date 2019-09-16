@@ -16,8 +16,6 @@ import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModInteract.Lua.LuaMethod;
 
-import dan200.computercraft.api.lua.LuaException;
-
 public class LuaIsConnected extends LuaMethod {
 
 	public LuaIsConnected() {
@@ -25,7 +23,7 @@ public class LuaIsConnected extends LuaMethod {
 	}
 
 	@Override
-	public Object[] invoke(TileEntity te, Object[] args) throws LuaException, InterruptedException {
+	public Object[] invoke(TileEntity te, Object[] args) throws LuaMethodException, InterruptedException {
 		Object[] o = new Object[1];
 		o[0] = CrystalNetworker.instance.checkConnectivity(CrystalElement.elements[(Integer)args[0]], (CrystalReceiver)te);
 		return o;

@@ -28,19 +28,22 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
 import Reika.ChromatiCraft.Magic.CastingTuning;
-import Reika.ChromatiCraft.Magic.CastingTuning.TuningKey;
 import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class RenderCrystalRepeater extends CrystalTransmitterRender {
+
+	private int tuningAlpha = 0;
+	private long tuningTick = 0;
 
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
@@ -99,7 +102,16 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 				if (te.isTurbocharged()) {
 					this.renderHalo(te, par8);
 				}
-				if (HoldingChecks.MANIPULATOR.isClientHolding()) {
+				if (tuningTick != te.worldObj.getTotalWorldTime()) {
+					tuningTick = te.worldObj.getTotalWorldTime();
+					if (HoldingChecks.MANIPULATOR.isClientHolding()) {
+						tuningAlpha = Math.min(255, tuningAlpha+32);
+					}
+					else {
+						tuningAlpha = Math.max(0, tuningAlpha-8);
+					}
+				}
+				if (tuningAlpha > 0) {
 					UUID uid = te.getCaster();
 					if (uid != null) {
 						this.renderCasterHalo(te, uid, par8);
@@ -154,25 +166,11 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 	}
 
 	private void renderCasterHalo(TileEntityCrystalRepeater te, UUID uid, float par8) {
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, TuningKey.ICON_SHEET);
-		//GL11.glDisable(GL11.GL_DEPTH_TEST);
-		Tessellator v5 = Tessellator.instance;
-		int idx = CastingTuning.instance.getTuningKey(uid).iconIndex;
-		GL11.glDepthMask(false);
-		int col = idx%TuningKey.ICON_COLS;
-		int row = idx/TuningKey.ICON_COLS;
-		float u = col/(float)TuningKey.ICON_COLS;
-		float v = row/(float)TuningKey.ICON_ROWS;
-		float du = u+1F/TuningKey.ICON_COLS;
-		float dv = v+1F/TuningKey.ICON_ROWS;
-		double s = 2.75+0.125*Math.sin(te.getTicksExisted()/40D);
-		v5.startDrawingQuads();
-		v5.setColorOpaque_I(this.getHaloRenderColor(te));
-		v5.addVertexWithUV(-s, -s, 0, u, v);
-		v5.addVertexWithUV(s, -s, 0, du, v);
-		v5.addVertexWithUV(s, s, 0, du, dv);
-		v5.addVertexWithUV(-s, s, 0, u, dv);
-		v5.draw();
+		int clr = this.getHaloRenderColor(te);
+		clr = ReikaColorAPI.mixColors(clr, 0xffffff, 0.875F+0.125F*(float)Math.sin(te.getTicksExisted()/90D));
+		clr = ReikaColorAPI.getColorWithBrightnessMultiplier(clr, tuningAlpha/255F);
+		double s = 1.75+0.0625*Math.sin(te.getTicksExisted()/6D);
+		CastingTuning.instance.getTuningKey(uid).drawIcon(Tessellator.instance, s, clr);
 	}
 
 	private void renderRainHalo(TileEntityCrystalRepeater te, float par8) {
@@ -184,7 +182,7 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 		float v = ico.getMinV();
 		float du = ico.getMaxU();
 		float dv = ico.getMaxV();
-		double s = 2.75+0.125*Math.sin(te.getTicksExisted()/40D);
+		double s = 2.75+0.125*Math.sin(te.getTileEntityAge()/40D);
 		v5.startDrawingQuads();
 		v5.setColorOpaque_I(this.getHaloRenderColor(te));
 		v5.addVertexWithUV(-s, -s, 0, u, v);

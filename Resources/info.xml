@@ -93,9 +93,9 @@
 	<casttuning>
 		As your casting process grows ever more complicated, involving more interacting parts and more intricate procedures, you are encountering more and more recipes which cannot be done without "imprinting" the casting structure with some aspect of yourself. Hopefully this will carry that imprint onto the things which it constructs, thus enabling them to be permanently tied to yourself and your efforts.
 	</casttuning>
-	<name>
-		
-	</name>
+	<multiblocks>
+		It is becoming clear at this point that in order to properly harness and manipulate crystal energies, you are going to need more than a simple block here or there. In particular, anything involving crafting, handling energy, or infusing one thing into another seems to require a fairly large construction. Given their size and number, and possible environmental considerations, it would be wise to build most or all of these - especially any that have anything to do with crafting or the pylons - outside.
+	</multiblocks>
 	<name>
 		
 	</name>

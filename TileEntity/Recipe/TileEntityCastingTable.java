@@ -559,8 +559,8 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 				if (ep != null && !ReikaPlayerAPI.isFake(ep)) {
 					boolean tuned = CastingTuning.instance.getTuningKey(ep).check(this);
 					if (tuned) {
-						ProgressionManager.instance.bypassWeakRepeaters(ep);
 						ProgressStage.TUNECAST.stepPlayerTo(ep);
+						ProgressionManager.instance.bypassWeakRepeaters(ep);
 					}
 				}
 			}

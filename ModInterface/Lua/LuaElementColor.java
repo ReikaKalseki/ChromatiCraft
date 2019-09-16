@@ -14,8 +14,6 @@ import net.minecraft.tileentity.TileEntity;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModInteract.Lua.LibraryLuaMethod;
 
-import dan200.computercraft.api.lua.LuaException;
-
 
 public class LuaElementColor extends LibraryLuaMethod {
 
@@ -24,7 +22,7 @@ public class LuaElementColor extends LibraryLuaMethod {
 	}
 
 	@Override
-	public Object[] invoke(TileEntity te, Object[] args) throws LuaException, InterruptedException {
+	public Object[] invoke(TileEntity te, Object[] args) throws LuaMethodException, InterruptedException {
 		int idx = ((Double)args[0]).intValue();
 		return new Object[]{CrystalElement.elements[idx].getColor()};
 	}

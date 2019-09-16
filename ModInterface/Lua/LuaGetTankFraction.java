@@ -14,8 +14,6 @@ import net.minecraft.tileentity.TileEntity;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
 import Reika.DragonAPI.ModInteract.Lua.LuaMethod;
 
-import dan200.computercraft.api.lua.LuaException;
-
 public class LuaGetTankFraction extends LuaMethod {
 
 	public LuaGetTankFraction() {
@@ -23,7 +21,7 @@ public class LuaGetTankFraction extends LuaMethod {
 	}
 
 	@Override
-	public Object[] invoke(TileEntity te, Object[] args) throws LuaException, InterruptedException {
+	public Object[] invoke(TileEntity te, Object[] args) throws LuaMethodException, InterruptedException {
 		TileEntityCrystalTank tk = (TileEntityCrystalTank)te;
 		return new Object[]{tk.getLevel()/(double)tk.getCapacity()};
 	}

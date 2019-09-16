@@ -113,7 +113,7 @@ public enum ChromaResearch implements ProgressElement {
 	ELEMENTS("Crystal Energy", 				ChromaItems.ELEMENTAL.getStackOf(CrystalElement.BLUE),	ResearchLevel.BASICCRAFT,	ProgressStage.ALLCOLORS),
 	CRYSTALS("Crystals", 					ChromaBlocks.CRYSTAL.getStackOfMetadata(4), 			ResearchLevel.ENTRY, 		ProgressStage.CRYSTALS),
 	PYLONS("Pylons", 						ChromaTiles.PYLON.getCraftedProduct(), 					ResearchLevel.ENTRY, 		ProgressStage.PYLON),
-	STRUCTURES("Structures",				ChromaBlocks.PYLONSTRUCT.getStackOf(),					ResearchLevel.RAWEXPLORE),
+	STRUCTURES("Scattered Structures",		ChromaBlocks.PYLONSTRUCT.getStackOf(),					ResearchLevel.RAWEXPLORE),
 	TRANSMISSION("Signal Transmission", 	ChromaStacks.beaconDust, 								ResearchLevel.ENERGYEXPLORE),
 	CRAFTING("Casting",						ChromaTiles.TABLE.getCraftedProduct(),					ResearchLevel.BASICCRAFT),
 	ENCHANTS("Enchantments",				ChromaTiles.ENCHANTER.getCraftedProduct(),				ResearchLevel.BASICCRAFT),
@@ -137,6 +137,7 @@ public enum ChromaResearch implements ProgressElement {
 	DIMTUNING("Portal Tuning",				ChromaStacks.bedrockloot2,								ResearchLevel.ENDGAME,		ProgressStage.DIMENSION),
 	ABILITIES("Abilities",					ChromaTiles.RITUAL.getCraftedProduct(),					ResearchLevel.ENERGYEXPLORE),
 	CASTTUNING("Personalized Casting",		new ItemStack(Blocks.skull, 1, 3),						ResearchLevel.NETWORKING,	ProgressionManager.instance.getPrereqsArray(ProgressStage.TUNECAST)),
+	MULTIBLOCKS("Functional Construction",	ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.COLUMN.ordinal()),	ResearchLevel.BASICCRAFT),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING,		ProgressStage.BLOWREPEATER),

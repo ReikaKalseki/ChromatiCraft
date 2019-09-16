@@ -15,8 +15,6 @@ import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.ModInteract.Lua.LuaMethod;
 
-import dan200.computercraft.api.lua.LuaException;
-
 public class LuaAddNote extends LuaMethod {
 
 	private static final int INDEX_OFFSET = MusicKey.C3.ordinal();
@@ -26,7 +24,7 @@ public class LuaAddNote extends LuaMethod {
 	}
 
 	@Override
-	public Object[] invoke(TileEntity te, Object[] args) throws LuaException, InterruptedException {
+	public Object[] invoke(TileEntity te, Object[] args) throws LuaMethodException, InterruptedException {
 		TileEntityCrystalMusic mus = (TileEntityCrystalMusic) te;
 		int pitch = ((Double)args[0]).intValue()+INDEX_OFFSET;
 		int channel = ((Double)args[1]).intValue();

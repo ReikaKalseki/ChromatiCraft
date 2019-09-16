@@ -14,8 +14,6 @@ import net.minecraft.tileentity.TileEntity;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
 import Reika.DragonAPI.ModInteract.Lua.LuaMethod;
 
-import dan200.computercraft.api.lua.LuaException;
-
 public class LuaCrystalConsole extends LuaMethod {
 
 	public LuaCrystalConsole() {
@@ -23,7 +21,7 @@ public class LuaCrystalConsole extends LuaMethod {
 	}
 
 	@Override
-	public Object[] invoke(TileEntity te, Object[] args) throws LuaException, InterruptedException {
+	public Object[] invoke(TileEntity te, Object[] args) throws LuaMethodException, InterruptedException {
 		TileEntityCrystalConsole tile = (TileEntityCrystalConsole) te;
 		int slot = ((Double)args[0]).intValue();
 		boolean on = (Boolean)args[1];

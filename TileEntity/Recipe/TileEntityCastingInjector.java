@@ -18,6 +18,7 @@ import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -237,6 +238,25 @@ public class TileEntityCastingInjector extends InventoriedChromaticBase implemen
 	@Override
 	public TileEntity getItemPool() {
 		return this.getAdjacentTileEntity(ForgeDirection.DOWN);
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound NBT) {
+		super.writeToNBT(NBT);
+
+		handler.writeToNBT(NBT);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound NBT) {
+		super.readFromNBT(NBT);
+
+		handler.readFromNBT(NBT);
+	}
+
+	@Override
+	public void breakBlock() {
+		handler.onBreak(worldObj);
 	}
 
 }

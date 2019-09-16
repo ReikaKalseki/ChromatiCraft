@@ -282,7 +282,7 @@ public class ItemElementCalculator {
 		ElementTagCompound tag = new ElementTagCompound();
 		ArrayList<CastingRecipe> li = RecipesCastingTable.instance.getAllRecipesMaking(is);
 		for (CastingRecipe c : li) {
-			ElementTagCompound tag2 = c.getInputElements();
+			ElementTagCompound tag2 = c.getInputElements(false);
 			tag2.addValueToColor(CrystalElement.BLACK, 2);
 			tag.addButMinimizeWith(tag2);
 		}

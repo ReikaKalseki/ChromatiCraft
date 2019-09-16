@@ -287,14 +287,28 @@ public class GuiBasicInfo extends GuiBookSection {
 		for (int i = 0; i < een.getLength(); i++) {
 			si = 16;
 			int ix = x+(i-een.getLength()/2)*(si+si/2-1)+si*3/4-1;
-			int iy = posY+66;
+			int iy = posY+69;
 			CrystalElement e = een.getSlot(i);
 			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(ix-si/2, iy-si/2, e.getGlowRune(), si, si);
 		}
 
 		GL11.glPushMatrix();
-		double s = 1.75;
-		GL11.glTranslated(x-14, posY+18, 0);
+		y -= 114;
+		double bs = 18;//38;
+		double ds = 0;//2;
+		double sz = bs+ds*Math.sin(this.getGuiTick()/90D);
+		double a = (this.getGuiTick()/20D*50D)%360;
+		//GL11.glTranslated(x, y, 0);
+		//GL11.glRotated(a, 0, 0, 1);
+		//GL11.glTranslated(-x, -y, 0);
+		GL11.glTranslated(x-sz-0.5, y-sz, 0);
+		ReikaTextureHelper.bindEnchantmentTexture();
+		tk.drawIconInGUI(Tessellator.instance, sz*2, 0, 0xffffff);
+		GL11.glPopMatrix();
+
+		GL11.glPushMatrix();
+		double s = 1.5;
+		GL11.glTranslated(x-13, posY+23, 0);
 		GL11.glScaled(s, s, s);
 		page.renderIcon(itemRender, fontRendererObj, 0, 0);
 		//ReikaGuiAPI.instance.drawItemStack(itemRender, new ItemStack(Blocks.brick_block), 0, 0);

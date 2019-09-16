@@ -16,6 +16,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -47,7 +48,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements Castin
 		required.addTag(CrystalElement.BLACK, 50);
 		required.addTag(CrystalElement.PURPLE, 20);
 		required.addTag(CrystalElement.LIGHTBLUE, 10);
-		required.addTag(CrystalElement.WHITE, 20);
+		required.addTag(CrystalElement.LIGHTGRAY, 20);
 	}
 
 	private RecursiveCastingAutomationSystem handler;
@@ -247,6 +248,25 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements Castin
 	@Override
 	public TileEntity getItemPool() {
 		return this.getAdjacentTileEntity(ForgeDirection.UP);
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound NBT) {
+		super.writeToNBT(NBT);
+
+		handler.writeToNBT(NBT);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound NBT) {
+		super.readFromNBT(NBT);
+
+		handler.readFromNBT(NBT);
+	}
+
+	@Override
+	public void breakBlock() {
+		handler.onBreak(worldObj);
 	}
 
 }

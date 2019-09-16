@@ -426,7 +426,9 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.END, 		ProgressStage.NETHER);
 
 		progressMap.addParent(ProgressStage.BLOWREPEATER, 	ProgressStage.USEENERGY);
+
 		progressMap.addParent(ProgressStage.BYPASSWEAK, 	ProgressStage.USEENERGY);
+		progressMap.addParent(ProgressStage.BYPASSWEAK, 	ProgressStage.TUNECAST);
 
 		progressMap.addParent(ProgressStage.TUNECAST,	ProgressStage.RUNEUSE);
 		progressMap.addParent(ProgressStage.TUNECAST,	ProgressStage.CHROMA);
