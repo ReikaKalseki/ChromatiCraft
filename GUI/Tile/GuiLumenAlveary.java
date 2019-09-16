@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2018
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -28,8 +28,8 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.CoreContainer;
+import Reika.DragonAPI.Instantiable.Data.CircularDivisionRenderer.ColorCallback;
 import Reika.DragonAPI.Instantiable.Data.Proportionality;
-import Reika.DragonAPI.Instantiable.Data.Proportionality.ColorCallback;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.SortedDeterminator;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -133,7 +133,8 @@ public class GuiLumenAlveary extends GuiChromaBase {
 			if (e != null) {
 				e.isHovered = true;
 			}
-			colorCharts[selectedColor.ordinal()].renderAsPie(x, y, r, 0);
+			colorCharts[selectedColor.ordinal()].setGeometry(x, y, r, 0);
+			colorCharts[selectedColor.ordinal()].render();
 			if (e != null) {
 				api.drawTooltipAt(fontRendererObj, e.effect.getDescription(), a, b);
 			}
@@ -148,7 +149,8 @@ public class GuiLumenAlveary extends GuiChromaBase {
 				}
 				api.drawTooltipAt(fontRendererObj, String.valueOf(e.displayName+": "+c.size()+" Effects"), a, b);
 			}
-			globalChart.renderAsPie(x, y, r, 0);
+			globalChart.setGeometry(x, y, r, 0);
+			globalChart.render();
 			if (ae != null) {
 				CrystalElement e = ae.effect.color;
 				Collection<AlvearyEffectControl> c = controls.get(e);

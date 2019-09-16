@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
+import com.mojang.authlib.GameProfile;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -80,6 +82,7 @@ import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Interfaces.Configuration.ConfigList;
 import Reika.DragonAPI.Interfaces.Registry.Dependency;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -659,7 +662,9 @@ public enum ChromaResearch implements ProgressElement {
 			GL11.glColor4f(1, 1, 1, 1);
 			TileEntitySkull te = new TileEntitySkull();
 			te.worldObj = Minecraft.getMinecraft().theWorld;
-			te.func_152106_a(Minecraft.getMinecraft().getSession().func_148256_e());
+			GameProfile p = ReikaPlayerAPI.getClientProfile();
+			if (p != null)
+				te.func_152106_a(p);
 			GL11.glRotated(180, 0, 0, 1);
 			GL11.glRotated(20, 1, 0, 0);
 			GL11.glRotated(-60, 0, 1, 0);

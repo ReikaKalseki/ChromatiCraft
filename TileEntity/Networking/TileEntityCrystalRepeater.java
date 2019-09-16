@@ -288,7 +288,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 		redstoneCache = NBT.getBoolean("redstone");
 		if (NBT.hasKey("caster"))
-			casterID = UUID.fromString("caster");
+			casterID = UUID.fromString(NBT.getString("caster"));
 	}
 
 	@Override
@@ -402,6 +402,10 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	public void setDataFromItemStackTag(ItemStack is) {
 		isTurbo = ReikaItemHelper.matchStacks(is, this.getTile().getCraftedProduct()) && is.stackTagCompound != null && is.stackTagCompound.getBoolean("boosted");
 		casterID = ReikaItemHelper.matchStacks(is, this.getTile().getCraftedProduct()) && is.stackTagCompound != null && is.stackTagCompound.hasKey("caster") ? UUID.fromString(is.stackTagCompound.getString("caster")) : null;
+	}
+
+	public final UUID getCaster() {
+		return casterID;
 	}
 
 	@Override

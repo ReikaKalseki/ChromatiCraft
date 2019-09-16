@@ -51,6 +51,7 @@ import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
@@ -191,7 +192,7 @@ public class GuiBasicInfo extends GuiBookSection {
 		else if (page == ChromaResearch.ENCHANTING && subpage == 1)
 			return PageType.RUNES;
 		else if (page == ChromaResearch.CASTTUNING && subpage == 1)
-			return PageType.COMPASS;
+			return PageType.CASTTUNE;
 		else if (page == ChromaResearch.STRUCTUREPASSWORDS && subpage == 1)
 			return PageType.STRUCTPASS;
 		return PageType.PLAIN;
@@ -253,35 +254,51 @@ public class GuiBasicInfo extends GuiBookSection {
 
 	private void renderPlayerCastingTuning(int posX, int posY, float ptick) {
 		int x = posX+xSize/2;
-		int y = posY+ySize/2;
-		String s = "Textures/GUIs/Handbook/misc.png";
+		int y = posY+ySize/2+39;
 		double a0 = 0;
-		double r = 57.5;
-
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, s);
-		ReikaGuiAPI.instance.setZLevel(0);
-		ReikaGuiAPI.instance.drawTexturedModalRect(x-(int)Math.ceil(r), y-(int)Math.ceil(r), 116, 0, (int)(r*2), (int)(r*2));
+		double r = 63;
+		double ri = 47;
 
 		TuningKey tk = CastingTuning.instance.getTuningKey(player);
 		HashMap<FanDirections, CrystalElement> map = tk.getCompass();
 		Compass<CrystalElement> c = new Compass(CompassDivisions.FULL);
+		c.squareRender = true;
 		for (Entry<FanDirections, CrystalElement> e : map.entrySet()) {
 			c.addValue(e.getKey(), e.getValue());
 		}
-		c.render(x, y, r, a0, CrystalElement.getColorMap());
-
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, s);
-		ReikaGuiAPI.instance.drawTexturedModalRect(x-(int)Math.ceil(r), y-(int)Math.ceil(r), 0, 0, (int)(r*2), (int)(r*2));
+		c.setGeometry(x, y, r, ri, a0);
+		c.render(CrystalElement.getColorMap());
 
 		ReikaTextureHelper.bindTerrainTexture();
-		double ir = r*0.625;
 		int si = 8;
 		for (Entry<FanDirections, CrystalElement> e : map.entrySet()) {
-			double a = a0-e.getKey().angle;
-			int ix = (int)Math.round(x+ir*Math.cos(Math.toRadians(a)));
-			int iy = (int)Math.round(y+ir*Math.sin(Math.toRadians(a)));
+			double a = Math.toRadians(a0-e.getKey().angle);
+			double ir = c.getOuterRadiusAt(a)*0.9;
+			int ix = (int)Math.round(x+ir*Math.cos(a));
+			int iy = (int)Math.round(y+ir*Math.sin(a));
 			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(ix-si/2, iy-si/2, e.getValue().getOutlineRune(), si, si);
 		}
+
+		//ReikaGuiAPI.instance.drawItemStack(itemRender, ChromaTiles.TABLE.getCraftedProduct(), x-8, y-8);
+		int d = 8;
+		ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x-d, y-d, ChromaTiles.TABLE.getBlock().getIcon(1, ChromaTiles.TABLE.getBlockMetadata()), d*2, d*2);
+
+		ElementEncodedNumber een = new ElementEncodedNumber(player.getUniqueID().hashCode(), 8);
+		for (int i = 0; i < een.getLength(); i++) {
+			si = 16;
+			int ix = x+(i-een.getLength()/2)*(si+si/2-1)+si*3/4-1;
+			int iy = posY+66;
+			CrystalElement e = een.getSlot(i);
+			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(ix-si/2, iy-si/2, e.getGlowRune(), si, si);
+		}
+
+		GL11.glPushMatrix();
+		double s = 1.75;
+		GL11.glTranslated(x-14, posY+18, 0);
+		GL11.glScaled(s, s, s);
+		page.renderIcon(itemRender, fontRendererObj, 0, 0);
+		//ReikaGuiAPI.instance.drawItemStack(itemRender, new ItemStack(Blocks.brick_block), 0, 0);
+		GL11.glPopMatrix();
 	}
 
 	private void renderStructureKeys(int posX, int posY) {

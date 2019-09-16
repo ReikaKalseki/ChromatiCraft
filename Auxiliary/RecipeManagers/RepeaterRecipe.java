@@ -77,7 +77,7 @@ public abstract class RepeaterRecipe extends MultiBlockCastingRecipe implements 
 				tag = new NBTTagCompound();
 			tag.setBoolean("boosted", false);
 		}
-		if (tile.getFragment().level.ordinal() > ResearchLevel.NETWORKING.ordinal()) {
+		if (tile.getFragment().level.ordinal() >= ResearchLevel.NETWORKING.ordinal()) {
 			if (tag == null)
 				tag = new NBTTagCompound();
 			tag.setString("caster", ep.getUniqueID().toString());
@@ -107,6 +107,7 @@ public abstract class RepeaterRecipe extends MultiBlockCastingRecipe implements 
 			return is;
 		is = is.copy();
 		is.stackTagCompound.removeTag("boosted");
+		is.stackTagCompound.removeTag("caster");
 		return is;
 	}
 

@@ -82,7 +82,7 @@ public class GuiStructure extends GuiBookSection {
 					}
 				}
 				for (Coordinate c : CastingTuning.instance.getTuningKeyLocations()) { //hide tuning runes from the lexicon
-					array.setBlock(c.xCoord, c.yCoord, c.zCoord, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.SMOOTH.ordinal());
+					array.setBlock(c.xCoord, c.yCoord+1, c.zCoord, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.SMOOTH.ordinal());
 				}
 			}
 			array.setBlock(array.getMidX()+1, array.getMinY()+1, array.getMidZ(), Blocks.air);

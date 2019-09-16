@@ -170,7 +170,8 @@ public class ChromaBookData {
 			int dx = px+184;
 			int dy = py+56;
 			double zang = System.identityHashCode(c);
-			p.renderAsPie(dx, dy, r, zang, CrystalElement.getColorMap());
+			p.setGeometry(dx, dy, r, zang);
+			p.render(CrystalElement.getColorMap());
 
 			ReikaTextureHelper.bindTerrainTexture();
 			double ba = zang;

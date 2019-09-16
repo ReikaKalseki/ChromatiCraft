@@ -21,7 +21,6 @@ import java.util.UUID;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -64,7 +63,6 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.BotaniaPetalShower;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityGlobeFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
@@ -73,16 +71,13 @@ import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.FocusLocation;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
-import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPICore;
-import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray.BlockMatchFailCallback;
-import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray.EmptyCheck;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -98,7 +93,6 @@ import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -119,8 +113,6 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 
 	private EntityPlayer craftingPlayer;
 
-	private StructureMismatch structureMismatch;
-
 	public boolean hasStructure = false;
 	public boolean hasStructure2 = false;
 	public boolean hasPylonConnections = false;
@@ -132,19 +124,12 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 	private final HashSet<KeyedItemStack> completedRecipes = new HashSet();
 	private final ItemHashMap<Integer> craftedItems = new ItemHashMap();
 
-	public Collection<Coordinate> getTuningBlocks() {
-		Collection<Coordinate> li = new ArrayList();
-		for (Coordinate c : CastingTuning.instance.getTuningKeyLocations()) {
-			li.add(c.offset(xCoord, yCoord, zCoord));
-		}
-		return li;
-	}
-
 	public HashMap<Coordinate, CrystalElement> getCurrentTuningMap() {
 		HashMap<Coordinate, CrystalElement> map = new HashMap();
-		for (Coordinate c : this.getTuningBlocks()) {
-			if (c.getBlock(worldObj) == ChromaBlocks.RUNE.getBlockInstance())
-				map.put(c, CrystalElement.elements[c.getBlockMetadata(worldObj)]);
+		for (Coordinate c : CastingTuning.instance.getTuningKeyLocations()) {
+			Coordinate c2 = c.offset(xCoord, yCoord, zCoord);
+			if (c2.getBlock(worldObj) == ChromaBlocks.RUNE.getBlockInstance())
+				map.put(c, CrystalElement.elements[c2.getBlockMetadata(worldObj)]);
 		}
 		return map;
 	}
@@ -200,11 +185,6 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		}
 		if (craftingTick > 0) {
 			this.onCraftingTick(world, x, y, z);
-		}
-
-		if (structureMismatch != null && structureMismatch.isActive) {
-			if (structureMismatch.doEffect(this))
-				structureMismatch.isActive = false;
 		}
 
 		if (isEnhanced && hasPylonConnections) {
@@ -517,10 +497,10 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		int x = xCoord;
 		int y = yCoord-1;
 		int z = zCoord;
-		structureMismatch = null;
 		FilledBlockArray b = ChromaStructures.getCastingLevelOne(world, x, y, z);
 		FilledBlockArray b2 = ChromaStructures.getCastingLevelTwo(world, x, y, z);
 		FilledBlockArray b3 = ChromaStructures.getCastingLevelThree(world, x, y, z);
+
 		if (this.getTier().isAtLeast(RecipeType.PYLON)) {
 			if (b3.matchInWorld(this)) {
 				hasStructure = hasStructure2 = hasPylonConnections = true;
@@ -589,8 +569,6 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 	}
 
 	public boolean triggerCrafting(EntityPlayer ep) {
-		if (structureMismatch != null)
-			structureMismatch.isActive = true;
 		if (activeRecipe != null && craftingTick == 0) {
 			if (this.isOwnedByPlayer(ep)) {
 				if (activeRecipe.canRunRecipe(this, ep)) {
@@ -1306,9 +1284,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 
 	@Override
 	public void onBlockFailure(World world, int x, int y, int z, BlockCheck seek) {
-		if (world.isRemote)
-			return;
-		structureMismatch = new StructureMismatch(x, y, z, seek);
+
 	}
 
 	public static enum CastingFocusLocation implements FocusLocation {
@@ -1343,7 +1319,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		}
 
 	}
-
+	/*
 	private static class StructureMismatch {
 
 		private static final int LIFESPAN = 50; //2.5s
@@ -1404,7 +1380,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		}
 
 	}
-
+	 */
 	@SideOnly(Side.CLIENT)
 	@ModDependent(ModList.BOTANIA)
 	public void onClickedWithBotaniaWand(ReikaDyeHelper dye1, ReikaDyeHelper dye2) {

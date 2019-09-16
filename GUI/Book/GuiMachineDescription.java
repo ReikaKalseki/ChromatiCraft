@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.CrystalTier;
+import Reika.DragonAPI.Instantiable.Data.Proportionality;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
@@ -121,7 +122,9 @@ public class GuiMachineDescription extends GuiDescription {
 				int r = 32;
 				int dx = posX+xSize-r-50;
 				int dy = posY+r+10;
-				tag.getProportionality().renderAsPie(dx, dy, r, System.identityHashCode(this)+this.getGuiTick()%360, CrystalElement.getColorMap());
+				Proportionality<CrystalElement> p = tag.getProportionality();
+				p.setGeometry(dx, dy, r, System.identityHashCode(this)+this.getGuiTick()%360);
+				p.render(CrystalElement.getColorMap());
 				float lf = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
 				GL11.glLineWidth(2.5F);
 				api.drawCircle(dx, dy, r+1, 0xffffffff);

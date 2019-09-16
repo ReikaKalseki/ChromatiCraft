@@ -40,6 +40,8 @@ public final class ElementEncodedNumber {
 		Collections.reverse(v);
 		while (v.get(0) == 0 && v.size() > len) //strip leading values
 			v.remove(0);
+		//while (v.size() < len) //pad to min length
+		//	v.add(0, (byte)0);
 		CrystalElement[] ret = new CrystalElement[v.size()];
 		for (int i = 0; i < v.size(); i++) {
 			int idx = (v.get(i)+offset)%16;

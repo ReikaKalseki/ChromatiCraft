@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
 
+import java.util.UUID;
+
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
@@ -23,7 +25,10 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
+import Reika.ChromatiCraft.Magic.CastingTuning;
+import Reika.ChromatiCraft.Magic.CastingTuning.TuningKey;
 import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -87,26 +92,19 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 
 			this.doAuxRendering(te, par8);
 
-			if (te.canConduct() && te.isTurbocharged()) {
-				this.renderHalo(te, par8);
-			}
-
-			if (te.canConduct() && te.isRainAffected()) {
-				//GL11.glDisable(GL11.GL_DEPTH_TEST);
-				GL11.glDepthMask(false);
-				ico = ChromaIcons.RAINFLARE.getIcon();
-				u = ico.getMinU();
-				v = ico.getMinV();
-				du = ico.getMaxU();
-				dv = ico.getMaxV();
-				s = 2.75+0.125*Math.sin(te.getTicksExisted()/40D);
-				v5.startDrawingQuads();
-				v5.setColorOpaque_I(this.getHaloRenderColor(te));
-				v5.addVertexWithUV(-s, -s, 0, u, v);
-				v5.addVertexWithUV(s, -s, 0, du, v);
-				v5.addVertexWithUV(s, s, 0, du, dv);
-				v5.addVertexWithUV(-s, s, 0, u, dv);
-				v5.draw();
+			if (te.canConduct()) {
+				if (te.isRainAffected()) {
+					this.renderRainHalo(te, par8);
+				}
+				if (te.isTurbocharged()) {
+					this.renderHalo(te, par8);
+				}
+				if (HoldingChecks.MANIPULATOR.isClientHolding()) {
+					UUID uid = te.getCaster();
+					if (uid != null) {
+						this.renderCasterHalo(te, uid, par8);
+					}
+				}
 			}
 
 			GL11.glPopMatrix();
@@ -153,6 +151,47 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 			GL11.glPopMatrix();
 			GL11.glPopAttrib();
 		}
+	}
+
+	private void renderCasterHalo(TileEntityCrystalRepeater te, UUID uid, float par8) {
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, TuningKey.ICON_SHEET);
+		//GL11.glDisable(GL11.GL_DEPTH_TEST);
+		Tessellator v5 = Tessellator.instance;
+		int idx = CastingTuning.instance.getTuningKey(uid).iconIndex;
+		GL11.glDepthMask(false);
+		int col = idx%TuningKey.ICON_COLS;
+		int row = idx/TuningKey.ICON_COLS;
+		float u = col/(float)TuningKey.ICON_COLS;
+		float v = row/(float)TuningKey.ICON_ROWS;
+		float du = u+1F/TuningKey.ICON_COLS;
+		float dv = v+1F/TuningKey.ICON_ROWS;
+		double s = 2.75+0.125*Math.sin(te.getTicksExisted()/40D);
+		v5.startDrawingQuads();
+		v5.setColorOpaque_I(this.getHaloRenderColor(te));
+		v5.addVertexWithUV(-s, -s, 0, u, v);
+		v5.addVertexWithUV(s, -s, 0, du, v);
+		v5.addVertexWithUV(s, s, 0, du, dv);
+		v5.addVertexWithUV(-s, s, 0, u, dv);
+		v5.draw();
+	}
+
+	private void renderRainHalo(TileEntityCrystalRepeater te, float par8) {
+		//GL11.glDisable(GL11.GL_DEPTH_TEST);
+		Tessellator v5 = Tessellator.instance;
+		GL11.glDepthMask(false);
+		IIcon ico = ChromaIcons.RAINFLARE.getIcon();
+		float u = ico.getMinU();
+		float v = ico.getMinV();
+		float du = ico.getMaxU();
+		float dv = ico.getMaxV();
+		double s = 2.75+0.125*Math.sin(te.getTicksExisted()/40D);
+		v5.startDrawingQuads();
+		v5.setColorOpaque_I(this.getHaloRenderColor(te));
+		v5.addVertexWithUV(-s, -s, 0, u, v);
+		v5.addVertexWithUV(s, -s, 0, du, v);
+		v5.addVertexWithUV(s, s, 0, du, dv);
+		v5.addVertexWithUV(-s, s, 0, u, dv);
+		v5.draw();
 	}
 
 	protected void doAuxRendering(TileEntityCrystalRepeater te, float par8) {

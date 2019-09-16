@@ -2380,7 +2380,7 @@ public class ChromaStructures {
 		FilledBlockArray array = getCastingLevelOne(world, x, y, z);
 
 		for (Coordinate c : CastingTuning.instance.getTuningKeyLocations()) {
-			array.addBlock(x+c.xCoord, y+c.yCoord, z+c.zCoord, ChromaBlocks.RUNE.getBlockInstance());
+			array.addBlock(x+c.xCoord, y+c.yCoord+1, z+c.zCoord, ChromaBlocks.RUNE.getBlockInstance());
 		}
 
 		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -91,7 +91,8 @@ public class GuiRitual extends GuiBookSection {
 		int dx = leftX+descX+184;
 		int dy = topY+descY+52;
 		double zang = System.identityHashCode(ability);
-		p.renderAsPie(dx, dy, r, zang, CrystalElement.getColorMap());
+		p.setGeometry(dx, dy, r, zang);
+		p.render(CrystalElement.getColorMap());
 
 		ReikaTextureHelper.bindTerrainTexture();
 		double ba = zang;

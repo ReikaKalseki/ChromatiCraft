@@ -201,7 +201,8 @@ public class GuiAspectFormer extends GuiLetterSearchable<Aspect> {
 				}
 			}
 			if (!text) {
-				p.renderAsPie(dx+32, dy+20, 20, 0, colors);
+				p.setGeometry(dx+32, dy+20, 20, 0);
+				p.render(colors);
 				api.drawCircle(dx+32, dy+20, 20.25, 0x000000);
 			}
 		}
