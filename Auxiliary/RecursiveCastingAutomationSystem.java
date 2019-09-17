@@ -43,8 +43,10 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 				prereqs = new RecipeChain(tile.getAvailableRecipes());
 				RecipePrereq pre = prereqs.createPrereq(null, new ItemMatch(c.getOutput()), c, amt*c.getOutput().stackSize);
 				Result res = this.determinePrerequisites(pre);
-				while (res == Result.DEFAULT) {
+				int tries = 0;
+				while (res == Result.DEFAULT && tries < 40) {
 					res = this.determinePrerequisites(pre);
+					tries++;
 				}
 				if (res == Result.ALLOW) {
 					//take items, set up crafting system
@@ -52,7 +54,7 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 					ReikaJavaLibrary.pConsole(prereqs.toString());
 				}
 				else {
-					ReikaJavaLibrary.pConsole("Could not recursively craft "+c);
+					ReikaJavaLibrary.pConsole("Could not recursively craft "+c+"; "+res);
 					//either no valid recipe paths, or uncraftable items
 				}
 			}
@@ -234,19 +236,21 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 		}
 
 		private void calculateItems() {
-			totalNeeded.clear();
-			totalProduction.clear();
-			for (RecipePrereq r : recipes.values()) {
-				totalProduction.increment(r.item, r.recipe.getOutput().stackSize);
-				totalNeeded.increment(r.recipe.getItemCounts());
-			}
-
-			//Trim surplus
-			//TODO
-
 			for (RecipePrereq r : recipes.values()) {
 				r.calculate();
 			}
+
+			totalNeeded.clear();
+			totalProduction.clear();
+			for (RecipePrereq r : recipes.values()) {
+				for (int i = 0; i < r.craftsRemaining; i++) {
+					totalProduction.increment(r.item, r.recipe.getOutput().stackSize);
+					totalNeeded.increment(r.recipe.getItemCounts());
+				}
+			}
+
+			//Trim surplus
+			//TODO?
 		}
 
 		public void craft(RecipePrereq r) {
