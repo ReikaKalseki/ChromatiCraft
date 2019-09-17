@@ -21,7 +21,7 @@ public class LuaGetTankFraction extends LuaMethod {
 	}
 
 	@Override
-	public Object[] invoke(TileEntity te, Object[] args) throws LuaMethodException, InterruptedException {
+	protected Object[] invoke(TileEntity te, Object[] args) throws LuaMethodException, InterruptedException {
 		TileEntityCrystalTank tk = (TileEntityCrystalTank)te;
 		return new Object[]{tk.getLevel()/(double)tk.getCapacity()};
 	}

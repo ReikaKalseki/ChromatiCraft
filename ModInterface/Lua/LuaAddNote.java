@@ -24,7 +24,7 @@ public class LuaAddNote extends LuaMethod {
 	}
 
 	@Override
-	public Object[] invoke(TileEntity te, Object[] args) throws LuaMethodException, InterruptedException {
+	protected Object[] invoke(TileEntity te, Object[] args) throws LuaMethodException, InterruptedException {
 		TileEntityCrystalMusic mus = (TileEntityCrystalMusic) te;
 		int pitch = ((Double)args[0]).intValue()+INDEX_OFFSET;
 		int channel = ((Double)args[1]).intValue();

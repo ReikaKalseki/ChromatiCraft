@@ -21,7 +21,7 @@ public class LuaCrystalConsole extends LuaMethod {
 	}
 
 	@Override
-	public Object[] invoke(TileEntity te, Object[] args) throws LuaMethodException, InterruptedException {
+	protected Object[] invoke(TileEntity te, Object[] args) throws LuaMethodException, InterruptedException {
 		TileEntityCrystalConsole tile = (TileEntityCrystalConsole) te;
 		int slot = ((Double)args[0]).intValue();
 		boolean on = (Boolean)args[1];

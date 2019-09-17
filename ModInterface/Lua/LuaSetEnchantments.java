@@ -22,7 +22,7 @@ public class LuaSetEnchantments extends LuaMethod {
 	}
 
 	@Override
-	public Object[] invoke(TileEntity te, Object[] args) throws LuaMethodException, InterruptedException {
+	protected Object[] invoke(TileEntity te, Object[] args) throws LuaMethodException, InterruptedException {
 		TileEntityAutoEnchanter tile = (TileEntityAutoEnchanter)te;
 		tile.clearEnchantments();
 		for (int i = 0; i < args.length; i += 2) {

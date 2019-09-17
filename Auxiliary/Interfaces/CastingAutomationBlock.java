@@ -10,12 +10,13 @@ import Reika.ChromatiCraft.Auxiliary.CastingAutomationSystem;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 
 import appeng.api.networking.security.IActionHost;
 
 @Strippable(value={"appeng.api.networking.IActionHost"})
-public interface CastingAutomationBlock extends GuiController, OwnedTile, IActionHost {
+public interface CastingAutomationBlock extends GuiController, OwnedTile, BreakAction, IActionHost {
 
 	public Collection<CastingRecipe> getAvailableRecipes();
 

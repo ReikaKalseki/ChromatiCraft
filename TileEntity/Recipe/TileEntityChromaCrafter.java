@@ -133,7 +133,6 @@ public class TileEntityChromaCrafter extends InventoriedRelayPowered implements 
 	public void readFromNBT(NBTTagCompound NBT) {
 		super.readFromNBT(NBT);
 
-		recipeItems.clear();
 		ReikaNBTHelper.readCollectionFromNBT(recipeItems, NBT, "recipeItems");
 		recipe = PoolRecipes.instance.getByID(NBT.getString("recipetype"));
 	}

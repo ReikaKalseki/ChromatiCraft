@@ -23,7 +23,7 @@ public class LuaGetLumens extends LuaMethod {
 	}
 
 	@Override
-	public Object[] invoke(TileEntity te, Object[] args) throws LuaMethodException, InterruptedException {
+	protected Object[] invoke(TileEntity te, Object[] args) throws LuaMethodException, InterruptedException {
 		ElementTagCompound tag = ((LumenTile)te).getEnergy();
 		Object[] o = new Object[16];
 		for (int i = 0; i < CrystalElement.elements.length; i++) {

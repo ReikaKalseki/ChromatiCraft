@@ -22,7 +22,7 @@ public class LuaElementColor extends LibraryLuaMethod {
 	}
 
 	@Override
-	public Object[] invoke(TileEntity te, Object[] args) throws LuaMethodException, InterruptedException {
+	protected Object[] invoke(TileEntity te, Object[] args) throws LuaMethodException, InterruptedException {
 		int idx = ((Double)args[0]).intValue();
 		return new Object[]{CrystalElement.elements[idx].getColor()};
 	}
