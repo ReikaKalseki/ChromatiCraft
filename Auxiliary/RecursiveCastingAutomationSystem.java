@@ -82,7 +82,8 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 				prereqs.surplus.increment(im, -has2);
 				RecipePrereq c = this.selectRecipeToMake(r, im, needed);
 				if (c != null) {
-					this.queuePrereq(r, c);
+					c.calculateCounts();
+					this.determinePrerequisites(c);
 				}
 				else {
 					return false;
@@ -110,17 +111,12 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 				}
 			}
 		}
-		return sel != null ? new RecipePrereq(parent, im, sel, needed) : null;
+		return sel != null ? prereqs.getOrCreatePrereq(parent, im, sel, needed) : null;
 	}
 
 	private boolean canRecurseTo(CastingRecipe cr, RecipePrereq parent, ItemMatch im) {
 		LinkedList<String> path = prereqs.getRecipePath(parent);
 		return !path.contains(cr.getIDString());
-	}
-
-	private void queuePrereq(RecipePrereq p, RecipePrereq c) {
-		prereqs.addRecipe(p, c);
-		this.determinePrerequisites(c);
 	}
 
 	public void setRecipePriority(CastingRecipe cr, boolean has) {
@@ -212,16 +208,6 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 			//usedRecipes.add(root.recipe.getIDString());
 		}
 
-		private void addRecipe(RecipePrereq parent, RecipePrereq rc) {
-			if (parent != null)
-				recipes.addChild(parent, rc);
-			else
-				recipes.addChildless(rc);
-			//usedRecipes.add(rc.recipe.getIDString());
-			if (rc.surplus > 0)
-				surplus.increment(rc.item, rc.surplus);
-		}
-
 		private void calculate() {
 			map = recipes.getTopology();
 		}
@@ -240,6 +226,28 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 			return ret;
 		}
 
+		private RecipePrereq getOrCreatePrereq(RecipePrereq parent, ItemMatch im, CastingRecipe sel, int needed) {
+			for (RecipePrereq at : recipes.getChildren(parent)) {
+				if (im.match(at.recipe.getOutput())) {
+					at.totalItemsNeeded += needed;
+					return at;
+				}
+			}
+			RecipePrereq ret = new RecipePrereq(parent, im, sel, needed);
+			this.addRecipe(parent, ret);
+			return ret;
+		}
+
+		private void addRecipe(RecipePrereq parent, RecipePrereq rc) {
+			if (parent != null)
+				recipes.addChild(parent, rc);
+			else
+				recipes.addChildless(rc);
+			//usedRecipes.add(rc.recipe.getIDString());
+			if (rc.surplus > 0)
+				surplus.increment(rc.item, rc.surplus);
+		}
+
 		@Override
 		public String toString() {
 			return recipes.toString();
@@ -253,20 +261,24 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 		private final RecipePrereq parent;
 		private final CastingRecipe recipe;
 		private final ItemMatch item;
-		public final int totalCraftsNeeded;
-		private final int surplus;
+
+		private int totalItemsNeeded;
 
 		private int craftsRemaining;
+		private int surplus;
 
-		private RecipePrereq(RecipePrereq p, ItemMatch im, CastingRecipe cr, int itemsNeeded) {
+		private RecipePrereq(RecipePrereq p, ItemMatch im, CastingRecipe cr, int n) {
 			parent = p;
 			recipe = cr;
 			item = im;
-			int per = cr.getOutput().stackSize;
-			totalCraftsNeeded = MathHelper.ceiling_float_int(itemsNeeded/(float)per);
-			craftsRemaining = totalCraftsNeeded;
-			int crafted = totalCraftsNeeded*per;
-			surplus = crafted-itemsNeeded;
+			totalItemsNeeded = n;
+		}
+
+		private void calculateCounts() {
+			int per = recipe.getOutput().stackSize;
+			craftsRemaining = MathHelper.ceiling_float_int(totalItemsNeeded/(float)per);
+			int crafted = craftsRemaining*per;
+			surplus = crafted-totalItemsNeeded;
 		}
 
 		private boolean craft() {
@@ -284,7 +296,7 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 
 		@Override
 		public String toString() {
-			return "("+recipe.toString()+") x"+totalCraftsNeeded;
+			return "("+recipe.toString()+") x"+craftsRemaining;
 		}
 
 		public String getChain() {
@@ -303,6 +315,16 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 				i++;
 			}
 			return sb.toString();
+		}
+
+		@Override
+		public int hashCode() {
+			return recipe.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o instanceof RecipePrereq && ((RecipePrereq)o).recipe.equals(recipe);
 		}
 
 	}
