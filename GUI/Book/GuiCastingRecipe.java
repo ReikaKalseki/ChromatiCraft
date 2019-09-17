@@ -87,7 +87,7 @@ public class GuiCastingRecipe extends GuiBookSection {
 			buttonList.add(new CustomSoundImagedGuiButton(1, j+215, k-3, 10, 12, 193, 6, file, ChromatiCraft.class, this));
 		}
 
-		if (subpage == 0 && this.getActiveRecipe().getItemCounts().size() > 10) {
+		if (subpage == 0 && this.getActiveRecipe().getItemCountsForDisplay().size() > 10) {
 			buttonList.add(new CustomSoundImagedGuiButton(2, j+205, k+50, 12, 10, 100, 6, file, ChromatiCraft.class, this));
 			buttonList.add(new CustomSoundImagedGuiButton(3, j+205, k+60, 12, 10, 112, 6, file, ChromatiCraft.class, this));
 		}
@@ -142,7 +142,7 @@ public class GuiCastingRecipe extends GuiBookSection {
 			if (button.id == 2 && recipeTextOffset > 0) {
 				recipeTextOffset--;
 			}
-			else if (button.id == 3 && recipeTextOffset < this.getActiveRecipe().getItemCounts().size()-11) {
+			else if (button.id == 3 && recipeTextOffset < this.getActiveRecipe().getItemCountsForDisplay().size()-11) {
 				recipeTextOffset++;
 			}
 			else if (button.id == 4) {
@@ -208,7 +208,7 @@ public class GuiCastingRecipe extends GuiBookSection {
 			api.drawItemStack(itemRender, fontRendererObj, ChromaTiles.AUTOMATOR.getCraftedProduct(), posX+xSize-27-16-28, posY+7);
 
 		if (subpage == 0) {
-			ItemHashMap<Integer> items = this.getActiveRecipe().getItemCounts();
+			ItemHashMap<Integer> items = this.getActiveRecipe().getItemCountsForDisplay();
 			ArrayList<ItemStack> li = new ArrayList(items.keySet());
 			Collections.sort(li, new AlphabeticItemComparator());
 			for (int i = recipeTextOffset; i < li.size(); i++) {

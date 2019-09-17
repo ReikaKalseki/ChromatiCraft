@@ -122,7 +122,7 @@ public class TileEntityCastingInjector extends InventoriedChromaticBase implemen
 	}
 
 	@Override
-	public boolean canRecursivelyRequest() {
+	public boolean canRecursivelyRequest(CastingRecipe c) {
 		return false;
 	}
 

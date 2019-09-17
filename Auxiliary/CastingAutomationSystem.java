@@ -132,6 +132,49 @@ public class CastingAutomationSystem {
 		return false;
 	}
 
+	protected final boolean hasItem(Object item, int amt) {
+		ItemStack is = this.findItem(item, amt, true);
+		return is != null && is.stackSize >= amt;
+	}
+
+	protected final int countItem(Object item) {
+		if (DragonAPICore.debugtest)
+			return Integer.MAX_VALUE;
+
+		List<ItemStack> li = new ArrayList();
+		if (item instanceof ItemStack)
+			li.add((ItemStack)item);
+		if (item instanceof List)
+			li.addAll((List)item);
+		if (item instanceof ItemMatch) {
+			for (KeyedItemStack ks : ((ItemMatch)item).getItemList()) {
+				li.add(ks.getItemStack());
+			}
+		}
+
+		if (ModList.APPENG.isLoaded()) {
+			ChromatiCraft.logger.debug("Delegate "+this+" counting "+li+" from "+ingredients+" / "+network);
+		}
+		else {
+			ChromatiCraft.logger.debug("Delegate "+this+" counting "+li+" from "+ingredients);
+		}
+
+		int ret = 0;
+		for (ItemStack is : li) {
+			if (ModList.APPENG.isLoaded()) {
+				if (is.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+					ret += network.getFuzzyItemCount(is, FuzzyMode.IGNORE_ALL, false, is.stackTagCompound != null);
+				}
+				else {
+					ret += network.getItemCount(is, is.stackTagCompound != null);
+				}
+				ChromatiCraft.logger.debug(this+" failed to find "+is+" in its ME System.");
+			}
+			ret += ingredients.getItemCount(is);
+		}
+		return ret;
+	}
+
 	protected final ItemStack findItem(Object item, int amt, boolean simulate) {
 		List<ItemStack> li = new ArrayList();
 		if (item instanceof ItemStack)

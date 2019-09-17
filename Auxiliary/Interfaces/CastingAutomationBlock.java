@@ -27,7 +27,7 @@ public interface CastingAutomationBlock extends GuiController, OwnedTile, BreakA
 
 	public boolean canTriggerCrafting();
 	public boolean canPlaceCentralItemForMultiRecipes();
-	public boolean canRecursivelyRequest();
+	public boolean canRecursivelyRequest(CastingRecipe c);
 
 	public CastingAutomationSystem getAutomationHandler();
 

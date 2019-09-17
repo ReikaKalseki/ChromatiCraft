@@ -64,6 +64,7 @@ import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Data.Maps.CountMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Recipe.ItemMatch;
 import Reika.DragonAPI.Instantiable.Recipe.RecipePattern;
@@ -255,7 +256,7 @@ public class CastingRecipe implements APICastingRecipe {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public ItemHashMap<Integer> getItemCounts() {
+	public ItemHashMap<Integer> getItemCountsForDisplay() {
 		ItemHashMap<Integer> map = new ItemHashMap();
 		ItemStack[] items = this.getArrayForDisplay();
 		for (int i = 0; i < 9; i++) {
@@ -267,6 +268,19 @@ public class CastingRecipe implements APICastingRecipe {
 			}
 		}
 		return map;
+	}
+
+	public CountMap<ItemMatch> getItemCounts() {
+		CountMap<ItemMatch> ret = new CountMap();
+		for (Object o : ReikaRecipeHelper.getAllInputsInRecipe(recipe)) {
+			if (o instanceof ItemStack)
+				ret.increment(new ItemMatch((ItemStack)o));
+			else if (o instanceof Collection)
+				ret.increment(new ItemMatch((Collection<ItemStack>)o));
+			else if (o instanceof String)
+				ret.increment(new ItemMatch((String)o));
+		}
+		return ret;
 	}
 
 	public ElementTagCompound getInputElements(boolean sum) {
@@ -771,7 +785,7 @@ public class CastingRecipe implements APICastingRecipe {
 
 		@Override
 		@SideOnly(Side.CLIENT)
-		public ItemHashMap<Integer> getItemCounts() {
+		public ItemHashMap<Integer> getItemCountsForDisplay() {
 			ItemHashMap<Integer> map = new ItemHashMap();
 			ItemStack[] items = this.getArrayForDisplay();
 			map.put(items[4], 1);
@@ -785,6 +799,16 @@ public class CastingRecipe implements APICastingRecipe {
 				map.put(is, n+1);
 			}
 			return map;
+		}
+
+		@Override
+		public CountMap<ItemMatch> getItemCounts() {
+			CountMap<ItemMatch> ret = new CountMap();
+			ret.increment(new ItemMatch(this.getMainInput()), this.getRequiredCentralItemCount());
+			for (ItemMatch m : inputs.values()) {
+				ret.increment(m);
+			}
+			return ret;
 		}
 
 		@Override

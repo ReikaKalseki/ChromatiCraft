@@ -484,7 +484,7 @@ public class ProgressionManager implements ProgressRegistry {
 
 		for (int i = 0; i < ProgressStage.list.length; i++) {
 			ProgressStage p = ProgressStage.list[i];
-			if (p.active && !progressMap.hasElement(p) && !progressMap.hasElementAsChild(p)) {
+			if (p.active && !progressMap.hasElementAsParent(p) && !progressMap.hasElementAsChild(p)) {
 				progressMap.addChildless(p);
 			}
 		}

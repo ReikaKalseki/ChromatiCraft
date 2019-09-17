@@ -155,8 +155,8 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements Castin
 	}
 
 	@Override
-	public boolean canRecursivelyRequest() {
-		return false && true;
+	public boolean canRecursivelyRequest(CastingRecipe c) {
+		return true;
 	}
 
 	@Override
