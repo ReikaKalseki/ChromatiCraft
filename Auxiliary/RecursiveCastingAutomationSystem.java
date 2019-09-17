@@ -22,6 +22,8 @@ import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
+import cpw.mods.fml.common.eventhandler.Event.Result;
+
 public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 
 	private RecipeChain prereqs;
@@ -39,9 +41,12 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 		if (c != null && tile.canRecursivelyRequest(c)) {
 			try {
 				prereqs = new RecipeChain(tile.getAvailableRecipes());
-				RecipePrereq pre = prereqs.getOrCreatePrereq(null, new ItemMatch(c.getOutput()), c, amt*c.getOutput().stackSize);
-				if (this.determinePrerequisites(pre)) {
-					prereqs.calculateItems();
+				RecipePrereq pre = prereqs.createPrereq(null, new ItemMatch(c.getOutput()), c, amt*c.getOutput().stackSize);
+				Result res = this.determinePrerequisites(pre);
+				while (res == Result.DEFAULT) {
+					res = this.determinePrerequisites(pre);
+				}
+				if (res == Result.ALLOW) {
 					//take items, set up crafting system
 					ReikaJavaLibrary.pConsole("Found recursive crafting for "+c+":");
 					ReikaJavaLibrary.pConsole(prereqs.toString());
@@ -58,48 +63,32 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 		super.setRecipe(c, amt);
 	}
 
-	private boolean determinePrerequisites(RecipePrereq r) {
-		CountMap<ItemMatch> used = r.recipe.getItemCounts();
-		for (ItemMatch im : used.keySet()) {
-			int amt = used.get(im);
-			int has = this.countItem(im);
-			if (has >= amt) { //none needed
+	private Result determinePrerequisites(RecipePrereq r) {
+		prereqs.calculateItems();
+		CountMap<ItemMatch> needed = new CountMap();
+		for (ItemMatch im : prereqs.getAllUsedItems()) {
+			int amt = prereqs.getDeficit(im);
+			if (amt > 0) {
+				int has = this.countItem(im);
+				if (has < amt) {
+					int craft = amt-has;
+					needed.increment(im, craft);
+				}
+			}
+		}
+		if (needed.getTotalCount() == 0) {
+			return Result.ALLOW;
+		}
+		for (ItemMatch im : needed.keySet()) {
+			RecipePrereq c = prereqs.selectRecipeToMake(r, im, needed.get(im));
+			if (c != null) {
 
 			}
 			else {
-				int needed = amt-has;
-				ReikaJavaLibrary.pConsole("Need "+needed+" more "+im);
-				RecipePrereq c = this.selectRecipeToMake(r, im, needed);
-				if (c != null) {
-					this.determinePrerequisites(c);
-				}
-				else {
-					return false;
-				}
+				return Result.DENY;
 			}
 		}
-		return true;
-	}
-
-	private RecipePrereq selectRecipeToMake(RecipePrereq p, ItemMatch im, int needed) {
-		Collection<CastingRecipe> c = new ArrayList();
-		for (KeyedItemStack is : im.getItemList()) {
-			c.addAll(RecipesCastingTable.instance.getAllRecipesMaking(is.getItemStack()));
-		}
-		if (c.isEmpty())
-			return null;
-		int max = -1;
-		CastingRecipe sel = null;
-		for (CastingRecipe cr : c) {
-			if (prereqs.isRecursable(cr)) {
-				int w = this.getRecipeValue(cr);
-				if (sel == null || w > max) {
-					sel = cr;
-					max = w;
-				}
-			}
-		}
-		return sel != null ? prereqs.getOrCreatePrereq(p, im, sel, needed) : null;
+		return Result.DEFAULT;
 	}
 
 	public void setRecipePriority(CastingRecipe cr, boolean has) {
@@ -175,7 +164,7 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 		ReikaItemHelper.dropItems(world, this.getX()+0.5, this.getY()+0.5, this.getZ()+0.5, cachedIngredients);
 	}
 
-	private static class RecipeChain {
+	private class RecipeChain {
 
 		private final HashMap<ItemMatch, RecipePrereq> recipes = new HashMap();
 		private final HashSet<String> validRecipes = new HashSet();
@@ -190,19 +179,49 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 			}
 		}
 
-		public RecipePrereq getOrCreatePrereq(RecipePrereq p, ItemMatch im, CastingRecipe sel, int needed) {
+		public Collection<ItemMatch> getAllUsedItems() {
+			return totalNeeded.keySet();
+		}
+
+		public RecipePrereq getCachedRecipe(ItemMatch im) {
 			RecipePrereq ret = recipes.get(im);
-			if (ret == null) {
-				ret = new RecipePrereq(im, sel, needed);
-				recipes.put(im, ret);
-				if (p != null)
-					p.dependencies.add(ret);
-				if (p == null && root == null)
-					root = ret;
+			return ret;
+		}
+
+		public RecipePrereq selectRecipeToMake(RecipePrereq p, ItemMatch im, int needed) {
+			RecipePrereq pre = this.getCachedRecipe(im);
+			if (pre != null) {
+				p.dependencies.add(pre);
+				pre.totalItemsNeeded += needed;
+				return pre;
 			}
-			else {
-				ret.totalItemsNeeded += needed;
+			Collection<CastingRecipe> c = new ArrayList();
+			for (KeyedItemStack is : im.getItemList()) {
+				c.addAll(RecipesCastingTable.instance.getAllRecipesMaking(is.getItemStack()));
 			}
+			if (c.isEmpty())
+				return null;
+			int max = -1;
+			CastingRecipe sel = null;
+			for (CastingRecipe cr : c) {
+				if (this.isRecursable(cr)) {
+					int w = RecursiveCastingAutomationSystem.this.getRecipeValue(cr);
+					if (sel == null || w > max) {
+						sel = cr;
+						max = w;
+					}
+				}
+			}
+			return sel != null ? this.createPrereq(p, im, sel, needed) : null;
+		}
+
+		public RecipePrereq createPrereq(RecipePrereq p, ItemMatch im, CastingRecipe sel, int needed) {
+			RecipePrereq ret = new RecipePrereq(im, sel, needed);
+			recipes.put(im, ret);
+			if (p != null)
+				p.dependencies.add(ret);
+			if (p == null && root == null)
+				root = ret;
 			return ret;
 		}
 
@@ -265,7 +284,7 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 		private int totalItemsNeeded;
 		private int craftsRemaining;
 
-		private final Collection<RecipePrereq> dependencies = new ArrayList();
+		private final Collection<RecipePrereq> dependencies = new HashSet();
 
 		private RecipePrereq(ItemMatch im, CastingRecipe cr, int n) {
 			recipe = cr;
