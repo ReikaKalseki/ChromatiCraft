@@ -34,7 +34,7 @@ import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
-import Reika.ChromatiCraft.Magic.CastingTuning;
+import Reika.ChromatiCraft.Magic.CastingTuning.CastingTuningManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -81,7 +81,7 @@ public class GuiStructure extends GuiBookSection {
 						}
 					}
 				}
-				for (Coordinate c : CastingTuning.instance.getTuningKeyLocations()) { //hide tuning runes from the lexicon
+				for (Coordinate c : CastingTuningManager.instance.getTuningKeyLocations()) { //hide tuning runes from the lexicon
 					array.setBlock(c.xCoord, c.yCoord+1, c.zCoord, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.SMOOTH.ordinal());
 				}
 			}

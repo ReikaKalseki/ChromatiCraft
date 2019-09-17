@@ -37,14 +37,33 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 	}
 
 	@Override
+	public void tick(World world) {
+		super.tick(world);
+		if (this.isIdle() && prereqs != null) {
+			RecipePrereq p = prereqs.getNextInQueue();
+			if (p != null) {
+				super.setRecipe(p.recipe, p.craftsRemaining);
+			}
+		}
+	}
+
+	@Override
+	protected void onTriggerCrafting(CastingRecipe r, int cycles) {
+		if (prereqs != null) {
+			prereqs.craft(r, cycles);
+		}
+	}
+
+	@Override
 	public void setRecipe(CastingRecipe c, int amt) {
+		prereqs = null;
 		if (c != null && tile.canRecursivelyRequest(c)) {
 			try {
 				prereqs = new RecipeChain(tile.getAvailableRecipes());
 				RecipePrereq pre = prereqs.createPrereq(null, new ItemMatch(c.getOutput()), c, amt*c.getOutput().stackSize);
 				Result res = this.determinePrerequisites(pre);
 				int tries = 0;
-				while (res == Result.DEFAULT && tries < 40) {
+				while (res == Result.DEFAULT && tries < 60) {
 					res = this.determinePrerequisites(pre);
 					tries++;
 				}
@@ -168,7 +187,8 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 
 	private class RecipeChain {
 
-		private final HashMap<ItemMatch, RecipePrereq> recipes = new HashMap();
+		private final HashMap<ItemMatch, RecipePrereq> recipesByItem = new HashMap();
+		private final HashMap<String, RecipePrereq> recipesByRecipe = new HashMap();
 		private final HashSet<String> validRecipes = new HashSet();
 		private final CountMap<ItemMatch> totalNeeded = new CountMap();
 		private final CountMap<ItemMatch> totalProduction = new CountMap();
@@ -186,7 +206,12 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 		}
 
 		public RecipePrereq getCachedRecipe(ItemMatch im) {
-			RecipePrereq ret = recipes.get(im);
+			RecipePrereq ret = recipesByItem.get(im);
+			return ret;
+		}
+
+		public RecipePrereq getCachedRecipe(CastingRecipe cr) {
+			RecipePrereq ret = recipesByRecipe.get(cr.getIDString());
 			return ret;
 		}
 
@@ -219,7 +244,8 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 
 		public RecipePrereq createPrereq(RecipePrereq p, ItemMatch im, CastingRecipe sel, int needed) {
 			RecipePrereq ret = new RecipePrereq(im, sel, needed);
-			recipes.put(im, ret);
+			recipesByItem.put(im, ret);
+			recipesByRecipe.put(sel.getIDString(), ret);
 			if (p != null)
 				p.dependencies.add(ret);
 			if (p == null && root == null)
@@ -236,13 +262,13 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 		}
 
 		private void calculateItems() {
-			for (RecipePrereq r : recipes.values()) {
+			for (RecipePrereq r : recipesByItem.values()) {
 				r.calculate();
 			}
 
 			totalNeeded.clear();
 			totalProduction.clear();
-			for (RecipePrereq r : recipes.values()) {
+			for (RecipePrereq r : recipesByItem.values()) {
 				for (int i = 0; i < r.craftsRemaining; i++) {
 					totalProduction.increment(r.item, r.recipe.getOutput().stackSize);
 					totalNeeded.increment(r.recipe.getItemCounts());
@@ -253,17 +279,23 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 			//TODO?
 		}
 
-		public void craft(RecipePrereq r) {
-			if (r.craft()) {
-				recipes.remove(r.item);
-				for (RecipePrereq r2 : recipes.values()) {
+		public void craft(CastingRecipe r, int cycles) {
+			RecipePrereq r0 = this.getCachedRecipe(r);
+			if (r0 != null && r0.craft(cycles)) {
+				this.removeRecipe(r0);
+				for (RecipePrereq r2 : recipesByItem.values()) {
 					r2.dependencies.remove(r);
 				}
 			}
 		}
 
+		private void removeRecipe(RecipePrereq r0) {
+			recipesByItem.remove(r0.item);
+			recipesByRecipe.remove(r0.recipe.getIDString());
+		}
+
 		public RecipePrereq getNextInQueue() {
-			for (RecipePrereq req : recipes.values()) {
+			for (RecipePrereq req : recipesByItem.values()) {
 				if (req.isReady()) {
 					return req;
 				}
@@ -273,7 +305,7 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 
 		@Override
 		public String toString() {
-			return recipes.values().toString();
+			return recipesByItem.values().toString();
 		}
 
 	}
@@ -282,8 +314,6 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 
 		private final CastingRecipe recipe;
 		private final ItemMatch item;
-
-		private int depth;
 
 		private int totalItemsNeeded;
 		private int craftsRemaining;
@@ -296,9 +326,9 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 			totalItemsNeeded = n;
 		}
 
-		private boolean craft() {
-			craftsRemaining--;
-			return craftsRemaining == 0;
+		private boolean craft(int cycles) {
+			craftsRemaining -= Math.min(craftsRemaining, cycles);
+			return craftsRemaining <= 0;
 		}
 
 		private void calculate() {

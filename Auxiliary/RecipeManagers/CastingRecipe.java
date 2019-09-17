@@ -45,10 +45,10 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.ConfigRecipe;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
-import Reika.ChromatiCraft.Magic.CastingTuning;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.RuneShape;
+import Reika.ChromatiCraft.Magic.CastingTuning.CastingTuningManager;
 import Reika.ChromatiCraft.Magic.RuneShape.RuneViewer;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
@@ -503,7 +503,7 @@ public class CastingRecipe implements APICastingRecipe {
 		}
 
 		protected final boolean checkForTuningKey(TileEntity te, EntityPlayer ep) {
-			return CastingTuning.instance.getTuningKey(ep).check((TileEntityCastingTable)te);
+			return CastingTuningManager.instance.getTuningKey(ep).check((TileEntityCastingTable)te);
 		}
 
 		protected TempleCastingRecipe addRuneRingRune(CrystalElement e) {

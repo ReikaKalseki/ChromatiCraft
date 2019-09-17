@@ -29,7 +29,7 @@ import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux;
 import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux.Flags;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
-import Reika.ChromatiCraft.Magic.CastingTuning;
+import Reika.ChromatiCraft.Magic.CastingTuning.CastingTuningManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -2379,7 +2379,7 @@ public class ChromaStructures {
 	public static FilledBlockArray getCastingLevelTwo(World world, int x, int y, int z) {
 		FilledBlockArray array = getCastingLevelOne(world, x, y, z);
 
-		for (Coordinate c : CastingTuning.instance.getTuningKeyLocations()) {
+		for (Coordinate c : CastingTuningManager.instance.getTuningKeyLocations()) {
 			array.addBlock(x+c.xCoord, y+c.yCoord+1, z+c.zCoord, ChromaBlocks.RUNE.getBlockInstance());
 		}
 

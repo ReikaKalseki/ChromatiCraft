@@ -27,7 +27,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
-import Reika.ChromatiCraft.Magic.CastingTuning;
+import Reika.ChromatiCraft.Magic.CastingTuning.CastingTuningManager;
 import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -170,7 +170,7 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 		clr = ReikaColorAPI.mixColors(clr, 0xffffff, 0.875F+0.125F*(float)Math.sin(te.getTicksExisted()/90D));
 		clr = ReikaColorAPI.getColorWithBrightnessMultiplier(clr, tuningAlpha/255F);
 		double s = 1.75+0.0625*Math.sin(te.getTicksExisted()/6D);
-		CastingTuning.instance.getTuningKey(uid).drawIcon(Tessellator.instance, s, clr);
+		CastingTuningManager.instance.getTuningKey(uid).drawIcon(Tessellator.instance, s, clr);
 	}
 
 	private void renderRainHalo(TileEntityCrystalRepeater te, float par8) {

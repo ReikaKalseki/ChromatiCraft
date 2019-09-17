@@ -88,6 +88,10 @@ public class CastingAutomationSystem {
 		}
 	}
 
+	public final boolean isIdle() {
+		return recipe == null || recipesToGo == 0;
+	}
+
 	public final CastingRecipe getCurrentRecipeOutput() {
 		return recipe;
 	}
@@ -279,6 +283,7 @@ public class CastingAutomationSystem {
 					if (this.isRecipeReady(world, x, y, z, te)) {
 						if (tile.canTriggerCrafting()) {
 							if (this.triggerCrafting(world, x, y, z, te)) {
+								this.onTriggerCrafting(recipe, recipeCycles);
 								te.syncAllData(true);
 								tile.consumeEnergy(recipe, te, null);
 								recipesToGo -= recipeCycles;
@@ -321,6 +326,10 @@ public class CastingAutomationSystem {
 		else if (recipe == null || recipesToGo == 0) {
 			this.cancelCrafting();
 		}
+	}
+
+	protected void onTriggerCrafting(CastingRecipe r, int cycles) {
+
 	}
 
 	private void buildCache() {

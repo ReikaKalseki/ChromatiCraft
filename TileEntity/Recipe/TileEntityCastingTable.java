@@ -51,9 +51,9 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
-import Reika.ChromatiCraft.Magic.CastingTuning;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.CastingTuning.CastingTuningManager;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -126,7 +126,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 
 	public HashMap<Coordinate, CrystalElement> getCurrentTuningMap() {
 		HashMap<Coordinate, CrystalElement> map = new HashMap();
-		for (Coordinate c : CastingTuning.instance.getTuningKeyLocations()) {
+		for (Coordinate c : CastingTuningManager.instance.getTuningKeyLocations()) {
 			Coordinate c2 = c.offset(xCoord, yCoord, zCoord);
 			if (c2.getBlock(worldObj) == ChromaBlocks.RUNE.getBlockInstance())
 				map.put(c, CrystalElement.elements[c2.getBlockMetadata(worldObj)]);
@@ -135,7 +135,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 	}
 
 	public boolean hasTuningKey() {
-		return this.getCurrentTuningMap().size() == CastingTuning.instance.getTuningKeyLocations().size();
+		return this.getCurrentTuningMap().size() == CastingTuningManager.instance.getTuningKeyLocations().size();
 	}
 
 	public RecipeType getTier() {
@@ -557,7 +557,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 			for (UUID uid : owners) {
 				EntityPlayer ep = world.func_152378_a(uid);
 				if (ep != null && !ReikaPlayerAPI.isFake(ep)) {
-					boolean tuned = CastingTuning.instance.getTuningKey(ep).check(this);
+					boolean tuned = CastingTuningManager.instance.getTuningKey(ep).check(this);
 					if (tuned) {
 						ProgressStage.TUNECAST.stepPlayerTo(ep);
 						ProgressionManager.instance.bypassWeakRepeaters(ep);

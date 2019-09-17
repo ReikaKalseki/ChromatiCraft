@@ -41,10 +41,10 @@ import Reika.ChromatiCraft.Auxiliary.Render.RuneShapeRenderer;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructureTypeData;
 import Reika.ChromatiCraft.Base.GuiBookSection;
-import Reika.ChromatiCraft.Magic.CastingTuning;
-import Reika.ChromatiCraft.Magic.CastingTuning.TuningKey;
 import Reika.ChromatiCraft.Magic.RuneShape;
 import Reika.ChromatiCraft.Magic.RuneShape.RuneViewer;
+import Reika.ChromatiCraft.Magic.CastingTuning.CastingTuningManager;
+import Reika.ChromatiCraft.Magic.CastingTuning.TuningKey;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaEnchants;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
@@ -259,7 +259,7 @@ public class GuiBasicInfo extends GuiBookSection {
 		double r = 63;
 		double ri = 47;
 
-		TuningKey tk = CastingTuning.instance.getTuningKey(player);
+		TuningKey tk = CastingTuningManager.instance.getTuningKey(player);
 		HashMap<FanDirections, CrystalElement> map = tk.getCompass();
 		Compass<CrystalElement> c = new Compass(CompassDivisions.FULL);
 		c.squareRender = true;
