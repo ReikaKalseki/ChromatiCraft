@@ -2,10 +2,8 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Random;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -18,13 +16,10 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCast
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
-import Reika.DragonAPI.Instantiable.Data.Maps.BranchingMap;
-import Reika.DragonAPI.Instantiable.Data.Maps.BranchingMap.Topology;
 import Reika.DragonAPI.Instantiable.Data.Maps.CountMap;
 import Reika.DragonAPI.Instantiable.Recipe.ItemMatch;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
@@ -43,11 +38,10 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 	public void setRecipe(CastingRecipe c, int amt) {
 		if (c != null && tile.canRecursivelyRequest(c)) {
 			try {
-				RecipePrereq pre = new RecipePrereq(null, new ItemMatch(c.getOutput()), c, amt*c.getOutput().stackSize);
-				prereqs = new RecipeChain(pre);
+				prereqs = new RecipeChain(tile.getAvailableRecipes());
+				RecipePrereq pre = prereqs.getOrCreatePrereq(null, new ItemMatch(c.getOutput()), c, amt*c.getOutput().stackSize);
 				if (this.determinePrerequisites(pre)) {
-					prereqs.calculate();
-
+					prereqs.calculateItems();
 					//take items, set up crafting system
 					ReikaJavaLibrary.pConsole("Found recursive crafting for "+c+":");
 					ReikaJavaLibrary.pConsole(prereqs.toString());
@@ -68,21 +62,15 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 		CountMap<ItemMatch> used = r.recipe.getItemCounts();
 		for (ItemMatch im : used.keySet()) {
 			int amt = used.get(im);
-			int has1 = this.countItem(im);
-			int has2 = prereqs.surplus.get(im);
-			if (has1 >= amt) { //none needed
+			int has = this.countItem(im);
+			if (has >= amt) { //none needed
 
 			}
-			else if (has1+has2 >= amt) { //use from surplus, but no crafts
-				int num = amt-has1;
-				prereqs.surplus.increment(im, -num);
-			}
 			else {
-				int needed = amt-has1-has2;
-				prereqs.surplus.increment(im, -has2);
+				int needed = amt-has;
+				ReikaJavaLibrary.pConsole("Need "+needed+" more "+im);
 				RecipePrereq c = this.selectRecipeToMake(r, im, needed);
 				if (c != null) {
-					c.calculateCounts();
 					this.determinePrerequisites(c);
 				}
 				else {
@@ -93,7 +81,7 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 		return true;
 	}
 
-	private RecipePrereq selectRecipeToMake(RecipePrereq parent, ItemMatch im, int needed) {
+	private RecipePrereq selectRecipeToMake(RecipePrereq p, ItemMatch im, int needed) {
 		Collection<CastingRecipe> c = new ArrayList();
 		for (KeyedItemStack is : im.getItemList()) {
 			c.addAll(RecipesCastingTable.instance.getAllRecipesMaking(is.getItemStack()));
@@ -103,7 +91,7 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 		int max = -1;
 		CastingRecipe sel = null;
 		for (CastingRecipe cr : c) {
-			if (this.canRecurseTo(cr, parent, im)) {
+			if (prereqs.isRecursable(cr)) {
 				int w = this.getRecipeValue(cr);
 				if (sel == null || w > max) {
 					sel = cr;
@@ -111,12 +99,7 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 				}
 			}
 		}
-		return sel != null ? prereqs.getOrCreatePrereq(parent, im, sel, needed) : null;
-	}
-
-	private boolean canRecurseTo(CastingRecipe cr, RecipePrereq parent, ItemMatch im) {
-		LinkedList<String> path = prereqs.getRecipePath(parent);
-		return !path.contains(cr.getIDString());
+		return sel != null ? prereqs.getOrCreatePrereq(p, im, sel, needed) : null;
 	}
 
 	public void setRecipePriority(CastingRecipe cr, boolean has) {
@@ -194,91 +177,100 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 
 	private static class RecipeChain {
 
-		private final RecipePrereq root;
+		private final HashMap<ItemMatch, RecipePrereq> recipes = new HashMap();
+		private final HashSet<String> validRecipes = new HashSet();
+		private final CountMap<ItemMatch> totalNeeded = new CountMap();
+		private final CountMap<ItemMatch> totalProduction = new CountMap();
 
-		private final BranchingMap<RecipePrereq> recipes = new BranchingMap();
-		//private final HashSet<String> usedRecipes = new HashSet();
-		private final CountMap<ItemMatch> surplus = new CountMap();
+		private RecipePrereq root;
 
-		private Topology<RecipePrereq> map;
-
-		private RecipeChain(RecipePrereq root) {
-			this.root = root;
-			this.addRecipe(null, root);
-			//usedRecipes.add(root.recipe.getIDString());
+		private RecipeChain(Collection<CastingRecipe> c) {
+			for (CastingRecipe cr : c) {
+				validRecipes.add(cr.getIDString());
+			}
 		}
 
-		private void calculate() {
-			map = recipes.getTopology();
-		}
-
-		private RecipePrereq getNextInQueue(Random rand) {
-			Collection<RecipePrereq> c = map.getByDepth(map.getMaxDepth());
-			return ReikaJavaLibrary.getRandomCollectionEntry(rand, c);
-		}
-
-		private LinkedList<String> getRecipePath(RecipePrereq r) {
-			LinkedList<RecipePrereq> li = recipes.getPathTo(r);
-			LinkedList<String> ret = new LinkedList();
-			for (RecipePrereq rp : li) {
-				ret.add(rp.recipe.getIDString());
+		public RecipePrereq getOrCreatePrereq(RecipePrereq p, ItemMatch im, CastingRecipe sel, int needed) {
+			RecipePrereq ret = recipes.get(im);
+			if (ret == null) {
+				ret = new RecipePrereq(im, sel, needed);
+				recipes.put(im, ret);
+				if (p != null)
+					p.dependencies.add(ret);
+				if (p == null && root == null)
+					root = ret;
+			}
+			else {
+				ret.totalItemsNeeded += needed;
 			}
 			return ret;
 		}
 
-		private RecipePrereq getOrCreatePrereq(RecipePrereq parent, ItemMatch im, CastingRecipe sel, int needed) {
-			for (RecipePrereq at : recipes.getChildren(parent)) {
-				if (im.match(at.recipe.getOutput())) {
-					at.totalItemsNeeded += needed;
-					return at;
+		public boolean isRecursable(CastingRecipe cr) {
+			return validRecipes.contains(cr.getIDString());
+		}
+
+		public int getDeficit(ItemMatch im) {
+			return totalNeeded.get(im)-totalProduction.get(im);
+		}
+
+		private void calculateItems() {
+			totalNeeded.clear();
+			totalProduction.clear();
+			for (RecipePrereq r : recipes.values()) {
+				totalProduction.increment(r.item, r.recipe.getOutput().stackSize);
+				totalNeeded.increment(r.recipe.getItemCounts());
+			}
+
+			//Trim surplus
+			//TODO
+
+			for (RecipePrereq r : recipes.values()) {
+				r.calculate();
+			}
+		}
+
+		public void craft(RecipePrereq r) {
+			if (r.craft()) {
+				recipes.remove(r.item);
+				for (RecipePrereq r2 : recipes.values()) {
+					r2.dependencies.remove(r);
 				}
 			}
-			RecipePrereq ret = new RecipePrereq(parent, im, sel, needed);
-			this.addRecipe(parent, ret);
-			return ret;
 		}
 
-		private void addRecipe(RecipePrereq parent, RecipePrereq rc) {
-			if (parent != null)
-				recipes.addChild(parent, rc);
-			else
-				recipes.addChildless(rc);
-			//usedRecipes.add(rc.recipe.getIDString());
-			if (rc.surplus > 0)
-				surplus.increment(rc.item, rc.surplus);
+		public RecipePrereq getNextInQueue() {
+			for (RecipePrereq req : recipes.values()) {
+				if (req.isReady()) {
+					return req;
+				}
+			}
+			return null;
 		}
 
 		@Override
 		public String toString() {
-			return recipes.toString();
+			return recipes.values().toString();
 		}
 
 	}
 
 	private static class RecipePrereq {
 
-		/** What recipe is this a prereq for */
-		private final RecipePrereq parent;
 		private final CastingRecipe recipe;
 		private final ItemMatch item;
 
+		private int depth;
+
 		private int totalItemsNeeded;
-
 		private int craftsRemaining;
-		private int surplus;
 
-		private RecipePrereq(RecipePrereq p, ItemMatch im, CastingRecipe cr, int n) {
-			parent = p;
+		private final Collection<RecipePrereq> dependencies = new ArrayList();
+
+		private RecipePrereq(ItemMatch im, CastingRecipe cr, int n) {
 			recipe = cr;
 			item = im;
 			totalItemsNeeded = n;
-		}
-
-		private void calculateCounts() {
-			int per = recipe.getOutput().stackSize;
-			craftsRemaining = MathHelper.ceiling_float_int(totalItemsNeeded/(float)per);
-			int crafted = craftsRemaining*per;
-			surplus = crafted-totalItemsNeeded;
 		}
 
 		private boolean craft() {
@@ -286,35 +278,12 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 			return craftsRemaining == 0;
 		}
 
-		private RecipePrereq getRoot() {
-			RecipePrereq p = parent;
-			while (p.parent != null) {
-				p = p.parent;
-			}
-			return p;
+		private void calculate() {
+			craftsRemaining = MathHelper.ceiling_float_int(totalItemsNeeded/(float)recipe.getOutput().stackSize);
 		}
 
-		@Override
-		public String toString() {
-			return "("+recipe.toString()+") x"+craftsRemaining;
-		}
-
-		public String getChain() {
-			LinkedList<RecipePrereq> li = new LinkedList();
-			RecipePrereq o = this;
-			while (o != null) {
-				li.add(o);
-				o = o.parent;
-			}
-			Collections.reverse(li);
-			StringBuilder sb = new StringBuilder();
-			sb.append("Recipe prereq chain:\n");
-			int i = 0;
-			for (RecipePrereq at : li) {
-				sb.append(ReikaStringParser.getNOf(" ", i*4)+at.toString()+"\n");
-				i++;
-			}
-			return sb.toString();
+		public boolean isReady() {
+			return dependencies.isEmpty();
 		}
 
 		@Override
@@ -325,6 +294,11 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 		@Override
 		public boolean equals(Object o) {
 			return o instanceof RecipePrereq && ((RecipePrereq)o).recipe.equals(recipe);
+		}
+
+		@Override
+		public String toString() {
+			return "("+recipe.toString()+") x"+totalItemsNeeded+" / "+craftsRemaining;
 		}
 
 	}
