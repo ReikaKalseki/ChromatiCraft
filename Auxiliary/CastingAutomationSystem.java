@@ -40,6 +40,7 @@ import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Collections.InventoryCache;
+import Reika.DragonAPI.Instantiable.Data.Collections.ItemCollection;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.ModInteract.BasicAEInterface;
 import Reika.DragonAPI.Instantiable.Recipe.ItemMatch;
@@ -191,6 +192,10 @@ public class CastingAutomationSystem {
 		return c.get(0);
 	}
 
+	protected ItemCollection getExtraItems(Object item, int amt, boolean simulate, boolean allowMultiple) {
+		return null;
+	}
+
 	private final ArrayList<ItemStack> getItems(Object item, int amt, boolean simulate, boolean allowMultiple) {
 		List<ItemStack> li = new ArrayList();
 		if (item instanceof ItemStack)
@@ -215,6 +220,22 @@ public class CastingAutomationSystem {
 
 		ArrayList<ItemStack> ret = new ArrayList();
 		int wanted = amt;
+
+		ItemCollection extra = this.getExtraItems(item, amt, simulate, allowMultiple);
+		if (extra != null) {
+			for (ItemStack is : extra.getItems()) {
+				int num = Math.min(is.stackSize, wanted);
+				ret.add(ReikaItemHelper.getSizedItemStack(is, num));
+				is.stackSize -= num;
+				wanted -= num;
+				if (wanted <= 0)
+					break;
+			}
+			extra.clearEmpties();
+		}
+
+		if (wanted <= 0)
+			return ret;
 
 		for (ItemStack is : li) {
 			if (ModList.APPENG.isLoaded()) {
@@ -259,10 +280,11 @@ public class CastingAutomationSystem {
 			if (wanted <= 0)
 				break;
 		}
-		return null;
+		return ret;
 	}
 
-	private boolean recoverItem(ItemStack is) {
+	/** Changes the stack size to whatever is NOT added, if it was not all added */
+	public final boolean recoverItem(ItemStack is) {
 		if (DragonAPICore.debugtest)
 			return true;
 		if (ModList.APPENG.isLoaded()) {
@@ -273,18 +295,6 @@ public class CastingAutomationSystem {
 		}
 		int left = ingredients.addItemsToUnderlyingInventories(is, false);
 		return left <= 0;
-	}
-
-	public final int pushItemToME(ItemStack is) {
-		if (DragonAPICore.debugtest)
-			return is.stackSize;
-		if (ModList.APPENG.isLoaded()) {
-			int left = (int)network.addItem(is, false);
-			int delta = is.stackSize-left;
-			is.stackSize = left;
-			return delta;
-		}
-		return 0;
 	}
 
 	public void tick(World world) {
@@ -350,7 +360,8 @@ public class CastingAutomationSystem {
 			}
 		}
 		else if (recipe == null || recipesToGo == 0) {
-			this.cancelCrafting();
+			if (!this.isIdle())
+				this.cancelCrafting();
 		}
 	}
 

@@ -2,8 +2,10 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map.Entry;
 
 import net.minecraft.item.ItemStack;
@@ -45,23 +47,65 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 		super.tick(world);
 		if (this.isIdle() && prereqs != null) {
 			RecipePrereq p = prereqs.getNextInQueue();
+			//ReikaJavaLibrary.pConsole("QUEUED TO: "+p);
 			if (p != null) {
 				super.setRecipe(p.recipe, p.craftsRemaining);
 			}
 		}
 	}
 
+	public boolean isRecursiveCrafting() {
+		return prereqs != null;
+	}
+
+	public void cacheIngredient(ItemStack is) {
+		cachedIngredients.add(is);
+	}
+
+	@Override
+	protected ItemCollection getExtraItems(Object item, int amt, boolean simulate, boolean allowMultiple) {
+		Ingredient i = cachedIngredients.data.get(item);
+		return i != null ? i.found : null;
+	}
+
 	@Override
 	protected void onTriggerCrafting(CastingRecipe r, int cycles) {
 		if (prereqs != null) {
 			prereqs.craft(r, cycles);
+			if (prereqs.isDone()) {
+				ReikaJavaLibrary.pConsole("Recursive crafting is done.");
+				this.recoverCachedIngredients();
+				prereqs = null;
+			}
 		}
+	}
+
+	private void recoverCachedIngredients() {
+		Iterator<Entry<ItemMatch, Ingredient>> it = cachedIngredients.data.entrySet().iterator();
+		while (it.hasNext()) {
+			Entry<ItemMatch, Ingredient> e = it.next();
+			Ingredient i = e.getValue();
+			if (this.recoverIngredient(i)) {
+				it.remove();
+			}
+		}
+	}
+
+	private boolean recoverIngredient(Ingredient i) {
+		Collection<ItemStack> c = new ArrayList(i.found.getItems());
+		for (ItemStack is : c) {
+			if (this.recoverItem(is)) {
+				i.found.removeItem(is);
+			}
+		}
+		return i.found.isEmpty();
 	}
 
 	@Override
 	public void setRecipe(CastingRecipe c, int amt) {
+		this.recoverCachedIngredients();
 		prereqs = null;
-		if (c != null && tile.canRecursivelyRequest(c)) {
+		if (c != null && tile.canRecursivelyRequest(c) && cachedIngredients.isEmpty()) {
 			prereqs = new RecipeChain(tile.getAvailableRecipes());
 			RecipePrereq pre = prereqs.createPrereq(null, new ItemMatch(c.getOutput()), c, amt*c.getOutput().stackSize);
 			Result res = this.determinePrerequisites(pre);
@@ -82,7 +126,7 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 				prereqs = null;
 			}
 		}
-		super.setRecipe(c, amt);
+		super.setRecipe(null, 0);
 	}
 
 	private void intakeNecessaryItems() {
@@ -98,9 +142,15 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 		cachedIngredients.clear();
 		for (ItemMatch im : prereqs.getAllUsedItems()) {
 			int amt = prereqs.getDeficit(im);
-			Collection<ItemStack> is = this.findItems(im, amt, false);
-			cachedIngredients.add(im, is);
+			if (amt > 0) {
+				Collection<ItemStack> is = this.findItems(im, amt, false);
+				if (is == null) {
+					ReikaJavaLibrary.pConsole("Got null list for "+im+"?!?!");
+				}
+				cachedIngredients.add(im, is);
+			}
 		}
+		ReikaJavaLibrary.pConsole("Took in intermediate ingredients: "+cachedIngredients.toString());
 	}
 
 	private Result determinePrerequisites(RecipePrereq r) {
@@ -314,6 +364,10 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 			}
 		}
 
+		public boolean isDone() {
+			return recipesByItem.isEmpty();
+		}
+
 		private void removeRecipe(RecipePrereq r0) {
 			recipesByItem.remove(r0.item);
 			recipesByRecipe.remove(r0.recipe.getIDString());
@@ -361,7 +415,11 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 		}
 
 		public boolean isReady() {
-			return dependencies.isEmpty();
+			for (RecipePrereq r : dependencies) {
+				if (r.craftsRemaining > 0)
+					return false;
+			}
+			return true;
 		}
 
 		@Override
@@ -391,6 +449,37 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 			if (i.found.isEmpty())
 				data.remove(im);
 			return ret;
+		}
+
+		public Collection<Ingredient> getItems() {
+			return Collections.unmodifiableCollection(data.values());
+		}
+
+		public boolean isEmpty() {
+			return data.isEmpty();
+		}
+
+		public void add(ItemStack is) {
+			for (Ingredient i : data.values()) {
+				if (i.seek.match(is)) {
+					i.found.add(is);
+					return;
+				}
+			}
+			this.add(new ItemMatch(is), is);
+		}
+
+		private void add(ItemMatch im, ItemStack is) {
+			Ingredient i = data.get(im);
+			if (i == null) {
+				ItemCollection ic = new ItemCollection();
+				ic.add(is);
+				i = new Ingredient(im, ic);
+				data.put(im, i);
+			}
+			else {
+				i.found.add(is);
+			}
 		}
 
 		public void add(ItemMatch im, Collection<ItemStack> is) {
@@ -453,7 +542,7 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 
 		@Override
 		public String toString() {
-			return data.toString();
+			return data.values().toString();
 		}
 
 	}

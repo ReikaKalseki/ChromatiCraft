@@ -24,6 +24,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Auxiliary.CastingAutomationSystem;
+import Reika.ChromatiCraft.Auxiliary.RecursiveCastingAutomationSystem;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CastingAutomationBlock;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
@@ -34,7 +35,6 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 
 import appeng.api.networking.IGridNode;
 import appeng.api.util.AECableType;
@@ -110,8 +110,15 @@ public class TileEntityCastingInjector extends InventoriedChromaticBase implemen
 				this.checkStructure(this.getTable());
 
 			if (inv[0] != null) {
-				int added = handler.pushItemToME(inv[0]);
-				ReikaInventoryHelper.decrStack(0, this, added);
+				TileEntityCastingAuto te = (TileEntityCastingAuto)delegate.getTileEntity(world);
+				if (te != null && ((RecursiveCastingAutomationSystem)te.getAutomationHandler()).isRecursiveCrafting()) {
+					((RecursiveCastingAutomationSystem)te.getAutomationHandler()).cacheIngredient(inv[0]);
+					inv[0] = null;
+				}
+				else {
+					if (handler.recoverItem(inv[0]))
+						inv[0] = null;
+				}
 			}
 		}
 	}
