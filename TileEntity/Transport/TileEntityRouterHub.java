@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -41,7 +41,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.StepTimer;
-import Reika.DragonAPI.Instantiable.Data.Collections.ItemCollection;
+import Reika.DragonAPI.Instantiable.Data.Collections.InventoryCache;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.ModInteract.BasicAEInterface;
 import Reika.DragonAPI.Interfaces.TileEntity.AdjacentUpdateWatcher;
@@ -52,6 +52,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.ExtractedItem;
+import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.ExtractedItemGroup;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.MatchMode;
 
 import appeng.api.AEApi;
@@ -69,7 +70,7 @@ import forestry.api.apiculture.IBeeHousingInventory;
 @Strippable(value={"appeng.api.networking.IActionHost"})
 public class TileEntityRouterHub extends TileEntityChromaticBase implements IActionHost, RouterFilter, AdjacentUpdateWatcher {
 
-	private final ItemCollection ingredients = new ItemCollection();
+	private final InventoryCache ingredients = new InventoryCache();
 
 	@ModDependent(ModList.APPENG)
 	private MESystemReader network;
@@ -249,9 +250,10 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 		}
 
 		if (ModList.APPENG.isLoaded()) {
-			ExtractedItem rem = mode.removeItems(network, is, simulate);
+			ExtractedItemGroup rem = mode.removeItems(network, is, simulate, false);
 			if (rem != null) {
-				return ReikaItemHelper.getSizedItemStack(rem.getItem(), (int)rem.amount);
+				ExtractedItem ei = rem.getBiggest();
+				return ReikaItemHelper.getSizedItemStack(ei.getItem(), (int)ei.amount);
 			}
 			ChromatiCraft.logger.debug(this+" failed to find "+is+" in its ME System.");
 		}

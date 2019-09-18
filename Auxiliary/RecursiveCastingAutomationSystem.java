@@ -18,12 +18,12 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCast
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
+import Reika.DragonAPI.Instantiable.Data.Collections.ItemCollection;
 import Reika.DragonAPI.Instantiable.Data.Maps.CountMap;
 import Reika.DragonAPI.Instantiable.Recipe.ItemMatch;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 import cpw.mods.fml.common.eventhandler.Event.Result;
 
@@ -387,37 +387,31 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 
 		public int subtract(ItemMatch im, int amt) {
 			Ingredient i = data.get(im);
-			int rem = Math.min(amt, i.amount);
-			i.amount -= rem;
-			if (i.amount == 0)
+			int ret = i.removeItems(amt);
+			if (i.found.isEmpty())
 				data.remove(im);
-			return rem;
+			return ret;
 		}
 
-		public void add(ItemMatch im, ItemStack is) {
+		public void add(ItemMatch im, Collection<ItemStack> is) {
 			Ingredient i = data.get(im);
 			if (i == null) {
-				i = new Ingredient(im, is);
+				i = new Ingredient(im, new ItemCollection(is));
 				data.put(im, i);
 			}
 			else {
-				i.amount += is.stackSize;
+				i.addItems(is);
 			}
 		}
 
 		public int count(ItemMatch im) {
 			Ingredient i = data.get(im);
-			return i != null ? i.amount : 0;
+			return i != null ? i.found.count() : 0;
 		}
 
 		public void drop(World world, int x, int y, int z) {
 			for (Ingredient i : data.values()) {
-				while (i.amount > 0) {
-					int num = Math.min(i.amount, i.found.getMaxStackSize());
-					ItemStack is = ReikaItemHelper.getSizedItemStack(i.found, num);
-					i.amount -= num;
-					ReikaItemHelper.dropItem(world, x+world.rand.nextDouble(), y+world.rand.nextDouble(), z+world.rand.nextDouble(), i.found);
-				}
+				i.found.drop(world, x, y, z);
 			}
 		}
 
@@ -467,19 +461,24 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 	private static class Ingredient {
 
 		private final ItemMatch seek;
-		private final ItemStack found;
+		private final ItemCollection found;
 
-		private int amount;
-
-		private Ingredient(ItemMatch im, ItemStack is) {
+		private Ingredient(ItemMatch im, ItemCollection is) {
 			seek = im;
-			found = is.copy();
-			amount = is.stackSize;
+			found = is;
+		}
+
+		public void addItems(Collection<ItemStack> is) {
+			found.add(is);
+		}
+
+		public int removeItems(int amt) {
+			return found.removeItems(amt);
 		}
 
 		@Override
 		public String toString() {
-			return seek.toString()+" > "+found.getDisplayName()+" x "+amount;
+			return seek.toString()+" > "+found.toString();
 		}
 
 		public void writeToNBT(NBTTagCompound NBT) {
@@ -489,16 +488,18 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 			seek.writeToNBT(tag2);
 			NBT.setTag("item", tag1);
 			NBT.setTag("match", tag2);
-			NBT.setInteger("amount", amount);
+			//NBT.setInteger("amount", amount);
 		}
 
 		public static Ingredient readFromNBT(NBTTagCompound NBT) {
 			NBTTagCompound tag1 = NBT.getCompoundTag("item");
 			NBTTagCompound tag2 = NBT.getCompoundTag("match");
-			ItemStack is = ItemStack.loadItemStackFromNBT(tag1);
-			is.stackSize = NBT.getInteger("amount");
+			ItemCollection is = new ItemCollection();
+			is.readFromNBT(tag1);
 			ItemMatch im = ItemMatch.readFromNBT(tag2);
-			return new Ingredient(im, is);
+			Ingredient ret = new Ingredient(im, is);
+			//ret.amount = NBT.getInteger("amount");
+			return ret;
 		}
 
 	}

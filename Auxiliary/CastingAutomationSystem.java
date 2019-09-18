@@ -39,7 +39,7 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
-import Reika.DragonAPI.Instantiable.Data.Collections.ItemCollection;
+import Reika.DragonAPI.Instantiable.Data.Collections.InventoryCache;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.ModInteract.BasicAEInterface;
 import Reika.DragonAPI.Instantiable.Recipe.ItemMatch;
@@ -73,7 +73,7 @@ public class CastingAutomationSystem {
 	private int recipesToGo = 0;
 	private int recipeCycles = 0;
 
-	private final ItemCollection ingredients = new ItemCollection();
+	private final InventoryCache ingredients = new InventoryCache();
 	@ModDependent(ModList.APPENG)
 	private MESystemReader network;
 	private Object aeGridBlock;
@@ -219,18 +219,13 @@ public class CastingAutomationSystem {
 		for (ItemStack is : li) {
 			if (ModList.APPENG.isLoaded()) {
 				if (is.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
-					ExtractedItemGroup rem = network.removeItemFuzzy(ReikaItemHelper.getSizedItemStack(is, amt), simulate, FuzzyMode.IGNORE_ALL, false, is.stackTagCompound != null);
+					ExtractedItemGroup rem = network.removeItemFuzzy(ReikaItemHelper.getSizedItemStack(is, wanted), simulate, FuzzyMode.IGNORE_ALL, false, is.stackTagCompound != null, allowMultiple);
 					if (rem != null) {
-						if (allowMultiple) {
-							for (ExtractedItem ei : rem.getItems()) {
-
-							}
-						}
-						else {
-							ExtractedItem ei = rem.getBiggest();
+						for (ExtractedItem ei : rem.getItems()) {
 							ItemStack is2 = ReikaItemHelper.getSizedItemStack(ei.getItem(), (int)ei.amount);
 							is2.setItemDamage(0);
-							return ReikaJavaLibrary.makeListFrom(is2);
+							ret.add(is2);
+							wanted -= is2.stackSize;
 						}
 					}
 					else {
@@ -238,23 +233,31 @@ public class CastingAutomationSystem {
 					}
 				}
 				else {
-					int rem = (int)network.removeItem(ReikaItemHelper.getSizedItemStack(is, amt), simulate, is.stackTagCompound != null);
+					int rem = (int)network.removeItem(ReikaItemHelper.getSizedItemStack(is, wanted), simulate, is.stackTagCompound != null);
 					if (rem > 0) {
-						return ReikaItemHelper.getSizedItemStack(is, rem);
+						ItemStack is2 = ReikaItemHelper.getSizedItemStack(is, rem);
+						ret.add(is2);
+						wanted -= is2.stackSize;
 					}
 					else {
 						//network.triggerCrafting(worldObj, is, amt, null, null); GOD DAMN IT AE
 					}
 				}
 				ChromatiCraft.logger.debug(this+" failed to find "+is+" in its ME System.");
+				if (wanted <= 0)
+					break;
 			}
 			int has = ingredients.getItemCount(is);
 			if (has > 0) {
-				int rem = Math.min(amt, has);
+				int rem = Math.min(wanted, has);
 				if (!simulate)
 					ingredients.removeXItems(is, rem);
-				return ReikaItemHelper.getSizedItemStack(is, rem);
+				ItemStack is2 = ReikaItemHelper.getSizedItemStack(is, rem);
+				ret.add(is2);
+				wanted -= is2.stackSize;
 			}
+			if (wanted <= 0)
+				break;
 		}
 		return null;
 	}

@@ -31,7 +31,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.StepTimer;
-import Reika.DragonAPI.Instantiable.Data.Collections.ItemCollection;
+import Reika.DragonAPI.Instantiable.Data.Collections.InventoryCache;
 import Reika.DragonAPI.Instantiable.ModInteract.BasicAEInterface;
 import Reika.DragonAPI.Instantiable.ModInteract.DirectionalAEInterface;
 import Reika.DragonAPI.Instantiable.ModInteract.MEWorkTracker;
@@ -41,7 +41,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
-import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.ExtractedItem;
+import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.ExtractedItemGroup;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.MatchMode;
 
 import appeng.api.AEApi;
@@ -62,7 +62,7 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 	private Object aeGridNode;
 	private int AEPowerCost = 1;
 
-	private final ItemCollection output = new ItemCollection();
+	private final InventoryCache output = new InventoryCache();
 
 	private StepTimer checkTimer = new StepTimer(10);
 	private StepTimer cacheTimer = new StepTimer(40);
@@ -193,12 +193,12 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 	}
 
 	private void transferItem(ItemStack is, IInventory ii, MatchMode mode) {
-		ExtractedItem rem = mode.removeItems(network, is, true);
+		ExtractedItemGroup rem = mode.removeItems(network, is, true, false);
 		if (rem != null) {
-			ItemStack add = rem.getItem();
+			ItemStack add = rem.getBiggest().getItem();
 			add.stackSize = Math.min(add.stackSize, is.stackSize);
 			if (ReikaInventoryHelper.addToIInv(add, ii)) {
-				mode.removeItems(network, add, false);
+				mode.removeItems(network, add, false, false);
 			}
 			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.METRANSFER.ordinal(), this, 32, Item.getIdFromItem(add.getItem()), add.getItemDamage());
 			AEPowerCost = Math.min(500, AEPowerCost+Math.max(1, add.stackSize/4));
