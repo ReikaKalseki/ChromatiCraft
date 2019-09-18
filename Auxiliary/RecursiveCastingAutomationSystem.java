@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
@@ -19,6 +21,7 @@ import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Maps.CountMap;
 import Reika.DragonAPI.Instantiable.Recipe.ItemMatch;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
@@ -26,11 +29,12 @@ import cpw.mods.fml.common.eventhandler.Event.Result;
 
 public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 
+	//private boolean isChainCrafting;
 	private RecipeChain prereqs;
 
 	private final HashSet<String> priorityRecipes = new HashSet();
 
-	private final ArrayList<ItemStack> cachedIngredients = new ArrayList();
+	private final IngredientCache cachedIngredients = new IngredientCache();
 
 	public RecursiveCastingAutomationSystem(CastingAutomationBlock te) {
 		super(te);
@@ -58,30 +62,45 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 	public void setRecipe(CastingRecipe c, int amt) {
 		prereqs = null;
 		if (c != null && tile.canRecursivelyRequest(c)) {
-			try {
-				prereqs = new RecipeChain(tile.getAvailableRecipes());
-				RecipePrereq pre = prereqs.createPrereq(null, new ItemMatch(c.getOutput()), c, amt*c.getOutput().stackSize);
-				Result res = this.determinePrerequisites(pre);
-				int tries = 0;
-				while (res == Result.DEFAULT && tries < 60) {
-					res = this.determinePrerequisites(pre);
-					tries++;
-				}
-				if (res == Result.ALLOW) {
-					//take items, set up crafting system
-					ReikaJavaLibrary.pConsole("Found recursive crafting for "+c+":");
-					ReikaJavaLibrary.pConsole(prereqs.toString());
-				}
-				else {
-					ReikaJavaLibrary.pConsole("Could not recursively craft "+c+"; "+res);
-					//either no valid recipe paths, or uncraftable items
-				}
+			prereqs = new RecipeChain(tile.getAvailableRecipes());
+			RecipePrereq pre = prereqs.createPrereq(null, new ItemMatch(c.getOutput()), c, amt*c.getOutput().stackSize);
+			Result res = this.determinePrerequisites(pre);
+			int tries = 0;
+			while (res == Result.DEFAULT && tries < 60) {
+				res = this.determinePrerequisites(pre);
+				tries++;
 			}
-			catch (Exception e) {
-				e.printStackTrace();
+			if (res == Result.ALLOW) {
+				//take items, set up crafting system
+				this.intakeNecessaryItems();
+				ReikaJavaLibrary.pConsole("Found recursive crafting for "+c+":");
+				ReikaJavaLibrary.pConsole(prereqs.toString());
+			}
+			else {
+				ReikaJavaLibrary.pConsole("Could not recursively craft "+c+"; "+res);
+				//either no valid recipe paths, or uncraftable items
+				prereqs = null;
 			}
 		}
 		super.setRecipe(c, amt);
+	}
+
+	private void intakeNecessaryItems() {
+		for (ItemMatch im : prereqs.getAllUsedItems()) { //second verification pass
+			int amt = prereqs.getDeficit(im);
+			int has = this.countItem(im);
+			if (has < amt) {
+				ReikaJavaLibrary.pConsole("Missing items on second check, cannot craft!");
+				prereqs = null;
+				return;
+			}
+		}
+		cachedIngredients.clear();
+		for (ItemMatch im : prereqs.getAllUsedItems()) {
+			int amt = prereqs.getDeficit(im);
+			Collection<ItemStack> is = this.findItems(im, amt, false);
+			cachedIngredients.add(im, is);
+		}
 	}
 
 	private Result determinePrerequisites(RecipePrereq r) {
@@ -167,22 +186,28 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 	public void writeToNBT(NBTTagCompound NBT) {
 		super.writeToNBT(NBT);
 
+		//NBT.setBoolean("chain", isChainCrafting);
+
 		ReikaNBTHelper.writeCollectionToNBT(priorityRecipes, NBT, "priority");
-		ReikaNBTHelper.writeCollectionToNBT(cachedIngredients, NBT, "ingredients");
+		NBTTagCompound tag = new NBTTagCompound();
+		cachedIngredients.writeToNBT(tag);
+		NBT.setTag("ingredients", tag);
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound NBT) {
 		super.readFromNBT(NBT);
 
+		//isChainCrafting = NBT.getBoolean("chain");
+
 		ReikaNBTHelper.readCollectionFromNBT(priorityRecipes, NBT, "priority");
-		ReikaNBTHelper.readCollectionFromNBT(cachedIngredients, NBT, "ingredients");
+		cachedIngredients.readFromNBT(NBT.getCompoundTag("ingredients"));
 	}
 
 	@Override
 	public void onBreak(World world) {
 		super.onBreak(world);
-		ReikaItemHelper.dropItems(world, this.getX()+0.5, this.getY()+0.5, this.getZ()+0.5, cachedIngredients);
+		cachedIngredients.drop(world, this.getX(), this.getY(), this.getZ());
 	}
 
 	private class RecipeChain {
@@ -352,6 +377,128 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 		@Override
 		public String toString() {
 			return "("+recipe.toString()+") x"+totalItemsNeeded+" / "+craftsRemaining;
+		}
+
+	}
+
+	private static class IngredientCache {
+
+		private HashMap<ItemMatch, Ingredient> data = new HashMap();
+
+		public int subtract(ItemMatch im, int amt) {
+			Ingredient i = data.get(im);
+			int rem = Math.min(amt, i.amount);
+			i.amount -= rem;
+			if (i.amount == 0)
+				data.remove(im);
+			return rem;
+		}
+
+		public void add(ItemMatch im, ItemStack is) {
+			Ingredient i = data.get(im);
+			if (i == null) {
+				i = new Ingredient(im, is);
+				data.put(im, i);
+			}
+			else {
+				i.amount += is.stackSize;
+			}
+		}
+
+		public int count(ItemMatch im) {
+			Ingredient i = data.get(im);
+			return i != null ? i.amount : 0;
+		}
+
+		public void drop(World world, int x, int y, int z) {
+			for (Ingredient i : data.values()) {
+				while (i.amount > 0) {
+					int num = Math.min(i.amount, i.found.getMaxStackSize());
+					ItemStack is = ReikaItemHelper.getSizedItemStack(i.found, num);
+					i.amount -= num;
+					ReikaItemHelper.dropItem(world, x+world.rand.nextDouble(), y+world.rand.nextDouble(), z+world.rand.nextDouble(), i.found);
+				}
+			}
+		}
+
+		public void writeToNBT(NBTTagCompound NBT) {
+			NBTTagList li = new NBTTagList();
+			for (Entry<ItemMatch, Ingredient> e : data.entrySet()) {
+				NBTTagCompound tag = new NBTTagCompound();
+				NBTTagCompound key = new NBTTagCompound();
+				NBTTagCompound value = new NBTTagCompound();
+
+				e.getKey().writeToNBT(key);
+				e.getValue().writeToNBT(value);
+
+				tag.setTag("key", key);
+				tag.setTag("value", value);
+				li.appendTag(tag);
+			}
+			NBT.setTag("data", li);
+		}
+
+		public void readFromNBT(NBTTagCompound NBT) {
+			this.clear();
+			NBTTagList li = NBT.getTagList("data", NBTTypes.COMPOUND.ID);
+			data.clear();
+			for (Object o : li.tagList) {
+				NBTTagCompound tag = (NBTTagCompound)o;
+				NBTTagCompound key = tag.getCompoundTag("key");
+				NBTTagCompound value = tag.getCompoundTag("value");
+
+				ItemMatch im = ItemMatch.readFromNBT(key);
+				Ingredient i = Ingredient.readFromNBT(value);
+				data.put(im, i);
+			}
+		}
+
+		public void clear() {
+			data.clear();
+		}
+
+		@Override
+		public String toString() {
+			return data.toString();
+		}
+
+	}
+
+	private static class Ingredient {
+
+		private final ItemMatch seek;
+		private final ItemStack found;
+
+		private int amount;
+
+		private Ingredient(ItemMatch im, ItemStack is) {
+			seek = im;
+			found = is.copy();
+			amount = is.stackSize;
+		}
+
+		@Override
+		public String toString() {
+			return seek.toString()+" > "+found.getDisplayName()+" x "+amount;
+		}
+
+		public void writeToNBT(NBTTagCompound NBT) {
+			NBTTagCompound tag1 = new NBTTagCompound();
+			NBTTagCompound tag2 = new NBTTagCompound();
+			found.writeToNBT(tag1);
+			seek.writeToNBT(tag2);
+			NBT.setTag("item", tag1);
+			NBT.setTag("match", tag2);
+			NBT.setInteger("amount", amount);
+		}
+
+		public static Ingredient readFromNBT(NBTTagCompound NBT) {
+			NBTTagCompound tag1 = NBT.getCompoundTag("item");
+			NBTTagCompound tag2 = NBT.getCompoundTag("match");
+			ItemStack is = ItemStack.loadItemStackFromNBT(tag1);
+			is.stackSize = NBT.getInteger("amount");
+			ItemMatch im = ItemMatch.readFromNBT(tag2);
+			return new Ingredient(im, is);
 		}
 
 	}

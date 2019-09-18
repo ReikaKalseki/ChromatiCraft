@@ -49,6 +49,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.ExtractedItem;
+import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.ExtractedItemGroup;
 
 import appeng.api.AEApi;
 import appeng.api.config.FuzzyMode;
@@ -179,7 +180,18 @@ public class CastingAutomationSystem {
 		return ret;
 	}
 
+	protected final Collection<ItemStack> findItems(Object item, int amt, boolean simulate) {
+		return this.getItems(item, amt, simulate, true);
+	}
+
 	protected final ItemStack findItem(Object item, int amt, boolean simulate) {
+		ArrayList<ItemStack> c = this.getItems(item, amt, simulate, false);
+		if (c == null || c.isEmpty())
+			return null;
+		return c.get(0);
+	}
+
+	private final ArrayList<ItemStack> getItems(Object item, int amt, boolean simulate, boolean allowMultiple) {
 		List<ItemStack> li = new ArrayList();
 		if (item instanceof ItemStack)
 			li.add((ItemStack)item);
@@ -192,7 +204,7 @@ public class CastingAutomationSystem {
 		}
 
 		if (DragonAPICore.debugtest)
-			return ReikaItemHelper.getSizedItemStack(li.get(0), amt);
+			return ReikaJavaLibrary.makeListFrom(ReikaItemHelper.getSizedItemStack(li.get(0), amt));
 
 		if (ModList.APPENG.isLoaded()) {
 			ChromatiCraft.logger.debug("Delegate "+this+" requesting "+li+" from "+ingredients+" / "+network);
@@ -201,14 +213,25 @@ public class CastingAutomationSystem {
 			ChromatiCraft.logger.debug("Delegate "+this+" requesting "+li+" from "+ingredients);
 		}
 
+		ArrayList<ItemStack> ret = new ArrayList();
+		int wanted = amt;
+
 		for (ItemStack is : li) {
 			if (ModList.APPENG.isLoaded()) {
 				if (is.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
-					ExtractedItem rem = network.removeItemFuzzy(ReikaItemHelper.getSizedItemStack(is, amt), simulate, FuzzyMode.IGNORE_ALL, false, is.stackTagCompound != null);
+					ExtractedItemGroup rem = network.removeItemFuzzy(ReikaItemHelper.getSizedItemStack(is, amt), simulate, FuzzyMode.IGNORE_ALL, false, is.stackTagCompound != null);
 					if (rem != null) {
-						ItemStack ret = ReikaItemHelper.getSizedItemStack(rem.getItem(), (int)rem.amount);
-						ret.setItemDamage(0);
-						return ret;
+						if (allowMultiple) {
+							for (ExtractedItem ei : rem.getItems()) {
+
+							}
+						}
+						else {
+							ExtractedItem ei = rem.getBiggest();
+							ItemStack is2 = ReikaItemHelper.getSizedItemStack(ei.getItem(), (int)ei.amount);
+							is2.setItemDamage(0);
+							return ReikaJavaLibrary.makeListFrom(is2);
+						}
 					}
 					else {
 						//network.triggerFuzzyCrafting(worldObj, is, amt, null, null);
