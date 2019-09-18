@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -38,6 +40,8 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 
 	private final IngredientCache cachedIngredients = new IngredientCache();
 
+	public boolean recursionEnabled = false;
+
 	public RecursiveCastingAutomationSystem(CastingAutomationBlock te) {
 		super(te);
 	}
@@ -64,6 +68,15 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 
 	@Override
 	protected ItemCollection getExtraItems(Object item, int amt, boolean simulate, boolean allowMultiple) {
+		if (item instanceof Block) {
+			item = new ItemMatch((Block)item);
+		}
+		else if (item instanceof Item) {
+			item = new ItemMatch((Item)item);
+		}
+		else if (item instanceof ItemStack) {
+			item = new ItemMatch((ItemStack)item);
+		}
 		Ingredient i = cachedIngredients.data.get(item);
 		return i != null ? i.found : null;
 	}
@@ -105,7 +118,7 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 	public void setRecipe(CastingRecipe c, int amt) {
 		this.recoverCachedIngredients();
 		prereqs = null;
-		if (c != null && tile.canRecursivelyRequest(c) && cachedIngredients.isEmpty()) {
+		if (c != null && recursionEnabled && tile.canRecursivelyRequest(c) && cachedIngredients.isEmpty()) {
 			prereqs = new RecipeChain(tile.getAvailableRecipes());
 			RecipePrereq pre = prereqs.createPrereq(null, new ItemMatch(c.getOutput()), c, amt*c.getOutput().stackSize);
 			Result res = this.determinePrerequisites(pre);
@@ -125,8 +138,11 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 				//either no valid recipe paths, or uncraftable items
 				prereqs = null;
 			}
+			super.setRecipe(null, 0);
 		}
-		super.setRecipe(null, 0);
+		else {
+			super.setRecipe(c, amt);
+		}
 	}
 
 	private void intakeNecessaryItems() {
@@ -181,13 +197,13 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 		return Result.DEFAULT;
 	}
 
-	public void setRecipePriority(CastingRecipe cr, boolean has) {
+	public void toggleRecipePriority(CastingRecipe cr) {
 		String s = cr.getIDString();
-		if (has) {
-			priorityRecipes.add(s);
+		if (priorityRecipes.contains(s)) {
+			priorityRecipes.remove(s);
 		}
 		else {
-			priorityRecipes.remove(s);
+			priorityRecipes.add(s);
 		}
 	}
 
@@ -236,7 +252,7 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 	public void writeToNBT(NBTTagCompound NBT) {
 		super.writeToNBT(NBT);
 
-		//NBT.setBoolean("chain", isChainCrafting);
+		NBT.setBoolean("recursion", recursionEnabled);
 
 		ReikaNBTHelper.writeCollectionToNBT(priorityRecipes, NBT, "priority");
 		NBTTagCompound tag = new NBTTagCompound();
@@ -248,7 +264,7 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 	public void readFromNBT(NBTTagCompound NBT) {
 		super.readFromNBT(NBT);
 
-		//isChainCrafting = NBT.getBoolean("chain");
+		recursionEnabled = NBT.getBoolean("recursion");
 
 		ReikaNBTHelper.readCollectionFromNBT(priorityRecipes, NBT, "priority");
 		cachedIngredients.readFromNBT(NBT.getCompoundTag("ingredients"));

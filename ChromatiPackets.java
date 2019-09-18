@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Auxiliary.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.RecursiveCastingAutomationSystem;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityCalls;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
@@ -602,13 +603,25 @@ public class ChromatiPackets implements PacketHandler {
 				case CASTAUTOUPDATE:
 					((CastingAutomationBlock)tile).getAutomationHandler().receiveUpdatePacket(world, data);
 					break;
-				case AUTORECIPE:
+				case AUTORECIPE: {
 					CastingRecipe cr = !Strings.isNullOrEmpty(stringdata) ? RecipesCastingTable.instance.getRecipeByStringID(stringdata) : null;
 					((CastingAutomationBlock)tile).getAutomationHandler().setRecipe(cr, data[0]);
 					break;
+				}
 				case AUTOCANCEL:
 					((CastingAutomationBlock)tile).getAutomationHandler().cancelCrafting();
 					break;
+				case AUTORECURSE: {
+					RecursiveCastingAutomationSystem sys = (RecursiveCastingAutomationSystem)((CastingAutomationBlock)tile).getAutomationHandler();
+					sys.recursionEnabled = !sys.recursionEnabled;
+					break;
+				}
+				case AUTORECIPEPRIORITY: {
+					CastingRecipe cr = !Strings.isNullOrEmpty(stringdata) ? RecipesCastingTable.instance.getRecipeByStringID(stringdata) : null;
+					RecursiveCastingAutomationSystem sys = (RecursiveCastingAutomationSystem)((CastingAutomationBlock)tile).getAutomationHandler();
+					sys.toggleRecipePriority(cr);
+					break;
+				}
 				case CHAINGUNHURT:
 					EntityChainGunShot.doDamagingParticles(data[0]);
 					break;

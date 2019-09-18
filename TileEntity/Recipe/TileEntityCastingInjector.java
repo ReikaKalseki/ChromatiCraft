@@ -24,7 +24,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Auxiliary.CastingAutomationSystem;
-import Reika.ChromatiCraft.Auxiliary.RecursiveCastingAutomationSystem;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CastingAutomationBlock;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
@@ -39,7 +38,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import appeng.api.networking.IGridNode;
 import appeng.api.util.AECableType;
 
-public class TileEntityCastingInjector extends InventoriedChromaticBase implements CastingAutomationBlock, VariableTexture {
+public class TileEntityCastingInjector extends InventoriedChromaticBase implements CastingAutomationBlock<CastingAutomationSystem>, VariableTexture {
 
 	private static final HashSet<Coordinate> foci = new HashSet();
 
@@ -111,8 +110,8 @@ public class TileEntityCastingInjector extends InventoriedChromaticBase implemen
 
 			if (inv[0] != null) {
 				TileEntityCastingAuto te = (TileEntityCastingAuto)delegate.getTileEntity(world);
-				if (te != null && ((RecursiveCastingAutomationSystem)te.getAutomationHandler()).isRecursiveCrafting()) {
-					((RecursiveCastingAutomationSystem)te.getAutomationHandler()).cacheIngredient(inv[0]);
+				if (te != null && te.getAutomationHandler().isRecursiveCrafting()) {
+					te.getAutomationHandler().cacheIngredient(inv[0]);
 					inv[0] = null;
 				}
 				else {

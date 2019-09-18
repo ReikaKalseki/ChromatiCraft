@@ -16,7 +16,7 @@ import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import appeng.api.networking.security.IActionHost;
 
 @Strippable(value={"appeng.api.networking.IActionHost"})
-public interface CastingAutomationBlock extends GuiController, OwnedTile, BreakAction, IActionHost {
+public interface CastingAutomationBlock<V extends CastingAutomationSystem> extends GuiController, OwnedTile, BreakAction, IActionHost {
 
 	public Collection<CastingRecipe> getAvailableRecipes();
 
@@ -29,7 +29,7 @@ public interface CastingAutomationBlock extends GuiController, OwnedTile, BreakA
 	public boolean canPlaceCentralItemForMultiRecipes();
 	public boolean canRecursivelyRequest(CastingRecipe c);
 
-	public CastingAutomationSystem getAutomationHandler();
+	public V getAutomationHandler();
 
 	public void consumeEnergy(CastingRecipe c, TileEntityCastingTable te, ItemStack is);
 	public boolean canCraft(World world, int x, int y, int z, TileEntityCastingTable te);

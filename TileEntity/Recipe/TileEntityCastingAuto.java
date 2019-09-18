@@ -21,7 +21,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.Auxiliary.CastingAutomationSystem;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Auxiliary.RecursiveCastingAutomationSystem;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CastingAutomationBlock;
@@ -40,7 +39,7 @@ import appeng.api.util.AECableType;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityCastingAuto extends CrystalReceiverBase implements CastingAutomationBlock {
+public class TileEntityCastingAuto extends CrystalReceiverBase implements CastingAutomationBlock<RecursiveCastingAutomationSystem> {
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
@@ -229,7 +228,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements Castin
 	}
 
 	@Override
-	public CastingAutomationSystem getAutomationHandler() {
+	public RecursiveCastingAutomationSystem getAutomationHandler() {
 		return handler;
 	}
 

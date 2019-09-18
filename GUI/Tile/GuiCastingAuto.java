@@ -26,7 +26,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.CastingAutomationSystem;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
+import Reika.ChromatiCraft.Auxiliary.RecursiveCastingAutomationSystem;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CastingAutomationBlock;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeComparator;
@@ -108,14 +110,26 @@ public class GuiCastingAuto extends GuiChromaBase {
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 		String tex = "Textures/GUIs/buttons.png";
-		buttonList.add(new CustomSoundImagedGuiButton(0, j+144, k+32, 74, 10, 100, 36, tex, ChromatiCraft.class, this));
-		buttonList.add(new CustomSoundImagedGuiButton(1, j+144, k+42, 74, 10, 100, 46, tex, ChromatiCraft.class, this));
 
 		buttonList.add(new CustomSoundImagedGuiButton(3, j+40, k+32, 10, 10, 90, 16, tex, ChromatiCraft.class, this));
 		buttonList.add(new CustomSoundImagedGuiButton(2, j+40, k+42, 10, 10, 90, 26, tex, ChromatiCraft.class, this));
 
 		buttonList.add(new CustomSoundImagedGuiButtonSneakIcon(4, j+28, k+32, 10, 10, 90, 66, tex, ChromatiCraft.class, this, 90, 86));
 		buttonList.add(new CustomSoundImagedGuiButton(5, j+28, k+42, 10, 10, 90, 56, tex, ChromatiCraft.class, this));
+
+		CastingAutomationSystem sys = tile.getAutomationHandler();
+		if (sys instanceof RecursiveCastingAutomationSystem) {
+			RecursiveCastingAutomationSystem rec = (RecursiveCastingAutomationSystem)sys;
+			buttonList.add(new CustomSoundImagedGuiButton(0, j+144, k+32, 64, 10, 150, 56, tex, ChromatiCraft.class, this));
+			buttonList.add(new CustomSoundImagedGuiButton(1, j+144, k+42, 64, 10, 150, 66, tex, ChromatiCraft.class, this));
+
+			buttonList.add(new CustomSoundImagedGuiButton(6, j+144+64, k+32, 10, 10, 80, rec.recursionEnabled ? 76 : 86, tex, ChromatiCraft.class, this));
+			buttonList.add(new CustomSoundImagedGuiButton(7, j+144+64, k+42, 10, 10, 90, 86, tex, ChromatiCraft.class, this));
+		}
+		else {
+			buttonList.add(new CustomSoundImagedGuiButton(0, j+144, k+32, 74, 10, 100, 36, tex, ChromatiCraft.class, this));
+			buttonList.add(new CustomSoundImagedGuiButton(1, j+144, k+42, 74, 10, 100, 46, tex, ChromatiCraft.class, this));
+		}
 	}
 
 	@Override
@@ -183,7 +197,22 @@ public class GuiCastingAuto extends GuiChromaBase {
 				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.AUTOCANCEL.ordinal(), (TileEntity)tile);
 				lexiconSelectedRecipe = null;
 				break;
+			case 6: {
+				RecursiveCastingAutomationSystem sys = (RecursiveCastingAutomationSystem)tile.getAutomationHandler();
+				sys.recursionEnabled = !sys.recursionEnabled;
+				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.AUTORECURSE.ordinal(), (TileEntity)tile);
+				break;
+			}
+			case 7: {
+				RecursiveCastingAutomationSystem sys = (RecursiveCastingAutomationSystem)tile.getAutomationHandler();
+				String cr = RecipesCastingTable.instance.getStringIDForRecipe(this.getRecipe());
+				sys.toggleRecipePriority(this.getRecipe());
+				ReikaPacketHelper.sendStringIntPacket(ChromatiCraft.packetChannel, ChromaPackets.AUTORECIPEPRIORITY.ordinal(), (TileEntity)tile, cr);
+				break;
+			}
 		}
+
+		this.initGui();
 	}
 
 	@Override
@@ -277,7 +306,15 @@ public class GuiCastingAuto extends GuiChromaBase {
 			if (ChromaItems.ADJACENCY.matchWith(out)) {
 				s = s+" (Tier "+(out.stackTagCompound.getInteger("tier"))+")";
 			}
-			fontRendererObj.drawString(s, 10, 18, 0xffffff);
+			int c = 0xffffff;
+			CastingAutomationSystem sys = tile.getAutomationHandler();
+			if (sys instanceof RecursiveCastingAutomationSystem) {
+				RecursiveCastingAutomationSystem rec = (RecursiveCastingAutomationSystem)sys;
+				if (rec.isRecipePriority(cr)) {
+					c = 0xCE8EDB;
+				}
+			}
+			fontRendererObj.drawString(s, 10, 18, c);
 
 			fontRendererObj.drawString(String.format("x%d = %d", number, number*out.stackSize), 74, 38, 0xffffff);
 			api.drawItemStack(itemRender, out, 52, 34);

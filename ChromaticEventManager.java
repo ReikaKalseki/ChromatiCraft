@@ -222,6 +222,7 @@ import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -333,13 +334,20 @@ public class ChromaticEventManager {
 			TileEntity te = evt.world.getTileEntity(evt.x, evt.y, evt.z);
 			if (te instanceof IAlvearyComponent && !(te instanceof TileEntityLumenAlveary)) {
 				IAlvearyComponent iae = (IAlvearyComponent)te;
-				TileEntityLumenAlveary te2 = ChromaBeeHelpers.getLumenAlvearyController(iae.getMultiblockLogic().getController(), evt.world, iae.getCoordinates());
-				if (te2 != null) {
-					EfficientFlowerCache eff = te2.getFlowerCache();
-					if (eff != null) {
-						eff.forceUpdate(te2);
+				try {
+					TileEntityLumenAlveary te2 = ChromaBeeHelpers.getLumenAlvearyController(iae.getMultiblockLogic().getController(), evt.world, iae.getCoordinates());
+					if (te2 != null) {
+						EfficientFlowerCache eff = te2.getFlowerCache();
+						if (eff != null) {
+							eff.forceUpdate(te2);
+						}
+						te2.syncAllData(true);
 					}
-					te2.syncAllData(true);
+				}
+				catch (AbstractMethodError e) {
+					String s = "Cannot fetch multiblock logic for alveary part "+iae+"; it is using an old verison of the API! This is a bug in its mod!";
+					ChromatiCraft.logger.log(s);
+					ReikaChatHelper.write("Error processing "+iae+"; it is using an outdated API. This is a bug in that mod.");
 				}
 			}
 		}
