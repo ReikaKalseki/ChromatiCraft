@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.item.EntityItem;
@@ -30,7 +29,6 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
@@ -50,19 +48,16 @@ import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.Instantiable.Data.RunningAverage;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
-import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.DelayableSchedulableEvent;
 import Reika.DragonAPI.Instantiable.Rendering.FXCollection;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
-import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
@@ -618,39 +613,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 	}
 
 	private static void dischargeIntoPlayer(TileEntityGlowFire tile, EntityPlayer player, CrystalElement color, float power) {
-		dischargeIntoPlayer(tile.xCoord+0.5, tile.yCoord+0.125, tile.zCoord+0.5, player, color, power);
-	}
-
-	private static void dischargeIntoPlayer(double x, double y, double z, EntityPlayer player, CrystalElement color, float power) {
-		if (player.worldObj.isRemote)
-			return;
-		ChromaAux.doPylonAttack(color, player, player.getHealth()/4F*Math.min(1, 2*power), false);
-		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.FIREDUMPSHOCK.ordinal(), player.worldObj, (int)x, (int)player.posY, (int)z, 64, color.ordinal(), player.getEntityId());
-		ReikaEntityHelper.knockbackEntityFromPos(x, /*y*/player.posY, z, player, 1.5*Math.min(power*4, 1));
-		player.motionY += 0.125+rand.nextDouble()*0.0625;
-	}
-
-	/** In the words of {@link SoundHandler} line 171, "IN YOU FACE!" */
-	@SideOnly(Side.CLIENT)
-	public static void dischargeIntoPlayerFX(World world, int x, int y, int z, CrystalElement e, EntityPlayer ep) {
-		ReikaSoundHelper.playClientSound(ChromaSounds.MONUMENTRAY, ep, 1, (float)CrystalMusicManager.instance.getDingPitchScale(e), false);
-		int n = 4+rand.nextInt(4);
-		LightningBolt b = new LightningBolt(new DecimalPosition(x+0.5, y+0.5, z+0.5), new DecimalPosition(ep).offset(0, -0.25, 0), n);
-		b.variance *= 2;
-		b.update();
-		for (int i = 0; i < b.nsteps; i++) {
-			DecimalPosition pos1 = b.getPosition(i);
-			DecimalPosition pos2 = b.getPosition(i+1);
-			for (double r = 0; r <= 1; r += 0.03125) {
-				double f = i+r;
-				float s = 1.75F;//(float)(1.25+1.75*f/(2D*b.nsteps));
-				int l = 20;
-				int a = (int)(2*f);
-				DecimalPosition dd = DecimalPosition.interpolate(pos1, pos2, r);
-				EntityFX fx = new EntityBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s).setColor(e.getColor()).setLife(l).setRapidExpand().freezeLife(a);
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-			}
-		}
+		ChromaAux.dischargeIntoPlayer(tile.xCoord+0.5, /*tile.yCoord+0.125*/player.posY, tile.zCoord+0.5, rand, player, color, power, 1);
 	}
 
 	private static class GlowFireDischarge implements DelayableSchedulableEvent {
@@ -669,7 +632,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 
 		@Override
 		public void fire() {
-			dischargeIntoPlayer(tile.xCoord, tile.yCoord, tile.zCoord, player, color, fraction);
+			ChromaAux.dischargeIntoPlayer(tile.xCoord, tile.yCoord*0+player.posY, tile.zCoord, player.worldObj.rand, player, color, fraction, 1);
 		}
 
 		@Override

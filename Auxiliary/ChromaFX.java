@@ -19,8 +19,10 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IIcon;
@@ -792,6 +794,29 @@ public class ChromaFX {
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 				}
+			}
+		}
+	}
+
+	/** In the words of {@link SoundHandler} line 171, "IN YOU FACE!" */
+	@SideOnly(Side.CLIENT)
+	public static void dischargeIntoPlayerFX(World world, int x, int y, int z, CrystalElement e, EntityLivingBase ep, float beamSize) {
+		ReikaSoundHelper.playClientSound(ChromaSounds.MONUMENTRAY, ep, 1, (float)CrystalMusicManager.instance.getDingPitchScale(e), false);
+		int n = 4+world.rand.nextInt(4);
+		LightningBolt b = new LightningBolt(new DecimalPosition(x+0.5, y+0.5, z+0.5), new DecimalPosition(ep).offset(0, -0.25, 0), n);
+		b.variance *= 2;
+		b.update();
+		for (int i = 0; i < b.nsteps; i++) {
+			DecimalPosition pos1 = b.getPosition(i);
+			DecimalPosition pos2 = b.getPosition(i+1);
+			for (double r = 0; r <= 1; r += 0.03125) {
+				double f = i+r;
+				float s = 1.75F*beamSize;//(float)(1.25+1.75*f/(2D*b.nsteps));
+				int l = 20;
+				int a = (int)(2*f);
+				DecimalPosition dd = DecimalPosition.interpolate(pos1, pos2, r);
+				EntityFX fx = new EntityBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s).setColor(e.getColor()).setLife(l).setRapidExpand().freezeLife(a);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}
 	}

@@ -4,6 +4,7 @@ import java.util.HashSet;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
@@ -22,6 +23,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.ProportionedBlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.ProportionedBlockBox.CubeEdge;
 import Reika.DragonAPI.Interfaces.TileEntity.AdjacentUpdateWatcher;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
+import Reika.DragonAPI.Interfaces.TileEntity.ConditionalUnbreakability;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -33,7 +35,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @Strippable(value = "buildcraft.api.tiles.ITileAreaProvider")
-public class TileEntityFloatingLandmark extends TileEntityChromaticBase implements ITileAreaProvider, BreakAction, AdjacentUpdateWatcher {
+public class TileEntityFloatingLandmark extends TileEntityChromaticBase implements ITileAreaProvider, BreakAction, AdjacentUpdateWatcher, ConditionalUnbreakability {
 
 	private static final int RANGE = 256;
 
@@ -363,6 +365,11 @@ public class TileEntityFloatingLandmark extends TileEntityChromaticBase implemen
 			this.delete();
 			ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, this.getTile().getCraftedProduct());
 		}
+	}
+
+	@Override
+	public boolean isUnbreakable(EntityPlayer ep) {
+		return this.isAnchored();
 	}
 
 }

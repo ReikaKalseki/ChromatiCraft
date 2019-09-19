@@ -109,6 +109,7 @@ public enum ChromaSounds implements SoundEnum {
 	TOWEREXTEND1("tower_extend_1"),
 	TOWEREXTEND2("tower_extend_2b"),
 	TOWERAMBIENT("tower_ambient2"),
+	CASTTUNEREJECT("casttunereject"),
 	;
 
 	public static final ChromaSounds[] soundList = values();

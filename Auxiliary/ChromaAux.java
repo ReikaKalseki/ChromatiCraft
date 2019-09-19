@@ -65,6 +65,7 @@ import Reika.ChromatiCraft.Magic.Network.TargetData;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaEntities;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -83,8 +84,10 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Interfaces.Entity.CustomProjectile;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
@@ -649,5 +652,14 @@ public class ChromaAux {
 		//else if (tex.getIconName().startsWith("chromaticraft:dimgen/glowcave/layer_1")) {
 		//	BlockDimensionDeco.setGlowCaveAnimationData(tex);
 		//}
+	}
+
+	public static void dischargeIntoPlayer(double x, double y, double z, Random rand, EntityLivingBase e, CrystalElement color, float power, float beamSize) {
+		if (e.worldObj.isRemote)
+			return;
+		ChromaAux.doPylonAttack(color, e, e.getHealth()/4F*Math.min(1, 2*power), false);
+		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.FIREDUMPSHOCK.ordinal(), e.worldObj, (int)x, (int)y, (int)z, 64, color.ordinal(), e.getEntityId(), Float.floatToRawIntBits(beamSize));
+		ReikaEntityHelper.knockbackEntityFromPos(x, /*y*/e.posY, z, e, 1.5*Math.min(power*4, 1));
+		e.motionY += 0.125+rand.nextDouble()*0.0625;
 	}
 }

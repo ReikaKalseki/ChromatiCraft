@@ -20,6 +20,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -784,8 +785,8 @@ public class ChromatiPackets implements PacketHandler {
 				}
 				case FIREDUMPSHOCK: {
 					Entity e = world.getEntityByID(data[1]);
-					if (e instanceof EntityPlayer)
-						TileEntityGlowFire.dischargeIntoPlayerFX(world, x, y, z, CrystalElement.elements[data[0]], (EntityPlayer)e);
+					if (e instanceof EntityLivingBase)
+						ChromaFX.dischargeIntoPlayerFX(world, x, y, z, CrystalElement.elements[data[0]], (EntityLivingBase)e, Float.intBitsToFloat(data[2]));
 					break;
 				}
 				case FIRECONSUMEITEM: {

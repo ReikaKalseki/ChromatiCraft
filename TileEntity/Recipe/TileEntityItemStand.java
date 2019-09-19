@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -40,6 +40,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
+import Reika.DragonAPI.Interfaces.TileEntity.ConditionalUnbreakability;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -51,7 +52,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @Strippable(value={"buildcraft.api.transport.IPipeConnection"})
-public class TileEntityItemStand extends InventoriedChromaticBase implements ItemOnRightClick, OwnedTile/*, HitAction*/, InertIInv, IPipeConnection {
+public class TileEntityItemStand extends InventoriedChromaticBase implements ItemOnRightClick, OwnedTile/*, HitAction*/, InertIInv, IPipeConnection, ConditionalUnbreakability {
 
 	private InertItem item;
 	private Coordinate tile;
@@ -316,6 +317,11 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 	@Override
 	public int getUpdatePacketRadius() {
 		return 96;
+	}
+
+	@Override
+	public boolean isUnbreakable(EntityPlayer ep) {
+		return this.isLocked();
 	}
 
 }

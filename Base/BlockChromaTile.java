@@ -56,7 +56,6 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
-import Reika.ChromatiCraft.ModInterface.TileEntityFloatingLandmark;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectJar;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
@@ -95,6 +94,7 @@ import Reika.DragonAPI.Interfaces.Item.MusicDataItem;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
 import Reika.DragonAPI.Interfaces.TileEntity.AdjacentUpdateWatcher;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
+import Reika.DragonAPI.Interfaces.TileEntity.ConditionalUnbreakability;
 import Reika.DragonAPI.Interfaces.TileEntity.HitAction;
 import Reika.DragonAPI.Interfaces.TileEntity.RedstoneTile;
 import Reika.DragonAPI.Interfaces.TileEntity.SidePlacedTile;
@@ -173,11 +173,11 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			if (o.onlyAllowOwnersToMine() && !o.isOwnedByPlayer(ep))
 				return -1;
 		}
+		if (te instanceof ConditionalUnbreakability) {
+			if (((ConditionalUnbreakability)te).isUnbreakable(ep))
+				return -1;
+		}
 		if (te instanceof TileEntityDataNode)
-			return -1;
-		if (te instanceof TileEntityItemStand && ((TileEntityItemStand)te).isLocked())
-			return -1;
-		if (te instanceof TileEntityFloatingLandmark && ((TileEntityFloatingLandmark)te).isAnchored())
 			return -1;
 		return super.getPlayerRelativeBlockHardness(ep, world, x, y, z);
 	}

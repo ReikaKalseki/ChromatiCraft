@@ -54,6 +54,7 @@ import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.CastingTuning.CastingTuningManager;
+import Reika.ChromatiCraft.Magic.CastingTuning.CastingTuningMismatchReaction;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -86,6 +87,7 @@ import Reika.DragonAPI.Instantiable.Effects.EntityParticleEmitterFX;
 import Reika.DragonAPI.Instantiable.Recipe.ItemMatch;
 import Reika.DragonAPI.Interfaces.BlockCheck;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
+import Reika.DragonAPI.Interfaces.TileEntity.ConditionalUnbreakability;
 import Reika.DragonAPI.Interfaces.TileEntity.TriggerableAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
@@ -104,7 +106,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityCastingTable extends InventoriedCrystalReceiver implements NBTTile, BreakAction, TriggerableAction, OwnedTile,
-OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, BlockMatchFailCallback {
+OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, BlockMatchFailCallback, ConditionalUnbreakability {
 
 	private CastingRecipe activeRecipe = null;
 	private int craftingTick = 0;
@@ -123,6 +125,8 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 
 	private final HashSet<KeyedItemStack> completedRecipes = new HashSet();
 	private final ItemHashMap<Integer> craftedItems = new ItemHashMap();
+
+	private CastingTuningMismatchReaction mismatch = null;
 
 	public HashMap<Coordinate, CrystalElement> getCurrentTuningMap() {
 		HashMap<Coordinate, CrystalElement> map = new HashMap();
@@ -180,6 +184,11 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
+		if (mismatch != null) {
+			if (mismatch.tick())
+				mismatch = null;
+			return;
+		}
 		if (!world.isRemote && this.getTicksExisted() == 1) {
 			this.evaluateRecipeAndRequest();
 		}
@@ -569,6 +578,8 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 	}
 
 	public boolean triggerCrafting(EntityPlayer ep) {
+		if (mismatch != null)
+			return false;
 		if (activeRecipe != null && craftingTick == 0) {
 			if (this.isOwnedByPlayer(ep)) {
 				if (activeRecipe.canRunRecipe(this, ep)) {
@@ -613,7 +624,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 	}
 
 	private void triggerTuningMismatch(EntityPlayer ep) {
-		//TODO
+		mismatch = new CastingTuningMismatchReaction(this, ep);
 	}
 
 	public ElementTagCompound getRequiredEnergy() {
@@ -637,7 +648,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 	}
 
 	public boolean isReadyToCraft() {
-		return craftingTick == 0 && inv[9] == null;
+		return craftingTick == 0 && inv[9] == null && mismatch == null;
 	}
 
 	/*
@@ -1397,6 +1408,16 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 			fx.noClip = true;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
+	}
+
+	@Override
+	public boolean isPlayerAccessible(EntityPlayer var1) {
+		return super.isPlayerAccessible(var1) && mismatch == null;
+	}
+
+	@Override
+	public boolean isUnbreakable(EntityPlayer ep) {
+		return mismatch != null;
 	}
 
 }
