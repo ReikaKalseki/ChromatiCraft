@@ -1,6 +1,8 @@
 package Reika.ChromatiCraft.World.Dimension.Structure.PistonTape;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.UUID;
 
@@ -101,7 +103,7 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 	}
 
 	void randomizeSolution(Random rand) {
-		for (int i = 0; i < loop.doorCount(); i++) {
+		for (int i = 0; i < bitCount; i++) {
 			this.genRandomColor(i, rand);
 		}
 	}
@@ -116,56 +118,48 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 	}
 
 	private void genRandomColor(int i, Random rand) {
-		int i2 = i+this.getSecondFilterOffset();
-		while (i2 >= bitColors.length) {
-			i2 -= bitColors.length;
+		int i2 = (i+this.getSecondFilterOffset())%bitColors.length;
+		RGBColorData net = RGBColorData.white();
+		Collection<RGBColorData> optionsA = RGBColorData.getAllPossibilities();
+		Collection<RGBColorData> optionsB = RGBColorData.getAllPossibilities();
+		if (bitColors[i] == null && bitColors[i2] == null) {
+
 		}
-		RGBColorData mix = bitColors[i2];
-		if (mix == null)
-			mix = RGBColorData.white();
-		RGBColorData c = ReikaJavaLibrary.getRandomCollectionEntry(rand, mix.getReductiveChildren(true, false));
-		if (c.matchColor(mix)) {
-			bitColors[i] = ReikaJavaLibrary.getRandomCollectionEntry(rand, mix.getAdditiveChildren(true, true));
+		else if (bitColors[i] == null) { //in empty space, but offset is wrapped around
+			optionsA = bitColors[i2].getReductiveChildren(true, false);
+			optionsB = ReikaJavaLibrary.makeListFrom(bitColors[i2]);
 		}
-		else if (mix.isWhite() && c.isPrimary()) {
-			RGBColorData c1 = null;
-			RGBColorData c2 = null;
-			if (c.red) {
-				c1 = new RGBColorData(true, true, false);
-				c2 = new RGBColorData(true, false, true);
-			}
-			else if (c.green) {
-				c1 = new RGBColorData(true, true, false);
-				c2 = new RGBColorData(false, true, true);
-			}
-			else if (c.blue) {
-				c1 = new RGBColorData(false, true, true);
-				c2 = new RGBColorData(true, false, true);
-			}
-			if (rand.nextBoolean()) {
-				bitColors[i2] = c1;
-				bitColors[i] = c2;
-			}
-			else {
-				bitColors[i2] = c2;
-				bitColors[i] = c1;
-			}
-			mix = bitColors[i2];
+		else if (bitColors[i2] == null) { //no wrap, but this position was set before as i2 from an earlier bit
+			optionsA = ReikaJavaLibrary.makeListFrom(bitColors[i]);
+			optionsB = bitColors[i].getReductiveChildren(true, false);
 		}
-		else {
-			bitColors[i] = mix.getColorNeededToMake(c);
+		else { //this position was set before AND wrap
+			optionsA = ReikaJavaLibrary.makeListFrom(bitColors[i]);
+			optionsB = ReikaJavaLibrary.makeListFrom(bitColors[i2]);
 		}
-		RGBColorData net = mix.copy();
-		net.intersect(bitColors[i]);
+		Iterator<RGBColorData> it = optionsA.iterator();
+		while (it.hasNext()) {
+			RGBColorData c = it.next();
+			if (c.isBlack() || c.isPrimary())
+				it.remove();
+		}
+		it = optionsB.iterator();
+		while (it.hasNext()) {
+			RGBColorData c = it.next();
+			if (c.isBlack() || c.isPrimary())
+				it.remove();
+		}
+		bitColors[i] = ReikaJavaLibrary.getRandomCollectionEntry(rand, optionsA);
+		bitColors[i2] = ReikaJavaLibrary.getRandomCollectionEntry(rand, optionsB);
+		net = bitColors[i].copy();
+		net.intersect(bitColors[i2]);
 		netColors[i] = net;
 
-		if (i > 0 && i != this.getSecondFilterOffset()) {
-			netColors[i] = bitColors[i2] = bitColors[i] = RGBColorData.white();
-		}
+		ReikaJavaLibrary.pConsole("At position "+i+" with offset value @ "+i2+", made "+netColors[i]+" from "+bitColors[i]+" and "+bitColors[i2]);
 	}
 
 	private int getSecondFilterOffset() {
-		return dimensions.totalDepth;
+		return dimensions.totalDepth+1;
 	}
 
 	@Override
@@ -229,12 +223,12 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 
 		if (true || false) {
 			for (int i = 0; i < dimensions.bitLength; i++) {
-				if (bitColors[i] == null || bitColors[i].isWhite())
-					continue;
 				Coordinate c = dimensions.getNthBitPosition(i);
 				int m = BlockPistonTapeBit.getMetaFor(bitColors[i], true);
-				ReikaJavaLibrary.pConsole("Slice "+busIndex+" @ "+i+": "+bitColors[i]+" > "+m);
 				world.setBlock(c.xCoord, c.yCoord, c.zCoord, ChromaBlocks.PISTONBIT.getBlockInstance(), m);
+				if (bitColors[i] != null && !bitColors[i].isWhite()) {
+					ReikaJavaLibrary.pConsole("Slice "+busIndex+" @ "+i+": "+bitColors[i]+" > "+m);
+				}
 			}
 		}
 	}

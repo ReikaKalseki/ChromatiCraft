@@ -131,6 +131,8 @@ public class BlockPistonTapeBit extends BlockDimensionStructure implements SemiU
 	}
 
 	public static int getMetaFor(RGBColorData c, boolean active) {
+		if (c == null)
+			return 0;
 		if (c.isWhite())
 			return 0;
 		if (c.isPrimary() || c.isBlack())

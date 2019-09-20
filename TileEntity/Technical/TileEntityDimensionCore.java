@@ -584,11 +584,13 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 
 	@Override
 	public void getTagsToWriteToStack(NBTTagCompound NBT) {
+		super.getTagsToWriteToStack(NBT);
 		NBT.setInteger("color", color.ordinal());
 	}
 
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
+		super.setDataFromItemStackTag(is);
 		color = is.stackTagCompound != null ? CrystalElement.elements[is.stackTagCompound.getInteger("color")] : CrystalElement.WHITE;
 	}
 

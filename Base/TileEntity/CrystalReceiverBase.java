@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -211,11 +211,13 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 
 	@Override
 	public void getTagsToWriteToStack(NBTTagCompound NBT) {
+		super.getTagsToWriteToStack(NBT);
 		energy.writeToNBT("energy", NBT);
 	}
 
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
+		super.setDataFromItemStackTag(is);
 		if (is.stackTagCompound == null)
 			return;
 		energy.readFromNBT("energy", is.stackTagCompound);

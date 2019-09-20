@@ -248,6 +248,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayList;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.IO.CustomRecipeList;
@@ -963,9 +964,7 @@ public class RecipesCastingTable {
 		}
 
 		if (ModList.BUILDCRAFT.isLoaded()) {
-			ItemStack is = ChromaTiles.LANDMARK.getCraftedProduct();
-			IRecipe sr = ReikaRecipeHelper.getShapelessRecipeFor(is, ChromaStacks.beaconDust, ChromaStacks.beaconDust, new ItemStack(Items.redstone), ChromaStacks.auraDust, new ItemStack(BuildCraftCore.markerBlock), new ItemStack(Items.quartz));
-			this.addRecipe(new FloatingLandmarkRecipe(is, sr));
+			this.addLandmarkRecipe();
 		}
 
 		for (Object o : Item.itemRegistry.getKeys()) {
@@ -977,6 +976,13 @@ public class RecipesCastingTable {
 				}
 			}
 		}
+	}
+
+	@ModDependent(ModList.BUILDCRAFT)
+	private void addLandmarkRecipe() {
+		ItemStack is = ChromaTiles.LANDMARK.getCraftedProduct();
+		IRecipe sr = ReikaRecipeHelper.getShapelessRecipeFor(is, ChromaStacks.beaconDust, ChromaStacks.beaconDust, new ItemStack(Items.redstone), ChromaStacks.auraDust, new ItemStack(BuildCraftCore.markerBlock), new ItemStack(Items.quartz));
+		this.addRecipe(new FloatingLandmarkRecipe(is, sr));
 	}
 
 	private CastingRecipe addRecipe(CastingRecipe r) {

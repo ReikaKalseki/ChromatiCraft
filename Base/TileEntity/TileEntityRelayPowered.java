@@ -190,11 +190,13 @@ public abstract class TileEntityRelayPowered extends TileEntityChromaticBase imp
 
 	@Override
 	public void getTagsToWriteToStack(NBTTagCompound NBT) {
+		super.getTagsToWriteToStack(NBT);
 		energy.writeToNBT("energy", NBT);
 	}
 
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
+		super.setDataFromItemStackTag(is);
 		if (is.stackTagCompound == null)
 			return;
 		energy.readFromNBT("energy", is.stackTagCompound);

@@ -40,7 +40,6 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.FocusAcceleratable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
@@ -105,7 +104,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityCastingTable extends InventoriedCrystalReceiver implements NBTTile, BreakAction, TriggerableAction, OwnedTile,
+public class TileEntityCastingTable extends InventoriedCrystalReceiver implements BreakAction, TriggerableAction, OwnedTile,
 OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, BlockMatchFailCallback, ConditionalUnbreakability {
 
 	private CastingRecipe activeRecipe = null;
@@ -1161,12 +1160,11 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 					tier = RecipeType.typeList[lvl];
 					tableXP = is.stackTagCompound.getInteger("xp");
 					isEnhanced = is.stackTagCompound.getBoolean("enhance");
+
+					this.readRecipes(is.stackTagCompound);
 				}
 			}
 		}
-
-		if (is.stackTagCompound != null)
-			this.readRecipes(is.stackTagCompound);
 	}
 
 	@Override

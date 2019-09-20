@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -16,24 +16,29 @@ import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaRenderList;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Interfaces.TextureFetcher;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 
 import li.cil.oc.api.network.Visibility;
 
-public abstract class TileEntityChromaticBase extends TileEntityBase implements RenderFetcher {
+public abstract class TileEntityChromaticBase extends TileEntityBase implements NBTTile, RenderFetcher {
 
 	protected final HashSet<UUID> owners = new HashSet();
 
@@ -163,5 +168,24 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 
 	public boolean renderModelsInPass1() {
 		return false;
+	}
+
+	@Override
+	public void getTagsToWriteToStack(NBTTagCompound NBT) {
+		if (this instanceof OwnedTile)
+			ReikaNBTHelper.writeCollectionToNBT(owners, NBT, "owners", ReikaNBTHelper.UUIDConverter.instance);
+	}
+
+	@Override
+	public void setDataFromItemStackTag(ItemStack is) {
+		if (ChromaItems.PLACER.matchWith(is)) {
+			if (is.getItemDamage() == this.getTile().ordinal()) {
+				if (is.stackTagCompound != null) {
+					if (this instanceof OwnedTile) {
+						ReikaNBTHelper.readCollectionFromNBT(owners, is.stackTagCompound, "owners", ReikaNBTHelper.UUIDConverter.instance);
+					}
+				}
+			}
+		}
 	}
 }
