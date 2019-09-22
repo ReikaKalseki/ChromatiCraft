@@ -88,6 +88,10 @@ public class RenderProgressionLinker extends ChromaRenderBase {
 				double h = 2.5;
 				double f = 0.5+0.5*Math.sin(tick/8D)+0.125*Math.sin((tick+300)/3D)+0.25*Math.cos((tick+20)/7D);
 				int c = ReikaColorAPI.mixColors(0x22aaff, 0x5588ff, (float)MathHelper.clamp_double(f, 0, 1));
+				float fd = te.getFailFade();
+				if (fd > 0) {
+					c = ReikaColorAPI.mixColors(c, 0xff0000, 1-fd);
+				}
 
 				//for (double a = 0; a < 360; a += 120) {
 				GL11.glPushMatrix();

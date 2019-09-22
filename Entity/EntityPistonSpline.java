@@ -73,11 +73,11 @@ public class EntityPistonSpline extends EntitySplineProjectile {
 			int c = color.getRenderColor();//ReikaColorAPI.mixColors(color.getRenderColor(), 0xffffff, 0.75F);
 			EntityBlurFX fx = new EntityBlurFX(worldObj, px, py, pz);
 			fx.setColor(c).setLife(l).setScale(s).setGravity(g);
-			fx.setIcon(ChromaIcons.FADE_GENTLE).setAlphaFading().setRapidExpand();
+			fx.setIcon(ChromaIcons.FADE_GENTLE).setAlphaFading().setRapidExpand().forceIgnoreLimits();
 			mc.effectRenderer.addEffect(fx);
 
 			EntityBlurFX fx2 = new EntityBlurFX(worldObj, px, py, pz);
-			fx2.setColor(0xffffff).setLife(l).setScale(s*0.72F).setGravity(g);
+			fx2.setColor(0xffffff).setLife(l).setScale(s*0.72F).setGravity(g).forceIgnoreLimits();
 			fx2.setIcon(ChromaIcons.FADE).setAlphaFading().setRapidExpand();
 			fx2.lockTo(fx);
 			mc.effectRenderer.addEffect(fx2);

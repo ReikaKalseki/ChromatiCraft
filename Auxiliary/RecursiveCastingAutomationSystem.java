@@ -86,7 +86,7 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 		if (prereqs != null) {
 			prereqs.craft(r, cycles);
 			if (prereqs.isDone()) {
-				ReikaJavaLibrary.pConsole("Recursive crafting is done.");
+				//ReikaJavaLibrary.pConsole("Recursive crafting is done.");
 				this.recoverCachedIngredients();
 				prereqs = null;
 			}
@@ -130,11 +130,11 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 			if (res == Result.ALLOW) {
 				//take items, set up crafting system
 				this.intakeNecessaryItems();
-				ReikaJavaLibrary.pConsole("Found recursive crafting for "+c+":");
-				ReikaJavaLibrary.pConsole(prereqs.toString());
+				//ReikaJavaLibrary.pConsole("Found recursive crafting for "+c+":");
+				//ReikaJavaLibrary.pConsole(prereqs.toString());
 			}
 			else {
-				ReikaJavaLibrary.pConsole("Could not recursively craft "+c+"; "+res);
+				//ReikaJavaLibrary.pConsole("Could not recursively craft "+c+"; "+res);
 				//either no valid recipe paths, or uncraftable items
 				prereqs = null;
 			}
@@ -150,7 +150,7 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 			int amt = prereqs.getDeficit(im);
 			int has = this.countItem(im);
 			if (has < amt) {
-				ReikaJavaLibrary.pConsole("Missing items on second check, cannot craft!");
+				//ReikaJavaLibrary.pConsole("Missing items on second check, cannot craft!");
 				prereqs = null;
 				return;
 			}
@@ -166,7 +166,7 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 				cachedIngredients.add(im, is);
 			}
 		}
-		ReikaJavaLibrary.pConsole("Took in intermediate ingredients: "+cachedIngredients.toString());
+		//ReikaJavaLibrary.pConsole("Took in intermediate ingredients: "+cachedIngredients.toString());
 	}
 
 	private Result determinePrerequisites(RecipePrereq r) {

@@ -155,7 +155,7 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 		net.intersect(bitColors[i2]);
 		netColors[i] = net;
 
-		ReikaJavaLibrary.pConsole("At position "+i+" with offset value @ "+i2+", made "+netColors[i]+" from "+bitColors[i]+" and "+bitColors[i2]);
+		//ReikaJavaLibrary.pConsole("At position "+i+" with offset value @ "+i2+", made "+netColors[i]+" from "+bitColors[i]+" and "+bitColors[i2]);
 	}
 
 	private int getSecondFilterOffset() {
@@ -209,25 +209,26 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 		zeroBit = new Coordinate(x, y, z);
 		dimensions.calculatePositions(zeroBit.xCoord, zeroBit.yCoord, zeroBit.zCoord, 1, facing, true);
 
-		for (int d = 0; d <= dimensions.totalDepth; d++) {
-			for (int h = 0; h <= dimensions.totalHeight; h++) {
-				if (d == 0 || d == dimensions.totalDepth || h == 0 || h == dimensions.totalHeight) {
-					if (d == 0 && h == dimensions.totalHeight)
-						continue;
-					if (d == dimensions.totalDepth && h == 0)
-						continue;
-					//this.placeBit(world, x-d*facing.offsetX, y+h, z-d*facing.offsetZ);
-				}
-			}
-		}
-
-		if (true || false) {
+		if (parent.DEBUG) {
 			for (int i = 0; i < dimensions.bitLength; i++) {
 				Coordinate c = dimensions.getNthBitPosition(i);
 				int m = BlockPistonTapeBit.getMetaFor(bitColors[i], true);
 				world.setBlock(c.xCoord, c.yCoord, c.zCoord, ChromaBlocks.PISTONBIT.getBlockInstance(), m);
 				if (bitColors[i] != null && !bitColors[i].isWhite()) {
 					ReikaJavaLibrary.pConsole("Slice "+busIndex+" @ "+i+": "+bitColors[i]+" > "+m);
+				}
+			}
+		}
+		else {
+			for (int d = 0; d <= dimensions.totalDepth; d++) {
+				for (int h = 0; h <= dimensions.totalHeight; h++) {
+					if (d == 0 || d == dimensions.totalDepth || h == 0 || h == dimensions.totalHeight) {
+						if (d == 0 && h == dimensions.totalHeight)
+							continue;
+						if (d == dimensions.totalDepth && h == 0)
+							continue;
+						this.placeBit(world, x-d*facing.offsetX, y+h, z-d*facing.offsetZ);
+					}
 				}
 			}
 		}

@@ -87,11 +87,6 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 	}
 
 	@Override
-	public int damageDropped(int meta) {
-		return meta;
-	}
-
-	@Override
 	public boolean isOpaqueCube() {
 		return false;
 	}

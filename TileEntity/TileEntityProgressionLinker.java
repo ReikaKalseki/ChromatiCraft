@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2018
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -39,7 +39,10 @@ public class TileEntityProgressionLinker extends TileEntityChromaticBase impleme
 	private int linkProgress;
 	private UUID targetPlayer;
 
+	private int failTicks = 0;
+
 	public static final int DURATION = 600;
+	private static final int FAIL_FADE = DURATION/2;
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
@@ -59,6 +62,8 @@ public class TileEntityProgressionLinker extends TileEntityChromaticBase impleme
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
+		if (failTicks > 0)
+			failTicks--;
 		if (this.hasStructure() && this.hasPlayer()) {
 			EntityPlayer ep = world.func_152378_a(targetPlayer);
 			if (ep == null || !ep.boundingBox.intersectsWith(ReikaAABBHelper.getBlockAABB(this).addCoord(0, 4, 0))) {
@@ -91,15 +96,22 @@ public class TileEntityProgressionLinker extends TileEntityChromaticBase impleme
 	}
 
 	private void linkPlayers(EntityPlayer ep, EntityPlayer target) {
-		for (int i = 0; i <= 100; i += 5) {
-			//ChromaSounds.LOREHEX.playSoundAtBlock(this, 1, 0.5F);
-			ScheduledSoundEvent evt = new ScheduledSoundEvent(ChromaSounds.LOREHEX, ep, 1, 2F);
-			TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(evt), 1+i);
+		if (ProgressionManager.instance.linkProgression(ep, target, true)) {
+			for (int i = 0; i <= 100; i += 5) {
+				//ChromaSounds.LOREHEX.playSoundAtBlock(this, 1, 0.5F);
+				ScheduledSoundEvent evt = new ScheduledSoundEvent(ChromaSounds.LOREHEX, ep, 1, 2F);
+				TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(evt), 1+i);
+			}
 		}
-		ProgressionManager.instance.linkProgression(ep, target, true);
+		else {
+			ChromaSounds.ERROR.playSoundAtBlock(this);
+			failTicks = FAIL_FADE;
+		}
 	}
 
 	public boolean trigger(EntityPlayer ep) {
+		if (failTicks > 0)
+			return false;
 		if (this.hasStructure() && this.isOwnedByPlayer(ep) && !this.hasPlayer()) {
 			targetPlayer = this.findPlayer();
 			if (targetPlayer != null) {
@@ -137,6 +149,7 @@ public class TileEntityProgressionLinker extends TileEntityChromaticBase impleme
 		super.readSyncTag(NBT);
 
 		hasStructure = NBT.getBoolean("struct");
+		failTicks = NBT.getInteger("fail");
 	}
 
 	@Override
@@ -144,10 +157,15 @@ public class TileEntityProgressionLinker extends TileEntityChromaticBase impleme
 		super.writeSyncTag(NBT);
 
 		NBT.setBoolean("struct", hasStructure);
+		NBT.setInteger("fail", failTicks);
 	}
 
 	public boolean hasStructure() {
 		return hasStructure;
+	}
+
+	public float getFailFade() {
+		return failTicks/(float)FAIL_FADE;
 	}
 
 }

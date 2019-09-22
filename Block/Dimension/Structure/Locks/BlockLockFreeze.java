@@ -34,11 +34,6 @@ public class BlockLockFreeze extends BlockDimensionStructureTile {
 	}
 
 	@Override
-	public int damageDropped(int meta) {
-		return meta;
-	}
-
-	@Override
 	public void registerBlockIcons(IIconRegister ico) {
 		blockIcon = ico.registerIcon("chromaticraft:dimstruct/lockfreeze");
 		activeIcon[0] = ico.registerIcon("chromaticraft:dimstruct/lockfreeze_button_inactive");

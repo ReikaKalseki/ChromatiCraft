@@ -613,7 +613,7 @@ public class ChromaDimensionManager {
 	}
 
 	public static boolean isBlockedAir(World world, int x, int y, int z, Block b, Entity ep) {
-		return b == Blocks.air && ep instanceof EntityPlayer && isStructureBiome(world.getBiomeGenForCoords(x, z)) && !TuningThresholds.STRUCTUREBIOMES.isSufficientlyTuned((EntityPlayer)ep);
+		return !b.isOpaqueCube() && ep instanceof EntityPlayer && isStructureBiome(world.getBiomeGenForCoords(x, z)) && !TuningThresholds.STRUCTUREBIOMES.isSufficientlyTuned((EntityPlayer)ep);
 	}
 
 	public static boolean isStructureBiome(BiomeGenBase b) {

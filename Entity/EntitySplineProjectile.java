@@ -40,6 +40,7 @@ public class EntitySplineProjectile extends ParticleEntity implements IEntityAdd
 		DecimalPosition pos = path.get(0);
 		this.spawnAt(pos.getCoordinate());
 		this.setPosition(pos);
+		//ReikaJavaLibrary.pConsole(path.size());
 	}
 
 	public EntitySplineProjectile(World world) {

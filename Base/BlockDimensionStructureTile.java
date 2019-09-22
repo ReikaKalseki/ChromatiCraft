@@ -31,6 +31,11 @@ public abstract class BlockDimensionStructureTile extends BlockContainer {
 	}
 
 	@Override
+	public final int damageDropped(int meta) { //for waila
+		return meta;
+	}
+
+	@Override
 	public final boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
 		if (world.provider.dimensionId != ExtraChromaIDs.DIMID.getValue() || TuningThresholds.STRUCTURES.isSufficientlyTuned(ep)) {
 			return this.onRightClicked(world, x, y, z, ep, s, a, b, c);

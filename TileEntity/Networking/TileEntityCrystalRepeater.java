@@ -143,7 +143,9 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 			double dy = ReikaRandomHelper.getRandomPlusMinus(y+0.5, 1.25);
 			double dz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 1.25);
 			int l = ReikaRandomHelper.getRandomBetween(4, 10);
-			int c = ReikaColorAPI.mixColors(this.getActiveColor().getColor(), 0xffffff, (float)ReikaRandomHelper.getRandomPlusMinus(0.5, 0.2));
+			CrystalElement e = this.getActiveColor();
+			int c1 = e != null ? e.getColor() : 0xffffff;
+			int c = ReikaColorAPI.mixColors(c1, 0xffffff, (float)ReikaRandomHelper.getRandomPlusMinus(0.5, 0.2));
 			float s = (float)ReikaRandomHelper.getRandomBetween(1.25, 2);
 			EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, dx, dy, dz, rand.nextDouble()*360, rand.nextDouble()*360);
 			fx.angleVelocity *= 2;

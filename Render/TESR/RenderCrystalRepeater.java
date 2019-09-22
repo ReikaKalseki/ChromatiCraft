@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.Magic.CastingTuning.CastingTuningManager;
 import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -320,7 +321,8 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 	}
 
 	protected int getHaloRenderColor(TileEntityCrystalRepeater te) {
-		return te.getActiveColor().getColor();
+		CrystalElement e = te.getActiveColor();
+		return e != null ? e.getColor() : 0xffffff;
 	}
 
 }

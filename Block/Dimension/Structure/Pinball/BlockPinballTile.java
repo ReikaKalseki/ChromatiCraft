@@ -59,12 +59,6 @@ public class BlockPinballTile extends BlockDimensionStructureTile {
 				return new PinballTile();
 		}
 	}
-
-	@Override
-	public int damageDropped(int meta) {
-		return meta;
-	}
-
 	@Override
 	public boolean isOpaqueCube() {
 		return false;

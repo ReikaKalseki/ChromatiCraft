@@ -62,11 +62,6 @@ public class BlockStructureDataStorage extends BlockDimensionStructureTile {
 	}
 
 	@Override
-	public int damageDropped(int meta) {
-		return meta;
-	}
-
-	@Override
 	public void registerBlockIcons(IIconRegister ico) {
 		icons[0][0] = ico.registerIcon("chromaticraft:dimstruct/dimdata");
 		icons[1][0] = ico.registerIcon("chromaticraft:dimstruct/dimdata_side");

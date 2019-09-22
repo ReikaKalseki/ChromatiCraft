@@ -14,6 +14,8 @@ import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.TapeStage;
 
 public class PistonTapeGenerator extends DimensionStructureGenerator {
 
+	public static final boolean DEBUG = false;
+
 	private TapeStage[] stages;
 
 	private boolean isActive = false;

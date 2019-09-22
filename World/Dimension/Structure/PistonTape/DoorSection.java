@@ -82,7 +82,12 @@ public class DoorSection extends StructurePiece<PistonTapeGenerator> {
 		}
 
 		for (int i = 1; i < HEIGHT; i++) {
-			world.setBlock(x+left.offsetX*5+2*tunnelDir.offsetX, y+i, z+left.offsetZ*5+2*tunnelDir.offsetZ, escd, esc);
+			int a = level.bitsPerDoor > 2 ? 1 : 0;
+			int m = i == 2 ? BlockType.LIGHT.metadata : ms;
+			world.setBlock(x+left.offsetX*6+(a+1)*tunnelDir.offsetX, y+i, z+left.offsetZ*6+(a+1)*tunnelDir.offsetZ, b, m);
+			world.setBlock(x+left.offsetX*6+(a+3)*tunnelDir.offsetX, y+i, z+left.offsetZ*6+(a+3)*tunnelDir.offsetZ, b, m);
+
+			world.setBlock(x+left.offsetX*5+(a+2)*tunnelDir.offsetX, y+i, z+left.offsetZ*5+(a+2)*tunnelDir.offsetZ, escd, esc);
 		}
 
 		world.setBlock(x+left.offsetX+2*tunnelDir.offsetX, y, z+left.offsetZ+2*tunnelDir.offsetZ, b, BlockType.LIGHT.metadata);
@@ -94,12 +99,6 @@ public class DoorSection extends StructurePiece<PistonTapeGenerator> {
 		Coordinate door = new Coordinate(x+left.offsetX*3, y+1, z+left.offsetZ*3);
 		for (int i = 0; i < level.bitsPerDoor; i++) {
 			this.placeTarget(world, x+left.offsetX*5+(i-level.bitsPerDoor/2)*tunnelDir.offsetX, y+2, z+left.offsetZ*5+(i-level.bitsPerDoor/2)*tunnelDir.offsetZ, i, door);
-		}
-
-		for (int d = 1; d <= HEIGHT-1; d++) {
-			int m = d == 2 ? BlockType.LIGHT.metadata : ms;
-			world.setBlock(x+left.offsetX*6+(-1-level.bitsPerDoor/2)*tunnelDir.offsetX, y+d, z+left.offsetZ*6+(-1-level.bitsPerDoor/2)*tunnelDir.offsetZ, b, m);
-			world.setBlock(x+left.offsetX*6+(level.bitsPerDoor-level.bitsPerDoor/2)*tunnelDir.offsetX, y+d, z+left.offsetZ*6+(level.bitsPerDoor-level.bitsPerDoor/2)*tunnelDir.offsetZ, b, m);
 		}
 	}
 

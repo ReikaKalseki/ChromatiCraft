@@ -519,6 +519,9 @@ public enum ChromaBlocks implements BlockEnum {
 				return ReikaObfuscationHelper.isDeObfEnvironment() ? this.getBasicName()+" ["+Passability.list[meta]+"]" : this.getBasicName();
 			case PAD:
 				return meta == 0 ? this.getBasicName() : this.getBasicName()+" (Decoration)";
+			case PISTONTARGET:
+			case PISTONCONTROL:
+				return StatCollector.translateToLocal(this.getBasicName()+"."+meta);
 			default:
 				return "";
 		}

@@ -589,7 +589,7 @@ public class ProgressionManager implements ProgressRegistry {
 	public boolean linkProgression(EntityPlayer ep1, EntityPlayer ep2, boolean link) {
 		ChromatiCraft.logger.debug("Attempting to link progression from "+ep1.getCommandSenderName()+" to "+ep2.getCommandSenderName());
 		if (!this.canLinkProgression(ep1, ep2)) {
-			ChromatiCraft.logger.debug("Failed to link progression; "+this.isProgressionEqual(ep1, ep2)+" & "+(ChromaResearchManager.instance.getPlayerResearchLevel(ep1) == ChromaResearchManager.instance.getPlayerResearchLevel(ep2)));
+			ChromatiCraft.logger.debug("Failed to link progression; "+this.isProgressionEqual(ep1, ep2, this.getLinkIgnoreList())+" & "+(ChromaResearchManager.instance.getPlayerResearchLevel(ep1) == ChromaResearchManager.instance.getPlayerResearchLevel(ep2)));
 			return false;
 		}
 		NBTTagString s1 = new NBTTagString(ep2.getUniqueID().toString());
@@ -612,12 +612,20 @@ public class ProgressionManager implements ProgressRegistry {
 	private boolean canLinkProgression(EntityPlayer ep1, EntityPlayer ep2) {
 		if (ReikaPlayerAPI.isFake(ep1) || ReikaPlayerAPI.isFake(ep2))
 			return false;
-		return this.isProgressionEqual(ep1, ep2) && ChromaResearchManager.instance.getPlayerResearchLevel(ep1) == ChromaResearchManager.instance.getPlayerResearchLevel(ep2);//playerProgressionComparator.compare(ep1, ep2) == 0;
+		return this.isProgressionEqual(ep1, ep2, this.getLinkIgnoreList()) && ChromaResearchManager.instance.getPlayerResearchLevel(ep1) == ChromaResearchManager.instance.getPlayerResearchLevel(ep2);//playerProgressionComparator.compare(ep1, ep2) == 0;
 	}
 
-	public boolean isProgressionEqual(EntityPlayer ep1, EntityPlayer ep2) {
-		Collection<ProgressStage> c1 = this.getStagesFor(ep1);
-		Collection<ProgressStage> c2 = this.getStagesFor(ep2);
+	private ProgressStage[] getLinkIgnoreList() {
+		return new ProgressStage[] {ProgressStage.CAVERN, ProgressStage.BURROW, ProgressStage.OCEAN, ProgressStage.DESERTSTRUCT, ProgressStage.SNOWSTRUCT, ProgressStage.TOWER, ProgressStage.ARTEFACT, ProgressStage.STRUCTCHEAT, ProgressStage.DIE, ProgressStage.VOIDMONSTER};
+	}
+
+	public boolean isProgressionEqual(EntityPlayer ep1, EntityPlayer ep2, ProgressStage... ignore) {
+		Collection<ProgressStage> c1 = new ArrayList(this.getStagesFor(ep1));
+		Collection<ProgressStage> c2 = new ArrayList(this.getStagesFor(ep2));
+		for (ProgressStage p : ignore) {
+			c1.remove(p);
+			c2.remove(p);
+		}
 		return c1.equals(c2);
 	}
 

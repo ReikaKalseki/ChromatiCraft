@@ -159,10 +159,10 @@ public class CastingAutomationSystem {
 		}
 
 		if (ModList.APPENG.isLoaded()) {
-			ChromatiCraft.logger.debug("Delegate "+this+" counting "+li+" from "+ingredients+" / "+network);
+			ChromatiCraft.logger.debug("Delegate "+tile+" counting "+li+" from "+ingredients+" / "+network);
 		}
 		else {
-			ChromatiCraft.logger.debug("Delegate "+this+" counting "+li+" from "+ingredients);
+			ChromatiCraft.logger.debug("Delegate "+tile+" counting "+li+" from "+ingredients);
 		}
 
 		int ret = 0;
@@ -174,7 +174,7 @@ public class CastingAutomationSystem {
 				else {
 					ret += network.getItemCount(is, is.stackTagCompound != null);
 				}
-				ChromatiCraft.logger.debug(this+" failed to find "+is+" in its ME System.");
+				ChromatiCraft.logger.debug(tile+" failed to find any "+is+" in its ME System.");
 			}
 			ret += ingredients.getItemCount(is);
 		}
@@ -212,10 +212,10 @@ public class CastingAutomationSystem {
 			return ReikaJavaLibrary.makeListFrom(ReikaItemHelper.getSizedItemStack(li.get(0), amt));
 
 		if (ModList.APPENG.isLoaded()) {
-			ChromatiCraft.logger.debug("Delegate "+this+" requesting "+li+" from "+ingredients+" / "+network);
+			ChromatiCraft.logger.debug("Delegate "+tile+" requesting "+li+" from "+ingredients+" / "+network);
 		}
 		else {
-			ChromatiCraft.logger.debug("Delegate "+this+" requesting "+li+" from "+ingredients);
+			ChromatiCraft.logger.debug("Delegate "+tile+" requesting "+li+" from "+ingredients);
 		}
 
 		ArrayList<ItemStack> ret = new ArrayList();
@@ -264,7 +264,7 @@ public class CastingAutomationSystem {
 						//network.triggerCrafting(worldObj, is, amt, null, null); GOD DAMN IT AE
 					}
 				}
-				ChromatiCraft.logger.debug(this+" failed to find "+is+" in its ME System.");
+				ChromatiCraft.logger.debug(tile+" failed to find "+is+" in its ME System.");
 				if (wanted <= 0)
 					break;
 			}
