@@ -24,6 +24,7 @@ import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 public class DoorSection extends StructurePiece<PistonTapeGenerator> {
 
 	static final int WIDTH = 10;
+	static final int HEIGHT = 4;
 
 	private final ForgeDirection tunnelDir;
 	final DoorKey doorData;
@@ -46,7 +47,6 @@ public class DoorSection extends StructurePiece<PistonTapeGenerator> {
 
 	@Override
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
-		int HEIGHT = 4;
 		Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 		ForgeDirection left = ReikaDirectionHelper.getLeftBy90(tunnelDir);
 		int ms = BlockType.STONE.metadata;

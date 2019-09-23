@@ -38,16 +38,15 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 
 	private int height;
 
-	public TapeStage(PistonTapeGenerator g, int idx, int bus, int n, Random rand) {
+	public TapeStage(PistonTapeGenerator g, int idx, int bus, int n, ForgeDirection dir, Random rand) {
 		super(g);
 		index = idx;
 		doorCount = n;
 		bitsPerDoor = bus;
 		totalBitWidth = bus*n;
+		mainDirection = dir;
 
-		mainDirection = PistonTapeGenerator.DIRECTION;
-
-		tape = new TapeArea(g, new PistonTapeLoop(g, ReikaDirectionHelper.getRightBy90(mainDirection), this));
+		tape = new TapeArea(g, mainDirection, new PistonTapeLoop(g, ReikaDirectionHelper.getRightBy90(mainDirection), this));
 		tape.tape.randomize(rand);
 
 		doors = new DoorSection[doorCount];
@@ -127,6 +126,14 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 
 	public int getTotalLength() {
 		return tape.tape.dimensions.bitLength;
+	}
+
+	public int getDirectionLength() {
+		int base = 3+PistonTapeAccessHall.DEPTH+tape.getWidth();
+		for (DoorSection s : doors) {
+			base += s.getLength();
+		}
+		return base;
 	}
 
 	private static class PistonControlCallback implements TileCallback {

@@ -9,6 +9,7 @@ import java.util.Random;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -74,6 +75,8 @@ public class CastingAutomationSystem {
 	private int recipesToGo = 0;
 	private int recipeCycles = 0;
 
+	protected EntityPlayer currentPlayer;
+
 	private final InventoryCache ingredients = new InventoryCache();
 	@ModDependent(ModList.APPENG)
 	private MESystemReader network;
@@ -113,17 +116,18 @@ public class CastingAutomationSystem {
 		return (IGridNode)aeGridNode;
 	}
 
-	public void setRecipe(CastingRecipe c, int amt) {
+	public void setRecipe(CastingRecipe c, int amt, EntityPlayer ep) {
 		//ReikaJavaLibrary.pConsole(amt+" x "+c);
 		recipe = c;
 		if (c != null && !tile.canTriggerCrafting()) {
 			amt = Math.min(amt, 64/c.getOutput().stackSize);
 		}
 		recipesToGo = amt;
+		currentPlayer = ep;
 	}
 
 	public final void cancelCrafting() {
-		this.setRecipe(null, 0);
+		this.setRecipe(null, 0, null);
 	}
 
 	protected final boolean matches(Object object, ItemStack is) {
@@ -495,7 +499,7 @@ public class CastingAutomationSystem {
 	}
 
 	private boolean triggerCrafting(World world, int x, int y, int z, TileEntityCastingTable te) {
-		return te.trigger();
+		return te.triggerCrafting(currentPlayer);
 	}
 
 	private boolean isRecipeReady(World world, int x, int y, int z, TileEntityCastingTable te) {

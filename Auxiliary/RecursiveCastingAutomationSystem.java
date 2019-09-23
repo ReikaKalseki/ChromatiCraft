@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -53,7 +54,7 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 			RecipePrereq p = prereqs.getNextInQueue();
 			//ReikaJavaLibrary.pConsole("QUEUED TO: "+p);
 			if (p != null) {
-				super.setRecipe(p.recipe, p.craftsRemaining);
+				super.setRecipe(p.recipe, p.craftsRemaining, currentPlayer);
 			}
 		}
 	}
@@ -115,7 +116,7 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 	}
 
 	@Override
-	public void setRecipe(CastingRecipe c, int amt) {
+	public void setRecipe(CastingRecipe c, int amt, EntityPlayer ep) {
 		this.recoverCachedIngredients();
 		prereqs = null;
 		if (c != null && recursionEnabled && tile.canRecursivelyRequest(c) && cachedIngredients.isEmpty()) {
@@ -138,10 +139,10 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 				//either no valid recipe paths, or uncraftable items
 				prereqs = null;
 			}
-			super.setRecipe(null, 0);
+			super.setRecipe(null, 0, null);
 		}
 		else {
-			super.setRecipe(c, amt);
+			super.setRecipe(c, amt, ep);
 		}
 	}
 

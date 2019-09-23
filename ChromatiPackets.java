@@ -606,7 +606,7 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case AUTORECIPE: {
 					CastingRecipe cr = !Strings.isNullOrEmpty(stringdata) ? RecipesCastingTable.instance.getRecipeByStringID(stringdata) : null;
-					((CastingAutomationBlock)tile).getAutomationHandler().setRecipe(cr, data[0]);
+					((CastingAutomationBlock)tile).getAutomationHandler().setRecipe(cr, data[0], ep);
 					break;
 				}
 				case AUTOCANCEL:

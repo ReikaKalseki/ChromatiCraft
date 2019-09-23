@@ -25,7 +25,7 @@ public class PistonTapeAccessHall extends StructurePiece<PistonTapeGenerator> {
 
 	@Override
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
-		ForgeDirection dir = PistonTapeGenerator.DIRECTION;
+		ForgeDirection dir = tape.hallDirection;
 		ForgeDirection left = tape.tape.facing.getOpposite();
 		for (int i = 0; i <= DEPTH; i++) {
 			for (int l = 0; l <= WIDTH; l++) {

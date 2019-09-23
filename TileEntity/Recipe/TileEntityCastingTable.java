@@ -89,6 +89,7 @@ import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.ConditionalUnbreakability;
 import Reika.DragonAPI.Interfaces.TileEntity.TriggerableAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
@@ -577,6 +578,8 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 	}
 
 	public boolean triggerCrafting(EntityPlayer ep) {
+		if (ep == null || ReikaPlayerAPI.isFake(ep) || !ReikaEntityHelper.isInWorld(ep))
+			return false;
 		if (mismatch != null)
 			return false;
 		if (activeRecipe != null && craftingTick == 0) {

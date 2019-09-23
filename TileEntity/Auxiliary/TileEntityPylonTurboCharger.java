@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -773,7 +773,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 						return false;
 					Location l = location.getNext();
 					Coordinate end = l.position.offset(location.position.negate()).offset(x, y, z);
-					return end.getTileEntity(world) instanceof TileEntityPylonTurboCharger && PylonFinder.lineOfSight(world, x, y, z, end.xCoord, end.yCoord, end.zCoord).hasLineOfSight;
+					return end.getTileEntity(world) instanceof TileEntityPylonTurboCharger && PylonFinder.lineOfSight(world, x, y, z, end.xCoord, end.yCoord, end.zCoord, ChromaBlocks.ENCRUSTED.getBlockInstance()).hasLineOfSight;
 				}
 			}
 		}

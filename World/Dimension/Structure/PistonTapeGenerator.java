@@ -49,13 +49,16 @@ public class PistonTapeGenerator extends DimensionStructureGenerator {
 		//this.generateDataTile(x-DIRECTION.offsetX*5, y, z-DIRECTION.offsetZ*5);
 		PistonTapeParameters[] arr = this.getTapes();
 		stages = new TapeStage[arr.length];
+		ForgeDirection dir = DIRECTION;
 		for (int i = 0; i < arr.length; i++) {
 			PistonTapeParameters p = arr[i];
-			TapeStage s = new TapeStage(this, i, p.busWidth, p.doorCount, rand);
+			TapeStage s = new TapeStage(this, i, p.busWidth, p.doorCount, dir, rand);
 			s.generate(world, x, y, z);
 			stages[i] = s;
-			//x += s.getLength();
+			x += dir.offsetX*s.getDirectionLength();
+			z += dir.offsetZ*s.getDirectionLength();
 			y -= s.getHeight();
+			dir = dir.getOpposite();
 		}
 	}
 

@@ -541,9 +541,13 @@ public class PylonFinder {
 	//	return lineOfSight(world, x, y, z, te.getX(), te.getY(), te.getZ());
 	//}
 
-	public static LOSData lineOfSight(World world, int x1, int y1, int z1, int x2, int y2, int z2) {
+	public static LOSData lineOfSight(World world, int x1, int y1, int z1, int x2, int y2, int z2, Block... extra) {
 		tracer.setOrigins(x1, y1, z1, x2, y2, z2);
 		tracer.offset(0.5, 0.5, 0.5);
+		if (extra.length > 0) {
+			for (Block b : extra)
+				tracer.addOneTimeIgnoredBlock(b);
+		}
 		boolean los = tracer.isClearLineOfSight(world);
 		Set<Coordinate> set = tracer.getRayBlocks();
 		return new LOSData(los, canRainOn(world, set), set);

@@ -13,19 +13,25 @@ import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 public class TapeArea extends StructurePiece<PistonTapeGenerator> {
 
 	final PistonTapeLoop tape;
+	final ForgeDirection hallDirection;
 
-	public TapeArea(PistonTapeGenerator gen, PistonTapeLoop p) {
+	public TapeArea(PistonTapeGenerator gen, ForgeDirection dir, PistonTapeLoop p) {
 		super(gen);
 		tape = p;
+		hallDirection = dir;
+	}
+
+	public int getWidth() {
+		return tape.busWidth+1;
 	}
 
 	@Override
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
-		ForgeDirection main = PistonTapeGenerator.DIRECTION;
-
-		int w = tape.busWidth+1;
+		int w = this.getWidth();
 		int h = tape.dimensions.totalHeight+2;
 		int l = tape.dimensions.totalDepth+1;
+
+		ForgeDirection main = hallDirection;
 
 		for (int i = 0; i < w; i++) {
 			world.setBlock(x-tape.facing.offsetX*4+main.offsetX*i, y+5, z-tape.facing.offsetZ*4+main.offsetZ*i, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);

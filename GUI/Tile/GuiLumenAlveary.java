@@ -163,7 +163,7 @@ public class GuiLumenAlveary extends GuiChromaBase {
 
 		float lf = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
 		GL11.glLineWidth(4);
-		api.drawCircle(x, y, r, 0xff000000);
+		api.drawCircle(x, y, r, 0);
 		GL11.glLineWidth(lf);
 	}
 
