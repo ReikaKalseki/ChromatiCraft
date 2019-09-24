@@ -29,20 +29,18 @@ public class DoorSection extends StructurePiece<PistonTapeGenerator> {
 	private final ForgeDirection tunnelDir;
 	final DoorKey doorData;
 	private final TapeStage level;
+	private boolean isClosed;
 
-	public DoorSection(PistonTapeGenerator s, TapeStage t, ForgeDirection dir, DoorKey d) {
+	public DoorSection(PistonTapeGenerator s, TapeStage t, ForgeDirection dir, DoorKey d, boolean closed) {
 		super(s);
 		tunnelDir = dir;
 		doorData = d;
 		level = t;
+		isClosed = closed;
 	}
 
 	public int getLength() {
 		return Math.max(3, level.bitsPerDoor+2);
-	}
-
-	public int getHeight() {
-		return level.tape.tape.dimensions.totalHeight+6;
 	}
 
 	@Override
@@ -56,7 +54,10 @@ public class DoorSection extends StructurePiece<PistonTapeGenerator> {
 		for (int d = 0; d <= len; d++) {
 			for (int i = 0; i <= WIDTH; i++) {
 				for (int h = 0; h < HEIGHT; h++) {
-					world.setBlock(x+i*left.offsetX+d*tunnelDir.offsetX, y+h, z+i*left.offsetZ+d*tunnelDir.offsetZ, Blocks.air);
+					if (isClosed && d == len && i > 4)
+						world.setBlock(x+i*left.offsetX+d*tunnelDir.offsetX, y+h, z+i*left.offsetZ+d*tunnelDir.offsetZ, b, ms);
+					else
+						world.setBlock(x+i*left.offsetX+d*tunnelDir.offsetX, y+h, z+i*left.offsetZ+d*tunnelDir.offsetZ, Blocks.air);
 				}
 			}
 			for (int h = 1; h < HEIGHT; h++) {

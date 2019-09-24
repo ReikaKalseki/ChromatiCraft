@@ -30,18 +30,22 @@ public class BlockPistonController extends BlockDimensionStructureTile {
 
 	private IIcon fireFront;
 	private IIcon playFront;
+	private IIcon stepFront;
 
 	public BlockPistonController(Material mat) {
 		super(mat);
+		this.setLightLevel(12);
 	}
 
 	@Override
 	public TileEntity createNewTileEntity(World world, int meta) {
 		switch(meta) {
 			case 0:
-				return new TilePistonCycler();
+				return new TilePistonPlayback();
 			case 1:
 				return new TilePistonTrigger();
+			case 2:
+				return new TilePistonCycler();
 			default:
 				return null;
 		}
@@ -51,7 +55,8 @@ public class BlockPistonController extends BlockDimensionStructureTile {
 	public void registerBlockIcons(IIconRegister ico) {
 		blockIcon = ico.registerIcon("chromaticraft:dimstruct/piston_control");
 		fireFront = ico.registerIcon("chromaticraft:dimstruct/piston_control_fire");
-		playFront = ico.registerIcon("chromaticraft:dimstruct/piston_control_play");
+		playFront = ico.registerIcon("chromaticraft:dimstruct/musicmemory_front"); // piston_control_play
+		stepFront = ico.registerIcon("chromaticraft:dimstruct/piston_control_step");
 	}
 
 	@Override
@@ -69,6 +74,8 @@ public class BlockPistonController extends BlockDimensionStructureTile {
 				return playFront;
 			case 1:
 				return fireFront;
+			case 2:
+				return stepFront;
 			default:
 				return blockIcon;
 		}
@@ -84,7 +91,7 @@ public class BlockPistonController extends BlockDimensionStructureTile {
 		return true;
 	}
 
-	public static class TilePistonCycler extends TilePistonController {
+	public static class TilePistonPlayback extends TilePistonController {
 
 		private static final int DELAY = 70;
 
@@ -150,6 +157,25 @@ public class BlockPistonController extends BlockDimensionStructureTile {
 		private TilePistonTrigger getTrigger() {
 			ForgeDirection dir = ReikaDirectionHelper.getRightBy90(this.getFacing());
 			return (TilePistonTrigger)worldObj.getTileEntity(xCoord+dir.offsetX, yCoord+dir.offsetY, zCoord+dir.offsetZ);
+		}
+
+	}
+
+	public static class TilePistonCycler extends TilePistonController {
+
+		@Override
+		public void writeToNBT(NBTTagCompound NBT) {
+			super.writeToNBT(NBT);
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound NBT) {
+			super.readFromNBT(NBT);
+		}
+
+		@Override
+		protected void onRightClick() {
+			this.getStage().cycle(worldObj);
 		}
 
 	}

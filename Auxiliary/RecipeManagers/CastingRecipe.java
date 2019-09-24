@@ -48,8 +48,8 @@ import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.RuneShape;
-import Reika.ChromatiCraft.Magic.CastingTuning.CastingTuningManager;
 import Reika.ChromatiCraft.Magic.RuneShape.RuneViewer;
+import Reika.ChromatiCraft.Magic.CastingTuning.CastingTuningManager;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
@@ -62,6 +62,7 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.CountMap;
@@ -639,6 +640,10 @@ public class CastingRecipe implements APICastingRecipe {
 
 		public final ItemStack getMainInput() {
 			return main.copy();
+		}
+
+		protected final MultiBlockCastingRecipe addAuxItem(BlockKey b, int dx, int dz) {
+			return this.addAuxItem(b.asItemStack(), dx, dz);
 		}
 
 		protected final MultiBlockCastingRecipe addAuxItem(Block b, int dx, int dz) {

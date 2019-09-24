@@ -9,7 +9,9 @@ import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.PistonTapeData;
+import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.PistonTapeStaircase;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.TapeStage;
+import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 
 
 public class PistonTapeGenerator extends DimensionStructureGenerator {
@@ -53,12 +55,21 @@ public class PistonTapeGenerator extends DimensionStructureGenerator {
 		for (int i = 0; i < arr.length; i++) {
 			PistonTapeParameters p = arr[i];
 			TapeStage s = new TapeStage(this, i, p.busWidth, p.doorCount, dir, rand);
-			s.generate(world, x, y, z);
+			ForgeDirection dir2 = ReikaDirectionHelper.getLeftBy90(dir);
+			int dx = x+dir2.offsetX*12;
+			int dz = z+dir2.offsetZ*12;
+			s.generate(world, dx, y, dz);
 			stages[i] = s;
 			x += dir.offsetX*s.getDirectionLength();
 			z += dir.offsetZ*s.getDirectionLength();
-			y -= s.getHeight();
+			y -= Math.max(6, s.height);
 			dir = dir.getOpposite();
+		}
+		for (int i = 1; i < stages.length-1; i++) {
+			TapeStage s1 = stages[i];
+			TapeStage s2 = stages[i+1];
+			PistonTapeStaircase p = new PistonTapeStaircase(this, s1, s2, rand);
+			p.generate(world, x, y, z);
 		}
 	}
 

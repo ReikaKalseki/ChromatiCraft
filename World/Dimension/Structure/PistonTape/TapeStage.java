@@ -5,20 +5,16 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.UUID;
 
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.EmitterTile;
-import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonController.TilePistonController;
 import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonTarget.PistonEmitterTile;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
 import Reika.DragonAPI.Instantiable.RGBColorData;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 
 public class TapeStage extends StructurePiece<PistonTapeGenerator> {
@@ -36,7 +32,10 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 	public final int bitsPerDoor;
 	public final int totalBitWidth;
 
-	private int height;
+	public final int height;
+
+	private Coordinate exit;
+	private Coordinate entrance;
 
 	public TapeStage(PistonTapeGenerator g, int idx, int bus, int n, ForgeDirection dir, Random rand) {
 		super(g);
@@ -49,12 +48,21 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 		tape = new TapeArea(g, mainDirection, new PistonTapeLoop(g, ReikaDirectionHelper.getRightBy90(mainDirection), this));
 		tape.tape.randomize(rand);
 
+		height = tape.tape.dimensions.totalHeight+3;
+
 		doors = new DoorSection[doorCount];
 		for (int i = 0; i < doorCount; i++) {
 			DoorKey dk = new DoorKey(i, bus, this.getColorList(i));
-			doors[i] = new DoorSection(g, this, mainDirection, dk);
-			height = Math.max(height, doors[i].getHeight());
+			doors[i] = new DoorSection(g, this, mainDirection, dk, i == doorCount-1);
 		}
+	}
+
+	public Coordinate getEntrance() {
+		return entrance;
+	}
+
+	public Coordinate getExit() {
+		return exit;
 	}
 
 	private RGBColorData[] getColorList(int i) {
@@ -77,11 +85,15 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 	 */
 	@Override
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
-		world.setTileEntity(x+mainDirection.offsetX*-3, y, z+mainDirection.offsetZ*-3, ChromaBlocks.PISTONCONTROL.getBlockInstance(), 0, new PistonControlCallback(this));
-		world.setTileEntity(x+mainDirection.offsetX*-3, y+1, z+mainDirection.offsetZ*-3, ChromaBlocks.PISTONCONTROL.getBlockInstance(), 1, new PistonControlCallback(this));
-		tape.generate(world, x-tape.tape.facing.offsetX*6, y, z-tape.tape.facing.offsetZ*6);
-		int dx = x+(2+tape.tape.busWidth)*mainDirection.offsetX;
-		int dz = z+(2+tape.tape.busWidth)*mainDirection.offsetZ;
+		int dx = x;
+		int dz = z;
+		entrance = new Coordinate(x-tape.tape.facing.offsetX*3-mainDirection.offsetX, y+2, z-tape.tape.facing.offsetZ*3-mainDirection.offsetZ);
+		new PistonTapeEntryArea(parent, this, tape).generate(world, dx-tape.tape.facing.offsetX, y, dz-tape.tape.facing.offsetZ);
+		dx += (PistonTapeEntryArea.DEPTH+1)*mainDirection.offsetX;
+		dz += (PistonTapeEntryArea.DEPTH+1)*mainDirection.offsetZ;
+		tape.generate(world, dx-tape.tape.facing.offsetX*6, y, dz-tape.tape.facing.offsetZ*6);
+		dx += (2+tape.tape.busWidth)*mainDirection.offsetX;
+		dz += (2+tape.tape.busWidth)*mainDirection.offsetZ;
 		new PistonTapeAccessHall(parent, tape).generate(world, dx-tape.tape.facing.offsetX, y, dz-tape.tape.facing.offsetZ);
 		dx += (PistonTapeAccessHall.DEPTH+2+tape.tape.busWidth/2)*mainDirection.offsetX;
 		dz += (PistonTapeAccessHall.DEPTH+2+tape.tape.busWidth/2)*mainDirection.offsetZ;
@@ -90,12 +102,9 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 			dx += (s.getLength()+1)*mainDirection.offsetX;
 			dz += (s.getLength()+1)*mainDirection.offsetZ;
 		}
+		exit = new Coordinate(dx-tape.tape.facing.offsetX*3, y+2, dz-tape.tape.facing.offsetZ*3);
 		//ForgeDirection left = ReikaDirectionHelper.getLeftBy90(PistonTapeGenerator.DIRECTION);
 		//tape.generate(world, x+left.offsetX*(3+DoorSection.WIDTH)-PistonTapeGenerator.DIRECTION.offsetX*(2+tape.busWidth), y, z+left.offsetZ*(3+DoorSection.WIDTH)-PistonTapeGenerator.DIRECTION.offsetZ*(2+tape.busWidth));
-	}
-
-	public int getHeight() {
-		return height;
 	}
 
 	public void fireEmitters(World world, int stage) {
@@ -129,31 +138,15 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 	}
 
 	public int getDirectionLength() {
-		int base = 3+PistonTapeAccessHall.DEPTH+tape.getWidth();
+		int base = 1+3+PistonTapeEntryArea.DEPTH+PistonTapeAccessHall.DEPTH+tape.getWidth();
 		for (DoorSection s : doors) {
-			base += s.getLength();
+			base += s.getLength()+1;
 		}
 		return base;
 	}
 
-	private static class PistonControlCallback implements TileCallback {
-
-		private final UUID uid;
-		private final int index;
-		private final ForgeDirection direction;
-
-		private PistonControlCallback(TapeStage t) {
-			uid = t.parent.id;
-			index = t.index;
-			direction = t.mainDirection.getOpposite();
-		}
-
-		@Override
-		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
-			((TilePistonController)te).setData(index, direction);
-			((TilePistonController)te).uid = uid;
-		}
-
+	public UUID getID() {
+		return parent.id;
 	}
 
 }

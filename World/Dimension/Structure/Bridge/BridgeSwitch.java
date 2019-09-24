@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -48,10 +48,10 @@ public class BridgeSwitch extends BridgeNode {
 		}
 
 		for (int i = -2; i <= 2; i++) {
-			world.setBlock(x+i, y, z-2, Blocks.planks, ReikaItemHelper.spruceWood.getItemDamage());
-			world.setBlock(x+i, y, z+2, Blocks.planks, ReikaItemHelper.spruceWood.getItemDamage());
-			world.setBlock(x-2, y, z+i, Blocks.planks, ReikaItemHelper.spruceWood.getItemDamage());
-			world.setBlock(x+2, y, z+i, Blocks.planks, ReikaItemHelper.spruceWood.getItemDamage());
+			world.setBlock(x+i, y, z-2, Blocks.planks, ReikaItemHelper.spruceWood.metadata);
+			world.setBlock(x+i, y, z+2, Blocks.planks, ReikaItemHelper.spruceWood.metadata);
+			world.setBlock(x-2, y, z+i, Blocks.planks, ReikaItemHelper.spruceWood.metadata);
+			world.setBlock(x+2, y, z+i, Blocks.planks, ReikaItemHelper.spruceWood.metadata);
 		}
 
 		for (int i = -1; i <= 1; i++) {
@@ -139,7 +139,7 @@ public class BridgeSwitch extends BridgeNode {
 	private void addSwitch(ChunkSplicedGenerationCache world, int x, int y, int z) {
 		UUID uid = UUID.randomUUID();
 		world.setTileEntity(x, y, z, ChromaBlocks.BRIDGECONTROL.getBlockInstance(), 0, new KeyCallback(parent.id, uid));
-		((BridgeGenerator)parent).addKey(uid);
+		parent.addKey(uid);
 	}
 
 	private static class KeyCallback implements TileCallback {

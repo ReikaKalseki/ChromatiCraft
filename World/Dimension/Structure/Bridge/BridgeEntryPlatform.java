@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -32,16 +32,16 @@ public class BridgeEntryPlatform extends BridgeNode {
 		for (int i = -1; i <= 1; i++) {
 			for (int k = -1; k <= 1; k++) {
 				if (i != 0 || k != 0) {
-					world.setBlock(x+i, y, z+k, Blocks.planks, ReikaItemHelper.spruceWood.getItemDamage());
+					world.setBlock(x+i, y, z+k, Blocks.planks, ReikaItemHelper.spruceWood.metadata);
 				}
 			}
 		}
 
 		for (int i = -3; i <= 3; i++) {
-			world.setBlock(x+i, y, z+3, Blocks.planks, ReikaItemHelper.spruceWood.getItemDamage());
-			world.setBlock(x+i, y, z-3, Blocks.planks, ReikaItemHelper.spruceWood.getItemDamage());
-			world.setBlock(x+3, y, z+i, Blocks.planks, ReikaItemHelper.spruceWood.getItemDamage());
-			world.setBlock(x-3, y, z+i, Blocks.planks, ReikaItemHelper.spruceWood.getItemDamage());
+			world.setBlock(x+i, y, z+3, Blocks.planks, ReikaItemHelper.spruceWood.metadata);
+			world.setBlock(x+i, y, z-3, Blocks.planks, ReikaItemHelper.spruceWood.metadata);
+			world.setBlock(x+3, y, z+i, Blocks.planks, ReikaItemHelper.spruceWood.metadata);
+			world.setBlock(x-3, y, z+i, Blocks.planks, ReikaItemHelper.spruceWood.metadata);
 		}
 
 		for (int i = 0; i <= 2; i++) {

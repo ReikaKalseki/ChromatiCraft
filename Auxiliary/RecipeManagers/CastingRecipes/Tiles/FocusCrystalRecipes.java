@@ -49,10 +49,10 @@ public class FocusCrystalRecipes {
 	private static final ItemStack exquisiteCrystal = CrystalTier.EXQUISITE.getCraftedItem();
 	private static final ItemStack turboCrystal = CrystalTier.TURBOCHARGED.getCraftedItem();
 
-	private static final ItemStack defaultSlab = ReikaItemHelper.stoneSlab;
+	private static final ItemStack defaultSlab = ReikaItemHelper.stoneSlab.asItemStack();
 
 	private static final ItemStack refinedSlabInner = ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.SMOOTH.ordinal());
-	private static final ItemStack refinedSlabOuter = ReikaItemHelper.chiseledQuartz;
+	private static final ItemStack refinedSlabOuter = ReikaItemHelper.chiseledQuartz.asItemStack();
 
 	private static final ItemStack exquisiteSlabInner = ChromaStacks.auraIngot;
 	private static final ItemStack exquisiteSlabOuter = ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.ENGRAVED.ordinal());

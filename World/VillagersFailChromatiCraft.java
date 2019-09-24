@@ -848,16 +848,16 @@ public class VillagersFailChromatiCraft {
 			if (BiomeDictionary.isBiomeOfType(genBiome, Type.SANDY))
 				return new BlockKey(Blocks.sandstone, 2);
 			if (genBiome == BiomeGenBase.taiga || genBiome == BiomeGenBase.taigaHills || genBiome == BiomeGenBase.coldTaiga || genBiome == BiomeGenBase.coldTaigaHills)
-				return new BlockKey(ReikaItemHelper.spruceWood);
+				return ReikaItemHelper.spruceWood;
 			if (genBiome == BiomeGenBase.jungle || genBiome == BiomeGenBase.jungleEdge || genBiome == BiomeGenBase.jungleHills)
-				return new BlockKey(ReikaItemHelper.jungleWood);
+				return ReikaItemHelper.jungleWood;
 			if (genBiome == BiomeGenBase.birchForest || genBiome == BiomeGenBase.birchForestHills)
-				return new BlockKey(ReikaItemHelper.birchWood);
+				return ReikaItemHelper.birchWood;
 			if (genBiome == BiomeGenBase.roofedForest)
-				return new BlockKey(ReikaItemHelper.darkOakWood);
+				return ReikaItemHelper.darkOakWood;
 			if (genBiome instanceof BiomeGenSavanna)
-				return new BlockKey(ReikaItemHelper.acaciaWood);
-			return new BlockKey(ReikaItemHelper.oakWood);
+				return ReikaItemHelper.acaciaWood;
+			return ReikaItemHelper.oakWood;
 		}
 
 	}

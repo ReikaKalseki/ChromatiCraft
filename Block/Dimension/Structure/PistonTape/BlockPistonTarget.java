@@ -103,6 +103,9 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 			if (te.color.matchColor(e.color)) {
 				te.receive();
 			}
+			else {
+				ChromaSounds.ERROR.playSoundAtBlock(te);
+			}
 		}
 		return true;
 	}

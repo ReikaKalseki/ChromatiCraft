@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -305,9 +305,9 @@ public class ItemDuplicationWand extends ItemWandBase {
 		addMapping(Blocks.monster_egg, 0, Blocks.stone);
 		addMapping(Blocks.monster_egg, 1, Blocks.cobblestone);
 		addMapping(Blocks.monster_egg, 2, Blocks.stonebrick);
-		addMapping(Blocks.monster_egg, 3, ReikaItemHelper.mossyBricks);
-		addMapping(Blocks.monster_egg, 4, ReikaItemHelper.crackBricks);
-		addMapping(Blocks.monster_egg, 5, ReikaItemHelper.circleBricks);
+		addMapping(Blocks.monster_egg, 3, ReikaItemHelper.mossyBricks.asItemStack());
+		addMapping(Blocks.monster_egg, 4, ReikaItemHelper.crackBricks.asItemStack());
+		addMapping(Blocks.monster_egg, 5, ReikaItemHelper.circleBricks.asItemStack());
 
 		addMapping(Blocks.lit_redstone_ore, Blocks.redstone_ore);
 		addMapping(Blocks.unlit_redstone_torch, Blocks.redstone_torch);
