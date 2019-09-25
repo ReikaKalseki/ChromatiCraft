@@ -13,14 +13,14 @@ package Reika.ChromatiCraft.World.Dimension.Structure.GOL;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 
-import Reika.ChromatiCraft.Base.StructurePiece;
+import Reika.ChromatiCraft.Base.StructureLootRoom;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.GOLGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 
 
-public class GOLLoot extends StructurePiece<GOLGenerator> {
+public class GOLLoot extends StructureLootRoom<GOLGenerator> {
 
 	public GOLLoot(GOLGenerator s) {
 		super(s);

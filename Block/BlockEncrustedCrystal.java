@@ -24,6 +24,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalEncrustingRenderer;
@@ -53,19 +54,19 @@ public class BlockEncrustedCrystal extends CrystalTypeBlock {
 		TileCrystalEncrusted te = (TileCrystalEncrusted)world.getTileEntity(x, y, z);
 		for (int i = 0; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-			int dx = x+dir.offsetX;
-			int dy = y+dir.offsetY;
-			int dz = z+dir.offsetZ;
-			Block b = world.getBlock(dx, dy, dz);
-			if (b.isSideSolid(world, dx, dy, dz, dir.getOpposite()))
+			if (CrystalGrowth.canExist(world, x, y, z, dir))
 				te.addGrowth(dir, 1+world.rand.nextInt(8));
 		}
+		te.markReady();
+		te.updateSides(world, x, y, z);
 	}
 
 	@Override
 	public void updateTick(World world, int x, int y, int z, Random rand) {
 		TileCrystalEncrusted te = (TileCrystalEncrusted)world.getTileEntity(x, y, z);
+		te.markReady();
 		te.grow(world, x, y, z);
+		te.updateSides(world, x, y, z);
 	}
 
 	@Override
@@ -228,10 +229,15 @@ public class BlockEncrustedCrystal extends CrystalTypeBlock {
 
 		private CrystalGrowth[] sides = new CrystalGrowth[6];
 		private boolean isSpecial;
+		private boolean isReadyToUpdate;
 
 		@Override
 		public boolean canUpdate() {
 			return false;
+		}
+
+		public void markReady() {
+			isReadyToUpdate = true;
 		}
 
 		public void makeSpecial() {
@@ -268,6 +274,8 @@ public class BlockEncrustedCrystal extends CrystalTypeBlock {
 		}
 
 		public void updateSides(World world, int x, int y, int z) {
+			if (!isReadyToUpdate)
+				return;
 			for (int i = 0; i < 6; i++) {
 				CrystalGrowth g = sides[i];
 				if (g != null) {
@@ -289,7 +297,7 @@ public class BlockEncrustedCrystal extends CrystalTypeBlock {
 
 		public void addGrowth(ForgeDirection dir, int amt) {
 			sides[dir.ordinal()] = new CrystalGrowth(this.getColor(), dir, isSpecial);
-			sides[dir.ordinal()].growthStage = amt;
+			sides[dir.ordinal()].setGrowth(worldObj, xCoord, yCoord, zCoord, amt);
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
@@ -311,6 +319,7 @@ public class BlockEncrustedCrystal extends CrystalTypeBlock {
 			}
 
 			NBT.setBoolean("special", isSpecial);
+			NBT.setBoolean("ready", isReadyToUpdate);
 		}
 
 		@Override
@@ -326,6 +335,7 @@ public class BlockEncrustedCrystal extends CrystalTypeBlock {
 			}
 
 			isSpecial = NBT.getBoolean("special");
+			isReadyToUpdate = NBT.getBoolean("ready");
 		}
 
 		@Override
@@ -375,6 +385,10 @@ public class BlockEncrustedCrystal extends CrystalTypeBlock {
 			special = sp;
 		}
 
+		private void setGrowth(World world, int x, int y, int z, int amt) {
+			growthStage = Math.min(amt, this.getMaxGrowth(world, x, y, z));
+		}
+
 		public boolean grow(World world, int x, int y, int z) {
 			if (growthStage < this.getMaxGrowth(world, x, y, z)) {
 				growthStage++;
@@ -398,7 +412,7 @@ public class BlockEncrustedCrystal extends CrystalTypeBlock {
 			int dy = y+side.offsetY;
 			int dz = z+side.offsetZ;
 			Block b = world.getBlock(dx, dy, dz);
-			return b.isSideSolid(world, dx, dy, dz, side.getOpposite());
+			return b == ChromaBlocks.STRUCTSHIELD.getBlockInstance() || b.isSideSolid(world, dx, dy, dz, side.getOpposite());
 		}
 
 		private void writeToNBT(NBTTagCompound NBT) {

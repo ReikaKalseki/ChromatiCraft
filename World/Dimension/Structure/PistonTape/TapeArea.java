@@ -47,7 +47,8 @@ public class TapeArea extends StructurePiece<PistonTapeGenerator> {
 				world.setBlock(x+tape.facing.offsetX*6+main.offsetX*i, y+dh, z+tape.facing.offsetZ*6+main.offsetZ*i, Blocks.air);
 				world.setBlock(x+tape.facing.offsetX*7+main.offsetX*i, y+dh, z+tape.facing.offsetZ*7+main.offsetZ*i, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata);
 			}
-			for (int d = 2; d <= 4; d++) {
+			//world.setBlock(x+tape.facing.offsetX+main.offsetX*i, y+4, z+tape.facing.offsetZ+main.offsetZ*i, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+			for (int d = 1; d <= 4; d++) {
 				world.setBlock(x+tape.facing.offsetX*d+main.offsetX*i, y, z+tape.facing.offsetZ*d+main.offsetZ*i, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.COBBLE.metadata);
 				world.setBlock(x+tape.facing.offsetX*d+main.offsetX*i, y+4, z+tape.facing.offsetZ*d+main.offsetZ*i, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
 			}

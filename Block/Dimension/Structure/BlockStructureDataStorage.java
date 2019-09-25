@@ -220,7 +220,7 @@ public class BlockStructureDataStorage extends BlockDimensionStructureTile {
 				return true;
 			}
 			int pass = gen.getPassword(ep);
-			if (ReikaPlayerAPI.isReika(ep) || ProgressionManager.instance.hasPlayerCompletedStructureColor(ep, gen.getCoreColor(ep.worldObj))) {
+			if (ReikaPlayerAPI.isReika(ep) || ProgressionManager.instance.hasPlayerCompletedStructureColor(ep, gen.getCoreColor())) {
 				ChromaSounds.CRAFTDONE.playSoundAtBlock(this);
 				gen.forceOpen(worldObj, ep);
 				return true;

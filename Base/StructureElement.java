@@ -20,10 +20,6 @@ public abstract class StructureElement<V extends DimensionStructureGenerator> {
 		parent = s;
 	}
 
-	protected final void placeCore(int x, int y, int z) {
-		parent.placeCore(x, y, z);
-	}
-
 	public static abstract class BasicStructurePiece<V extends DimensionStructureGenerator> extends StructureElement<V> {
 
 		protected BasicStructurePiece(V s) {

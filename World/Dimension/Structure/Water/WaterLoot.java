@@ -11,14 +11,14 @@ package Reika.ChromatiCraft.World.Dimension.Structure.Water;
 
 import net.minecraft.init.Blocks;
 
-import Reika.ChromatiCraft.Base.StructurePiece;
+import Reika.ChromatiCraft.Base.StructureLootRoom;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.WaterPuzzleGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 
 
-public class WaterLoot extends StructurePiece<WaterPuzzleGenerator> {
+public class WaterLoot extends StructureLootRoom<WaterPuzzleGenerator> {
 
 	private final boolean hasCore;
 

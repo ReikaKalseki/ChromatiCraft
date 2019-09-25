@@ -235,7 +235,7 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 	public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 		if (te instanceof TileEntityDimensionCore) {
-			StructurePair sp = new StructurePair(this, this.getCoreColor(world));
+			StructurePair sp = new StructurePair(this, this.getCoreColor());
 			sp.generatedDimension = world.provider.dimensionId;
 			((TileEntityDimensionCore)te).setStructure(sp);
 		}
@@ -244,8 +244,8 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		}
 	}
 
-	public CrystalElement getCoreColor(World world) {
-		return genColor;//CrystalElement.elements[(int)((world.getSeed()%16)+16+structureType.ordinal())%16];
+	public CrystalElement getCoreColor() {
+		return genColor;
 	}
 
 	public final void placeCore(int x, int y, int z) {

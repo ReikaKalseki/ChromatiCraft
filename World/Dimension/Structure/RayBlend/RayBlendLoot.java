@@ -16,13 +16,13 @@ import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Base.StructurePiece;
+import Reika.ChromatiCraft.Base.StructureLootRoom;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.RayBlendGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 
-public class RayBlendLoot extends StructurePiece<RayBlendGenerator> {
+public class RayBlendLoot extends StructureLootRoom<RayBlendGenerator> {
 
 	public RayBlendLoot(RayBlendGenerator s) {
 		super(s);

@@ -450,6 +450,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			encrustedBlocks.remove(new Coordinate(x, y, z));
 			return;
 		}
+		te.markReady();
 		if (special) {
 			te.makeSpecial();
 		}
