@@ -71,7 +71,6 @@ import net.minecraftforge.client.event.sound.PlaySoundEvent17;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHotkeys;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityXRays;
@@ -97,6 +96,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavationWand;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;

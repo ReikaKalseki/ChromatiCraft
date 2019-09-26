@@ -47,8 +47,6 @@ import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
@@ -67,9 +65,12 @@ import Reika.ChromatiCraft.Items.ItemMagicBranch;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalColors;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeTypes;
+import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
+import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager.ProgressElement;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
+import Reika.ChromatiCraft.Magic.Progression.ResearchLevel;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Render.TESR.RenderDataNode;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.CrystalTier;
 import Reika.DragonAPI.DragonAPICore;
@@ -547,7 +548,7 @@ public enum ChromaResearch implements ProgressElement {
 		return this.playerCanSee(ep) || ChromaResearchManager.instance.canPlayerStepTo(ep, this);
 	}
 
-	public boolean playerHasProgress(EntityPlayer ep) {
+	public boolean canPlayerProgressTo(EntityPlayer ep) {
 		if (progress != null) {
 			for (int i = 0; i < progress.length; i++) {
 				ProgressStage p = progress[i];
@@ -555,6 +556,8 @@ public enum ChromaResearch implements ProgressElement {
 					return false;
 			}
 		}
+		if (ability != null && !ability.isAvailableToPlayer(ep))
+			return false;
 		return true;
 	}
 
@@ -1647,6 +1650,10 @@ public enum ChromaResearch implements ProgressElement {
 
 	public static ChromaResearch getPageFor(ChromaTiles c) {
 		return tileMap.get(c);
+	}
+
+	public static Collection<ChromaResearch> getPagesFor(ResearchLevel l) {
+		return levelMap.get(l);
 	}
 
 	public static List<ChromaResearch> getAllParents() {

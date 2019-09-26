@@ -27,10 +27,10 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.DragonAPICore;

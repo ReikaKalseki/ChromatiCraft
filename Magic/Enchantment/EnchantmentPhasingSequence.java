@@ -16,8 +16,8 @@ import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ChromaticEnchantment;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 

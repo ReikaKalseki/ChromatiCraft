@@ -66,12 +66,12 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
 import Reika.ChromatiCraft.Items.Tools.ItemEfficiencyCrystal;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
@@ -225,6 +225,11 @@ public class AbilityHelper {
 			progressMap.addValue(Chromabilities.BEEALYZE, ProgressStage.HIVE);
 		progressMap.addValue(Chromabilities.BEEALYZE, ProgressStage.LINK);
 		progressMap.addValue(Chromabilities.NUKER, ProgressStage.STRUCTCOMPLETE);
+
+		progressMap.addValue(Chromabilities.LIGHTCAST, ProgressStage.KILLMOB);
+		//progressMap.addValue(Chromabilities.JUMP);
+		//progressMap.addValue(Chromabilities.SUPERBUILD);
+		//progressMap.addValue(Chromabilities.CHESTCLEAR);
 
 		for (Ability a : progressMap.keySet()) {
 			if (progressMap.get(a).contains(ProgressStage.STRUCTCOMPLETE)) {

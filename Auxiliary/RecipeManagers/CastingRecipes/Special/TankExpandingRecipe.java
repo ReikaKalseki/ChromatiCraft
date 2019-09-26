@@ -5,8 +5,8 @@ import java.util.Collection;
 import net.minecraft.init.Items;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;

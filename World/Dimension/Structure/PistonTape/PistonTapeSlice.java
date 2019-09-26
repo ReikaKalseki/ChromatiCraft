@@ -254,7 +254,7 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 
 	private void placeTarget(ChunkSplicedGenerationCache world, int x, int y, int z) {
 		target = new Coordinate(x, y, z);
-		world.setTileEntity(x, y, z, ChromaBlocks.PISTONTARGET.getBlockInstance(), 0, new PistonTargetCallback(this));
+		world.setTileEntity(x, y, z, ChromaBlocks.PISTONTARGET.getBlockInstance(), 0, new PistonTargetCallback(this, loop.level));
 	}
 
 	private static class PistonTargetCallback implements TileCallback {
@@ -263,19 +263,21 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 		private final ForgeDirection facing;
 		private final int index;
 		private final int width;
+		private final int stage;
 
-		private PistonTargetCallback(PistonTapeSlice p) {
+		private PistonTargetCallback(PistonTapeSlice p, TapeStage s) {
 			//ReikaJavaLibrary.spamConsole(p+" & "+p.facing);
 			uid = p.parent.id;
 			index = p.busIndex;
 			facing = p.facing;
 			width = p.loop.busWidth;
+			stage = s.index;
 		}
 
 		@Override
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			PistonEmitterTile e = (PistonEmitterTile)te;
-			e.setData(facing, index, width);
+			e.setData(facing, stage, -1, index, width);
 			e.uid = uid;
 		}
 

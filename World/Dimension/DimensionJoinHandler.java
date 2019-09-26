@@ -24,8 +24,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.BlockFluidBase;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaTeleporter;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler.PlayerTracker;

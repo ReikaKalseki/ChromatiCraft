@@ -20,10 +20,10 @@ import net.minecraft.util.MathHelper;
 
 import Reika.ChromatiCraft.ChromaNames;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ResearchDependentName;
 import Reika.ChromatiCraft.Base.ItemChromaMulti;
 import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.DragonAPI.Interfaces.Item.AnimatedSpritesheet;

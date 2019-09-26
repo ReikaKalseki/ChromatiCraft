@@ -18,10 +18,11 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionLinking;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionLinking.LinkFailure;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.DragonAPICore;
@@ -96,7 +97,8 @@ public class TileEntityProgressionLinker extends TileEntityChromaticBase impleme
 	}
 
 	private void linkPlayers(EntityPlayer ep, EntityPlayer target) {
-		if (ProgressionManager.instance.linkProgression(ep, target, true)) {
+		LinkFailure lf = ProgressionLinking.instance.linkProgression(ep, target);
+		if (lf == null) {
 			for (int i = 0; i <= 100; i += 5) {
 				//ChromaSounds.LOREHEX.playSoundAtBlock(this, 1, 0.5F);
 				ScheduledSoundEvent evt = new ScheduledSoundEvent(ChromaSounds.LOREHEX, ep, 1, 2F);
@@ -106,6 +108,7 @@ public class TileEntityProgressionLinker extends TileEntityChromaticBase impleme
 		else {
 			ChromaSounds.ERROR.playSoundAtBlock(this);
 			failTicks = FAIL_FADE;
+			lf
 		}
 	}
 

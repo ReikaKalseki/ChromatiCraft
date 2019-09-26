@@ -16,6 +16,7 @@ import Reika.DragonAPI.Instantiable.RGBColorData;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 
 public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 
@@ -37,6 +38,8 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 	private Coordinate exit;
 	private Coordinate entrance;
 
+	private boolean[] pings;
+
 	public TapeStage(PistonTapeGenerator g, int idx, int bus, int n, ForgeDirection dir, Random rand) {
 		super(g);
 		index = idx;
@@ -53,8 +56,10 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 		doors = new DoorSection[doorCount];
 		for (int i = 0; i < doorCount; i++) {
 			DoorKey dk = new DoorKey(i, bus, this.getColorList(i));
-			doors[i] = new DoorSection(g, this, mainDirection, dk, i == doorCount-1);
+			doors[i] = new DoorSection(g, this, mainDirection, dk, i, i == doorCount-1);
 		}
+
+		pings = new boolean[doorCount];
 	}
 
 	public Coordinate getEntrance() {
@@ -147,6 +152,24 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 
 	public UUID getID() {
 		return parent.id;
+	}
+
+	public void openAllDoors(World world) {
+		for (DoorSection s : doors) {
+			s.forceOpenDoor(world);
+		}
+	}
+
+	public void validate(int door) {
+		pings[door] = true;
+	}
+
+	public void resetValidate() {
+		pings = new boolean[doorCount];
+	}
+
+	public boolean isSolved() {
+		return ReikaArrayHelper.isAllTrue(pings);
 	}
 
 }

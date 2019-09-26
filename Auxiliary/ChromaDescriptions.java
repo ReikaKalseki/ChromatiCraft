@@ -22,7 +22,6 @@ import net.minecraft.client.resources.Language;
 import net.minecraftforge.common.MinecraftForge;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
@@ -33,6 +32,7 @@ import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.LoreScripts;
 import Reika.ChromatiCraft.Magic.Lore.LoreScripts.ScriptLocations;
 import Reika.ChromatiCraft.Magic.Network.RelayNetworker;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectJar;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;

@@ -18,12 +18,12 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.GUI.GuiChromability;
+import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;

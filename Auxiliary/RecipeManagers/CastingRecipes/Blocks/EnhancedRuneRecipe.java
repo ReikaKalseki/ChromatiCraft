@@ -11,9 +11,9 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 
 import java.util.Collection;
 
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class EnhancedRuneRecipe extends TempleCastingRecipe implements CoreRecipe {

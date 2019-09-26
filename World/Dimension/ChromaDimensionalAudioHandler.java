@@ -14,7 +14,7 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
 
 import Reika.ChromatiCraft.Auxiliary.MonumentCompletionRitual;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.Instantiable.IO.CustomMusic;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;

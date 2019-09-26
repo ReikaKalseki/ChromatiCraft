@@ -26,7 +26,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
@@ -37,6 +36,7 @@ import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree.TileEntityPowerTreeAux;
 import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.ModInterface.TileEntityFloatingLandmark;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeRecharger;
@@ -267,7 +267,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 				te.setFacing(ForgeDirection.VALID_DIRECTIONS[s]);
 			}
 			else {
-				te.calcFence();
+				te.calcFence(false);
 				if (te.isValid()) {
 					ChromaSounds.CAST.playSoundAtBlock(te);
 				}

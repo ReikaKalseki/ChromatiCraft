@@ -20,9 +20,9 @@ import net.minecraft.util.MathHelper;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.Worldgen.BlockWarpNode.TileEntityWarpNode;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;

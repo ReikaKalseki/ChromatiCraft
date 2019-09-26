@@ -30,10 +30,10 @@ import net.minecraftforge.client.IItemRenderer.ItemRenderType;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Base.ItemChromaBasic;
+import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.DragonAPI.Interfaces.Item.SpriteRenderCallback;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 
@@ -59,7 +59,7 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 					this.programShardAndGiveData(is, ep);
 				}
 				else {
-					if (r.playerHasProgress(ep) && ChromaResearchManager.instance.getNextResearchesFor(ep).contains(r))
+					if (r.canPlayerProgressTo(ep) && ChromaResearchManager.instance.getNextResearchesFor(ep).contains(r))
 						ChromaResearchManager.instance.givePlayerFragment(ep, r, true);
 				}
 			}

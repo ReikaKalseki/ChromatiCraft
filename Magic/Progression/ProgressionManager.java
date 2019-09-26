@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Auxiliary;
+package Reika.ChromatiCraft.Magic.Progression;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,31 +16,17 @@ import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.UUID;
 
-import org.lwjgl.opengl.GL11;
-
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -53,23 +39,17 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
-import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
-import Reika.ChromatiCraft.Items.ItemUnknownArtefact.ArtefactTypes;
+import Reika.ChromatiCraft.Items.ItemInfoFragment;
+import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.Shareability;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
-import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap;
@@ -81,9 +61,6 @@ import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-import Reika.DragonAPI.ModRegistry.ModWoodList;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -96,7 +73,6 @@ public class ProgressionManager implements ProgressRegistry {
 	public static final String MAIN_NBT_TAG = "Chroma_Progression";
 	private static final String COLOR_NBT_TAG = "Chroma_Element_Discovery";
 	private static final String STRUCTURE_NBT_TAG = "Structure_Color_Completion";
-	private static final String COOPERATE_NBT_TAG = "Chroma_Cooperation";
 
 	private final SequenceMap<ProgressStage> progressMap = new SequenceMap();
 
@@ -108,250 +84,6 @@ public class ProgressionManager implements ProgressRegistry {
 	private final EnumMap<ProgressStage, ChromaResearch> auxiliaryReference = new EnumMap(ProgressStage.class);
 
 	//private final Comparator<EntityPlayer> playerProgressionComparator = new PlayerProgressionComparator();
-
-	public static enum ProgressStage implements ProgressElement {
-
-		CASTING(								ChromaTiles.TABLE.getCraftedProduct()), //Do a recipe
-		CRYSTALS(								ChromaBlocks.CRYSTAL.getStackOfMetadata(CrystalElement.RED.ordinal())), //Found a crystal
-		DYETREE(								ChromaBlocks.DYELEAF.getStackOfMetadata(CrystalElement.YELLOW.ordinal())), //Harvest a dye tree
-		MULTIBLOCK(		Shareability.PROXIMITY,	ChromaTiles.STAND.getCraftedProduct()), //Assembled a multiblock
-		RUNEUSE(		Shareability.PROXIMITY,	ChromaBlocks.RUNE.getStackOfMetadata(CrystalElement.ORANGE.ordinal())), //Placed runes
-		PYLON(									ChromaTiles.PYLON.getCraftedProduct()), //Found pylon
-		LINK(			Shareability.PROXIMITY,	ChromaTiles.COMPOUND.getCraftedProduct()), //Made a network connection/high-tier crafting
-		CHARGE(									ChromaItems.TOOL.getStackOf()), //charge from a pylon
-		ABILITY(								ChromaTiles.RITUAL.getCraftedProduct()), //use an ability
-		RAINBOWLEAF(	Shareability.PROXIMITY,	ChromaBlocks.RAINBOWLEAF.getStackOfMetadata(3)), //harvest a rainbow leaf
-		MAKECHROMA(		Shareability.PROXIMITY,	ChromaTiles.COLLECTOR.getCraftedProduct()),
-		SHARDCHARGE(	Shareability.PROXIMITY,	ChromaStacks.chargedRedShard),
-		ALLOY(			Shareability.PROXIMITY,	ChromaStacks.chromaIngot),
-		CHROMA(									ChromaBlocks.CHROMA.getBlockInstance()), //step in liquid chroma
-		//STONES(								ChromaStacks.elementUnit), //craft all elemental stones together
-		SHOCK(									ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(5)), //get hit by a pylon
-		HIVE(			Shareability.ALWAYS,	new ItemStack(ChromaBlocks.HIVE.getBlockInstance()), ModList.FORESTRY.isLoaded()),
-		NETHER(									Blocks.portal), //go to the nether
-		END(									Blocks.end_portal_frame), //go to the end
-		TWILIGHT(ModList.TWILIGHT.isLoaded() ? ModWoodList.CANOPY.getItem() : null, ModList.TWILIGHT.isLoaded()), //Go to the twilight forest
-		BEDROCK(								Blocks.bedrock), //Find bedrock
-		CAVERN(			Shareability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CLOAK.metadata)), //Cavern structure
-		BURROW(			Shareability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.MOSS.metadata)), //Burrow structure
-		OCEAN(			Shareability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.GLASS.metadata)), //Ocean floor structure
-		DESERTSTRUCT(	Shareability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.COBBLE.metadata)),
-		SNOWSTRUCT(		Shareability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.LIGHT.metadata)),
-		DIE(									Items.skull), //die and lose energy
-		ALLCOLORS(								ChromaItems.ELEMENTAL.getStackOf(CrystalElement.CYAN)), //find all colors
-		REPEATER(		Shareability.ALWAYS,	ChromaTiles.REPEATER.getCraftedProduct()), //craft any repeater type
-		RAINBOWFOREST(							ChromaBlocks.RAINBOWSAPLING.getBlockInstance()),
-		DIMENSION(								ChromaBlocks.PORTAL.getBlockInstance()),
-		CTM(									ChromaTiles.AURAPOINT.getCraftedProduct()),
-		STORAGE(		Shareability.ALWAYS,	ChromaItems.STORAGE.getStackOf()),
-		CHARGECRYSTAL(	Shareability.ALWAYS,	ChromaTiles.CHARGER.getCraftedProduct()),
-		BALLLIGHTNING(							ChromaStacks.auraDust),
-		POWERCRYSTAL(	Shareability.PROXIMITY,	ChromaTiles.CRYSTAL.getCraftedProduct()),
-		POWERTREE(		Shareability.PROXIMITY,	ChromaBlocks.POWERTREE.getStackOfMetadata(CrystalElement.YELLOW.ordinal())),
-		TURBOCHARGE(	Shareability.PROXIMITY,	ChromaTiles.PYLONTURBO.getCraftedProduct()),
-		FINDSPAWNER(	Shareability.PROXIMITY,	new ItemStack(Blocks.mob_spawner)),
-		BREAKSPAWNER(	Shareability.ALWAYS,	new ItemStack(Items.spawn_egg, 1, (int)EntityList.classToIDMapping.get(EntitySpider.class))),
-		KILLDRAGON(		Shareability.PROXIMITY,	new ItemStack(Blocks.dragon_egg)),
-		KILLWITHER(		Shareability.PROXIMITY,	new ItemStack(Items.nether_star)),
-		KILLMOB(								new ItemStack(Items.skull, 1, 4)),
-		ALLCORES(								ChromaTiles.DIMENSIONCORE.getCraftedNBTProduct("color", CrystalElement.RED.ordinal())),
-		USEENERGY(		Shareability.PROXIMITY,	ChromaTiles.WEAKREPEATER.getCraftedProduct()),
-		BLOWREPEATER(	Shareability.PROXIMITY,	ChromaStacks.crystalPowder),
-		STRUCTCOMPLETE(							ChromaBlocks.DIMDATA.getStackOf()),
-		NETHERROOF(								Blocks.netherrack),
-		NETHERSTRUCT(	Shareability.PROXIMITY,	new ItemStack(Blocks.nether_brick)),
-		VILLAGECASTING(	Shareability.PROXIMITY,	new ItemStack(Blocks.cobblestone)),
-		FOCUSCRYSTAL(	Shareability.ALWAYS,	new ItemStack(Items.emerald)),
-		ANYSTRUCT(								ChromaTiles.STRUCTCONTROL.getCraftedProduct()),
-		ARTEFACT(								ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.FRAGMENT.ordinal())),
-		TOWER(									ChromaTiles.DATANODE.getCraftedProduct()),
-		STRUCTCHEAT(							Blocks.tnt), //optional, just to rub it in
-		VOIDMONSTER(							(ItemStack)null, ModList.VOIDMONSTER.isLoaded()),
-		LUMA(									ChromaBlocks.LUMA.getBlockInstance()),
-		WARPNODE(								ChromaBlocks.WARPNODE.getBlockInstance()),
-		BYPASSWEAK(								(ItemStack)null),
-		TUNECAST(								(ItemStack)null),
-		NEVER(									(ItemStack)null, false), //used as a no-trigger placeholder
-		;
-
-		private final ItemStack icon;
-		public final boolean active;
-		public final Shareability shareLevel;
-
-		public static final ProgressStage[] list = values();
-
-		private ProgressStage(Block b, boolean... cond) {
-			this(new ItemStack(b), cond);
-		}
-
-		private ProgressStage(Item b, boolean... cond) {
-			this(new ItemStack(b), cond);
-		}
-
-		private ProgressStage(ItemStack is, boolean... cond) {
-			this(Shareability.SELFONLY, is, cond);
-		}
-
-		private ProgressStage(Shareability s, ItemStack is, boolean... cond) {
-			icon = is;
-			boolean flag = true;
-			for (int i = 0; i < cond.length; i++)
-				flag = flag && cond[i];
-			active = flag;
-			ChromaResearchManager.instance.register(this);
-			shareLevel = s;
-		}
-
-		public boolean stepPlayerTo(EntityPlayer ep) {
-			return instance.stepPlayerTo(ep, this, true);
-		}
-
-		public boolean isPlayerAtStage(EntityPlayer ep) {
-			return instance.isPlayerAtStage(ep, this);
-		}
-
-		public boolean isPlayerAtStage(World world, UUID id) {
-			EntityPlayer ep = world.func_152378_a(id);
-			if (ep == null && world instanceof WorldServer) {
-				ep = ReikaPlayerAPI.getFakePlayerByNameAndUUID((WorldServer)world, "Progress Backup", id);
-			}
-			return ep != null && instance.isPlayerAtStage(ep, this);
-		}
-
-		public boolean playerHasPrerequisites(EntityPlayer ep) {
-			return instance.playerHasPrerequisites(ep, this);
-		}
-
-		public boolean isOneStepAway(EntityPlayer ep) {
-			return instance.isOneStepAway(ep, this);
-		}
-
-		//@SideOnly(Side.CLIENT)
-		public String getTitle() {
-			return this.getTitleString();
-		}
-
-		//@SideOnly(Side.CLIENT)
-		public String getShortDesc() {
-			return ChromaDescriptions.getProgressText(this).desc;
-		}
-
-		//@SideOnly(Side.CLIENT)
-		public String getTitleString() {
-			//StatCollector.translateToLocal("chromaprog."+this.name().toLowerCase());
-			return ChromaDescriptions.getProgressText(this).title;
-		}
-
-		//@SideOnly(Side.CLIENT)
-		public String getHintString() {
-			//StatCollector.translateToLocal("chromaprog."+this.name().toLowerCase());
-			return ChromaDescriptions.getProgressText(this).hint;
-		}
-
-		//@SideOnly(Side.CLIENT)
-		public String getRevealedString() {
-			//StatCollector.translateToLocal("chromaprog.reveal."+this.name().toLowerCase());
-			return ChromaDescriptions.getProgressText(this).reveal;
-		}
-
-		@SideOnly(Side.CLIENT)
-		public void renderIcon(RenderItem ri, FontRenderer fr, int x, int y) {
-			if (this == ANYSTRUCT) { //item render does not work
-				ReikaTextureHelper.bindTerrainTexture();
-				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-				GL11.glColor4f(1, 1, 1, 1);
-				GL11.glDisable(GL11.GL_LIGHTING);
-				GL11.glEnable(GL11.GL_BLEND);
-				BlendMode.ADDITIVEDARK.apply();
-				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y, ChromaIcons.SPINFLARE.getIcon(), 16, 16); //render directly
-				GL11.glPopAttrib();
-			}
-			else if (this == VOIDMONSTER) {
-				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-				GL11.glColor4f(1, 1, 1, 1);
-				GL11.glDisable(GL11.GL_LIGHTING);
-				ReikaGuiAPI.instance.renderStatic(x-1, y-1, x+16, y+16);
-				GL11.glPopAttrib();
-			}
-			else if (this == WARPNODE) {
-				ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/warpnode-small.png");
-				int idx = (int)(System.currentTimeMillis()/20%64);
-				double u = idx%8/8D;
-				double v = idx/8/8D;
-				double du = u+1/8D;
-				double dv = v+1/8D;
-				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-				GL11.glColor4f(1, 1, 1, 1);
-				GL11.glDisable(GL11.GL_LIGHTING);
-				GL11.glEnable(GL11.GL_BLEND);
-				BlendMode.ADDITIVEDARK.apply();
-				int d = 2;
-				int w = 16;
-				int h = 16;
-				Tessellator tessellator = Tessellator.instance;
-				tessellator.startDrawingQuads();
-				tessellator.addVertexWithUV((x + 0 - d), (y + h + d), 0, u, dv);
-				tessellator.addVertexWithUV((x + w + d), (y + h + d), 0, du, dv);
-				tessellator.addVertexWithUV((x + w + d), (y + 0 - d), 0, du, v);
-				tessellator.addVertexWithUV((x + 0 - d), (y + 0 - d), 0, u, v);
-				tessellator.draw();
-				GL11.glPopAttrib();
-			}
-			else if (this == BYPASSWEAK) {
-				ReikaGuiAPI.instance.drawItemStack(ri, fr, ChromaTiles.WEAKREPEATER.getCraftedProduct(), x, y);
-				ReikaTextureHelper.bindTerrainTexture();
-				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-				GL11.glColor4f(1, 1, 1, 1);
-				GL11.glDisable(GL11.GL_LIGHTING);
-				GL11.glEnable(GL11.GL_BLEND);
-				boolean has = this.isPlayerAtStage(Minecraft.getMinecraft().thePlayer);
-				if (has)
-					BlendMode.DEFAULT.apply();
-				else
-					BlendMode.ADDITIVEDARK.apply();
-				ChromaIcons ico = has ? ChromaIcons.X : ChromaIcons.QUESTION;
-				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x+2, y+2, ico.getIcon(), 12, 12); //render directly
-				GL11.glPopAttrib();
-			}
-			else if (this == TUNECAST) {
-				ChromaResearch.CASTTUNING.renderIcon(ri, fr, x, y);
-				double s = 0.6;
-				GL11.glPushMatrix();
-				GL11.glScaled(s, s, s);
-				ReikaGuiAPI.instance.drawItemStack(ri, fr, ChromaTiles.TABLE.getCraftedProduct(), (int)(x/s+12), (int)(y/s+12));
-				GL11.glPopMatrix();
-			}
-			else {
-				ReikaGuiAPI.instance.drawItemStack(ri, fr, icon, x, y);
-			}
-		}
-
-		public boolean alwaysRenderFullBright() {
-			return this == BYPASSWEAK;
-		}
-
-		public boolean isGatedAfter(ProgressStage p) {
-			return ProgressionManager.instance.progressMap.getRecursiveParents(this).contains(p);
-		}
-
-		@Override
-		public String getFormatting() {
-			return EnumChatFormatting.UNDERLINE.toString();
-		}
-
-		@Override
-		public boolean giveToPlayer(EntityPlayer ep, boolean notify) {
-			return instance.stepPlayerTo(ep, this, notify);
-		}
-
-		public void forceOnPlayer(EntityPlayer ep, boolean notify) {
-			//instance.setPlayerStage(ep, this, true, notify);
-		}
-
-		public Shareability getShareability() {
-			return shareLevel;
-		}
-	}
 
 	private ProgressionManager() {
 		ResearchFetcher.progressManager = this;
@@ -559,7 +291,7 @@ public class ProgressionManager implements ProgressRegistry {
 		return li;
 	}
 
-	private boolean isPlayerAtStage(EntityPlayer ep, ProgressStage s) {
+	boolean isPlayerAtStage(EntityPlayer ep, ProgressStage s) {
 		return this.getPlayerData(ep).contains(s);
 	}
 
@@ -573,52 +305,6 @@ public class ProgressionManager implements ProgressRegistry {
 		return c != null ? Collections.unmodifiableCollection(c) : new ArrayList();
 	}
 
-	public Collection<UUID> getSlavedIDs(EntityPlayer ep) {
-		Collection<UUID> c = new HashSet();
-		for (NBTTagString s : ((List<NBTTagString>)this.getCooperatorList(ep).tagList)) {
-			try {
-				c.add(UUID.fromString(s.func_150285_a_()));
-			}
-			catch (IllegalArgumentException e) {
-				ChromatiCraft.logger.logError("Could not load cooperator UUID "+s.func_150285_a_()+"' as a cooperator with "+ep.getCommandSenderName());
-			}
-		}
-		return c;
-	}
-
-	public boolean linkProgression(EntityPlayer ep1, EntityPlayer ep2, boolean link) {
-		ChromatiCraft.logger.debug("Attempting to link progression from "+ep1.getCommandSenderName()+" to "+ep2.getCommandSenderName());
-		if (!this.canLinkProgression(ep1, ep2)) {
-			ChromatiCraft.logger.debug("Failed to link progression; "+this.isProgressionEqual(ep1, ep2, this.getLinkIgnoreList())+" & "+(ChromaResearchManager.instance.getPlayerResearchLevel(ep1) == ChromaResearchManager.instance.getPlayerResearchLevel(ep2)));
-			return false;
-		}
-		NBTTagString s1 = new NBTTagString(ep2.getUniqueID().toString());
-		NBTTagString s2 = new NBTTagString(ep1.getUniqueID().toString());
-		NBTTagList li1 = this.getCooperatorList(ep1);
-		NBTTagList li2 = this.getCooperatorList(ep2);
-		if (link) {
-			li1.appendTag(s1);
-			li2.appendTag(s2);
-		}
-		else {
-			li1.tagList.remove(s1);
-			li2.tagList.remove(s2);
-		}
-		ChromaResearchManager.instance.getRootNBTTag(ep1).setTag(COOPERATE_NBT_TAG, li1);
-		ChromaResearchManager.instance.getRootNBTTag(ep2).setTag(COOPERATE_NBT_TAG, li2);
-		return true;
-	}
-
-	private boolean canLinkProgression(EntityPlayer ep1, EntityPlayer ep2) {
-		if (ReikaPlayerAPI.isFake(ep1) || ReikaPlayerAPI.isFake(ep2))
-			return false;
-		return this.isProgressionEqual(ep1, ep2, this.getLinkIgnoreList()) && ChromaResearchManager.instance.getPlayerResearchLevel(ep1) == ChromaResearchManager.instance.getPlayerResearchLevel(ep2);//playerProgressionComparator.compare(ep1, ep2) == 0;
-	}
-
-	private ProgressStage[] getLinkIgnoreList() {
-		return new ProgressStage[] {ProgressStage.CAVERN, ProgressStage.BURROW, ProgressStage.OCEAN, ProgressStage.DESERTSTRUCT, ProgressStage.SNOWSTRUCT, ProgressStage.TOWER, ProgressStage.ARTEFACT, ProgressStage.STRUCTCHEAT, ProgressStage.DIE, ProgressStage.VOIDMONSTER};
-	}
-
 	public boolean isProgressionEqual(EntityPlayer ep1, EntityPlayer ep2, ProgressStage... ignore) {
 		Collection<ProgressStage> c1 = new ArrayList(this.getStagesFor(ep1));
 		Collection<ProgressStage> c2 = new ArrayList(this.getStagesFor(ep2));
@@ -629,15 +315,7 @@ public class ProgressionManager implements ProgressRegistry {
 		return c1.equals(c2);
 	}
 
-	private NBTTagList getCooperatorList(EntityPlayer ep) {
-		NBTTagCompound nbt = ChromaResearchManager.instance.getRootNBTTag(ep);
-		if (!nbt.hasKey(COOPERATE_NBT_TAG))
-			nbt.setTag(COOPERATE_NBT_TAG, new NBTTagList());
-		NBTTagList li = nbt.getTagList(COOPERATE_NBT_TAG, NBTTypes.STRING.ID);
-		return li;
-	}
-
-	private boolean stepPlayerTo(EntityPlayer ep, ProgressStage s, boolean notify) {
+	boolean stepPlayerTo(EntityPlayer ep, ProgressStage s, boolean notify) {
 		if (ep == null) {
 			ChromatiCraft.logger.logError("Tried to give progress '"+s+"' to null player???");
 			return false;
@@ -682,7 +360,11 @@ public class ProgressionManager implements ProgressRegistry {
 		return c != null ? c.toArray(new ProgressStage[c.size()]) : new ProgressStage[0];
 	}
 
-	private boolean isOneStepAway(EntityPlayer ep, ProgressStage s) {
+	Collection<ProgressStage> getRecursiveParents(ProgressStage p) {
+		return progressMap.getRecursiveParents(p);
+	}
+
+	boolean isOneStepAway(EntityPlayer ep, ProgressStage s) {
 		if (this.isPlayerAtStage(ep, s))
 			return false;
 		Collection<ProgressStage> c = progressMap.getParents(s);
@@ -734,7 +416,7 @@ public class ProgressionManager implements ProgressRegistry {
 		if (activeList.contains(ep.getUniqueID()))
 			return;
 		activeList.add(ep.getUniqueID());
-		Collection<UUID> coop = this.getSlavedIDs(ep);
+		Collection<UUID> coop = ProgressionLinking.instance.getSlavedIDs(ep);
 		Collection<EntityPlayer> players = new ArrayList();
 		for (UUID u : coop) {
 			EntityPlayer e = ep.worldObj.func_152378_a(u);
@@ -1011,8 +693,11 @@ public class ProgressionManager implements ProgressRegistry {
 	public void giveAuxiliaryResearch(EntityPlayer ep, ProgressStage p) {
 		if (ChromaOptions.EASYFRAG.getState()) {
 			ChromaResearch r = auxiliaryReference.get(p);
-			if (r != null)
+			if (r != null) {
 				ChromaResearchManager.instance.givePlayerFragment(ep, r, true);
+				ItemStack is = ItemInfoFragment.getItem(r);
+				ReikaPlayerAPI.addOrDropItem(is, ep);
+			}
 		}
 	}
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -194,8 +194,10 @@ public class TileEntityRFDistributor extends TileEntityAreaDistributor implement
 		if (te instanceof TileEntityRFDistributor)
 			return te.yCoord < yCoord;
 		if (te instanceof IEnergyReceiver || te instanceof IEnergyHandler) {
-			if (ModList.IMMERSIVEENG.isLoaded() && InterfaceCache.IMMERSIVEWIRE.instanceOf(te))
+			if (ModList.IMMERSIVEENG.isLoaded() && InterfaceCache.IMMERSIVEWIRE.instanceOf(te)) {
+				blacklist.add(c);
 				return false;
+			}
 			String s = c.getName().toLowerCase(Locale.ENGLISH);
 			if (s.contains("conduit") || ReikaStringParser.containsWord(s, "duct") || s.contains("cable") || s.contains("pipepower") || ReikaStringParser.containsWord(s, "wire")) {
 				blacklist.add(c);

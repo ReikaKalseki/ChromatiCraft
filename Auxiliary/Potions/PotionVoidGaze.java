@@ -16,11 +16,11 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.StatCollector;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ChromaPotion;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
+import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
+import Reika.ChromatiCraft.Magic.Progression.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 

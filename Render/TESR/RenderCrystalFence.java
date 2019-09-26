@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -70,6 +70,10 @@ public class RenderCrystalFence extends ChromaRenderBase {
 			this.renderModel(te, model);
 		if (te.isInWorld() && te.isValid() && MinecraftForgeClient.getRenderPass() == 1) {
 			Perimeter p = te.getFence();
+			if (p.isEmpty() && te.getTicksExisted()%4 == 0) {
+				te.calcFence(true);
+				p = te.getFence();
+			}
 			Tessellator v5 = Tessellator.instance;
 
 			GL11.glDisable(GL11.GL_LIGHTING);

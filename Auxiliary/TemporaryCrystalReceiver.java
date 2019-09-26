@@ -21,7 +21,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.WrapperTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
+import Reika.ChromatiCraft.Magic.Progression.ResearchLevel;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 

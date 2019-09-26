@@ -18,10 +18,10 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.InscriptionRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.InscriptionRecipes.InscriptionRecipe;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;

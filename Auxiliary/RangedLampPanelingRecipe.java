@@ -42,6 +42,7 @@ public class RangedLampPanelingRecipe implements IRecipe {
 		if (!ChromaBlocks.LAMPBLOCK.match(is))
 			return null;
 		is = is.copy();
+		is.stackSize = 1;
 		if (is.getItemDamage() >= 16)
 			is.setItemDamage(is.getItemDamage()-16);
 		else

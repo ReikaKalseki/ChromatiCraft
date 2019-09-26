@@ -25,14 +25,14 @@ import net.minecraft.util.MathHelper;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Block.BlockActiveChroma;
 import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;

@@ -18,8 +18,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 

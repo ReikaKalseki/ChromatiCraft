@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Interfaces.MinerBlock;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.ModList;

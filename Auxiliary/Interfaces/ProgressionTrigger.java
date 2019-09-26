@@ -12,7 +12,7 @@ package Reika.ChromatiCraft.Auxiliary.Interfaces;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 
 public interface ProgressionTrigger {
 

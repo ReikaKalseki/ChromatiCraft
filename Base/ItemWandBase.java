@@ -11,9 +11,9 @@ package Reika.ChromatiCraft.Base;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public abstract class ItemWandBase extends ItemChromaTool {

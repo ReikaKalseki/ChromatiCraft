@@ -25,12 +25,12 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Base.StructureData;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;

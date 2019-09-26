@@ -28,8 +28,8 @@ import net.minecraftforge.common.ISpecialArmor;
 
 import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.DragonAPICore;

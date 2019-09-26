@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Registry;
+package Reika.ChromatiCraft.Magic.Progression;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.Random;
 
 import com.google.common.collect.HashBiMap;
@@ -30,8 +29,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.MinecraftForge;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -40,20 +37,19 @@ import Reika.ChromatiCraft.API.ResearchFetcher.ResearchRegistry;
 import Reika.ChromatiCraft.API.Event.ProgressionEvent;
 import Reika.ChromatiCraft.API.Event.ProgressionEvent.ResearchType;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
-import Reika.ChromatiCraft.Auxiliary.ProgressionCacher;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
-import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -140,7 +136,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 			if (!this.playerHasFragment(ep, r)) {
 				if (r.level == null || this.getPlayerResearchLevel(ep).isAtLeast(r.level)) {
 					boolean missingdep = false;
-					if (!r.playerHasProgress(ep)) {
+					if (!r.canPlayerProgressTo(ep)) {
 						missingdep = true;
 						if (debug)
 							ChromatiCraft.logger.log("Fragment "+r+" rejected; insufficient progress "+Arrays.toString(r.getRequiredProgress())+".");
@@ -251,7 +247,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	public Collection<ChromaResearch> getResearchForLevelAndBelow(ResearchLevel rl) {
 		Collection<ChromaResearch> c = new ArrayList();
 		while (true) {
-			c.addAll(ChromaResearch.levelMap.get(rl));
+			c.addAll(ChromaResearch.getPagesFor(rl));
 			if (rl == rl.pre())
 				break;
 			else
@@ -261,7 +257,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	}
 
 	public Collection<ChromaResearch> getResearchForLevel(ResearchLevel rl) {
-		return Collections.unmodifiableCollection(ChromaResearch.levelMap.get(rl));
+		return Collections.unmodifiableCollection(ChromaResearch.getPagesFor(rl));
 	}
 
 	private boolean playerHasAllFragmentsThatMatter(EntityPlayer ep, Collection<ChromaResearch> li) {
@@ -283,7 +279,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	}
 
 	public boolean setPlayerResearchLevel(EntityPlayer ep, ResearchLevel r, boolean notify) {
-		if (r.movePlayerTo(ep)) {
+		if (this.movePlayerTo(ep, r)) {
 			if (ep instanceof EntityPlayerMP)
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 			if (notify)
@@ -384,6 +380,16 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		return li;
 	}
 
+	private boolean movePlayerTo(EntityPlayer ep, ResearchLevel rl) {
+		NBTTagCompound tag = ChromaResearchManager.instance.getNBT(ep);
+		int has = tag.getInteger("research_level");
+		if (has != rl.ordinal()) {
+			tag.setInteger("research_level", rl.ordinal());
+			return true;
+		}
+		return false;
+	}
+
 	public NBTTagCompound getRootNBTTag(EntityPlayer ep) {
 		NBTTagCompound tag = ReikaPlayerAPI.isFake(ep) ? null : ReikaPlayerAPI.getDeathPersistentNBT(ep);
 		if (tag == null || tag.hasNoTags()/* || !tag.hasKey(NBT_TAG) || !tag.hasKey(ProgressionManager.MAIN_NBT_TAG)*/) {
@@ -444,128 +450,6 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		NBTTagList li = tag.getTagList(key, NBTTypes.INT.ID);
 		tag.setTag(key, li);
 		return li;
-	}
-
-	/** The part that must be completed before getting a given research available */
-	public static enum ResearchLevel implements ProgressElement {
-		ENTRY(),
-		RAWEXPLORE(),
-		BASICCRAFT(),
-		RUNECRAFT(),
-		CHARGESELF(), //?
-		ENERGYEXPLORE(),
-		MULTICRAFT(),
-		NETWORKING(),
-		PYLONCRAFT(),
-		ENDGAME(),
-		CTM();
-
-		public static final ResearchLevel[] levelList = values();
-
-		private ResearchLevel() {
-			instance.register(this);
-		}
-
-		private boolean movePlayerTo(EntityPlayer ep) {
-			NBTTagCompound tag = instance.getNBT(ep);
-			int has = tag.getInteger("research_level");
-			if (has != this.ordinal()) {
-				tag.setInteger("research_level", this.ordinal());
-				return true;
-			}
-			return false;
-		}
-
-		public boolean canProgressTo(EntityPlayer ep) {
-			switch(this) {
-				case ENTRY:
-					return true;
-				case CHARGESELF:
-					return ProgressStage.CHARGE.isPlayerAtStage(ep);
-				case RAWEXPLORE:
-					return ProgressStage.CRYSTALS.isPlayerAtStage(ep);
-				case ENERGYEXPLORE:
-					return ProgressStage.PYLON.isPlayerAtStage(ep);
-				case BASICCRAFT:
-					return ProgressStage.ANYSTRUCT.isPlayerAtStage(ep);
-				case RUNECRAFT:
-					return RecipesCastingTable.playerHasCrafted(ep, RecipeType.CRAFTING);
-				case MULTICRAFT:
-					return RecipesCastingTable.playerHasCrafted(ep, RecipeType.TEMPLE);
-				case PYLONCRAFT:
-					return ProgressStage.REPEATER.isPlayerAtStage(ep);
-				case NETWORKING:
-					return RecipesCastingTable.playerHasCrafted(ep, RecipeType.MULTIBLOCK);
-				case ENDGAME:
-					return RecipesCastingTable.playerHasCrafted(ep, RecipeType.PYLON);
-				case CTM:
-					return ProgressStage.CTM.isPlayerAtStage(ep);
-				default:
-					return false;
-			}
-		}
-
-		public String getDisplayName() {
-			return StatCollector.translateToLocal("chromaresearch."+this.name().toLowerCase(Locale.ENGLISH));
-		}
-
-		public ResearchLevel pre() {
-			return this.ordinal() > 0 ? levelList[this.ordinal()-1] : this;
-		}
-
-		public ResearchLevel post() {
-			return this.ordinal() < levelList.length-1 ? levelList[this.ordinal()+1] : this;
-		}
-
-		@Override
-		//@SideOnly(Side.CLIENT)
-		public String getTitle() {
-			return this.getDisplayName();
-		}
-
-		@Override
-		//@SideOnly(Side.CLIENT)
-		public String getShortDesc() {
-			return "More of the world becomes visible to you.";
-		}
-
-		@Override
-		@SideOnly(Side.CLIENT)
-		public void renderIcon(RenderItem ri, FontRenderer fr, int x, int y) {
-			ReikaGuiAPI.instance.drawItemStack(ri, fr, ChromaItems.FRAGMENT.getStackOf(), x, y);
-		}
-
-		@Override
-		public String getFormatting() {
-			return EnumChatFormatting.BOLD.toString();
-		}
-
-		@Override
-		public boolean giveToPlayer(EntityPlayer ep, boolean notify) {
-			return ChromaResearchManager.instance.setPlayerResearchLevel(ep, this, notify);
-		}
-
-		public boolean isAtLeast(ResearchLevel rl) {
-			return rl.ordinal() <= this.ordinal();
-		}
-	}
-
-	public static enum Shareability {
-		SELFONLY(),
-		PROXIMITY(),
-		ALWAYS();
-
-		public boolean canShareTo(EntityPlayer from, EntityPlayer to) {
-			switch(this) {
-				case ALWAYS:
-					return true;
-				case PROXIMITY:
-					return to.getDistanceSqToEntity(from) <= 576;
-				case SELFONLY:
-					return false;
-			}
-			return false;
-		}
 	}
 
 	private static final class ChromaResearchComparator implements Comparator<ChromaResearch> {

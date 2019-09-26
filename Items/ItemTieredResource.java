@@ -11,11 +11,11 @@ package Reika.ChromatiCraft.Items;
 
 import net.minecraft.item.ItemStack;
 
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
 import Reika.ChromatiCraft.Base.ItemChromaMulti;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 
 public class ItemTieredResource extends ItemChromaMulti implements TieredItem {

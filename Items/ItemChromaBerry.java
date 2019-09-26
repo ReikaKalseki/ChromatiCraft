@@ -20,10 +20,10 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.RecentEventCounter;

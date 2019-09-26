@@ -27,12 +27,12 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.Decoration.BlockMetaAlloyLamp;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;

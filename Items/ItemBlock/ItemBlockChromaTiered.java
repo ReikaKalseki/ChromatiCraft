@@ -23,13 +23,13 @@ import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
 
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Base.BlockChromaTiered;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Base.BlockTieredResource;

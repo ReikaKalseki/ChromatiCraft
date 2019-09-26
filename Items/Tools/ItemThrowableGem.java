@@ -15,10 +15,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Entity.EntityThrownGem;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Interfaces.Item.AnimatedSpritesheet;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;

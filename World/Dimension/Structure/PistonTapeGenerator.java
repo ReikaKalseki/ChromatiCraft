@@ -98,12 +98,18 @@ public class PistonTapeGenerator extends DimensionStructureGenerator {
 
 	@Override
 	protected boolean hasBeenSolved(World world) {
-		return false;
+		for (TapeStage s : stages) {
+			if (!s.isSolved())
+				return false;
+		}
+		return true;
 	}
 
 	@Override
 	protected void openStructure(World world) {
-
+		for (TapeStage s : stages) {
+			s.openAllDoors(world);
+		}
 	}
 
 	@Override

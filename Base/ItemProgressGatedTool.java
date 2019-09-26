@@ -11,8 +11,8 @@ package Reika.ChromatiCraft.Base;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 
 
 public abstract class ItemProgressGatedTool extends ItemChromaTool {

@@ -1,5 +1,6 @@
 package Reika.ChromatiCraft.World.Dimension.Structure.PistonTape;
 
+import java.util.HashSet;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
@@ -10,6 +11,7 @@ import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.StructurePiece;
+import Reika.ChromatiCraft.Block.BlockChromaDoor;
 import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonTarget.PistonDoorTile;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -29,14 +31,18 @@ public class DoorSection extends StructurePiece<PistonTapeGenerator> {
 	private final ForgeDirection tunnelDir;
 	final DoorKey doorData;
 	private final TapeStage level;
-	private boolean isClosed;
+	private final boolean isClosed;
+	private final int index;
 
-	public DoorSection(PistonTapeGenerator s, TapeStage t, ForgeDirection dir, DoorKey d, boolean closed) {
+	private final HashSet<Coordinate> doors = new HashSet();
+
+	public DoorSection(PistonTapeGenerator s, TapeStage t, ForgeDirection dir, DoorKey d, int idx, boolean closed) {
 		super(s);
 		tunnelDir = dir;
 		doorData = d;
 		level = t;
 		isClosed = closed;
+		index = idx;
 	}
 
 	public int getLength() {
@@ -124,34 +130,44 @@ public class DoorSection extends StructurePiece<PistonTapeGenerator> {
 
 	private void placeTarget(ChunkSplicedGenerationCache world, int x, int y, int z, int idx, Coordinate door) {
 		doorData.setTarget(idx, new Coordinate(x, y, z));
-		world.setTileEntity(x, y, z, ChromaBlocks.PISTONTARGET.getBlockInstance(), 1, new DoorTargetCallback(doorData.getValue(idx), ReikaDirectionHelper.getRightBy90(tunnelDir), door, parent.id));
+		world.setTileEntity(x, y, z, ChromaBlocks.PISTONTARGET.getBlockInstance(), 1, new DoorTargetCallback(doorData.getValue(idx), level, index, ReikaDirectionHelper.getRightBy90(tunnelDir), door, parent.id));
 	}
 
 	private void placeDoorBlock(ChunkSplicedGenerationCache world, int x, int y, int z) {
 		world.setBlock(x, y, z, ChromaBlocks.DOOR.getBlockInstance());
 		//world.setTileEntity(x, y, z, ChromaBlocks.COLORLOCK.getBlockInstance(), 0, new DoorKeySet(parent, level.ordinal(), parent.id, elements));
-		//doorData.addDoorLocation(x, y, z);
+		doors.add(new Coordinate(x, y, z));
+	}
+
+	public void forceOpenDoor(World world) {
+		for (Coordinate c : doors) {
+			BlockChromaDoor.setOpen(world, c.xCoord, c.yCoord, c.zCoord, true);
+		}
 	}
 
 	private static class DoorTargetCallback implements TileCallback {
 
 		private final UUID id;
+		private final int stage;
+		private final int doorIndex;
 		private final DoorValue data;
 		private final Coordinate door;
 		private final ForgeDirection direction;
 
-		private DoorTargetCallback(DoorValue d, ForgeDirection dir, Coordinate c, UUID uid) {
+		private DoorTargetCallback(DoorValue d, TapeStage s, int step, ForgeDirection dir, Coordinate c, UUID uid) {
 			id = uid;
 			data = d;
 			door = c;
 			direction = dir;
+			doorIndex = step;
+			stage = s.index;
 		}
 
 		@Override
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			((PistonDoorTile)te).uid = id;
 			((PistonDoorTile)te).setColor(data.getColor());
-			((PistonDoorTile)te).setData(direction, data.index, data.getParent().colorCount);
+			((PistonDoorTile)te).setData(direction, stage, doorIndex, data.index, data.getParent().colorCount);
 			((PistonDoorTile)te).setTarget(door);
 		}
 

@@ -37,6 +37,7 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 
 	static {
 		new DeconstructionTableDelegateInterface();
+		new ChromaCollectorDelegateInterface();
 	}
 
 	@Override

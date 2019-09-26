@@ -87,6 +87,7 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	NODECHARGESPEED("Crystal-Network-Integrated ThaumCraft Node Improvement Speed", 1F),
 	METEORFIRE("Meteor Tower Projectiles Start Fires On Impact", true),
 	PANELLAMPCOLLISION("Panel-Form Lumen Lamps Have No Hitbox", false),
+	EPILEPSY("Epilepsy Mode", false),
 	;
 
 	private String label;
@@ -292,6 +293,7 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 			case RECEIVEDIMSOUND:
 			case PROGRESSDURATION:
 			case PROGRESSNOTIFY_SELF:
+			case EPILEPSY:
 				return true;
 			default:
 				return false;

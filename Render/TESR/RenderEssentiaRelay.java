@@ -57,11 +57,12 @@ public class RenderEssentiaRelay extends ChromaRenderBase {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glTranslated(par2, par4, par6);
 
-		if (te.isInWorld() && !StructureRenderer.isRenderingTiles() && HoldingChecks.MANIPULATOR.isClientHolding()) {
-			if (par8 != lastNetworkRenderPTick || lastNetworkRenderTick != te.worldObj.getTotalWorldTime()) {
+		if (te.isInWorld() && !StructureRenderer.isRenderingTiles()) {
+			float f = HoldingChecks.MANIPULATOR.getFade();
+			if (f > 0 && (par8 != lastNetworkRenderPTick || lastNetworkRenderTick != te.worldObj.getTotalWorldTime())) {
 				lastNetworkRenderPTick = par8;
 				lastNetworkRenderTick = te.worldObj.getTotalWorldTime();
-				this.renderNetwork(te, par8);
+				this.renderNetwork(te, f, par8);
 			}
 		}
 
@@ -80,7 +81,7 @@ public class RenderEssentiaRelay extends ChromaRenderBase {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
-	private void renderNetwork(TileEntityEssentiaRelay te, float par8) {
+	private void renderNetwork(TileEntityEssentiaRelay te, float fade, float par8) {
 		Map<Coordinate, Boolean> map = te.getNetworkTiles();
 		if (map.isEmpty())
 			return;
@@ -99,7 +100,7 @@ public class RenderEssentiaRelay extends ChromaRenderBase {
 			int c1 = e.getValue() ? 0x0000e0 : 0x00e000;
 			int c2 = e.getValue() ? 0x7f7fff : 0x7fff7f;
 			int clr = ReikaColorAPI.mixColors(c1, c2, f);
-			v5.setColorRGBA_I(clr, 255);
+			v5.setColorRGBA_I(clr, (int)(fade*255));
 			v5.addVertex(c.xCoord-te.xCoord+o, c.yCoord-te.yCoord+o, c.zCoord-te.zCoord+o);
 			v5.addVertex(c.xCoord-te.xCoord+o, c.yCoord-te.yCoord+1-o, c.zCoord-te.zCoord+o);
 			v5.addVertex(c.xCoord-te.xCoord+1-o, c.yCoord-te.yCoord+o, c.zCoord-te.zCoord+o);

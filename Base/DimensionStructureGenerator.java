@@ -31,9 +31,9 @@ import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage.StructureInterfaceTile;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
+import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
@@ -270,7 +270,9 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 	public final void forceOpen(World world, EntityPlayer ep) {
 		forcedOpen = true;
 		this.openStructure(world);
-		this.getCoreTile(world).whitelistPlayer(ep);
+		TileEntityDimensionCore te = this.getCoreTile(world);
+		if (te != null)
+			te.whitelistPlayer(ep);
 	}
 
 	public final TileEntityDimensionCore getCoreTile(World world) {

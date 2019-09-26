@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -115,15 +115,17 @@ public class TileEntityCrystalFence extends TileEntityRelayPowered implements Ow
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
-		this.calcFence();
+		this.calcFence(false);
 	}
 
-	public void calcFence() {
+	public void calcFence(boolean renderOnly) {
 		fence.clear();
 		fence.addPoint(xCoord, yCoord, zCoord);
 		this.findFrom(xCoord, zCoord, outputFace, 0);
-		colorFade = new boolean[fence.segmentCount()];
-		chargingTick = 600;
+		if (!renderOnly) {
+			colorFade = new boolean[fence.segmentCount()];
+			chargingTick = 600;
+		}
 	}
 
 	public Perimeter getFence() {

@@ -18,8 +18,8 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler;

@@ -14,11 +14,9 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LaserPulseEffect;
 import Reika.ChromatiCraft.Base.BlockDimensionStructure;
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
-import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.RGBColorData;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 
@@ -75,7 +73,7 @@ public class BlockPistonTapeBit extends BlockDimensionStructure implements SemiU
 	@Override
 	public boolean onRightClicked(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
 		int meta = world.getBlockMetadata(x, y, z);
-		if (ep.isSneaking() && ReikaObfuscationHelper.isDeObfEnvironment() && DragonAPICore.isReikasComputer()) {
+		if (ep.isSneaking()) {
 			meta = (meta+2) | 1;
 			if (meta >= 7)
 				meta = 1;

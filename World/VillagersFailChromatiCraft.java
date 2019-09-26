@@ -29,8 +29,8 @@ import net.minecraftforge.common.BiomeDictionary.Type;
 import net.minecraftforge.common.ChestGenHooks;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;

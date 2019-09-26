@@ -16,9 +16,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 

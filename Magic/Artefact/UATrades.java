@@ -34,8 +34,8 @@ import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact.ArtefactTypes;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.DragonAPICore;
@@ -190,7 +190,7 @@ public class UATrades implements ConnectionErrorHandler {
 
 		@Override
 		public boolean isValid(EntityPlayer ep) {
-			return ProgressionManager.ProgressStage.ARTEFACT.isPlayerAtStage(ep);
+			return ProgressStage.ARTEFACT.isPlayerAtStage(ep);
 		}
 
 	}

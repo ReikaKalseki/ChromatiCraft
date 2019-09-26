@@ -16,6 +16,9 @@ public enum HoldingChecks {
 	FOCUSCRYSTAL(),
 	REPEATER();
 
+	private float fade;
+	private long lastUpdate;
+
 	@SideOnly(Side.CLIENT)
 	public boolean isClientHolding() {
 		return this.isHolding(Minecraft.getMinecraft().thePlayer);
@@ -23,6 +26,21 @@ public enum HoldingChecks {
 
 	public boolean isHolding(EntityPlayer ep) {
 		return this.match(ep.getCurrentEquippedItem());
+	}
+
+	@SideOnly(Side.CLIENT)
+	public float getFade() {
+		long t = Minecraft.getMinecraft().theWorld.getTotalWorldTime();
+		if (t != lastUpdate) {
+			lastUpdate = t;
+			if (this.isClientHolding()) {
+				fade = Math.min(1, fade+0.125F);
+			}
+			else {
+				fade = Math.max(0, fade-0.03125F);
+			}
+		}
+		return fade;
 	}
 
 	private boolean match(ItemStack is) {

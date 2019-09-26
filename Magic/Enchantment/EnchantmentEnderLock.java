@@ -12,8 +12,8 @@ package Reika.ChromatiCraft.Magic.Enchantment;
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.player.EntityPlayer;
 
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ChromaticEnchantment;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 
 
 public class EnchantmentEnderLock extends ChromaticEnchantment {

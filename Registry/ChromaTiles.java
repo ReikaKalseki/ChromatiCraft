@@ -20,7 +20,6 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.IBlockAccess;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomHitbox;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.FocusAcceleratable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
@@ -37,6 +36,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.ModInterface.TileEntityFloatingLandmark;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.ModInterface.TileEntityManaBooster;

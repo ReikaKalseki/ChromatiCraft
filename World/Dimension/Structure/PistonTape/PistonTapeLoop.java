@@ -22,7 +22,7 @@ public class PistonTapeLoop extends StructurePiece<PistonTapeGenerator> {
 	public final int busWidth;
 
 	public final LoopDimensions dimensions;
-	private final TapeStage level;
+	final TapeStage level;
 	private final PistonTapeSlice[] bits;
 
 	protected PistonTapeLoop(PistonTapeGenerator s, ForgeDirection dir, TapeStage t) {

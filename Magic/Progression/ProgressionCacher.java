@@ -1,13 +1,13 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Auxiliary;
+package Reika.ChromatiCraft.Magic.Progression;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +24,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler.PlayerTracker;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;

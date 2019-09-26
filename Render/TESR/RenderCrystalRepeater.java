@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
 import Reika.ChromatiCraft.Magic.CastingTuning.CastingTuningManager;
 import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
@@ -42,9 +43,6 @@ import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class RenderCrystalRepeater extends CrystalTransmitterRender {
-
-	private int tuningAlpha = 0;
-	private long tuningTick = 0;
 
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
@@ -103,19 +101,11 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 				if (te.isTurbocharged()) {
 					this.renderHalo(te, par8);
 				}
-				if (tuningTick != te.worldObj.getTotalWorldTime()) {
-					tuningTick = te.worldObj.getTotalWorldTime();
-					if (HoldingChecks.MANIPULATOR.isClientHolding()) {
-						tuningAlpha = Math.min(255, tuningAlpha+32);
-					}
-					else {
-						tuningAlpha = Math.max(0, tuningAlpha-8);
-					}
-				}
-				if (tuningAlpha > 0) {
+				float f = HoldingChecks.MANIPULATOR.getFade();
+				if (f > 0) {
 					UUID uid = te.getCaster();
 					if (uid != null) {
-						this.renderCasterHalo(te, uid, par8);
+						this.renderCasterHalo(te, f, uid, par8);
 					}
 				}
 			}
@@ -166,10 +156,10 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 		}
 	}
 
-	private void renderCasterHalo(TileEntityCrystalRepeater te, UUID uid, float par8) {
+	private void renderCasterHalo(TileEntityCrystalRepeater te, float fade, UUID uid, float par8) {
 		int clr = this.getHaloRenderColor(te);
 		clr = ReikaColorAPI.mixColors(clr, 0xffffff, 0.875F+0.125F*(float)Math.sin(te.getTicksExisted()/90D));
-		clr = ReikaColorAPI.getColorWithBrightnessMultiplier(clr, tuningAlpha/255F);
+		clr = ReikaColorAPI.getColorWithBrightnessMultiplier(clr, fade);
 		double s = 1.75+0.0625*Math.sin(te.getTicksExisted()/6D);
 		CastingTuningManager.instance.getTuningKey(uid).drawIcon(Tessellator.instance, s, clr);
 	}
@@ -269,9 +259,20 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 	}
 
 	private void renderHalo(TileEntityCrystalRepeater te, float par8) {
+		float f = 1;
+		if (te.worldObj != null) {
+			if (ChromaOptions.EPILEPSY.getState()) {
+				f = HoldingChecks.MANIPULATOR.getFade();
+				if (f <= 0)
+					return;
+			}
+		}
+
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		int c = te.worldObj != null ? this.getHaloRenderColor(te) : 0xffffff;
+		if (f < 1)
+			c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, f);
 		if (te.worldObj == null)
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glDepthMask(false);

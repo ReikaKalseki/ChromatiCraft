@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.ISBRH.PistonTargetRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
+import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.TapeStage;
 import Reika.DragonAPI.Instantiable.RGBColorData;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
@@ -156,6 +157,7 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 			}
 			else {
 				this.setActive(true);
+				this.getStage().validate(this.getDoor());
 				ChromaSounds.CAST.playSoundAtBlock(this);
 			}
 		}
@@ -373,6 +375,8 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 	public static abstract class PistonTargetTile extends StructureBlockTile<PistonTapeGenerator> {
 
 		private int doorBusWidth;
+		private int stageIndex;
+		private int doorIndex;
 		private int doorColorIndex;
 		private ForgeDirection facing;
 
@@ -381,6 +385,8 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 			super.writeToNBT(NBT);
 
 			NBT.setInteger("index", doorColorIndex);
+			NBT.setInteger("stage", stageIndex);
+			NBT.setInteger("door", doorIndex);
 			NBT.setInteger("bus", doorBusWidth);
 			if (facing != null)
 				NBT.setInteger("facing", facing.ordinal());
@@ -391,6 +397,8 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 			super.readFromNBT(NBT);
 
 			doorColorIndex = NBT.getInteger("index");
+			stageIndex = NBT.getInteger("stage");
+			doorIndex = NBT.getInteger("door");
 			doorBusWidth = NBT.getInteger("bus");
 			if (NBT.hasKey("facing"))
 				facing = ForgeDirection.VALID_DIRECTIONS[NBT.getInteger("facing")];
@@ -408,8 +416,10 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 			return doorBusWidth;
 		}
 
-		public void setData(ForgeDirection dir, int idx, int w) {
+		public void setData(ForgeDirection dir, int stage, int door, int idx, int w) {
 			doorColorIndex = idx;
+			stageIndex = stage;
+			doorIndex = door;
 			facing = dir;
 			doorBusWidth = w;
 		}
@@ -421,6 +431,14 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 
 		public int getRenderColor() {
 			return 0xffffff;
+		}
+
+		public final TapeStage getStage() {
+			return this.getGenerator().getStage(stageIndex);
+		}
+
+		public final int getDoor() {
+			return doorIndex;
 		}
 
 	}

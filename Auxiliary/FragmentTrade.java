@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -14,6 +14,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.village.MerchantRecipe;
 
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Interfaces.PlayerSpecificTrade;
 
@@ -31,7 +32,7 @@ public class FragmentTrade extends MerchantRecipe implements PlayerSpecificTrade
 
 	@Override
 	public boolean isValid(EntityPlayer ep) {
-		return ProgressionManager.ProgressStage.ANYSTRUCT.isPlayerAtStage(ep);
+		return ProgressStage.ANYSTRUCT.isPlayerAtStage(ep);
 	}
 
 	@Override

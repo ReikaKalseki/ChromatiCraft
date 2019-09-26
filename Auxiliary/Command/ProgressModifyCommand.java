@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -26,14 +26,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumChatFormatting;
 
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
-import Reika.ChromatiCraft.Auxiliary.ProgressionCacher;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
+import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionCacher;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
+import Reika.ChromatiCraft.Magic.Progression.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;

@@ -18,7 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.ConditionalProductProvider;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.ProductCondition;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;

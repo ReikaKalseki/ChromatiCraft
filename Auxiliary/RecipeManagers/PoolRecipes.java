@@ -26,13 +26,13 @@ import net.minecraft.util.MathHelper;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ItemChromaBasic;
 import Reika.ChromatiCraft.Block.BlockActiveChroma;
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact.ArtefactTypes;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.Artefact.ArtefactWithDataCrystalAlloyingEffect;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayList;
