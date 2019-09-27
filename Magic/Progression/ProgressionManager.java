@@ -485,6 +485,21 @@ public class ProgressionManager implements ProgressRegistry {
 		//	ReikaJavaLibrary.pConsole(sg);
 	}
 
+	public void copyProgressStages(EntityPlayer from, EntityPlayer to) {
+		NBTTagList li1 = this.getNBTList(from);
+		NBTTagList li2 = this.getNBTList(to);
+		li2.tagList.clear();
+		for (Object o : li1.tagList) {
+			li2.appendTag(((NBTBase)o).copy());
+		}
+		Collection<ProgressStage> c1 = playerMap.get(from.getCommandSenderName());
+		Collection<ProgressStage> c2 = playerMap.get(to.getCommandSenderName());
+		c2.clear();
+		c2.addAll(c1);
+		ChromaResearchManager.instance.getRootNBTTag(to).setTag(MAIN_NBT_TAG, li2);
+		this.onProgressionChange(to, false);
+	}
+
 	public void resetPlayerProgression(EntityPlayer ep, boolean notify) {
 		NBTTagList li = this.getNBTList(ep);
 		li.tagList.clear();
@@ -502,6 +517,10 @@ public class ProgressionManager implements ProgressRegistry {
 			this.setPlayerDiscoveredColor(ep, CrystalElement.elements[i], false, notify);
 			this.markPlayerCompletedStructureColor(ep, null, CrystalElement.elements[i], false, notify);
 		}
+		this.onProgressionChange(ep, notify);
+	}
+
+	private void onProgressionChange(EntityPlayer ep, boolean notify) {
 		if (ep instanceof EntityPlayerMP)
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 		if (notify)

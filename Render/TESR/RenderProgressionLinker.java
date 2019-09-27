@@ -104,6 +104,14 @@ public class RenderProgressionLinker extends ChromaRenderBase {
 				v5.addVertexWithUV(0.5, 0, 0, du, dv);
 				v5.addVertexWithUV(-0.5, 0, 0, u, dv);
 				v5.draw();
+
+				if (te.failure != null) {
+					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+					GL11.glTranslated(0, 2.25+0.125*Math.sin(te.getTicksExisted()/15D), 0);
+					te.failure.render(v5, 0.33);
+					GL11.glPopAttrib();
+				}
+
 				GL11.glPopMatrix();
 				//}
 			}

@@ -197,6 +197,7 @@ public enum ChromaPackets {
 	CONNECTIVITY(3),
 	STRUCTUREERROR(2),
 	CLEARHOVERBOX(),
+	LINKFAIL(),
 	;
 
 	public final int numInts;

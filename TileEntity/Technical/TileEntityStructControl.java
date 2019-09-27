@@ -626,96 +626,99 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	@Override
 	public void breakBlock() {
 		if (struct != null) {
-			switch(struct) {
-				case CAVERN:
-					if (blocks != null) {
-						for (int i = 0; i < blocks.getSize(); i++) {
-							Coordinate c = blocks.getNthBlock(i);
-							int x = c.xCoord;
-							int y = c.yCoord;
-							int z = c.zCoord;
-							if (worldObj.getBlock(x, y, z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
-								worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
-							else if (worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
-								worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
-								ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
+			EntityPlayer ep = worldObj.getClosestPlayer(xCoord+0.5, yCoord+0.5, zCoord+0.5, 12);
+			if (ep != null) {
+				switch(struct) {
+					case CAVERN:
+						if (blocks != null) {
+							for (int i = 0; i < blocks.getSize(); i++) {
+								Coordinate c = blocks.getNthBlock(i);
+								int x = c.xCoord;
+								int y = c.yCoord;
+								int z = c.zCoord;
+								if (worldObj.getBlock(x, y, z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
+									worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+								else if (worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
+									worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+									ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
+								}
 							}
 						}
-					}
-					worldObj.setBlockMetadataWithNotify(xCoord+7, yCoord, zCoord, worldObj.getBlockMetadata(xCoord+7, yCoord, zCoord)%8, 3);
-					worldObj.setBlockMetadataWithNotify(xCoord+7, yCoord-1, zCoord, worldObj.getBlockMetadata(xCoord+7, yCoord-1, zCoord)%8, 3);
-					break;
-				case BURROW:
-					if (blocks != null) {
-						for (int i = 0; i < blocks.getSize(); i++) {
-							Coordinate c = blocks.getNthBlock(i);
-							int x = c.xCoord+5;
-							int y = c.yCoord+8;
-							int z = c.zCoord+2;
-							if (worldObj.getBlock(x, y, z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
-								worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
-							else if (worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
-								worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
-								ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
+						worldObj.setBlockMetadataWithNotify(xCoord+7, yCoord, zCoord, worldObj.getBlockMetadata(xCoord+7, yCoord, zCoord)%8, 3);
+						worldObj.setBlockMetadataWithNotify(xCoord+7, yCoord-1, zCoord, worldObj.getBlockMetadata(xCoord+7, yCoord-1, zCoord)%8, 3);
+						break;
+					case BURROW:
+						if (blocks != null) {
+							for (int i = 0; i < blocks.getSize(); i++) {
+								Coordinate c = blocks.getNthBlock(i);
+								int x = c.xCoord+5;
+								int y = c.yCoord+8;
+								int z = c.zCoord+2;
+								if (worldObj.getBlock(x, y, z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
+									worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+								else if (worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
+									worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+									ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
+								}
 							}
 						}
-					}
-					break;
-				case OCEAN:
-					this.triggerOceanTrap(worldObj.getClosestPlayer(xCoord+0.5, yCoord+0.5, zCoord+0.5, 8));
-					if (blocks != null) {
-						for (int i = 0; i < blocks.getSize(); i++) {
-							Coordinate c = blocks.getNthBlock(i);
-							int x = c.xCoord;//-3;
-							int y = c.yCoord;//-5;
-							int z = c.zCoord;//-3;
-							if (worldObj.getBlock(x, y, z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
-								worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
-							else if (worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
-								worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
-								ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
+						break;
+					case OCEAN:
+						this.triggerOceanTrap(ep);
+						if (blocks != null) {
+							for (int i = 0; i < blocks.getSize(); i++) {
+								Coordinate c = blocks.getNthBlock(i);
+								int x = c.xCoord;//-3;
+								int y = c.yCoord;//-5;
+								int z = c.zCoord;//-3;
+								if (worldObj.getBlock(x, y, z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
+									worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+								else if (worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
+									worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+									ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
+								}
 							}
 						}
-					}
-					break;
-				case DESERT:
-					if (blocks != null) {
-						for (int i = 0; i < blocks.getSize(); i++) {
-							Coordinate c = blocks.getNthBlock(i);
-							int x = c.xCoord-7;
-							int y = c.yCoord-3;
-							int z = c.zCoord-7;
-							if (worldObj.getBlock(x, y, z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
-								worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
-							else if (worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
-								worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
-								ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
+						break;
+					case DESERT:
+						if (blocks != null) {
+							for (int i = 0; i < blocks.getSize(); i++) {
+								Coordinate c = blocks.getNthBlock(i);
+								int x = c.xCoord-7;
+								int y = c.yCoord-3;
+								int z = c.zCoord-7;
+								if (worldObj.getBlock(x, y, z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
+									worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+								else if (worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
+									worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+									ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
+								}
 							}
 						}
-					}
-					break;
-				case SNOWSTRUCT:
-					if (blocks != null) {
-						for (int i = 0; i < blocks.getSize(); i++) {
-							Coordinate c = blocks.getNthBlock(i);
-							int x = c.xCoord-8;
-							int y = c.yCoord-3;
-							int z = c.zCoord-6;
-							Block b = worldObj.getBlock(x, y, z);
-							if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
-								worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
-							else if (b == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
-								worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
-								ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
-							}
-							else if (b == ChromaBlocks.SHIFTLOCK.getBlockInstance()) {
-								worldObj.setBlockMetadataWithNotify(x, y, z, Passability.BREAKABLE.ordinal(), 3);
+						break;
+					case SNOWSTRUCT:
+						if (blocks != null) {
+							for (int i = 0; i < blocks.getSize(); i++) {
+								Coordinate c = blocks.getNthBlock(i);
+								int x = c.xCoord-8;
+								int y = c.yCoord-3;
+								int z = c.zCoord-6;
+								Block b = worldObj.getBlock(x, y, z);
+								if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
+									worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+								else if (b == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
+									worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+									ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
+								}
+								else if (b == ChromaBlocks.SHIFTLOCK.getBlockInstance()) {
+									worldObj.setBlockMetadataWithNotify(x, y, z, Passability.BREAKABLE.ordinal(), 3);
+								}
 							}
 						}
-					}
-					break;
-				default:
-					break;
+						break;
+					default:
+						break;
+				}
 			}
 		}
 		LootChestWatcher.instance.remove(this);

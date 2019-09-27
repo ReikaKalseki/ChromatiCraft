@@ -17,20 +17,28 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionLinking;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionLinking.LinkFailure;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledSoundEvent;
+import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class TileEntityProgressionLinker extends TileEntityChromaticBase implements OwnedTile, MultiBlockChromaTile {
@@ -41,6 +49,7 @@ public class TileEntityProgressionLinker extends TileEntityChromaticBase impleme
 	private UUID targetPlayer;
 
 	private int failTicks = 0;
+	public LinkFailure failure;
 
 	public static final int DURATION = 600;
 	private static final int FAIL_FADE = DURATION/2;
@@ -65,6 +74,11 @@ public class TileEntityProgressionLinker extends TileEntityChromaticBase impleme
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (failTicks > 0)
 			failTicks--;
+		if (failTicks <= 0)
+			failure = null;
+		if (failTicks > 0)
+			return;
+		this.linkPlayers(this.getPlacer(), this.getPlacer());
 		if (this.hasStructure() && this.hasPlayer()) {
 			EntityPlayer ep = world.func_152378_a(targetPlayer);
 			if (ep == null || !ep.boundingBox.intersectsWith(ReikaAABBHelper.getBlockAABB(this).addCoord(0, 4, 0))) {
@@ -108,7 +122,9 @@ public class TileEntityProgressionLinker extends TileEntityChromaticBase impleme
 		else {
 			ChromaSounds.ERROR.playSoundAtBlock(this);
 			failTicks = FAIL_FADE;
-			lf
+			NBTTagCompound tag = lf.writeToNBT();
+			new Coordinate(this).writeToNBT("loc", tag);
+			ReikaPacketHelper.sendNBTPacket(ChromatiCraft.packetChannel, ChromaPackets.LINKFAIL.ordinal(), tag, new PacketTarget.RadiusTarget(this, 64));
 		}
 	}
 
@@ -169,6 +185,12 @@ public class TileEntityProgressionLinker extends TileEntityChromaticBase impleme
 
 	public float getFailFade() {
 		return failTicks/(float)FAIL_FADE;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void showFailure(LinkFailure f) {
+		failTicks = FAIL_FADE;
+		failure = f;
 	}
 
 }

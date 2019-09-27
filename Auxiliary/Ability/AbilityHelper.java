@@ -1644,8 +1644,8 @@ public class AbilityHelper {
 		if (ep.worldObj == null)
 			return;
 
-		if (!Minecraft.getMinecraft().isGamePaused() && ep.ticksExisted%32 == 0)
-			ReikaSoundHelper.playClientSound(ChromaSounds.RADIANCE, ep, 0.20F, 1F, false);
+		if (!Minecraft.getMinecraft().isGamePaused() && ep.ticksExisted%48 == 0)
+			ReikaSoundHelper.playClientSound(ChromaSounds.RADIANCE, ep, 0.1F, 0.75F, false);
 
 		GuiScreen gui = Minecraft.getMinecraft().currentScreen;
 		if (gui instanceof GuiContainerCreative || gui instanceof GuiInventory)

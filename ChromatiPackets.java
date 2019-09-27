@@ -91,6 +91,7 @@ import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Magic.Network.PylonLinkNetwork;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionLinking.LinkFailure;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.ModInterface.RFWeb;
 import Reika.ChromatiCraft.ModInterface.VoidMonsterDestructionRitual;
@@ -112,6 +113,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.TileEntityDataNode;
 import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
+import Reika.ChromatiCraft.TileEntity.TileEntityProgressionLinker;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCaveLighter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityHoverPad;
@@ -1057,6 +1059,10 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case CLEARHOVERBOX:
 					((TileEntityHoverPad)tile).clearBox();
+					break;
+				case LINKFAIL:
+					tile = Coordinate.readFromNBT("loc", NBT).getTileEntity(world);
+					((TileEntityProgressionLinker)tile).showFailure(LinkFailure.readFromNBT(NBT));
 					break;
 			}
 		}

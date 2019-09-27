@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,6 +18,8 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -33,8 +36,10 @@ import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
@@ -256,6 +261,72 @@ public enum ProgressStage implements ProgressElement {
 		}
 		else {
 			ReikaGuiAPI.instance.drawItemStack(ri, fr, icon, x, y);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void renderIconInWorld(Tessellator v5, double s, int x, int y) {
+		if (this == ANYSTRUCT) { //item render does not work
+			ReikaTextureHelper.bindTerrainTexture();
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glColor4f(1, 1, 1, 1);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.ADDITIVEDARK.apply();
+			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y, ChromaIcons.SPINFLARE.getIcon(), 16, 16); //render directly
+			IIcon ico = ChromaIcons.SPINFLARE.getIcon();
+			v5.startDrawingQuads();
+			v5.setColorOpaque_I(0xffffff);
+			v5.addVertexWithUV(-s, s, 0, ico.getMinU(), ico.getMaxV());
+			v5.addVertexWithUV(s, s, 0, ico.getMaxU(), ico.getMaxV());
+			v5.addVertexWithUV(s, -s, 0, ico.getMaxU(), ico.getMinV());
+			v5.addVertexWithUV(-s, -s, 0, ico.getMinU(), ico.getMinV());
+			v5.draw();
+			GL11.glPopAttrib();
+		}
+		else if (this == VOIDMONSTER) {
+			//not possible
+		}
+		else if (this == WARPNODE) {
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/warpnode-small.png");
+			int idx = (int)(System.currentTimeMillis()/20%64);
+			double u = idx%8/8D;
+			double v = idx/8/8D;
+			double du = u+1/8D;
+			double dv = v+1/8D;
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glColor4f(1, 1, 1, 1);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.ADDITIVEDARK.apply();
+			double w = 1*s;
+			double h = 1*s;
+			Tessellator tessellator = Tessellator.instance;
+			tessellator.startDrawingQuads();
+			tessellator.addVertexWithUV((x - w), (y + h), 0, u, dv);
+			tessellator.addVertexWithUV((x + w), (y + h), 0, du, dv);
+			tessellator.addVertexWithUV((x + w), (y - h), 0, du, v);
+			tessellator.addVertexWithUV((x - w), (y - h), 0, u, v);
+			tessellator.draw();
+			GL11.glPopAttrib();
+		}
+		else {
+			ItemStack is = icon;
+			if (this == BYPASSWEAK) {
+				is = ChromaTiles.WEAKREPEATER.getCraftedProduct();
+			}
+			else if (this == TUNECAST) {
+
+			}
+			InertItem ei = new InertItem(Minecraft.getMinecraft().theWorld, is);
+			ei.age = 0;
+			ei.hoverStart = MathHelper.sin(System.currentTimeMillis()/100F);
+			ei.rotationYaw = 0;
+			ReikaRenderHelper.disableEntityLighting();
+			RenderItem.renderInFrame = true;
+			RenderManager.instance.renderEntityWithPosYaw(ei, 0, 0, 0, 0, 0/*tick*/);
+			RenderItem.renderInFrame = false;
+			ReikaRenderHelper.enableEntityLighting();
 		}
 	}
 

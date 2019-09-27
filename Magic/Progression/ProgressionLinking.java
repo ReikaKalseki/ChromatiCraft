@@ -7,14 +7,23 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaIcon;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.DragonAPI.Instantiable.Rendering.TextureSubImage;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ProgressionLinking {
 
@@ -39,8 +48,8 @@ public class ProgressionLinking {
 		return c;
 	}
 
-	public LinkFailure linkProgression(EntityPlayer ep1, EntityPlayer ep2) {
-		return this.doLinkProgression(ep1, ep2, true);
+	public LinkFailure linkProgression(EntityPlayer from, EntityPlayer to) {
+		return this.doLinkProgression(from, to, true);
 	}
 
 	public void unlinkProgression(EntityPlayer ep1, EntityPlayer ep2) {
@@ -107,7 +116,7 @@ public class ProgressionLinking {
 	}
 
 	private boolean canEverLinkProgression(EntityPlayer ep1, EntityPlayer ep2) {
-		if (ReikaPlayerAPI.isFake(ep1) || ReikaPlayerAPI.isFake(ep2))
+		if (ep1 == ep2 || ReikaPlayerAPI.isFake(ep1) || ReikaPlayerAPI.isFake(ep2))
 			return false;
 		return true;
 	}
@@ -141,20 +150,20 @@ public class ProgressionLinking {
 			switch(this) {
 				case EARLY:
 					if (rl1.getDifference(rl2) >= 2) {
-						return new LinkFailure("Mismatched Research Levels");
+						return LinkFailure.LEVELS;
 					}
 					return null;
 				case MID:
 					if (rl1 != rl2) {
-						return new LinkFailure("Mismatched Research Levels");
+						return LinkFailure.LEVELS;
 					}
 					if (!ProgressionManager.instance.isProgressionEqual(ep1, ep2, instance.getLinkIgnoreList())) {
-						return new LinkFailure("Mismatched Progression");
+						return new LinkFailure("Mismatched Progression", ChromaIcons.QUESTION);
 					}
 					return null;
 				case LATE:
 					if (rl1.getDifference(rl2) > 2) {
-						return new LinkFailure("Mismatched Research Levels");
+						return LinkFailure.LEVELS;
 					}
 					return null;
 				case FINAL:
@@ -183,13 +192,15 @@ public class ProgressionLinking {
 			return p.isPlayerAtStage(ep1) == p.isPlayerAtStage(ep2);
 		}
 
-		private void onLink(EntityPlayer ep1, EntityPlayer ep2) {
+		private void onLink(EntityPlayer from, EntityPlayer to) {
 			switch(this) {
 				case EARLY:
+					ProgressionManager.instance.copyProgressStages(to, from);
 					break;
 				case MID:
 					break;
 				case LATE:
+					ProgressionManager.instance.copyProgressStages(from, to);
 					break;
 				case FINAL:
 					break;
@@ -199,24 +210,74 @@ public class ProgressionLinking {
 
 	public static class LinkFailure {
 
-		private static final LinkFailure INVALID = new LinkFailure("Invalid Players");
-		private static final LinkFailure REGIONS = new LinkFailure("Progression Too Different");
-		private static final LinkFailure LEVELS = new LinkFailure("Mismatched Levels");
-		private static final LinkFailure TOO_LATE = new LinkFailure("Too Late");
+		private static final LinkFailure INVALID = new LinkFailure("Invalid Players", ChromaIcons.NOENTER);
+		private static final LinkFailure REGIONS = new LinkFailure("Progression Too Different", ChromaIcons.X);
+		private static final LinkFailure LEVELS = new LinkFailure("Mismatched Levels", ChromaIcons.X);
+		private static final LinkFailure TOO_LATE = new LinkFailure("Too Late", ChromaIcons.NOENTER);
 
 		public final String text;
+		private final TextureSubImage icon;
+		private final ProgressStage progress;
 
 		private LinkFailure(ProgressStage p) {
 			text = p.getTitleString();
+			progress = p;
+			icon = null;
 		}
 
-		private LinkFailure(String s) {
+		private LinkFailure(String s, ChromaIcon ico) {
 			text = s;
+			progress = null;
+			icon = new TextureSubImage(ico.getIcon());
+		}
+
+		private LinkFailure(String s, TextureSubImage img) {
+			text = s;
+			progress = null;
+			icon = img;
 		}
 
 		@Override
 		public String toString() {
 			return text;
+		}
+
+		@SideOnly(Side.CLIENT)
+		public void render(Tessellator v5, double s) {
+			if (progress != null) {
+				progress.renderIconInWorld(v5, s, 0, 0);
+			}
+			else {
+				BlendMode.DEFAULT.apply();
+				ReikaTextureHelper.bindTerrainTexture();
+				v5.startDrawingQuads();
+				int a = 220+(int)(32*Math.sin(System.currentTimeMillis()/250D));
+				v5.setColorRGBA_I(0xffffff, a);
+				v5.addVertexWithUV(-s, s, 0, icon.minU, icon.maxV);
+				v5.addVertexWithUV(s, s, 0, icon.maxU, icon.maxV);
+				v5.addVertexWithUV(s, -s, 0, icon.maxU, icon.minV);
+				v5.addVertexWithUV(-s, -s, 0, icon.minU, icon.minV);
+				v5.draw();
+			}
+		}
+
+		public NBTTagCompound writeToNBT() {
+			NBTTagCompound ret = new NBTTagCompound();
+			ret.setString("label", text);
+			if (progress != null) {
+				ret.setInteger("prog", progress.ordinal());
+			}
+			ret.setTag("icon", icon.writeToNBT());
+			return ret;
+		}
+
+		public static LinkFailure readFromNBT(NBTTagCompound NBT) {
+			if (NBT.hasKey("prog")) {
+				return new LinkFailure(ProgressStage.list[NBT.getInteger("prog")]);
+			}
+			else {
+				return new LinkFailure(NBT.getString("label"), TextureSubImage.readFromNBT(NBT.getCompoundTag("icon")));
+			}
 		}
 
 	}

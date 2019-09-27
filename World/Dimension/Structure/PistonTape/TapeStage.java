@@ -62,6 +62,14 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 		pings = new boolean[doorCount];
 	}
 
+	public ArrayList<Integer> getNumberList() {
+		ArrayList<Integer> li = new ArrayList();
+		for (DoorSection s : doors) {
+			li.add(s.doorData.value);
+		}
+		return li;
+	}
+
 	public Coordinate getEntrance() {
 		return entrance;
 	}
