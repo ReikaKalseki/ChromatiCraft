@@ -262,7 +262,8 @@ public class CrystalNetworker implements TickHandler {
 		if (this.hasFlowTo(r, e, world))
 			return false;
 		EntityPlayer ep = r.getPlacerUUID() != null ? world.func_152378_a(r.getPlacerUUID()) : null;
-		CrystalFlow p = new PylonFinder(e, r, ep).findPylon(amount, maxthru);
+		SourceValidityRule rule = new SourceValidityRule(0, amount/10, 0.75F); //require the source have at least 10% of the requested amount, or be at least 75% full
+		CrystalFlow p = new PylonFinder(e, r, ep).findPylon(amount, maxthru, rule);
 		//ReikaJavaLibrary.pConsole(p, Side.SERVER);
 		CrystalNetworkLogger.logRequest(r, e, amount, p);
 		if (p != null) {
@@ -275,7 +276,7 @@ public class CrystalNetworker implements TickHandler {
 
 	public CrystalSource findSourceWithX(CrystalReceiver r, CrystalElement e, int amount, int range, boolean consume) {
 		EntityPlayer ep = r.getPlacerUUID() != null ? r.getWorld().func_152378_a(r.getPlacerUUID()) : null;
-		CrystalPath p = new PylonFinder(e, r, ep).findPylonWith(amount);
+		CrystalPath p = new PylonFinder(e, r, ep).findPylonWith(new SourceValidityRule(amount));
 		if (p != null) {
 			if (consume)
 				p.transmitter.drain(e, amount);

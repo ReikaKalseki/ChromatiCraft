@@ -113,21 +113,21 @@ public class PylonFinder {
 	}
 
 	CrystalPath findPylon() {
-		return this.findPylonWith(0);
+		return this.findPylonWith(new SourceValidityRule());
 	}
 
-	CrystalPath findPylonWith(int thresh) {
+	CrystalPath findPylonWith(SourceValidityRule rule) {
 		if (!isValidWorld)
 			return null;
 		invalid = false;
-		CrystalPath p = this.checkExistingPaths(thresh);
+		CrystalPath p = this.checkExistingPaths();
 		//ReikaJavaLibrary.pConsole(p != null ? p.nodes.size() : "null", Side.SERVER);
 		if (p != null)
 			return p;
 		if (!this.anyConnectedSources())
 			return null;
 
-		this.findFrom(target, thresh);
+		this.findFrom(target, rule);
 		//ReikaJavaLibrary.pConsole(this.toString());
 		if (this.isComplete()) {
 			ArrayList<WorldLocation> li = new ArrayList(nodes);
@@ -140,20 +140,20 @@ public class PylonFinder {
 	}
 
 	CrystalFlow findPylon(int amount, int maxthru) {
-		return this.findPylon(amount, maxthru, 0);
+		return this.findPylon(amount, maxthru, new SourceValidityRule());
 	}
 
-	CrystalFlow findPylon(int amount, int maxthru, int thresh) {
+	CrystalFlow findPylon(int amount, int maxthru, SourceValidityRule rule) {
 		if (!isValidWorld)
 			return null;
 		invalid = false;
-		CrystalPath p = this.checkExistingPaths(thresh);
+		CrystalPath p = this.checkExistingPaths();
 		//ReikaJavaLibrary.pConsole(element+" to "+this.getLocation(target)+": "+p);
 		if (p != null)
 			return new CrystalFlow(net, p, target, amount, maxthru);
 		if (!this.anyConnectedSources())
 			return null;
-		this.findFrom(target, thresh);
+		this.findFrom(target, rule);
 		//ReikaJavaLibrary.pConsole(this.toString());
 		if (this.isComplete()) {
 			ArrayList<WorldLocation> li = new ArrayList(nodes);
@@ -239,7 +239,7 @@ public class PylonFinder {
 		return target instanceof WrapperTile || s instanceof TileEntityCreativeSource || !net.getNearbyReceivers(s, element).isEmpty();
 	}
 
-	private CrystalPath checkExistingPaths(int thresh) {
+	private CrystalPath checkExistingPaths() {
 		EnumMap<CrystalElement, ArrayList<CrystalPath>> map = paths.get(getLocation(target));
 		if (map != null) {
 			ArrayList<CrystalPath> c = map.get(element);
@@ -319,7 +319,7 @@ public class PylonFinder {
 		return nodes.size() >= 2 && this.getSourceAt(nodes.getLast(), false) != null;
 	}
 
-	private void findFrom(CrystalReceiver r, int thresh) {
+	private void findFrom(CrystalReceiver r, SourceValidityRule rule) {
 		if (invalid)
 			return;
 		WorldLocation loc = getLocation(r);
@@ -388,7 +388,7 @@ public class PylonFinder {
 					ReikaJavaLibrary.pConsole("Repeater: "+(te instanceof CrystalRepeater));
 					 */
 
-					if (te instanceof CrystalSource && this.isConnectableSource((CrystalSource)te, thresh)) {
+					if (te instanceof CrystalSource && this.isConnectableSource((CrystalSource)te, rule)) {
 						net.addLink(l, true);
 						nodes.add(loc2);
 						//ReikaJavaLibrary.pConsole("Found source for "+element+" > "+r+", returning: "+this.isComplete());
@@ -414,7 +414,7 @@ public class PylonFinder {
 							if (lastSkypeaterType != null && skypeaterEntry != null && skypeaterEntry != lastSkypeaterType)
 								;//continue;
 						}
-						this.findFrom((CrystalRepeater)te, thresh);
+						this.findFrom((CrystalRepeater)te, rule);
 					}
 				}
 			}
@@ -426,8 +426,11 @@ public class PylonFinder {
 		}
 	}
 
-	private boolean isConnectableSource(CrystalSource te, int thresh) {
-		return te.canSupply(target, element) && te.getEnergy(element) >= thresh && (user == null || te.playerCanUse(user)) && (!(te instanceof TileEntityCrystalPylon) || !((TileEntityCrystalPylon)te).enhancing);
+	private boolean isConnectableSource(CrystalSource te, SourceValidityRule rule) {
+		if (te instanceof TileEntityCrystalPylon)
+			if (((TileEntityCrystalPylon)te).enhancing)
+				return false;
+		return te.canSupply(target, element) && (user == null || te.playerCanUse(user)) && rule.isValid(te, element);
 	}
 
 	/*
