@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -10,7 +10,8 @@
 package Reika.ChromatiCraft.TileEntity.AOE.Defence;
 
 import java.util.Collection;
-import java.util.HashSet;
+
+import com.google.common.collect.Sets;
 
 import net.machinemuse.api.electricity.MuseElectricItem;
 import net.minecraft.client.Minecraft;
@@ -42,7 +43,7 @@ import ic2.api.item.IElectricItem;
 //Some sort of indicator? Cloaking?
 public class TileEntityCloakingTower extends TileEntityChromaticBase implements LocationCached, MultiBlockChromaTile {
 
-	private static final Collection<WorldLocation> cache = new HashSet();
+	private static final Collection<WorldLocation> cache = Sets.newConcurrentHashSet();
 
 	public static final int MAXRANGE = 128;
 

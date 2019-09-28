@@ -13,9 +13,10 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
+
+import com.google.common.collect.Sets;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -54,7 +55,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityMultiBuilder extends TileEntityChromaticBase implements LocationCached {
 
-	private static final Collection<WorldLocation> cache = new HashSet();
+	private static final Collection<WorldLocation> cache = Sets.newConcurrentHashSet();
 
 	private Collection<RenderBeam> renderBeams = new ArrayList();
 

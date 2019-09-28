@@ -1,16 +1,17 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
-import java.util.ArrayList;
 import java.util.Collection;
+
+import com.google.common.collect.Sets;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -29,7 +30,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class TileEntityLocusPoint extends TileEntityChromaticBase implements LocationCached {
 
-	private static final Collection<WorldLocation> cache = new ArrayList();
+	private static final Collection<WorldLocation> cache = Sets.newConcurrentHashSet();
 
 	@Override
 	public void breakBlock() {

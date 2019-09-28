@@ -749,7 +749,7 @@
 	</injector>
 	<landmark>
 		<desc>
-			#NULL!
+			Apparently sticking blue dye on a power torch, beyond simply tinting it that color, makes it, when used with others like it, capable of demarcating an area or volume which can then be used by some of your machinery. Useful, perhaps, but they retain their parent torch's need to be stuck onto something, and the bounds are not always clear. You can solve both of those issues by binding them into the world somewhat more explicitly...something you have perhaps managed to do somewhat TOO effectively.
 		</desc>
 		<note>
 

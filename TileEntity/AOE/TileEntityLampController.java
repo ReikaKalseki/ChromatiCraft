@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityRangeBoost;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.ConcurrencyDeterminator;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -37,8 +38,8 @@ import cofh.api.energy.IEnergyHandler;
 
 public class TileEntityLampController extends TileEntityChromaticBase implements LocationCached, GuiController, SimpleShaftPowerReceiver {
 
-	private static final MultiMap<Integer, LightSource> map = new MultiMap(CollectionType.HASHSET);
-	private static final MultiMap<Integer, WorldLocation> lights = new MultiMap(CollectionType.HASHSET);
+	private static final MultiMap<Integer, LightSource> map = new MultiMap(CollectionType.CONCURRENTSET, new ConcurrencyDeterminator());
+	private static final MultiMap<Integer, WorldLocation> lights = new MultiMap(CollectionType.CONCURRENTSET, new ConcurrencyDeterminator());
 
 	public static final int MAXRANGE = 64;
 	public static final int MAXCHANNEL = 999;

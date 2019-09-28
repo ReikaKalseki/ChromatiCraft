@@ -14,9 +14,10 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaIcon;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.DragonAPI.Auxiliary.IconLookupRegistry;
 import Reika.DragonAPI.Instantiable.Rendering.TextureSubImage;
+import Reika.DragonAPI.Interfaces.IconEnum;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -216,25 +217,22 @@ public class ProgressionLinking {
 		private static final LinkFailure TOO_LATE = new LinkFailure("Too Late", ChromaIcons.NOENTER);
 
 		public final String text;
-		private final TextureSubImage icon;
+		private final String iconName;
+		private TextureSubImage icon;
 		private final ProgressStage progress;
 
 		private LinkFailure(ProgressStage p) {
 			text = p.getTitleString();
 			progress = p;
-			icon = null;
+			iconName = null;
 		}
 
-		private LinkFailure(String s, ChromaIcon ico) {
+		private LinkFailure(String s, IconEnum ico) {
 			text = s;
 			progress = null;
-			icon = new TextureSubImage(ico.getIcon());
-		}
-
-		private LinkFailure(String s, TextureSubImage img) {
-			text = s;
-			progress = null;
-			icon = img;
+			if (ico == null)
+				throw new IllegalArgumentException("Null icon!");
+			iconName = ico.name();
 		}
 
 		@Override
@@ -268,6 +266,7 @@ public class ProgressionLinking {
 				ret.setInteger("prog", progress.ordinal());
 			}
 			ret.setTag("icon", icon.writeToNBT());
+			ret.setString("iconName", iconName);
 			return ret;
 		}
 
@@ -276,7 +275,7 @@ public class ProgressionLinking {
 				return new LinkFailure(ProgressStage.list[NBT.getInteger("prog")]);
 			}
 			else {
-				return new LinkFailure(NBT.getString("label"), TextureSubImage.readFromNBT(NBT.getCompoundTag("icon")));
+				return new LinkFailure(NBT.getString("label"), IconLookupRegistry.instance.getIcon(NBT.getString("iconName")));
 			}
 		}
 

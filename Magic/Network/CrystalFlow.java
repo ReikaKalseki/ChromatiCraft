@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -191,6 +191,10 @@ public class CrystalFlow extends CrystalPath {
 
 	public int getRemainingLumens() {
 		return remainingAmount;
+	}
+
+	public int estimateLifetime() {
+		return this.getRemainingLumens()/this.getDrainThisTick();
 	}
 
 	int drain() {

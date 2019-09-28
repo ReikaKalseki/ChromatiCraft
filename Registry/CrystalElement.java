@@ -23,10 +23,10 @@ import net.minecraft.util.IIcon;
 
 import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.Auxiliary.OverlayColor;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaIcon;
 import Reika.ChromatiCraft.Magic.ElementMixer;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
+import Reika.DragonAPI.Interfaces.IconEnum;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
@@ -35,7 +35,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public enum CrystalElement implements ChromaIcon, OverlayColor {
+public enum CrystalElement implements IconEnum, OverlayColor {
 
 	BLACK("Kuro", 0x191919, EnumChatFormatting.BLACK), //Magic
 	RED("Karmir", 0xFF0000, EnumChatFormatting.DARK_RED), //Endurance

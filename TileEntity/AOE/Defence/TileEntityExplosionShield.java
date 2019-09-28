@@ -9,9 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE.Defence;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+
+import com.google.common.collect.Sets;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -40,7 +41,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityExplosionShield extends CrystalReceiverBase implements LocationCached, RangeUpgradeable {
 
-	private static final Collection<WorldLocation> cache = new ArrayList();
+	private static final Collection<WorldLocation> cache = Sets.newConcurrentHashSet();
 
 	public static final int MAXRANGE = 32;
 	//public static final int MAXRANGE_Y = 24;

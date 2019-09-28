@@ -9,7 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE.Defence;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -25,7 +25,7 @@ import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 
 public class TileEntityChromaLamp extends TileEntityChromaticBase implements LocationCached, RangeUpgradeable {
 
-	private static final HashMap<WorldLocation, Integer> cache = new HashMap();
+	private static final ConcurrentHashMap<WorldLocation, Integer> cache = new ConcurrentHashMap();
 
 	public static final int FACTOR = 8;
 

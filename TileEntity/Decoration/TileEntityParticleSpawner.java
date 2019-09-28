@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,7 +15,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaIcon;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -23,9 +22,11 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.DragonAPI.Auxiliary.IconLookupRegistry;
 import Reika.DragonAPI.Instantiable.BoundedValue;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
+import Reika.DragonAPI.Interfaces.IconEnum;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Interfaces.TileEntity.NBTCopyable;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -121,7 +122,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 		public boolean alphaFade = false;
 		public boolean cyclingColor = false;
 
-		public ChromaIcon particleIcon = ChromaIcons.FADE;
+		public IconEnum particleIcon = ChromaIcons.FADE;
 
 		public BoundedValue<Integer> particleRate = new BoundedValue(1, 300, 10).setStep(1);
 
@@ -223,17 +224,9 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 			alphaFade = NBT.getBoolean("afade");
 			cyclingColor = NBT.getBoolean("cycle");
 
-			try {
-				particleIcon = ChromaIcons.valueOf(NBT.getString("icon"));
-			}
-			catch (IllegalArgumentException e) {
-				try {
-					particleIcon = CrystalElement.valueOf(NBT.getString("icon"));
-				}
-				catch (IllegalArgumentException e2) {
-					ChromatiCraft.logger.logError("Tried to load invalid particle type '"+NBT.getString("icon")+"' from NBT.");
-					e.printStackTrace();
-				}
+			particleIcon = IconLookupRegistry.instance.getIcon(NBT.getString("icon"));
+			if (particleIcon == null) {
+				ChromatiCraft.logger.logError("Tried to load invalid particle type '"+NBT.getString("icon")+"' from NBT.");
 			}
 
 			NBTTagCompound tag = NBT.getCompoundTag("rate");

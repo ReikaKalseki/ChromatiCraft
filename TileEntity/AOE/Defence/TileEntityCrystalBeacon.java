@@ -9,9 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE.Defence;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
+
+import com.google.common.collect.Sets;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -46,7 +47,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityCrystalBeacon extends CrystalReceiverBase implements LocationCached, RangeUpgradeable, MultiBlockChromaTile, OwnedTile {
 
-	private static final Collection<WorldLocation> cache = new ArrayList();
+	private static final Collection<WorldLocation> cache = Sets.newConcurrentHashSet();
 
 	public static final int RATIO = 100;
 	public static final int POWER = 2;

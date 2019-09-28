@@ -156,6 +156,7 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.CreativeTabSorter;
+import Reika.DragonAPI.Auxiliary.IconLookupRegistry;
 import Reika.DragonAPI.Auxiliary.PopupWriter;
 import Reika.DragonAPI.Auxiliary.SpecialBiomePlacementRegistry;
 import Reika.DragonAPI.Auxiliary.SpecialBiomePlacementRegistry.Category;
@@ -761,6 +762,9 @@ public class ChromatiCraft extends DragonAPIMod {
 		WorldGenInterceptionRegistry.instance.addWatcher(ChromaAux.populationWatcher);
 		WorldGenInterceptionRegistry.instance.addIWGWatcher(ChromaAux.slimeIslandBlocker);
 		WorldGenInterceptionRegistry.instance.addException(ChromaAux.dimensionException);
+
+		IconLookupRegistry.instance.registerIcons(instance, ChromaIcons.class);
+		IconLookupRegistry.instance.registerIcons(instance, CrystalElement.class);
 
 		ItemMagicRegistry.instance.addPostload();
 

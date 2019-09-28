@@ -78,7 +78,6 @@ public class TileEntityProgressionLinker extends TileEntityChromaticBase impleme
 			failure = null;
 		if (failTicks > 0)
 			return;
-		this.linkPlayers(this.getPlacer(), this.getPlacer());
 		if (this.hasStructure() && this.hasPlayer()) {
 			EntityPlayer ep = world.func_152378_a(targetPlayer);
 			if (ep == null || !ep.boundingBox.intersectsWith(ReikaAABBHelper.getBlockAABB(this).addCoord(0, 4, 0))) {

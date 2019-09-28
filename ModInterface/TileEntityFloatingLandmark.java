@@ -349,7 +349,7 @@ public class TileEntityFloatingLandmark extends TileEntityChromaticBase implemen
 
 	@Override
 	public boolean isValidFromLocation(int x, int y, int z) {
-		return new Coordinate(x, y, z).getTaxicabDistanceTo(new Coordinate(this)) == 1;
+		return this.isAnchored() && new Coordinate(x, y, z).getTaxicabDistanceTo(new Coordinate(this)) == 1;
 	}
 
 	public void breakBlock() {

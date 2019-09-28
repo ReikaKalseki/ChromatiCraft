@@ -10,9 +10,10 @@
 package Reika.ChromatiCraft.TileEntity.AOE;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+
+import com.google.common.collect.Sets;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -61,7 +62,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
-	private static final Collection<WorldLocation> cache = new HashSet();
+	private static final Collection<WorldLocation> cache = Sets.newConcurrentHashSet();
 
 	static {
 		required.addTag(CrystalElement.LIME, 25);

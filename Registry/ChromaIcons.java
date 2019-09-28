@@ -15,13 +15,13 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.IIcon;
 
-import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaIcon;
 import Reika.DragonAPI.DragonOptions;
+import Reika.DragonAPI.Interfaces.IconEnum;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public enum ChromaIcons implements ChromaIcon {
+public enum ChromaIcons implements IconEnum {
 
 	TRANSPARENT("transparent"),
 	GUARDIANOUTER("guardian_outer"),

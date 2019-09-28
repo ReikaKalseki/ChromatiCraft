@@ -19,7 +19,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaIcon;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -30,6 +29,7 @@ import Reika.DragonAPI.Instantiable.BoundedValue;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Instantiable.GUI.ScrollingButtonList;
+import Reika.DragonAPI.Interfaces.IconEnum;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -50,7 +50,7 @@ public class GuiParticleSpawner extends GuiChromaBase {
 	private float luminosity;
 	private int color;
 
-	private static ArrayList<ChromaIcon> permittedIcons = new ArrayList();
+	private static ArrayList<IconEnum> permittedIcons = new ArrayList();
 
 	public static final int MAX_ICON_ROWS = 6;
 	public static final int MAX_ICON_COLS = 7;
@@ -195,7 +195,7 @@ public class GuiParticleSpawner extends GuiChromaBase {
 				buttonList.add(new GuiButton(50, j+27, k+144, 20, 20, "^"));
 				buttonList.add(new GuiButton(51, j+47, k+144, 20, 20, "v"));
 				int i = 0;
-				for (ChromaIcon ico : permittedIcons) {
+				for (IconEnum ico : permittedIcons) {
 					if (i >= iconButtons.getBaseOffset() && i <= iconButtons.getHighestVisible()) {
 						int rowPos = (i/MAX_ICON_COLS)-iconButtons.getScroll();
 						int x = j+29+(i%MAX_ICON_COLS)*21-2;
