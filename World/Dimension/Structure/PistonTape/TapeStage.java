@@ -55,17 +55,17 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 
 		doors = new DoorSection[doorCount];
 		for (int i = 0; i < doorCount; i++) {
-			DoorKey dk = new DoorKey(i, bus, this.getColorList(i));
+			DoorKey dk = new DoorKey(i, this.getColorList(i));
 			doors[i] = new DoorSection(g, this, mainDirection, dk, i, i == doorCount-1);
 		}
 
 		pings = new boolean[doorCount];
 	}
 
-	public ArrayList<Integer> getNumberList() {
-		ArrayList<Integer> li = new ArrayList();
+	public ArrayList<DoorKey> getDisplayList() {
+		ArrayList<DoorKey> li = new ArrayList();
 		for (DoorSection s : doors) {
-			li.add(s.doorData.value);
+			li.add(s.doorData);
 		}
 		return li;
 	}

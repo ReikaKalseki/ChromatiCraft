@@ -416,7 +416,7 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 			return doorBusWidth;
 		}
 
-		public void setData(ForgeDirection dir, int stage, int door, int idx, int w) {
+		public final void setData(ForgeDirection dir, int stage, int door, int idx, int w) {
 			doorColorIndex = idx;
 			stageIndex = stage;
 			doorIndex = door;

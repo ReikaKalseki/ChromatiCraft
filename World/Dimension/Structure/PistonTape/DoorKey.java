@@ -1,7 +1,11 @@
 package Reika.ChromatiCraft.World.Dimension.Structure.PistonTape;
 
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+
 import Reika.DragonAPI.Instantiable.RGBColorData;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTIO;
 
 public class DoorKey {
 
@@ -11,9 +15,9 @@ public class DoorKey {
 	public final int index;
 	public final int value;
 
-	public DoorKey(int idx, int n, RGBColorData[] clr) {
+	DoorKey(int idx, RGBColorData[] clr) {
 		index = idx;
-		colorCount = n;
+		colorCount = clr.length;
 		colors = new DoorValue[colorCount];
 		int v = 0;
 		for (int i = 0; i < colorCount; i++) {
@@ -27,7 +31,7 @@ public class DoorKey {
 		return colors[idx];
 	}
 
-	public void setTarget(int idx, Coordinate c) {
+	void setTarget(int idx, Coordinate c) {
 		colors[idx].target = c;
 	}
 
@@ -44,7 +48,7 @@ public class DoorKey {
 			numberValue = (clr.red ? 4 : 0) | (clr.green ? 2 : 0) | (clr.blue ? 1 : 0);
 		}
 
-		public RGBColorData getColor() {
+		RGBColorData getColor() {
 			return color.copy();
 		}
 
@@ -52,12 +56,50 @@ public class DoorKey {
 			return color.getRenderColor();
 		}
 
-		public DoorKey getParent() {
+		DoorKey getParent() {
 			return DoorKey.this;
 		}
 
-		public Coordinate getTargetLocation() {
+		Coordinate getTargetLocation() {
 			return target;
+		}
+
+	}
+
+	public static class KeyIO implements NBTIO<DoorKey> {
+
+		public static final KeyIO instance = new KeyIO();
+
+		private KeyIO() {
+
+		}
+
+		@Override
+		public DoorKey createFromNBT(NBTBase nbt) {
+			NBTTagCompound tag = (NBTTagCompound)nbt;
+			int num = tag.getInteger("count");
+			int idx = tag.getInteger("idx");
+			RGBColorData[] arr = new RGBColorData[num];
+			for (int i = 0; i < num; i++) {
+				NBTTagCompound val = tag.getCompoundTag("clr_"+i);
+				RGBColorData clr = RGBColorData.white();
+				clr.readFromNBT(val);
+				arr[i] = clr;
+			}
+			return new DoorKey(idx, arr);
+		}
+
+		@Override
+		public NBTBase convertToNBT(DoorKey obj) {
+			NBTTagCompound ret = new NBTTagCompound();
+			for (int i = 0; i < obj.colorCount; i++) {
+				NBTTagCompound tag = new NBTTagCompound();
+				obj.colors[i].color.writeToNBT(tag);
+				ret.setTag("clr_"+i, tag);
+			}
+			ret.setInteger("count", obj.colorCount);
+			ret.setInteger("idx", obj.index);
+			return ret;
 		}
 
 	}

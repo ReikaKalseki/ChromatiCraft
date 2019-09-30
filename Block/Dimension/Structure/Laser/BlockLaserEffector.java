@@ -445,6 +445,11 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 			tag.setInteger("reset", autoReset);
 		}
 
+		@Override
+		public boolean shouldRenderInPass(int pass) {
+			return pass <= 1;
+		}
+
 	}
 
 	public static class PrismTile extends LaserEffectTile {

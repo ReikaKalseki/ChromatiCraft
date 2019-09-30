@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.AntFarm.BlockAntKey.AntKeyT
 import Reika.ChromatiCraft.Block.Dimension.Structure.Gravity.BlockGravityTile.GravityTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.TargetTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Pinball.BlockPinballTile.TileBouncePad;
+import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonController.TilePistonDisplay;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Water.BlockRotatingLock.TileEntityRotatingLock;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockWarpNode.TileEntityWarpNode;
@@ -143,6 +144,7 @@ import Reika.ChromatiCraft.Render.TESR.Dimension.RenderBouncePad;
 import Reika.ChromatiCraft.Render.TESR.Dimension.RenderGlowingCracks;
 import Reika.ChromatiCraft.Render.TESR.Dimension.RenderGravityTile;
 import Reika.ChromatiCraft.Render.TESR.Dimension.RenderLaserTarget;
+import Reika.ChromatiCraft.Render.TESR.Dimension.RenderPistonDisplay;
 import Reika.ChromatiCraft.Render.TESR.Dimension.RenderVoidRift;
 import Reika.ChromatiCraft.Render.TESR.Dimension.RenderWaterLock;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
@@ -344,6 +346,7 @@ public class ChromaClient extends ChromaCommon {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRotatingLock.class, new RenderWaterLock());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileGlowingCracks.class, new RenderGlowingCracks());
 		ClientRegistry.bindTileEntitySpecialRenderer(TilePolyCrystal.class, new RenderPolyCrystal());
+		ClientRegistry.bindTileEntitySpecialRenderer(TilePistonDisplay.class, new RenderPistonDisplay());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityWarpNode.class, new RenderWarpNode());
 
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.PLACER.getItemInstance(), ChromatiCraft.instance.isLocked() ? null : placer);

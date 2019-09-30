@@ -9,11 +9,15 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -23,8 +27,12 @@ import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
+import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.DoorKey;
+import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.DoorKey.KeyIO;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.TapeStage;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 
 public class BlockPistonController extends BlockDimensionStructureTile {
 
@@ -46,6 +54,8 @@ public class BlockPistonController extends BlockDimensionStructureTile {
 				return new TilePistonTrigger();
 			case 2:
 				return new TilePistonCycler();
+			case 3:
+				return new TilePistonDisplay();
 			default:
 				return null;
 		}
@@ -99,6 +109,11 @@ public class BlockPistonController extends BlockDimensionStructureTile {
 		private int tickUntilNextDoor = DELAY;
 
 		@Override
+		public boolean canUpdate() {
+			return true;
+		}
+
+		@Override
 		public void updateEntity() {
 			//ReikaJavaLibrary.pConsole(this.getStage().doorCount, yCoord == 87);
 			if (isPlaying) {
@@ -108,13 +123,13 @@ public class BlockPistonController extends BlockDimensionStructureTile {
 				else {
 					//ReikaJavaLibrary.pConsole("Attempting cycle of "+currentDoor);
 					if (this.getStage().cycle(worldObj)) {
-						currentDoor++;
+						this.setDoor(currentDoor+1);
 						//ReikaJavaLibrary.pConsole("Cycled to "+currentDoor);
 						if (currentDoor == this.getStage().doorCount)
 							tickUntilNextDoor = DELAY;
 						if (currentDoor >= this.getStage().doorCount) {
 							if (currentDoor >= this.getStage().getTotalLength()) {
-								isPlaying = false;
+								this.setPlaying(false);
 								//ReikaJavaLibrary.pConsole("Done");
 							}
 							else {
@@ -132,16 +147,16 @@ public class BlockPistonController extends BlockDimensionStructureTile {
 		}
 
 		@Override
-		public boolean canUpdate() {
-			return true;
-		}
-
-		@Override
 		protected void onRightClick() {
-			currentDoor = 0;
-			isPlaying = true;
+			this.setDoor(0);
+			this.setPlaying(true);
 			this.fire();
 			tickUntilNextDoor = DELAY;
+		}
+
+		private void setPlaying(boolean play) {
+			isPlaying = play;
+			this.getDisplay().setActive(play);
 		}
 
 		@Override
@@ -154,9 +169,15 @@ public class BlockPistonController extends BlockDimensionStructureTile {
 			super.readFromNBT(NBT);
 		}
 
-		private TilePistonTrigger getTrigger() {
-			ForgeDirection dir = ReikaDirectionHelper.getRightBy90(this.getFacing());
-			return (TilePistonTrigger)worldObj.getTileEntity(xCoord+dir.offsetX, yCoord+dir.offsetY, zCoord+dir.offsetZ);
+		private TilePistonDisplay getDisplay() {
+			ForgeDirection dir = ReikaDirectionHelper.getLeftBy90(this.getFacing());
+			return (TilePistonDisplay)worldObj.getTileEntity(xCoord+dir.offsetX*2, yCoord+dir.offsetY-1, zCoord+dir.offsetZ*2);
+		}
+
+		@Override
+		protected void setDoor(int door) {
+			super.setDoor(door);
+			this.getDisplay().setDoor(door);
 		}
 
 	}
@@ -199,11 +220,90 @@ public class BlockPistonController extends BlockDimensionStructureTile {
 
 	}
 
+	public static class TilePistonDisplay extends TilePistonController {
+
+		private List<DoorKey> display = new ArrayList();
+		private boolean active;
+
+		@Override
+		public void writeToNBT(NBTTagCompound NBT) {
+			super.writeToNBT(NBT);
+			NBT.setBoolean("active", active);
+			ReikaNBTHelper.writeCollectionToNBT(display, NBT, "display", KeyIO.instance);
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound NBT) {
+			super.readFromNBT(NBT);
+			active = NBT.getBoolean("active");
+			ReikaNBTHelper.readCollectionFromNBT(display, NBT, "display", KeyIO.instance);
+		}
+
+		@Override
+		public boolean shouldRenderInPass(int pass) {
+			return pass <= 1;
+		}
+
+		@Override
+		public AxisAlignedBB getRenderBoundingBox() {
+			return ReikaAABBHelper.getBlockAABB(this).expand(3, 3, 3);
+		}
+
+		@Override
+		protected void onRightClick() {
+			if (!worldObj.isRemote)
+				this.read();
+		}
+
+		public void read() {
+			TapeStage s = this.getStage();
+			if (s != null) {
+				display = new ArrayList(s.getDisplayList());
+				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			}
+		}
+
+		public List<DoorKey> getDisplayList() {
+			return display;
+		}
+
+		public int getActiveDoor() {
+			return currentDoor-1;
+		}
+
+		@Override
+		public boolean canUpdate() {
+			return true;
+		}
+
+		@Override
+		public void updateEntity() {
+			if (!worldObj.isRemote && display.isEmpty()) {
+				this.read();
+			}
+		}
+
+		private void setActive(boolean flag) {
+			active = flag;
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		}
+
+		public boolean isActive() {
+			return active;
+		}
+
+	}
+
 	public static abstract class TilePistonController extends StructureBlockTile<PistonTapeGenerator> {
 
 		private ForgeDirection facing;
 		private int stageIndex;
 		protected int currentDoor;
+
+		@Override
+		public boolean canUpdate() {
+			return false;
+		}
 
 		public ForgeDirection getFacing() {
 			return facing != null ? facing : ForgeDirection.UNKNOWN;
@@ -215,7 +315,7 @@ public class BlockPistonController extends BlockDimensionStructureTile {
 
 		protected abstract void onRightClick();
 
-		public void setData(int stage, ForgeDirection dir) {
+		public final void setData(int stage, ForgeDirection dir) {
 			stageIndex = stage;
 			facing = dir;
 		}
@@ -228,6 +328,7 @@ public class BlockPistonController extends BlockDimensionStructureTile {
 				NBT.setInteger("face", facing.ordinal());
 
 			NBT.setInteger("stage", stageIndex);
+			NBT.setInteger("door", currentDoor);
 		}
 
 		@Override
@@ -238,6 +339,7 @@ public class BlockPistonController extends BlockDimensionStructureTile {
 				facing = ForgeDirection.VALID_DIRECTIONS[NBT.getInteger("face")];
 
 			stageIndex = NBT.getInteger("stage");
+			currentDoor = NBT.getInteger("door");
 		}
 
 		protected final void fire() {
@@ -249,6 +351,11 @@ public class BlockPistonController extends BlockDimensionStructureTile {
 		@Override
 		public final DimensionStructureType getType() {
 			return DimensionStructureType.PISTONTAPE;
+		}
+
+		protected void setDoor(int door) {
+			currentDoor = door;
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
 	}

@@ -107,12 +107,17 @@ public class PistonTapeEntryArea extends StructurePiece<PistonTapeGenerator> {
 			}
 		}
 
-		int dx = x+tape.hallDirection.offsetX*2;
-		int dz = z+tape.hallDirection.offsetZ*2;
+		int dx = x+tape.hallDirection.offsetX*3;
+		int dz = z+tape.hallDirection.offsetZ*3;
+
+		int dx2 = dx-tape.hallDirection.offsetX*2;
+		int dz2 = dz-tape.hallDirection.offsetZ*2;
 
 		world.setTileEntity(dx, y+3, dz, ChromaBlocks.PISTONCONTROL.getBlockInstance(), 0, new PistonControlCallback(level));
 		world.setTileEntity(dx, y+2, dz, ChromaBlocks.PISTONCONTROL.getBlockInstance(), 1, new PistonControlCallback(level));
 		world.setTileEntity(dx, y+1, dz, ChromaBlocks.PISTONCONTROL.getBlockInstance(), 2, new PistonControlCallback(level));
+
+		world.setTileEntity(dx2, y+2, dz2, ChromaBlocks.PISTONCONTROL.getBlockInstance(), 3, new PistonControlCallback(level));
 	}
 
 	private static class PistonControlCallback implements TileCallback {
