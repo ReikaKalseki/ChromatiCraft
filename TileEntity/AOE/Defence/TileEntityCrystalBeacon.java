@@ -12,8 +12,6 @@ package Reika.ChromatiCraft.TileEntity.AOE.Defence;
 import java.util.Collection;
 import java.util.Random;
 
-import com.google.common.collect.Sets;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,6 +32,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -47,7 +46,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityCrystalBeacon extends CrystalReceiverBase implements LocationCached, RangeUpgradeable, MultiBlockChromaTile, OwnedTile {
 
-	private static final Collection<WorldLocation> cache = Sets.newConcurrentHashSet();
+	private static final Collection<WorldLocation> cache = new ThreadSafeSet();
 
 	public static final int RATIO = 100;
 	public static final int POWER = 2;

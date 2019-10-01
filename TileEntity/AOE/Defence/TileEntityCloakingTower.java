@@ -11,8 +11,6 @@ package Reika.ChromatiCraft.TileEntity.AOE.Defence;
 
 import java.util.Collection;
 
-import com.google.common.collect.Sets;
-
 import net.machinemuse.api.electricity.MuseElectricItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -28,6 +26,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
+import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -43,7 +42,7 @@ import ic2.api.item.IElectricItem;
 //Some sort of indicator? Cloaking?
 public class TileEntityCloakingTower extends TileEntityChromaticBase implements LocationCached, MultiBlockChromaTile {
 
-	private static final Collection<WorldLocation> cache = Sets.newConcurrentHashSet();
+	private static final Collection<WorldLocation> cache = new ThreadSafeSet();
 
 	public static final int MAXRANGE = 128;
 

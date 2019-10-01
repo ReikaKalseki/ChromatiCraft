@@ -303,7 +303,7 @@ public class MouseoverOverlayRenderer {
 			color = e.getColor();
 			v5.setColorOpaque_I(color);
 			v5.setBrightness(240);
-			double dr = Math.min(r, r*lt.getEnergy(e)/maxe);
+			double dr = Math.min(r, r*(long)lt.getEnergy(e)/maxe);
 			for (double a = min; a <= max; a += angleStep) {
 				double x = ox+dr*Math.cos(Math.toRadians(oa+a));
 				double y = oy+dr*Math.sin(Math.toRadians(oa+a));

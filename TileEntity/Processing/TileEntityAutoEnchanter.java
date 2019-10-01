@@ -179,6 +179,8 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			return true;
 		if (ChromaItems.HELP.matchWith(is))
 			return true;
+		if (ChromaItems.OREPICK.matchWith(is) || ChromaItems.ORESILK.matchWith(is) || ChromaItems.MULTITOOL.matchWith(is))
+			return true;
 		if (ModList.TINKERER.isLoaded() && (TinkerToolHandler.getInstance().isTool(is) || TinkerToolHandler.getInstance().isWeapon(is)))
 			return true;
 		if (Loader.isModLoaded("Backpack") && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("backpack"))
@@ -216,6 +218,11 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			}
 			else if (!e.canApply(is) && !(i instanceof EnchantableItem && ((EnchantableItem)i).isEnchantValid(e, is))) {
 				return false;
+			}
+
+			if (ChromaItems.OREPICK.matchWith(is) || ChromaItems.ORESILK.matchWith(is) || ChromaItems.MULTITOOL.matchWith(is)) {
+				if (e != Enchantment.unbreaking && e != Enchantment.efficiency && !e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
+					return false;
 			}
 
 			if (ChromaItems.BEEFRAME.matchWith(is))

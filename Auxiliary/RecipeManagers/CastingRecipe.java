@@ -177,18 +177,32 @@ public class CastingRecipe implements APICastingRecipe {
 		return ReikaItemHelper.listContainsItemStack(ReikaRecipeHelper.getAllItemsInRecipe(recipe), is, true);
 	}
 
-	public boolean crafts(ItemStack is) {
+	public final boolean crafts(ItemStack is) {
 		if (is == null)
 			return false;
-		if (is.stackTagCompound != null) {
-			is = is.copy();
-			ChromaTiles c = ChromaTiles.getTileByCraftedItem(is);
-			if (c != null) {
-				if (c.isLumenTile())
-					is.stackTagCompound.removeTag("energy");
-			}
-		}
+		if (out.stackTagCompound == null)
+			return ReikaItemHelper.matchStacks(is, out);
+		ItemStack is1 = is.copy();
+		ItemStack is2 = out.copy();
+		if (is1.stackTagCompound != null)
+			this.filterMatchTags(is1);
+		if (is2.stackTagCompound != null)
+			this.filterMatchTags(is2);
 		return ReikaItemHelper.matchStacks(is, out) && ItemStack.areItemStackTagsEqual(is, out);
+	}
+
+	protected final ItemStack applyTagFilters(ItemStack is) {
+		is = is.copy();
+		this.filterMatchTags(is);
+		return is;
+	}
+
+	protected void filterMatchTags(ItemStack is) {
+		ChromaTiles c = ChromaTiles.getTileByCraftedItem(is);
+		if (c != null) {
+			if (c.isLumenTile())
+				is.stackTagCompound.removeTag("energy");
+		}
 	}
 	/*
 	@Override

@@ -11,14 +11,13 @@ package Reika.ChromatiCraft.Base.TileEntity;
 
 import java.util.Collection;
 
-import com.google.common.collect.Sets;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
+import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -30,7 +29,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class TileEntityLocusPoint extends TileEntityChromaticBase implements LocationCached {
 
-	private static final Collection<WorldLocation> cache = Sets.newConcurrentHashSet();
+	private static final Collection<WorldLocation> cache = new ThreadSafeSet();
 
 	@Override
 	public void breakBlock() {

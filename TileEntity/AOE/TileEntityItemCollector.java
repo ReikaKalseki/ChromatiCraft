@@ -13,8 +13,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import com.google.common.collect.Sets;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
@@ -41,6 +39,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.StepTimer;
+import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
@@ -62,7 +61,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
-	private static final Collection<WorldLocation> cache = Sets.newConcurrentHashSet();
+	private static final Collection<WorldLocation> cache = new ThreadSafeSet();
 
 	static {
 		required.addTag(CrystalElement.LIME, 25);

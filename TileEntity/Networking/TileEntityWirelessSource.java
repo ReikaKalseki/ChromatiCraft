@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,7 +11,7 @@ package Reika.ChromatiCraft.TileEntity.Networking;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.Set;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.GlowTendril;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.ParticleController.AttractiveMotionController;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
@@ -64,7 +65,7 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 		tendril = new GlowTendril(1.25, 6);
 	}
 
-	private static final HashSet<WorldLocation> cache = new HashSet();
+	private static final Set<WorldLocation> cache = new ThreadSafeSet();
 
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
@@ -269,6 +270,10 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 	public int getRenderColor(float ptick) {
 		int t = this.isInWorld() && !StructureRenderer.isRenderingTiles() ? this.getTicksExisted() : Math.abs((int)(System.currentTimeMillis()/50));
 		return CrystalElement.getBlendedColor(t, 25);
+	}
+
+	public static void clearCache() {
+		cache.clear();
 	}
 
 }

@@ -16,8 +16,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 
-import com.google.common.collect.Sets;
-
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -36,6 +34,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
+import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
@@ -55,7 +54,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityMultiBuilder extends TileEntityChromaticBase implements LocationCached {
 
-	private static final Collection<WorldLocation> cache = Sets.newConcurrentHashSet();
+	private static final Collection<WorldLocation> cache = new ThreadSafeSet();
 
 	private Collection<RenderBeam> renderBeams = new ArrayList();
 

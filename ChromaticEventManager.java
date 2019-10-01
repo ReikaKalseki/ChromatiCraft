@@ -159,6 +159,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityExplosionShield;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityProtectionUpgrade;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalBroadcaster;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityWirelessSource;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
@@ -473,6 +474,7 @@ public class ChromaticEventManager {
 		TileEntityCrystalBeacon.clearCache();
 		TileEntityMultiBuilder.clearCache();
 		TileEntityExplosionShield.clearCache();
+		TileEntityWirelessSource.clearCache();
 		BlockFakeSky.clearCache();
 		LoreManager.instance.clearOnLogout();
 		WarpNetwork.instance.clear();

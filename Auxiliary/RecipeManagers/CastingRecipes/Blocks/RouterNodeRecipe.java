@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -35,16 +35,9 @@ public class RouterNodeRecipe extends CastingRecipe {
 	}
 
 	@Override
-	public boolean crafts(ItemStack is) {
-		return super.crafts(this.stripUncaredTags(is));
-	}
-
-	private ItemStack stripUncaredTags(ItemStack is) {
-		if (is.stackTagCompound == null)
-			return is;
-		is = is.copy();
+	protected void filterMatchTags(ItemStack is) {
+		super.filterMatchTags(is);
 		is.stackTagCompound.removeTag("target");
-		return is;
 	}
 
 }
