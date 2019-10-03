@@ -93,11 +93,6 @@ public abstract class RepeaterRecipe extends MultiBlockCastingRecipe implements 
 	}
 
 	@Override
-	protected final boolean isValidCentralNBT(ItemStack is) {
-		return super.isValidCentralNBT(this.applyTagFilters(is));
-	}
-
-	@Override
 	protected final void filterMatchTags(ItemStack is) {
 		super.filterMatchTags(is);
 		is.stackTagCompound.removeTag("boosted");

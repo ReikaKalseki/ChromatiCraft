@@ -35,6 +35,7 @@ import Reika.ChromatiCraft.Entity.EntityTunnelNuker;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
 import Reika.ChromatiCraft.Items.Tools.ItemDataCrystal.EntityDataCrystal;
 import Reika.ChromatiCraft.ModInterface.EntityChromaManaBurst;
+import Reika.ChromatiCraft.ModInterface.EntityVoidMonsterBait;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.Registry.EntityEnum;
 
@@ -63,7 +64,8 @@ public enum ChromaEntities implements EntityEnum {
 	TUNNELNUKER(EntityTunnelNuker.class, "Tunnel Nuker", 0x402020, 0xf0a030),
 	ENDEREYE(EntityEnderEyeT2.class, "Ender Eye T2"),
 	LIGHTGUN(EntityLightShot.class, "LightGun Shot"),
-	PISTONSPLINE(EntityPistonSpline.class, "Bezier Particle");
+	PISTONSPLINE(EntityPistonSpline.class, "Bezier Particle"),
+	VOIDBAIT(EntityVoidMonsterBait.class, "Void Bait");
 
 	public final String entityName;
 	private final Class entityClass;

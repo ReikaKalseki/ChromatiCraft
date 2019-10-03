@@ -66,6 +66,7 @@ import Reika.ChromatiCraft.Entity.EntityTunnelNuker;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
 import Reika.ChromatiCraft.Items.Tools.ItemDataCrystal.EntityDataCrystal;
 import Reika.ChromatiCraft.ModInterface.EntityChromaManaBurst;
+import Reika.ChromatiCraft.ModInterface.EntityVoidMonsterBait;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
 import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -94,6 +95,7 @@ import Reika.ChromatiCraft.Render.Entity.RenderTNTPinball;
 import Reika.ChromatiCraft.Render.Entity.RenderThrownGem;
 import Reika.ChromatiCraft.Render.Entity.RenderTunnelNuker;
 import Reika.ChromatiCraft.Render.Entity.RenderVacuum;
+import Reika.ChromatiCraft.Render.Entity.RenderVoidMonsterBait;
 import Reika.ChromatiCraft.Render.ISBRH.ArtefactRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.BedrockCrackRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CaveIndicatorRenderer;
@@ -257,6 +259,7 @@ public class ChromaClient extends ChromaCommon {
 		RenderingRegistry.registerEntityRenderingHandler(EntityGlowCloud.class, new RenderGlowCloud());
 		RenderingRegistry.registerEntityRenderingHandler(EntityDataCrystal.class, new RenderDataCrystal());
 		RenderingRegistry.registerEntityRenderingHandler(EntityOverloadingPylonShock.class, new RenderOverloadingPylonShock());
+		RenderingRegistry.registerEntityRenderingHandler(EntityVoidMonsterBait.class, new RenderVoidMonsterBait());
 		RenderingRegistry.registerEntityRenderingHandler(EntityTunnelNuker.class, new RenderTunnelNuker());
 		if (ModList.BOTANIA.isLoaded())
 			RenderingRegistry.registerEntityRenderingHandler(EntityChromaManaBurst.class, new RenderChromaManaBurst());

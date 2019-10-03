@@ -87,14 +87,4 @@ public class AdjacencyRecipe extends PylonCastingRecipe {
 		}
 	}
 
-	@Override
-	protected boolean isValidCentralNBT(ItemStack is) {
-		return super.isValidCentralNBT(this.applyTagFilters(is));
-	}
-
-	@Override
-	protected void filterMatchTags(ItemStack is) {
-		super.filterMatchTags(is);
-	}
-
 }

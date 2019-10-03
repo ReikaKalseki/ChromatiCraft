@@ -191,9 +191,10 @@ public class CastingRecipe implements APICastingRecipe {
 		return ReikaItemHelper.matchStacks(is, out) && ItemStack.areItemStackTagsEqual(is, out);
 	}
 
-	protected final ItemStack applyTagFilters(ItemStack is) {
+	final ItemStack applyTagFilters(ItemStack is) {
 		is = is.copy();
-		this.filterMatchTags(is);
+		if (is.stackTagCompound != null)
+			this.filterMatchTags(is);
 		return is;
 	}
 
@@ -762,7 +763,7 @@ public class CastingRecipe implements APICastingRecipe {
 		}
 
 		protected boolean isValidCentralNBT(ItemStack is) {
-			return this.getMainInput().stackTagCompound == null || ItemStack.areItemStackTagsEqual(this.getMainInput(), is);
+			return this.getMainInput().stackTagCompound == null || ItemStack.areItemStackTagsEqual(this.getMainInput(), this.applyTagFilters(is));
 		}
 
 		@Override
