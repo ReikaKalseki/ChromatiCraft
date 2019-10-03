@@ -19,6 +19,7 @@ import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockTNT;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -60,12 +61,12 @@ import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
+import Reika.ChromatiCraft.Entity.EntityMonsterBait;
 import Reika.ChromatiCraft.Entity.EntityNukerBall;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
-import Reika.ChromatiCraft.ModInterface.EntityMonsterBait;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -1216,6 +1217,14 @@ public class AbilityCalls {
 	}*/
 
 	public static boolean doMobBait(EntityPlayer ep) {
+		if (!ep.onGround)
+			return false;
+		if (ep.worldObj.provider.dimensionId != -1 || ep.posY < 127.5) {
+			AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(ep, 6);
+			Entity at = ep.worldObj.findNearestEntityWithinAABB(EntityMonsterBait.class, box, ep);
+			if (at != null)
+				return false;
+		}
 		if (!ep.worldObj.isRemote) {
 			EntityMonsterBait e = new EntityMonsterBait(ep.worldObj, ep);
 			ep.worldObj.spawnEntityInWorld(e);

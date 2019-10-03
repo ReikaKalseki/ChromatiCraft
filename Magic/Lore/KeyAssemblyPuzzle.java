@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -628,6 +628,9 @@ public class KeyAssemblyPuzzle {
 					//Hex h = location.getNeighbor(dir);
 					//ReikaJavaLibrary.pConsole(a+" > "+dir+" > "+this.getNeighbor(p, dir).occupant);
 					occupant.move(p, dir, ep);
+				}
+				else {
+					ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, ep, 0.3F, 0.5F);
 				}
 			}
 			//ReikaJavaLibrary.pConsole(p.isComplete()+": "+p.activeCells+"/"+p.totalCells);

@@ -123,9 +123,9 @@
 	<chestclear>
 		Finding rooms with chests of loot is always a nice surprise - though slightly less pleasant when a hidden spawner arranges for an unexpected encounter - but actually TAKING all of the loot is something of a chore. And that does not even begin to cover cases like when the chests are inaccessible, such as the one you encountered behind a tripwire some maniac rigged to TNT. Being able to raid these things at a distance would be not only convenient, but prudent.
 	</chestclear>
-	<name>
-
-	</name>
+	<mobbait>
+		No matter what you try, going out at night seemingly inevitably results in you being tailed by a dozen assorted monsters who will not stop the chase until you or they are destroyed. You do not always have enough firepower on hand to make that a desirable gamble, and so deception might be in order instead - leaving something behind to distract them, giving you time to flee. One wonders if this works on all pursuers, regardless of how alien and distorted they may be...
+	</mobbait>
 	<name>
 
 	</name>

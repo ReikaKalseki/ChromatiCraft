@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -292,6 +292,12 @@ public final class AbilityRituals {
 		rit.addAura(CrystalElement.LIME, 9000);
 		rit.addAura(CrystalElement.LIGHTGRAY, 1000);
 		rit.addAura(CrystalElement.WHITE, 3000);
+		this.addRitual(rit);
+
+		rit = new AbilityRitual(Chromabilities.MOBBAIT);
+		rit.addAura(CrystalElement.LIGHTGRAY, 12000);
+		rit.addAura(CrystalElement.RED, 9000);
+		rit.addAura(CrystalElement.PINK, 3000);
 		this.addRitual(rit);
 	}
 

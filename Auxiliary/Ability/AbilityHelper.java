@@ -226,10 +226,13 @@ public class AbilityHelper {
 		progressMap.addValue(Chromabilities.BEEALYZE, ProgressStage.LINK);
 		progressMap.addValue(Chromabilities.NUKER, ProgressStage.STRUCTCOMPLETE);
 
-		progressMap.addValue(Chromabilities.LIGHTCAST, ProgressStage.KILLMOB);
+		progressMap.addValue(Chromabilities.LIGHTCAST, ProgressStage.BEDROCK);
 		//progressMap.addValue(Chromabilities.JUMP);
 		//progressMap.addValue(Chromabilities.SUPERBUILD);
-		//progressMap.addValue(Chromabilities.CHESTCLEAR);
+		if (ModList.TWILIGHT.isLoaded())
+			progressMap.addValue(Chromabilities.CHESTCLEAR, ProgressStage.TWILIGHT);
+
+		progressMap.addValue(Chromabilities.MOBBAIT, ProgressStage.KILLMOB);
 
 		for (Ability a : progressMap.keySet()) {
 			if (progressMap.get(a).contains(ProgressStage.STRUCTCOMPLETE)) {

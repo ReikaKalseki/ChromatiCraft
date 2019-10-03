@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.ChromatiCraft.Entity.EntityLightShot;
 import Reika.ChromatiCraft.Entity.EntityLumaBurst;
 import Reika.ChromatiCraft.Entity.EntityMeteorShot;
+import Reika.ChromatiCraft.Entity.EntityMonsterBait;
 import Reika.ChromatiCraft.Entity.EntityNukerBall;
 import Reika.ChromatiCraft.Entity.EntityOverloadingPylonShock;
 import Reika.ChromatiCraft.Entity.EntityParticleCluster;
@@ -35,7 +36,6 @@ import Reika.ChromatiCraft.Entity.EntityTunnelNuker;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
 import Reika.ChromatiCraft.Items.Tools.ItemDataCrystal.EntityDataCrystal;
 import Reika.ChromatiCraft.ModInterface.EntityChromaManaBurst;
-import Reika.ChromatiCraft.ModInterface.EntityMonsterBait;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.Registry.EntityEnum;
 

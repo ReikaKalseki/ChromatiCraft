@@ -1,4 +1,4 @@
-package Reika.ChromatiCraft.ModInterface;
+package Reika.ChromatiCraft.Entity;
 
 import java.util.List;
 import java.util.UUID;
@@ -40,6 +40,7 @@ public class EntityMonsterBait extends InertEntity implements IEntityAdditionalS
 	private int lifespan;
 
 	private int life;
+	private EntityMob currentEntity;
 
 	public EntityMonsterBait(World world) {
 		super(world);
@@ -60,15 +61,15 @@ public class EntityMonsterBait extends InertEntity implements IEntityAdditionalS
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
-		EntityMob nearest = this.findClosestValidMob();
+		currentEntity = this.findClosestValidMob();
 		if (worldObj.isRemote) {
 			life = dataWatcher.getWatchableObjectInt(24);
 			if (life > 5)
-				this.doParticles(nearest);
+				this.doParticles();
 		}
 		else {
-			if (this.isActive() && nearest != null) {
-				nearest.setTarget(this);
+			if (this.isActive() && currentEntity != null) {
+				currentEntity.setTarget(this);
 			}
 			life--;
 			if (life <= 0)
@@ -99,7 +100,7 @@ public class EntityMonsterBait extends InertEntity implements IEntityAdditionalS
 	}
 
 	@SideOnly(Side.CLIENT)
-	private void doParticles(EntityMob e) {
+	private void doParticles() {
 		int n = 1+rand.nextInt(4);
 		for (int i = 0; i < n; i++) {
 			double r = ReikaRandomHelper.getRandomPlusMinus(0.5, 0.0625);
@@ -111,10 +112,10 @@ public class EntityMonsterBait extends InertEntity implements IEntityAdditionalS
 			EntityBlurFX fx = new EntityBlurFX(worldObj, posX+xyz[0], posY+xyz[1], posZ+xyz[2]);
 			fx.setGravity(g).setLife(l).setScale(s);
 			fx.setIcon(ChromaIcons.FADE_GENTLE).setAlphaFading().setRapidExpand().forceIgnoreLimits();
-			if (e != null) {
-				MotionController m = new EntityLockMotionController(e, 0.03125/8, 0.125*4, 0.875);
+			if (currentEntity != null) {
+				MotionController m = new EntityLockMotionController(currentEntity, 0.03125/8, 0.125*4, 0.875);
 				fx.setMotionController(m);
-				c = ReikaColorAPI.mixColorBiDirectional(ReikaEntityHelper.mobToColor(e), 0x000000, 0xffffff, (float)ReikaRandomHelper.getRandomPlusMinus(0.5, 0.125));
+				c = ReikaColorAPI.mixColorBiDirectional(ReikaEntityHelper.mobToColor(currentEntity), 0x000000, 0xffffff, (float)ReikaRandomHelper.getRandomPlusMinus(0.5, 0.25));
 			}
 			fx.setColor(c);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
@@ -171,7 +172,7 @@ public class EntityMonsterBait extends InertEntity implements IEntityAdditionalS
 
 	@Override
 	public void attack(double dmg) {
-		life -= dmg;
+		life -= dmg/4D;
 		if (life <= 0)
 			this.setDead();
 	}
@@ -182,6 +183,17 @@ public class EntityMonsterBait extends InertEntity implements IEntityAdditionalS
 
 	public float getBrightness() {
 		return life <= 0 ? 0 : life >= MIN_LIFE ? 1 : (float)Math.sqrt(life/(float)MIN_LIFE);
+	}
+
+	public int getRenderColor(double layer) {
+		if (currentEntity != null) {
+			float f = (float)(0.5+0.25*Math.sin(ticksExisted/12D+layer*60D));
+			return ReikaColorAPI.mixColorBiDirectional(ReikaEntityHelper.mobToColor(currentEntity), 0x000000, 0xffffff, f);
+		}
+		else {
+			int c0 = ReikaColorAPI.getColorWithBrightnessMultiplier(0xffffff, this.getBrightness());
+			return ReikaColorAPI.getColorWithBrightnessMultiplier(c0, 0.65F+(float)(0.35F*Math.sin(ticksExisted/10D+layer*40D)));
+		}
 	}
 
 }

@@ -367,8 +367,9 @@ public enum ChromaResearch implements ProgressElement {
 	NUKER(			Chromabilities.NUKER,						ResearchLevel.ENDGAME),
 	LIGHTCAST(		Chromabilities.LIGHTCAST),
 	JUMPABILITY(	Chromabilities.JUMP, 						ResearchLevel.ENERGYEXPLORE),
-	SUPERBUILD	(	Chromabilities.SUPERBUILD, 					ResearchLevel.ENERGYEXPLORE),
-	CHESTCLEAR	(	Chromabilities.CHESTCLEAR, 					ResearchLevel.ENERGYEXPLORE),
+	SUPERBUILD(		Chromabilities.SUPERBUILD, 					ResearchLevel.ENERGYEXPLORE),
+	CHESTCLEAR(		Chromabilities.CHESTCLEAR, 					ResearchLevel.ENERGYEXPLORE),
+	MOBBAIT(		Chromabilities.MOBBAIT, 					ResearchLevel.ENERGYEXPLORE),
 
 	STRUCTUREDESC("Structures", ""),
 	PYLON(			Structures.PYLON,			StoneTypes.FOCUS.ordinal(),				ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),

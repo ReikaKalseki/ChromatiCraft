@@ -173,7 +173,7 @@ public enum ChromaIcons implements IconEnum {
 
 	public static boolean loadXmasTextures() {
 		Calendar c = Calendar.getInstance();
-		return (c.get(Calendar.MONTH) == Calendar.DECEMBER && c.get(Calendar.DAY_OF_MONTH) >= 21) || (c.get(Calendar.MONTH) == Calendar.JANUARY && c.get(Calendar.DAY_OF_MONTH) <= 4);
+		return (c.get(Calendar.MONTH) == Calendar.DECEMBER && c.get(Calendar.DAY_OF_MONTH) >= 18) || (c.get(Calendar.MONTH) == Calendar.JANUARY && c.get(Calendar.DAY_OF_MONTH) <= 5);
 	}
 
 	@SideOnly(Side.CLIENT)
