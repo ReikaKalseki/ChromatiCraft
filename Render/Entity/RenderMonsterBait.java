@@ -18,19 +18,19 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 
-import Reika.ChromatiCraft.ModInterface.EntityVoidMonsterBait;
+import Reika.ChromatiCraft.ModInterface.EntityMonsterBait;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
-public class RenderVoidMonsterBait extends Render {
+public class RenderMonsterBait extends Render {
 
 	@Override
 	public void doRender(Entity e, double par2, double par4, double par6, float par8, float ptick) {
 		ReikaTextureHelper.bindTerrainTexture();
-		EntityVoidMonsterBait eb = (EntityVoidMonsterBait)e;
+		EntityMonsterBait eb = (EntityMonsterBait)e;
 		Tessellator v5 = Tessellator.instance;
 		IIcon icon = ChromaIcons.FLARE.getIcon();
 		float u = icon.getMinU();
@@ -57,9 +57,8 @@ public class RenderVoidMonsterBait extends Render {
 		//GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
 		v5.startDrawingQuads();
 		v5.setBrightness(240);
-		double s1 = 1.5;
-		double d = 0.001;
-		int c1 = ReikaColorAPI.getColorWithBrightnessMultiplier(0xfffff, eb.getBrightness());
+		double s1 = 0.5;
+		int c1 = ReikaColorAPI.getColorWithBrightnessMultiplier(0xffffff, eb.getBrightness());
 		v5.setColorOpaque_I(c1);
 		v5.addVertexWithUV(-s1, -s1, 0, u, v);
 		v5.addVertexWithUV(s1, -s1, 0, du, v);

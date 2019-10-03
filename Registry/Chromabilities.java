@@ -97,6 +97,7 @@ public enum Chromabilities implements Ability {
 	//VOXELPLACE(null, false);
 	SUPERBUILD(null, false),
 	CHESTCLEAR(Phase.END, false),
+	MOBBAIT(null, false),
 	;
 
 
@@ -336,6 +337,8 @@ public enum Chromabilities implements Ability {
 				return AbilityCalls.doLightCast(ep);
 			case JUMP:
 				return AbilityCalls.doJump(ep, data);
+			case MOBBAIT:
+				return AbilityCalls.doMobBait(ep);
 			default:
 				return false;
 		}
@@ -405,6 +408,7 @@ public enum Chromabilities implements Ability {
 			case LASER:
 			case LIGHTCAST:
 			case JUMP:
+			case MOBBAIT:
 				return true;
 			default:
 				return false;

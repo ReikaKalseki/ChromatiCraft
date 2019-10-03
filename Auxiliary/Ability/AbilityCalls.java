@@ -65,6 +65,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.ModInterface.EntityMonsterBait;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -1213,5 +1214,13 @@ public class AbilityCalls {
 			b.update();
 		}
 	}*/
+
+	public static boolean doMobBait(EntityPlayer ep) {
+		if (!ep.worldObj.isRemote) {
+			EntityMonsterBait e = new EntityMonsterBait(ep.worldObj, ep);
+			ep.worldObj.spawnEntityInWorld(e);
+		}
+		return true;
+	}
 
 }

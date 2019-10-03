@@ -3,7 +3,7 @@ package Reika.ChromatiCraft.ModInterface;
 import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -21,7 +21,6 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.VoidMonster.Auxiliary.VoidMonsterBait;
-import Reika.VoidMonster.Entity.EntityVoidMonster;
 
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import cpw.mods.fml.relauncher.Side;
@@ -29,7 +28,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 
 @Strippable(value = "Reika.VoidMonster.Auxiliary.VoidMonsterBait")
-public class EntityVoidMonsterBait extends InertEntity implements VoidMonsterBait, IEntityAdditionalSpawnData {
+public class EntityMonsterBait extends InertEntity implements IEntityAdditionalSpawnData, VoidMonsterBait {
 
 	private static final int MIN_LIFE = 100; //5s
 	private static final int MAX_LIFE = 600; //30s
@@ -39,13 +38,14 @@ public class EntityVoidMonsterBait extends InertEntity implements VoidMonsterBai
 
 	private int life;
 
-	public EntityVoidMonsterBait(World world) {
+	public EntityMonsterBait(World world) {
 		super(world);
 	}
 
-	public EntityVoidMonsterBait(World world, EntityPlayer ep) {
+	public EntityMonsterBait(World world, EntityPlayer ep) {
 		super(world);
-		lifespan = ReikaRandomHelper.getRandomBetween(MIN_LIFE, MAX_LIFE);
+		this.setLifeSpan(ReikaRandomHelper.getRandomBetween(MIN_LIFE, MAX_LIFE));
+		this.setLocationAndAngles(ep.posX, ep.posY+ep.getEyeHeight()/4F, ep.posZ, 0, 0);
 		placer = ep.getPersistentID();
 	}
 
@@ -57,11 +57,17 @@ public class EntityVoidMonsterBait extends InertEntity implements VoidMonsterBai
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
+		AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(this, 16);
+		EntityMob nearest = (EntityMob)worldObj.findNearestEntityWithinAABB(EntityMob.class, box, this);
 		if (worldObj.isRemote) {
 			life = dataWatcher.getWatchableObjectInt(24);
-			this.doParticles();
+			if (life > 5)
+				this.doParticles(nearest);
 		}
 		else {
+			if (this.isActive() && nearest != null) {
+				nearest.setTarget(this);
+			}
 			life--;
 			if (life <= 0)
 				this.setDead();
@@ -71,20 +77,18 @@ public class EntityVoidMonsterBait extends InertEntity implements VoidMonsterBai
 	}
 
 	@SideOnly(Side.CLIENT)
-	private void doParticles() {
+	private void doParticles(EntityMob e) {
 		int n = 1+rand.nextInt(4);
 		for (int i = 0; i < n; i++) {
 			double r = ReikaRandomHelper.getRandomPlusMinus(0.5, 0.0625);
 			double[] xyz = ReikaPhysicsHelper.polarToCartesian(r, 0, rand.nextDouble()*360);
-			int c = ReikaColorAPI.mixColors(0xa0a0a0, 0xffffff, rand.nextFloat());
-			float g = (float)ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
-			int l = ReikaRandomHelper.getRandomBetween(10, 80);
+			int c = ReikaColorAPI.mixColors(0xa0a0a0, 0xffffff, Math.min(rand.nextFloat(), this.getBrightness()));
+			float g = (float)ReikaRandomHelper.getRandomPlusMinus(0, 0.035);
+			int l = Math.min(life, ReikaRandomHelper.getRandomBetween(10, 80));
 			float s = (float)ReikaRandomHelper.getRandomBetween(0.5, 2);
-			EntityBlurFX fx = new EntityBlurFX(worldObj, xyz[0], xyz[1], xyz[2]);
+			EntityBlurFX fx = new EntityBlurFX(worldObj, posX+xyz[0], posY+xyz[1], posZ+xyz[2]);
 			fx.setColor(c).setGravity(g).setLife(l).setScale(s);
-			fx.setIcon(ChromaIcons.FADE_GENTLE).setAlphaFading().setRapidExpand().setNoSlowdown().forceIgnoreLimits();
-			AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(this, 16);
-			Entity e = worldObj.findNearestEntityWithinAABB(EntityVoidMonster.class, box, this);
+			fx.setIcon(ChromaIcons.FADE_GENTLE).setAlphaFading().setRapidExpand().forceIgnoreLimits();
 			if (e != null) {
 				MotionController m = new EntityLockMotionController(e, 0.03125/8, 0.125*4, 0.875);
 				fx.setMotionController(m);
