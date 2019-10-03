@@ -1,8 +1,10 @@
 package Reika.ChromatiCraft.ModInterface;
 
+import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,6 +18,7 @@ import Reika.DragonAPI.Base.InertEntity;
 import Reika.DragonAPI.Instantiable.ParticleController.EntityLockMotionController;
 import Reika.DragonAPI.Interfaces.MotionController;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -57,8 +60,7 @@ public class EntityMonsterBait extends InertEntity implements IEntityAdditionalS
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
-		AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(this, 16);
-		EntityMob nearest = (EntityMob)worldObj.findNearestEntityWithinAABB(EntityMob.class, box, this);
+		EntityMob nearest = this.findClosestValidMob();
 		if (worldObj.isRemote) {
 			life = dataWatcher.getWatchableObjectInt(24);
 			if (life > 5)
@@ -76,6 +78,26 @@ public class EntityMonsterBait extends InertEntity implements IEntityAdditionalS
 		}
 	}
 
+	private EntityMob findClosestValidMob() {
+		AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(this, 16);
+		List<EntityMob> li = worldObj.getEntitiesWithinAABB(EntityMob.class, box);
+		EntityMob ret = null;
+		double maxd = Double.POSITIVE_INFINITY;
+		for (EntityMob e : li) {
+			if (!e.isDead) {
+				Entity tgt = e.getEntityToAttack();
+				if (tgt != this && tgt instanceof EntityMonsterBait)
+					continue;
+				double dist = e.getDistanceSqToEntity(this);
+				if (dist < maxd) {
+					maxd = dist;
+					ret = e;
+				}
+			}
+		}
+		return ret;
+	}
+
 	@SideOnly(Side.CLIENT)
 	private void doParticles(EntityMob e) {
 		int n = 1+rand.nextInt(4);
@@ -87,12 +109,14 @@ public class EntityMonsterBait extends InertEntity implements IEntityAdditionalS
 			int l = Math.min(life, ReikaRandomHelper.getRandomBetween(10, 80));
 			float s = (float)ReikaRandomHelper.getRandomBetween(0.5, 2);
 			EntityBlurFX fx = new EntityBlurFX(worldObj, posX+xyz[0], posY+xyz[1], posZ+xyz[2]);
-			fx.setColor(c).setGravity(g).setLife(l).setScale(s);
+			fx.setGravity(g).setLife(l).setScale(s);
 			fx.setIcon(ChromaIcons.FADE_GENTLE).setAlphaFading().setRapidExpand().forceIgnoreLimits();
 			if (e != null) {
 				MotionController m = new EntityLockMotionController(e, 0.03125/8, 0.125*4, 0.875);
 				fx.setMotionController(m);
+				c = ReikaColorAPI.mixColorBiDirectional(ReikaEntityHelper.mobToColor(e), 0x000000, 0xffffff, (float)ReikaRandomHelper.getRandomPlusMinus(0.5, 0.125));
 			}
+			fx.setColor(c);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
