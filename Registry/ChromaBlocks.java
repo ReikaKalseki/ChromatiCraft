@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.Block.BlockCrystalTank;
 import Reika.ChromatiCraft.Block.BlockCrystalTile;
 import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
+import Reika.ChromatiCraft.Block.BlockDistortingEffect;
 import Reika.ChromatiCraft.Block.BlockDummyAux;
 import Reika.ChromatiCraft.Block.BlockEncrustedCrystal;
 import Reika.ChromatiCraft.Block.BlockEnderTNT;
@@ -279,6 +280,7 @@ public enum ChromaBlocks implements BlockEnum {
 	RAYBLEND(BlockRayblendFloor.class,											"chroma.rayblend"),
 	ENCRUSTED(BlockEncrustedCrystal.class,		ItemBlockDyeTypes.class,		"chroma.encrusted"),
 	INJECTORAUX(BlockCastingInjectorFocus.class,								"chroma.injectorfocus"),
+	DISTORTING(BlockDistortingEffect.class,										"chroma.distorting"),
 	;
 
 	private Class blockClass;

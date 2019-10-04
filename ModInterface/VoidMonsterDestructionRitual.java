@@ -9,22 +9,21 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface;
 
-import java.awt.Polygon;
-import java.awt.Rectangle;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
-import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Block.BlockDistortingEffect;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Formula.MathExpression;
 import Reika.DragonAPI.Instantiable.Formula.PeriodicExpression;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
@@ -33,6 +32,7 @@ import Reika.DragonAPI.Instantiable.ParticleController.FlashColorController;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.VoidMonster.API.NonTeleportingDamage;
 import Reika.VoidMonster.API.VoidMonsterHook;
@@ -45,19 +45,16 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class VoidMonsterDestructionRitual implements VoidMonsterHook {
 
-	private final MonsterArena arena;
+	private static final double RADIUS = 64;
+
+	private final WorldLocation center;
 	private final EntityPlayer startingPlayer;
 
 	private static final Random rand = new Random();
 
-	public VoidMonsterDestructionRitual(EntityPlayer ep, double r) {
-		this(ep, MonsterArena.createCircular(ep.posX, ep.posZ, r));
-	}
-
-	public VoidMonsterDestructionRitual(EntityPlayer ep, MonsterArena a) {
+	public VoidMonsterDestructionRitual(EntityPlayer ep, WorldLocation loc) {
 		startingPlayer = ep;
-		arena = a;
-		arena.close(ep.worldObj);
+		center = loc;
 	}
 
 	@ModDependent(ModList.VOIDMONSTER)
@@ -65,14 +62,14 @@ public class VoidMonsterDestructionRitual implements VoidMonsterHook {
 		this.keepWithinArea(e);
 		for (Effects ef : Effects.list) {
 			if (rand.nextInt(ef.effectChance) == 0) {
-				ef.doEffectServer(startingPlayer, e);
+				ef.doEffectServer(this, e);
 			}
 		}
 	}
 
 	private void keepWithinArea(EntityVoidMonster e) {
-		if (!arena.isInside(e)) {
-			e.moveTowards(arena.centerX, e.posY, arena.centerZ, 1);
+		if (e.getDistanceSq(center.xCoord+0.5, center.yCoord+0.5, center.zCoord+0.5) >= RADIUS*RADIUS) {
+			e.moveTowards(center.xCoord+0.5, center.yCoord+0.5, center.zCoord+0.5, 1);
 		}
 	}
 
@@ -80,56 +77,11 @@ public class VoidMonsterDestructionRitual implements VoidMonsterHook {
 		MonsterGenerator.instance.addCooldown(e, 20*60*ReikaRandomHelper.getRandomBetween(20, 45));
 	}
 
-	public static class MonsterArena {
-
-		private final Polygon perimeter = new Polygon();
-		private double centerX;
-		private double centerZ;
-
-		public MonsterArena() {
-
-		}
-
-		public static MonsterArena createCircular(double x, double z, double r) {
-			MonsterArena m = new MonsterArena();
-			for (int i = 0; i < 360; i++) {
-				double a = Math.toRadians(i);
-				double dx = x+r*Math.cos(a);
-				double dz = z+r*Math.sin(a);
-				m.addPosition(dx, dz);
-			}
-			return m;
-		}
-
-		public void close(World world) {
-			for (int i = 0; i < perimeter.npoints; i += 8) {
-
-			}
-		}
-
-		public void addPosition(EntityPlayer ep) {
-			this.addPosition(ep.posX, ep.posZ);
-		}
-
-		private void addPosition(double dx, double dz) {
-			int x = (int)Math.round(dx*100);
-			int y = (int)Math.round(dz*100);
-			perimeter.addPoint(x, y);
-			Rectangle r = perimeter.getBounds();
-			centerX = r.getCenterX();
-			centerZ = r.getCenterY();
-		}
-
-		public boolean isInside(Entity e) {
-			return perimeter.contains(e.posX*100, e.posZ*100);
-		}
-
-	}
-
 	public static enum Effects {
 		COLLAPSING_SPHERE(40),
 		RAYS(70),
-		EXPLOSION(200);
+		EXPLOSION(200),
+		DISTORTION(400);
 
 		private final int effectChance;
 
@@ -140,8 +92,8 @@ public class VoidMonsterDestructionRitual implements VoidMonsterHook {
 		}
 
 		@ModDependent(ModList.VOIDMONSTER)
-		public void doEffectServer(EntityPlayer ep, EntityVoidMonster e) {
-			DamageSource src = new VoidMonsterRitualDamage(ep);
+		public void doEffectServer(VoidMonsterDestructionRitual rit, EntityVoidMonster e) {
+			DamageSource src = new VoidMonsterRitualDamage(rit.startingPlayer);
 			switch(this) {
 				case COLLAPSING_SPHERE:
 					e.attackEntityFrom(src, 20);
@@ -151,6 +103,25 @@ public class VoidMonsterDestructionRitual implements VoidMonsterHook {
 					break;
 				case EXPLOSION:
 					e.worldObj.newExplosion(e, e.posX, e.posY, e.posZ, 9, true, true);
+					break;
+				case DISTORTION:
+					e.attackEntityFrom(src, 20);
+					int r = (int)(RADIUS*1.5);
+					int r2 = r/3;
+					for (int i = -r; i <= r; i++) {
+						for (int j = -r2; j <= r2; j++) {
+							for (int k = -r; k <= r; k++) {
+								if (ReikaMathLibrary.isPointInsideEllipse(i, j, k, r, r2, r)) {
+									int dx = rit.center.xCoord+i;
+									int dy = rit.center.yCoord+j;
+									int dz = rit.center.zCoord+k;
+									if (BlockDistortingEffect.canReplace(e.worldObj, dx, dy, dz)) {
+										BlockDistortingEffect.doReplace(e.worldObj, dx, dy, dz, false);
+									}
+								}
+							}
+						}
+					}
 					break;
 			}
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.VOIDMONSTERRITUAL.ordinal(), new PacketTarget.RadiusTarget(e, 128), e.getEntityId(), this.ordinal());
@@ -202,6 +173,8 @@ public class VoidMonsterDestructionRitual implements VoidMonsterHook {
 					f = 0.5F;
 					break;
 				case EXPLOSION:
+					break;
+				case DISTORTION:
 					break;
 			}
 			ReikaSoundHelper.playClientSound(ChromaSounds.FLAREATTACK, e, 1, f, false);
