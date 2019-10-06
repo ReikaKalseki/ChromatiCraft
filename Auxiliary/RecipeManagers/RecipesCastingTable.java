@@ -420,7 +420,7 @@ public class RecipesCastingTable {
 		}
 
 		ItemStack is = ChromaTiles.STAND.getCraftedProduct();
-		sr = new ShapedOreRecipe(is, "I I", "SLS", "CCC", 'I', Items.iron_ingot, 'C', "cobblestone", 'S', ReikaItemHelper.stoneSlab.asItemStack(), 'L', ReikaItemHelper.lapisDye);
+		sr = new ShapedOreRecipe(is, "I I", "SLS", "CCC", 'I', Items.iron_ingot, 'C', "cobblestone", 'S', ReikaItemHelper.stoneSlab, 'L', ReikaItemHelper.lapisDye);
 		this.addRecipe(new StandRecipe(is, sr));
 
 		is = ChromaTiles.ENCHANTER.getCraftedProduct();
@@ -484,7 +484,7 @@ public class RecipesCastingTable {
 		this.addRecipe(hr);
 
 		is = ChromaTiles.REVERTER.getCraftedProduct();
-		sr = new ShapedOreRecipe(is, " F ", "FBF", "LSL", 'L', ReikaItemHelper.fern.asItemStack(), 'F', "flower", 'S', ChromaStacks.greenShard, 'B', Items.redstone);
+		sr = new ShapedOreRecipe(is, " F ", "FBF", "LSL", 'L', ReikaItemHelper.fern, 'F', "flower", 'S', ChromaStacks.greenShard, 'B', Items.redstone);
 		this.addRecipe(new ReversionLotusRecipe(is, sr));
 
 		is = ChromaTiles.COBBLEGEN.getCraftedProduct();

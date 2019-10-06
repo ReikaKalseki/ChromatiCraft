@@ -18,6 +18,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator.Accelerat
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 
+@Deprecated
 public class RailCraftMultiBlockAcceleration extends Acceleration {
 
 	public static final RailCraftMultiBlockAcceleration instance = new RailCraftMultiBlockAcceleration();
