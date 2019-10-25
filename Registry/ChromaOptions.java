@@ -18,12 +18,14 @@ import Reika.DragonAPI.Interfaces.Configuration.CustomCategoryConfig;
 import Reika.DragonAPI.Interfaces.Configuration.DecimalConfig;
 import Reika.DragonAPI.Interfaces.Configuration.IntegerConfig;
 import Reika.DragonAPI.Interfaces.Configuration.MatchingConfig;
+import Reika.DragonAPI.Interfaces.Configuration.SegmentedConfigList;
+import Reika.DragonAPI.Interfaces.Configuration.SelectiveConfig;
 import Reika.DragonAPI.Interfaces.Configuration.StringConfig;
 import Reika.DragonAPI.Interfaces.Configuration.UserSpecificConfig;
 import Reika.DragonAPI.Interfaces.Registry.Dependency;
 
 
-public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig, StringConfig, MatchingConfig, CustomCategoryConfig, UserSpecificConfig, Dependency {
+public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, IntegerConfig, BooleanConfig, DecimalConfig, StringConfig, MatchingConfig, CustomCategoryConfig, UserSpecificConfig, Dependency {
 
 	NOISE("Lamp Noises", true),
 	NETHER("Nether Crystals", true),
@@ -88,6 +90,7 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	METEORFIRE("Meteor Tower Projectiles Start Fires On Impact", true),
 	PANELLAMPCOLLISION("Panel-Form Lumen Lamps Have No Hitbox", false),
 	EPILEPSY("Epilepsy Mode", false),
+	PYLONOVERWORLD("Spawn Pylons in Overworld", true);
 	;
 
 	private String label;
@@ -97,6 +100,8 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	private String defaultString;
 	private Class type;
 	private boolean enforcing = false;
+
+	private static boolean t2ConfigModel = false;
 
 	public static final ChromaOptions[] optionList = values();
 
@@ -305,6 +310,36 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 		if (this.isString() && this.name().toLowerCase(Locale.ENGLISH).contains("keybind"))
 			return "Keybinds";
 		return null;
+	}
+
+	@Override
+	public boolean saveIfUnspecified() {
+		switch(this) {
+			case PYLONOVERWORLD:
+				return false;
+			default:
+				return true;
+		}
+	}
+
+	@Override
+	public String getCustomConfigFile() {
+		switch(this) {
+			case PYLONOVERWORLD:
+				return "*_ExtraOptions";
+			default:
+				return null;
+		}
+	}
+
+	@Override
+	public boolean isAccessible() {
+		switch(this) {
+			case PYLONOVERWORLD:
+				return t2ConfigModel;
+			default:
+				return true;
+		}
 	}
 
 }

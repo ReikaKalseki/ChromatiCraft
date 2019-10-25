@@ -1,0 +1,199 @@
+{
+	type = "test1"
+	level = "basic"
+	recipe = {
+		shaped = true
+		input_top = "ore:stone, ore:stone, null"
+		input_middle = "minecraft:gold_ingot, chromaticraft_stack:redShard, null"
+		input_bottom = "ore:ingotGold, null, chromaticraft_stack:purityDust"
+	}
+	output = "chromaticraft_stack:lumaDust*3"
+	output_tag = {
+		tag1 = 370
+		tag2 = "potato"
+	}
+}
+{
+	type = "test2"
+	level = "rune"
+	recipe = {
+		shaped = true
+		input_top = "ore:stone, ore:stone, null"
+		input_middle = "minecraft:gold_ingot, chromaticraft_stack:blueShard, null"
+		input_bottom = "ore:ingotGold, null, chromaticraft_stack:lumaDust"
+	}
+	output = "chromaticraft_stack:avolite*3"
+	runes = {
+		{
+			x = -3
+			y = -1
+			z = 5
+			color = "green"
+		}
+		{
+			x = -5
+			y = -1
+			z = 3
+			color = "red"
+		}
+		{
+			x = -3
+			y = 0
+			z = 4
+			color = "lightgray"
+		}
+	}
+}
+{
+	type = "test3"
+	level = "multi"
+	recipe = {
+		center = "minecraft:wool:15"
+		items = {
+			{
+				item = "minecraft:leaves:1"
+				x = -2
+				z = 4
+			}
+			{
+				item = "minecraft:planks:2"
+				x = 2
+				z = 0
+			}
+			{
+				item = "minecraft:dirt:1"
+				x = 4
+				z = 0
+			}
+		}
+	}
+	output = "chromaticraft_stack:focusDust*11"
+	runes = {
+		{
+			x = 2
+			y = -1
+			z = 5
+			color = "green"
+		}
+		{
+			x = -5
+			y = -1
+			z = 3
+			color = "blue"
+		}
+		{
+			x = 4
+			y = -1
+			z = 5
+			color = "lightblue"
+		}
+	}
+}
+{
+	type = "test4"
+	level = "pylon"
+	recipe = {
+		center = "minecraft:wool:12"
+		items = {
+			{
+				item = "chromaticraft_stack:greenShard"
+				x = -2
+				z = 4
+			}
+			{
+				item = "minecraft:planks:3"
+				x = 2
+				z = 0
+			}
+			{
+				item = "ore:stone"
+				x = 4
+				z = 0
+			}
+		}
+	}
+	energy = {
+		{
+			color = "yellow"
+			amount = 60000
+		}
+		{
+			color = "red"
+			amount = 8000
+		}
+	}
+	output = "chromaticraft_stack:purityDust*17"
+}
+{
+	type = "test5"
+	level = "pylon"
+	recipe = {
+		center = "minecraft:wool:9"
+		items = {
+			{
+				item = "chromaticraft_stack:purpleShard"
+				x = -2
+				z = 4
+			}
+			{
+				item = "minecraft:log:3"
+				x = 2
+				z = 0
+			}
+			{
+				item = "minecraft:dirt"
+				x = 4
+				z = 0
+			}
+		}
+	}
+	energy = {
+		{
+			color = "green"
+			amount = 10000
+		}
+		{
+			color = "blue"
+			amount = 8000
+		}
+	}
+	output = "chromaticraft_stack:whiteShard"
+	output_nbt = {
+		ench = {
+			{
+				id = 21
+				lvl = 2
+			}
+		}
+	}
+	runes = {
+		{
+			x = 2
+			y = -1
+			z = 5
+			color = "green"
+		}
+		{
+			x = -5
+			y = -1
+			z = 3
+			color = "blue"
+		}
+		{
+			x = 4
+			y = -1
+			z = 5
+			color = "lightblue"
+		}
+	}
+	progress = {
+		"killwither"
+		"ocean"
+	}
+	duration = 80
+	typical_crafted_amount = 8
+	central_leftover = "minecraft:bucket:1"
+	automation_cost_factor = 6.5
+	can_be_stacked = true
+	experience_factor = 0.67
+}

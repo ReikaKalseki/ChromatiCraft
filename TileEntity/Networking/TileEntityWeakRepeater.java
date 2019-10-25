@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.DynamicRepeater;
+import Reika.ChromatiCraft.Magic.Network.CrystalLink;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -374,6 +375,11 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 	@Override
 	public int getModifiedThoughput(int basethru, CrystalSource src, CrystalReceiver r) {
 		return !this.canSafelySupply(r) ? 0 : basethru;
+	}
+
+	@Override
+	protected boolean canBeRainAffected(CrystalLink l) {
+		return false;
 	}
 
 	private static enum RepeaterFailures {

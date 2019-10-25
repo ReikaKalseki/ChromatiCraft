@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.NotifiedNetworkTile;
+import Reika.ChromatiCraft.Magic.Network.CrystalLink;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Network.CrystalPath;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -327,7 +328,7 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 	}
 
 	@Override
-	public boolean isRainAffected() {
+	protected boolean canBeRainAffected(CrystalLink l) {
 		return false;
 	}
 

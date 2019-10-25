@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2018
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -170,8 +170,9 @@ public class EntityChromaManaBurst extends ParticleEntity implements IEntityAddi
 							if (boosterEntryTick == -1 || boosterExitTick >= 6) {
 								boosterEntryTick = -1;
 								this.setPosition(p);
+								int t = pathTick;
 								pathTick = Math.min(path.pathToPool.size()-1, pathTick+1);
-								if (pathTick >= path.pathToBooster.size()) {
+								if (pathTick >= path.pathToPool.size()-1) {
 									this.dumpMana();
 								}
 							}

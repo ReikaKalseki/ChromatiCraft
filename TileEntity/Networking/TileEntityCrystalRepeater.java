@@ -42,6 +42,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.LinkWatchingRepeater;
+import Reika.ChromatiCraft.Magic.Interfaces.NaturalCrystalSource;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Magic.Network.CrystalLink;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
@@ -637,15 +638,24 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		super.doBottleneckDisplay();
 	}
 
-	public boolean isRainAffected() {
+	public final boolean isRainAffected() {
 		return isRainLossy;
 	}
 
 	@Override
 	public final void onLinkRecalculated(CrystalLink l) {
-		if (l.isRainable() && PylonFinder.isRainableBiome(worldObj.getBiomeGenForCoords(xCoord, zCoord))) {
-			rainable = true;
-		}
+		rainable = this.canBeRainAffected(l) && l.isRainable() && PylonFinder.isRainableBiome(worldObj.getBiomeGenForCoords(xCoord, zCoord));
+	}
+
+	protected boolean canBeRainAffected(CrystalLink l) {
+		if (this.isTurbocharged())
+			return false;
+		CrystalNetworkTile loc = l.getOtherEnd(this);
+		if (loc instanceof NaturalCrystalSource)
+			return false;
+		if (loc instanceof TileEntityCrystalRepeater && ((TileEntityCrystalRepeater)loc).isTurbocharged())
+			return false;
+		return true;
 	}
 
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -20,6 +20,7 @@ import Reika.DragonAPI.Base.DragonAPIMod;
 import Reika.DragonAPI.Instantiable.IO.ControlledConfig;
 import Reika.DragonAPI.Interfaces.Configuration.ConfigList;
 import Reika.DragonAPI.Interfaces.Registry.IDRegistry;
+import Reika.DragonAPI.Libraries.Java.ReikaJVMParser;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
@@ -45,6 +46,8 @@ public class ChromaConfig extends ControlledConfig {
 			String name = modTrees.get(i);
 			trees[i+vanillaTreeCount] = this.registerAdditionalOption("Generate Mod Logs", name, true);
 		}
+
+		registerProperty("t2ConfigModel", ReikaJVMParser.isArgumentPresent("-ChromaTrustingConfigModel"));
 
 		guardianExceptions = this.registerAdditionalOption("Other Options", "Guardian Stone Exceptions", this.getDefaultGuardstoneExceptions());
 	}

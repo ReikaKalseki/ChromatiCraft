@@ -1,0 +1,16 @@
+{
+	type = "test1"
+	catalyst = "minecraft:brick"
+	items = {
+		"minecraft:slime_ball"
+		"minecraft:gold_ore"
+		"chromaticraft_stack:purityDust*4"
+		"chromaticraft_stack:lumaDust*17"
+		"minecraft:potato*61"
+	}
+	output = "minecraft:grass"
+	output_tag = {
+		
+	}
+	allow_doubling = false
+}

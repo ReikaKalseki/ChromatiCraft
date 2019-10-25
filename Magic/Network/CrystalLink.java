@@ -16,6 +16,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.LinkWatchingRepeater;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldChunk;
@@ -30,6 +31,7 @@ public final class CrystalLink {
 
 	boolean hasLOS = false;
 	boolean isRainable = false;
+	public final double length;
 	private boolean activeEndpoint1 = false;
 	private boolean activeEndpoint2 = false;
 
@@ -49,6 +51,7 @@ public final class CrystalLink {
 		}
 		activeEndpoint1 = l1.getTileEntity() instanceof LinkWatchingRepeater;
 		activeEndpoint2 = l2.getTileEntity() instanceof LinkWatchingRepeater;
+		length = l1.getDistanceTo(l2);
 	}
 
 	private void recalculateLOS() {
@@ -120,6 +123,11 @@ public final class CrystalLink {
 
 	public boolean hasLOS() {
 		return hasLOS;
+	}
+
+	/** Returns loc2 if the tile is on neither end */
+	public CrystalNetworkTile getOtherEnd(CrystalNetworkTile te) {
+		return PylonFinder.getNetTileAt(loc1.equals(te.getWorld(), te.getX(), te.getY(), te.getZ()) ? loc2 : loc1, true);
 	}
 
 }

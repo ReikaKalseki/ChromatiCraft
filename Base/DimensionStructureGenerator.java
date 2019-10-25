@@ -53,6 +53,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.RayBlendGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.TessellationGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.ThreeDMazeGenerator;
+import Reika.ChromatiCraft.World.Dimension.Structure.TracePuzzleGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.WaterPuzzleGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Exception.RegistrationException;
@@ -374,9 +375,9 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		WATER(WaterPuzzleGenerator.class, "Channeled Flow"),
 		TESSELLATION(TessellationGenerator.class, "Spatial Satisfaction"),
 		LIGHTPANEL(LightPanelGenerator.class, "Glowing Logic"),
-		PISTONTAPE(PistonTapeGenerator.class, "?"),
+		PISTONTAPE(PistonTapeGenerator.class, "Filter Cycle"),
 		RAYBLEND(RayBlendGenerator.class, "Crystal Interference"),
-		//TRACES(),//http://www.cross-plus-a.com/data/arukone.gif
+		TRACES(TracePuzzleGenerator.class, "Parallel Connections"),//http://www.cross-plus-a.com/data/arukone.gif
 		;
 
 		private final Class generatorClass;
