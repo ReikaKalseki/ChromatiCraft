@@ -48,7 +48,7 @@ public class RayBlendEntrance extends DynamicStructurePiece<RayBlendGenerator> {
 		while (y+EntranceLevel.HEIGHT+EntranceLevel.SEP < y2) {
 			int sX = last != null ? last.shaftUp.x : Integer.MIN_VALUE;
 			int sZ = last != null ? last.shaftUp.y : Integer.MIN_VALUE;
-			EntranceLevel el = new EntranceLevel(rand, floor, x, z, sX, sZ, EntranceLevel.rand(), EntranceLevel.rand());
+			EntranceLevel el = new EntranceLevel(rand, floor, x, z, sX, sZ);
 			floor++;
 			el.generate(world, x, y, z);
 			y += EntranceLevel.HEIGHT+EntranceLevel.SEP;
@@ -116,10 +116,15 @@ public class RayBlendEntrance extends DynamicStructurePiece<RayBlendGenerator> {
 		private final ArrayList<Point> path = new ArrayList();
 		//private final MultiMap<Point, ForgeDirection> openSides = new MultiMap(CollectionType.HASHSET);
 
-		private EntranceLevel(Random rand, int fn, int rx, int rz, int xd, int zd, int xu, int zu) {
+		private EntranceLevel(Random rand, int fn, int rx, int rz, int xd, int zd) {
 			floorIndex = fn;
 			shaftDown = xd != Integer.MIN_VALUE ? new Point(xd, zd) : null;
-			shaftUp = new Point(xu, zu);
+
+			Point p = new Point(EntranceLevel.rand(), EntranceLevel.rand());
+			while (p.equals(shaftDown)) {
+				p = new Point(EntranceLevel.rand(), EntranceLevel.rand());
+			}
+			shaftUp = p;
 
 			for (int i = -GRID_RADIUS; i <= GRID_RADIUS; i++) {
 				for (int k = -GRID_RADIUS; k <= GRID_RADIUS; k++) {
@@ -451,8 +456,9 @@ public class RayBlendEntrance extends DynamicStructurePiece<RayBlendGenerator> {
 				int dz = this.getCenterZ(true)+dir.offsetZ*Cell.TOTAL_RADIUS;
 				for (int h = 1; h < EntranceLevel.HEIGHT; h++) {
 					for (int a = -HOLE_RADIUS; a <= HOLE_RADIUS; a++) {
-						Block b = sides[d] ? Blocks.air : ChromaBlocks.STRUCTSHIELD.getBlockInstance();
-						int m = sides[d] ? 0 : BlockType.GLASS.metadata;
+						boolean air = sides[d] || Math.abs(xPos+dir.offsetX) > EntranceLevel.GRID_RADIUS || Math.abs(zPos+dir.offsetZ) > EntranceLevel.GRID_RADIUS;
+						Block b = air ? Blocks.air : ChromaBlocks.STRUCTSHIELD.getBlockInstance();
+						int m = air ? 0 : BlockType.GLASS.metadata;
 						if (dir.offsetX == 0) {
 							world.setBlock(dx+a, y+h, dz, b, m, 3);
 						}
