@@ -1,8 +1,12 @@
 package Reika.ChromatiCraft.World.Dimension.Structure.RayBlend;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -33,6 +37,8 @@ public class RayBlendEntrance extends DynamicStructurePiece<RayBlendGenerator> {
 
 		x -= EntranceLevel.GRID_RADIUS*EntranceLevel.CELL_SPACING+2;
 
+		Random rand = new Random();
+
 		int y2 = world.getTopSolidOrLiquidBlock(x, z);
 		int y = y1;
 		EntranceLevel last = null;
@@ -40,9 +46,9 @@ public class RayBlendEntrance extends DynamicStructurePiece<RayBlendGenerator> {
 		int dz = 0;
 		int floor = 0;
 		while (y+EntranceLevel.HEIGHT+EntranceLevel.SEP < y2) {
-			int sX = last != null ? last.shaftUpX : Integer.MIN_VALUE;
-			int sZ = last != null ? last.shaftUpZ : Integer.MIN_VALUE;
-			EntranceLevel el = new EntranceLevel(floor, x, z, sX, sZ, EntranceLevel.rand(), EntranceLevel.rand());
+			int sX = last != null ? last.shaftUp.x : Integer.MIN_VALUE;
+			int sZ = last != null ? last.shaftUp.y : Integer.MIN_VALUE;
+			EntranceLevel el = new EntranceLevel(rand, floor, x, z, sX, sZ, EntranceLevel.rand(), EntranceLevel.rand());
 			floor++;
 			el.generate(world, x, y, z);
 			y += EntranceLevel.HEIGHT+EntranceLevel.SEP;
@@ -103,19 +109,18 @@ public class RayBlendEntrance extends DynamicStructurePiece<RayBlendGenerator> {
 		private final HashMap<Point, Cell> floorCells = new HashMap();
 		private final HashMap<Point, Cell> ceilCells = new HashMap();
 
-		private final int shaftDownX;
-		private final int shaftDownZ;
-		private final int shaftUpX;
-		private final int shaftUpZ;
+		private final Point shaftDown;
+		private final Point shaftUp;
 
 		private final int floorIndex;
 
-		private EntranceLevel(int fn, int rx, int rz, int xd, int zd, int xu, int zu) {
+		private final ArrayList<Point> path = new ArrayList();
+		//private final MultiMap<Point, ForgeDirection> openSides = new MultiMap(CollectionType.HASHSET);
+
+		private EntranceLevel(Random rand, int fn, int rx, int rz, int xd, int zd, int xu, int zu) {
 			floorIndex = fn;
-			shaftDownX = xd;
-			shaftDownZ = zd;
-			shaftUpX = xu;
-			shaftUpZ = zu;
+			shaftDown = xd != Integer.MIN_VALUE ? new Point(xd, zd) : null;
+			shaftUp = new Point(xu, zu);
 
 			for (int i = -GRID_RADIUS; i <= GRID_RADIUS; i++) {
 				for (int k = -GRID_RADIUS; k <= GRID_RADIUS; k++) {
@@ -126,19 +131,98 @@ public class RayBlendEntrance extends DynamicStructurePiece<RayBlendGenerator> {
 				}
 			}
 
-			Cell p = floorCells.get(new Point(shaftDownX, shaftDownZ));
+			this.calculatePath(rand);
+
+			Cell p = floorCells.get(shaftDown);
 			if (p != null)
 				p.isOpen = true;
-			ceilCells.get(new Point(shaftUpX, shaftUpZ)).isOpen = true;
+			ceilCells.get(shaftUp).isOpen = true;
 
 			int n1 = GRID_RADIUS*GRID_RADIUS/2;
 			int n2 = Math.max(1, GRID_RADIUS*GRID_RADIUS*2/3);
 			int n = ReikaRandomHelper.getRandomBetween(n1, n2);
 			for (int i = 0; i < n; i++) {
 				Cell c = ReikaJavaLibrary.getRandomCollectionEntry(DragonAPICore.rand, floorCells.values());
-				if (!c.isOpen && !ceilCells.get(new Point(c.xPos, c.zPos)).isOpen)
+				if (c.canHaveLoot() && !ceilCells.get(new Point(c.xPos, c.zPos)).isOpen)
 					c.hasLoot = true;
 			}
+		}
+
+		private void calculatePath(Random rand) {
+			Point p = shaftUp;
+			Point end = shaftDown != null ? shaftDown : new Point(GRID_RADIUS, 0);
+			int dx = p.x-end.x;
+			int dz = p.y-end.y;
+			while (dx != 0 || dz != 0) {
+				path.add(p);
+				boolean moveX = dx != 0 && dz != 0 ? rand.nextBoolean() : dx != 0;
+				int sx = moveX ? -(int)Math.signum(dx) : 0;
+				int sz = moveX ? 0 : -(int)Math.signum(dz);
+				ReikaJavaLibrary.pConsole("At "+p+", moving "+sx+", "+sz+", towards "+end+" to ");
+				p = new Point(p.x+sx, p.y+sz);
+				ReikaJavaLibrary.pConsole(p.toString());
+				dx = p.x-end.x;
+				dz = p.y-end.y;
+				ReikaJavaLibrary.pConsole("dx,dz = "+dx+", "+dz);
+			}
+			if (!p.equals(end)) {
+				throw new RuntimeException("Path "+path+" ended early at "+p+", before "+end);
+			}
+			path.add(end);
+
+			for (int i = 1; i < path.size()-1; i++) {
+				Point p0 = path.get(i-1);
+				Point p1 = path.get(i);
+				Point p2 = path.get(i+1);
+				this.connect(p0, p1);
+				this.connect(p1, p2);
+			}
+
+			HashSet<Point> unconnected = new HashSet(ceilCells.keySet());
+			unconnected.removeAll(path);
+
+			while (!unconnected.isEmpty()) {
+				Point pr = ReikaJavaLibrary.getRandomCollectionEntry(rand, unconnected);
+				boolean pathed = false;
+				while (!pathed) {
+					Point next = this.getValidRandomNeighbor(pr, rand);
+					this.connect(pr, next);
+					if (!unconnected.contains(next)) {
+						unconnected.remove(pr);
+						pathed = true;
+					}
+					else {
+						pr = next;
+					}
+				}
+			}
+		}
+
+		private Point getValidRandomNeighbor(Point pr, Random rand) {
+			ArrayList<ForgeDirection> li = ReikaDirectionHelper.getRandomOrderedDirections(false);
+			while (!li.isEmpty()) {
+				int idx = rand.nextInt(li.size());
+				ForgeDirection dir = li.remove(idx);
+				Point p2 = new Point(pr.x+dir.offsetX, pr.y+dir.offsetZ);
+				if (this.isInGrid(p2)) {
+					return p2;
+				}
+			}
+			return null;
+		}
+
+		private boolean isInGrid(Point p) {
+			return Math.abs(p.x) <= GRID_RADIUS && Math.abs(p.y) <= GRID_RADIUS;
+		}
+
+		private void connect(Point p1, Point p2) {
+			ForgeDirection side = ReikaDirectionHelper.getDirectionBetween(p1, p2);
+			if (side == null)
+				throw new IllegalArgumentException("You cannot link two non-adjacent points "+p1+", "+p2+" from "+path);
+			Cell c1 = ceilCells.get(p1);
+			Cell c2 = ceilCells.get(p2);
+			c1.sides[side.ordinal()-2] = true;
+			c2.sides[side.getOpposite().ordinal()-2] = true;
 		}
 
 		private void generate(World world, int x, int y, int z) {
@@ -248,52 +332,25 @@ public class RayBlendEntrance extends DynamicStructurePiece<RayBlendGenerator> {
 				}
 			}
 
-			int ng = ReikaRandomHelper.getRandomBetween(4, 7);
-			for (int n = 0; n < ng; n++) {
-				Point p = new Point(rand(), rand());
-				Cell c = floorCells.get(p);
-				if (c != null) {
-					ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[ReikaRandomHelper.getRandomBetween(2, 5)];
-					Cell c2 = c.getNeighbor(this, dir);
-					if (c2 != null && c2.countGlassSides() > 0)
-						continue;
-					c.glass[dir.ordinal()-2] = true;
-					if (c2 != null)
-						c2.glass[dir.getOpposite().ordinal()-2] = true;
-					int dx = c.getCenterX(true)+dir.offsetX*Cell.TOTAL_RADIUS;
-					int dz = c.getCenterZ(true)+dir.offsetZ*Cell.TOTAL_RADIUS;
-					for (int i = 1; i < HEIGHT; i++) {
-						for (int d = -Cell.HOLE_RADIUS; d <= Cell.HOLE_RADIUS; d++) {
-							if (dir.offsetX == 0) {
-								world.setBlock(dx+d, y+i, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.metadata, 3);
-							}
-							else {
-								world.setBlock(dx, y+i, dz+d, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.metadata, 3);
-							}
-						}
-					}
-				}
-			}
-
 			for (int i = HEIGHT+1; i <= HEIGHT+SEP; i++) {
 				this.generateShaft(world, x+this.getUpperShaftXCenterOffset(), y+i, z+this.getUpperShaftZCenterOffset());
 			}
 		}
 
 		private int getLowerShaftXCenterOffset() {
-			return shaftDownX*CELL_SPACING;
+			return shaftDown.x*CELL_SPACING;
 		}
 
 		private int getLowerShaftZCenterOffset() {
-			return shaftDownZ*CELL_SPACING;
+			return shaftDown.y*CELL_SPACING;
 		}
 
 		private int getUpperShaftXCenterOffset() {
-			return shaftUpX*CELL_SPACING;
+			return shaftUp.x*CELL_SPACING;
 		}
 
 		private int getUpperShaftZCenterOffset() {
-			return shaftUpZ*CELL_SPACING;
+			return shaftUp.y*CELL_SPACING;
 		}
 
 		private static int rand() {
@@ -330,7 +387,7 @@ public class RayBlendEntrance extends DynamicStructurePiece<RayBlendGenerator> {
 		private boolean isOpen;
 		private boolean hasLoot;
 
-		private boolean[] glass = new boolean[4];
+		private boolean[] sides = new boolean[4];
 
 		private Cell(int x, int z, int rx, int rz) {
 			xPos = x;
@@ -342,8 +399,12 @@ public class RayBlendEntrance extends DynamicStructurePiece<RayBlendGenerator> {
 			//ReikaJavaLibrary.pConsole(rx+", "+rz);
 		}
 
-		private int countGlassSides() {
-			return ReikaArrayHelper.countTrue(glass);
+		public boolean canHaveLoot() {
+			return !isOpen && this.countWalls() == 3;
+		}
+
+		private int countWalls() {
+			return 4-ReikaArrayHelper.countTrue(sides);
 		}
 
 		private Cell getNeighbor(EntranceLevel el, ForgeDirection dir) {
@@ -368,6 +429,24 @@ public class RayBlendEntrance extends DynamicStructurePiece<RayBlendGenerator> {
 					}
 					else {
 						world.setBlock(dx, y, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.COBBLE.metadata, 3);
+					}
+				}
+			}
+
+			for (int d = 0; d < 4; d++) {
+				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[2+d];
+				int dx = this.getCenterX(true)+dir.offsetX*Cell.TOTAL_RADIUS;
+				int dz = this.getCenterZ(true)+dir.offsetZ*Cell.TOTAL_RADIUS;
+				for (int h = 1; h < EntranceLevel.HEIGHT; h++) {
+					for (int a = -HOLE_RADIUS; a <= HOLE_RADIUS; a++) {
+						Block b = sides[d] ? Blocks.air : ChromaBlocks.STRUCTSHIELD.getBlockInstance();
+						int m = sides[d] ? 0 : BlockType.GLASS.metadata;
+						if (dir.offsetX == 0) {
+							world.setBlock(dx+a, y+h, dz, b, m, 3);
+						}
+						else {
+							world.setBlock(dx, y+h, dz+a, b, m, 3);
+						}
 					}
 				}
 			}
