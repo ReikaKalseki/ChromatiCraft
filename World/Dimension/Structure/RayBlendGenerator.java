@@ -68,7 +68,7 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 			dx += DEBUG ? 7 : extra+sizePre*sizePre;
 			int dz = z-p.gridSize*p.gridSize/2;
 			rb.generate(world, dx, y, dz);
-			gr.addGap(rb.getGenerationBounds().minX+1, rb.getGenerationBounds().maxX);
+			gr.addGap(rb.getGenerationBounds().minX+1, rb.getGenerationBounds().maxX-1);
 			doors.put(rb.getGenerationBounds().maxX+2, rb.ID);
 		}
 		len += 7;

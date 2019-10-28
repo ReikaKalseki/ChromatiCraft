@@ -2,6 +2,7 @@ package Reika.ChromatiCraft.World.Dimension.Structure.RayBlend;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
@@ -9,6 +10,7 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -19,10 +21,12 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.RayBlendGenerator;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
 
 public class RayBlendEntrance extends DynamicStructurePiece<RayBlendGenerator> {
@@ -97,6 +101,82 @@ public class RayBlendEntrance extends DynamicStructurePiece<RayBlendGenerator> {
 				}
 			}
 		}
+
+		for (int i = 0; i < 8; i++) {
+			int r = ReikaRandomHelper.getRandomBetween(6, 16);
+			double ang = rand.nextDouble()*360;
+			double[] xyz = ReikaPhysicsHelper.polarToCartesian(r, 0, ang);
+			dx = x+MathHelper.floor_double(xyz[0]);
+			dz = z+MathHelper.floor_double(xyz[2]);
+			int dy = world.getTopSolidOrLiquidBlock(dx, dz)-1;
+			if (world.getBlock(dx, dy, dz) != Blocks.grass)
+				continue;
+			CrystalDeposit cry = new CrystalDeposit(dx, dy, dz);
+			cry.calculate(world);
+			cry.generate(world);
+		}
+	}
+
+	private static class CrystalDeposit {
+
+		private final Coordinate origin;
+		private final Random rand = new Random();
+
+		private final HashSet<Coordinate> crystals = new HashSet();
+		private final HashSet<Coordinate> edge = new HashSet();
+
+		private CrystalDeposit(int x, int y, int z) {
+			origin = new Coordinate(x, y, z);
+		}
+
+		private void calculate(World world) {
+			int arms = 2+rand.nextInt(4);
+			for (int i = 0; i < arms; i++) {
+				this.calculateArm(world);
+			}
+
+			for (Coordinate c : crystals) {
+				for (Coordinate c2 : c.getAdjacentCoordinates()) {
+					for (int i = 0; i <= 3; i++) {
+						Coordinate c3 = c2.offset(0, i, 0);
+						edge.add(c3);
+					}
+				}
+			}
+			edge.removeAll(crystals);
+		}
+
+		private void calculateArm(World world) {
+			ForgeDirection dir = ReikaDirectionHelper.getRandomDirection(false, rand);
+			int maxl = 6+rand.nextInt(15);
+			int d = 0;
+			Coordinate c = origin;
+			while (d < maxl) {
+				crystals.add(c);
+				c = c.offset(dir, 1);
+				if (c.getBlock(world) != Blocks.grass)
+					break;
+				//int dy = world.getTopSolidOrLiquidBlock(c.xCoord, c.zCoord);
+				//c = c.to2D().offset(0, dy, 0);
+				if (rand.nextInt(3) == 0) {
+					dir = ReikaDirectionHelper.getRandomDirection(false, rand);
+				}
+				d++;
+			}
+		}
+
+		private void generate(World world) {
+			for (Coordinate c : edge) {
+				if (c.yCoord > origin.yCoord)
+					c.setBlock(world, Blocks.air);
+				else
+					c.setBlock(world, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata, 3);
+			}
+			for (Coordinate c : crystals) {
+				c.setBlock(world, ChromaBlocks.CRYSTAL.getBlockInstance(), rand.nextInt(16), 3);
+			}
+		}
+
 	}
 
 	private static class EntranceLevel {
@@ -145,13 +225,27 @@ public class RayBlendEntrance extends DynamicStructurePiece<RayBlendGenerator> {
 			int n = ReikaRandomHelper.getRandomBetween(n1, n2);
 			int amt = 0;
 			for (Cell c : cells.values()) {
-				if (c.canHaveLoot()) {
+				if (c.canHaveLoot() && !(floorIndex == 0 && c.xPos == GRID_RADIUS && c.zPos == 0)) {
 					c.hasLoot = true;
 					amt++;
 				}
 				if (amt >= n)
 					break;
 			}
+
+			//ReikaJavaLibrary.pConsole("Floor "+floorIndex+", path = "+path);
+			for (Point pt : path) {
+				Cell c = cells.get(pt);
+				ArrayList<ForgeDirection> li = new ArrayList();
+				for (int i = 0; i < c.sides.length; i++) {
+					if (c.sides[i]) {
+						li.add(ForgeDirection.VALID_DIRECTIONS[2+i]);
+					}
+				}
+				Collections.sort(li);
+				//ReikaJavaLibrary.pConsole(li);
+			}
+			//ReikaJavaLibrary.pConsole("");
 		}
 
 		private void calculatePath(Random rand) {
@@ -164,38 +258,47 @@ public class RayBlendEntrance extends DynamicStructurePiece<RayBlendGenerator> {
 				boolean moveX = dx != 0 && dz != 0 ? rand.nextBoolean() : dx != 0;
 				int sx = moveX ? -(int)Math.signum(dx) : 0;
 				int sz = moveX ? 0 : -(int)Math.signum(dz);
-				ReikaJavaLibrary.pConsole("At "+p+", moving "+sx+", "+sz+", towards "+end+" to ");
+				//ReikaJavaLibrary.pConsole("At "+p+", moving "+sx+", "+sz+", towards "+end+" to ");
 				p = new Point(p.x+sx, p.y+sz);
-				ReikaJavaLibrary.pConsole(p.toString());
+				//ReikaJavaLibrary.pConsole(p.toString());
 				dx = p.x-end.x;
 				dz = p.y-end.y;
-				ReikaJavaLibrary.pConsole("dx,dz = "+dx+", "+dz);
+				//ReikaJavaLibrary.pConsole("dx,dz = "+dx+", "+dz);
 			}
 			if (!p.equals(end)) {
 				throw new RuntimeException("Path "+path+" ended early at "+p+", before "+end);
 			}
 			path.add(end);
 
-			for (int i = 1; i < path.size()-1; i++) {
+			//ReikaJavaLibrary.pConsole("Connecting main path");
+
+			for (int i = 1; i < path.size(); i++) {
 				Point p0 = path.get(i-1);
 				Point p1 = path.get(i);
-				Point p2 = path.get(i+1);
 				this.connect(p0, p1);
-				this.connect(p1, p2);
 			}
+
+			//ReikaJavaLibrary.pConsole("Done main path");
 
 			HashSet<Point> unconnected = new HashSet(cells.keySet());
 			unconnected.removeAll(path);
 
 			while (!unconnected.isEmpty()) {
 				Point pr = ReikaJavaLibrary.getRandomCollectionEntry(rand, unconnected);
+				ArrayList<Point> subpath = new ArrayList();
 				boolean pathed = false;
 				while (!pathed) {
 					Point next = this.getValidRandomNeighbor(pr, rand);
-					this.connect(pr, next);
+					subpath.add(pr);
 					if (!unconnected.contains(next)) {
-						unconnected.remove(pr);
+						subpath.add(next);
+						unconnected.removeAll(subpath);
 						pathed = true;
+						for (int i = 1; i < subpath.size(); i++) {
+							Point p0 = subpath.get(i-1);
+							Point p1 = subpath.get(i);
+							this.connect(p0, p1);
+						}
 					}
 					else {
 						pr = next;
@@ -225,6 +328,7 @@ public class RayBlendEntrance extends DynamicStructurePiece<RayBlendGenerator> {
 			ForgeDirection side = ReikaDirectionHelper.getDirectionBetween(p1, p2);
 			if (side == null)
 				throw new IllegalArgumentException("You cannot link two non-adjacent points "+p1+", "+p2+" from "+path);
+			//ReikaJavaLibrary.pConsole("Connecting "+p1+" to "+p2+" in direction "+side);
 			Cell c1 = cells.get(p1);
 			Cell c2 = cells.get(p2);
 			c1.sides[side.ordinal()-2] = true;
@@ -340,6 +444,12 @@ public class RayBlendEntrance extends DynamicStructurePiece<RayBlendGenerator> {
 			world.setBlock(x-Cell.TOTAL_RADIUS/2-1, y+HEIGHT/2, z+Cell.TOTAL_RADIUS/2+1, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.LIGHT.metadata, 3);
 			world.setBlock(x-Cell.TOTAL_RADIUS/2-1, y+HEIGHT/2, z-Cell.TOTAL_RADIUS/2-1, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.LIGHT.metadata, 3);
 
+			/*
+			for (Point p : path) {
+				Cell c = cells.get(p);
+				world.setBlock(c.getCenterX(true), y+2, c.getCenterZ(true), Blocks.wool, 1+path.indexOf(p), 3);
+			}*/
+
 			for (int i = HEIGHT+1; i <= HEIGHT+SEP; i++) {
 				this.generateShaft(world, x+this.getUpperShaftXCenterOffset(), y+i, z+this.getUpperShaftZCenterOffset());
 			}
@@ -450,12 +560,16 @@ public class RayBlendEntrance extends DynamicStructurePiece<RayBlendGenerator> {
 				}
 			}
 
+			//int hash = (xPos+EntranceLevel.GRID_RADIUS)+(EntranceLevel.GRID_RADIUS*2+1)*(zPos+EntranceLevel.GRID_RADIUS);
+
 			for (int d = 0; d < 4; d++) {
 				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[2+d];
 				int dx = this.getCenterX(true)+dir.offsetX*Cell.TOTAL_RADIUS;
 				int dz = this.getCenterZ(true)+dir.offsetZ*Cell.TOTAL_RADIUS;
 				for (int h = 1; h < EntranceLevel.HEIGHT; h++) {
 					for (int a = -HOLE_RADIUS; a <= HOLE_RADIUS; a++) {
+						//if (h%2 != hash%2)
+						//	continue;
 						boolean air = sides[d] || Math.abs(xPos+dir.offsetX) > EntranceLevel.GRID_RADIUS || Math.abs(zPos+dir.offsetZ) > EntranceLevel.GRID_RADIUS;
 						Block b = air ? Blocks.air : ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 						int m = air ? 0 : BlockType.GLASS.metadata;
