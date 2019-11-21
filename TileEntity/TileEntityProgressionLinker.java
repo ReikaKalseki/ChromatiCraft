@@ -18,7 +18,6 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
@@ -26,6 +25,7 @@ import Reika.ChromatiCraft.Magic.Progression.ProgressionLinking;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionLinking.LinkFailure;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
@@ -62,7 +62,7 @@ public class TileEntityProgressionLinker extends TileEntityChromaticBase impleme
 	}
 
 	public void validateStructure() {
-		hasStructure = ChromaStructures.getProgressionLinkerStructure(worldObj, xCoord, yCoord, zCoord).matchInWorld();
+		hasStructure = ChromaStructures.PROGRESSLINK.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 	}
 
 	@Override

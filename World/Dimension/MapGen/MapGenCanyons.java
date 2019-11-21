@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ChromaFeatureBase;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
+@Deprecated
 public class MapGenCanyons extends ChromaFeatureBase {
 
 	//private float[] field_75046_d = new float[1024];

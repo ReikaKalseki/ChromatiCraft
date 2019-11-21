@@ -34,7 +34,6 @@ import net.minecraftforge.fluids.FluidContainerRegistry;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Event.CastingEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.FocusAcceleratable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
@@ -60,6 +59,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.BotaniaPetalShower;
@@ -506,9 +506,9 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		int x = xCoord;
 		int y = yCoord-1;
 		int z = zCoord;
-		FilledBlockArray b = ChromaStructures.getCastingLevelOne(world, x, y, z);
-		FilledBlockArray b2 = ChromaStructures.getCastingLevelTwo(world, x, y, z);
-		FilledBlockArray b3 = ChromaStructures.getCastingLevelThree(world, x, y, z);
+		FilledBlockArray b = ChromaStructures.CASTING1.getArray(world, x, y, z);
+		FilledBlockArray b2 = ChromaStructures.CASTING2.getArray(world, x, y, z);
+		FilledBlockArray b3 = ChromaStructures.CASTING3.getArray(world, x, y, z);
 
 		if (this.getTier().isAtLeast(RecipeType.PYLON)) {
 			if (b3.matchInWorld(this)) {
@@ -1180,11 +1180,11 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 			case CRAFTING:
 				return null;
 			case TEMPLE:
-				return ChromaStructures.getCastingLevelOne(worldObj, xCoord, yCoord-1, zCoord);
+				return ChromaStructures.CASTING1.getArray(worldObj, xCoord, yCoord-1, zCoord);
 			case MULTIBLOCK:
-				return ChromaStructures.getCastingLevelTwo(worldObj, xCoord, yCoord-1, zCoord);
+				return ChromaStructures.CASTING2.getArray(worldObj, xCoord, yCoord-1, zCoord);
 			case PYLON:
-				return ChromaStructures.getCastingLevelThree(worldObj, xCoord, yCoord-1, zCoord);
+				return ChromaStructures.CASTING3.getArray(worldObj, xCoord, yCoord-1, zCoord);
 			default:
 				return null;
 		}

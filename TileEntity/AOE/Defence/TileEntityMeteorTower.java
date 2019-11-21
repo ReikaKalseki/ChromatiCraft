@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -30,7 +30,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
@@ -38,6 +37,7 @@ import Reika.ChromatiCraft.Entity.EntityMeteorShot;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
@@ -302,7 +302,19 @@ public class TileEntityMeteorTower extends CrystalReceiverBase implements NBTTil
 	}
 
 	public void validateStructure() {
-		hasStructure = !worldObj.isRemote && ChromaStructures.getMeteorTowerStructure(worldObj, xCoord, yCoord, zCoord, tier).matchInWorld();
+		ChromaStructures struct = null;
+		switch(tier) {
+			case 0:
+				struct = ChromaStructures.METEOR1;
+				break;
+			case 1:
+				struct = ChromaStructures.METEOR2;
+				break;
+			case 2:
+				struct = ChromaStructures.METEOR3;
+				break;
+		}
+		hasStructure = !worldObj.isRemote && struct.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 		//ReikaJavaLibrary.pConsole(hasStructure, Side.SERVER);
 		if (!hasStructure) {
 			fireTick = 0;

@@ -30,7 +30,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
-import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -307,13 +306,13 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 	}
 
 	@Override
-	public boolean canExtractItem(int slot, ItemStack is, int side) {
-		return this.getStoredEnergy() == 0;
+	protected boolean canExtractOtherItem(int slot, ItemStack is, int side) {
+		return false;
 	}
 
 	@Override
-	public boolean isItemValidForSlot(int slot, ItemStack is) {
-		return ChromaItems.STORAGE.matchWith(is);
+	protected boolean isItemValidForOtherSlot(int slot, ItemStack is) {
+		return false;
 	}
 
 	@Override

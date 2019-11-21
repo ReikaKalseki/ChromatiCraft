@@ -1,26 +1,26 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Auxiliary;
+package Reika.ChromatiCraft.Auxiliary.Structure.Worldgen;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.Base.ChromaStructureBase;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 
 
-public class DesertStructure {
+public class DesertStructure extends ChromaStructureBase {
 
-	private static final Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 	private static final int ms = BlockType.STONE.metadata;
 	private static final int mc = BlockType.COBBLE.metadata;
 
@@ -28,7 +28,8 @@ public class DesertStructure {
 
 	private static final Block ch = ChromaBlocks.LOOTCHEST.getBlockInstance();
 
-	public static FilledBlockArray getDesertStructure(World world, int x, int y, int z) {
+	@Override
+	public FilledBlockArray getArray(World world, int x, int y, int z) {
 		FilledBlockArray array = new FilledBlockArray(world);
 
 		array.setBlock(x+10, y+6, z+2, ch, 11);

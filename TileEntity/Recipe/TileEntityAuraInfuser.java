@@ -24,7 +24,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.MultiBlockCheck;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.FocusAcceleratable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemCollision;
@@ -37,6 +36,7 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
@@ -101,7 +101,7 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		}
 
 		if (DragonAPICore.debugtest)
-			ChromaStructures.getInfusionStructure(world, x, y, z).place();
+			ChromaStructures.INFUSION.getArray(world, x, y, z).place();
 	}
 
 	@Override
@@ -113,7 +113,7 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		focusCrystalTotal = 0;
 		allExquisite = true;
 		focusCrystalSpots.clear();
-		FilledBlockArray arr = ChromaStructures.getInfusionStructure(worldObj, xCoord, yCoord, zCoord);
+		FilledBlockArray arr = ChromaStructures.INFUSION.getArray(worldObj, xCoord, yCoord, zCoord);
 		hasStructure = arr.matchInWorld();
 		if (hasStructure) {
 			this.countFocusCrystals(arr);
@@ -220,7 +220,7 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 	private void craft() {
 		ChromaSounds.INFUSE.playSoundAtBlock(this);
 		inv[0] = ReikaItemHelper.getSizedItemStack(ChromaStacks.iridCrystal, inv[0].stackSize);
-		FilledBlockArray arr = ChromaStructures.getInfusionStructure(worldObj, xCoord, yCoord, zCoord);
+		FilledBlockArray arr = ChromaStructures.INFUSION.getArray(worldObj, xCoord, yCoord, zCoord);
 		for (int i = 0; i < arr.getSize(); i++) {
 			Coordinate c = arr.getNthBlock(i);
 			int dx = c.xCoord;

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -760,18 +760,13 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 	}
 
 	@Override
-	public boolean canExtractItem(int slot, ItemStack is, int side) {
+	protected boolean canExtractOtherItem(int slot, ItemStack is, int side) {
 		return false;
 	}
 
 	@Override
-	public boolean isItemValidForSlot(int slot, ItemStack is) {
-		switch(slot) {
-			case 0:
-				return ChromaItems.STORAGE.matchWith(is);
-			default:
-				return false;
-		}
+	protected boolean isItemValidForOtherSlot(int slot, ItemStack is) {
+		return false;
 	}
 
 	@Override

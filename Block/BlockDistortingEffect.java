@@ -13,7 +13,6 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.CubePoints;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -24,6 +23,7 @@ import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
+@Deprecated
 public class BlockDistortingEffect extends BlockContainer {
 
 	public BlockDistortingEffect(Material mat) {
@@ -44,7 +44,7 @@ public class BlockDistortingEffect extends BlockContainer {
 
 	public static void doReplace(World world, int x, int y, int z, boolean global) {
 		BlockKey bk = BlockKey.getAt(world, x, y, z);
-		world.setBlock(x, y, z, ChromaBlocks.DISTORTING.getBlockInstance(), global ? 0 : 1, 3);
+		//world.setBlock(x, y, z, ChromaBlocks.DISTORTING.getBlockInstance(), global ? 0 : 1, 3);
 		TileEntityDistorting te = (TileEntityDistorting)world.getTileEntity(x, y, z);
 		te.loadBlock(bk);
 	}

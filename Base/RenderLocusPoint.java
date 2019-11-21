@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -31,6 +31,8 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
 public abstract class RenderLocusPoint extends ChromaRenderBase {
 
+	//private static final ShaderProgram shader = ShaderRegistry.createShader(ChromatiCraft.instance, "dimcore", ChromatiCraft.class, "Shaders/");
+
 	@Override
 	public final void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		GL11.glPushMatrix();
@@ -42,8 +44,11 @@ public abstract class RenderLocusPoint extends ChromaRenderBase {
 		GL11.glDepthMask(false);
 		GL11.glColor4f(1, 1, 1, 1);
 		GL11.glTranslated(par2, par4, par6);
-		if (MinecraftForgeClient.getRenderPass() == 1 || !tile.hasWorldObj())
+		if (MinecraftForgeClient.getRenderPass() == 1 || !tile.hasWorldObj()) {
+			//ShaderRegistry.runShader(shader);
 			this.renderCore((TileEntityLocusPoint)tile, par2, par4, par6, par8);
+			//ShaderRegistry.completeShader();
+		}
 		this.doOtherRendering((TileEntityLocusPoint)tile, par8);
 		GL11.glPopAttrib();
 		GL11.glPopMatrix();

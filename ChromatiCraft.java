@@ -205,6 +205,7 @@ import Reika.DragonAPI.ModRegistry.ModCropList;
 import Reika.MeteorCraft.API.MeteorSpawnAPI;
 import Reika.RotaryCraft.API.ReservoirAPI;
 import Reika.VoidMonster.API.DimensionAPI;
+import Reika.VoidMonster.API.MonsterAPI;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
@@ -823,6 +824,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			DimensionAPI.blacklistBiomeForSounds(ExtraChromaIDs.LUMINOUSCLIFFS.getValue());
 			DimensionAPI.blacklistBiomeForSounds(ExtraChromaIDs.LUMINOUSEDGE.getValue());
 			DimensionAPI.setDimensionRuleForSpawning(ExtraChromaIDs.DIMID.getValue(), false);
+			MonsterAPI.addDrop(ChromaStacks.voidmonsterEssence, 24, 64);
 		}
 
 		if (ModList.MINEFACTORY.isLoaded()) {

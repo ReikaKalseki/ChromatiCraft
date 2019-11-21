@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -38,7 +38,6 @@ import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
-import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityRangeBoost;
@@ -159,10 +158,8 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 	}
 
 	@Override
-	public boolean canExtractItem(int slot, ItemStack is, int side) {
+	protected boolean canExtractOtherItem(int slot, ItemStack is, int side) {
 		switch(slot) {
-			case 0:
-				return this.getStoredEnergy() == 0;
 			case 1:
 				return FluidContainerRegistry.isFilledContainer(is);
 			default:
@@ -171,10 +168,8 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 	}
 
 	@Override
-	public boolean isItemValidForSlot(int slot, ItemStack is) {
+	protected boolean isItemValidForOtherSlot(int slot, ItemStack is) {
 		switch(slot) {
-			case 0:
-				return ChromaItems.STORAGE.matchWith(is);
 			case 1:
 				return is.getItem() == Items.bucket;
 			default:

@@ -104,7 +104,8 @@ public enum ProgressStage implements ProgressElement {
 	ARTEFACT(		Shareability.SELFONLY,	ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.FRAGMENT.ordinal())),
 	TOWER(			Shareability.SELFONLY,	ChromaTiles.DATANODE),
 	STRUCTCHEAT(	Shareability.SELFONLY,	Blocks.tnt), //optional, just to rub it in
-	VOIDMONSTER(	Shareability.SELFONLY,	(ItemStack)null, ModList.VOIDMONSTER.isLoaded()),
+	VOIDMONSTER(	Shareability.PROXIMITY,	(ItemStack)null, ModList.VOIDMONSTER.isLoaded()),
+	VOIDMONSTERDIE(	Shareability.SELFONLY,	(ItemStack)null, ModList.VOIDMONSTER.isLoaded()),
 	LUMA(			Shareability.SELFONLY,	ChromaBlocks.LUMA.getBlockInstance()),
 	WARPNODE(		Shareability.SELFONLY,	ChromaBlocks.WARPNODE.getBlockInstance()),
 	BYPASSWEAK(		Shareability.SELFONLY,	(ItemStack)null),
@@ -204,11 +205,14 @@ public enum ProgressStage implements ProgressElement {
 			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y, ChromaIcons.SPINFLARE.getIcon(), 16, 16); //render directly
 			GL11.glPopAttrib();
 		}
-		else if (this == VOIDMONSTER) {
+		else if (this == VOIDMONSTER || this == VOIDMONSTERDIE) {
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glColor4f(1, 1, 1, 1);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			ReikaGuiAPI.instance.renderStatic(x-1, y-1, x+16, y+16);
+			if (this == VOIDMONSTERDIE) {
+				ReikaGuiAPI.instance.drawItemStack(ri, fr, new ItemStack(Items.skull), x, y);
+			}
 			GL11.glPopAttrib();
 		}
 		else if (this == WARPNODE) {

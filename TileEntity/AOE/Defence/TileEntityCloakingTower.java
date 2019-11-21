@@ -21,9 +21,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
@@ -62,7 +62,7 @@ public class TileEntityCloakingTower extends TileEntityChromaticBase implements 
 	}
 
 	public void validateStructure() {
-		active = ChromaStructures.getCloakingTower(worldObj, xCoord, yCoord, zCoord).matchInWorld();
+		active = ChromaStructures.CLOAKTOWER.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 	}
 
 	@Override

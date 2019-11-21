@@ -46,7 +46,6 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
@@ -224,6 +223,8 @@ public enum ChromaResearch implements ProgressElement {
 	LANDMARK(		ChromaTiles.LANDMARK,		ResearchLevel.BASICCRAFT),
 	INJECTOR(		ChromaTiles.INJECTOR,		ResearchLevel.MULTICRAFT),
 	HOVERPAD(		ChromaTiles.HOVERPAD,		ResearchLevel.RUNECRAFT/*,		TieredOres.TELEPORT.level*/),
+	DEATHFOG(		ChromaTiles.DEATHFOG,		ResearchLevel.RUNECRAFT,		ProgressStage.VOIDMONSTER),
+	VOIDTRAP(		ChromaTiles.VOIDTRAP,		ResearchLevel.MULTICRAFT,		ProgressStage.VOIDMONSTERDIE, ProgressStage.CHARGECRYSTAL),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT,	ProgressStage.ALLCOLORS),
@@ -372,41 +373,42 @@ public enum ChromaResearch implements ProgressElement {
 	MOBBAIT(		Chromabilities.MOBBAIT, 					ResearchLevel.ENERGYEXPLORE),
 
 	STRUCTUREDESC("Structures", ""),
-	PYLON(			Structures.PYLON,			StoneTypes.FOCUS.ordinal(),				ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),
-	CASTING1(		Structures.CASTING1,		StoneTypes.SMOOTH.ordinal(),			ResearchLevel.BASICCRAFT,		ProgressStage.CRYSTALS),
-	CASTING2(		Structures.CASTING2,		StoneTypes.BEAM.ordinal(),				ResearchLevel.RUNECRAFT,		ProgressStage.RUNEUSE),
-	CASTING3(		Structures.CASTING3,		StoneTypes.COLUMN.ordinal(),			ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK, ProgressStage.BLOWREPEATER),
-	RITUAL	(		Structures.RITUAL,			StoneTypes.ENGRAVED.ordinal(),			ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
-	INFUSION(		Structures.INFUSION,		StoneTypes.BRICKS.ordinal(),			ResearchLevel.MULTICRAFT,		ProgressStage.CHROMA),
-	TREE(			Structures.TREE,			StoneTypes.STABILIZER.ordinal(),		ResearchLevel.ENDGAME,			ProgressStage.POWERCRYSTAL),
-	TREESEND(		Structures.TREE_SENDER,		StoneTypes.FOCUSFRAME.ordinal(),		ResearchLevel.ENDGAME,			ProgressStage.POWERTREE),
-	REPEATERSTRUCT(	Structures.REPEATER,		StoneTypes.SMOOTH.ordinal(),			ResearchLevel.NETWORKING,		ProgressStage.RUNEUSE, ProgressStage.BLOWREPEATER),
-	COMPOUNDSTRUCT(	Structures.COMPOUND,		StoneTypes.MULTICHROMIC.ordinal(),		ResearchLevel.NETWORKING,		ProgressStage.REPEATER),
-	CAVERN(			Structures.CAVERN,			ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.CAVERN),
-	BURROW(			Structures.BURROW,			ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.BURROW),
-	OCEAN(			Structures.OCEAN,			ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.MOSS.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.OCEAN),
-	DESERT(			Structures.DESERT,			ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.COBBLE.metadata,ResearchLevel.RAWEXPLORE,		ProgressStage.DESERTSTRUCT),
-	SNOW(			Structures.SNOWSTRUCT,		ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.LIGHT.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.SNOWSTRUCT),
-	PORTALSTRUCT(	Structures.PORTAL,			StoneTypes.SMOOTH.ordinal(),			ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
-	MINIPYLON(		Structures.PERSONAL,		StoneTypes.FOCUSFRAME.ordinal(),		ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
-	BROADCASTER(	Structures.BROADCAST,		StoneTypes.RESORING.ordinal(),			ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK, ProgressStage.REPEATER),
-	CLOAKTOWER(		Structures.CLOAKTOWER,		StoneTypes.GLOWCOL.ordinal(),			ResearchLevel.MULTICRAFT,		ProgressStage.KILLMOB),
-	BOOSTTREE(		Structures.TREE_BOOSTED,	StoneTypes.STABILIZER.ordinal(),		ResearchLevel.CTM,				ProgressStage.TURBOCHARGE),
-	BEACONSTRUCT(	Structures.PROTECT,			StoneTypes.CORNER.ordinal(),			ResearchLevel.ENDGAME),
-	MINIREPEATER(	Structures.WEAKREPEATER,	Blocks.log, 0, 							ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),
-	METEOR1(		Structures.METEOR1,			StoneTypes.BRICKS.ordinal(),			ResearchLevel.PYLONCRAFT),
-	METEOR2(		Structures.METEOR2,			StoneTypes.BRICKS.ordinal(),			ResearchLevel.ENDGAME),
-	METEOR3(		Structures.METEOR3,			StoneTypes.BRICKS.ordinal(),			ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
-	RITUAL2	(		Structures.RITUAL2,			StoneTypes.ENGRAVED.ordinal(),			ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
-	GATESTRUCT(		Structures.TELEGATE,		StoneTypes.COLUMN.ordinal(),			ResearchLevel.ENDGAME,			ProgressStage.END),
-	RELAYSTRUCT(	Structures.RELAY,			StoneTypes.FOCUSFRAME.ordinal(),		ResearchLevel.ENDGAME,			ProgressStage.POWERCRYSTAL),
-	PYLONBROADCAST(	Structures.PYLONBROADCAST,	StoneTypes.FOCUS.ordinal(),				ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
-	PYLONTURBORING(	Structures.PYLONTURBO,		StoneTypes.FOCUS.ordinal(),				ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.TURBOCHARGE)),
-	WIRELESSPED(	Structures.WIRELESSPEDESTAL, StoneTypes.MULTICHROMIC.ordinal(), 	ResearchLevel.ENDGAME),
-	WIRELESSPED2(	Structures.WIRELESSPEDESTAL2, StoneTypes.MULTICHROMIC.ordinal(),	ResearchLevel.CTM),
-	DATATOWER(		Structures.DATANODE,		StoneTypes.SMOOTH.ordinal(),			ResearchLevel.RAWEXPLORE,		ProgressStage.TOWER),
-	PROGLINKSTRUCT(	Structures.PROGRESSLINK,	StoneTypes.CORNER.ordinal(),			ResearchLevel.BASICCRAFT),
-	OPTIMISTRUCT(	Structures.OPTIMIZER,		StoneTypes.RESORING.ordinal(),			ResearchLevel.ENDGAME,			TieredOres.LUMA.level),
+	PYLON(			ChromaStructures.PYLON,			StoneTypes.FOCUS.ordinal(),				ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),
+	CASTING1(		ChromaStructures.CASTING1,		StoneTypes.SMOOTH.ordinal(),			ResearchLevel.BASICCRAFT,		ProgressStage.CRYSTALS),
+	CASTING2(		ChromaStructures.CASTING2,		StoneTypes.BEAM.ordinal(),				ResearchLevel.RUNECRAFT,		ProgressStage.RUNEUSE),
+	CASTING3(		ChromaStructures.CASTING3,		StoneTypes.COLUMN.ordinal(),			ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK, ProgressStage.BLOWREPEATER),
+	RITUAL	(		ChromaStructures.RITUAL,			StoneTypes.ENGRAVED.ordinal(),			ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
+	INFUSION(		ChromaStructures.INFUSION,		StoneTypes.BRICKS.ordinal(),			ResearchLevel.MULTICRAFT,		ProgressStage.CHROMA),
+	TREE(			ChromaStructures.TREE,			StoneTypes.STABILIZER.ordinal(),		ResearchLevel.ENDGAME,			ProgressStage.POWERCRYSTAL),
+	TREESEND(		ChromaStructures.TREE_SENDER,		StoneTypes.FOCUSFRAME.ordinal(),		ResearchLevel.ENDGAME,			ProgressStage.POWERTREE),
+	REPEATERSTRUCT(	ChromaStructures.REPEATER,		StoneTypes.SMOOTH.ordinal(),			ResearchLevel.NETWORKING,		ProgressStage.RUNEUSE, ProgressStage.BLOWREPEATER),
+	COMPOUNDSTRUCT(	ChromaStructures.COMPOUND,		StoneTypes.MULTICHROMIC.ordinal(),		ResearchLevel.NETWORKING,		ProgressStage.REPEATER),
+	CAVERN(			ChromaStructures.CAVERN,			ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.CAVERN),
+	BURROW(			ChromaStructures.BURROW,			ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.BURROW),
+	OCEAN(			ChromaStructures.OCEAN,			ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.MOSS.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.OCEAN),
+	DESERT(			ChromaStructures.DESERT,			ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.COBBLE.metadata,ResearchLevel.RAWEXPLORE,		ProgressStage.DESERTSTRUCT),
+	SNOW(			ChromaStructures.SNOWSTRUCT,		ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.LIGHT.metadata,	ResearchLevel.RAWEXPLORE,		ProgressStage.SNOWSTRUCT),
+	PORTALSTRUCT(	ChromaStructures.PORTAL,			StoneTypes.SMOOTH.ordinal(),			ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
+	MINIPYLON(		ChromaStructures.PERSONAL,		StoneTypes.FOCUSFRAME.ordinal(),		ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
+	BROADCASTER(	ChromaStructures.BROADCAST,		StoneTypes.RESORING.ordinal(),			ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK, ProgressStage.REPEATER),
+	CLOAKTOWER(		ChromaStructures.CLOAKTOWER,		StoneTypes.GLOWCOL.ordinal(),			ResearchLevel.MULTICRAFT,		ProgressStage.KILLMOB),
+	BOOSTTREE(		ChromaStructures.TREE_BOOSTED,	StoneTypes.STABILIZER.ordinal(),		ResearchLevel.CTM,				ProgressStage.TURBOCHARGE),
+	BEACONSTRUCT(	ChromaStructures.PROTECT,			StoneTypes.CORNER.ordinal(),			ResearchLevel.ENDGAME),
+	MINIREPEATER(	ChromaStructures.WEAKREPEATER,	Blocks.log, 0, 							ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),
+	METEOR1(		ChromaStructures.METEOR1,			StoneTypes.BRICKS.ordinal(),			ResearchLevel.PYLONCRAFT),
+	METEOR2(		ChromaStructures.METEOR2,			StoneTypes.BRICKS.ordinal(),			ResearchLevel.ENDGAME),
+	METEOR3(		ChromaStructures.METEOR3,			StoneTypes.BRICKS.ordinal(),			ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
+	RITUAL2	(		ChromaStructures.RITUAL2,			StoneTypes.ENGRAVED.ordinal(),			ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
+	GATESTRUCT(		ChromaStructures.TELEGATE,		StoneTypes.COLUMN.ordinal(),			ResearchLevel.ENDGAME,			ProgressStage.END),
+	RELAYSTRUCT(	ChromaStructures.RELAY,			StoneTypes.FOCUSFRAME.ordinal(),		ResearchLevel.ENDGAME,			ProgressStage.POWERCRYSTAL),
+	PYLONBROADCAST(	ChromaStructures.PYLONBROADCAST,	StoneTypes.FOCUS.ordinal(),				ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
+	PYLONTURBORING(	ChromaStructures.PYLONTURBO,		StoneTypes.FOCUS.ordinal(),				ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.TURBOCHARGE)),
+	WIRELESSPED(	ChromaStructures.WIRELESSPEDESTAL, StoneTypes.MULTICHROMIC.ordinal(), 	ResearchLevel.ENDGAME),
+	WIRELESSPED2(	ChromaStructures.WIRELESSPEDESTAL2, StoneTypes.MULTICHROMIC.ordinal(),	ResearchLevel.CTM),
+	DATATOWER(		ChromaStructures.DATANODE,		StoneTypes.SMOOTH.ordinal(),			ResearchLevel.RAWEXPLORE,		ProgressStage.TOWER),
+	PROGLINKSTRUCT(	ChromaStructures.PROGRESSLINK,	StoneTypes.CORNER.ordinal(),			ResearchLevel.BASICCRAFT),
+	OPTIMISTRUCT(	ChromaStructures.OPTIMIZER,		StoneTypes.RESORING.ordinal(),			ResearchLevel.ENDGAME,			TieredOres.LUMA.level),
+	VOIDTRAPSTRUCT(	ChromaStructures.VOIDRITUAL,		Blocks.bedrock, 0,						ResearchLevel.MULTICRAFT,		ProgressStage.VOIDMONSTERDIE, ProgressStage.CHARGECRYSTAL);
 	;
 
 	private final ItemStack iconItem;
@@ -418,7 +420,7 @@ public enum ChromaResearch implements ProgressElement {
 	private final ProgressStage[] progress;
 	public final ResearchLevel level;
 	private Chromabilities ability;
-	private Structures struct;
+	private ChromaStructures struct;
 
 	private int sectionIndex = 0;
 
@@ -512,11 +514,11 @@ public enum ChromaResearch implements ProgressElement {
 		ability = c;
 	}
 
-	private ChromaResearch(Structures s, int meta, ResearchLevel r, ProgressStage... p) {
+	private ChromaResearch(ChromaStructures s, int meta, ResearchLevel r, ProgressStage... p) {
 		this(s, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), meta, r, p);
 	}
 
-	private ChromaResearch(Structures s, Block b, int meta, ResearchLevel r, ProgressStage... p) {
+	private ChromaResearch(ChromaStructures s, Block b, int meta, ResearchLevel r, ProgressStage... p) {
 		iconItem = new ItemStack(b, 1, meta);
 		pageTitle = s.getDisplayName();
 		progress = p;
@@ -574,7 +576,7 @@ public enum ChromaResearch implements ProgressElement {
 		return ability;
 	}
 
-	public Structures getStructure() {
+	public ChromaStructures getStructure() {
 		return struct;
 	}
 
@@ -648,7 +650,11 @@ public enum ChromaResearch implements ProgressElement {
 			ReikaTextureHelper.bindTerrainTexture();
 			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y+1, ChromaIcons.QUESTION.getIcon(), 16, 14);
 			return;
-		}
+		}/*
+		else if (this.getDependency() == ModList.VOIDMONSTER) {
+			ReikaGuiAPI.instance.renderStatic(x, y, x+15, y+15);
+			return;
+		}*/
 		else if (this == CASTTUNING) {
 			GL11.glPushMatrix();
 			/*
@@ -909,6 +915,8 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == WARPNODE)
 			return false;
 		if (this == TRAPFLOOR)
+			return false;
+		if (this.requiresProgress(ProgressStage.DIE) || this.requiresProgress(ProgressStage.VOIDMONSTERDIE))
 			return false;
 		if (this.requiresProgress(ProgressStage.TOWER) || this.requiresProgress(ProgressStage.ARTEFACT))
 			return false;
@@ -1496,6 +1504,10 @@ public enum ChromaResearch implements ProgressElement {
 				return ModList.THAUMCRAFT;
 			case MYSTPAGE:
 				return ModList.MYSTCRAFT;
+			case DEATHFOG:
+			case VOIDTRAP:
+			case VOIDTRAPSTRUCT:
+				return ModList.VOIDMONSTER;
 			default:
 				return null;
 		}

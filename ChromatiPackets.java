@@ -36,7 +36,6 @@ import net.minecraftforge.fluids.FluidRegistry;
 
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Auxiliary.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Auxiliary.RecursiveCastingAutomationSystem;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityCalls;
@@ -108,6 +107,7 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
@@ -949,7 +949,7 @@ public class ChromatiPackets implements PacketHandler {
 					((TileEntityRouterHub)tile).addHighlight(new Coordinate(data[0], data[1], data[2]));
 					break;
 				case STRUCTFIND: {
-					ItemStructureFinder.doHeldFX(ep, dx, dy, dz, Structures.structureList[data[0]], data[1] > 0);
+					ItemStructureFinder.doHeldFX(ep, dx, dy, dz, ChromaStructures.structureList[data[0]], data[1] > 0);
 					break;
 				}
 				case DATASCAN:

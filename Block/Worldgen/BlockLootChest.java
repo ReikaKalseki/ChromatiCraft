@@ -45,14 +45,13 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Event.StructureChestPopulationEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.DragonAPI.DragonAPICore;
@@ -142,7 +141,7 @@ public class BlockLootChest extends BlockContainer {
 			if (DragonAPICore.debugtest && ep.capabilities.isCreativeMode && HoldingChecks.MANIPULATOR.isHolding(ep)) {
 				int level = ep.isSneaking() ? 2 : 0;
 				String sg = level > 0 ? ChestGenHooks.PYRAMID_JUNGLE_CHEST : ChestGenHooks.DUNGEON_CHEST;
-				Structures str = level > 0 ? ChromaStructures.Structures.OCEAN : ChromaStructures.Structures.BURROW;
+				ChromaStructures str = level > 0 ? ChromaStructures.OCEAN : ChromaStructures.BURROW;
 				((TileEntityLootChest)world.getTileEntity(x, y, z)).populateChest(sg, str, level, rand);
 				return true;
 			}
@@ -514,17 +513,17 @@ public class BlockLootChest extends BlockContainer {
 			}
 		}
 
-		public void populateChest(String s, Structures struct, int bonus, Random r) {
+		public void populateChest(String s, ChromaStructures struct, int bonus, Random r) {
 			ReikaInventoryHelper.clearInventory(this);
 
 			WeightedRandomChestContent[] loot = ChestGenHooks.getItems(s, r);
 			int count = 1+ChestGenHooks.getCount(s, r);
-			if (struct == Structures.BURROW)
+			if (struct == ChromaStructures.BURROW)
 				count /= 2;
 			WeightedRandomChestContent.generateChestContents(r, loot, this, count);
 			if (bonus > 0)
 				ReikaInventoryHelper.generateMultipliedLoot(bonus, r, s, this);
-			int n1 = struct == Structures.BURROW ? 3 : 5;//struct == Structures.OCEAN ? r.nextInt(5) == 0 ? 3 : 1 : 3;
+			int n1 = struct == ChromaStructures.BURROW ? 3 : 5;//struct == Structures.OCEAN ? r.nextInt(5) == 0 ? 3 : 1 : 3;
 			int n2 = 2;//struct == Structures.OCEAN ? 8 : 3;
 
 			//ReikaJavaLibrary.pConsole("CC DEBUG: Generating loot chest @ "+xCoord+", "+yCoord+", "+zCoord+", inv="+Arrays.toString(inv));

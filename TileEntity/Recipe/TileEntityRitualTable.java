@@ -22,7 +22,6 @@ import net.minecraftforge.common.MinecraftForge;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.API.RitualCompletionEvent;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
@@ -30,6 +29,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
+import Reika.ChromatiCraft.Auxiliary.Structure.RitualStructure;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
@@ -37,6 +37,7 @@ import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -314,10 +315,11 @@ OperationInterval, MultiBlockChromaTile, VariableTexture {
 		int x = xCoord;
 		int y = yCoord-2;
 		int z = zCoord;
-		FilledBlockArray array = ChromaStructures.getRitualStructure(world, x, y, z, isEnhanced, false);
+		((RitualStructure)ChromaStructures.RITUAL.getStructure()).initializeEnhance(isEnhanced, false);
+		FilledBlockArray array = ChromaStructures.RITUAL.getArray(world, x, y, z);
 		hasStructure = array.matchInWorld();
 		//ReikaJavaLibrary.pConsole(hasStructure+" / "+isEnhanced+": "+this.getSide()+" @ "+array);
-		hasEnhancedStructure = isEnhanced && hasStructure && ChromaStructures.getRitualStructure(world, x, y, z, true, true).matchInWorld();
+		hasEnhancedStructure = isEnhanced && hasStructure && ChromaStructures.RITUAL2.getArray(world, x, y, z).matchInWorld();
 		if (!hasStructure && abilityTick > 0) {
 			this.killRitual();
 		}

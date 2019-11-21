@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -41,7 +41,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
@@ -53,6 +52,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -419,7 +419,7 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 	}
 
 	public void validateStructure() {
-		hasStructure = !worldObj.isRemote && ChromaStructures.getGateStructure(worldObj, xCoord, yCoord, zCoord).matchInWorld();
+		hasStructure = !worldObj.isRemote && ChromaStructures.TELEGATE.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 		if (!hasStructure)
 			ChunkManager.instance.unloadChunks(this);
 	}

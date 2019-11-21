@@ -147,10 +147,10 @@ public class BlockCrystalTile extends BlockChromaTile {
 				 */
 				if (silk || !c.needsSilkTouch()) {
 					ItemStack is = this.getHarvestedItemStack(world, x, y, z, meta, c);
-					if (is == null) {
-						throw new IllegalStateException("Block type "+c+" returned null ItemStack when silk touched!");
-					}
 					if (c.hasNBTVariants()) {
+						if (is == null) {
+							throw new IllegalStateException("Block type "+c+" returned null ItemStack when silk touched!");
+						}
 						NBTTagCompound nbt = new NBTTagCompound();
 						((NBTTile)te).getTagsToWriteToStack(nbt);
 						is.stackTagCompound = (NBTTagCompound)(!nbt.hasNoTags() ? nbt.copy() : null);

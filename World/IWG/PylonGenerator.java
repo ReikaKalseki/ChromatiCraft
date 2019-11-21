@@ -44,7 +44,6 @@ import net.minecraftforge.fluids.BlockFluidBase;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Event.PylonGenerationEvent;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Aura.BaseAura;
 import Reika.ChromatiCraft.Magic.Network.PylonLinkNetwork;
@@ -52,6 +51,7 @@ import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityChromaCrystal;
@@ -504,7 +504,7 @@ public final class PylonGenerator implements RetroactiveGenerator {
 		if (rand.nextInt(25) > 0)
 			tag.clipToPrimaries();
 		CrystalElement e = CrystalElement.randomElement();//tag.asWeightedRandom().getRandomEntry();
-		FilledBlockArray array = ChromaStructures.getPylonStructure(world, x, y+9, z, e);
+		FilledBlockArray array = ChromaStructures.PYLON.getArray(world, x, y+9, z, e);
 
 		boolean broken = ChromaOptions.BROKENPYLON.getState() && rand.nextInt(2) == 0;
 		if (broken)

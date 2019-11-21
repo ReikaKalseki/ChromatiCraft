@@ -11,13 +11,14 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.Render.ProbeInfoOverlayRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.StructureErrorOverlays;
+import Reika.ChromatiCraft.Auxiliary.Structure.RitualStructure;
 import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
@@ -212,18 +213,19 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 								case CRAFTING:
 									break;
 								case TEMPLE:
-									arr = ChromaStructures.getCastingLevelOne(world, x, y-1, z);
+									arr = ChromaStructures.CASTING1.getArray(world, x, y-1, z);
 									break;
 								case MULTIBLOCK:
-									arr = ChromaStructures.getCastingLevelTwo(world, x, y-1, z);
+									arr = ChromaStructures.CASTING2.getArray(world, x, y-1, z);
 									break;
 								case PYLON:
-									arr = ChromaStructures.getCastingLevelThree(world, x, y-1, z);
+									arr = ChromaStructures.CASTING3.getArray(world, x, y-1, z);
 									break;
 							}
 							break;
 						case RITUAL:
-							arr = ChromaStructures.getRitualStructure(world, x, y, z, true, false);
+							((RitualStructure)ChromaStructures.RITUAL.getStructure()).initializeEnhance(true, false);
+							arr = ChromaStructures.RITUAL.getArray(world, x, y, z);
 							break;
 						default:
 							break;

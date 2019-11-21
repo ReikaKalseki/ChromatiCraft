@@ -18,7 +18,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Magic.Interfaces.ConnectivityAction;
@@ -32,6 +31,7 @@ import Reika.ChromatiCraft.Magic.Network.CrystalPath;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
@@ -103,7 +103,7 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 
 	@Override
 	protected boolean checkForStructure() {
-		return ChromaStructures.getBroadcastStructure(worldObj, xCoord, yCoord, zCoord).matchInWorld();
+		return ChromaStructures.BROADCAST.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 	}
 
 	@Override

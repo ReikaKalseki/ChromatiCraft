@@ -20,10 +20,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
@@ -48,20 +48,20 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 
 	private static final double RANGE = 512;
 	private static final double FUZZ = 96;
-	private static Structures[] TYPES;
-	private static final int[] COLORS = new int[Structures.structureList.length];
+	private static ChromaStructures[] TYPES;
+	private static final int[] COLORS = new int[ChromaStructures.structureList.length];
 
 	static {
-		COLORS[Structures.BURROW.ordinal()] = 0x79B783;
-		COLORS[Structures.CAVERN.ordinal()] = 0x8FA3B5;
-		COLORS[Structures.OCEAN.ordinal()] = 0x60C4C4;
-		COLORS[Structures.DESERT.ordinal()] = 0xBF655D;
-		COLORS[Structures.SNOWSTRUCT.ordinal()] = 0xf050c0;
+		COLORS[ChromaStructures.BURROW.ordinal()] = 0x79B783;
+		COLORS[ChromaStructures.CAVERN.ordinal()] = 0x8FA3B5;
+		COLORS[ChromaStructures.OCEAN.ordinal()] = 0x60C4C4;
+		COLORS[ChromaStructures.DESERT.ordinal()] = 0xBF655D;
+		COLORS[ChromaStructures.SNOWSTRUCT.ordinal()] = 0xf050c0;
 	}
 
 	private static final Random rand = new Random();
 
-	public static int getColor(Structures s) {
+	public static int getColor(ChromaStructures s) {
 		return COLORS[s.ordinal()];
 	}
 
@@ -102,7 +102,7 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 		return true;
 	}
 
-	private void sendParticle(EntityPlayer ep, double sx, double sy, double sz, Structures s, boolean close) {
+	private void sendParticle(EntityPlayer ep, double sx, double sy, double sz, ChromaStructures s, boolean close) {
 		if (ep instanceof EntityPlayerMP) {
 			PacketTarget pt = new PacketTarget.PlayerTarget((EntityPlayerMP)ep);
 			ReikaPacketHelper.sendPositionPacket(ChromatiCraft.packetChannel, ChromaPackets.STRUCTFIND.ordinal(), ep.worldObj, sx, sy, sz, pt, s.ordinal(), close ? 1 : 0);
@@ -110,7 +110,7 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void doHeldFX(EntityPlayer ep, double sx, double sy, double sz, Structures s, boolean close) {
+	public static void doHeldFX(EntityPlayer ep, double sx, double sy, double sz, ChromaStructures s, boolean close) {
 		double[] xyz = ReikaPhysicsHelper.polarToCartesian(0.0625, -ep.rotationPitch, ep.rotationYawHead+90+60);
 		double px = ep.posX+xyz[0];
 		double py = ep.posY+xyz[1];
@@ -149,7 +149,7 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 
 	private int getStructureType(ItemStack is) {
 		if (TYPES == null)
-			TYPES = DungeonGenerator.instance.getStructureTypes().toArray(new Structures[DungeonGenerator.instance.getStructureTypes().size()]);
+			TYPES = DungeonGenerator.instance.getStructureTypes().toArray(new ChromaStructures[DungeonGenerator.instance.getStructureTypes().size()]);
 		if (is.stackTagCompound == null) {
 			is.stackTagCompound = new NBTTagCompound();
 		}

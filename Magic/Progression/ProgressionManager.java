@@ -148,8 +148,10 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.ALLOY, 		ProgressStage.MULTIBLOCK);
 		progressMap.addParent(ProgressStage.ALLOY, 		ProgressStage.CHROMA);
 
-		if (ProgressStage.VOIDMONSTER.active)
+		if (ProgressStage.VOIDMONSTER.active) {
 			progressMap.addParent(ProgressStage.VOIDMONSTER,	ProgressStage.BEDROCK);
+			progressMap.addParent(ProgressStage.VOIDMONSTERDIE,	ProgressStage.VOIDMONSTER);
+		}
 
 		progressMap.addParent(ProgressStage.NETHER, 	ProgressStage.BEDROCK);
 		progressMap.addParent(ProgressStage.NETHERROOF, ProgressStage.NETHER);

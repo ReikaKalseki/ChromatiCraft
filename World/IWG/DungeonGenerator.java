@@ -46,16 +46,15 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fluids.BlockFluidBase;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
-import Reika.ChromatiCraft.Auxiliary.DesertStructure;
-import Reika.ChromatiCraft.Auxiliary.OceanStructure;
-import Reika.ChromatiCraft.Auxiliary.SnowStructure;
+import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.DesertStructure;
+import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.OceanStructure;
+import Reika.ChromatiCraft.Base.ChromaStructureBase;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
@@ -90,31 +89,31 @@ public class DungeonGenerator implements RetroactiveGenerator {
 
 	private final ForgeDirection[] dirs = ForgeDirection.values();
 
-	private final ArrayList<Structures> structs = new ArrayList();
+	private final ArrayList<ChromaStructures> structs = new ArrayList();
 
-	private final ConcurrentHashMap<Structures, TileEntityCache<Coordinate>> generatedStructures;
+	private final ConcurrentHashMap<ChromaStructures, TileEntityCache<Coordinate>> generatedStructures;
 
 	private String baseFilepath;
 
 	private boolean needsSave;
 
 	private DungeonGenerator() {
-		structs.add(Structures.CAVERN);
-		structs.add(Structures.BURROW);
-		structs.add(Structures.OCEAN);
-		structs.add(Structures.DESERT);
-		structs.add(Structures.SNOWSTRUCT);
+		structs.add(ChromaStructures.CAVERN);
+		structs.add(ChromaStructures.BURROW);
+		structs.add(ChromaStructures.OCEAN);
+		structs.add(ChromaStructures.DESERT);
+		structs.add(ChromaStructures.SNOWSTRUCT);
 
 		generatedStructures = new ConcurrentHashMap();
 
-		for (Structures s : structs) {
+		for (ChromaStructures s : structs) {
 			generatedStructures.put(s, new TileEntityCache());
 		}
 
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
-	public Collection<Structures> getStructureTypes() {
+	public Collection<ChromaStructures> getStructureTypes() {
 		return Collections.unmodifiableCollection(structs);
 	}
 
@@ -123,16 +122,16 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		this.loadData();
 	}
 
-	private final String getFilepath(Structures s) {
+	private final String getFilepath(ChromaStructures s) {
 		return baseFilepath+s.name().toLowerCase()+".dat";
 	}
 
 	private void loadData() {
-		for (Structures s : structs) {
+		for (ChromaStructures s : structs) {
 			generatedStructures.put(s, new TileEntityCache());
 		}
 
-		for (Structures s : structs) {
+		for (ChromaStructures s : structs) {
 			File f = new File(this.getFilepath(s));
 			StructureFile pf = new StructureFile(f);
 			TileEntityCache<Coordinate> cache = generatedStructures.get(s);
@@ -152,7 +151,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	}
 
 	private void saveData() {
-		for (Structures s : structs) {
+		for (ChromaStructures s : structs) {
 			File f = new File(this.getFilepath(s));
 			StructureFile pf = new StructureFile(f);
 			for (WorldLocation p : generatedStructures.get(s).keySet()) {
@@ -180,11 +179,11 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		ReikaJavaLibrary.pConsole("["+FMLCommonHandler.instance().getEffectiveSide()+"] Cache Debug: "+generatedStructures);
 	}
 
-	public Collection<WorldLocation> getNearbyStructures(Structures s, World world, double x, double y, double z, double r) {
+	public Collection<WorldLocation> getNearbyStructures(ChromaStructures s, World world, double x, double y, double z, double r) {
 		return generatedStructures.get(s).getAllLocationsNear(new WorldLocation(world, (int)Math.round(x), (int)Math.round(y), (int)Math.round(z)), r);
 	}
 
-	public WorldLocation getNearestStructure(Structures s, World world, double x, double y, double z, double r) {
+	public WorldLocation getNearestStructure(ChromaStructures s, World world, double x, double y, double z, double r) {
 		Collection<WorldLocation> c = generatedStructures.get(s).getAllLocationsNear(new WorldLocation(world, (int)Math.round(x), (int)Math.round(y), (int)Math.round(z)), r);
 		WorldLocation closest = null;
 		double d = Double.POSITIVE_INFINITY;
@@ -198,11 +197,11 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		return closest;
 	}
 
-	public boolean isStructureWithin(Structures s, World world, int x, int y, int z, double r) {
+	public boolean isStructureWithin(ChromaStructures s, World world, int x, int y, int z, double r) {
 		return this.getNearestStructure(s, world, x, y, z, r) != null;
 	}
 
-	public void generateStructure(Structures s, TileEntityStructControl te) {
+	public void generateStructure(ChromaStructures s, TileEntityStructControl te) {
 		WorldLocation loc = new WorldLocation(te);
 		if (!generatedStructures.get(s).containsKey(loc)) {
 			generatedStructures.get(s).put(loc, new Coordinate(te));
@@ -210,7 +209,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 	}
 
-	public void deleteStructure(Structures s, TileEntityStructControl te) {
+	public void deleteStructure(ChromaStructures s, TileEntityStructControl te) {
 		WorldLocation loc = new WorldLocation(te);
 		if (generatedStructures.get(s).containsKey(loc)) {
 			generatedStructures.get(s).remove(loc);
@@ -221,7 +220,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
 		if (this.canGenerateIn(world)) {
-			for (Structures s : structs) {
+			for (ChromaStructures s : structs) {
 				if (this.isGennableChunk(world, chunkX*16, chunkZ*16, random, s)) {
 					//ReikaWorldHelper.forceGenAndPopulate(world, chunkX*16, chunkZ*16, s == Structures.OCEAN ? 2 : 1); causes extra structures
 					if (this.tryGenerate(world, chunkX*16, chunkZ*16, random, s)) {
@@ -232,20 +231,20 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 	}
 
-	private boolean tryGenerate(World world, int cx, int cz, Random r, Structures s) {
+	private boolean tryGenerate(World world, int cx, int cz, Random r, ChromaStructures s) {
 		int x = cx + r.nextInt(16);
 		int z = cz + r.nextInt(16);
 		switch(s) {
 			case CAVERN: {
 				int y = 10+r.nextInt(40);
 				int tries = 0;
-				while (tries < 10 && !this.isValidCavernLocation(world, x, y, z, ChromaStructures.getCavernStructure(world, x, y, z))) {
+				while (tries < 10 && !this.isValidCavernLocation(world, x, y, z, ChromaStructures.CAVERN.getArray(world, x, y, z))) {
 					y = 10+r.nextInt(40);
 					x = cx + r.nextInt(16);
 					z = cz + r.nextInt(16);
 					tries++;
 				}
-				FilledBlockArray struct = ChromaStructures.getCavernStructure(world, x, y, z);
+				FilledBlockArray struct = ChromaStructures.CAVERN.getArray(world, x, y, z);
 				if (this.isValidCavernLocation(world, x, y, z, struct)) {
 					struct.place(2);
 					//generate tunnel
@@ -275,7 +274,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			case BURROW: {
 				int y = world.getTopSolidOrLiquidBlock(x, z)-1;
 				CrystalElement e = CrystalElement.randomElement();
-				FilledBlockArray arr = ChromaStructures.getBurrowStructure(world, x, y, z, e);
+				FilledBlockArray arr = ChromaStructures.BURROW.getArray(world, x, y, z, e);
 				if (this.isValidBurrowLocation(world, x, y, z, arr)) {
 					arr.place(2);
 					this.convertDirtToGrass(arr);
@@ -307,7 +306,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					//	y--;
 					//	b = world.getBlock(x, y, z);
 					//}
-					FilledBlockArray struct = ChromaStructures.getOceanStructure(world, x, y, z);
+					FilledBlockArray struct = ChromaStructures.OCEAN.getArray(world, x, y, z);
 					if (y > 0 && this.isValidOceanLocation(world, x, y, z, struct)) {
 						struct.place(2);
 						world.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
@@ -337,7 +336,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					y -= 3;
 					z -= 7;
 
-					FilledBlockArray struct = ChromaStructures.getDesertStructure(world, x, y, z);
+					FilledBlockArray struct = ChromaStructures.DESERT.getArray(world, x, y, z);
 					DesertStructure.getTerrain(struct, x, y, z);
 					if (this.isValidDesertLocation(world, x, y, z, struct)) {
 						struct.place(2);
@@ -383,7 +382,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			}
 			case SNOWSTRUCT: {
 				int y = world.getTopSolidOrLiquidBlock(x, z)-1;
-				FilledBlockArray arr = SnowStructure.getSnowStructure(world, x, y, z, r);
+				FilledBlockArray arr = ChromaStructures.SNOWSTRUCT.getArray(world, x, y, z, r);
 				if (this.isValidSnowStructLocation(world, x, y, z, arr)) {
 					arr.offset(0, -6, 0);
 					arr.place(2);
@@ -535,7 +534,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 	}
 
-	private void mossify(Structures s, FilledBlockArray arr, Random r) {
+	private void mossify(ChromaStructures s, FilledBlockArray arr, Random r) {
 		Block b2 = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 		for (int k = 0; k < arr.getSize(); k++) {
 			Coordinate c = arr.getNthBlock(k);
@@ -553,7 +552,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 	}
 
-	private void programSpawners(Structures s, FilledBlockArray arr) {
+	private void programSpawners(ChromaStructures s, FilledBlockArray arr) {
 		switch(s) {
 			case OCEAN:
 				for (int k = 0; k < arr.getSize(); k++) {
@@ -603,19 +602,19 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 	}
 
-	public static void populateChests(ChromaStructures.Structures struct, FilledBlockArray arr, Random r) {
+	public static void populateChests(ChromaStructures struct, FilledBlockArray arr, Random r) {
 		for (int k = 0; k < arr.getSize(); k++) {
 			Coordinate c = arr.getNthBlock(k);
 			Block b = c.getBlock(arr.world);
-			if (b == ChromaStructures.getChestGen()) {
+			if (b == ChromaStructureBase.getChestGen()) {
 				TileEntityLootChest te = (TileEntityLootChest)c.getTileEntity(arr.world);
 				if (te.isUntouchedWorldgen()) {
 					int bonus = 0;
-					if (struct == Structures.OCEAN && c.yCoord-arr.getMinY() == 4)
+					if (struct == ChromaStructures.OCEAN && c.yCoord-arr.getMinY() == 4)
 						bonus = 4;
-					if (struct == Structures.DESERT && c.yCoord-arr.getMinY() < 4)
+					if (struct == ChromaStructures.DESERT && c.yCoord-arr.getMinY() < 4)
 						bonus = 2;
-					if (struct == Structures.SNOWSTRUCT)
+					if (struct == ChromaStructures.SNOWSTRUCT)
 						bonus = c.yCoord-arr.getMinY() < 4 ? 2 : 1;
 					populateChest(te, struct, bonus, r);
 				}
@@ -623,7 +622,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 	}
 
-	public static void populateChest(TileEntityLootChest te, Structures struct, int bonus, Random r) {
+	public static void populateChest(TileEntityLootChest te, ChromaStructures struct, int bonus, Random r) {
 		String s = null;
 		switch (struct) {
 			case CAVERN:
@@ -924,7 +923,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		return world.getBlock(x, 0, z) == Blocks.air || world.canBlockSeeTheSky(x, 1, z);
 	}
 
-	private boolean isGennableChunk(World world, int x, int z, Random r, Structures s) {
+	private boolean isGennableChunk(World world, int x, int z, Random r, ChromaStructures s) {
 		if (this.isVoidWorld(world, x, z))
 			return false;
 		if (this.isStructureWithin(s, world, x, 48, z, this.getMinSeparation(s)))
@@ -948,14 +947,14 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 	}
 
-	private boolean isValidBiome(Structures s, BiomeGenBase b) {
+	private boolean isValidBiome(ChromaStructures s, BiomeGenBase b) {
 		switch(s) {
 			case OCEAN:
 				return ReikaBiomeHelper.isOcean(b);
 			case CAVERN:
 				return true;
 			case BURROW:
-				return b.topBlock == Blocks.grass && !this.isValidBiome(Structures.SNOWSTRUCT, b);
+				return b.topBlock == Blocks.grass && !this.isValidBiome(ChromaStructures.SNOWSTRUCT, b);
 			case DESERT:
 				return b.topBlock == Blocks.sand;
 			case SNOWSTRUCT:
@@ -965,7 +964,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 	}
 
-	private double getMinSeparation(Structures s) {
+	private double getMinSeparation(ChromaStructures s) {
 		switch(s) {
 			case DESERT:
 				return 512;

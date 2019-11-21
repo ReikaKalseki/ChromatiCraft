@@ -767,18 +767,32 @@
 	</structcheat>
 	<voidmonster>
 		<title>
-			Below the world lurks a...THING.
+			A distortion below the world
 		</title>
 		<hint>
 			Exactly what that thing is, remains unknown.
 		</hint>
 		<reveal>
-			A thing that must now be destroyed after what it has done to you.
+			Some sort of foreboding corruption of reality.
+		</reveal>
+		<desc>
+			A corruption of reality itself
+		</desc>
+	</voidmonster>
+	<voidmonsterdie>
+		<title>
+			Contact with the corruption
+		</title>
+		<hint>
+			What could possibly go wrong?
+		</hint>
+		<reveal>
+			That thing must now be destroyed after what it has done to you.
 		</reveal>
 		<desc>
 			Death by amorphous evil
 		</desc>
-	</voidmonster>
+	</voidmonsterdie>
 	<luma>
 		<title>
 			Ethereal Luma

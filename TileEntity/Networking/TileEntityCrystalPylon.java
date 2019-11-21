@@ -41,7 +41,6 @@ import net.minecraftforge.common.MinecraftForge;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PlayerChargedFromPylonEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonDrainedEvent;
@@ -70,6 +69,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -273,13 +273,13 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		super.updateEntity(world, x, y, z, meta);
 
 		if (hasMultiblock && structure == null) {
-			structure = ChromaStructures.getPylonStructure(world, x, y, z, this.getColor());
+			structure = ChromaStructures.PYLON.getArray(world, x, y, z, this.getColor());
 		}
 
 		if (DragonAPICore.debugtest) {
 			if (!hasMultiblock) {
 				CrystalElement e = CrystalElement.randomElement();
-				FilledBlockArray b = ChromaStructures.getPylonStructure(world, x, y, z, e);
+				FilledBlockArray b = ChromaStructures.PYLON.getArray(world, x, y, z, e);
 				b.place();
 				//world.setBlock(x, y+9, z, this.getTile().getBlock(), this.getTile().getBlockMetadata(), 3);
 				//TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y+9, z);
@@ -885,7 +885,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		hasMultiblock = true;
 		structure = struct;
 
-		broadcast = !worldObj.isRemote && ChromaStructures.getPylonBroadcastStructure(worldObj, xCoord, yCoord, zCoord, color).matchInWorld();
+		broadcast = !worldObj.isRemote && ChromaStructures.PYLONBROADCAST.getArray(worldObj, xCoord, yCoord, zCoord, color).matchInWorld();
 
 		this.syncAllData(true);
 		PylonGenerator.instance.cachePylon(this);

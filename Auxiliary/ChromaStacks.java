@@ -159,6 +159,7 @@ public class ChromaStacks {
 	public static final ItemStack waterCap		= ChromaItems.MODINTERACT.getStackOfMetadata(2);
 	public static final ItemStack endCap		= ChromaItems.MODINTERACT.getStackOfMetadata(3);
 	public static final ItemStack chromaCap		= ChromaItems.MODINTERACT.getStackOfMetadata(4);
+	public static final ItemStack voidmonsterEssence	= ChromaItems.MODINTERACT.getStackOfMetadata(5);
 
 	public static final ItemStack turboRepeater = getTurboRepeater(ChromaTiles.REPEATER);
 	public static final ItemStack turboMultiRepeater = getTurboRepeater(ChromaTiles.COMPOUND);

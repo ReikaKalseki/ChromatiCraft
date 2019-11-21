@@ -28,8 +28,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidRegistry;
 
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
@@ -39,6 +37,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
@@ -115,7 +114,7 @@ public class GuiStructure extends GuiBookSection {
 		switch(page) {
 			case TREESEND:
 			case BOOSTTREE: {
-				FilledBlockArray arr = ChromaStructures.Structures.TREE.getStructureForDisplay();
+				FilledBlockArray arr = ChromaStructures.TREE.getStructureForDisplay();
 				for (Coordinate c : arr.keySet()) {
 					BlockKey key = arr.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord);
 					if (key.blockID != Blocks.air && key.equals(array.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord)))
@@ -125,7 +124,7 @@ public class GuiStructure extends GuiBookSection {
 			}
 			case PYLONBROADCAST:
 			case PYLONTURBORING: {
-				FilledBlockArray arr = ChromaStructures.Structures.PYLON.getStructureForDisplay();
+				FilledBlockArray arr = ChromaStructures.PYLON.getStructureForDisplay();
 				for (Coordinate c : arr.keySet()) {
 					if (arr.getBlockAt(c.xCoord, c.yCoord, c.zCoord) != Blocks.air)
 						set.add(c);
@@ -133,7 +132,7 @@ public class GuiStructure extends GuiBookSection {
 				break;
 			}
 			case METEOR2: {
-				FilledBlockArray arr = ChromaStructures.Structures.METEOR1.getStructureForDisplay();
+				FilledBlockArray arr = ChromaStructures.METEOR1.getStructureForDisplay();
 				for (Coordinate c : arr.keySet()) {
 					BlockKey key = arr.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord);
 					if (key.blockID != Blocks.air && key.equals(array.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord)))
@@ -142,7 +141,7 @@ public class GuiStructure extends GuiBookSection {
 				break;
 			}
 			case METEOR3: {
-				FilledBlockArray arr = ChromaStructures.Structures.METEOR2.getStructureForDisplay();
+				FilledBlockArray arr = ChromaStructures.METEOR2.getStructureForDisplay();
 				for (Coordinate c : arr.keySet()) {
 					BlockKey key = arr.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord);
 					if (key.blockID != Blocks.air && key.equals(array.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord)))
@@ -151,7 +150,7 @@ public class GuiStructure extends GuiBookSection {
 				break;
 			}
 			case RITUAL2: {
-				FilledBlockArray arr = ChromaStructures.Structures.RITUAL.getStructureForDisplay();
+				FilledBlockArray arr = ChromaStructures.RITUAL.getStructureForDisplay();
 				for (Coordinate c : arr.keySet()) {
 					BlockKey key = arr.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord);
 					if (key.blockID != Blocks.air && key.equals(array.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord)))
@@ -160,7 +159,7 @@ public class GuiStructure extends GuiBookSection {
 				break;
 			}
 			case WIRELESSPED2: {
-				FilledBlockArray arr = ChromaStructures.Structures.WIRELESSPEDESTAL.getStructureForDisplay();
+				FilledBlockArray arr = ChromaStructures.WIRELESSPEDESTAL.getStructureForDisplay();
 				for (Coordinate c : arr.keySet()) {
 					BlockKey key = arr.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord);
 					if (key.blockID != Blocks.air && key.equals(array.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord)))
@@ -169,7 +168,7 @@ public class GuiStructure extends GuiBookSection {
 				break;
 			}
 			case CASTING2: {
-				FilledBlockArray arr = ChromaStructures.Structures.CASTING1.getStructureForDisplay();
+				FilledBlockArray arr = ChromaStructures.CASTING1.getStructureForDisplay();
 				for (Coordinate c : arr.keySet()) {
 					BlockKey key = arr.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord);
 					if (key.blockID != Blocks.air && key.equals(array.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord)))
@@ -178,7 +177,7 @@ public class GuiStructure extends GuiBookSection {
 				break;
 			}
 			case CASTING3: {
-				FilledBlockArray arr = ChromaStructures.Structures.CASTING2.getStructureForDisplay();
+				FilledBlockArray arr = ChromaStructures.CASTING2.getStructureForDisplay();
 				for (Coordinate c : arr.keySet()) {
 					BlockKey key = arr.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord);
 					if (key.blockID != Blocks.air && key.equals(array.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord)))
@@ -380,7 +379,7 @@ public class GuiStructure extends GuiBookSection {
 	private void drawTally(int j, int k) {
 		ItemHashMap<Integer> map = array.tally();
 		ItemHashMap<Integer> map2 = null;
-		Structures diff = this.getDifferenceTally();
+		ChromaStructures diff = this.getDifferenceTally();
 		if (diff != null) {
 			map2 = ItemHashMap.subtract(map, diff.getStructureForDisplay().tally());
 		}
@@ -454,25 +453,25 @@ public class GuiStructure extends GuiBookSection {
 		}
 	}
 
-	private Structures getDifferenceTally() {
+	private ChromaStructures getDifferenceTally() {
 		switch(page.getStructure()) {
 			case CASTING2:
-				return Structures.CASTING1;
+				return ChromaStructures.CASTING1;
 			case CASTING3:
-				return Structures.CASTING2;
+				return ChromaStructures.CASTING2;
 			case METEOR2:
-				return Structures.METEOR1;
+				return ChromaStructures.METEOR1;
 			case METEOR3:
-				return Structures.METEOR2;
+				return ChromaStructures.METEOR2;
 			case PYLONBROADCAST:
 			case PYLONTURBO:
-				return Structures.PYLON;
+				return ChromaStructures.PYLON;
 			case RITUAL2:
-				return Structures.RITUAL;
+				return ChromaStructures.RITUAL;
 			case TREE_BOOSTED:
-				return Structures.TREE;
+				return ChromaStructures.TREE;
 			case WIRELESSPEDESTAL2:
-				return Structures.WIRELESSPEDESTAL;
+				return ChromaStructures.WIRELESSPEDESTAL;
 			default:
 				return null;
 		}

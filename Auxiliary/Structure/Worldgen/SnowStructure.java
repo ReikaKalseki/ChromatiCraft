@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Auxiliary;
+package Reika.ChromatiCraft.Auxiliary.Structure.Worldgen;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,6 +18,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.Base.ChromaStructureBase;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock.Passability;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -30,9 +31,8 @@ import Reika.GeoStrata.Blocks.BlockLavaRock;
 import Reika.GeoStrata.Registry.GeoBlocks;
 
 
-public class SnowStructure {
+public class SnowStructure extends ChromaStructureBase {
 
-	private static final Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 	private static final Block b2 = ChromaBlocks.TRAPFLOOR.getBlockInstance();
 	private static final int ms = BlockType.STONE.metadata;
 	private static final int mc = BlockType.COBBLE.metadata;
@@ -176,7 +176,8 @@ public class SnowStructure {
 		return li;
 	}
 
-	public static FilledBlockArray getSnowStructure(World world, int x, int y, int z, Random rand) {
+	@Override
+	public FilledBlockArray getArray(World world, int x, int y, int z) {
 		FilledBlockArray array = new FilledBlockArray(world);
 
 		//array.setBlock(x + 8, y + 3, z + 6, Blocks.blockDiamond);

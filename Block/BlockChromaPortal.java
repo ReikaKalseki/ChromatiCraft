@@ -34,7 +34,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaTeleporter;
 import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
@@ -42,6 +41,7 @@ import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityBallLightningFX;
@@ -409,7 +409,7 @@ public class BlockChromaPortal extends Block {
 				complete = true;
 			}
 			else {
-				complete = ChromaStructures.getPortalStructure(world, x, y, z, false).matchInWorld();
+				complete = ChromaStructures.PORTAL.getArray(world, x, y, z).matchInWorld();
 				complete &= this.getEntities(world, x, y, z);
 			}
 			if (last != complete)

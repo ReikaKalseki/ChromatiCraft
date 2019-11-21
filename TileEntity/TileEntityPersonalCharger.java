@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,13 +15,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
@@ -141,7 +141,7 @@ public class TileEntityPersonalCharger extends CrystalReceiverBase implements Ch
 		int m4 = world.getBlockMetadata(x+2, y-4, z+2);
 		if (m1 == m2 && m1 == m3 && m1 == m4) {
 			CrystalElement e = CrystalElement.elements[m1];
-			FilledBlockArray arr = ChromaStructures.getPersonalStructure(world, x, y-6, z, e);
+			FilledBlockArray arr = ChromaStructures.PERSONAL.getArray(world, x, y-6, z, e);
 			boolean flag = arr.matchInWorld();
 			if (flag != hasMultiblock) {
 				if (flag) {

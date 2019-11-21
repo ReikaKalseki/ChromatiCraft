@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -24,13 +24,12 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.ChestGenHooks;
 
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.TileEntity.TileEntityDataNode;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -105,7 +104,7 @@ public class DataTowerGenerator implements RetroactiveGenerator {
 			z = c.zCoord;
 		}
 
-		FilledBlockArray f = ChromaStructures.getDataTowerStructure(world, x, y, z);
+		FilledBlockArray f = ChromaStructures.DATANODE.getArray(world, x, y, z);
 		//if (f.isSpaceEmpty(world, true)) {
 		f.place();
 		TileEntityDataNode td = (TileEntityDataNode)world.getTileEntity(x, y+1, z);
@@ -196,7 +195,7 @@ public class DataTowerGenerator implements RetroactiveGenerator {
 	}
 
 	private void generateLoot(TileEntityLootChest te, Random rand) {
-		te.populateChest(ChestGenHooks.STRONGHOLD_LIBRARY, Structures.CAVERN, 2, rand);
+		te.populateChest(ChestGenHooks.STRONGHOLD_LIBRARY, ChromaStructures.CAVERN, 2, rand);
 		Collections.shuffle(loot);
 		for (TowerLoot t : loot) {
 			int n = rand.nextInt(1+t.maxCount);

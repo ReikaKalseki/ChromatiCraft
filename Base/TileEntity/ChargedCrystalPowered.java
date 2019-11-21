@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -74,10 +74,18 @@ public abstract class ChargedCrystalPowered extends InventoriedChromaticBase imp
 		return 0;
 	}
 
-	protected final int getStoredEnergy() {
+	protected final int getStoredEnergy(boolean onlyUsedColors) {
 		if (ChromaItems.STORAGE.matchWith(inv[0])) {
 			ItemStack is = inv[0];
-			return ((ItemStorageCrystal)is.getItem()).getTotalEnergy(is);
+			ElementTagCompound tag = ((ItemStorageCrystal)is.getItem()).getStoredTags(is);
+			if (onlyUsedColors) {
+				for (int i = 0; i < 16; i++) {
+					CrystalElement e = CrystalElement.elements[i];
+					if (!this.usesColor(e))
+						tag.removeTag(e);
+				}
+			}
+			return tag.getTotalEnergy();
 		}
 		return 0;
 	}
@@ -125,8 +133,17 @@ public abstract class ChargedCrystalPowered extends InventoriedChromaticBase imp
 
 	public abstract boolean usesColor(CrystalElement e);
 
-	public abstract boolean canExtractItem(int slot, ItemStack is, int side);
-	public abstract boolean isItemValidForSlot(int slot, ItemStack is);
+	public final boolean canExtractItem(int slot, ItemStack is, int side) {
+		return slot == 0 ? this.getStoredEnergy(true) == 0 : this.canExtractOtherItem(slot, is, side);
+	}
+
+	public final boolean isItemValidForSlot(int slot, ItemStack is) {
+		return slot == 0 ? ChromaItems.STORAGE.matchWith(is) : this.isItemValidForOtherSlot(slot, is);
+	}
+
+	protected abstract boolean canExtractOtherItem(int slot, ItemStack is, int side);
+
+	protected abstract boolean isItemValidForOtherSlot(int slot, ItemStack is) ;
 
 	public abstract ElementTagCompound getRequiredEnergy();
 

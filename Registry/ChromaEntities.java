@@ -16,6 +16,7 @@ import Reika.ChromatiCraft.Entity.EntityAurora;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
+import Reika.ChromatiCraft.Entity.EntityDeathFog;
 import Reika.ChromatiCraft.Entity.EntityDimensionFlare;
 import Reika.ChromatiCraft.Entity.EntityEnderEyeT2;
 import Reika.ChromatiCraft.Entity.EntityFlyingLight;
@@ -65,7 +66,8 @@ public enum ChromaEntities implements EntityEnum {
 	ENDEREYE(EntityEnderEyeT2.class, "Ender Eye T2"),
 	LIGHTGUN(EntityLightShot.class, "LightGun Shot"),
 	PISTONSPLINE(EntityPistonSpline.class, "Bezier Particle"),
-	BAIT(EntityMonsterBait.class, "Bait");
+	BAIT(EntityMonsterBait.class, "Bait"),
+	DEATHFOG(EntityDeathFog.class, "Death Fog");
 
 	public final String entityName;
 	private final Class entityClass;

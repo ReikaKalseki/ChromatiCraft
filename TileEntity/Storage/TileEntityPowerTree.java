@@ -30,7 +30,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
@@ -48,6 +47,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -413,7 +413,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	}
 
 	public void validateStructure() {
-		FilledBlockArray f = ChromaStructures.getTreeStructure(worldObj, xCoord, yCoord, zCoord, false);
+		FilledBlockArray f = ChromaStructures.TREE.getArray(worldObj, xCoord, yCoord, zCoord);
 		boolean flag = f.matchInWorld();
 		if (!flag && hasMultiblock) {
 			this.onBreakMultiblock();
@@ -423,7 +423,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		if (ep != null && !ReikaPlayerAPI.isFake(ep)) {
 			hadEnhancedProgress = ProgressStage.CTM.isPlayerAtStage(ep);
 		}
-		enhanced = hasMultiblock && hadEnhancedProgress && ChromaStructures.getBoostedTreeStructure(worldObj, xCoord, yCoord, zCoord, false).matchInWorld();
+		enhanced = hasMultiblock && hadEnhancedProgress && ChromaStructures.TREE_BOOSTED.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 		this.checkHasSendFocus();
 		for (int i = 0; i < 16; i++)
 			this.clamp(CrystalElement.elements[i]);
@@ -431,7 +431,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	}
 
 	private void checkHasSendFocus() {
-		canSendEnergy = hasMultiblock && ChromaStructures.getTreeSendFocus(worldObj, xCoord, yCoord, zCoord).matchInWorld();
+		canSendEnergy = hasMultiblock && ChromaStructures.TREE_SENDER.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 	}
 
 	public boolean hasMultiBlock() {

@@ -93,6 +93,7 @@ import net.minecraftforge.event.world.WorldEvent;
 import Reika.ChromatiCraft.API.Interfaces.CustomEnderDragon;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromaTeleporter;
 import Reika.ChromatiCraft.Auxiliary.FocusCrystalTrade;
 import Reika.ChromatiCraft.Auxiliary.LumenTurretDamage;
@@ -240,6 +241,7 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler.ToolPartType;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
+import Reika.VoidMonster.API.PlayerLookAtVoidMonsterEvent;
 import Reika.VoidMonster.Entity.EntityVoidMonster;
 
 import WayofTime.alchemicalWizardry.api.event.TeleposeEvent;
@@ -614,7 +616,7 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
-	public void preventCliffCreepers(LivingSpawnEvent.CheckSpawn evt) {
+	public void changeLightSpawnCurve(LivingSpawnEvent.CheckSpawn evt) {
 		int x = MathHelper.floor_double(evt.x);
 		int z = MathHelper.floor_double(evt.z);
 		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(x, z))) {
@@ -1180,10 +1182,42 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	@ModDependent(ModList.VOIDMONSTER)
-	public void voidMonsterDeathProgress(LivingDeathEvent evt) {
+	public void voidMonsterAttackDrops(LivingHurtEvent evt) {
+		if (evt.entityLiving instanceof EntityVoidMonster) {
+			if (evt.source.getEntity() instanceof EntityPlayer) {
+				EntityPlayer ep = (EntityPlayer)evt.source.getEntity();
+				float num = evt.ammount/40F;
+				while (num > 1)
+					ReikaItemHelper.dropItem(evt.entityLiving, ChromaStacks.voidmonsterEssence);
+				if (num > 0)
+					if (ReikaRandomHelper.doWithChance(num))
+						ReikaItemHelper.dropItem(evt.entityLiving, ChromaStacks.voidmonsterEssence);
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	@ModDependent(ModList.VOIDMONSTER)
+	public void voidMonsterSeeProgress(LivingHurtEvent evt) {
 		if (evt.entityLiving instanceof EntityPlayer) {
 			if (evt.source.getEntity() instanceof EntityVoidMonster) {
 				ProgressStage.VOIDMONSTER.stepPlayerTo((EntityPlayer)evt.entityLiving);
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	@ModDependent(ModList.VOIDMONSTER)
+	public void voidMonsterSeeProgress(PlayerLookAtVoidMonsterEvent evt) {
+		ProgressStage.VOIDMONSTER.stepPlayerTo(evt.entityPlayer);
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	@ModDependent(ModList.VOIDMONSTER)
+	public void voidMonsterDeathProgress(LivingDeathEvent evt) {
+		if (evt.entityLiving instanceof EntityPlayer) {
+			if (evt.source.getEntity() instanceof EntityVoidMonster) {
+				ProgressStage.VOIDMONSTERDIE.stepPlayerTo((EntityPlayer)evt.entityLiving);
 			}
 		}
 	}

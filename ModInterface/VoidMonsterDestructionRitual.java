@@ -17,7 +17,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Block.BlockDistortingEffect;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
@@ -32,7 +31,6 @@ import Reika.DragonAPI.Instantiable.ParticleController.FlashColorController;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.VoidMonster.API.NonTeleportingDamage;
 import Reika.VoidMonster.API.VoidMonsterHook;
@@ -107,6 +105,7 @@ public class VoidMonsterDestructionRitual implements VoidMonsterHook {
 				case DISTORTION:
 					e.attackEntityFrom(src, 20);
 					int r = (int)(RADIUS*1.5);
+					/*
 					int r2 = r/3;
 					for (int i = -r; i <= r; i++) {
 						for (int j = -r2; j <= r2; j++) {
@@ -121,7 +120,7 @@ public class VoidMonsterDestructionRitual implements VoidMonsterHook {
 								}
 							}
 						}
-					}
+					}*/
 					break;
 			}
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.VOIDMONSTERRITUAL.ordinal(), new PacketTarget.RadiusTarget(e, 128), e.getEntityId(), this.ordinal());

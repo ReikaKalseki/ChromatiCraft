@@ -32,11 +32,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Auxiliary.MonumentCompletionRitual;
-import Reika.ChromatiCraft.Auxiliary.OceanStructure;
-import Reika.ChromatiCraft.Auxiliary.SnowStructure;
+import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.OceanStructure;
+import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.SnowStructure;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock.Passability;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
@@ -48,6 +46,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
@@ -79,7 +78,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityStructControl extends InventoriedChromaticBase implements BreakAction, HitAction, InertIInv, PlayerBreakHook {
 
-	private Structures struct;
+	private ChromaStructures struct;
 	private FilledBlockArray blocks;
 	private CrystalElement color;
 	private final EnumMap<CrystalElement, Coordinate> crystals = new EnumMap(CrystalElement.class);
@@ -132,7 +131,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			}
 		}
 		//triggered = false;
-		if (struct == Structures.OCEAN) {
+		if (struct == ChromaStructures.OCEAN) {
 			if (trapTick > 0) {
 				trapTick--;
 			}
@@ -477,15 +476,15 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			return;
 		if (struct != null) {
 			FilledBlockArray copy = (FilledBlockArray)blocks.copy();
-			if (struct == Structures.BURROW) {
+			if (struct == ChromaStructures.BURROW) {
 				copy.offset(5, 8, 2);
 			}
-			if (struct == Structures.DESERT) {
+			if (struct == ChromaStructures.DESERT) {
 				copy.offset(-7, -3, -7);
 			}
 			copy.placeExcept(new Coordinate(this), 3);
 			DungeonGenerator.populateChests(struct, copy, rand);
-			if (struct == Structures.OCEAN) {
+			if (struct == ChromaStructures.OCEAN) {
 				BlockLootChest.setMaxReach(worldObj, xCoord-2, yCoord-1, zCoord, 2.5);
 				BlockLootChest.setMaxReach(worldObj, xCoord, yCoord-1, zCoord-1, 2.5);
 			}
@@ -557,7 +556,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		}
 	}
 
-	public void generate(Structures s, CrystalElement e) {
+	public void generate(ChromaStructures s, CrystalElement e) {
 		if (!s.isNatural())
 			throw new IllegalArgumentException("You cannot generate a structure control in the wrong structure!");
 		struct = s;
@@ -593,19 +592,19 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	private void calcCrystals(World world, int x, int y, int z) {
 		switch(struct) {
 			case CAVERN:
-				blocks = ChromaStructures.getCavernStructure(world, x, y, z);
+				blocks = ChromaStructures.CAVERN.getArray(world, x, y, z);
 				break;
 			case BURROW:
-				blocks = ChromaStructures.getBurrowStructure(world, x, y, z, color);
+				blocks = ChromaStructures.BURROW.getArray(world, x, y, z, color);
 				break;
 			case OCEAN:
-				blocks = ChromaStructures.getOceanStructure(world, x, y, z);
+				blocks = ChromaStructures.OCEAN.getArray(world, x, y, z);
 				break;
 			case DESERT:
-				blocks = ChromaStructures.getDesertStructure(world, x, y, z);
+				blocks = ChromaStructures.DESERT.getArray(world, x, y, z);
 				break;
 			case SNOWSTRUCT:
-				blocks = ChromaStructures.getSnowStructure(world, x, y, z);
+				blocks = ChromaStructures.SNOWSTRUCT.getArray(world, x, y, z);
 				break;
 			default:
 				break;
@@ -730,7 +729,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	}
 
 	public int getBrightness() {
-		return struct == Structures.BURROW || struct == Structures.DESERT ? 15 : 0;
+		return struct == ChromaStructures.BURROW || struct == ChromaStructures.DESERT ? 15 : 0;
 	}
 
 	@Override
@@ -759,7 +758,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		super.readFromNBT(NBT);
 
 		if (NBT.hasKey("struct"))
-			struct = Structures.valueOf(NBT.getString("struct"));
+			struct = ChromaStructures.valueOf(NBT.getString("struct"));
 
 		if (NBT.hasKey("lastPlayer"))
 			lastTriggerPlayer = UUID.fromString(NBT.getString("lastPlayer"));
@@ -921,14 +920,14 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 	@Override
 	public boolean breakByPlayer(EntityPlayer ep) {
-		if (struct == Structures.OCEAN) {
+		if (struct == ChromaStructures.OCEAN) {
 			return ep != null && ep.getDistance(xCoord+0.5, yCoord+0.5, zCoord+0.5) <= 2.5;
 		}
 		return true;
 	}
 
 	/** Is often null! */
-	public Structures getStructureType() {
+	public ChromaStructures getStructureType() {
 		return struct;
 	}
 

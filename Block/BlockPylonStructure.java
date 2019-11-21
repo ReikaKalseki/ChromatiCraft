@@ -26,13 +26,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Render.ISBRH.CrystallineStoneRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
@@ -469,7 +469,7 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 		for (int h = 9; h < 16; h++) {
 			TileEntity te = world.getTileEntity(mx, my+h, mz);
 			if (te instanceof TileEntityCrystalPylon) {
-				if (!ChromaStructures.getPylonStructure(world, mx, my+h, mz, ((TileEntityCrystalPylon)te).getColor()).matchInWorld()) {
+				if (!ChromaStructures.PYLON.getArray(world, mx, my+h, mz, ((TileEntityCrystalPylon)te).getColor()).matchInWorld()) {
 					((TileEntityCrystalPylon)te).invalidateMultiblock();
 					break;
 				}
@@ -519,7 +519,7 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 		for (int h = 9; h < 16; h++) {
 			TileEntity te = world.getTileEntity(mx, my+h, mz);
 			if (te instanceof TileEntityCrystalPylon) {
-				FilledBlockArray f = ChromaStructures.getPylonStructure(world, mx, my+h, mz, ((TileEntityCrystalPylon)te).getColor());
+				FilledBlockArray f = ChromaStructures.PYLON.getArray(world, mx, my+h, mz, ((TileEntityCrystalPylon)te).getColor());
 				if (f.matchInWorld()) {
 					((TileEntityCrystalPylon)te).validateMultiblock(f);
 					break;

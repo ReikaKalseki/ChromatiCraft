@@ -18,13 +18,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityWirelessPowered;
 import Reika.ChromatiCraft.Magic.Interfaces.WirelessSource;
 import Reika.ChromatiCraft.Magic.Network.LOSData;
 import Reika.ChromatiCraft.Magic.Network.PylonFinder;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.GlowTendril;
@@ -103,8 +103,8 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 
 	@Override
 	public void validateStructure() {
-		broadcasting = !worldObj.isRemote && ChromaStructures.getWirelessPedestalStructure(worldObj, xCoord, yCoord, zCoord).matchInWorld();
-		enhancedBroadcasting = broadcasting && ChromaStructures.getWirelessPedestalStructure2(worldObj, xCoord, yCoord, zCoord).matchInWorld();
+		broadcasting = !worldObj.isRemote && ChromaStructures.WIRELESSPEDESTAL.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
+		enhancedBroadcasting = broadcasting && ChromaStructures.WIRELESSPEDESTAL2.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 	}
 
 	private void broadcastEnergy(World world) {
