@@ -47,7 +47,7 @@ public class GateStructure extends ChromaStructureBase {
 				int dx = x+i-metas.length/2;
 				int dz = z+k-metas.length/2;
 				if (m >= 0) {
-					array.setBlock(dx, y-1, dz, b, m);
+					array.setBlock(dx, y-1, dz, crystalstone, m);
 				}
 				else if (m == -1) {
 					array.setBlock(dx, y-1, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.ordinal());
@@ -59,21 +59,21 @@ public class GateStructure extends ChromaStructureBase {
 		for (int i = 0; i < m.length; i++) {
 			int meta = m[i];
 			int dy = y+i;
-			array.setBlock(x+4, dy, z, b, meta);
-			array.setBlock(x-4, dy, z, b, meta);
-			array.setBlock(x, dy, z+4, b, meta);
-			array.setBlock(x, dy, z-4, b, meta);
+			array.setBlock(x+4, dy, z, crystalstone, meta);
+			array.setBlock(x-4, dy, z, crystalstone, meta);
+			array.setBlock(x, dy, z+4, crystalstone, meta);
+			array.setBlock(x, dy, z-4, crystalstone, meta);
 		}
 
-		array.setBlock(x+3, y+4, z, b, StoneTypes.GLOWBEAM.ordinal());
-		array.setBlock(x-3, y+4, z, b, StoneTypes.GLOWBEAM.ordinal());
-		array.setBlock(x, y+4, z-3, b, StoneTypes.GLOWBEAM.ordinal());
-		array.setBlock(x, y+4, z+3, b, StoneTypes.GLOWBEAM.ordinal());
+		array.setBlock(x+3, y+4, z, crystalstone, StoneTypes.GLOWBEAM.ordinal());
+		array.setBlock(x-3, y+4, z, crystalstone, StoneTypes.GLOWBEAM.ordinal());
+		array.setBlock(x, y+4, z-3, crystalstone, StoneTypes.GLOWBEAM.ordinal());
+		array.setBlock(x, y+4, z+3, crystalstone, StoneTypes.GLOWBEAM.ordinal());
 
-		array.setBlock(x+2, y+4, z, b, StoneTypes.ENGRAVED.ordinal());
-		array.setBlock(x-2, y+4, z, b, StoneTypes.ENGRAVED.ordinal());
-		array.setBlock(x, y+4, z-2, b, StoneTypes.ENGRAVED.ordinal());
-		array.setBlock(x, y+4, z+2, b, StoneTypes.ENGRAVED.ordinal());
+		array.setBlock(x+2, y+4, z, crystalstone, StoneTypes.ENGRAVED.ordinal());
+		array.setBlock(x-2, y+4, z, crystalstone, StoneTypes.ENGRAVED.ordinal());
+		array.setBlock(x, y+4, z-2, crystalstone, StoneTypes.ENGRAVED.ordinal());
+		array.setBlock(x, y+4, z+2, crystalstone, StoneTypes.ENGRAVED.ordinal());
 
 		array.setBlock(x, y, z, ChromaTiles.TELEPORT.getBlock(), ChromaTiles.TELEPORT.getBlockMetadata());
 

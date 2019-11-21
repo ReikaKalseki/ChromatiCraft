@@ -89,7 +89,7 @@ public class GuiStructure extends GuiBookSection {
 			array.setBlock(array.getMidX(), array.getMinY()+1, array.getMidZ()+1, Blocks.air);
 			array.setBlock(array.getMidX(), array.getMinY()+1, array.getMidZ()-1, Blocks.air);
 		}
-		if (page == ChromaResearch.TREE || page == ChromaResearch.TREESEND || page == ChromaResearch.BOOSTTREE) {
+		if (page == ChromaResearch.TREE || page == ChromaResearch.BOOSTTREE) {
 			array.setBlock(array.getMidX()-1, array.getMaxY(), array.getMidZ(), ChromaTiles.POWERTREE.getBlock(), ChromaTiles.POWERTREE.getBlockMetadata());
 		}
 		if (page == ChromaResearch.INFUSION) {
@@ -469,6 +469,8 @@ public class GuiStructure extends GuiBookSection {
 			case RITUAL2:
 				return ChromaStructures.RITUAL;
 			case TREE_BOOSTED:
+				return ChromaStructures.TREE;
+			case TREE_SENDER:
 				return ChromaStructures.TREE;
 			case WIRELESSPEDESTAL2:
 				return ChromaStructures.WIRELESSPEDESTAL;

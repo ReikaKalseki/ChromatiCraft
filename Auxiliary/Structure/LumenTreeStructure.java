@@ -27,10 +27,10 @@ public class LumenTreeStructure extends ChromaStructureBase {
 			}
 			else {
 				int meta = (i == 3 || i == 5 || i == 7 || i == 9) ? 15 : 11;
-				array.setBlock(x, dy, z, b, meta);
-				array.setBlock(x, dy, z-1, b, meta);
-				array.setBlock(x+1, dy, z, b, meta);
-				array.setBlock(x+1, dy, z-1, b, meta);
+				array.setBlock(x, dy, z, crystalstone, meta);
+				array.setBlock(x, dy, z-1, crystalstone, meta);
+				array.setBlock(x+1, dy, z, crystalstone, meta);
+				array.setBlock(x+1, dy, z-1, crystalstone, meta);
 			}
 
 			if (i > 1) {
@@ -63,17 +63,17 @@ public class LumenTreeStructure extends ChromaStructureBase {
 			}
 		}
 
-		array.setBlock(x-1, y-1, z, b, 14);
-		array.setBlock(x-1, y-1, z-1, b, 14);
+		array.setBlock(x-1, y-1, z, crystalstone, 14);
+		array.setBlock(x-1, y-1, z-1, crystalstone, 14);
 
-		array.setBlock(x+2, y-1, z, b, 14);
-		array.setBlock(x+2, y-1, z-1, b, 14);
+		array.setBlock(x+2, y-1, z, crystalstone, 14);
+		array.setBlock(x+2, y-1, z-1, crystalstone, 14);
 
-		array.setBlock(x, y-1, z-2, b, 14);
-		array.setBlock(x+1, y-1, z-2, b, 14);
+		array.setBlock(x, y-1, z-2, crystalstone, 14);
+		array.setBlock(x+1, y-1, z-2, crystalstone, 14);
 
-		array.setBlock(x, y-1, z+1, b, 14);
-		array.setBlock(x+1, y-1, z+1, b, 14);
+		array.setBlock(x, y-1, z+1, crystalstone, 14);
+		array.setBlock(x+1, y-1, z+1, crystalstone, 14);
 
 		FilledBlockArray treeSend = ChromaStructures.TREE_SENDER.getArray(world, x, y, z);
 		if (addTreeSender) {

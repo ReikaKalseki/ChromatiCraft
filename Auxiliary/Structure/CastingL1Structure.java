@@ -38,7 +38,7 @@ public class CastingL1Structure extends ChromaStructureBase {
 			for (int k = 3; k <= 5; k++) {
 				int dx = x+k*dir.offsetX;
 				int dz = z+k*dir.offsetZ;
-				array.addBlock(dx, y, dz, b, 0);
+				array.addBlock(dx, y, dz, crystalstone, 0);
 				array.addBlock(dx, y, dz, ChromaBlocks.RUNE.getBlockInstance());
 			}
 
@@ -47,46 +47,46 @@ public class CastingL1Structure extends ChromaStructureBase {
 			for (int k = 1; k <= 5; k++) {
 				int meta2 = k == 1 ? 8 : 2;
 				int dy = y+k;
-				array.setBlock(dx, dy, dz, b, meta2);
+				array.setBlock(dx, dy, dz, crystalstone, meta2);
 			}
 		}
 
 		for (int i = -6; i <= 6; i++) {
-			array.setBlock(x-6, y, z+i, b, 0);
-			array.setBlock(x+6, y, z+i, b, 0);
-			array.setBlock(x+i, y, z-6, b, 0);
-			array.setBlock(x+i, y, z+6, b, 0);
+			array.setBlock(x-6, y, z+i, crystalstone, 0);
+			array.setBlock(x+6, y, z+i, crystalstone, 0);
+			array.setBlock(x+i, y, z-6, crystalstone, 0);
+			array.setBlock(x+i, y, z+6, crystalstone, 0);
 		}
 
 		for (int k = 1; k <= 4; k++) {
 			int meta2 = k == 1 ? 0 : 2;
 			int dy = y+k;
-			array.setBlock(x+6, dy, z+6, b, meta2);
-			array.setBlock(x-6, dy, z+6, b, meta2);
-			array.setBlock(x+6, dy, z-6, b, meta2);
-			array.setBlock(x-6, dy, z-6, b, meta2);
+			array.setBlock(x+6, dy, z+6, crystalstone, meta2);
+			array.setBlock(x-6, dy, z+6, crystalstone, meta2);
+			array.setBlock(x+6, dy, z-6, crystalstone, meta2);
+			array.setBlock(x-6, dy, z-6, crystalstone, meta2);
 		}
 
 		for (int k = 1; k <= 6; k++) {
 			int meta2 = k == 1 || k == 5 ? 0 : (k == 6 ? 7 : 2);
 			int dy = y+k;
-			array.setBlock(x+6, dy, z+3, b, meta2);
-			array.setBlock(x+6, dy, z-3, b, meta2);
-			array.setBlock(x-6, dy, z+3, b, meta2);
-			array.setBlock(x-6, dy, z-3, b, meta2);
-			array.setBlock(x+3, dy, z-6, b, meta2);
-			array.setBlock(x-3, dy, z-6, b, meta2);
-			array.setBlock(x-3, dy, z+6, b, meta2);
-			array.setBlock(x+3, dy, z+6, b, meta2);
+			array.setBlock(x+6, dy, z+3, crystalstone, meta2);
+			array.setBlock(x+6, dy, z-3, crystalstone, meta2);
+			array.setBlock(x-6, dy, z+3, crystalstone, meta2);
+			array.setBlock(x-6, dy, z-3, crystalstone, meta2);
+			array.setBlock(x+3, dy, z-6, crystalstone, meta2);
+			array.setBlock(x-3, dy, z-6, crystalstone, meta2);
+			array.setBlock(x-3, dy, z+6, crystalstone, meta2);
+			array.setBlock(x+3, dy, z+6, crystalstone, meta2);
 		}
 
 		for (int i = -5; i <= 5; i++) {
 			if (i != 3 && i != -3 && i != 0) {
 				int dy = Math.abs(i) < 3 ? y+6 : y+5;
-				array.setBlock(x-6, dy, z+i, b, 1);
-				array.setBlock(x+6, dy, z+i, b, 1);
-				array.setBlock(x+i, dy, z-6, b, 1);
-				array.setBlock(x+i, dy, z+6, b, 1);
+				array.setBlock(x-6, dy, z+i, crystalstone, 1);
+				array.setBlock(x+6, dy, z+i, crystalstone, 1);
+				array.setBlock(x+i, dy, z-6, crystalstone, 1);
+				array.setBlock(x+i, dy, z+6, crystalstone, 1);
 			}
 		}
 
@@ -94,10 +94,10 @@ public class CastingL1Structure extends ChromaStructureBase {
 			for (int k = 0; k <= 1; k++) {
 				if (k == 0 || Math.abs(i)%2 == 1) {
 					int dy = y+k;
-					array.addBlock(x-3, dy, z+i, b, 0);
-					array.addBlock(x+3, dy, z+i, b, 0);
-					array.addBlock(x+i, dy, z-3, b, 0);
-					array.addBlock(x+i, dy, z+3, b, 0);
+					array.addBlock(x-3, dy, z+i, crystalstone, 0);
+					array.addBlock(x+3, dy, z+i, crystalstone, 0);
+					array.addBlock(x+i, dy, z-3, crystalstone, 0);
+					array.addBlock(x+i, dy, z+3, crystalstone, 0);
 
 					array.addBlock(x-3, dy, z+i, ChromaBlocks.RUNE.getBlockInstance());
 					array.addBlock(x+3, dy, z+i, ChromaBlocks.RUNE.getBlockInstance());
@@ -117,10 +117,10 @@ public class CastingL1Structure extends ChromaStructureBase {
 		array.setBlock(x+6, y+6, z, Blocks.lapis_block);
 		array.setBlock(x-6, y+6, z, Blocks.lapis_block);
 
-		array.addBlock(x+1, y, z, b, 0);
-		array.addBlock(x-1, y, z, b, 0);
-		array.addBlock(x, y, z+1, b, 0);
-		array.addBlock(x, y, z-1, b, 0);
+		array.addBlock(x+1, y, z, crystalstone, 0);
+		array.addBlock(x-1, y, z, crystalstone, 0);
+		array.addBlock(x, y, z+1, crystalstone, 0);
+		array.addBlock(x, y, z-1, crystalstone, 0);
 
 		array.addBlock(x+1, y, z, ChromaBlocks.RUNE.getBlockInstance());
 		array.addBlock(x-1, y, z, ChromaBlocks.RUNE.getBlockInstance());

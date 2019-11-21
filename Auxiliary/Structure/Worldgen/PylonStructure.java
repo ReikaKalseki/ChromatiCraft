@@ -20,7 +20,7 @@ public class PylonStructure extends ColoredStructureBase {
 		FilledBlockArray array = new FilledBlockArray(world);
 		for (int n = 0; n <= 9; n++) {
 			int dy = y+n;
-			Block b2 = n == 0 ? b : Blocks.air;
+			Block b2 = n == 0 ? crystalstone : Blocks.air;
 			for (int i = 2; i < 6; i++) {
 				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 				for (int k = 0; k <= 3; k++) {
@@ -56,7 +56,7 @@ public class PylonStructure extends ColoredStructureBase {
 
 		for (int i = 1; i <= 5; i++) {
 			int dy = y+i;
-			Block b2 = i < 5 ? b : ChromaBlocks.RUNE.getBlockInstance();
+			Block b2 = i < 5 ? crystalstone : ChromaBlocks.RUNE.getBlockInstance();
 			int meta = (i == 2 || i == 3) ? 2 : (i == 4 ? 7 : 8);
 			if (i == 5) //rune
 				meta = this.getCurrentColor().ordinal();
@@ -80,28 +80,28 @@ public class PylonStructure extends ColoredStructureBase {
 				for (int k = -1; k <= 1; k += 2) {
 					int dz = z+k;
 					int meta = n == 5 ? 3 : (n == 7 ? 5 : 2);
-					array.setBlock(dx, dy, dz, b, meta);
+					array.setBlock(dx, dy, dz, crystalstone, meta);
 				}
 			}
 		}
 
-		array.setBlock(x-3, y+4, z, b, 4);
-		array.setBlock(x+3, y+4, z, b, 4);
-		array.setBlock(x, y+4, z-3, b, 4);
-		array.setBlock(x, y+4, z+3, b, 4);
+		array.setBlock(x-3, y+4, z, crystalstone, 4);
+		array.setBlock(x+3, y+4, z, crystalstone, 4);
+		array.setBlock(x, y+4, z-3, crystalstone, 4);
+		array.setBlock(x, y+4, z+3, crystalstone, 4);
 
 
-		array.setBlock(x-2, y+3, z+1, b, 1);
-		array.setBlock(x-2, y+3, z-1, b, 1);
+		array.setBlock(x-2, y+3, z+1, crystalstone, 1);
+		array.setBlock(x-2, y+3, z-1, crystalstone, 1);
 
-		array.setBlock(x+2, y+3, z+1, b, 1);
-		array.setBlock(x+2, y+3, z-1, b, 1);
+		array.setBlock(x+2, y+3, z+1, crystalstone, 1);
+		array.setBlock(x+2, y+3, z-1, crystalstone, 1);
 
-		array.setBlock(x-1, y+3, z+2, b, 1);
-		array.setBlock(x-1, y+3, z-2, b, 1);
+		array.setBlock(x-1, y+3, z+2, crystalstone, 1);
+		array.setBlock(x-1, y+3, z-2, crystalstone, 1);
 
-		array.setBlock(x+1, y+3, z+2, b, 1);
-		array.setBlock(x+1, y+3, z-2, b, 1);
+		array.setBlock(x+1, y+3, z+2, crystalstone, 1);
+		array.setBlock(x+1, y+3, z-2, crystalstone, 1);
 
 		array.remove(x, y+9, z);
 
@@ -117,19 +117,19 @@ public class PylonStructure extends ColoredStructureBase {
 		array.remove(x+3, y+6, z+1);
 		array.remove(x+1, y+6, z+3);
 
-		array.addBlock(x, y, z, b, StoneTypes.STABILIZER.ordinal());
+		array.addBlock(x, y, z, crystalstone, StoneTypes.STABILIZER.ordinal());
 		for (int i = 1; i <= 2; i++) {
-			array.addBlock(x+i, y, z, b, StoneTypes.RESORING.ordinal());
-			array.addBlock(x-i, y, z, b, StoneTypes.RESORING.ordinal());
-			array.addBlock(x, y, z+i, b, StoneTypes.RESORING.ordinal());
-			array.addBlock(x, y, z-i, b, StoneTypes.RESORING.ordinal());
+			array.addBlock(x+i, y, z, crystalstone, StoneTypes.RESORING.ordinal());
+			array.addBlock(x-i, y, z, crystalstone, StoneTypes.RESORING.ordinal());
+			array.addBlock(x, y, z+i, crystalstone, StoneTypes.RESORING.ordinal());
+			array.addBlock(x, y, z-i, crystalstone, StoneTypes.RESORING.ordinal());
 		}
 
 		this.addTile(array, x, y, z, ChromaTiles.PYLONLINK);
 
 		array.setEmpty(x, y+1, z, false, false);
 		this.addTile(array, x, y+1, z, ChromaTiles.PYLONTURBO);
-		array.setPlacementOverride(x, y, z, b, 0);
+		array.setPlacementOverride(x, y, z, crystalstone, 0);
 		array.setPlacementOverride(x, y+1, z, Blocks.air, 0);
 
 		return array;

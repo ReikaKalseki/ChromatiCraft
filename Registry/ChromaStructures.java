@@ -51,6 +51,7 @@ import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.SnowStructure;
 import Reika.ChromatiCraft.Base.ChromaStructureBase;
 import Reika.ChromatiCraft.Base.ColoredStructureBase;
 import Reika.ChromatiCraft.ModInterface.VoidMonsterRitualStructure;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Base.StructureBase;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
@@ -135,7 +136,7 @@ public enum ChromaStructures implements StructureEnum {
 		ChromaStructureBase s = (ChromaStructureBase)this.getStructure();
 		s.setRand(r);
 		FilledBlockArray ret = s.getArray(world, x, y, z);
-		s.setRand(null);
+		s.setRand(DragonAPICore.rand);
 		return ret;
 	}
 
@@ -145,6 +146,8 @@ public enum ChromaStructures implements StructureEnum {
 
 	@SideOnly(Side.CLIENT)
 	public FilledBlockArray getStructureForDisplay() {
+		ChromaStructureBase s = (ChromaStructureBase)this.getStructure();
+		s.setRand(DragonAPICore.rand);
 		return this.getStructure().getStructureForDisplay();
 	}
 

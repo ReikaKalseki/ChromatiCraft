@@ -16,7 +16,7 @@ public class InfusionStructure extends ChromaStructureBase {
 		for (int i = 0; i < 360; i += 15) {
 			int dx = MathHelper.floor_double(x+0.5+r*Math.sin(Math.toRadians(i)));
 			int dz = MathHelper.floor_double(z+0.5+r*Math.cos(Math.toRadians(i)));
-			array.setBlock(dx, y-1, dz, b, 12);
+			array.setBlock(dx, y-1, dz, crystalstone, 12);
 		}
 
 		r = 2;
@@ -24,14 +24,14 @@ public class InfusionStructure extends ChromaStructureBase {
 			int dx = MathHelper.floor_double(x+0.5+r*Math.sin(Math.toRadians(i)));
 			int dz = MathHelper.floor_double(z+0.5+r*Math.cos(Math.toRadians(i)));
 			array.setBlock(dx, y-1, dz, ChromaBlocks.CHROMA.getBlockInstance(), 0);
-			array.setBlock(dx, y-2, dz, b, 0);
+			array.setBlock(dx, y-2, dz, crystalstone, 0);
 		}
 
 		r = 3.2;
 		for (int i = 0; i < 360; i += 15) {
 			int dx = MathHelper.floor_double(x+0.5+r*Math.sin(Math.toRadians(i)));
 			int dz = MathHelper.floor_double(z+0.5+r*Math.cos(Math.toRadians(i)));
-			array.setBlock(dx, y-1, dz, b, 12);
+			array.setBlock(dx, y-1, dz, crystalstone, 12);
 		}
 
 		//ReikaJavaLibrary.pConsole(array);

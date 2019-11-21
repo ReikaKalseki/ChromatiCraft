@@ -14,7 +14,7 @@ public class WirelessPedestalL2Structure extends WirelessPedestalStructure {
 		for (int i = -1; i <= 1; i++) {
 			for (int k = -1; k <= 1; k++) {
 				if (i != 0 && k != 0) {
-					array.setBlock(x+i, y-3, z+k, b, StoneTypes.GLOWCOL.ordinal());
+					array.setBlock(x+i, y-3, z+k, crystalstone, StoneTypes.GLOWCOL.ordinal());
 				}
 			}
 		}
@@ -27,7 +27,7 @@ public class WirelessPedestalL2Structure extends WirelessPedestalStructure {
 				else if (Math.abs(k) == 3 || Math.abs(i) == 3)
 					m = StoneTypes.RESORING.ordinal();
 				if (m != StoneTypes.SMOOTH.ordinal()) {
-					array.setBlock(x+i, y-4, z+k, b, m);
+					array.setBlock(x+i, y-4, z+k, crystalstone, m);
 				}
 			}
 		}

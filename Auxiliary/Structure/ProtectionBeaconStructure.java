@@ -17,7 +17,7 @@ public class ProtectionBeaconStructure extends ChromaStructureBase {
 
 		for (int i = -2; i <= 2; i++) {
 			for (int k = -2; k <= 2; k++) {
-				array.setBlock(x+i, y-1, z+k, b, StoneTypes.SMOOTH.ordinal());
+				array.setBlock(x+i, y-1, z+k, crystalstone, StoneTypes.SMOOTH.ordinal());
 			}
 		}
 
@@ -31,26 +31,26 @@ public class ProtectionBeaconStructure extends ChromaStructureBase {
 		}
 
 		for (int i = -2; i <= 2; i++) {
-			array.setBlock(x+3, y-1, z+i, b, StoneTypes.GROOVE2.ordinal());
-			array.setBlock(x-3, y-1, z+i, b, StoneTypes.GROOVE2.ordinal());
-			array.setBlock(x+i, y-1, z+3, b, StoneTypes.GROOVE1.ordinal());
-			array.setBlock(x+i, y-1, z-3, b, StoneTypes.GROOVE1.ordinal());
+			array.setBlock(x+3, y-1, z+i, crystalstone, StoneTypes.GROOVE2.ordinal());
+			array.setBlock(x-3, y-1, z+i, crystalstone, StoneTypes.GROOVE2.ordinal());
+			array.setBlock(x+i, y-1, z+3, crystalstone, StoneTypes.GROOVE1.ordinal());
+			array.setBlock(x+i, y-1, z-3, crystalstone, StoneTypes.GROOVE1.ordinal());
 		}
 
-		array.setBlock(x-3, y-1, z-3, b, StoneTypes.CORNER.ordinal());
-		array.setBlock(x+3, y-1, z-3, b, StoneTypes.CORNER.ordinal());
-		array.setBlock(x-3, y-1, z+3, b, StoneTypes.CORNER.ordinal());
-		array.setBlock(x+3, y-1, z+3, b, StoneTypes.CORNER.ordinal());
+		array.setBlock(x-3, y-1, z-3, crystalstone, StoneTypes.CORNER.ordinal());
+		array.setBlock(x+3, y-1, z-3, crystalstone, StoneTypes.CORNER.ordinal());
+		array.setBlock(x-3, y-1, z+3, crystalstone, StoneTypes.CORNER.ordinal());
+		array.setBlock(x+3, y-1, z+3, crystalstone, StoneTypes.CORNER.ordinal());
 
-		array.setBlock(x-2, y, z-2, b, StoneTypes.COLUMN.ordinal());
-		array.setBlock(x+2, y, z-2, b, StoneTypes.COLUMN.ordinal());
-		array.setBlock(x-2, y, z+2, b, StoneTypes.COLUMN.ordinal());
-		array.setBlock(x+2, y, z+2, b, StoneTypes.COLUMN.ordinal());
+		array.setBlock(x-2, y, z-2, crystalstone, StoneTypes.COLUMN.ordinal());
+		array.setBlock(x+2, y, z-2, crystalstone, StoneTypes.COLUMN.ordinal());
+		array.setBlock(x-2, y, z+2, crystalstone, StoneTypes.COLUMN.ordinal());
+		array.setBlock(x+2, y, z+2, crystalstone, StoneTypes.COLUMN.ordinal());
 
-		array.setBlock(x-2, y+1, z-2, b, StoneTypes.FOCUS.ordinal());
-		array.setBlock(x+2, y+1, z-2, b, StoneTypes.FOCUS.ordinal());
-		array.setBlock(x-2, y+1, z+2, b, StoneTypes.FOCUS.ordinal());
-		array.setBlock(x+2, y+1, z+2, b, StoneTypes.FOCUS.ordinal());
+		array.setBlock(x-2, y+1, z-2, crystalstone, StoneTypes.FOCUS.ordinal());
+		array.setBlock(x+2, y+1, z-2, crystalstone, StoneTypes.FOCUS.ordinal());
+		array.setBlock(x-2, y+1, z+2, crystalstone, StoneTypes.FOCUS.ordinal());
+		array.setBlock(x+2, y+1, z+2, crystalstone, StoneTypes.FOCUS.ordinal());
 
 		this.setTile(array, x, y, z, ChromaTiles.BEACON);
 

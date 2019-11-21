@@ -29,16 +29,16 @@ public class MeteorTowerStructure extends ChromaStructureBase {
 			int dy = y-j;
 			for (int i = -1; i <= 1; i++) {
 				for (int k = -1; k <= 1; k++) {
-					array.setBlock(x+i, dy, z+k, b, 0);
+					array.setBlock(x+i, dy, z+k, crystalstone, 0);
 				}
 			}
 			for (int i = -2; i <= 2; i++) {
 				int ml = j == 13 ? StoneTypes.RESORING.ordinal() : StoneTypes.GROOVE1.ordinal();
 				int mc = j == 13 ? StoneTypes.COLUMN.ordinal() : StoneTypes.CORNER.ordinal();
-				array.setBlock(x-2, dy, z+i, b, Math.abs(i) == 2 ? mc : ml);
-				array.setBlock(x+2, dy, z+i, b, Math.abs(i) == 2 ? mc : ml);
-				array.setBlock(x+i, dy, z-2, b, Math.abs(i) == 2 ? mc : ml);
-				array.setBlock(x+i, dy, z+2, b, Math.abs(i) == 2 ? mc : ml);
+				array.setBlock(x-2, dy, z+i, crystalstone, Math.abs(i) == 2 ? mc : ml);
+				array.setBlock(x+2, dy, z+i, crystalstone, Math.abs(i) == 2 ? mc : ml);
+				array.setBlock(x+i, dy, z-2, crystalstone, Math.abs(i) == 2 ? mc : ml);
+				array.setBlock(x+i, dy, z+2, crystalstone, Math.abs(i) == 2 ? mc : ml);
 			}
 		}
 
@@ -53,15 +53,15 @@ public class MeteorTowerStructure extends ChromaStructureBase {
 				int m = j == 4 || j == 7 || j == 11 ? StoneTypes.BRICKS.ordinal() : StoneTypes.COLUMN.ordinal();
 				if (j == 9 && tier == 2)
 					m = StoneTypes.GLOWCOL.ordinal();
-				array.setBlock(dx, dy, dz, b, m);
+				array.setBlock(dx, dy, dz, crystalstone, m);
 			}
 		}
 
 		for (int i = -1; i <= 1; i++) {
-			array.setBlock(x-2, y-1, z+i, b, StoneTypes.BRICKS.ordinal());
-			array.setBlock(x+2, y-1, z+i, b, StoneTypes.BRICKS.ordinal());
-			array.setBlock(x+i, y-1, z-2, b, StoneTypes.BRICKS.ordinal());
-			array.setBlock(x+i, y-1, z+2, b, StoneTypes.BRICKS.ordinal());
+			array.setBlock(x-2, y-1, z+i, crystalstone, StoneTypes.BRICKS.ordinal());
+			array.setBlock(x+2, y-1, z+i, crystalstone, StoneTypes.BRICKS.ordinal());
+			array.setBlock(x+i, y-1, z-2, crystalstone, StoneTypes.BRICKS.ordinal());
+			array.setBlock(x+i, y-1, z+2, crystalstone, StoneTypes.BRICKS.ordinal());
 		}
 
 		for (int i = -1; i <= 1; i++) {
@@ -69,7 +69,7 @@ public class MeteorTowerStructure extends ChromaStructureBase {
 				int dx = x+i;
 				int dz = z+k;
 				if (i != 0 || k != 0) {
-					array.setBlock(dx, y, dz, b, StoneTypes.BRICKS.ordinal());
+					array.setBlock(dx, y, dz, crystalstone, StoneTypes.BRICKS.ordinal());
 				}
 			}
 		}
@@ -88,7 +88,7 @@ public class MeteorTowerStructure extends ChromaStructureBase {
 					int dx = x+i;
 					int dz = z+k;
 					int m = j == 1 ? StoneTypes.COLUMN.ordinal() : (tier == 0 ? StoneTypes.SMOOTH.ordinal() : StoneTypes.FOCUS.ordinal());
-					array.setBlock(dx, dy, dz, b, m);
+					array.setBlock(dx, dy, dz, crystalstone, m);
 				}
 			}
 		}
@@ -110,21 +110,21 @@ public class MeteorTowerStructure extends ChromaStructureBase {
 					m = StoneTypes.GLOWBEAM.ordinal();
 					break;
 			}
-			array.setBlock(x-2, dy, z, b, m);
-			array.setBlock(x+2, dy, z, b, m);
-			array.setBlock(x, dy, z-2, b, m);
-			array.setBlock(x, dy, z+2, b, m);
+			array.setBlock(x-2, dy, z, crystalstone, m);
+			array.setBlock(x+2, dy, z, crystalstone, m);
+			array.setBlock(x, dy, z-2, crystalstone, m);
+			array.setBlock(x, dy, z+2, crystalstone, m);
 		}
 
 		if (tier > 0) {
 			for (int j = h[0]; j <= h[1]; j++) {
 				int dy = y-j;
 				int m = j == h[0] || j == h[1] ? StoneTypes.SMOOTH.ordinal() : StoneTypes.STABILIZER.ordinal();
-				array.setBlock(x-2, dy, z-2, b, m);
-				array.setBlock(x+2, dy, z+2, b, m);
+				array.setBlock(x-2, dy, z-2, crystalstone, m);
+				array.setBlock(x+2, dy, z+2, crystalstone, m);
 				if (tier == 2) {
-					array.setBlock(x+2, dy, z-2, b, m);
-					array.setBlock(x-2, dy, z+2, b, m);
+					array.setBlock(x+2, dy, z-2, crystalstone, m);
+					array.setBlock(x-2, dy, z+2, crystalstone, m);
 				}
 			}
 		}

@@ -21,8 +21,8 @@ public class PylonTurboStructure extends PylonStructure {
 		array.setBlock(x, y+9, z,  ChromaTiles.PYLON.getBlock(), ChromaTiles.PYLON.getBlockMetadata());
 
 		BlockKey[] col = new BlockKey[]{
-				new BlockKey(b, StoneTypes.COLUMN.ordinal()),
-				new BlockKey(b, StoneTypes.FOCUS.ordinal()),
+				new BlockKey(crystalstone, StoneTypes.COLUMN.ordinal()),
+				new BlockKey(crystalstone, StoneTypes.FOCUS.ordinal()),
 				new BlockKey(ChromaTiles.PYLONTURBO.getBlock(), ChromaTiles.PYLONTURBO.getBlockMetadata()),
 		};
 

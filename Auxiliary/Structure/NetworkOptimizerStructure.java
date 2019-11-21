@@ -34,7 +34,7 @@ public class NetworkOptimizerStructure extends ChromaStructureBase {
 					}
 					else {
 						StoneTypes s = j == 5 && Math.abs(i) == r && Math.abs(k) == r ? StoneTypes.BRICKS : StoneTypes.SMOOTH;
-						array.setBlock(x+i, y-j, z+k, b, s.ordinal());
+						array.setBlock(x+i, y-j, z+k, crystalstone, s.ordinal());
 					}
 				}
 			}
@@ -58,10 +58,10 @@ public class NetworkOptimizerStructure extends ChromaStructureBase {
 
 		int r = 4;
 		for (int i = -r; i <= r; i++) {
-			array.setBlock(x+i, y-7, z-r, b, StoneTypes.SMOOTH.ordinal());
-			array.setBlock(x+i, y-7, z+r, b, StoneTypes.SMOOTH.ordinal());
-			array.setBlock(x-r, y-7, z+i, b, StoneTypes.SMOOTH.ordinal());
-			array.setBlock(x+r, y-7, z+i, b, StoneTypes.SMOOTH.ordinal());
+			array.setBlock(x+i, y-7, z-r, crystalstone, StoneTypes.SMOOTH.ordinal());
+			array.setBlock(x+i, y-7, z+r, crystalstone, StoneTypes.SMOOTH.ordinal());
+			array.setBlock(x-r, y-7, z+i, crystalstone, StoneTypes.SMOOTH.ordinal());
+			array.setBlock(x+r, y-7, z+i, crystalstone, StoneTypes.SMOOTH.ordinal());
 		}
 
 		r = 3;
@@ -78,21 +78,21 @@ public class NetworkOptimizerStructure extends ChromaStructureBase {
 				s = StoneTypes.STABILIZER;
 			else if (j == 4)
 				s = StoneTypes.GLOWCOL;
-			array.setBlock(x+2, y-j, z+2, b, s.ordinal());
-			array.setBlock(x-2, y-j, z+2, b, s.ordinal());
-			array.setBlock(x+2, y-j, z-2, b, s.ordinal());
-			array.setBlock(x-2, y-j, z-2, b, s.ordinal());
+			array.setBlock(x+2, y-j, z+2, crystalstone, s.ordinal());
+			array.setBlock(x-2, y-j, z+2, crystalstone, s.ordinal());
+			array.setBlock(x+2, y-j, z-2, crystalstone, s.ordinal());
+			array.setBlock(x-2, y-j, z-2, crystalstone, s.ordinal());
 		}
 
-		array.setBlock(x-1, y-4, z+1, b, StoneTypes.CORNER.ordinal());
-		array.setBlock(x+1, y-4, z+1, b, StoneTypes.CORNER.ordinal());
-		array.setBlock(x-1, y-4, z-1, b, StoneTypes.CORNER.ordinal());
-		array.setBlock(x+1, y-4, z-1, b, StoneTypes.CORNER.ordinal());
+		array.setBlock(x-1, y-4, z+1, crystalstone, StoneTypes.CORNER.ordinal());
+		array.setBlock(x+1, y-4, z+1, crystalstone, StoneTypes.CORNER.ordinal());
+		array.setBlock(x-1, y-4, z-1, crystalstone, StoneTypes.CORNER.ordinal());
+		array.setBlock(x+1, y-4, z-1, crystalstone, StoneTypes.CORNER.ordinal());
 
-		array.setBlock(x-1, y-4, z, b, StoneTypes.GROOVE2.ordinal());
-		array.setBlock(x+1, y-4, z, b, StoneTypes.GROOVE2.ordinal());
-		array.setBlock(x, y-4, z+1, b, StoneTypes.GROOVE1.ordinal());
-		array.setBlock(x, y-4, z-1, b, StoneTypes.GROOVE1.ordinal());
+		array.setBlock(x-1, y-4, z, crystalstone, StoneTypes.GROOVE2.ordinal());
+		array.setBlock(x+1, y-4, z, crystalstone, StoneTypes.GROOVE2.ordinal());
+		array.setBlock(x, y-4, z+1, crystalstone, StoneTypes.GROOVE1.ordinal());
+		array.setBlock(x, y-4, z-1, crystalstone, StoneTypes.GROOVE1.ordinal());
 
 		return array;
 	}

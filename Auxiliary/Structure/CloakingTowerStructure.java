@@ -35,11 +35,11 @@ public class CloakingTowerStructure extends ChromaStructureBase {
 
 					if (Math.abs(i) == 2 && Math.abs(k) == 2 && j < 5) {
 						int m = j == 4 ? 6 : 2;
-						array.setBlock(dx, dy, dz, b, m);
+						array.setBlock(dx, dy, dz, crystalstone, m);
 					}
 				}
 
-				array.setBlock(dx, y-5, dz, b, 0);
+				array.setBlock(dx, y-5, dz, crystalstone, 0);
 			}
 		}
 
@@ -48,42 +48,42 @@ public class CloakingTowerStructure extends ChromaStructureBase {
 				int dx = x+i;
 				int dz = z+k;
 				int m = Math.abs(i) == 1 && Math.abs(k) == 1 ? 0 : 12;
-				array.setBlock(dx, y+5, dz, b, m);
+				array.setBlock(dx, y+5, dz, crystalstone, m);
 
 				m = Math.abs(i) == 1 && Math.abs(k) == 1 ? 8 : 12;
-				array.setBlock(dx, y+6, dz, b, m);
+				array.setBlock(dx, y+6, dz, crystalstone, m);
 			}
 		}
 
 		for (int i = -1; i <= 1; i++) {
-			array.setBlock(x+i, y-5, z+2, b, 12);
-			array.setBlock(x+i, y-5, z-2, b, 12);
-			array.setBlock(x+2, y-5, z+i, b, 12);
-			array.setBlock(x-2, y-5, z+i, b, 12);
+			array.setBlock(x+i, y-5, z+2, crystalstone, 12);
+			array.setBlock(x+i, y-5, z-2, crystalstone, 12);
+			array.setBlock(x+2, y-5, z+i, crystalstone, 12);
+			array.setBlock(x-2, y-5, z+i, crystalstone, 12);
 
-			array.setBlock(x+i, y+4, z+2, b, 1);
-			array.setBlock(x+i, y+4, z-2, b, 1);
-			array.setBlock(x+2, y+4, z+i, b, 1);
-			array.setBlock(x-2, y+4, z+i, b, 1);
+			array.setBlock(x+i, y+4, z+2, crystalstone, 1);
+			array.setBlock(x+i, y+4, z-2, crystalstone, 1);
+			array.setBlock(x+2, y+4, z+i, crystalstone, 1);
+			array.setBlock(x-2, y+4, z+i, crystalstone, 1);
 
 			int m = i == 0 ? 12 : 0;
 
-			array.setBlock(x+i, y+5, z+2, b, m);
-			array.setBlock(x+i, y+5, z-2, b, m);
-			array.setBlock(x+2, y+5, z+i, b, m);
-			array.setBlock(x-2, y+5, z+i, b, m);
+			array.setBlock(x+i, y+5, z+2, crystalstone, m);
+			array.setBlock(x+i, y+5, z-2, crystalstone, m);
+			array.setBlock(x+2, y+5, z+i, crystalstone, m);
+			array.setBlock(x-2, y+5, z+i, crystalstone, m);
 
-			array.setBlock(x-2, y-2-i, z+i, b, 0);
-			array.setBlock(x-2, y+1-i, z+i, b, 0);
+			array.setBlock(x-2, y-2-i, z+i, crystalstone, 0);
+			array.setBlock(x-2, y+1-i, z+i, crystalstone, 0);
 
-			array.setBlock(x+2, y-2+i, z+i, b, 0);
-			array.setBlock(x+2, y+1+i, z+i, b, 0);
+			array.setBlock(x+2, y-2+i, z+i, crystalstone, 0);
+			array.setBlock(x+2, y+1+i, z+i, crystalstone, 0);
 
-			array.setBlock(x+i, y-2+i, z-2, b, 0);
-			array.setBlock(x+i, y+1+i, z-2, b, 0);
+			array.setBlock(x+i, y-2+i, z-2, crystalstone, 0);
+			array.setBlock(x+i, y+1+i, z-2, crystalstone, 0);
 
-			array.setBlock(x+i, y-2-i, z+2, b, 0);
-			array.setBlock(x+i, y+1-i, z+2, b, 0);
+			array.setBlock(x+i, y-2-i, z+2, crystalstone, 0);
+			array.setBlock(x+i, y+1-i, z+2, crystalstone, 0);
 		}
 
 		this.setTile(array, x, y, z, ChromaTiles.CLOAKING);

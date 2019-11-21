@@ -24,7 +24,7 @@ public class CastingL2Structure extends CastingL1Structure {
 				int dx = x+i;
 				int dz = z+k;
 				array.remove(dx, y, dz);
-				array.addBlock(dx, y, dz, b, 0);
+				array.addBlock(dx, y, dz, crystalstone, 0);
 				array.addBlock(dx, y, dz, ChromaBlocks.RUNE.getBlockInstance());
 			}
 		}

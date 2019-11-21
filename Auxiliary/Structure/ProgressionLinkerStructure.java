@@ -48,7 +48,7 @@ public class ProgressionLinkerStructure extends ChromaStructureBase {
 					if (s == null)
 						array.setBlock(x+i, y-j, z+k, Blocks.glowstone);
 					else
-						array.setBlock(x+i, y-j, z+k, b, s.ordinal());
+						array.setBlock(x+i, y-j, z+k, crystalstone, s.ordinal());
 				}
 			}
 		}
@@ -59,8 +59,8 @@ public class ProgressionLinkerStructure extends ChromaStructureBase {
 			int dx = x+dir.offsetX*2;
 			int dy = y-2;
 			int dz = z+dir.offsetZ*2;
-			array.setBlock(dx, dy, dz, b, StoneTypes.BEAM.ordinal());
-			array.setBlock(dx+dir2.offsetX, dy, dz+dir2.offsetZ, b, StoneTypes.BEAM.ordinal());
+			array.setBlock(dx, dy, dz, crystalstone, StoneTypes.BEAM.ordinal());
+			array.setBlock(dx+dir2.offsetX, dy, dz+dir2.offsetZ, crystalstone, StoneTypes.BEAM.ordinal());
 		}
 
 		return array;

@@ -20,28 +20,28 @@ public class PersonalChargerStructure extends ColoredStructureBase {
 
 		for (int i = -1; i <= 1; i++) {
 			for (int k = -1; k <= 1; k++) {
-				array.setBlock(x+i, y, z+k, b, 0);
+				array.setBlock(x+i, y, z+k, crystalstone, 0);
 			}
 		}
-		array.setBlock(x, y, z, b, 14);
+		array.setBlock(x, y, z, crystalstone, 14);
 
 		for (int i = 1; i <= 4; i++) {
 			int m = i == 4 ? 7 : 2;
-			array.setBlock(x+1, y+i, z+1, b, m);
-			array.setBlock(x-1, y+i, z+1, b, m);
-			array.setBlock(x+1, y+i, z-1, b, m);
-			array.setBlock(x-1, y+i, z-1, b, m);
+			array.setBlock(x+1, y+i, z+1, crystalstone, m);
+			array.setBlock(x-1, y+i, z+1, crystalstone, m);
+			array.setBlock(x+1, y+i, z-1, crystalstone, m);
+			array.setBlock(x-1, y+i, z-1, crystalstone, m);
 		}
 
-		array.setBlock(x+2, y, z+2, b, 12);
-		array.setBlock(x-2, y, z+2, b, 12);
-		array.setBlock(x+2, y, z-2, b, 12);
-		array.setBlock(x-2, y, z-2, b, 12);
+		array.setBlock(x+2, y, z+2, crystalstone, 12);
+		array.setBlock(x-2, y, z+2, crystalstone, 12);
+		array.setBlock(x+2, y, z-2, crystalstone, 12);
+		array.setBlock(x-2, y, z-2, crystalstone, 12);
 
-		array.setBlock(x+2, y+1, z+2, b, 2);
-		array.setBlock(x-2, y+1, z+2, b, 2);
-		array.setBlock(x+2, y+1, z-2, b, 2);
-		array.setBlock(x-2, y+1, z-2, b, 2);
+		array.setBlock(x+2, y+1, z+2, crystalstone, 2);
+		array.setBlock(x-2, y+1, z+2, crystalstone, 2);
+		array.setBlock(x+2, y+1, z-2, crystalstone, 2);
+		array.setBlock(x-2, y+1, z-2, crystalstone, 2);
 
 		CrystalElement e = this.getCurrentColor();
 		array.setBlock(x+2, y+2, z+2, r, e.ordinal());
@@ -50,11 +50,11 @@ public class PersonalChargerStructure extends ColoredStructureBase {
 		array.setBlock(x-2, y+2, z-2, r, e.ordinal());
 
 		for (int i = -1; i <= 1; i++) {
-			array.setBlock(x+2, y, z+i, b, 11);
-			array.setBlock(x-2, y, z+i, b, 11);
+			array.setBlock(x+2, y, z+i, crystalstone, 11);
+			array.setBlock(x-2, y, z+i, crystalstone, 11);
 
-			array.setBlock(x+i, y, z+2, b, 10);
-			array.setBlock(x+i, y, z-2, b, 10);
+			array.setBlock(x+i, y, z+2, crystalstone, 10);
+			array.setBlock(x+i, y, z-2, crystalstone, 10);
 		}
 
 		this.setTile(array, x, y+6, z, ChromaTiles.PERSONAL);

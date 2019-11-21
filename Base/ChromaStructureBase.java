@@ -19,7 +19,7 @@ import Reika.DragonAPI.Base.StructureBase;
 
 public abstract class ChromaStructureBase extends StructureBase {
 
-	protected static final Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
+	protected static final Block crystalstone = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
 	protected static final Block shield = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 
 	protected Random rand;

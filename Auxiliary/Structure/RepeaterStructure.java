@@ -15,8 +15,8 @@ public class RepeaterStructure extends ColoredStructureBase {
 		FilledBlockArray array = new FilledBlockArray(world);
 		this.setTile(array, x, y, z, ChromaTiles.REPEATER);
 		array.setBlock(x, y-1, z, ChromaBlocks.RUNE.getBlockInstance(), this.getCurrentColor().ordinal());
-		array.setBlock(x, y-2, z, b, 0);
-		array.setBlock(x, y-3, z, b, 0);
+		array.setBlock(x, y-2, z, crystalstone, 0);
+		array.setBlock(x, y-3, z, crystalstone, 0);
 		return array;
 	}
 

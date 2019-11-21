@@ -24,14 +24,14 @@ public class DataTowerStructure extends ChromaStructureBase {
 
 		for (int i = -1; i <= 1; i++) {
 			for (int k = -1; k <= 1; k++) {
-				array.setBlock(x+i, y, z+k, b, r.nextInt(3) == 0 ? BlockType.MOSS.metadata : BlockType.STONE.metadata);
+				array.setBlock(x+i, y, z+k, shield, r.nextInt(3) == 0 ? BlockType.MOSS.metadata : BlockType.STONE.metadata);
 			}
 		}
 
-		array.setBlock(x+1, y+1, z, b, r.nextInt(3) == 0 ? BlockType.MOSS.metadata : BlockType.STONE.metadata);
-		array.setBlock(x-1, y+1, z, b, r.nextInt(3) == 0 ? BlockType.MOSS.metadata : BlockType.STONE.metadata);
-		array.setBlock(x, y+1, z+1, b, r.nextInt(3) == 0 ? BlockType.MOSS.metadata : BlockType.STONE.metadata);
-		array.setBlock(x, y+1, z-1, b, r.nextInt(3) == 0 ? BlockType.MOSS.metadata : BlockType.STONE.metadata);
+		array.setBlock(x+1, y+1, z, shield, r.nextInt(3) == 0 ? BlockType.MOSS.metadata : BlockType.STONE.metadata);
+		array.setBlock(x-1, y+1, z, shield, r.nextInt(3) == 0 ? BlockType.MOSS.metadata : BlockType.STONE.metadata);
+		array.setBlock(x, y+1, z+1, shield, r.nextInt(3) == 0 ? BlockType.MOSS.metadata : BlockType.STONE.metadata);
+		array.setBlock(x, y+1, z-1, shield, r.nextInt(3) == 0 ? BlockType.MOSS.metadata : BlockType.STONE.metadata);
 
 		array.setBlock(x, y+1, z, ChromaTiles.DATANODE.getBlock(), ChromaTiles.DATANODE.getBlockMetadata());
 

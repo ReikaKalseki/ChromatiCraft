@@ -17,15 +17,15 @@ public class CastingL3Structure extends CastingL2Structure {
 		FilledBlockArray array = super.getArray(world, x, y, z);
 
 		for (int i = -7; i <= 7; i++) {
-			array.addBlock(x-7, y, z+i, b, 0);
-			array.addBlock(x+7, y, z+i, b, 0);
-			array.addBlock(x+i, y, z-7, b, 0);
-			array.addBlock(x+i, y, z+7, b, 0);
+			array.addBlock(x-7, y, z+i, crystalstone, 0);
+			array.addBlock(x+7, y, z+i, crystalstone, 0);
+			array.addBlock(x+i, y, z-7, crystalstone, 0);
+			array.addBlock(x+i, y, z+7, crystalstone, 0);
 
-			array.addBlock(x-7, y, z+i, b, 12);
-			array.addBlock(x+7, y, z+i, b, 12);
-			array.addBlock(x+i, y, z-7, b, 12);
-			array.addBlock(x+i, y, z+7, b, 12);
+			array.addBlock(x-7, y, z+i, crystalstone, 12);
+			array.addBlock(x+7, y, z+i, crystalstone, 12);
+			array.addBlock(x+i, y, z-7, crystalstone, 12);
+			array.addBlock(x+i, y, z+7, crystalstone, 12);
 		}
 
 		for (int i = -8; i <= 8; i++) {
@@ -60,7 +60,7 @@ public class CastingL3Structure extends CastingL2Structure {
 				array.setBlock(x+8, dy, z-2, b2);
 			}
 			else {
-				Block b2 = i == 4 ? ChromaTiles.REPEATER.getBlock() : b;
+				Block b2 = i == 4 ? ChromaTiles.REPEATER.getBlock() : crystalstone;
 				int meta2 = i == 4 ? ChromaTiles.REPEATER.getBlockMetadata() : 0;
 				int meta3 = i == 1 ? StoneTypes.RESORING.ordinal() : meta2;
 				array.setBlock(x-2, dy, z-8, b2, meta2);
@@ -110,10 +110,10 @@ public class CastingL3Structure extends CastingL2Structure {
 		for (int i = 1; i <= 3; i++) {
 			int dy = y+i;
 			int meta = i == 1 ? 0 : i == 2 ? 2 : 7;
-			array.setBlock(x-8, dy, z-8, b, meta);
-			array.setBlock(x+8, dy, z-8, b, meta);
-			array.setBlock(x-8, dy, z+8, b, meta);
-			array.setBlock(x+8, dy, z+8, b, meta);
+			array.setBlock(x-8, dy, z-8, crystalstone, meta);
+			array.setBlock(x+8, dy, z-8, crystalstone, meta);
+			array.setBlock(x-8, dy, z+8, crystalstone, meta);
+			array.setBlock(x+8, dy, z+8, crystalstone, meta);
 		}
 
 		array.setBlock(x-6, y+5, z-6, Blocks.glowstone);

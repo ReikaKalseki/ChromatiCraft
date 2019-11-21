@@ -16,13 +16,14 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Entity.EntityDeathFog;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.Base.OneSlotMachine;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 
-public class TileEntityDeathFogEmitter extends InventoriedChromaticBase {
+public class TileEntityDeathFogEmitter extends InventoriedChromaticBase implements OneSlotMachine {
 
 	@Override
 	public ChromaTiles getTile() {
