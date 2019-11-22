@@ -93,6 +93,7 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 	}
 
 	public void validateStructure() {
+		ChromaStructures.PROTECT.getStructure().resetToDefaults();
 		hasStructure = ChromaStructures.PROTECT.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 		//ReikaJavaLibrary.pConsole(hasStructure, Side.SERVER);
 		this.syncAllData(false);

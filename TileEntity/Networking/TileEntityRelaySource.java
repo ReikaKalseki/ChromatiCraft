@@ -142,6 +142,7 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 	}
 
 	public void validateStructure() {
+		ChromaStructures.RELAY.getStructure().resetToDefaults();
 		hasEnhancedStructure = ChromaStructures.RELAY.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 	}
 

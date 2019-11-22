@@ -103,6 +103,8 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 
 	@Override
 	public void validateStructure() {
+		ChromaStructures.WIRELESSPEDESTAL.getStructure().resetToDefaults();
+		ChromaStructures.WIRELESSPEDESTAL2.getStructure().resetToDefaults();
 		broadcasting = !worldObj.isRemote && ChromaStructures.WIRELESSPEDESTAL.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 		enhancedBroadcasting = broadcasting && ChromaStructures.WIRELESSPEDESTAL2.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 	}

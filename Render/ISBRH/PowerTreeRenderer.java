@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -10,14 +10,19 @@
 package Reika.ChromatiCraft.Render.ISBRH;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree.TileEntityPowerTreeAux;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.Storage.TileEntityPowerTree;
+import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 
@@ -31,11 +36,25 @@ public class PowerTreeRenderer implements ISBRH {
 	@Override
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks rb) {
 		TileEntityPowerTreeAux te = (TileEntityPowerTreeAux)world.getTileEntity(x, y, z);
-		if (te == null || te.getDirection() == null) {
-			rb.renderBlockAllFaces(te == null ? Blocks.bedrock : te.getDirection() == null ? Blocks.clay : Blocks.brick_block, x, y, z);
+		ForgeDirection dir = te != null ? te.getDirection() : null;
+		int growth = te != null ? te.getGrowth() : 0;
+		if (StructureRenderer.isRenderingTiles() && te == null || dir == null) {
+			te = new TileEntityPowerTreeAux();
+			te.worldObj = Minecraft.getMinecraft().theWorld;
+			te.xCoord = x;
+			te.yCoord = y;
+			te.zCoord = z;
+			dir = TileEntityPowerTree.getDirection(CrystalElement.elements[world.getBlockMetadata(x, y, z)]);
+			growth = TileEntityPowerTreeAux.MAX_GROWTH;
+		}
+		if (te == null) {
+			rb.renderBlockAllFaces(Blocks.bedrock, x, y, z);
 			return true;
 		}
-		int growth = te.getGrowth();
+		if (dir == null) {
+			rb.renderBlockAllFaces(Blocks.clay, x, y, z);
+			return true;
+		}
 		double size = 0.25+0.75*growth/te.MAX_GROWTH;
 		double out = size/2;
 		double space = 0.5-out;
@@ -47,12 +66,12 @@ public class PowerTreeRenderer implements ISBRH {
 		double zmin = 0.5-out;
 		double zmax = 0.5+out;
 
-		xmin -= te.getDirection().offsetX*space;
-		xmax -= te.getDirection().offsetX*space;
-		ymin -= te.getDirection().offsetY*space;
-		ymax -= te.getDirection().offsetY*space;
-		zmin -= te.getDirection().offsetZ*space;
-		zmax -= te.getDirection().offsetZ*space;
+		xmin -= dir.offsetX*space;
+		xmax -= dir.offsetX*space;
+		ymin -= dir.offsetY*space;
+		ymax -= dir.offsetY*space;
+		zmin -= dir.offsetZ*space;
+		zmax -= dir.offsetZ*space;
 
 		IIcon ico = block.getIcon(0, 0);
 		int color = ReikaColorAPI.mixColors(0, block.colorMultiplier(world, x, y, z), 1-(float)size);

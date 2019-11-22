@@ -86,6 +86,7 @@ public class TileEntityNetworkOptimizer extends CrystalReceiverBase implements M
 	}
 
 	public void validateStructure() {
+		ChromaStructures.OPTIMIZER.getStructure().resetToDefaults();
 		hasStructure = ChromaStructures.OPTIMIZER.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 		//ReikaJavaLibrary.pConsole(hasStructure, Side.SERVER);
 		this.syncAllData(false);

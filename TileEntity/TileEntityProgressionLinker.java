@@ -62,6 +62,7 @@ public class TileEntityProgressionLinker extends TileEntityChromaticBase impleme
 	}
 
 	public void validateStructure() {
+		ChromaStructures.PROGRESSLINK.getStructure().resetToDefaults();
 		hasStructure = ChromaStructures.PROGRESSLINK.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 	}
 

@@ -590,6 +590,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	}
 
 	private void calcCrystals(World world, int x, int y, int z) {
+		struct.getStructure().resetToDefaults();
 		switch(struct) {
 			case CAVERN:
 				blocks = ChromaStructures.CAVERN.getArray(world, x, y, z);

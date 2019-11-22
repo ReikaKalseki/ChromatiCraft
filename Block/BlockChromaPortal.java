@@ -409,6 +409,7 @@ public class BlockChromaPortal extends Block {
 				complete = true;
 			}
 			else {
+				ChromaStructures.PORTAL.getStructure().resetToDefaults();
 				complete = ChromaStructures.PORTAL.getArray(world, x, y, z).matchInWorld();
 				complete &= this.getEntities(world, x, y, z);
 			}

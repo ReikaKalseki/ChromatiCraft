@@ -315,6 +315,7 @@ OperationInterval, MultiBlockChromaTile, VariableTexture {
 		int x = xCoord;
 		int y = yCoord-2;
 		int z = zCoord;
+		ChromaStructures.RITUAL.getStructure().resetToDefaults();
 		((RitualStructure)ChromaStructures.RITUAL.getStructure()).initializeEnhance(isEnhanced, false);
 		FilledBlockArray array = ChromaStructures.RITUAL.getArray(world, x, y, z);
 		hasStructure = array.matchInWorld();

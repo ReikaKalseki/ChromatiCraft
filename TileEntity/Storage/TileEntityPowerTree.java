@@ -247,6 +247,15 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		li.add(new Coordinate(x, y, z));
 	}
 
+	/** Returns relative to TILE location */
+	public static Coordinate getLeafLocation(CrystalElement e, int index) {
+		return locations.get(e).get(index);
+	}
+
+	public static int maxLeafCount(CrystalElement e) {
+		return locations.get(e).size();
+	}
+
 	public static ForgeDirection getDirection(CrystalElement e) {
 		return origins.get(e).direction;
 	}
@@ -413,6 +422,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	}
 
 	public void validateStructure() {
+		ChromaStructures.TREE.getStructure().resetToDefaults();
 		FilledBlockArray f = ChromaStructures.TREE.getArray(worldObj, xCoord, yCoord, zCoord);
 		boolean flag = f.matchInWorld();
 		if (!flag && hasMultiblock) {
@@ -431,6 +441,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	}
 
 	private void checkHasSendFocus() {
+		ChromaStructures.TREE_SENDER.getStructure().resetToDefaults();
 		canSendEnergy = hasMultiblock && ChromaStructures.TREE_SENDER.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 	}
 

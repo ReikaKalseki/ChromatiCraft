@@ -62,6 +62,7 @@ public class TileEntityCloakingTower extends TileEntityChromaticBase implements 
 	}
 
 	public void validateStructure() {
+		ChromaStructures.CLOAKTOWER.getStructure().resetToDefaults();
 		active = ChromaStructures.CLOAKTOWER.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 	}
 

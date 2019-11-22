@@ -419,6 +419,7 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 	}
 
 	public void validateStructure() {
+		ChromaStructures.TELEGATE.getStructure().resetToDefaults();
 		hasStructure = !worldObj.isRemote && ChromaStructures.TELEGATE.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 		if (!hasStructure)
 			ChunkManager.instance.unloadChunks(this);

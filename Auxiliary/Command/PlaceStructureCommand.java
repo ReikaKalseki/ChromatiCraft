@@ -30,6 +30,7 @@ public class PlaceStructureCommand extends DragonCommandBase {
 		int x = MathHelper.floor_double(ep.posX);
 		int y = MathHelper.floor_double(ep.posY);
 		int z = MathHelper.floor_double(ep.posZ);
+		s.getStructure().resetToDefaults();
 		FilledBlockArray arr = s.getArray(ep.worldObj, x, y, z, s.requiresColor ? CrystalElement.valueOf(args[1].toUpperCase(Locale.ENGLISH)) : null);
 		arr.place();
 	}

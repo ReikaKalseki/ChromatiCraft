@@ -209,6 +209,9 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 					switch(ChromaTiles.getTile(world, x, y, z)) {
 						case TABLE:
 							TileEntityCastingTable te = (TileEntityCastingTable)world.getTileEntity(x, y, z);
+							ChromaStructures.CASTING1.getStructure().resetToDefaults();
+							ChromaStructures.CASTING2.getStructure().resetToDefaults();
+							ChromaStructures.CASTING3.getStructure().resetToDefaults();
 							switch(te.getTier()) {
 								case CRAFTING:
 									break;
@@ -224,6 +227,7 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 							}
 							break;
 						case RITUAL:
+							ChromaStructures.RITUAL.getStructure().resetToDefaults();
 							((RitualStructure)ChromaStructures.RITUAL.getStructure()).initializeEnhance(true, false);
 							arr = ChromaStructures.RITUAL.getArray(world, x, y, z);
 							break;

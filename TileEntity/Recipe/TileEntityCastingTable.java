@@ -506,6 +506,9 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		int x = xCoord;
 		int y = yCoord-1;
 		int z = zCoord;
+		ChromaStructures.CASTING1.getStructure().resetToDefaults();
+		ChromaStructures.CASTING2.getStructure().resetToDefaults();
+		ChromaStructures.CASTING3.getStructure().resetToDefaults();
 		FilledBlockArray b = ChromaStructures.CASTING1.getArray(world, x, y, z);
 		FilledBlockArray b2 = ChromaStructures.CASTING2.getArray(world, x, y, z);
 		FilledBlockArray b3 = ChromaStructures.CASTING3.getArray(world, x, y, z);

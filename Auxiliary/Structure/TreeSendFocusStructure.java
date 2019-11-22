@@ -11,7 +11,9 @@ public class TreeSendFocusStructure extends ChromaStructureBase {
 
 	@Override
 	public FilledBlockArray getArray(World world, int x, int y, int z) {
-		FilledBlockArray array = new LumenTreeStructure().getArray(world, x, y, z);
+		FilledBlockArray array = new FilledBlockArray(world);
+
+		LumenTreeStructure.getTrunkBlocks(array, x, y, z);
 
 		for (int i = -2; i <= 3; i += 5) {
 			for (int k = -2; k <= 3; k += 5) {

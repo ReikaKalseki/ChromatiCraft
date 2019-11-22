@@ -15,6 +15,7 @@ import net.minecraft.block.Block;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Base.StructureBase;
 
 public abstract class ChromaStructureBase extends StructureBase {
@@ -23,6 +24,14 @@ public abstract class ChromaStructureBase extends StructureBase {
 	protected static final Block shield = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 
 	protected Random rand;
+
+	public void setRand(Random r) {
+		rand = r;
+	}
+
+	public void resetToDefaults() {
+		this.setRand(DragonAPICore.rand);
+	}
 
 	public static Block getChestGen() {
 		return ChromaBlocks.LOOTCHEST.getBlockInstance();//Blocks.chest;
@@ -41,10 +50,6 @@ public abstract class ChromaStructureBase extends StructureBase {
 			default:
 				return 0;
 		}
-	}
-
-	public void setRand(Random r) {
-		rand = r;
 	}
 
 }

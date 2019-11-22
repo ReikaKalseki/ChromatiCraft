@@ -103,6 +103,7 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 
 	@Override
 	protected boolean checkForStructure() {
+		ChromaStructures.BROADCAST.getStructure().resetToDefaults();
 		return ChromaStructures.BROADCAST.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 	}
 

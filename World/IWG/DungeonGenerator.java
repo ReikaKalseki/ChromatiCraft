@@ -234,6 +234,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	private boolean tryGenerate(World world, int cx, int cz, Random r, ChromaStructures s) {
 		int x = cx + r.nextInt(16);
 		int z = cz + r.nextInt(16);
+		s.getStructure().resetToDefaults();
 		switch(s) {
 			case CAVERN: {
 				int y = 10+r.nextInt(40);

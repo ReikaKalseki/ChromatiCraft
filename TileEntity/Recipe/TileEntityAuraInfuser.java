@@ -113,6 +113,7 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		focusCrystalTotal = 0;
 		allExquisite = true;
 		focusCrystalSpots.clear();
+		ChromaStructures.INFUSION.getStructure().resetToDefaults();
 		FilledBlockArray arr = ChromaStructures.INFUSION.getArray(worldObj, xCoord, yCoord, zCoord);
 		hasStructure = arr.matchInWorld();
 		if (hasStructure) {
@@ -220,6 +221,7 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 	private void craft() {
 		ChromaSounds.INFUSE.playSoundAtBlock(this);
 		inv[0] = ReikaItemHelper.getSizedItemStack(ChromaStacks.iridCrystal, inv[0].stackSize);
+		ChromaStructures.INFUSION.getStructure().resetToDefaults();
 		FilledBlockArray arr = ChromaStructures.INFUSION.getArray(worldObj, xCoord, yCoord, zCoord);
 		for (int i = 0; i < arr.getSize(); i++) {
 			Coordinate c = arr.getNthBlock(i);

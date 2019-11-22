@@ -39,6 +39,8 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.Storage.TileEntityPowerTree;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -203,6 +205,16 @@ public class GuiStructure extends GuiBookSection {
 		}
 		else if (page == ChromaResearch.TREE || page == ChromaResearch.BOOSTTREE) {
 			render.addOverride(array.getMidX()-1, array.getMaxY(), array.getMidZ(), ChromaTiles.POWERTREE.getCraftedProduct());
+
+			for (int c = 0; c < 16; c++) {
+				CrystalElement e = CrystalElement.elements[c];
+				int max = TileEntityPowerTree.maxLeafCount(e);
+				for (int i = 0; i < max; i++) {
+					Coordinate cc = TileEntityPowerTree.getLeafLocation(e, i);
+					cc = cc.offset(array.getMidX()-1, array.getMaxY(), array.getMidZ()); //tile location
+					render.addOverride(cc.xCoord, cc.yCoord, cc.zCoord, new LumenLeafHook(i, e));
+				}
+			}
 		}
 		else if (page == ChromaResearch.BEACONSTRUCT) {
 			render.addOverride(array.getMidX(), array.getMinY()+1, array.getMidZ(), ChromaTiles.BEACON.getCraftedProduct());
@@ -526,10 +538,30 @@ public class GuiStructure extends GuiBookSection {
 
 	}
 
+	private static class LumenLeafHook implements BlockChoiceHook {
+
+		private final int step;
+		private final CrystalElement color;
+
+		private LumenLeafHook(int s, CrystalElement e) {
+			step = s;
+			color = e;
+		}
+
+		@Override
+		public ItemStack getBlock(Coordinate pos) {
+			int max = TileEntityPowerTree.maxLeafCount(color)*3/2;
+			int tick = (int)((System.currentTimeMillis()/500)%max)-2;
+			boolean show = tick > step;
+			return show ? new BlockKey(ChromaBlocks.POWERTREE.getBlockInstance(), color.ordinal()).asItemStack() : null;
+		}
+
+	}
+
 	private static class RuneRenderHook implements BlockChoiceHook {
 
 		@Override
-		public ItemStack getBlock(Coordinate pos, int meta) {
+		public ItemStack getBlock(Coordinate pos) {
 			return new BlockKey(ChromaBlocks.RUNE.getBlockInstance(), getElementByTick()).asItemStack();
 		}
 
@@ -538,7 +570,7 @@ public class GuiStructure extends GuiBookSection {
 	private static class LogRenderHook implements BlockChoiceHook {
 
 		@Override
-		public ItemStack getBlock(Coordinate pos, int meta) {
+		public ItemStack getBlock(Coordinate pos) {
 			ArrayList<TreeType> li = ReikaJavaLibrary.makeListFromArray(ReikaTreeHelper.treeList);
 			for (int i = 0; i < ModWoodList.woodList.length; i++) {
 				ModWoodList tree = ModWoodList.woodList[i];

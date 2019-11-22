@@ -104,6 +104,7 @@ public class DataTowerGenerator implements RetroactiveGenerator {
 			z = c.zCoord;
 		}
 
+		ChromaStructures.DATANODE.getStructure().resetToDefaults();
 		FilledBlockArray f = ChromaStructures.DATANODE.getArray(world, x, y, z);
 		//if (f.isSpaceEmpty(world, true)) {
 		f.place();

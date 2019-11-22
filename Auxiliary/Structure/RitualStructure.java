@@ -27,6 +27,12 @@ public class RitualStructure extends ChromaStructureBase {
 	}
 
 	@Override
+	public void resetToDefaults() {
+		super.resetToDefaults();
+		this.initializeEnhance(isEnhanced, isEnhanced);
+	}
+
+	@Override
 	public FilledBlockArray getArray(World world, int x, int y, int z) {
 		FilledBlockArray array = new FilledBlockArray(world);
 

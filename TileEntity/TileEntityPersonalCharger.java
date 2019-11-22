@@ -141,6 +141,7 @@ public class TileEntityPersonalCharger extends CrystalReceiverBase implements Ch
 		int m4 = world.getBlockMetadata(x+2, y-4, z+2);
 		if (m1 == m2 && m1 == m3 && m1 == m4) {
 			CrystalElement e = CrystalElement.elements[m1];
+			ChromaStructures.PERSONAL.getStructure().resetToDefaults();
 			FilledBlockArray arr = ChromaStructures.PERSONAL.getArray(world, x, y-6, z, e);
 			boolean flag = arr.matchInWorld();
 			if (flag != hasMultiblock) {

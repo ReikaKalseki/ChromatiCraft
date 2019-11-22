@@ -52,7 +52,6 @@ import Reika.ChromatiCraft.Base.ChromaStructureBase;
 import Reika.ChromatiCraft.Base.ColoredStructureBase;
 import Reika.ChromatiCraft.ModInterface.VoidMonsterRitualStructure;
 import Reika.DragonAPI.DragonAPICore;
-import Reika.DragonAPI.Base.StructureBase;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Interfaces.Registry.StructureEnum;
@@ -60,7 +59,7 @@ import Reika.DragonAPI.Interfaces.Registry.StructureEnum;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public enum ChromaStructures implements StructureEnum {
+public enum ChromaStructures implements StructureEnum<ChromaStructureBase> {
 
 	PYLON(PylonStructure.class),
 	CASTING1(CastingL1Structure.class),
@@ -133,10 +132,10 @@ public enum ChromaStructures implements StructureEnum {
 	}
 
 	public FilledBlockArray getArray(World world, int x, int y, int z, Random r) {
-		ChromaStructureBase s = (ChromaStructureBase)this.getStructure();
+		ChromaStructureBase s = this.getStructure();
 		s.setRand(r);
 		FilledBlockArray ret = s.getArray(world, x, y, z);
-		s.setRand(DragonAPICore.rand);
+		s.resetToDefaults();
 		return ret;
 	}
 
@@ -146,7 +145,7 @@ public enum ChromaStructures implements StructureEnum {
 
 	@SideOnly(Side.CLIENT)
 	public FilledBlockArray getStructureForDisplay() {
-		ChromaStructureBase s = (ChromaStructureBase)this.getStructure();
+		ChromaStructureBase s = this.getStructure();
 		s.setRand(DragonAPICore.rand);
 		return this.getStructure().getStructureForDisplay();
 	}
@@ -170,7 +169,7 @@ public enum ChromaStructures implements StructureEnum {
 	}
 
 	@Override
-	public StructureBase getStructure() {
+	public ChromaStructureBase getStructure() {
 		return structureInstance;
 	}
 

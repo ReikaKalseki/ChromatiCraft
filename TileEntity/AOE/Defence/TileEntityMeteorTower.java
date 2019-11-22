@@ -314,6 +314,7 @@ public class TileEntityMeteorTower extends CrystalReceiverBase implements NBTTil
 				struct = ChromaStructures.METEOR3;
 				break;
 		}
+		struct.getStructure().resetToDefaults();
 		hasStructure = !worldObj.isRemote && struct.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 		//ReikaJavaLibrary.pConsole(hasStructure, Side.SERVER);
 		if (!hasStructure) {
