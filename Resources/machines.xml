@@ -776,7 +776,7 @@
 			You have finally determined a way to destroy that evil distortion, the way it has done to you so many times. And indeed, you will be turning its own nature against it, making for a healthy dose of irony. However, in order to actually initiate the whole process, you need to build and then activate a large construct, something not easily done if the thing is there and denying you the ability to linger in the area. Additionally, you will need a way to trap it within range of the construct, so that your purification process can actually act upon it. This device may be the key to both problems.
 		</desc>
 		<note>
-
+			Requires setup in both the overworld and whatever dimension the ritual is performed
 		</note>
 	</voidtrap>
 	<name>

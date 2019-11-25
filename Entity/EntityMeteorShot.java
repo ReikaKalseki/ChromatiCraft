@@ -28,7 +28,6 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFireSmokeFX;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityMeteorTower;
-import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
@@ -39,7 +38,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.DragonAPI.ModRegistry.InterfaceCache;
+import Reika.DragonAPI.ModInteract.DeepInteract.PlanetDimensionHandler;
 
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import cpw.mods.fml.relauncher.Side;
@@ -92,7 +91,7 @@ public class EntityMeteorShot extends Entity implements IEntityAdditionalSpawnDa
 
 	private double getGravity(World world) {
 		double g = 0.03125;
-		if (ModList.GALACTICRAFT.isLoaded() && InterfaceCache.IGALACTICWORLD.instanceOf(world.provider)) {
+		if (PlanetDimensionHandler.isGalacticWorld(world)) {
 			g += ((IGalacticraftWorldProvider)world.provider).getGravity();
 		}
 		return g;

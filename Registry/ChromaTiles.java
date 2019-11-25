@@ -368,6 +368,7 @@ public enum ChromaTiles implements TileEnum {
 			case OPTIMIZER:
 			case ASPECTJAR:
 			case LANDMARK:
+			case VOIDTRAP:
 				return true;
 			default:
 				return false;
@@ -811,6 +812,7 @@ public enum ChromaTiles implements TileEnum {
 			case FUNCTIONRELAY:
 			case MANABOOSTER:
 			case OPTIMIZER:
+			case VOIDTRAP:
 				return true;
 			default:
 				return false;

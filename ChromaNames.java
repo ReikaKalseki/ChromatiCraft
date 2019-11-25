@@ -61,7 +61,7 @@ public class ChromaNames {
 	};
 
 	public static final String[] modInteractNames = {
-			"chromamod.crystalwand", "chromamod.firaxcap", "chromamod.watercap", "chromamod.endercap", "chromamod.finalcap"
+			"chromamod.crystalwand", "chromamod.firaxcap", "chromamod.watercap", "chromamod.endercap", "chromamod.finalcap", "chromamod.voidmonster"
 	};
 
 	public static final String[] coloredModInteractNames = {

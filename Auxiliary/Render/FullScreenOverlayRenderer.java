@@ -28,9 +28,11 @@ import Reika.ChromatiCraft.Magic.Lore.KeyAssemblyPuzzle.HexCell;
 import Reika.ChromatiCraft.Magic.Lore.KeyAssemblyPuzzle.TileGroup;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
+import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator.PylonEntry;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Math.HexGrid.Hex;
 import Reika.DragonAPI.Instantiable.Math.HexGrid.Point;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -126,6 +128,13 @@ public class FullScreenOverlayRenderer {
 		double w = Minecraft.getMinecraft().displayWidth/gsc;
 		double h = Minecraft.getMinecraft().displayHeight/gsc;
 		double z = -1000;
+
+		float maxIntensity = -1;
+
+		CrystalElement glowColor = null;
+		Coordinate glowCenter = null;
+		float glowIntensity = 0;
+
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];
 			boolean containsColor = factors.containsKey(e);
@@ -151,6 +160,16 @@ public class FullScreenOverlayRenderer {
 						factors.remove(e);
 				}
 				if (res > 0) {
+					if (res > maxIntensity) {
+						maxIntensity = res;
+						glowColor = e;
+						float f = Math.min(1, (float)(1.5-dd/20));
+						glowIntensity = ((f*f)-0.75F)*2;
+						if (dd < 6) {
+							glowIntensity = Math.min(1, glowIntensity+(float)(6-dd)/12F);
+						}
+						glowCenter = new Coordinate(c.location);
+					}
 					int color = ReikaColorAPI.getColorWithBrightnessMultiplier(e.getColor(), Math.min(1, res));
 					v5.startDrawingQuads();
 					v5.setBrightness(240);
@@ -167,6 +186,15 @@ public class FullScreenOverlayRenderer {
 		BlendMode.DEFAULT.apply();
 		//GL11.glDisable(GL11.GL_DEPTH_TEST); //turn off depth testing to avoid this occluding other elements
 		GL11.glPopAttrib();
+
+		ChromaShaders.PYLON.getShader().setEnabled(glowIntensity > 0);
+		ChromaShaders.PYLON.getShader().setIntensity(glowIntensity);
+		if (glowColor != null) {
+			ChromaShaders.PYLON.getShader().setField("pylonRed", glowColor.getRed());
+			ChromaShaders.PYLON.getShader().setField("pylonGreen", glowColor.getGreen());
+			ChromaShaders.PYLON.getShader().setField("pylonBlue", glowColor.getBlue());
+			ChromaShaders.PYLON.getShader().setFocus(glowCenter);
+		}
 	}
 
 	boolean isPylonOverlayForced() {

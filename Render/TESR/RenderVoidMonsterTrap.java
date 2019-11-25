@@ -63,8 +63,8 @@ public class RenderVoidMonsterTrap extends ChromaRenderBase {
 
 	private void drawInner(TileEntityVoidMonsterTrap te, float par8) {
 		ReikaTextureHelper.bindTerrainTexture();
-		IIcon[] icons = {ChromaIcons.SUNFLARE.getIcon(), ChromaIcons.TURBO.getIcon(), ChromaIcons.CONCENTRIC2REV.getIcon()};
-		double[] sz = {te.isInWorld() ? 1.5 : 1.25, te.isInWorld() ? 0.75 : 1.25, te.isInWorld() ? 0.875 : 0.9375};
+		IIcon[] icons = {ChromaIcons.SUNFLARE.getIcon(), ChromaIcons.CELLFLARE.getIcon(), ChromaIcons.ECLIPSEFLARE.getIcon()};
+		double[] sz = {te.isInWorld() ? 4 : 1.25, te.isInWorld() ? 2.75 : 1.25, te.isInWorld() ? 3 : 0.9375};
 		float[] br = {1, 1, 0.75F};
 
 		Tessellator v5 = Tessellator.instance;
@@ -92,12 +92,18 @@ public class RenderVoidMonsterTrap extends ChromaRenderBase {
 
 		double t = te.isInWorld() ? (te.getTicksExisted()+par8) : System.currentTimeMillis()/50D;
 
-		double s2 = 1.5+0.25*Math.sin(t/32D);
-
-		int c = ReikaColorAPI.getModifiedHue(0xff0000, (int)(System.currentTimeMillis()/15D%360));
-		c = ReikaColorAPI.getModifiedSat(c, 0.2F);
+		double s2 = 2+0.5*Math.sin(t/90D);
+		//float f = te.isInWorld() ? ((float)(Math.sin(t/5.4D)+Math.cos(t/3.9D))*15-14) : 0;
+		//if (f > 1)
+		//	f = 1;
+		float f = te.getFlashBrightness();
 
 		for (int i = 0; i < icons.length; i++) {
+			int c = ReikaColorAPI.getModifiedHue(0xff0000, 265+(int)(15*Math.sin(t/30D+i)));
+			c = ReikaColorAPI.getModifiedSat(c, 0.9F+0.1F*(float)Math.sin(t/20D+i/4D));
+			c = ReikaColorAPI.getModifiedSat(c, 1-0.15F*i);
+			if (f > 0)
+				c = ReikaColorAPI.getModifiedSat(c, 1-f);
 			IIcon ico = icons[i];
 			float u = ico.getMinU();
 			float v = ico.getMinV();

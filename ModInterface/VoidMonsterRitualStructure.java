@@ -10,7 +10,7 @@ public class VoidMonsterRitualStructure extends ChromaStructureBase {
 
 	@Override
 	public FilledBlockArray getArray(World world, int x, int y, int z) {
-
+		return new FilledBlockArray(world);
 	}
 
 }

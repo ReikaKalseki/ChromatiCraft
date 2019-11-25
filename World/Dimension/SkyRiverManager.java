@@ -128,7 +128,6 @@ public class SkyRiverManager {
 		}
 		double multiplier = 7D;
 		float f = DimensionTuningManager.TuningThresholds.SKYRIVER.getTuningFraction(player);
-		f = 0.1F;
 		if (f <= 0) {
 			moveVector.xCoord = rp.next.xCoord-rp.position.xCoord;
 			moveVector.yCoord = rp.next.yCoord-rp.position.yCoord;

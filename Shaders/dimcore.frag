@@ -1,23 +1,17 @@
-#version 120
-
 varying vec2 texcoord;
-uniform sampler2D bgl_RenderedTexture;
-uniform int time; // Passed in, see ShaderHelper.java
 
-float rand(vec2 co) {
-   return fract(sin(dot(co.xy, vec2(12.9898,78.233))) * 43758.5453);
-}
+uniform sampler2D bgl_RenderedTexture;
+
+uniform int time;
+uniform int screenWidth;
+uniform int screenHeight;
+uniform mat4 modelview;
+uniform mat4 projection;
+uniform float screenX;
+uniform float screenY;
 
 void main() {
-/*
     vec4 color = texture2D(bgl_RenderedTexture, texcoord);
     
-    float gs = (color.r + color.g + color.b) / 50.0;
-    
-    float r = gs + rand(texcoord) * 0.3;
-    float g = gs + rand(texcoord) * 0.3;
-    float b = gs + rand(texcoord) * 0.3;
-    
-    gl_FragColor = vec4(r, g, b, color.a);
-	*/
+    gl_FragColor = vec4(color.r, color.g, color.b, color.a);
 }

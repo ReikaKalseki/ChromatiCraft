@@ -8,6 +8,11 @@ uniform mat4 projection;
 uniform float screenX;
 uniform float screenY;
 
+uniform int pylonRed;
+uniform int pylonGreen;
+uniform int pylonBlue;
+uniform float intensity;
+
 void main() {
     vec4 vert = gl_Vertex;
 	

@@ -18,6 +18,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.Explosion;
@@ -57,6 +58,9 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 	private final IIcon[] edges = new IIcon[10];
 
 	private final int[] variants = ReikaArrayHelper.getArrayOf(1, 16);
+
+	private static IIcon redstoneTorch;
+	private static IIcon redstoneTorchOff;
 
 	public static enum StoneTypes {
 		SMOOTH(),
@@ -361,6 +365,9 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 		for (int i = 0; i < 10; i++) {
 			edges[i] = ico.registerIcon("chromaticraft:pylon/connected/side_"+i);
 		}
+
+		redstoneTorch = ico.registerIcon("chromaticraft:crystaltorch_on");
+		redstoneTorchOff = ico.registerIcon("chromaticraft:crystaltorch_off");
 	}
 
 	@Override
@@ -640,6 +647,10 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 	@Override
 	public boolean renderCentralTextureForItem(int meta) {
 		return true;
+	}
+
+	public static IIcon getIconOverride(Block b) {
+		return b == Blocks.redstone_torch ? redstoneTorch : redstoneTorchOff;
 	}
 
 }

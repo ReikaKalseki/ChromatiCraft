@@ -83,6 +83,7 @@ import Reika.ChromatiCraft.Base.ChromaBookGui;
 import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux;
 import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux.Flags;
 import Reika.ChromatiCraft.Block.BlockFakeSky;
+import Reika.ChromatiCraft.Block.BlockPylonStructure;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
@@ -226,6 +227,27 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 					Minecraft.getMinecraft().gameSettings.hideGUI = false;
 				}
 				break;
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onRenderLoop(EntityRenderingLoopEvent evt) {
+
+	}
+
+	@SubscribeEvent
+	public void updateRedstoneTorchIcons(RenderBlockAtPosEvent evt) {
+		if (evt.block == Blocks.redstone_torch || evt.block == Blocks.unlit_redstone_torch) {
+			if (evt.world.getBlockMetadata(evt.xCoord, evt.yCoord, evt.zCoord) == 5) {
+				Block b2 = evt.world.getBlock(evt.xCoord, evt.yCoord-1, evt.zCoord);
+				if (b2 == ChromaBlocks.PYLONSTRUCT.getBlockInstance() || b2 instanceof BlockStructureShield) {
+					Tessellator.instance.setBrightness(evt.block.getMixedBrightnessForBlock(evt.world, evt.xCoord, evt.yCoord, evt.zCoord));
+					Tessellator.instance.setColorOpaque_I(0xffffff);
+					evt.continueRendering = true;
+					evt.setCanceled(true);
+					ReikaRenderHelper.renderTorch(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, BlockPylonStructure.getIconOverride(evt.block), Tessellator.instance, evt.render, 0.625, 0.0625);
+				}
 			}
 		}
 	}
