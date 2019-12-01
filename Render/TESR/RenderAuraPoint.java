@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,8 +11,10 @@ package Reika.ChromatiCraft.Render.TESR;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.client.MinecraftForgeClient;
 
@@ -20,6 +22,7 @@ import Reika.ChromatiCraft.Base.RenderLocusPoint;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
 import Reika.ChromatiCraft.GUI.Book.GuiMachineDescription;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -48,6 +51,22 @@ public class RenderAuraPoint extends RenderLocusPoint {
 			int color = 0xff000000 | ReikaColorAPI.getModifiedSat(tile.getRenderColor(), 0.875F);
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glDepthMask(false);
+
+			if (te.isInWorld()) {
+				EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+				double dist = ep.getDistanceSq(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
+				float f = 0;
+				if (dist <= 8) {
+					f = 1;
+				}
+				else if (dist <= 40) {
+					f = 1-(float)((dist-8D)/32D);
+				}
+				ChromaShaders.AURALOC.clearOnRender = true;
+				ChromaShaders.AURALOC.setIntensity(f);
+				ChromaShaders.AURALOC.getShader().setFocus(te);
+				ChromaShaders.AURALOC.getShader().setMatricesToCurrent();
+			}
 
 			if (te.doPvP() && te.isInWorld()) {
 				ReikaTextureHelper.bindTerrainTexture();

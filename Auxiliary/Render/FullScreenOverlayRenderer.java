@@ -187,8 +187,7 @@ public class FullScreenOverlayRenderer {
 		//GL11.glDisable(GL11.GL_DEPTH_TEST); //turn off depth testing to avoid this occluding other elements
 		GL11.glPopAttrib();
 
-		ChromaShaders.PYLON.getShader().setEnabled(glowIntensity > 0);
-		ChromaShaders.PYLON.getShader().setIntensity(glowIntensity);
+		ChromaShaders.PYLON.setIntensity(glowIntensity);
 		if (glowColor != null) {
 			ChromaShaders.PYLON.getShader().setField("pylonRed", glowColor.getRed());
 			ChromaShaders.PYLON.getShader().setField("pylonGreen", glowColor.getGreen());
