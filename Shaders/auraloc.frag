@@ -51,8 +51,8 @@ void main() {
     vec4 color = texture2D(bgl_RenderedTexture, texcoord);
 	
 	vec3 hsb = rgb2hsb(color.xyz);
-	hsb.y = min(1.0, hsb.y*(1.0+cf*0.5));
-	color.rgb = hsb2rgb(hsb);
+	hsb.y = min(1.0, hsb.y*1.5);
+	color.rgb = mix(color.rgb, hsb2rgb(hsb), cf-0.01);
     
     gl_FragColor = vec4(color.x, color.y, color.z, color.a);
 }

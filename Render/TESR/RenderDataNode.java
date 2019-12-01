@@ -92,11 +92,14 @@ public class RenderDataNode extends ChromaRenderBase {
 					EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 					double dist = ep.getDistance(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
 					float f = 0;
-					if (dist <= 20) {
-						f = 1;
-					}
-					else if (dist <= 80) {
-						f = 1-(float)((dist-20D)/60D);
+					if (te.getExtension1() >= te.EXTENSION_LIMIT_1) {
+						if (dist <= 20) {
+							f = 1;
+						}
+						else if (dist <= 80) {
+							f = 1-(float)((dist-20D)/60D);
+						}
+						f *= te.getExtension2()/te.EXTENSION_LIMIT_2;
 					}
 					ChromaShaders.DATANODE.clearOnRender = true;
 					ChromaShaders.DATANODE.setIntensity(f);

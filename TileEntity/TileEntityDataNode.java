@@ -54,7 +54,6 @@ import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
@@ -155,7 +154,7 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 					snd.add(ChromaSounds.TOWERAMBIENT);
 			}
 
-			ReikaJavaLibrary.pConsole(snd, !snd.isEmpty());
+			//ReikaJavaLibrary.pConsole(snd, !snd.isEmpty());
 			for (ChromaSounds s : snd) {
 				s.playSoundAtBlock(world, x, y+3, z, 2, 1);
 				List<EntityPlayer> li = world.getEntitiesWithinAABB(EntityPlayer.class, ReikaAABBHelper.getBlockAABB(this).expand(30, 18, 30));
