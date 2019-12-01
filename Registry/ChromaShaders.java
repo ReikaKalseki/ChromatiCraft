@@ -14,7 +14,8 @@ import Reika.DragonAPI.IO.Shaders.ShaderRegistry.ShaderDomain;
 public enum ChromaShaders implements ShaderHook {
 
 	PYLON(),
-	AURALOC();
+	AURALOC(),
+	DATANODE();
 
 	private final ShaderDomain domain;
 	private ShaderProgram shader;
@@ -23,6 +24,7 @@ public enum ChromaShaders implements ShaderHook {
 
 	public boolean clearOnRender = false;
 
+	private static boolean registered = false;
 	public static final ChromaShaders[] shaders = values();
 
 	private ChromaShaders() {
@@ -48,10 +50,13 @@ public enum ChromaShaders implements ShaderHook {
 	}
 
 	public static void registerAll() {
+		if (registered)
+			return;
 		for (int i = 0; i < shaders.length; i++) {
 			ChromaShaders s = shaders[i];
 			s.create();
 		}
+		registered = true;
 	}
 
 	@Override
@@ -80,6 +85,11 @@ public enum ChromaShaders implements ShaderHook {
 	public void onPostRender(ShaderProgram s) {
 		if (clearOnRender)
 			intensity = 0;
+	}
+
+	@Override
+	public void updateEnabled(ShaderProgram s) {
+		s.setEnabled(intensity > 0);
 	}
 
 }

@@ -16,6 +16,7 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.client.MinecraftForgeClient;
@@ -28,6 +29,7 @@ import Reika.ChromatiCraft.Magic.Lore.LoreScripts.ScriptLocations;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.ChromatiCraft.Render.InWorldScriptRenderer;
 import Reika.ChromatiCraft.TileEntity.TileEntityDataNode;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
@@ -86,6 +88,21 @@ public class RenderDataNode extends ChromaRenderBase {
 				this.renderTwistingBeam(te, v5, par8);
 			}
 			else {
+				if (te.isInWorld()) {
+					EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+					double dist = ep.getDistance(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
+					float f = 0;
+					if (dist <= 20) {
+						f = 1;
+					}
+					else if (dist <= 80) {
+						f = 1-(float)((dist-20D)/60D);
+					}
+					ChromaShaders.DATANODE.clearOnRender = true;
+					ChromaShaders.DATANODE.setIntensity(f);
+					ChromaShaders.DATANODE.getShader().setFocus(te);
+					ChromaShaders.DATANODE.getShader().setMatricesToCurrent();
+				}
 				this.renderPrism(te, v5);
 			}
 			GL11.glPopMatrix();

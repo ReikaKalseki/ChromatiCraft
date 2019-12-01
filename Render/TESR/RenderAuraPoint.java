@@ -54,7 +54,7 @@ public class RenderAuraPoint extends RenderLocusPoint {
 
 			if (te.isInWorld()) {
 				EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-				double dist = ep.getDistanceSq(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
+				double dist = ep.getDistance(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
 				float f = 0;
 				if (dist <= 8) {
 					f = 1;

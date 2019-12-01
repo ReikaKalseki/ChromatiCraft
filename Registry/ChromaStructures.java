@@ -140,6 +140,8 @@ public enum ChromaStructures implements StructureEnum<ChromaStructureBase> {
 	}
 
 	public FilledBlockArray getArray(World world, int x, int y, int z, CrystalElement e) {
+		if (e == null)
+			return this.getArray(world, x, y, z);
 		return ((ColoredStructureBase)this.getStructure()).getArray(world, x, y, z, e);
 	}
 

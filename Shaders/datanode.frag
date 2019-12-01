@@ -38,21 +38,22 @@ vec3 hsb2rgb(vec3 c){
 void main() {
 	vec4 clipSpacePos = projection * (modelview * vec4(0.5, 0.5, 0.5, 1.0));
 	vec3 ndcSpacePos = clipSpacePos.xyz / clipSpacePos.w;
-	vec2 locusXY = ((ndcSpacePos.xy + 1.0) / 2.0);
+	vec2 nodeXY = ((ndcSpacePos.xy + 1.0) / 2.0);
 	
-	float distsq = distsq(locusXY, texcoord);
+	float distsq = distsq(nodeXY, texcoord);
 	float distfac_color = max(0.0, min(1.0, 2.0-50.0*distsq));
-	float distfac_vertex = max(0.0, min(1.0, 3.0-400.0*distsq));
-	float cf = intensity*distfac_color;
+	float distfac_color2 = max(0.0, min(1.0, 2.0-150.0*distsq));
+	float distfac_vertex = max(0.0, min(1.0, 3.0-200.0*distsq));
+	float cf = intensity*distfac_color*0.5;
+	float cf2 = intensity*distfac_color2;
 	float vf = intensity*distfac_vertex;
 	
-	texcoord = mix(texcoord, locusXY, vf/4.0);
+	texcoord.y += 0.05*vf*sin(texcoord.x+float(time)/20.0);
 	
     vec4 color = texture2D(bgl_RenderedTexture, texcoord);
 	
-	vec3 hsb = rgb2hsb(color.xyz);
-	hsb.y = min(1.0, hsb.y*(1.0+cf*0.5));
-	color.rgb = hsb2rgb(hsb);
+	color.rgb = mix(color.rgb, vec3(135.0/255.0, 225.0/255.0, 1.0), cf)
+	color.rgb = mix(color.rgb, vec3(235.0/255.0, 250.0/255.0, 1.0), cf2)
     
     gl_FragColor = vec4(color.x, color.y, color.z, color.a);
 }
