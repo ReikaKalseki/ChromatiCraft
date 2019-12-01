@@ -7,13 +7,16 @@ uniform int screenWidth;
 uniform int screenHeight;
 uniform mat4 modelview;
 uniform mat4 projection;
-uniform float screenX;
-uniform float screenY;
+uniform vec3 focus;
 
-uniform int pylonRed;
-uniform int pylonGreen;
-uniform int pylonBlue;
 uniform float intensity;
+
+float distsq(vec2 a, vec2 b) {
+	float f = float(screenHeight)/float(screenWidth);
+	float dx = (a.x-b.x);
+	float dy = (a.y-b.y)*f;
+	return dx*dx+dy*dy;
+}
 
 vec3 rgb2hsb(vec3 c) {
     vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
@@ -33,21 +36,23 @@ vec3 hsb2rgb(vec3 c){
 }
 
 void main() {
-    vec4 orig = texture2D(bgl_RenderedTexture, texcoord);
+	vec4 clipSpacePos = projection * (modelview * vec4(0, 0, 0, 1.0));
+	vec3 ndcSpacePos = clipSpacePos.xyz / clipSpacePos.w;
+	vec2 locusXY = ((ndcSpacePos.xy + 1.0) / 2.0);
+	
+	float distsq = distsq(locusXY, texcoord);
+	float distfac_color = max(0.0, 1.0-4.5*distsq);
+	float distfac_vertex = max(0.0, 1.0-7.5*distsq);
+	float cf = intensity*distfac_color;
+	float vf = intensity*distfac_vertex;
+	
+	texcoord = mix(texcoord, locusXY, vf/5.0);
+	
+    vec4 color = texture2D(bgl_RenderedTexture, texcoord);
+	
+	vec3 hsb = rgb2hsb(color.xyz);
+	hsb.y = min(1.0, hsb.y*(1.0+cf*0.75));
+	color.rgb = hsb2rgb(hsb);
     
-    float gs = orig.r*0.2989+orig.g*0.5870+orig.b*0.1140;
-	
-	float r = float(pylonRed)/255.0;
-	float g = float(pylonGreen)/255.0;
-	float b = float(pylonBlue)/255.0;
-	
-	vec3 hsl = rgb2hsb(clamp(orig.rgb*vec3(1.0+r/2.5*intensity, 1.0+g/2.5*intensity, 1.0+b/2.5*intensity), 0, 1));
-	vec3 pylon = rgb2hsb(vec3(r, g, b));
-	
-	//vec3 shifted = vec3(gs*pylonRed/255, gs*pylonGreen/255, gs*pylonBlue/255);
-	vec3 shifted = hsb2rgb(vec3(pylon.x, float(float(pylon.y)+float(hsl.y))/2.0, hsl.z));
-	
-	vec3 net = mix(orig.rgb, shifted, intensity);
-    
-    gl_FragColor = vec4(net.x, net.y, net.z, orig.a);
+    gl_FragColor = vec4(color.x, color.y, color.z, color.a);
 }

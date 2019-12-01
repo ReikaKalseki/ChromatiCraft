@@ -232,11 +232,6 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 	}
 
 	@SubscribeEvent
-	public void onRenderLoop(EntityRenderingLoopEvent evt) {
-
-	}
-
-	@SubscribeEvent
 	public void updateRedstoneTorchIcons(RenderBlockAtPosEvent evt) {
 		if (evt.block == Blocks.redstone_torch || evt.block == Blocks.unlit_redstone_torch) {
 			if (evt.world.getBlockMetadata(evt.xCoord, evt.yCoord, evt.zCoord) == 5) {

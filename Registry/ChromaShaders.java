@@ -11,7 +11,7 @@ import Reika.DragonAPI.IO.Shaders.ShaderRegistry.ShaderDomain;
 public enum ChromaShaders {
 
 	PYLON(),
-	DIMCORE();
+	AURALOC();
 
 	private final ShaderDomain domain;
 	private ShaderProgram shader;
