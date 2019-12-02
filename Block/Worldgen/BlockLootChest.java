@@ -566,6 +566,10 @@ public class BlockLootChest extends BlockContainer {
 		public boolean shouldRenderInPass(int pass) {
 			return pass == 0 || hasMarker;
 		}
+
+		public void clear() {
+			ReikaInventoryHelper.clearInventory(this);
+		}
 	}
 
 }

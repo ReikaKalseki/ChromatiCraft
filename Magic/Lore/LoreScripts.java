@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -137,6 +137,7 @@ public class LoreScripts {
 	Towers: 23 chars x 5 lines x 4 panels
 	pylons: 15 chars x 5 lines x 8 panels
 	alvearies: 23 chars x 17 lines x 4 panels
+	snowstruct:
 	 */
 	public static enum ScriptLocations {
 		BURROW(new PanelSize(24, 5), 3),
@@ -147,7 +148,8 @@ public class LoreScripts {
 		OCEAN(new PanelSize(64, 17), 2),
 		PYLON(new PanelSize(15, 5), 8),
 		TOWER(new PanelSize(23, 5), 4),
-		ALVEARY(new PanelSize(17, 7), 4);
+		ALVEARY(new PanelSize(17, 7), 4),
+		SNOWSTRUCT(new PanelSize(0, 0), 0);
 
 		public final PanelSize size;
 		public final int panelCount;

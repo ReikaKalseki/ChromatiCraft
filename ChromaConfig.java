@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 
@@ -35,6 +36,9 @@ public class ChromaConfig extends ControlledConfig {
 	private DataElement<String[]> guardianExceptions;
 	private Key superbuildKey;
 
+	private DataElement<int[]> structureDimensionBlacklist;
+	private HashSet<Integer> structureDimensionBlacklistSet;
+
 	public ChromaConfig(DragonAPIMod mod, ConfigList[] option, IDRegistry[] id) {
 		super(mod, option, id);
 
@@ -47,9 +51,11 @@ public class ChromaConfig extends ControlledConfig {
 			trees[i+vanillaTreeCount] = this.registerAdditionalOption("Generate Mod Logs", name, true);
 		}
 
-		registerProperty("t2ConfigModel", ReikaJVMParser.isArgumentPresent("-ChromaTrustingConfigModel"));
+		this.registerProperty("t2ConfigModel", ReikaJVMParser.isArgumentPresent("-ChromaTrustingConfigModel"));
 
 		guardianExceptions = this.registerAdditionalOption("Other Options", "Guardian Stone Exceptions", this.getDefaultGuardstoneExceptions());
+
+		structureDimensionBlacklist = this.registerAdditionalOption("Other Options", "Structure Dimension Blacklist", new int[0]);
 	}
 
 	@Override
@@ -118,6 +124,16 @@ public class ChromaConfig extends ControlledConfig {
 
 	public boolean shouldGenerateLogType(ReikaTreeHelper tree) {
 		return trees[tree.ordinal()].getData();
+	}
+
+	public boolean isDimensionBlacklistedForStructures(int dim) {
+		if (structureDimensionBlacklistSet == null) {
+			structureDimensionBlacklistSet = new HashSet();
+			for (int val : structureDimensionBlacklist.getData()) {
+				structureDimensionBlacklistSet.add(val);
+			}
+		}
+		return structureDimensionBlacklistSet.contains(dim);
 	}
 
 }

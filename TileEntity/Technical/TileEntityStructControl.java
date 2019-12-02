@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock.Passability;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.LootChestAccessEvent;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
@@ -70,6 +71,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -219,8 +221,10 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	}
 
 	private void onPlayerProximity(World world, int x, int y, int z, EntityPlayer ep) {
-		if (struct != null)
+		if (struct != null) {
+			this.initArray(world, x, y, z);
 			this.calcCrystals(world, x, y, z);
+		}
 		switch(struct) {
 			case CAVERN:
 				if (!world.isRemote) {
@@ -463,12 +467,72 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	@Override
 	public void onFirstTick(World world, int x, int y, int z) {
 		if (struct != null) {
+			this.initArray(world, x, y, z);
+			if (this.checkExclusionZone(world, x, y, z))
+				return;
 			this.calcCrystals(world, x, y, z);
 			this.regenerate();
 			DungeonGenerator.instance.generateStructure(struct, this);
 		}
 		LootChestWatcher.instance.cache(this);
 		this.syncAllData(true);
+	}
+
+	private void initArray(World world, int x, int y, int z) {
+		struct.getStructure().resetToDefaults();
+		switch(struct) {
+			case CAVERN:
+				blocks = ChromaStructures.CAVERN.getArray(world, x, y, z);
+				break;
+			case BURROW:
+				blocks = ChromaStructures.BURROW.getArray(world, x, y, z, color);
+				break;
+			case OCEAN:
+				blocks = ChromaStructures.OCEAN.getArray(world, x, y, z);
+				break;
+			case DESERT:
+				blocks = ChromaStructures.DESERT.getArray(world, x, y, z);
+				break;
+			case SNOWSTRUCT:
+				blocks = ChromaStructures.SNOWSTRUCT.getArray(world, x, y, z);
+				break;
+			default:
+				break;
+		}
+	}
+
+	private boolean checkExclusionZone(World world, int x, int y, int z) {
+		int dist = DungeonGenerator.instance.getMinSeparation(struct);
+		WorldLocation src = new WorldLocation(this);
+		WorldLocation loc = DungeonGenerator.instance.getNearestStructure(struct, world, x+0.5, y+0.5, z+0.5, dist, src);
+		if (loc != null) {
+			ChromatiCraft.logger.logError("Found a "+struct+" only "+loc.getDistanceTo(src)+" blocks away, inside the "+dist+" limit!");
+			boolean placed = false;
+			for (Coordinate c : blocks.keySet()) {
+				Block b = c.getBlock(world);
+				if (b == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
+					placed = true;
+					TileEntityLootChest te = (TileEntityLootChest)c.getTileEntity(world);
+					te.clear();
+					c.setBlock(world, Blocks.air);
+				}
+			}
+			if (placed) {
+				for (Coordinate c : blocks.keySet()) {
+					Block b = c.getBlock(world);
+					if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance()) {
+						double bdist = c.getDistanceTo(x+0.5, y+0.5, z+0.5);
+						if (ReikaRandomHelper.doWithChance(Math.min(1, 4/bdist))) {
+							c.setBlock(world, Blocks.air);
+						}
+					}
+				}
+				this.delete();
+				worldObj.newExplosion(null, x+0.5, y+0.5, z+0.5, 6, true, false);
+			}
+			return true;
+		}
+		return false;
 	}
 
 	private void regenerate() {
@@ -590,26 +654,6 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	}
 
 	private void calcCrystals(World world, int x, int y, int z) {
-		struct.getStructure().resetToDefaults();
-		switch(struct) {
-			case CAVERN:
-				blocks = ChromaStructures.CAVERN.getArray(world, x, y, z);
-				break;
-			case BURROW:
-				blocks = ChromaStructures.BURROW.getArray(world, x, y, z, color);
-				break;
-			case OCEAN:
-				blocks = ChromaStructures.OCEAN.getArray(world, x, y, z);
-				break;
-			case DESERT:
-				blocks = ChromaStructures.DESERT.getArray(world, x, y, z);
-				break;
-			case SNOWSTRUCT:
-				blocks = ChromaStructures.SNOWSTRUCT.getArray(world, x, y, z);
-				break;
-			default:
-				break;
-		}
 		if (blocks != null) {
 			for (int i = 0; i < blocks.getSize(); i++) {
 				Coordinate c1 = blocks.getNthBlock(i);

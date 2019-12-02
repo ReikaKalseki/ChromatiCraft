@@ -57,6 +57,7 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
@@ -75,6 +76,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.PlanetDimensionHandler;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
@@ -184,10 +186,16 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	}
 
 	public WorldLocation getNearestStructure(ChromaStructures s, World world, double x, double y, double z, double r) {
+		return this.getNearestStructure(s, world, x, y, z, r, null);
+	}
+
+	public WorldLocation getNearestStructure(ChromaStructures s, World world, double x, double y, double z, double r, WorldLocation exclude) {
 		Collection<WorldLocation> c = generatedStructures.get(s).getAllLocationsNear(new WorldLocation(world, (int)Math.round(x), (int)Math.round(y), (int)Math.round(z)), r);
 		WorldLocation closest = null;
 		double d = Double.POSITIVE_INFINITY;
 		for (WorldLocation loc : c) {
+			if (exclude != null && exclude.equals(loc))
+				continue;
 			double dist = loc.getDistanceTo(x, y, z);
 			if ((closest == null || dist < d) && dist <= r) {
 				d = dist;
@@ -965,7 +973,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 	}
 
-	private double getMinSeparation(ChromaStructures s) {
+	public int getMinSeparation(ChromaStructures s) {
 		switch(s) {
 			case DESERT:
 				return 512;
@@ -993,6 +1001,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 		if (world.provider.dimensionId == 0)
 			return true;
+		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
+			return false;
 		if (Math.abs(world.provider.dimensionId) == 1)
 			return false;
 		if (world.provider.dimensionId == ExtraUtilsHandler.getInstance().darkID)
@@ -1001,7 +1011,9 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			return false;
 		if (world.provider.getClass().getName().equals("WorldProviderMiner"))
 			return false;
-		return true;
+		if (PlanetDimensionHandler.isOtherWorld(world))
+			return false;
+		return !ChromatiCraft.config.isDimensionBlacklistedForStructures(world.provider.dimensionId);
 	}
 
 	@Override

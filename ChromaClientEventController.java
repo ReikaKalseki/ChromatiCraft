@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Set;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -1268,7 +1269,7 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 	@SubscribeEvent
 	@ModDependent(ModList.NEI)
 	public void interceptNEI(NEIRecipeCheckEvent evt) {
-		if (this.loadLexiconRecipe(evt.gui, evt.getItem()))
+		if (!Keyboard.isKeyDown(Keyboard.KEY_LMENU) && this.loadLexiconRecipe(evt.gui, evt.getItem()))
 			evt.setCanceled(true);
 	}
 

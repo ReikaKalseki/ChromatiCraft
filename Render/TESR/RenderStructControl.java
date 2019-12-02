@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -84,6 +84,10 @@ public class RenderStructControl extends ChromaRenderBase {
 				case OCEAN:
 					if (ScriptLocations.OCEAN.isEnabled())
 						InWorldScriptRenderer.renderOceanScript(te, par8, v5, sc);
+					break;
+				case SNOWSTRUCT:
+					if (ScriptLocations.SNOWSTRUCT.isEnabled())
+						InWorldScriptRenderer.renderSnowScript(te, par8, v5, sc);
 					break;
 				default:
 					break;
