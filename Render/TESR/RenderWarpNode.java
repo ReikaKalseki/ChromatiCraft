@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.Worldgen.BlockWarpNode.TileEntityWarpNode;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -62,17 +63,49 @@ public class RenderWarpNode extends ChromaRenderBase {
 			GL11.glPushMatrix();
 			double t = (System.currentTimeMillis()/2000D+te.hashCode())%360;
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+			double dist = ep.getDistance(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
+
 			boolean flag = te.isOpen() && ProgressStage.WARPNODE.isPlayerAtStage(ep);
 			double sch = this.getDisplayDistance(ep, flag);
 			if (flag && ChromaItems.TOOL.matchWith(ep.getCurrentEquippedItem())) {
 				sch *= 2;
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
 			}
-			double d = sch == Double.POSITIVE_INFINITY ? 0 : Math.max(0, ep.getDistance(te.xCoord+0.5, te.yCoord+0.5+1.62, te.zCoord+0.5)-sch);
+			double d = sch == Double.POSITIVE_INFINITY ? 0 : Math.max(0, dist-sch);
 			float f = sch == Double.POSITIVE_INFINITY ? 1 : 0.5F+0.5F*(float)(1-d/8D);
 			f = MathHelper.clamp_float(f, 0, 1);
 			double s = 0.125+0.5*f+0.125*Math.sin(t);
 			s *= 4;
+
+			if (te.hasWorldObj()) {
+				float val = 0;
+				if (dist <= 3) {
+					val = 1;
+				}
+				else if (dist <= 12) {
+					val = 1-(float)((dist-3D)/9D);
+				}
+				float val2 = 0;
+				if (te.isOpen()) {
+					if (dist <= 1) {
+						val2 = 1;
+					}
+					else if (dist <= 3) {
+						val2 = 1-(float)((dist-1D)/2D);
+					}
+				}
+				//if (dist >= 0.875 && !ReikaEntityHelper.isLookingAt(ep, te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5))
+				//	val = 0;
+				ChromaShaders shd = te.isOpen() ? ChromaShaders.WARPNODE_OPEN : ChromaShaders.WARPNODE;
+				shd.clearOnRender = true;
+				shd.setIntensity(val);
+				shd.getShader().setFocus(te);
+				shd.getShader().setMatricesToCurrent();
+				shd.getShader().setField("distance", dist*dist);
+				shd.getShader().setField("scale", s);
+				shd.getShader().setField("washout", val2);
+			}
+
 			GL11.glScaled(s, s, s);
 			if (StructureRenderer.isRenderingTiles()) {
 				GL11.glRotated(-StructureRenderer.getRenderRY(), 0, 1, 0);

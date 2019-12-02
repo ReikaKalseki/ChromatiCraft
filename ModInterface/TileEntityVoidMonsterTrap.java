@@ -19,6 +19,8 @@ public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered {
 	private static final ElementTagCompound required = new ElementTagCompound();
 
 	private float flashFactor = 0;
+	private float shaderRotation = 0;
+	private float shaderRotationSpeed = 0;
 
 	private static final int RING_DURATION = 400;
 
@@ -79,6 +81,21 @@ public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered {
 			else if (rand.nextInt(70) == 0) {
 				flashFactor = 2;
 			}
+
+			if (shaderRotationSpeed > 0) {
+				boolean flag = shaderRotation < 0;
+				shaderRotation += shaderRotationSpeed;
+				if (shaderRotation >= 1) {
+					shaderRotation = -1;
+				}
+				else if (flag && shaderRotation >= 0) {
+					shaderRotation = 0;
+					shaderRotationSpeed = 0;
+				}
+			}
+			else if (rand.nextInt(40) == 0) {
+				shaderRotationSpeed = 0.0625F+rand.nextFloat()*0.0625F;
+			}
 		}
 	}
 
@@ -86,6 +103,10 @@ public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered {
 		if (flashFactor <= 0 || flashFactor > 2)
 			return 0;
 		return flashFactor <= 1 ? flashFactor : 2-flashFactor;
+	}
+
+	public float getShaderRotation() {
+		return shaderRotation;
 	}
 
 	public boolean isActive() {

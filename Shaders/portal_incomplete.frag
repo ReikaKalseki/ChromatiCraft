@@ -11,6 +11,8 @@ uniform vec3 focus;
 
 uniform float intensity;
 
+uniform float distance;
+
 float distsq(vec2 a, vec2 b) {
 	float f = float(screenHeight)/float(screenWidth);
 	float dx = (a.x-b.x);
@@ -36,33 +38,25 @@ vec3 hsb2rgb(vec3 c){
 }
 
 void main() {
-	vec4 clipSpacePos = projection * (modelview * vec4(0, 3.875, 0, 1.0));
+	vec4 clipSpacePos = projection * (modelview * vec4(0.5, 1.0, 0.5, 1.0));
 	vec3 ndcSpacePos = clipSpacePos.xyz / clipSpacePos.w;
 	vec2 nodeXY = ((ndcSpacePos.xy + 1.0) / 2.0);
 	
 	float distsq = distsq(nodeXY, texcoord);
 	float distfac_color = max(0.0, min(1.0, 1.0-15.0*distsq));
-	//float distfac_color = max(0.0, min(1.0, 1.0-50.0*distsq));
-	//float distfac_color2 = max(0.0, min(1.0, 1.0-150.0*distsq));
-	float distfac_vertex = max(0.0, min(1.0, 1.5-15.0*distsq));
+	float distfac_vertex = max(0.0, min(1.0, 2.5-4.0*distsq*distance));
 	float cf = intensity*distfac_color*0.8;
-	//float cf = intensity*distfac_color*0.75;
-	//float cf2 = intensity*distfac_color2*0.5;
-	float vf = intensity*distfac_vertex*0.006;
+	float vf = intensity*distfac_vertex;
 	
-	texcoord.x += 0.11*vf*sin(23.3+texcoord.y*111.8+float(time)/2.1);
-	texcoord.y += 0.19*vf*sin(34.5+texcoord.x*115.7+float(time)/2.3);
+	vec4 color = texture2D(bgl_RenderedTexture, texcoord);
+	vec3 hsb = rgb2hsb(color.rgb);
 	
-    vec4 color = texture2D(bgl_RenderedTexture, texcoord);
-	/*
-	color.rgb = mix(color.rgb, vec3(135.0/255.0, 225.0/255.0, 1.0), cf);
-	color.rgb = mix(color.rgb, vec3(235.0/255.0, 250.0/255.0, 1.0), cf2);
-    */
-	vec3 hsb = rgb2hsb(color.xyz);
-	hsb.z = min(1.0, hsb.z+0.125);
-	vec3 c2 = hsb2rgb(hsb);
-	c2.y = min(1.0, c2.y*1.1+0.035);
-	c2.z = min(1.0, c2.z*1.25+0.125);
-	color.rgb = mix(color.rgb, c2, cf);
+	float wiggle = 0.5*hsb.y*vf/distance;
+	
+	texcoord.y += 0.41*wiggle*cos(34.5+texcoord.x*3.7*distance+float(time)/2.3);
+	texcoord.x += 0.35*wiggle*sin(23.3+texcoord.y*3.1*distance+float(time)/3.8);
+	
+    color = texture2D(bgl_RenderedTexture, texcoord);
+
     gl_FragColor = vec4(color.x, color.y, color.z, color.a);
 }

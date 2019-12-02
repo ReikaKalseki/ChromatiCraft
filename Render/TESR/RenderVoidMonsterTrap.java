@@ -12,8 +12,10 @@ package Reika.ChromatiCraft.Render.TESR;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.client.MinecraftForgeClient;
@@ -21,6 +23,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.ModInterface.TileEntityVoidMonsterTrap;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -49,6 +52,24 @@ public class RenderVoidMonsterTrap extends ChromaRenderBase {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glTranslatef((float)par2, (float)par4 + 1.0F, (float)par6 + 1.0F);
 		GL11.glScalef(1.0F, -1.0F, -1.0F);
+
+		if (te.isInWorld()) {
+			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+			double dist = ep.getDistance(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
+			float f = 0;
+			if (dist <= 16) {
+				f = 1;
+			}
+			else if (dist <= 32) {
+				f = 1-(float)((dist-16D)/16D);
+			}
+			ChromaShaders.VOIDTRAP.clearOnRender = true;
+			ChromaShaders.VOIDTRAP.setIntensity(f);
+			ChromaShaders.VOIDTRAP.getShader().setFocus(te);
+			ChromaShaders.VOIDTRAP.getShader().setMatricesToCurrent();
+			ChromaShaders.VOIDTRAP.getShader().setField("distance", dist*dist);
+			ChromaShaders.VOIDTRAP.getShader().setField("rotation", te.getShaderRotation());
+		}
 
 		if (MinecraftForgeClient.getRenderPass() == 1 || !te.isInWorld())
 			this.drawInner(te, par8);

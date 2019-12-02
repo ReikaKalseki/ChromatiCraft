@@ -13,9 +13,21 @@ import Reika.DragonAPI.IO.Shaders.ShaderRegistry.ShaderDomain;
 
 public enum ChromaShaders implements ShaderHook {
 
+	//Block/Entity
 	PYLON(),
 	AURALOC(),
-	DATANODE();
+	DATANODE(),
+	PORTAL(),
+	PORTAL_INCOMPLETE(),
+	VOIDTRAP(),
+	WARPNODE(),
+	WARPNODE_OPEN(),
+
+	//Situational
+	INSKYRIVER(),
+	PYLONTURBO_OVERBRIGHT(),
+	PYLONTURBO_PINCH(ShaderDomain.GLOBAL),
+	VOIDRITUAL();
 
 	private final ShaderDomain domain;
 	private ShaderProgram shader;
@@ -23,6 +35,11 @@ public enum ChromaShaders implements ShaderHook {
 	private float intensity;
 
 	public boolean clearOnRender = false;
+	public float rampDownFactor;
+	public float rampDownAmount;
+	public int lingerTime;
+
+	private int renderAge;
 
 	private static boolean registered = false;
 	public static final ChromaShaders[] shaders = values();
@@ -85,11 +102,20 @@ public enum ChromaShaders implements ShaderHook {
 	public void onPostRender(ShaderProgram s) {
 		if (clearOnRender)
 			intensity = 0;
+		renderAge++;
+		if (renderAge > lingerTime) {
+			if (rampDownAmount > 0 || rampDownFactor > 0)
+				this.rampDownIntensity(rampDownAmount, rampDownFactor);
+		}
 	}
 
 	@Override
 	public void updateEnabled(ShaderProgram s) {
 		s.setEnabled(intensity > 0);
+	}
+
+	public void refresh() {
+		renderAge = 0;
 	}
 
 }

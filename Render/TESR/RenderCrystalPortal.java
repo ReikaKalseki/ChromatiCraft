@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
@@ -29,7 +30,9 @@ import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.BlockChromaPortal.TileEntityCrystalPortal;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -38,6 +41,8 @@ import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public class RenderCrystalPortal extends ChromaRenderBase {
+
+	private static final RayTracer LOS = RayTracer.getVisualLOS();
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
@@ -140,6 +145,43 @@ public class RenderCrystalPortal extends ChromaRenderBase {
 								v5.draw();
 							}
 							GL11.glPopMatrix();
+						}
+					}
+					if (te.hasWorldObj()) {
+						ChromaShaders[] sh = {ChromaShaders.PORTAL_INCOMPLETE, ChromaShaders.PORTAL};
+						for (ChromaShaders shd : sh) {
+							shd.rampDownAmount = 0.0125F;
+							shd.rampDownFactor = 0.98F;
+							shd.lingerTime = 8;
+							EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+							shd.getShader().setField("distance", Math.max(1, ep.getDistanceSq(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5)));
+							shd.getShader().setFocus(te);
+							shd.getShader().setMatricesToCurrent();
+							float f = 0;
+							for (double d = 0; d <= 5; d += 0.25) {
+								LOS.setOrigins(te.xCoord+0.5, te.yCoord+d, te.zCoord+0.5, ep.posX, ep.posY, ep.posZ);
+								if (LOS.isClearLineOfSight(te.worldObj)) {
+									float amt = 0.25F;
+									if (d < 2)
+										amt = 0.5F;
+									if (d >= 3.5)
+										amt = 0.125F;
+									if (d >= 4.25)
+										amt = 0.0625F;
+									f += amt;
+								}
+							}
+							float f2 = te.getCharge()/(float)te.MINCHARGE;
+							f *= f2*f2;
+							if (shd == ChromaShaders.PORTAL_INCOMPLETE) {
+								f = 1-f;
+							}
+							if (f > 0) {
+								shd.rampUpIntensity(0.03F, 1.06F);
+								shd.refresh();
+								shd.setIntensity(Math.min(shd.getIntensity(), f));
+							}
+							//ReikaJavaLibrary.pConsole(shd+" > "+shd.getIntensity());
 						}
 					}
 				}

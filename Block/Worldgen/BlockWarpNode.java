@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Magic.WarpNetwork;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
@@ -172,6 +173,11 @@ public class BlockWarpNode extends BlockContainer {
 		@Override
 		public double getMaxRenderDistanceSquared() {
 			return 512*512;
+		}
+
+		@Override
+		public AxisAlignedBB getRenderBoundingBox() {
+			return ReikaAABBHelper.getBlockAABB(this).expand(0.6, 0.6, 0.6);
 		}
 
 	}
