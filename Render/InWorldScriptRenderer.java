@@ -41,7 +41,7 @@ public class InWorldScriptRenderer {
 		GL11.glTranslated(0, -1-0.175, 0);
 
 		GL11.glPushMatrix();
-		ArrayList<LorePanel> li = LoreScripts.ScriptLocations.SNOWSTRUCT.getUniqueRandomPanels(rand, 3);
+		ArrayList<LorePanel> li = LoreScripts.ScriptLocations.SNOWSTRUCT.getUniqueRandomPanels(rand, 4);
 		GL11.glTranslated(0, 0, -1+0.005);
 		GL11.glTranslated(0.25, 0, 0);
 		GL11.glScaled(sc, sc, sc);

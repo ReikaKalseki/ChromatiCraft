@@ -127,11 +127,11 @@ public enum ChromaStructures implements StructureEnum<ChromaStructureBase> {
 		return structureClass.newInstance();
 	}
 
-	public FilledBlockArray getArray(World world, int x, int y, int z) {
+	public synchronized FilledBlockArray getArray(World world, int x, int y, int z) {
 		return this.getStructure().getArray(world, x, y, z);
 	}
 
-	public FilledBlockArray getArray(World world, int x, int y, int z, Random r) {
+	public synchronized FilledBlockArray getArray(World world, int x, int y, int z, Random r) {
 		ChromaStructureBase s = this.getStructure();
 		s.setRand(r);
 		FilledBlockArray ret = s.getArray(world, x, y, z);
@@ -139,14 +139,14 @@ public enum ChromaStructures implements StructureEnum<ChromaStructureBase> {
 		return ret;
 	}
 
-	public FilledBlockArray getArray(World world, int x, int y, int z, CrystalElement e) {
+	public synchronized FilledBlockArray getArray(World world, int x, int y, int z, CrystalElement e) {
 		if (e == null)
 			return this.getArray(world, x, y, z);
 		return ((ColoredStructureBase)this.getStructure()).getArray(world, x, y, z, e);
 	}
 
 	@SideOnly(Side.CLIENT)
-	public FilledBlockArray getStructureForDisplay() {
+	public synchronized FilledBlockArray getStructureForDisplay() {
 		ChromaStructureBase s = this.getStructure();
 		s.setRand(DragonAPICore.rand);
 		return this.getStructure().getStructureForDisplay();

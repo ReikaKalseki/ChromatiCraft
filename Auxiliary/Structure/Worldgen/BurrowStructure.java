@@ -228,6 +228,7 @@ public class BurrowStructure extends ColoredStructureBase {
 		array.setBlock(x+4, y+9, z+3, Blocks.dirt);
 		array.setBlock(x+4, y+9, z+4, Blocks.dirt);
 
+		//ReikaJavaLibrary.pConsole("Running burrow lamp "+this.getCurrentColor()+" on "+Thread.currentThread().getName());
 		array.setBlock(x+3, y+1, z+3, ChromaBlocks.LAMP.getBlockInstance(), this.getCurrentColor().ordinal());
 		array.setBlock(x+3, y+5, z+3, Blocks.torch, 5);
 

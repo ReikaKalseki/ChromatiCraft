@@ -950,7 +950,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			case DESERT:
 				return r.nextInt(/*120*/10) == 0;
 			case SNOWSTRUCT:
-				return r.nextInt(/*120*/2) == 0;
+				return r.nextInt(/*120*/3) == 0;
 			default:
 				return false;
 		}
