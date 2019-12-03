@@ -1,16 +1,21 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
 
+import java.util.HashMap;
+
+import net.minecraft.client.Minecraft;
+
 import Reika.ChromatiCraft.Base.RenderLocusPoint;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
+import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 
 public class RenderDimensionCore extends RenderLocusPoint {
@@ -22,7 +27,13 @@ public class RenderDimensionCore extends RenderLocusPoint {
 
 	@Override
 	protected void doOtherRendering(TileEntityLocusPoint tile, float par8) {
-
+		ChromaShaders.DIMCORE.setIntensity(1);
+		ChromaShaders.DIMCORE.getShader().addFocus(tile);
+		double dist = Minecraft.getMinecraft().thePlayer.getDistance(tile.xCoord+0.5, tile.yCoord+0.5, tile.zCoord+0.5);
+		HashMap<String, Object> map = new HashMap();
+		map.put("distance", dist*dist);
+		float f = 1;
+		ChromaShaders.DIMCORE.getShader().modifyLastCompoundFocus(f, map);
 	}
 
 }

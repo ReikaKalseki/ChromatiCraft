@@ -15,6 +15,7 @@ public enum ChromaShaders implements ShaderHook {
 
 	//Block/Entity
 	PYLON(),
+	DIMCORE(),
 	AURALOC(),
 	DATANODE(),
 	PORTAL(),
@@ -22,6 +23,8 @@ public enum ChromaShaders implements ShaderHook {
 	VOIDTRAP(),
 	WARPNODE(),
 	WARPNODE_OPEN(),
+
+	LENSPARTICLE(),
 
 	//Situational
 	INSKYRIVER(),
@@ -100,8 +103,10 @@ public enum ChromaShaders implements ShaderHook {
 
 	@Override
 	public void onPostRender(ShaderProgram s) {
-		if (clearOnRender)
+		if (clearOnRender) {
 			intensity = 0;
+			s.clearFoci();
+		}
 		renderAge++;
 		if (renderAge > lingerTime) {
 			if (rampDownAmount > 0 || rampDownFactor > 0)

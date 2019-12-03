@@ -70,6 +70,8 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 	private boolean depthTest = true;
 	private boolean alphaTest = false;
 
+	private boolean lensing = false;
+
 	private boolean renderOverLimit = false;
 
 	private RenderMode renderMode;
@@ -140,6 +142,11 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 
 	public final EntityBlurFX setAlphaFading() {
 		alphaFade = true;
+		return this;
+	}
+
+	public final EntityBlurFX setLensing() {
+		lensing = true;
 		return this;
 	}
 
