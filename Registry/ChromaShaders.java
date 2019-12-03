@@ -104,8 +104,10 @@ public enum ChromaShaders implements ShaderHook {
 	@Override
 	public void onPostRender(ShaderProgram s) {
 		if (clearOnRender) {
-			intensity = 0;
-			s.clearFoci();
+			if (!s.hasOngoingFoci()) {
+				intensity = 0;
+				s.clearFoci();
+			}
 		}
 		renderAge++;
 		if (renderAge > lingerTime) {
