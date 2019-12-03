@@ -38,79 +38,52 @@ public class InWorldScriptRenderer {
 		seedRandom(te);
 
 		GL11.glPushMatrix();
-		GL11.glTranslated(0, -1-0.175, 0);
+		GL11.glTranslated(0, 8.76, 2);
 
 		GL11.glPushMatrix();
+
+		int c1 = 0xd65aff;
+		int c2 = 0xe091fa;
+
 		ArrayList<LorePanel> li = LoreScripts.ScriptLocations.SNOWSTRUCT.getUniqueRandomPanels(rand, 4);
-		GL11.glTranslated(0, 0, -1+0.005);
-		GL11.glTranslated(0.25, 0, 0);
-		GL11.glScaled(sc, sc, sc);
-		int ca = te.getColor().getColor();
-		int cb = ReikaColorAPI.mixColors(ca, 0xffffff, 0.75F);
-		int c1 = ReikaColorAPI.getShiftedHue(cb, -8F);
-		int c2 = ReikaColorAPI.getShiftedHue(cb, 8F);
-		int i = 0;
-		LorePanel p = li.get(0);
-		int w = 4*p.size.maxLength*2;
-		double x = 4*(p.size.maxLength+1.5);
-		for (int k = 0; k < p.lineCount; k++) {
-			LoreLine l = p.getLine(k);
-			double tick = -i+0.125*(te.getTicksExisted()+par8);
-			float f1 = (float)(0.5+0.5*Math.sin(tick));
-			float f2 = (float)Math.min(1, (0.75+0.25*Math.sin(tick*0.25-4.7)+0.03125*Math.sin(tick*5-1)));
-			int c = ReikaColorAPI.mixColors(c1, c2, f1);
-			c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, f2);
-			LoreScriptRenderer.instance.startRendering(true, c);
-			LoreScriptRenderer.instance.renderLine(l.text, x, i, w, true);
-			LoreScriptRenderer.instance.stopRendering();
-			i -= 11;
-		}
-		GL11.glPopMatrix();
 
-		GL11.glPushMatrix();
-		//li = ReikaJavaLibrary.makeListFrom("AnotHER 8024", "sh OR t sTG", "a 5 2 hF a 7", "test num 4", "a FIFTH line");
-		GL11.glRotated(180, 0, 1, 0);
-		//GL11.glTranslated(0, 0, 2-0.005);
-		GL11.glTranslated(-0.75, 0, -2+0.005);
-		GL11.glScaled(sc, sc, sc);
-		i = 0;
-		p = li.get(1);
-		w = 4*p.size.maxLength*2;
-		x = 4*(p.size.maxLength+1.5);
-		for (int k = 0; k < p.lineCount; k++) {
-			LoreLine l = p.getLine(k);
-			double tick = -i-76+0.125*(te.getTicksExisted()+par8);
-			float f1 = (float)(0.5+0.5*Math.sin(tick));
-			float f2 = (float)Math.min(1, (0.75+0.25*Math.sin(tick*0.25-4.7)+0.03125*Math.sin(tick*5-1)));
-			int c = ReikaColorAPI.mixColors(c1, c2, f1);
-			c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, f2);
-			LoreScriptRenderer.instance.startRendering(true, c);
-			LoreScriptRenderer.instance.renderLine(l.text, x, i, w, true);
-			LoreScriptRenderer.instance.stopRendering();
-			i -= 11;
-		}
-		GL11.glPopMatrix();
-
-		GL11.glPushMatrix();
-		//li = ReikaJavaLibrary.makeListFrom("type 102 7", "trest the 81", " 23iig kgj", "chAr gROUp", "number FIVE 5");
-		GL11.glRotated(90, 0, 1, 0);
-		GL11.glTranslated(-0.75, 0, -1+0.005);
-		GL11.glScaled(sc, sc, sc);
-		i = 0;
-		p = li.get(2);
-		w = 4*p.size.maxLength*2;
-		x = 4*(p.size.maxLength+1.5);
-		for (int k = 0; k < p.lineCount; k++) {
-			LoreLine l = p.getLine(k);
-			double tick = -i+23+0.125*(te.getTicksExisted()+par8);
-			float f1 = (float)(0.5+0.5*Math.sin(tick));
-			float f2 = (float)Math.min(1, (0.75+0.25*Math.sin(tick*0.25-4.7)+0.03125*Math.sin(tick*5-1)));
-			int c = ReikaColorAPI.mixColors(c1, c2, f1);
-			c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, f2);
-			LoreScriptRenderer.instance.startRendering(true, c);
-			LoreScriptRenderer.instance.renderLine(l.text, x, i, w, true);
-			LoreScriptRenderer.instance.stopRendering();
-			i -= 11;
+		for (int r = 0; r < 4; r++) {
+			GL11.glPushMatrix();
+			GL11.glRotated(90*r, 0, 1, 0);
+			GL11.glTranslated(0, 0, -3+0.005);
+			switch(r) {
+				case 1:
+					GL11.glTranslated(-1, 0, 0);
+					break;
+				case 2:
+					GL11.glTranslated(-1, 0, -1);
+					break;
+				case 3:
+					GL11.glTranslated(0, 0, -1);
+					break;
+				case 4:
+					GL11.glTranslated(0, 0, 1);
+					break;
+			}
+			GL11.glTranslated(0.25, 0, 0);
+			GL11.glScaled(sc, sc, sc);
+			int i = 0;
+			LorePanel p = li.get(r);
+			int w = 4*p.size.maxLength*2;
+			double x = 4*(p.size.maxLength+1.5);
+			for (int k = 0; k < p.lineCount; k++) {
+				LoreLine l = p.getLine(k);
+				double tick = -i+0.125*(te.getTicksExisted()+par8);
+				float f1 = (float)(0.5+0.5*Math.sin(tick));
+				float f2 = (float)Math.min(1, (0.75+0.25*Math.sin(tick*0.25-4.7)+0.03125*Math.sin(tick*5-1)));
+				int c = ReikaColorAPI.mixColors(c1, c2, f1);
+				c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, f2);
+				LoreScriptRenderer.instance.startRendering(true, c);
+				LoreScriptRenderer.instance.renderLine(l.text, x, i, w, true);
+				LoreScriptRenderer.instance.stopRendering();
+				i -= 11;
+			}
+			GL11.glPopMatrix();
 		}
 		GL11.glPopMatrix();
 

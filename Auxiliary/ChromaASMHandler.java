@@ -23,6 +23,7 @@ import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.TypeInsnNode;
@@ -94,6 +95,8 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 			UPDATEDCLIMATE("climateControl.biomeSettings.ReikasPackage"),
 			//FLOWERCACHE("Reika.ChromatiCraft.ModInterface.Bees.EfficientFlowerCache"),
 			TEXTURELOAD("net.minecraft.client.renderer.texture.TextureAtlasSprite", "bqd"),
+			LOREHANDLER("Reika.ChromatiCraft.Magic.Lore.LoreScripts"),
+			ROSETTAHANDLER("Reika.ChromatiCraft.Magic.Lore.RosettaStone"),
 			;
 
 			private final String obfName;
@@ -404,6 +407,54 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 
 						//ReikaASMHelper.log(ReikaASMHelper.clearString(m.instructions));
 						ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");
+						break;
+					}
+					case LOREHANDLER: {
+						MethodNode m = ReikaASMHelper.getMethodByName(cn, "getDataStream", "()Ljava/io/InputStream;");
+						m.instructions.clear();
+						m.instructions.add(new LdcInsnNode("Reika.ChromatiCraft.ChromatiCraft"));
+						m.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Class", "forName", "(Ljava/lang/String;)Ljava/lang/Class;", false));
+						m.instructions.add(new LdcInsnNode("Resources/lore.png"));
+						m.instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/Class", "getResourceAsStream", "(Ljava/lang/String;)Ljava/io/InputStream;", false));
+						m.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "javax/imageio/ImageIO", "read", "(Ljava/io/InputStream;)Ljava/awt/image/BufferedImage;", false));
+						m.instructions.add(new VarInsnNode(Opcodes.ASTORE, 1));
+						m.instructions.add(new VarInsnNode(Opcodes.ALOAD, 1));
+						m.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/DragonAPI/Libraries/IO/ImageToStringConverter", "decodeToString", "(Ljava/awt/image/BufferedImage;)Ljava/lang/String;", false));
+						m.instructions.add(new VarInsnNode(Opcodes.ASTORE, 2));
+						m.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/util/Base64", "getDecoder", "()Ljava/util/Base64$Decoder;", false));
+						m.instructions.add(new VarInsnNode(Opcodes.ALOAD, 2));
+						m.instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/util/Base64$Decoder", "decode", "(Ljava/lang/String;)[B", false));
+						m.instructions.add(new VarInsnNode(Opcodes.ASTORE, 3));
+						m.instructions.add(new TypeInsnNode(Opcodes.NEW, "java/io/ByteArrayInputStream"));
+						m.instructions.add(new InsnNode(Opcodes.DUP));
+						m.instructions.add(new VarInsnNode(Opcodes.ALOAD, 3));
+						m.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/io/ByteArrayInputStream", "<init>", "([B)V", false));
+						m.instructions.add(new InsnNode(Opcodes.ARETURN));
+						break;
+					}
+					case ROSETTAHANDLER: {
+						MethodNode m = ReikaASMHelper.getMethodByName(cn, "loadInternalRosettaFile", "()Ljava/util/ArrayList;");
+						m.instructions.clear();
+						m.instructions.add(new LdcInsnNode("Reika.ChromatiCraft.ChromatiCraft"));
+						m.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Class", "forName", "(Ljava/lang/String;)Ljava/lang/Class;", false));
+						m.instructions.add(new LdcInsnNode("Resources/rosetta.png"));
+						m.instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/Class", "getResourceAsStream", "(Ljava/lang/String;)Ljava/io/InputStream;", false));
+						m.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "javax/imageio/ImageIO", "read", "(Ljava/io/InputStream;)Ljava/awt/image/BufferedImage;", false));
+						m.instructions.add(new VarInsnNode(Opcodes.ASTORE, 1));
+						m.instructions.add(new VarInsnNode(Opcodes.ALOAD, 1));
+						m.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/DragonAPI/Libraries/IO/ImageToStringConverter", "decodeToString", "(Ljava/awt/image/BufferedImage;)Ljava/lang/String;", false));
+						m.instructions.add(new VarInsnNode(Opcodes.ASTORE, 2));
+						m.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/util/Base64", "getDecoder", "()Ljava/util/Base64$Decoder;", false));
+						m.instructions.add(new VarInsnNode(Opcodes.ALOAD, 2));
+						m.instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/util/Base64$Decoder", "decode", "(Ljava/lang/String;)[B", false));
+						m.instructions.add(new VarInsnNode(Opcodes.ASTORE, 3));
+						m.instructions.add(new TypeInsnNode(Opcodes.NEW, "java/io/ByteArrayInputStream"));
+						m.instructions.add(new InsnNode(Opcodes.DUP));
+						m.instructions.add(new VarInsnNode(Opcodes.ALOAD, 3));
+						m.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/io/ByteArrayInputStream", "<init>", "([B)V", false));
+						m.instructions.add(new InsnNode(Opcodes.ICONST_1));
+						m.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/DragonAPI/IO/ReikaFileReader", "getFileAsLines", "(Ljava/io/InputStream;Z)Ljava/util/ArrayList;", false));
+						m.instructions.add(new InsnNode(Opcodes.ARETURN));
 						break;
 					}
 				}

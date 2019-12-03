@@ -1,15 +1,14 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic.Lore;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
@@ -94,10 +93,17 @@ public class RosettaStone {
 			return ReikaFileReader.getFileAsLines(LoreScripts.instance.getReroutedRosettaFile(), true);
 		}
 		else {
-			InputStream in = ChromatiCraft.class.getResourceAsStream("Resources/rosetta.txt");
-			in = ReikaFileReader.decryptInputStream(in);
-			return ReikaFileReader.getFileAsLines(in, true);
+			try {
+				return this.loadInternalRosettaFile();
+			}
+			catch (Exception e) {
+				throw new RegistrationException(ChromatiCraft.instance, "Could not load rosetta text", e);
+			}
 		}
+	}
+
+	private ArrayList<String> loadInternalRosettaFile() throws Exception {
+		return null;
 	}
 
 	public void render(ScaledResolution res, double w2, double h2) {

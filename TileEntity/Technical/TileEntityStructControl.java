@@ -502,11 +502,11 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	}
 
 	private boolean checkExclusionZone(World world, int x, int y, int z) {
-		int dist = DungeonGenerator.instance.getMinSeparation(struct);
+		double dist = DungeonGenerator.instance.getMinSeparation(struct)*0.8;
 		WorldLocation src = new WorldLocation(this);
 		WorldLocation loc = DungeonGenerator.instance.getNearestStructure(struct, world, x+0.5, y+0.5, z+0.5, dist, src);
 		if (loc != null) {
-			ChromatiCraft.logger.logError("Found a "+struct+" only "+loc.getDistanceTo(src)+" blocks away, inside the "+dist+" limit!");
+			ChromatiCraft.logger.logError("Found a "+this+" @ "+this+" only "+loc.getDistanceTo(src)+" blocks away, inside the "+dist+" limit!");
 			boolean placed = false;
 			for (Coordinate c : blocks.keySet()) {
 				Block b = c.getBlock(world);
@@ -528,7 +528,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 					}
 				}
 				this.delete();
-				worldObj.newExplosion(null, x+0.5, y+0.5, z+0.5, 6, true, false);
+				worldObj.newExplosion(null, x+0.5, y+0.5, z+0.5, 6, false, true);
 			}
 			return true;
 		}

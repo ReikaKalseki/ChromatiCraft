@@ -13,9 +13,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Random;
+import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.block.Block;
@@ -63,6 +65,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldChunk;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.TileEntityCache;
 import Reika.DragonAPI.Instantiable.IO.NBTFile;
@@ -94,6 +97,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	private final ArrayList<ChromaStructures> structs = new ArrayList();
 
 	private final ConcurrentHashMap<ChromaStructures, TileEntityCache<Coordinate>> generatedStructures;
+	private final EnumMap<ChromaStructures, Stack<StructureGeneration>> currentGenerationQueue = new EnumMap(ChromaStructures.class);
 
 	private String baseFilepath;
 
@@ -110,6 +114,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 
 		for (ChromaStructures s : structs) {
 			generatedStructures.put(s, new TileEntityCache());
+			currentGenerationQueue.put(s, new Stack());
 		}
 
 		MinecraftForge.EVENT_BUS.register(this);
@@ -229,14 +234,33 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
 		if (this.canGenerateIn(world)) {
 			for (ChromaStructures s : structs) {
-				if (this.isGennableChunk(world, chunkX*16, chunkZ*16, random, s)) {
-					//ReikaWorldHelper.forceGenAndPopulate(world, chunkX*16, chunkZ*16, s == Structures.OCEAN ? 2 : 1); causes extra structures
-					if (this.tryGenerate(world, chunkX*16, chunkZ*16, random, s)) {
-						//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+chunkX*16+", "+chunkZ*16);
-					}
-				}
+				this.checkChunk(world, chunkX, chunkZ, random, s);
 			}
 		}
+	}
+
+	private boolean checkChunk(World world, int chunkX, int chunkZ, Random random, ChromaStructures s) {
+		if (this.isGennableChunk(world, chunkX*16, chunkZ*16, random, s)) {
+			//ReikaWorldHelper.forceGenAndPopulate(world, chunkX*16, chunkZ*16, s == Structures.OCEAN ? 2 : 1); causes extra structures
+			currentGenerationQueue.get(s).push(new StructureGeneration(s, world, chunkX*16, chunkZ*16));
+			boolean flag = false;
+			if (this.tryGenerate(world, chunkX*16, chunkZ*16, random, s)) {
+				flag = true;
+				//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+chunkX*16+", "+chunkZ*16);
+			}
+			StructureGeneration done = currentGenerationQueue.get(s).pop();
+			if (done.isDelayed) {
+				ChromatiCraft.logger.log("Delayed "+done+" succeeded");
+			}
+			for (StructureGeneration del : done.delayed) {
+				//ChromatiCraft.logger.log("Re-running delayed generator "+del);
+				if (this.checkChunk(del.getWorld(), del.location.chunk.chunkXPos >> 4, del.location.chunk.chunkZPos >> 4, random, del.type)) {
+					//ChromatiCraft.logger.log("Delayed generator "+gen+" failed exclusion zone, would have maybe been a duplicate");
+				}
+			}
+			return flag;
+		}
+		return false;
 	}
 
 	private boolean tryGenerate(World world, int cx, int cz, Random r, ChromaStructures s) {
@@ -935,8 +959,23 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	private boolean isGennableChunk(World world, int x, int z, Random r, ChromaStructures s) {
 		if (this.isVoidWorld(world, x, z))
 			return false;
-		if (this.isStructureWithin(s, world, x, 48, z, this.getMinSeparation(s)))
+		int mind = this.getMinSeparation(s);
+		Stack<StructureGeneration> li = currentGenerationQueue.get(s);
+		for (StructureGeneration sg : li) {
+			if (sg.location.dimensionID == world.provider.dimensionId) {
+				double dist = ReikaMathLibrary.py3d(sg.location.chunk.chunkXPos-x, 0, sg.location.chunk.chunkZPos-z);
+				if (dist < mind) {
+					StructureGeneration del = new StructureGeneration(s, world, x, z);
+					del.isDelayed = true;
+					sg.delayed.add(del);
+					//ChromatiCraft.logger.log("Delayed a "+del+" because it was triggered by a too-close "+sg);
+					return false;
+				}
+			}
+		}
+		if (this.isStructureWithin(s, world, x, 48, z, mind)) {
 			return false;
+		}
 		BiomeGenBase b = world.getBiomeGenForCoords(x, z);
 		if (!this.isValidBiome(s, b))
 			return false;
@@ -1071,6 +1110,31 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		@Override
 		protected NBTTagCompound writeExtraData() {
 			return null;
+		}
+
+	}
+
+	private static class StructureGeneration {
+
+		private final ChromaStructures type;
+		/** In block coords */
+		private final WorldChunk location;
+
+		private final ArrayList<StructureGeneration> delayed = new ArrayList();
+		private boolean isDelayed;
+
+		private StructureGeneration(ChromaStructures s, World world, int chunkX, int chunkZ) {
+			type = s;
+			location = new WorldChunk(world, chunkX, chunkZ);
+		}
+
+		public World getWorld() {
+			return DimensionManager.getWorld(location.dimensionID);
+		}
+
+		@Override
+		public String toString() {
+			return type.getDisplayName()+" @ "+location.toString();
 		}
 
 	}

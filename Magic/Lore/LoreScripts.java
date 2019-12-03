@@ -10,6 +10,8 @@
 package Reika.ChromatiCraft.Magic.Lore;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -18,13 +20,14 @@ import java.util.Random;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.Exception.RegistrationException;
+import Reika.DragonAPI.Interfaces.DataProvider;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 import cpw.mods.fml.common.FMLLog;
 
 
-public class LoreScripts {
+public class LoreScripts implements DataProvider {
 
 	public static final LoreScripts instance = new LoreScripts();
 
@@ -47,6 +50,14 @@ public class LoreScripts {
 
 	public File getReroutedRosettaFile() {
 		return new File(reroutePath, "rosetta.txt");
+	}
+
+	public InputStream getDataStream() throws IOException {
+		return null;
+	}
+
+	public boolean canBeReloaded() {
+		return true;
 	}
 
 	public Collection<LorePanel> getData() {
