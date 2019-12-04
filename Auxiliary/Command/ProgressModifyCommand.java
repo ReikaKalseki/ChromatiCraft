@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.Magic.Progression.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Command.DragonCommandBase;
 import Reika.DragonAPI.Instantiable.BasicModEntry;
@@ -218,6 +219,12 @@ public class ProgressModifyCommand extends DragonCommandBase {
 				}
 				ProgressionManager.instance.markPlayerCompletedStructureColor(ep, null, e, set, false);
 				this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Structure "+e.displayName+" set to "+set+" for "+ep.getCommandSenderName());
+				break;
+			}
+			case "dimtuning": {
+				int amt = args.length >= 2 ? Integer.parseInt(args[1]) : 200000;
+				DimensionTuningManager.instance.tunePlayer(ep, amt);
+				this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Player "+ep.getCommandSenderName()+" tuned to "+amt);
 				break;
 			}
 			case "towers":

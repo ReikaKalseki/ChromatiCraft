@@ -146,6 +146,7 @@ import Reika.DragonAPI.Instantiable.Event.Client.FarClippingPlaneEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.GetMouseoverEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.HotbarKeyEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.ItemEffectRenderEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.LightmapEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.NightVisionBrightnessEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.PlayMusicEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.RenderBlockAtPosEvent;
@@ -228,6 +229,20 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 					Minecraft.getMinecraft().gameSettings.hideGUI = false;
 				}
 				break;
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void adjustLightMap(LightmapEvent evt) {
+		if (Minecraft.getMinecraft().theWorld.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			int[] colors = Minecraft.getMinecraft().entityRenderer.lightmapColors;
+			for (int i = 0; i < colors.length; i++) {
+				int color = colors[i];
+				int[] c = ReikaColorAPI.HexToRGB(color);
+				int avg = (c[0]+c[1]+c[2])/3;
+				color = 0xff000000 | ReikaColorAPI.GStoHex(avg);
+				colors[i] = color;
 			}
 		}
 	}

@@ -26,6 +26,7 @@ import net.minecraftforge.client.IRenderHandler;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -128,6 +129,22 @@ public class ChromaCloudRenderer extends IRenderHandler {
 
 		if (ep.posY > 80)
 			return;
+
+		if (ep.posY < 20) {
+			ChromaShaders.DIMFLOOR.refresh();
+			ChromaShaders.DIMFLOOR.rampUpIntensity(0.05F, 1.1F);
+			float f = ep.posY <= 10 ? 1 : 1-(float)((ep.posY-10)/10);
+			ChromaShaders.DIMFLOOR.setIntensity(Math.min(ChromaShaders.DIMFLOOR.getIntensity(), f));
+			ChromaShaders.DIMFLOOR.lingerTime = 20;
+			ChromaShaders.DIMFLOOR.rampDownAmount = 0.001F;
+			ChromaShaders.DIMFLOOR.rampDownFactor = 0.999F;
+			float f2 = 0;
+			if (ep.posY <= 1)
+				f2 = 1;
+			else if (ep.posY <= 3.5)
+				f2 = 1-(float)((ep.posY-1)/2.5);
+			ChromaShaders.DIMFLOOR.getShader().setField("starFactor", f2);
+		}
 
 		Tessellator v5 = Tessellator.instance;
 

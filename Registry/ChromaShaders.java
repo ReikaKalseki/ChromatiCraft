@@ -23,14 +23,17 @@ public enum ChromaShaders implements ShaderHook {
 	VOIDTRAP(),
 	WARPNODE(),
 	WARPNODE_OPEN(),
+	DIMGLOWCLOUD(),
 
 	LENSPARTICLE(),
 
 	//Situational
 	INSKYRIVER(),
+	DIMFLOOR(),
 	PYLONTURBO_OVERBRIGHT(),
 	PYLONTURBO_PINCH(ShaderDomain.GLOBAL),
-	VOIDRITUAL();
+	VOIDRITUAL(),
+	MONUMENTRITUAL();
 
 	private final ShaderDomain domain;
 	private ShaderProgram shader;

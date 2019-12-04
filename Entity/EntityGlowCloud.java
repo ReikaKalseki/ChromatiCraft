@@ -48,6 +48,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.SphericalVector;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
@@ -106,6 +107,8 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity, IMo
 		}
 
 	};
+
+	private static final RayTracer LOS = new RayTracer(0, 0, 0, 0, 0, 0);
 
 	private boolean init;
 
@@ -492,6 +495,19 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity, IMo
 					}
 				}
 			}
+			else if (worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+				EntityPlayer ep = worldObj.getClosestPlayerToEntity(this, -1);
+				if (ep.getDistanceSqToEntity(this) > 144) {
+					LOS.setOrigins(ep.posX, ep.posY+1.62, ep.posZ, posX, posY, posZ);
+					if (LOS.isClearLineOfSight(worldObj)) {
+						if (velocity != null) {
+							velocity.aimFrom(posX, posY, posZ, ep.posX, ep.posY+1.3, ep.posZ);
+							velocity.magnitude = 0.125;
+							velocityChanged = true;
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -544,12 +560,13 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity, IMo
 	@Override
 	public boolean getCanSpawnHere() {
 		int n = 5;
-		if (worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
-			if (posY > 4)
+		boolean dim = worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue();
+		if (dim) {
+			if (posY > 6)
 				return false;
 			n = 3;
 		}
-		return rand.nextInt(n) == 0/* && spawnedEntities < SPAWN_LIMIT*/ && !ReikaEntityHelper.existsAnotherValidEntityWithin(this, 32, naturalSpawnedSelector);// && worldObj.getClosestPlayer(posX, posY, posZ, 64) != null;
+		return rand.nextInt(n) == 0/* && spawnedEntities < SPAWN_LIMIT*/ && !ReikaEntityHelper.existsAnotherValidEntityWithin(this, dim ? 20 : 32, naturalSpawnedSelector);// && worldObj.getClosestPlayer(posX, posY, posZ, 64) != null;
 	}
 
 	@Override

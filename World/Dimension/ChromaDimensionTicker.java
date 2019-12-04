@@ -151,7 +151,7 @@ public class ChromaDimensionTicker implements TickHandler {
 	private void spawnVoidLumaFog(EntityPlayer ep) {
 		double x = ReikaRandomHelper.getRandomPlusMinus(ep.posX, 32);
 		double z = ReikaRandomHelper.getRandomPlusMinus(ep.posZ, 32);
-		double y = ReikaRandomHelper.getRandomBetween(-10, 0);
+		double y = ReikaRandomHelper.getRandomBetween(-10, 6);
 		EntityGlowCloud e = new EntityGlowCloud(ep.worldObj, x, y, z);
 		if (e.getCanSpawnHere()) {
 			ep.worldObj.spawnEntityInWorld(e);
