@@ -79,7 +79,7 @@ public class MeteorTowerStructure extends ChromaStructureBase {
 		is.stackTagCompound = new NBTTagCompound();
 		is.stackTagCompound.setInteger("tier", tier);
 		te.setDataFromItemStackTag(is);
-		array.setBlock(x, y, z, ChromaTiles.METEOR.getBlock(), ChromaTiles.METEOR.getBlockMetadata(), te, "tier");
+		array.setTile(x, y, z, ChromaTiles.METEOR.getBlock(), ChromaTiles.METEOR.getBlockMetadata(), te, "tier");
 
 		for (int j = 1; j <= 2; j++) {
 			int dy = y+j;

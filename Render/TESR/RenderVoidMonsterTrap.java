@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.ModInterface.TileEntityVoidMonsterTrap;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
+import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -32,6 +33,8 @@ import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 
 public class RenderVoidMonsterTrap extends ChromaRenderBase {
+
+	protected static final RayTracer LOS = RayTracer.getVisualLOS();
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
@@ -55,20 +58,23 @@ public class RenderVoidMonsterTrap extends ChromaRenderBase {
 
 		if (te.isInWorld()) {
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-			double dist = ep.getDistance(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
-			float f = 0;
-			if (dist <= 16) {
-				f = 1;
+			LOS.setOrigins(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5, ep.posX, ep.posY, ep.posZ);
+			if (LOS.isClearLineOfSight(te.worldObj)) {
+				double dist = ep.getDistance(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
+				float f = 0;
+				if (dist <= 16) {
+					f = 1;
+				}
+				else if (dist <= 32) {
+					f = 1-(float)((dist-16D)/16D);
+				}
+				ChromaShaders.VOIDTRAP.clearOnRender = true;
+				ChromaShaders.VOIDTRAP.setIntensity(f);
+				ChromaShaders.VOIDTRAP.getShader().setFocus(te);
+				ChromaShaders.VOIDTRAP.getShader().setMatricesToCurrent();
+				ChromaShaders.VOIDTRAP.getShader().setField("distance", dist*dist);
+				ChromaShaders.VOIDTRAP.getShader().setField("rotation", te.getShaderRotation());
 			}
-			else if (dist <= 32) {
-				f = 1-(float)((dist-16D)/16D);
-			}
-			ChromaShaders.VOIDTRAP.clearOnRender = true;
-			ChromaShaders.VOIDTRAP.setIntensity(f);
-			ChromaShaders.VOIDTRAP.getShader().setFocus(te);
-			ChromaShaders.VOIDTRAP.getShader().setMatricesToCurrent();
-			ChromaShaders.VOIDTRAP.getShader().setField("distance", dist*dist);
-			ChromaShaders.VOIDTRAP.getShader().setField("rotation", te.getShaderRotation());
 		}
 
 		if (MinecraftForgeClient.getRenderPass() == 1 || !te.isInWorld())

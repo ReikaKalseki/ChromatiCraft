@@ -1,5 +1,8 @@
 package Reika.ChromatiCraft.ModInterface;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -9,23 +12,31 @@ import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
+import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire.WireWatcher;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 
-public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered {
+public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements WireWatcher {
 
 	private static final ElementTagCompound required = new ElementTagCompound();
+
+	private static final int RING_DURATION = 400;
+
+	private Collection<Coordinate> wires;
+	private ArrayList<Coordinate> wireSeek = new ArrayList();
 
 	private float flashFactor = 0;
 	private float shaderRotation = 0;
 	private float shaderRotationSpeed = 0;
 
-	private static final int RING_DURATION = 400;
-
 	private int outerRingActivation = 0;
 	private int innerRingActivation = 0;
+
+	private int ritualTick;
 
 	static {
 		required.addTag(CrystalElement.BLACK, 5);
@@ -35,8 +46,6 @@ public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered {
 		required.addTag(CrystalElement.WHITE, 10);
 		required.addTag(CrystalElement.MAGENTA, 2);
 	}
-
-	private int ritualTick;
 
 	public void activateOuterRing() {
 		outerRingActivation = RING_DURATION;
@@ -54,20 +63,36 @@ public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered {
 	}
 
 	@Override
-	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (ReikaItemHelper.matchStacks(inv[0], ChromaStacks.voidDust)) {
-			if (this.hasEnergy(required)) {
-				if (this.isActive()) {
+	protected void onFirstTick(World world, int x, int y, int z) {
+		wires = VoidMonsterRitualStructure.getWireLocations();
+		wireSeek.addAll(wires);
+	}
 
+	@Override
+	public void updateEntity(World world, int x, int y, int z, int meta) {
+		if (!world.isRemote) {
+			if (!wireSeek.isEmpty()) {
+				int idx = rand.nextInt(wireSeek.size());
+				Coordinate c = wireSeek.get(idx);
+				if (c.getBlock(world) == ChromaTiles.LUMENWIRE.getBlock() && c.getBlockMetadata(world) == ChromaTiles.LUMENWIRE.getBlockMetadata()) {
+					TileEntityLumenWire te = (TileEntityLumenWire)c.getTileEntity(world);
+					te.addWatcher(this);
 				}
-				else {
-					if (this.canAttractMonster()) {
+			}
+			if (ReikaItemHelper.matchStacks(inv[0], ChromaStacks.voidDust)) {
+				if (this.hasEnergy(required)) {
+					if (this.isActive()) {
 
 					}
+					else {
+						if (this.canAttractMonster()) {
+
+						}
+					}
+					this.useEnergy(required);
+					if (rand.nextInt(this.isActive() ? 20 : 60) == 0)
+						ReikaInventoryHelper.decrStack(1, inv);
 				}
-				this.useEnergy(required);
-				if (rand.nextInt(this.isActive() ? 20 : 60) == 0)
-					ReikaInventoryHelper.decrStack(1, inv);
 			}
 		}
 	}
@@ -156,6 +181,16 @@ public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered {
 	@Override
 	public AxisAlignedBB getRenderBoundingBox() {
 		return ReikaAABBHelper.getBlockAABB(this).expand(2, 2, 2);
+	}
+
+	@Override
+	public void onToggle(Coordinate wire, boolean active) {
+		if (wire.yCoord == yCoord-1) {
+			this.activateInnerRing();
+		}
+		else {
+			this.activateOuterRing();
+		}
 	}
 
 }

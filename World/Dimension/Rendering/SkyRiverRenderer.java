@@ -16,10 +16,12 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.player.EntityPlayer;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverGenerator;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverGenerator.RiverPoint;
@@ -47,6 +49,7 @@ public class SkyRiverRenderer {
 	public void render() {
 		GL11.glPushMatrix();
 		GL11.glTranslated(-RenderManager.renderPosX, -RenderManager.renderPosY, -RenderManager.renderPosZ);
+
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		GL11.glEnable(GL11.GL_BLEND);
 		BlendMode.ADDITIVEDARK.apply();
@@ -58,9 +61,11 @@ public class SkyRiverRenderer {
 		GL11.glDepthMask(false);
 		Collection<RiverPoint> c = SkyRiverGenerator.getPointsWithin(Minecraft.getMinecraft().thePlayer, 512, false);
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "/Reika/ChromatiCraft/Textures/SkyRiver2.png");
+		boolean rendered = false;
 		for (RiverPoint p : c) {
 			if (p.nextRiverPoint == null)
 				continue;
+			rendered = true;
 			GL11.glPushMatrix();
 			GL11.glTranslated(p.position.xCoord, p.position.yCoord, p.position.zCoord);
 
@@ -175,6 +180,20 @@ public class SkyRiverRenderer {
 				}
 			}
 		}
+
+		if (rendered) {
+			EntityPlayer pl = Minecraft.getMinecraft().thePlayer;
+			SkyRiverGenerator.RiverPoint closest = SkyRiverGenerator.getClosestPoint(pl, 16, true);
+			if (closest != null && SkyRiverGenerator.isWithinSkyRiver(pl, closest)) {
+				ChromaShaders.INSKYRIVER.rampUpIntensity(0.02F, 1.06F);
+				ChromaShaders.INSKYRIVER.refresh();
+				ChromaShaders.INSKYRIVER.lingerTime = 20;
+				ChromaShaders.INSKYRIVER.rampDownAmount = 0.004F;
+				ChromaShaders.INSKYRIVER.rampDownFactor = 0.994F;
+				ChromaShaders.INSKYRIVER.getShader().setMatricesToCurrent();
+			}
+		}
+
 		GL11.glPopAttrib();
 		GL11.glPopMatrix();
 	}

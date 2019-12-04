@@ -41,7 +41,7 @@ public class DataTowerStructure extends ChromaStructureBase {
 			te.setFlag(Flags.RENDER, false);
 			te.setFlag(Flags.MOUSEOVER, false);
 			te.link(new Coordinate(x, y+1, z));
-			array.setBlock(x, y+2+i, z, ChromaBlocks.DUMMYAUX.getBlockInstance(), 0, te, "loc", "flags");
+			array.setTile(x, y+2+i, z, ChromaBlocks.DUMMYAUX.getBlockInstance(), 0, te, "loc", "flags");
 		}
 
 		return array;

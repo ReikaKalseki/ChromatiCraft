@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
@@ -19,6 +20,7 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -67,6 +69,8 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 	private int activeTick = 0;
 
 	private CheckType check = CheckType.OWNER;
+
+	private final ArrayList<WireWatcher> notifyList = new ArrayList();
 
 	public static final int MAX_LENGTH = 6;
 	public static final int ACTIVATION_LENGTH = 30;
@@ -208,6 +212,9 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 				te.causeUpdates(world, connection.xCoord, connection.yCoord, connection.zCoord);
 			if (ModList.OPENCOMPUTERS.isLoaded())
 				this.sendOCActivation(world, x, y, z, on);
+			for (WireWatcher w : notifyList) {
+				w.onToggle(new Coordinate(this), this.isActive());
+			}
 			MinecraftForge.EVENT_BUS.post(new LumenWireToggleEvent(world, x, y, z, connectionUID, on));
 			this.syncAllData(false);
 		}
@@ -543,6 +550,34 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 	@Override
 	public AxisAlignedBB getRenderBoundingBox() {
 		return this.getCheckBox(worldObj, xCoord, yCoord, zCoord);
+	}
+
+	public void addWatcher(WireWatcher w) {
+		if (w instanceof TileEntity) {
+			w = new TileWireWatcher(w);
+		}
+		notifyList.add(w);
+	}
+
+	public static interface WireWatcher {
+
+		void onToggle(Coordinate wire, boolean active);
+
+	}
+
+	private static class TileWireWatcher implements WireWatcher {
+
+		private final WorldLocation location;
+
+		public TileWireWatcher(WireWatcher te) {
+			location = new WorldLocation((TileEntity)te);
+		}
+
+		@Override
+		public void onToggle(Coordinate wire, boolean active) {
+			((WireWatcher)location.getTileEntity()).onToggle(wire, active);
+		}
+
 	}
 
 }

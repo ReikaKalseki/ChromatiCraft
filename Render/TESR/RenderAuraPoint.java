@@ -54,18 +54,21 @@ public class RenderAuraPoint extends RenderLocusPoint {
 
 			if (te.isInWorld()) {
 				EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-				double dist = ep.getDistance(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
-				float f = 0;
-				if (dist <= 8) {
-					f = 1;
+				LOS.setOrigins(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5, ep.posX, ep.posY, ep.posZ);
+				if (LOS.isClearLineOfSight(te.worldObj)) {
+					double dist = ep.getDistance(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
+					float f = 0;
+					if (dist <= 8) {
+						f = 1;
+					}
+					else if (dist <= 40) {
+						f = 1-(float)((dist-8D)/32D);
+					}
+					ChromaShaders.AURALOC.clearOnRender = true;
+					ChromaShaders.AURALOC.setIntensity(f);
+					ChromaShaders.AURALOC.getShader().setFocus(te);
+					ChromaShaders.AURALOC.getShader().setMatricesToCurrent();
 				}
-				else if (dist <= 40) {
-					f = 1-(float)((dist-8D)/32D);
-				}
-				ChromaShaders.AURALOC.clearOnRender = true;
-				ChromaShaders.AURALOC.setIntensity(f);
-				ChromaShaders.AURALOC.getShader().setFocus(te);
-				ChromaShaders.AURALOC.getShader().setMatricesToCurrent();
 			}
 
 			if (te.doPvP() && te.isInWorld()) {

@@ -24,6 +24,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
+import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -31,7 +32,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
 public abstract class RenderLocusPoint extends ChromaRenderBase {
 
-	//private static final ShaderProgram shader = ShaderRegistry.createShader(ChromatiCraft.instance, "dimcore", ChromatiCraft.class, "Shaders/");
+	protected static final RayTracer LOS = RayTracer.getVisualLOS();
 
 	@Override
 	public final void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {

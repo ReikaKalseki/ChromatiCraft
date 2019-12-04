@@ -58,7 +58,7 @@ public class BoostedRelayStructure extends ChromaStructureBase {
 		TileEntityRelaySource te = new TileEntityRelaySource();
 		if (this.isDisplay())
 			te.setEnhanced(true);
-		array.setBlock(x, y, z, ChromaTiles.RELAYSOURCE.getBlock(), ChromaTiles.RELAYSOURCE.getBlockMetadata(), te, "enhance");
+		array.setTile(x, y, z, ChromaTiles.RELAYSOURCE.getBlock(), ChromaTiles.RELAYSOURCE.getBlockMetadata(), te, "enhance");
 		return array;
 	}
 

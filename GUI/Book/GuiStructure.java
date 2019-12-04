@@ -17,6 +17,7 @@ import java.util.Locale;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -112,6 +113,9 @@ public class GuiStructure extends GuiBookSection {
 		if (page == ChromaResearch.CLOAKTOWER) {
 			array.setBlock(array.getMidX(), array.getMinY()+5, array.getMidZ(), ChromaTiles.CLOAKING.getBlock(), ChromaTiles.CLOAKING.getBlockMetadata());
 		}
+		if (page == ChromaResearch.VOIDTRAPSTRUCT) {
+			array.setBlock(array.getMidX(), array.getMaxY(), array.getMidZ(), ChromaTiles.VOIDTRAP.getBlock(), ChromaTiles.VOIDTRAP.getBlockMetadata());
+		}
 		HashSet<Coordinate> set = new HashSet();
 		switch(page) {
 			case TREESEND:
@@ -202,6 +206,10 @@ public class GuiStructure extends GuiBookSection {
 		}
 		else if (page == ChromaResearch.CLOAKTOWER) {
 			render.addOverride(array.getMidX(), array.getMinY()+5, array.getMidZ(), ChromaTiles.CLOAKING.getCraftedProduct());
+		}
+		else if (page == ChromaResearch.VOIDTRAPSTRUCT) {
+			render.addOverride(array.getMidX(), array.getMaxY(), array.getMidZ(), ChromaTiles.VOIDTRAP.getCraftedProduct());
+			render.addOverride(new ItemStack(ChromaTiles.LUMENWIRE.getBlock(), ChromaTiles.LUMENWIRE.getBlockMetadata()), ChromaTiles.LUMENWIRE.getCraftedProduct());
 		}
 		else if (page == ChromaResearch.TREE || page == ChromaResearch.BOOSTTREE) {
 			render.addOverride(array.getMidX()-1, array.getMaxY(), array.getMidZ(), ChromaTiles.POWERTREE.getCraftedProduct());
@@ -371,6 +379,7 @@ public class GuiStructure extends GuiBookSection {
 
 		//FilledBlockArray arr = page.getStructure().getStructureForDisplay();
 
+		GL11.glPushMatrix();
 		switch(mode) {
 			case 0:
 				this.draw3d(j, k, f);
@@ -382,6 +391,7 @@ public class GuiStructure extends GuiBookSection {
 				this.drawTally(j, k);
 				break;
 		}
+		GL11.glPopMatrix();
 	}
 
 	private void drawSlice(int j, int k) {
