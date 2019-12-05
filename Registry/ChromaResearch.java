@@ -226,6 +226,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	HOVERPAD(		ChromaTiles.HOVERPAD,		ResearchLevel.RUNECRAFT/*,		TieredOres.TELEPORT.level*/),
 	DEATHFOG(		ChromaTiles.DEATHFOG,		ResearchLevel.RUNECRAFT,		ProgressStage.VOIDMONSTER),
 	VOIDTRAP(		ChromaTiles.VOIDTRAP,		ResearchLevel.MULTICRAFT,		ProgressStage.VOIDMONSTERDIE, ProgressStage.CHARGECRYSTAL),
+	PLAYERINFUSER(	ChromaTiles.PLAYERINFUSER,	ResearchLevel.MULTICRAFT,		ProgressStage.INFUSE),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT,	ProgressStage.ALLCOLORS),
@@ -380,6 +381,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	CASTING3(		ChromaStructures.CASTING3,		StoneTypes.COLUMN.ordinal(),			ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK, ProgressStage.BLOWREPEATER),
 	RITUAL	(		ChromaStructures.RITUAL,		StoneTypes.ENGRAVED.ordinal(),			ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
 	INFUSION(		ChromaStructures.INFUSION,		StoneTypes.BRICKS.ordinal(),			ResearchLevel.MULTICRAFT,		ProgressStage.CHROMA),
+	PLAYERINFUSION(	ChromaStructures.PLAYERINFUSION,StoneTypes.BEAM.ordinal(),				ResearchLevel.MULTICRAFT,		ProgressStage.INFUSE),
 	TREE(			ChromaStructures.TREE,			StoneTypes.STABILIZER.ordinal(),		ResearchLevel.ENDGAME,			ProgressStage.POWERCRYSTAL),
 	TREESEND(		ChromaStructures.TREE_SENDER,	StoneTypes.FOCUSFRAME.ordinal(),		ResearchLevel.ENDGAME,			ProgressStage.POWERTREE),
 	REPEATERSTRUCT(	ChromaStructures.REPEATER,		StoneTypes.SMOOTH.ordinal(),			ResearchLevel.NETWORKING,		ProgressStage.RUNEUSE, ProgressStage.BLOWREPEATER),

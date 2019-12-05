@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.Auxiliary.Structure.LumenTreeStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.MeteorTowerStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.NetworkOptimizerStructureV2;
 import Reika.ChromatiCraft.Auxiliary.Structure.PersonalChargerStructure;
+import Reika.ChromatiCraft.Auxiliary.Structure.PlayerInfusionStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.PortalStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.ProgressionLinkerStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.ProtectionBeaconStructure;
@@ -68,6 +69,7 @@ public enum ChromaStructures implements StructureEnum<ChromaStructureBase> {
 	RITUAL(RitualStructure.class,	false),
 	RITUAL2(RitualStructure.class,	true),
 	INFUSION(InfusionStructure.class),
+	PLAYERINFUSION(PlayerInfusionStructure.class),
 	TREE(LumenTreeStructure.class),
 	TREE_SENDER(TreeSendFocusStructure.class),
 	TREE_BOOSTED(BoostedLumenTreeStructure.class),

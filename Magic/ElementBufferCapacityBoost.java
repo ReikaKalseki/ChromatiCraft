@@ -3,11 +3,12 @@ package Reika.ChromatiCraft.Magic;
 import java.util.ArrayList;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 
-import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Magic.Progression.ProgressAccess;
@@ -29,6 +30,7 @@ public enum ElementBufferCapacityBoost {
 
 	private final ProgressAccess requirement;
 	private ElementBufferCapacityBoost dependency;
+	private ItemStack ingredient;
 
 	private static final String NBT_TAG = "BufferBoosts";
 
@@ -84,7 +86,7 @@ public enum ElementBufferCapacityBoost {
 
 	private void doGive(EntityPlayer ep) {
 		this.getTag(ep).appendTag(new NBTTagString(this.name()));
-		ChromatiCraft.logger.log("Player "+ep.getCommandSenderName()+" just upgraded their element buffer with "+this+"; capacity is now "+PlayerElementBuffer.instance.getPlayerMaximumCap(ep));
+		//ChromatiCraft.logger.log("Player "+ep.getCommandSenderName()+" just upgraded their element buffer with "+this+"; capacity is now "+PlayerElementBuffer.instance.getPlayerMaximumCap(ep));
 	}
 
 	public boolean isAvailableToPlayer(EntityPlayer ep) {
@@ -92,6 +94,10 @@ public enum ElementBufferCapacityBoost {
 		if (flag && this.isGrantedAutomatically())
 			this.doGive(ep);
 		return flag;
+	}
+
+	public ItemStack getIngredient() {
+		return ingredient != null ? ingredient.copy() : null;
 	}
 
 	public static ArrayList<ElementBufferCapacityBoost> getAvailableBoosts(EntityPlayer ep) {
@@ -122,6 +128,11 @@ public enum ElementBufferCapacityBoost {
 			list[i].dependency = list[i-1];
 		}
 		LORECOMPLETE.dependency = TOWER;
+
+		DIMENSION.ingredient = ChromaStacks.glowcavedust;
+		TURBOCHARGE.ingredient = ChromaStacks.boostroot;
+		CTM.ingredient = ChromaStacks.echoCrystal;
+		TOWER.ingredient = ChromaStacks.unknownFragments;
 	}
 
 }

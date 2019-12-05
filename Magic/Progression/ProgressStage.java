@@ -62,6 +62,7 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 	MAKECHROMA(		Shareability.PROXIMITY,	ChromaTiles.COLLECTOR),
 	SHARDCHARGE(	Shareability.PROXIMITY,	ChromaStacks.chargedRedShard),
 	ALLOY(			Shareability.PROXIMITY,	ChromaStacks.chromaIngot),
+	INFUSE(			Shareability.PROXIMITY,	ChromaTiles.INFUSER),
 	CHROMA(			Shareability.SELFONLY,	ChromaBlocks.CHROMA.getBlockInstance()), //step in liquid chroma
 	//STONES(		Shareability.SELFONLY,	ChromaStacks.elementUnit), //craft all elemental stones together
 	SHOCK(			Shareability.SELFONLY,	ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(5)), //get hit by a pylon

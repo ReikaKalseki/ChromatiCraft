@@ -148,6 +148,8 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.ALLOY, 		ProgressStage.MULTIBLOCK);
 		progressMap.addParent(ProgressStage.ALLOY, 		ProgressStage.CHROMA);
 
+		progressMap.addParent(ProgressStage.INFUSE, 	ProgressStage.ALLOY);
+
 		if (ProgressStage.VOIDMONSTER.active) {
 			progressMap.addParent(ProgressStage.VOIDMONSTER,	ProgressStage.BEDROCK);
 			progressMap.addParent(ProgressStage.VOIDMONSTERDIE,	ProgressStage.VOIDMONSTER);
@@ -179,7 +181,7 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.LINK);
 		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.STORAGE);
 		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.CHARGE);
-		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.ALLOY);
+		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.INFUSE);
 
 		progressMap.addParent(ProgressStage.POWERTREE, 	ProgressStage.POWERCRYSTAL);
 

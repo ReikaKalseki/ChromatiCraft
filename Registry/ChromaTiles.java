@@ -116,13 +116,14 @@ import Reika.ChromatiCraft.TileEntity.Processing.TileEntityEnchantDecomposer;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityGlowFire;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityInventoryTicker;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
-import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityAuraInfuser;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingInjector;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityChromaCrafter;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCrystalBrewer;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemInfuser;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityPlayerInfuser;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityMultiStorage;
@@ -176,7 +177,7 @@ public enum ChromaTiles implements TileEnum {
 	BEACON("chroma.beacon", 			ChromaBlocks.TILEMODELLED, 	TileEntityCrystalBeacon.class, 		5, "RenderCrystalBeacon"),
 	ITEMRIFT("chroma.itemrift", 		ChromaBlocks.TILEMODELLED, 	TileEntityItemRift.class, 			6, "RenderItemRift"),
 	CRYSTAL("chroma.chromacrystal", 	ChromaBlocks.RAINBOWCRYSTAL, TileEntityChromaCrystal.class, 	0),
-	INFUSER("chroma.infuser", 			ChromaBlocks.TILEMODELLED, 	TileEntityAuraInfuser.class, 		7, "RenderInfuser3"),
+	INFUSER("chroma.infuser", 			ChromaBlocks.TILEMODELLED, 	TileEntityItemInfuser.class, 		7, "RenderInfuser3"),
 	FABRICATOR("chroma.fabricator",		ChromaBlocks.TILEMODELLED, 	TileEntityItemFabricator.class, 	8, "RenderItemFabricator"),
 	MINER("chroma.miner",				ChromaBlocks.TILEMODELLED, 	TileEntityMiner.class, 				9, "RenderMiner"),
 	HEATLILY("chroma.heatlily",			ChromaBlocks.DECOPLANT, 	TileEntityHeatLily.class, 			0),
@@ -255,7 +256,8 @@ public enum ChromaTiles implements TileEnum {
 	OPTIMIZER("chroma.optimizer",		ChromaBlocks.TILEMODELLED4,	TileEntityNetworkOptimizer.class,	4, "RenderNetworkOptimizer"),
 	LANDMARK("chroma.landmark",			ChromaBlocks.TILEMODELLED4, TileEntityFloatingLandmark.class,	5, "RenderFloatingLandmark", ModList.BUILDCRAFT),
 	INJECTOR("chroma.injector",			ChromaBlocks.TILEENTITY2,	TileEntityCastingInjector.class,	5),
-	VOIDTRAP("chroma.voidtrap",			ChromaBlocks.TILEMODELLED4,	TileEntityVoidMonsterTrap.class,	6, "RenderVoidMonsterTrap", ModList.VOIDMONSTER);
+	VOIDTRAP("chroma.voidtrap",			ChromaBlocks.TILEMODELLED4,	TileEntityVoidMonsterTrap.class,	6, "RenderVoidMonsterTrap", ModList.VOIDMONSTER),
+	PLAYERINFUSER("chroma.playerinfuser", ChromaBlocks.TILEMODELLED4, TileEntityPlayerInfuser.class, 	7, "RenderInfuser3");
 
 	private final Class tile;
 	private final String name;
@@ -644,6 +646,7 @@ public enum ChromaTiles implements TileEnum {
 			case STAND:
 				return 0.75;
 			case INFUSER:
+			case PLAYERINFUSER:
 				return 0.5;
 			case ASPECTJAR:
 				return 0.875;

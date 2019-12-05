@@ -98,6 +98,9 @@ public class GuiStructure extends GuiBookSection {
 		if (page == ChromaResearch.INFUSION) {
 			array.setBlock(array.getMidX(), array.getMinY()+2, array.getMidZ(), ChromaTiles.INFUSER.getBlock(), ChromaTiles.INFUSER.getBlockMetadata());
 		}
+		if (page == ChromaResearch.PLAYERINFUSION) {
+			array.setBlock(array.getMidX(), array.getMaxY(), array.getMidZ(), ChromaTiles.PLAYERINFUSER.getBlock(), ChromaTiles.PLAYERINFUSER.getBlockMetadata());
+		}
 		if (page == ChromaResearch.MINIPYLON) {
 			array.setBlock(array.getMidX(), array.getMinY()+6, array.getMidZ(), ChromaTiles.PERSONAL.getBlock(), ChromaTiles.PERSONAL.getBlockMetadata());
 		}
@@ -206,6 +209,12 @@ public class GuiStructure extends GuiBookSection {
 		}
 		else if (page == ChromaResearch.CLOAKTOWER) {
 			render.addOverride(array.getMidX(), array.getMinY()+5, array.getMidZ(), ChromaTiles.CLOAKING.getCraftedProduct());
+		}
+		else if (page == ChromaResearch.INFUSION) {
+			render.addOverride(array.getMidX(), array.getMinY()+2, array.getMidZ(), ChromaTiles.INFUSER.getCraftedProduct());
+		}
+		else if (page == ChromaResearch.PLAYERINFUSION) {
+			render.addOverride(array.getMidX(), array.getMaxY(), array.getMidZ(), ChromaTiles.PLAYERINFUSER.getCraftedProduct());
 		}
 		else if (page == ChromaResearch.VOIDTRAPSTRUCT) {
 			render.addOverride(array.getMidX(), array.getMaxY(), array.getMidZ(), ChromaTiles.VOIDTRAP.getCraftedProduct());
