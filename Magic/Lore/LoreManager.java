@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
 import Reika.ChromatiCraft.Magic.Lore.KeyAssemblyPuzzle.TileGroup;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
+import Reika.ChromatiCraft.Magic.Progression.ProgressAccess;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -39,7 +40,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class LoreManager {
+public class LoreManager implements ProgressAccess {
 
 	public static final LoreManager instance = new LoreManager();
 
@@ -216,6 +217,11 @@ public class LoreManager {
 			int idx = tag.getInteger("idx");
 			Towers.towerList[idx].setLocationFromServer(x, z);
 		}
+	}
+
+	@Override
+	public boolean playerHas(EntityPlayer ep) {
+		return this.hasPlayerCompletedBoard(ep);
 	}
 
 }

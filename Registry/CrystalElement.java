@@ -18,12 +18,15 @@ import java.util.Map;
 import java.util.Random;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 
 import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.Auxiliary.OverlayColor;
 import Reika.ChromatiCraft.Magic.ElementMixer;
+import Reika.ChromatiCraft.Magic.Progression.ProgressAccess;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Interfaces.IconEnum;
@@ -35,7 +38,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public enum CrystalElement implements IconEnum, OverlayColor {
+public enum CrystalElement implements IconEnum, OverlayColor, ProgressAccess {
 
 	BLACK("Kuro", 0x191919, EnumChatFormatting.BLACK), //Magic
 	RED("Karmir", 0xFF0000, EnumChatFormatting.DARK_RED), //Endurance
@@ -259,6 +262,11 @@ public enum CrystalElement implements IconEnum, OverlayColor {
 	@Override
 	public IIcon getIcon() {
 		return this.getGlowRune();
+	}
+
+	@Override
+	public boolean playerHas(EntityPlayer ep) {
+		return ProgressionManager.instance.hasPlayerDiscoveredColor(ep, this);
 	}
 
 }

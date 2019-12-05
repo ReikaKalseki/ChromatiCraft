@@ -15,6 +15,7 @@ void main() {
 	vec3 pylon = rgb2hsb(vec3(r, g, b));
 	
 	vec3 shifted = hsb2rgb(vec3(pylon.x, float(float(pylon.y)+float(hsl.y))/2.0, hsl.z));
+	shifted = mix(mix(vec3(gs, gs, gs), vec3(r, g, b), 0.5), shifted, min(1.0, pylon.y*2.5+0.125));
 	
 	vec3 net = mix(orig.rgb, shifted, intensity);
     

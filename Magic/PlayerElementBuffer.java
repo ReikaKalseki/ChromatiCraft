@@ -39,6 +39,7 @@ public class PlayerElementBuffer {
 	private final CountMap<UUID> recentUpgrades = new CountMap();
 
 	private static final String NBT_TAG = "CrystalBuffer";
+	private static final int PLAYER_BASE_CAP = 400000;
 
 	private PlayerElementBuffer() {
 
@@ -228,14 +229,8 @@ public class PlayerElementBuffer {
 		return Math.max(this.getPlayerBuffer(ep).getMaximumValue(), MathHelper.clamp_int((int)(Math.min(amt*f, m*Math.pow(amt, p))), 24, this.getPlayerMaximumCap(ep)));
 	}
 
-	public int getPlayerMaximumCap(EntityPlayer ep) {
-		if (ProgressStage.CTM.isPlayerAtStage(ep))
-			return 2400000;
-		else if (ProgressStage.TURBOCHARGE.isPlayerAtStage(ep))
-			return 1200000;
-		else if (ProgressStage.DIMENSION.isPlayerAtStage(ep))
-			return 800000;
-		return 400000;
+	int getPlayerMaximumCap(EntityPlayer ep) {
+		return ElementBufferCapacityBoost.calculateCap(PLAYER_BASE_CAP, ep);
 	}
 
 	public int getChargeInefficiency(EntityPlayer ep) {

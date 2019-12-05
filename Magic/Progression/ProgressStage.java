@@ -47,7 +47,7 @@ import Reika.DragonAPI.ModRegistry.ModWoodList;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public enum ProgressStage implements ProgressElement {
+public enum ProgressStage implements ProgressElement, ProgressAccess {
 
 	CASTING(		Shareability.SELFONLY,	ChromaTiles.TABLE), //Do a recipe
 	CRYSTALS(		Shareability.SELFONLY,	ChromaBlocks.CRYSTAL.getStackOfMetadata(CrystalElement.RED.ordinal())), //Found a crystal
@@ -376,5 +376,10 @@ public enum ProgressStage implements ProgressElement {
 			}
 			return false;
 		}
+	}
+
+	@Override
+	public boolean playerHas(EntityPlayer ep) {
+		return this.isPlayerAtStage(ep);
 	}
 }

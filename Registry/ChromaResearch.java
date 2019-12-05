@@ -66,6 +66,7 @@ import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalColors;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeTypes;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager.ProgressElement;
+import Reika.ChromatiCraft.Magic.Progression.ProgressAccess;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Magic.Progression.ResearchLevel;
@@ -104,7 +105,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.EnumBeeType;
 
-public enum ChromaResearch implements ProgressElement {
+public enum ChromaResearch implements ProgressElement, ProgressAccess {
 
 	//---------------------INFO--------------------//
 	INTRO("Introduction", ""),
@@ -1542,6 +1543,11 @@ public enum ChromaResearch implements ProgressElement {
 	@Override
 	public boolean giveToPlayer(EntityPlayer ep, boolean notify) {
 		return ChromaResearchManager.instance.givePlayerFragment(ep, this, notify);
+	}
+
+	@Override
+	public boolean playerHas(EntityPlayer ep) {
+		return ChromaResearchManager.instance.playerHasFragment(ep, this);
 	}
 
 	public boolean playerCanSeeRecipe(ItemStack is, EntityPlayer ep) {

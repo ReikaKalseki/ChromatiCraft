@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -26,6 +26,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 //Infuses shards with activated chroma
+@Deprecated
 public class TileEntityAuraInfuser_Old1 extends FluidReceiverInventoryBase implements ItemOnRightClick {
 
 	private CrystalElement color;
