@@ -53,7 +53,7 @@ public class PlayerElementBuffer {
 		return get/2000F;
 	}
 
-	private NBTTagCompound getTag(EntityPlayer ep) {
+	NBTTagCompound getTag(EntityPlayer ep) {
 		NBTTagCompound tag = ep.getEntityData().getCompoundTag(NBT_TAG);
 		ep.getEntityData().setTag(NBT_TAG, tag);
 		return tag;
@@ -204,8 +204,13 @@ public class PlayerElementBuffer {
 		int prev = this.getElementCap(ep);
 		int val = Math.min(cap, this.getPlayerMaximumCap(ep));
 		tag.setInteger("cap", val);
-		boolean flag = val > prev;
+		boolean flag = val != prev;
 		if (flag) {
+			for (int i = 0; i < 16; i++) {
+				CrystalElement e = CrystalElement.elements[i];
+				int amt = Math.min(val, this.getPlayerContent(ep, e));
+				this.setToPlayer(ep, e, amt);
+			}
 			if (notify) {
 				if (cap%2 == 0)
 					ChromaSounds.CRAFTDONE.playSound(ep.worldObj, ep.posX, ep.posY, ep.posZ, 0.1F, 0.5F);

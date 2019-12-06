@@ -26,6 +26,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumChatFormatting;
 
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
+import Reika.ChromatiCraft.Magic.ElementBufferCapacityBoost;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
@@ -227,6 +228,23 @@ public class ProgressModifyCommand extends DragonCommandBase {
 				this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Player "+ep.getCommandSenderName()+" tuned to "+amt);
 				break;
 			}
+			case "buffer": {
+				ElementBufferCapacityBoost b = ElementBufferCapacityBoost.valueOf(args[1].toUpperCase(Locale.ENGLISH));
+				if (set) {
+					if (b.give(ep)) {
+
+					}
+					else {
+						this.sendChatToSender(ics, EnumChatFormatting.RED+"Player "+ep.getCommandSenderName()+" could not be given buffer boost "+b);
+						return;
+					}
+				}
+				else {
+					b.remove(ep);
+				}
+				this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Player "+ep.getCommandSenderName()+" given buffer boost "+b);
+				break;
+			}
 			case "towers":
 			case "lore": {
 				if (args[1].equalsIgnoreCase("puzzle")) {
@@ -279,6 +297,12 @@ public class ProgressModifyCommand extends DragonCommandBase {
 					}
 					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Color discovery reset for "+ep.getCommandSenderName());
 				}
+				if (args[1].equals("all") || args[1].equals("buffer")) {
+					for (ElementBufferCapacityBoost b : ElementBufferCapacityBoost.list) {
+						b.remove(ep);
+					}
+					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Element buffer boosts reset for "+ep.getCommandSenderName());
+				}
 				if (args[1].equals("all") || args[1].equals("lore") || args[1].equals("towers")) {
 					for (int i = 0; i < Towers.towerList.length; i++) {
 						LoreManager.instance.setPlayerScanned(ep, Towers.towerList[i], false);
@@ -309,6 +333,12 @@ public class ProgressModifyCommand extends DragonCommandBase {
 						ProgressionManager.instance.markPlayerCompletedStructureColor(ep, null, CrystalElement.elements[i], true, false);
 					}
 					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Dimstruct maximized for "+ep.getCommandSenderName());
+				}
+				if (args[1].equals("all") || args[1].equals("buffer")) {
+					for (ElementBufferCapacityBoost b : ElementBufferCapacityBoost.list) {
+						b.give(ep);
+					}
+					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Element buffer boosts maximized for "+ep.getCommandSenderName());
 				}
 				if (args[1].equals("all") || args[1].equals("colors")) {
 					for (int i = 0; i < 16; i++) {

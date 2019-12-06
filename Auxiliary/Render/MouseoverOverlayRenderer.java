@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer.FontType;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux;
+import Reika.ChromatiCraft.Magic.ElementBufferCapacityBoost;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenRequestingTile;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
@@ -37,11 +38,13 @@ import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.ConditionalProduct
 import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.ConditionalProductProvider;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.ProductCondition;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeRecharger;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire.CheckType;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityChromaCrafter;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityPlayerInfuser;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -117,6 +120,13 @@ public class MouseoverOverlayRenderer {
 				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 				GL11.glPushMatrix();
 				this.renderDetectionMode(ep, gsc, (TileEntityLumenWire)te);
+				GL11.glPopMatrix();
+				GL11.glPopAttrib();
+			}
+			if (te instanceof TileEntityPlayerInfuser) {
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				GL11.glPushMatrix();
+				this.renderInfuserStatuses(ep, gsc, (TileEntityPlayerInfuser)te);
 				GL11.glPopMatrix();
 				GL11.glPopAttrib();
 			}
@@ -453,6 +463,58 @@ public class MouseoverOverlayRenderer {
 		v5.addVertexWithUV(ox+0, oy+0, 0, u, v);
 
 		v5.draw();
+	}
+
+	private void renderInfuserStatuses(EntityPlayer ep, int gsc, TileEntityPlayerInfuser te) {
+		int ar = 16;
+		int ox = Minecraft.getMinecraft().displayWidth/(gsc*2)+ar-8;
+		int oy = Minecraft.getMinecraft().displayHeight/(gsc*2)-ar-8;
+		ReikaRenderHelper.disableLighting();
+		ReikaRenderHelper.disableEntityLighting();
+		GL11.glColor4f(1, 1, 1, 1);
+		Tessellator.instance.setBrightness(240);
+		Tessellator.instance.setColorOpaque_I(0xffffff);
+		ElementBufferCapacityBoost r = te.getSelectedEffect();
+		int x = Minecraft.getMinecraft().displayWidth/(gsc*2);
+		int y = Minecraft.getMinecraft().displayHeight/(gsc*2)+40;
+		if (r != null) {
+			/*
+			ItemStack out = r.getIngredient();
+			if (out != null) {
+				ReikaGuiAPI.instance.drawItemStack(itemRender, FontType.GUI.renderer, out, x+3, y-4);
+			}
+			 */
+			r.drawIcon(Tessellator.instance, x, y, 16);
+			if (r.isAvailableToPlayer(ep) && !r.playerHas(ep)) {
+
+			}
+			else {
+				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x+1, y-6, ChromaIcons.NOENTER.getIcon(), 16, 16);
+			}
+		}
+		else {
+			int dx = x;
+			boolean flag = false;
+			for (ElementBufferCapacityBoost b : ElementBufferCapacityBoost.list) {
+				if (b.playerHas(ep) || b.isAvailableToPlayer(ep)) {
+					flag = true;
+					b.drawIcon(Tessellator.instance, dx+3, y-4, 16);
+					if (b.playerHas(ep)) {
+						ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(dx+3+6, y+8, ChromaIcons.CHECK.getIcon(), 8, 8);
+					}
+					else {
+						ItemStack out = b.getIngredient();
+						if (out != null) {
+							ReikaGuiAPI.instance.drawItemStack(itemRender, FontType.GUI.renderer, out, dx+3+6, y+4);
+							dx += 18;
+						}
+					}
+				}
+			}
+			if (!flag) {
+				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x+1, y-6, ChromaIcons.X.getIcon(), 16, 16);
+			}
+		}
 	}
 
 	@ModDependent(ModList.FORESTRY)

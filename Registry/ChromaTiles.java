@@ -371,6 +371,7 @@ public enum ChromaTiles implements TileEnum {
 			case ASPECTJAR:
 			case LANDMARK:
 			case VOIDTRAP:
+			case PLAYERINFUSER:
 				return true;
 			default:
 				return false;

@@ -779,6 +779,14 @@
 			Requires setup in both the overworld and whatever dimension the ritual is performed
 		</note>
 	</voidtrap>
+	<playerinfuser>
+		<desc>
+			Having found a new way to directly imbue significant quantities of chroma into shards, you wonder if you could apply that same sort of strategy with your own body. In particular, it would be useful to use this infusion to enhance your body's ability to store energy, thus allowing you to carry more around at any time. Obviously, this will require refinements to the construct, but it should not necessitate a total redesign.
+		</desc>
+		<note>
+
+		</note>
+	</playerinfuser>
 	<name>
 		<desc>
 

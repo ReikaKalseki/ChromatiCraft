@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.TileEntity.Recipe;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
 import net.minecraft.client.Minecraft;
@@ -38,7 +39,6 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.CrystalTier;
@@ -78,6 +78,7 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 	private boolean allExquisite = false;
 
 	protected final HashSet<Coordinate> focusCrystalSpots = new HashSet();
+	private final ArrayList<Coordinate> chromaLocations = new ArrayList();
 
 	static {
 		required.addTag(CrystalElement.PURPLE, 500);
@@ -95,18 +96,24 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 			craftingTick = 0;
 		}
 
-		if (world.isRemote) {
+		if (world.isRemote && hasStructure) {
 			ChromaFX.doFocusCrystalParticles(world, x, y, z, this);
+			if (craftingTick == 0)
+				this.doAmbientParticles(world, x, y, z);
 		}
 
 		if (DragonAPICore.debugtest)
 			this.getStructure().getArray(world, x, y, z).place();
 	}
 
+	protected void doAmbientParticles(World world, int x, int y, int z) {
+
+	}
+
 	protected abstract ChromaStructures getStructure();
 
 	@Override
-	protected final void onFirstTick(World world, int x, int y, int z) {
+	protected void onFirstTick(World world, int x, int y, int z) {
 		this.validateStructure();
 	}
 
@@ -114,11 +121,13 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		focusCrystalTotal = 0;
 		allExquisite = true;
 		focusCrystalSpots.clear();
+		chromaLocations.clear();
 		ChromaStructures struct = this.getStructure();
 		struct.getStructure().resetToDefaults();
 		FilledBlockArray arr = struct.getArray(worldObj, xCoord, yCoord, zCoord);
 		hasStructure = arr.matchInWorld();
 		if (hasStructure) {
+			this.collectChromaLocations(arr);
 			this.collectFocusCrystalLocations(arr);
 			this.countFocusCrystals(arr);
 		}
@@ -130,6 +139,18 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		}
 		this.markDirty();
 		this.syncAllData(false);
+	}
+
+	private void collectChromaLocations(FilledBlockArray arr) {
+		for (Coordinate c : arr.keySet()) {
+			if (arr.getBlockAt(c.xCoord, c.yCoord, c.zCoord) == ChromaBlocks.CHROMA.getBlockInstance()) {
+				chromaLocations.add(c);
+			}
+		}
+	}
+
+	protected final Collection<Coordinate> getChromaLocations() {
+		return Collections.unmodifiableCollection(chromaLocations);
 	}
 
 	protected abstract void collectFocusCrystalLocations(FilledBlockArray arr);
@@ -156,7 +177,7 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 	}
 
 	private void killCrafting() {
-
+		ChromaSounds.ERROR.playSoundAtBlock(this);
 	}
 
 	public final boolean hasStructure() {
@@ -190,6 +211,12 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 	private void tickCrafting(World world, int x, int y, int z) {
 		if (world.isRemote)
 			this.spawnParticles(world, x, y, z);
+
+		if (!this.canCraft()) {
+			craftingTick = 0;
+			this.killCrafting();
+			return;
+		}
 
 		int sp = this.getCraftSpeed();
 		if (sp == 4 && craftingTick%152 == 0)
@@ -295,26 +322,7 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 	protected abstract boolean isReady();
 
 	@SideOnly(Side.CLIENT)
-	private void spawnParticles(World world, int x, int y, int z) {
-		double ang = Math.toRadians(this.getTicksExisted()*2%360);
-		float fac = (float)Math.sin(Math.toRadians(this.getTicksExisted()*4));
-		float s = 1.25F+0.25F*fac;
-		for (int i = 0; i < 360; i += 60) {
-			boolean tall = i%120 == 0;
-			float g = tall ? 0.375F*(0.5F+0.5F*fac) : 0.375F;
-			double a = ang+Math.toRadians(i);
-			double r = 1.85;
-			double v = tall ? 0.0425*(1+fac) : ReikaRandomHelper.getRandomPlusMinus(0.0425, 0.005);
-			double px = x+0.5+r*Math.sin(a);
-			double py = y-0.75;
-			double pz = z+0.5+r*Math.cos(a);
-			double vx = -v*(px-x-0.5);
-			double vy = 0.3;
-			double vz = -v*(pz-z-0.5);
-			EntityChromaFluidFX fx = new EntityChromaFluidFX(CrystalElement.WHITE, world, px, py, pz, vx, vy, vz).setScale(s).setGravity(g);
-			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-		}
-	}
+	protected abstract void spawnParticles(World world, int x, int y, int z);
 
 	@Override
 	public final boolean canExtractItem(int side, ItemStack is, int slot) {

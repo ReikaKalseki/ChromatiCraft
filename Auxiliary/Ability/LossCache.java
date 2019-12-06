@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -17,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
+import Reika.ChromatiCraft.Magic.ElementBufferCapacityBoost;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -30,6 +31,7 @@ class LossCache {
 	private static final Random rand = new Random();
 
 	private final Collection<Ability> savedAbilities = new ArrayList();
+	private final Collection<ElementBufferCapacityBoost> savedBoosts = new ArrayList();
 	private final ElementTagCompound savedEnergy = new ElementTagCompound();
 	private int cap;
 
@@ -56,6 +58,11 @@ class LossCache {
 				savedAbilities.add(a);
 			}
 		}
+		for (ElementBufferCapacityBoost b : ElementBufferCapacityBoost.list) {
+			if (b.playerHas(ep)) {
+				savedBoosts.add(b);
+			}
+		}
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement e = CrystalElement.elements[i];
 			int max = PlayerElementBuffer.instance.getPlayerContent(ep, e);
@@ -74,7 +81,7 @@ class LossCache {
 		cap = 24;
 		int max = savedEnergy.getMaximumValue();
 		while (cap < max)
-			cap *= 4;
+			cap *= 2;
 	}
 
 	void applyToPlayer(EntityPlayer player) {
@@ -84,6 +91,9 @@ class LossCache {
 		}
 		for (Ability a : savedAbilities) {
 			Chromabilities.give(player, a);
+		}
+		for (ElementBufferCapacityBoost b : savedBoosts) {
+			b.give(player);
 		}
 	}
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -16,12 +16,16 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.client.MinecraftForgeClient;
 
+import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Models.ModelInfuser2;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityAuraInfuser;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityPlayerInfuser;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 
@@ -31,7 +35,7 @@ public class RenderInfuser3 extends ChromaRenderBase {
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
-		return "infuser2.png";
+		return te instanceof TileEntityPlayerInfuser ? "infuser3.png" : "infuser2.png";
 	}
 
 	@Override
@@ -42,6 +46,13 @@ public class RenderInfuser3 extends ChromaRenderBase {
 
 		if (te.hasWorldObj()) {
 			this.renderItem(te, par2, par4, par6, par8);
+			if (te instanceof TileEntityPlayerInfuser && MinecraftForgeClient.getRenderPass() == 1) {
+				int a = (int)(64*HoldingChecks.MANIPULATOR.getFade());
+				if (a > 0) {
+					TileEntityPlayerInfuser tp = (TileEntityPlayerInfuser)te;
+					ReikaAABBHelper.renderAABB(tp.getTargetBox(), par2, par4, par6, te.xCoord, te.yCoord, te.zCoord, a, 255, 255, 255, true);
+				}
+			}
 		}
 		GL11.glTranslated(par2, par4, par6);
 		this.renderModel(te, model);
