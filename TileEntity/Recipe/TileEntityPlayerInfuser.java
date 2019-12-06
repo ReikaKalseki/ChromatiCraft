@@ -1,6 +1,7 @@
 package Reika.ChromatiCraft.TileEntity.Recipe;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -128,6 +129,26 @@ public class TileEntityPlayerInfuser extends TileEntityAuraInfuser {
 
 	public ElementBufferCapacityBoost getSelectedEffect() {
 		return inv[0] != null ? this.getEffect(inv[0]) : null;
+	}
+
+	@Override
+	protected void onCraftingTick(World world, int x, int y, int z) {
+		EntityPlayer ep = this.getCraftingPlayer();
+		AxisAlignedBB box = ep.boundingBox;
+		double cx = (box.maxX+box.minX)/2;
+		double cy = box.minY;
+		double cz = (box.maxZ+box.minZ)/2;
+		double cx2 = (targetBox.maxX+targetBox.minX)/2;
+		double cy2 = (targetBox.maxY+targetBox.minY)/2;
+		double cz2 = (targetBox.maxZ+targetBox.minZ)/2;
+		double dx = cx2-cx;
+		double dy = cy2-cy;
+		double dz = cz2-cz;
+		double v = 0.25;
+		ep.motionX += dx*dx*v*Math.signum(dx);
+		ep.motionY += dy*dy*v*1.5*Math.signum(dy);
+		ep.motionZ += dz*dz*v*Math.signum(dz);
+		//ep.velocityChanged = true;
 	}
 
 }
