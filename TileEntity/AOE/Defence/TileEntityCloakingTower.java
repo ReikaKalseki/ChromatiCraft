@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -228,6 +229,20 @@ public class TileEntityCloakingTower extends TileEntityChromaticBase implements 
 
 	public static void clearCache() {
 		cache.clear();
+	}
+
+	@Override
+	public ChromaStructures getPrimaryStructure() {
+		return ChromaStructures.CLOAKTOWER;
+	}
+
+	@Override
+	public Coordinate getStructureOffset() {
+		return null;
+	}
+
+	public boolean canStructureBeInspected() {
+		return true;
 	}
 
 }

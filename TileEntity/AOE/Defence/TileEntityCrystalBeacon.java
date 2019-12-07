@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -324,6 +325,20 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 
 	public static void clearCache() {
 		cache.clear();
+	}
+
+	@Override
+	public ChromaStructures getPrimaryStructure() {
+		return ChromaStructures.PROTECT;
+	}
+
+	@Override
+	public Coordinate getStructureOffset() {
+		return null;
+	}
+
+	public boolean canStructureBeInspected() {
+		return true;
 	}
 
 	/*

@@ -1,16 +1,16 @@
-package Reika.ChromatiCraft.Items.Tools;
+package Reika.ChromatiCraft.Items.Tools.Powered;
 
-import java.util.HashMap;
-import java.util.HashSet;
-
-import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ColoredMultiBlockChromaTile;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Render.ProbeInfoOverlayRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.StructureErrorOverlays;
 import Reika.ChromatiCraft.Auxiliary.Structure.RitualStructure;
@@ -19,35 +19,18 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
-import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 
 public class ItemCrystalProbe extends ItemPoweredChromaTool {
 
-	private static final HashMap<BlockKey, Inspections> lookup = new HashMap();
-	private static final int MIN_CHARGE = Inspections.getMostExpensiveOperation().energyCost;
 	public static final int CHARGE_TIME = 50;
 
 	public ItemCrystalProbe(int index) {
 		super(index);
 	}
-
-	/*
-	@Override
-	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float a, float b, float c) {
-		Inspections i = Inspections.getFor(world, x, y, z);
-		if (i != null) {
-			if (i.doEffect(world, x, y, z, s, ep, is)) {
-				this.removeCharge(is, i.energyCost);
-				return true;
-			}
-		}
-		return false;
-	}*/
 
 	@Override
 	public void onPlayerStoppedUsing(ItemStack is, World world, EntityPlayer ep, int count) {
@@ -68,8 +51,8 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 			int y = mov.blockY;
 			int z = mov.blockZ;
 			int s = mov.sideHit;
-			Inspections i = Inspections.getFor(world, x, y, z);
-			if (i != null && this.getCharge(is) >= i.energyCost) {
+			Inspections i = Inspections.list[this.getActionType(is)];
+			if (i != null && i.isValid(world, x, y, z) && this.getCharge(is) >= i.energyCost) {
 				ChromaSounds.LOREHEX.playSound(ep, 1, 1);
 				if (i.doEffect(world, x, y, z, s, ep, is)) {
 					this.removeCharge(is, i.energyCost);
@@ -95,9 +78,22 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
-		if (!this.handleUseAllowance(ep) && this.isActivated(ep, is, true))
+		if (ep.isSneaking()) {
+			int type = this.getActionType(is);
+			type = (type+1)%Inspections.list.length;
+			is.stackTagCompound.setInteger("type", type);
+		}
+		else if (!this.handleUseAllowance(ep) && this.isActivated(ep, is, true))
 			ep.setItemInUse(is, this.getMaxItemUseDuration(is));
 		return is;
+	}
+
+	private int getActionType(ItemStack is) {
+		if (is.stackTagCompound == null) {
+			is.stackTagCompound = new NBTTagCompound();
+		}
+		int type = is.stackTagCompound != null ? is.stackTagCompound.getInteger("type") : 0;
+		return type;
 	}
 
 	@Override
@@ -134,12 +130,16 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 
 	@Override
 	protected int getChargeState(float frac) {
-		return frac >= MIN_CHARGE/(float)this.getMaxCharge() ? Math.max(1, super.getChargeState(frac)) : 0;
+		return frac >= Inspections.getMostExpensiveOperation().energyCost/(float)this.getMaxCharge() ? Math.max(1, super.getChargeState(frac)) : 0;
 	}
 
 	@Override
 	protected boolean isActivated(EntityPlayer e, ItemStack is, boolean held) {
-		return this.getCharge(is) >= MIN_CHARGE;
+		return this.getCharge(is) >= this.getRequiredCharge(is);
+	}
+
+	private int getRequiredCharge(ItemStack is) {
+		return Inspections.list[this.getActionType(is)].energyCost;
 	}
 
 	@Override
@@ -162,36 +162,17 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 	}
 	 */
 	private static enum Inspections {
-		REPEATER_CONNECTIVITY(60, ChromaTiles.REPEATER, ChromaTiles.COMPOUND, ChromaTiles.BROADCAST, ChromaTiles.WEAKREPEATER, ChromaTiles.SKYPEATER),
-		STRUCTURE_CHECK(1000, ChromaTiles.TABLE, ChromaTiles.RITUAL);
+		REPEATER_CONNECTIVITY(60, CrystalRepeater.class),
+		STRUCTURE_CHECK(1000, MultiBlockChromaTile.class);
 
 		public final int energyCost;
-		private final HashSet<BlockKey> trigger = new HashSet();
+		private final Class trigger;
 
-		private Inspections(int energy) {
+		private static final Inspections[] list = values();
+
+		private Inspections(int energy, Class check) {
 			energyCost = energy;
-		}
-
-		private Inspections(int energy, ChromaTiles... arr) {
-			this(energy);
-			for (ChromaTiles t : arr) {
-				this.addBlock(new BlockKey(t.getBlock(), t.getBlockMetadata()));
-			}
-		}
-
-		private Inspections(int energy, Block b) {
-			this(energy);
-			this.addBlock(new BlockKey(b));
-		}
-
-		private Inspections(int energy, Block b, int meta) {
-			this(energy);
-			this.addBlock(new BlockKey(b, meta));
-		}
-
-		private void addBlock(BlockKey b) {
-			trigger.add(b);
-			lookup.put(b, this);
+			trigger = check;
 		}
 
 		private boolean doEffect(World world, int x, int y, int z, int s, EntityPlayer ep, ItemStack is) {
@@ -205,47 +186,36 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 					}
 					return true;
 				case STRUCTURE_CHECK:
-					FilledBlockArray arr = null;
-					switch(ChromaTiles.getTile(world, x, y, z)) {
-						case TABLE:
-							TileEntityCastingTable te = (TileEntityCastingTable)world.getTileEntity(x, y, z);
-							ChromaStructures.CASTING1.getStructure().resetToDefaults();
-							ChromaStructures.CASTING2.getStructure().resetToDefaults();
-							ChromaStructures.CASTING3.getStructure().resetToDefaults();
-							switch(te.getTier()) {
-								case CRAFTING:
-									break;
-								case TEMPLE:
-									arr = ChromaStructures.CASTING1.getArray(world, x, y-1, z);
-									break;
-								case MULTIBLOCK:
-									arr = ChromaStructures.CASTING2.getArray(world, x, y-1, z);
-									break;
-								case PYLON:
-									arr = ChromaStructures.CASTING3.getArray(world, x, y-1, z);
-									break;
-							}
-							break;
-						case RITUAL:
-							ChromaStructures.RITUAL.getStructure().resetToDefaults();
-							((RitualStructure)ChromaStructures.RITUAL.getStructure()).initializeEnhance(true, false);
-							arr = ChromaStructures.RITUAL.getArray(world, x, y, z);
-							break;
-						default:
-							break;
-					}
-					if (arr != null) {
+					MultiBlockChromaTile te = (MultiBlockChromaTile)world.getTileEntity(x, y, z);
+					if (te.canStructureBeInspected()) {
+						ChromaStructures str = te.getPrimaryStructure();
+						Coordinate c = te.getStructureOffset();
+						if (c == null)
+							c = new Coordinate(0, 0, 0);
+						str.getStructure().resetToDefaults();
+						switch(str) {
+							case RITUAL:
+								((RitualStructure)str.getStructure()).initializeEnhance(true, false);
+								break;
+							default:
+								break;
+						}
+						CrystalElement e = str.requiresColor ? ((ColoredMultiBlockChromaTile)te).getColor() : null;
+						FilledBlockArray arr = str.requiresColor ? str.getArray(world, x, y, z, e) : str.getArray(world, x+c.xCoord, y+c.yCoord, z+c.zCoord);
 						if (!arr.matchInWorld(StructureErrorOverlays.instance)) {
 
 						}
 						return true;
 					}
-					else {
-						return false;
-					}
+					return false;
 				default:
 					return false;
 			}
+		}
+
+		private boolean isValid(World world, int x, int y, int z) {
+			TileEntity te = world.getTileEntity(x, y, z);
+			return te != null && trigger.isAssignableFrom(te.getClass());
 		}
 
 		public static Inspections getMostExpensiveOperation() {
@@ -255,10 +225,6 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 					ret = i;
 			}
 			return ret;
-		}
-
-		public static Inspections getFor(World world, int x, int y, int z) {
-			return lookup.get(BlockKey.getAt(world, x, y, z));
 		}
 	}
 

@@ -16,7 +16,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ColoredMultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
@@ -35,7 +35,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class TileEntityPersonalCharger extends CrystalReceiverBase implements ChargingPoint, OwnedTile, MultiBlockChromaTile {
+public class TileEntityPersonalCharger extends CrystalReceiverBase implements ChargingPoint, OwnedTile, ColoredMultiBlockChromaTile {
 
 	private CrystalElement color = CrystalElement.WHITE;
 	private boolean hasMultiblock = false;
@@ -259,6 +259,20 @@ public class TileEntityPersonalCharger extends CrystalReceiverBase implements Ch
 	@Override
 	public Coordinate getChargeParticleOrigin(EntityPlayer ep, CrystalElement e) {
 		return new Coordinate(this);
+	}
+
+	@Override
+	public ChromaStructures getPrimaryStructure() {
+		return ChromaStructures.PERSONAL;
+	}
+
+	@Override
+	public Coordinate getStructureOffset() {
+		return new Coordinate(0, -6, 0);
+	}
+
+	public boolean canStructureBeInspected() {
+		return true;
 	}
 
 }

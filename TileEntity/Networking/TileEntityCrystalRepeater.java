@@ -52,10 +52,12 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -656,6 +658,20 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		if (loc instanceof TileEntityCrystalRepeater && ((TileEntityCrystalRepeater)loc).isTurbocharged())
 			return false;
 		return true;
+	}
+
+	@Override
+	public ChromaStructures getPrimaryStructure() {
+		return ChromaStructures.REPEATER;
+	}
+
+	@Override
+	public Coordinate getStructureOffset() {
+		return null;
+	}
+
+	public boolean canStructureBeInspected() {
+		return false;
 	}
 
 }

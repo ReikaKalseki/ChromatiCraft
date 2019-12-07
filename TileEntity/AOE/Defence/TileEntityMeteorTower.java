@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Instantiable.StepTimer;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -302,18 +303,7 @@ public class TileEntityMeteorTower extends CrystalReceiverBase implements NBTTil
 	}
 
 	public void validateStructure() {
-		ChromaStructures struct = null;
-		switch(tier) {
-			case 0:
-				struct = ChromaStructures.METEOR1;
-				break;
-			case 1:
-				struct = ChromaStructures.METEOR2;
-				break;
-			case 2:
-				struct = ChromaStructures.METEOR3;
-				break;
-		}
+		ChromaStructures struct = this.getPrimaryStructure();
 		struct.getStructure().resetToDefaults();
 		hasStructure = !worldObj.isRemote && struct.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 		//ReikaJavaLibrary.pConsole(hasStructure, Side.SERVER);
@@ -405,6 +395,28 @@ public class TileEntityMeteorTower extends CrystalReceiverBase implements NBTTil
 			return;
 		super.setDataFromItemStackTag(is);
 		tier = is.stackTagCompound.getInteger("tier");
+	}
+
+	@Override
+	public ChromaStructures getPrimaryStructure() {
+		switch(tier) {
+			case 0:
+				return ChromaStructures.METEOR1;
+			case 1:
+				return ChromaStructures.METEOR2;
+			case 2:
+				return ChromaStructures.METEOR3;
+		}
+		return null;
+	}
+
+	@Override
+	public Coordinate getStructureOffset() {
+		return null;
+	}
+
+	public boolean canStructureBeInspected() {
+		return true;
 	}
 
 }

@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -258,6 +259,20 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 	@Override
 	public AxisAlignedBB getRenderBoundingBox() {
 		return enhanced ? ReikaAABBHelper.getBlockAABB(this).expand(3, 2, 3) : ReikaAABBHelper.getBlockAABB(this);
+	}
+
+	@Override
+	public ChromaStructures getPrimaryStructure() {
+		return ChromaStructures.RELAY;
+	}
+
+	@Override
+	public Coordinate getStructureOffset() {
+		return null;
+	}
+
+	public boolean canStructureBeInspected() {
+		return true;
 	}
 
 }

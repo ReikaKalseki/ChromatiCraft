@@ -45,6 +45,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityGlobeFX;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.TriggerableAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -495,6 +496,20 @@ OperationInterval, MultiBlockChromaTile, VariableTexture {
 	@Override
 	public OperationState getState() {
 		return ability != null && hasStructure ? (energy.containsAtLeast(AbilityRituals.instance.getAura(ability)) ? OperationState.RUNNING : OperationState.PENDING) : OperationState.INVALID;
+	}
+
+	@Override
+	public ChromaStructures getPrimaryStructure() {
+		return ChromaStructures.RITUAL;
+	}
+
+	@Override
+	public Coordinate getStructureOffset() {
+		return new Coordinate(0, -2, 0);
+	}
+
+	public boolean canStructureBeInspected() {
+		return true;
 	}
 
 }

@@ -853,4 +853,18 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		return 500;
 	}
 
+	@Override
+	public ChromaStructures getPrimaryStructure() {
+		return ChromaStructures.TREE;
+	}
+
+	@Override
+	public Coordinate getStructureOffset() {
+		return null;
+	}
+
+	public boolean canStructureBeInspected() {
+		return true;
+	}
+
 }

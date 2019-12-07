@@ -193,4 +193,18 @@ public class TileEntityProgressionLinker extends TileEntityChromaticBase impleme
 		failure = f;
 	}
 
+	@Override
+	public ChromaStructures getPrimaryStructure() {
+		return ChromaStructures.PROGRESSLINK;
+	}
+
+	@Override
+	public Coordinate getStructureOffset() {
+		return null;
+	}
+
+	public boolean canStructureBeInspected() {
+		return true;
+	}
+
 }

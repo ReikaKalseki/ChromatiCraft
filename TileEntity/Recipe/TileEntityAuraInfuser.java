@@ -141,6 +141,20 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		this.syncAllData(false);
 	}
 
+	@Override
+	public final ChromaStructures getPrimaryStructure() {
+		return this.getStructure();
+	}
+
+	@Override
+	public final Coordinate getStructureOffset() {
+		return null;
+	}
+
+	public final boolean canStructureBeInspected() {
+		return true;
+	}
+
 	private void collectChromaLocations(FilledBlockArray arr) {
 		for (Coordinate c : arr.keySet()) {
 			if (arr.getBlockAt(c.xCoord, c.yCoord, c.zCoord) == ChromaBlocks.CHROMA.getBlockInstance()) {

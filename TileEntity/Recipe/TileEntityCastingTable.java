@@ -1424,4 +1424,28 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		return mismatch != null;
 	}
 
+	@Override
+	public ChromaStructures getPrimaryStructure() {
+		switch(this.getTier()) {
+			case CRAFTING:
+				return null;
+			case TEMPLE:
+				return ChromaStructures.CASTING1;
+			case MULTIBLOCK:
+				return ChromaStructures.CASTING2;
+			case PYLON:
+				return ChromaStructures.CASTING3;
+		}
+		return null;
+	}
+
+	@Override
+	public Coordinate getStructureOffset() {
+		return new Coordinate(0, -1, 0);
+	}
+
+	public boolean canStructureBeInspected() {
+		return true;
+	}
+
 }
