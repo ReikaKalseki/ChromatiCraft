@@ -21,12 +21,14 @@ import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.BlockChromaPortal.TileEntityCrystalPortal;
@@ -43,6 +45,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class RenderCrystalPortal extends ChromaRenderBase {
 
@@ -193,6 +196,10 @@ public class RenderCrystalPortal extends ChromaRenderBase {
 
 	private void renderPortalTuning(TileEntityCrystalPortal te, Tessellator v5, float par8) {
 		float f = HoldingChecks.MANIPULATOR.getFade();
+		ItemStack is = Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem();
+		if (ReikaItemHelper.matchStacks(ChromaStacks.bedrockloot, is) || ReikaItemHelper.matchStacks(ChromaStacks.bedrockloot2, is)) {
+			f = 1;
+		}
 		if (f <= 0)
 			return;
 
@@ -205,29 +212,27 @@ public class RenderCrystalPortal extends ChromaRenderBase {
 				slots.add(t.ordinal()+1);
 			}
 		}
-		slots.add(2);
-		slots.add(3);
-		slots.add(5);
 		if (slots.isEmpty()) {
 			slots.add(0);
 		}
 
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/portalbar.png");
 
+		double t = System.currentTimeMillis()*Math.max(1, Math.pow(amt, 0.5))*0.0625;
 		v5.startDrawingQuads();
 		v5.setColorRGBA_I(0xffffff, (int)(f*255));
-		double r = 2.5;//11.5+0.5*Math.sin(System.currentTimeMillis()/600D);
-		double a0 = System.currentTimeMillis()/240D;
-		double y1 = 3.25;//8;
-		double y2 = y1+r/11*2;
+		double r = 2.5;//11.5+0.5*Math.sin(t/600D);
+		double a0 = t/240D;
+		double p = 0.875+0.125*Math.sin(System.currentTimeMillis()/600D);//0.675;//+0.125*Math.sin(t/720D);
+		double y1 = 2.75+p/2;//3;//3.25;//8;
+		double y2 = y1+r/11*2/Math.pow(p, 1.5);
 		double maxa = 10;
 		double x0 = 0.5;
 		double z0 = 0.5;
 		int n = ReikaMathLibrary.roundUpToX(slots.size(), (int)Math.ceil(360/maxa));
 		double da = 360D/n;
 		int i = 0;
-		double dt = System.currentTimeMillis()/150D;
-		double p = 0.9;
+		double dt = t/150D;
 		for (double a = a0; a < a0+360; a += da) {
 			double ang = Math.toRadians(a);
 			double ang2 = Math.toRadians(a+da);

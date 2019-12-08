@@ -272,6 +272,7 @@ public class BlockChromaPortal extends Block {
 			boolean tier2 = ReikaItemHelper.matchStacks(is, ChromaStacks.bedrockloot2);
 			int amt = (int)((tier2 ? 150 : 1)*Math.pow(is.stackSize, tier2 ? 0.85 : 0.5));
 			tuning += amt;
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
 		public boolean ownedBy(EntityPlayer ep) {
