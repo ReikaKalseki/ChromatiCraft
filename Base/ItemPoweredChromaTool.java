@@ -209,11 +209,16 @@ public abstract class ItemPoweredChromaTool extends ItemChromaTool implements Sp
 		return super.getItemSpriteIndex(item)+item.getItemDamage();
 	}
 
+	protected void renderExtraIcons(RenderItem ri, ItemStack is, ItemRenderType type) {
+
+	}
+
 	@Override
 	@SideOnly(Side.CLIENT)
 	public final boolean onRender(RenderItem ri, ItemStack is, ItemRenderType type) {
 		if (is.stackTagCompound != null && is.stackTagCompound.getBoolean("tooltip"))
 			return false;
+		this.renderExtraIcons(ri, is, type);
 		if (type == ItemRenderType.INVENTORY && Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 			ReikaTextureHelper.bindTerrainTexture();
 			CrystalElement e = this.getColor();

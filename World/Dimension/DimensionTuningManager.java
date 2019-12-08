@@ -1,9 +1,11 @@
 package Reika.ChromatiCraft.World.Dimension;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.MathHelper;
 
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 
 public class DimensionTuningManager {
 
@@ -17,6 +19,8 @@ public class DimensionTuningManager {
 
 	public void tunePlayer(EntityPlayer ep, int amt) {
 		ep.getEntityData().setInteger(NBT_TAG, amt);
+		if (ep instanceof EntityPlayerMP)
+			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 	}
 
 	public int getPlayerTuning(EntityPlayer ep) {
@@ -60,6 +64,8 @@ public class DimensionTuningManager {
 
 		public final int minimumTuning;
 		public final int minimumEffect;
+
+		public static final TuningThresholds[] list = values();
 
 		private TuningThresholds(int t) {
 			this(t, 0);

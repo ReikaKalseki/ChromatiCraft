@@ -134,6 +134,16 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 	}
 
 	@Override
+	public int damageDropped(int meta) {
+		return meta;
+	}
+
+	@Override
+	public boolean canCollideCheck(int meta, boolean liq) {
+		return DimDecoTileTypes.list[meta].isCollideable();
+	}
+
+	@Override
 	public float getPlayerRelativeBlockHardness(EntityPlayer ep, World world, int x, int y, int z) {
 		return ProgressStage.CTM.isPlayerAtStage(ep) && DimDecoTileTypes.list[world.getBlockMetadata(x, y, z)].isMineable() ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z) : -1;
 	}

@@ -437,9 +437,11 @@ public class KeyAssemblyPuzzle {
 		boolean flag2 = flag;
 		if (flag) {
 			//this.drawTexturedGrid(v5);
-			for (HexCell c : cells.values()) {
-				if (c.getSolveFactor() < 1)
-					flag2 = false;
+			if (!LoreManager.instance.hasPlayerCompletedBoard(ep)) {
+				for (HexCell c : cells.values()) {
+					if (c.getSolveFactor() < 1)
+						flag2 = false;
+				}
 			}
 			if (flag2) {
 				GL11.glTranslated(-w2, -h2, 0);

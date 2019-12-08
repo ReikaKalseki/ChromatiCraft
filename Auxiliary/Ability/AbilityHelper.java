@@ -305,7 +305,14 @@ public class AbilityHelper {
 			//Chromabilities.SUPERBUILD.setToPlayer(evt.player, false);
 		}
 	}
+	/*
+	@SubscribeEvent
+	public void angelBlock(PlayerInteractEvent evt) {
+		if (!evt.world.isRemote && Chromabilities.ANGELBLOCK.enabledOn(evt.entityPlayer) && evt.action == Action.RIGHT_CLICK_AIR) {
 
+		}
+	}
+	 */
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void middleMouseUse(MouseEvent e) {

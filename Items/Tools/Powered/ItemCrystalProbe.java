@@ -1,5 +1,10 @@
 package Reika.ChromatiCraft.Items.Tools.Powered;
 
+import org.lwjgl.opengl.GL11;
+
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
@@ -8,7 +13,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+import net.minecraftforge.client.IItemRenderer.ItemRenderType;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ColoredMultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Render.ProbeInfoOverlayRenderer;
@@ -23,6 +30,11 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemCrystalProbe extends ItemPoweredChromaTool {
 
@@ -161,6 +173,40 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 		}
 	}
 	 */
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	protected void renderExtraIcons(RenderItem ri, ItemStack is, ItemRenderType type) {
+		if (type == ItemRenderType.INVENTORY && GuiScreen.isCtrlKeyDown()) {
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glPushMatrix();
+			GL11.glColor4f(1, 1, 1, 1);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.DEFAULT.apply();
+			GL11.glDisable(GL11.GL_LIGHTING);
+			double sc = 1;
+			GL11.glScaled(sc, sc, sc);
+			GL11.glTranslated(0.5/sc, -0.5/sc, 0);
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/infoicons.png");
+			int d = 1+this.getActionType(is);
+			if (d == 1 && (System.currentTimeMillis()/500)%2 == 0)
+				d = 0;
+			double u = 0.0625*d;
+			double v = 0.125;
+			double s = 0.0625;
+			Tessellator v5 = Tessellator.instance;
+			double z = 50;
+			v5.startDrawingQuads();
+			v5.addVertexWithUV(0, 0, z, u, v+s);
+			v5.addVertexWithUV(1, 0, z, u+s, v+s);
+			v5.addVertexWithUV(1, 1, z, u+s, v);
+			v5.addVertexWithUV(0, 1, z, u, v);
+			v5.draw();
+			GL11.glPopMatrix();
+			GL11.glPopAttrib();
+		}
+	}
+
 	private static enum Inspections {
 		REPEATER_CONNECTIVITY(60, CrystalRepeater.class),
 		STRUCTURE_CHECK(1000, MultiBlockChromaTile.class);

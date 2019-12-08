@@ -529,6 +529,10 @@ public class BlockChromaPortal extends Block {
 			return true;
 		}
 
+		public int getTuning() {
+			return tuning;
+		}
+
 	}
 
 }

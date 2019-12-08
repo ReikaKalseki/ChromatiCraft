@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Render.TESR;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 import java.util.Random;
 
 import org.lwjgl.opengl.GL11;
@@ -26,12 +27,14 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.BlockChromaPortal.TileEntityCrystalPortal;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager.TuningThresholds;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
@@ -39,6 +42,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class RenderCrystalPortal extends ChromaRenderBase {
 
@@ -80,72 +84,9 @@ public class RenderCrystalPortal extends ChromaRenderBase {
 					v5.draw();
 
 					if (StructureRenderer.isRenderingTiles() || te.isComplete()) {
-						BlendMode.ADDITIVEDARK.apply();
-
-
-						ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/beam2.png");
-						u = 2*Math.sin(System.currentTimeMillis()/3200D);
-						v = Math.cos(90+System.currentTimeMillis()/1600D);
-						du = u+1;
-						dv = v+1;
-						v5.startDrawingQuads();
-						v5.setColorRGBA_I(ReikaColorAPI.getColorWithBrightnessMultiplier(CrystalElement.getBlendedColor(te.getTicks(), 20), 0.0625F), 255);
-						v5.addVertexWithUV(-1, 1, 2, u, dv);
-						v5.addVertexWithUV(2, 1, 2, du, dv);
-						v5.addVertexWithUV(2, 1, -1, du, v);
-						v5.addVertexWithUV(-1, 1, -1, u, v);
-						v5.draw();
-
-						boolean half = StructureRenderer.isRenderingTiles() || te.getCharge() >= te.MINCHARGE/2;
-
-						v5.startDrawingQuads();
-						ReikaTextureHelper.bindTerrainTexture();
-						ico = ChromaIcons.RINGS.getIcon();
-						u = ico.getMinU();
-						v = ico.getMinV();
-						du = ico.getMaxU();
-						dv = ico.getMaxV();
-						double dh = 0.25;
-						double n = half ? 2D : 2D*te.getCharge()*2/te.MINCHARGE;
-						for (double i = 0; i <= n; i += dh) {
-							double s = 1.5-i/2;
-							double a = 255-64*i;
-							v5.setColorRGBA_I(ReikaColorAPI.GStoHex((int)(a*(0.75+0.25*Math.sin((te.getTicks()+par8+i*96)/4F)))), 255);
-							v5.addVertexWithUV(0.5-s, i+1, 0.5+s, u, dv);
-							v5.addVertexWithUV(0.5+s, i+1, 0.5+s, du, dv);
-							v5.addVertexWithUV(0.5+s, i+1, 0.5-s, du, v);
-							v5.addVertexWithUV(0.5-s, i+1, 0.5-s, u, v);
-						}
-						v5.draw();
-
-						if (half) {
-							GL11.glPushMatrix();
-							GL11.glTranslated(0.5, 0, 0.5);
-							for (double a = 0; a < 180; a += 60) {
-								GL11.glRotated(a-RenderManager.instance.playerViewY, 0, 1, 0);
-								v5.startDrawingQuads();
-								ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/arches2.png");
-								for (double ux = 0; ux <= 0.5; ux += 0.5) {
-									//v5.setColorRGBA_I(CrystalElement.getBlendedColor(te.getTicks()+(int)(8*ux), 20), 255);
-									u = ux+((System.currentTimeMillis()/50)%32)/32D;
-									v = 0;
-									du = u+1/32D;
-									dv = v+1;
-									double h = 9;
-									//v5.addVertexWithUV(0, 2, -0.5, u, dv);
-									//v5.addVertexWithUV(1, 2, -0.5, du, dv);
-									//v5.addVertexWithUV(1, h, -0.5, du, v);
-									//v5.addVertexWithUV(0, h, -0.5, u, v);
-
-									v5.addVertexWithUV(-0.5, 2, 0, u, dv);
-									v5.addVertexWithUV(0.5, 2, 0, du, dv);
-									v5.addVertexWithUV(0.5, h, 0, du, v);
-									v5.addVertexWithUV(-0.5, h, 0, u, v);
-								}
-								v5.draw();
-							}
-							GL11.glPopMatrix();
-						}
+						this.renderCompletedFX(te, v5, par8);
+						if (te.getCharge() >= te.MINCHARGE)
+							this.renderPortalTuning(te, v5, par8);
 					}
 					if (te.hasWorldObj()) {
 						ChromaShaders[] sh = {ChromaShaders.PORTAL_INCOMPLETE, ChromaShaders.PORTAL};
@@ -248,6 +189,141 @@ public class RenderCrystalPortal extends ChromaRenderBase {
 		GL11.glPopAttrib();
 		GL11.glPopMatrix();
 		//this.renderStaticTexture(par2, par4, par6, par8);
+	}
+
+	private void renderPortalTuning(TileEntityCrystalPortal te, Tessellator v5, float par8) {
+		float f = HoldingChecks.MANIPULATOR.getFade();
+		if (f <= 0)
+			return;
+
+		BlendMode.DEFAULT.apply();
+
+		int amt = te.getTuning();
+		ArrayList<Integer> slots = new ArrayList();
+		for (TuningThresholds t : TuningThresholds.list) {
+			if (amt >= t.minimumTuning) {
+				slots.add(t.ordinal()+1);
+			}
+		}
+		slots.add(2);
+		slots.add(3);
+		slots.add(5);
+		if (slots.isEmpty()) {
+			slots.add(0);
+		}
+
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/portalbar.png");
+
+		v5.startDrawingQuads();
+		v5.setColorRGBA_I(0xffffff, (int)(f*255));
+		double r = 2.5;//11.5+0.5*Math.sin(System.currentTimeMillis()/600D);
+		double a0 = System.currentTimeMillis()/240D;
+		double y1 = 3.25;//8;
+		double y2 = y1+r/11*2;
+		double maxa = 10;
+		double x0 = 0.5;
+		double z0 = 0.5;
+		int n = ReikaMathLibrary.roundUpToX(slots.size(), (int)Math.ceil(360/maxa));
+		double da = 360D/n;
+		int i = 0;
+		double dt = System.currentTimeMillis()/150D;
+		double p = 0.9;
+		for (double a = a0; a < a0+360; a += da) {
+			double ang = Math.toRadians(a);
+			double ang2 = Math.toRadians(a+da);
+			float f2a = (float)(f*(0.75+0.25*Math.sin(ang*6+dt)));
+			float f2b = (float)(f*(0.75+0.25*Math.sin(ang2*6+dt)));
+			int slot = slots.get(i);
+			double u = slot*0.125;
+			double v = 0;
+			double du = u+0.125;
+			double dv = v+1;
+			double ca = Math.cos(ang);
+			double ca2 = Math.cos(ang2);
+			double sa = Math.sin(ang);
+			double sa2 = Math.sin(ang2);
+			double x1 = x0+r*Math.signum(ca)*Math.pow(Math.abs(ca), p);
+			double z1 = z0+r*Math.signum(sa)*Math.pow(Math.abs(sa), p);
+			double x2 = x0+r*Math.signum(ca2)*Math.pow(Math.abs(ca2), p);
+			double z2 = z0+r*Math.signum(sa2)*Math.pow(Math.abs(sa2), p);
+			v5.setColorRGBA_I(0xffffff, (int)(f2a*255));
+			v5.addVertexWithUV(x1, y2, z1, u, v);
+			v5.setColorRGBA_I(0xffffff, (int)(f2b*255));
+			v5.addVertexWithUV(x2, y2, z2, du, v);
+			v5.addVertexWithUV(x2, y1, z2, du, dv);
+			v5.setColorRGBA_I(0xffffff, (int)(f2a*255));
+			v5.addVertexWithUV(x1, y1, z1, u, dv);
+			i = (i+1)%slots.size();
+		}
+		v5.draw();
+	}
+
+	private void renderCompletedFX(TileEntityCrystalPortal te, Tessellator v5, float par8) {
+		BlendMode.ADDITIVEDARK.apply();
+
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/beam2.png");
+		double u = 2*Math.sin(System.currentTimeMillis()/3200D);
+		double v = Math.cos(90+System.currentTimeMillis()/1600D);
+		double du = u+1;
+		double dv = v+1;
+		v5.startDrawingQuads();
+		v5.setColorRGBA_I(ReikaColorAPI.getColorWithBrightnessMultiplier(CrystalElement.getBlendedColor(te.getTicks(), 20), 0.0625F), 255);
+		v5.addVertexWithUV(-1, 1, 2, u, dv);
+		v5.addVertexWithUV(2, 1, 2, du, dv);
+		v5.addVertexWithUV(2, 1, -1, du, v);
+		v5.addVertexWithUV(-1, 1, -1, u, v);
+		v5.draw();
+
+		boolean half = StructureRenderer.isRenderingTiles() || te.getCharge() >= te.MINCHARGE/2;
+
+		v5.startDrawingQuads();
+		ReikaTextureHelper.bindTerrainTexture();
+		IIcon ico = ChromaIcons.RINGS.getIcon();
+		u = ico.getMinU();
+		v = ico.getMinV();
+		du = ico.getMaxU();
+		dv = ico.getMaxV();
+		double dh = 0.25;
+		double n = half ? 2D : 2D*te.getCharge()*2/te.MINCHARGE;
+		for (double i = 0; i <= n; i += dh) {
+			double s = 1.5-i/2;
+			double a = 255-64*i;
+			v5.setColorRGBA_I(ReikaColorAPI.GStoHex((int)(a*(0.75+0.25*Math.sin((te.getTicks()+par8+i*96)/4F)))), 255);
+			v5.addVertexWithUV(0.5-s, i+1, 0.5+s, u, dv);
+			v5.addVertexWithUV(0.5+s, i+1, 0.5+s, du, dv);
+			v5.addVertexWithUV(0.5+s, i+1, 0.5-s, du, v);
+			v5.addVertexWithUV(0.5-s, i+1, 0.5-s, u, v);
+		}
+		v5.draw();
+
+		if (half) {
+			GL11.glPushMatrix();
+			GL11.glTranslated(0.5, 0, 0.5);
+			for (double a = 0; a < 180; a += 60) {
+				GL11.glRotated(a-RenderManager.instance.playerViewY, 0, 1, 0);
+				v5.startDrawingQuads();
+				ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/arches2.png");
+				for (double ux = 0; ux <= 0.5; ux += 0.5) {
+					//v5.setColorRGBA_I(CrystalElement.getBlendedColor(te.getTicks()+(int)(8*ux), 20), 255);
+					u = ux+((System.currentTimeMillis()/50)%32)/32D;
+					v = 0;
+					du = u+1/32D;
+					dv = v+1;
+					double h = 9;
+					//v5.addVertexWithUV(0, 2, -0.5, u, dv);
+					//v5.addVertexWithUV(1, 2, -0.5, du, dv);
+					//v5.addVertexWithUV(1, h, -0.5, du, v);
+					//v5.addVertexWithUV(0, h, -0.5, u, v);
+
+					v5.addVertexWithUV(-0.5, 2, 0, u, dv);
+					v5.addVertexWithUV(0.5, 2, 0, du, dv);
+					v5.addVertexWithUV(0.5, h, 0, du, v);
+					v5.addVertexWithUV(-0.5, h, 0, u, v);
+				}
+				v5.draw();
+			}
+			GL11.glPopMatrix();
+		}
 	}
 
 	private void renderStaticTextureLayer(double par2, double par4, double par6, float ptick, int rgb) {

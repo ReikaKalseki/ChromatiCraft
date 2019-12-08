@@ -98,6 +98,7 @@ public enum Chromabilities implements Ability {
 	SUPERBUILD(null, false),
 	CHESTCLEAR(Phase.END, false),
 	MOBBAIT(null, false),
+	//ANGELBLOCK(null, false),
 	;
 
 

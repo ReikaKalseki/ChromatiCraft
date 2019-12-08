@@ -4,8 +4,8 @@ void main() {
 	vec2 focusXY = getScreenPos(0.5, 3.0, 0.5);
 	
 	float distv = distsq(focusXY, texcoord);
-	float distfac_color = max(0.0, min(1.0, 1.0-7.5*distv));
-	float distfac_vertex = max(0.0, min(1.0, 2.5-75.0*distv));
+	float distfac_color = max(0.0, min(1.0, 1.0-0.05*distv*distance));
+	float distfac_vertex = max(0.0, min(1.0, 2.5-0.5*distv*distance));
 	float cf = intensity*distfac_color*0.8;
 	float vf = intensity*distfac_vertex;
 	
