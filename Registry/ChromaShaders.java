@@ -26,6 +26,7 @@ public enum ChromaShaders implements ShaderHook {
 	DIMGLOWCLOUD(),
 
 	LENSPARTICLE(),
+	PINCHPARTICLE(),
 
 	//Situational
 	INSKYRIVER(),

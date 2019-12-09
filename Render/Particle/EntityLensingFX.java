@@ -13,6 +13,7 @@ public class EntityLensingFX extends EntityBlurFX {
 	private float lensingIntensity;
 	private float lensingFadeRate = 0.05F;
 	private float lensingClip = 1;
+	private boolean pinching = false;
 
 	public EntityLensingFX(World world, double x, double y, double z, float f) {
 		super(world, x, y, z);
@@ -34,11 +35,17 @@ public class EntityLensingFX extends EntityBlurFX {
 		return this;
 	}
 
+	public EntityLensingFX setPinching(boolean pinch) {
+		pinching = pinch;
+		return this;
+	}
+
 	@Override
 	public void renderParticle(Tessellator v5, float par2, float par3, float par4, float par5, float par6, float par7) {
-		ChromaShaders.LENSPARTICLE.clearOnRender = true;
-		ChromaShaders.LENSPARTICLE.setIntensity(1);
-		ChromaShaders.LENSPARTICLE.getShader().addFocus(this);
+		ChromaShaders sh = pinching ? ChromaShaders.PINCHPARTICLE : ChromaShaders.LENSPARTICLE;
+		sh.clearOnRender = true;
+		sh.setIntensity(1);
+		sh.getShader().addFocus(this);
 		float f = Math.min(lensingIntensity, particleAge*lensingFadeRate);
 		HashMap<String, Object> map = new HashMap();
 		float f11 = (float)(prevPosX + (posX - prevPosX) * par2 - interpPosX);
@@ -50,7 +57,7 @@ public class EntityLensingFX extends EntityBlurFX {
 		map.put("distance", Minecraft.getMinecraft().thePlayer.getDistanceSqToEntity(this));
 		map.put("clip", lensingClip);
 		map.put("scale", particleScale*0.2F);
-		ChromaShaders.LENSPARTICLE.getShader().modifyLastCompoundFocus(f, map);
+		sh.getShader().modifyLastCompoundFocus(f, map);
 	}
 
 }
