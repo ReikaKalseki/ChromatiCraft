@@ -731,15 +731,15 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 
 		if (rand.nextInt(4) == 0) {
 			double ang = Math.toRadians(rand.nextDouble()*360);
-			r = 4;
-			px = x+0.5+r*Math.cos(ang);
-			pz = z+0.5+r*Math.sin(ang);
-			py = y-0.25;
-			s = (float)ReikaRandomHelper.getRandomBetween(1F, 4);
+			px = x+0.5;
+			pz = z+0.5;
+			py = y-0.75;
+			s = (float)ReikaRandomHelper.getRandomBetween(12F, 36);
 			l = ReikaRandomHelper.getRandomBetween(20, 40);
 			l *= s;
 			float g = -(float)ReikaRandomHelper.getRandomBetween(0.03125, 0.125);
-			fx = new EntityLensingFX(world, px, py, pz, 1F).setLife(l).setScale(s).setGravity(g).forceIgnoreLimits().setRapidExpand();
+			float f = (float)ReikaRandomHelper.getRandomBetween(0.04, 0.15);
+			fx = new EntityLensingFX(world, px, py, pz, f).setLife(l).setScale(s).setGravity(g).forceIgnoreLimits().setRapidExpand();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
