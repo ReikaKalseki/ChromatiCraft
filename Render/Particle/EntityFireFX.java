@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -71,8 +71,7 @@ public class EntityFireFX extends EntityBlurFX {
 	}
 
 	@Override
-	public void renderParticle(Tessellator v5, float par2, float par3, float par4, float par5, float par6, float par7)
-	{
+	public void renderParticle(Tessellator v5, float par2, float par3, float par4, float par5, float par6, float par7) {
 		float s = particleScale;
 		double y = posY;
 		int n = hasImpacted ? 1+(rand.nextInt(2) == 0 ? 1 : 0) : 5;

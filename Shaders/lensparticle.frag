@@ -1,16 +1,21 @@
 uniform float distance;
 
-void main() {	
+uniform float scale;
+uniform float clip;
+
+uniform float dx;
+uniform float dy;
+uniform float dz;
+
+void main() {
+	vec2 particleXY = getScreenPos(dx, dy, dz);	
+	float distv = distsq(particleXY, texcoord);
+	float distfac_vertex = max(0.0, min(1.0, clip-15.0*distv*distance/scale));
+	float vf = intensity*distfac_vertex;
+	
+	texcoord = mix(texcoord, particleXY, vf);
 	
     vec4 color = texture2D(bgl_RenderedTexture, texcoord);
-	
-	float gs = getVisualBrightness(color.rgb);
-	
-	float wiggle = (0.125+gs*0.875)*0.05;
-	
-	texcoord.y += 0.41*wiggle*sin(34.5+texcoord.x*85.7+float(time)/2.3);
-	texcoord.x += 0.33*wiggle*sin(23.3+texcoord.y*81.8+float(time)/2.1);
-	
-    color = texture2D(bgl_RenderedTexture, texcoord);	
+	//color.rgb = mix(color.rgb, vec3(1.0, 0.0, 0.0), vf);
     gl_FragColor = vec4(color.x, color.y, color.z, color.a);
 }

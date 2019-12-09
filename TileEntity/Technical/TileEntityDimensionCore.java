@@ -368,6 +368,8 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 				break;
 			case PISTONTAPE:
 				break;
+			case TRACES:
+				break;
 		}
 	}
 

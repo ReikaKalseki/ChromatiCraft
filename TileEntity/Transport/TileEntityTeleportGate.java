@@ -57,6 +57,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityLensingFX;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Auxiliary.ChunkManager;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
@@ -727,6 +728,20 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 		CollectingPositionController p = new CollectingPositionController(px, py, pz, x+0.5, ty, z+0.5, l);
 		EntityFX fx = new EntityBlurFX(world, px, py, pz).setPositionController(p).setColor(c).setLife(l).forceIgnoreLimits();
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+
+		if (rand.nextInt(4) == 0) {
+			double ang = Math.toRadians(rand.nextDouble()*360);
+			r = 4;
+			px = x+0.5+r*Math.cos(ang);
+			pz = z+0.5+r*Math.sin(ang);
+			py = y-0.25;
+			s = (float)ReikaRandomHelper.getRandomBetween(1F, 4);
+			l = ReikaRandomHelper.getRandomBetween(20, 40);
+			l *= s;
+			float g = -(float)ReikaRandomHelper.getRandomBetween(0.03125, 0.125);
+			fx = new EntityLensingFX(world, px, py, pz, 1F).setLife(l).setScale(s).setGravity(g).forceIgnoreLimits().setRapidExpand();
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
 	}
 
 	@Override
