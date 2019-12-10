@@ -411,7 +411,8 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	DATATOWER(		ChromaStructures.DATANODE,		StoneTypes.SMOOTH.ordinal(),			ResearchLevel.RAWEXPLORE,		ProgressStage.TOWER),
 	PROGLINKSTRUCT(	ChromaStructures.PROGRESSLINK,	StoneTypes.CORNER.ordinal(),			ResearchLevel.BASICCRAFT),
 	OPTIMISTRUCT(	ChromaStructures.OPTIMIZER,		StoneTypes.RESORING.ordinal(),			ResearchLevel.ENDGAME,			TieredOres.LUMA.level),
-	VOIDTRAPSTRUCT(	ChromaStructures.VOIDRITUAL,	Blocks.redstone_torch, 5,				ResearchLevel.MULTICRAFT,		ProgressStage.VOIDMONSTERDIE, ProgressStage.CHARGECRYSTAL);
+	VOIDTRAPSTRUCT(	ChromaStructures.VOIDRITUAL,	Blocks.redstone_torch, 5,				ResearchLevel.MULTICRAFT,		ProgressStage.VOIDMONSTERDIE, ProgressStage.CHARGECRYSTAL),
+	VOIDTRAPSTRUCTN(ChromaStructures.NETHERTRAP,	Blocks.tnt, 0,							ResearchLevel.MULTICRAFT,		ProgressStage.VOIDMONSTERDIE, ProgressStage.CHARGECRYSTAL),
 	;
 
 	private final ItemStack iconItem;

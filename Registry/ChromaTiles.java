@@ -787,6 +787,8 @@ public enum ChromaTiles implements TileEnum {
 			case AURAPOINT:
 			case MANABOOSTER:
 			case OPTIMIZER:
+			case VOIDTRAP:
+			case LANDMARK:
 				return true;
 			default:
 				return false;

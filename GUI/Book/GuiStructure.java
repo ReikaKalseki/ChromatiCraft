@@ -25,6 +25,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -41,6 +42,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.TESR.RenderVoidMonsterTrap;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityPowerTree;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
@@ -116,7 +118,7 @@ public class GuiStructure extends GuiBookSection {
 		if (page == ChromaResearch.CLOAKTOWER) {
 			array.setBlock(array.getMidX(), array.getMinY()+5, array.getMidZ(), ChromaTiles.CLOAKING.getBlock(), ChromaTiles.CLOAKING.getBlockMetadata());
 		}
-		if (page == ChromaResearch.VOIDTRAPSTRUCT) {
+		if (page == ChromaResearch.VOIDTRAPSTRUCT || page == ChromaResearch.VOIDTRAPSTRUCTN) {
 			array.setBlock(array.getMidX(), array.getMaxY(), array.getMidZ(), ChromaTiles.VOIDTRAP.getBlock(), ChromaTiles.VOIDTRAP.getBlockMetadata());
 		}
 		HashSet<Coordinate> set = new HashSet();
@@ -216,7 +218,7 @@ public class GuiStructure extends GuiBookSection {
 		else if (page == ChromaResearch.PLAYERINFUSION) {
 			render.addOverride(array.getMidX(), array.getMaxY(), array.getMidZ(), ChromaTiles.PLAYERINFUSER.getCraftedProduct());
 		}
-		else if (page == ChromaResearch.VOIDTRAPSTRUCT) {
+		else if (page == ChromaResearch.VOIDTRAPSTRUCT || page == ChromaResearch.VOIDTRAPSTRUCTN) {
 			render.addOverride(array.getMidX(), array.getMaxY(), array.getMidZ(), ChromaTiles.VOIDTRAP.getCraftedProduct());
 			render.addOverride(new ItemStack(ChromaTiles.LUMENWIRE.getBlock(), ChromaTiles.LUMENWIRE.getBlockMetadata()), ChromaTiles.LUMENWIRE.getCraftedProduct());
 		}
@@ -434,6 +436,9 @@ public class GuiStructure extends GuiBookSection {
 			else if (ChromaBlocks.RUNE.match(is)) {
 				is2 = ChromaBlocks.RUNE.getStackOfMetadata(getElementByTick());
 			}
+			else if (ReikaItemHelper.matchStackWithBlock(is, Blocks.redstone_wire)) {
+				is2 = new ItemStack(Items.redstone);
+			}
 			else if (page == ChromaResearch.PORTALSTRUCT && Block.getBlockFromItem(is.getItem()) == Blocks.bedrock) {
 				is2 = ChromaItems.ENDERCRYSTAL.getStackOfMetadata(1);
 			}
@@ -531,7 +536,9 @@ public class GuiStructure extends GuiBookSection {
 			render.rotate(0.75, 0, 0);
 		}
 
+		RenderVoidMonsterTrap.netherRender = page == ChromaResearch.VOIDTRAPSTRUCTN;
 		render.draw3D(j, k, ptick, true);
+		RenderVoidMonsterTrap.netherRender = false;
 	}
 
 	private static int getElementByTick() {

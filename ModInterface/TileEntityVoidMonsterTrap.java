@@ -73,7 +73,7 @@ public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements 
 	}
 
 	public boolean isNether() {
-		return worldObj.provider.dimensionId == -1;
+		return worldObj != null && worldObj.provider.dimensionId == -1;
 	}
 
 	@Override
