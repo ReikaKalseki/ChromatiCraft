@@ -71,6 +71,10 @@ public class VoidMonsterRitualStructure extends ChromaStructureBase {
 		Block luma = ChromaBlocks.LUMA.getBlockInstance();
 		Block altar = ChromaBlocks.COLORALTAR.getBlockInstance();
 
+		x -= 14;
+		z -= 14;
+		y -= 8;
+
 		for (int i = 0; i <= 28; i++) {
 			for (int k = 0; k <= 28; k++) {
 				for (int j = 2; j <= 8; j++) {

@@ -51,6 +51,7 @@ import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.PylonStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.SnowStructure;
 import Reika.ChromatiCraft.Base.ChromaStructureBase;
 import Reika.ChromatiCraft.Base.ColoredStructureBase;
+import Reika.ChromatiCraft.ModInterface.VoidMonsterNetherStructure;
 import Reika.ChromatiCraft.ModInterface.VoidMonsterRitualStructure;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Exception.RegistrationException;
@@ -98,7 +99,8 @@ public enum ChromaStructures implements StructureEnum<ChromaStructureBase> {
 	WIRELESSPEDESTAL2(WirelessPedestalL2Structure.class),
 	PROGRESSLINK(ProgressionLinkerStructure.class),
 	OPTIMIZER(NetworkOptimizerStructureV2.class),
-	VOIDRITUAL(VoidMonsterRitualStructure.class);
+	VOIDRITUAL(VoidMonsterRitualStructure.class),
+	NETHERTRAP(VoidMonsterNetherStructure.class);
 
 	public final boolean requiresColor;
 	private final Class<? extends ChromaStructureBase> structureClass;

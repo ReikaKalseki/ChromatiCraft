@@ -249,17 +249,12 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 
 	@SubscribeEvent
 	public void updateRedstoneTorchIcons(RenderBlockAtPosEvent evt) {
-		if (evt.block == Blocks.redstone_torch || evt.block == Blocks.unlit_redstone_torch) {
-			if (evt.world.getBlockMetadata(evt.xCoord, evt.yCoord, evt.zCoord) == 5) {
-				Block b2 = evt.world.getBlock(evt.xCoord, evt.yCoord-1, evt.zCoord);
-				if (b2 == ChromaBlocks.PYLONSTRUCT.getBlockInstance() || b2 instanceof BlockStructureShield) {
-					Tessellator.instance.setBrightness(evt.block.getMixedBrightnessForBlock(evt.world, evt.xCoord, evt.yCoord, evt.zCoord));
-					Tessellator.instance.setColorOpaque_I(0xffffff);
-					evt.continueRendering = true;
-					evt.setCanceled(true);
-					ReikaRenderHelper.renderTorch(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, BlockPylonStructure.getIconOverride(evt.block), Tessellator.instance, evt.render, 0.625, 0.0625);
-				}
-			}
+		if (ChromaticEventManager.instance.isCrystallineRedstoneTorch(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, evt.block, evt.getMetadata())) {
+			Tessellator.instance.setBrightness(evt.block.getMixedBrightnessForBlock(evt.world, evt.xCoord, evt.yCoord, evt.zCoord));
+			Tessellator.instance.setColorOpaque_I(0xffffff);
+			evt.continueRendering = true;
+			evt.setCanceled(true);
+			ReikaRenderHelper.renderTorch(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, BlockPylonStructure.getIconOverride(evt.block), Tessellator.instance, evt.render, 0.625, 0.0625);
 		}
 	}
 

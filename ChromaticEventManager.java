@@ -58,6 +58,7 @@ import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.EnumSkyBlock;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.feature.WorldGenAbstractTree;
@@ -242,6 +243,7 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler.ToolPartType;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
 import Reika.VoidMonster.API.PlayerLookAtVoidMonsterEvent;
+import Reika.VoidMonster.API.VoidMonsterEatLightEvent;
 import Reika.VoidMonster.Entity.EntityVoidMonster;
 
 import WayofTime.alchemicalWizardry.api.event.TeleposeEvent;
@@ -268,6 +270,26 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	@ModDependent(ModList.VOIDMONSTER)
+	public void preventVoidMonsterRedstoneCrystalTorchEat(VoidMonsterEatLightEvent evt) {
+		if (this.isCrystallineRedstoneTorch(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, evt.block, evt.metadata)) {
+			evt.setCanceled(true);
+		}
+	}
+
+	public boolean isCrystallineRedstoneTorch(IBlockAccess world, int x, int y, int z, Block b, int meta) {
+		if (b == Blocks.redstone_torch || b == Blocks.unlit_redstone_torch) {
+			if (meta == 5) {
+				Block b2 = world.getBlock(x, y-1, z);
+				if (b2 == ChromaBlocks.PYLONSTRUCT.getBlockInstance() || b2 instanceof BlockStructureShield) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	@SubscribeEvent

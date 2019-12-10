@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
@@ -20,7 +23,7 @@ import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 
-public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements WireWatcher {
+public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements MultiBlockChromaTile, WireWatcher {
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
@@ -37,6 +40,7 @@ public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements 
 	private int innerRingActivation = 0;
 
 	private int ritualTick;
+	private boolean hasStructure;
 
 	static {
 		required.addTag(CrystalElement.BLACK, 5);
@@ -58,14 +62,25 @@ public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements 
 		}
 	}
 
+	public void validateStructure() {
+		ChromaStructures s = this.getPrimaryStructure();
+		s.getStructure().resetToDefaults();
+		hasStructure = s.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
+	}
+
 	public boolean canAttractMonster() {
 		return innerRingActivation > 0;
+	}
+
+	public boolean isNether() {
+		return worldObj.provider.dimensionId == -1;
 	}
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		wires = VoidMonsterRitualStructure.getWireLocations();
 		wireSeek.addAll(wires);
+		this.validateStructure();
 	}
 
 	@Override
@@ -191,6 +206,41 @@ public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements 
 		else {
 			this.activateOuterRing();
 		}
+	}
+
+	@Override
+	public void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		hasStructure = NBT.getBoolean("struct");
+		ritualTick = NBT.getInteger("rtick");
+	}
+
+	@Override
+	public void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		NBT.setBoolean("struct", hasStructure);
+		NBT.setInteger("rtick", ritualTick);
+	}
+
+	public boolean hasStructure() {
+		return hasStructure;
+	}
+
+	@Override
+	public ChromaStructures getPrimaryStructure() {
+		return this.isNether() ? ChromaStructures.NETHERTRAP : ChromaStructures.VOIDRITUAL;
+	}
+
+	@Override
+	public Coordinate getStructureOffset() {
+		return null;
+	}
+
+	@Override
+	public boolean canStructureBeInspected() {
+		return true;
 	}
 
 }

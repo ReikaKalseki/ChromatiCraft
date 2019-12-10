@@ -381,40 +381,32 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 		}
 		if (item != null && !this.isItemValidForSlot(0, item))
 			return item;
-		if (inv[0] != null) {
-			int max = Math.min(inv[0].getMaxStackSize(), this.getInventoryStackLimit());
-			if (item != null && ReikaItemHelper.matchStacks(inv[0], item) && ItemStack.areItemStackTagsEqual(item, inv[0]) && inv[0].stackSize < max) {
-				if (item.stackSize+inv[0].stackSize <= max) {
-					inv[0].stackSize += item.stackSize;
-					item = null;
-				}
-				else {
-					inv[0].stackSize++;
-					item.stackSize--;
-				}
-				craftingPlayer = ep;
-				this.syncAllData(true);
-				return item;
+		if (item != null && ReikaItemHelper.matchStacks(item, inv[0]) && ItemStack.areItemStackTagsEqual(item, inv[0])) {
+			if (inv[0].stackSize+item.stackSize <= this.getInventoryStackLimit()) {
+				inv[0].stackSize += item.stackSize;
+				item = null;
+			}
+			else if (inv[0].stackSize < this.getInventoryStackLimit()) {
+				inv[0].stackSize++;
+				item.stackSize--;
+			}
+		}
+		else if (inv[0] != null) {
+			ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, inv[0]);
+			inv[0] = null;
+		}
+
+		if (item != null && inv[0] == null) {
+			if (item.stackSize <= this.getInventoryStackLimit()) {
+				inv[0] = item.copy();
+				item = null;
 			}
 			else {
-				ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, inv[0]);
+				inv[0] = ReikaItemHelper.getSizedItemStack(item, 1);
+				item.stackSize--;
 			}
 		}
-		else if (item != null && item.stackSize > this.getInventoryStackLimit()) {
-			inv[0] = ReikaItemHelper.getSizedItemStack(item, 1);
-			item.stackSize--;
-			craftingPlayer = ep;
-			this.syncAllData(true);
-			return item;
-		}
-		if (item == null || item.stackSize <= this.getInventoryStackLimit()) {
-			inv[0] = item != null ? item.copy() : null;
-			item = null;
-		}
-		else {
-			inv[0] = ReikaItemHelper.getSizedItemStack(item, this.getInventoryStackLimit());
-			item.stackSize -= inv[0].stackSize;
-		}
+
 		craftingPlayer = ep;
 		this.syncAllData(true);
 		return item;
