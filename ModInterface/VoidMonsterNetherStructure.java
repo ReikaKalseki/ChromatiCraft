@@ -20,6 +20,16 @@ public class VoidMonsterNetherStructure extends ChromaStructureBase {
 		y -= 6;
 		z -= 2;
 
+		for (int i = -2; i <= 6; i++) {
+			for (int k = -2; k <= 6; k++) {
+				for (int j = 0; j <= 4; j++) {
+					if (i < 0 || k < 0 || i > 4 || k > 4)
+						array.setEmpty(x + i, y + j, z + k, false, false);
+					//array.setBlock(x + i, y + j, z + k, Blocks.ice);
+				}
+			}
+		}
+
 		array.setBlock(x + 0, y + 0, z + 0, crystalstone, 8);
 		array.setBlock(x + 0, y + 0, z + 2, crystalstone, 7);
 		array.setBlock(x + 0, y + 0, z + 4, crystalstone, 8);

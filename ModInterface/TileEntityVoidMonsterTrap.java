@@ -3,6 +3,7 @@ package Reika.ChromatiCraft.ModInterface;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -86,30 +87,39 @@ public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (!world.isRemote) {
-			if (!wireSeek.isEmpty()) {
-				int idx = rand.nextInt(wireSeek.size());
-				Coordinate c = wireSeek.get(idx);
-				if (c.getBlock(world) == ChromaTiles.LUMENWIRE.getBlock() && c.getBlockMetadata(world) == ChromaTiles.LUMENWIRE.getBlockMetadata()) {
-					TileEntityLumenWire te = (TileEntityLumenWire)c.getTileEntity(world);
-					te.addWatcher(this);
-				}
-			}
-			if (ReikaItemHelper.matchStacks(inv[0], ChromaStacks.voidDust)) {
-				if (this.hasEnergy(required)) {
-					if (this.isActive()) {
+			if (this.isNether()) {
 
+			}
+			else {
+				if (!wireSeek.isEmpty()) {
+					int idx = rand.nextInt(wireSeek.size());
+					Coordinate c = wireSeek.get(idx);
+					if (c.getBlock(world) == ChromaTiles.LUMENWIRE.getBlock() && c.getBlockMetadata(world) == ChromaTiles.LUMENWIRE.getBlockMetadata()) {
+						TileEntityLumenWire te = (TileEntityLumenWire)c.getTileEntity(world);
+						te.addWatcher(this);
 					}
-					else {
-						if (this.canAttractMonster()) {
+				}
+				if (ReikaItemHelper.matchStacks(inv[0], ChromaStacks.voidDust)) {
+					if (this.hasEnergy(required)) {
+						if (this.isActive()) {
 
 						}
+						else {
+							if (this.canAttractMonster()) {
+
+							}
+						}
+						this.useEnergy(required);
+						if (rand.nextInt(this.isActive() ? 20 : 60) == 0)
+							ReikaInventoryHelper.decrStack(1, inv);
 					}
-					this.useEnergy(required);
-					if (rand.nextInt(this.isActive() ? 20 : 60) == 0)
-						ReikaInventoryHelper.decrStack(1, inv);
 				}
 			}
 		}
+	}
+
+	private void teleport(Entity e) {
+
 	}
 
 	@Override
