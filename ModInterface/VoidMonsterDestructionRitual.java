@@ -56,11 +56,11 @@ public class VoidMonsterDestructionRitual implements VoidMonsterHook {
 	}
 
 	@ModDependent(ModList.VOIDMONSTER)
-	public void tick(EntityVoidMonster e) {
-		this.keepWithinArea(e);
+	public void tick(Entity e) {
+		this.keepWithinArea((EntityVoidMonster)e);
 		for (Effects ef : Effects.list) {
 			if (rand.nextInt(ef.effectChance) == 0) {
-				ef.doEffectServer(this, e);
+				ef.doEffectServer(this, (EntityVoidMonster)e);
 			}
 		}
 	}

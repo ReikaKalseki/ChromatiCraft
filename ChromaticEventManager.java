@@ -30,6 +30,7 @@ import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityGhast;
@@ -134,6 +135,7 @@ import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentWeaponAOE;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.ModInterface.MystPages;
+import Reika.ChromatiCraft.ModInterface.TileEntityVoidMonsterTrap;
 import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers;
 import Reika.ChromatiCraft.ModInterface.Bees.EfficientFlowerCache;
 import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
@@ -270,6 +272,13 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	public void triggerVoidMonsterTeleport(ExplosionEvent.Start evt) {
+		if (evt.explosion.exploder instanceof EntityTNTPrimed && !evt.world.isRemote) {
+			TileEntityVoidMonsterTrap.handleTNTTrigger(evt.world, evt.explosion.exploder);
+		}
 	}
 
 	@SubscribeEvent
@@ -499,6 +508,7 @@ public class ChromaticEventManager {
 		TileEntityMultiBuilder.clearCache();
 		TileEntityExplosionShield.clearCache();
 		TileEntityWirelessSource.clearCache();
+		TileEntityVoidMonsterTrap.clearCache();
 		BlockFakeSky.clearCache();
 		LoreManager.instance.clearOnLogout();
 		WarpNetwork.instance.clear();
@@ -514,6 +524,7 @@ public class ChromaticEventManager {
 		TileEntityCrystalBeacon.clearCache();
 		TileEntityMultiBuilder.clearCache();
 		TileEntityExplosionShield.clearCache();
+		TileEntityVoidMonsterTrap.clearCache();
 		BlockFakeSky.clearCache();
 		LoreManager.instance.clearOnLogout();
 		WarpNetwork.instance.clear();

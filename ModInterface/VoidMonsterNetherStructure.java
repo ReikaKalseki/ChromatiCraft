@@ -1,14 +1,27 @@
 package Reika.ChromatiCraft.ModInterface;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Base.ChromaStructureBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 
 public class VoidMonsterNetherStructure extends ChromaStructureBase {
+
+	private static Collection<Coordinate> tntLocations;
+
+	static {
+		tntLocations.add(new Coordinate(1, 2, 1));
+		tntLocations.add(new Coordinate(1, 2, 3));
+		tntLocations.add(new Coordinate(3, 2, 1));
+		tntLocations.add(new Coordinate(3, 2, 3));
+	}
 
 	@Override
 	public FilledBlockArray getArray(World world, int x, int y, int z) {
@@ -45,9 +58,7 @@ public class VoidMonsterNetherStructure extends ChromaStructureBase {
 		array.setBlock(x + 1, y + 1, z + 1, crystalstone, 2);
 		array.setBlock(x + 1, y + 1, z + 3, crystalstone, 2);
 		array.setBlock(x + 1, y + 2, z + 0, crystalstone, 1);
-		array.setBlock(x + 1, y + 2, z + 1, Blocks.tnt);
 		array.setBlock(x + 1, y + 2, z + 2, crystalstone, 15);
-		array.setBlock(x + 1, y + 2, z + 3, Blocks.tnt);
 		array.setBlock(x + 1, y + 2, z + 4, crystalstone, 1);
 		array.setBlock(x + 1, y + 3, z + 1, crystalstone, 2);
 		array.setBlock(x + 1, y + 3, z + 3, crystalstone, 2);
@@ -65,9 +76,7 @@ public class VoidMonsterNetherStructure extends ChromaStructureBase {
 		array.setBlock(x + 3, y + 1, z + 1, crystalstone, 2);
 		array.setBlock(x + 3, y + 1, z + 3, crystalstone, 2);
 		array.setBlock(x + 3, y + 2, z + 0, crystalstone, 1);
-		array.setBlock(x + 3, y + 2, z + 1, Blocks.tnt);
 		array.setBlock(x + 3, y + 2, z + 2, crystalstone, 15);
-		array.setBlock(x + 3, y + 2, z + 3, Blocks.tnt);
 		array.setBlock(x + 3, y + 2, z + 4, crystalstone, 1);
 		array.setBlock(x + 3, y + 3, z + 1, crystalstone, 2);
 		array.setBlock(x + 3, y + 3, z + 3, crystalstone, 2);
@@ -186,7 +195,15 @@ public class VoidMonsterNetherStructure extends ChromaStructureBase {
 		array.setBlock(x + 4, y + 6, z + 3, Blocks.air);
 		array.setBlock(x + 4, y + 6, z + 4, Blocks.air);
 
+		for (Coordinate c : tntLocations) {
+			array.setBlock(x+c.xCoord, y+c.yCoord, z+c.zCoord, Blocks.tnt);
+		}
+
 		return array;
+	}
+
+	public static Collection<Coordinate> getTNTLocations() {
+		return Collections.unmodifiableCollection(tntLocations);
 	}
 
 }
