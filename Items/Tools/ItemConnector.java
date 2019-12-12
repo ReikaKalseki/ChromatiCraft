@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -78,9 +78,9 @@ public class ItemConnector extends ItemChromaTool {
 		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment() && ep.capabilities.isCreativeMode) {
 			if (is.stackTagCompound != null && is.stackTagCompound.getBoolean("noneuclid")) {
 
-				int dx = is.stackTagCompound.getInteger("r1x");
-				int dy = is.stackTagCompound.getInteger("r1y");
-				int dz = is.stackTagCompound.getInteger("r1z");
+				int dx = is.stackTagCompound.getInteger("x1");
+				int dy = is.stackTagCompound.getInteger("y1");
+				int dz = is.stackTagCompound.getInteger("z1");
 				int face = is.stackTagCompound.getInteger("facing");
 
 				TileEntity tile = world.getTileEntity(dx, dy, dz);
@@ -96,9 +96,9 @@ public class ItemConnector extends ItemChromaTool {
 			else if (te instanceof TileEntityTeleport) {
 				if (is.stackTagCompound == null)
 					is.stackTagCompound = new NBTTagCompound();
-				is.stackTagCompound.setInteger("r1x", x);
-				is.stackTagCompound.setInteger("r1y", y);
-				is.stackTagCompound.setInteger("r1z", z);
+				is.stackTagCompound.setInteger("x1", x);
+				is.stackTagCompound.setInteger("y1", y);
+				is.stackTagCompound.setInteger("z1", z);
 				is.stackTagCompound.setInteger("facing", s);
 				is.stackTagCompound.setBoolean("noneuclid", true);
 				ReikaJavaLibrary.pConsole(is.stackTagCompound);
@@ -124,33 +124,33 @@ public class ItemConnector extends ItemChromaTool {
 	private boolean connectRift(LinkedTile te, World world, int x, int y, int z, ItemStack is, EntityPlayer ep) {
 		if (is.stackTagCompound == null) {
 			is.stackTagCompound = new NBTTagCompound();
-			is.stackTagCompound.setInteger("r1x", Integer.MIN_VALUE);
-			is.stackTagCompound.setInteger("r1y", Integer.MIN_VALUE);
-			is.stackTagCompound.setInteger("r1z", Integer.MIN_VALUE);
-			is.stackTagCompound.setInteger("r2x", Integer.MIN_VALUE);
-			is.stackTagCompound.setInteger("r2y", Integer.MIN_VALUE);
-			is.stackTagCompound.setInteger("r2z", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("x1", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("y1", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("z1", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("x2", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("y2", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("z2", Integer.MIN_VALUE);
 			is.stackTagCompound.setInteger("w1", Integer.MIN_VALUE);
 			is.stackTagCompound.setInteger("w2", Integer.MIN_VALUE);
 		}
-		if (is.stackTagCompound.getInteger("r1x") == Integer.MIN_VALUE) {
-			is.stackTagCompound.setInteger("r1x", x);
-			is.stackTagCompound.setInteger("r1y", y);
-			is.stackTagCompound.setInteger("r1z", z);
+		if (is.stackTagCompound.getInteger("x1") == Integer.MIN_VALUE) {
+			is.stackTagCompound.setInteger("x1", x);
+			is.stackTagCompound.setInteger("y1", y);
+			is.stackTagCompound.setInteger("z1", z);
 			is.stackTagCompound.setInteger("w1", world.provider.dimensionId);
 		}
 		else {
-			is.stackTagCompound.setInteger("r2x", x);
-			is.stackTagCompound.setInteger("r2y", y);
-			is.stackTagCompound.setInteger("r2z", z);
+			is.stackTagCompound.setInteger("x2", x);
+			is.stackTagCompound.setInteger("y2", y);
+			is.stackTagCompound.setInteger("z2", z);
 			is.stackTagCompound.setInteger("w2", world.provider.dimensionId);
 		}
-		int x1 = is.stackTagCompound.getInteger("r1x");
-		int y1 = is.stackTagCompound.getInteger("r1y");
-		int z1 = is.stackTagCompound.getInteger("r1z");
-		int x2 = is.stackTagCompound.getInteger("r2x");
-		int y2 = is.stackTagCompound.getInteger("r2y");
-		int z2 = is.stackTagCompound.getInteger("r2z");
+		int x1 = is.stackTagCompound.getInteger("x1");
+		int y1 = is.stackTagCompound.getInteger("y1");
+		int z1 = is.stackTagCompound.getInteger("z1");
+		int x2 = is.stackTagCompound.getInteger("x2");
+		int y2 = is.stackTagCompound.getInteger("y2");
+		int z2 = is.stackTagCompound.getInteger("z2");
 		int dim1 = is.stackTagCompound.getInteger("w1");
 		int dim2 = is.stackTagCompound.getInteger("w2");
 		World w1 = DimensionManager.getWorld(dim1);
@@ -195,29 +195,29 @@ public class ItemConnector extends ItemChromaTool {
 	private boolean connectWindow(TileEntityTransportWindow te, World world, int x, int y, int z, ItemStack is, EntityPlayer ep) {
 		if (is.stackTagCompound == null) {
 			is.stackTagCompound = new NBTTagCompound();
-			is.stackTagCompound.setInteger("w1x", Integer.MIN_VALUE);
-			is.stackTagCompound.setInteger("w1y", Integer.MIN_VALUE);
-			is.stackTagCompound.setInteger("w1z", Integer.MIN_VALUE);
-			is.stackTagCompound.setInteger("w2x", Integer.MIN_VALUE);
-			is.stackTagCompound.setInteger("w2y", Integer.MIN_VALUE);
-			is.stackTagCompound.setInteger("w2z", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("x1", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("y1", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("z1", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("x2", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("y2", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("z2", Integer.MIN_VALUE);
 		}
-		if (is.stackTagCompound.getInteger("w1x") == Integer.MIN_VALUE) {
-			is.stackTagCompound.setInteger("w1x", x);
-			is.stackTagCompound.setInteger("w1y", y);
-			is.stackTagCompound.setInteger("w1z", z);
+		if (is.stackTagCompound.getInteger("x1") == Integer.MIN_VALUE) {
+			is.stackTagCompound.setInteger("x1", x);
+			is.stackTagCompound.setInteger("y1", y);
+			is.stackTagCompound.setInteger("z1", z);
 		}
 		else {
-			is.stackTagCompound.setInteger("w2x", x);
-			is.stackTagCompound.setInteger("w2y", y);
-			is.stackTagCompound.setInteger("w2z", z);
+			is.stackTagCompound.setInteger("x2", x);
+			is.stackTagCompound.setInteger("y2", y);
+			is.stackTagCompound.setInteger("z2", z);
 		}
-		int x1 = is.stackTagCompound.getInteger("w1x");
-		int y1 = is.stackTagCompound.getInteger("w1y");
-		int z1 = is.stackTagCompound.getInteger("w1z");
-		int x2 = is.stackTagCompound.getInteger("w2x");
-		int y2 = is.stackTagCompound.getInteger("w2y");
-		int z2 = is.stackTagCompound.getInteger("w2z");
+		int x1 = is.stackTagCompound.getInteger("x1");
+		int y1 = is.stackTagCompound.getInteger("y1");
+		int z1 = is.stackTagCompound.getInteger("z1");
+		int x2 = is.stackTagCompound.getInteger("x2");
+		int y2 = is.stackTagCompound.getInteger("y2");
+		int z2 = is.stackTagCompound.getInteger("z2");
 
 		if (x1 != Integer.MIN_VALUE && y1 != Integer.MIN_VALUE && z1 != Integer.MIN_VALUE) {
 			if (x1 != Integer.MIN_VALUE && y2 != Integer.MIN_VALUE && z2 != Integer.MIN_VALUE) {
@@ -269,11 +269,13 @@ public class ItemConnector extends ItemChromaTool {
 			is.stackTagCompound.setInteger("x1", x);
 			is.stackTagCompound.setInteger("y1", y);
 			is.stackTagCompound.setInteger("z1", z);
+			is.stackTagCompound.setInteger("w1", world.provider.dimensionId);
 		}
 		else {
 			is.stackTagCompound.setInteger("x2", x);
 			is.stackTagCompound.setInteger("y2", y);
 			is.stackTagCompound.setInteger("z2", z);
+			is.stackTagCompound.setInteger("w2", world.provider.dimensionId);
 		}
 		int ex = is.stackTagCompound.getInteger("x1");
 		int ey = is.stackTagCompound.getInteger("y1");
@@ -281,6 +283,8 @@ public class ItemConnector extends ItemChromaTool {
 		int rx = is.stackTagCompound.getInteger("x2");
 		int ry = is.stackTagCompound.getInteger("y2");
 		int rz = is.stackTagCompound.getInteger("z2");
+		World w1 = DimensionManager.getWorld(is.stackTagCompound.getInteger("w1"));
+		World w2 = DimensionManager.getWorld(is.stackTagCompound.getInteger("w2"));
 
 		int dl = Math.abs(ex-rx+ey-ry+ez-rz)-1;
 
@@ -289,8 +293,8 @@ public class ItemConnector extends ItemChromaTool {
 		//if (is.stackSize >= dl || ep.capabilities.isCreativeMode) {
 		if (rx != Integer.MIN_VALUE && ry != Integer.MIN_VALUE && rz != Integer.MIN_VALUE) {
 			if (ex != Integer.MIN_VALUE && ey != Integer.MIN_VALUE && ez != Integer.MIN_VALUE) {
-				Linkable em = (Linkable)world.getTileEntity(ex, ey, ez);
-				Linkable rec = (Linkable)world.getTileEntity(rx, ry, rz);
+				Linkable em = (Linkable)w1.getTileEntity(ex, ey, ez);
+				Linkable rec = (Linkable)w2.getTileEntity(rx, ry, rz);
 
 				//ReikaJavaLibrary.pConsole(rec+"\n"+em);
 				if (em == null) {
@@ -312,8 +316,8 @@ public class ItemConnector extends ItemChromaTool {
 				em.resetOther();
 				em.reset();
 				rec.reset();
-				boolean src = em.connectTo(world, rx, ry, rz);
-				boolean tg = rec.connectTo(world, ex, ey, ez);
+				boolean src = em.connectTo(w2, rx, ry, rz);
+				boolean tg = rec.connectTo(w1, ex, ey, ez);
 				//ReikaJavaLibrary.pConsole(src+":"+tg, Side.SERVER);
 				if (src && tg) {
 					//ReikaJavaLibrary.pConsole("connected", Side.SERVER);
@@ -330,14 +334,20 @@ public class ItemConnector extends ItemChromaTool {
 	}
 
 	@Override
+	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
+		is.stackTagCompound = null;
+		return is;
+	}
+
+	@Override
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
 		if (is.stackTagCompound != null) {
-			int x1 = is.stackTagCompound.getInteger("r1x");
-			int y1 = is.stackTagCompound.getInteger("r1y");
-			int z1 = is.stackTagCompound.getInteger("r1z");
-			int x2 = is.stackTagCompound.getInteger("r2x");
-			int y2 = is.stackTagCompound.getInteger("r2y");
-			int z2 = is.stackTagCompound.getInteger("r2z");
+			int x1 = is.stackTagCompound.getInteger("x1");
+			int y1 = is.stackTagCompound.getInteger("y1");
+			int z1 = is.stackTagCompound.getInteger("z1");
+			int x2 = is.stackTagCompound.getInteger("x2");
+			int y2 = is.stackTagCompound.getInteger("y2");
+			int z2 = is.stackTagCompound.getInteger("z2");
 			int w1 = is.stackTagCompound.getInteger("w1");
 			int w2 = is.stackTagCompound.getInteger("w2");
 			if (x1 != Integer.MIN_VALUE)

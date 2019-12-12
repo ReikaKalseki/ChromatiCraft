@@ -1,5 +1,6 @@
 package Reika.ChromatiCraft.ModInterface;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -14,13 +15,24 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 public class VoidMonsterNetherStructure extends ChromaStructureBase {
 
-	private static Collection<Coordinate> tntLocations;
+	private static Collection<Coordinate> tntLocations = new ArrayList();
+
+	private boolean useTNT = true;
 
 	static {
 		tntLocations.add(new Coordinate(1, 2, 1));
 		tntLocations.add(new Coordinate(1, 2, 3));
 		tntLocations.add(new Coordinate(3, 2, 1));
 		tntLocations.add(new Coordinate(3, 2, 3));
+	}
+
+	@Override
+	public void resetToDefaults() {
+		useTNT = true;
+	}
+
+	public void setTNT(boolean tnt) {
+		useTNT = tnt;
 	}
 
 	@Override
@@ -92,6 +104,7 @@ public class VoidMonsterNetherStructure extends ChromaStructureBase {
 		array.setBlock(x + 4, y + 2, z + 2, crystalstone, 1);
 		array.setBlock(x + 4, y + 2, z + 3, crystalstone, 1);
 		array.setBlock(x + 4, y + 2, z + 4, crystalstone, 6);
+
 		array.setBlock(x + 0, y + 3, z + 0, Blocks.redstone_wire);
 		array.setBlock(x + 0, y + 3, z + 1, Blocks.redstone_wire);
 		array.setBlock(x + 0, y + 3, z + 2, Blocks.redstone_wire);
@@ -195,8 +208,10 @@ public class VoidMonsterNetherStructure extends ChromaStructureBase {
 		array.setBlock(x + 4, y + 6, z + 3, Blocks.air);
 		array.setBlock(x + 4, y + 6, z + 4, Blocks.air);
 
-		for (Coordinate c : tntLocations) {
-			array.setBlock(x+c.xCoord, y+c.yCoord, z+c.zCoord, Blocks.tnt);
+		if (useTNT) {
+			for (Coordinate c : tntLocations) {
+				array.setBlock(x+c.xCoord, y+c.yCoord, z+c.zCoord, Blocks.tnt);
+			}
 		}
 
 		return array;

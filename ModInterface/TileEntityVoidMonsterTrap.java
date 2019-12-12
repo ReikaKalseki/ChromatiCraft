@@ -2,13 +2,18 @@ package Reika.ChromatiCraft.ModInterface;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.Teleporter;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -26,20 +31,24 @@ import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire.WireWatcher;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Auxiliary.ChunkManager;
 import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.VoidMonster.API.MonsterAPI;
 import Reika.VoidMonster.Entity.EntityVoidMonster;
 
 
-public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements MultiBlockChromaTile, WireWatcher, LocationCached, Linkable {
+public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements MultiBlockChromaTile, WireWatcher, LocationCached,
+Linkable, ChunkLoadingTile {
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
@@ -50,6 +59,7 @@ public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements 
 	private Collection<Coordinate> wires;
 	private ArrayList<Coordinate> wireSeek = new ArrayList();
 	private ArrayList<Coordinate> explosionSeek = new ArrayList();
+	private HashMap<Integer, VoidMonsterTether> tethers = new HashMap();
 
 	private float flashFactor = 0;
 	private float shaderRotation = 0;
@@ -89,7 +99,7 @@ public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements 
 	}
 
 	public boolean canAttractMonster() {
-		return innerRingActivation > 0;
+		return (this.isNether() || innerRingActivation > 0) && hasStructure && (link != null || !this.isNether());
 	}
 
 	public boolean isNether() {
@@ -109,17 +119,35 @@ public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements 
 		if (!cache.contains(loc))
 			cache.add(loc);
 		this.validateStructure();
+		ChunkManager.instance.loadChunks(this);
+	}
+
+	@Override
+	protected void onInvalidateOrUnload(World world, int x, int y, int z, boolean invalid) {
+		ChunkManager.instance.unloadChunks(this);
+	}
+
+	@Override
+	public Collection<ChunkCoordIntPair> getChunksToLoad() {
+		return ChunkManager.instance.getChunkSquare(xCoord, yCoord, 2);
 	}
 
 	@Override
 	public void breakBlock() {
 		WorldLocation loc = new WorldLocation(this);
 		cache.remove(loc);
+		this.resetOther();
+		this.reset();
 	}
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (!world.isRemote) {
+			if (explosionSeek.size() < 4) {
+				hasStructure = false;
+				explosionSeek.clear();
+				explosionSeek.addAll(VoidMonsterNetherStructure.getTNTLocations());
+			}
 			if (this.isNether()) {
 				if (this.canAttractMonster()) {
 					this.attractMonster(world, x, y, z);
@@ -158,14 +186,47 @@ public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements 
 		if (world.isRemote)
 			return;
 		EntityVoidMonster e = (EntityVoidMonster)MonsterAPI.getNearestMonster(world, x+0.5, y+0.5, z+0.5);
-		e.moveTowards(x+0.5, this.isNether() ? y-0.5 : y+0.5, z+0.5, 1.5);
+		if (e == null)
+			return;
+		double dist = e.getDistanceSq(x+0.5, y+0.5, z+0.5);
+		if (this.isNether()) {
+			if (dist > 256)
+				return;
+			VoidMonsterTether t = this.getOrCreateTether(e);
+			t.setDistance(e.moveTowards(x+0.5, y-0.5, z+0.5, Math.min(1, 20/dist)));
+		}
+		else {
+			if (dist > 64)
+				return;
+			VoidMonsterTether t = this.getOrCreateTether(e);
+			t.setDistance(e.moveTowards(x+0.5, y-0.5, z+0.5, 0.5*Math.min(1, 20/dist)));
+		}
+	}
+
+	private VoidMonsterTether getOrCreateTether(Entity e) {
+		VoidMonsterTether t = tethers.get(e.getEntityId());
+		if (t == null) {
+			t = new VoidMonsterTether(e);
+			tethers.put(t.ID, t);
+			this.syncAllData(true);
+		}
+		return t;
+	}
+
+	public Collection<VoidMonsterTether> getTethers() {
+		return Collections.unmodifiableCollection(tethers.values());
 	}
 
 	@ModDependent(ModList.VOIDMONSTER)
 	private void triggerTeleport() {
-		Entity e = MonsterAPI.getNearestMonster(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5);
-		MonsterTeleporter tel = new MonsterTeleporter((WorldServer)worldObj, link, 24, 60, 6);
+		EntityVoidMonster e = (EntityVoidMonster)MonsterAPI.getNearestMonster(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5);
+		if (e == null)
+			return;
+		e.forcePersist = true;
+		e.forceSpawn = true;
+		MonsterTeleporter tel = new MonsterTeleporter((WorldServer)link.getWorld(), link, 24, 60, 6);
 		ReikaEntityHelper.transferEntityToDimension(e, link.dimensionID, tel);
+		worldObj.newExplosion(null, xCoord+0.5, yCoord-0.5, zCoord+0.5, 9, true, true);
 		this.delete();
 	}
 
@@ -266,19 +327,44 @@ public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements 
 	}
 
 	@Override
-	public void readSyncTag(NBTTagCompound NBT) {
+	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 
 		hasStructure = NBT.getBoolean("struct");
 		ritualTick = NBT.getInteger("rtick");
+
+		tethers.clear();
+		NBTTagList li = NBT.getTagList("tethers", NBTTypes.COMPOUND.ID);
+		for (Object o : li.tagList) {
+			VoidMonsterTether t = VoidMonsterTether.readFromNBT((NBTTagCompound)o);
+			tethers.put(t.ID, t);
+		}
+
+		link = NBT.hasKey("link") ? WorldLocation.readFromNBT("link", NBT) : null;
 	}
 
 	@Override
-	public void writeSyncTag(NBTTagCompound NBT) {
+	protected void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
 
 		NBT.setBoolean("struct", hasStructure);
 		NBT.setInteger("rtick", ritualTick);
+
+		NBTTagList li = new NBTTagList();
+		for (Entry<Integer, VoidMonsterTether> e : tethers.entrySet()) {
+			li.appendTag(e.getValue().writeToNBT());
+		}
+		NBT.setTag("tethers", li);
+
+		if (link != null) {
+			link.writeToNBT("link", NBT);
+		}
+	}
+
+	@Override
+	public int getPacketDelay() {
+		int base = super.getPacketDelay();
+		return tethers.isEmpty() ? base : base/2;
 	}
 
 	public boolean hasStructure() {
@@ -300,7 +386,7 @@ public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements 
 		return true;
 	}
 
-	public static void handleTNTTrigger(World world, Entity e) {
+	public static boolean handleTNTTrigger(World world, Entity e) {
 		Iterator<WorldLocation> it = cache.iterator();
 		while (it.hasNext()) {
 			WorldLocation loc = it.next();
@@ -308,7 +394,7 @@ public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements 
 				TileEntity te = loc.getTileEntity(world);
 				if (te instanceof TileEntityVoidMonsterTrap) {
 					if (((TileEntityVoidMonsterTrap)te).handleTNTTrigger(e))
-						return;
+						return true;
 				}
 				else {
 					it.remove();
@@ -319,13 +405,17 @@ public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements 
 				}
 			}
 		}
+		return false;
 	}
 
 	private boolean handleTNTTrigger(Entity e) {
-		if (this.isNether() && hasStructure && link != null && ModList.VOIDMONSTER.isLoaded()) {
-			Coordinate c = new Coordinate(e);
+		//ReikaJavaLibrary.pConsole(e+" and "+link+" and "+this.hasStructure, yCoord == 133);
+		if (this.isNether() && (hasStructure || explosionSeek.size() < 4) && link != null && ModList.VOIDMONSTER.isLoaded()) {
+			Coordinate c = new Coordinate(e).offset(-xCoord+2, -yCoord+6, -zCoord+2);
+			//ReikaJavaLibrary.pConsole(c+" of "+explosionSeek.size()+":"+explosionSeek+" for "+e);
 			if (explosionSeek.contains(c)) {
 				explosionSeek.remove(c);
+				hasStructure = false;
 				if (explosionSeek.isEmpty()) {
 					this.triggerTeleport();
 				}
@@ -337,6 +427,32 @@ public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements 
 
 	public static void clearCache() {
 		cache.clear();
+	}
+
+	@Override
+	public void reset() {
+		link = null;
+	}
+
+	@Override
+	public void resetOther() {
+		if (link == null)
+			return;
+		TileEntity te = link.getTileEntity();
+		if (te instanceof Linkable) {
+			((Linkable)te).reset();
+		}
+	}
+
+	@Override
+	public boolean connectTo(World world, int x, int y, int z) {
+		if (ChromaTiles.getTile(world, x, y, z) == this.getTile()) {
+			TileEntityVoidMonsterTrap te = (TileEntityVoidMonsterTrap)world.getTileEntity(x, y, z);
+			te.link = new WorldLocation(this);
+			link = new WorldLocation(te);
+			return true;
+		}
+		return false;
 	}
 
 	private static class MonsterTeleporter extends Teleporter {
@@ -397,28 +513,45 @@ public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements 
 
 	}
 
-	@Override
-	public void reset() {
-		link = null;
-	}
+	public static class VoidMonsterTether {
 
-	@Override
-	public void resetOther() {
-		TileEntity te = link.getTileEntity();
-		if (te instanceof Linkable) {
-			((Linkable)te).reset();
-		}
-	}
+		public final int ID;
 
-	@Override
-	public boolean connectTo(World world, int x, int y, int z) {
-		if (ChromaTiles.getTile(world, x, y, z) == this.getTile()) {
-			TileEntityVoidMonsterTrap te = (TileEntityVoidMonsterTrap)world.getTileEntity(x, y, z);
-			te.link = new WorldLocation(this);
-			link = new WorldLocation(te);
-			return true;
+		private double distance;
+
+		private VoidMonsterTether(Entity e) {
+			this(e.getEntityId());
 		}
-		return false;
+
+		private VoidMonsterTether(int id) {
+			ID = id;
+		}
+
+		private void setDistance(double d) {
+			distance = d;
+		}
+
+		public double getDistance() {
+			return distance;
+		}
+
+		public Entity getEntity(World world) {
+			return world.getEntityByID(ID);
+		}
+
+		private NBTTagCompound writeToNBT() {
+			NBTTagCompound ret = new NBTTagCompound();
+			ret.setInteger("id", ID);
+			ret.setDouble("dist", distance);
+			return ret;
+		}
+
+		private static VoidMonsterTether readFromNBT(NBTTagCompound tag) {
+			VoidMonsterTether ret = new VoidMonsterTether(tag.getInteger("id"));
+			ret.distance = tag.getDouble("dist");
+			return ret;
+		}
+
 	}
 
 }

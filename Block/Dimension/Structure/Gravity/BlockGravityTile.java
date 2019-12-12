@@ -431,6 +431,12 @@ public class BlockGravityTile extends BlockDimensionStructureTile {
 			return false;
 		}
 
+		@Override
+		public void breakBlock() {
+			this.resetOther();
+			this.reset();
+		}
+
 	}
 
 	public static class GravityTarget extends GravityTile implements RechargeWaiter {

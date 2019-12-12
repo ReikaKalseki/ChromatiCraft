@@ -9,20 +9,25 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
 
+import java.util.Collection;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.client.MinecraftForgeClient;
 
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.Render.TESRIcon;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.ModInterface.TileEntityVoidMonsterTrap;
+import Reika.ChromatiCraft.ModInterface.TileEntityVoidMonsterTrap.VoidMonsterTether;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.DragonAPI.Instantiable.RayTracer;
@@ -97,8 +102,12 @@ public class RenderVoidMonsterTrap extends ChromaRenderBase {
 			}
 		}
 
-		if (MinecraftForgeClient.getRenderPass() == 1 || !te.isInWorld() || StructureRenderer.isRenderingTiles())
+		if (MinecraftForgeClient.getRenderPass() == 1 || !te.isInWorld() || StructureRenderer.isRenderingTiles()) {
 			this.drawInner(te, par8);
+			if (te.isInWorld() && !StructureRenderer.isRenderingTiles()) {
+				this.renderTethers(te, par8);
+			}
+		}
 
 		GL11.glDisable(GL11.GL_BLEND);
 		if (te.hasWorldObj())
@@ -106,6 +115,14 @@ public class RenderVoidMonsterTrap extends ChromaRenderBase {
 		GL11.glPopMatrix();
 		GL11.glPopAttrib();
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+	}
+
+	private void renderTethers(TileEntityVoidMonsterTrap te, float par8) {
+		Collection<VoidMonsterTether> c = te.getTethers();
+		for (VoidMonsterTether v : c) {
+			Entity e = v.getEntity(te.worldObj);
+			ChromaFX.renderBeam(0.5, 0.5, 0.5, e.posX-te.xCoord, e.posY-te.yCoord, e.posZ-te.zCoord, par8, 255, 0.125, 0xffffff);
+		}
 	}
 
 	private void drawInner(TileEntityVoidMonsterTrap te, float par8) {

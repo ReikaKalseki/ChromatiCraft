@@ -277,7 +277,8 @@ public class ChromaticEventManager {
 	@SubscribeEvent
 	public void triggerVoidMonsterTeleport(ExplosionEvent.Start evt) {
 		if (evt.explosion.exploder instanceof EntityTNTPrimed && !evt.world.isRemote) {
-			TileEntityVoidMonsterTrap.handleTNTTrigger(evt.world, evt.explosion.exploder);
+			if (TileEntityVoidMonsterTrap.handleTNTTrigger(evt.world, evt.explosion.exploder))
+				evt.setCanceled(true);
 		}
 	}
 

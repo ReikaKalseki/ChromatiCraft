@@ -726,7 +726,8 @@
 			Sharing a base with a friend is a common practice, but you have found that what you learn as you explore and experiment is less easily shared. You could of course have your partner perform the same actions as you, but they may be more interested in pulling up ores, playing bee matchmaker, or going insane by reading ancient scribbles. Or they may be interested but unable to learn, preferring to watch crops grow or to fall into lava. Either way, if you could make it such that the two - or more - of you learned in tandem, this problem would be solved.
 		</desc>
 		<note>
-			Requires that both players have matching progression at the time of linking
+			Requires that both players have similar progression at the time of linking
+			If the two players have different progression, the other will be made to match, possibly forgetting some of their progression
 			
 			Both players are still required to be involved for some progress
 		</note>
@@ -744,7 +745,7 @@
 			Despite having only recently begun using casting stands to enhance your table, you are thoroughly sick of stuffing items into them; those recipes involving shoving shards together in various combinations have proven particularly tedious. Some time ago, you designed a construct for placing items in devices; perhaps you could apply that knowledge and design something capable of being given a recipe and placing the ingredients in the stands automatically. That does not quite automate the process - you still need to place the central item, and trigger the actual crafting - but it is a start.
 		</desc>
 		<note>
-
+			Can only produce intermediate products
 		</note>
 	</injector>
 	<landmark>
@@ -757,7 +758,7 @@
 	</landmark>
 	<hoverpad>
 		<desc>
-			Having built a base with a large number of rooms spread across multiple floors, and a maze of stairs and walkways between them, you have realized that while it excels in aesthetics it suffers greatly in practicality. In an attempt to solve this, you created an access shaft allowing you to travel between any two floors. However, this too has an issue: Reliably getting between said floors, with nothing solid to walk on, is fiddly and requires the ability to fly. If you could just...suppress gravity and friction while moving through the shaft, it would be far more useful.
+			Having built a base with a large number of rooms spread across multiple floors, and a maze of stairs and walkways between them, you have realized that while it excels in aesthetics, it suffers greatly in practicality. In an attempt to solve this, you created an access shaft allowing you to travel between any two floors. However, this too has an issue: Reliably getting between said floors, with nothing solid to walk on, is fiddly and requires the ability to fly. If you could just...suppress gravity and friction while moving through the shaft, it would be far more useful.
 		</desc>
 		<note>
 

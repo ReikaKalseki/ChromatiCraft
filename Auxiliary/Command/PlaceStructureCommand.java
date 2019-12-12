@@ -15,6 +15,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 
+import Reika.ChromatiCraft.ModInterface.VoidMonsterNetherStructure;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Command.DragonCommandBase;
@@ -31,8 +32,11 @@ public class PlaceStructureCommand extends DragonCommandBase {
 		int y = MathHelper.floor_double(ep.posY);
 		int z = MathHelper.floor_double(ep.posZ);
 		s.getStructure().resetToDefaults();
+		if (s == ChromaStructures.NETHERTRAP)
+			((VoidMonsterNetherStructure)s.getStructure()).setTNT(args.length == 1 || Boolean.parseBoolean(args[1]));
 		FilledBlockArray arr = s.getArray(ep.worldObj, x, y, z, s.requiresColor ? CrystalElement.valueOf(args[1].toUpperCase(Locale.ENGLISH)) : null);
 		arr.place();
+		s.getStructure().resetToDefaults();
 	}
 
 	@Override
