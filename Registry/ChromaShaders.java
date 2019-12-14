@@ -25,15 +25,21 @@ public enum ChromaShaders implements ShaderHook {
 	WARPNODE_OPEN(),
 	DIMGLOWCLOUD(),
 
+	//FX
 	LENSPARTICLE(),
 	PINCHPARTICLE(),
 
 	//Situational
 	INSKYRIVER(),
 	DIMFLOOR(),
-	PYLONTURBO_OVERBRIGHT(),
-	PYLONTURBO_PINCH(ShaderDomain.GLOBAL),
-	VOIDRITUAL(),
+
+	//Ritual-related
+	PYLONTURBO$OVERBRIGHT(),
+	PYLONTURBO$PINCH(ShaderDomain.GLOBAL),
+
+	VOIDRITUAL$SPHERE(),
+	VOIDRITUAL$WAVE(ShaderDomain.WORLD),
+
 	MONUMENTRITUAL();
 
 	private final ShaderDomain domain;
@@ -51,6 +57,8 @@ public enum ChromaShaders implements ShaderHook {
 	private static boolean registered = false;
 	public static final ChromaShaders[] shaders = values();
 
+	private String id;
+
 	private ChromaShaders() {
 		this(ShaderDomain.GLOBALNOGUI);
 	}
@@ -65,7 +73,14 @@ public enum ChromaShaders implements ShaderHook {
 
 	public void create() {
 		try {
-			shader = ShaderRegistry.createShader(ChromatiCraft.instance, this.name().toLowerCase(Locale.ENGLISH), ChromatiCraft.class, "Shaders/", domain);
+			String path = "Shaders/";
+			id = this.name().toLowerCase(Locale.ENGLISH);
+			int idx = id.indexOf('$');
+			if (idx >= 0) {
+				id = id.substring(idx+1);
+				path = path+this.name().toLowerCase(Locale.ENGLISH).substring(0, idx)+"/";
+			}
+			shader = ShaderRegistry.createShader(ChromatiCraft.instance, id, ChromatiCraft.class, path, domain);
 			shader.setHook(this);
 		}
 		catch (Exception e) {

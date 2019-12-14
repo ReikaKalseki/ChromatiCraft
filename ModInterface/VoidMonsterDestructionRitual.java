@@ -33,7 +33,6 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.VoidMonster.API.NonTeleportingDamage;
-import Reika.VoidMonster.API.VoidMonsterHook;
 import Reika.VoidMonster.Entity.EntityVoidMonster;
 import Reika.VoidMonster.World.MonsterGenerator;
 
@@ -41,23 +40,20 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class VoidMonsterDestructionRitual implements VoidMonsterHook {
-
-	private static final double RADIUS = 64;
+public class VoidMonsterDestructionRitual {
 
 	private final WorldLocation center;
 	private final EntityPlayer startingPlayer;
 
 	private static final Random rand = new Random();
 
-	public VoidMonsterDestructionRitual(EntityPlayer ep, WorldLocation loc) {
-		startingPlayer = ep;
-		center = loc;
+	public VoidMonsterDestructionRitual(TileEntityVoidMonsterTrap loc) {
+		startingPlayer = loc.getPlacer();
+		center = new WorldLocation(loc);
 	}
 
 	@ModDependent(ModList.VOIDMONSTER)
 	public void tick(Entity e) {
-		this.keepWithinArea((EntityVoidMonster)e);
 		for (Effects ef : Effects.list) {
 			if (rand.nextInt(ef.effectChance) == 0) {
 				ef.doEffectServer(this, (EntityVoidMonster)e);
@@ -65,62 +61,39 @@ public class VoidMonsterDestructionRitual implements VoidMonsterHook {
 		}
 	}
 
-	private void keepWithinArea(EntityVoidMonster e) {
-		if (e.getDistanceSq(center.xCoord+0.5, center.yCoord+0.5, center.zCoord+0.5) >= RADIUS*RADIUS) {
-			e.moveTowards(center.xCoord+0.5, center.yCoord+0.5, center.zCoord+0.5, 1);
-		}
-	}
-
-	private void onCompletion(EntityVoidMonster e) {
+	public static void onCompletion(EntityVoidMonster e) {
 		MonsterGenerator.instance.addCooldown(e, 20*60*ReikaRandomHelper.getRandomBetween(20, 45));
 	}
 
 	public static enum Effects {
-		COLLAPSING_SPHERE(40),
-		RAYS(70),
-		EXPLOSION(200),
-		DISTORTION(400);
+		COLLAPSING_SPHERE(40, 20),
+		RAYS(70, 40),
+		EXPLOSION(200, 0),
+		DISTORTION(400, 20);
 
 		private final int effectChance;
+		private final int damageAmount;
 
 		private static Effects[] list = values();
 
-		private Effects(int c) {
+		private Effects(int c, int dmg) {
 			effectChance = c;
+			damageAmount = dmg;
 		}
 
 		@ModDependent(ModList.VOIDMONSTER)
 		public void doEffectServer(VoidMonsterDestructionRitual rit, EntityVoidMonster e) {
 			DamageSource src = new VoidMonsterRitualDamage(rit.startingPlayer);
+			e.attackEntityFrom(src, damageAmount);
 			switch(this) {
 				case COLLAPSING_SPHERE:
-					e.attackEntityFrom(src, 20);
 					break;
 				case RAYS:
-					e.attackEntityFrom(src, 40);
 					break;
 				case EXPLOSION:
 					e.worldObj.newExplosion(e, e.posX, e.posY, e.posZ, 9, true, true);
 					break;
 				case DISTORTION:
-					e.attackEntityFrom(src, 20);
-					int r = (int)(RADIUS*1.5);
-					/*
-					int r2 = r/3;
-					for (int i = -r; i <= r; i++) {
-						for (int j = -r2; j <= r2; j++) {
-							for (int k = -r; k <= r; k++) {
-								if (ReikaMathLibrary.isPointInsideEllipse(i, j, k, r, r2, r)) {
-									int dx = rit.center.xCoord+i;
-									int dy = rit.center.yCoord+j;
-									int dz = rit.center.zCoord+k;
-									if (BlockDistortingEffect.canReplace(e.worldObj, dx, dy, dz)) {
-										BlockDistortingEffect.doReplace(e.worldObj, dx, dy, dz, false);
-									}
-								}
-							}
-						}
-					}*/
 					break;
 			}
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.VOIDMONSTERRITUAL.ordinal(), new PacketTarget.RadiusTarget(e, 128), e.getEntityId(), this.ordinal());
@@ -189,7 +162,7 @@ public class VoidMonsterDestructionRitual implements VoidMonsterHook {
 		}
 	}
 
-	private static class VoidMonsterRitualDamage extends DamageSource implements NonTeleportingDamage {
+	public static class VoidMonsterRitualDamage extends DamageSource implements NonTeleportingDamage {
 
 		private final EntityPlayer player;
 

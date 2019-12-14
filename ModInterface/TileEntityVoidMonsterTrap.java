@@ -68,9 +68,9 @@ Linkable, ChunkLoadingTile {
 	private int outerRingActivation = 0;
 	private int innerRingActivation = 0;
 
-	private int ritualTick;
 	private boolean hasStructure;
 	private WorldLocation link;
+	private VoidMonsterDestructionRitual ritual;
 
 	static {
 		required.addTag(CrystalElement.BLACK, 5);
@@ -99,7 +99,7 @@ Linkable, ChunkLoadingTile {
 	}
 
 	public boolean canAttractMonster() {
-		return (this.isNether() || innerRingActivation > 0) && hasStructure && (link != null || !this.isNether());
+		return (this.isNether() || outerRingActivation > 0) && hasStructure && (link != null || !this.isNether());
 	}
 
 	public boolean isNether() {
@@ -162,44 +162,57 @@ Linkable, ChunkLoadingTile {
 						te.addWatcher(this);
 					}
 				}
-				if (ReikaItemHelper.matchStacks(inv[0], ChromaStacks.voidDust)) {
-					if (this.hasEnergy(required)) {
-						if (this.isActive()) {
-
-						}
-						else {
-							if (this.canAttractMonster()) {
-								this.attractMonster(world, x, y, z);
+				Entity e = MonsterAPI.getNearestMonster(world, x+0.5, y+0.5, z+0.5);
+				if (e != null) {
+					if (ReikaItemHelper.matchStacks(inv[0], ChromaStacks.voidmonsterEssence)) {
+						if (this.hasEnergy(required)) {
+							if (this.isActive()) {
+								ritual.tick(e);
 							}
+							else {
+								if (this.canAttractMonster()) {
+									double dist = this.attractMonster(world, x, y, z);
+									if (dist < 1) {
+										this.activate(world, x, y, z);
+									}
+								}
+							}
+							this.useEnergy(required);
+							if (rand.nextInt(this.isActive() ? 20 : 60) == 0)
+								ReikaInventoryHelper.decrStack(1, inv);
 						}
-						this.useEnergy(required);
-						if (rand.nextInt(this.isActive() ? 20 : 60) == 0)
-							ReikaInventoryHelper.decrStack(1, inv);
 					}
 				}
 			}
 		}
 	}
 
+	private void activate(World world, int x, int y, int z) {
+		ritual = new VoidMonsterDestructionRitual(this);
+	}
+
 	@ModDependent(ModList.VOIDMONSTER)
-	private void attractMonster(World world, int x, int y, int z) {
+	private double attractMonster(World world, int x, int y, int z) {
 		if (world.isRemote)
-			return;
+			return Double.POSITIVE_INFINITY;
 		EntityVoidMonster e = (EntityVoidMonster)MonsterAPI.getNearestMonster(world, x+0.5, y+0.5, z+0.5);
 		if (e == null)
-			return;
+			return Double.POSITIVE_INFINITY;
 		double dist = e.getDistanceSq(x+0.5, y+0.5, z+0.5);
 		if (this.isNether()) {
 			if (dist > 256)
-				return;
+				return dist;
 			VoidMonsterTether t = this.getOrCreateTether(e);
 			t.setDistance(e.moveTowards(x+0.5, y-0.5, z+0.5, Math.min(1, 20/dist)));
+			return t.distance;
 		}
 		else {
 			if (dist > 64)
-				return;
+				return dist;
 			VoidMonsterTether t = this.getOrCreateTether(e);
-			t.setDistance(e.moveTowards(x+0.5, y-0.5, z+0.5, 0.5*Math.min(1, 20/dist)));
+			double s = innerRingActivation > 0 ? 1.5 : 0.25;
+			t.setDistance(e.moveTowards(x+0.5, y-0.5, z+0.5, s*Math.min(1, 20/dist)));
+			return t.distance;
 		}
 	}
 
@@ -268,7 +281,7 @@ Linkable, ChunkLoadingTile {
 	}
 
 	public boolean isActive() {
-		return ritualTick > 0;
+		return ritual != null;
 	}
 
 	@Override
@@ -331,7 +344,6 @@ Linkable, ChunkLoadingTile {
 		super.readSyncTag(NBT);
 
 		hasStructure = NBT.getBoolean("struct");
-		ritualTick = NBT.getInteger("rtick");
 
 		tethers.clear();
 		NBTTagList li = NBT.getTagList("tethers", NBTTypes.COMPOUND.ID);
@@ -348,7 +360,6 @@ Linkable, ChunkLoadingTile {
 		super.writeSyncTag(NBT);
 
 		NBT.setBoolean("struct", hasStructure);
-		NBT.setInteger("rtick", ritualTick);
 
 		NBTTagList li = new NBTTagList();
 		for (Entry<Integer, VoidMonsterTether> e : tethers.entrySet()) {
