@@ -78,6 +78,7 @@ import Reika.ChromatiCraft.Auxiliary.Ability.AbilityXRays;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionVoidGaze.VoidGazeLevels;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
+import Reika.ChromatiCraft.Auxiliary.Render.WorldRenderIntercept;
 import Reika.ChromatiCraft.Auxiliary.Tab.FragmentTab;
 import Reika.ChromatiCraft.Auxiliary.Tab.TabChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaBookGui;
@@ -136,6 +137,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
 import Reika.DragonAPI.Instantiable.Event.ProfileEvent;
 import Reika.DragonAPI.Instantiable.Event.ProfileEvent.ProfileEventWatcher;
+import Reika.DragonAPI.Instantiable.Event.Client.ChunkWorldRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.ClientLoginEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.ClientLogoutEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.CloudRenderEvent;
@@ -231,6 +233,11 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 				break;
 			}
 		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void mapChunkRenderToCallList(ChunkWorldRenderEvent evt) {
+		WorldRenderIntercept.instance.mapChunkRenderList(evt.defaultGLListID, evt.renderer);
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
