@@ -14,10 +14,11 @@ void main() {
 	
 	float wiggle = 0.5*hsb.y*vf/distance;
 	
-	texcoord.y += 0.41*wiggle*cos(34.5+texcoord.x*3.7*distance+float(time)/2.3);
-	texcoord.x += 0.35*wiggle*sin(23.3+texcoord.y*3.1*distance+float(time)/3.8);
+	vec2 texUV = texcoord.xy;
+	texUV.y += 0.41*wiggle*cos(34.5+texcoord.x*3.7*distance+float(time)/2.3);
+	texUV.x += 0.35*wiggle*sin(23.3+texcoord.y*3.1*distance+float(time)/3.8);
 	
-    color = texture2D(bgl_RenderedTexture, texcoord);
+    color = texture2D(bgl_RenderedTexture, texUV);
 
     gl_FragColor = vec4(color.x, color.y, color.z, color.a);
 }

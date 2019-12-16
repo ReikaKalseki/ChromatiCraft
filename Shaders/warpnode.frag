@@ -14,9 +14,9 @@ void main() {
 	vec2 diff = texcoord-nodeXY;
 	//diff.x = -diff.x;
 	vec2 new = nodeXY-diff;
-	texcoord = mix(texcoord, new, vf);	
+	vec2 texUV = mix(texcoord, new, vf);	
 	
-    vec4 color = texture2D(bgl_RenderedTexture, texcoord);
+    vec4 color = texture2D(bgl_RenderedTexture, texUV);
 	
 	color.rgb = mix(color.rgb, vec3(0.5, 0.5, 0.5), cf*washout);
 

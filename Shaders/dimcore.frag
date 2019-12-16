@@ -13,9 +13,9 @@ void main() {
 	float cf = intensity*distfac_color*0.55;
 	float vf = intensity*distfac_vertex;
 	
-	texcoord = mix(texcoord, coreXY, vf/7.5);
+	vec2 texUV = mix(texcoord, coreXY, vf/7.5);
 	
-    vec4 orig = texture2D(bgl_RenderedTexture, texcoord);
+    vec4 orig = texture2D(bgl_RenderedTexture, texUV);
 	
 	float r = float(coreRed)/255.0;
 	float g = float(coreGreen)/255.0;

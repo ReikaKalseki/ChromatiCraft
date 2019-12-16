@@ -13,9 +13,9 @@ void main() {
     vec4 color = texture2D(bgl_RenderedTexture, texcoord);
     float gs = getVisualBrightness(color.rgb);
 	float rot = 0.125*vf*3.1416*2*rotation/pow(max(0.002, distv), 0.25);///max(0.02, min(1, distv*2.4));
-	texcoord = rotate(texcoord, nodeXY, rot);
+	vec2 texUV = rotate(texcoord, nodeXY, rot);
 	
-	vec4 color2 = texture2D(bgl_RenderedTexture, texcoord);
+	vec4 color2 = texture2D(bgl_RenderedTexture, texUV);
 	
 	float fac = max(0, (abs(rotation)-0.5))*2;
 	fac *= cf;

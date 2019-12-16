@@ -10,9 +10,9 @@ void main() {
 	float cf = intensity*distfac_color;
 	float vf = intensity*distfac_vertex;
 	
-	texcoord = mix(texcoord, cloudXY, vf*factor/8.0);
+	vec2 texUV = mix(texcoord, cloudXY, vf*factor/8.0);
 	
-    vec4 color = texture2D(bgl_RenderedTexture, texcoord);
+    vec4 color = texture2D(bgl_RenderedTexture, texUV);
 	
 	vec3 hsb = rgb2hsb(color.xyz);
 	hsb.y = min(1.0, hsb.y*2.0);

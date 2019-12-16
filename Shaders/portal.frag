@@ -15,10 +15,11 @@ void main() {
 	
 	float wiggle = (0.125+gs*0.875)*vf*0.02;
 	
-	texcoord.y += 0.41*wiggle*sin(34.5+texcoord.x*85.7+float(time)/2.3);
-	texcoord.x += 0.33*wiggle*sin(23.3+texcoord.y*81.8+float(time)/2.1);
+	vec2 texUV = texcoord.xy;
+	texUV.y += 0.41*wiggle*sin(34.5+texUV.x*85.7+float(time)/2.3);
+	texUV.x += 0.33*wiggle*sin(23.3+texUV.y*81.8+float(time)/2.1);
 	
-    color = texture2D(bgl_RenderedTexture, texcoord);
+    color = texture2D(bgl_RenderedTexture, texUV);
 	
 	vec3 color2 = color.rgb;
 	color2.r += 0.5+0.5*sin(45.4+float(time)/4.7);

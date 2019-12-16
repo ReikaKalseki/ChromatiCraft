@@ -9,10 +9,11 @@ void main() {
 	float wiggle = intensity*pow(gs, 2.0)*0.02*pow(sat, 2.0);
 	wiggle += starFactor*intensity*pow(1-gs, 2.0)*0.04;
 	
-	texcoord.y += 0.41*wiggle*sin(34.5+texcoord.x*85.7+float(time)/3.3);
-	texcoord.x += 0.43*wiggle*sin(23.3+texcoord.y*81.8+float(time)/3.1);
+	vec2 texUV = texcoord.xy;
+	texUV.y += 0.41*wiggle*sin(34.5+texUV.x*85.7+float(time)/3.3);
+	texUV.x += 0.43*wiggle*sin(23.3+texUV.y*81.8+float(time)/3.1);
 	
-	color = texture2D(bgl_RenderedTexture, texcoord);
+	color = texture2D(bgl_RenderedTexture, texUV);
 	
 	gs = getVisualBrightness(color.rgb);
 	
