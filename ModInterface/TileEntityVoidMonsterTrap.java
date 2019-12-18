@@ -1,6 +1,7 @@
 package Reika.ChromatiCraft.ModInterface;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,7 +35,10 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.ChunkManager;
 import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
+import Reika.DragonAPI.Instantiable.Math.VariableEndpointSpline;
 import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -185,6 +189,13 @@ Linkable, ChunkLoadingTile {
 				}
 			}
 		}
+		else {
+			for (VoidMonsterTether t : tethers.values()) {
+				if (t.tick(world)) {
+					this.removeTether(t, world);
+				}
+			}
+		}
 	}
 
 	private void activate(World world, int x, int y, int z) {
@@ -193,33 +204,41 @@ Linkable, ChunkLoadingTile {
 
 	@ModDependent(ModList.VOIDMONSTER)
 	private double attractMonster(World world, int x, int y, int z) {
-		if (world.isRemote)
-			return Double.POSITIVE_INFINITY;
 		EntityVoidMonster e = (EntityVoidMonster)MonsterAPI.getNearestMonster(world, x+0.5, y+0.5, z+0.5);
 		if (e == null)
 			return Double.POSITIVE_INFINITY;
+		VoidMonsterTether t = this.getOrCreateTether(e);
 		double dist = e.getDistanceSq(x+0.5, y+0.5, z+0.5);
 		if (this.isNether()) {
-			if (dist > 256)
+			if (dist > 256) {
+				this.removeTether(t, world);
 				return dist;
-			VoidMonsterTether t = this.getOrCreateTether(e);
+			}
 			t.setDistance(e.moveTowards(x+0.5, y-0.5, z+0.5, Math.min(1, 20/dist)));
 			return t.distance;
 		}
 		else {
-			if (dist > 64)
+			if (dist > 64) {
+				this.removeTether(t, world);
 				return dist;
-			VoidMonsterTether t = this.getOrCreateTether(e);
+			}
 			double s = innerRingActivation > 0 ? 1.5 : 0.25;
 			t.setDistance(e.moveTowards(x+0.5, y-0.5, z+0.5, s*Math.min(1, 20/dist)));
 			return t.distance;
 		}
 	}
 
+	private void removeTether(VoidMonsterTether t, World world) {
+		tethers.remove(t.ID);
+		Entity e = t.getEntity(world);
+		if (e != null)
+			;//world.newExplosion(e, e.posX, e.posY, e.posZ, 4, true, false);
+	}
+
 	private VoidMonsterTether getOrCreateTether(Entity e) {
 		VoidMonsterTether t = tethers.get(e.getEntityId());
 		if (t == null) {
-			t = new VoidMonsterTether(e);
+			t = new VoidMonsterTether(this, e);
 			tethers.put(t.ID, t);
 			this.syncAllData(true);
 		}
@@ -345,11 +364,14 @@ Linkable, ChunkLoadingTile {
 
 		hasStructure = NBT.getBoolean("struct");
 
-		tethers.clear();
 		NBTTagList li = NBT.getTagList("tethers", NBTTypes.COMPOUND.ID);
 		for (Object o : li.tagList) {
 			VoidMonsterTether t = VoidMonsterTether.readFromNBT((NBTTagCompound)o);
-			tethers.put(t.ID, t);
+			VoidMonsterTether has = tethers.get(t.ID);
+			if (has == null)
+				tethers.put(t.ID, t);
+			else
+				has.copyFrom(t);
 		}
 
 		link = NBT.hasKey("link") ? WorldLocation.readFromNBT("link", NBT) : null;
@@ -527,15 +549,40 @@ Linkable, ChunkLoadingTile {
 	public static class VoidMonsterTether {
 
 		public final int ID;
+		public final Coordinate location;
 
 		private double distance;
+		private final VariableEndpointSpline[] splines = new VariableEndpointSpline[3];
 
-		private VoidMonsterTether(Entity e) {
-			this(e.getEntityId());
+		VoidMonsterTether(TileEntity te, Entity e) {
+			this(new Coordinate(te), e.getEntityId(), new DecimalPosition(e));
 		}
 
-		private VoidMonsterTether(int id) {
+		private VoidMonsterTether(Coordinate c, int id, DecimalPosition p2) {
+			location = c;
 			ID = id;
+			for (int i = 0; i < splines.length; i++) {
+				splines[i] = new VariableEndpointSpline(c.xCoord+0.5, c.yCoord+0.5, c.zCoord+0.5, p2.xCoord, p2.yCoord, p2.zCoord, SplineType.CENTRIPETAL, 6, 1.2, 0.125);
+			}
+		}
+
+		public boolean tick(World world) {
+			Entity e = this.getEntity(world);
+			if (e == null)
+				return true;
+			for (int i = 0; i < splines.length; i++) {
+				splines[i].setEndpoint(e.posX, e.posY+e.height/2, e.posZ);
+				splines[i].tick();
+			}
+			return false;
+		}
+
+		public void copyFrom(VoidMonsterTether t) {
+			distance = t.distance;
+		}
+
+		public Collection<VariableEndpointSpline> getSplines() {
+			return Arrays.asList(splines);
 		}
 
 		private void setDistance(double d) {
@@ -554,11 +601,12 @@ Linkable, ChunkLoadingTile {
 			NBTTagCompound ret = new NBTTagCompound();
 			ret.setInteger("id", ID);
 			ret.setDouble("dist", distance);
+			location.writeToTag(ret);
 			return ret;
 		}
 
 		private static VoidMonsterTether readFromNBT(NBTTagCompound tag) {
-			VoidMonsterTether ret = new VoidMonsterTether(tag.getInteger("id"));
+			VoidMonsterTether ret = new VoidMonsterTether(Coordinate.readTag(tag), tag.getInteger("id"), new DecimalPosition(0, 0, 0));
 			ret.distance = tag.getDouble("dist");
 			return ret;
 		}
