@@ -203,8 +203,8 @@ public class TieredOreRenderer implements ISBRH {
 			}
 		}
 		else {
-			rb.renderBlockAllFaces(t.getDisguise(meta), x, y, z);
-			//rb.renderStandardBlockWithAmbientOcclusion(t.getDisguise(), x, y, z, 1, 1, 1);
+			//rb.renderBlockAllFaces(t.getDisguise(meta), x, y, z);
+			rb.renderStandardBlockWithAmbientOcclusion(t.getDisguise(meta), x, y, z, 1, 1, 1);
 		}
 		return true;
 	}

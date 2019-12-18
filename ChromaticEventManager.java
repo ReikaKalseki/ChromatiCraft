@@ -136,8 +136,6 @@ import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.ChromatiCraft.ModInterface.TileEntityVoidMonsterTrap;
-import Reika.ChromatiCraft.ModInterface.VoidMonsterDestructionRitual;
-import Reika.ChromatiCraft.ModInterface.VoidMonsterDestructionRitual.VoidMonsterRitualDamage;
 import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers;
 import Reika.ChromatiCraft.ModInterface.Bees.EfficientFlowerCache;
 import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
@@ -274,14 +272,6 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
-	}
-
-	@SubscribeEvent
-	@ModDependent(ModList.VOIDMONSTER)
-	public void triggerVoidMonsterCooldown(LivingDeathEvent evt) {
-		if (evt.entityLiving instanceof EntityVoidMonster && evt.source instanceof VoidMonsterRitualDamage) {
-			VoidMonsterDestructionRitual.onCompletion((EntityVoidMonster)evt.entityLiving);
-		}
 	}
 
 	@SubscribeEvent

@@ -13,8 +13,10 @@ import java.util.Random;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
+import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -44,25 +46,35 @@ public class VoidMonsterDestructionRitual {
 
 	private final WorldLocation center;
 	private final EntityPlayer startingPlayer;
+	private final int monsterID;
+	private final World world;
 
 	private static final Random rand = new Random();
 
-	public VoidMonsterDestructionRitual(TileEntityVoidMonsterTrap loc) {
+	public VoidMonsterDestructionRitual(TileEntityVoidMonsterTrap loc, EntityLiving e) {
 		startingPlayer = loc.getPlacer();
 		center = new WorldLocation(loc);
+		monsterID = e.getEntityId();
+		world = loc.worldObj;
+	}
+
+	public EntityLiving getEntity() {
+		return (EntityLiving)world.getEntityByID(monsterID);
+	}
+
+	public boolean tick() {
+		EntityLiving e = this.getEntity();
+		for (Effects ef : Effects.list) {
+			if (rand.nextInt(ef.effectChance) == 0) {
+				ef.doEffectServer(this, e);
+			}
+		}
+		return e.getHealth() <= 0;
 	}
 
 	@ModDependent(ModList.VOIDMONSTER)
-	public void tick(Entity e) {
-		for (Effects ef : Effects.list) {
-			if (rand.nextInt(ef.effectChance) == 0) {
-				ef.doEffectServer(this, (EntityVoidMonster)e);
-			}
-		}
-	}
-
-	public static void onCompletion(EntityVoidMonster e) {
-		MonsterGenerator.instance.addCooldown(e, 20*60*ReikaRandomHelper.getRandomBetween(20, 45));
+	public void onCompletion() {
+		MonsterGenerator.instance.addCooldown((EntityVoidMonster)this.getEntity(), 20*60*ReikaRandomHelper.getRandomBetween(20, 45));
 	}
 
 	public static enum Effects {
@@ -82,7 +94,7 @@ public class VoidMonsterDestructionRitual {
 		}
 
 		@ModDependent(ModList.VOIDMONSTER)
-		public void doEffectServer(VoidMonsterDestructionRitual rit, EntityVoidMonster e) {
+		public void doEffectServer(VoidMonsterDestructionRitual rit, EntityLiving e) {
 			DamageSource src = new VoidMonsterRitualDamage(rit.startingPlayer);
 			e.attackEntityFrom(src, damageAmount);
 			switch(this) {

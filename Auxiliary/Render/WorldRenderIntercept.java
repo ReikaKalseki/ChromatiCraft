@@ -5,10 +5,10 @@ import java.util.HashMap;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.WorldRenderer;
 
 import Reika.ChromatiCraft.Registry.ChromaShaders;
-import Reika.DragonAPI.IO.Shaders.ShaderRegistry;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 public class WorldRenderIntercept {
@@ -41,9 +41,10 @@ public class WorldRenderIntercept {
 				ChromaShaders.VOIDRITUAL$WAVE.getShader().setField("chunkY", c.yCoord);
 				ChromaShaders.VOIDRITUAL$WAVE.getShader().setField("chunkZ", c.zCoord);
 			}
-			ShaderRegistry.runShader(ChromaShaders.VOIDRITUAL$WAVE.getShader());
+			ChromaShaders.VOIDRITUAL$WAVE.getShader().setTextureUnit("bgl_LightMapTexture", OpenGlHelper.lightmapTexUnit);
+			//ShaderRegistry.runShader(ChromaShaders.VOIDRITUAL$WAVE.getShader());
 			GL11.glCallList(id);
-			ShaderRegistry.completeShader();
+			//ShaderRegistry.completeShader();
 		}
 	}
 

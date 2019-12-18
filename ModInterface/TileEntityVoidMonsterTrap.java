@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -166,18 +167,21 @@ Linkable, ChunkLoadingTile {
 						te.addWatcher(this);
 					}
 				}
-				Entity e = MonsterAPI.getNearestMonster(world, x+0.5, y+0.5, z+0.5);
+				EntityLiving e = this.getMonster(world, x, y, z);
 				if (e != null) {
 					if (ReikaItemHelper.matchStacks(inv[0], ChromaStacks.voidmonsterEssence)) {
 						if (this.hasEnergy(required)) {
 							if (this.isActive()) {
-								ritual.tick(e);
+								if (ritual.tick()) {
+									ritual.onCompletion();
+									ritual = null;
+								}
 							}
 							else {
 								if (this.canAttractMonster()) {
 									double dist = this.attractMonster(world, x, y, z);
 									if (dist < 1) {
-										this.activate(world, x, y, z);
+										this.activate(world, x, y, z, e);
 									}
 								}
 							}
@@ -198,13 +202,17 @@ Linkable, ChunkLoadingTile {
 		}
 	}
 
-	private void activate(World world, int x, int y, int z) {
-		ritual = new VoidMonsterDestructionRitual(this);
+	private EntityLiving getMonster(World world, int x, int y, int z) {
+		return ritual != null ? ritual.getEntity() : MonsterAPI.getNearestMonster(world, x+0.5, y+0.5, z+0.5);
+	}
+
+	private void activate(World world, int x, int y, int z, EntityLiving e) {
+		ritual = new VoidMonsterDestructionRitual(this, e);
 	}
 
 	@ModDependent(ModList.VOIDMONSTER)
 	private double attractMonster(World world, int x, int y, int z) {
-		EntityVoidMonster e = (EntityVoidMonster)MonsterAPI.getNearestMonster(world, x+0.5, y+0.5, z+0.5);
+		EntityVoidMonster e = (EntityVoidMonster)this.getMonster(world, x, y, z);
 		if (e == null)
 			return Double.POSITIVE_INFINITY;
 		VoidMonsterTether t = this.getOrCreateTether(e);
