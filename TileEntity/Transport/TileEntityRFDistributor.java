@@ -194,6 +194,8 @@ public class TileEntityRFDistributor extends TileEntityAreaDistributor implement
 		if (te instanceof TileEntityRFDistributor)
 			return te.yCoord < yCoord;
 		if (te instanceof IEnergyReceiver || te instanceof IEnergyHandler) {
+			if (ModList.BCTRANSPORT.isLoaded() && InterfaceCache.BCPIPE.instanceOf(te))
+				return false;
 			if (ModList.IMMERSIVEENG.isLoaded() && InterfaceCache.IMMERSIVEWIRE.instanceOf(te)) {
 				blacklist.add(c);
 				return false;

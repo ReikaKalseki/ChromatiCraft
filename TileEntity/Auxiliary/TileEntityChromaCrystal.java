@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -51,6 +51,10 @@ public class TileEntityChromaCrystal extends TileEntityChromaticBase implements 
 		return ChromaTiles.CRYSTAL;
 	}
 
+	public boolean isConnected() {
+		return pylonLocation != null;
+	}
+
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 
@@ -61,6 +65,7 @@ public class TileEntityChromaCrystal extends TileEntityChromaticBase implements 
 		if (!world.isRemote)
 			pylonLocation = this.findPylonLocation(world, x, y, z);
 		this.syncAllData(true);
+		worldObj.markBlockForUpdate(x, y, z);
 	}
 
 	private Coordinate findPylonLocation(World world, int x, int y, int z) {

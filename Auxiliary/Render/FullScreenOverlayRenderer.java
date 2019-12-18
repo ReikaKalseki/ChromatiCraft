@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Magic.Lore.KeyAssemblyPuzzle.TileGroup;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator.PylonEntry;
@@ -160,7 +161,7 @@ public class FullScreenOverlayRenderer {
 						factors.remove(e);
 				}
 				if (res > 0) {
-					if (res > maxIntensity) {
+					if (!Chromabilities.PYLON.enabledOn(ep) && res > maxIntensity) {
 						maxIntensity = res;
 						glowColor = e;
 						float f = Math.min(1, (float)(1.5-dd/20));

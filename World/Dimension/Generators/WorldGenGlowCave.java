@@ -356,11 +356,6 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 			return new CavePoint(posX+x, posY+y, posZ+z, radius);
 		}
 
-		@Override
-		public DecimalPosition asPosition() {
-			return super.asPosition();
-		}
-
 	}
 
 }

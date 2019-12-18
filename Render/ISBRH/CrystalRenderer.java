@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -103,7 +103,7 @@ public class CrystalRenderer implements ISBRH {
 		int color = /*discover ? */((CrystalRenderedBlock)b).getTintColor(meta);// : 0xbbbbbb;
 		int alpha = /*discover ? */220;// : 32;
 
-		IIcon ico = b.getIcon(0, meta);
+		IIcon ico = b.getIcon(world, x, y, z, 0);
 		//ico = Blocks.blockNetherQuartz.getIcon(0, 0);
 		double u = ico.getMinU();
 		double v = ico.getMinV();

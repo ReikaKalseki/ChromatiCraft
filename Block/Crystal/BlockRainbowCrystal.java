@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
 import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityChromaCrystal;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
@@ -35,19 +36,28 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockRainbowCrystal extends BlockCrystalTileNonCube implements CrystalRenderedBlock {
 
+	private IIcon inertIcon;
+
 	public BlockRainbowCrystal(Material mat) {
 		super(mat);
 	}
 
-	@SideOnly(Side.CLIENT)
 	@Override
+	@SideOnly(Side.CLIENT)
 	public final IIcon getIcon(int s, int meta) {
 		return blockIcon;
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
+	public final IIcon getIcon(IBlockAccess iba, int x, int y, int z, int s) {
+		return ((TileEntityChromaCrystal)iba.getTileEntity(x, y, z)).isConnected() ? blockIcon : inertIcon;
+	}
+
+	@Override
 	public final void registerBlockIcons(IIconRegister ico) {
 		blockIcon = ico.registerIcon("chromaticraft:crystal/chroma");
+		inertIcon = ico.registerIcon("chromaticraft:crystal/chroma_inert");
 	}
 
 	@Override

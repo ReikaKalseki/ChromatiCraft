@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Render.TESR;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -31,6 +32,8 @@ import Reika.ChromatiCraft.ModInterface.TileEntityVoidMonsterTrap.VoidMonsterTet
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.DragonAPI.Instantiable.RayTracer;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
+import Reika.DragonAPI.Instantiable.Math.VariableEndpointSpline;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -119,9 +122,28 @@ public class RenderVoidMonsterTrap extends ChromaRenderBase {
 
 	private void renderTethers(TileEntityVoidMonsterTrap te, float par8) {
 		Collection<VoidMonsterTether> c = te.getTethers();
+		BlendMode.ADDITIVEDARK.apply();
 		for (VoidMonsterTether v : c) {
 			Entity e = v.getEntity(te.worldObj);
-			ChromaFX.renderBeam(0.5, 0.5, 0.5, e.posX-te.xCoord, e.posY-te.yCoord, e.posZ-te.zCoord, par8, 255, 0.125, 0xffffff);
+			double d = 0.25+0.5*(1-v.getDistance()/16D);
+			//ReikaJavaLibrary.pConsole(v.getDistance()+" > "+d);
+			int c1 = 0xffffff;
+			int c2 = 0xda50ff;
+			double dc = te.getTicksExisted()/5D;
+			for (VariableEndpointSpline s : v.getSplines()) {
+				List<DecimalPosition> li = s.getPoints(8);
+				//ReikaJavaLibrary.pConsole(li);
+				//ChromaFX.renderBeam(0.5, 0.5, 0.5, e.posX-te.xCoord, te.yCoord-e.posY, -(e.posZ-te.zCoord), par8, 255, d, 0xffffff);
+				for (int i = 0; i < li.size()-1; i++) {
+					float f = (float)(0.5+0.5*Math.sin(dc));
+					int clr = ReikaColorAPI.mixColors(c1, c2, f);
+					DecimalPosition pos1 = li.get(i);
+					DecimalPosition pos2 = li.get(i+1);
+					ChromaFX.renderBeam(pos1.xCoord-te.xCoord, te.yCoord+1-pos1.yCoord, te.zCoord+1-pos1.zCoord, pos2.xCoord-te.xCoord, te.yCoord+1-pos2.yCoord, te.zCoord+1-pos2.zCoord, par8, 255, d, clr);
+					dc += 0.4;
+				}
+				dc += 0.9;
+			}
 		}
 	}
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -40,7 +40,6 @@ import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledSoundEvent
 import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
-import Reika.DragonAPI.Instantiable.Math.Spline.VibratingSpline;
 import Reika.DragonAPI.Instantiable.ParticleController.BlendListColorController;
 import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Interfaces.ColorController;
@@ -89,7 +88,7 @@ public class ItemSplineAttack extends ItemChromaTool {
 		//if (world.isRemote)
 		//	Collections.shuffle(li);
 		Collections.sort(li, entitySorter);
-		VibratingSpline s = new VibratingSpline(SplineType.CHORDAL);
+		Spline s = new Spline(SplineType.CHORDAL);
 		if (world.isRemote) {
 			DecimalPosition pos = new DecimalPosition(ep.posX, ep.posY-0.375, ep.posZ);
 			s.addPoint(new BasicSplinePoint(pos));

@@ -1,4 +1,3 @@
-varying vec2 vLightMapCoords;
 varying vec4 vLightMapColor;
 
 uniform sampler2D bgl_LightMapTexture;
@@ -25,6 +24,9 @@ void main() {
 	gl_Position = gl_ModelViewProjectionMatrix * vert;
     texcoord = vec2(gl_MultiTexCoord0);
     vec2 lightMapCoords = vec2(gl_MultiTexCoord1);
-    vLightMapColor = texture2D(bgl_LightMapTexture, vec2(0.5+lightMapCoords.x, 0.5+lightMapCoords.y));
+	//lightMapCoords *= 15.0/16.0;
+	//lightMapCoords += 1.0/32.0;
+	lightMapCoords /= 240.0;
+    vLightMapColor = min(texture2D(bgl_LightMapTexture, lightMapCoords)*2.0, vec4(1.0));
 	gl_FrontColor = gl_Color;
 }
