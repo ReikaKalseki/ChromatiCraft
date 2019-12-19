@@ -38,7 +38,7 @@ public enum ChromaShaders implements ShaderHook {
 	PYLONTURBO$PINCH(ShaderDomain.GLOBAL),
 
 	VOIDRITUAL$SPHERE(),
-	VOIDRITUAL$WAVE(ShaderDomain.WORLD),
+	VOIDRITUAL$WORLD(ShaderDomain.WORLD),
 
 	MONUMENTRITUAL();
 

@@ -9,6 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
@@ -24,6 +27,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.IO.Shaders.ShaderComponent;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Formula.MathExpression;
 import Reika.DragonAPI.Instantiable.Formula.PeriodicExpression;
@@ -50,6 +54,8 @@ public class VoidMonsterDestructionRitual {
 	private final World world;
 
 	private static final Random rand = new Random();
+	private static final Collection<VoidMonsterDestructionRitual> activeRituals = new HashSet();
+	private static int ritualCount = 0;
 
 	public VoidMonsterDestructionRitual(TileEntityVoidMonsterTrap loc, EntityLiving e) {
 		startingPlayer = loc.getPlacer();
@@ -63,8 +69,13 @@ public class VoidMonsterDestructionRitual {
 	}
 
 	public boolean tick() {
+		activeRituals.add(this);
 		EntityLiving e = this.getEntity();
 		for (Effects ef : Effects.list) {
+			if (ef.shader != null) {
+				ef.shader.tick();
+				ef.fadeShader();
+			}
 			if (rand.nextInt(ef.effectChance) == 0) {
 				ef.doEffectServer(this, e);
 			}
@@ -72,25 +83,73 @@ public class VoidMonsterDestructionRitual {
 		return e.getHealth() <= 0;
 	}
 
+	public static void sync() {
+		ritualCount = activeRituals.size();
+		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.VOIDMONSTERRITUALSET.ordinal(), PacketTarget.allPlayers.allPlayers, ritualCount);
+	}
+
 	@ModDependent(ModList.VOIDMONSTER)
 	public void onCompletion() {
+		activeRituals.remove(this);
+		this.sync();
 		MonsterGenerator.instance.addCooldown((EntityVoidMonster)this.getEntity(), 20*60*ReikaRandomHelper.getRandomBetween(20, 45));
 	}
 
+	public static void readSync(int amt) {
+		ritualCount = amt;
+	}
+
+	public static boolean ritualsActive() {
+		return ritualCount > 0;
+	}
+
 	public static enum Effects {
-		COLLAPSING_SPHERE(40, 20),
-		RAYS(70, 40),
-		EXPLOSION(200, 0),
-		DISTORTION(400, 20);
+		COLLAPSING_SPHERE(	40, 20,	false, 0, 0.05F, new SphereShader()),
+		RAYS(				70, 40,	false),
+		EXPLOSION(			200, 0, false),
+		DISTORTION(			400, 20, true, 0, 0.1F, new DistortionShader());
 
 		private final int effectChance;
 		private final int damageAmount;
+		public final boolean hasTerrainShader;
+		private final float shaderDecayFactor;
+		private final float shaderDecayLinear;
+
+		private VoidMonsterRitualShaderComponent shader;
 
 		private static Effects[] list = values();
+		private static final Collection<Effects> terrainShaderEffects = new HashSet();
 
-		private Effects(int c, int dmg) {
+		private Effects(int c, int dmg, boolean shader) {
+			this(c, dmg, shader, 0, 0, null);
+		}
+
+		private Effects(int c, int dmg, boolean shader, float f, float l, ShaderComponent s) {
 			effectChance = c;
 			damageAmount = dmg;
+			hasTerrainShader = shader;
+			shaderDecayFactor = f;
+			shaderDecayLinear = l;
+		}
+
+		static {
+			for (Effects e : list) {
+				if (e.hasTerrainShader) {
+					terrainShaderEffects.add(e);
+				}
+			}
+		}
+
+		public static Collection<Effects> getTerrainShaders() {
+			return Collections.unmodifiableCollection(terrainShaderEffects);
+		}
+
+		private void fadeShader() {
+			shader.setIntensity(Math.max(0, shader.getIntensity()*shaderDecayFactor-shaderDecayLinear));
+		}
+
+		public ShaderComponent getShader() {
+			return shader;
 		}
 
 		@ModDependent(ModList.VOIDMONSTER)
@@ -118,6 +177,9 @@ public class VoidMonsterDestructionRitual {
 			double ex = e.posX;
 			double ey = e.posY+1;
 			double ez = e.posZ;
+			if (shader != null) {
+				shader.refresh();
+			}
 			switch(this) {
 				case COLLAPSING_SPHERE:
 					for (int i = 0; i < 128; i++) {
@@ -191,6 +253,29 @@ public class VoidMonsterDestructionRitual {
 		@Override
 		public boolean isMagicDamage() {
 			return true;
+		}
+
+	}
+
+	private static class DistortionShader extends VoidMonsterRitualShaderComponent {
+
+	}
+
+	private static class SphereShader extends VoidMonsterRitualShaderComponent {
+
+	}
+
+	private static class VoidMonsterRitualShaderComponent extends ShaderComponent {
+
+		private int tick;
+
+		protected void tick() {
+			tick++;
+		}
+
+		private void refresh() {
+			tick = 0;
+			this.setIntensity(1);
 		}
 
 	}

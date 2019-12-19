@@ -100,6 +100,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavationWand;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.ModInterface.VoidMonsterDestructionRitual;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
@@ -562,16 +563,19 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 	@SubscribeEvent
 	public void clearOnLogout(ClientDisconnectionFromServerEvent evt) {
 		SkyRiverManagerClient.handleRayClearPacket();
+		VoidMonsterDestructionRitual.readSync(0);
 	}
 
 	@SubscribeEvent
 	public void clearOnLogout(ClientLogoutEvent evt) {
 		SkyRiverManagerClient.handleRayClearPacket();
+		VoidMonsterDestructionRitual.readSync(0);
 	}
 
 	@SubscribeEvent
 	public void clearOnLogout(SinglePlayerLogoutEvent evt) {
 		SkyRiverManagerClient.handleRayClearPacket();
+		VoidMonsterDestructionRitual.readSync(0);
 	}
 
 	@SubscribeEvent

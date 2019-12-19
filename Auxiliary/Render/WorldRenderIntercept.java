@@ -8,7 +8,10 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.WorldRenderer;
 
+import Reika.ChromatiCraft.ModInterface.VoidMonsterDestructionRitual;
+import Reika.ChromatiCraft.ModInterface.VoidMonsterDestructionRitual.Effects;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
+import Reika.DragonAPI.IO.Shaders.ShaderRegistry;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 public class WorldRenderIntercept {
@@ -30,21 +33,34 @@ public class WorldRenderIntercept {
 	}
 
 	public static void callGlLists(IntBuffer lists) {
-		while (lists.remaining() > 0) {
-			ChromaShaders.VOIDRITUAL$WAVE.setIntensity(1);
-			ChromaShaders.VOIDRITUAL$WAVE.getShader().updateEnabled();
-			int id = lists.get();
-			Coordinate c = instance.getRenderChunkForList(id);
-			//ReikaJavaLibrary.pConsole("Running GL list # "+id+" which maps to chunk "+c);
-			if (c != null) {
-				ChromaShaders.VOIDRITUAL$WAVE.getShader().setField("chunkX", c.xCoord);
-				ChromaShaders.VOIDRITUAL$WAVE.getShader().setField("chunkY", c.yCoord);
-				ChromaShaders.VOIDRITUAL$WAVE.getShader().setField("chunkZ", c.zCoord);
+		float f = 0;
+		if (VoidMonsterDestructionRitual.ritualsActive()) {
+			for (Effects e : Effects.getTerrainShaders()) {
+				float f2 = e.getShader().getIntensity();
+				f = Math.max(f, f2);
+				if (f2 > 0) {
+					ChromaShaders.VOIDRITUAL$WORLD.getShader().applyShaderData(e.getShader());
+				}
 			}
-			ChromaShaders.VOIDRITUAL$WAVE.getShader().setTextureUnit("bgl_LightMapTexture", OpenGlHelper.lightmapTexUnit);
-			//ShaderRegistry.runShader(ChromaShaders.VOIDRITUAL$WAVE.getShader());
+		}
+		while (lists.remaining() > 0) {
+			int id = lists.get();
+			if (f > 0) {
+				ChromaShaders.VOIDRITUAL$WORLD.setIntensity(f);
+				ChromaShaders.VOIDRITUAL$WORLD.getShader().updateEnabled();
+				Coordinate c = instance.getRenderChunkForList(id);
+				//ReikaJavaLibrary.pConsole("Running GL list # "+id+" which maps to chunk "+c);
+				if (c != null) {
+					ChromaShaders.VOIDRITUAL$WORLD.getShader().setField("chunkX", c.xCoord);
+					ChromaShaders.VOIDRITUAL$WORLD.getShader().setField("chunkY", c.yCoord);
+					ChromaShaders.VOIDRITUAL$WORLD.getShader().setField("chunkZ", c.zCoord);
+				}
+				ChromaShaders.VOIDRITUAL$WORLD.getShader().setTextureUnit("bgl_LightMapTexture", OpenGlHelper.lightmapTexUnit);
+				ShaderRegistry.runShader(ChromaShaders.VOIDRITUAL$WORLD.getShader());
+			}
 			GL11.glCallList(id);
-			//ShaderRegistry.completeShader();
+			if (f > 0)
+				ShaderRegistry.completeShader();
 		}
 	}
 
