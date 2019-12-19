@@ -74,7 +74,7 @@ public class VoidMonsterDestructionRitual {
 		activeRituals.add(this);
 		EntityLiving e = this.getEntity();
 		for (Effects ef : Effects.list) {
-			ef.tickShader(e);
+			ef.tickShader();
 			if (rand.nextInt(ef.effectChance) == 0) {
 				ef.doEffectServer(this, e);
 			}
@@ -229,12 +229,15 @@ public class VoidMonsterDestructionRitual {
 			ReikaSoundHelper.playClientSound(ChromaSounds.FLAREATTACK, e, 1, f, false);
 		}
 
-		private void tickShader(EntityLiving e) {
+		@SideOnly(Side.CLIENT)
+		public void tickShader() {
 			switch(this) {
 				case COLLAPSING_SPHERE:
-					float r = (float)shaderData.get("radius");
+					float r = (float)shaderData.get("size");
 					r -= 0.025F;
-					shaderData.put("radius", r);
+					shaderData.put("size", r);
+					if (r <= 0)
+						shaderIntensity = 0;
 					ChromaShaders.VOIDRITUAL$SPHERE.setIntensity(shaderIntensity);
 					ChromaShaders.VOIDRITUAL$SPHERE.getShader().updateEnabled();
 					ChromaShaders.VOIDRITUAL$SPHERE.getShader().setFields(shaderData);
@@ -244,15 +247,22 @@ public class VoidMonsterDestructionRitual {
 				case EXPLOSION:
 					break;
 				case DISTORTION:
+					int has = (int)shaderData.get("wavePhase");
+					has++;
+					shaderData.put("wavePhase", has);
+					if (has >= 200) {
+						shaderIntensity = 0;
+					}
 					break;
 			}
 		}
 
+		@SideOnly(Side.CLIENT)
 		private void setShaderData(EntityLiving e) {
 			switch(this) {
 				case COLLAPSING_SPHERE:
 					float r = 2;
-					shaderData.put("radius", r);
+					shaderData.put("size", r);
 					ChromaShaders.VOIDRITUAL$SPHERE.setIntensity(shaderIntensity);
 					ChromaShaders.VOIDRITUAL$SPHERE.getShader().updateEnabled();
 					ChromaShaders.VOIDRITUAL$SPHERE.getShader().setFields(shaderData);
@@ -262,6 +272,7 @@ public class VoidMonsterDestructionRitual {
 				case EXPLOSION:
 					break;
 				case DISTORTION:
+					shaderData.put("wavePhase", -200);
 					break;
 			}
 		}

@@ -6,6 +6,9 @@ uniform int chunkX;
 uniform int chunkY;
 uniform int chunkZ;
 
+uniform float offset;
+uniform float wavePhase;
+
 float getX(vec4 vert) {
 	return vert.x+float(chunkX);
 }

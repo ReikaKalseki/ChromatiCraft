@@ -4,7 +4,7 @@ void main() {
     vec2 coreXY = getScreenPos(0.5, 0.5, 0.5);
 	
 	float distv = distsq(coreXY, texcoord);
-	float distfac = max(0.0, min(1.0, 1.0-0.6*distv*size)-min(1.0, 0.04/(distv*size)));
+	float distfac = max(0.0, min(1.0, 1.0-0.6*distv/size)-min(1.0, 0.04*size/distv));
 	float f = intensity*distfac;
 	
 	vec2 texUV = mix(texcoord, coreXY, f/7.5);
