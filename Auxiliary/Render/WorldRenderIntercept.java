@@ -36,10 +36,10 @@ public class WorldRenderIntercept {
 		float f = 0;
 		if (VoidMonsterDestructionRitual.ritualsActive()) {
 			for (Effects e : Effects.getTerrainShaders()) {
-				float f2 = e.getShader().getIntensity();
+				float f2 = e.getShaderIntensity();
 				f = Math.max(f, f2);
 				if (f2 > 0) {
-					ChromaShaders.VOIDRITUAL$WORLD.getShader().applyShaderData(e.getShader());
+					ChromaShaders.VOIDRITUAL$WORLD.getShader().setFields(e.getShaderData());
 				}
 			}
 		}
