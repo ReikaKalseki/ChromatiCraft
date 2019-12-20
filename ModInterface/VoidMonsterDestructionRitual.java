@@ -11,8 +11,10 @@ package Reika.ChromatiCraft.ModInterface;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
@@ -20,6 +22,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
@@ -30,20 +33,25 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry;
+import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
+import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Formula.MathExpression;
 import Reika.DragonAPI.Instantiable.Formula.PeriodicExpression;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.ParticleController.CollectingPositionController;
 import Reika.DragonAPI.Instantiable.ParticleController.FlashColorController;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.VoidMonster.API.NonTeleportingDamage;
-import Reika.VoidMonster.Entity.EntityVoidMonster;
 import Reika.VoidMonster.World.MonsterGenerator;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -57,49 +65,85 @@ public class VoidMonsterDestructionRitual {
 
 	private static final Random rand = new Random();
 	private static final Collection<VoidMonsterDestructionRitual> activeRituals = new HashSet();
-	private static int ritualCount = 0;
+	private static final HashSet<Integer> ritualEntities = new HashSet();
 
 	public VoidMonsterDestructionRitual(TileEntityVoidMonsterTrap loc, EntityLiving e) {
-		startingPlayer = loc.getPlacer();
-		center = new WorldLocation(loc);
+		this(new WorldLocation(loc), loc.getPlacer(), e);
+	}
+
+	private VoidMonsterDestructionRitual(WorldLocation loc, EntityPlayer ep, EntityLiving e) {
+		startingPlayer = ep;
+		center = loc;
 		monsterID = e.getEntityId();
-		world = loc.worldObj;
+		world = ep.worldObj;
 	}
 
 	public EntityLiving getEntity() {
 		return (EntityLiving)world.getEntityByID(monsterID);
 	}
 
-	public boolean tick() {
+	private boolean tick() {
 		activeRituals.add(this);
 		EntityLiving e = this.getEntity();
 		for (Effects ef : Effects.list) {
-			ef.tickShader();
-			if (rand.nextInt(ef.effectChance) == 0) {
-				ef.doEffectServer(this, e);
+			if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+				if (ef.shaderIntensity > 0)
+					ef.tickShader();
+			}
+			else {
+				if (rand.nextInt(ef.effectChance) == 0) {
+					ef.doEffectServer(this, e);
+				}
 			}
 		}
 		return e.getHealth() <= 0;
 	}
 
 	public static void sync() {
-		ritualCount = activeRituals.size();
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.VOIDMONSTERRITUALSET.ordinal(), PacketTarget.allPlayers.allPlayers, ritualCount);
+		ritualEntities.clear();
+		for (VoidMonsterDestructionRitual v : activeRituals) {
+			ritualEntities.add(v.monsterID);
+		}
+		NBTTagCompound NBT = new NBTTagCompound();
+		ReikaNBTHelper.writeCollectionToNBT(ritualEntities, NBT, "data");
+		ReikaPacketHelper.sendNBTPacket(ChromatiCraft.packetChannel, ChromaPackets.VOIDMONSTERRITUALSET.ordinal(), NBT, PacketTarget.allPlayers.allPlayers);
 	}
 
 	@ModDependent(ModList.VOIDMONSTER)
-	public void onCompletion() {
-		activeRituals.remove(this);
-		this.sync();
-		MonsterGenerator.instance.addCooldown((EntityVoidMonster)this.getEntity(), 20*60*ReikaRandomHelper.getRandomBetween(20, 45));
+	private void onCompletion() {
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+			for (Effects ef : Effects.list) {
+				ef.shaderData.clear();
+				ef.shaderIntensity = 0;
+			}
+		}
+		else {
+			activeRituals.remove(this);
+			sync();
+			MonsterGenerator.instance.addCooldown(this.getEntity(), 20*60*ReikaRandomHelper.getRandomBetween(20, 45));
+		}
 	}
 
-	public static void readSync(int amt) {
-		ritualCount = amt;
+	@SideOnly(Side.CLIENT)
+	public static void readSync(NBTTagCompound tag) {
+		ritualEntities.clear();
+		if (tag != null) {
+			ReikaNBTHelper.readCollectionFromNBT(ritualEntities, tag, "data");
+		}
 	}
 
 	public static boolean ritualsActive() {
-		return ritualCount > 0;
+		return !ritualEntities.isEmpty();
+	}
+
+	public static boolean isFocusOfActiveRitual(Entity e) {
+		return ritualEntities.contains(e.getEntityId());
+	}
+
+	public static void setShaderFoci(Entity el) {
+		for (Effects e : Effects.list) {
+			e.setShaderFocus(el);
+		}
 	}
 
 	public static enum Effects {
@@ -276,15 +320,75 @@ public class VoidMonsterDestructionRitual {
 					break;
 			}
 		}
+
+		@SideOnly(Side.CLIENT)
+		private void setShaderFocus(Entity e) {
+			switch(this) {
+				case COLLAPSING_SPHERE:
+					ChromaShaders.VOIDRITUAL$SPHERE.getShader().setFocus(e);
+					ChromaShaders.VOIDRITUAL$SPHERE.getShader().setMatricesToCurrent();
+					break;
+				case RAYS:
+					break;
+				case EXPLOSION:
+					break;
+				case DISTORTION:
+					shaderData.put("wavePhase", -200);
+					break;
+			}
+		}
 	}
 
 	@SideOnly(Side.CLIENT)
 	@ModDependent(ModList.VOIDMONSTER)
 	public static void handlePacket(int entity, int effect) {
 		Entity e = Minecraft.getMinecraft().theWorld.getEntityByID(entity);
-		if (e instanceof EntityVoidMonster) {
-			Effects.list[effect].doEffectClient((EntityVoidMonster)e);
+		Effects.list[effect].doEffectClient((EntityLiving)e);
+	}
+
+	public static void registerHandler() {
+		TickRegistry.instance.registerTickHandler(RitualTickHandler.instance);
+	}
+
+	private static class RitualTickHandler implements TickHandler {
+
+		private static final RitualTickHandler instance = new RitualTickHandler();
+
+		private final HashSet<VoidMonsterDestructionRitual> active = new HashSet();
+
+		private RitualTickHandler() {
+
 		}
+
+		@Override
+		public void tick(TickType type, Object... tickData) {
+			if (!active.isEmpty()) {
+				Iterator<VoidMonsterDestructionRitual> it = active.iterator();
+				while (it.hasNext()) {
+					VoidMonsterDestructionRitual e = it.next();
+					if (e.tick()) {
+						e.onCompletion();
+						it.remove();
+					}
+				}
+			}
+		}
+
+		@Override
+		public EnumSet<TickType> getType() {
+			return EnumSet.of(TickType.SERVER, TickType.CLIENT);
+		}
+
+		@Override
+		public boolean canFire(Phase p) {
+			return p == Phase.END;
+		}
+
+		@Override
+		public String getLabel() {
+			return "voidritual";
+		}
+
 	}
 
 	public static class VoidMonsterRitualDamage extends DamageSource implements NonTeleportingDamage {

@@ -172,10 +172,7 @@ Linkable, ChunkLoadingTile {
 					if (ReikaItemHelper.matchStacks(inv[0], ChromaStacks.voidmonsterEssence)) {
 						if (this.hasEnergy(required)) {
 							if (this.isActive()) {
-								if (ritual.tick()) {
-									ritual.onCompletion();
-									ritual = null;
-								}
+
 							}
 							else {
 								if (this.canAttractMonster()) {

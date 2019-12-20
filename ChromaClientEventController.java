@@ -237,6 +237,13 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void setShaderFoci(EntityRenderEvent evt) {
+		if (VoidMonsterDestructionRitual.isFocusOfActiveRitual(evt.entity)) {
+			VoidMonsterDestructionRitual.setShaderFoci(evt.entity);
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void mapChunkRenderToCallList(ChunkWorldRenderEvent evt) {
 		WorldRenderIntercept.instance.mapChunkRenderList(evt.defaultGLListID, evt.renderer);
 	}
@@ -563,19 +570,19 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 	@SubscribeEvent
 	public void clearOnLogout(ClientDisconnectionFromServerEvent evt) {
 		SkyRiverManagerClient.handleRayClearPacket();
-		VoidMonsterDestructionRitual.readSync(0);
+		VoidMonsterDestructionRitual.readSync(null);
 	}
 
 	@SubscribeEvent
 	public void clearOnLogout(ClientLogoutEvent evt) {
 		SkyRiverManagerClient.handleRayClearPacket();
-		VoidMonsterDestructionRitual.readSync(0);
+		VoidMonsterDestructionRitual.readSync(null);
 	}
 
 	@SubscribeEvent
 	public void clearOnLogout(SinglePlayerLogoutEvent evt) {
 		SkyRiverManagerClient.handleRayClearPacket();
-		VoidMonsterDestructionRitual.readSync(0);
+		VoidMonsterDestructionRitual.readSync(null);
 	}
 
 	@SubscribeEvent

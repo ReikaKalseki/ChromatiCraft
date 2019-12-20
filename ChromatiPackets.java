@@ -1019,7 +1019,7 @@ public class ChromatiPackets implements PacketHandler {
 					VoidMonsterDestructionRitual.handlePacket(data[0], data[1]);
 					break;
 				case VOIDMONSTERRITUALSET:
-					VoidMonsterDestructionRitual.readSync(data[0]);
+					VoidMonsterDestructionRitual.readSync(NBT);
 					break;
 				case ALVEARYEFFECT:
 					((TileEntityLumenAlveary)tile).setEffectSelectionState(data[0], data[1] > 0);
