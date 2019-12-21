@@ -76,7 +76,8 @@ public class VoidMonsterDestructionRitual {
 
 	public boolean tick() {
 		activeRituals.add(this);
-		EntityLiving e = this.getEntity();
+		EntityVoidMonster e = (EntityVoidMonster)this.getEntity();
+		e.moveTowards(center.xCoord+0.5, center.yCoord+0.5, center.zCoord+0.5, 2);
 		for (Effects ef : Effects.list) {
 			if (rand.nextInt(ef.effectChance) == 0) {
 				ef.doEffectServer(this, e);
@@ -167,7 +168,7 @@ public class VoidMonsterDestructionRitual {
 				case RAYS:
 					break;
 				case EXPLOSION:
-					e.worldObj.newExplosion(e, e.posX, e.posY, e.posZ, 9, true, true);
+					e.worldObj.newExplosion(e, e.posX, e.posY, e.posZ, 9, true, false);
 					break;
 				case DISTORTION:
 					break;

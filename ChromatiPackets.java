@@ -97,10 +97,11 @@ import Reika.ChromatiCraft.ModInterface.AE.TileEntityMEDistributor;
 import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.CrystalWand;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.EssentiaNetwork.EssentiaPath;
-import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterDestructionRitual;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeReceiverWrapper;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeRecharger;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectFormer;
+import Reika.ChromatiCraft.ModInterface.VoidRitual.TileEntityVoidMonsterTrap;
+import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterDestructionRitual;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -1066,6 +1067,9 @@ public class ChromatiPackets implements PacketHandler {
 				case LINKFAIL:
 					tile = Coordinate.readFromNBT("loc", NBT).getTileEntity(world);
 					((TileEntityProgressionLinker)tile).showFailure(LinkFailure.readFromNBT(NBT));
+					break;
+				case VOIDTRAPEAT:
+					TileEntityVoidMonsterTrap.doEatFX(world, x, y, z);
 					break;
 			}
 		}

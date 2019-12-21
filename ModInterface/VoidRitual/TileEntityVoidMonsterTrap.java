@@ -6,15 +6,21 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityBreakingFX;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.Teleporter;
 import net.minecraft.world.World;
@@ -24,8 +30,9 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.Linkable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
-import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
+import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -38,23 +45,31 @@ import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
 import Reika.DragonAPI.Instantiable.Math.VariableEndpointSpline;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
+import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.VoidMonster.API.MonsterAPI;
 import Reika.VoidMonster.Entity.EntityVoidMonster;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements MultiBlockChromaTile, WireWatcher, LocationCached,
-Linkable, ChunkLoadingTile, BreakAction {
+
+public class TileEntityVoidMonsterTrap extends InventoriedCrystalReceiver implements MultiBlockChromaTile, WireWatcher, LocationCached,
+Linkable, ChunkLoadingTile, BreakAction, InertIInv {
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
@@ -87,6 +102,10 @@ Linkable, ChunkLoadingTile, BreakAction {
 		required.addTag(CrystalElement.MAGENTA, 2);
 	}
 
+	public static ElementTagCompound getRequiredEnergy() {
+		return required.copy();
+	}
+
 	public void activateOuterRing() {
 		outerRingActivation = RING_DURATION;
 	}
@@ -105,7 +124,7 @@ Linkable, ChunkLoadingTile, BreakAction {
 	}
 
 	public boolean canAttractMonster() {
-		return (this.isNether() || outerRingActivation > 0) && hasStructure && (link != null || !this.isNether()) && !this.isActive();
+		return hasStructure && (link != null || !this.isNether()) && !this.isActive();
 	}
 
 	public boolean isNether() {
@@ -150,9 +169,27 @@ Linkable, ChunkLoadingTile, BreakAction {
 		this.reset();
 	}
 
+	private void checkAndRequest() {
+		for (CrystalElement e : required.elementSet()) {
+			int amt = this.getRemainingSpace(e);
+			if (amt > 0) {
+				boolean ret = this.requestEnergy(e, amt);
+			}
+		}
+	}
+
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
+		super.updateEntity(world, x, y, z, meta);
+
+		if (!world.isRemote && this.hasStructure() && this.getCooldown() == 0 && checkTimer.checkCap()) {
+			this.checkAndRequest();
+		}
+
 		if (!world.isRemote) {
+			if (inv[0] == null || inv[0].stackSize < this.getInventoryStackLimit()) {
+				this.searchForItems(world, x, y, z);
+			}
 			if (explosionSeek.size() < 4) {
 				hasStructure = false;
 				explosionSeek.clear();
@@ -172,29 +209,27 @@ Linkable, ChunkLoadingTile, BreakAction {
 						te.addWatcher(this);
 					}
 				}
-				if (!this.isActive()) {
-					EntityLiving e = this.getMonster(world, x, y, z);
-					if (e != null) {
-						if (ReikaItemHelper.matchStacks(inv[0], ChromaStacks.voidmonsterEssence)) {
-							if (this.hasEnergy(required)) {
-								if (this.isActive()) {
-									if (ritual.tick()) {
-										ritual.onCompletion();
-										ritual = null;
-									}
+				EntityLiving e = this.getMonster(world, x, y, z);
+				if (e != null) {
+					if (ReikaItemHelper.matchStacks(inv[0], ChromaStacks.voidmonsterEssence)) {
+						if (energy.containsAtLeast(required)) {
+							if (this.isActive()) {
+								if (ritual.tick()) {
+									ritual.onCompletion();
+									ritual = null;
 								}
-								else {
-									if (this.canAttractMonster()) {
-										double dist = this.attractMonster(world, x, y, z);
-										if (dist < 1) {
-											this.activate(world, x, y, z, e);
-										}
-									}
-								}
-								this.useEnergy(required);
-								if (rand.nextInt(this.isActive() ? 20 : 60) == 0)
-									ReikaInventoryHelper.decrStack(1, inv);
 							}
+							else {
+								if (this.canAttractMonster()) {
+									double dist = this.attractMonster(world, x, y, z);
+									if (dist < 1) {
+										this.activate(world, x, y, z, e);
+									}
+								}
+							}
+							this.drainEnergy(required);
+							if (rand.nextInt(this.isActive() ? 20 : 60) == 0)
+								ReikaInventoryHelper.decrStack(0, inv);
 						}
 					}
 				}
@@ -209,12 +244,73 @@ Linkable, ChunkLoadingTile, BreakAction {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
+	public static void doEatFX(World world, int x, int y, int z) {
+		for (int i = 0; i < 4; i++) {
+			EntityFX fx = new EntityBreakingFX(world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble(), ChromaStacks.voidmonsterEssence.getItem(), ChromaStacks.voidmonsterEssence.getItemDamage());
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+	}
+
+	private void searchForItems(World world, int x, int y, int z) {
+		AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(this).expand(8, 5, 8);
+		List<EntityItem> li = world.selectEntitiesWithinAABB(EntityItem.class, box, new ReikaEntityHelper.SpecificItemSelector(ChromaStacks.voidmonsterEssence));
+		double v = 0.125;
+		for (EntityItem ent : li) {
+			if (ent.ticksExisted > 5) {
+				//Vec3 i2vac = ReikaVectorHelper.getVec2Pt(ent.posX, ent.posY, ent.posZ, x+0.5, y+0.5, z+0.5);
+				//if (ReikaWorldHelper.canBlockSee(world, x, y, z, ent.posX, ent.posY, ent.posZ, this.getRange()+2)) {
+				double dx = (x+0.5 - ent.posX);
+				double dy = (y+0.5 - ent.posY);
+				double dz = (z+0.5 - ent.posZ);
+				double ddt = ReikaMathLibrary.py3d(dx, dy, dz);
+				if (ddt < 0.5) {
+					ItemStack is = ent.getEntityItem();
+					ItemStack is2 = ReikaItemHelper.getSizedItemStack(is, 1);
+					if (ReikaInventoryHelper.addOrSetStack(is2, inv, 0)) {
+						is.stackSize--;
+						if (is.stackSize <= 0) {
+							ent.setDead();
+						}
+						else {
+							ent.setEntityItemStack(is);
+						}
+						ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.VOIDTRAPEAT.ordinal(), new PacketTarget.RadiusTarget(this, 32));
+					}
+				}
+				else {
+					if (ent.ticksExisted > 50 && ddt > 1.5 && ent.ticksExisted%400 < 80) { //For routing around objects
+						double t = this.getTicksExisted()/25D;
+						double r = 2.875;//+1*ReikaMathLibrary.cosInterpolation(0, 1, Math.sin(t/2));
+						dx += r*Math.cos(t);
+						dz += r*Math.sin(t);
+					}
+					double vx = v*dx/ddt/ddt;
+					double vy = v*dy/ddt/ddt/2;
+					double vz = v*dz/ddt/ddt;
+					double vmax = 0.125;
+					vx = MathHelper.clamp_double(vx, -vmax, vmax);
+					vy = MathHelper.clamp_double(vy, -vmax, vmax);
+					vz = MathHelper.clamp_double(vz, -vmax, vmax);
+					ent.motionX += vx;
+					ent.motionY += vy;
+					ent.motionZ += vz;
+					if (ent.posY < y)
+						ent.motionY += 0.125;
+					if (!world.isRemote)
+						ent.velocityChanged = true;
+				}
+			}
+		}
+	}
+
 	private EntityLiving getMonster(World world, int x, int y, int z) {
 		return ritual != null ? ritual.getEntity() : MonsterAPI.getNearestMonster(world, x+0.5, y+0.5, z+0.5);
 	}
 
 	private void activate(World world, int x, int y, int z, EntityLiving e) {
 		ritual = new VoidMonsterDestructionRitual(this, e);
+		ReikaJavaLibrary.pConsole("Activating ritual with "+this+" "+e);
 	}
 
 	@ModDependent(ModList.VOIDMONSTER)
@@ -237,7 +333,7 @@ Linkable, ChunkLoadingTile, BreakAction {
 				this.removeTether(t, world);
 				return dist;
 			}
-			double s = innerRingActivation > 0 ? 1.5 : 0.25;
+			double s = 1.5;//innerRingActivation > 0 ? 1.5 : 0.25;
 			t.setDistance(e.moveTowards(x+0.5, y-0.5, z+0.5, s*Math.min(1, 20/dist)));
 			return t.distance;
 		}
@@ -320,37 +416,22 @@ Linkable, ChunkLoadingTile, BreakAction {
 
 	@Override
 	public int getSizeInventory() {
-		return 2;
+		return 1;
 	}
 
 	@Override
 	public int getInventoryStackLimit() {
-		return 8;
+		return ChromaStacks.voidmonsterEssence.getMaxStackSize();
 	}
 
 	@Override
-	public float getCostModifier() {
-		return this.isActive() ? 2 : 1;
-	}
-
-	@Override
-	public boolean usesColor(CrystalElement e) {
-		return required.contains(e);
-	}
-
-	@Override
-	protected boolean canExtractOtherItem(int slot, ItemStack is, int side) {
+	public boolean canExtractItem(int slot, ItemStack is, int side) {
 		return false;
 	}
 
 	@Override
-	protected boolean isItemValidForOtherSlot(int slot, ItemStack is) {
-		return slot == 1 && ReikaItemHelper.matchStacks(is, ChromaStacks.voidDust);
-	}
-
-	@Override
-	public ElementTagCompound getRequiredEnergy() {
-		return required.copy();
+	public boolean isItemValidForSlot(int slot, ItemStack is) {
+		return false;
 	}
 
 	@Override
@@ -501,6 +582,31 @@ Linkable, ChunkLoadingTile, BreakAction {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public int getReceiveRange() {
+		return 24;
+	}
+
+	@Override
+	public boolean isConductingElement(CrystalElement e) {
+		return required.contains(e);
+	}
+
+	@Override
+	public int maxThroughput() {
+		return 100;
+	}
+
+	@Override
+	public boolean canConduct() {
+		return hasStructure;
+	}
+
+	@Override
+	public int getMaxStorage(CrystalElement e) {
+		return required.getValue(e)*600;
 	}
 
 	private static class MonsterTeleporter extends Teleporter {
