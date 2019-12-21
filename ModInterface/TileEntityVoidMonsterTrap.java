@@ -104,7 +104,7 @@ Linkable, ChunkLoadingTile {
 	}
 
 	public boolean canAttractMonster() {
-		return (this.isNether() || outerRingActivation > 0) && hasStructure && (link != null || !this.isNether());
+		return (this.isNether() || outerRingActivation > 0) && hasStructure && (link != null || !this.isNether()) && !this.isActive();
 	}
 
 	public boolean isNether() {
@@ -147,6 +147,12 @@ Linkable, ChunkLoadingTile {
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
+		if (this.isActive()) {
+			if (ritual.tick()) {
+				ritual.onCompletion();
+				ritual = null;
+			}
+		}
 		if (!world.isRemote) {
 			if (explosionSeek.size() < 4) {
 				hasStructure = false;
@@ -167,24 +173,21 @@ Linkable, ChunkLoadingTile {
 						te.addWatcher(this);
 					}
 				}
-				EntityLiving e = this.getMonster(world, x, y, z);
-				if (e != null) {
-					if (ReikaItemHelper.matchStacks(inv[0], ChromaStacks.voidmonsterEssence)) {
-						if (this.hasEnergy(required)) {
-							if (this.isActive()) {
-
-							}
-							else {
+				if (!this.isActive()) {
+					EntityLiving e = this.getMonster(world, x, y, z);
+					if (e != null) {
+						if (ReikaItemHelper.matchStacks(inv[0], ChromaStacks.voidmonsterEssence)) {
+							if (this.hasEnergy(required)) {
 								if (this.canAttractMonster()) {
 									double dist = this.attractMonster(world, x, y, z);
 									if (dist < 1) {
 										this.activate(world, x, y, z, e);
 									}
 								}
+								this.useEnergy(required);
+								if (rand.nextInt(this.isActive() ? 20 : 60) == 0)
+									ReikaInventoryHelper.decrStack(1, inv);
 							}
-							this.useEnergy(required);
-							if (rand.nextInt(this.isActive() ? 20 : 60) == 0)
-								ReikaInventoryHelper.decrStack(1, inv);
 						}
 					}
 				}

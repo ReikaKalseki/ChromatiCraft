@@ -110,7 +110,6 @@ import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.ChromaPrepHandler;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.PoolRecipeHandler;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.ShardBoostingHandler;
 import Reika.ChromatiCraft.ModInterface.TreeCapitatorHandler;
-import Reika.ChromatiCraft.ModInterface.VoidMonsterDestructionRitual;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.ChromaAspectManager;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeRecharger;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectFormer;
@@ -579,8 +578,6 @@ public class ChromatiCraft extends DragonAPIMod {
 			PlayerHandler.instance.registerTracker(PylonCacheLoader.instance);
 			PlayerHandler.instance.registerTracker(DimensionJoinHandler.instance);
 			PlayerHandler.instance.registerTracker(ProgressionCacher.instance);
-			if (ModList.VOIDMONSTER.isLoaded())
-				VoidMonsterDestructionRitual.registerHandler();
 		}
 
 		if (ChromaOptions.HANDBOOK.getState())

@@ -11,10 +11,8 @@ package Reika.ChromatiCraft.ModInterface;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
@@ -33,9 +31,6 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
-import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry;
-import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
-import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Formula.MathExpression;
 import Reika.DragonAPI.Instantiable.Formula.PeriodicExpression;
@@ -51,7 +46,6 @@ import Reika.VoidMonster.API.NonTeleportingDamage;
 import Reika.VoidMonster.World.MonsterGenerator;
 
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -82,7 +76,7 @@ public class VoidMonsterDestructionRitual {
 		return (EntityLiving)world.getEntityByID(monsterID);
 	}
 
-	private boolean tick() {
+	public boolean tick() {
 		activeRituals.add(this);
 		EntityLiving e = this.getEntity();
 		for (Effects ef : Effects.list) {
@@ -110,11 +104,12 @@ public class VoidMonsterDestructionRitual {
 	}
 
 	@ModDependent(ModList.VOIDMONSTER)
-	private void onCompletion() {
+	void onCompletion() {
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			for (Effects ef : Effects.list) {
 				ef.shaderData.clear();
 				ef.shaderIntensity = 0;
+				ef.updateShaderEnabled();
 			}
 		}
 		else {
@@ -322,6 +317,22 @@ public class VoidMonsterDestructionRitual {
 		}
 
 		@SideOnly(Side.CLIENT)
+		private void updateShaderEnabled() {
+			switch(this) {
+				case COLLAPSING_SPHERE:
+					ChromaShaders.VOIDRITUAL$SPHERE.setIntensity(shaderIntensity);
+					ChromaShaders.VOIDRITUAL$SPHERE.getShader().updateEnabled();
+					break;
+				case RAYS:
+					break;
+				case EXPLOSION:
+					break;
+				case DISTORTION:
+					break;
+			}
+		}
+
+		@SideOnly(Side.CLIENT)
 		private void setShaderFocus(Entity e) {
 			switch(this) {
 				case COLLAPSING_SPHERE:
@@ -344,51 +355,6 @@ public class VoidMonsterDestructionRitual {
 	public static void handlePacket(int entity, int effect) {
 		Entity e = Minecraft.getMinecraft().theWorld.getEntityByID(entity);
 		Effects.list[effect].doEffectClient((EntityLiving)e);
-	}
-
-	public static void registerHandler() {
-		TickRegistry.instance.registerTickHandler(RitualTickHandler.instance);
-	}
-
-	private static class RitualTickHandler implements TickHandler {
-
-		private static final RitualTickHandler instance = new RitualTickHandler();
-
-		private final HashSet<VoidMonsterDestructionRitual> active = new HashSet();
-
-		private RitualTickHandler() {
-
-		}
-
-		@Override
-		public void tick(TickType type, Object... tickData) {
-			if (!active.isEmpty()) {
-				Iterator<VoidMonsterDestructionRitual> it = active.iterator();
-				while (it.hasNext()) {
-					VoidMonsterDestructionRitual e = it.next();
-					if (e.tick()) {
-						e.onCompletion();
-						it.remove();
-					}
-				}
-			}
-		}
-
-		@Override
-		public EnumSet<TickType> getType() {
-			return EnumSet.of(TickType.SERVER, TickType.CLIENT);
-		}
-
-		@Override
-		public boolean canFire(Phase p) {
-			return p == Phase.END;
-		}
-
-		@Override
-		public String getLabel() {
-			return "voidritual";
-		}
-
 	}
 
 	public static class VoidMonsterRitualDamage extends DamageSource implements NonTeleportingDamage {
