@@ -1,16 +1,19 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.Entity;
 
+import java.util.HashMap;
+
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -20,6 +23,7 @@ import net.minecraft.util.ResourceLocation;
 
 import Reika.ChromatiCraft.Entity.EntityVacuum;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -41,8 +45,11 @@ public class RenderVacuum extends Render {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		BlendMode.ADDITIVEDARK.apply();
+		GL11.glDepthMask(false);
 		GL11.glTranslated(par2, par4, par6);
+		double s = this.getVortexSize(eb);
 		if (!e.isDead) {
+			this.runShader(eb, s);
 			RenderManager rm = RenderManager.instance;
 			double dx = e.posX-RenderManager.renderPosX;
 			double dy = e.posY-RenderManager.renderPosY;
@@ -54,7 +61,6 @@ public class RenderVacuum extends Render {
 		//GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
 		v5.startDrawingQuads();
 		v5.setBrightness(240);
-		double s = this.getVortexSize(eb);
 		double s1 = 0.25;
 		double d = 0.001;
 		int c1 = 0xffffff;//eb.getRenderColor();
@@ -96,8 +102,20 @@ public class RenderVacuum extends Render {
 		v5.draw();
 		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glDepthMask(true);
 		BlendMode.DEFAULT.apply();
 		GL11.glPopMatrix();
+	}
+
+	private void runShader(EntityVacuum e, double size) {
+		ChromaShaders.VACGUN.setIntensity(1);
+		ChromaShaders.VACGUN.clearOnRender = true;
+		ChromaShaders.VACGUN.getShader().addFocus(e);
+		HashMap<String, Object> vars = new HashMap();
+		double dist = e.getDistanceToEntity(Minecraft.getMinecraft().thePlayer);
+		vars.put("distance", dist);
+		vars.put("size", size);
+		ChromaShaders.VACGUN.getShader().modifyLastCompoundFocus(1, vars);
 	}
 
 	private double getVortexSize(EntityVacuum eb) {

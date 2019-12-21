@@ -24,6 +24,7 @@ public enum ChromaShaders implements ShaderHook {
 	WARPNODE(),
 	WARPNODE_OPEN(),
 	DIMGLOWCLOUD(),
+	VACGUN(),
 
 	//FX
 	LENSPARTICLE(),

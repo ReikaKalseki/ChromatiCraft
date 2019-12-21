@@ -154,20 +154,24 @@ public class VoidMonsterRitualClientEffects implements TickHandler {
 		@Override
 		protected boolean tick() {
 			float r = (float)shaderData.get("size");
-			r -= 0.025F;
+			r = r*1.005F+0.005F;
 			shaderData.put("size", r);
-			if (r <= 0)
+			float t = (float)shaderData.get("thickness");
+			shaderData.put("thickness", t*1.05F);
+			if (r >= 0.5)
 				shaderIntensity = 0;
+			else if (r >= 0.35)
+				shaderIntensity *= 0.75;
 			ChromaShaders.VOIDRITUAL$SPHERE.setIntensity(shaderIntensity);
 			ChromaShaders.VOIDRITUAL$SPHERE.getShader().updateEnabled();
 			ChromaShaders.VOIDRITUAL$SPHERE.getShader().setFields(shaderData);
-			return r <= 0;
+			return shaderIntensity <= 0;
 		}
 
 		@Override
 		protected void initShaderData(EntityLiving e) {
-			float r = 2;
-			shaderData.put("size", r);
+			shaderData.put("size", 0F);
+			shaderData.put("thickness", 0.0125F);
 			ChromaShaders.VOIDRITUAL$SPHERE.setIntensity(shaderIntensity);
 			ChromaShaders.VOIDRITUAL$SPHERE.getShader().updateEnabled();
 			ChromaShaders.VOIDRITUAL$SPHERE.getShader().setFields(shaderData);
@@ -195,15 +199,15 @@ public class VoidMonsterRitualClientEffects implements TickHandler {
 
 		@Override
 		protected boolean tick() {
-			int has = (int)shaderData.get("wavePhase");
-			has++;
-			shaderData.put("wavePhase", has);
-			return has >= 200;
+			float r = (float)shaderData.get("radius");
+			r += 0.5F;
+			shaderData.put("radius", r);
+			return r >= 200;
 		}
 
 		@Override
 		protected void initShaderData(EntityLiving e) {
-			shaderData.put("wavePhase", -200);
+			shaderData.put("radius", 0F);
 		}
 
 		@Override
@@ -213,7 +217,7 @@ public class VoidMonsterRitualClientEffects implements TickHandler {
 
 		@Override
 		protected void setShaderFocus(Entity e) {
-			shaderData.put("wavePhase", -200);
+
 		}
 
 	}
