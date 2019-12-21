@@ -15,6 +15,7 @@ import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterDestructionRitual.
 import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.relauncher.Side;
@@ -38,7 +39,9 @@ public class VoidMonsterRitualClientEffects implements TickHandler {
 			Iterator<EffectVisual> it = active.iterator();
 			while (it.hasNext()) {
 				EffectVisual e = it.next();
+				ReikaJavaLibrary.pConsole("Ticking active visual "+e);
 				if (e.tick()) {
+					ReikaJavaLibrary.pConsole("Removing "+e);
 					e.clearShader();
 					it.remove();
 				}
@@ -102,6 +105,13 @@ public class VoidMonsterRitualClientEffects implements TickHandler {
 			return Collections.unmodifiableCollection(terrainShaderEffects);
 		}
 
+		final void activate(EntityLiving e) {
+			shaderIntensity = 1;
+			this.initShaderData(e);
+			instance.active.add(this);
+			ReikaJavaLibrary.pConsole("Activating "+this);
+		}
+
 		public final void clearShader() {
 			shaderData.clear();
 			shaderIntensity = 0;
@@ -127,6 +137,11 @@ public class VoidMonsterRitualClientEffects implements TickHandler {
 		protected abstract void updateShaderEnabled();
 
 		protected abstract void setShaderFocus(Entity e);
+
+		@Override
+		public final String toString() {
+			return "Visual effect for "+cause+" ["+hasTerrainShader+"] F="+shaderIntensity+" with data "+shaderData;
+		}
 
 	}
 

@@ -144,6 +144,7 @@ Linkable, ChunkLoadingTile, BreakAction {
 		cache.remove(loc);
 		if (ritual != null) {
 			ritual.onPrematureTermination();
+			ritual = null;
 		}
 		this.resetOther();
 		this.reset();

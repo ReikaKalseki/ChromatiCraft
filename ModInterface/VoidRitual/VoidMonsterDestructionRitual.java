@@ -183,8 +183,7 @@ public class VoidMonsterDestructionRitual {
 			double ey = e.posY+1;
 			double ez = e.posZ;
 			if (visuals != null) {
-				visuals.shaderIntensity = 1;
-				visuals.initShaderData(e);
+				visuals.activate(e);
 			}
 			switch(this) {
 				case COLLAPSING_SPHERE:

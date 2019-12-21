@@ -113,6 +113,7 @@ import Reika.ChromatiCraft.ModInterface.TreeCapitatorHandler;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.ChromaAspectManager;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeRecharger;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectFormer;
+import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterRitualClientEffects;
 import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaEnchants;
@@ -578,6 +579,8 @@ public class ChromatiCraft extends DragonAPIMod {
 			PlayerHandler.instance.registerTracker(PylonCacheLoader.instance);
 			PlayerHandler.instance.registerTracker(DimensionJoinHandler.instance);
 			PlayerHandler.instance.registerTracker(ProgressionCacher.instance);
+			if (ModList.VOIDMONSTER.isLoaded() && FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+				TickRegistry.instance.registerTickHandler(VoidMonsterRitualClientEffects.instance);
 		}
 
 		if (ChromaOptions.HANDBOOK.getState())
