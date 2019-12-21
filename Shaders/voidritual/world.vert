@@ -7,6 +7,8 @@ uniform int chunkY;
 uniform int chunkZ;
 
 uniform float radius;
+uniform float thickness;
+uniform float amplitude;
 
 float getX(vec4 vert) {
 	return vert.x+float(chunkX);
@@ -21,17 +23,24 @@ float getZ(vec4 vert) {
 }
 
 float getDistance(vec4 vert) {
-	return sqrt((getX(vert)-focus.x)*(getX(vert)-focus.x)+(getY(vert)-focus.y)*(getY(vert)-focus.y)+(getZ(vert)-focus.z)*(getZ(vert)-focus.z));
+	vec3 real = vec3(getX(vert), getY(vert), getZ(vert));
+	vec3 diff = abs(real-focus);
+	return sqrt(diff.x*diff.x+diff.y*diff.y+diff.z*diff.z);
+}
+
+float getDistanceXZ(vec4 vert) {
+	vec3 real = vec3(getX(vert), getY(vert), getZ(vert));
+	vec3 diff = abs(real-focus);
+	return sqrt(diff.x*diff.x+diff.z*diff.z);
 }
 
 void main() {
     vec4 vert = gl_Vertex;
-	float thickness = 2.0;
-	float distv = getDistance(vert);
+	float distv = getDistanceXZ(vert);
 	float rdist = abs(distv-radius);
 	float fr = max(0.0, 1.0-rdist/thickness);
 	float f = intensity*fr;
-	vert.y += 2.0*f;
+	vert.y += amplitude*f;
 	
 	//vert.y += 2.5*sin(time*0.02+getX(vert)*0.175);
 	

@@ -8,8 +8,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.util.MathHelper;
 
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterDestructionRitual.Effects;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
@@ -35,7 +37,7 @@ public class VoidMonsterRitualClientEffects implements TickHandler {
 
 	@Override
 	public void tick(TickType type, Object... tickData) {
-		if (!active.isEmpty()) {
+		if (!active.isEmpty() && !Minecraft.getMinecraft().isGamePaused()) {
 			Iterator<EffectVisual> it = active.iterator();
 			while (it.hasNext()) {
 				EffectVisual e = it.next();
@@ -200,14 +202,26 @@ public class VoidMonsterRitualClientEffects implements TickHandler {
 		@Override
 		protected boolean tick() {
 			float r = (float)shaderData.get("radius");
-			r += 0.5F;
+			float t = (float)shaderData.get("thickness");
+			float a = (float)shaderData.get("amplitude");
+			r = r+1.25F;
+			r *= 1.01F;
+			t = MathHelper.clamp_float(r/6, 2, 15F);
+			a = MathHelper.clamp_float(r/24, 1, 4F);
 			shaderData.put("radius", r);
-			return r >= 200;
+			shaderData.put("thickness", t);
+			shaderData.put("amplitude", a);
+			if (r > 200) {
+				shaderIntensity *= 0.95F;
+			}
+			return shaderIntensity < 0.05;
 		}
 
 		@Override
 		protected void initShaderData(EntityLiving e) {
 			shaderData.put("radius", 0F);
+			shaderData.put("thickness", 2F);
+			shaderData.put("amplitude", 1F);
 		}
 
 		@Override
@@ -217,7 +231,8 @@ public class VoidMonsterRitualClientEffects implements TickHandler {
 
 		@Override
 		protected void setShaderFocus(Entity e) {
-
+			ChromaShaders.VOIDRITUAL$WORLD.getShader().setFocus(e);
+			ChromaShaders.VOIDRITUAL$WORLD.getShader().setMatricesToCurrent();
 		}
 
 	}
