@@ -39,7 +39,7 @@ public class VoidMonsterRitualClientEffects implements TickHandler {
 			Iterator<EffectVisual> it = active.iterator();
 			while (it.hasNext()) {
 				EffectVisual e = it.next();
-				ReikaJavaLibrary.pConsole("Ticking active visual "+e);
+				//ReikaJavaLibrary.pConsole("Ticking active visual "+e);
 				if (e.tick()) {
 					ReikaJavaLibrary.pConsole("Removing "+e);
 					e.clearShader();

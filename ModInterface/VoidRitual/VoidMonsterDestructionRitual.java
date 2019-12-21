@@ -39,7 +39,6 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
-import Reika.VoidMonster.API.NonTeleportingDamage;
 import Reika.VoidMonster.Entity.EntityVoidMonster;
 import Reika.VoidMonster.World.MonsterGenerator;
 
@@ -161,7 +160,7 @@ public class VoidMonsterDestructionRitual {
 		@ModDependent(ModList.VOIDMONSTER)
 		public void doEffectServer(VoidMonsterDestructionRitual rit, EntityLiving e) {
 			DamageSource src = new VoidMonsterRitualDamage(rit.startingPlayer);
-			e.attackEntityFrom(src, damageAmount);
+			this.doAttack((EntityVoidMonster)e, src, damageAmount);
 			switch(this) {
 				case COLLAPSING_SPHERE:
 					break;
@@ -174,6 +173,18 @@ public class VoidMonsterDestructionRitual {
 					break;
 			}
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.VOIDMONSTERRITUAL.ordinal(), new PacketTarget.RadiusTarget(e, 128), e.getEntityId(), this.ordinal());
+		}
+
+		@ModDependent(ModList.VOIDMONSTER)
+		private void doAttack(EntityVoidMonster e, DamageSource src, int amt) {
+			if (e.getHealth() >= e.getHealth()) { //kill
+				e.setHealth(0.1F);
+				e.attackEntityFrom(src, 1F);
+			}
+			else {
+				e.setHealth(e.getHealth()-amt+1);
+				e.attackEntityFrom(src, 1F);
+			}
 		}
 
 		@SideOnly(Side.CLIENT)
@@ -240,7 +251,7 @@ public class VoidMonsterDestructionRitual {
 		Effects.list[effect].doEffectClient((EntityLiving)e);
 	}
 
-	public static class VoidMonsterRitualDamage extends DamageSource implements NonTeleportingDamage {
+	private static class VoidMonsterRitualDamage extends DamageSource {
 
 		private final EntityPlayer player;
 

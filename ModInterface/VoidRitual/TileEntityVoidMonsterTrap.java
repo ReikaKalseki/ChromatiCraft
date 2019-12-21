@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityBreakingFX;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -32,10 +31,13 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.Linkable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire.WireWatcher;
 import Reika.DragonAPI.ModList;
@@ -45,7 +47,6 @@ import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
 import Reika.DragonAPI.Instantiable.Math.VariableEndpointSpline;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
@@ -60,6 +61,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.VoidMonster.API.MonsterAPI;
 import Reika.VoidMonster.Entity.EntityVoidMonster;
@@ -80,7 +82,7 @@ Linkable, ChunkLoadingTile, BreakAction, InertIInv {
 	private Collection<Coordinate> wires;
 	private ArrayList<Coordinate> wireSeek = new ArrayList();
 	private ArrayList<Coordinate> explosionSeek = new ArrayList();
-	private HashMap<Integer, VoidMonsterTether> tethers = new HashMap();
+	private ConcurrentHashMap<Integer, VoidMonsterTether> tethers = new ConcurrentHashMap();
 
 	private float flashFactor = 0;
 	private float shaderRotation = 0;
@@ -186,6 +188,10 @@ Linkable, ChunkLoadingTile, BreakAction, InertIInv {
 			this.checkAndRequest();
 		}
 
+		if (!world.isRemote && !hasStructure && this.getTicksExisted() < 5) {
+			this.validateStructure();
+		}
+
 		if (!world.isRemote) {
 			if (inv[0] == null || inv[0].stackSize < this.getInventoryStackLimit()) {
 				this.searchForItems(world, x, y, z);
@@ -246,16 +252,28 @@ Linkable, ChunkLoadingTile, BreakAction, InertIInv {
 
 	@SideOnly(Side.CLIENT)
 	public static void doEatFX(World world, int x, int y, int z) {
-		for (int i = 0; i < 4; i++) {
-			EntityFX fx = new EntityBreakingFX(world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble(), ChromaStacks.voidmonsterEssence.getItem(), ChromaStacks.voidmonsterEssence.getItemDamage());
-			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		for (int i = 0; i < 20; i++) {
+			int l = 20+rand.nextInt(60);
+			float s = 1.5F+rand.nextFloat()*2.5F;
+			int c1 = 0xdf3fff;
+			int c2 = 0x202020;
+			double dx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.25);
+			double dz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.25);
+			double dy = y+rand.nextDouble();
+			float f = (float)ReikaRandomHelper.getRandomPlusMinus(0.6, 0.2);
+			double vel = ReikaRandomHelper.getRandomBetween(0.0625, 0.25);
+			double[] v = ReikaPhysicsHelper.polarToCartesian(vel, rand.nextDouble()*360, rand.nextDouble()*360);
+			EntityFX fx1 = new EntityBlurFX(world, dx, dy, dz, v[0], v[1], v[2]).setScale(s).setLife(l).setColor(c1).setBasicBlend().setIcon(ChromaIcons.TRANSFADE);
+			EntityFX fx2 = new EntityBlurFX(world, dx, dy, dz, v[0], v[1], v[2]).setScale(s*f).setLife(l).setColor(c2).setBasicBlend().setIcon(ChromaIcons.TRANSFADE).lockTo(fx1);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx1);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 		}
 	}
 
 	private void searchForItems(World world, int x, int y, int z) {
 		AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(this).expand(8, 5, 8);
 		List<EntityItem> li = world.selectEntitiesWithinAABB(EntityItem.class, box, new ReikaEntityHelper.SpecificItemSelector(ChromaStacks.voidmonsterEssence));
-		double v = 0.125;
+		double v = 2.5;
 		for (EntityItem ent : li) {
 			if (ent.ticksExisted > 5) {
 				//Vec3 i2vac = ReikaVectorHelper.getVec2Pt(ent.posX, ent.posY, ent.posZ, x+0.5, y+0.5, z+0.5);
@@ -275,26 +293,22 @@ Linkable, ChunkLoadingTile, BreakAction, InertIInv {
 						else {
 							ent.setEntityItemStack(is);
 						}
-						ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.VOIDTRAPEAT.ordinal(), new PacketTarget.RadiusTarget(this, 32));
+						ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.VOIDTRAPEAT.ordinal(), this, 32);
+						ChromaSounds.BOUNCE.playSoundAtBlock(this, 1, 2F);
 					}
 				}
 				else {
-					if (ent.ticksExisted > 50 && ddt > 1.5 && ent.ticksExisted%400 < 80) { //For routing around objects
-						double t = this.getTicksExisted()/25D;
-						double r = 2.875;//+1*ReikaMathLibrary.cosInterpolation(0, 1, Math.sin(t/2));
-						dx += r*Math.cos(t);
-						dz += r*Math.sin(t);
-					}
-					double vx = v*dx/ddt/ddt;
-					double vy = v*dy/ddt/ddt/2;
-					double vz = v*dz/ddt/ddt;
-					double vmax = 0.125;
+					double vx = v*dx/ddt;
+					double vy = v*dy/ddt;
+					double vz = v*dz/ddt;
+					double vmax = 0.0625;
+					double f = Math.min(1, ent.ticksExisted/80D);
 					vx = MathHelper.clamp_double(vx, -vmax, vmax);
 					vy = MathHelper.clamp_double(vy, -vmax, vmax);
 					vz = MathHelper.clamp_double(vz, -vmax, vmax);
-					ent.motionX += vx;
-					ent.motionY += vy;
-					ent.motionZ += vz;
+					ent.motionX = ent.motionX*(1-f)+vx*f;
+					ent.motionY = ent.motionY*(1-f)+vy*f;
+					ent.motionZ = ent.motionZ*(1-f)+vz*f;
 					if (ent.posY < y)
 						ent.motionY += 0.125;
 					if (!world.isRemote)
