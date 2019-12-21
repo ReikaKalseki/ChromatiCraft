@@ -7,13 +7,10 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.ModInterface;
+package Reika.ChromatiCraft.ModInterface.VoidRitual;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
@@ -25,8 +22,8 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterRitualClientEffects.EffectVisual;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
-import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
@@ -43,6 +40,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.VoidMonster.API.NonTeleportingDamage;
+import Reika.VoidMonster.Entity.EntityVoidMonster;
 import Reika.VoidMonster.World.MonsterGenerator;
 
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -80,14 +78,8 @@ public class VoidMonsterDestructionRitual {
 		activeRituals.add(this);
 		EntityLiving e = this.getEntity();
 		for (Effects ef : Effects.list) {
-			if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
-				if (ef.shaderIntensity > 0)
-					ef.tickShader();
-			}
-			else {
-				if (rand.nextInt(ef.effectChance) == 0) {
-					ef.doEffectServer(this, e);
-				}
+			if (rand.nextInt(ef.effectChance) == 0) {
+				ef.doEffectServer(this, e);
 			}
 		}
 		return e.getHealth() <= 0;
@@ -104,18 +96,29 @@ public class VoidMonsterDestructionRitual {
 	}
 
 	@ModDependent(ModList.VOIDMONSTER)
+	void onPrematureTermination() {
+		this.onEnd();
+		EntityVoidMonster el = (EntityVoidMonster)this.getEntity();
+		el.heal(6000);
+		el.setAttackTarget(startingPlayer);
+		el.increaseDifficulty(2);
+	}
+
+	@ModDependent(ModList.VOIDMONSTER)
 	void onCompletion() {
+		MonsterGenerator.instance.addCooldown(this.getEntity(), 20*60*ReikaRandomHelper.getRandomBetween(20, 45));
+		this.onEnd();
+	}
+
+	private void onEnd() {
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			for (Effects ef : Effects.list) {
-				ef.shaderData.clear();
-				ef.shaderIntensity = 0;
-				ef.updateShaderEnabled();
+				ef.visuals.clearShader();
 			}
 		}
 		else {
 			activeRituals.remove(this);
 			sync();
-			MonsterGenerator.instance.addCooldown(this.getEntity(), 20*60*ReikaRandomHelper.getRandomBetween(20, 45));
 		}
 	}
 
@@ -135,64 +138,23 @@ public class VoidMonsterDestructionRitual {
 		return ritualEntities.contains(e.getEntityId());
 	}
 
-	public static void setShaderFoci(Entity el) {
-		for (Effects e : Effects.list) {
-			e.setShaderFocus(el);
-		}
-	}
-
 	public static enum Effects {
-		COLLAPSING_SPHERE(	40, 20,	false),
-		RAYS(				70, 40,	false),
-		EXPLOSION(			200, 0, false),
-		DISTORTION(			400, 20, true);
+		COLLAPSING_SPHERE(	40, 20),
+		RAYS(				70, 40),
+		EXPLOSION(			200, 0),
+		DISTORTION(			400, 20);
 
 		private final int effectChance;
 		private final int damageAmount;
-		public final boolean hasTerrainShader;
-		private final float shaderDecayFactor;
-		private final float shaderDecayLinear;
 
-		private final HashMap<String, Object> shaderData = new HashMap();
-		private float shaderIntensity = 0;
+		@SideOnly(Side.CLIENT)
+		public EffectVisual visuals;
 
-		private static Effects[] list = values();
-		private static final Collection<Effects> terrainShaderEffects = new HashSet();
+		static Effects[] list = values();
 
-		private Effects(int c, int dmg, boolean shader) {
-			this(c, dmg, shader, 0, 0);
-		}
-
-		private Effects(int c, int dmg, boolean shader, float f, float l) {
+		private Effects(int c, int dmg) {
 			effectChance = c;
 			damageAmount = dmg;
-			hasTerrainShader = shader;
-			shaderDecayFactor = f;
-			shaderDecayLinear = l;
-		}
-
-		static {
-			for (Effects e : list) {
-				if (e.hasTerrainShader) {
-					terrainShaderEffects.add(e);
-				}
-			}
-		}
-
-		public static Collection<Effects> getTerrainShaders() {
-			return Collections.unmodifiableCollection(terrainShaderEffects);
-		}
-
-		private void fadeShader() {
-			shaderIntensity = Math.max(0, shaderIntensity*shaderDecayFactor-shaderDecayLinear);
-		}
-
-		public Map<String, Object> getShaderData() {
-			return Collections.unmodifiableMap(shaderData);
-		}
-
-		public float getShaderIntensity() {
-			return shaderIntensity;
 		}
 
 		@ModDependent(ModList.VOIDMONSTER)
@@ -220,8 +182,10 @@ public class VoidMonsterDestructionRitual {
 			double ex = e.posX;
 			double ey = e.posY+1;
 			double ez = e.posZ;
-			shaderIntensity = 1;
-			this.setShaderData(e);
+			if (visuals != null) {
+				visuals.shaderIntensity = 1;
+				visuals.initShaderData(e);
+			}
 			switch(this) {
 				case COLLAPSING_SPHERE:
 					for (int i = 0; i < 128; i++) {
@@ -266,87 +230,6 @@ public class VoidMonsterDestructionRitual {
 					break;
 			}
 			ReikaSoundHelper.playClientSound(ChromaSounds.FLAREATTACK, e, 1, f, false);
-		}
-
-		@SideOnly(Side.CLIENT)
-		public void tickShader() {
-			switch(this) {
-				case COLLAPSING_SPHERE:
-					float r = (float)shaderData.get("size");
-					r -= 0.025F;
-					shaderData.put("size", r);
-					if (r <= 0)
-						shaderIntensity = 0;
-					ChromaShaders.VOIDRITUAL$SPHERE.setIntensity(shaderIntensity);
-					ChromaShaders.VOIDRITUAL$SPHERE.getShader().updateEnabled();
-					ChromaShaders.VOIDRITUAL$SPHERE.getShader().setFields(shaderData);
-					break;
-				case RAYS:
-					break;
-				case EXPLOSION:
-					break;
-				case DISTORTION:
-					int has = (int)shaderData.get("wavePhase");
-					has++;
-					shaderData.put("wavePhase", has);
-					if (has >= 200) {
-						shaderIntensity = 0;
-					}
-					break;
-			}
-		}
-
-		@SideOnly(Side.CLIENT)
-		private void setShaderData(EntityLiving e) {
-			switch(this) {
-				case COLLAPSING_SPHERE:
-					float r = 2;
-					shaderData.put("size", r);
-					ChromaShaders.VOIDRITUAL$SPHERE.setIntensity(shaderIntensity);
-					ChromaShaders.VOIDRITUAL$SPHERE.getShader().updateEnabled();
-					ChromaShaders.VOIDRITUAL$SPHERE.getShader().setFields(shaderData);
-					break;
-				case RAYS:
-					break;
-				case EXPLOSION:
-					break;
-				case DISTORTION:
-					shaderData.put("wavePhase", -200);
-					break;
-			}
-		}
-
-		@SideOnly(Side.CLIENT)
-		private void updateShaderEnabled() {
-			switch(this) {
-				case COLLAPSING_SPHERE:
-					ChromaShaders.VOIDRITUAL$SPHERE.setIntensity(shaderIntensity);
-					ChromaShaders.VOIDRITUAL$SPHERE.getShader().updateEnabled();
-					break;
-				case RAYS:
-					break;
-				case EXPLOSION:
-					break;
-				case DISTORTION:
-					break;
-			}
-		}
-
-		@SideOnly(Side.CLIENT)
-		private void setShaderFocus(Entity e) {
-			switch(this) {
-				case COLLAPSING_SPHERE:
-					ChromaShaders.VOIDRITUAL$SPHERE.getShader().setFocus(e);
-					ChromaShaders.VOIDRITUAL$SPHERE.getShader().setMatricesToCurrent();
-					break;
-				case RAYS:
-					break;
-				case EXPLOSION:
-					break;
-				case DISTORTION:
-					shaderData.put("wavePhase", -200);
-					break;
-			}
 		}
 	}
 

@@ -15,7 +15,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 
-import Reika.ChromatiCraft.ModInterface.VoidMonsterNetherStructure;
+import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterNetherStructure;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Command.DragonCommandBase;

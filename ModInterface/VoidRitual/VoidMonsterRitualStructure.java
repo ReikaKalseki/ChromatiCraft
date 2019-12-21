@@ -1,4 +1,4 @@
-package Reika.ChromatiCraft.ModInterface;
+package Reika.ChromatiCraft.ModInterface.VoidRitual;
 
 import java.util.Collection;
 import java.util.Collections;

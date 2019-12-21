@@ -8,12 +8,17 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.WorldRenderer;
 
-import Reika.ChromatiCraft.ModInterface.VoidMonsterDestructionRitual;
-import Reika.ChromatiCraft.ModInterface.VoidMonsterDestructionRitual.Effects;
+import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterDestructionRitual;
+import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterRitualClientEffects;
+import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterRitualClientEffects.EffectVisual;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.DragonAPI.IO.Shaders.ShaderRegistry;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+@SideOnly(Side.CLIENT)
 public class WorldRenderIntercept {
 
 	public static final WorldRenderIntercept instance = new WorldRenderIntercept();
@@ -35,7 +40,7 @@ public class WorldRenderIntercept {
 	public static void callGlLists(IntBuffer lists) {
 		float f = 0;
 		if (VoidMonsterDestructionRitual.ritualsActive()) {
-			for (Effects e : Effects.getTerrainShaders()) {
+			for (EffectVisual e : VoidMonsterRitualClientEffects.EffectVisual.getTerrainShaders()) {
 				float f2 = e.getShaderIntensity();
 				f = Math.max(f, f2);
 				if (f2 > 0) {

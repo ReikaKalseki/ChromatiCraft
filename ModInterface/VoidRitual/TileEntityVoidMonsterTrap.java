@@ -1,4 +1,4 @@
-package Reika.ChromatiCraft.ModInterface;
+package Reika.ChromatiCraft.ModInterface.VoidRitual;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +40,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
 import Reika.DragonAPI.Instantiable.Math.VariableEndpointSpline;
+import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -53,7 +54,7 @@ import Reika.VoidMonster.Entity.EntityVoidMonster;
 
 
 public class TileEntityVoidMonsterTrap extends ChargedCrystalPowered implements MultiBlockChromaTile, WireWatcher, LocationCached,
-Linkable, ChunkLoadingTile {
+Linkable, ChunkLoadingTile, BreakAction {
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
@@ -141,18 +142,15 @@ Linkable, ChunkLoadingTile {
 	public void breakBlock() {
 		WorldLocation loc = new WorldLocation(this);
 		cache.remove(loc);
+		if (ritual != null) {
+			ritual.onPrematureTermination();
+		}
 		this.resetOther();
 		this.reset();
 	}
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (this.isActive()) {
-			if (ritual.tick()) {
-				ritual.onCompletion();
-				ritual = null;
-			}
-		}
 		if (!world.isRemote) {
 			if (explosionSeek.size() < 4) {
 				hasStructure = false;
@@ -178,10 +176,18 @@ Linkable, ChunkLoadingTile {
 					if (e != null) {
 						if (ReikaItemHelper.matchStacks(inv[0], ChromaStacks.voidmonsterEssence)) {
 							if (this.hasEnergy(required)) {
-								if (this.canAttractMonster()) {
-									double dist = this.attractMonster(world, x, y, z);
-									if (dist < 1) {
-										this.activate(world, x, y, z, e);
+								if (this.isActive()) {
+									if (ritual.tick()) {
+										ritual.onCompletion();
+										ritual = null;
+									}
+								}
+								else {
+									if (this.canAttractMonster()) {
+										double dist = this.attractMonster(world, x, y, z);
+										if (dist < 1) {
+											this.activate(world, x, y, z, e);
+										}
 									}
 								}
 								this.useEnergy(required);

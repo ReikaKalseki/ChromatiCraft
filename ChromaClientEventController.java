@@ -100,7 +100,8 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavationWand;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
-import Reika.ChromatiCraft.ModInterface.VoidMonsterDestructionRitual;
+import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterDestructionRitual;
+import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterRitualClientEffects;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
@@ -239,7 +240,7 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void setShaderFoci(EntityRenderEvent evt) {
 		if (VoidMonsterDestructionRitual.isFocusOfActiveRitual(evt.entity)) {
-			VoidMonsterDestructionRitual.setShaderFoci(evt.entity);
+			VoidMonsterRitualClientEffects.instance.setShaderFoci(evt.entity);
 		}
 	}
 
