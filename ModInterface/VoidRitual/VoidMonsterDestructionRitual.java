@@ -28,7 +28,10 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
+import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledEvent;
 import Reika.DragonAPI.Instantiable.Formula.MathExpression;
 import Reika.DragonAPI.Instantiable.Formula.PeriodicExpression;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
@@ -139,13 +142,17 @@ public class VoidMonsterDestructionRitual {
 	}
 
 	public static enum Effects {
-		COLLAPSING_SPHERE(	40, 20),
-		RAYS(				70, 40),
+		COLLAPSING_SPHERE(	70, 20),
+		RAYS(				40, 40),
 		EXPLOSION(			200, 0),
-		DISTORTION(			400, 20);
+		WAVE(				400, 20),
+		CURL(				400, 40, 30),
+		STRETCH(			400, 30, 20),
+		;
 
 		private final int effectChance;
 		private final int damageAmount;
+		private final int damageDelay;
 
 		@SideOnly(Side.CLIENT)
 		public EffectVisual visuals;
@@ -153,14 +160,19 @@ public class VoidMonsterDestructionRitual {
 		static Effects[] list = values();
 
 		private Effects(int c, int dmg) {
+			this(c, dmg, 0);
+		}
+
+		private Effects(int c, int dmg, int del) {
 			effectChance = c;
 			damageAmount = dmg;
+			damageDelay = del;
 		}
 
 		@ModDependent(ModList.VOIDMONSTER)
 		public void doEffectServer(VoidMonsterDestructionRitual rit, EntityLiving e) {
 			DamageSource src = new VoidMonsterRitualDamage(rit.startingPlayer);
-			this.doAttack((EntityVoidMonster)e, src, damageAmount);
+			this.doAttack(e, src, damageAmount);
 			switch(this) {
 				case COLLAPSING_SPHERE:
 					break;
@@ -169,21 +181,20 @@ public class VoidMonsterDestructionRitual {
 				case EXPLOSION:
 					e.worldObj.newExplosion(e, e.posX, e.posY, e.posZ, 9, true, false);
 					break;
-				case DISTORTION:
+				case WAVE:
+					break;
+				case CURL:
 					break;
 			}
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.VOIDMONSTERRITUAL.ordinal(), new PacketTarget.RadiusTarget(e, 128), e.getEntityId(), this.ordinal());
 		}
 
-		@ModDependent(ModList.VOIDMONSTER)
-		private void doAttack(EntityVoidMonster e, DamageSource src, int amt) {
-			if (e.getHealth() >= e.getHealth()) { //kill
-				e.setHealth(0.1F);
-				e.attackEntityFrom(src, 1F);
+		private void doAttack(EntityLiving e, DamageSource src, int amt) {
+			if (damageDelay > 0) {
+				TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new ScheduledDamage(e, src, amt)), damageDelay);
 			}
 			else {
-				e.setHealth(e.getHealth()-amt+1);
-				e.attackEntityFrom(src, 1F);
+				runAttack(e, src, amt);
 			}
 		}
 
@@ -237,7 +248,9 @@ public class VoidMonsterDestructionRitual {
 					break;
 				case EXPLOSION:
 					break;
-				case DISTORTION:
+				case WAVE:
+					break;
+				case CURL:
 					break;
 			}
 			ReikaSoundHelper.playClientSound(ChromaSounds.FLAREATTACK, e, 1, f, false);
@@ -249,6 +262,41 @@ public class VoidMonsterDestructionRitual {
 	public static void handlePacket(int entity, int effect) {
 		Entity e = Minecraft.getMinecraft().theWorld.getEntityByID(entity);
 		Effects.list[effect].doEffectClient((EntityLiving)e);
+	}
+
+	private static void runAttack(EntityLiving e, DamageSource src, int amt) {
+		if (e.getHealth() >= e.getHealth()) { //kill
+			e.setHealth(0.1F);
+			e.attackEntityFrom(src, 1F);
+		}
+		else {
+			e.setHealth(e.getHealth()-amt+1);
+			e.attackEntityFrom(src, 1F);
+		}
+	}
+
+	private static class ScheduledDamage implements ScheduledEvent {
+
+		private final EntityLiving entity;
+		private final DamageSource source;
+		private final int amount;
+
+		public ScheduledDamage(EntityLiving e, DamageSource src, int amt) {
+			entity = e;
+			source = src;
+			amount = amt;
+		}
+
+		@Override
+		public void fire() {
+			runAttack(entity, source, amount);
+		}
+
+		@Override
+		public boolean runOnSide(Side s) {
+			return s == Side.SERVER;
+		}
+
 	}
 
 	private static class VoidMonsterRitualDamage extends DamageSource {

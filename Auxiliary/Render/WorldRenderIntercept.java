@@ -43,9 +43,6 @@ public class WorldRenderIntercept {
 			for (EffectVisual e : VoidMonsterRitualClientEffects.EffectVisual.getTerrainShaders()) {
 				float f2 = e.getShaderIntensity();
 				f = Math.max(f, f2);
-				if (f2 > 0) {
-					ChromaShaders.VOIDRITUAL$WORLD.getShader().setFields(e.getShaderData());
-				}
 			}
 		}
 		while (lists.remaining() > 0) {
