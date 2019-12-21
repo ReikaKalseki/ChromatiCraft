@@ -33,6 +33,7 @@ public class VoidMonsterRitualClientEffects implements TickHandler {
 		new SphereVisual();
 		new WaveVisual();
 		new CurlVisual();
+		new StretchVisual();
 	}
 
 	@Override
