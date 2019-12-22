@@ -209,9 +209,9 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 		return true;
 	}
 
-	public static float getVillageStructureWeight(float defaultValue) {
+	public static int getVillageStructureRarity(int defaultValue, int minValue) {
 		float f = Math.min(2.5F, VILLAGERATE.getFloat());
-		return Math.max(0.1F, f*defaultValue);
+		return Math.max(minValue, (int)(defaultValue/f));
 	}
 
 	public static boolean doesVanillaDyeDrop() {

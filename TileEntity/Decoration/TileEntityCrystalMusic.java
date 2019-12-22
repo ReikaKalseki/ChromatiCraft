@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -153,11 +153,11 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 			}
 		}
 
-		/*
-		for (CrystalElement e : colorPositions.keySet()) {
-			colorPositions.get(e).offset(x, y, z).setBlock(world, ChromaBlocks.LAMP.getBlockInstance(), e.ordinal());
+		if (DragonAPICore.debugtest) {
+			for (CrystalElement e : colorPositions.keySet()) {
+				colorPositions.get(e).offset(x, y, z).setBlock(world, ChromaBlocks.LAMP.getBlockInstance(), e.ordinal());
+			}
 		}
-		 */
 	}
 
 	@Override
@@ -252,7 +252,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 		}
 		else {
 			canPlay = true;
-			this.generateParticles(world, x, y+2, z, CrystalElement.randomElement());
+			this.generateParticles(world, x, y+2, z, CrystalElement.randomElement(), 20);
 		}
 
 		if (canPlay) {
@@ -279,7 +279,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 		if (DragonAPICore.debugtest)
 			c.setBlock(world, ChromaBlocks.LAMP.getBlockInstance(), e.ordinal());
 		if (b instanceof CrystalBlock && c.getBlockMetadata(world) == e.ordinal()) {
-			this.generateParticles(world, c.xCoord, c.yCoord, c.zCoord, e);
+			this.generateParticles(world, c.xCoord, c.yCoord, c.zCoord, e, length);
 			if (networkConnections[e.ordinal()] != null && networkConnections[e.ordinal()].stillValid()) {
 				//ReikaJavaLibrary.pConsole(networkConnections[e.ordinal()]);
 				networkConnections[e.ordinal()].blink(MathHelper.clamp_int(length*0+12, 1, 40), receiver);
@@ -293,12 +293,12 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 		return new TemporaryCrystalReceiver(new WorldLocation(this), 0, 32, 0.35, ResearchLevel.BASICCRAFT);
 	}
 
-	private void generateParticles(World world, int x, int y, int z, CrystalElement e) {
+	private void generateParticles(World world, int x, int y, int z, CrystalElement e, int length) {
 		if (world.isRemote) {
-			this.doParticles(world, x, y, z, e);
+			this.doParticles(world, x, y, z, e, length);
 		}
 		else {
-			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALMUS.ordinal(), this, BROADCAST_RANGE, x, y, z, e.ordinal());
+			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALMUS.ordinal(), this, BROADCAST_RANGE, x, y, z, e.ordinal(), length);
 		}
 	}
 
@@ -321,7 +321,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void doParticles(World world, int x, int y, int z, CrystalElement e) {
+	public void doParticles(World world, int x, int y, int z, CrystalElement e, int length) {
 		int n = 3+rand.nextInt(6);
 		for (int i = 0; i < n; i++) {
 			double px = x+rand.nextDouble();
@@ -343,7 +343,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 			for (double p = 0; p <= dd; p += 0.125) {
 				double f = p/dd;
 				float s = 1+1.5F*(float)Math.sin(f*Math.PI);
-				int l = 10;//(int)(17*dd);
+				int l = length/6;//(int)(17*dd);
 				double px = xCoord+0.5+f*dx;
 				double py = yCoord+0.5+f*dy;
 				double pz = zCoord+0.5+f*dz;

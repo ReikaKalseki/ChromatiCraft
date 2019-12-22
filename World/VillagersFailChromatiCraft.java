@@ -50,8 +50,8 @@ public class VillagersFailChromatiCraft {
 	private static final ArrayList<StructureEntry> entries = new ArrayList();
 
 	static {
-		entries.add(new PerVillageStructureEntry(BrokenChromaStructure.class, ChromaOptions.getVillageStructureWeight(0.4F), "FailChC", 15, 6, 16, 7));
-		entries.add(new PerVillageStructureEntry(WoodenChromaStructure.class, ChromaOptions.getVillageStructureWeight(4), "ChCHouse", 15, 8, 15, 4));
+		entries.add(new PerVillageStructureEntry(BrokenChromaStructure.class, 1, "FailChC", 15, 6, 16, ChromaOptions.getVillageStructureRarity(7, 3)));
+		entries.add(new PerVillageStructureEntry(WoodenChromaStructure.class, 4, "ChCHouse", 15, 8, 15, ChromaOptions.getVillageStructureRarity(4, 1)));
 	}
 
 	public static void register() {
