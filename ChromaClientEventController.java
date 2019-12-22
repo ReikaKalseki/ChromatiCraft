@@ -55,6 +55,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
@@ -110,6 +111,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -118,6 +120,7 @@ import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.BiomeFXRenderer;
 import Reika.ChromatiCraft.Render.CliffFogRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityShaderFX;
 import Reika.ChromatiCraft.Render.TESR.RenderAlveary;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
@@ -131,6 +134,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.KeybindHandler.KeyPressEvent;
 import Reika.DragonAPI.Auxiliary.Trackers.ModLockController.ModReVerifyEvent;
+import Reika.DragonAPI.Auxiliary.Trackers.SpecialDayTracker;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
@@ -173,6 +177,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
@@ -214,6 +219,8 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 	private boolean excavatorOverlaySpread;
 	private BlockArray cachedExcavatorOverlay;
 
+	private final ArrayList<Integer> snowColors = new ArrayList();
+
 	private ChromaClientEventController() {
 		/*
 		if (ChromaOptions.BIOMEFX.getState()) {
@@ -224,6 +231,13 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 		}
 		 */
 		ProfileEvent.registerHandler("gui", this);
+
+		snowColors.add(0xffffff);
+		snowColors.add(0xFFD800);
+		snowColors.add(0xff00ff);
+		snowColors.add(0x0000ff);
+		snowColors.add(0xb000ff);
+		snowColors.add(0x0094ff);
 	}
 
 	public void onCall(String tag) {
@@ -233,6 +247,31 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 					Minecraft.getMinecraft().gameSettings.hideGUI = false;
 				}
 				break;
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void xmasSnow(ClientTickEvent evt) {
+		if (Minecraft.getMinecraft().gameSettings.thirdPersonView == 0 && !Minecraft.getMinecraft().isGamePaused() && SpecialDayTracker.instance.loadXmasTextures()) {
+			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+			if (ep != null && rand.nextInt(3) == 0 && SpecialDayTracker.instance.getXmasWeatherStrength(ep.worldObj) > 0) {
+				int x = MathHelper.floor_double(ep.posX);
+				int y = MathHelper.floor_double(ep.posY);
+				int z = MathHelper.floor_double(ep.posZ);
+				if (ep.worldObj.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) > 5) {
+					double px = ReikaRandomHelper.getRandomPlusMinus(ep.posX, 3.5);
+					double py = ReikaRandomHelper.getRandomPlusMinus(ep.posY+1.5, 1);
+					double pz = ReikaRandomHelper.getRandomPlusMinus(ep.posZ, 3.5);
+					float g = (float)ReikaRandomHelper.getRandomBetween(0.03125, 0.125);
+					int l = ReikaRandomHelper.getRandomBetween(10, 50);
+					float s = (float)ReikaRandomHelper.getRandomBetween(0.25, 0.75);
+					EntityShaderFX fx = new EntityShaderFX(ep.worldObj, px, py, pz, 1, ChromaShaders.CRYSTALLIZEPARTICLE);
+					int c0 = ReikaJavaLibrary.getRandomListEntry(rand, snowColors);
+					int c = ReikaColorAPI.mixColors(c0, 0xffffff, (float)ReikaRandomHelper.getRandomBetween(0, 0.25));
+					fx.setRendering(true).setClip(0.6F).setRapidExpand().setColliding().setAlphaFading().setLife(l).setGravity(g).setScale(s).setColor(c).setIcon(ChromaIcons.FADE);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				}
 			}
 		}
 	}

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -93,7 +93,7 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater implem
 
 	@Override
 	public boolean isConductingElement(CrystalElement e) {
-		return e != null && this.canConduct();
+		return e != null && this.canConduct();// && (e != CrystalElement.BLUE && e != CrystalElement.RED && e != CrystalElement.WHITE && e != CrystalElement.YELLOW && e != CrystalElement.MAGENTA && e != CrystalElement.LIME && e != CrystalElement.ORANGE);
 	}
 
 	@Override

@@ -9,13 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
-import java.util.Calendar;
-
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.IIcon;
 
-import Reika.DragonAPI.DragonOptions;
+import Reika.DragonAPI.Auxiliary.Trackers.SpecialDayTracker;
 import Reika.DragonAPI.Interfaces.IconEnum;
 
 import cpw.mods.fml.relauncher.Side;
@@ -41,11 +39,11 @@ public enum ChromaIcons implements IconEnum {
 	LASER("laser_2"),
 	LASEREND("laser_end_2"),
 	BIGFLARE("bigflare"),
-	ROUNDFLARE(loadAprilTextures() ? "smileflare" : loadXmasTextures() ? "xmasflare" : "roundflare"),
+	ROUNDFLARE(SpecialDayTracker.instance.loadAprilTextures() ? "smileflare" : SpecialDayTracker.instance.loadXmasTextures() ? "xmasflare" : "roundflare"),
 	RINGS("ringrow_fade"),
 	RIFT("rift"),
 	RIFTHALO("rift_halo"),
-	FADE("fade"),
+	FADE(SpecialDayTracker.instance.loadXmasTextures() ? "fade_snowflake" : "fade"),
 	FADE_BASICBLEND("fade_basic"),
 	FADE_GENTLE("fade_gentle"),
 	FADE_STAR("fade_star"),
@@ -163,18 +161,6 @@ public enum ChromaIcons implements IconEnum {
 		return "Reika/ChromatiCraft/Textures/Icons/Animated/"+iconName+".png";
 	}
 	 */
-
-	private static boolean loadAprilTextures() {
-		if (!DragonOptions.APRIL.getState())
-			return false;
-		Calendar c = Calendar.getInstance();
-		return c.get(Calendar.MONTH) == Calendar.APRIL && c.get(Calendar.DAY_OF_MONTH) <= 2;
-	}
-
-	public static boolean loadXmasTextures() {
-		Calendar c = Calendar.getInstance();
-		return (c.get(Calendar.MONTH) == Calendar.DECEMBER && c.get(Calendar.DAY_OF_MONTH) >= 18) || (c.get(Calendar.MONTH) == Calendar.JANUARY && c.get(Calendar.DAY_OF_MONTH) <= 5);
-	}
 
 	@SideOnly(Side.CLIENT)
 	public static void registerAll(TextureMap ico) {

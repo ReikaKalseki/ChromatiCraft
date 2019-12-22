@@ -282,7 +282,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 			this.generateParticles(world, c.xCoord, c.yCoord, c.zCoord, e, length);
 			if (networkConnections[e.ordinal()] != null && networkConnections[e.ordinal()].stillValid()) {
 				//ReikaJavaLibrary.pConsole(networkConnections[e.ordinal()]);
-				networkConnections[e.ordinal()].blink(MathHelper.clamp_int(length*0+12, 1, 40), receiver);
+				networkConnections[e.ordinal()].blink(MathHelper.clamp_int(length/2, 1, 40), receiver);
 			}
 			return true;
 		}
@@ -343,7 +343,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 			for (double p = 0; p <= dd; p += 0.125) {
 				double f = p/dd;
 				float s = 1+1.5F*(float)Math.sin(f*Math.PI);
-				int l = length/6;//(int)(17*dd);
+				int l = Math.max(8, length/6);//(int)(17*dd);
 				double px = xCoord+0.5+f*dx;
 				double py = yCoord+0.5+f*dy;
 				double pz = zCoord+0.5+f*dz;

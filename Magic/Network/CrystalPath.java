@@ -198,7 +198,7 @@ public class CrystalPath implements Comparable<CrystalPath> {
 		WorldLocation locs = nodes.get(nodes.size()-2);
 		src.removeTarget(locs, element);
 		for (int i = 1; i < nodes.size()-1; i++) {
-			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
+			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), false);
 			if (te instanceof CrystalTransmitter) {
 				WorldLocation tg = nodes.get(i-1);
 				((CrystalTransmitter)te).removeTarget(tg, element);

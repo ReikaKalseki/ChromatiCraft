@@ -29,6 +29,7 @@ public enum ChromaShaders implements ShaderHook {
 	//FX
 	LENSPARTICLE(),
 	PINCHPARTICLE(),
+	CRYSTALLIZEPARTICLE(),
 
 	//Situational
 	INSKYRIVER(),

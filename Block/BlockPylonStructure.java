@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityPowerTree;
+import Reika.DragonAPI.Auxiliary.Trackers.SpecialDayTracker;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
@@ -354,7 +355,7 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 			for (int k = 0; k < variants[i]; k++) {
 				String suff = k > 0 ? String.valueOf(i+"-"+(k+1)) : String.valueOf(i);
 				if (StoneTypes.list[i].isColumn()) {
-					if (k == 0 && ChromaIcons.loadXmasTextures()) {
+					if (k == 0 && SpecialDayTracker.instance.loadXmasTextures()) {
 						suff = suff+"_xm";
 					}
 				}
@@ -413,7 +414,7 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void randomDisplayTick(World world, int x, int y, int z, Random rand) {
-		if (ChromaIcons.loadXmasTextures() && StoneTypes.list[world.getBlockMetadata(x, y, z)].isColumn()) {
+		if (SpecialDayTracker.instance.loadXmasTextures() && StoneTypes.list[world.getBlockMetadata(x, y, z)].isColumn()) {
 			double o = 0.0625;
 			int d = 2+rand.nextInt(4);
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[d];

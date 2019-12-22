@@ -51,13 +51,14 @@ import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.ChromatiCraft.Render.Particle.EntityLensingFX;
+import Reika.ChromatiCraft.Render.Particle.EntityShaderFX;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Auxiliary.ChunkManager;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
@@ -742,7 +743,7 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 			float f = (float)ReikaRandomHelper.getRandomBetween(0.04, 0.15);
 			if (rand.nextInt(4) == 0)
 				f = f*2+0.125F;
-			fx = new EntityLensingFX(world, px, py, pz, f).setLife(l).setScale(s).setGravity(g).forceIgnoreLimits().setRapidExpand();
+			fx = new EntityShaderFX(world, px, py, pz, f, ChromaShaders.LENSPARTICLE).setLife(l).setScale(s).setGravity(g).forceIgnoreLimits().setRapidExpand();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

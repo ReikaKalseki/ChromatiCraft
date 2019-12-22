@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.InWorldScriptRenderer;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.DragonAPI.Auxiliary.Trackers.SpecialDayTracker;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -96,7 +97,7 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 				if (!te.getTargets().isEmpty()) {
 					s += 1;
 				}
-				if (ChromaIcons.loadXmasTextures()) {
+				if (SpecialDayTracker.instance.loadXmasTextures()) {
 					s *= 0.7;
 				}
 				if (!te.canConduct() && !StructureRenderer.isRenderingTiles()) {
