@@ -50,6 +50,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler;
 
 import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.eventhandler.Event.Result;
 
 public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implements ChromaPowered, OperationInterval, VariableTexture {
 
@@ -197,62 +198,78 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	private boolean areEnchantsValid(ItemStack is) {
 		Item i = is.getItem();
 		for (Enchantment e : selected.keySet()) {
-			if (i == Items.book) {
-				if (!e.isAllowedOnBooks()) {
-					return false;
-				}
-			}
-			else if (ModList.TINKERER.isLoaded() && TinkerToolHandler.getInstance().isTool(is)) {
-				if (!(e instanceof ChromaticEnchantment))
-					return false;
-				if (((ChromaticEnchantment)e).type != EnumEnchantmentType.all && ((ChromaticEnchantment)e).type != EnumEnchantmentType.digger) {
-					return false;
-				}
-			}
-			else if (ModList.TINKERER.isLoaded() && TinkerToolHandler.getInstance().isWeapon(is)) {
-				if (!(e instanceof ChromaticEnchantment))
-					return false;
-				if (((ChromaticEnchantment)e).type != EnumEnchantmentType.all && ((ChromaticEnchantment)e).type != EnumEnchantmentType.weapon) {
-					return false;
-				}
-			}
-			else if (!e.canApply(is) && !(i instanceof EnchantableItem && ((EnchantableItem)i).isEnchantValid(e, is))) {
-				return false;
-			}
-
-			if (ChromaItems.OREPICK.matchWith(is) || ChromaItems.ORESILK.matchWith(is) || ChromaItems.MULTITOOL.matchWith(is)) {
-				if (e != Enchantment.unbreaking && e != Enchantment.efficiency && !e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
-					return false;
-			}
-
-			if (ChromaItems.BEEFRAME.matchWith(is))
-				if (e != Enchantment.unbreaking)
-					return false;
-
-			if (ChromaItems.HELP.matchWith(is))
-				if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
-					return false;
-
-			if (Loader.isModLoaded("Backpack") && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("backpack"))
-				if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
-					return false;
-
-			if (Loader.isModLoaded("EnderStorage") && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("enderpouch"))
-				if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
-					return false;
-
-			if (ModList.THAUMCRAFT.isLoaded() && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("focuspouch"))
-				if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
-					return false;
-
-			if (ModList.THAUMICTINKER.isLoaded() && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("ichorpouch"))
-				if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
-					return false;
-
-			if (ReikaEnchantmentHelper.getEnchantmentLevel(e, is) >= selected.get(e))
+			if (!this.isEnchantValid(e, is, i))
 				return false;
 		}
 		return true;
+	}
+
+	private boolean isEnchantValid(Enchantment e, ItemStack is, Item i) {
+		if (i == Items.book) {
+			if (!e.isAllowedOnBooks()) {
+				return false;
+			}
+		}
+		else if (ModList.TINKERER.isLoaded() && TinkerToolHandler.getInstance().isTool(is)) {
+			if (!(e instanceof ChromaticEnchantment))
+				return false;
+			if (((ChromaticEnchantment)e).type != EnumEnchantmentType.all && ((ChromaticEnchantment)e).type != EnumEnchantmentType.digger) {
+				return false;
+			}
+		}
+		else if (ModList.TINKERER.isLoaded() && TinkerToolHandler.getInstance().isWeapon(is)) {
+			if (!(e instanceof ChromaticEnchantment))
+				return false;
+			if (((ChromaticEnchantment)e).type != EnumEnchantmentType.all && ((ChromaticEnchantment)e).type != EnumEnchantmentType.weapon) {
+				return false;
+			}
+		}
+
+		if (i instanceof EnchantableItem) {
+			Result res = ((EnchantableItem)i).getEnchantValidity(e, is);
+			switch(res) {
+				case ALLOW:
+					return true;
+				case DEFAULT:
+					break;
+				case DENY:
+					return false;
+			}
+		}
+
+		if (ChromaItems.OREPICK.matchWith(is) || ChromaItems.ORESILK.matchWith(is) || ChromaItems.MULTITOOL.matchWith(is)) {
+			if (e != Enchantment.unbreaking && e != Enchantment.efficiency && !e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
+				return false;
+		}
+
+		if (ChromaItems.BEEFRAME.matchWith(is))
+			if (e != Enchantment.unbreaking)
+				return false;
+
+		if (ChromaItems.HELP.matchWith(is))
+			if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
+				return false;
+
+		if (Loader.isModLoaded("Backpack") && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("backpack"))
+			if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
+				return false;
+
+		if (Loader.isModLoaded("EnderStorage") && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("enderpouch"))
+			if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
+				return false;
+
+		if (ModList.THAUMCRAFT.isLoaded() && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("focuspouch"))
+			if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
+				return false;
+
+		if (ModList.THAUMICTINKER.isLoaded() && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("ichorpouch"))
+			if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
+				return false;
+
+		if (ReikaEnchantmentHelper.getEnchantmentLevel(e, is) >= selected.get(e))
+			return false;
+
+		return e.canApply(is);
 	}
 
 	private void applyEnchants() {

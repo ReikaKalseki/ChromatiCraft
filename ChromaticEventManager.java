@@ -268,6 +268,8 @@ public class ChromaticEventManager {
 	private boolean applyingAOE;
 	private boolean applyingPhasing;
 
+	public EntityPlayer collectItemPlayer;
+
 	private final HashSet<Coordinate> playerBreakCache = new HashSet();
 
 	private ChromaticEventManager() {
@@ -770,9 +772,19 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void boostHarvestLevel(HarvestLevelEvent ev) {
-		int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.HARVESTLEVEL.getEnchantment(), ev.getItem());
+		int level = ChromaEnchants.HARVESTLEVEL.getLevel(ev.getItem());
 		if (level > 0) {
 			ev.harvestLevel += level;
+		}
+	}
+
+	@SubscribeEvent
+	public void autoCollectDirect(EntityJoinWorldEvent evt) {
+		if (collectItemPlayer != null && evt.entity instanceof EntityItem) {
+			EntityItem ei = (EntityItem)evt.entity;
+			if (!MinecraftForge.EVENT_BUS.post(new EntityItemPickupEvent(collectItemPlayer, ei)))
+				ReikaPlayerAPI.addOrDropItem(ei.getEntityItem(), collectItemPlayer);
+			collectItemPlayer = null;
 		}
 	}
 
@@ -786,7 +798,7 @@ public class ChromaticEventManager {
 		EntityPlayer ep = evt.harvester;
 		if (ep != null && !ReikaPlayerAPI.isFake(ep) && playerBreakCache.contains(new Coordinate(evt.x, evt.y, evt.z))) {
 			ItemStack tool = ep.getCurrentEquippedItem();
-			int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.AUTOCOLLECT.getEnchantment(), tool);
+			int level = ChromaEnchants.AUTOCOLLECT.getLevel(tool);
 			if (level > 0) {
 				for (ItemStack is : evt.drops) {
 					if (!MinecraftForge.EVENT_BUS.post(new EntityItemPickupEvent(ep, new EntityItem(ep.worldObj, ep.posX, ep.posY, ep.posZ, is))))
@@ -805,7 +817,7 @@ public class ChromaticEventManager {
 			EntityLivingBase src = (EntityLivingBase)ev.source.getEntity();
 			ItemStack is = src.getHeldItem();
 			if (is != null) {
-				int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.RARELOOT.getEnchantment(), is);
+				int level = ChromaEnchants.RARELOOT.getLevel(is);
 				if (level > 0) {
 					EntityLivingBase e = ev.entityLiving;
 					ArrayList<EntityItem> li = ev.drops;
@@ -1075,7 +1087,7 @@ public class ChromaticEventManager {
 			EntityLivingBase mob = evt.entityLiving;
 			ItemStack weapon = ep.getCurrentEquippedItem();
 			if (weapon != null) {
-				int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.AGGROMASK.getEnchantment(), weapon);
+				int level = ChromaEnchants.AGGROMASK.getLevel(weapon);
 				if (level > 0 && EnchantmentAggroMask.hidePigmanSpreadDamage(level)) {
 					evt.setCanceled(true);
 				}
@@ -1091,7 +1103,7 @@ public class ChromaticEventManager {
 			EntityLivingBase mob = evt.entityLiving;
 			ItemStack weapon = ep.getCurrentEquippedItem();
 			if (weapon != null) {
-				int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.AGGROMASK.getEnchantment(), weapon);
+				int level = ChromaEnchants.AGGROMASK.getLevel(weapon);
 				if (level > 0 && EnchantmentAggroMask.hideDirectDamage(level)) {
 					evt.setResult(Result.DENY);
 				}
@@ -1107,7 +1119,7 @@ public class ChromaticEventManager {
 			EntityLivingBase mob = evt.entityLiving;
 			ItemStack weapon = ep.getCurrentEquippedItem();
 			if (weapon != null) {
-				int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.ENDERLOCK.getEnchantment(), weapon);
+				int level = ChromaEnchants.ENDERLOCK.getLevel(weapon);
 				if (level > 0) {
 					evt.setResult(Result.DENY);
 				}
@@ -1123,7 +1135,7 @@ public class ChromaticEventManager {
 			EntityLivingBase mob = evt.entityLiving;
 			ItemStack weapon = ep.getCurrentEquippedItem();
 			if (weapon != null) {
-				int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.USEREPAIR.getEnchantment(), weapon);
+				int level = ChromaEnchants.USEREPAIR.getLevel(weapon);
 				if (level > 0) {
 					int rep = EnchantmentUseRepair.getRepairedDurability(weapon, level, evt.ammount);
 					weapon.setItemDamage(weapon.getItemDamage()-rep);
@@ -1143,7 +1155,7 @@ public class ChromaticEventManager {
 			EntityLivingBase mob = evt.entityLiving;
 			ItemStack weapon = ep.getCurrentEquippedItem();
 			if (weapon != null) {
-				int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.BOSSKILL.getEnchantment(), weapon);
+				int level = ChromaEnchants.BOSSKILL.getLevel(weapon);
 				if (level > 0) {
 					float dmg = EnchantmentBossKill.getDamageDealt(mob, level);
 					if (dmg > 0) {
@@ -1178,7 +1190,7 @@ public class ChromaticEventManager {
 			EntityLivingBase mob = evt.entityLiving;
 			ItemStack weapon = ep.getCurrentEquippedItem();
 			if (weapon != null) {
-				int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.WEAPONAOE.getEnchantment(), weapon);
+				int level = ChromaEnchants.WEAPONAOE.getLevel(weapon);
 				if (level > 0) {
 					applyingAOE = true;
 					double r = EnchantmentWeaponAOE.getRadius(level);
@@ -1326,12 +1338,11 @@ public class ChromaticEventManager {
 	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
 	public void forceConstantMiningSpeed(BreakSpeed evt) {
 		ItemStack is = evt.entityPlayer.getCurrentEquippedItem();
-		Enchantment e = ChromaEnchants.MINETIME.getEnchantment();
-		int lvl = ReikaEnchantmentHelper.getEnchantmentLevel(e, is);
+		int lvl = ChromaEnchants.MINETIME.getLevel(is);
 		if (lvl > 0) {
 			float h = evt.block.getBlockHardness(evt.entityPlayer.worldObj, evt.x, evt.y, evt.z);
 			if (h > 0) {
-				float f = (float)Math.pow(lvl/(float)e.getMaxLevel(), 1.5);
+				float f = (float)Math.pow(lvl/(float)ChromaEnchants.MINETIME.getEnchantment().getMaxLevel(), 1.5);
 				float best = 2*h; //force same speed on everything, even superhard blocks
 				evt.newSpeed = best*f+evt.originalSpeed*(1-f);
 				evt.setCanceled(false);
@@ -1725,7 +1736,7 @@ public class ChromaticEventManager {
 				ItemStack is = elb.getHeldItem();
 				if (is != null && ReikaEnchantmentHelper.hasEnchantment(ChromaEnchants.PHASING.getEnchantment(), is)) {
 					applyingPhasing = true;
-					int lvl = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.PHASING.getEnchantment(), is);
+					int lvl = ChromaEnchants.PHASING.getLevel(is);
 					float pierce = EnchantmentPhasingSequence.getPenetratingDamage(evt.ammount, lvl);
 					float leftover = EnchantmentPhasingSequence.getSpilloverDamage(evt.ammount, lvl);
 					evt.entityLiving.attackEntityFrom(src, leftover);
