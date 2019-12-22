@@ -14,6 +14,8 @@ uniform float curlMovementXZ;
 uniform float curlMovementY;
 
 uniform float stretchFactor;
+uniform float stretchRadius;
+uniform float stretchApplication;
 
 float getX(vec4 vert) {
 	return vert.x+float(chunkX);
@@ -62,10 +64,10 @@ void main() {
 	real.z = mix(real.z, focus.z, curlMovementXZ*intensity);
 	
 	diff = real-focus;
-	diff *= 1.0+max(0.0, stretchFactor-1.0);
+	diff *= mix(1.0, stretchFactor, intensity*max(0.0, 1.0-distxz/stretchRadius));
 	vec3 repl = focus+diff;
-	real.x = repl.x;
-	real.z = repl.z;
+	real.x = mix(real.x, repl.x, stretchApplication);
+	real.z = mix(real.z, repl.z, stretchApplication);
 	
 	gl_Position = gl_ModelViewProjectionMatrix * vec4(getRelativeCoord(real.xyz), vert.w);
 	

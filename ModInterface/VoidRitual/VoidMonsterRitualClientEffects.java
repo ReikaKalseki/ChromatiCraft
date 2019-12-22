@@ -275,21 +275,27 @@ public class VoidMonsterRitualClientEffects implements TickHandler {
 		protected boolean tick() {
 			float f = (float)shaderData.get("stretchFactor");
 			float f2 = (float)shaderData.get("factorDelta");
+			float r = (float)shaderData.get("stretchRadius");
+			r = r*1.125F+4F;
 			f *= f2;
 			if (f > 5) {
-				f2 = 0.875F;
+				f2 = 0.5F;
 			}
 			shaderData.put("stretchFactor", f);
+			shaderData.put("factorDelta", f2);
+			shaderData.put("stretchRadius", r);
+			shaderData.put("stretchApplication", 1F);
 			if (f < 1) {
-				shaderIntensity = 0;
+				shaderIntensity *= 0.75;
 			}
-			return shaderIntensity <= 0;
+			return shaderIntensity <= 0.01;
 		}
 
 		@Override
 		protected void initShaderData(EntityLiving e) {
 			shaderData.put("stretchFactor", 1F);
 			shaderData.put("factorDelta", 1.03125F);
+			shaderData.put("stretchRadius", 1F);
 		}
 
 		@Override
