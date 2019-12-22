@@ -393,6 +393,30 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 		return ChunkManager.getChunkSquare(xCoord, zCoord, range >> 4);
 	}
 
+	private void updateRange() {
+		int oldrange = range;
+		double r = 1;
+		int val = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.LIME);
+		if (val > 0)
+			r = TileEntityRangeBoost.getFactor(val-1);
+		range = (int)(MAXRANGE*r);
+		if (scanning && oldrange != range) {
+			scanY = 0;
+			fluids.clear();
+			counts.clear();
+		}
+	}
+
+	@Override
+	public void getTagsToWriteToStack(NBTTagCompound NBT) {
+		this.writeOwnerData(NBT);
+	}
+
+	@Override
+	public void setDataFromItemStackTag(ItemStack is) {
+		this.readOwnerData(is);
+	}
+
 	private static class FluidSource {
 
 		private final Coordinate location;
@@ -407,20 +431,6 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 			return FluidRegistry.lookupFluidForBlock(location.getBlock(world)) == fluid.getFluid();
 		}
 
-	}
-
-	private void updateRange() {
-		int oldrange = range;
-		double r = 1;
-		int val = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.LIME);
-		if (val > 0)
-			r = TileEntityRangeBoost.getFactor(val-1);
-		range = (int)(MAXRANGE*r);
-		if (scanning && oldrange != range) {
-			scanY = 0;
-			fluids.clear();
-			counts.clear();
-		}
 	}
 
 }

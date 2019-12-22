@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -166,6 +166,16 @@ public class TileEntityAtmosphericRelay extends CrystalTransmitterBase implement
 	@Override
 	public int getThoughputInsurance() {
 		return 1000;
+	}
+
+	@Override
+	public void getTagsToWriteToStack(NBTTagCompound NBT) {
+		this.writeOwnerData(NBT);
+	}
+
+	@Override
+	public void setDataFromItemStackTag(ItemStack is) {
+		this.readOwnerData(is);
 	}
 
 }

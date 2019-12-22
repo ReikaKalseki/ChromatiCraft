@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -178,6 +179,16 @@ public class TileEntityCollector extends FluidIOInventoryBase implements OwnedTi
 
 	public int getProgressScaled(int i) {
 		return 0;
+	}
+
+	@Override
+	public void getTagsToWriteToStack(NBTTagCompound NBT) {
+		this.writeOwnerData(NBT);
+	}
+
+	@Override
+	public void setDataFromItemStackTag(ItemStack is) {
+		this.readOwnerData(is);
 	}
 
 }

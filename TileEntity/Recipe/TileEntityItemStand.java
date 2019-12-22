@@ -324,4 +324,14 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 		return this.isLocked();
 	}
 
+	@Override
+	public void getTagsToWriteToStack(NBTTagCompound NBT) {
+		this.writeOwnerData(NBT);
+	}
+
+	@Override
+	public void setDataFromItemStackTag(ItemStack is) {
+		this.readOwnerData(is);
+	}
+
 }

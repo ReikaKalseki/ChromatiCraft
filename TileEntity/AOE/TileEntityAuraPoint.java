@@ -33,7 +33,6 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -67,7 +66,7 @@ import vazkii.botania.api.boss.IBotaniaBoss;
 
 
 // Shoot down hostile mobs, speed crop growth, heal players
-public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTile {
+public class TileEntityAuraPoint extends TileEntityLocusPoint {
 
 	@SideOnly(Side.CLIENT)
 	public GlowKnot knot;

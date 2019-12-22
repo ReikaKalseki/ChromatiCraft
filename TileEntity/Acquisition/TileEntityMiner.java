@@ -827,6 +827,16 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		return coords.isEmpty() ? 0 : coords.get(mc).size();
 	}
 
+	@Override
+	public void getTagsToWriteToStack(NBTTagCompound NBT) {
+		this.writeOwnerData(NBT);
+	}
+
+	@Override
+	public void setDataFromItemStackTag(ItemStack is) {
+		this.readOwnerData(is);
+	}
+
 	public static enum MineralCategory {
 		UBIQUITOUS_ORE("Ubiquitous Ore"),
 		COMMON_ORE("Common Ore"),

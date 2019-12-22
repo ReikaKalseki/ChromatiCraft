@@ -263,13 +263,13 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 
 	@Override
 	public void getTagsToWriteToStack(NBTTagCompound NBT) {
-		super.getTagsToWriteToStack(NBT);
+		this.writeOwnerData(NBT);
 		NBT.setInteger("tier", tier.ordinal());
 	}
 
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
-		super.setDataFromItemStackTag(is);
+		this.readOwnerData(is);
 		if (is != null && is.stackTagCompound != null) {
 			tier = CrystalTier.tierList[is.stackTagCompound.getInteger("tier")];
 		}

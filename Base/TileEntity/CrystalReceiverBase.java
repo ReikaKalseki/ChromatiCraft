@@ -211,13 +211,13 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 
 	@Override
 	public void getTagsToWriteToStack(NBTTagCompound NBT) {
-		super.getTagsToWriteToStack(NBT);
+		this.writeOwnerData(NBT);
 		energy.writeToNBT("energy", NBT);
 	}
 
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
-		super.setDataFromItemStackTag(is);
+		this.readOwnerData(is);
 		if (is.stackTagCompound == null)
 			return;
 		energy.readFromNBT("energy", is.stackTagCompound);

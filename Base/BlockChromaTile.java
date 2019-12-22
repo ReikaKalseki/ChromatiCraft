@@ -575,11 +575,11 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			return null;
 		TileEntity tile = world.getTileEntity(target.blockX, target.blockY, target.blockZ);
 		ItemStack core = m.getCraftedProduct();/*
-		if (m.isEnchantable()) {
+		if (core != null && m.isEnchantable()) {
 			HashMap<Enchantment, Integer> ench = ((EnchantableMachine)tile).getEnchantments();
 			ReikaEnchantmentHelper.applyEnchantments(core, ench);
 		}*/
-		if (m.hasNBTVariants()) {
+		if (core != null && m.hasNBTVariants()) {
 			NBTTile nb = (NBTTile)tile;
 			NBTTagCompound nbt = new NBTTagCompound();
 			nb.getTagsToWriteToStack(nbt);
@@ -619,11 +619,11 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			ItemStack is = m.getCraftedProduct();
 			ArrayList li = new ArrayList();
 			/*
-			if (m.isEnchantable()) {
+			if (is != null && m.isEnchantable()) {
 				HashMap<Enchantment,Integer> map = ((EnchantableMachine)te).getEnchantments();
 				ReikaEnchantmentHelper.applyEnchantments(is, map);
 			}*/
-			if (m.hasNBTVariants()) {
+			if (is != null && m.hasNBTVariants()) {
 				NBTTagCompound nbt = new NBTTagCompound();
 				((NBTTile)te).getTagsToWriteToStack(nbt);
 				is.stackTagCompound = (NBTTagCompound)(!nbt.hasNoTags() ? nbt.copy() : null);
@@ -651,16 +651,17 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 		if (m != null) {
 			ItemStack is = m.getCraftedProduct();
 			/*
-			if (m.isEnchantable()) {
+			if (is != null && m.isEnchantable()) {
 				HashMap<Enchantment,Integer> map = ((EnchantableMachine)te).getEnchantments();
 				ReikaEnchantmentHelper.applyEnchantments(is, map);
 			}*/
-			if (m.hasNBTVariants()) {
+			if (is != null && m.hasNBTVariants()) {
 				NBTTagCompound nbt = new NBTTagCompound();
 				((NBTTile)te).getTagsToWriteToStack(nbt);
 				is.stackTagCompound = (NBTTagCompound)(!nbt.hasNoTags() ? nbt.copy() : null);
 			}
-			li = ReikaJavaLibrary.makeListFrom(is);
+			if (is != null)
+				li = ReikaJavaLibrary.makeListFrom(is);
 		}
 		return li;
 	}

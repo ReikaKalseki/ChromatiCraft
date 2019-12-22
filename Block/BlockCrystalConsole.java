@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -153,7 +153,7 @@ public class BlockCrystalConsole extends BlockContainer implements ConnectedText
 			HashMap<Enchantment, Integer> ench = ((EnchantableMachine)tile).getEnchantments();
 			ReikaEnchantmentHelper.applyEnchantments(core, ench);
 		}*/
-		if (m.hasNBTVariants()) {
+		if (core != null && m.hasNBTVariants()) {
 			NBTTile nb = (NBTTile)tile;
 			NBTTagCompound nbt = new NBTTagCompound();
 			nb.getTagsToWriteToStack(nbt);
@@ -191,18 +191,19 @@ public class BlockCrystalConsole extends BlockContainer implements ConnectedText
 		ChromaTiles m = ChromaTiles.getTile(world, x, y, z);
 		if (m != null) {
 			ItemStack is = m.getCraftedProduct();
-			List li;
+			List li = new ArrayList();
 			/*
 			if (m.isEnchantable()) {
 				HashMap<Enchantment,Integer> map = ((EnchantableMachine)te).getEnchantments();
 				ReikaEnchantmentHelper.applyEnchantments(is, map);
 			}*/
-			if (m.hasNBTVariants()) {
+			if (is != null && m.hasNBTVariants()) {
 				NBTTagCompound nbt = new NBTTagCompound();
 				((NBTTile)te).getTagsToWriteToStack(nbt);
 				is.stackTagCompound = (NBTTagCompound)(!nbt.hasNoTags() ? nbt.copy() : null);
 			}
-			li = ReikaJavaLibrary.makeListFrom(is);
+			if (is != null)
+				li = ReikaJavaLibrary.makeListFrom(is);
 			ReikaItemHelper.dropItems(world, x+0.5, y+0.5, z+0.5, li);
 		}
 	}

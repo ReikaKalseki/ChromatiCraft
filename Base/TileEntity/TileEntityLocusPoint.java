@@ -13,8 +13,11 @@ import java.util.Collection;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
@@ -27,7 +30,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public abstract class TileEntityLocusPoint extends TileEntityChromaticBase implements LocationCached {
+public abstract class TileEntityLocusPoint extends TileEntityChromaticBase implements LocationCached, OwnedTile {
 
 	private static final Collection<WorldLocation> cache = new ThreadSafeSet();
 
@@ -103,6 +106,16 @@ public abstract class TileEntityLocusPoint extends TileEntityChromaticBase imple
 
 	public static void clearCache() {
 		cache.clear();
+	}
+
+	@Override
+	public void getTagsToWriteToStack(NBTTagCompound NBT) {
+		this.writeOwnerData(NBT);
+	}
+
+	@Override
+	public void setDataFromItemStackTag(ItemStack is) {
+		this.readOwnerData(is);
 	}
 
 }

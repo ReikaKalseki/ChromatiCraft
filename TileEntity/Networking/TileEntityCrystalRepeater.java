@@ -398,7 +398,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	@Override
 	public void getTagsToWriteToStack(NBTTagCompound NBT) {
-		super.getTagsToWriteToStack(NBT);
+		this.writeOwnerData(NBT);
 		NBT.setBoolean("boosted", isTurbo);
 		if (casterID != null)
 			NBT.setString("caster", casterID.toString());
@@ -406,7 +406,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
-		super.setDataFromItemStackTag(is);
+		this.readOwnerData(is);
 		isTurbo = ReikaItemHelper.matchStacks(is, this.getTile().getCraftedProduct()) && is.stackTagCompound != null && is.stackTagCompound.getBoolean("boosted");
 		casterID = ReikaItemHelper.matchStacks(is, this.getTile().getCraftedProduct()) && is.stackTagCompound != null && is.stackTagCompound.hasKey("caster") ? UUID.fromString(is.stackTagCompound.getString("caster")) : null;
 	}
@@ -444,8 +444,9 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		this.delete();
 	}
 
+	@Override
 	public final boolean canDrop(EntityPlayer ep) {
-		return ep.getUniqueID().equals(placerUUID);
+		return placerUUID == null || ep.getUniqueID().equals(placerUUID);
 	}
 
 	protected boolean shouldDrop() {

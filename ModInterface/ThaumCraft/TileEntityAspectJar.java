@@ -415,14 +415,14 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 
 	@Override
 	public void getTagsToWriteToStack(NBTTagCompound NBT) {
-		super.getTagsToWriteToStack(NBT);
+		this.writeOwnerData(NBT);
 		if (ModList.THAUMCRAFT.isLoaded())
 			tank.writeToNBT(NBT);
 	}
 
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
-		super.setDataFromItemStackTag(is);
+		this.readOwnerData(is);
 		if (is.stackTagCompound != null && ReikaItemHelper.matchStacks(is, ChromaTiles.ASPECTJAR.getCraftedProduct()) && ModList.THAUMCRAFT.isLoaded())
 			tank.readFromNBT(is.stackTagCompound);
 	}

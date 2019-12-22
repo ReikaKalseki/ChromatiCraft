@@ -102,6 +102,7 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 			RepeaterFailures r = RepeaterFailures.failureModes.getRandomEntry();
 			r.doEffect(world, x, y, z, this);
 			ProgressStage.BLOWREPEATER.stepPlayerTo(this.getPlacer());
+			placerUUID = null;
 			if (world.isRemote) {
 				this.doDestroyFXClient(world, x, y, z);
 			}

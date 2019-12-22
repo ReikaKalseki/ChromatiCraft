@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -120,7 +120,9 @@ public class BlockChromaPlantTile extends BlockChromaTile {
 	@Override
 	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int meta, int fortune) {
 		ArrayList<ItemStack> li = new ArrayList();
-		li.add(ChromaTiles.getTileFromIDandMetadata(this, meta).getCraftedProduct());
+		ItemStack is = ChromaTiles.getTileFromIDandMetadata(this, meta).getCraftedProduct();
+		if (is != null)
+			li.add(is);
 		return li;
 	}
 

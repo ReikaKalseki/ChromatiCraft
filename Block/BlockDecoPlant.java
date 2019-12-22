@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -144,7 +144,8 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 
 	@Override
 	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int meta, int fortune) {
-		return ReikaJavaLibrary.makeListFrom(ChromaTiles.getTileFromIDandMetadata(this, meta).getCraftedProduct());
+		ItemStack is = ChromaTiles.getTileFromIDandMetadata(this, meta).getCraftedProduct();
+		return is != null ? ReikaJavaLibrary.makeListFrom(is) : new ArrayList();
 	}
 
 	@Override

@@ -22,7 +22,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaRenderList;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -38,7 +37,7 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 
 import li.cil.oc.api.network.Visibility;
 
-public abstract class TileEntityChromaticBase extends TileEntityBase implements NBTTile, RenderFetcher {
+public abstract class TileEntityChromaticBase extends TileEntityBase implements RenderFetcher {
 
 	protected final HashSet<UUID> owners = new HashSet();
 
@@ -170,14 +169,12 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 		return false;
 	}
 
-	@Override
-	public void getTagsToWriteToStack(NBTTagCompound NBT) {
+	protected final void writeOwnerData(NBTTagCompound NBT) {
 		if (this instanceof OwnedTile)
 			ReikaNBTHelper.writeCollectionToNBT(owners, NBT, "owners", ReikaNBTHelper.UUIDConverter.instance);
 	}
 
-	@Override
-	public void setDataFromItemStackTag(ItemStack is) {
+	protected final void readOwnerData(ItemStack is) {
 		if (ChromaItems.PLACER.matchWith(is)) {
 			if (is.getItemDamage() == this.getTile().ordinal()) {
 				if (is.stackTagCompound != null) {
