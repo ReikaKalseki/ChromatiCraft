@@ -267,10 +267,10 @@ public class VoidMonsterRitualClientEffects implements TickHandler {
 
 	private static class StretchVisual extends EffectVisual {
 
-		private boolean oscillating;
 		private boolean released;
 		private float amplitude;
 		private int time;
+		private final float frequency = 0.125F;
 
 		private StretchVisual() {
 			super(Effects.STRETCH, true);
@@ -279,28 +279,25 @@ public class VoidMonsterRitualClientEffects implements TickHandler {
 		@Override
 		protected boolean tick() {
 			float f = (float)shaderData.get("stretchFactor");
-			int t = (int)shaderData.get("time");
-			if (f >= 5) {
+			if (f >= amplitude+1) {
 				released = true;
 			}
 			if (released) {
-				if (oscillating) {
-					f = 1+(float)(amplitude*Math.cos(t*0.125));
-					amplitude *= 0.9875;
+				float df = (float)(amplitude*Math.cos(time*frequency));
+				if (df < 0) {
+					f = 1/(1F+Math.abs(df));
 				}
 				else {
-					f *= 0.75;
-					if (f <= 1) {
-						oscillating = true;
-					}
+					f = 1+df;
 				}
+				amplitude *= 0.965;
+				time++;
 			}
 			else {
 				f *= 1.0625;
 			}
 			shaderData.put("stretchFactor", f);
 			shaderData.put("stretchApplication", 1F);
-			time++;
 			if (amplitude < 1) {
 				shaderIntensity *= 0.9975;
 			}
@@ -311,8 +308,8 @@ public class VoidMonsterRitualClientEffects implements TickHandler {
 		protected void initShaderData(EntityLiving e) {
 			shaderData.put("stretchFactor", 1F);
 			shaderData.put("stretchRadius", 1000F);
-			amplitude = 0.99F;
-			oscillating = released = false;
+			amplitude = 4F;
+			released = false;
 			time = 0;
 		}
 

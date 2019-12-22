@@ -68,6 +68,7 @@ void main() {
 	vec3 repl = focus+diff;
 	real.x = mix(real.x, repl.x, stretchApplication);
 	real.z = mix(real.z, repl.z, stretchApplication);
+	real.y -= (stretchFactor-1.0)*stretchApplication;
 	
 	gl_Position = gl_ModelViewProjectionMatrix * vec4(getRelativeCoord(real.xyz), vert.w);
 	

@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Magic.Progression.ProgressionManager.StructureComplet
 import Reika.ChromatiCraft.Magic.Progression.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
@@ -117,6 +118,12 @@ public class ProgressOverlayRenderer {
 			ReikaSoundHelper.playClientSound(ChromaSounds.GAINPROGRESS, Minecraft.getMinecraft().thePlayer, 0.5F, 1, false);
 			soundCooldown = 24;
 		}
+
+		ChromaShaders.GAINPROGRESS.setIntensity(1);
+		ChromaShaders.GAINPROGRESS.refresh();
+		ChromaShaders.GAINPROGRESS.lingerTime = 30;
+		ChromaShaders.GAINPROGRESS.rampDownAmount = 0.004F;
+		ChromaShaders.GAINPROGRESS.rampDownFactor = 0.997F;
 		//ReikaJavaLibrary.pConsole("Adding "+p+" to map ("+progressFlags.keySet().contains(p)+"), set is "+progressFlags.keySet());
 	}
 

@@ -33,6 +33,7 @@ public enum ChromaShaders implements ShaderHook {
 	//Situational
 	INSKYRIVER(),
 	DIMFLOOR(),
+	GAINPROGRESS(),
 
 	//Ritual-related
 	PYLONTURBO$OVERBRIGHT(),
@@ -49,7 +50,7 @@ public enum ChromaShaders implements ShaderHook {
 	private float intensity;
 
 	public boolean clearOnRender = false;
-	public float rampDownFactor;
+	public float rampDownFactor = 1;
 	public float rampDownAmount;
 	public int lingerTime;
 
@@ -131,7 +132,7 @@ public enum ChromaShaders implements ShaderHook {
 		}
 		renderAge++;
 		if (renderAge > lingerTime) {
-			if (rampDownAmount > 0 || rampDownFactor > 0)
+			if (rampDownAmount > 0 || rampDownFactor < 1)
 				this.rampDownIntensity(rampDownAmount, rampDownFactor);
 		}
 	}

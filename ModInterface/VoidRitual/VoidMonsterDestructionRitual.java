@@ -185,6 +185,8 @@ public class VoidMonsterDestructionRitual {
 					break;
 				case CURL:
 					break;
+				case STRETCH:
+					break;
 			}
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.VOIDMONSTERRITUAL.ordinal(), new PacketTarget.RadiusTarget(e, 128), e.getEntityId(), this.ordinal());
 		}
@@ -251,6 +253,8 @@ public class VoidMonsterDestructionRitual {
 				case WAVE:
 					break;
 				case CURL:
+					break;
+				case STRETCH:
 					break;
 			}
 			ReikaSoundHelper.playClientSound(ChromaSounds.FLAREATTACK, e, 1, f, false);
