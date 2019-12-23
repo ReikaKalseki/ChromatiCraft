@@ -254,7 +254,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			}
 			for (StructureGeneration del : done.delayed) {
 				//ChromatiCraft.logger.log("Re-running delayed generator "+del);
-				if (this.checkChunk(del.getWorld(), del.location.chunk.chunkXPos >> 4, del.location.chunk.chunkZPos >> 4, random, del.type)) {
+				if (this.checkChunk(world, del.location.chunk.chunkXPos >> 4, del.location.chunk.chunkZPos >> 4, random, del.type)) {
 					//ChromatiCraft.logger.log("Delayed generator "+gen+" failed exclusion zone, would have maybe been a duplicate");
 				}
 			}
@@ -1126,10 +1126,6 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		private StructureGeneration(ChromaStructures s, World world, int chunkX, int chunkZ) {
 			type = s;
 			location = new WorldChunk(world, chunkX, chunkZ);
-		}
-
-		public World getWorld() {
-			return DimensionManager.getWorld(location.dimensionID);
 		}
 
 		@Override

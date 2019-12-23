@@ -119,11 +119,13 @@ public class ProgressOverlayRenderer {
 			soundCooldown = 24;
 		}
 
-		ChromaShaders.GAINPROGRESS.setIntensity(1);
-		ChromaShaders.GAINPROGRESS.refresh();
-		ChromaShaders.GAINPROGRESS.lingerTime = 30;
-		ChromaShaders.GAINPROGRESS.rampDownAmount = 0.004F;
-		ChromaShaders.GAINPROGRESS.rampDownFactor = 0.997F;
+		if (p instanceof ProgressStage) {
+			ChromaShaders.GAINPROGRESS.setIntensity(1);
+			ChromaShaders.GAINPROGRESS.refresh();
+			ChromaShaders.GAINPROGRESS.lingerTime = 30;
+			ChromaShaders.GAINPROGRESS.rampDownAmount = 0.004F;
+			ChromaShaders.GAINPROGRESS.rampDownFactor = 0.997F;
+		}
 		//ReikaJavaLibrary.pConsole("Adding "+p+" to map ("+progressFlags.keySet().contains(p)+"), set is "+progressFlags.keySet());
 	}
 

@@ -269,7 +269,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		if (ReikaEnchantmentHelper.getEnchantmentLevel(e, is) >= selected.get(e))
 			return false;
 
-		return e.canApply(is);
+		return i == Items.book ? true : e.canApply(is);
 	}
 
 	private void applyEnchants() {

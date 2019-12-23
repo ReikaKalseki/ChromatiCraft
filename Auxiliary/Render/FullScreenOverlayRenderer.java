@@ -169,7 +169,7 @@ public class FullScreenOverlayRenderer {
 						if (dd < 6) {
 							glowIntensity = Math.min(1, glowIntensity+(float)(6-dd)/12F);
 						}
-						glowCenter = new Coordinate(c.location);
+						glowCenter = c != null ? new Coordinate(c.location) : null;
 					}
 					int color = ReikaColorAPI.getColorWithBrightnessMultiplier(e.getColor(), Math.min(1, res));
 					v5.startDrawingQuads();
@@ -193,7 +193,8 @@ public class FullScreenOverlayRenderer {
 			ChromaShaders.PYLON.getShader().setField("pylonRed", glowColor.getRed());
 			ChromaShaders.PYLON.getShader().setField("pylonGreen", glowColor.getGreen());
 			ChromaShaders.PYLON.getShader().setField("pylonBlue", glowColor.getBlue());
-			ChromaShaders.PYLON.getShader().setFocus(glowCenter);
+			if (glowCenter != null)
+				ChromaShaders.PYLON.getShader().setFocus(glowCenter);
 		}
 	}
 
