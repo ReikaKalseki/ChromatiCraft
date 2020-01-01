@@ -255,27 +255,41 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 	public void xmasSnow(ClientTickEvent evt) {
 		if (Minecraft.getMinecraft().gameSettings.thirdPersonView == 0 && !Minecraft.getMinecraft().isGamePaused() && SpecialDayTracker.instance.loadXmasTextures()) {
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-			if (ep != null && rand.nextInt(3) == 0 && SpecialDayTracker.instance.getXmasWeatherStrength(ep.worldObj) > 0) {
-				int x = MathHelper.floor_double(ep.posX);
-				int y = MathHelper.floor_double(ep.posY);
-				int z = MathHelper.floor_double(ep.posZ);
-				if (ep.worldObj.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) > 5) {
-					double px = ReikaRandomHelper.getRandomPlusMinus(ep.posX, 3.5);
-					double py = ReikaRandomHelper.getRandomPlusMinus(ep.posY+1.5, 1);
-					double pz = ReikaRandomHelper.getRandomPlusMinus(ep.posZ, 3.5);
-					float g = (float)ReikaRandomHelper.getRandomBetween(0.03125, 0.125);
-					int l = ReikaRandomHelper.getRandomBetween(10, 50);
-					float s = (float)ReikaRandomHelper.getRandomBetween(0.25, 0.75);
-					EntityShaderFX fx = new EntityShaderFX(ep.worldObj, px, py, pz, 1, ChromaShaders.CRYSTALLIZEPARTICLE);
-					int c0 = ReikaJavaLibrary.getRandomListEntry(rand, snowColors);
-					int c = ReikaColorAPI.mixColors(c0, 0xffffff, (float)ReikaRandomHelper.getRandomBetween(0, 0.25));
-					fx.setRendering(true).setClip(0.6F).setRapidExpand().setColliding().setAlphaFading().setLife(l).setGravity(g).setScale(s).setColor(c).setIcon(ChromaIcons.FADE);
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			if (ep != null) {
+				float f = SpecialDayTracker.instance.getXmasWeatherStrength(ep.worldObj);
+				if (f >= 0.25) {
+					float f2 = (float)Math.pow(1+f, 1.25)-1;
+					int r = Math.round(2/f2);
+					//ReikaJavaLibrary.pConsole(f+" > "+f2+" > "+r);
+					if (r < 1 || rand.nextInt(r) == 0) {
+						int x = MathHelper.floor_double(ep.posX);
+						int y = MathHelper.floor_double(ep.posY);
+						int z = MathHelper.floor_double(ep.posZ);
+						if (ep.worldObj.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) > 5) {
+							double px = ReikaRandomHelper.getRandomPlusMinus(ep.posX, 3.5);
+							double py = ReikaRandomHelper.getRandomPlusMinus(ep.posY+1.5, 1);
+							double pz = ReikaRandomHelper.getRandomPlusMinus(ep.posZ, 3.5);
+							float g = (float)ReikaRandomHelper.getRandomBetween(0.03125, 0.125);
+							int l = ReikaRandomHelper.getRandomBetween(10, 50);
+							float s = (float)ReikaRandomHelper.getRandomBetween(0.25, 0.75);
+							double vm = 0.03125;
+							double vx = ReikaRandomHelper.getRandomPlusMinus(0, vm);
+							double vz = ReikaRandomHelper.getRandomPlusMinus(0, vm);
+							double ax = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625/8)*ReikaRandomHelper.getRandomBetween(0.25, 1);
+							double az = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625/8)*ReikaRandomHelper.getRandomBetween(0.25, 1);
+							EntityShaderFX fx = new EntityShaderFX(ep.worldObj, px, py, pz, vx, 0, vz, 1, ChromaShaders.CRYSTALLIZEPARTICLE);
+							int c0 = ReikaJavaLibrary.getRandomListEntry(rand, snowColors);
+							int c = ReikaColorAPI.mixColors(c0, 0xffffff, (float)ReikaRandomHelper.getRandomBetween(0, 0.25));
+							fx.setRendering(true).setClip(0.5F).setAcceleration(ax, 0, az).setRapidExpand().setColliding().setAlphaFading().setLife(l).setGravity(g).setScale(s).setColor(c).setIcon(ChromaIcons.FADE);
+							Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+						}
+					}
 				}
 			}
 		}
 	}
 
+	@ModDependent(ModList.VOIDMONSTER)
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void setShaderFoci(EntityRenderEvent evt) {
 		if (VoidMonsterDestructionRitual.isFocusOfActiveRitual(evt.entity)) {
@@ -283,6 +297,7 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 		}
 	}
 
+	@ModDependent(ModList.VOIDMONSTER)
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void mapChunkRenderToCallList(ChunkWorldRenderEvent evt) {
 		WorldRenderIntercept.instance.mapChunkRenderList(evt.defaultGLListID, evt.renderer);
@@ -610,18 +625,26 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 	@SubscribeEvent
 	public void clearOnLogout(ClientDisconnectionFromServerEvent evt) {
 		SkyRiverManagerClient.handleRayClearPacket();
-		VoidMonsterDestructionRitual.readSync(null);
+		if (ModList.VOIDMONSTER.isLoaded())
+			this.clearVoidRituals();
 	}
 
 	@SubscribeEvent
 	public void clearOnLogout(ClientLogoutEvent evt) {
 		SkyRiverManagerClient.handleRayClearPacket();
-		VoidMonsterDestructionRitual.readSync(null);
+		if (ModList.VOIDMONSTER.isLoaded())
+			this.clearVoidRituals();
 	}
 
 	@SubscribeEvent
 	public void clearOnLogout(SinglePlayerLogoutEvent evt) {
 		SkyRiverManagerClient.handleRayClearPacket();
+		if (ModList.VOIDMONSTER.isLoaded())
+			this.clearVoidRituals();
+	}
+
+	@ModDependent(ModList.VOIDMONSTER)
+	private void clearVoidRituals() {
 		VoidMonsterDestructionRitual.readSync(null);
 	}
 

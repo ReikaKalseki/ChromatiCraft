@@ -495,7 +495,8 @@ public class VoidMonsterRitualStructure extends ChromaStructureBase {
 		array.setBlock(x + 16, y + 2, z + 18, crystalstone, 1);
 		array.setBlock(x + 16, y + 2, z + 19, crystalstone, 1);
 		array.setBlock(x + 16, y + 2, z + 20, crystalstone, 6);
-		array.setBlock(x + 16, y + 2, z + 21, luma, 15);
+
+
 		array.setBlock(x + 16, y + 2, z + 24, crystalstone, 2);
 		array.setBlock(x + 16, y + 3, z + 4, crystalstone, 5);
 		array.setBlock(x + 16, y + 3, z + 12, crystalstone, 1);

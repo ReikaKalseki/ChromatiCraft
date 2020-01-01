@@ -316,7 +316,7 @@ public class ItemUnknownArtefact extends ItemChromaMulti implements AnimatedSpri
 	}
 
 	@Override
-	public int getFrameCount() {
+	public int getFrameCount(ItemStack is) {
 		return 16;
 	}
 
@@ -332,7 +332,7 @@ public class ItemUnknownArtefact extends ItemChromaMulti implements AnimatedSpri
 
 	@Override
 	public int getFrameOffset(ItemStack is) {
-		return ((System.identityHashCode(is)))%this.getFrameCount();
+		return ((System.identityHashCode(is)))%this.getFrameCount(is);
 	}
 
 	@Override

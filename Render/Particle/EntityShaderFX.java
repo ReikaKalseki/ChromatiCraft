@@ -22,6 +22,12 @@ public class EntityShaderFX extends EntityBlurFX {
 		shaderType = s;
 	}
 
+	public EntityShaderFX(World world, double x, double y, double z, double vx, double vy, double vz, float f, ChromaShaders s) {
+		super(world, x, y, z, vx, vy, vz);
+		lensingIntensity = f;
+		shaderType = s;
+	}
+
 	public EntityShaderFX setIntensity(float f) {
 		lensingIntensity = f;
 		return this;

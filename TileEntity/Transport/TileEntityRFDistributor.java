@@ -21,6 +21,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAreaDistributor;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -55,7 +56,8 @@ public class TileEntityRFDistributor extends TileEntityAreaDistributor implement
 		if (this.hasRedstoneSignal())
 			return 0;
 		this.addInput(new WorldLocation(this).move(from, 1));
-		return this.tryDistributeEnergy(worldObj, maxReceive, simulate);
+		int amt = (int)(maxReceive*ChromaAux.getRFTransferEfficiency(worldObj, xCoord, yCoord, zCoord));
+		return this.tryDistributeEnergy(worldObj, amt, simulate);
 	}
 
 	private int tryDistributeEnergy(World world, int maxReceive, boolean simulate) {

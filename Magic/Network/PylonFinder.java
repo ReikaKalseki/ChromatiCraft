@@ -746,4 +746,8 @@ static class ChunkRequest {
 	public static int getSourcePriority(CrystalSource src, CrystalElement e) {
 		return src.getEnergy(e);
 	}
+
+	static int getThroughput(CrystalNetworkTile te) {
+		return te.maxThroughput();
+	}
 }

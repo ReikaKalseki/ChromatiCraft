@@ -12,6 +12,8 @@ import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterDestructionRitual;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterRitualClientEffects;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterRitualClientEffects.EffectVisual;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.IO.Shaders.ShaderRegistry;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
@@ -38,6 +40,16 @@ public class WorldRenderIntercept {
 	}
 
 	public static void callGlLists(IntBuffer lists) {
+		if (ModList.VOIDMONSTER.isLoaded()) {
+			instance.runIntercept(lists);
+		}
+		else {
+			GL11.glCallLists(lists);
+		}
+	}
+
+	@ModDependent(ModList.VOIDMONSTER)
+	private void runIntercept(IntBuffer lists) {
 		float f = 0;
 		if (VoidMonsterDestructionRitual.ritualsActive()) {
 			for (EffectVisual e : VoidMonsterRitualClientEffects.EffectVisual.getTerrainShaders()) {

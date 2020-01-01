@@ -22,7 +22,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -93,7 +92,6 @@ import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
 import Reika.DragonAPI.Interfaces.Item.MusicDataItem;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
 import Reika.DragonAPI.Interfaces.TileEntity.AdjacentUpdateWatcher;
-import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.ConditionalUnbreakability;
 import Reika.DragonAPI.Interfaces.TileEntity.HitAction;
 import Reika.DragonAPI.Interfaces.TileEntity.RedstoneTile;
@@ -673,8 +671,6 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			((TileEntityItemCollector)te).canIntake = false;
 			ReikaWorldHelper.splitAndSpawnXP(world, x+0.5, y+0.5, z+0.5, ((TileEntityItemCollector)te).getExperience());
 		}
-		if (te instanceof IInventory)
-			ReikaItemHelper.dropInventory(world, x, y, z);
 		if (te instanceof TileEntityRift) {
 			((TileEntityRift)te).resetOther();
 		}
@@ -687,9 +683,6 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 		//if (te instanceof TileEntityFiberOptic) {
 		//	((TileEntityFiberOptic)te).removeFromNetwork();
 		//}
-		if (te instanceof BreakAction) {
-			((BreakAction)te).breakBlock();
-		}
 		if (te instanceof CrystalNetworkTile) {
 			((CrystalNetworkTile)te).removeFromCache();
 		}

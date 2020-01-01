@@ -90,7 +90,8 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	METEORFIRE("Meteor Tower Projectiles Start Fires On Impact", true),
 	PANELLAMPCOLLISION("Panel-Form Lumen Lamps Have No Hitbox", false),
 	EPILEPSY("Epilepsy Mode", false),
-	PYLONOVERWORLD("Spawn Pylons in Overworld", true);
+	PYLONOVERWORLD("Spawn Pylons in Overworld", true),
+	RFEFFICIENCY("Wireless RF Transmission Efficiency (%)", 100F),
 	;
 
 	private String label;
@@ -254,6 +255,11 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	public static float getNodeGrowthSpeed() {
 		float base = NODECHARGESPEED.getFloat();
 		return Math.min(6F, Math.max(0.2F, base));
+	}
+
+	public static float getRFEfficiency() {
+		float base = RFEFFICIENCY.getFloat()/100F;
+		return Math.min(1F, Math.max(0.5F, base));
 	}
 
 	@Override

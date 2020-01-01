@@ -211,6 +211,10 @@ public class ChromaAux {
 
 	};
 
+	public static float getRFTransferEfficiency(World world, int x, int y, int z) {
+		return ChromaOptions.getRFEfficiency();
+	}
+
 	public static final boolean hasGui(World world, int x, int y, int z, EntityPlayer ep) {
 		ChromaTiles m = ChromaTiles.getTile(world, x, y, z);
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {

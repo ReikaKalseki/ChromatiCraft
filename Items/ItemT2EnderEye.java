@@ -60,7 +60,7 @@ public class ItemT2EnderEye extends ItemChromaBasic implements AnimatedSpriteshe
 	}
 
 	@Override
-	public int getFrameCount() {
+	public int getFrameCount(ItemStack is) {
 		return 16;
 	}
 

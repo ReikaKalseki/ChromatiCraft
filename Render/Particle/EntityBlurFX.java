@@ -59,6 +59,10 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 	private float defaultGreen;
 	private float defaultBlue;
 
+	private double accelerationX;
+	private double accelerationY;
+	private double accelerationZ;
+
 	private double drag;
 
 	private Coordinate destination;
@@ -214,6 +218,13 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 		return this;
 	}
 
+	public final EntityBlurFX setAcceleration(double x, double y, double z) {
+		accelerationX = x;
+		accelerationY = y;
+		accelerationZ = z;
+		return this;
+	}
+
 	public final EntityBlurFX setBasicBlend() {
 		additiveBlend = false;
 		renderMode = null;
@@ -290,6 +301,10 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 				this.setDead();
 			}
 		}
+
+		motionX += accelerationX;
+		motionY += accelerationY;
+		motionZ += accelerationZ;
 
 		if (noSlow) {
 			double mx = motionX;

@@ -692,6 +692,10 @@ public class CastingRecipe implements APICastingRecipe {
 			return Collections.unmodifiableMap(inputs);
 		}
 
+		public ItemMatch getAuxItem(int x, int z) {
+			return inputs.get(Arrays.asList(x, z));
+		}
+
 		public final Map<List<Integer>, Set<KeyedItemStack>> getInputItems() {
 			HashMap<List<Integer>, Set<KeyedItemStack>> map = new HashMap();
 			for (List<Integer> li : inputs.keySet()) {

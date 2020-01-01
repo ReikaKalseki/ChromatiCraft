@@ -25,7 +25,7 @@ public class SourceValidityRule {
 
 	public boolean isValid(CrystalSource s, CrystalElement e) {
 		if (minThroughput > 0) {
-			if (s.maxThroughput() < minThroughput)
+			if (PylonFinder.getThroughput(s) < minThroughput)
 				return false;
 		}
 		if (minAmount > 0) {

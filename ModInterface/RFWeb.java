@@ -16,6 +16,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Base.BlockAttachableMini;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -374,7 +375,9 @@ public class RFWeb {
 		private void moveEnergyTo(World world, RFConnection r) {
 			int mov = r.addEnergy(world, THROUGHPUT, false);
 			mov = this.takeEnergy(world, mov, true);
-			mov = r.addEnergy(world, mov, true);
+			mov *= ChromaAux.getRFTransferEfficiency(world, location.xCoord, location.yCoord, location.zCoord);
+			if (mov > 0)
+				mov = r.addEnergy(world, mov, true);
 			if (mov > 0 && this.shouldCreateParticle(world)) {
 				int range = world.rand.nextInt(3) == 0 ? 60 : 30;
 				ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.RFWEBSEND.ordinal(), world, location.xCoord, location.yCoord, location.zCoord, range, r.location.xCoord, r.location.yCoord, r.location.zCoord, mov);

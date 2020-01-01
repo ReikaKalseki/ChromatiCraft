@@ -50,10 +50,14 @@ public class CrystalFlow extends CrystalPath {
 		CrystalNetworkLogger.logPathCalculation("maxthru", maxthru);
 		throughputLimit = maxthru;
 		maxFlow = this.calcEffectiveThroughput(maxthru);
+		if (maxFlow > 0 || totalCost == 0)
+			this.buildLeyLines();
 	}
 
 	private int calcEffectiveThroughput(int maxthru) {
 		int base = this.getMinMaxFlow();
+		if (base == 0)
+			return 0;
 		if (CrystalNetworkLogger.getLogLevel().isAtLeast(LoggingLevel.PATHCALC)) {
 			CrystalNetworkLogger.logPathCalculation("base", base);
 			CrystalNetworkLogger.logPathCalculation("bonus", this.getThoughputBonus());
@@ -94,10 +98,10 @@ public class CrystalFlow extends CrystalPath {
 	}
 
 	private int getMinMaxFlow() {
-		int max = Math.min(transmitter.maxThroughput(), receiver.maxThroughput());
+		int max = Math.min(PylonFinder.getThroughput(transmitter), PylonFinder.getThroughput(receiver));
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
-			max = Math.min(max, te.maxThroughput());
+			max = Math.min(max, PylonFinder.getThroughput(te));
 		}
 		return max;
 	}
@@ -127,6 +131,9 @@ public class CrystalFlow extends CrystalPath {
 	@Override
 	protected void initialize() {
 		super.initialize();
+	}
+
+	private void buildLeyLines() {
 		//nodes.getFirst().getTileEntity().NOT A TILE
 		WorldLocation locs = nodes.get(nodes.size()-2);
 		CrystalReceiver r = PylonFinder.getReceiverAt(locs, true);
@@ -147,10 +154,10 @@ public class CrystalFlow extends CrystalPath {
 				double dz = offset != null ? offset.right : 0;
 				((CrystalTransmitter)te).addTarget(tg, element, dx, dy, dz, r.getIncomingBeamRadius());
 			}/*
-			if (te instanceof CrystalReceiver) {
-				WorldLocation src = nodes.get(i+1);
-				te.markSource(src);
-			}*/
+					if (te instanceof CrystalReceiver) {
+						WorldLocation src = nodes.get(i+1);
+						te.markSource(src);
+					}*/
 		}
 	}
 
@@ -206,7 +213,7 @@ public class CrystalFlow extends CrystalPath {
 	}
 
 	private int getDrainThisTick() {
-		return Math.min(Math.min(maxFlow, transmitter.maxThroughput()), remainingAmount);
+		return Math.min(Math.min(maxFlow, PylonFinder.getThroughput(transmitter)), remainingAmount);
 	}
 
 	public void tickRepeaters(int amt) {
