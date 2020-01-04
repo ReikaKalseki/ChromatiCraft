@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -144,6 +144,8 @@ public class GuiCraftingRecipe extends GuiBookSection {
 		//ChromaBookData.drawCastingRecipe(fontRendererObj, ri, this.getActiveRecipe(), subpage, posX, posY);
 		IRecipe ir = this.getActiveRecipe();
 		ItemStack[] arr = ReikaRecipeHelper.getPermutedRecipeArray(ir);
+		if (arr == null)
+			return;
 		for (int i = 0; i < arr.length; i++) {
 			ItemStack is = arr[i];
 			if (is != null) {

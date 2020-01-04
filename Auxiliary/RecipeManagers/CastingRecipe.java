@@ -418,6 +418,10 @@ public class CastingRecipe implements APICastingRecipe {
 	}
 
 	public final void validate() {
+		if (recipe != null && this.getRecipeArray() == null) {
+			throw new RegistrationException(ChromatiCraft.instance, "Invalid casting recipe "+this.getClass()+" has unparseable recipe: "+ReikaRecipeHelper.toString(recipe));
+		}
+
 		try {
 			if (out == null)
 				throw new IllegalArgumentException("Null output");
