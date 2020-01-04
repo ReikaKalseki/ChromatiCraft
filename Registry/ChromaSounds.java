@@ -83,7 +83,7 @@ public enum ChromaSounds implements SoundEnum {
 	FLAREATTACK("flareattack"),
 	BOUNCE("bounce"),
 	SKYRIVER("lumenstream"),
-	PING("ping"),
+	PING("ping2"),
 	GAINPROGRESS("progress2"),
 	AVOLASER("avolaser2"),
 	CLIFFSOUND("cliffambience"),
@@ -110,6 +110,7 @@ public enum ChromaSounds implements SoundEnum {
 	TOWEREXTEND2("tower_extend_2b"),
 	TOWERAMBIENT("tower_ambient2"),
 	CASTTUNEREJECT("casttunereject"),
+	DINGCHARGE("dingcharge"),
 	;
 
 	public static final ChromaSounds[] soundList = values();

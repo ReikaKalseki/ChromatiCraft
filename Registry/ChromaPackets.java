@@ -200,6 +200,7 @@ public enum ChromaPackets {
 	CLEARHOVERBOX(),
 	LINKFAIL(),
 	VOIDTRAPEAT(),
+	OREPINGLOC(3),
 	;
 
 	public final int numInts;

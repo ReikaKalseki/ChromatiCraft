@@ -197,7 +197,8 @@ public abstract class ItemPoweredChromaTool extends ItemChromaTool implements Sp
 			is.stackTagCompound = new NBTTagCompound();
 		int max = this.getMaxCharge();
 		is.stackTagCompound.setInteger("charge", MathHelper.clamp_int(amt, 0, max));
-		is.setItemDamage(this.getChargeState(this.getCharge(is)/(float)max));
+		if (this.hasChargeStates())
+			is.setItemDamage(this.getChargeState(this.getCharge(is)/(float)max));
 	}
 
 	public final int getCharge(ItemStack is) {
@@ -205,12 +206,16 @@ public abstract class ItemPoweredChromaTool extends ItemChromaTool implements Sp
 	}
 
 	@Override
-	public final int getItemSpriteIndex(ItemStack item) {
+	public int getItemSpriteIndex(ItemStack item) {
 		return super.getItemSpriteIndex(item)+item.getItemDamage();
 	}
 
 	protected void renderExtraIcons(RenderItem ri, ItemStack is, ItemRenderType type) {
 
+	}
+
+	protected boolean hasChargeStates() {
+		return true;
 	}
 
 	@Override

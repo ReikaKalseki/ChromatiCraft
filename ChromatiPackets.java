@@ -49,6 +49,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.Portal
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.RepeaterTurboRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.PylonTurboRecipe;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
+import Reika.ChromatiCraft.Auxiliary.Render.OreOverlayRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.ProbeInfoOverlayRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.StructureErrorOverlays;
 import Reika.ChromatiCraft.Base.CrystalBlock;
@@ -1070,6 +1071,9 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case VOIDTRAPEAT:
 					TileEntityVoidMonsterTrap.doEatFX(world, x, y, z);
+					break;
+				case OREPINGLOC:
+					OreOverlayRenderer.instance.addCoordinate(world, x, y, z, Block.getBlockById(data[0]), data[1], data[2] > 0);
 					break;
 			}
 		}
