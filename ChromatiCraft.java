@@ -891,6 +891,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		DungeonGenerator.instance.initLevelData(evt.getServer());
 		ProgressionCacher.instance.initLevelData(evt.getServer());
 		ProgressionCacher.instance.load();
+		OreOverlayRenderer.instance.loadOres();
 	}
 
 	@EventHandler

@@ -25,15 +25,13 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 
+import Reika.ChromatiCraft.API.Interfaces.OrePings.OrePingDelegate;
 import Reika.ChromatiCraft.Auxiliary.Render.OreOverlayRenderer;
 import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Interfaces.Item.ToolSprite;
-import Reika.DragonAPI.Interfaces.Registry.OreType;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
-import Reika.DragonAPI.ModRegistry.ModOreList;
 
 public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite {
 
@@ -48,27 +46,26 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite {
 
 	@Override
 	protected boolean doTick(ItemStack is, World world, EntityPlayer ep, boolean held) {
-		int type = -1;
+		OrePingDelegate type = null;
 		float r = 8;//5;
 		for (float i = 0; i <= r; i += 0.2) {
 			int[] xyz = ReikaVectorHelper.getPlayerLookBlockCoords(ep, i);
-			int at = this.getOreType(world, xyz[0], xyz[1], xyz[2]);
-			if (at >= 0) {
+			OrePingDelegate at = this.getOreType(world, xyz[0], xyz[1], xyz[2]);
+			if (at != null) {
 				type = at;
 				break;
 			}
 		}
 		if (is.stackTagCompound == null)
 			is.stackTagCompound = new NBTTagCompound();
-		is.stackTagCompound.setInteger("ore", type);
-		return type >= 0;
-	}
-
-	public static OreType getOreTypeByMetadata(ItemStack is) {
-		int meta = is.stackTagCompound != null ? is.stackTagCompound.getInteger("ore") : -1;
-		if (meta == -1)
-			return null;
-		return meta >= 4096 ? ModOreList.oreList[meta-4096] : ReikaOreHelper.oreList[meta];
+		is.stackTagCompound.removeTag("oreType");
+		is.stackTagCompound.setBoolean("ore", type != null);
+		if (type != null) {
+			NBTTagCompound tag = new NBTTagCompound();
+			type.getPrimary().writeToNBT(tag);
+			is.stackTagCompound.setTag("oreType", tag);
+		}
+		return type != null;
 	}
 
 	@Override
@@ -132,8 +129,8 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite {
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float a, float b, float c) {
 		if (this.getCharge(is) < SCAN_COST)
 			return false;
-		int ore = this.getOreType(world, x, y, z);
-		if (ore >= 0) {
+		OrePingDelegate ore = this.getOreType(world, x, y, z);
+		if (ore != null) {
 			if (!world.isRemote) {
 				this.removeCharge(is, SCAN_COST);
 				OreOverlayRenderer.instance.startScan(world, x, y, z, ep);
@@ -143,20 +140,10 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite {
 		return false;
 	}
 
-	private int getOreType(World world, int x, int y, int z) {
+	private OrePingDelegate getOreType(World world, int x, int y, int z) {
 		Block id = world.getBlock(x, y, z);
 		int meta = world.getBlockMetadata(x, y, z);
-		ReikaOreHelper ore = ReikaOreHelper.getFromVanillaOre(id);
-		ModOreList mod = ModOreList.getModOreFromOre(id, meta);
-		if (ore != null) {
-			return ore.ordinal();
-		}
-		else if (mod != null) {
-			return 4096+mod.ordinal();
-		}
-		else {
-			return -1;
-		}
+		return OreOverlayRenderer.instance.getForBlock(id, meta);
 	}
 
 	@Override

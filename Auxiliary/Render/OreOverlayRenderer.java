@@ -70,6 +70,10 @@ public class OreOverlayRenderer {
 	private static final int DURATION_SCAN = 90;
 
 	private OreOverlayRenderer() {
+		this.loadOres();
+	}
+
+	public void loadOres() {
 		for (ReikaOreHelper ore : ReikaOreHelper.oreList) {
 			blocks.put(new BlockKey(ore.getOreBlockInstance()), new OreBlock(ore));
 		}
@@ -83,6 +87,15 @@ public class OreOverlayRenderer {
 
 	public OrePingDelegate getForBlock(Block b, int meta) {
 		return blocks.get(new BlockKey(b, meta));
+	}
+
+	public OrePingDelegate getOreTypeByData(ItemStack is) {
+		if (is.stackTagCompound == null || !is.stackTagCompound.hasKey("oreType"))
+			return null;
+		ItemStack ore = ItemStack.loadItemStackFromNBT(is.stackTagCompound.getCompoundTag("oreType"));
+		if (ore == null)
+			return null;
+		return blocks.get(new BlockKey(ore));
 	}
 
 	public static void addBlockDelegate(Block b, int meta, OrePingDelegate delegate) {
@@ -326,7 +339,13 @@ public class OreOverlayRenderer {
 
 		@Override
 		public IIcon getIcon() {
-			return Block.getBlockFromItem(ore.getFirstOreBlock().getItem()).blockIcon;
+			ItemStack is = ore.getFirstOreBlock();
+			return Block.getBlockFromItem(is.getItem()).getIcon(0, is.getItemDamage());
+		}
+
+		@Override
+		public ItemStack getPrimary() {
+			return ore.getFirstOreBlock();
 		}
 
 	}

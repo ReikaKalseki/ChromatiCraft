@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 
 public class OrePings {
@@ -17,6 +18,8 @@ public class OrePings {
 		public boolean isVisible(EntityPlayer ep);
 
 		public IIcon getIcon();
+
+		public ItemStack getPrimary();
 
 	}
 

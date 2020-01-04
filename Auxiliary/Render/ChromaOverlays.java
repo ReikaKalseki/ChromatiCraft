@@ -20,13 +20,13 @@ import java.util.Iterator;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
@@ -38,11 +38,11 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
+import Reika.ChromatiCraft.API.Interfaces.OrePings.OrePingDelegate;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Items.Tools.ItemBottleneckFinder.WarningLevels;
-import Reika.ChromatiCraft.Items.Tools.Powered.ItemOrePick;
 import Reika.ChromatiCraft.Items.Tools.ItemKillAuraGun;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
@@ -60,7 +60,6 @@ import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderingLoopEvent;
-import Reika.DragonAPI.Interfaces.Registry.OreType;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
@@ -437,11 +436,14 @@ public class ChromaOverlays {
 	}
 
 	private void renderOreHUD(EntityPlayer ep, ScaledResolution sr, ItemStack is) {
-		OreType otype = ItemOrePick.getOreTypeByMetadata(is);
+		OrePingDelegate otype = OreOverlayRenderer.instance.getOreTypeByData(is);
 		if (otype == null)
 			return;
-		ItemStack ore = otype.getFirstOreBlock();
-		IIcon ico = Block.getBlockFromItem(ore.getItem()).getIcon(0, ore.getItemDamage());
+		IIcon ico = otype.getIcon();
+		if (ico == null) {
+			ChromatiCraft.logger.logError("Ore Ping Delegate "+otype+" for "+otype.getPrimary()+" has a null icon!");
+			ico = Blocks.bedrock.blockIcon;
+		}
 		float u = ico.getMinU();
 		float v = ico.getMinV();
 		float du = ico.getMaxU();
