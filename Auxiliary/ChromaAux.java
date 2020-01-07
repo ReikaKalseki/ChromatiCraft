@@ -141,7 +141,7 @@ public class ChromaAux {
 	public static final InterceptionException dimensionException = new InterceptionException() {
 
 		@Override
-		public boolean doesExceptionApply(World world, int x, int y, int z) {
+		public boolean doesExceptionApply(World world, int x, int y, int z, Block set, int meta) {
 			return world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue();
 		}
 

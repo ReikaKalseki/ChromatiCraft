@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -97,7 +97,7 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 		if (ChromaOptions.BIOMEBLEND.getState())
 			this.setHeight(new Height(BiomeGenBase.extremeHillsPlus.rootHeight, BiomeGenBase.extremeHillsPlus.heightVariation));
 		else
-			this.setHeight(new Height(-0.375F, 0));
+			this.setHeight(new Height(-0.75F, 0));
 
 		spawnableMonsterList.clear();
 		spawnableCaveCreatureList.clear();

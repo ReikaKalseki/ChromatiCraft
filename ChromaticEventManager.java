@@ -428,7 +428,8 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void updateFakeSkyBlocks(SetBlockEvent.Post evt) {
-		BlockFakeSky.updateColumn(evt.world, evt.xCoord, evt.yCoord, evt.zCoord);
+		if (!evt.isWorldgen)
+			BlockFakeSky.updateColumn(evt.world, evt.xCoord, evt.yCoord, evt.zCoord);
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -551,7 +552,8 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void reloadBroacastAirCache(SetBlockEvent.Post evt) {
-		TileEntityCrystalBroadcaster.updateAirCaches(evt.world, evt.xCoord, evt.yCoord, evt.zCoord);
+		if (!evt.isWorldgen)
+			TileEntityCrystalBroadcaster.updateAirCaches(evt.world, evt.xCoord, evt.yCoord, evt.zCoord);
 	}
 
 	/*
@@ -919,7 +921,7 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent //fallback
 	public void banDimensionBlocks(SetBlockEvent.Post evt) {
-		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue() && !evt.isWorldgen) {
 			Block b = evt.getBlock();
 			int meta = evt.getMetadata();
 			if (ChromaDimensionManager.isBannedDimensionBlock(b, meta)) {
