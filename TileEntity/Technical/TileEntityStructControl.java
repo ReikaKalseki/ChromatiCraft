@@ -57,10 +57,12 @@ import Reika.ChromatiCraft.World.IWG.DungeonGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray.PlacementExclusionHook;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldChunk;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Interfaces.BlockCheck;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.HitAction;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
@@ -78,7 +80,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityStructControl extends InventoriedChromaticBase implements BreakAction, HitAction, InertIInv, PlayerBreakHook {
+public class TileEntityStructControl extends InventoriedChromaticBase implements BreakAction, HitAction, InertIInv, PlayerBreakHook, PlacementExclusionHook {
 
 	private ChromaStructures struct;
 	private FilledBlockArray blocks;
@@ -536,6 +538,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	}
 
 	private void regenerate() {
+		if (struct == ChromaStructures.DESERT) {
+			regenned = false;
+		}
 		if (regenned)
 			return;
 		if (struct != null) {
@@ -546,8 +551,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			if (struct == ChromaStructures.DESERT) {
 				copy.offset(-7, -3, -7);
 			}
-			copy.placeExcept(new Coordinate(this), 3);
-			DungeonGenerator.populateChests(struct, copy, rand);
+			copy.placeExcept(3, this);
+			if (!triggered)
+				;//DungeonGenerator.populateChests(struct, copy, rand);
 			if (struct == ChromaStructures.OCEAN) {
 				BlockLootChest.setMaxReach(worldObj, xCoord-2, yCoord-1, zCoord, 2.5);
 				BlockLootChest.setMaxReach(worldObj, xCoord, yCoord-1, zCoord-1, 2.5);
@@ -979,6 +985,11 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	@Override
 	public AxisAlignedBB getRenderBoundingBox() {
 		return INFINITE_EXTENT_AABB;
+	}
+
+	@Override
+	public boolean skipPlacement(Coordinate c, BlockCheck bc) {
+		return c.equals(xCoord, yCoord, zCoord) || bc.asBlockKey().blockID == ChromaBlocks.LOOTCHEST.getBlockInstance();
 	}
 
 }

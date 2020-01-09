@@ -45,7 +45,6 @@ import Reika.DragonAPI.Interfaces.Registry.OreType;
 import Reika.DragonAPI.Interfaces.Registry.SoundEnum;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
@@ -66,8 +65,10 @@ public class OreOverlayRenderer {
 	private final HashMap<WorldLocation, OreRender> coords = new HashMap();
 	private final HashMap<String, Long> lastSoundTick = new HashMap();
 
-	private static final int DURATION_PING = 360;
+	private static final int DURATION_PING = 720;//360;
 	private static final int DURATION_SCAN = 90;
+
+	private static final int PING_RANGE = 48;//40;//32;
 
 	private OreOverlayRenderer() {
 		this.loadOres();
@@ -83,6 +84,7 @@ public class OreOverlayRenderer {
 			for (ItemStack is : ore.getAllOreBlocks())
 				blocks.put(new BlockKey(is), ob);
 		}
+		ChromatiCraft.logger.log("Initialized ore map with "+blocks.size()+" entries: "+blocks.keySet());
 	}
 
 	public OrePingDelegate getForBlock(Block b, int meta) {
@@ -192,14 +194,14 @@ public class OreOverlayRenderer {
 	}
 
 	public void startPing(World world, int x, int y, int z, EntityPlayer ep) {
-		int r = 30;//8;
+		int r = PING_RANGE;//8;
 		ProgressiveBreaker b = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, r);
 		b.isOmni = true;
 		b.breakAir = true;
 		this.addBreaker(b, ep);
 		b.tickRate = 1;
 		b.call = new OrePingCallback();
-		ReikaSoundHelper.playClientSound(ChromaSounds.NETWORKOPT, ep, 1, 0.5F);
+		ChromaSounds.NETWORKOPT.playSound(ep, 1, 0.5F);
 	}
 
 	private void addBreaker(ProgressiveBreaker b, EntityPlayer ep) {
@@ -267,8 +269,6 @@ public class OreOverlayRenderer {
 			arr.recursiveAddWithMetadata(world, x, y, z, id, meta);
 			instance.playSoundWithCooldown(ChromaSounds.BOUNCE, b.player, 0.5F, 1F);
 			for (Coordinate c : arr.keySet()) {
-				if (c.equals(x, y, z))
-					continue;
 				b.exclude(c);
 				instance.addCoordinate(world, c.xCoord, c.yCoord, c.zCoord, id, meta, true);
 			}

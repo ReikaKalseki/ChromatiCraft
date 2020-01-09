@@ -65,7 +65,7 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite {
 			type.getPrimary().writeToNBT(tag);
 			is.stackTagCompound.setTag("oreType", tag);
 		}
-		return type != null;
+		return true;//type != null;
 	}
 
 	@Override
@@ -205,7 +205,7 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite {
 
 	@Override
 	public int getItemSpriteIndex(ItemStack item) {
-		int base = super.getItemSpriteIndex(item);
+		int base = super.getItemSpriteIndex(item)-item.getItemDamage();
 		if (item.stackTagCompound != null && item.stackTagCompound.getBoolean("ore"))
 			base++;
 		return base;
@@ -218,7 +218,8 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite {
 
 	@Override
 	protected int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is) {
-		return world.rand.nextInt(20) == 0 ? 1 : 0;
+		int c = is.stackTagCompound.getBoolean("ore") ? 5 : 40;
+		return world.rand.nextInt(c) == 0 ? 1 : 0;
 	}
 
 }

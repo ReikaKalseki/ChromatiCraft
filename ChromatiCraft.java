@@ -181,6 +181,7 @@ import Reika.DragonAPI.Base.DragonAPIMod.LoadProfiler.LoadPhase;
 import Reika.DragonAPI.Extras.PseudoAirMaterial;
 import Reika.DragonAPI.Instantiable.EnhancedFluid;
 import Reika.DragonAPI.Instantiable.RayTracer;
+import Reika.DragonAPI.Instantiable.Event.Client.GameFinishedLoadingEvent;
 import Reika.DragonAPI.Instantiable.IO.ModLogger;
 import Reika.DragonAPI.Libraries.ReikaDispenserHelper;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
@@ -891,6 +892,12 @@ public class ChromatiCraft extends DragonAPIMod {
 		DungeonGenerator.instance.initLevelData(evt.getServer());
 		ProgressionCacher.instance.initLevelData(evt.getServer());
 		ProgressionCacher.instance.load();
+		OreOverlayRenderer.instance.loadOres();
+	}
+
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void onGameLoaded(GameFinishedLoadingEvent evt) {
 		OreOverlayRenderer.instance.loadOres();
 	}
 

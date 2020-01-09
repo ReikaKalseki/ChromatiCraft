@@ -55,7 +55,10 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
-		ep.openGui(ChromatiCraft.instance, ChromaGuis.TRANSITION.ordinal(), world, 0, 0, 0);
+		if (ep.isSneaking())
+			is.stackTagCompound = null;
+		else
+			ep.openGui(ChromatiCraft.instance, ChromaGuis.TRANSITION.ordinal(), world, 0, 0, 0);
 		return is;
 	}
 

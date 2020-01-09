@@ -222,12 +222,15 @@ public class ItemMagicRegistry {
 		this.addElement(Items.blaze_rod, CrystalElement.ORANGE, 4);
 		this.addElement(Items.blaze_rod, CrystalElement.GREEN, 1);
 		this.addElement(Items.blaze_rod, CrystalElement.PINK, 2);
-		this.addElement(Items.saddle, CrystalElement.PURPLE, 1);
 		this.addElement(Items.ender_pearl, CrystalElement.LIME, 4);
 		this.addElement(Items.ender_pearl, CrystalElement.GREEN, 1);
 		this.addElement(Items.ender_pearl, CrystalElement.BLACK, 4);
 		this.addElement(Items.ghast_tear, CrystalElement.BLACK, 1);
 		this.addElement(Items.ghast_tear, CrystalElement.GREEN, 1);
+
+		this.addElement(Items.saddle, CrystalElement.PURPLE, 2);
+		this.addElement(Items.saddle, CrystalElement.GREEN, 3);
+		this.addElement(Items.saddle, CrystalElement.LIME, 5);
 
 		this.addElement(new ItemStack(Items.skull, 1, 0), CrystalElement.PINK, 4);
 		this.addElement(new ItemStack(Items.skull, 1, 1), CrystalElement.PINK, 4);
