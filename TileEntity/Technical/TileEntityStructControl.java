@@ -35,6 +35,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.OceanStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.SnowStructure;
+import Reika.ChromatiCraft.Base.GeneratedStructureBase;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock.Passability;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
@@ -88,6 +89,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	private final EnumMap<CrystalElement, Coordinate> crystals = new EnumMap(CrystalElement.class);
 	private boolean triggered = false;
 	private boolean regenned = false;
+	private int version;
 	private int trapTick = 0;
 
 	private UUID lastTriggerPlayer;
@@ -538,8 +540,10 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	}
 
 	private void regenerate() {
-		if (struct == ChromaStructures.DESERT) {
+		int ver = ((GeneratedStructureBase)this.getStructureType().getStructure()).getStructureVersion();
+		if (version < ver) {
 			regenned = false;
+			version = ver;
 		}
 		if (regenned)
 			return;
@@ -800,6 +804,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 		NBT.setInteger("ttick", trapTick);
 
+		NBT.setInteger("version", version);
+
 		NBT.setBoolean("monument", isMonument);
 		NBT.setBoolean("monument_t", triggeredMonument);
 	}
@@ -820,6 +826,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		regenned = NBT.getBoolean("regen");
 
 		trapTick = NBT.getInteger("ttick");
+
+		version = NBT.getInteger("version");
 
 		isMonument = NBT.getBoolean("monument");
 		triggeredMonument = NBT.getBoolean("monument_t");

@@ -4,12 +4,12 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.Base.ColoredStructureBase;
+import Reika.ChromatiCraft.Base.GeneratedStructureBase;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 
 
-public class BurrowStructure extends ColoredStructureBase {
+public class BurrowStructure extends GeneratedStructureBase {
 
 	@Override
 	public FilledBlockArray getArray(World world, int x, int y, int z) {
@@ -350,6 +350,11 @@ public class BurrowStructure extends ColoredStructureBase {
 		array.setBlock(x+8, y+11, z+4, Blocks.air);
 
 		return array;
+	}
+
+	@Override
+	public int getStructureVersion() {
+		return 0;
 	}
 
 }

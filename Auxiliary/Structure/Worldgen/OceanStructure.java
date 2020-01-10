@@ -13,11 +13,11 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Base.ChromaStructureBase;
+import Reika.ChromatiCraft.Base.GeneratedStructureBase;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 
-public class OceanStructure extends ChromaStructureBase {
+public class OceanStructure extends GeneratedStructureBase {
 
 	@Override
 	public FilledBlockArray getArray(World world, int x, int y, int z) {
@@ -3567,6 +3567,11 @@ public class OceanStructure extends ChromaStructureBase {
 		array.setBlock(x+4, y+0, z+2, Blocks.air);
 		array.setBlock(x+4, y+0, z+3, Blocks.air);
 		array.setBlock(x+4, y+0, z+4, Blocks.air);
+	}
+
+	@Override
+	public int getStructureVersion() {
+		return 0;
 	}
 
 }

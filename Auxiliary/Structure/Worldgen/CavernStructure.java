@@ -4,13 +4,13 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.Base.ChromaStructureBase;
+import Reika.ChromatiCraft.Base.GeneratedStructureBase;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 
 
-public class CavernStructure extends ChromaStructureBase {
+public class CavernStructure extends GeneratedStructureBase {
 
 	@Override
 	public FilledBlockArray getArray(World world, int x, int y, int z) {
@@ -420,6 +420,11 @@ public class CavernStructure extends ChromaStructureBase {
 		array.setBlock(x+13, y+3, z+5, shield, 8);
 		array.setBlock(x+13, y+3, z+6, shield, 8);
 		return array;
+	}
+
+	@Override
+	public int getStructureVersion() {
+		return 0;
 	}
 
 }

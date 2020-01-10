@@ -35,8 +35,9 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 
 public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite {
 
-	private static final int SONAR_COST = 90;
-	private static final int SCAN_COST = 10;
+	private static final float SONAR_COST = 0.025F; //40 uses
+	private static final float SCAN_COST = 0.0015F;
+
 	private static final int CHARGE_TIME = 30;
 
 	public ItemOrePick(int index) {
@@ -118,7 +119,8 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite {
 
 	private void fire(ItemStack is, World world, EntityPlayer ep) {
 		if (!world.isRemote) {
-			this.removeCharge(is, SONAR_COST);int x = MathHelper.floor_double(ep.posX);
+			this.removeCharge(is, (int)(SONAR_COST*this.getMaxCharge()));
+			int x = MathHelper.floor_double(ep.posX);
 			int y = MathHelper.floor_double(ep.posY);
 			int z = MathHelper.floor_double(ep.posZ);
 			OreOverlayRenderer.instance.startPing(world, x, y, z, ep);
@@ -132,7 +134,7 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite {
 		OrePingDelegate ore = this.getOreType(world, x, y, z);
 		if (ore != null) {
 			if (!world.isRemote) {
-				this.removeCharge(is, SCAN_COST);
+				this.removeCharge(is, (int)(SCAN_COST*this.getMaxCharge()));
 				OreOverlayRenderer.instance.startScan(world, x, y, z, ep);
 			}
 			return true;
@@ -190,7 +192,7 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite {
 
 	@Override
 	public int getMaxCharge() {
-		return 7200;
+		return 180000;
 	}
 
 	@Override
@@ -218,8 +220,7 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite {
 
 	@Override
 	protected int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is) {
-		int c = is.stackTagCompound.getBoolean("ore") ? 5 : 40;
-		return world.rand.nextInt(c) == 0 ? 1 : 0;
+		return is.stackTagCompound.getBoolean("ore") ? 8 : 1;
 	}
 
 }

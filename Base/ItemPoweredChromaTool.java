@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
@@ -26,6 +27,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.client.IItemRenderer.ItemRenderType;
 
@@ -39,8 +41,10 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.DragonAPIInit;
+import Reika.DragonAPI.Auxiliary.ChunkManager;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
+import Reika.DragonAPI.Interfaces.Entity.ChunkLoadingEntity;
 import Reika.DragonAPI.Interfaces.Item.SpriteRenderCallback;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -55,6 +59,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 
 public abstract class ItemPoweredChromaTool extends ItemChromaTool implements SpriteRenderCallback {
+
+	private static final int CHARGE_RANGE = 32;
 
 	public ItemPoweredChromaTool(int index) {
 		super(index);
@@ -107,19 +113,28 @@ public abstract class ItemPoweredChromaTool extends ItemChromaTool implements Sp
 	}
 
 	@Override
+	public final boolean hasCustomEntity(ItemStack stack) {
+		return true;
+	}
+
+	@Override
+	public final Entity createEntity(World world, Entity location, ItemStack itemstack) {
+		return new EntityChargingTool(world, (EntityItem)location, itemstack);
+	}
+
+	@Override
 	public final boolean onEntityItemUpdate(EntityItem ei) {
 		int charge = this.getCharge(ei.getEntityItem());
 		if (!ei.worldObj.isRemote) {
 			if (charge < this.getMaxCharge()) {
-				int range = 32;
 				WorldLocation loc = new WorldLocation(ei);
-				TemporaryCrystalReceiver r = new TemporaryCrystalReceiver(loc, 0, range, 0.0625, ResearchLevel.ENDGAME);
+				TemporaryCrystalReceiver r = new TemporaryCrystalReceiver(loc, 0, CHARGE_RANGE, 0.0625, ResearchLevel.ENDGAME);
 				CrystalElement e = this.getColor();
 				r.addColorRestriction(e);
 				ItemStack is = ei.getEntityItem();
 				int amt = this.getChargeRate(is);
 				//CrystalSource s = CrystalNetworker.instance.findSourceWithX(r, e, amt, range, true);
-				CrystalSource s = CrystalNetworker.instance.getNearestTileOfType(r, CrystalSource.class, range);
+				CrystalSource s = CrystalNetworker.instance.getNearestTileOfType(r, CrystalSource.class, CHARGE_RANGE);
 				if (s != null && s.isConductingElement(e)) {
 					s.drain(e, amt*4);
 					if (s instanceof TileEntityCrystalPylon) {
@@ -288,6 +303,67 @@ public abstract class ItemPoweredChromaTool extends ItemChromaTool implements Sp
 	@Override
 	public final boolean doPreGLTransforms(ItemStack is, ItemRenderType type) {
 		return true;
+	}
+
+	public static class EntityChargingTool extends EntityItem implements ChunkLoadingEntity {
+
+		private boolean needsLoad = true;
+
+		public EntityChargingTool(World world) {
+			super(world);
+		}
+
+		public EntityChargingTool(World world, EntityItem e, ItemStack is) {
+			super(world, e.posX, e.posY, e.posZ, is);
+			delayBeforeCanPickup = e.delayBeforeCanPickup;
+			motionX = e.motionX;
+			motionY = e.motionY;
+			motionZ = e.motionZ;
+			velocityChanged = true;
+		}
+
+		public EntityChargingTool(World world, double posX, double posY, double posZ, ItemStack is) {
+			super(world, posX, posY, posZ, is);
+		}
+
+		@Override
+		public void setAgeToCreativeDespawnTime() {
+
+		}
+
+		@Override
+		public void onUpdate() {
+			super.onUpdate();
+			//ReikaJavaLibrary.pConsole("Ticking age "+age+" for "+this);
+			//worldObj.newExplosion(this, posX, posY, posZ, 8, true, true);
+			if (needsLoad) {
+				ChunkManager.instance.loadChunks(this);
+				needsLoad = false;
+			}
+		}
+
+		@Override
+		public boolean isInRangeToRenderDist(double distsq) {
+			return true;
+		}
+
+		@Override
+		public Collection<ChunkCoordIntPair> getChunksToLoad() {
+			return ChunkManager.instance.getChunkSquare(MathHelper.floor_double(posX), MathHelper.floor_double(posZ), CHARGE_RANGE/16);
+			//return ChunkManager.instance.getChunk(this);
+		}
+
+		@Override
+		public void setDead() {
+			this.onDestroy();
+			super.setDead();
+		}
+
+		@Override
+		public void onDestroy() {
+			ChunkManager.instance.unloadChunks(this);
+		}
+
 	}
 
 }

@@ -13,13 +13,13 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Base.ChromaStructureBase;
+import Reika.ChromatiCraft.Base.GeneratedStructureBase;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 
 
-public class DesertStructure extends ChromaStructureBase {
+public class DesertStructure extends GeneratedStructureBase {
 
 	private static final int ms = BlockType.STONE.metadata;
 	private static final int mc = BlockType.COBBLE.metadata;
@@ -1909,6 +1909,11 @@ public class DesertStructure extends ChromaStructureBase {
 		array.setBlock(x+11, y+11, z+10, Blocks.sand);
 		array.setBlock(x+12, y+5, z+0, Blocks.sandstone);
 		array.setBlock(x+12, y+5, z+1, Blocks.sandstone);
+	}
+
+	@Override
+	public int getStructureVersion() {
+		return 1;
 	}
 
 }

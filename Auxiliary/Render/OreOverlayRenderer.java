@@ -290,7 +290,12 @@ public class OreOverlayRenderer {
 			block = b;
 			metadata = meta;
 
-			color = instance.blocks.get(new BlockKey(b, meta)).getColor();
+			BlockKey bk = new BlockKey(b, meta);
+			OrePingDelegate del = instance.blocks.get(bk);
+			if (del == null) {
+				ChromatiCraft.logger.logError("Block "+bk+" has null oreping delegate?!");
+			}
+			color = del != null ? del.getColor() : 0xD47EFF;
 
 			lifetime = ping ? DURATION_PING : DURATION_SCAN;
 			life = lifetime;

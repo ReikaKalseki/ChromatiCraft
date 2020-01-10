@@ -4,11 +4,15 @@ import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Registry.ChromaShaders;
+import Reika.DragonAPI.Instantiable.RayTracer;
 
 public class EntityShaderFX extends EntityBlurFX {
+
+	private static final RayTracer LOS = RayTracer.getVisualLOS();
 
 	private float lensingIntensity;
 	private float lensingFadeRate = 0.05F;
@@ -58,6 +62,13 @@ public class EntityShaderFX extends EntityBlurFX {
 		if (stillRender)
 			super.renderParticle(v5, par2, par3, par4, par5, par6, par7);
 		shaderType.clearOnRender = true;
+
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		LOS.setOrigins(posX, posY, posZ, ep.posX, ep.posY, ep.posZ); //particle posX in world is valid
+		boolean see = LOS.isClearLineOfSight(worldObj);
+		if (!see)
+			return;
+
 		shaderType.setIntensity(1);
 		shaderType.getShader().addFocus(this);
 		float f = Math.min(lensingIntensity, particleAge*lensingFadeRate);
@@ -68,7 +79,7 @@ public class EntityShaderFX extends EntityBlurFX {
 		map.put("dx", f11);
 		map.put("dy", f12);
 		map.put("dz", f13);
-		map.put("distance", Minecraft.getMinecraft().thePlayer.getDistanceSqToEntity(this));
+		map.put("distance", ep.getDistanceSqToEntity(this));
 		map.put("clip", lensingClip);
 		map.put("scale", particleScale*0.2F);
 		shaderType.getShader().modifyLastCompoundFocus(f, map);

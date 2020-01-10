@@ -5,14 +5,14 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.Base.ColoredStructureBase;
+import Reika.ChromatiCraft.Base.GeneratedStructureBase;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 
 
-public class PylonStructure extends ColoredStructureBase {
+public class PylonStructure extends GeneratedStructureBase {
 
 	@Override
 	public FilledBlockArray getArray(World world, int x, int y, int z) {
@@ -133,6 +133,11 @@ public class PylonStructure extends ColoredStructureBase {
 		array.setPlacementOverride(x, y+1, z, Blocks.air, 0);
 
 		return array;
+	}
+
+	@Override
+	public int getStructureVersion() {
+		return 0;
 	}
 
 }

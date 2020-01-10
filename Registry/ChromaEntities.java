@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Registry;
 
 import net.minecraft.entity.Entity;
 
+import Reika.ChromatiCraft.Base.ItemPoweredChromaTool.EntityChargingTool;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Entity.EntityAurora;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
@@ -67,7 +68,8 @@ public enum ChromaEntities implements EntityEnum {
 	LIGHTGUN(EntityLightShot.class, "LightGun Shot"),
 	PISTONSPLINE(EntityPistonSpline.class, "Bezier Particle"),
 	BAIT(EntityMonsterBait.class, "Bait"),
-	DEATHFOG(EntityDeathFog.class, "Death Fog");
+	DEATHFOG(EntityDeathFog.class, "Death Fog"),
+	CHARGINGTOOL(EntityChargingTool.class, "ChargingTool");
 
 	public final String entityName;
 	private final Class entityClass;

@@ -4,7 +4,7 @@ import java.util.Random;
 
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Base.ChromaStructureBase;
+import Reika.ChromatiCraft.Base.GeneratedStructureBase;
 import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux;
 import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux.Flags;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
@@ -15,7 +15,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 
-public class DataTowerStructure extends ChromaStructureBase {
+public class DataTowerStructure extends GeneratedStructureBase {
 
 	@Override
 	public FilledBlockArray getArray(World world, int x, int y, int z) {
@@ -45,6 +45,11 @@ public class DataTowerStructure extends ChromaStructureBase {
 		}
 
 		return array;
+	}
+
+	@Override
+	public int getStructureVersion() {
+		return 0;
 	}
 
 }

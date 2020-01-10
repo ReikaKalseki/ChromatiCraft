@@ -18,7 +18,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.Base.ChromaStructureBase;
+import Reika.ChromatiCraft.Base.GeneratedStructureBase;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock.Passability;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -31,7 +31,7 @@ import Reika.GeoStrata.Blocks.BlockLavaRock;
 import Reika.GeoStrata.Registry.GeoBlocks;
 
 
-public class SnowStructure extends ChromaStructureBase {
+public class SnowStructure extends GeneratedStructureBase {
 
 	private static final Block b2 = ChromaBlocks.TRAPFLOOR.getBlockInstance();
 	private static final int ms = BlockType.STONE.metadata;
@@ -2072,5 +2072,10 @@ public class SnowStructure extends ChromaStructureBase {
 	@ModDependent(ModList.GEOSTRATA)
 	private static BlockKey getLavaRock() {
 		return new BlockKey(GeoBlocks.LAVAROCK.getBlockInstance(), 0 | BlockLavaRock.Flags.NONREPLACEABLE.flag());
+	}
+
+	@Override
+	public int getStructureVersion() {
+		return 0;
 	}
 }
