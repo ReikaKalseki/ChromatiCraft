@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -65,6 +65,11 @@ public abstract class HighCoreRecipe extends PylonCastingRecipe implements Shard
 		this.addRune(primary, rune2.xCoord, rune2.yCoord, rune2.zCoord);
 
 		this.addAuraRequirement(primary, 5000);
+	}
+
+	@Override
+	public final boolean canBeSimpleAutomated() {
+		return false;
 	}
 
 }

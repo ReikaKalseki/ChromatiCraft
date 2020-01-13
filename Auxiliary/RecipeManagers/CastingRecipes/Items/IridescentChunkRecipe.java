@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -33,6 +33,11 @@ public class IridescentChunkRecipe extends MultiBlockCastingRecipe {
 	@Override
 	public int getTypicalCraftedAmount() {
 		return 768;
+	}
+
+	@Override
+	public final boolean canBeSimpleAutomated() {
+		return true;
 	}
 
 }

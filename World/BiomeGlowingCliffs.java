@@ -40,6 +40,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.WorldgenProfiler;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ModifiableBigTree;
 import Reika.DragonAPI.Instantiable.Worldgen.ModifiableSmallTrees;
@@ -47,6 +48,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.BoPBlockHandler;
 
 import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.relauncher.Side;
@@ -71,7 +73,8 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 	@SideOnly(Side.CLIENT)
 	public static float renderFactor;
 
-	private final WorldGenAbstractTree bigTreeGen = new ModifiableBigTree(false); //defaults to oak
+	private final WorldGenAbstractTree basicTreeGen = new SlightlyFloweringSmallTree(false); //defaults to oak
+	private final WorldGenAbstractTree bigTreeGen = new SlightlyFloweringBigTree(false); //defaults to oak
 	private final GlowingTreeGenerator glowTree = new GlowingTreeGenerator();
 	private final GlowingTreeGenerator smallGlowTrees = new GlowingTreeGenerator();
 
@@ -248,7 +251,7 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 		}
 		else {
 			//return super.func_150567_a(rand);//rand.nextInt(10) == 0 ? worldGeneratorBigTree : worldGeneratorTrees;
-			return rand.nextInt(10) == 0 ? bigTreeGen : worldGeneratorTrees;
+			return rand.nextInt(10) == 0 ? bigTreeGen : basicTreeGen;
 		}
 	}
 
@@ -300,8 +303,8 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 		}
 
 		@Override
-		public Block getLeafBlock(int x, int y, int z) {
-			return rand.nextInt(glowChance) == 0 ? ChromaBlocks.GLOWLEAF.getBlockInstance() : super.getLeafBlock(x, y, z);
+		public BlockKey getLeafBlock(int x, int y, int z) {
+			return BiomeGlowingCliffs.selectGlowingTreeLeaf(rand, glowChance, super.getLeafBlock(x, y, z), true);
 		}
 
 		public void setGlowChance(int c) {
@@ -313,11 +316,6 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 
 		public void resetGlowChance() {
 			glowChance = DEFAULT_GLOW_CHANCE;
-		}
-
-		@Override
-		public int getLeafMetadata(int x, int y, int z) {
-			return super.getLeafMetadata(x, y, z);
 		}
 
 		@Override
@@ -358,8 +356,8 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 		}
 
 		@Override
-		public Block getLeafBlock(int x, int y, int z) {
-			return rand.nextInt(glowChance) == 0 ? ChromaBlocks.GLOWLEAF.getBlockInstance() : super.getLeafBlock(x, y, z);
+		public BlockKey getLeafBlock(int x, int y, int z) {
+			return BiomeGlowingCliffs.selectGlowingTreeLeaf(rand, glowChance, super.getLeafBlock(x, y, z), false);
 		}
 
 		@Override
@@ -376,11 +374,45 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 
 	}
 
+	private static class SlightlyFloweringSmallTree extends ModifiableSmallTrees {
+
+		public SlightlyFloweringSmallTree(boolean updates) {
+			super(updates);
+		}
+
+		@Override
+		public BlockKey getLeafBlock(int x, int y, int z) {
+			return BiomeGlowingCliffs.selectBasicTreeLeaf(rand, super.getLeafBlock(x, y, z), false);
+		}
+	}
+
+	private static class SlightlyFloweringBigTree extends ModifiableBigTree {
+
+		public SlightlyFloweringBigTree(boolean updates) {
+			super(updates);
+		}
+
+		@Override
+		public BlockKey getLeafBlock(int x, int y, int z) {
+			return BiomeGlowingCliffs.selectBasicTreeLeaf(rand, super.getLeafBlock(x, y, z), true);
+		}
+	}
+
 	public static interface GlowingTreeGen {
 
 		public void setGlowChance(int chance);
 		public void resetGlowChance();
 
+	}
+
+	public static BlockKey selectGlowingTreeLeaf(Random rand, int glowChance, BlockKey leafDefault, boolean isBig) {
+		if (rand.nextInt(glowChance) == 0)
+			return new BlockKey(ChromaBlocks.GLOWLEAF.getBlockInstance());
+		return ModList.BOP.isLoaded() && rand.nextInt(isBig ? 20 : 25) == 0 ? BoPBlockHandler.LeafTypes.flowering.getBlock() : leafDefault;
+	}
+
+	public static BlockKey selectBasicTreeLeaf(Random rand, BlockKey leafDefault, boolean isBig) {
+		return ModList.BOP.isLoaded() && rand.nextInt(isBig ? 15 : 10) == 0 ? BoPBlockHandler.LeafTypes.flowering.getBlock() : leafDefault;
 	}
 
 }

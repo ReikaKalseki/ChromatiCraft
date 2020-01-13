@@ -14,6 +14,7 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -28,6 +29,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.EnumPlantType;
 import net.minecraftforge.common.IPlantable;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -38,6 +40,7 @@ import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -46,6 +49,7 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 
 	private final IIcon[] front_icons = new IIcon[16];
 	private final IIcon[] back_icons = new IIcon[16];
+	private IIcon encasedVineIcon;
 
 	public BlockDecoPlant(Material xMaterial) {
 		super(xMaterial);
@@ -70,7 +74,22 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 
 	@Override
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+		ChromaTiles te = ChromaTiles.getTile(world, x, y, z);
+		if (te == ChromaTiles.PLANTACCEL && isEncased(world, x, y, z))
+			return ReikaAABBHelper.getBlockAABB(x, y, z);
 		return null;
+	}
+
+	public static boolean isEncased(World world, int x, int y, int z) {
+		for (int i = 2; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			int dx = x+dir.offsetX;
+			int dy = y+dir.offsetY;
+			int dz = z+dir.offsetZ;
+			if (!ReikaBlockHelper.isCollideable(world, dx, dy, dz))
+				return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -169,6 +188,20 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 		return false;
 	}
 
+	public IIcon getOverlay(IBlockAccess world, int x, int y, int z) {
+		int meta = world.getBlockMetadata(x, y, z);
+		return front_icons[meta];
+	}
+
+	@SideOnly(Side.CLIENT)
+	public IIcon getBacking(IBlockAccess world, int x, int y, int z) {
+		int meta = world.getBlockMetadata(x, y, z);
+		if (ChromaTiles.getTile(world, x, y, z) == ChromaTiles.PLANTACCEL && this.isEncased(Minecraft.getMinecraft().theWorld, x, y, z)) {
+			return encasedVineIcon;
+		}
+		return back_icons[meta];
+	}
+
 	public IIcon getOverlay(int meta) {
 		return front_icons[meta];
 	}
@@ -179,7 +212,12 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
-		return this.getBacking(meta);
+		return back_icons[meta];
+	}
+
+	@Override
+	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int s) {
+		return this.getBacking(world, x, y, z);
 	}
 
 	@Override
@@ -190,6 +228,11 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 				back_icons[i] = ico.registerIcon("chromaticraft:plant/decoplant_"+i+"_back");
 			}
 		}
+		encasedVineIcon = ico.registerIcon("chromaticraft:plant/vine_encased_back");
+	}
+
+	public boolean renderAsCrops(IBlockAccess world, int x, int y, int z) {
+		return ChromaTiles.getTile(world, x, y, z) == ChromaTiles.PLANTACCEL && this.isEncased(Minecraft.getMinecraft().theWorld, x, y, z);
 	}
 
 	@Override

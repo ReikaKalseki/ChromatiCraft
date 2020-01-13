@@ -240,7 +240,7 @@ public enum ChromaSounds implements SoundEnum {
 
 	@Override
 	public boolean attenuate() {
-		return this != GOTODIM && this != PYLONTURBO && this != PYLONFLASH && this != PYLONBOOSTRITUAL && this != PYLONBOOSTSTART && this != REPEATERSURGE && this != MONUMENT && this != MONUMENTRAY && this != GAINPROGRESS && this != LOREHEX && this != LORECOMPLETE;
+		return this != GOTODIM && this != PYLONTURBO && this != PYLONFLASH && this != PYLONBOOSTRITUAL && this != PYLONBOOSTSTART && this != REPEATERSURGE && this != MONUMENT && this != MONUMENTRAY && this != GAINPROGRESS && this != LORECOMPLETE;
 	}
 
 	public boolean hasWiderPitchRange() {

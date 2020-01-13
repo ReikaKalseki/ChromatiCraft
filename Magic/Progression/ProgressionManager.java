@@ -18,6 +18,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.UUID;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -75,6 +77,7 @@ public class ProgressionManager implements ProgressRegistry {
 	private static final String STRUCTURE_NBT_TAG = "Structure_Color_Completion";
 
 	private final SequenceMap<ProgressStage> progressMap = new SequenceMap();
+	private final MultiMap<ProgressStage, ImmutablePair<ProgressStage, ProgressStage>> chains = new MultiMap();
 
 	private final MultiMap<String, ProgressStage> playerMap = new MultiMap(CollectionType.HASHSET);
 
@@ -163,8 +166,10 @@ public class ProgressionManager implements ProgressRegistry {
 
 		progressMap.addParent(ProgressStage.BLOWREPEATER, 	ProgressStage.USEENERGY);
 
-		progressMap.addParent(ProgressStage.BYPASSWEAK, 	ProgressStage.USEENERGY);
+		//progressMap.addParent(ProgressStage.BYPASSWEAK, 	ProgressStage.USEENERGY);
 		progressMap.addParent(ProgressStage.BYPASSWEAK, 	ProgressStage.TUNECAST);
+
+		this.addChainedProgression(ProgressStage.USEENERGY, ProgressStage.BYPASSWEAK, ProgressStage.BLOWREPEATER);
 
 		progressMap.addParent(ProgressStage.TUNECAST,	ProgressStage.RUNEUSE);
 		progressMap.addParent(ProgressStage.TUNECAST,	ProgressStage.CHROMA);
@@ -234,6 +239,10 @@ public class ProgressionManager implements ProgressRegistry {
 		auxiliaryReference.put(ProgressStage.DYETREE, ChromaResearch.DYELEAVES);
 		auxiliaryReference.put(ProgressStage.BALLLIGHTNING, ChromaResearch.BALLLIGHTNING);
 		auxiliaryReference.put(ProgressStage.ALLCOLORS, ChromaResearch.RUNES);
+	}
+
+	private void addChainedProgression(ProgressStage hook, ProgressStage req, ProgressStage chain) {
+		chains.addValue(hook, new ImmutablePair(req, chain));
 	}
 
 	public Topology getTopology() {
@@ -327,6 +336,10 @@ public class ProgressionManager implements ProgressRegistry {
 		if (!this.canStepPlayerTo(ep, s))
 			return false;
 		this.setPlayerStage(ep, s, true, notify);
+		for (ImmutablePair<ProgressStage, ProgressStage> chained : chains.get(s)) {
+			if (this.isPlayerAtStage(ep, chained.left))
+				this.stepPlayerTo(ep, chained.right, notify);
+		}
 		return true;
 	}
 
@@ -385,7 +398,7 @@ public class ProgressionManager implements ProgressRegistry {
 		}
 		return true;
 	}
-
+	/*
 	public boolean setPlayerStage(EntityPlayer ep, int val, boolean set, boolean notify) {
 		if (ReikaPlayerAPI.isFake(ep))
 			return false;
@@ -394,7 +407,7 @@ public class ProgressionManager implements ProgressRegistry {
 		this.setPlayerStage(ep, ProgressStage.values()[val], set, notify);
 		return true;
 	}
-
+	 */
 	@SideOnly(Side.CLIENT)
 	public void setPlayerStageClient(EntityPlayer ep, ProgressStage s, boolean set, boolean notify) {
 		this.setPlayerStage(ep, s, set, true, notify);

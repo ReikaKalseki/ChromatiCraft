@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -19,6 +19,7 @@ import net.minecraft.world.IBlockAccess;
 
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
 import Reika.DragonAPI.Interfaces.ISBRH;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 
 public class DecoPlantRenderer implements ISBRH {
 
@@ -70,13 +71,16 @@ public class DecoPlantRenderer implements ISBRH {
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block b, int model, RenderBlocks rb) {
 		BlockDecoPlant t = (BlockDecoPlant)b;
 		Tessellator v5 = Tessellator.instance;
-		int meta = world.getBlockMetadata(x, y, z);
 		if (renderPass == 0) {
 			v5.setColorOpaque(255, 255, 255);
 			v5.setBrightness(b.getMixedBrightnessForBlock(world, x, y, z));
-			rb.drawCrossedSquares(t.getBacking(meta), x, y, z, 1);
+			IIcon back = t.getBacking(world, x, y, z);
+			if (t.renderAsCrops(world, x, y, z))
+				ReikaRenderHelper.renderCropTypeTex(world, x, y, z, back, v5, rb, 0.125, 1);
+			else
+				rb.drawCrossedSquares(back, x, y, z, 1);
 			v5.setBrightness(240);
-			rb.drawCrossedSquares(t.getOverlay(meta), x, y, z, 1);
+			rb.drawCrossedSquares(t.getOverlay(world, x, y, z), x, y, z, 1);
 			return true;
 		}/*
 			else if (renderPass == 1) {

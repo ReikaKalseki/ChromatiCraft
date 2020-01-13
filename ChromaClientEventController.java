@@ -164,6 +164,8 @@ import Reika.DragonAPI.Instantiable.Event.Client.SinglePlayerLogoutEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.TileEntityRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.WaterColorEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.WeatherSkyStrengthEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.WinterColorsEvent.WinterFogColorsEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.WinterColorsEvent.WinterSkyColorsEvent;
 import Reika.DragonAPI.Instantiable.IO.EnumSound;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
@@ -252,8 +254,28 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 	}
 
 	@SubscribeEvent
+	public void glowCliffsSnowColor(WinterSkyColorsEvent evt) {
+		Entity e = Minecraft.getMinecraft().thePlayer;
+		int x = MathHelper.floor_double(e.posX);
+		int z = MathHelper.floor_double(e.posZ);
+		if (BiomeGlowingCliffs.isGlowingCliffs(e.worldObj.getBiomeGenForCoords(x, z))) {
+			evt.chosenColor = 0xA077C6;
+		}
+	}
+
+	@SubscribeEvent
+	public void glowCliffsSnowColor(WinterFogColorsEvent evt) {
+		Entity e = Minecraft.getMinecraft().thePlayer;
+		int x = MathHelper.floor_double(e.posX);
+		int z = MathHelper.floor_double(e.posZ);
+		if (BiomeGlowingCliffs.isGlowingCliffs(e.worldObj.getBiomeGenForCoords(x, z))) {
+			evt.chosenColor = 0xBE93E5;
+		}
+	}
+
+	@SubscribeEvent
 	public void xmasSnow(ClientTickEvent evt) {
-		if (Minecraft.getMinecraft().gameSettings.thirdPersonView == 0 && !Minecraft.getMinecraft().isGamePaused() && SpecialDayTracker.instance.loadXmasTextures()) {
+		if (Minecraft.getMinecraft().gameSettings.thirdPersonView == 0 && !Minecraft.getMinecraft().isGamePaused()) {
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 			if (ep != null) {
 				float f = SpecialDayTracker.instance.getXmasWeatherStrength(ep.worldObj);

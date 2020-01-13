@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -53,6 +53,8 @@ public class MetaAlloyRenderer implements ISBRH {
 	@Override
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks rb) {
 		rand.setSeed(this.calcSeed(x, y, z));
+		rand.nextBoolean();
+		rand.nextBoolean();
 		Tessellator.instance.setBrightness(block.getMixedBrightnessForBlock(world, x, y, z));
 		this.renderLowPetals(world, x, y, z, Tessellator.instance);
 

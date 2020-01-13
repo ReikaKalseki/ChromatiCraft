@@ -221,6 +221,7 @@ import Reika.DragonAPI.Instantiable.Event.VillagerTradeEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.SinglePlayerLogoutEvent;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
+import Reika.DragonAPI.Interfaces.Entity.ClampedDamage;
 import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
@@ -1160,6 +1161,9 @@ public class ChromaticEventManager {
 				int level = ChromaEnchants.BOSSKILL.getLevel(weapon);
 				if (level > 0) {
 					float dmg = EnchantmentBossKill.getDamageDealt(mob, level);
+					if (mob instanceof ClampedDamage) {
+						dmg = Math.min(((ClampedDamage)mob).getDamageCap(src, dmg), dmg);
+					}
 					if (dmg > 0) {
 						if (dmg >= mob.getHealth()) {
 							mob.setHealth(0);

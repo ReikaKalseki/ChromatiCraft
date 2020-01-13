@@ -50,4 +50,9 @@ public class ElementUnitRecipe extends MultiBlockCastingRecipe {
 		return 16;
 	}
 
+	@Override
+	public final boolean canBeSimpleAutomated() {
+		return true;
+	}
+
 }

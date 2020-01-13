@@ -317,7 +317,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	SHARDS("Shards",				ChromaStacks.redShard, 									ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),
 	DUSTS("Plant Dusts",			ChromaStacks.auraDust, 									ResearchLevel.ENERGYEXPLORE),
 	GROUPS("Groups",				ChromaStacks.crystalCore, 								ResearchLevel.RUNECRAFT),
-	CORES("Cores",					ChromaStacks.energyCore,								ResearchLevel.MULTICRAFT),
+	CORES("Cores",					ChromaStacks.energyCore,								ResearchLevel.CHARGESELF),
 	HICORES("Energized Cores",		ChromaStacks.energyCoreHigh,							ResearchLevel.PYLONCRAFT),
 	IRID("Iridescent Crystal",		ChromaStacks.iridCrystal,								ResearchLevel.MULTICRAFT,	ProgressStage.ALLOY),
 	ORES("Buried Secrets",			ChromaStacks.bindingCrystal,							ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),
