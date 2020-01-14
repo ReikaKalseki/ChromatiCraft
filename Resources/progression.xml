@@ -863,20 +863,20 @@
 			Spotting disaster before it strikes
 		</desc>
 	</bypassweak>
-	<name>
+	<infuse>
 		<title>
-			
+			Resourceful Experience
 		</title>
 		<hint>
-			
+			Can one even combine such disparate things as items, liquids, and players?
 		</hint>
 		<reveal>
-			
+			As with most things, all it took was the proper construct.
 		</reveal>
 		<desc>
-			
+			Imbuing one energy into another
 		</desc>
-	</name>
+	</infuse>
 	<name>
 		<title>
 			

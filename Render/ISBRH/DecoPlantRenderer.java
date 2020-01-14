@@ -75,21 +75,18 @@ public class DecoPlantRenderer implements ISBRH {
 			v5.setColorOpaque(255, 255, 255);
 			v5.setBrightness(b.getMixedBrightnessForBlock(world, x, y, z));
 			IIcon back = t.getBacking(world, x, y, z);
-			if (t.renderAsCrops(world, x, y, z))
-				ReikaRenderHelper.renderCropTypeTex(world, x, y, z, back, v5, rb, 0.125, 1);
-			else
-				rb.drawCrossedSquares(back, x, y, z, 1);
+			IIcon front = t.getOverlay(world, x, y, z);
+			if (t.renderAsCrops(world, x, y, z)) {
+				ReikaRenderHelper.renderCropTypeTex(world, x, y, z, back, v5, rb, 0.09375, 1);
+				ReikaRenderHelper.renderCropTypeTex(world, x, y, z, front, v5, rb, 0.09375, 1);
+			}
+			//else {
+			rb.drawCrossedSquares(back, x, y, z, 1);
+			rb.drawCrossedSquares(front, x, y, z, 1);
+			//}
 			v5.setBrightness(240);
-			rb.drawCrossedSquares(t.getOverlay(world, x, y, z), x, y, z, 1);
 			return true;
-		}/*
-			else if (renderPass == 1) {
-				IIcon ico = ChromaIcons.CENTER.getIcon();
-				BlendMode.ADDITIVEDARK.apply();
-				rb.drawCrossedSquares(ico, x, y, z, 1);
-				BlendMode.DEFAULT.apply();
-				return true;
-			}*/
+		}
 		return false;
 	}
 

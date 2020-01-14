@@ -292,6 +292,11 @@ public class ItemMagicRegistry {
 		this.addElement(ChromaStacks.crystalPowder, CrystalElement.BLACK, 1);
 		this.addElement(ChromaStacks.crystalPowder, CrystalElement.WHITE, 1);
 
+		this.addElement(ChromaStacks.voidmonsterEssence, CrystalElement.LIGHTGRAY, 2);
+		this.addElement(ChromaStacks.voidmonsterEssence, CrystalElement.GRAY, 1);
+		this.addElement(ChromaStacks.voidmonsterEssence, CrystalElement.PINK, 2);
+		this.addElement(ChromaStacks.voidmonsterEssence, CrystalElement.GREEN, 1);
+
 		this.addFluids();
 	}
 

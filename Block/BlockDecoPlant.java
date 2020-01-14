@@ -232,7 +232,21 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 	}
 
 	public boolean renderAsCrops(IBlockAccess world, int x, int y, int z) {
-		return ChromaTiles.getTile(world, x, y, z) == ChromaTiles.PLANTACCEL && this.isEncased(Minecraft.getMinecraft().theWorld, x, y, z);
+		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
+		if (c == ChromaTiles.PLANTACCEL)
+			return this.isEncased(Minecraft.getMinecraft().theWorld, x, y, z);
+		TileEntityMagicPlant te = (TileEntityMagicPlant)world.getTileEntity(x, y, z);
+		if (te != null) {
+			ForgeDirection dir = te.getGrowthDirection().getOpposite();
+			int dx = x+dir.offsetX;
+			int dy = y+dir.offsetY;
+			int dz = z+dir.offsetZ;
+			Block b = world.getBlock(dx, dy, dz);
+			if (b == this && this.renderAsCrops(world, dx, dy, dz)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

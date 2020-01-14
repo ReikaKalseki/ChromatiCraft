@@ -129,6 +129,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.Crystal
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CrystalFurnaceRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CrystalLaserRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CrystalTankRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.DeathFogRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.EnchantDecompRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.EnchanterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.EssentiaRelayRecipe;
@@ -903,6 +904,10 @@ public class RecipesCastingTable {
 		this.addRecipe(new HoverPadBlockRecipe(is, sr, pad));
 
 		this.addRecipe(new HoverPadLampRecipe(ChromaBlocks.PAD));
+
+		is = ChromaTiles.DEATHFOG.getCraftedProduct();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "cac", "epe", "ccc", 'p', Items.bucket, 'e', ChromaStacks.voidmonsterEssence, 'a', ChromaStacks.auraDust, 'c', Blocks.cobblestone);
+		this.addRecipe(new DeathFogRecipe(is, sr));
 
 		this.addSpecialRecipes();
 	}
