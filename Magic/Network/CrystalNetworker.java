@@ -266,7 +266,7 @@ public class CrystalNetworker implements TickHandler {
 		CrystalFlow p = new PylonFinder(e, r, ep).findPylon(amount, maxthru, rule);
 		//ReikaJavaLibrary.pConsole(p, Side.SERVER);
 		CrystalNetworkLogger.logRequest(r, e, amount, p);
-		if (p != null && (p.maxFlow > 0 || amount == 0)) {
+		if (p != null/* && (p.maxFlow > 0 || amount == 0)*/) {
 			flows.addValue(world.provider.dimensionId, p);
 			p.transmitter.onUsedBy(ep, e);
 			return true;

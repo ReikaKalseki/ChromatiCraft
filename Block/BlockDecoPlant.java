@@ -86,7 +86,7 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 			int dx = x+dir.offsetX;
 			int dy = y+dir.offsetY;
 			int dz = z+dir.offsetZ;
-			if (!ReikaBlockHelper.isCollideable(world, dx, dy, dz))
+			if (world.getBlock(dx, dy, dz) != ChromaTiles.PLANTACCEL.getBlock() && !ReikaBlockHelper.isCollideable(world, dx, dy, dz))
 				return false;
 		}
 		return true;
@@ -231,6 +231,7 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 		encasedVineIcon = ico.registerIcon("chromaticraft:plant/vine_encased_back");
 	}
 
+	@SideOnly(Side.CLIENT)
 	public boolean renderAsCrops(IBlockAccess world, int x, int y, int z) {
 		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
 		if (c == ChromaTiles.PLANTACCEL)

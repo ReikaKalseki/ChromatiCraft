@@ -179,8 +179,9 @@ public class BlockHeatLamp extends BlockAttachableMini {
 			else if (!this.isCold() && ReikaRailCraftHelper.isSolidFirebox(te)) {
 				te = MultiblockControllerFinder.instance.getController(te);
 				FireboxWrapper s = new FireboxWrapper(te);
-				double temp = 80+25*Math.sin(worldObj.getTotalWorldTime()/350D); //not enough to be sustainable, but enough to prevent total blackout
-				s.temperature = Math.max(s.temperature, temp);
+				s.load(te);
+				if (80+25*Math.sin(worldObj.getTotalWorldTime()/350D) >= 100)
+					s.setBurning(5);
 				s.write(te);
 			}
 		}

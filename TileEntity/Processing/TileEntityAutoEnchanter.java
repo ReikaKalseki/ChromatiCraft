@@ -292,6 +292,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		int total = 0;
 		for (Enchantment e : selected.keySet()) {
 			float level = selected.get(e);
+			level = Math.max(0.25F, level-0.5F*ReikaEnchantmentHelper.getEnchantmentLevel(e, inv[0]));
 			if (inv[1] != null)
 				level = Math.max(0.25F, level-0.8F*ReikaEnchantmentHelper.getEnchantmentLevel(e, inv[1]));
 			float add = level*CHROMA_PER_LEVEL_BASE*this.getCostFactor(e);
