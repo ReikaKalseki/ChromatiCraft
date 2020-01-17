@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.ModInterface;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -22,17 +23,19 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidHandler;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityAreaDistributor;
+import Reika.ChromatiCraft.Auxiliary.RangeTracker;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.ParticlePath;
+import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Effects.EntityFluidFX;
@@ -49,7 +52,7 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntitySmelteryDistributor extends TileEntityAreaDistributor {
+public class TileEntitySmelteryDistributor extends TileEntityChromaticBase {
 
 	private static Class drainClass;
 	private static Method getDirection;
@@ -72,7 +75,12 @@ public class TileEntitySmelteryDistributor extends TileEntityAreaDistributor {
 		}
 	}
 
-	private Coordinate controller;
+	public static final int SCAN_RADIUS_XZ = 16;
+
+	private final RangeTracker range = new RangeTracker(SCAN_RADIUS_XZ);
+
+	private final StepTimer cacheTimer = new StepTimer(40);
+
 	private final ArrayList<SmelteryDrain> drains = new ArrayList();
 	private final ArrayList<CastingBlock> targets = new ArrayList();
 
@@ -118,41 +126,74 @@ public class TileEntitySmelteryDistributor extends TileEntityAreaDistributor {
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		super.updateEntity(world, x, y, z, meta);
+
+		cacheTimer.update();
+		if (cacheTimer.checkCap() || this.getTicksExisted() == 0) {
+			this.findDrainsAndTargets(world, x, y, z);
+		}
 
 		if (world.isRemote) {
 			this.doParticles(world, x, y, z);
 		}
 
-		if (controller == null) {
-			this.findController(world, x, y, z);
-		}
-		else {
-			FluidStack fs = this.getTransferrableFluid(world);
-			for (CastingBlock cb : targets) {
-				cb.update(world);
+		if (drains.isEmpty()) {
+			SmelteryDrain sd = ReikaJavaLibrary.getRandomListEntry(rand, drains);
+			if (sd.isValid(world)) {
+				FluidStack fs = this.getTransferrableFluid(world, sd);
+				if (fs != null) {
+					for (CastingBlock cb : targets) {
+						cb.update(world);
+					}
+					Collections.sort(targets);
+					CastingBlock cb = this.getFirstValidTarget(world, fs);
+					if (cb != null) {
+						this.doTransfer(sd, cb);
+					}
+				}
 			}
-			Collections.sort(targets);
-			CastingBlock cb = this.getFirstValidTarget(fs);
-			if (cb != null) {
-				SmelteryDrain sd = ReikaJavaLibrary.getRandomListEntry(rand, drains);
-				this.doTransfer(sd, cb);
+			else {
+				drains.remove(sd);
 			}
 		}
 	}
 
-	private void findController(World world, int x, int y, int z) {
-
-	}
-
-	private FluidStack getTransferrableFluid(World world) {
-		TileEntity te = controller.getTileEntity(world);
-	}
-
-	private CastingBlock getFirstValidTarget(FluidStack fs) {
-		for (CastingBlock cb : targets) {
-
+	private void findDrainsAndTargets(World world, int x, int y, int z) {
+		int r = range.getRange();
+		int r2 = r/2;
+		for (int i = -r; i <= r; i++) {
+			for (int k = -r; k <= r; k++) {
+				for (int j = -r2; j <= 0; j++) {
+					TileEntity te = world.getTileEntity(x+i, y+j, z+k);
+					if (te != null) {
+						if (te.getClass() == drainClass) {
+							drains.add(new SmelteryDrain(te));
+						}
+						else if (te.getClass() == basinClass || te.getClass() == tableClass) {
+							targets.add(new CastingBlock(te));
+						}
+					}
+				}
+			}
 		}
+	}
+
+	private FluidStack getTransferrableFluid(World world, SmelteryDrain sd) {
+		IFluidHandler te = (IFluidHandler)sd.location.getTileEntity(world);
+		return te.drain(sd.facing, Integer.MAX_VALUE, false);
+	}
+
+	private CastingBlock getFirstValidTarget(World world, FluidStack fs) {
+		Iterator<CastingBlock> it = targets.iterator();
+		while (it.hasNext()) {
+			CastingBlock cb = it.next();
+			if (cb.isValid(world)) {
+
+			}
+			else {
+				it.remove();
+			}
+		}
+		return null;
 	}
 
 	private void doTransfer(SmelteryDrain sd, CastingBlock cb) {
@@ -180,20 +221,6 @@ public class TileEntitySmelteryDistributor extends TileEntityAreaDistributor {
 	}
 
 	@Override
-	protected boolean isValidTarget(TileEntity te) {
-		if (te == this)
-			return false;
-		if (te == null)
-			return false;
-		if (te instanceof TileEntityRift)
-			return false;
-		Class c = te.getClass();
-		if (te.yCoord >= yCoord)
-			return false;
-		return false;
-	}
-
-	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
 
 	}
@@ -203,13 +230,24 @@ public class TileEntitySmelteryDistributor extends TileEntityAreaDistributor {
 		private final Coordinate location;
 		private final ForgeDirection facing;
 
-		private SmelteryDrain(TileEntity te) throws Exception {
+		private SmelteryDrain(TileEntity te) {
 			location = new Coordinate(te);
 			facing = this.getDirection(te);
 		}
 
-		private ForgeDirection getDirection(TileEntity te) throws Exception {
-			return (ForgeDirection)getDirection.invoke(te);
+		public boolean isValid(World world) {
+			TileEntity te = location.getTileEntity(world);
+			return te != null && te.getClass() == drainClass;
+		}
+
+		private ForgeDirection getDirection(TileEntity te) {
+			try {
+				return (ForgeDirection)getDirection.invoke(te);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				return ForgeDirection.UNKNOWN;
+			}
 		}
 
 	}
@@ -233,6 +271,11 @@ public class TileEntitySmelteryDistributor extends TileEntityAreaDistributor {
 			isOutputFull = ii.getStackInSlot(1) != null;
 			hasCast = ii.getStackInSlot(0) != null;
 			hasNonIngotCast = hasCast && !ReikaItemHelper.matchStacks(ii.getStackInSlot(0), TinkerToolHandler.getInstance().getIngotCast());
+		}
+
+		public boolean isValid(World world) {
+			TileEntity te = location.getTileEntity(world);
+			return te != null && (te.getClass() == basinClass || te.getClass() == tableClass);
 		}
 
 		@Override
