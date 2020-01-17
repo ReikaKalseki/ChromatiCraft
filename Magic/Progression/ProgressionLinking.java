@@ -100,8 +100,8 @@ public class ProgressionLinking {
 			li1.tagList.remove(s1);
 			li2.tagList.remove(s2);
 		}
-		ChromaResearchManager.instance.getRootNBTTag(ep1).setTag(COOPERATE_NBT_TAG, li1);
-		ChromaResearchManager.instance.getRootNBTTag(ep2).setTag(COOPERATE_NBT_TAG, li2);
+		ChromaResearchManager.instance.getRootProgressionNBT(ep1).setTag(COOPERATE_NBT_TAG, li1);
+		ChromaResearchManager.instance.getRootProgressionNBT(ep2).setTag(COOPERATE_NBT_TAG, li2);
 		p1.onLink(ep1, ep2);
 		return null;
 	}
@@ -127,7 +127,7 @@ public class ProgressionLinking {
 	}
 
 	private NBTTagList getCooperatorList(EntityPlayer ep) {
-		NBTTagCompound nbt = ChromaResearchManager.instance.getRootNBTTag(ep);
+		NBTTagCompound nbt = ChromaResearchManager.instance.getRootProgressionNBT(ep);
 		if (!nbt.hasKey(COOPERATE_NBT_TAG))
 			nbt.setTag(COOPERATE_NBT_TAG, new NBTTagList());
 		NBTTagList li = nbt.getTagList(COOPERATE_NBT_TAG, NBTTypes.STRING.ID);

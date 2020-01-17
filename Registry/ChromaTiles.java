@@ -41,6 +41,7 @@ import Reika.ChromatiCraft.ModInterface.TileEntityFloatingLandmark;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.ModInterface.TileEntityManaBooster;
 import Reika.ChromatiCraft.ModInterface.TileEntityPageExtractor;
+import Reika.ChromatiCraft.ModInterface.TileEntitySmelteryDistributor;
 import Reika.ChromatiCraft.ModInterface.AE.TileEntityMEDistributor;
 import Reika.ChromatiCraft.ModInterface.AE.TileEntityPatternCache;
 import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
@@ -257,7 +258,8 @@ public enum ChromaTiles implements TileEnum {
 	LANDMARK("chroma.landmark",			ChromaBlocks.TILEMODELLED4, TileEntityFloatingLandmark.class,	5, "RenderFloatingLandmark", ModList.BUILDCRAFT),
 	INJECTOR("chroma.injector",			ChromaBlocks.TILEENTITY2,	TileEntityCastingInjector.class,	5),
 	VOIDTRAP("chroma.voidtrap",			ChromaBlocks.TILEMODELLED4,	TileEntityVoidMonsterTrap.class,	6, "RenderVoidMonsterTrap", ModList.VOIDMONSTER),
-	PLAYERINFUSER("chroma.playerinfuser", ChromaBlocks.TILEMODELLED4, TileEntityPlayerInfuser.class, 	7, "RenderInfuser3");
+	PLAYERINFUSER("chroma.playerinfuser", ChromaBlocks.TILEMODELLED4, TileEntityPlayerInfuser.class, 	7, "RenderInfuser3"),
+	SMELTERYDISTRIBUTOR("chroma.smeltery", ChromaBlocks.TILEMODELLED4, TileEntitySmelteryDistributor.class, 8, "RenderSmelteryDistributor", ModList.TINKERER);
 
 	private final Class tile;
 	private final String name;

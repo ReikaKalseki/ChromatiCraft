@@ -21,6 +21,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaExtractable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.FluidIOInventoryBase;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
@@ -37,7 +38,7 @@ import Reika.DragonAPI.ModInteract.ReikaXPFluidHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityCollector extends FluidIOInventoryBase implements OwnedTile {
+public class TileEntityCollector extends FluidIOInventoryBase implements OwnedTile, ChromaExtractable {
 
 	public static final int XP_PER_CHROMA = 1; //1 xp per mB of liquid
 	private static final int XP_PER_BOTTLE = 300;
@@ -189,6 +190,11 @@ public class TileEntityCollector extends FluidIOInventoryBase implements OwnedTi
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
 		this.readOwnerData(is);
+	}
+
+	@Override
+	public int getChromaLevel() {
+		return output.getLevel();
 	}
 
 }

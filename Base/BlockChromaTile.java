@@ -42,6 +42,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaExtractable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaPowered;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
@@ -68,7 +69,6 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityMultiBuilder;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
-import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.CrystalTier;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
@@ -381,18 +381,9 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			}
 		}
 
-		if (is != null && is.getItem() == Items.bucket && is.stackSize == 1 && te instanceof TileEntityEnchantDecomposer) {
-			if (((TileEntityEnchantDecomposer)te).getChromaLevel() >= 1000) {
-				((TileEntityEnchantDecomposer)te).removeLiquid(1000);
-				if (!ep.capabilities.isCreativeMode)
-					ep.setCurrentItemOrArmor(0, ChromaItems.BUCKET.getStackOfMetadata(0));
-				return true;
-			}
-		}
-
-		if (is != null && is.getItem() == Items.bucket && is.stackSize == 1 && te instanceof TileEntityCollector) {
-			if (((TileEntityCollector)te).getOutputLevel() >= 1000) {
-				((TileEntityCollector)te).removeLiquid(1000);
+		if (is != null && is.getItem() == Items.bucket && is.stackSize == 1 && te instanceof ChromaExtractable) {
+			if (((ChromaExtractable)te).getChromaLevel() >= 1000) {
+				((ChromaExtractable)te).removeLiquid(1000);
 				if (!ep.capabilities.isCreativeMode)
 					ep.setCurrentItemOrArmor(0, ChromaItems.BUCKET.getStackOfMetadata(0));
 				return true;

@@ -48,6 +48,7 @@ import Reika.DragonAPI.Interfaces.TileEntity.ThermalTile;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MultiblockControllerFinder;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.TinkerSmelteryHandler;
 import Reika.DragonAPI.ModInteract.DeepInteract.TinkerSmelteryHandler.SmelteryWrapper;
 import Reika.DragonAPI.ModInteract.Power.ReikaRailCraftHelper;
@@ -169,20 +170,24 @@ public class BlockHeatLamp extends BlockAttachableMini {
 					te.updateEntity();
 				}
 			}
-			else if (!this.isCold() && TinkerSmelteryHandler.isSmelteryController(te)) {
+			else if (ModList.TINKERER.isLoaded() && !this.isCold() && TinkerSmelteryHandler.isSmelteryController(te)) {
 				SmelteryWrapper s = new SmelteryWrapper(te);
 				s.fuelLevel = 4000;
 				s.meltPower = temperature*1500/MAXTEMP; //that puts max heat lamp at 1500
 				s.write(te);
 				//TinkerSmelteryHandler.tick(te, temperature*1500/MAXTEMP);
 			}
-			else if (!this.isCold() && ReikaRailCraftHelper.isSolidFirebox(te)) {
+			else if (ModList.RAILCRAFT.isLoaded() && !this.isCold() && ReikaRailCraftHelper.isSolidFirebox(te)) {
 				te = MultiblockControllerFinder.instance.getController(te);
 				FireboxWrapper s = new FireboxWrapper(te);
 				s.load(te);
-				if (80+25*Math.sin(worldObj.getTotalWorldTime()/350D) >= 100)
+				//if (80+25*Math.sin(worldObj.getTotalWorldTime()/350D) >= 100)
+				if (s.temperature < 99)
 					s.setBurning(5);
 				s.write(te);
+			}
+			else if (ModList.THAUMCRAFT.isLoaded() && !this.isCold() && temperature >= 200 && ReikaThaumHelper.isAlchemicalFurnace(te)) {
+				ReikaThaumHelper.setAlchemicalBurnTime(te, temperature/50);
 			}
 		}
 

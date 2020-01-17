@@ -33,6 +33,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Interfaces.EnchantableItem;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaExtractable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaPowered;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
@@ -52,7 +53,7 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 
-public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implements ChromaPowered, OperationInterval, VariableTexture {
+public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implements ChromaPowered, ChromaExtractable, OperationInterval, VariableTexture {
 
 	private HashMap<Enchantment, Integer> selected = new HashMap();
 
@@ -139,7 +140,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	}
 
 	private boolean hasSufficientChroma() {
-		return this.getChroma() >= this.getConsumedChroma();
+		return this.getChromaLevel() >= this.getConsumedChroma();
 	}
 
 	private boolean enchanting() {
@@ -153,7 +154,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		return false;
 	}
 
-	public int getChroma() {
+	public int getChromaLevel() {
 		return tank.getLevel();
 	}
 
@@ -225,6 +226,9 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			}
 		}
 
+		if (ReikaEnchantmentHelper.getEnchantmentLevel(e, is) >= selected.get(e))
+			return false;
+
 		if (i instanceof EnchantableItem) {
 			Result res = ((EnchantableItem)i).getEnchantValidity(e, is);
 			switch(res) {
@@ -266,9 +270,6 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
 				return false;
 
-		if (ReikaEnchantmentHelper.getEnchantmentLevel(e, is) >= selected.get(e))
-			return false;
-
 		return i == Items.book ? true : e.canApply(is);
 	}
 
@@ -292,7 +293,6 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		int total = 0;
 		for (Enchantment e : selected.keySet()) {
 			float level = selected.get(e);
-			level = Math.max(0.25F, level-0.5F*ReikaEnchantmentHelper.getEnchantmentLevel(e, inv[0]));
 			if (inv[1] != null)
 				level = Math.max(0.25F, level-0.8F*ReikaEnchantmentHelper.getEnchantmentLevel(e, inv[1]));
 			float add = level*CHROMA_PER_LEVEL_BASE*this.getCostFactor(e);
@@ -528,6 +528,11 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	@Override
 	public int getIconState(int side) {
 		return side > 1 && this.isAssisted() ? 1 : 0;
+	}
+
+	@Override
+	public void removeLiquid(int amt) {
+		tank.removeLiquid(amt);
 	}
 
 }

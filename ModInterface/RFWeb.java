@@ -2,11 +2,9 @@ package Reika.ChromatiCraft.ModInterface;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -21,18 +19,11 @@ import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Base.BlockAttachableMini;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.DragonAPI.Instantiable.Data.BlockStruct.OpenPathFinder;
-import Reika.DragonAPI.Instantiable.Data.BlockStruct.Search;
-import Reika.DragonAPI.Instantiable.Data.BlockStruct.Search.LocationTerminus;
-import Reika.DragonAPI.Instantiable.Data.BlockStruct.Search.PropagationCondition;
-import Reika.DragonAPI.Instantiable.Data.BlockStruct.Search.TerminationCondition;
+import Reika.DragonAPI.Instantiable.ParticlePath;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
-import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
-import Reika.DragonAPI.Instantiable.Math.Spline;
-import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
-import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
 import Reika.DragonAPI.Instantiable.ParticleController.SplineMotionController;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -59,8 +50,6 @@ public class RFWeb {
 	public static final int THROUGHPUT = 3600/2;
 
 	private final HashMap<Coordinate, RFConnection> data = new HashMap();
-
-	private static final PluralMap<ParticlePath> pathCache = new PluralMap(2);
 
 	private final int dimensionID;
 
@@ -245,13 +234,16 @@ public class RFWeb {
 	public static void doSendParticle(World world, int x1, int y1, int z1, int x2, int y2, int z2, int amt) {
 		if (!shouldAcceptParticle(world))
 			return;
-		ParticlePath p = getPath(world, new Coordinate(x1, y1, z1), new Coordinate(x2, y2, z2));
+		ForgeDirection d1 = ((BlockAttachableMini)world.getBlock(x1, y1, z1)).getSide(world, x1, y1, z1);
+		ForgeDirection d2 = ((BlockAttachableMini)world.getBlock(x2, y2, z2)).getSide(world, x2, y2, z2);
+		ParticlePath p = ParticlePath.getPath(world, new BlockVector(x1, y1, z1, d1), new BlockVector(x2, y2, z2, d2), 0.375, 0.7);
 		EntityBlurFX fx = new EntityBlurFX(world, x1+0.5, y1+0.5, z1+0.5);
-		int l = p != null ? Math.max(10, 3*p.path.size()/2) : 90;
+		List<DecimalPosition> path = p != null ? p.getPath() : null;
+		int l = p != null ? Math.max(10, 3*path.size()/2) : 90;
 		float s = Math.max(0.8F, Math.min(2.4F, amt*2.4F/THROUGHPUT));
 		fx.setColor(0xff0000).setScale(s).setLife(l).setAlphaFading().forceIgnoreLimits();
 		int hash = p != null ? Math.abs(p.hashCode()) : 0;
-		int dt = p != null ? Math.max(1, 5-p.path.size()/20) : 3;
+		int dt = p != null ? Math.max(1, 5-path.size()/20) : 3;
 		if (world.getTotalWorldTime()%dt != hash%dt)
 			return;
 		if (p != null) {
@@ -275,69 +267,6 @@ public class RFWeb {
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 		}
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-	}
-
-	private static ParticlePath getPath(World world, Coordinate from, Coordinate to) {
-		ParticlePath p = pathCache.get(from, to);
-		if (p == null || !p.isValid(world)) {
-			p = calculateParticlePath(world, from, to);
-			pathCache.put(p, from, to);
-		}
-		return p;
-	}
-
-	private static ParticlePath calculateParticlePath(World world, Coordinate from, Coordinate to) {
-		PropagationCondition f = new OpenPathFinder(from, to, 12*2);
-		TerminationCondition t = new LocationTerminus(to);
-		//Search s = new Search(from.xCoord, from.yCoord, from.zCoord);
-		LinkedList<Coordinate> li = Search.getPath(world, from.xCoord, from.yCoord, from.zCoord, t, f);
-		if (li != null) {
-			HashSet<Coordinate> set = new HashSet();
-
-			double sx = from.xCoord+0.5;
-			double sy = from.yCoord+0.5;
-			double sz = from.zCoord+0.5;
-			double tx = to.xCoord+0.5;
-			double ty = to.yCoord+0.5;
-			double tz = to.zCoord+0.5;
-			ForgeDirection d1 = ((BlockAttachableMini)from.getBlock(world)).getSide(world, from.xCoord, from.yCoord, from.zCoord);
-			ForgeDirection d2 = ((BlockAttachableMini)to.getBlock(world)).getSide(world, to.xCoord, to.yCoord, to.zCoord);
-
-			double r = 0.375;
-			sx -= d1.offsetX*r;
-			sy -= d1.offsetY*r;
-			sz -= d1.offsetZ*r;
-			tx -= d2.offsetX*r;
-			ty -= d2.offsetY*r;
-			tz -= d2.offsetZ*r;
-
-			double dr = 0.7;
-			double sx2 = sx+d1.offsetX*dr;
-			double sy2 = sy+d1.offsetY*dr;
-			double sz2 = sz+d1.offsetZ*dr;
-			double tx2 = tx+d2.offsetX*dr;
-			double ty2 = ty+d2.offsetY*dr;
-			double tz2 = tz+d2.offsetZ*dr;
-
-			Spline s1 = new Spline(SplineType.CENTRIPETAL);
-			s1.addPoint(new BasicSplinePoint(new DecimalPosition(sx, sy, sz)));
-			s1.addPoint(new BasicSplinePoint(new DecimalPosition(sx2, sy2, sz2)));
-			int i = -1;
-			for (Coordinate c : li) {
-				if (i%4 == 0 && c != li.getLast()) {
-					if (!c.equals(to) && !c.equals(from))
-						set.add(c);
-					s1.addPoint(new BasicSplinePoint(new DecimalPosition(c)));
-				}
-				i++;
-			}
-			s1.addPoint(new BasicSplinePoint(new DecimalPosition(tx2, ty2, tz2)));
-			s1.addPoint(new BasicSplinePoint(new DecimalPosition(tx, ty, tz)));
-
-			ParticlePath p = new ParticlePath(from, to, s1, set);
-			return p;
-		}
-		return null;
 	}
 
 	private static class RFConnection {
@@ -447,37 +376,6 @@ public class RFWeb {
 		private IEnergyConnection getConnection(World world) {
 			TileEntity te = location.offset(connection, 1).getTileEntity(world);
 			return te instanceof IEnergyConnection ? (IEnergyConnection)te : null;
-		}
-
-	}
-
-	private static class ParticlePath {
-
-		public final Coordinate source;
-		public final Coordinate target;
-		public final List<DecimalPosition> path;
-		public final Spline spline;
-		private final HashSet<Coordinate> coords;
-
-		private ParticlePath(Coordinate c1, Coordinate c2, Spline s, HashSet<Coordinate> set) {
-			source = c1;
-			target = c2;
-			spline = s;
-			path = Collections.unmodifiableList(s.get(12, false));
-			coords = set;
-			for (DecimalPosition p : path) {
-				coords.add(new Coordinate(p.xCoord, p.yCoord, p.zCoord));
-			}
-		}
-
-		public boolean isValid(World world) {
-			for (Coordinate c : coords) {
-				if (c.equals(source) || c.equals(target))
-					continue;
-				if (!c.getBlock(world).isAir(world, c.xCoord, c.yCoord, c.zCoord))
-					return false;
-			}
-			return true;
 		}
 
 	}

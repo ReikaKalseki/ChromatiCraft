@@ -159,7 +159,7 @@ public class GuiAutoEnchanter extends GuiLetterSearchable<Enchantment> {
 		int amt = ench.getConsumedChroma();
 		String sg = String.valueOf(amt/1000F);
 		fontRendererObj.drawString("Cost:", 32-fontRendererObj.getStringWidth("Cost:"), 28, 0xffffff);
-		fontRendererObj.drawString(sg, 32-fontRendererObj.getStringWidth(sg), 38, amt > ench.getCapacity() ? 0xff0000 : amt > ench.getChroma() ? 0xffff00 : 0x00ff00);
+		fontRendererObj.drawString(sg, 32-fontRendererObj.getStringWidth(sg), 38, amt > ench.getCapacity() ? 0xff0000 : amt > ench.getChromaLevel() ? 0xffff00 : 0x00ff00);
 
 		String display = this.getEnchantDisplayString();
 		api.drawCenteredString(fontRendererObj, display, xSize/2, 75, 0xffffff);

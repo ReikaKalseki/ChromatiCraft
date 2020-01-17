@@ -292,7 +292,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	}
 
 	public ResearchLevel getPlayerResearchLevel(EntityPlayer ep) {
-		return ResearchLevel.levelList[this.getRootNBTTag(ep).getInteger("research_level")];
+		return ResearchLevel.levelList[this.getRootProgressionNBT(ep).getInteger("research_level")];
 	}
 
 	public void maxPlayerResearch(EntityPlayer ep, boolean notify) {
@@ -308,7 +308,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	}
 
 	public void resetPlayerResearch(EntityPlayer ep, boolean notify) {
-		this.getPlayerCoreNBTTag(ep).removeTag(NBT_TAG);
+		this.getRootNBTTag(ep).removeTag(NBT_TAG);
 		if (ep instanceof EntityPlayerMP)
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 	}
@@ -364,7 +364,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	 */
 	private NBTTagList getNBTFragments(EntityPlayer ep) {
 		String key = "fragments";
-		NBTTagCompound tag = this.getRootNBTTag(ep);
+		NBTTagCompound tag = this.getRootProgressionNBT(ep);
 		if (!tag.hasKey(key))
 			tag.setTag(key, new NBTTagList());
 		NBTTagList li = tag.getTagList(key, NBTTypes.STRING.ID);
@@ -372,8 +372,8 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		return li;
 	}
 
-	public NBTTagCompound getRootNBTTag(EntityPlayer ep) {
-		NBTTagCompound nbt = this.getPlayerCoreNBTTag(ep);
+	public NBTTagCompound getRootProgressionNBT(EntityPlayer ep) {
+		NBTTagCompound nbt = this.getRootNBTTag(ep);
 		if (!nbt.hasKey(NBT_TAG))
 			nbt.setTag(NBT_TAG, new NBTTagCompound());
 		NBTTagCompound li = nbt.getCompoundTag(NBT_TAG);
@@ -381,7 +381,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	}
 
 	private boolean movePlayerTo(EntityPlayer ep, ResearchLevel rl) {
-		NBTTagCompound tag = ChromaResearchManager.instance.getRootNBTTag(ep);
+		NBTTagCompound tag = ChromaResearchManager.instance.getRootProgressionNBT(ep);
 		int has = tag.getInteger("research_level");
 		if (has != rl.ordinal()) {
 			tag.setInteger("research_level", rl.ordinal());
@@ -390,7 +390,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		return false;
 	}
 
-	private NBTTagCompound getPlayerCoreNBTTag(EntityPlayer ep) {
+	public NBTTagCompound getRootNBTTag(EntityPlayer ep) {
 		NBTTagCompound tag = ReikaPlayerAPI.isFake(ep) ? null : ReikaPlayerAPI.getDeathPersistentNBT(ep);
 		if (tag == null || tag.hasNoTags()/* || !tag.hasKey(NBT_TAG) || !tag.hasKey(ProgressionManager.MAIN_NBT_TAG)*/) {
 			NBTTagCompound repl = ProgressionCacher.instance.attemptToLoadBackup(ep);
@@ -444,7 +444,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 
 	private NBTTagList getNBTRecipes(EntityPlayer ep) {
 		String key = "recipes";
-		NBTTagCompound tag = this.getRootNBTTag(ep);
+		NBTTagCompound tag = this.getRootProgressionNBT(ep);
 		if (!tag.hasKey(key))
 			tag.setTag(key, new NBTTagList());
 		NBTTagList li = tag.getTagList(key, NBTTypes.INT.ID);

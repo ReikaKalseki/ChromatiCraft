@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -24,6 +24,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaExtractable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
@@ -46,7 +47,7 @@ import buildcraft.api.transport.IPipeTile.PipeType;
 
 @Strippable(value = {"buildcraft.api.transport.IPipeConnection"})
 public class TileEntityEnchantDecomposer extends InventoriedRelayPowered implements IFluidHandler, IPipeConnection, OperationInterval,
-VariableTexture {
+VariableTexture, ChromaExtractable {
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
