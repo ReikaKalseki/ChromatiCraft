@@ -169,7 +169,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 			flag2 |= flag;
 		}
 		double over = (averageOutputValue.getAverage()-temperatureBoost)/averageIngredientValue.getAverage();
-		if (averageIngredientValue.getAverage() > 0 && over >= 1) {
+		if (temperatureBoost == 0 && averageIngredientValue.getAverage() > 0 && over >= 1) {
 			if (ReikaRandomHelper.doWithChance(Math.min(0.25, over/16D))) {
 				smothered = true;
 			}

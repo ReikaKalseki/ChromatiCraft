@@ -196,7 +196,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	PLANTACCEL(		ChromaTiles.PLANTACCEL,		ResearchLevel.RUNECRAFT),
 	CROPSPEED(		ChromaTiles.CROPSPEED,		ResearchLevel.RUNECRAFT),
 	WEAKREPEATER(	ChromaTiles.WEAKREPEATER,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON, ProgressStage.MAKECHROMA),
-	ENCHANTDECOMP(	ChromaTiles.ENCHANTDECOMP,	ResearchLevel.ENERGYEXPLORE,		ProgressStage.MAKECHROMA),
+	ENCHANTDECOMP(	ChromaTiles.ENCHANTDECOMP,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.MAKECHROMA),
 	LUMENWIRE(		ChromaTiles.LUMENWIRE,		ResearchLevel.BASICCRAFT),
 	PARTICLES(		ChromaTiles.PARTICLES,		ResearchLevel.BASICCRAFT),
 	METEOR(			ChromaTiles.METEOR,			ResearchLevel.PYLONCRAFT),
@@ -227,6 +227,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	DEATHFOG(		ChromaTiles.DEATHFOG,		ResearchLevel.RUNECRAFT,		ProgressStage.VOIDMONSTER),
 	VOIDTRAP(		ChromaTiles.VOIDTRAP,		ResearchLevel.MULTICRAFT,		ProgressStage.VOIDMONSTERDIE, ProgressStage.CHARGECRYSTAL),
 	PLAYERINFUSER(	ChromaTiles.PLAYERINFUSER,	ResearchLevel.MULTICRAFT,		ProgressStage.INFUSE),
+	SMELTERY(		ChromaTiles.SMELTERYDISTRIBUTOR,ResearchLevel.RUNECRAFT),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT,	ProgressStage.ALLCOLORS),

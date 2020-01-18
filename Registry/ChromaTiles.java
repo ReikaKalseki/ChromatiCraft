@@ -374,6 +374,7 @@ public enum ChromaTiles implements TileEnum {
 			case LANDMARK:
 			case VOIDTRAP:
 			case PLAYERINFUSER:
+			case SMELTERYDISTRIBUTOR:
 				return true;
 			default:
 				return false;
@@ -821,6 +822,7 @@ public enum ChromaTiles implements TileEnum {
 			case MANABOOSTER:
 			case OPTIMIZER:
 			case VOIDTRAP:
+			case SMELTERYDISTRIBUTOR:
 				return true;
 			default:
 				return false;

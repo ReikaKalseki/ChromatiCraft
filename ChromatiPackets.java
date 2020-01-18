@@ -94,6 +94,7 @@ import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionLinking.LinkFailure;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.ModInterface.RFWeb;
+import Reika.ChromatiCraft.ModInterface.TileEntitySmelteryDistributor;
 import Reika.ChromatiCraft.ModInterface.AE.TileEntityMEDistributor;
 import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.CrystalWand;
@@ -1074,6 +1075,9 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case OREPINGLOC:
 					OreOverlayRenderer.instance.addCoordinate(world, x, y, z, Block.getBlockById(data[0]), data[1], data[2] > 0);
+					break;
+				case SMELTERYFLUIDSEND:
+					((TileEntitySmelteryDistributor)tile).sendFluidToClient(data[0], data[1], data[2], data[3], data[4], data[5], ForgeDirection.VALID_DIRECTIONS[data[6]], FluidRegistry.getFluid(data[7]));
 					break;
 			}
 		}

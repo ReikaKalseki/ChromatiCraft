@@ -15,13 +15,15 @@ import net.minecraft.item.crafting.IRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class RFDistributorRecipe extends TempleCastingRecipe {
+public class SmelteryDistributorRecipe extends TempleCastingRecipe {
 
-	public RFDistributorRecipe(ItemStack out, IRecipe recipe) {
+	public SmelteryDistributorRecipe(ItemStack out, IRecipe recipe) {
 		super(out, recipe);
 
 		this.addRune(CrystalElement.LIME, -1, 0, -3);
-		this.addRune(CrystalElement.YELLOW, 1, 0, 3);
+		this.addRune(CrystalElement.ORANGE, 4, 0, -2);
+		this.addRune(CrystalElement.CYAN, -4, 0, 0);
+		this.addRune(CrystalElement.BROWN, -2, 0, -4);
 	}
 
 }

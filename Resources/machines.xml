@@ -788,14 +788,14 @@
 
 		</note>
 	</playerinfuser>
-	<name>
+	<smelterydistributor>
 		<desc>
-
+			As you develop your tools and infrastructure, you have needed a large brick basin in which you can melt down various metals and then taps to pour it into casts in various shapes. That last step is where the headaches begun; the taps are stupidly slow, and the piping you have access to achieved nothing remotely resembling success. Copper/lead pipes blew up in your face; ones made from stone and glass developed a hopeless mix of random crap and clogged completely. And should the metal run out, none of them are able to avoid filling a cast only partway, leaving you with six half-casted ingots you can make zero use of. Screw this, you need your own solution.
 		</desc>
 		<note>
-
+			Prioritizes tool casts over everything, and basins over all other casts
 		</note>
-	</name>
+	</smelterydistributor>
 	<name>
 		<desc>
 

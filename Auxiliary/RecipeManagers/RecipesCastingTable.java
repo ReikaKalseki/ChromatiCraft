@@ -181,6 +181,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.Reversi
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.RiftRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.RitualTableRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.RouterHubRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.SmelteryDistributorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.SpawnerReprogrammerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.StandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.TelePumpRecipe;
@@ -908,6 +909,12 @@ public class RecipesCastingTable {
 		is = ChromaTiles.DEATHFOG.getCraftedProduct();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "cac", "epe", "ccc", 'p', Items.bucket, 'e', ChromaStacks.voidmonsterEssence, 'a', ChromaStacks.auraDust, 'c', Blocks.cobblestone);
 		this.addRecipe(new DeathFogRecipe(is, sr));
+
+		if (ModList.TINKERER.isLoaded()) {
+			is = ChromaTiles.SMELTERYDISTRIBUTOR.getCraftedProduct();
+			sr = ReikaRecipeHelper.getShapedRecipeFor(is, "fif", "aGa", "iei", 'f', ChromaStacks.firaxite, 'e', ChromaStacks.beaconDust, 'a', ChromaStacks.auraDust, 'i', Items.blaze_powder, 'G', Blocks.glowstone);
+			this.addRecipe(new SmelteryDistributorRecipe(is, sr));
+		}
 
 		this.addSpecialRecipes();
 	}
