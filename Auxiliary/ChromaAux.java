@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLeavesBase;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -55,6 +57,7 @@ import Reika.ChromatiCraft.Block.Dimension.BlockLightedLeaf;
 import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
+import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
@@ -540,25 +543,37 @@ public class ChromaAux {
 		int i1 = MathHelper.floor_double(box.minZ);
 		int j1 = MathHelper.floor_double(box.maxZ + 1.0D);
 
-		for (int k1 = i; k1 < j; ++k1) {
-			for (int l1 = i1; l1 < j1; ++l1) {
-				if (world.blockExists(k1, 64, l1)) {
-					for (int i2 = k - 1; i2 < l; ++i2) {
+		for (int x = i; x < j; ++x) {
+			for (int z = i1; z < j1; ++z) {
+				if (world.blockExists(x, 64, z)) {
+					for (int y = k - 1; y < l; ++y) {
 						Block block;
 
-						if (k1 >= -30000000 && k1 < 30000000 && l1 >= -30000000 && l1 < 30000000) {
-							block = world.getBlock(k1, i2, l1);
+						if (x >= -30000000 && x < 30000000 && z >= -30000000 && z < 30000000) {
+							block = world.getBlock(x, y, z);
 						}
 						else {
 							block = Blocks.stone;
 						}
 
-						if (ChromaDimensionManager.isBlockedAir(world, k1, i2, l1, block, ep)) {
-							Blocks.stone.addCollisionBoxesToList(world, k1, i2, l1, box, li, ep);
-							ChromaDimensionManager.onPlayerBlockedFromBiome(world, k1, i2, l1, ep);
+						boolean flag = true;
+						if (ChromaDimensionManager.isBlockedAir(world, x, y, z, block, ep)) {
+							Blocks.stone.addCollisionBoxesToList(world, x, y, z, box, li, ep);
+							ChromaDimensionManager.onPlayerBlockedFromBiome(world, x, y, z, ep);
+							flag = false;
 						}
-						else {
-							block.addCollisionBoxesToList(world, k1, i2, l1, box, li, ep);
+						else if (ep instanceof EntityGlowCloud) {
+							if (block.getMaterial() == Material.glass && block.getLightOpacity(world, x, y, z) == 0)
+								flag = false;
+							else if (block == Blocks.stained_glass || block == Blocks.stained_glass_pane || block == Blocks.leaves || block == Blocks.leaves2)
+								flag = false;
+							else if (block == ChromaBlocks.DYELEAF.getBlockInstance() || block == ChromaBlocks.DECAY.getBlockInstance() || block == ChromaBlocks.GLOWLEAF.getBlockInstance())
+								flag = false;
+							else if (block.getMaterial() == Material.leaves || block instanceof BlockLeavesBase || block.isLeaves(world, x, y, z))
+								flag = false;
+						}
+						if (flag) {
+							block.addCollisionBoxesToList(world, x, y, z, box, li, ep); //necessary for vanilla and mods like TreeClimbing
 						}
 					}
 				}

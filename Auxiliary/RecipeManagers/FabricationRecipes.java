@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -22,6 +22,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.oredict.OreDictionary;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Items.ItemTieredResource;
@@ -262,6 +263,11 @@ public class FabricationRecipes {
 	}
 
 	private FabricationRecipe addRecipe(ItemStack is, ElementTagCompound tag, ProgressStage... progress) {
+		if (is == null || is.getItem() == null) {
+			ChromatiCraft.logger.logError("Cannot add recipe for null!");
+			Thread.dumpStack();
+			return null;
+		}
 		FabricationRecipe f = new FabricationRecipe(is, tag);
 		for (ProgressStage p : progress)
 			f.addProgress(p);

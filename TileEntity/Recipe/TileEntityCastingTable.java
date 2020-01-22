@@ -54,6 +54,8 @@ import Reika.ChromatiCraft.Magic.CastingTuning.CastingTuningMismatchReaction;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionCatchupHandling.CastingProgressSyncTriggers;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionLinking;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -122,6 +124,8 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 	private RecipeType tier = RecipeType.CRAFTING;
 
 	private boolean isEnhanced;
+	private boolean isTuned;
+	private boolean hasRunes;
 
 	private final HashSet<KeyedItemStack> completedRecipes = new HashSet();
 	private final ItemHashMap<Integer> craftedItems = new ItemHashMap();
@@ -172,6 +176,10 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		}
 	}
 
+	public boolean isTuned() {
+		return isTuned;
+	}
+
 	public CastingRecipe getActiveRecipe() {
 		return activeRecipe;
 	}
@@ -194,6 +202,10 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		}
 		if (craftingTick > 0) {
 			this.onCraftingTick(world, x, y, z);
+		}
+
+		if (!world.isRemote && this.getTicksExisted()%20 == 0) {
+			this.attemptTriggerProgressSync(world, x, y, z);
 		}
 
 		if (isEnhanced && hasPylonConnections) {
@@ -221,6 +233,16 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 
 		//if (world.isRemote)
 		//	this.spawnIdleParticles(world, x, y, z);
+
+		/*
+		TuningKey tk = CastingTuningManager.instance.getTuningKey(this.getPlacer());
+		Map<Coordinate, CrystalElement> map = tk.getRunes();
+		for (Coordinate c : map.keySet()) {
+			CrystalElement e = map.get(c);
+			c = c.offset(x, y, z);
+			c.setBlock(world, ChromaBlocks.RUNE.getBlockInstance(), e.ordinal());
+		}
+		 */
 
 		/*
 		Collection<CastingRecipe> li = RecipesCastingTable.instance.getAllRecipes();
@@ -272,6 +294,18 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		 */
 
 		//ReikaJavaLibrary.pConsole(hasStructure, Side.SERVER);
+	}
+
+	private void attemptTriggerProgressSync(World world, int x, int y, int z) {
+		for (EntityPlayer ep : this.getOwners(false)) {
+			if (ep.getDistanceSq(x+0.5, y+0.5, z+0.5) <= 100 && ProgressionLinking.instance.hasLinkedPlayers(ep)) {
+				for (CastingProgressSyncTriggers cp : CastingProgressSyncTriggers.getTriggers()) {
+					if (cp.isValid(this) && ProgressionManager.instance.canStepPlayerTo(ep, cp.progress)) {
+						ProgressionLinking.instance.attemptSyncTriggerProgressFor(ep, cp.progress);
+					}
+				}
+			}
+		}
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -565,14 +599,26 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 			activeRecipe = null;
 		}
 		this.recountFocusCrystals();
-		if (hasStructure2 && !world.isRemote) {
-			for (UUID uid : owners) {
-				EntityPlayer ep = world.func_152378_a(uid);
-				if (ep != null && !ReikaPlayerAPI.isFake(ep)) {
-					boolean tuned = CastingTuningManager.instance.getTuningKey(ep).check(this);
-					if (tuned) {
-						ProgressStage.TUNECAST.stepPlayerTo(ep);
-						ProgressionManager.instance.bypassWeakRepeaters(ep);
+		if (!world.isRemote) {
+			hasRunes = false;
+			if (hasStructure) {
+				for (Coordinate c : b.keySet()) {
+					if (c.getBlock(world) == ChromaBlocks.RUNE.getBlockInstance()) {
+						hasRunes = true;
+						break;
+					}
+				}
+			}
+			isTuned = false;
+			if (hasStructure2) {
+				for (UUID uid : owners) {
+					EntityPlayer ep = world.func_152378_a(uid);
+					if (ep != null && !ReikaPlayerAPI.isFake(ep)) {
+						isTuned |= CastingTuningManager.instance.getTuningKey(ep).check(this);
+						if (isTuned) {
+							ProgressStage.TUNECAST.stepPlayerTo(ep);
+							ProgressionManager.instance.bypassWeakRepeaters(ep);
+						}
 					}
 				}
 			}
@@ -741,6 +787,8 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		craftingTick = NBT.getInteger("craft");
 
 		isEnhanced = NBT.getBoolean("enhance");
+		isTuned = NBT.getBoolean("tune");
+		hasRunes = NBT.getBoolean("runes");
 
 		craftingAmount = NBT.getInteger("crafting");
 
@@ -762,6 +810,8 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		NBT.setInteger("craft", craftingTick);
 
 		NBT.setBoolean("enhance", isEnhanced);
+		NBT.setBoolean("tune", isTuned);
+		NBT.setBoolean("runes", hasRunes);
 
 		NBT.setInteger("crafting", craftingAmount);
 
@@ -1446,6 +1496,17 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 
 	public boolean canStructureBeInspected() {
 		return true;
+	}
+
+	public void onAddRune(World world, int x, int y, int z, EntityPlayer e, ItemStack is) {
+		if (this.isAtLeast(RecipeType.TEMPLE)) {
+			ProgressStage.RUNEUSE.stepPlayerTo(e);
+			hasRunes = true;
+		}
+	}
+
+	public boolean hasRunes() {
+		return hasRunes;
 	}
 
 }

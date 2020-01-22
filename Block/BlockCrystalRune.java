@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -25,13 +25,14 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.BlockDyeTypes;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
-import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.DragonAPI.Base.TileEntityBase;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -73,8 +74,11 @@ public class BlockCrystalRune extends BlockDyeTypes implements SemiUnbreakable {
 			}
 		}
 		if (e instanceof EntityPlayer && ReikaWorldHelper.checkForAdjBlockWithCorners(world, x, y, z, ChromaBlocks.PYLONSTRUCT.getBlockInstance()) != null) {
-			if (ReikaWorldHelper.findNearBlock(world, x, y, z, 6, ChromaTiles.TABLE.getBlock(), ChromaTiles.TABLE.getBlockMetadata()))
-				ProgressStage.RUNEUSE.stepPlayerTo((EntityPlayer)e);
+			Coordinate c = ReikaWorldHelper.findNearBlock(world, x, y, z, 6, ChromaTiles.TABLE.getBlock(), ChromaTiles.TABLE.getBlockMetadata());
+			if (c != null) {
+				TileEntityCastingTable te = (TileEntityCastingTable)c.getTileEntity(world);
+				te.onAddRune(world, x, y, z, (EntityPlayer)e, is);
+			}
 		}
 		super.onBlockAdded(world, x, y, z);
 	}

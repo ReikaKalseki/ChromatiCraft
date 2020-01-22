@@ -42,6 +42,7 @@ import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalBattery;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.WirelessSource;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionCatchupHandling;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -305,6 +306,9 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 				if (this.getTicksExisted()%40 == 0)
 					this.checkHasSendFocus();
+			}
+			else {
+				ProgressionCatchupHandling.instance.attemptSync(this, 18, ProgressStage.POWERTREE);
 			}
 
 			for (EntityPlayer ep : this.getOwners(false)) {

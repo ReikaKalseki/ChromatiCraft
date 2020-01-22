@@ -19,6 +19,8 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityPylonEnhancer;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionCatchupHandling;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -55,7 +57,8 @@ public class TileEntityChromaCrystal extends TileEntityPylonEnhancer {
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-
+		if (world.isRemote && pylonLocation != null)
+			ProgressionCatchupHandling.instance.attemptSync(this, 9, ProgressStage.POWERCRYSTAL);
 	}
 
 	@Override

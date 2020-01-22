@@ -201,6 +201,12 @@ public class ItemElementCalculator {
 		return this.getValueForItem(is, 0);
 	}
 
+	public void setItemValue(ItemStack is, ElementTagCompound tag) {
+		if (cache.containsKey(is))
+			throw new IllegalArgumentException("Item already has a value!");
+		cache.put(is, tag);
+	}
+
 	private ElementTagCompound getValueForItem(ItemStack is, int step) {
 		if (is == null)
 			return empty.copy();

@@ -49,90 +49,91 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public enum ProgressStage implements ProgressElement, ProgressAccess {
 
-	CASTING(		Shareability.SELFONLY,	ChromaTiles.TABLE), //Do a recipe
-	CRYSTALS(		Shareability.SELFONLY,	ChromaBlocks.CRYSTAL.getStackOfMetadata(CrystalElement.RED.ordinal())), //Found a crystal
-	DYETREE(		Shareability.SELFONLY,	ChromaBlocks.DYELEAF.getStackOfMetadata(CrystalElement.YELLOW.ordinal())), //Harvest a dye tree
-	MULTIBLOCK(		Shareability.PROXIMITY,	ChromaTiles.STAND), //Assembled a multiblock
-	RUNEUSE(		Shareability.PROXIMITY,	ChromaBlocks.RUNE.getStackOfMetadata(CrystalElement.ORANGE.ordinal())), //Placed runes
-	PYLON(			Shareability.SELFONLY,	ChromaTiles.PYLON), //Found pylon
-	LINK(			Shareability.PROXIMITY,	ChromaTiles.COMPOUND), //Made a network connection/high-tier crafting
-	CHARGE(			Shareability.SELFONLY,	ChromaItems.TOOL.getStackOf()), //charge from a pylon
-	ABILITY(		Shareability.SELFONLY,	ChromaTiles.RITUAL), //use an ability
-	RAINBOWLEAF(	Shareability.PROXIMITY,	ChromaBlocks.RAINBOWLEAF.getStackOfMetadata(3)), //harvest a rainbow leaf
-	MAKECHROMA(		Shareability.PROXIMITY,	ChromaTiles.COLLECTOR),
-	SHARDCHARGE(	Shareability.PROXIMITY,	ChromaStacks.chargedRedShard),
-	ALLOY(			Shareability.PROXIMITY,	ChromaStacks.chromaIngot),
-	INFUSE(			Shareability.PROXIMITY,	ChromaTiles.INFUSER),
-	CHROMA(			Shareability.SELFONLY,	ChromaBlocks.CHROMA.getBlockInstance()), //step in liquid chroma
+	CASTING(		Shareability.SELFONLY,	Reloadability.NEVER,	ChromaTiles.TABLE), //Do a recipe
+	CRYSTALS(		Shareability.SELFONLY,	Reloadability.NEVER,	ChromaBlocks.CRYSTAL.getStackOfMetadata(CrystalElement.RED.ordinal())), //Found a crystal
+	DYETREE(		Shareability.SELFONLY,	Reloadability.NEVER,	ChromaBlocks.DYELEAF.getStackOfMetadata(CrystalElement.YELLOW.ordinal())), //Harvest a dye tree
+	MULTIBLOCK(		Shareability.PROXIMITY,	Reloadability.TRIGGER,	ChromaTiles.STAND), //Assembled a multiblock
+	RUNEUSE(		Shareability.PROXIMITY,	Reloadability.TRIGGER,	ChromaBlocks.RUNE.getStackOfMetadata(CrystalElement.ORANGE.ordinal())), //Placed runes
+	PYLON(			Shareability.SELFONLY,	Reloadability.NEVER,	ChromaTiles.PYLON), //Found pylon
+	LINK(			Shareability.PROXIMITY,	Reloadability.NEVER,	ChromaTiles.COMPOUND), //Made a network connection/high-tier crafting
+	CHARGE(			Shareability.SELFONLY,	Reloadability.NEVER,	ChromaItems.TOOL.getStackOf()), //charge from a pylon
+	ABILITY(		Shareability.SELFONLY,	Reloadability.NEVER,	ChromaTiles.RITUAL), //use an ability
+	RAINBOWLEAF(	Shareability.PROXIMITY,	Reloadability.ALWAYS,	ChromaBlocks.RAINBOWLEAF.getStackOfMetadata(3)), //harvest a rainbow leaf
+	MAKECHROMA(		Shareability.PROXIMITY,	Reloadability.ALWAYS,	ChromaTiles.COLLECTOR),
+	SHARDCHARGE(	Shareability.PROXIMITY,	Reloadability.NEVER,	ChromaStacks.chargedRedShard),
+	ALLOY(			Shareability.PROXIMITY,	Reloadability.NEVER,	ChromaStacks.chromaIngot),
+	INFUSE(			Shareability.PROXIMITY,	Reloadability.NEVER,	ChromaTiles.INFUSER),
+	CHROMA(			Shareability.SELFONLY,	Reloadability.NEVER,	ChromaBlocks.CHROMA.getBlockInstance()), //step in liquid chroma
 	//STONES(		Shareability.SELFONLY,	ChromaStacks.elementUnit), //craft all elemental stones together
-	SHOCK(			Shareability.SELFONLY,	ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(5)), //get hit by a pylon
-	HIVE(			Shareability.ALWAYS,	new ItemStack(ChromaBlocks.HIVE.getBlockInstance()), ModList.FORESTRY.isLoaded()),
-	NETHER(			Shareability.SELFONLY,	Blocks.portal), //go to the nether
-	END(			Shareability.SELFONLY,	Blocks.end_portal_frame), //go to the end
-	TWILIGHT(		Shareability.SELFONLY,	ModList.TWILIGHT.isLoaded() ? ModWoodList.CANOPY.getItem() : null, ModList.TWILIGHT.isLoaded()), //Go to the twilight forest
-	BEDROCK(		Shareability.SELFONLY,		Blocks.bedrock), //Find bedrock
-	CAVERN(			Shareability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CLOAK.metadata)), //Cavern structure
-	BURROW(			Shareability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.MOSS.metadata)), //Burrow structure
-	OCEAN(			Shareability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.GLASS.metadata)), //Ocean floor structure
-	DESERTSTRUCT(	Shareability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.COBBLE.metadata)),
-	SNOWSTRUCT(		Shareability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.LIGHT.metadata)),
-	DIE(			Shareability.SELFONLY,	Items.skull), //die and lose energy
-	ALLCOLORS(		Shareability.SELFONLY,	ChromaItems.ELEMENTAL.getStackOf(CrystalElement.CYAN)), //find all colors
-	REPEATER(		Shareability.ALWAYS,	ChromaTiles.REPEATER), //craft any repeater type
-	RAINBOWFOREST(	Shareability.SELFONLY,	ChromaBlocks.RAINBOWSAPLING.getBlockInstance()),
-	DIMENSION(		Shareability.SELFONLY,	ChromaBlocks.PORTAL.getBlockInstance()),
-	CTM(			Shareability.SELFONLY,	ChromaTiles.AURAPOINT),
-	STORAGE(		Shareability.ALWAYS,	ChromaItems.STORAGE.getStackOf()),
-	CHARGECRYSTAL(	Shareability.ALWAYS,	ChromaTiles.CHARGER),
-	BALLLIGHTNING(	Shareability.SELFONLY,	ChromaStacks.auraDust),
-	POWERCRYSTAL(	Shareability.PROXIMITY,	ChromaTiles.CRYSTAL),
-	POWERTREE(		Shareability.PROXIMITY,	ChromaBlocks.POWERTREE.getStackOfMetadata(CrystalElement.YELLOW.ordinal())),
-	TURBOCHARGE(	Shareability.PROXIMITY,	ChromaTiles.PYLONTURBO),
-	FINDSPAWNER(	Shareability.PROXIMITY,	new ItemStack(Blocks.mob_spawner)),
-	BREAKSPAWNER(	Shareability.ALWAYS,	new ItemStack(Items.spawn_egg, 1, (int)EntityList.classToIDMapping.get(EntitySpider.class))),
-	KILLDRAGON(		Shareability.PROXIMITY,	new ItemStack(Blocks.dragon_egg)),
-	KILLWITHER(		Shareability.PROXIMITY,	new ItemStack(Items.nether_star)),
-	KILLMOB(		Shareability.SELFONLY,	new ItemStack(Items.skull, 1, 4)),
-	ALLCORES(		Shareability.SELFONLY,	ChromaTiles.DIMENSIONCORE.getCraftedNBTProduct("color", CrystalElement.RED.ordinal())),
-	USEENERGY(		Shareability.PROXIMITY,	ChromaTiles.WEAKREPEATER),
-	BLOWREPEATER(	Shareability.PROXIMITY,	ChromaStacks.crystalPowder),
-	STRUCTCOMPLETE(	Shareability.SELFONLY,	ChromaBlocks.DIMDATA.getStackOf()),
-	NETHERROOF(		Shareability.SELFONLY,	Blocks.netherrack),
-	NETHERSTRUCT(	Shareability.PROXIMITY,	new ItemStack(Blocks.nether_brick)),
-	VILLAGECASTING(	Shareability.PROXIMITY,	new ItemStack(Blocks.cobblestone)),
-	FOCUSCRYSTAL(	Shareability.ALWAYS,	new ItemStack(Items.emerald)),
-	ANYSTRUCT(		Shareability.SELFONLY,	ChromaTiles.STRUCTCONTROL),
-	ARTEFACT(		Shareability.SELFONLY,	ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.FRAGMENT.ordinal())),
-	TOWER(			Shareability.SELFONLY,	ChromaTiles.DATANODE),
-	STRUCTCHEAT(	Shareability.SELFONLY,	Blocks.tnt), //optional, just to rub it in
-	VOIDMONSTER(	Shareability.PROXIMITY,	(ItemStack)null, ModList.VOIDMONSTER.isLoaded()),
-	VOIDMONSTERDIE(	Shareability.SELFONLY,	(ItemStack)null, ModList.VOIDMONSTER.isLoaded()),
-	LUMA(			Shareability.SELFONLY,	ChromaBlocks.LUMA.getBlockInstance()),
-	WARPNODE(		Shareability.SELFONLY,	ChromaBlocks.WARPNODE.getBlockInstance()),
-	BYPASSWEAK(		Shareability.SELFONLY,	(ItemStack)null),
-	TUNECAST(		Shareability.SELFONLY,	(ItemStack)null),
-	NEVER(			Shareability.SELFONLY,	(ItemStack)null, false), //used as a no-trigger placeholder
+	SHOCK(			Shareability.SELFONLY,	Reloadability.NEVER,	ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(5)), //get hit by a pylon
+	HIVE(			Shareability.ALWAYS,	Reloadability.ALWAYS,	new ItemStack(ChromaBlocks.HIVE.getBlockInstance()), ModList.FORESTRY.isLoaded()),
+	NETHER(			Shareability.SELFONLY,	Reloadability.NEVER,	Blocks.portal), //go to the nether
+	END(			Shareability.SELFONLY,	Reloadability.NEVER,	Blocks.end_portal_frame), //go to the end
+	TWILIGHT(		Shareability.SELFONLY,	Reloadability.NEVER,	ModList.TWILIGHT.isLoaded() ? ModWoodList.CANOPY.getItem() : null, ModList.TWILIGHT.isLoaded()), //Go to the twilight forest
+	BEDROCK(		Shareability.PROXIMITY,	Reloadability.ALWAYS,	Blocks.bedrock), //Find bedrock
+	CAVERN(			Shareability.ALWAYS,	Reloadability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CLOAK.metadata)), //Cavern structure
+	BURROW(			Shareability.ALWAYS,	Reloadability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.MOSS.metadata)), //Burrow structure
+	OCEAN(			Shareability.ALWAYS,	Reloadability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.GLASS.metadata)), //Ocean floor structure
+	DESERTSTRUCT(	Shareability.ALWAYS,	Reloadability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.COBBLE.metadata)),
+	SNOWSTRUCT(		Shareability.ALWAYS,	Reloadability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.LIGHT.metadata)),
+	DIE(			Shareability.SELFONLY,	Reloadability.NEVER,	Items.skull), //die and lose energy
+	ALLCOLORS(		Shareability.SELFONLY,	Reloadability.NEVER,	ChromaItems.ELEMENTAL.getStackOf(CrystalElement.CYAN)), //find all colors
+	REPEATER(		Shareability.ALWAYS,	Reloadability.TRIGGER,	ChromaTiles.REPEATER), //craft any repeater type
+	RAINBOWFOREST(	Shareability.PROXIMITY,	Reloadability.ALWAYS,	ChromaBlocks.RAINBOWSAPLING.getBlockInstance()),
+	DIMENSION(		Shareability.SELFONLY,	Reloadability.NEVER,	ChromaBlocks.PORTAL.getBlockInstance()),
+	CTM(			Shareability.SELFONLY,	Reloadability.NEVER,	ChromaTiles.AURAPOINT),
+	STORAGE(		Shareability.ALWAYS,	Reloadability.TRIGGER,	ChromaItems.STORAGE.getStackOf()),
+	CHARGECRYSTAL(	Shareability.ALWAYS,	Reloadability.ALWAYS,	ChromaTiles.CHARGER),
+	BALLLIGHTNING(	Shareability.PROXIMITY,	Reloadability.ALWAYS,	ChromaStacks.auraDust),
+	POWERCRYSTAL(	Shareability.PROXIMITY,	Reloadability.TRIGGER,	ChromaTiles.CRYSTAL),
+	POWERTREE(		Shareability.PROXIMITY,	Reloadability.TRIGGER,	ChromaBlocks.POWERTREE.getStackOfMetadata(CrystalElement.YELLOW.ordinal())),
+	TURBOCHARGE(	Shareability.PROXIMITY,	Reloadability.NEVER,	ChromaTiles.PYLONTURBO),
+	FINDSPAWNER(	Shareability.PROXIMITY,	Reloadability.NEVER,	new ItemStack(Blocks.mob_spawner)),
+	BREAKSPAWNER(	Shareability.ALWAYS,	Reloadability.ALWAYS,	new ItemStack(Items.spawn_egg, 1, (int)EntityList.classToIDMapping.get(EntitySpider.class))),
+	KILLDRAGON(		Shareability.PROXIMITY,	Reloadability.ALWAYS,	new ItemStack(Blocks.dragon_egg)),
+	KILLWITHER(		Shareability.PROXIMITY,	Reloadability.ALWAYS,	new ItemStack(Items.nether_star)),
+	KILLMOB(		Shareability.SELFONLY,	Reloadability.NEVER,	new ItemStack(Items.skull, 1, 4)),
+	ALLCORES(		Shareability.SELFONLY,	Reloadability.NEVER,	ChromaTiles.DIMENSIONCORE.getCraftedNBTProduct("color", CrystalElement.RED.ordinal())),
+	USEENERGY(		Shareability.PROXIMITY,	Reloadability.NEVER,	ChromaTiles.WEAKREPEATER),
+	BLOWREPEATER(	Shareability.PROXIMITY,	Reloadability.ALWAYS,	ChromaStacks.crystalPowder),
+	STRUCTCOMPLETE(	Shareability.SELFONLY,	Reloadability.NEVER,	ChromaBlocks.DIMDATA.getStackOf()),
+	NETHERROOF(		Shareability.SELFONLY,	Reloadability.NEVER,	Blocks.netherrack),
+	NETHERSTRUCT(	Shareability.PROXIMITY,	Reloadability.ALWAYS,	new ItemStack(Blocks.nether_brick)),
+	VILLAGECASTING(	Shareability.PROXIMITY,	Reloadability.ALWAYS,	new ItemStack(Blocks.cobblestone)),
+	FOCUSCRYSTAL(	Shareability.ALWAYS,	Reloadability.TRIGGER,	new ItemStack(Items.emerald)),
+	ANYSTRUCT(		Shareability.SELFONLY,	Reloadability.NEVER,	ChromaTiles.STRUCTCONTROL),
+	ARTEFACT(		Shareability.SELFONLY,	Reloadability.NEVER,	ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.FRAGMENT.ordinal())),
+	TOWER(			Shareability.SELFONLY,	Reloadability.NEVER,	ChromaTiles.DATANODE),
+	STRUCTCHEAT(	Shareability.SELFONLY,	Reloadability.NEVER,	Blocks.tnt), //optional, just to rub it in
+	VOIDMONSTER(	Shareability.PROXIMITY,	Reloadability.NEVER,	(ItemStack)null, ModList.VOIDMONSTER.isLoaded()),
+	VOIDMONSTERDIE(	Shareability.PROXIMITY,	Reloadability.ALWAYS,	(ItemStack)null, ModList.VOIDMONSTER.isLoaded()),
+	LUMA(			Shareability.SELFONLY,	Reloadability.NEVER,	ChromaBlocks.LUMA.getBlockInstance()),
+	WARPNODE(		Shareability.SELFONLY,	Reloadability.NEVER,	ChromaBlocks.WARPNODE.getBlockInstance()),
+	BYPASSWEAK(		Shareability.ALWAYS,	Reloadability.ALWAYS,	(ItemStack)null),
+	TUNECAST(		Shareability.SELFONLY,	Reloadability.TRIGGER,	(ItemStack)null),
+	NEVER(			Shareability.SELFONLY,	Reloadability.NEVER,	(ItemStack)null, false), //used as a no-trigger placeholder
 	;
 
 	private final ItemStack icon;
 	public final boolean active;
 	public final Shareability shareLevel;
+	public final Reloadability reloadLevel;
 
 	public static final ProgressStage[] list = values();
 
-	private ProgressStage(Shareability s, Block b, boolean... cond) {
-		this(s, new ItemStack(b), cond);
+	private ProgressStage(Shareability s, Reloadability r, Block b, boolean... cond) {
+		this(s, r, new ItemStack(b), cond);
 	}
 
-	private ProgressStage(Shareability s, Item b, boolean... cond) {
-		this(s, new ItemStack(b), cond);
+	private ProgressStage(Shareability s, Reloadability r, Item b, boolean... cond) {
+		this(s, r, new ItemStack(b), cond);
 	}
 
-	private ProgressStage(Shareability s, ChromaTiles t, boolean... cond) {
-		this(s, t.getCraftedProduct(), cond);
+	private ProgressStage(Shareability s, Reloadability r, ChromaTiles t, boolean... cond) {
+		this(s, r, t.getCraftedProduct(), cond);
 	}
 
-	private ProgressStage(Shareability s, ItemStack is, boolean... cond) {
+	private ProgressStage(Shareability s, Reloadability r, ItemStack is, boolean... cond) {
 		icon = is;
 		boolean flag = true;
 		for (int i = 0; i < cond.length; i++)
@@ -140,10 +141,15 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 		active = flag;
 		ChromaResearchManager.instance.register(this);
 		shareLevel = s;
+		reloadLevel = r;
 	}
 
 	public boolean stepPlayerTo(EntityPlayer ep) {
-		return ProgressionManager.instance.stepPlayerTo(ep, this, true);
+		return ProgressionManager.instance.stepPlayerTo(ep, this, true, true);
+	}
+
+	public boolean stepPlayerTo(EntityPlayer ep, boolean syncToCoop) {
+		return ProgressionManager.instance.stepPlayerTo(ep, this, true, syncToCoop);
 	}
 
 	public boolean isPlayerAtStage(EntityPlayer ep) {
@@ -350,7 +356,7 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 
 	@Override
 	public boolean giveToPlayer(EntityPlayer ep, boolean notify) {
-		return ProgressionManager.instance.stepPlayerTo(ep, this, notify);
+		return ProgressionManager.instance.stepPlayerTo(ep, this, notify, true);
 	}
 
 	public void forceOnPlayer(EntityPlayer ep, boolean notify) {
@@ -359,6 +365,15 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 
 	public Shareability getShareability() {
 		return shareLevel;
+	}
+
+	public Reloadability getReloadability() {
+		return reloadLevel;
+	}
+
+	@Override
+	public boolean playerHas(EntityPlayer ep) {
+		return this.isPlayerAtStage(ep);
 	}
 
 	public static enum Shareability {
@@ -379,8 +394,9 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 		}
 	}
 
-	@Override
-	public boolean playerHas(EntityPlayer ep) {
-		return this.isPlayerAtStage(ep);
+	public static enum Reloadability {
+		NEVER(),
+		TRIGGER(),
+		ALWAYS();
 	}
 }

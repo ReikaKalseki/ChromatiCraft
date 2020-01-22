@@ -33,9 +33,9 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import cpw.mods.fml.common.FMLLog;
 
 
-public class ProgressionCacher implements PlayerTracker {
+public class ProgressionLoadHandler implements PlayerTracker {
 
-	public static final ProgressionCacher instance = new ProgressionCacher();
+	public static final ProgressionLoadHandler instance = new ProgressionLoadHandler();
 
 	private String baseFilepath;
 
@@ -43,7 +43,7 @@ public class ProgressionCacher implements PlayerTracker {
 
 	private final PlayerMap<NBTTagCompound> cachedBackup = new PlayerMap();
 
-	private ProgressionCacher() {
+	private ProgressionLoadHandler() {
 
 	}
 
@@ -97,6 +97,7 @@ public class ProgressionCacher implements PlayerTracker {
 	@Override
 	public void onPlayerLogin(EntityPlayer player) {
 		this.updateProgressCache(player);
+		ProgressionLinking.instance.attemptSyncAllInGroup(player);
 	}
 
 	@Override

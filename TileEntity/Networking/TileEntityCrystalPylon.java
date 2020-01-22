@@ -1053,6 +1053,11 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	public void setColor(CrystalElement e) {
 		color = e;
+		for (Coordinate c : encrustedBlocks) {
+			if (c.getBlock(worldObj) == ChromaBlocks.ENCRUSTED.getBlockInstance()) {
+				c.setBlockMetadata(worldObj, e.ordinal());
+			}
+		}
 	}
 
 	@Override

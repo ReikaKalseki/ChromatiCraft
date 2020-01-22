@@ -91,6 +91,7 @@ import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Magic.Network.PylonLinkNetwork;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionLinking;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionLinking.LinkFailure;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.ModInterface.RFWeb;
@@ -1078,6 +1079,9 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case SMELTERYFLUIDSEND:
 					((TileEntitySmelteryDistributor)tile).sendFluidToClient(data[0], data[1], data[2], data[3], data[4], data[5], ForgeDirection.VALID_DIRECTIONS[data[6]], FluidRegistry.getFluid(data[7]));
+					break;
+				case PROGSYNC:
+					ProgressionLinking.instance.attemptSyncTriggerProgressFor(ep, ProgressStage.list[data[0]]);
 					break;
 			}
 		}

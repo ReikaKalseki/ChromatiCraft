@@ -36,6 +36,7 @@ public class CrystalFlow extends CrystalPath {
 	private final int throughputLimit;
 
 	private int remainingAmount;
+	private int throttle = Integer.MAX_VALUE;
 
 	CrystalFlow(CrystalNetworker net, CrystalPath p, CrystalReceiver r, int amt, int maxthru) {
 		this(net, r, p.element, amt, p.nodes, maxthru);
@@ -98,10 +99,10 @@ public class CrystalFlow extends CrystalPath {
 	}
 
 	private int getMinMaxFlow() {
-		int max = Math.min(PylonFinder.getThroughput(transmitter), PylonFinder.getThroughput(receiver));
+		int max = Math.min(transmitter.maxThroughput(), receiver.maxThroughput());
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
-			max = Math.min(max, PylonFinder.getThroughput(te));
+			max = Math.min(max, te.maxThroughput());
 		}
 		return max;
 	}
@@ -213,7 +214,7 @@ public class CrystalFlow extends CrystalPath {
 	}
 
 	private int getDrainThisTick() {
-		return Math.min(Math.min(maxFlow, PylonFinder.getThroughput(transmitter)), remainingAmount);
+		return Math.min(Math.min(Math.min(throttle, maxFlow), transmitter.maxThroughput()), remainingAmount);
 	}
 
 	public void tickRepeaters(int amt) {

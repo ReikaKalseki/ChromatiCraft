@@ -227,7 +227,7 @@ public class MouseoverOverlayRenderer {
 		v = 0.25;
 		v5.startDrawing(GL11.GL_TRIANGLE_FAN);
 		v5.addVertexWithUV(ox+r/2, oy+r/2, 0, u+0.0625, v+0.0625);
-		float f = te.getAccelerationFactor()/te.getMaximumAcceleratability();
+		float f = (te.getAccelerationFactor()-1)/(te.getMaximumAcceleratability()-1);
 		double ma = 360*f;
 		double da = 0.25;
 		for (double a = 0; a < ma; a += da) {

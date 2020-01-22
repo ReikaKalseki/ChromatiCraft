@@ -48,6 +48,8 @@ import Reika.ChromatiCraft.Magic.Network.CrystalLink;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Network.CrystalPath;
 import Reika.ChromatiCraft.Magic.Network.PylonFinder;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionCatchupHandling;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -73,6 +75,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements LinkWatchingRepeater, CrystalFuse, NBTTile, SneakPop, OwnedTile, MultiBlockChromaTile {
 
+	public static final int RANGE = 32;
+
 	protected ForgeDirection facing = ForgeDirection.DOWN;
 	protected boolean hasMultiblock;
 	private int depth = -1;
@@ -86,8 +90,6 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	private int surgeTicks = 0;
 
 	protected int connectionRenderTick = 0;
-
-	public static final int RANGE = 32;
 
 	private boolean redstoneCache;
 
@@ -120,6 +122,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 			if (this.isTurbocharged() && this.isEnhancedStructure()) {
 				this.doEnhancedStructureParticles(world, x, y, z);
 			}
+			ProgressionCatchupHandling.instance.attemptSync(this, 12, ProgressStage.REPEATER);
 		}
 
 		if (surgeTicks > 0) {

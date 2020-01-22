@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -782,7 +782,7 @@ public class CrystalBees {
 		}
 
 		@Override
-		public IAllele getEffectAllele() {
+		public IAlleleBeeEffect getEffectAllele() {
 			return effect != null ? effect : Effect.NONE.getAllele();
 		}
 
@@ -1028,7 +1028,7 @@ public class CrystalBees {
 		}
 
 		@Override
-		public IAllele getEffectAllele() {
+		public IAlleleBeeEffect getEffectAllele() {
 			return effectMap.get(color);
 		}
 

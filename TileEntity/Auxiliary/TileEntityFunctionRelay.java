@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,6 +15,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeHooks;
 
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -129,6 +130,44 @@ public class TileEntityFunctionRelay extends TileEntityChromaticBase {
 
 	public Coordinate getRandomCoordinate() {
 		return activeCoords.isEmpty() ? null : activeCoords.get(rand.nextInt(activeCoords.size()));
+	}
+
+	public float getEnchantPowerInRange(World world, int x, int y, int z) {
+		/*
+		int i = 0;
+		int j;
+		float power = 0;
+
+		for (j = -1; j <= 1; ++j) {
+			for (int k = -1; k <= 1; ++k) {
+				if ((j != 0 || k != 0) && world.isAirBlock(x+k, y, z+j) && world.isAirBlock(x+k, y+1, z+j)) {
+					power += ForgeHooks.getEnchantPower(world, x+k*2, y,    z+j*2);
+					power += ForgeHooks.getEnchantPower(world, x+k*2, y+1, 	z+j*2);
+
+					if (k != 0 && j != 0) {
+						power += ForgeHooks.getEnchantPower(world, x+k*2, y,    z+j    	);
+						power += ForgeHooks.getEnchantPower(world, x+k*2, y+1, 	z+j    	);
+						power += ForgeHooks.getEnchantPower(world, x+k,   y,  	z+j*2	);
+						power += ForgeHooks.getEnchantPower(world, x+k,   y+1,	z+j*2	);
+					}
+				}
+			}
+		}
+		return power;
+		 */
+		float power = 0;
+		for (int j = -1; j <= 1; j++) {
+			for (int i = -5; i <= 5; i++) {
+				for (int k = -5; k <= 5; k++) {
+					int dx = x+i;
+					int dy = y+j;
+					int dz = z+k;
+					if (ChromaTiles.getTile(world, dx, dy, dz) != ChromaTiles.FUNCTIONRELAY)
+						power += ForgeHooks.getEnchantPower(world, dx, dy, dz);
+				}
+			}
+		}
+		return power;
 	}
 
 	public static enum RelayFunctions {

@@ -210,8 +210,8 @@ public final class ChromaResearchManager implements ResearchRegistry {
 			}
 			if (ep instanceof EntityPlayerMP)
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
-			ProgressionCacher.instance.updateProgressCache(ep);
-			ProgressionCacher.instance.updateBackup(ep);
+			ProgressionLoadHandler.instance.updateProgressCache(ep);
+			ProgressionLoadHandler.instance.updateBackup(ep);
 			return true;
 		}
 		return false;
@@ -225,8 +225,8 @@ public final class ChromaResearchManager implements ResearchRegistry {
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 			if (notify)
 				this.notifyPlayerOfProgression(ep, r);
-			ProgressionCacher.instance.updateProgressCache(ep);
-			ProgressionCacher.instance.updateBackup(ep);
+			ProgressionLoadHandler.instance.updateProgressCache(ep);
+			ProgressionLoadHandler.instance.updateBackup(ep);
 			MinecraftForge.EVENT_BUS.post(new ProgressionEvent(ep, r.name(), ResearchType.FRAGMENT));
 			return true;
 		}
@@ -284,8 +284,8 @@ public final class ChromaResearchManager implements ResearchRegistry {
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 			if (notify)
 				this.notifyPlayerOfProgression(ep, r);
-			ProgressionCacher.instance.updateProgressCache(ep);
-			ProgressionCacher.instance.updateBackup(ep);
+			ProgressionLoadHandler.instance.updateProgressCache(ep);
+			ProgressionLoadHandler.instance.updateBackup(ep);
 			return true;
 		}
 		return false;
@@ -393,7 +393,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	public NBTTagCompound getRootNBTTag(EntityPlayer ep) {
 		NBTTagCompound tag = ReikaPlayerAPI.isFake(ep) ? null : ReikaPlayerAPI.getDeathPersistentNBT(ep);
 		if (tag == null || tag.hasNoTags()/* || !tag.hasKey(NBT_TAG) || !tag.hasKey(ProgressionManager.MAIN_NBT_TAG)*/) {
-			NBTTagCompound repl = ProgressionCacher.instance.attemptToLoadBackup(ep);
+			NBTTagCompound repl = ProgressionLoadHandler.instance.attemptToLoadBackup(ep);
 			if (repl != null) {
 				if (tag == null)
 					tag = new NBTTagCompound();

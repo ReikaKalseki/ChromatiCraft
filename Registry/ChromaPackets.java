@@ -202,6 +202,7 @@ public enum ChromaPackets {
 	VOIDTRAPEAT(),
 	OREPINGLOC(3),
 	SMELTERYFLUIDSEND(8),
+	PROGSYNC(1),
 	;
 
 	public final int numInts;

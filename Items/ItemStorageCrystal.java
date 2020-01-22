@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,13 +12,17 @@ package Reika.ChromatiCraft.Items;
 import java.util.List;
 
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionLinking;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
@@ -34,8 +38,7 @@ public class ItemStorageCrystal extends ItemChromaTool {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public final void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List)
-	{
+	public final void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
 		for (int i = 0; i < ChromaItems.STORAGE.getNumberMetadatas(); i++) {
 			ItemStack item = new ItemStack(par1, 1, i);
 			par3List.add(item);
@@ -47,8 +50,9 @@ public class ItemStorageCrystal extends ItemChromaTool {
 	}
 
 	@Override
-	public void onUsingTick(ItemStack is, EntityPlayer ep, int count) {
-
+	public void onUpdate(ItemStack is, World world, Entity e, int slot, boolean held) {
+		if (e instanceof EntityPlayer)
+			ProgressionLinking.instance.attemptSyncTriggerProgressFor((EntityPlayer)e, ProgressStage.STORAGE);
 	}
 
 	@Override

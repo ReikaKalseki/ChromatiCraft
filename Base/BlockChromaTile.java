@@ -71,8 +71,8 @@ import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.CrystalTier;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFunctionRelay;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
-import Reika.ChromatiCraft.TileEntity.Processing.TileEntityEnchantDecomposer;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityGlowFire;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
@@ -681,6 +681,15 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			CrystalNetworker.instance.breakPaths((CrystalReceiver)te);
 		}
 		super.breakBlock(world, x, y, z, par5, par6);
+	}
+
+	@Override
+	public float getEnchantPowerBonus(World world, int x, int y, int z) {
+		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
+		if (c == ChromaTiles.FUNCTIONRELAY) {
+			return ((TileEntityFunctionRelay)world.getTileEntity(x, y, z)).getEnchantPowerInRange(world, x, y, z);
+		}
+		return super.getEnchantPowerBonus(world, x, y, z);
 	}
 
 	@Override

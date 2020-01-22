@@ -48,6 +48,7 @@ public class RenderSmelteryDistributor extends ChromaRenderBase {
 			ReikaTextureHelper.bindTerrainTexture();
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glDisable(GL11.GL_CULL_FACE);
+			GL11.glDepthMask(false);
 			BlendMode.ADDITIVEDARK.apply();
 			GL11.glDisable(GL11.GL_LIGHTING);
 			ReikaRenderHelper.disableEntityLighting();
@@ -74,7 +75,9 @@ public class RenderSmelteryDistributor extends ChromaRenderBase {
 			GL11.glRotatef(-45, 1, 0, 0);
 		}
 
-		GL11.glRotated(te.getTicksExisted()*3.5, 0, 0, 1);
+		double t = te.isInWorld() ? te.getTicksExisted() : -System.currentTimeMillis()/80D;
+
+		GL11.glRotated((t*3.5)%360, 0, 0, 1);
 
 		IIcon ico = ChromaIcons.PINWHEEL.getIcon();
 		ReikaTextureHelper.bindTerrainTexture();
@@ -86,18 +89,20 @@ public class RenderSmelteryDistributor extends ChromaRenderBase {
 		int c1 = this.getColor();
 		int c2 = 0xffffff;
 
-		double da = 10+5*Math.sin(te.getTicksExisted()/10D);
+		double da = 10+5*Math.sin(t/10D);
 
+		double d0 = 0;
 		for (double d = 1; d >= 0.25; d *= 0.75) {
 			GL11.glRotated(da, 0, 0, 1);
 			v5.startDrawingQuads();
 			int c = ReikaColorAPI.mixColors(c1, c2, (float)d);
 			v5.setColorRGBA_I(c, 255);
-			v5.addVertexWithUV(-d, -d, 0, u, v);
-			v5.addVertexWithUV(d, -d, 0, du, v);
-			v5.addVertexWithUV(d, d, 0, du, dv);
-			v5.addVertexWithUV(-d, d, 0, u, dv);
+			v5.addVertexWithUV(-d, -d, d0, u, v);
+			v5.addVertexWithUV(d, -d, d0, du, v);
+			v5.addVertexWithUV(d, d, d0, du, dv);
+			v5.addVertexWithUV(-d, d, d0, u, dv);
 			v5.draw();
+			d0 += 0.03125;
 		}
 
 		GL11.glPopMatrix();

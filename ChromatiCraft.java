@@ -102,7 +102,7 @@ import Reika.ChromatiCraft.Magic.Artefact.ArtefactSpawner;
 import Reika.ChromatiCraft.Magic.Artefact.UABombingEffects;
 import Reika.ChromatiCraft.Magic.Lore.RosettaStone;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
-import Reika.ChromatiCraft.Magic.Progression.ProgressionCacher;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionLoadHandler;
 import Reika.ChromatiCraft.ModInterface.IC2ReactorAcceleration;
 import Reika.ChromatiCraft.ModInterface.ModInteraction;
 import Reika.ChromatiCraft.ModInterface.MultiblockAcceleration;
@@ -579,7 +579,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			AbilityHelper.instance.register();
 			PlayerHandler.instance.registerTracker(PylonCacheLoader.instance);
 			PlayerHandler.instance.registerTracker(DimensionJoinHandler.instance);
-			PlayerHandler.instance.registerTracker(ProgressionCacher.instance);
+			PlayerHandler.instance.registerTracker(ProgressionLoadHandler.instance);
 			if (ModList.VOIDMONSTER.isLoaded() && FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
 				TickRegistry.instance.registerTickHandler(VoidMonsterRitualClientEffects.instance);
 		}
@@ -890,8 +890,8 @@ public class ChromatiCraft extends DragonAPIMod {
 		}
 
 		DungeonGenerator.instance.initLevelData(evt.getServer());
-		ProgressionCacher.instance.initLevelData(evt.getServer());
-		ProgressionCacher.instance.load();
+		ProgressionLoadHandler.instance.initLevelData(evt.getServer());
+		ProgressionLoadHandler.instance.load();
 		OreOverlayRenderer.instance.loadOres();
 	}
 
@@ -910,7 +910,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	@EventHandler
 	public void serverShutdown(FMLServerStoppingEvent evt) {
-		ProgressionCacher.instance.saveAll();
+		ProgressionLoadHandler.instance.saveAll();
 		//if (MinecraftServer.getServer().isDedicatedServer())
 		ChromaDimensionManager.serverStopping = true;
 	}

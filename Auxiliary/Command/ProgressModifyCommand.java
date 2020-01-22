@@ -31,7 +31,7 @@ import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
-import Reika.ChromatiCraft.Magic.Progression.ProgressionCacher;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionLoadHandler;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Magic.Progression.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
@@ -145,7 +145,7 @@ public class ProgressModifyCommand extends DragonCommandBase {
 			args = Arrays.copyOfRange(args, 1, args.length);
 		boolean set = Boolean.valueOf(args[2]);
 		boolean rerender = true;
-		ProgressionCacher.instance.clearProgressCache(ep);
+		ProgressionLoadHandler.instance.clearProgressCache(ep);
 		switch(args[0]) {
 			case "color": {
 				CrystalElement e = this.getColor(args[1]);
@@ -160,7 +160,7 @@ public class ProgressModifyCommand extends DragonCommandBase {
 			case "progress": {
 				try {
 					ProgressStage p = ProgressStage.valueOf(args[1].toUpperCase());
-					ProgressionManager.instance.setPlayerStage(ep, p, set, false);
+					ProgressionManager.instance.setPlayerStage(ep, p, set, false, false);
 					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Progress Stage "+p.name()+" set to "+set+" for "+ep.getCommandSenderName());
 				}
 				catch (IllegalArgumentException e) {

@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -17,7 +18,6 @@ import java.util.UUID;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
@@ -32,6 +32,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
@@ -188,16 +189,16 @@ public class SkyRiverManager {
 	}
 
 	protected static void sendRiverClearPacketsToAll() {
-		List objPlayers;
+		Collection<EntityPlayer> objPlayers;
 		try {
-			objPlayers = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
+			objPlayers = ReikaPlayerAPI.getAllPlayers();
 		}
 		catch (NullPointerException exc) {
 			// Well, then we're still in the server startup and sending is not necessary.
 			return;
 		}
-		for (Object player : objPlayers) {
-			clearClientRiver((EntityPlayer)player);
+		for (EntityPlayer player : objPlayers) {
+			clearClientRiver(player);
 		}
 	}
 
@@ -223,16 +224,15 @@ public class SkyRiverManager {
 	// New people do matter since if they'd move around, they accumulate non-tracked movement packets which cause >200 chunks to load.
 	// RIP server if we don't handle that. Thus, everyone gets a refresh-state DENY packet and set onto the enter-delay.
 	private static void handleUntrack() {
-		List objPlayers;
+		Collection<EntityPlayer> objPlayers;
 		try {
-			objPlayers = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
+			objPlayers = ReikaPlayerAPI.getAllPlayers();
 		}
 		catch (NullPointerException exc) {
 			return;
 		}
 
-		for (Object o : objPlayers) {
-			EntityPlayer pl = (EntityPlayer)o;
+		for (EntityPlayer pl : objPlayers) {
 			if (!PlayerChunkTracker.shouldStopChunkloadingFor(pl)) {
 				sendSkyriverEnterStatePacket(pl, false);
 				RiverStatus rs = getOrCreateEntry(pl);
@@ -277,16 +277,16 @@ public class SkyRiverManager {
 	}
 
 	protected static void startSendingRiverPacketsToAll() {
-		List objPlayers;
+		Collection<EntityPlayer> objPlayers;
 		try {
-			objPlayers = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
+			objPlayers = ReikaPlayerAPI.getAllPlayers();
 		}
 		catch (NullPointerException exc) {
 			// Well, then we're still in the server startup and sending is not necessary.
 			return;
 		}
-		for (Object player : objPlayers) {
-			startSendingRiverPackets((EntityPlayer)player);
+		for (EntityPlayer player : objPlayers) {
+			startSendingRiverPackets(player);
 		}
 	}
 

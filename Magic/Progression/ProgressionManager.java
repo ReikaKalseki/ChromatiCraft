@@ -328,17 +328,17 @@ public class ProgressionManager implements ProgressRegistry {
 		return c1.equals(c2);
 	}
 
-	boolean stepPlayerTo(EntityPlayer ep, ProgressStage s, boolean notify) {
+	boolean stepPlayerTo(EntityPlayer ep, ProgressStage s, boolean notify, boolean syncToCoop) {
 		if (ep == null) {
 			ChromatiCraft.logger.logError("Tried to give progress '"+s+"' to null player???");
 			return false;
 		}
 		if (!this.canStepPlayerTo(ep, s))
 			return false;
-		this.setPlayerStage(ep, s, true, notify);
+		this.setPlayerStage(ep, s, true, notify, syncToCoop);
 		for (ImmutablePair<ProgressStage, ProgressStage> chained : chains.get(s)) {
 			if (this.isPlayerAtStage(ep, chained.left))
-				this.stepPlayerTo(ep, chained.right, notify);
+				this.stepPlayerTo(ep, chained.right, notify, syncToCoop);
 		}
 		return true;
 	}
@@ -410,18 +410,18 @@ public class ProgressionManager implements ProgressRegistry {
 	 */
 	@SideOnly(Side.CLIENT)
 	public void setPlayerStageClient(EntityPlayer ep, ProgressStage s, boolean set, boolean notify) {
-		this.setPlayerStage(ep, s, set, true, notify);
+		this.setPlayerStage(ep, s, set, true, notify, false);
 	}
 
-	public void setPlayerStage(EntityPlayer ep, ProgressStage s, boolean set, boolean notify) {
-		this.setPlayerStage(ep, s, set, false, notify);
+	public void setPlayerStage(EntityPlayer ep, ProgressStage s, boolean set, boolean notify, boolean syncToCoop) {
+		this.setPlayerStage(ep, s, set, false, notify, syncToCoop);
 	}
 
-	private void setPlayerStage(EntityPlayer ep, ProgressStage s, boolean set, boolean allowClient, boolean notify) {
-		this.setPlayerStage(ep, s, set, allowClient, notify, new HashSet());
+	private void setPlayerStage(EntityPlayer ep, ProgressStage s, boolean set, boolean allowClient, boolean notify, boolean syncToCoop) {
+		this.setPlayerStage(ep, s, set, allowClient, notify, syncToCoop, new HashSet());
 	}
 
-	private void setPlayerStage(EntityPlayer ep, ProgressStage s, boolean set, boolean allowClient, boolean notify, HashSet<UUID> activeList) {
+	private void setPlayerStage(EntityPlayer ep, ProgressStage s, boolean set, boolean allowClient, boolean notify, boolean syncToCoop, HashSet<UUID> activeList) {
 		//ReikaJavaLibrary.pConsole("Giving "+ep.getCommandSenderName()+" progress '"+s+"': "+set+"/"+allowClient+"/"+notify);
 		//ReikaJavaLibrary.pConsole("NBT PRE: ");
 		//for (String sg : ReikaNBTHelper.parseNBTAsLines(ChromaResearchManager.instance.getRootNBTTag(ep)))
@@ -433,21 +433,13 @@ public class ProgressionManager implements ProgressRegistry {
 		if (activeList.contains(ep.getUniqueID()))
 			return;
 		activeList.add(ep.getUniqueID());
-		Collection<UUID> coop = ProgressionLinking.instance.getSlavedIDs(ep);
-		Collection<EntityPlayer> players = new ArrayList();
-		for (UUID u : coop) {
-			EntityPlayer e = ep.worldObj.func_152378_a(u);
-			if (e == null || ReikaPlayerAPI.isFake(e)) {
-				return;
+		if (syncToCoop) {
+			ProgressionLinking.instance.attemptSyncAllInGroup(ep);
+			Collection<EntityPlayer> players = ProgressionLinking.instance.getShareablePlayers(ep, s);
+			for (EntityPlayer e : players) {
+				ChromatiCraft.logger.debug("Sharing progression "+s+" from "+ep.getCommandSenderName()+" to "+e.getCommandSenderName());
+				this.setPlayerStage(ep, s, set, allowClient, notify, false, activeList);
 			}
-			if (!s.getShareability().canShareTo(ep, e)) {
-				return;
-			}
-			players.add(e);
-		}
-		for (EntityPlayer e : players) {
-			ChromatiCraft.logger.debug("Sharing progression "+s+" from "+ep.getCommandSenderName()+" to "+e.getCommandSenderName());
-			this.setPlayerStage(ep, s, set, allowClient, notify, activeList);
 		}
 		if (notify && ep instanceof EntityPlayerMP)
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.GIVEPROGRESS.ordinal(), (EntityPlayerMP)ep, s.ordinal(), set ? 1 : 0);
@@ -494,8 +486,8 @@ public class ProgressionManager implements ProgressRegistry {
 			}
 			if (notify)
 				this.updateChunks(ep);
-			ProgressionCacher.instance.updateProgressCache(ep);
-			ProgressionCacher.instance.updateBackup(ep);
+			ProgressionLoadHandler.instance.updateProgressCache(ep);
+			ProgressionLoadHandler.instance.updateBackup(ep);
 		}
 		//ReikaJavaLibrary.pConsole("NBT POST: ");
 		//for (String sg : ReikaNBTHelper.parseNBTAsLines(ChromaResearchManager.instance.getRootNBTTag(ep)))
@@ -542,14 +534,14 @@ public class ProgressionManager implements ProgressRegistry {
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 		if (notify)
 			this.updateChunks(ep);
-		ProgressionCacher.instance.updateProgressCache(ep);
-		ProgressionCacher.instance.updateBackup(ep);
+		ProgressionLoadHandler.instance.updateProgressCache(ep);
+		ProgressionLoadHandler.instance.updateBackup(ep);
 	}
 
 	public void maxPlayerProgression(EntityPlayer ep, boolean notify) {
 		for (int i = 0; i < ProgressStage.list.length; i++) {
 			if (ProgressStage.list[i].active)
-				this.setPlayerStage(ep, ProgressStage.list[i], true, notify);
+				this.setPlayerStage(ep, ProgressStage.list[i], true, notify, false);
 		}
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			this.setPlayerDiscoveredColor(ep, CrystalElement.elements[i], true, notify);
@@ -579,8 +571,8 @@ public class ProgressionManager implements ProgressRegistry {
 				ChromaResearchManager.instance.notifyPlayerOfProgression(ep, colorDiscoveries.get(e));
 			if (disc)
 				MinecraftForge.EVENT_BUS.post(new ProgressionEvent(ep, e.name(), ResearchType.COLOR));
-			ProgressionCacher.instance.updateProgressCache(ep);
-			ProgressionCacher.instance.updateBackup(ep);
+			ProgressionLoadHandler.instance.updateProgressCache(ep);
+			ProgressionLoadHandler.instance.updateBackup(ep);
 			return true;
 		}
 		return false;
@@ -819,7 +811,7 @@ public class ProgressionManager implements ProgressRegistry {
 				this.checkPlayerStructures(ep);
 			}
 			else {
-				this.setPlayerStage(ep, ProgressStage.ALLCORES, false, notify);
+				this.setPlayerStage(ep, ProgressStage.ALLCORES, false, notify, true);
 			}
 			if (ep instanceof EntityPlayerMP)
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
@@ -829,8 +821,8 @@ public class ProgressionManager implements ProgressRegistry {
 				ChromaResearchManager.instance.notifyPlayerOfProgression(ep, structureFlags.get(e));
 			if (set)
 				MinecraftForge.EVENT_BUS.post(new ProgressionEvent(ep, e.name(), ResearchType.DIMSTRUCT));
-			ProgressionCacher.instance.updateProgressCache(ep);
-			ProgressionCacher.instance.updateBackup(ep);
+			ProgressionLoadHandler.instance.updateProgressCache(ep);
+			ProgressionLoadHandler.instance.updateBackup(ep);
 			return true;
 		}
 		return false;

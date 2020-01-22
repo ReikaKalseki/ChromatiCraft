@@ -36,7 +36,7 @@ public class ProgressionLinking {
 
 	}
 
-	public Collection<UUID> getSlavedIDs(EntityPlayer ep) {
+	private Collection<UUID> getSlavedIDs(EntityPlayer ep) {
 		Collection<UUID> c = new HashSet();
 		for (NBTTagString s : ((List<NBTTagString>)this.getCooperatorList(ep).tagList)) {
 			try {
@@ -279,5 +279,61 @@ public class ProgressionLinking {
 			}
 		}
 
+	}
+
+	public boolean hasLinkedPlayers(EntityPlayer ep) {
+		return !this.getCooperatorList(ep).tagList.isEmpty();
+	}
+
+	public Collection<EntityPlayer> getShareablePlayers(EntityPlayer ep, ProgressStage s) {
+		Collection<EntityPlayer> players = new ArrayList();
+		Collection<UUID> coop = this.getSlavedIDs(ep);
+		for (UUID u : coop) {
+			EntityPlayer e = ep.worldObj.func_152378_a(u);
+			if (e == null || ReikaPlayerAPI.isFake(e)) {
+				continue;
+			}
+			if (s != null && !s.getShareability().canShareTo(ep, e)) {
+				continue;
+			}
+			players.add(e);
+		}
+		return players;
+	}
+
+	public void attemptSyncTo(EntityPlayer main, EntityPlayer follower) {
+		boolean flag = true;
+		while (flag) {
+			flag = false;
+			for (ProgressStage p : ProgressionManager.instance.getStagesFor(main)) {
+				if (p.isPlayerAtStage(follower) || !p.playerHasPrerequisites(follower))
+					continue;
+				switch(p.reloadLevel) {
+					case ALWAYS:
+						if (p.stepPlayerTo(follower, false))
+							flag = true;
+						break;
+					case TRIGGER:
+					case NEVER:
+					default:
+						break;
+				}
+			}
+		}
+	}
+
+	public void attemptSyncAllInGroup(EntityPlayer player) {
+		for (EntityPlayer ep : this.getShareablePlayers(player, null)) {
+			this.attemptSyncTo(ep, player);
+			this.attemptSyncTo(player, ep);
+		}
+	}
+
+	public void attemptSyncTriggerProgressFor(EntityPlayer ep, ProgressStage p) {
+		for (EntityPlayer ep2 : this.getShareablePlayers(ep, p)) {
+			if (p.isPlayerAtStage(ep2)) {
+				p.stepPlayerTo(ep);
+			}
+		}
 	}
 }

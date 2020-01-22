@@ -151,7 +151,7 @@ public class CrystalNetworker implements TickHandler {
 		}
 	}
 
-	private void schedulePathBreak(CrystalFlow p) {
+	public void schedulePathBreak(CrystalFlow p) {
 		toBreak.add(p);
 	}
 
