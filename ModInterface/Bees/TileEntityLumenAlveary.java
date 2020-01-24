@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -1515,7 +1515,7 @@ IBeeModifier, IBeeListener {
 
 		@Override
 		protected boolean worksWhenBeesDoNot() {
-			return true;
+			return false;
 		}
 
 	}
@@ -1568,7 +1568,7 @@ IBeeModifier, IBeeListener {
 
 		@Override
 		protected boolean worksWhenBeesDoNot() {
-			return true;
+			return false;
 		}
 
 	}
