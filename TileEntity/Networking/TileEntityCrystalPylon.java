@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
@@ -47,6 +48,7 @@ import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonDrainedEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonFullyChargedEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonRechargedEvent;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
+import Reika.ChromatiCraft.Block.BlockEncrustedCrystal;
 import Reika.ChromatiCraft.Block.BlockEncrustedCrystal.TileCrystalEncrusted;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityOverloadingPylonShock;
@@ -1053,9 +1055,17 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	public void setColor(CrystalElement e) {
 		color = e;
+		this.forceCrystalColorMatch();
+	}
+
+	public Set<Coordinate> getEncrustedCrystals() {
+		return Collections.unmodifiableSet(encrustedBlocks);
+	}
+
+	public void forceCrystalColorMatch() {
 		for (Coordinate c : encrustedBlocks) {
 			if (c.getBlock(worldObj) == ChromaBlocks.ENCRUSTED.getBlockInstance()) {
-				c.setBlockMetadata(worldObj, e.ordinal());
+				BlockEncrustedCrystal.setColor(worldObj, c.xCoord, c.yCoord, c.zCoord, color);
 			}
 		}
 	}

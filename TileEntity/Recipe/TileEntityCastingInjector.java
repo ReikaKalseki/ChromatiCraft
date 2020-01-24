@@ -138,6 +138,8 @@ public class TileEntityCastingInjector extends InventoriedChromaticBase implemen
 	}
 
 	private void checkStructure(TileEntityCastingTable te) {
+		if (te == null)
+			return;
 		localFoci.clear();
 		for (Coordinate c : foci) {
 			Coordinate c2 = c.offset(te.xCoord, te.yCoord, te.zCoord);

@@ -171,7 +171,7 @@ public class CastingAutomationSystem {
 
 		int ret = 0;
 		for (ItemStack is : li) {
-			if (ModList.APPENG.isLoaded()) {
+			if (ModList.APPENG.isLoaded() && network != null) {
 				if (is.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
 					ret += network.getFuzzyItemCount(is, FuzzyMode.IGNORE_ALL, false, is.stackTagCompound != null);
 				}
@@ -242,7 +242,7 @@ public class CastingAutomationSystem {
 			return ret;
 
 		for (ItemStack is : li) {
-			if (ModList.APPENG.isLoaded()) {
+			if (ModList.APPENG.isLoaded() && network != null) {
 				if (is.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
 					ExtractedItemGroup rem = network.removeItemFuzzy(ReikaItemHelper.getSizedItemStack(is, wanted), simulate, FuzzyMode.IGNORE_ALL, false, is.stackTagCompound != null, allowMultiple);
 					if (rem != null) {
@@ -291,7 +291,7 @@ public class CastingAutomationSystem {
 	public final boolean recoverItem(ItemStack is) {
 		if (DragonAPICore.debugtest)
 			return true;
-		if (ModList.APPENG.isLoaded()) {
+		if (ModList.APPENG.isLoaded() && network != null) {
 			int left = (int)network.addItem(is, false);
 			is.stackSize = left;
 			if (left == 0)

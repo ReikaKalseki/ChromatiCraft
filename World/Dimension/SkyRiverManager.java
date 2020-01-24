@@ -189,7 +189,7 @@ public class SkyRiverManager {
 	}
 
 	protected static void sendRiverClearPacketsToAll() {
-		Collection<EntityPlayer> objPlayers;
+		Collection<EntityPlayerMP> objPlayers;
 		try {
 			objPlayers = ReikaPlayerAPI.getAllPlayers();
 		}
@@ -224,7 +224,7 @@ public class SkyRiverManager {
 	// New people do matter since if they'd move around, they accumulate non-tracked movement packets which cause >200 chunks to load.
 	// RIP server if we don't handle that. Thus, everyone gets a refresh-state DENY packet and set onto the enter-delay.
 	private static void handleUntrack() {
-		Collection<EntityPlayer> objPlayers;
+		Collection<EntityPlayerMP> objPlayers;
 		try {
 			objPlayers = ReikaPlayerAPI.getAllPlayers();
 		}
@@ -277,7 +277,7 @@ public class SkyRiverManager {
 	}
 
 	protected static void startSendingRiverPacketsToAll() {
-		Collection<EntityPlayer> objPlayers;
+		Collection<EntityPlayerMP> objPlayers;
 		try {
 			objPlayers = ReikaPlayerAPI.getAllPlayers();
 		}

@@ -99,6 +99,7 @@ public class TileEntityPlayerInfuser extends TileEntityAuraInfuser {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	protected void doAmbientParticles(World world, int x, int y, int z) {
 		Coordinate p = ReikaJavaLibrary.getRandomCollectionEntry(rand, this.getChromaLocations());
 		double px = p.xCoord+rand.nextDouble();

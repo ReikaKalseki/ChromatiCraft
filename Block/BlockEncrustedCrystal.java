@@ -225,6 +225,12 @@ public class BlockEncrustedCrystal extends CrystalTypeBlock {
 		}
 	}
 
+	public static void setColor(World world, int x, int y, int z, CrystalElement e) {
+		world.setBlockMetadataWithNotify(x, y, z, e.ordinal(), 3);
+		TileCrystalEncrusted te = (TileCrystalEncrusted)world.getTileEntity(x, y, z);
+		te.setColor(e);
+	}
+
 	public static class TileCrystalEncrusted extends TileEntity {
 
 		private CrystalGrowth[] sides = new CrystalGrowth[6];
@@ -234,6 +240,13 @@ public class BlockEncrustedCrystal extends CrystalTypeBlock {
 		@Override
 		public boolean canUpdate() {
 			return false;
+		}
+
+		public void setColor(CrystalElement e) {
+			for (int i = 0; i < sides.length; i++) {
+				if (sides[i] != null)
+					sides[i] = sides[i].getWithColor(e);
+			}
 		}
 
 		public void markReady() {
@@ -301,7 +314,11 @@ public class BlockEncrustedCrystal extends CrystalTypeBlock {
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
-		private CrystalElement getColor() {
+		public CrystalElement getColor() {
+			return CrystalElement.elements[this.getBlockMetadata()];
+		}
+
+		public CrystalElement getInternalColor() {
 			return CrystalElement.elements[this.getBlockMetadata()];
 		}
 
@@ -383,6 +400,12 @@ public class BlockEncrustedCrystal extends CrystalTypeBlock {
 			side = dir;
 			color = e;
 			special = sp;
+		}
+
+		public CrystalGrowth getWithColor(CrystalElement e) {
+			CrystalGrowth gr = new CrystalGrowth(e, side, special);
+			gr.growthStage = growthStage;
+			return gr;
 		}
 
 		private void setGrowth(World world, int x, int y, int z, int amt) {

@@ -91,7 +91,7 @@ public class RenderCrystalPortal extends ChromaRenderBase {
 						if (te.getCharge() >= te.MINCHARGE)
 							this.renderPortalTuning(te, v5, par8);
 					}
-					if (te.hasWorldObj()) {
+					if (te.hasWorldObj() && !StructureRenderer.isRenderingTiles()) {
 						ChromaShaders[] sh = {ChromaShaders.PORTAL_INCOMPLETE, ChromaShaders.PORTAL};
 						for (ChromaShaders shd : sh) {
 							shd.rampDownAmount = 0.0125F;

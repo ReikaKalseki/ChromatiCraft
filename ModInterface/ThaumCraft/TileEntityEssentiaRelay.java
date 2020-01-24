@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -113,12 +114,14 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		HashSet<Coordinate> activeTargets = new HashSet();
-		for (EssentiaPath p : activePaths) {
+		Iterator<EssentiaPath> it = activePaths.iterator();
+		while (it.hasNext()) {
+			EssentiaPath p = it.next();
 			p.update(world, x, y, z);
 			if (p.target != null)
 				activeTargets.add(p.target);
+			it.remove();
 		}
-		activePaths.clear();
 
 		if (!world.isRemote) {
 			EssentiaMovement mov = this.getNetwork().tick(world);
