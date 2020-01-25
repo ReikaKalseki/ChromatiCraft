@@ -29,6 +29,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
@@ -114,27 +115,8 @@ public class EssentiaNetwork {
 		Coordinate loc = new Coordinate((TileEntity)te);
 		NetworkEndpoint n = endpoints.get(loc);
 		NetworkEndpoint n2 = this.createEndpoint(loc, te);
-		if (n == null || n.getClass() != n2.getClass()) {
-			if (n2 instanceof ActiveEndpoint) {
-				activeLocations.put(loc, (ActiveEndpoint)n2);
-			}
-			endpoints.put(loc, n2);
-			n2.nodeAccesses.add(new Coordinate(caller));
-		}
-		else {
-			n.nodeAccesses.add(new Coordinate(caller));
-		}
-		this.rebuildNetworkDisplay(caller.worldObj);
-	}
 
-	private NetworkEndpoint createEndpoint(Coordinate loc, IEssentiaTransport te) {
-		Aspect a = isFilteredJar(te);
-		if (a != null)
-			return new LabelledJarEndpoint(loc, te, a);
-		if (te.getClass() == alembicClass) {
-			return new AlembicEndpoint(loc, te);
-		}
-		return new NetworkEndpoint(loc, te);
+		this.rebuildNetworkDisplay(caller.worldObj);
 	}
 
 	/*
@@ -458,7 +440,7 @@ public class EssentiaNetwork {
 	}
 
 	private static boolean LOS(World world, Coordinate c1, Coordinate c2) {
-		tracer.setOrigins(c1.xCoord, c1.yCoord, c1.zCoord, c2.xCoord, c2.yCoord, c2.zCoord);
+		tracer.setOrigins(c1.xCoord+0.5, c1.yCoord, c1.zCoord+0.5, c2.xCoord+0.5, c2.yCoord+0.5, c2.zCoord+0.5);
 		//ReikaJavaLibrary.pConsole(c1+" > "+c2+" = "+tracer.isClearLineOfSight(world));
 		return tracer.isClearLineOfSight(world);
 	}
@@ -653,11 +635,16 @@ public class EssentiaNetwork {
 
 		private final ArrayList<Coordinate> path;
 
+		private long lastValidation = -1;
+
 		private EssentiaPathCache(ArrayList<Coordinate> li) {
 			path = li;
 		}
 
 		public boolean validate(World world) {
+			if (world.getTotalWorldTime()-lastValidation < 20)
+				return true;
+			lastValidation = world.getTotalWorldTime();
 			for (int i = 0; i < path.size()-1; i++) {
 				Coordinate loc1 = path.get(i);
 				Coordinate loc2 = path.get(i+1);
@@ -857,7 +844,6 @@ public class EssentiaNetwork {
 
 	private static class NetworkEndpoint {
 
-		public final HashSet<Coordinate> nodeAccesses = new HashSet();
 		public final Coordinate point;
 		protected final IEssentiaTransport tile;
 
@@ -992,5 +978,155 @@ public class EssentiaNetwork {
 				return ret;
 			}
 		}
+	}
+
+	public static class NetworkBuilder {
+
+		public static EssentiaSubnet buildFrom(TileEntityEssentiaRelay te) {
+			HashSet<Coordinate> set = new HashSet();
+			set.add(new Coordinate(te));
+			boolean flag = true;
+			while (flag) {
+				flag = false;
+				for (Coordinate c : set) {
+					Collection<Coordinate> li = getNearNodesExcept(te.worldObj, c, set);
+					if (!li.isEmpty()) {
+						flag = true;
+						for (Coordinate c2 : li) {
+							set.add(c2);
+						}
+					}
+				}
+			}
+			return buildNetworkWithNodes(te.worldObj, set);
+		}
+
+		private static Collection<Coordinate> getNearNodesExcept(World world, Coordinate c, HashSet<Coordinate> set) {
+			Collection<Coordinate> ret = new ArrayList();
+			int r = TileEntityEssentiaRelay.SEARCH_RANGE;
+			for (int i = -r; i <= r; i++) {
+				for (int j = -r; j <= r; j++) {
+					for (int k = -r; k <= r; k++) {
+						int dx = c.xCoord+i;
+						int dy = c.yCoord+j;
+						int dz = c.zCoord+k;
+						Coordinate c2 = new Coordinate(dx, dy, dz);
+						if (set.contains(c2))
+							continue;
+						if (ChromaTiles.getTile(world, dx, dy, dz) == ChromaTiles.ESSENTIARELAY) {
+							ret.add(c2);
+						}
+					}
+				}
+			}
+			return ret;
+		}
+
+		private static EssentiaSubnet buildNetworkWithNodes(World world, HashSet<Coordinate> set) {
+			EssentiaSubnet net = new EssentiaSubnet(world.provider.dimensionId);
+			for (Coordinate c : set) {
+				net.addRelay(world, c);
+			}
+			net.findAllEndpoints(world);
+			return net;
+		}
+	}
+
+	public static class EssentiaSubnet {
+
+		public final int dimension;
+		private final HashMap<Coordinate, EssentiaNode> relays = new HashMap();
+
+		private EssentiaSubnet(int dim) {
+			dimension = dim;
+		}
+
+		private void addRelay(World world, Coordinate c) {
+			EssentiaNode n = new EssentiaNode(c);
+			this.linkNodesTo(world, n);
+			relays.put(c, n);
+		}
+
+		private void linkNodesTo(World world, EssentiaNode n) {
+			for (EssentiaNode c : relays.values()) {
+				if (this.canConnect(world, n, c)) {
+					n.connect(c);
+				}
+			}
+		}
+
+		private boolean canConnect(World world, EssentiaNode n, EssentiaNode c) {
+			return n.getDistanceTo(c) <= TileEntityEssentiaRelay.SEARCH_RANGE && LOS(world, n.position, c.position);
+		}
+
+		public void findAllEndpoints(World world) {
+			for (EssentiaNode c : relays.values()) {
+				c.findValidEndpoints(world);
+			}
+		}
+
+		public EssentiaNode getNode(TileEntityEssentiaRelay te) {
+			return relays.get(new Coordinate(te));
+		}
+
+	}
+
+	public static class EssentiaNode {
+
+		public final Coordinate position;
+		private final HashSet<Coordinate> otherNodes = new HashSet();
+		private final HashMap<Coordinate, NetworkEndpoint> inertEndpoints = new HashMap();
+		private final HashMap<Coordinate, ActiveEndpoint> activeEndpoints = new HashMap();
+
+		private EssentiaNode(Coordinate c) {
+			position = c;
+		}
+
+		public double getDistanceTo(EssentiaNode c) {
+			return c.position.getDistanceTo(position);
+		}
+
+		public void findValidEndpoints(World world) {
+			int r = TileEntityEssentiaRelay.SEARCH_RANGE;
+			for (int i = -r; i <= r; i++) {
+				for (int j = -r; j <= r; j++) {
+					for (int k = -r; k <= r; k++) {
+						int dx = position.xCoord+i;
+						int dy = position.yCoord+j;
+						int dz = position.zCoord+k;
+						this.addEndpointAt(world, dx, dy, dz);
+					}
+				}
+			}
+		}
+
+		private void addEndpointAt(World world, int x, int y, int z) {
+			TileEntity te = world.getTileEntity(x, y, z);
+			if (te instanceof IEssentiaTransport) {
+				NetworkEndpoint end = this.createEndpoint(new Coordinate(x, y, z), (IEssentiaTransport)te);
+				if (end instanceof ActiveEndpoint) {
+					activeEndpoints.put(end.point, (ActiveEndpoint)end);
+				}
+				else {
+					inertEndpoints.put(end.point, end);
+				}
+			}
+		}
+
+		private NetworkEndpoint createEndpoint(Coordinate loc, IEssentiaTransport te) {
+			Aspect a = isFilteredJar(te);
+			if (a != null)
+				return new LabelledJarEndpoint(loc, te, a);
+			if (te.getClass() == alembicClass) {
+				return new AlembicEndpoint(loc, te);
+			}
+			return new NetworkEndpoint(loc, te);
+		}
+
+		public void connect(EssentiaNode c) {
+			otherNodes.add(c.position);
+			c.otherNodes.add(position);
+		}
+
 	}
 }

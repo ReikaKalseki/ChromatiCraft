@@ -58,6 +58,9 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 	private final Collection<EssentiaPath> activePaths = new ArrayList();
 	final HashMap<Coordinate, Boolean> networkCoords = new HashMap();
 
+	private int throttle;
+	private int tickThrottle;
+
 	private static Class infusionMatrix;
 	private static Class essentiaHandler;
 	private static HashMap<WorldCoordinates, ArrayList<WorldCoordinates>> essentiaHandlerData;
@@ -102,6 +105,10 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 		}
 	}
 
+	public void tryBuildNetwork() {
+		network = EssentiaNetwork.NetworkBuilder.buildFrom(this);
+	}
+
 	public Map<Coordinate, Boolean> getNetworkTiles() {
 		return Collections.unmodifiableMap(networkCoords);
 	}
@@ -123,12 +130,15 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 			it.remove();
 		}
 
-		if (!world.isRemote) {
+		if (!world.isRemote && tickThrottle == 0) {
 			EssentiaMovement mov = this.getNetwork().tick(world);
 			if (mov != null) {
 				for (EssentiaPath p : mov.paths()) {
 					this.addPath(p);
 				}
+			}
+			else {
+				tickThrottle = 8;
 			}
 		}
 
@@ -136,6 +146,10 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 		if (scanTimer.checkCap()) {
 			this.scan(world, x, y, z, false);
 		}
+	}
+
+	private void throttleOnFailure() {
+		throttle = 8;
 	}
 
 	@Override
@@ -256,6 +270,8 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 
 	@Override
 	public int takeEssentia(Aspect aspect, int amount, ForgeDirection face) {
+		if (throttle > 0)
+			return 0;
 		amount = Math.min(THROUGHPUT, amount);
 		EssentiaMovement r = this.getNetwork().removeEssentia(this, face, aspect, amount);
 		if (r != null) {
@@ -264,10 +280,13 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 			}
 			return r.totalAmount;
 		}
+		this.throttleOnFailure();
 		return 0;
 	}
 
 	private int collectEssentiaToTarget(Aspect a, int amt, Coordinate tgt) {
+		if (throttle > 0)
+			return 0;
 		amt = Math.min(THROUGHPUT, amt);
 		EssentiaMovement r = this.getNetwork().removeEssentia(this, ForgeDirection.DOWN, a, amt, tgt);
 		if (r != null) {
@@ -276,11 +295,14 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 			}
 			return r.totalAmount;
 		}
+		this.throttleOnFailure();
 		return 0;
 	}
 
 	@Override
 	public int addEssentia(Aspect aspect, int amount, ForgeDirection face) {
+		if (throttle > 0)
+			return 0;
 		amount = Math.min(THROUGHPUT, amount);
 		EssentiaMovement s = this.getNetwork().addEssentia(this, face, aspect, amount);
 		if (s != null) {
@@ -289,17 +311,22 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 			}
 			return s.totalAmount;
 		}
+		this.throttleOnFailure();
 		return 0;
 	}
 
 	@Override
 	public Aspect getEssentiaType(ForgeDirection face) {
+		if (throttle > 0)
+			return null;
 		TileEntity te = this.getAdjacentTileEntity(face);
 		return te instanceof IEssentiaTransport	? ((IEssentiaTransport)te).getSuctionType(face.getOpposite()) : null;
 	}
 
 	@Override
 	public int getEssentiaAmount(ForgeDirection face) {
+		if (throttle > 0)
+			return 0;
 		Aspect a = this.getEssentiaType(face);
 		return a != null ? this.getNetwork().countEssentia(worldObj, a) : 0;
 	}
