@@ -812,7 +812,6 @@ public class EssentiaNetwork {
 		}
 
 		private EssentiaPathCache getPath(World world, NetworkEndpoint from, NetworkEndpoint to) {
-			pathList.clear();
 			ImmutablePair<Coordinate, Coordinate> key = new ImmutablePair(from.point, to.point);
 			EssentiaPathCache path = pathList.get(key);
 			if (path != null) {

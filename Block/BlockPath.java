@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Block;
 
 import java.util.HashSet;
+import java.util.Locale;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -17,6 +18,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.IIcon;
@@ -25,8 +27,14 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
+import Reika.GeoStrata.GeoStrata;
+import Reika.GeoStrata.Registry.RockShapes;
+import Reika.GeoStrata.Registry.RockTypes;
 
 public class BlockPath extends Block {
 
@@ -36,10 +44,11 @@ public class BlockPath extends Block {
 		BRICK("Brick", Blocks.brick_block),
 		GLOW("Glowing", Blocks.glowstone),
 		FIRE("Fiery", Blocks.obsidian),
-		EMERALD("Rich", Blocks.emerald_block);
+		EMERALD("Rich", Blocks.emerald_block),
+		RAINBOW("Opalized", Blocks.lapis_block);
 
 		public final String name;
-		public final Block addition;
+		private final Block addition;
 
 		public static final PathType[] list = values();
 
@@ -47,12 +56,23 @@ public class BlockPath extends Block {
 			name = s;
 			addition = b;
 		}
+
+		public ItemStack getBlock() {
+			if (this == RAINBOW && ModList.GEOSTRATA.isLoaded())
+				return getOpal();
+			return new ItemStack(addition);
+		}
+
+		@ModDependent(ModList.GEOSTRATA)
+		private static ItemStack getOpal() {
+			return RockTypes.OPAL.getItem(RockShapes.SMOOTH);
+		}
 	}
 
-	private IIcon[] icons = new IIcon[PathType.list.length];
+	private IIcon[][] icons = new IIcon[PathType.list.length][3];
 
-	public BlockPath(Material par2Material) {
-		super(par2Material);
+	public BlockPath(Material mat) {
+		super(mat);
 		this.setHardness(2);
 		this.setResistance(10);
 		this.setCreativeTab(ChromatiCraft.tabChroma);
@@ -77,14 +97,30 @@ public class BlockPath extends Block {
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
-		return icons[meta];
+		return icons[meta][2];
 	}
 
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
 		for (int i = 0; i < icons.length; i++) {
-			icons[i] = ico.registerIcon("chromaticraft:basic/path_"+i);
+			icons[i][0] = ico.registerIcon("chromaticraft:path/"+PathType.list[i].name.toLowerCase(Locale.ENGLISH)+"_back");
+			icons[i][1] = ico.registerIcon("chromaticraft:path/"+PathType.list[i].name.toLowerCase(Locale.ENGLISH)+"_front");
+			icons[i][2] = ico.registerIcon("chromaticraft:path/path_"+i);
 		}
+	}
+
+	@Override
+	public int colorMultiplier(IBlockAccess world, int x, int y, int z) {
+		return world.getBlockMetadata(x, y, z) != PathType.RAINBOW.ordinal() ? 0xffffff : ModList.GEOSTRATA.isLoaded() ? this.getOpalColor(world, x, y, z) : this.getBasicRainbowColor(world, x, y, z);
+	}
+
+	private int getBasicRainbowColor(IBlockAccess world, int x, int y, int z) {
+		return CrystalElement.getBlendedColor(x, 10);
+	}
+
+	@ModDependent(ModList.GEOSTRATA)
+	private int getOpalColor(IBlockAccess world, int x, int y, int z) {
+		return GeoStrata.getOpalPositionColor(world, x, y, z);
 	}
 
 	@Override
@@ -94,7 +130,7 @@ public class BlockPath extends Block {
 			EntityLivingBase el = (EntityLivingBase)e;
 			float max = 0.6F;
 			int meta = world.getBlockMetadata(x, y, z);
-			if (meta != PathType.EMERALD.ordinal())
+			if (meta == PathType.EMERALD.ordinal())
 				max = 0.8F;
 			if (meta == PathType.BASIC.ordinal())
 				max = 0.3F;

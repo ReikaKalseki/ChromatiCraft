@@ -109,12 +109,14 @@ public class TileEntityCastingInjector extends InventoriedChromaticBase implemen
 				this.checkStructure(this.getTable());
 
 			if (inv[0] != null) {
-				TileEntityCastingAuto te = (TileEntityCastingAuto)delegate.getTileEntity(world);
-				if (te != null && te.getAutomationHandler().isRecursiveCrafting()) {
-					te.getAutomationHandler().cacheIngredient(inv[0]);
-					inv[0] = null;
+				if (delegate != null) {
+					TileEntityCastingAuto te = (TileEntityCastingAuto)delegate.getTileEntity(world);
+					if (te != null && te.getAutomationHandler().recursionEnabled && te.getAutomationHandler().isRecursiveCrafting()) {
+						te.getAutomationHandler().cacheIngredient(inv[0]);
+						inv[0] = null;
+					}
 				}
-				else {
+				if (inv[0] != null) {
 					if (handler.recoverItem(inv[0]))
 						inv[0] = null;
 				}

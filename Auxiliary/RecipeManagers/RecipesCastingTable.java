@@ -590,7 +590,7 @@ public class RecipesCastingTable {
 
 		for (int i = 0; i < BlockPath.PathType.list.length; i++) {
 			PathType p = BlockPath.PathType.list[i];
-			this.addRecipe(new PathRecipe(ChromaItems.ELEMENTAL.getStackOf(CrystalElement.LIME), i, p.addition));
+			this.addRecipe(new PathRecipe(ChromaItems.ELEMENTAL.getStackOf(CrystalElement.LIME), i, p.getBlock()));
 		}
 
 		if (ChromaOptions.BIOMEPAINTER.getState())
