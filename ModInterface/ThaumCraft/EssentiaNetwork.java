@@ -17,6 +17,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -37,13 +38,13 @@ import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
-import thaumcraft.api.aspects.IAspectContainer;
 import thaumcraft.api.aspects.IEssentiaTransport;
 
 
@@ -56,8 +57,7 @@ public class EssentiaNetwork {
 	private static Field alembicAspectField;
 	private static Field alembicAmountField;
 
-	private static final Comparator<NetworkEndpoint> pullComparator = new SuctionComparator(true);
-	private static final Comparator<NetworkEndpoint> pushComparator = new SuctionComparator(false);
+	private static final SuctionComparator endpointComparator = new SuctionComparator();
 
 	private static final RayTracer tracer = new RayTracer(0, 0, 0, 0, 0, 0);
 
@@ -94,259 +94,10 @@ public class EssentiaNetwork {
 		return e;
 	}
 
-	private final HashMap<Coordinate, NetworkEndpoint> endpoints = new HashMap();
-	private final HashMap<Coordinate, ActiveEndpoint> activeLocations = new HashMap();
-	private final HashSet<Coordinate> nodes = new HashSet();
-	private final HashMap<ImmutablePair<Coordinate, Coordinate>, EssentiaPathCache> pathList = new HashMap();
-
-	private long lastTick;
+	private final HashSet<EssentiaSubnet> subnets = new HashSet();
 
 	private EssentiaNetwork() {
 
-	}
-
-	public void addNode(TileEntityEssentiaRelay te) {
-		nodes.add(new Coordinate(te));
-		pathList.clear();
-		this.rebuildNetworkDisplay(te.worldObj);
-	}
-
-	public void addEndpoint(TileEntityEssentiaRelay caller, IEssentiaTransport te) {
-		Coordinate loc = new Coordinate((TileEntity)te);
-		NetworkEndpoint n = endpoints.get(loc);
-		NetworkEndpoint n2 = this.createEndpoint(loc, te);
-
-		this.rebuildNetworkDisplay(caller.worldObj);
-	}
-
-	/*
-	public void merge(World world, EssentiaNetwork m) {
-		for (NetworkEndpoint n : m.endpoints.values()) {
-			NetworkEndpoint at = endpoints.get(n.point);
-			if (at == null) {
-				endpoints.put(n.point, n);
-			}
-			else {
-				at.nodeAccesses.addAll(n.nodeAccesses);
-			}
-		}
-		nodes.addAll(m.nodes);
-		activeLocations.putAll(m.activeLocations);
-
-		for (Coordinate loc : nodes) {
-			TileEntity te = loc.getTileEntity(world);
-			if (te instanceof TileEntityEssentiaRelay) {
-				((TileEntityEssentiaRelay)te).network = this;
-			}
-		}
-
-		//this.recalculatePaths();
-
-		pathList.clear();
-		this.rebuildNetworkDisplay(world);
-
-		m.endpoints.clear();
-		m.nodes.clear();
-		m.pathList.clear();
-	}*/
-
-	private void rebuildNetworkDisplay(World world) {
-		for (Coordinate loc : nodes) {
-			TileEntityEssentiaRelay te = (TileEntityEssentiaRelay)loc.getTileEntity(world);
-			te.networkCoords.clear();
-			for (Coordinate node : nodes) {
-				te.networkCoords.put(node, true);
-			}
-			for (Coordinate node : endpoints.keySet()) {
-				te.networkCoords.put(node, false);
-			}
-		}
-	}
-
-	/*
-	private void recalculatePaths() {
-		pathList.clear();
-		for (Coordinate loc : tiles.keySet()) {
-			for (Coordinate loc2 : tiles.keySet()) {
-				if (!loc.equals(loc2)) {
-					ImmutablePair<Coordinate, Coordinate> locs = new ImmutablePair(loc, loc2);
-					HashSet<Coordinate> seen = new HashSet();
-					seen.add(loc);
-					seen.add(loc2);
-					ArrayList<Coordinate> li = this.findPathFrom(loc, loc2, seen);
-					if (li != null) {
-						ReikaJavaLibrary.pConsole(locs+": "+li);
-						pathList.put(locs, li);
-					}
-				}
-			}
-		}
-	}
-
-	private ArrayList<Coordinate> findPathFrom(Coordinate loc, Coordinate loc2, HashSet<Coordinate> seen) {
-		int r = TileEntityEssentiaRelay.SEARCH_RANGE;
-		if (loc.isWithinDistOnAllCoords(loc2, r)) {
-			return ReikaJavaLibrary.makeListFrom(loc, loc2);
-		}
-		else {
-			ArrayList<Coordinate> li = (ArrayList<Coordinate>)nodes.get(loc);
-			for (Coordinate loc3 : li) {
-				if (!seen.contains(loc3)) {
-					seen.add(loc3);
-					ArrayList<Coordinate> li2 = this.findPathFrom(loc3, loc2, seen);
-					if (li2 != null) {
-						ArrayList<Coordinate> ret = new ArrayList();
-						ret.addAll(li2);
-						ret.add(0, loc);
-						return ret;
-					}
-					seen.remove(loc3);
-				}
-			}
-		}
-		return null;
-	}
-	 */
-
-	public EssentiaMovement tick(World world) {
-		if (lastTick == world.getTotalWorldTime())
-			return null;
-		lastTick = world.getTotalWorldTime();
-		Iterator<NetworkEndpoint> it = endpoints.values().iterator();
-		while (it.hasNext()) {
-			NetworkEndpoint n = it.next();
-			if (!n.isValid(world)) {
-				it.remove();
-				activeLocations.remove(n.point);
-			}
-		}
-		if (!activeLocations.isEmpty()) {
-			ArrayList<EssentiaPath> li = new ArrayList();
-			for (ActiveEndpoint from : activeLocations.values()) {
-				AspectList al = from.getPush();
-				if (al != null && !al.aspects.isEmpty()) {
-					for (NetworkEndpoint to : endpoints.values()) {
-						if (this.canTransfer(world, from, to)) {
-							li.addAll(this.transferEssentia(world, from, to, al));
-							if (al.aspects.isEmpty())
-								break;
-						}
-					}
-				}
-				al = from.getPull();
-				if (al != null && !al.aspects.isEmpty()) {
-					for (NetworkEndpoint to : endpoints.values()) {
-						if (this.canTransfer(world, to, from)) {
-							li.addAll(this.transferEssentia(world, to, from, al));
-							if (al.aspects.isEmpty())
-								break;
-						}
-					}
-				}
-			}
-			//ReikaJavaLibrary.pConsole(li, !li.isEmpty());
-			return li.isEmpty() ? null : new EssentiaMovement(li);
-		}
-		return null;
-	}
-
-	private boolean canTransfer(World world, NetworkEndpoint from, NetworkEndpoint to) {
-		if (from == to || from.point.equals(to.point))
-			return false;
-		if (from instanceof LabelledJarEndpoint)
-			return !isJar(to.tile);
-		if (isJar(from.tile) && isJar(to.tile))
-			return to instanceof LabelledJarEndpoint && ((LabelledJarEndpoint)to).getPull() != null;
-		return from.canEmit() && to.canReceive() && from.isValid(world) && to.isValid(world);
-	}
-
-	private ArrayList<EssentiaPath> transferEssentia(World world, NetworkEndpoint from, NetworkEndpoint to, AspectList al) {
-		//ReikaJavaLibrary.pConsole("Attempting transfer of "+ReikaThaumHelper.aspectsToString(al)+" from "+from+" to "+to);
-		ArrayList<EssentiaPath> ret = new ArrayList();
-		Iterator<Entry<Aspect, Integer>> it = al.aspects.entrySet().iterator();
-		while (it.hasNext()) {
-			Entry<Aspect, Integer> e = it.next();
-			Aspect a = e.getKey();
-			int amt = e.getValue();
-			EssentiaPath p = this.transferEssentia(world, from, to, a, Math.min(amt, TileEntityEssentiaRelay.THROUGHPUT));
-			if (p != null) {
-				ret.add(p);
-				e.setValue(amt-p.amount);
-				if (e.getValue() <= 0)
-					it.remove();
-			}
-		}
-		//ReikaJavaLibrary.pConsole(ret, !ret.isEmpty());
-		return ret;
-	}
-
-	private EssentiaPath transferEssentia(World world, NetworkEndpoint from, NetworkEndpoint to, Aspect a, int amount) {
-		EssentiaPathCache pt = this.getPath(world, from, to);
-		if (pt == null || pt.isEmpty())
-			return null;
-		int has = from.getContents(a);
-		int amt = Math.min(amount, has);
-		int put = to.addAspect(a, amt);
-		int put2 = from.takeAspect(a, put);
-		if (put2 < put) {
-			to.takeAspect(a, put-put2);
-		}
-		if (put2 <= 0)
-			return null;
-		//ReikaJavaLibrary.pConsole("Transferred "+put+" & "+put2+" / "+amount+" of "+a.getTag()+" from "+from+" to "+to);
-		//ReikaJavaLibrary.pConsole(pt+" of "+from+" , "+to);
-		return new EssentiaPath(a, put2, pt);
-	}
-
-	public EssentiaMovement addEssentia(TileEntityEssentiaRelay caller, ForgeDirection callDir, Aspect aspect, int amount) {
-		return this.addEssentia(caller, aspect, amount, new Coordinate(caller).offset(callDir, 1));
-	}
-
-	public EssentiaMovement addEssentia(TileEntityEssentiaRelay caller, Aspect aspect, int amount, Coordinate src) {
-		this.addEndpoint(caller, (IEssentiaTransport)src.getTileEntity(caller.worldObj));
-		ArrayList<EssentiaPath> li = new ArrayList();
-		ArrayList<NetworkEndpoint> list = this.getTerminusList(caller.worldObj);
-		Collections.sort(list, pushComparator);
-		for (NetworkEndpoint p : list) {
-			EssentiaPathCache pt = this.getPath(caller.worldObj, endpoints.get(src), p);
-			if (pt != null && !pt.isEmpty()) {
-				int added = p.addAspect(aspect, amount);
-				if (added > 0) {
-					amount -= added;
-					li.add(new EssentiaPath(aspect, added, pt)); //ReikaJavaLibrary.makeListFrom(new Coordinate(caller), node, loc)
-					if (amount <= 0) {
-						break;
-					}
-				}
-			}
-		}
-		return li.isEmpty() ? null : new EssentiaMovement(li);
-	}
-
-	public EssentiaMovement removeEssentia(TileEntityEssentiaRelay caller, ForgeDirection callDir, Aspect aspect, int amount) {
-		return this.removeEssentia(caller, callDir, aspect, amount, new Coordinate(caller).offset(callDir, 1));
-	}
-
-	public EssentiaMovement removeEssentia(TileEntityEssentiaRelay caller, ForgeDirection callDir, Aspect aspect, int amount, Coordinate tgt) {
-		TileEntity target = caller.getAdjacentTileEntity(callDir);
-		this.addEndpoint(caller, (IEssentiaTransport)target);
-		ArrayList<EssentiaPath> li = new ArrayList();
-		ArrayList<NetworkEndpoint> list = this.getTerminusList(caller.worldObj);
-		Collections.sort(list, pullComparator);
-		for (NetworkEndpoint p : list) {
-			EssentiaPathCache pt = this.getPath(caller.worldObj, p, endpoints.get(new Coordinate(target)));
-			if (pt != null && !pt.isEmpty()) {
-				int rem = p.takeAspect(aspect, amount);
-				if (rem > 0) {
-					amount -= rem;
-					li.add(new EssentiaPath(aspect, rem, pt)); //ReikaJavaLibrary.makeListFrom(loc, node, new Coordinate(caller))
-					if (amount <= 0) {
-						break;
-					}
-				}
-			}
-		}
-		return li.isEmpty() ? null : new EssentiaMovement(li);
 	}
 	/*
 	private ArrayList<Coordinate> getPath(Coordinate loc, Coordinate loc2) {
@@ -356,232 +107,10 @@ public class EssentiaNetwork {
 	}
 	 */
 
-	private ArrayList<NetworkEndpoint> getTerminusList(World world) {
-		ArrayList<NetworkEndpoint> li = new ArrayList();
-		Iterator<NetworkEndpoint> it = endpoints.values().iterator();
-		while (it.hasNext()) {
-			NetworkEndpoint n = it.next();
-			if (n.isValid(world))
-				li.add(n);
-			else
-				it.remove();
-		}
-		return li;
-	}
-
-	private EssentiaPathCache getPath(World world, NetworkEndpoint loc, NetworkEndpoint loc2) {
-		pathList.clear();
-		ImmutablePair<Coordinate, Coordinate> key = new ImmutablePair(loc.point, loc2.point);
-		EssentiaPathCache path = pathList.get(key);
-		if (path != null) {
-			if (!path.validate(world)) {
-				pathList.remove(key);
-			}
-			else {
-				return path;
-			}
-		}
-		ArrayList<Coordinate> li = this.calculatePath(world, loc, loc2);
-		if (li != null && !li.isEmpty() && li.get(0).equals(loc.point) && li.get(li.size()-1).equals(loc2.point)) {
-			path = new EssentiaPathCache(li);
-			pathList.put(key, path);
-		}
-		return path;
-	}
-
-	private ArrayList<Coordinate> calculatePath(World world, NetworkEndpoint loc, NetworkEndpoint loc2) {
-		if (loc.point.isWithinDistOnAllCoords(loc2.point, TileEntityEssentiaRelay.SEARCH_RANGE)) {
-			ArrayList<Coordinate> li = new ArrayList();
-			li.add(loc.point);
-			if (!loc.nodeAccesses.isEmpty()) {
-				li.add(loc.nodeAccesses.iterator().next());
-			}
-			if (!loc2.nodeAccesses.isEmpty()) {
-				Coordinate loc3 = loc2.nodeAccesses.iterator().next();
-				if (!li.contains(loc3))
-					li.add(loc3);
-			}
-			li.add(loc2.point);
-			return li;
-		}
-		EssentiaPathSearch s = new EssentiaPathSearch();
-		HashSet<Coordinate> set = new HashSet();
-		s.path.add(loc.point);
-		s.looked.add(loc.point);
-		for (Coordinate n : loc.nodeAccesses) {
-			if (LOS(world, loc.point, n))
-				this.recurseTo(world, n, loc2, s);
-		}
-		//ReikaJavaLibrary.pConsole(s.path, s.isComplete);
-		return s.path;
-	}
-
-	private void recurseTo(World world, Coordinate loc, NetworkEndpoint seek, EssentiaPathSearch s) {
-		if (s.isComplete)
-			return;
-		s.path.add(loc);
-		s.looked.add(loc);
-		ArrayList<Coordinate> li = this.getNextLocations(world, loc, s);
-		//ReikaJavaLibrary.pConsole(li+" from "+loc+" S="+s.looked);
-		for (Coordinate n2 : li) {
-			if (seek.nodeAccesses.contains(n2)) {
-				s.path.add(n2);
-				s.path.add(seek.point);
-				s.isComplete = true;
-				return;
-			}
-		}
-		for (Coordinate n2 : li) {
-			this.recurseTo(world, n2, seek, s);
-		}
-		if (s.isComplete)
-			return;
-		s.path.remove(s.path.size()-1);
-	}
-
 	private static boolean LOS(World world, Coordinate c1, Coordinate c2) {
 		tracer.setOrigins(c1.xCoord+0.5, c1.yCoord, c1.zCoord+0.5, c2.xCoord+0.5, c2.yCoord+0.5, c2.zCoord+0.5);
 		//ReikaJavaLibrary.pConsole(c1+" > "+c2+" = "+tracer.isClearLineOfSight(world));
 		return tracer.isClearLineOfSight(world);
-	}
-
-	private ArrayList<Coordinate> getNextLocations(World world, Coordinate loc, EssentiaPathSearch s) {
-		ArrayList<Coordinate> li = new ArrayList();
-		for (Coordinate loc2 : nodes) {
-			//ReikaJavaLibrary.pConsole(loc2, loc.equals(new Coordinate(499, 4, 549)));
-			if (loc2.getTileEntity(world) instanceof TileEntityEssentiaRelay && !s.looked.contains(loc2)) {
-				if (loc.isWithinDistOnAllCoords(loc2, TileEntityEssentiaRelay.SEARCH_RANGE)) {
-					tracer.setOrigins(loc.xCoord, loc.yCoord, loc.zCoord, loc2.xCoord, loc2.yCoord, loc2.zCoord);
-					//ReikaJavaLibrary.pConsole(loc+" > "+loc2+" = "+tracer.isClearLineOfSight(world), loc2.equals(507, 4, 560));
-					if (this.LOS(world, loc, loc2))
-						li.add(loc2);
-				}
-			}
-		}
-		return li;
-	}
-
-	public int countEssentia(World world, Aspect aspect) {
-		int sum = 0;
-		Iterator<Entry<Coordinate, NetworkEndpoint>> it = endpoints.entrySet().iterator();
-		while (it.hasNext()) {
-			Entry<Coordinate, NetworkEndpoint> e = it.next();
-			TileEntity te = e.getKey().getTileEntity(world);
-			if (te instanceof IEssentiaTransport) {
-				IEssentiaTransport p = (IEssentiaTransport)te;
-				for (int i = 0; i < 6; i++) {
-					ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-					if (p.canOutputTo(dir)) {
-						if (p instanceof IAspectContainer) {
-							AspectList al = ((IAspectContainer)p).getAspects();
-							if (al != null) {
-								for (Aspect a : al.aspects.keySet()) {
-									if (a == aspect) {
-										sum += p.getEssentiaAmount(dir);
-									}
-								}
-							}
-						}
-						else {
-							Aspect a = p.getEssentiaType(dir);
-							if (a == aspect) {
-								sum += p.getEssentiaAmount(dir);
-							}
-						}
-					}
-				}
-			}
-			else {
-				it.remove();
-			}
-		}
-		//ReikaJavaLibrary.pConsole(aspect.getName()+":"+sum);
-		return sum;
-	}
-
-	@Override
-	public String toString() {
-		return System.identityHashCode(this)+" "+nodes;
-	}
-
-	private void reset(World world) {
-		/*
-		for (Coordinate loc : nodes) {
-			TileEntity te = loc.getTileEntity(world);
-			if (te instanceof TileEntityEssentiaRelay)
-				((TileEntityEssentiaRelay)te).network = null;
-		}*/
-		endpoints.clear();
-		activeLocations.clear();
-		nodes.clear();
-		pathList.clear();
-	}
-
-	public void removeNode(TileEntityEssentiaRelay te) {
-		nodes.remove(new Coordinate(te));
-		pathList.clear();
-	}
-
-	public Collection<Coordinate> getAllFilteredJars() {
-		Collection<Coordinate> ret = new HashSet();
-		for (NetworkEndpoint n : endpoints.values()) {
-			if (n instanceof LabelledJarEndpoint)
-				ret.add(n.point);
-		}
-		return ret;
-	}
-
-	public HashSet<Coordinate> getDirectlyAccessibleEndpoints(TileEntityEssentiaRelay te) {
-		return this.getDirectlyAccessibleEndpoints(new Coordinate(te));
-	}
-
-	private HashSet<Coordinate> getDirectlyAccessibleEndpoints(Coordinate c) {
-		HashSet<Coordinate> ret = new HashSet();
-		for (NetworkEndpoint n : endpoints.values()) {
-			if (n.nodeAccesses.contains(c)) {
-				ret.add(n.point);
-			}
-		}
-		return ret;
-	}
-
-	public Collection<Coordinate> getAllAccessibleEndpoints(TileEntityEssentiaRelay te, boolean los) {
-		Coordinate loc = new Coordinate(te);
-		HashSet<Coordinate> ret = this.getDirectlyAccessibleEndpoints(loc);
-		/*
-		for (Coordinate c : ret) {
-			NetworkEndpoint n = endpoints.get(c);
-			for (NetworkEndpoint n2 : endpoints.values()) {
-				if (!ret.contains(n2)) {
-					if (this.getPath(te.worldObj, n, n2) != null) {
-						ret.add(n2.point);
-					}
-				}
-			}
-		}*/
-		HashSet<Coordinate> path = new HashSet();
-		this.recursiveFind(te.worldObj, loc, ret, path, los);
-
-		return ret;
-	}
-
-	private void recursiveFind(World world, Coordinate from, HashSet<Coordinate> ret, HashSet<Coordinate> path, boolean los) {
-		path.add(from);
-		for (Coordinate c : nodes) {
-			if (!path.contains(c)) {
-				if (c.isWithinDistOnAllCoords(from, TileEntityEssentiaRelay.SEARCH_RANGE)) {
-					if (!los || LOS(world, from, c)) {
-						ret.addAll(this.getDirectlyAccessibleEndpoints(c));
-						//ReikaJavaLibrary.pConsole(c);
-						this.recursiveFind(world, c, ret, path, los);
-					}
-				}
-			}
-		}
-	}
-
-	public boolean isFilteredJar(Coordinate c) {
-		return endpoints.get(c) instanceof LabelledJarEndpoint;
 	}
 
 	private static Aspect isFilteredJar(IEssentiaTransport te) {
@@ -634,17 +163,13 @@ public class EssentiaNetwork {
 	private static class EssentiaPathCache {
 
 		private final ArrayList<Coordinate> path;
-
-		private long lastValidation = -1;
+		private boolean isDirty = false;
 
 		private EssentiaPathCache(ArrayList<Coordinate> li) {
 			path = li;
 		}
 
 		public boolean validate(World world) {
-			if (world.getTotalWorldTime()-lastValidation < 20)
-				return true;
-			lastValidation = world.getTotalWorldTime();
 			for (int i = 0; i < path.size()-1; i++) {
 				Coordinate loc1 = path.get(i);
 				Coordinate loc2 = path.get(i+1);
@@ -652,6 +177,10 @@ public class EssentiaNetwork {
 					return false;
 			}
 			return true;
+		}
+
+		public void markDirty() {
+			isDirty = true;
 		}
 
 		public boolean isEmpty() {
@@ -753,12 +282,13 @@ public class EssentiaNetwork {
 		}
 
 		@Override
-		public AspectList getPull() {
+		public AspectList getPull(World world) {
 			return null;
 		}
 
 		@Override
-		public AspectList getPush() {
+		public AspectList getPush(World world) {
+			IEssentiaTransport tile = this.getTile(world);
 			try {
 				Aspect a = (Aspect)alembicAspectField.get(tile);
 				return a != null ? new AspectList().add(a, alembicAmountField.getInt(tile)) : null;
@@ -770,12 +300,12 @@ public class EssentiaNetwork {
 		}
 
 		@Override
-		public int addAspect(Aspect a, int amount) { //never allow fill
+		public int addAspect(World world, Aspect a, int amount) { //never allow fill
 			return 0;
 		}
 
 		@Override
-		public boolean canReceive() {
+		public boolean canReceive(World world) {
 			return false;
 		}
 
@@ -791,9 +321,9 @@ public class EssentiaNetwork {
 		}
 
 		@Override
-		public AspectList getPull() {
+		public AspectList getPull(World world) {
 			try {
-				int amt = 64-amountField.getInt(tile);
+				int amt = 64-amountField.getInt(this.getTile(world));
 				return amt > 0 ? new AspectList().add(filter, amt) : null;
 			}
 			catch (Exception e) {
@@ -803,14 +333,14 @@ public class EssentiaNetwork {
 		}
 
 		@Override
-		public AspectList getPush() {
+		public AspectList getPush(World world) {
 			return null;
 		}
 
 		@Override
 		public boolean isValid(World world) {
 			try {
-				return super.isValid(world) && filterField.get(tile) == filter;
+				return super.isValid(world) && filterField.get(this.getTile(world)) == filter;
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -826,18 +356,18 @@ public class EssentiaNetwork {
 			super(loc, te);
 		}
 
-		public abstract AspectList getPull();
+		public abstract AspectList getPull(World world);
 
-		public abstract AspectList getPush();
+		public abstract AspectList getPush(World world);
 
 		@Override
-		public boolean canReceive() {
-			return this.getPush() == null && this.getPull() != null;
+		public boolean canReceive(World world) {
+			return this.getPush(world) == null && this.getPull(world) != null;
 		}
 
 		@Override
-		public boolean canEmit() {
-			return this.getPull() == null && this.getPush() != null;
+		public boolean canEmit(World world) {
+			return this.getPull(world) == null && this.getPush(world) != null;
 		}
 
 	}
@@ -845,13 +375,14 @@ public class EssentiaNetwork {
 	private static class NetworkEndpoint {
 
 		public final Coordinate point;
-		protected final IEssentiaTransport tile;
+		private final HashMap<Coordinate, EssentiaNode> relays = new HashMap();
+		protected final int tileHash;
 
 		public final int suction;
 
 		private NetworkEndpoint(Coordinate loc, IEssentiaTransport te) {
 			point = loc;
-			tile = te;
+			tileHash = System.identityHashCode(te);
 
 			int maxsuc = 0;
 			for (int i = 0; i < 6; i++) {
@@ -863,10 +394,16 @@ public class EssentiaNetwork {
 		}
 
 		public boolean isValid(World world) {
-			return point.getTileEntity(world) == tile;
+			TileEntity te = point.getTileEntity(world);
+			return te != null && System.identityHashCode(te) == tileHash;
 		}
 
-		public final int getContents(Aspect a) {
+		protected final IEssentiaTransport getTile(World world) {
+			return (IEssentiaTransport)point.getTileEntity(world);
+		}
+
+		public final int getContents(World world, Aspect a) {
+			IEssentiaTransport tile = this.getTile(world);
 			if (tile instanceof TileEntityAspectJar) {
 				return ((TileEntityAspectJar)tile).getAmount(a);
 			}
@@ -881,7 +418,8 @@ public class EssentiaNetwork {
 			return 0;
 		}
 
-		public int addAspect(Aspect a, int amount) {
+		public int addAspect(World world, Aspect a, int amount) {
+			IEssentiaTransport tile = this.getTile(world);
 			int ret = 0;
 			for (int i = 0; i < 6; i++) {
 				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
@@ -897,7 +435,8 @@ public class EssentiaNetwork {
 			return ret;
 		}
 
-		public int takeAspect(Aspect a, int amount) {
+		public int takeAspect(World world, Aspect a, int amount) {
+			IEssentiaTransport tile = this.getTile(world);
 			int ret = 0;
 			for (int i = 0; i < 6; i++) {
 				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
@@ -913,11 +452,11 @@ public class EssentiaNetwork {
 			return ret;
 		}
 
-		public boolean canReceive() {
+		public boolean canReceive(World world) {
 			return true;
 		}
 
-		public boolean canEmit() {
+		public boolean canEmit(World world) {
 			return true;
 		}
 
@@ -933,25 +472,34 @@ public class EssentiaNetwork {
 
 		@Override
 		public final String toString() {
-			return tile+" @ "+point+" suc="+suction;
+			return tileHash+" @ "+point+" suc="+suction;
 		}
 
 	}
 
 	private static class SuctionComparator implements Comparator<NetworkEndpoint> {
 
-		private final boolean suction;
+		private boolean suction;
+		private World referenceWorld;
 
-		private SuctionComparator(boolean suck) {
-			suction = suck;
+		private void setWorld(World world) {
+			referenceWorld = world;
+		}
+
+		private void setForPull(boolean pull) {
+			suction = pull;
+		}
+
+		private void reset() {
+			referenceWorld = null;
 		}
 
 		public int compare(NetworkEndpoint o1, NetworkEndpoint o2) {
 			if (o1 instanceof ActiveEndpoint && o2 instanceof ActiveEndpoint) {
 				ActiveEndpoint a1 = (ActiveEndpoint)o1;
 				ActiveEndpoint a2 = (ActiveEndpoint)o2;
-				AspectList p1 = suction ? a1.getPull() : a1.getPush();
-				AspectList p2 = suction ? a2.getPull() : a2.getPush();
+				AspectList p1 = suction ? a1.getPull(referenceWorld) : a1.getPush(referenceWorld);
+				AspectList p2 = suction ? a2.getPull(referenceWorld) : a2.getPush(referenceWorld);
 				if (p1 == null && p2 == null) {
 					return 0;
 				}
@@ -990,6 +538,8 @@ public class EssentiaNetwork {
 				flag = false;
 				for (Coordinate c : set) {
 					Collection<Coordinate> li = getNearNodesExcept(te.worldObj, c, set);
+					if (li == null)
+						return null;
 					if (!li.isEmpty()) {
 						flag = true;
 						for (Coordinate c2 : li) {
@@ -998,7 +548,8 @@ public class EssentiaNetwork {
 					}
 				}
 			}
-			return buildNetworkWithNodes(te.worldObj, set);
+			EssentiaSubnet ret = buildNetworkWithNodes(te.worldObj, set);
+			return ret;
 		}
 
 		private static Collection<Coordinate> getNearNodesExcept(World world, Coordinate c, HashSet<Coordinate> set) {
@@ -1014,6 +565,11 @@ public class EssentiaNetwork {
 						if (set.contains(c2))
 							continue;
 						if (ChromaTiles.getTile(world, dx, dy, dz) == ChromaTiles.ESSENTIARELAY) {
+							EssentiaSubnet net = ((TileEntityEssentiaRelay)world.getTileEntity(dx, dy, dz)).getNetwork();
+							if (net != null) {
+								net.destroy(world, true);
+								return null;
+							}
 							ret.add(c2);
 						}
 					}
@@ -1023,7 +579,7 @@ public class EssentiaNetwork {
 		}
 
 		private static EssentiaSubnet buildNetworkWithNodes(World world, HashSet<Coordinate> set) {
-			EssentiaSubnet net = new EssentiaSubnet(world.provider.dimensionId);
+			EssentiaSubnet net = new EssentiaSubnet(EssentiaNetwork.getNetwork(world), world.provider.dimensionId);
 			for (Coordinate c : set) {
 				net.addRelay(world, c);
 			}
@@ -1035,16 +591,39 @@ public class EssentiaNetwork {
 	public static class EssentiaSubnet {
 
 		public final int dimension;
-		private final HashMap<Coordinate, EssentiaNode> relays = new HashMap();
 
-		private EssentiaSubnet(int dim) {
+		private final EssentiaNetwork parent;
+		private final HashMap<Coordinate, EssentiaNode> relays = new HashMap();
+		private final HashMap<Coordinate, NetworkEndpoint> endpoints = new HashMap();
+		private final HashMap<ImmutablePair<Coordinate, Coordinate>, EssentiaPathCache> pathList = new HashMap();
+
+		private final HashMap<Coordinate, Boolean> renderMap = new HashMap();
+
+		private long lastTick;
+
+		private EssentiaSubnet(EssentiaNetwork n, int dim) {
 			dimension = dim;
+			parent = n;
+			parent.subnets.add(this);
+		}
+
+		public void destroy(World world, boolean doDrops) {
+			parent.subnets.remove(this);
+			for (EssentiaNode n : relays.values()) {
+				n.destroy(world, doDrops);
+			}
+			relays.clear();
+			endpoints.clear();
+			pathList.clear();
+			renderMap.clear();
 		}
 
 		private void addRelay(World world, Coordinate c) {
-			EssentiaNode n = new EssentiaNode(c);
+			EssentiaNode n = new EssentiaNode(this, c);
 			this.linkNodesTo(world, n);
 			relays.put(c, n);
+			renderMap.put(c, false);
+			((TileEntityEssentiaRelay)c.getTileEntity(world)).setNetwork(this);
 		}
 
 		private void linkNodesTo(World world, EssentiaNode n) {
@@ -1059,7 +638,7 @@ public class EssentiaNetwork {
 			return n.getDistanceTo(c) <= TileEntityEssentiaRelay.SEARCH_RANGE && LOS(world, n.position, c.position);
 		}
 
-		public void findAllEndpoints(World world) {
+		private void findAllEndpoints(World world) {
 			for (EssentiaNode c : relays.values()) {
 				c.findValidEndpoints(world);
 			}
@@ -1069,24 +648,273 @@ public class EssentiaNetwork {
 			return relays.get(new Coordinate(te));
 		}
 
+		public int countEssentia(World world, Aspect aspect) {
+			int sum = 0;
+			for (NetworkEndpoint n : endpoints.values()) {
+				sum += n.getContents(world, aspect);
+			}
+			return sum;
+		}
+
+		public EssentiaMovement removeEssentia(TileEntityEssentiaRelay caller, ForgeDirection callDir, Aspect aspect, int amount) {
+			return this.removeEssentia(caller, callDir, aspect, amount, new Coordinate(caller).offset(callDir, 1));
+		}
+
+		public EssentiaMovement removeEssentia(TileEntityEssentiaRelay caller, ForgeDirection callDir, Aspect aspect, int amount, Coordinate tgt) {
+			TileEntity target = caller.getAdjacentTileEntity(callDir);
+			ArrayList<EssentiaPath> li = new ArrayList();
+			ArrayList<NetworkEndpoint> list = new ArrayList(endpoints.values());
+			endpointComparator.setWorld(caller.worldObj);
+			endpointComparator.setForPull(true);
+			Collections.sort(list, endpointComparator);
+			endpointComparator.reset();
+			for (NetworkEndpoint p : list) {
+				EssentiaPathCache pt = this.getPath(caller.worldObj, p, endpoints.get(new Coordinate(target)));
+				if (pt != null && !pt.isEmpty()) {
+					int rem = p.takeAspect(caller.worldObj, aspect, amount);
+					if (rem > 0) {
+						amount -= rem;
+						li.add(new EssentiaPath(aspect, rem, pt)); //ReikaJavaLibrary.makeListFrom(loc, node, new Coordinate(caller))
+						if (amount <= 0) {
+							break;
+						}
+					}
+				}
+			}
+			return li.isEmpty() ? null : new EssentiaMovement(li);
+		}
+
+		public EssentiaMovement addEssentia(TileEntityEssentiaRelay caller, ForgeDirection callDir, Aspect aspect, int amount) {
+			return this.addEssentia(caller, aspect, amount, new Coordinate(caller).offset(callDir, 1));
+		}
+
+		public EssentiaMovement addEssentia(TileEntityEssentiaRelay caller, Aspect aspect, int amount, Coordinate src) {
+			ArrayList<EssentiaPath> li = new ArrayList();
+			ArrayList<NetworkEndpoint> list = new ArrayList(endpoints.values());
+			endpointComparator.setWorld(caller.worldObj);
+			endpointComparator.setForPull(false);
+			Collections.sort(list, endpointComparator);
+			endpointComparator.reset();
+			for (NetworkEndpoint p : list) {
+				EssentiaPathCache pt = this.getPath(caller.worldObj, endpoints.get(src), p);
+				if (pt != null && !pt.isEmpty()) {
+					int added = p.addAspect(caller.worldObj, aspect, amount);
+					if (added > 0) {
+						amount -= added;
+						li.add(new EssentiaPath(aspect, added, pt)); //ReikaJavaLibrary.makeListFrom(new Coordinate(caller), node, loc)
+						if (amount <= 0) {
+							break;
+						}
+					}
+				}
+			}
+			return li.isEmpty() ? null : new EssentiaMovement(li);
+		}
+
+		public EssentiaMovement tick(World world) {
+			if (lastTick == world.getTotalWorldTime())
+				return null;
+			lastTick = world.getTotalWorldTime();
+			ArrayList<EssentiaPath> li = new ArrayList();
+			for (NetworkEndpoint net : endpoints.values()) {
+				if (net instanceof ActiveEndpoint) {
+					ActiveEndpoint from = (ActiveEndpoint)net;
+					AspectList al = from.getPush(world);
+					if (al != null && !al.aspects.isEmpty()) {
+						for (NetworkEndpoint to : endpoints.values()) {
+							if (this.canTransfer(world, from, to)) {
+								li.addAll(this.transferEssentia(world, from, to, al));
+								if (al.aspects.isEmpty())
+									break;
+							}
+						}
+					}
+					al = from.getPull(world);
+					if (al != null && !al.aspects.isEmpty()) {
+						for (NetworkEndpoint to : endpoints.values()) {
+							if (this.canTransfer(world, to, from)) {
+								li.addAll(this.transferEssentia(world, to, from, al));
+								if (al.aspects.isEmpty())
+									break;
+							}
+						}
+					}
+				}
+				//ReikaJavaLibrary.pConsole(li, !li.isEmpty());
+			}
+			return li.isEmpty() ? null : new EssentiaMovement(li);
+		}
+
+		private boolean canTransfer(World world, NetworkEndpoint from, NetworkEndpoint to) {
+			if (from == to || from.point.equals(to.point))
+				return false;
+			if (from instanceof LabelledJarEndpoint)
+				return !isJar(to.getTile(world));
+			if (isJar(from.getTile(world)) && isJar(to.getTile(world)))
+				return to instanceof LabelledJarEndpoint && ((LabelledJarEndpoint)to).getPull(world) != null;
+			return from.canEmit(world) && to.canReceive(world) && from.isValid(world) && to.isValid(world);
+		}
+
+		private ArrayList<EssentiaPath> transferEssentia(World world, NetworkEndpoint from, NetworkEndpoint to, AspectList al) {
+			//ReikaJavaLibrary.pConsole("Attempting transfer of "+ReikaThaumHelper.aspectsToString(al)+" from "+from+" to "+to);
+			ArrayList<EssentiaPath> ret = new ArrayList();
+			Iterator<Entry<Aspect, Integer>> it = al.aspects.entrySet().iterator();
+			while (it.hasNext()) {
+				Entry<Aspect, Integer> e = it.next();
+				Aspect a = e.getKey();
+				int amt = e.getValue();
+				EssentiaPath p = this.transferEssentia(world, from, to, a, Math.min(amt, TileEntityEssentiaRelay.THROUGHPUT));
+				if (p != null) {
+					ret.add(p);
+					e.setValue(amt-p.amount);
+					if (e.getValue() <= 0)
+						it.remove();
+				}
+			}
+			//ReikaJavaLibrary.pConsole(ret, !ret.isEmpty());
+			return ret;
+		}
+
+		private EssentiaPath transferEssentia(World world, NetworkEndpoint from, NetworkEndpoint to, Aspect a, int amount) {
+			EssentiaPathCache pt = this.getPath(world, from, to);
+			if (pt == null || pt.isEmpty())
+				return null;
+			int has = from.getContents(world, a);
+			int amt = Math.min(amount, has);
+			int put = to.addAspect(world, a, amt);
+			int put2 = from.takeAspect(world, a, put);
+			if (put2 < put) {
+				to.takeAspect(world, a, put-put2);
+			}
+			if (put2 <= 0)
+				return null;
+			//ReikaJavaLibrary.pConsole("Transferred "+put+" & "+put2+" / "+amount+" of "+a.getTag()+" from "+from+" to "+to);
+			//ReikaJavaLibrary.pConsole(pt+" of "+from+" , "+to);
+			return new EssentiaPath(a, put2, pt);
+		}
+
+		@Override
+		public String toString() {
+			return System.identityHashCode(this)+" "+relays;
+		}
+
+		public Collection<Coordinate> getAllFilteredJars() {
+			Collection<Coordinate> ret = new HashSet();
+			for (NetworkEndpoint n : endpoints.values()) {
+				if (n instanceof LabelledJarEndpoint)
+					ret.add(n.point);
+			}
+			return ret;
+		}
+
+		public boolean isFilteredJar(Coordinate c) {
+			return endpoints.get(c) instanceof LabelledJarEndpoint;
+		}
+
+		private EssentiaPathCache getPath(World world, NetworkEndpoint from, NetworkEndpoint to) {
+			pathList.clear();
+			ImmutablePair<Coordinate, Coordinate> key = new ImmutablePair(from.point, to.point);
+			EssentiaPathCache path = pathList.get(key);
+			if (path != null) {
+				if (path.isDirty) {
+					if (!path.validate(world))
+						pathList.remove(key);
+				}
+				return path;
+			}
+			ArrayList<Coordinate> li = this.calculatePath(world, from, to);
+			if (li != null && !li.isEmpty()) {
+				path = new EssentiaPathCache(li);
+				pathList.put(key, path);
+			}
+			return path;
+		}
+
+		private ArrayList<Coordinate> calculatePath(World world, NetworkEndpoint from, NetworkEndpoint to) {
+			for (Coordinate c : from.relays.keySet()) {
+				if (to.relays.containsKey(c)) {
+					return this.buildPathBetween(from, to, c);
+				}
+			}
+			for (EssentiaNode e : from.relays.values()) {
+				for (EssentiaNode e2 : to.relays.values()) {
+					ArrayList<Coordinate> li = this.getNodePath(world, e, e2, new HashSet());
+					if (li != null) {
+						return this.buildPathBetween(from, to, li.toArray(new Coordinate[li.size()]));
+					}
+				}
+			}
+			return null;
+		}
+
+		private ArrayList<Coordinate> getNodePath(World world, EssentiaNode from, EssentiaNode to, HashSet<Coordinate> visited) {
+			if (to.otherNodes.contains(from.position)) {
+				return ReikaJavaLibrary.makeListFrom(from.position, to.position);
+			}
+			for (Coordinate c : to.otherNodes) {
+				if (visited.contains(c))
+					continue;
+				visited.add(c);
+				EssentiaNode e = relays.get(c);
+				ArrayList<Coordinate> li = this.getNodePath(world, from, e, visited);
+				if (li != null) {
+					li.add(to.position);
+					return li;
+				}
+			}
+			return null;
+		}
+
+		private ArrayList<Coordinate> buildPathBetween(NetworkEndpoint from, NetworkEndpoint to, Coordinate... hops) {
+			ArrayList<Coordinate> li = new ArrayList();
+			li.add(from.point);
+			for (Coordinate c : hops) {
+				li.add(c);
+			}
+			li.add(to.point);
+			return li;
+		}
+
+		public Collection<Coordinate> getAllEndpoints() {
+			return Collections.unmodifiableCollection(endpoints.keySet());
+		}
+
+		public Map<Coordinate, Boolean> getGeneralizedNetworkRenderer() {
+			return Collections.unmodifiableMap(renderMap);
+		}
 	}
 
 	public static class EssentiaNode {
 
 		public final Coordinate position;
+
+		private final EssentiaSubnet network;
 		private final HashSet<Coordinate> otherNodes = new HashSet();
 		private final HashMap<Coordinate, NetworkEndpoint> inertEndpoints = new HashMap();
 		private final HashMap<Coordinate, ActiveEndpoint> activeEndpoints = new HashMap();
 
-		private EssentiaNode(Coordinate c) {
+		private EssentiaNode(EssentiaSubnet n, Coordinate c) {
+			network = n;
 			position = c;
+		}
+
+		private void destroy(World world, boolean doDrops) {
+			activeEndpoints.clear();
+			inertEndpoints.clear();
+			otherNodes.clear();
+			TileEntity te = position.getTileEntity(world);
+			if (te instanceof TileEntityEssentiaRelay) {
+				((TileEntityEssentiaRelay)te).reset();
+				if (doDrops)
+					((TileEntityEssentiaRelay)te).drop();
+			}
 		}
 
 		public double getDistanceTo(EssentiaNode c) {
 			return c.position.getDistanceTo(position);
 		}
 
-		public void findValidEndpoints(World world) {
+		private void findValidEndpoints(World world) {
 			int r = TileEntityEssentiaRelay.SEARCH_RANGE;
 			for (int i = -r; i <= r; i++) {
 				for (int j = -r; j <= r; j++) {
@@ -1102,14 +930,20 @@ public class EssentiaNetwork {
 
 		private void addEndpointAt(World world, int x, int y, int z) {
 			TileEntity te = world.getTileEntity(x, y, z);
-			if (te instanceof IEssentiaTransport) {
-				NetworkEndpoint end = this.createEndpoint(new Coordinate(x, y, z), (IEssentiaTransport)te);
+			if (te instanceof IEssentiaTransport && !(te instanceof TileEntityEssentiaRelay)) {
+				Coordinate c = new Coordinate(x, y, z);
+				NetworkEndpoint end = network.endpoints.get(c);
+				if (end == null)
+					end = this.createEndpoint(c, (IEssentiaTransport)te);
 				if (end instanceof ActiveEndpoint) {
-					activeEndpoints.put(end.point, (ActiveEndpoint)end);
+					activeEndpoints.put(c, (ActiveEndpoint)end);
 				}
 				else {
-					inertEndpoints.put(end.point, end);
+					inertEndpoints.put(c, end);
 				}
+				end.relays.put(position, this);
+				network.endpoints.put(c, end);
+				network.renderMap.put(c, true);
 			}
 		}
 
@@ -1123,9 +957,20 @@ public class EssentiaNetwork {
 			return new NetworkEndpoint(loc, te);
 		}
 
-		public void connect(EssentiaNode c) {
+		private void connect(EssentiaNode c) {
 			otherNodes.add(c.position);
 			c.otherNodes.add(position);
+		}
+
+		public Collection<Coordinate> getNeighbors() {
+			return Collections.unmodifiableCollection(otherNodes);
+		}
+
+		public Collection<Coordinate> getVisibleEndpoints() {
+			Collection<Coordinate> c = new HashSet();
+			c.addAll(activeEndpoints.keySet());
+			c.addAll(inertEndpoints.keySet());
+			return c;
 		}
 
 	}

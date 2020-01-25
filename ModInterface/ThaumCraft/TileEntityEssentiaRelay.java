@@ -12,35 +12,40 @@ package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.EssentiaNetwork.EssentiaMovement;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.EssentiaNetwork.EssentiaPath;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.EssentiaNetwork.EssentiaSubnet;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
-import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import thaumcraft.api.WorldCoordinates;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.IEssentiaTransport;
@@ -56,10 +61,8 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 	private final StepTimer scanTimer = new StepTimer(50);
 
 	private final Collection<EssentiaPath> activePaths = new ArrayList();
-	final HashMap<Coordinate, Boolean> networkCoords = new HashMap();
-
-	private int throttle;
-	private int tickThrottle;
+	private EssentiaSubnet network;
+	private boolean isController;
 
 	private static Class infusionMatrix;
 	private static Class essentiaHandler;
@@ -83,34 +86,42 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 	protected void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
 
-		NBTTagList li = new NBTTagList();
-		for (Coordinate c : networkCoords.keySet()) {
-			NBTTagCompound tag = c.writeToTag();
-			tag.setBoolean("node", networkCoords.get(c));
-			li.appendTag(tag);
-		}
-		NBT.setTag("points", li);
+		NBT.setBoolean("controller", isController);
 	}
 
 	@Override
 	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 
-		networkCoords.clear();
-		NBTTagList li = NBT.getTagList("points", NBTTypes.COMPOUND.ID);
-		for (Object o : li.tagList) {
-			NBTTagCompound n = (NBTTagCompound)o;
-			Coordinate c = Coordinate.readTag(n);
-			networkCoords.put(c, n.getBoolean("node"));
-		}
+		isController = NBT.getBoolean("controller");
 	}
 
 	public void tryBuildNetwork() {
-		network = EssentiaNetwork.NetworkBuilder.buildFrom(this);
+		if (network != null) {
+			ChromaSounds.ERROR.playSoundAtBlock(this);
+		}
+		else {
+			network = EssentiaNetwork.NetworkBuilder.buildFrom(this);
+			if (network != null) {
+				isController = true;
+				ChromaSounds.CAST.playSoundAtBlock(this);
+			}
+			else {
+				ChromaSounds.ERROR.playSoundAtBlock(this);
+			}
+		}
 	}
 
 	public Map<Coordinate, Boolean> getNetworkTiles() {
-		return Collections.unmodifiableMap(networkCoords);
+		return network != null ? network.getGeneralizedNetworkRenderer() : null;
+	}
+
+	public Collection<Coordinate> getVisibleOtherNodes() {
+		return network != null ? network.getNode(this).getNeighbors() : null;
+	}
+
+	public Collection<Coordinate> getVisibleEndpoints() {
+		return network != null ? network.getNode(this).getVisibleEndpoints() : null;
 	}
 
 	@Override
@@ -130,15 +141,17 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 			it.remove();
 		}
 
-		if (!world.isRemote && tickThrottle == 0) {
-			EssentiaMovement mov = this.getNetwork().tick(world);
-			if (mov != null) {
-				for (EssentiaPath p : mov.paths()) {
-					this.addPath(p);
+		if (network != null) {
+			if (!world.isRemote) {
+				EssentiaMovement mov = network.tick(world);
+				if (mov != null) {
+					for (EssentiaPath p : mov.paths()) {
+						this.addPath(p);
+					}
 				}
 			}
 			else {
-				tickThrottle = 8;
+				this.doNetworkConnectivityParticles(world, x, y, z);
 			}
 		}
 
@@ -148,22 +161,50 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 		}
 	}
 
-	private void throttleOnFailure() {
-		throttle = 8;
+	@SideOnly(Side.CLIENT)
+	private void doNetworkConnectivityParticles(World world, int x, int y, int z) {
+		if (HoldingChecks.MANIPULATOR.isClientHolding()) {
+			int n = 12;
+			Coordinate h = new Coordinate(this);
+			for (Coordinate c : this.getVisibleOtherNodes()) {
+				if (c.hashCode() >= h.hashCode()) {
+					if (this.getTicksExisted()%n == (c.hashCode()^h.hashCode())%n)
+						this.doConnectionParticles(world, x, y, z, c.xCoord, c.yCoord, c.zCoord, true);
+				}
+			}
+			for (Coordinate c : this.getVisibleEndpoints()) {
+				if (this.getTicksExisted()%n == (c.hashCode()^h.hashCode())%n)
+					this.doConnectionParticles(world, x, y, z, c.xCoord, c.yCoord, c.zCoord, false);
+			}
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void doConnectionParticles(World world, int x, int y, int z, int x2, int y2, int z2, boolean isNode) {
+		for (double d = 0; d <= 1; d += 0.03125) {
+			double dx = x+(x2-x)*d;
+			double dy = y+(y2-y)*d;
+			double dz = z+(z2-z)*d;
+			int c = isNode ? 0x6f6fff : 0x6fff6f;
+			float s = 0.5F+(float)(2*Math.min(d, 1-d));
+			EntityBlurFX fx = new EntityBlurFX(world, dx+0.5, dy+0.5, dz+0.5).setScale(s).setColor(c).setAlphaFading().setLife(10).setIcon(ChromaIcons.CENTER);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
 	}
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
-		this.scan(world, x, y, z, true);
+		//this.scan(world, x, y, z, true);
+		if (isController && network == null) {
+			this.tryBuildNetwork();
+		}
 	}
 
-	void scan(World world, int x, int y, int z, boolean rebuild) {
+	private void scan(World world, int x, int y, int z, boolean rebuild) {
 		if (world.isRemote)
 			return;
-		EssentiaNetwork ew = this.getNetwork();
-		if (rebuild) {
-			ew.addNode(this);
-		}
+		if (network == null)
+			return;
 		HashSet<Coordinate> matrices = new HashSet();
 		for (int i = -SEARCH_RANGE; i <= SEARCH_RANGE; i++) {
 			for (int j = -SEARCH_RANGE; j <= SEARCH_RANGE; j++) {
@@ -172,20 +213,7 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 					int dy = y+j;
 					int dz = z+k;
 					TileEntity te = world.getTileEntity(dx, dy, dz);
-					if (te instanceof IEssentiaTransport) {
-						if (te != this) {
-							if (te instanceof TileEntityEssentiaRelay) {
-								/*
-								TileEntityEssentiaRelay tr = (TileEntityEssentiaRelay)te;
-								if (rebuild && tr.network != null)
-									network.merge(world, tr.network);*/
-							}
-							else {
-								ew.addEndpoint(this, (IEssentiaTransport)te);
-							}
-						}
-					}
-					else if (te != null && te.getClass() == infusionMatrix) {
+					if (te != null && te.getClass() == infusionMatrix) {
 						matrices.add(new Coordinate(te));
 					}
 				}
@@ -193,9 +221,9 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 		}
 		if (!matrices.isEmpty()) {
 			for (Coordinate loc : matrices) {
-				Collection<Coordinate> li = ew.getAllAccessibleEndpoints(this, false);
+				Collection<Coordinate> li = network.getAllEndpoints();
 				for (Coordinate c : li) {
-					if (ew.isFilteredJar(c)) {
+					if (network.isFilteredJar(c)) {
 						this.injectFilteredJar(loc, c);
 					}
 				}
@@ -270,54 +298,51 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 
 	@Override
 	public int takeEssentia(Aspect aspect, int amount, ForgeDirection face) {
-		if (throttle > 0)
+		if (network == null)
 			return 0;
 		amount = Math.min(THROUGHPUT, amount);
-		EssentiaMovement r = this.getNetwork().removeEssentia(this, face, aspect, amount);
+		EssentiaMovement r = network.removeEssentia(this, face, aspect, amount);
 		if (r != null) {
 			for (EssentiaPath p : r.paths()) {
 				this.addPath(p);
 			}
 			return r.totalAmount;
 		}
-		this.throttleOnFailure();
 		return 0;
 	}
 
 	private int collectEssentiaToTarget(Aspect a, int amt, Coordinate tgt) {
-		if (throttle > 0)
+		if (network == null)
 			return 0;
 		amt = Math.min(THROUGHPUT, amt);
-		EssentiaMovement r = this.getNetwork().removeEssentia(this, ForgeDirection.DOWN, a, amt, tgt);
+		EssentiaMovement r = network.removeEssentia(this, ForgeDirection.DOWN, a, amt, tgt);
 		if (r != null) {
 			for (EssentiaPath p : r.paths()) {
 				this.addPath(p);
 			}
 			return r.totalAmount;
 		}
-		this.throttleOnFailure();
 		return 0;
 	}
 
 	@Override
 	public int addEssentia(Aspect aspect, int amount, ForgeDirection face) {
-		if (throttle > 0)
+		if (network == null)
 			return 0;
 		amount = Math.min(THROUGHPUT, amount);
-		EssentiaMovement s = this.getNetwork().addEssentia(this, face, aspect, amount);
+		EssentiaMovement s = network.addEssentia(this, face, aspect, amount);
 		if (s != null) {
 			for (EssentiaPath p : s.paths()) {
 				this.addPath(p);
 			}
 			return s.totalAmount;
 		}
-		this.throttleOnFailure();
 		return 0;
 	}
 
 	@Override
 	public Aspect getEssentiaType(ForgeDirection face) {
-		if (throttle > 0)
+		if (network == null)
 			return null;
 		TileEntity te = this.getAdjacentTileEntity(face);
 		return te instanceof IEssentiaTransport	? ((IEssentiaTransport)te).getSuctionType(face.getOpposite()) : null;
@@ -325,10 +350,10 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 
 	@Override
 	public int getEssentiaAmount(ForgeDirection face) {
-		if (throttle > 0)
+		if (network == null)
 			return 0;
 		Aspect a = this.getEssentiaType(face);
-		return a != null ? this.getNetwork().countEssentia(worldObj, a) : 0;
+		return a != null ? network.countEssentia(worldObj, a) : 0;
 	}
 
 	@Override
@@ -343,11 +368,24 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 
 	@Override
 	public void breakBlock() {
-		this.getNetwork().removeNode(this);
+		if (network != null)
+			network.destroy(worldObj, true);
+		network = null;
+		isController = false;
 	}
 
-	private EssentiaNetwork getNetwork() {
-		return EssentiaNetwork.getNetwork(worldObj);
+	public void reset() {
+		//network.destroy(worldObj, false);
+		network = null;
+		isController = false;
+	}
+
+	void setNetwork(EssentiaSubnet net) {
+		network = net;
+	}
+
+	EssentiaSubnet getNetwork() {
+		return network;
 	}
 
 	@Override

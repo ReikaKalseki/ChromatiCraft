@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.ModInterface.TileEntityFloatingLandmark;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeRecharger;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityEssentiaRelay;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
@@ -260,6 +261,17 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			return true;
 		}
 		 */
+
+		if (t == ChromaTiles.ESSENTIARELAY) {
+			TileEntityEssentiaRelay te = (TileEntityEssentiaRelay)tile;
+			if (ep.isSneaking()) {
+				return false;
+			}
+			else {
+				te.tryBuildNetwork();
+			}
+			return true;
+		}
 
 		if (t == ChromaTiles.FENCE) {
 			TileEntityCrystalFence te = (TileEntityCrystalFence)tile;

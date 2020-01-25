@@ -9,9 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -21,14 +18,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.client.MinecraftForgeClient;
 
-import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityEssentiaRelay;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -56,15 +49,13 @@ public class RenderEssentiaRelay extends ChromaRenderBase {
 		ReikaRenderHelper.disableEntityLighting();
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glTranslated(par2, par4, par6);
-
+		/*
 		if (te.isInWorld() && !StructureRenderer.isRenderingTiles()) {
 			float f = HoldingChecks.MANIPULATOR.getFade();
-			if (f > 0 && (par8 != lastNetworkRenderPTick || lastNetworkRenderTick != te.worldObj.getTotalWorldTime())) {
-				lastNetworkRenderPTick = par8;
-				lastNetworkRenderTick = te.worldObj.getTotalWorldTime();
+			if (f > 0) {
 				this.renderNetwork(te, f, par8);
 			}
-		}
+		}*/
 
 		GL11.glTranslatef(0, 1, 1);
 		GL11.glScalef(1.0F, -1.0F, -1.0F);
@@ -80,10 +71,10 @@ public class RenderEssentiaRelay extends ChromaRenderBase {
 		GL11.glPopAttrib();
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 	}
-
+	/*
 	private void renderNetwork(TileEntityEssentiaRelay te, float fade, float par8) {
-		Map<Coordinate, Boolean> map = te.getNetworkTiles();
-		if (map.isEmpty())
+		Collection<Coordinate> map = te.getVisibleOtherNodes();
+		if (map == null || map.isEmpty())
 			return;
 		BlendMode.DEFAULT.apply();
 		GL11.glColor4f(1, 1, 1, 1);
@@ -94,13 +85,15 @@ public class RenderEssentiaRelay extends ChromaRenderBase {
 		v5.setBrightness(240);
 		v5.startDrawing(GL11.GL_LINES);
 		double o = 0.125;
-		for (Entry<Coordinate, Boolean> e : map.entrySet()) {
-			Coordinate c = e.getKey();
+		for (Coordinate c : map) {
+			if (c.hashCode() < new Coordinate(te).hashCode())
+				continue;
 			float f = (float)(0.5+0.5*Math.sin((te.getTicksExisted()+par8)/10D+System.identityHashCode(c)));
-			int c1 = e.getValue() ? 0x0000e0 : 0x00e000;
-			int c2 = e.getValue() ? 0x7f7fff : 0x7fff7f;
+			int c1 = true ? 0x0000e0 : 0x00e000;
+			int c2 = true ? 0x7f7fff : 0x7fff7f;
 			int clr = ReikaColorAPI.mixColors(c1, c2, f);
 			v5.setColorRGBA_I(clr, (int)(fade*255));
+			/*
 			v5.addVertex(c.xCoord-te.xCoord+o, c.yCoord-te.yCoord+o, c.zCoord-te.zCoord+o);
 			v5.addVertex(c.xCoord-te.xCoord+o, c.yCoord-te.yCoord+1-o, c.zCoord-te.zCoord+o);
 			v5.addVertex(c.xCoord-te.xCoord+1-o, c.yCoord-te.yCoord+o, c.zCoord-te.zCoord+o);
@@ -127,12 +120,15 @@ public class RenderEssentiaRelay extends ChromaRenderBase {
 			v5.addVertex(c.xCoord-te.xCoord+o, c.yCoord-te.yCoord+1-o, c.zCoord-te.zCoord+1-o);
 			v5.addVertex(c.xCoord-te.xCoord+1-o, c.yCoord-te.yCoord+1-o, c.zCoord-te.zCoord+o);
 			v5.addVertex(c.xCoord-te.xCoord+1-o, c.yCoord-te.yCoord+1-o, c.zCoord-te.zCoord+1-o);
+	 *//*
+			v5.addVertex(0.5, 0.5, 0.5);
+			v5.addVertex(0.5+c.xCoord-te.xCoord, 0.5+c.yCoord-te.yCoord, 0.5+c.zCoord-te.zCoord);
 		}
 		v5.draw();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glLineWidth(w);
 		BlendMode.ADDITIVEDARK.apply();
-	}
+	}*/
 
 	private void drawInner(TileEntityEssentiaRelay te, float par8) {
 		ReikaTextureHelper.bindTerrainTexture();
