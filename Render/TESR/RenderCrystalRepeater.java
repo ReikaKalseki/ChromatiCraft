@@ -225,11 +225,13 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 	private void renderRangeSphere(TileEntityCrystalRepeater te, float par8) {
 		int a = te.getRangeAlpha();
 		if (a > 0) {
-			this.renderSphere(te, par8, ReikaColorAPI.getColorWithBrightnessMultiplier(0xffffff, a/255F), te.getSendRange());
+			double r = Math.min(te.getReceiveRange(), te.getSendRange());
+			r += 0.75*Math.sin(te.getTicksExisted()/128D);
+			this.renderSphere(te, par8, ReikaColorAPI.getColorWithBrightnessMultiplier(this.getHaloRenderColor(te), a/512F), r);
 		}
 	}
 
-	protected void renderSphere(TileEntityCrystalRepeater te, float par8, int color, int r) {
+	protected void renderSphere(TileEntityCrystalRepeater te, float par8, int color, double r) {
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glDisable(GL11.GL_CULL_FACE);
@@ -239,7 +241,7 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 		BlendMode.ADDITIVEDARK.apply();
 		GL11.glDepthMask(false);
 
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/repeaterrange.png");
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/repeaterrange3.png");
 		Tessellator var5 = Tessellator.instance;
 		var5.startDrawingQuads();
 		var5.setColorOpaque_I(color);
@@ -256,10 +258,10 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 				double a2 = Math.toRadians(i+di);
 				double ti = i+(System.currentTimeMillis()/50D%360);
 				double tk = k+(System.currentTimeMillis()/220D%360);
-				double u = ti/360D;
-				double du = (ti+di)/360D;
-				double v = tk/r;
-				double dv = (tk+dk)/r;
+				double u = ti/360D*3;
+				double du = (ti+di)/360D*3;
+				double v = tk*r/1024D;
+				double dv = (tk+dk)*r/1024D;
 				double s1 = Math.sin(a);
 				double s2 = Math.sin(a2);
 				double c1 = Math.cos(a);

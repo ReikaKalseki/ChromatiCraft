@@ -386,14 +386,17 @@ public class EssentiaNetwork {
 	private static class NetworkEndpoint {
 
 		public final Coordinate point;
-		private final HashMap<Coordinate, EssentiaNode> relays = new HashMap();
 		protected final int tileHash;
+		protected final Class tileClass;
+
+		private EssentiaNode relay;
 
 		public final int suction;
 
 		private NetworkEndpoint(Coordinate loc, IEssentiaTransport te) {
 			point = loc;
 			tileHash = System.identityHashCode(te);
+			tileClass = te.getClass();
 
 			int maxsuc = 0;
 			for (int i = 0; i < 6; i++) {
@@ -487,11 +490,11 @@ public class EssentiaNetwork {
 		}
 
 		public void removeFromRelays() {
-			for (EssentiaNode n : relays.values()) {
-				n.activeEndpoints.remove(point);
-				n.inertEndpoints.remove(point);
+			if (relay != null) {
+				relay.activeEndpoints.remove(point);
+				relay.inertEndpoints.remove(point);
 			}
-			relays.clear();
+			relay = null;
 		}
 	}
 
@@ -599,6 +602,7 @@ public class EssentiaNetwork {
 				net.addRelay(world, c);
 			}
 			net.findAllEndpoints(world);
+			net.prune(world);
 			return net;
 		}
 	}
@@ -621,6 +625,38 @@ public class EssentiaNetwork {
 			dimension = dim;
 			parent = n;
 			parent.subnets.add(this);
+		}
+
+		private void prune(World world) {
+			boolean flag = true;
+			while (flag) {
+				flag = false;
+				for (EssentiaNode e1 : relays.values()) {
+					for (EssentiaNode e2 : relays.values()) {
+						for (EssentiaNode e3 : relays.values()) {
+							double l12 = e1.isConnectedTo(e2) ? e1.getDistanceTo(e3) : -1;
+							double l13 = e1.isConnectedTo(e3) ? e1.getDistanceTo(e3) : -1;
+							double l23 = e2.isConnectedTo(e3) ? e2.getDistanceTo(e3) : -1;
+							if (l12 >= 0 && l13 >= 0 && l23 >= 0) {
+								this.breakLongestLink(e1, e2, e3, l12, l13, l23);
+								flag = true;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		private void breakLongestLink(EssentiaNode e1, EssentiaNode e2, EssentiaNode e3, double l12, double l13, double l23) {
+			if (l12 > l13 && l12 > l23) { //l12
+				e1.disconnect(e2);
+			}
+			else if (l13 > l12 && l13 > l23) { //l13
+				e1.disconnect(e3);
+			}
+			else { //l23
+				e2.disconnect(e3);
+			}
 		}
 
 		public void destroy(World world, boolean doDrops) {
@@ -778,11 +814,9 @@ public class EssentiaNetwork {
 				IEssentiaTransport te = n.getTile(world);
 				NetworkEndpoint repl = createEndpoint(n.point, te);
 				if (!n.isValid(world) || repl.getClass() != n.getClass()) {
-					repl.relays.putAll(n.relays);
-					n.relays.clear();
-					for (EssentiaNode e : repl.relays.values()) {
-						e.replaceEndpoint(repl);
-					}
+					repl.relay = n.relay;
+					n.relay = null;
+					repl.relay.replaceEndpoint(repl);
 				}
 				else {
 					repl = n;
@@ -876,20 +910,11 @@ public class EssentiaNetwork {
 		}
 
 		private ArrayList<Coordinate> calculatePath(World world, NetworkEndpoint from, NetworkEndpoint to) {
-			for (Coordinate c : from.relays.keySet()) {
-				if (to.relays.containsKey(c)) {
-					return this.buildPathBetween(from, to, c);
-				}
+			if (from.relay.equals(to.relay)) {
+				return this.buildPathBetween(from, to, to.relay.position);
 			}
-			for (EssentiaNode e : from.relays.values()) {
-				for (EssentiaNode e2 : to.relays.values()) {
-					ArrayList<Coordinate> li = this.getNodePath(world, e, e2, new HashSet());
-					if (li != null) {
-						return this.buildPathBetween(from, to, li.toArray(new Coordinate[li.size()]));
-					}
-				}
-			}
-			return null;
+			ArrayList<Coordinate> li = this.getNodePath(world, from.relay, to.relay, new HashSet());
+			return li != null ? this.buildPathBetween(from, to, li.toArray(new Coordinate[li.size()])) : null;
 		}
 
 		private ArrayList<Coordinate> getNodePath(World world, EssentiaNode from, EssentiaNode to, HashSet<Coordinate> visited) {
@@ -956,7 +981,11 @@ public class EssentiaNetwork {
 		}
 
 		public double getDistanceTo(EssentiaNode c) {
-			return c.position.getDistanceTo(position);
+			return position.getDistanceTo(c.position);
+		}
+
+		private double getDistanceTo(NetworkEndpoint end) {
+			return position.getDistanceTo(end.point);
 		}
 
 		private void findValidEndpoints(World world) {
@@ -977,16 +1006,27 @@ public class EssentiaNetwork {
 			TileEntity te = world.getTileEntity(x, y, z);
 			if (te instanceof IEssentiaTransport && !(te instanceof TileEntityEssentiaRelay)) {
 				Coordinate c = new Coordinate(x, y, z);
+				if (!LOS(world, position, c))
+					return;
 				NetworkEndpoint end = network.endpoints.get(c);
-				if (end == null)
+				if (end != null) {
+					if (this.getDistanceTo(end) >= end.relay.getDistanceTo(end))
+						return;
+				}
+				else {
 					end = createEndpoint(c, (IEssentiaTransport)te);
+				}
 				if (end instanceof ActiveEndpoint) {
 					activeEndpoints.put(c, (ActiveEndpoint)end);
 				}
 				else {
 					inertEndpoints.put(c, end);
 				}
-				end.relays.put(position, this);
+				if (end.relay != null) {
+					end.relay.activeEndpoints.remove(end.point);
+					end.relay.inertEndpoints.remove(end.point);
+				}
+				end.relay = this;
 				network.endpoints.put(c, end);
 				network.renderMap.put(c, true);
 			}
@@ -995,6 +1035,15 @@ public class EssentiaNetwork {
 		private void connect(EssentiaNode c) {
 			otherNodes.add(c.position);
 			c.otherNodes.add(position);
+		}
+
+		private void disconnect(EssentiaNode c) {
+			otherNodes.remove(c.position);
+			c.otherNodes.remove(position);
+		}
+
+		public boolean isConnectedTo(EssentiaNode c) {
+			return otherNodes.contains(c.position);
 		}
 
 		private void replaceEndpoint(NetworkEndpoint end) {

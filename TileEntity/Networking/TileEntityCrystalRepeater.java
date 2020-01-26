@@ -495,7 +495,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	@SideOnly(Side.CLIENT)
 	public void updateRangeAlpha() {
-		rangeSphereAlpha = rangeSphereAlpha >= -128 ? 1024 : 0;
+		rangeSphereAlpha = rangeSphereAlpha >= -20 ? 1024 : 0;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -532,7 +532,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		AxisAlignedBB def = super.getRenderBoundingBox();
 		if (def == INFINITE_EXTENT_AABB)
 			return def;
-		if (connectionRenderTick > 0) {
+		if (connectionRenderTick > 0 || rangeSphereAlpha > 0) {
 			return INFINITE_EXTENT_AABB;
 		}
 		else if (isTurbo) {

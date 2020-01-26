@@ -380,6 +380,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 		if (t != null && t.isRepeater() && t != ChromaTiles.SKYPEATER) {
 			TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)tile;
 			te.refreshConnectionRender();
+			te.updateRangeAlpha();
 			if (ep.isSneaking()) {
 				if (te.isPlacer(ep)) {
 					//world.setBlock(x, y, z, Blocks.air);
