@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -165,7 +165,7 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 
 						if (b == Blocks.sapling) {
 							world.setBlock(x, y, z, Blocks.air);
-							WorldGenAbstractTree tree = ChromatiCraft.glowingcliffs.getUndergroundTreeGen(rand, true);//biome.func_150567_a(rand);
+							WorldGenAbstractTree tree = ChromatiCraft.glowingcliffs.getUndergroundTreeGen(rand, true, 40);//biome.func_150567_a(rand);
 							((GlowingTreeGen)tree).setGlowChance(10);// no, because if triggers a chunk to gen, will get this on surface
 							tree.setScale(1.0D, 1.0D, 1.0D);
 

@@ -63,6 +63,7 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 	private final Collection<EssentiaPath> activePaths = new ArrayList();
 	private EssentiaSubnet network;
 	private boolean isController;
+	private boolean alreadyDropped;
 
 	private static Class infusionMatrix;
 	private static Class essentiaHandler;
@@ -165,6 +166,7 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 	private void doNetworkConnectivityParticles(World world, int x, int y, int z) {
 		if (HoldingChecks.MANIPULATOR.isClientHolding()) {
 			int n = 12;
+			int n2 = 48;
 			Coordinate h = new Coordinate(this);
 			for (Coordinate c : this.getVisibleOtherNodes()) {
 				if (c.hashCode() >= h.hashCode()) {
@@ -173,7 +175,7 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 				}
 			}
 			for (Coordinate c : this.getVisibleEndpoints()) {
-				if (this.getTicksExisted()%n == (c.hashCode()^h.hashCode())%n)
+				if (this.getTicksExisted()%(n2+n) == (c.hashCode()^h.hashCode())%(n2+n))
 					this.doConnectionParticles(world, x, y, z, c.xCoord, c.yCoord, c.zCoord, false);
 			}
 		}
@@ -393,6 +395,9 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 		//ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, this.getTile().getCraftedProduct());
 		//if (!this.shouldDrop())
 		//	return;
+		if (alreadyDropped)
+			return;
+		alreadyDropped = true;
 		ItemStack is = this.getTile().getCraftedProduct();
 		is.stackTagCompound = new NBTTagCompound();
 		//this.getTagsToWriteToStack(is.stackTagCompound);

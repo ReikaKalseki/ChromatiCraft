@@ -72,6 +72,7 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 			GL11.glTranslated(0.5, 0.5, 0.5);
 
 			this.renderPlayerConnectivityLine(te, par8);
+			this.renderRangeSphere(te, par8);
 
 			double s = 0.75;
 			GL11.glScaled(s, s, s);
@@ -221,9 +222,81 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 		}
 	}
 	 */
+	private void renderRangeSphere(TileEntityCrystalRepeater te, float par8) {
+		int a = te.getRangeAlpha();
+		if (a > 0) {
+			this.renderSphere(te, par8, ReikaColorAPI.getColorWithBrightnessMultiplier(0xffffff, a/255F), te.getSendRange());
+		}
+	}
+
+	protected void renderSphere(TileEntityCrystalRepeater te, float par8, int color, int r) {
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glDisable(GL11.GL_CULL_FACE);
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glEnable(GL11.GL_BLEND);
+		ReikaRenderHelper.disableEntityLighting();
+		BlendMode.ADDITIVEDARK.apply();
+		GL11.glDepthMask(false);
+
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/repeaterrange.png");
+		Tessellator var5 = Tessellator.instance;
+		var5.startDrawingQuads();
+		var5.setColorOpaque_I(color);
+		double dx = 0.5;
+		double dy = 0.5;
+		double dz = 0.5;
+		double dk = 0.5*r/16;
+		double di = 10;
+		for (double k = -r; k <= r; k += dk) {
+			double r2 = Math.sqrt(r*r-k*k);
+			double r3 = Math.sqrt(r*r-(k+dk)*(k+dk));
+			for (int i = 0; i < 360; i += di) {
+				double a = Math.toRadians(i);
+				double a2 = Math.toRadians(i+di);
+				double ti = i+(System.currentTimeMillis()/50D%360);
+				double tk = k+(System.currentTimeMillis()/220D%360);
+				double u = ti/360D;
+				double du = (ti+di)/360D;
+				double v = tk/r;
+				double dv = (tk+dk)/r;
+				double s1 = Math.sin(a);
+				double s2 = Math.sin(a2);
+				double c1 = Math.cos(a);
+				double c2 = Math.cos(a2);
+				var5.addVertexWithUV(dx+r2*c1, dy+k, dz+r2*s1, u, v);
+				var5.addVertexWithUV(dx+r2*c2, dy+k, dz+r2*s2, du, v);
+				var5.addVertexWithUV(dx+r3*c2, dy+k+dk, dz+r3*s2, du, dv);
+				var5.addVertexWithUV(dx+r3*c1, dy+k+dk, dz+r3*s1, u, dv);
+			}
+		}
+		var5.draw();
+		/*
+		var5.startDrawing(GL11.GL_TRIANGLE_FAN);
+		var5.setColorRGBA_I(color, color >> 24 & 255);
+		var5.addVertexWithUV(x, y+0.5, z, 0.5, 0.5);
+		double dr = 2;
+		for (int i = 0; i < 360; i += 10) {
+			double a = Math.toRadians(i);
+			double a2 = a+Math.toRadians(System.currentTimeMillis()/20D%360);
+			double dx = Math.cos(a);
+			double dz = Math.sin(a);
+			double ux = (System.currentTimeMillis()/3100D)%10;
+			double uy = (System.currentTimeMillis()/4700D)%10;
+			double u = Math.cos(a2)+ux;
+			double v = Math.sin(a2)+uy;
+			u = u*0.25;
+			v = v*0.25;
+			var5.addVertexWithUV(x+dx*dr, y+r-0.25, z+dz*dr, u, v);
+		}
+		var5.draw();*/
+
+		GL11.glPopAttrib();
+	}
+
 	private void renderPlayerConnectivityLine(TileEntityCrystalRepeater te, float par8) {
 		int a = te.updateAndGetConnectionRenderAlpha();
-		if (a != 0) {
+		if (a > 0) {
 			//ReikaJavaLibrary.pConsole(c);
 			MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlockClient(4.5, false);
 			if (mov != null && mov.typeOfHit == MovingObjectType.BLOCK) {

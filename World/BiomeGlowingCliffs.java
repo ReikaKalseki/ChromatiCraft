@@ -255,8 +255,8 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 		}
 	}
 
-	public WorldGenAbstractTree getUndergroundTreeGen(Random rand, boolean construct) {
-		return rand.nextInt(40) == 0 ? construct ? new GlowingTreeGenerator() : glowTree : construct ? new SmallGlowingTreeGenerator() : smallGlowTrees;
+	public WorldGenAbstractTree getUndergroundTreeGen(Random rand, boolean construct, int bigChance) {
+		return rand.nextInt(bigChance) == 0 ? construct ? new GlowingTreeGenerator() : glowTree : construct ? new SmallGlowingTreeGenerator() : smallGlowTrees;
 	}
 
 	public static boolean isGlowingCliffs(BiomeGenBase b) {

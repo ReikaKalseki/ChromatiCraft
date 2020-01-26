@@ -394,13 +394,13 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void growGlowcliffsTrees(PlayerInteractEvent evt) {
-		if (evt.action == Action.RIGHT_CLICK_BLOCK) {
+		if (evt.action == Action.RIGHT_CLICK_BLOCK && !evt.world.isRemote) {
 			if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.x, evt.z))) {
 				if (evt.world.getBlock(evt.x, evt.y, evt.z) == Blocks.sapling && evt.world.getBlockMetadata(evt.x, evt.y, evt.z)%8 == 0) {
 					ItemStack is = evt.entityPlayer.getCurrentEquippedItem();
 					if (is != null && is.getItem() == Items.glowstone_dust && rand.nextInt(3) == 0) {
 						evt.world.setBlock(evt.x, evt.y, evt.z, Blocks.air);
-						WorldGenAbstractTree tree = ChromatiCraft.glowingcliffs.getUndergroundTreeGen(rand, true);
+						WorldGenAbstractTree tree = ChromatiCraft.glowingcliffs.getUndergroundTreeGen(rand, true, 12); //default chance is 40
 						((GlowingTreeGen)tree).setGlowChance(10);
 						tree.setScale(1.0D, 1.0D, 1.0D);
 						int n = 8;

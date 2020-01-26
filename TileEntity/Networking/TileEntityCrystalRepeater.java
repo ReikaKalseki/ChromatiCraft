@@ -48,8 +48,8 @@ import Reika.ChromatiCraft.Magic.Network.CrystalLink;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Network.CrystalPath;
 import Reika.ChromatiCraft.Magic.Network.PylonFinder;
-import Reika.ChromatiCraft.Magic.Progression.ProgressionCatchupHandling;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionCatchupHandling;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -90,6 +90,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	private int surgeTicks = 0;
 
 	protected int connectionRenderTick = 0;
+	protected int rangeSphereAlpha = -256;
 
 	private boolean redstoneCache;
 
@@ -483,6 +484,18 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 			this.refreshConnectionRender();
 		}
 		return connectionRenderTick > 0 ? (connectionRenderTick > 10 ? 255 : 25*connectionRenderTick) : 0;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public int getRangeAlpha() {
+		if (rangeSphereAlpha > -256)
+			rangeSphereAlpha--;
+		return Math.min(255, Math.max(0, rangeSphereAlpha));
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void updateRangeAlpha() {
+		rangeSphereAlpha = rangeSphereAlpha >= -128 ? 1024 : 0;
 	}
 
 	@SideOnly(Side.CLIENT)

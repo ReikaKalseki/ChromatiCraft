@@ -35,6 +35,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.RayTracer;
+import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -129,6 +130,16 @@ public class EssentiaNetwork {
 
 	private static boolean isJar(IEssentiaTransport te) {
 		return jarClass != null && jarClass.isAssignableFrom(te.getClass());
+	}
+
+	private static NetworkEndpoint createEndpoint(Coordinate loc, IEssentiaTransport te) {
+		Aspect a = isFilteredJar(te);
+		if (a != null)
+			return new LabelledJarEndpoint(loc, te, a);
+		if (te.getClass() == alembicClass) {
+			return new AlembicEndpoint(loc, te);
+		}
+		return new NetworkEndpoint(loc, te);
 	}
 
 	public static class EssentiaMovement {
@@ -472,9 +483,16 @@ public class EssentiaNetwork {
 
 		@Override
 		public final String toString() {
-			return tileHash+" @ "+point+" suc="+suction;
+			return this.getClass()+" # "+tileHash+" @ "+point+" suc="+suction;
 		}
 
+		public void removeFromRelays() {
+			for (EssentiaNode n : relays.values()) {
+				n.activeEndpoints.remove(point);
+				n.inertEndpoints.remove(point);
+			}
+			relays.clear();
+		}
 	}
 
 	private static class SuctionComparator implements Comparator<NetworkEndpoint> {
@@ -535,18 +553,15 @@ public class EssentiaNetwork {
 			set.add(new Coordinate(te));
 			boolean flag = true;
 			while (flag) {
-				flag = false;
+				Collection<Coordinate> toAdd = new HashSet();
 				for (Coordinate c : set) {
 					Collection<Coordinate> li = getNearNodesExcept(te.worldObj, c, set);
 					if (li == null)
 						return null;
-					if (!li.isEmpty()) {
-						flag = true;
-						for (Coordinate c2 : li) {
-							set.add(c2);
-						}
-					}
+					toAdd.addAll(li);
 				}
+				set.addAll(toAdd);
+				flag = !toAdd.isEmpty();
 			}
 			EssentiaSubnet ret = buildNetworkWithNodes(te.worldObj, set);
 			return ret;
@@ -598,6 +613,7 @@ public class EssentiaNetwork {
 		private final HashMap<ImmutablePair<Coordinate, Coordinate>, EssentiaPathCache> pathList = new HashMap();
 
 		private final HashMap<Coordinate, Boolean> renderMap = new HashMap();
+		private final StepTimer reListTime = new StepTimer(20);
 
 		private long lastTick;
 
@@ -668,8 +684,11 @@ public class EssentiaNetwork {
 			endpointComparator.setForPull(true);
 			Collections.sort(list, endpointComparator);
 			endpointComparator.reset();
+			NetworkEndpoint end = endpoints.get(new Coordinate(target));
 			for (NetworkEndpoint p : list) {
-				EssentiaPathCache pt = this.getPath(caller.worldObj, p, endpoints.get(new Coordinate(target)));
+				if (!this.canTransfer(caller.worldObj, p, end))
+					continue;
+				EssentiaPathCache pt = this.getPath(caller.worldObj, p, end);
 				if (pt != null && !pt.isEmpty()) {
 					int rem = p.takeAspect(caller.worldObj, aspect, amount);
 					if (rem > 0) {
@@ -695,8 +714,11 @@ public class EssentiaNetwork {
 			endpointComparator.setForPull(false);
 			Collections.sort(list, endpointComparator);
 			endpointComparator.reset();
+			NetworkEndpoint start = endpoints.get(src);
 			for (NetworkEndpoint p : list) {
-				EssentiaPathCache pt = this.getPath(caller.worldObj, endpoints.get(src), p);
+				if (!this.canTransfer(caller.worldObj, start, p))
+					continue;
+				EssentiaPathCache pt = this.getPath(caller.worldObj, start, p);
 				if (pt != null && !pt.isEmpty()) {
 					int added = p.addAspect(caller.worldObj, aspect, amount);
 					if (added > 0) {
@@ -715,6 +737,10 @@ public class EssentiaNetwork {
 			if (lastTick == world.getTotalWorldTime())
 				return null;
 			lastTick = world.getTotalWorldTime();
+			reListTime.update();
+			if (reListTime.checkCap()) {
+				this.relistEndpoints(world);
+			}
 			ArrayList<EssentiaPath> li = new ArrayList();
 			for (NetworkEndpoint net : endpoints.values()) {
 				if (net instanceof ActiveEndpoint) {
@@ -743,6 +769,26 @@ public class EssentiaNetwork {
 				//ReikaJavaLibrary.pConsole(li, !li.isEmpty());
 			}
 			return li.isEmpty() ? null : new EssentiaMovement(li);
+		}
+
+		private void relistEndpoints(World world) {
+			Collection<NetworkEndpoint> c = new ArrayList(endpoints.values());
+			endpoints.clear();
+			for (NetworkEndpoint n : c) {
+				IEssentiaTransport te = n.getTile(world);
+				NetworkEndpoint repl = createEndpoint(n.point, te);
+				if (!n.isValid(world) || repl.getClass() != n.getClass()) {
+					repl.relays.putAll(n.relays);
+					n.relays.clear();
+					for (EssentiaNode e : repl.relays.values()) {
+						e.replaceEndpoint(repl);
+					}
+				}
+				else {
+					repl = n;
+				}
+				endpoints.put(repl.point, repl);
+			}
 		}
 
 		private boolean canTransfer(World world, NetworkEndpoint from, NetworkEndpoint to) {
@@ -933,7 +979,7 @@ public class EssentiaNetwork {
 				Coordinate c = new Coordinate(x, y, z);
 				NetworkEndpoint end = network.endpoints.get(c);
 				if (end == null)
-					end = this.createEndpoint(c, (IEssentiaTransport)te);
+					end = createEndpoint(c, (IEssentiaTransport)te);
 				if (end instanceof ActiveEndpoint) {
 					activeEndpoints.put(c, (ActiveEndpoint)end);
 				}
@@ -946,19 +992,21 @@ public class EssentiaNetwork {
 			}
 		}
 
-		private NetworkEndpoint createEndpoint(Coordinate loc, IEssentiaTransport te) {
-			Aspect a = isFilteredJar(te);
-			if (a != null)
-				return new LabelledJarEndpoint(loc, te, a);
-			if (te.getClass() == alembicClass) {
-				return new AlembicEndpoint(loc, te);
-			}
-			return new NetworkEndpoint(loc, te);
-		}
-
 		private void connect(EssentiaNode c) {
 			otherNodes.add(c.position);
 			c.otherNodes.add(position);
+		}
+
+		private void replaceEndpoint(NetworkEndpoint end) {
+			Coordinate c = end.point;
+			activeEndpoints.remove(c);
+			inertEndpoints.remove(c);
+			if (end instanceof ActiveEndpoint) {
+				activeEndpoints.put(c, (ActiveEndpoint)end);
+			}
+			else {
+				inertEndpoints.put(c, end);
+			}
 		}
 
 		public Collection<Coordinate> getNeighbors() {
