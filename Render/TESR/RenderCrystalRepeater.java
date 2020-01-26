@@ -226,7 +226,7 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 		int a = te.getRangeAlpha();
 		if (a > 0) {
 			double r = Math.min(te.getReceiveRange(), te.getSendRange());
-			r += 0.75*Math.sin(te.getTicksExisted()/128D);
+			//r += 0.75*Math.sin(te.getTicksExisted()/5D);
 			this.renderSphere(te, par8, ReikaColorAPI.getColorWithBrightnessMultiplier(this.getHaloRenderColor(te), a/512F), r);
 		}
 	}
@@ -250,9 +250,10 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 		double dz = 0.5;
 		double dk = 0.5*r/16;
 		double di = 10;
+		double f = 0.75*Math.sin(te.getTicksExisted()/128D);
 		for (double k = -r; k <= r; k += dk) {
-			double r2 = Math.sqrt(r*r-k*k);
-			double r3 = Math.sqrt(r*r-(k+dk)*(k+dk));
+			double r2 = f+Math.sqrt(r*r-k*k);
+			double r3 = f+Math.sqrt(r*r-(k+dk)*(k+dk));
 			for (int i = 0; i < 360; i += di) {
 				double a = Math.toRadians(i);
 				double a2 = Math.toRadians(i+di);

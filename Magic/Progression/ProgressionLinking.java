@@ -265,7 +265,8 @@ public class ProgressionLinking {
 			if (progress != null) {
 				ret.setInteger("prog", progress.ordinal());
 			}
-			ret.setTag("icon", icon.writeToNBT());
+			if (icon != null)
+				ret.setTag("icon", icon.writeToNBT());
 			ret.setString("iconName", iconName);
 			return ret;
 		}

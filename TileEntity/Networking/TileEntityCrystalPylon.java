@@ -30,7 +30,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -95,7 +94,6 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
-import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -261,6 +259,17 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		}
 	}
 
+	private void reloadEncrusted(World world, int x, int y, int z) {
+		for (Coordinate c : structure.keySet()) {
+			for (Coordinate c2 : c.getAdjacentCoordinates()) {
+				if (!structure.hasBlock(c2)) {
+					if (c2.getBlock(world) == ChromaBlocks.ENCRUSTED.getBlockInstance())
+						encrustedBlocks.add(c2);
+				}
+			}
+		}
+	}
+
 	private void forceLoading() {
 		if (!forceLoad) {
 			if (ChromaOptions.PYLONLOAD.getState()) {
@@ -277,6 +286,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		if (hasMultiblock && structure == null) {
 			structure = ChromaStructures.PYLON.getArray(world, x, y, z, this.getColor());
 		}
+
+		if (structure != null && this.getTicksExisted() == 0)
+			this.reloadEncrusted(world, x, y, z);
 
 		if (DragonAPICore.debugtest) {
 			if (!hasMultiblock) {
@@ -968,12 +980,6 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 		if (linkTile != null)
 			linkTile.writeToNBT("link", NBT);
-
-		NBTTagList li = new NBTTagList();
-		for (Coordinate c : encrustedBlocks) {
-			li.appendTag(c.writeToTag());
-		}
-		NBT.setTag("encrusted", li);
 	}
 
 	@Override
@@ -985,13 +991,6 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 		if (NBT.hasKey("link"))
 			linkTile = WorldLocation.readFromNBT("link", NBT);
-
-		encrustedBlocks.clear();
-		NBTTagList li = NBT.getTagList("encrusted", NBTTypes.COMPOUND.ID);
-		for (Object o : li.tagList) {
-			NBTTagCompound tag = (NBTTagCompound)o;
-			encrustedBlocks.add(Coordinate.readTag(tag));
-		}
 	}
 
 	@Override

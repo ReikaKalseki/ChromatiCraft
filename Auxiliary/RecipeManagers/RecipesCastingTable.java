@@ -186,6 +186,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.Spawner
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.StandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.TelePumpRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.TransportWindowRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.VoidTrapRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.WarpGateRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.WeakRepeaterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.WirelessTransmitterRecipe;
@@ -906,14 +907,19 @@ public class RecipesCastingTable {
 
 		this.addRecipe(new HoverPadLampRecipe(ChromaBlocks.PAD));
 
-		is = ChromaTiles.DEATHFOG.getCraftedProduct();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "cac", "epe", "ccc", 'p', Items.bucket, 'e', ChromaStacks.voidmonsterEssence, 'a', ChromaStacks.auraDust, 'c', Blocks.cobblestone);
-		this.addRecipe(new DeathFogRecipe(is, sr));
-
 		if (ModList.TINKERER.isLoaded()) {
 			is = ChromaTiles.SMELTERYDISTRIBUTOR.getCraftedProduct();
 			sr = ReikaRecipeHelper.getShapedRecipeFor(is, "fif", "aGa", "iei", 'f', ChromaStacks.firaxite, 'e', ChromaStacks.beaconDust, 'a', ChromaStacks.auraDust, 'i', Items.blaze_powder, 'G', Blocks.glowstone);
 			this.addRecipe(new SmelteryDistributorRecipe(is, sr));
+		}
+
+		if (ModList.VOIDMONSTER.isLoaded()) {
+			is = ChromaTiles.DEATHFOG.getCraftedProduct();
+			sr = ReikaRecipeHelper.getShapedRecipeFor(is, "cac", "epe", "ccc", 'p', Items.bucket, 'e', ChromaStacks.voidmonsterEssence, 'a', ChromaStacks.auraDust, 'c', Blocks.cobblestone);
+			this.addRecipe(new DeathFogRecipe(is, sr));
+
+			is = ChromaTiles.VOIDTRAP.getCraftedProduct();
+			this.addRecipe(new VoidTrapRecipe(is, ChromaStacks.voidCoreHigh));
 		}
 
 		this.addSpecialRecipes();

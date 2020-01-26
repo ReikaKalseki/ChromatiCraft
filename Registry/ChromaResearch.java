@@ -225,7 +225,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	INJECTOR(		ChromaTiles.INJECTOR,		ResearchLevel.MULTICRAFT),
 	HOVERPAD(		ChromaTiles.HOVERPAD,		ResearchLevel.RUNECRAFT/*,		TieredOres.TELEPORT.level*/),
 	DEATHFOG(		ChromaTiles.DEATHFOG,		ResearchLevel.RUNECRAFT,		ProgressStage.VOIDMONSTER),
-	VOIDTRAP(		ChromaTiles.VOIDTRAP,		ResearchLevel.MULTICRAFT,		ProgressStage.VOIDMONSTERDIE, ProgressStage.CHARGECRYSTAL),
+	VOIDTRAP(		ChromaTiles.VOIDTRAP,		ResearchLevel.PYLONCRAFT,		ProgressStage.VOIDMONSTERDIE, ProgressStage.CHARGECRYSTAL),
 	PLAYERINFUSER(	ChromaTiles.PLAYERINFUSER,	ResearchLevel.MULTICRAFT,		ProgressStage.INFUSE),
 	SMELTERY(		ChromaTiles.SMELTERYDISTRIBUTOR,ResearchLevel.RUNECRAFT),
 
@@ -412,8 +412,8 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	DATATOWER(		ChromaStructures.DATANODE,		StoneTypes.SMOOTH.ordinal(),			ResearchLevel.RAWEXPLORE,		ProgressStage.TOWER),
 	PROGLINKSTRUCT(	ChromaStructures.PROGRESSLINK,	StoneTypes.CORNER.ordinal(),			ResearchLevel.BASICCRAFT),
 	OPTIMISTRUCT(	ChromaStructures.OPTIMIZER,		StoneTypes.RESORING.ordinal(),			ResearchLevel.ENDGAME,			TieredOres.LUMA.level),
-	VOIDTRAPSTRUCT(	ChromaStructures.VOIDRITUAL,	Blocks.redstone_torch, 5,				ResearchLevel.MULTICRAFT,		ProgressStage.VOIDMONSTERDIE, ProgressStage.CHARGECRYSTAL),
-	VOIDTRAPSTRUCTN(ChromaStructures.NETHERTRAP,	Blocks.tnt, 0,							ResearchLevel.MULTICRAFT,		ProgressStage.VOIDMONSTERDIE, ProgressStage.CHARGECRYSTAL),
+	VOIDTRAPSTRUCT(	ChromaStructures.VOIDRITUAL,	Blocks.redstone_torch, 5,				ResearchLevel.PYLONCRAFT,		ProgressStage.VOIDMONSTERDIE, ProgressStage.CHARGECRYSTAL),
+	VOIDTRAPSTRUCTN(ChromaStructures.NETHERTRAP,	Blocks.tnt, 0,							ResearchLevel.PYLONCRAFT,		ProgressStage.VOIDMONSTERDIE, ProgressStage.CHARGECRYSTAL),
 	;
 
 	private final ItemStack iconItem;

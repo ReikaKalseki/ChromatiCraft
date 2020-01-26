@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.Auxiliary.Render.ProbeInfoOverlayRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.StructureErrorOverlays;
 import Reika.ChromatiCraft.Auxiliary.Structure.RitualStructure;
 import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -208,7 +209,7 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 	}
 
 	private static enum Inspections {
-		REPEATER_CONNECTIVITY(60, CrystalRepeater.class),
+		REPEATER_CONNECTIVITY(60, CrystalReceiver.class),
 		STRUCTURE_CHECK(1000, MultiBlockChromaTile.class);
 
 		public final int energyCost;
