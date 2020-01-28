@@ -223,6 +223,8 @@ public class ProgressionManager implements ProgressRegistry {
 
 		progressMap.addParent(ProgressStage.CTM,		ProgressStage.ALLCORES);
 
+		progressMap.addParent(ProgressStage.PYLONLINK, 	ProgressStage.TOWER);
+
 		for (int i = 0; i < ProgressStage.list.length; i++) {
 			ProgressStage p = ProgressStage.list[i];
 			if (p.active && !progressMap.hasElementAsParent(p) && !progressMap.hasElementAsChild(p)) {

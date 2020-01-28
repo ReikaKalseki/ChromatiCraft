@@ -96,9 +96,9 @@
 	<multiblocks>
 		It is becoming clear at this point that in order to properly harness and manipulate crystal energies, you are going to need more than a simple block here or there. In particular, anything involving crafting, handling energy, or infusing one thing into another seems to require a fairly large construction. Given their size and number, and possible environmental considerations, it would be wise to build most or all of these - especially any that have anything to do with crafting or the pylons - outside.
 	</multiblocks>
-	<name>
-		
-	</name>
+	<pylonlink>
+		Having connected various colors of pylon to your network, you quickly learned that their energy sources are not infinite; they will deplete and require significant time to recharge. You may be able to find a way to improve that later, but in the meantime, the fact you have half a dozen pylons of any given color, but useless without also being directly connected with repeaters, proved too irksome to leave be. However, a clue learned from a strange structure with a beaconlike aura pointed you in a new direction: linking the pylons themselves. If you can pull this off, they will effectively become one large energy buffer, with recharge rate to match.
+	</pylonlink>
 	<name>
 		
 	</name>

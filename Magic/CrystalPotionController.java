@@ -27,6 +27,7 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Items.Tools.ItemPendant;
 import Reika.ChromatiCraft.Items.Tools.Powered.ItemPurifyCrystal;
 import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -277,7 +278,14 @@ public class CrystalPotionController {
 						EntityPlayer ep = (EntityPlayer)e;
 						if (doFX)
 							ep.worldObj.playSoundAtEntity(ep, "random.orb", 0.2F, rand.nextFloat()*2);
-						ep.addExperience(1);
+						int amt = 1;
+						if (ItemPendant.isEnhancedZambarauPendantActive(ep)) {
+							amt *= 3;
+						}
+						else if (ItemPendant.isZambarauPendantActive(ep)) {
+							amt *= 2;
+						}
+						ep.addExperience(amt);
 					}
 					break;
 				default:

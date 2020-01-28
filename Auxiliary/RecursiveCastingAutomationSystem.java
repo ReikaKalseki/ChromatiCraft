@@ -139,7 +139,7 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 				//either no valid recipe paths, or uncraftable items
 				prereqs = null;
 			}
-			super.setRecipe(null, 0, null);
+			super.setRecipe(null, 0, ep);
 		}
 		else {
 			super.setRecipe(c, amt, ep);

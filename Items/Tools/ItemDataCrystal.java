@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -81,6 +82,9 @@ public class ItemDataCrystal extends ItemChromaTool {
 				int tick = is.stackTagCompound.getInteger("carve")+1;
 				if (tick >= ir.duration) {
 					ir.place(world, x, y, z, ep);
+					if (ir.output.match(ChromaTiles.PYLONLINK.getBlock(), ChromaTiles.PYLONLINK.getBlockMetadata())) {
+						ProgressStage.PYLONLINK.stepPlayerTo(ep);
+					}
 					ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.INSCRIBE.ordinal(), world, x, y, z, 128, ir.referenceIndex);
 					is.stackTagCompound = null;
 				}

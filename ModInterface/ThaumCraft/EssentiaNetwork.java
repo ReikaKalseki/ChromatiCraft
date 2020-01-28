@@ -57,6 +57,7 @@ public class EssentiaNetwork {
 	private static Field amountField;
 	private static Field alembicAspectField;
 	private static Field alembicAmountField;
+	private static Class tubeClass;
 
 	private static final SuctionComparator endpointComparator = new SuctionComparator();
 
@@ -74,9 +75,11 @@ public class EssentiaNetwork {
 				alembicClass = Class.forName("thaumcraft.common.tiles.TileAlembic");
 				alembicAspectField = alembicClass.getField("aspect");
 				alembicAmountField = alembicClass.getField("amount");
+
+				tubeClass = Class.forName("thaumcraft.common.tiles.TileTube");
 			}
 			catch (Exception e) {
-				ChromatiCraft.logger.logError("Could not fetch Warded Jar class");
+				ChromatiCraft.logger.logError("Could not fetch TC tile classes");
 				e.printStackTrace();
 				ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.THAUMCRAFT, e);
 			}
@@ -132,7 +135,13 @@ public class EssentiaNetwork {
 		return jarClass != null && jarClass.isAssignableFrom(te.getClass());
 	}
 
+	private static boolean shouldSkipEndpoint(TileEntity te) {
+		return te instanceof TileEntityEssentiaRelay || (tubeClass != null && tubeClass == te.getClass());
+	}
+
 	private static NetworkEndpoint createEndpoint(Coordinate loc, IEssentiaTransport te) {
+		if (te == null)
+			return null;
 		Aspect a = isFilteredJar(te);
 		if (a != null)
 			return new LabelledJarEndpoint(loc, te, a);
@@ -357,6 +366,14 @@ public class EssentiaNetwork {
 				e.printStackTrace();
 				return false;
 			}
+		}
+
+		@Override
+		public int addAspect(World world, Aspect a, int amount) {
+			if (a != filter) {
+				return 0;
+			}
+			return super.addAspect(world, a, amount);
 		}
 
 	}
@@ -690,6 +707,14 @@ public class EssentiaNetwork {
 			return n.getDistanceTo(c) <= TileEntityEssentiaRelay.SEARCH_RANGE && LOS(world, n.position, c.position);
 		}
 
+		public void reloadEndpoints(World world) {
+			for (EssentiaNode c : relays.values()) {
+				c.activeEndpoints.clear();
+				c.inertEndpoints.clear();
+			}
+			this.findAllEndpoints(world);
+		}
+
 		private void findAllEndpoints(World world) {
 			for (EssentiaNode c : relays.values()) {
 				c.findValidEndpoints(world);
@@ -813,7 +838,14 @@ public class EssentiaNetwork {
 			for (NetworkEndpoint n : c) {
 				IEssentiaTransport te = n.getTile(world);
 				NetworkEndpoint repl = createEndpoint(n.point, te);
-				if (!n.isValid(world) || repl.getClass() != n.getClass()) {
+				if (repl == null) {
+					endpoints.remove(n.point);
+					n.relay.activeEndpoints.remove(n.point);
+					n.relay.inertEndpoints.remove(n.point);
+					n.relay = null;
+					continue;
+				}
+				else if (!n.isValid(world) || repl.getClass() != n.getClass()) {
 					repl.relay = n.relay;
 					n.relay = null;
 					repl.relay.replaceEndpoint(repl);
@@ -1004,7 +1036,7 @@ public class EssentiaNetwork {
 
 		private void addEndpointAt(World world, int x, int y, int z) {
 			TileEntity te = world.getTileEntity(x, y, z);
-			if (te instanceof IEssentiaTransport && !(te instanceof TileEntityEssentiaRelay)) {
+			if (te instanceof IEssentiaTransport && !shouldSkipEndpoint(te)) {
 				Coordinate c = new Coordinate(x, y, z);
 				if (!LOS(world, position, c))
 					return;

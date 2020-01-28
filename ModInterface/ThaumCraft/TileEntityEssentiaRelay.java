@@ -69,15 +69,19 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 	private static Class essentiaHandler;
 	private static HashMap<WorldCoordinates, ArrayList<WorldCoordinates>> essentiaHandlerData;
 
+	private static Class centrifugeClass;
+
 	static {
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			try {
 				infusionMatrix = Class.forName("thaumcraft.common.tiles.TileInfusionMatrix");
 				essentiaHandler = Class.forName("thaumcraft.common.lib.events.EssentiaHandler");
+
+				centrifugeClass = Class.forName("thaumcraft.common.tiles.TileCentrifuge");
 			}
 			catch (Exception e) {
 				ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.THAUMCRAFT, e);
-				ChromatiCraft.logger.logError("Could not access infusion matrix classes!");
+				ChromatiCraft.logger.logError("Could not access TC tile classes!");
 				e.printStackTrace();
 			}
 		}
@@ -99,7 +103,9 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 
 	public void tryBuildNetwork() {
 		if (network != null) {
-			ChromaSounds.ERROR.playSoundAtBlock(this);
+			//ChromaSounds.ERROR.playSoundAtBlock(this);
+			ChromaSounds.USE.playSoundAtBlock(this);
+			network.reloadEndpoints(worldObj);
 		}
 		else {
 			network = EssentiaNetwork.NetworkBuilder.buildFrom(this);
@@ -148,6 +154,20 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 				if (mov != null) {
 					for (EssentiaPath p : mov.paths()) {
 						this.addPath(p);
+					}
+				}
+				TileEntity te = this.getAdjacentTileEntity(ForgeDirection.DOWN);
+				if (te != null && te.getClass() == centrifugeClass) {
+					IEssentiaTransport ie = (IEssentiaTransport)te;
+					Aspect pull = ie.getEssentiaType(ForgeDirection.UP);
+					if (pull != null && ie.getEssentiaAmount(ForgeDirection.UP) > 0) {
+						EssentiaMovement em = network.addEssentia(this, ForgeDirection.DOWN, pull, 1);
+						if (em != null && em.totalAmount > 0) {
+							int rem = ie.takeEssentia(pull, 1, ForgeDirection.UP);
+							for (EssentiaPath p : em.paths()) {
+								this.addPath(p);
+							}
+						}
 					}
 				}
 			}

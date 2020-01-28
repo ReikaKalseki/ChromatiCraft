@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.Auxiliary.RangeTracker;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
@@ -83,6 +84,11 @@ public class TileEntitySmelteryDistributor extends TileEntityChromaticBase {
 	private final ArrayList<SmelteryDrain> drains = new ArrayList();
 	private final ArrayList<CastingBlock> targets = new ArrayList();
 
+	private double rotation;
+	private double rotationSpeed;
+	private double MAX_ROTATION_SPEED = 3.5;
+	private float colorIntensity = 1;
+
 	private void sendFluid(Fluid f, ForgeDirection dir, Coordinate drain, Coordinate target) {
 		int x = drain.xCoord;
 		int y = drain.yCoord;
@@ -91,6 +97,7 @@ public class TileEntitySmelteryDistributor extends TileEntityChromaticBase {
 		int y2 = target.yCoord;
 		int z2 = target.zCoord;
 		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.SMELTERYFLUIDSEND.ordinal(), this, 48, x, y, z, x2, y2, z2, dir.ordinal(), f.getID());
+		ChromaSounds.FIRE.playSoundAtBlock(this, 0.7F, 2);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -117,10 +124,29 @@ public class TileEntitySmelteryDistributor extends TileEntityChromaticBase {
 		return ChromaTiles.SMELTERYDISTRIBUTOR;
 	}
 
+	public double getRotation() {
+		return rotation;
+	}
+
+	public float getColorIntensity() {
+		return colorIntensity;
+	}
+
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
+		boolean active = !this.hasRedstoneSignal();
 		if (world.isRemote) {
-			this.doParticles(world, x, y, z);
+			rotation += rotationSpeed;
+			if (active) {
+				this.doParticles(world, x, y, z);
+				double d = Math.max(1, 3-this.getTicksExisted()/32D);
+				rotationSpeed = Math.min(rotationSpeed+0.1*d*d, MAX_ROTATION_SPEED*d);
+				colorIntensity = Math.min(1, colorIntensity*1.05F+0.05F);
+			}
+			else {
+				rotationSpeed = Math.max(rotationSpeed-0.08, 0);
+				colorIntensity *= 0.9;
+			}
 		}
 		else {
 			cacheTimer.setCap(drains.isEmpty() || targets.isEmpty() ? 40 : 160);
@@ -131,7 +157,7 @@ public class TileEntitySmelteryDistributor extends TileEntityChromaticBase {
 				this.findDrainsAndTargets(world, x, y, z);
 			}
 
-			if (!drains.isEmpty() && !this.hasRedstoneSignal() && operationTimer.checkCap()) {
+			if (active && !drains.isEmpty() && operationTimer.checkCap()) {
 				SmelteryDrain sd = ReikaJavaLibrary.getRandomListEntry(rand, drains);
 				if (sd.isValid(world)) {
 					FluidStack fs = this.getTransferrableFluid(world, sd);

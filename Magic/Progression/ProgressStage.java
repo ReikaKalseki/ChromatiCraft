@@ -111,6 +111,7 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 	WARPNODE(		Shareability.SELFONLY,	Reloadability.NEVER,	ChromaBlocks.WARPNODE.getBlockInstance()),
 	BYPASSWEAK(		Shareability.ALWAYS,	Reloadability.ALWAYS,	(ItemStack)null),
 	TUNECAST(		Shareability.SELFONLY,	Reloadability.TRIGGER,	(ItemStack)null),
+	PYLONLINK(		Shareability.SELFONLY,	Reloadability.TRIGGER,	ChromaTiles.PYLONLINK.getCraftedProduct()),
 	NEVER(			Shareability.SELFONLY,	Reloadability.NEVER,	(ItemStack)null, false), //used as a no-trigger placeholder
 	;
 

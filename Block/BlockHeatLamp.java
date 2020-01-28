@@ -143,6 +143,8 @@ public class BlockHeatLamp extends BlockAttachableMini {
 
 		@Override
 		public void updateEntity() {
+			if (worldObj.isRemote)
+				return;
 			temperature = Math.max(this.isCold() ? MINTEMP_COLD : MINTEMP, Math.min(this.isCold() ? MAXTEMP_COLD : MAXTEMP, temperature));
 			ForgeDirection dir = ((BlockHeatLamp)this.getBlockType()).getSide(worldObj, xCoord, yCoord, zCoord).getOpposite();
 			TileEntity te = worldObj.getTileEntity(xCoord+dir.offsetX, yCoord+dir.offsetY, zCoord+dir.offsetZ);

@@ -11,13 +11,14 @@ package Reika.ChromatiCraft.GUI.Book;
 
 import java.util.ArrayList;
 
+import org.apache.logging.log4j.core.helpers.Strings;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.DynamicallyGeneratedSubpage;
 import Reika.ChromatiCraft.Base.GuiDescription;
-import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 
@@ -49,7 +50,9 @@ public class GuiToolDescription extends GuiDescription {
 
 	@Override
 	protected int getMaxSubpage() {
-		return page.getItem().getItemInstance() instanceof ItemWandBase ? 1 : 0;
+		if (page.getItem().getItemInstance() instanceof DynamicallyGeneratedSubpage)
+			return ((DynamicallyGeneratedSubpage)page.getItem().getItemInstance()).getMaxSubpage();
+		return !Strings.isEmpty(page.getNotes(0)) ? 1 : 0;
 	}
 
 }

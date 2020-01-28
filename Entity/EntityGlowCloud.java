@@ -497,7 +497,7 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity, IMo
 			}
 			else if (worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
 				EntityPlayer ep = worldObj.getClosestPlayerToEntity(this, -1);
-				if (ep.getDistanceSqToEntity(this) > 144) {
+				if (ep != null && ep.getDistanceSqToEntity(this) > 144) {
 					LOS.setOrigins(ep.posX, ep.posY+1.62, ep.posZ, posX, posY, posZ);
 					if (LOS.isClearLineOfSight(worldObj)) {
 						if (velocity != null) {

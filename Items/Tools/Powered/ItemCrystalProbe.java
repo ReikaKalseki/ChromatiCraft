@@ -1,5 +1,6 @@
 package Reika.ChromatiCraft.Items.Tools.Powered;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.gui.GuiScreen;
@@ -17,6 +18,7 @@ import net.minecraftforge.client.IItemRenderer.ItemRenderType;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ColoredMultiBlockChromaTile;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.DynamicallyGeneratedSubpage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Render.ProbeInfoOverlayRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.StructureErrorOverlays;
@@ -37,7 +39,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemCrystalProbe extends ItemPoweredChromaTool {
+public class ItemCrystalProbe extends ItemPoweredChromaTool implements DynamicallyGeneratedSubpage {
 
 	public static final int CHARGE_TIME = 50;
 
@@ -208,6 +210,23 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 		}
 	}
 
+	@Override
+	public String getNotes(int subpage) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Action Types:\n");
+		for (Inspections i : Inspections.list) {
+			sb.append("  ");
+			sb.append(i.displayName());
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
+
+	@Override
+	public int getMaxSubpage() {
+		return 1;
+	}
+
 	private static enum Inspections {
 		REPEATER_CONNECTIVITY(60, CrystalReceiver.class),
 		STRUCTURE_CHECK(1000, MultiBlockChromaTile.class);
@@ -258,6 +277,10 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 				default:
 					return false;
 			}
+		}
+
+		public String displayName() {
+			return WordUtils.capitalize(this.name(), ' ', '_');
 		}
 
 		private boolean isValid(World world, int x, int y, int z) {

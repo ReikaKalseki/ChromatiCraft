@@ -118,6 +118,8 @@ public class LumenTreeStructure extends ChromaStructureBase {
 		}
 		else {
 			for (Coordinate c : treeSend.keySet()) {
+				if (array.hasBlock(c))
+					continue;
 				array.addEmpty(c.xCoord, c.yCoord, c.zCoord, false, false);
 				Block bk = treeSend.getBlockAt(c.xCoord, c.yCoord, c.zCoord);
 				int meta = treeSend.getMetaAt(c.xCoord, c.yCoord, c.zCoord);

@@ -922,6 +922,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 			//ReikaJavaLibrary.pConsole("post "+inv[9]);
 
 			this.addCrafted(out, 1);
+			craftingAmount--;
 			if (triggerCrafted) {
 				triggerCrafted = false;
 				CastingRecipe temp = activeRecipe;

@@ -33,7 +33,7 @@ public class HoverPadLampRecipe extends CastingRecipe {
 
 	@Override
 	public int getNumberProduced() {
-		return 6;
+		return 12;
 	}
 
 	@Override

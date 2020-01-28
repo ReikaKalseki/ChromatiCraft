@@ -18,7 +18,6 @@ import net.minecraft.util.IIcon;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.ModInterface.TileEntitySmelteryDistributor;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
@@ -60,7 +59,7 @@ public class RenderSmelteryDistributor extends ChromaRenderBase {
 		}
 	}
 
-	private void renderFlare(TileEntityChromaticBase te, Tessellator v5) {
+	private void renderFlare(TileEntitySmelteryDistributor te, Tessellator v5) {
 		GL11.glPushMatrix();
 		GL11.glTranslated(0.5, 0.5, 0.5);
 		double s = 0.8;
@@ -77,7 +76,7 @@ public class RenderSmelteryDistributor extends ChromaRenderBase {
 
 		double t = te.isInWorld() ? te.getTicksExisted() : -System.currentTimeMillis()/80D;
 
-		GL11.glRotated((t*3.5)%360, 0, 0, 1);
+		GL11.glRotated((te.getRotation())%360, 0, 0, 1);
 
 		IIcon ico = ChromaIcons.PINWHEEL.getIcon();
 		ReikaTextureHelper.bindTerrainTexture();
@@ -86,7 +85,7 @@ public class RenderSmelteryDistributor extends ChromaRenderBase {
 		float du = ico.getMaxU();
 		float dv = ico.getMaxV();
 
-		int c1 = this.getColor();
+		int c1 = this.getColor(te);
 		int c2 = 0xffffff;
 
 		double da = 10+5*Math.sin(t/10D);
@@ -108,7 +107,9 @@ public class RenderSmelteryDistributor extends ChromaRenderBase {
 		GL11.glPopMatrix();
 	}
 
-	public int getColor() {
-		return 0xFFA700;
+	public int getColor(TileEntitySmelteryDistributor te) {
+		int c0 = 0xFFA700;
+		float f = te.getColorIntensity();
+		return f >= 1 ? c0 : ReikaColorAPI.mixColors(c0, 0xd0d0d0, f);
 	}
 }

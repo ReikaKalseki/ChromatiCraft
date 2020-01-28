@@ -22,8 +22,8 @@ import net.minecraft.client.resources.Language;
 import net.minecraftforge.common.MinecraftForge;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.DynamicallyGeneratedSubpage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
-import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
@@ -300,10 +300,17 @@ public final class ChromaDescriptions {
 		}
 
 		for (ChromaResearch h : tooltabs) {
-			String desc = tools.getValueAtNode("tools:"+h.name().toLowerCase(Locale.ENGLISH));
+			String key = "tools:"+h.name().toLowerCase(Locale.ENGLISH);
+			String desc = tools.getValueAtNode(key);
 			desc = String.format(desc, itemData.get(h.getItem()));
-			if (h.getItem().getItemInstance() instanceof ItemWandBase) {
-				notes.put(((ItemWandBase)h.getItem().getItemInstance()).generateUsageData(), h, 0);
+			if (h.getItem().getItemInstance() instanceof DynamicallyGeneratedSubpage) {
+				DynamicallyGeneratedSubpage iw = (DynamicallyGeneratedSubpage)h.getItem().getItemInstance();
+				for (int p = 0; p < iw.getMaxSubpage(); p++)
+					notes.put(iw.getNotes(p), h, p);
+			}
+			else if (tools.nodeExists(key+":notes")) {
+				notes.put(tools.getValueAtNode(key+":notes"), h, 0);
+				desc = tools.getValueAtNode(key+":desc");
 			}
 			addEntry(h, desc);
 		}

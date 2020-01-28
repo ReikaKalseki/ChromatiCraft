@@ -25,7 +25,7 @@ public class HoverPadBlockRecipe extends TempleCastingRecipe {
 
 	@Override
 	public int getNumberProduced() {
-		return 1;
+		return 3;
 	}
 
 	@Override

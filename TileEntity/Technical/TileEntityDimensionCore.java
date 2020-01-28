@@ -688,4 +688,9 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 		playerWhitelist.add(ep.getUniqueID());
 	}
 
+	@Override
+	public boolean onlyAllowOwnersToMine() {
+		return !this.hasStructure();
+	}
+
 }

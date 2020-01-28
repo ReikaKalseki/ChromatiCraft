@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -29,6 +29,9 @@ public class ItemPendant extends ItemCrystalBasic {
 	private static final String TAG = "last_kuropend";
 	private static final String TAG2 = "last_kuropend2";
 
+	private static final String TAGb = "last_zambpend";
+	private static final String TAG2b = "last_zambpend2";
+
 	public ItemPendant(int tex) {
 		super(tex);
 		hasSubtypes = true;
@@ -50,7 +53,10 @@ public class ItemPendant extends ItemCrystalBasic {
 			if (color == CrystalElement.BLACK) {
 				e.getEntityData().setLong(this.isEnhanced() ? TAG2 : TAG, world.getTotalWorldTime());
 			}
-			else if (color != CrystalElement.PURPLE) {
+			else if (color == CrystalElement.PURPLE) {
+				e.getEntityData().setLong(this.isEnhanced() ? TAG2b : TAGb, world.getTotalWorldTime());
+			}
+			else {
 				int dura = this.isEnhanced() ? 6000 : color == CrystalElement.BLUE ? 3 : 100;
 				PotionEffect pot = CrystalPotionController.getEffectFromColor(color, dura, level);
 				if (pot == null || color == CrystalElement.BLUE || !ep.isPotionActive(pot.getPotionID())) {
@@ -68,6 +74,14 @@ public class ItemPendant extends ItemCrystalBasic {
 
 	public static boolean isEnhancedKuroPendantActive(EntityPlayer ep) {
 		return ep.worldObj.getTotalWorldTime()-ep.getEntityData().getLong(TAG2) < 20;
+	}
+
+	public static boolean isZambarauPendantActive(EntityPlayer ep) {
+		return ep.worldObj.getTotalWorldTime()-ep.getEntityData().getLong(TAGb) < 20;
+	}
+
+	public static boolean isEnhancedZambarauPendantActive(EntityPlayer ep) {
+		return ep.worldObj.getTotalWorldTime()-ep.getEntityData().getLong(TAG2b) < 20;
 	}
 
 	public boolean isEnhanced() {

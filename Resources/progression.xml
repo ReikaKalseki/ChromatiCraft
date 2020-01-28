@@ -877,20 +877,20 @@
 			Imbuing one energy into another
 		</desc>
 	</infuse>
-	<name>
+	<pylonlink>
 		<title>
-			
+			Energy Interconnection
 		</title>
 		<hint>
-			
+			You can connect one pylon to a network, but that still leaves all the others...
 		</hint>
 		<reveal>
-			
+			Linking them together makes for a much larger energy pool and recharge rate.
 		</reveal>
 		<desc>
-			
+			A way to make use of multiple pylons per color
 		</desc>
-	</name>
+	</pylonlink>
 	<name>
 		<title>
 			

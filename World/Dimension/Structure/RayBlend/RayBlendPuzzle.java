@@ -590,7 +590,7 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		if (gs == null)
 			return;
 		gs.setCrystal(world, null);
-		isComplete = false;
+		//isComplete = false;
 	}
 
 	public void ping(World world, int x, int z) {

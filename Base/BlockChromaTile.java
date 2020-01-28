@@ -107,7 +107,6 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.BotaniaHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.DartItemHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
-import Reika.DragonRealmCore.DragonRealmCore;
 
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
@@ -140,7 +139,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			Coordinate loc = new Coordinate(x, y, z);
 			Long get = lastNoTileWarning.get(loc);
 			if (get == null || time-get.longValue() > 2000) {
-				DragonRealmCore.logger.logError("No tile at location "+loc+" ["+loc.getBlock(world)+":"+loc.getBlockMetadata(world)+"] !?");
+				ChromatiCraft.logger.logError("No tile at location "+loc+" ["+loc.getBlock(world)+":"+loc.getBlockMetadata(world)+"] !?");
 				lastNoTileWarning.put(loc, time);
 			}
 			return super.isSideSolid(world, x, y, z, dir);

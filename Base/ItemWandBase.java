@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,12 +11,13 @@ package Reika.ChromatiCraft.Base;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.DynamicallyGeneratedSubpage;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public abstract class ItemWandBase extends ItemChromaTool {
+public abstract class ItemWandBase extends ItemChromaTool implements DynamicallyGeneratedSubpage {
 
 	private final ElementTagCompound energy = new ElementTagCompound();
 
@@ -65,6 +66,14 @@ public abstract class ItemWandBase extends ItemChromaTool {
 
 	protected static boolean canUseBoostedEffect(EntityPlayer ep) {
 		return ProgressStage.CTM.isPlayerAtStage(ep);
+	}
+
+	public String getNotes(int subpage) {
+		return this.generateUsageData();
+	}
+
+	public int getMaxSubpage() {
+		return 1;
 	}
 
 }

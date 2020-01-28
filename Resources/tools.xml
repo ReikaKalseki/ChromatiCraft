@@ -25,7 +25,12 @@
 		Mining and other activities tend to fill your inventory with useless junk that seems to accumulate faster than you can get rid of it. By leveraging the power of elements associated with movement, you discover that you can create a linkage between your inventory and one placed somewhere in the world, and one for which you can control the items it transports.
 	</invlink>
 	<pendant>
+		<desc>
 		As you have already discovered, crystallized elemental energy can be found scattered around the world, and its proximity imbues the effects of that element on yourself. However, the effect is rather less than convenient to transport in a form that bulky, so a logical next step would be to wear a small part of the crystal to allow you to benefit from its effects at any location.
+		</desc>
+		<notes>
+			In some cases, this may alter the nature of the application of the effect
+		</notes>
 	</pendant>
 	<vacuumgun>
 		Though purely utilitarian ways of killing hostile mobs get the job done, they lack a certain entertainment value. With that in mind, you devised a weapon that creates a rift in the fabric of space, pulling all the creatures into it from a substantial radius. Even better, it seems to rip the blocks out of the ground as well.
@@ -40,7 +45,12 @@
 		Many constructs come in pairs, needing to be linked to each other. The linking tool accomplishes exactly that, binding together two positions.
 	</linktool>
 	<warp>
+		<desc>
 		By experimenting with the darker aspects of another branch of magic, you have suffered some serious consequences, including impaired vision and a nasty tendency for the air around you to come alive with hostile and destructive manifestations of that power. With this mixture, you should be able to work towards keeping those effects at bay.
+		</desc>
+		<notes>
+			Requires activation to be useful
+		</notes>
 	</warp>
 	<duplicator>
 		Building structures that consist of many repeated parts is a tedious task involving less in the way mental vigour and more in the way of running around. Finally, however, you have found a way to scan regions of a structure and allow it to be replicated as many times as you see fit and can afford.
@@ -64,7 +74,12 @@
 		Different kinds of blocks need different kinds of tools to harvest them efficiently and effectively. Given the wide variety of blocks you come across, this quickly necessitates several tools - picks, axes, shovels, shears, your SWORD - and switching between them becomes increasingly clumsy. Combining all the tools into one - somehow - is the obvious solution.
 	</multitool>
 	<orepick>
+		<desc>
 		Branch mining is a waste of time. You make a narrow tunnel out of kilometers of rock and find barely anything - and most of what you find is worthless - except that which you blindly dug right into. No doubt large amounts of ore remain hidden to you just underneath the walls of your tunnel, but short of expending the herculean effort to clear all of the overlying stone, you will never know what you are missing...
+		</desc>
+		<notes>
+			Can passively detect nearby ore behind walls, scan an ore vein's shape and size, or "ping" for ores in a large radius
+		</notes>
 	</orepick>
 	<oresilk>
 		You have mechanisms to process ore and increase your rate of return, from half a dozen ways of doubling it to ways of increasing that output even further, but this is rather unhelpful if the ore blocks themselves are unobtainable to you and the ore taunts you by dropping its contents instead. You could of course put Silk Touch on your tool, but enchanting is a random and often frustrating endeavor; a better idea would be to make the tool itself carve ore cleanly from the ground.
@@ -79,7 +94,12 @@
 		For groups of tightly packed mobs, the usual strategy is to wildly flail a sword around you, but this is both rather amateur and ineffective. A weapon that dealt splash damage would be ideal...
 	</splash>
 	<endercrys>
+		<desc>
 		You recall needing eight of those mysterious pulsing crystals from the eldritch island, but attempting to interact with them blew up in your face...literally. You need a more delicate method of picking them up and storing them.
+		</desc>
+		<notes>
+			Can store multiple crystals
+		</notes>
 	</endercrys>
 	<hover>
 		Water buckets, as a method of breaking fall damage, are somewhat effective, but they require agile reflexes. As a way of climbing a wall, they are slow. Perhaps some sort of magical buffer would do a better job...
@@ -115,13 +135,23 @@
 		You have gotten lost so many times that you probably have more resources sitting in random "when you return" chests than you have back at home, and now you have done it again. Fed up with this, you have created a tablet that will let you instantly warp back to where you inscribed it. However, you appear to have done a rather poor job of it, as the thing is nearly as dangerous as teleporting blindly and hoping you do not end up suffocating in a wall. At least you are free of those damn gas and lava pockets...
 	</telecapsule>
 	<caveexit>
+		<desc>
 		The first days of building a base are inevitably bottlenecked by the acquisition of ores, even with the help of your various machines to grind, pulverize, mill, or otherwise process them to increase the yield. And that means mining. Lots of mining. Branch mining is boring and unproductive, so you recently took up cave mining...something which is now a clear mistake, given your tendency to get lost in the deepest layers. You may not know the way back out, but perhaps you can create something that can...
+		</desc>
+		<notes>
+			Can also be used in an alternate mode to find the deepest part of a cave system
+		</notes>
 	</caveexit>
 	<mobsonar>
 		The problem with caving, aside from the occasional pitfall into a ravine - and those should be avoidable by not being an idiot - is that no matter what you do, you are always forced to turn blind corners that more often than not hide one or more monsters who wish to kill you. You did have a radar you tried a while back, but its range was limited and your attempt at a moving version saw you exiled to another part of the world entirely. Perhaps you can try something more like sonar instead, this time without being accused of trying to gain unfair advantages by seeing that which you should not.
 	</mobsonar>
 	<structfind>
+		<desc>
 		You already know about the buried - slightly and deeply - structures in various biomes, from which you have learned the bulk of your knowledge of manipulating crystal energy. However, when it comes time to look for a new one, you thus far have had to rely on sheer luck, which is neither enjoyable nor productive. If you could tap into the ambient energy field the structures seem to focus on, you might help expedite that search.
+		</desc>
+		<notes>
+			Can only check for one kind of structure at a time
+		</notes>
 	</structfind>
 	<splineattack>
 		As noted before, clusters of enemies are the most difficult arrangement to deal with, as focusing your attacks on one often mean being attacked by another with impunity. What you need is some sort of attack that can bridge the gap and jump between mobs, attacking them in rapid succession. And now you have it, though for some insane reason you keep getting asked if you need to whistle to use it.
@@ -139,7 +169,12 @@
 		You have determined that in a few places in the world lie abandoned structures buried deep underground, and within each lies some sort of gate. Having fashioned some strange-looking items to seek out these structures, you rapidly grew frustrated with their short range and propensity to burst in midair. Undaunted, you have devised an improved version, which is both far more reliable and more powerful, having a far greater range, indestructability, and the ability to return towards you under nearly any circumstance. However, that increased range has led it to occasionally pick up some sort of interference...
 	</endereye>
 	<spawnerbypass>
+		<desc>
 		More than once, you have happened upon a location where you were on the other side of a wall from a spawner, and then, while fiddling through your pouch of tools to find the appropriate weaponry, found yourself face-to-face with a mob that appeared on your side of the wall. Never again must that be allowed to happen; once you enter the room and engage the spawner is one thing, but having it activate before you can even see it is neither fair nor enjoyable.
+		</desc>
+		<notes>
+			Will not work on spawners which are directly visible
+		</notes>
 	</spawnerbypass>
 	<probe>
 		Normally, when you screw up, you can find and fix the mistake simply enough (barring, perhaps, that time your devices melted into gray slag that kills everything that approaches, forcing you to completely abandon the region). However, there have been times where you have stared for hours and not uncovered your error. Clearly you need a tool which can help you in that regard. Naming it, however, has proven difficult; after your original name - involving some mention that it is effectively some sort of probe - was incessantly met with puerile remarks, you have not had ideas on a suitable replacement.
