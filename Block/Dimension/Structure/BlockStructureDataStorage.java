@@ -25,6 +25,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ElementEncodedNumber;
 import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
@@ -38,7 +39,6 @@ import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 
 public class BlockStructureDataStorage extends BlockDimensionStructureTile {
@@ -219,7 +219,7 @@ public class BlockStructureDataStorage extends BlockDimensionStructureTile {
 				ChromaSounds.CRAFTDONE.playSoundAtBlock(this);
 				return true;
 			}
-			int pass = gen.getPassword(ep);
+			ElementEncodedNumber pass = new ElementEncodedNumber(gen.getPassword(ep));
 			if (ReikaPlayerAPI.isReika(ep) || ProgressionManager.instance.hasPlayerCompletedStructureColor(ep, gen.getCoreColor())) {
 				ChromaSounds.CRAFTDONE.playSoundAtBlock(this);
 				gen.forceOpen(worldObj, ep);
@@ -238,9 +238,8 @@ public class BlockStructureDataStorage extends BlockDimensionStructureTile {
 				}
 				chars[i] = (byte)(inv[i].getItemDamage()%16);
 			}
-			int given = ReikaJavaLibrary.buildIntFromHexChars(chars);
 			//ReikaJavaLibrary.pConsole(pass+" , "+given+" > "+Arrays.toString(ReikaJavaLibrary.splitIntToHexChars(pass)));
-			boolean match = pass == given;
+			boolean match = pass.match(chars);
 			if (match) {
 				ChromaSounds.CRAFTDONE.playSoundAtBlock(this);
 				gen.forceOpen(worldObj, ep);

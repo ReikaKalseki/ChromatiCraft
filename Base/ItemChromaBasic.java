@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Base;
 
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
@@ -35,7 +36,6 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Interfaces.Item.MultisheetItem;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -118,7 +118,7 @@ public abstract class ItemChromaBasic extends Item implements MultisheetItem {
 	public final String getItemStackDisplayName(ItemStack is) {
 		ChromaItems ir = ChromaItems.getEntry(is);
 		String name = ir.hasMultiValuedName() ? ir.getMultiValuedName(is.getItemDamage()) : ir.getBasicName();
-		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+		if (Thread.currentThread().getName().toLowerCase(Locale.ENGLISH).contains("client")) { //not effective side, since CC calls from own thread that tricks FML
 			//name = ModList.NEI.isLoaded() && DragonAPICore.hasGameLoaded() ? ObfuscatedNameHandler.registerName(name, is) : name;
 			if (this.obfuscate(is)) {
 				//name = EnumChatFormatting.OBFUSCATED.toString()+name;

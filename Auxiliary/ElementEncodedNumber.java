@@ -52,6 +52,16 @@ public final class ElementEncodedNumber {
 		return ret;
 	}
 
+	public boolean match(byte[] chars) {
+		if (chars.length != encodedValue.length)
+			return false;
+		for (int i = 0; i < chars.length; i++) {
+			if (chars[i] != encodedValue[i].ordinal())
+				return false;
+		}
+		return true;
+	}
+
 	public int getLength() {
 		return encodedValue.length;
 	}

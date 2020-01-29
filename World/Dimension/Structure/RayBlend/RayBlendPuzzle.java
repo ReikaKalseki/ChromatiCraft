@@ -761,9 +761,10 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 				}
 				else {
 					if (gs.isBlocked) {
-						world.setBlock(dx, y, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.LIGHT.metadata);
-						world.setBlock(dx, y+1, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.metadata);
-						world.setBlock(dx, y+2, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.metadata);
+						//world.setBlock(dx, y, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.LIGHT.metadata);
+						world.setBlock(dx, y, dz, Blocks.lava);
+						//world.setBlock(dx, y+1, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.metadata);
+						//world.setBlock(dx, y+2, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.metadata);
 					}
 					else if (gs.color != null) {
 						if (gs.appearsAtStart || GENERATE_SOLVED)

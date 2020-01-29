@@ -56,7 +56,6 @@ public class ItemInventoryLinker extends ItemChromaTool {
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
 		if (ep.isSneaking()) {
-			is.setItemDamage(0);
 			this.setMode(is, this.getMode(is).next());
 		}
 		else {

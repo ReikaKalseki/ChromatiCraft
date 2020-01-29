@@ -59,6 +59,8 @@ import li.cil.oc.api.Network;
 import li.cil.oc.api.network.Environment;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.api.network.Visibility;
+import mrtjp.projectred.api.IBundledTile;
+import mrtjp.projectred.api.ProjectRedAPI;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectContainer;
@@ -68,11 +70,12 @@ import vazkii.botania.api.mana.IManaCollisionGhost;
 import vazkii.botania.api.mana.IManaReceiver;
 
 @Strippable(value = {"cofh.api.energy.IEnergyHandler", "thaumcraft.api.aspects.IEssentiaTransport",
-		"thaumcraft.api.aspects.IAspectContainer", "vazkii.botania.api.mana.IManaCollisionGhost", "vazkii.botania.api.mana.IManaReceiver"})
+		"thaumcraft.api.aspects.IAspectContainer", "vazkii.botania.api.mana.IManaCollisionGhost", "vazkii.botania.api.mana.IManaReceiver",
+"mrtjp.projectred.api.IBundledTile"})
 @Injectable(value = {"dan200.computercraft.api.peripheral.IPeripheral", "li.cil.oc.api.network.Environment",
 		"li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.SidedEnvironment"})
 public class TileEntityRift extends LinkedTileBase implements WorldRift, IFluidHandler, IEnergyHandler,
-IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCollisionGhost, IManaReceiver {
+IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCollisionGhost, IManaReceiver, IBundledTile {
 
 	private int color = 0xffffff;
 	private int[] redstoneCache = new int[6];
@@ -897,6 +900,25 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 	//@Override
 	@ModDependent(ModList.OPENCOMPUTERS)
 	public boolean canConnect(ForgeDirection side) { //OC
+		return this.isLinked();
+	}
+
+	@Override
+	public byte[] getBundledSignal(int dir) {
+		if (!this.isLinked())
+			return new byte[16];
+		WorldLocation other = this.getLinkTarget();
+		byte[] ret = ProjectRedAPI.transmissionAPI.getBundledInput(other.getWorld(), other.xCoord, other.yCoord, other.zCoord, ForgeDirection.VALID_DIRECTIONS[dir].getOpposite().ordinal());
+		if (ret == null)
+			return ret;
+		for (int i = 0; i < ret.length; i++) {
+			ret[i] = (byte)Math.max((ret[i] & 0xFF)-2, 0);
+		}
+		return ret;
+	}
+
+	@Override
+	public boolean canConnectBundled(int side) {
 		return this.isLinked();
 	}
 

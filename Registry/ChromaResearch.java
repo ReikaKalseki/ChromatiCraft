@@ -139,7 +139,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	ABILITIES("Abilities",					ChromaTiles.RITUAL.getCraftedProduct(),					ResearchLevel.ENERGYEXPLORE),
 	CASTTUNING("Personalized Casting",		new ItemStack(Blocks.skull, 1, 3),						ResearchLevel.NETWORKING,	ProgressionManager.instance.getPrereqsArray(ProgressStage.TUNECAST)),
 	MULTIBLOCKS("Functional Construction",	ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.COLUMN.ordinal()),	ResearchLevel.BASICCRAFT),
-	PYLONLINK("Interconnected Energy",		ChromaTiles.PYLONLINK.getCraftedProduct(),				ResearchLevel.ENERGYEXPLORE, ProgressStage.TOWER),
+	PYLONLINK("Interconnected Energy",		ChromaTiles.PYLONLINK.getCraftedProduct(),				ResearchLevel.ENERGYEXPLORE, ProgressStage.PYLONLINK),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING,		ProgressStage.BLOWREPEATER),

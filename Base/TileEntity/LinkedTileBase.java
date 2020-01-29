@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -20,6 +20,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Base.BlockTEBase;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 
 public abstract class LinkedTileBase extends TileEntityChromaticBase implements SneakPop, LinkedTile {
@@ -88,6 +89,8 @@ public abstract class LinkedTileBase extends TileEntityChromaticBase implements 
 		if (other && this.isLinked()) {
 			this.getOther().onLink(false);
 		}
+		this.triggerBlockUpdate();
+		ReikaWorldHelper.causeAdjacentUpdates(worldObj, xCoord, yCoord, zCoord);
 	}
 
 	public final boolean linkTo(WorldLocation loc) {

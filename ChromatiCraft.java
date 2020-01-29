@@ -430,6 +430,11 @@ public class ChromatiCraft extends DragonAPIMod {
 		ConfigMatcher.instance.addConfigList(this, ChromaOptions.optionList);
 		ConfigMatcher.instance.addConfigList(this, ExtraChromaIDs.idList);
 
+		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.GLASS.getBlockInstance());
+		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.SELECTIVEGLASS.getBlockInstance());
+		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.DOOR.getBlockInstance());
+		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.PYLON.getBlockInstance());
+
 		this.basicSetup(evt);
 		this.finishTiming();
 	}
@@ -610,11 +615,6 @@ public class ChromatiCraft extends DragonAPIMod {
 		this.addDyeCompat();
 
 		VanillaIntegrityTracker.instance.addWatchedBlock(instance, Blocks.leaves);
-
-		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.GLASS.getBlockInstance());
-		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.SELECTIVEGLASS.getBlockInstance());
-		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.DOOR.getBlockInstance());
-		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.PYLON.getBlockInstance());
 
 		if (ModList.ATG.isLoaded()) {
 			ATGBiomes.addBiome(ATGBiomes.BiomeType.LAND, "Forest", rainbowforest, 1.0);

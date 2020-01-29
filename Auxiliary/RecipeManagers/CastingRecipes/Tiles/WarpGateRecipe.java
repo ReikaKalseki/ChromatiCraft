@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -56,6 +56,11 @@ public class WarpGateRecipe extends PylonCastingRecipe {
 		this.addAuraRequirement(CrystalElement.BLACK, 20000);
 		this.addAuraRequirement(CrystalElement.LIGHTBLUE, 10000);
 		this.addAuraRequirement(CrystalElement.PURPLE, 10000);
+	}
+
+	@Override
+	public int getNumberProduced() {
+		return 2;
 	}
 
 }

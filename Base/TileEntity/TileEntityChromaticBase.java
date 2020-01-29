@@ -143,7 +143,7 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 	}
 
 	public final boolean isOwnedByPlayer(UUID id) {
-		return owners.contains(id);
+		return owners.isEmpty() || owners.contains(id);
 	}
 
 	public final Collection<EntityPlayer> getOwners(boolean allowFake) {
