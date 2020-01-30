@@ -18,6 +18,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 
 import Reika.DragonAPI.Base.ParticleEntity;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
@@ -46,6 +47,10 @@ public class EntitySplineProjectile extends ParticleEntity implements IEntityAdd
 	public EntitySplineProjectile(World world) {
 		super(world);
 		path = new ArrayList();
+	}
+
+	public Coordinate getFinalPathBlock() {
+		return path == null || path.isEmpty() ? null : path.get(path.size()-1).getCoordinate();
 	}
 
 	@Override

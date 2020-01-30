@@ -183,7 +183,7 @@ public class UnknownArtefactGenerator implements RetroactiveGenerator {
 		return true;
 	}
 
-	private boolean canGenerateIn(World world) {
+	public boolean canGenerateIn(World world) {
 		if (world.provider.dimensionId != 0)
 			return false;
 		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT && !ChromaOptions.FLATGEN.getState()) {

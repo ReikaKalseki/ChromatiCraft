@@ -278,6 +278,15 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
+	public void noDimWarpMobs(EntityJoinWorldEvent evt) {
+		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			if (ChromaDimensionManager.isDisallowedEntity(evt.entity)) {
+				evt.setCanceled(true);
+			}
+		}
+	}
+
+	@SubscribeEvent
 	@ModDependent(ModList.VOIDMONSTER)
 	public void triggerVoidMonsterTeleport(ExplosionEvent.Start evt) {
 		if (evt.explosion.exploder instanceof EntityTNTPrimed && !evt.world.isRemote) {

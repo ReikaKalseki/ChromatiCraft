@@ -95,6 +95,7 @@ import Reika.ChromatiCraft.Auxiliary.Render.PylonFinderOverlay;
 import Reika.ChromatiCraft.Auxiliary.Render.StructureErrorOverlays;
 import Reika.ChromatiCraft.Auxiliary.Tab.FragmentTab;
 import Reika.ChromatiCraft.Auxiliary.Tab.TabChromatiCraft;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
@@ -434,6 +435,8 @@ public class ChromatiCraft extends DragonAPIMod {
 		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.SELECTIVEGLASS.getBlockInstance());
 		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.DOOR.getBlockInstance());
 		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.PYLON.getBlockInstance());
+		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.ordinal());
+		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.metadata);
 
 		this.basicSetup(evt);
 		this.finishTiming();

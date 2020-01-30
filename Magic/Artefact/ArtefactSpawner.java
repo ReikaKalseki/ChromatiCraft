@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -66,6 +66,10 @@ public class ArtefactSpawner implements TickHandler {
 		EntityPlayer pl = (EntityPlayer)tickData[0];
 		if (pl.worldObj.isRemote)
 			return;
+		if (!UnknownArtefactGenerator.instance.canGenerateIn(pl.worldObj)) {
+			artefacts.clear();
+			return;
+		}
 		EntityPlayerMP ep = (EntityPlayerMP)pl;
 		if (rand.nextInt(2) == 0 && this.canSpawnArtefactNearPlayer(ep))
 			ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.PARTICLE.ordinal(), ep.worldObj, MathHelper.floor_double(ep.posX), (int)ep.posY+1, MathHelper.floor_double(ep.posZ), new PacketTarget.PlayerTarget(ep), ReikaJavaLibrary.makeListFrom(ReikaParticleHelper.PORTAL.ordinal(), 1));

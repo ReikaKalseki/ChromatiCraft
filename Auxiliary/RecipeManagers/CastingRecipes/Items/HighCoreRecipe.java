@@ -69,7 +69,7 @@ public abstract class HighCoreRecipe extends PylonCastingRecipe implements Shard
 
 	@Override
 	public final boolean canBeSimpleAutomated() {
-		return false;
+		return true;
 	}
 
 }

@@ -7,6 +7,7 @@ import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 
 
@@ -74,6 +75,17 @@ public class GateStructure extends ChromaStructureBase {
 		array.setBlock(x-2, y+4, z, crystalstone, StoneTypes.ENGRAVED.ordinal());
 		array.setBlock(x, y+4, z-2, crystalstone, StoneTypes.ENGRAVED.ordinal());
 		array.setBlock(x, y+4, z+2, crystalstone, StoneTypes.ENGRAVED.ordinal());
+
+
+		array.addBlock(x+3, y+2, z, ChromaBlocks.GLOW.getBlockInstance(), CrystalElement.WHITE.ordinal());
+		array.addBlock(x-3, y+2, z, ChromaBlocks.GLOW.getBlockInstance(), CrystalElement.WHITE.ordinal());
+		array.addBlock(x, y+2, z-3, ChromaBlocks.GLOW.getBlockInstance(), CrystalElement.WHITE.ordinal());
+		array.addBlock(x, y+2, z+3, ChromaBlocks.GLOW.getBlockInstance(), CrystalElement.WHITE.ordinal());
+
+		array.addBlock(x+2, y+3, z, ChromaBlocks.GLOW.getBlockInstance(), CrystalElement.WHITE.ordinal());
+		array.addBlock(x-2, y+3, z, ChromaBlocks.GLOW.getBlockInstance(), CrystalElement.WHITE.ordinal());
+		array.addBlock(x, y+3, z-2, ChromaBlocks.GLOW.getBlockInstance(), CrystalElement.WHITE.ordinal());
+		array.addBlock(x, y+3, z+2, ChromaBlocks.GLOW.getBlockInstance(), CrystalElement.WHITE.ordinal());
 
 		array.setBlock(x, y, z, ChromaTiles.TELEPORT.getBlock(), ChromaTiles.TELEPORT.getBlockMetadata());
 

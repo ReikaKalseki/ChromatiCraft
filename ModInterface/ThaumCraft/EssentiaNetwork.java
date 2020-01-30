@@ -638,6 +638,8 @@ public class EssentiaNetwork {
 
 		private long lastTick;
 
+		private boolean isBeingDestroyed = false;
+
 		private EssentiaSubnet(EssentiaNetwork n, int dim) {
 			dimension = dim;
 			parent = n;
@@ -645,6 +647,8 @@ public class EssentiaNetwork {
 		}
 
 		private void prune(World world) {
+			if (isBeingDestroyed)
+				return;
 			boolean flag = true;
 			while (flag) {
 				flag = false;
@@ -677,6 +681,7 @@ public class EssentiaNetwork {
 		}
 
 		public void destroy(World world, boolean doDrops) {
+			isBeingDestroyed = true;
 			parent.subnets.remove(this);
 			for (EssentiaNode n : relays.values()) {
 				n.destroy(world, doDrops);
@@ -688,6 +693,8 @@ public class EssentiaNetwork {
 		}
 
 		private void addRelay(World world, Coordinate c) {
+			if (isBeingDestroyed)
+				return;
 			EssentiaNode n = new EssentiaNode(this, c);
 			this.linkNodesTo(world, n);
 			relays.put(c, n);
@@ -696,6 +703,8 @@ public class EssentiaNetwork {
 		}
 
 		private void linkNodesTo(World world, EssentiaNode n) {
+			if (isBeingDestroyed)
+				return;
 			for (EssentiaNode c : relays.values()) {
 				if (this.canConnect(world, n, c)) {
 					n.connect(c);
@@ -708,6 +717,8 @@ public class EssentiaNetwork {
 		}
 
 		public void reloadEndpoints(World world) {
+			if (isBeingDestroyed)
+				return;
 			for (EssentiaNode c : relays.values()) {
 				c.activeEndpoints.clear();
 				c.inertEndpoints.clear();
@@ -716,6 +727,8 @@ public class EssentiaNetwork {
 		}
 
 		private void findAllEndpoints(World world) {
+			if (isBeingDestroyed)
+				return;
 			for (EssentiaNode c : relays.values()) {
 				c.findValidEndpoints(world);
 			}
@@ -726,6 +739,8 @@ public class EssentiaNetwork {
 		}
 
 		public int countEssentia(World world, Aspect aspect) {
+			if (isBeingDestroyed)
+				return 0;
 			int sum = 0;
 			for (NetworkEndpoint n : endpoints.values()) {
 				sum += n.getContents(world, aspect);
@@ -738,6 +753,8 @@ public class EssentiaNetwork {
 		}
 
 		public EssentiaMovement removeEssentia(TileEntityEssentiaRelay caller, ForgeDirection callDir, Aspect aspect, int amount, Coordinate tgt) {
+			if (isBeingDestroyed)
+				return null;
 			TileEntity target = caller.getAdjacentTileEntity(callDir);
 			ArrayList<EssentiaPath> li = new ArrayList();
 			ArrayList<NetworkEndpoint> list = new ArrayList(endpoints.values());
@@ -769,6 +786,8 @@ public class EssentiaNetwork {
 		}
 
 		public EssentiaMovement addEssentia(TileEntityEssentiaRelay caller, Aspect aspect, int amount, Coordinate src) {
+			if (isBeingDestroyed)
+				return null;
 			ArrayList<EssentiaPath> li = new ArrayList();
 			ArrayList<NetworkEndpoint> list = new ArrayList(endpoints.values());
 			endpointComparator.setWorld(caller.worldObj);
@@ -795,6 +814,8 @@ public class EssentiaNetwork {
 		}
 
 		public EssentiaMovement tick(World world) {
+			if (isBeingDestroyed)
+				return null;
 			if (lastTick == world.getTotalWorldTime())
 				return null;
 			lastTick = world.getTotalWorldTime();
@@ -858,6 +879,8 @@ public class EssentiaNetwork {
 		}
 
 		private boolean canTransfer(World world, NetworkEndpoint from, NetworkEndpoint to) {
+			if (isBeingDestroyed)
+				return false;
 			if (from == to || from.point.equals(to.point))
 				return false;
 			if (from instanceof LabelledJarEndpoint)
@@ -868,6 +891,8 @@ public class EssentiaNetwork {
 		}
 
 		private ArrayList<EssentiaPath> transferEssentia(World world, NetworkEndpoint from, NetworkEndpoint to, AspectList al) {
+			if (isBeingDestroyed)
+				return null;
 			//ReikaJavaLibrary.pConsole("Attempting transfer of "+ReikaThaumHelper.aspectsToString(al)+" from "+from+" to "+to);
 			ArrayList<EssentiaPath> ret = new ArrayList();
 			Iterator<Entry<Aspect, Integer>> it = al.aspects.entrySet().iterator();
@@ -888,6 +913,8 @@ public class EssentiaNetwork {
 		}
 
 		private EssentiaPath transferEssentia(World world, NetworkEndpoint from, NetworkEndpoint to, Aspect a, int amount) {
+			if (isBeingDestroyed)
+				return null;
 			EssentiaPathCache pt = this.getPath(world, from, to);
 			if (pt == null || pt.isEmpty())
 				return null;
@@ -911,6 +938,8 @@ public class EssentiaNetwork {
 		}
 
 		public Collection<Coordinate> getAllFilteredJars() {
+			if (isBeingDestroyed)
+				return new ArrayList();
 			Collection<Coordinate> ret = new HashSet();
 			for (NetworkEndpoint n : endpoints.values()) {
 				if (n instanceof LabelledJarEndpoint)

@@ -67,7 +67,7 @@ import forestry.api.apiculture.IBeeHousing;
 import forestry.api.apiculture.IBeeHousingInventory;
 
 
-@Strippable(value={"appeng.api.networking.IActionHost"})
+@Strippable(value={"appeng.api.networking.security.IActionHost"})
 public class TileEntityRouterHub extends TileEntityChromaticBase implements IActionHost, RouterFilter, AdjacentUpdateWatcher {
 
 	private final InventoryCache ingredients = new InventoryCache();

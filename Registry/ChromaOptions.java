@@ -11,6 +11,9 @@ package Reika.ChromatiCraft.Registry;
 
 import java.util.Locale;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
 import Reika.DragonAPI.Interfaces.Configuration.BooleanConfig;
@@ -23,6 +26,7 @@ import Reika.DragonAPI.Interfaces.Configuration.SelectiveConfig;
 import Reika.DragonAPI.Interfaces.Configuration.StringConfig;
 import Reika.DragonAPI.Interfaces.Configuration.UserSpecificConfig;
 import Reika.DragonAPI.Interfaces.Registry.Dependency;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 
 
 public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, IntegerConfig, BooleanConfig, DecimalConfig, StringConfig, MatchingConfig, CustomCategoryConfig, UserSpecificConfig, Dependency {
@@ -83,7 +87,7 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	RECEIVEDIMSOUND("Play Dimension Join Sound For Others", true),
 	BIOMEBLEND("Blend CC Biome Edges", true),
 	MIDISIZE("Orchestra MIDI Size Limit (KB)", 80),
-	ALLOWSTRUCTPASS("Allow Structure Bypass Passwords", true),
+	STRUCTPASSLEVEL("Structure Bypass Usability (0 = None, 1 = Admins Only, 2 = All)", 1),
 	SUPERBUILDKEYBIND("Superbuild Ability Activation", Key.LCTRL.toString()),
 	VILLAGERATE("Village Structure Frequency", 1F),
 	NODECHARGESPEED("Crystal-Network-Integrated ThaumCraft Node Improvement Speed", 1F),
@@ -250,6 +254,25 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	public static int getStructureDifficulty() {
 		int base = STRUCTDIFFICULTY.getValue();
 		return Math.min(3, Math.max(1, base));
+	}
+
+	public static boolean structureBypassEnabled() {
+		return STRUCTPASSLEVEL.getValue() > 0;
+	}
+
+	public static boolean canPlayerUseStructureBypass(EntityPlayer ep) {
+		if (ReikaPlayerAPI.isReika(ep))
+			return true;
+		int l = STRUCTPASSLEVEL.getValue();
+		switch(l) {
+			case 0:
+			default:
+				return false;
+			case 1:
+				return ep instanceof EntityPlayerMP && ReikaPlayerAPI.isAdmin((EntityPlayerMP)ep);
+			case 2:
+				return true;
+		}
 	}
 
 	public static float getNodeGrowthSpeed() {

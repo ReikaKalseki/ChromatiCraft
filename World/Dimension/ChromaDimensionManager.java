@@ -23,6 +23,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -67,6 +68,7 @@ import Reika.ChromatiCraft.World.Dimension.Biome.StructureBiome;
 import Reika.ChromatiCraft.World.Dimension.Rendering.Aurora;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.IDCollisionTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.RetroGenController;
 import Reika.DragonAPI.Exception.RegistrationException;
@@ -85,6 +87,8 @@ import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import thaumcraft.api.entities.IEldritchMob;
+import thaumcraft.api.entities.ITaintedMob;
 
 public class ChromaDimensionManager {
 
@@ -619,6 +623,21 @@ public class ChromaDimensionManager {
 	public static boolean isStructureBiome(BiomeGenBase b) {
 		ChromaDimensionBiomeType type = Biomes.getFromID(b.biomeID);
 		return type == Biomes.STRUCTURE || type == Biomes.MONUMENT;
+	}
+
+	public static boolean isDisallowedEntity(Entity e) {
+		if (ModList.THAUMCRAFT.isLoaded() && isThaumEvilMob(e))
+			return true;
+		return false;
+	}
+
+	@ModDependent(ModList.THAUMCRAFT)
+	private static boolean isThaumEvilMob(Entity e) {
+		if (e instanceof ITaintedMob || e instanceof IEldritchMob)
+			return true;
+		if (e instanceof IMob && e.getClass().getName().startsWith("thaumcraft.common.entities.monster"))
+			return true;
+		return false;
 	}
 
 }

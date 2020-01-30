@@ -22,7 +22,12 @@
 		Gray-colored energy seems to have the power to transmute and change, so it is a reasonable guess to think that if applied to the world, with some information of what blocks to place and replace, this power could be used to change large swaths of one block into another, greatly expediting the landscaping process.
 	</transition>
 	<invlink>
+		<desc>
 		Mining and other activities tend to fill your inventory with useless junk that seems to accumulate faster than you can get rid of it. By leveraging the power of elements associated with movement, you discover that you can create a linkage between your inventory and one placed somewhere in the world, and one for which you can control the items it transports.
+		</desc>
+		<notes>
+			Can be toggled to reverse the item flow direction
+		</notes>
 	</invlink>
 	<pendant>
 		<desc>

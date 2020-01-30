@@ -53,7 +53,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-@Strippable(value={"appeng.api.networking.IActionHost"})
+@Strippable(value={"appeng.api.networking.security.IActionHost"})
 public class TileEntityMEDistributor extends TileEntityChromaticBase implements IActionHost, SidePlacedTile {
 
 	@ModDependent(ModList.APPENG)

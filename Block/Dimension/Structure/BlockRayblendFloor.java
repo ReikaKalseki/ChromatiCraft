@@ -75,6 +75,8 @@ public class BlockRayblendFloor extends BlockDimensionStructureTile {
 	@Override
 	public int colorMultiplier(IBlockAccess world, int x, int y, int z) {
 		TileEntityRayblendFloor te = (TileEntityRayblendFloor)world.getTileEntity(x, y, z);
+		if (te.isBlocked())
+			return 0xffffff;
 		OverlayColor e = te.getOverlayColor();
 		return e != null ? e.getColor() : 0xffffff;
 	}
@@ -116,6 +118,7 @@ public class BlockRayblendFloor extends BlockDimensionStructureTile {
 		private UUID gridID = DragonAPICore.Reika_UUID;
 		private int tileX;
 		private int tileZ;
+		private boolean isBlocked;
 
 		@Override
 		public DimensionStructureType getType() {
@@ -124,12 +127,16 @@ public class BlockRayblendFloor extends BlockDimensionStructureTile {
 
 		public boolean allowsCrystalAt(int x, int z, CrystalElement e) {
 			RayBlendGenerator g = this.getGenerator();
-			return g != null && g.allowsCrystalAt(worldObj, puzzleID, x, z, e);
+			return g != null && !isBlocked && g.allowsCrystalAt(worldObj, puzzleID, x, z, e);
 		}
 
 		public OverlayColor getOverlayColor() {
 			RayBlendGenerator g = this.getGenerator();
 			return g != null ? g.getCageColor(puzzleID, tileX, tileZ) : null;
+		}
+
+		public boolean isBlocked() {
+			return isBlocked;
 		}
 
 		private void blockUpdate(World world, int x, int y, int z) {
@@ -156,11 +163,12 @@ public class BlockRayblendFloor extends BlockDimensionStructureTile {
 			return false;
 		}
 
-		public void populate(UUID uid, UUID grid, int x, int z) {
+		public void populate(UUID uid, UUID grid, int x, int z, boolean blocked) {
 			puzzleID = uid;
 			gridID = grid;
 			tileX = x;
 			tileZ = z;
+			isBlocked = blocked;
 		}
 
 		@Override
@@ -173,6 +181,7 @@ public class BlockRayblendFloor extends BlockDimensionStructureTile {
 				NBT.setString("grid", gridID.toString());
 			NBT.setInteger("tileX", tileX);
 			NBT.setInteger("tileZ", tileZ);
+			NBT.setBoolean("blocked", isBlocked);
 		}
 
 		@Override
@@ -185,6 +194,7 @@ public class BlockRayblendFloor extends BlockDimensionStructureTile {
 				gridID = UUID.fromString(NBT.getString("grid"));
 			tileX = NBT.getInteger("tileX");
 			tileZ = NBT.getInteger("tileZ");
+			isBlocked = NBT.getBoolean("blocked");
 		}
 
 		public UUID getGridID() {

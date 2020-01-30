@@ -256,7 +256,7 @@
 		<note>
 			Enchantment base cost: %d mB per level
 			
-			Can take an already-enchanted item to discount this cost
+			Can take an already-enchanted item to discount this cost; can be placed below the table in a "normal" enchanting room to further reduce this cost
 		</note>
 	</enchanter>
 	<chromaflower>
@@ -605,7 +605,9 @@
 			Being the prudent designer you are, you have decided to split your base into multiple structures spread across the landscape. However, this created a problem: Simply getting to them becomes something of a chore. However, another idea occurs to you: You could build a link of sorts, a gate, at any number of locations and be able to link between any two points at will. As long as the purity of the link is maintained, the two gates should work in harmony, and the supremacy of this method of travel will act as an emancipation from your current commute.
 		</desc>
 		<note>
-
+			Can be toggled into private mode (purple), as well as between arrival/departure only (red/yellow).
+			
+			GUI Color Statuses: White = Available; Red = Owned by Other; Yellow = Unpowered; Magenta = No Structure; Blue = Other Dimension
 		</note>
 	</teleport>
 	<harvestplant>

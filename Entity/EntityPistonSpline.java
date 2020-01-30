@@ -11,6 +11,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.RGBColorData;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -114,8 +115,11 @@ public class EntityPistonSpline extends EntitySplineProjectile {
 	protected boolean onEnterBlock(World world, int x, int y, int z) {
 		Block b = world.getBlock(x, y, z);
 		if (b == ChromaBlocks.PISTONTARGET.getBlockInstance()) {
+			Coordinate end = this.getFinalPathBlock();
+			if (end != null && end.equals(x, y, z)) {
 			((BlockPistonTarget)b).receiveSplineParticle(world, x, y, z, this);
 			return true;
+			}
 		}
 		return false;//!b.isAir(world, x, y, z);
 	}

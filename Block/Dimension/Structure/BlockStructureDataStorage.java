@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
@@ -131,7 +132,7 @@ public class BlockStructureDataStorage extends BlockDimensionStructureTile {
 
 		@Override
 		protected void onRightClick(EntityPlayer ep, int s) {
-			if (!this.checkPassword(ep)) {
+			if (!this.checkPassword(ep) && ChromaOptions.canPlayerUseStructureBypass(ep)) {
 				ep.openGui(ChromatiCraft.instance, ChromaGuis.STRUCTUREPASS.ordinal(), worldObj, xCoord, yCoord, zCoord);
 			}
 			//if (ReikaPlayerAPI.isReika(ep)) {

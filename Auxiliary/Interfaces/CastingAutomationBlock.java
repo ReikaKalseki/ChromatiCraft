@@ -15,7 +15,7 @@ import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 
 import appeng.api.networking.security.IActionHost;
 
-@Strippable(value={"appeng.api.networking.IActionHost"})
+@Strippable(value={"appeng.api.networking.security.IActionHost"})
 public interface CastingAutomationBlock<V extends CastingAutomationSystem> extends GuiController, OwnedTile, BreakAction, IActionHost {
 
 	public Collection<CastingRecipe> getAvailableRecipes();

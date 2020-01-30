@@ -159,7 +159,7 @@ public class LoreScripts implements DataProvider {
 		OCEAN(new PanelSize(64, 17), 2),
 		PYLON(new PanelSize(15, 5), 8),
 		TOWER(new PanelSize(23, 5), 4),
-		ALVEARY(new PanelSize(17, 7), 4),
+		ALVEARY(new PanelSize(20, 7), 4),
 		SNOWSTRUCT(new PanelSize(24, 5), 4);
 
 		public final PanelSize size;

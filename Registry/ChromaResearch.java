@@ -21,8 +21,6 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
-import com.mojang.authlib.GameProfile;
-
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -37,8 +35,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 
@@ -680,15 +676,10 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 			GL11.glScaled(s, s, s);
 			GL11.glColor4f(1, 1, 1, 1);
 			try {
-				TileEntitySkull te = new TileEntitySkull();
-				te.worldObj = Minecraft.getMinecraft().theWorld;
-				GameProfile p = ReikaPlayerAPI.getClientProfile();
-				if (p != null && MinecraftServer.getServer() != null)
-					te.func_152106_a(p);
 				GL11.glRotated(180, 0, 0, 1);
 				GL11.glRotated(20, 1, 0, 0);
 				GL11.glRotated(-60, 0, 1, 0);
-				TileEntityRendererDispatcher.instance.renderTileEntityAt(te, 0, 0, 0, ReikaRenderHelper.getPartialTickTime());
+				TileEntityRendererDispatcher.instance.renderTileEntityAt(ReikaPlayerAPI.getPlayerHead(Minecraft.getMinecraft().theWorld, ReikaPlayerAPI.getClientProfile()), 0, 0, 0, ReikaRenderHelper.getPartialTickTime());
 			}
 			catch (Exception e) {
 				ReikaChatHelper.write("Threw exception rendering fragment "+this+"! Check your console!");

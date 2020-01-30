@@ -555,6 +555,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			if (struct == ChromaStructures.DESERT) {
 				copy.offset(-7, -3, -7);
 			}
+			if (struct == ChromaStructures.SNOWSTRUCT) {
+				copy.offset(-8, -3, -6);
+			}
 			copy.placeExcept(3, this);
 			if (!triggered)
 				;//DungeonGenerator.populateChests(struct, copy, rand);

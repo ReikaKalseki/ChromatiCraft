@@ -17,6 +17,7 @@ import java.util.List;
 import org.lwjgl.input.Keyboard;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
@@ -65,6 +66,38 @@ public class ItemInventoryLinker extends ItemChromaTool {
 	}
 
 	@Override
+	public int getItemSpriteIndex(ItemStack item) {
+		int base = super.getItemSpriteIndex(item);
+		return getMode(item) == Mode.REVERSED ? base+1 : base;
+	}
+
+	@Override
+	public void onUpdate(ItemStack is, World world, Entity e, int slot, boolean held) {
+		if (!world.isRemote && e instanceof EntityPlayer && is.stackTagCompound != null && getMode(is) == Mode.REVERSED && is.stackTagCompound.hasKey("link")) {
+			EntityPlayer ep = (EntityPlayer)e;
+			WorldLocation loc = WorldLocation.readFromNBT("link", is.stackTagCompound);
+			if (loc != null) {
+				if (loc.isChunkLoaded()) {
+					Block id = loc.getBlock();
+					if (id != Blocks.air) {
+						TileEntity te = loc.getTileEntity();
+						if (te instanceof IInventory) {
+							IInventory ii = (IInventory)te;
+							int look = (int)(world.getTotalWorldTime()%ii.getSizeInventory());
+							ItemStack in = ii.getStackInSlot(look);
+							if (in != null) {
+								if (ReikaInventoryHelper.addToIInv(in, ep.inventory)) {
+									ii.setInventorySlotContents(look, null);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@Override
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
 		if (is.stackTagCompound != null) {
 			if (is.stackTagCompound.hasKey("link")) {
@@ -107,6 +140,9 @@ public class ItemInventoryLinker extends ItemChromaTool {
 					break;
 				case WHITELIST:
 					li.add("Sending:");
+					break;
+				case REVERSED:
+					li.add("Reversed flow direction");
 					break;
 			}
 			if (m.usesInventory() && is.stackTagCompound.hasKey("items")) {
@@ -276,7 +312,8 @@ public class ItemInventoryLinker extends ItemChromaTool {
 		WHITELIST(),
 		BLACKLIST(),
 		EVERYTHING(),
-		NOTHING();
+		NOTHING(),
+		REVERSED();
 
 		private static final Mode[] list = values();
 
@@ -290,12 +327,14 @@ public class ItemInventoryLinker extends ItemChromaTool {
 					return true;
 				case NOTHING:
 					return false;
+				case REVERSED:
+					return false;
 			}
 			return false;
 		}
 
 		public boolean usesInventory() {
-			return this != EVERYTHING && this != NOTHING;
+			return this != EVERYTHING && this != NOTHING && this != REVERSED;
 		}
 
 		private Mode next() {

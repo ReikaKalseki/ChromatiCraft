@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.Auxiliary.OverlayColor;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockRayblendFloor.TileEntityRayblendFloor;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockSpecialShield;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Rendering.EdgeDetectionRenderer;
 import Reika.DragonAPI.Interfaces.ISBRH;
@@ -94,10 +95,16 @@ public class RayBlendFloorRenderer implements ISBRH {
 		if (b.shouldSideBeRendered(world, x, y+1, z, 1)) {
 			rb.renderFaceYPos(b, x, y, z, ico);
 
+			v5.setColorOpaque_I(0xffffff);
 			TileEntityRayblendFloor te = (TileEntityRayblendFloor)world.getTileEntity(x, y, z);
-			OverlayColor clr = te.getOverlayColor();
-			if (clr instanceof CrystalElement) {
-				rb.renderFaceYPos(b, x, y+0.01, z, ((CrystalElement)clr).getEngravingRune());
+			if (te.isBlocked()) {
+				rb.renderFaceYPos(b, x, y+0.01, z, ChromaIcons.X.getIcon());
+			}
+			else {
+				OverlayColor clr = te.getOverlayColor();
+				if (clr instanceof CrystalElement) {
+					rb.renderFaceYPos(b, x, y+0.01, z, ((CrystalElement)clr).getEngravingRune());
+				}
 			}
 		}
 
