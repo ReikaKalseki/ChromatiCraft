@@ -67,6 +67,7 @@ public class ChromaStacks {
 	public static final ItemStack livingEssence			= ChromaItems.CRAFTING.getStackOfMetadata(31);
 	public static final ItemStack lumenCore				= ChromaItems.CRAFTING.getStackOfMetadata(32);
 	public static final ItemStack glowChunk				= ChromaItems.CRAFTING.getStackOfMetadata(33);
+	public static final ItemStack experienceGem			= ChromaItems.CRAFTING.getStackOfMetadata(34);
 
 	public static final ItemStack chromaDust 		= ChromaItems.TIERED.getStackOfMetadata(0);
 	public static final ItemStack auraDust 			= ChromaItems.TIERED.getStackOfMetadata(1);

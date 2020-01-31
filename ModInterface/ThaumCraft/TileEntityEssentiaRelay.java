@@ -69,19 +69,15 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 	private static Class essentiaHandler;
 	private static HashMap<WorldCoordinates, ArrayList<WorldCoordinates>> essentiaHandlerData;
 
-	private static Class centrifugeClass;
-
 	static {
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			try {
 				infusionMatrix = Class.forName("thaumcraft.common.tiles.TileInfusionMatrix");
 				essentiaHandler = Class.forName("thaumcraft.common.lib.events.EssentiaHandler");
-
-				centrifugeClass = Class.forName("thaumcraft.common.tiles.TileCentrifuge");
 			}
 			catch (Exception e) {
 				ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.THAUMCRAFT, e);
-				ChromatiCraft.logger.logError("Could not access TC tile classes!");
+				ChromatiCraft.logger.logError("Could not access TC infusion matrix classes!");
 				e.printStackTrace();
 			}
 		}
@@ -103,9 +99,10 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 
 	public void tryBuildNetwork() {
 		if (network != null) {
+			network.destroy(worldObj, false);
 			//ChromaSounds.ERROR.playSoundAtBlock(this);
-			ChromaSounds.USE.playSoundAtBlock(this);
-			network.reloadEndpoints(worldObj);
+			ChromaSounds.USE.playSoundAtBlock(this, 1, 0.5F);
+			//network.reloadEndpoints(worldObj);
 		}
 		else {
 			network = EssentiaNetwork.NetworkBuilder.buildFrom(this);
@@ -157,7 +154,7 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 					}
 				}
 				TileEntity te = this.getAdjacentTileEntity(ForgeDirection.DOWN);
-				if (te != null && te.getClass() == centrifugeClass) {
+				if (te != null && te.getClass() == EssentiaNetwork.getCentrifugeClass()) {
 					IEssentiaTransport ie = (IEssentiaTransport)te;
 					Aspect pull = ie.getEssentiaType(ForgeDirection.UP);
 					if (pull != null && ie.getEssentiaAmount(ForgeDirection.UP) > 0) {

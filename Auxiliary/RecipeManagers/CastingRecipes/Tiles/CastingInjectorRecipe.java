@@ -31,8 +31,9 @@ public class CastingInjectorRecipe extends MultiBlockCastingRecipe {
 
 		this.addAuxItem(ChromaStacks.crystalLens, -2, -4);
 		this.addAuxItem(ChromaStacks.crystalLens, 2, -4);
-		this.addAuxItem(ChromaStacks.crystalLens, 0, -4);
 		this.addAuxItem(ChromaStacks.crystalLens, 0, -2);
+
+		this.addAuxItem(ChromaStacks.experienceGem, 0, -4);
 
 		for (int i = -2; i <= 2; i += 2) {
 			this.addAuxItem(ChromaStacks.iridCrystal, -4, i);

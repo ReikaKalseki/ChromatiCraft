@@ -44,6 +44,8 @@ import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CastingAutomationBlock;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.InscriptionRecipes;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.PortalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.RepeaterTurboRecipe;
@@ -175,6 +177,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.AppEngHandler;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -1082,6 +1085,21 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case PROGSYNC:
 					ProgressionLinking.instance.attemptSyncTriggerProgressFor(ep, ProgressStage.list[data[0]]);
+					break;
+				case ALLOYPATTERN:
+					PoolRecipe pr = PoolRecipes.instance.getByID(stringdata);
+					if (pr != null) {
+						int slot = ReikaInventoryHelper.locateInInventory(AppEngHandler.getInstance().getBlankPattern(), ep.inventory.mainInventory, false);
+						if (slot >= 0 || ep.capabilities.isCreativeMode) {
+							int empty = ReikaInventoryHelper.findEmptySlot(ep.inventory.mainInventory);
+							if (empty >= 0) {
+								ItemStack pattern = pr.programToAEPattern();
+								ep.inventory.mainInventory[empty] = pattern;
+								if (!ep.capabilities.isCreativeMode)
+									ReikaInventoryHelper.decrStack(slot, ep.inventory.mainInventory);
+							}
+						}
+					}
 					break;
 			}
 		}

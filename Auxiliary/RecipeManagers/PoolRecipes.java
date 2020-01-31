@@ -35,6 +35,8 @@ import Reika.ChromatiCraft.Magic.Artefact.ArtefactWithDataCrystalAlloyingEffect;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayList;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.IO.CustomRecipeList;
@@ -46,6 +48,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.AEPatternHandling;
 
 public class PoolRecipes {
 
@@ -64,7 +67,10 @@ public class PoolRecipes {
 		this.addRecipe(ChromaStacks.auraIngot, new ItemStack(Items.iron_ingot), ReikaItemHelper.getSizedItemStack(ChromaStacks.auraDust, 8), new ItemStack(Items.glowstone_dust, 8, 0), new ItemStack(Items.redstone, 16, 0), new ItemStack(Items.quartz, 4, 0));
 		this.addRecipe(ChromaStacks.spaceIngot, new ItemStack(Items.iron_ingot), ReikaItemHelper.getSizedItemStack(ChromaStacks.spaceDust, 16), new ItemStack(Items.glowstone_dust, 32, 0), new ItemStack(Items.redstone, 64, 0), new ItemStack(Items.quartz, 16, 0), new ItemStack(Items.diamond, 4, 0));
 
-		PoolRecipe pr = this.addRecipe(ChromaStacks.complexIngot, ChromaStacks.chromaIngot, ChromaStacks.enderIngot, ChromaStacks.waterIngot, ChromaStacks.spaceIngot, ChromaStacks.fieryIngot, ChromaStacks.auraIngot, ChromaStacks.conductiveIngot, ChromaStacks.iridChunk, new ItemStack(Blocks.obsidian, 4, 0), new ItemStack(Items.emerald, 8, 0));
+		PoolRecipe pr = this.addRecipe(ChromaStacks.experienceGem, ChromaStacks.iridChunk, new ItemStack(Blocks.obsidian, 4, 0), new ItemStack(Items.emerald, 8, 0));
+		//pr.allowDoubling = false;
+
+		pr = this.addRecipe(ChromaStacks.complexIngot, ChromaStacks.experienceGem, ChromaStacks.chromaIngot, ChromaStacks.enderIngot, ChromaStacks.waterIngot, ChromaStacks.spaceIngot, ChromaStacks.fieryIngot, ChromaStacks.auraIngot, ChromaStacks.conductiveIngot);
 		//pr.allowDoubling = false;
 
 		pr = this.addRecipe(ChromaItems.DATACRYSTAL.getCraftedProduct(2), ChromaItems.DATACRYSTAL.getStackOf(), ReikaItemHelper.getSizedItemStack(ChromaStacks.crystalPowder, 18)).addProgress(ProgressStage.TOWER);
@@ -271,6 +277,12 @@ public class PoolRecipes {
 			return true;
 		}
 
+		public void addItem(ItemStack is, int amt) {
+			Integer has = inputs.get(is);
+			int val = has != null ? has.intValue() : 0;
+			inputs.put(is, amt);
+		}
+
 		private void makeFrom(Collection<EntityItem> li) {
 			ItemHashMap<Integer> map = inputs.clone();
 			for (EntityItem ei : li) {
@@ -376,6 +388,16 @@ public class PoolRecipes {
 			for (AlloyingEffect c : effects) {
 				c.doEffect(ei);
 			}
+		}
+
+		@ModDependent(ModList.APPENG)
+		public ItemStack programToAEPattern() {
+			Collection<ItemStack> in = new ArrayList();
+			in.add(main);
+			for (ItemStack is : inputs.keySet()) {
+				in.add(ReikaItemHelper.getSizedItemStack(is, inputs.get(is)));
+			}
+			return AEPatternHandling.getEncodedPattern(output, false, false, in.toArray(new ItemStack[in.size()]));
 		}
 	}
 

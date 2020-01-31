@@ -34,7 +34,7 @@ public class ChromaNames {
 			"chromacraft.chassis2", "chromacraft.chassis3", "chromacraft.ingot2", "chromacraft.ingot3", "chromacraft.ingot4", "chromacraft.ingot5",
 			"chromacraft.ingot6", "chromacraft.ingot7", "chromacraft.ingot8", "chromacraft.hivoid", "chromacraft.hitransformcore",
 			"chromacraft.hienergycore", "chromacraft.teledust", "chromacraft.icydust", "chromacraft.energydust", "chromacraft.etherberries",
-			"chromacraft.voiddust", "chromacraft.livingessence", "chromacraft.lumencore", "chromacraft.glowchunk"
+			"chromacraft.voiddust", "chromacraft.livingessence", "chromacraft.lumencore", "chromacraft.glowchunk", "chromacraft.experiencegem"
 	};
 
 	public static final String[] tieredNames = {

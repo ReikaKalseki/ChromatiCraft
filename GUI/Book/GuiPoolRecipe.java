@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -27,16 +27,22 @@ import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
 import Reika.ChromatiCraft.Base.GuiBookSection;
+import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
+import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.AppEngHandler;
 
 import codechicken.nei.NEIClientConfig;
 
@@ -68,6 +74,9 @@ public class GuiPoolRecipe extends GuiBookSection {
 			buttonList.add(new CustomSoundImagedGuiButton(0, j+205, k-3, 10, 12, 183, 6, file, ChromatiCraft.class, this));
 			buttonList.add(new CustomSoundImagedGuiButton(1, j+215, k-3, 10, 12, 193, 6, file, ChromatiCraft.class, this));
 		}
+
+		if (ModList.APPENG.isLoaded() && ChromaResearchManager.instance.playerHasFragment(player, ChromaResearch.CHROMACRAFTER))
+			buttonList.add(new CustomSoundGuiButton(4, j+xSize-27-20-28, k-2, 20, 20, " ", this));
 
 		if (NEItrigger && !centeredMouse) {
 			Mouse.setCursorPosition(Display.getWidth() / 2, Display.getHeight() / 2);
@@ -105,6 +114,11 @@ public class GuiPoolRecipe extends GuiBookSection {
 			else if (button.id == 1 && index < recipes.size()-1) {
 				index++;
 				subpage = Math.min(subpage, this.getMaxSubpage());
+			}
+			else if (button.id == 4) {
+				PoolRecipe pr = this.getActiveRecipe();
+				if (pr != null)
+					ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.ALLOYPATTERN.ordinal(), pr.ID, PacketTarget.server);
 			}
 		}
 		//renderq = 22.5F;
@@ -147,7 +161,8 @@ public class GuiPoolRecipe extends GuiBookSection {
 	}
 
 	protected void drawAuxGraphics(int posX, int posY) {
-
+		if (ModList.APPENG.isLoaded() && ChromaResearchManager.instance.playerHasFragment(player, ChromaResearch.CHROMACRAFTER))
+			api.drawItemStack(itemRender, fontRendererObj, new ItemStack(AppEngHandler.getInstance().getEncodedPattern()), posX+xSize-27-16-28, posY+8);
 	}
 
 	@Override

@@ -58,6 +58,7 @@ public class EssentiaNetwork {
 	private static Field alembicAspectField;
 	private static Field alembicAmountField;
 	private static Class tubeClass;
+	private static Class centrifugeClass;
 
 	private static final SuctionComparator endpointComparator = new SuctionComparator();
 
@@ -77,6 +78,8 @@ public class EssentiaNetwork {
 				alembicAmountField = alembicClass.getField("amount");
 
 				tubeClass = Class.forName("thaumcraft.common.tiles.TileTube");
+
+				centrifugeClass = Class.forName("thaumcraft.common.tiles.TileCentrifuge");
 			}
 			catch (Exception e) {
 				ChromatiCraft.logger.logError("Could not fetch TC tile classes");
@@ -86,6 +89,10 @@ public class EssentiaNetwork {
 		}
 
 		tracer.airOnly = true;
+	}
+
+	public static Class getCentrifugeClass() {
+		return centrifugeClass;
 	}
 
 	public static EssentiaNetwork getNetwork(World world) {
@@ -147,6 +154,9 @@ public class EssentiaNetwork {
 			return new LabelledJarEndpoint(loc, te, a);
 		if (te.getClass() == alembicClass) {
 			return new AlembicEndpoint(loc, te);
+		}
+		else if (te.getClass() == centrifugeClass) {
+			return new CentrifugeEndpoint(loc, te);
 		}
 		return new NetworkEndpoint(loc, te);
 	}
@@ -400,6 +410,24 @@ public class EssentiaNetwork {
 
 	}
 
+	private static class CentrifugeEndpoint extends NetworkEndpoint {
+
+		private CentrifugeEndpoint(Coordinate loc, IEssentiaTransport te) {
+			super(loc, te);
+		}
+
+		@Override
+		public boolean canReceive(World world) {
+			return false; //do not allow push to centrifuges
+		}
+
+		@Override
+		public boolean canEmit(World world) {
+			return true;
+		}
+
+	}
+
 	private static class NetworkEndpoint {
 
 		public final Coordinate point;
@@ -506,7 +534,7 @@ public class EssentiaNetwork {
 			return this.getClass()+" # "+tileHash+" @ "+point+" suc="+suction;
 		}
 
-		public void removeFromRelays() {
+		private void removeFromRelays() {
 			if (relay != null) {
 				relay.activeEndpoints.remove(point);
 				relay.inertEndpoints.remove(point);

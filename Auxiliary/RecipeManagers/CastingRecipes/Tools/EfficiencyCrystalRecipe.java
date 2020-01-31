@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -43,8 +43,8 @@ public class EfficiencyCrystalRecipe extends PylonCastingRecipe {
 		this.addAuxItem(ChromaStacks.rawCrystal, -2, 2);
 		this.addAuxItem(ChromaStacks.rawCrystal, -2, -2);
 
-		this.addAuxItem(ChromaStacks.iridChunk, -4, 0);
-		this.addAuxItem(ChromaStacks.iridChunk, 4, 0);
+		this.addAuxItem(ChromaStacks.experienceGem, -4, 0);
+		this.addAuxItem(ChromaStacks.experienceGem, 4, 0);
 
 		this.addAuxItem(ChromaStacks.voidDust, 0, 4);
 		this.addAuxItem(ChromaStacks.voidDust, 0, -4);

@@ -203,6 +203,7 @@ public enum ChromaPackets {
 	OREPINGLOC(3),
 	SMELTERYFLUIDSEND(8),
 	PROGSYNC(1),
+	ALLOYPATTERN(),
 	;
 
 	public final int numInts;
