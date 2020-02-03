@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldChunk;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 
 public class CrystalPath implements Comparable<CrystalPath> {
@@ -97,6 +98,14 @@ public class CrystalPath implements Comparable<CrystalPath> {
 
 	public final boolean containsLink(CrystalLink l) {
 		return links.contains(l);
+	}
+
+	public HashSet<WorldChunk> getRelevantChunks() {
+		HashSet<WorldChunk> ret = new HashSet();
+		for (CrystalLink l : links) {
+			ret.addAll(l.chunks);
+		}
+		return ret;
 	}
 
 	public final int getSignalLoss() {
@@ -243,7 +252,7 @@ public class CrystalPath implements Comparable<CrystalPath> {
 		return PylonFinder.getLocation(transmitter).equals(PylonFinder.getLocation(p.transmitter)) && origin.equals(p.origin);
 	}
 
-	public CrystalPath cleanExtraEndJumps() {
+	CrystalPath cleanExtraEndJumps() {
 		return new CrystalPath(network, hasRealTarget, element, this.getCleanedNodePath());
 	}
 

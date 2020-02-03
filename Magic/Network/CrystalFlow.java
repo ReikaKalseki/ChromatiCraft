@@ -179,7 +179,7 @@ public class CrystalFlow extends CrystalPath {
 		return sb.toString();
 	}
 
-	public void resetTiles() {
+	void resetTiles() {
 		PylonFinder.getSourceAt(nodes.get(nodes.size()-1), true).removeTarget(nodes.get(nodes.size()-2), element);
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
@@ -213,11 +213,11 @@ public class CrystalFlow extends CrystalPath {
 		return ret;
 	}
 
-	private int getDrainThisTick() {
+	public int getDrainThisTick() {
 		return Math.min(Math.min(Math.min(throttle, maxFlow), transmitter.maxThroughput()), remainingAmount);
 	}
 
-	public void tickRepeaters(int amt) {
+	void tickRepeaters(int amt) {
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
 			if (te instanceof CrystalRepeater) {
@@ -227,7 +227,7 @@ public class CrystalFlow extends CrystalPath {
 	}
 
 	@Override
-	public CrystalPath cleanExtraEndJumps() {
+	CrystalPath cleanExtraEndJumps() {
 		return new CrystalFlow(network, super.cleanExtraEndJumps(), receiver, requestedAmount, throughputLimit);
 	}
 

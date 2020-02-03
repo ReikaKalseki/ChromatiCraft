@@ -158,6 +158,9 @@ public class EssentiaNetwork {
 		else if (te.getClass() == centrifugeClass) {
 			return new CentrifugeEndpoint(loc, te);
 		}
+		else if (te.getClass().getSimpleName().startsWith("TileThaumatorium")) {
+			return new ThaumatoriumEndpoint(loc, te);
+		}
 		return new NetworkEndpoint(loc, te);
 	}
 
@@ -335,7 +338,7 @@ public class EssentiaNetwork {
 		}
 
 		@Override
-		public boolean canReceive(World world) {
+		public boolean canReceive(World world, boolean isTick) {
 			return false;
 		}
 
@@ -399,12 +402,12 @@ public class EssentiaNetwork {
 		public abstract AspectList getPush(World world);
 
 		@Override
-		public boolean canReceive(World world) {
+		public boolean canReceive(World world, boolean isTick) {
 			return this.getPush(world) == null && this.getPull(world) != null;
 		}
 
 		@Override
-		public boolean canEmit(World world) {
+		public boolean canEmit(World world, boolean isTick) {
 			return this.getPull(world) == null && this.getPush(world) != null;
 		}
 
@@ -417,13 +420,31 @@ public class EssentiaNetwork {
 		}
 
 		@Override
-		public boolean canReceive(World world) {
-			return false; //do not allow push to centrifuges
+		public boolean canReceive(World world, boolean isTick) {
+			return !isTick; //do not allow push to centrifuges
 		}
 
 		@Override
-		public boolean canEmit(World world) {
+		public boolean canEmit(World world, boolean isTick) {
 			return true;
+		}
+
+	}
+
+	private static class ThaumatoriumEndpoint extends NetworkEndpoint {
+
+		private ThaumatoriumEndpoint(Coordinate loc, IEssentiaTransport te) {
+			super(loc, te);
+		}
+
+		@Override
+		public boolean canReceive(World world, boolean isTick) {
+			return !isTick; //do not allow push to centrifuges
+		}
+
+		@Override
+		public boolean canEmit(World world, boolean isTick) {
+			return false;
 		}
 
 	}
@@ -511,11 +532,11 @@ public class EssentiaNetwork {
 			return ret;
 		}
 
-		public boolean canReceive(World world) {
+		public boolean canReceive(World world, boolean isTick) {
 			return true;
 		}
 
-		public boolean canEmit(World world) {
+		public boolean canEmit(World world, boolean isTick) {
 			return true;
 		}
 
@@ -792,7 +813,7 @@ public class EssentiaNetwork {
 			endpointComparator.reset();
 			NetworkEndpoint end = endpoints.get(new Coordinate(target));
 			for (NetworkEndpoint p : list) {
-				if (!this.canTransfer(caller.worldObj, p, end))
+				if (!this.canTransfer(caller.worldObj, p, end, false))
 					continue;
 				EssentiaPathCache pt = this.getPath(caller.worldObj, p, end);
 				if (pt != null && !pt.isEmpty()) {
@@ -824,7 +845,7 @@ public class EssentiaNetwork {
 			endpointComparator.reset();
 			NetworkEndpoint start = endpoints.get(src);
 			for (NetworkEndpoint p : list) {
-				if (!this.canTransfer(caller.worldObj, start, p))
+				if (!this.canTransfer(caller.worldObj, start, p, false))
 					continue;
 				EssentiaPathCache pt = this.getPath(caller.worldObj, start, p);
 				if (pt != null && !pt.isEmpty()) {
@@ -858,7 +879,7 @@ public class EssentiaNetwork {
 					AspectList al = from.getPush(world);
 					if (al != null && !al.aspects.isEmpty()) {
 						for (NetworkEndpoint to : endpoints.values()) {
-							if (this.canTransfer(world, from, to)) {
+							if (this.canTransfer(world, from, to, true)) {
 								li.addAll(this.transferEssentia(world, from, to, al));
 								if (al.aspects.isEmpty())
 									break;
@@ -868,7 +889,7 @@ public class EssentiaNetwork {
 					al = from.getPull(world);
 					if (al != null && !al.aspects.isEmpty()) {
 						for (NetworkEndpoint to : endpoints.values()) {
-							if (this.canTransfer(world, to, from)) {
+							if (this.canTransfer(world, to, from, true)) {
 								li.addAll(this.transferEssentia(world, to, from, al));
 								if (al.aspects.isEmpty())
 									break;
@@ -906,7 +927,7 @@ public class EssentiaNetwork {
 			}
 		}
 
-		private boolean canTransfer(World world, NetworkEndpoint from, NetworkEndpoint to) {
+		private boolean canTransfer(World world, NetworkEndpoint from, NetworkEndpoint to, boolean isTick) {
 			if (isBeingDestroyed)
 				return false;
 			if (from == to || from.point.equals(to.point))
@@ -915,7 +936,7 @@ public class EssentiaNetwork {
 				return !isJar(to.getTile(world));
 			if (isJar(from.getTile(world)) && isJar(to.getTile(world)))
 				return to instanceof LabelledJarEndpoint && ((LabelledJarEndpoint)to).getPull(world) != null;
-			return from.canEmit(world) && to.canReceive(world) && from.isValid(world) && to.isValid(world);
+			return from.canEmit(world, isTick) && to.canReceive(world, isTick) && from.isValid(world) && to.isValid(world);
 		}
 
 		private ArrayList<EssentiaPath> transferEssentia(World world, NetworkEndpoint from, NetworkEndpoint to, AspectList al) {

@@ -25,7 +25,6 @@ import Reika.ChromatiCraft.Auxiliary.Render.StructureErrorOverlays;
 import Reika.ChromatiCraft.Auxiliary.Structure.RitualStructure;
 import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
-import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
@@ -245,7 +244,7 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool implements Dynamical
 			switch(this) {
 				case REPEATER_CONNECTIVITY:
 					for (CrystalElement e : CrystalElement.elements) {
-						CrystalRepeater te = (CrystalRepeater)world.getTileEntity(x, y, z);
+						CrystalReceiver te = (CrystalReceiver)world.getTileEntity(x, y, z);
 						boolean can = te.isConductingElement(e);
 						boolean flag = can && CrystalNetworker.instance.checkConnectivity(e, te);
 						ProbeInfoOverlayRenderer.instance.markConnectivity(ep, e, flag, can);

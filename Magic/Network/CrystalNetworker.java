@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Magic.Network;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -399,6 +400,10 @@ public class CrystalNetworker implements TickHandler {
 
 			CrystalNetworkLogger.logTileAdd(te);
 		}
+	}
+
+	public Collection<CrystalFlow> getActiveFlows(World world) {
+		return Collections.unmodifiableCollection(flows.get(world.provider.dimensionId));
 	}
 
 	private void verifyTileAt(CrystalNetworkTile te, WorldLocation loc) {

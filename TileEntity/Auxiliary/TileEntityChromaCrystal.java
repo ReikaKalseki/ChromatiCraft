@@ -59,14 +59,21 @@ public class TileEntityChromaCrystal extends TileEntityPylonEnhancer {
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (world.isRemote && pylonLocation != null)
 			ProgressionCatchupHandling.instance.attemptSync(this, 9, ProgressStage.POWERCRYSTAL);
+
+		if (this.getTicksExisted() < 5)
+			this.update();
 	}
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		if (!world.isRemote)
 			pylonLocation = this.findPylonLocation(world, x, y, z);
+		this.update();
+	}
+
+	private void update() {
 		this.syncAllData(true);
-		worldObj.markBlockForUpdate(x, y, z);
+		this.triggerBlockUpdate();
 	}
 
 	private Coordinate findPylonLocation(World world, int x, int y, int z) {

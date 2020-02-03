@@ -416,6 +416,9 @@ public class GuiStructure extends GuiBookSection {
 		if (diff != null) {
 			map2 = ItemHashMap.subtract(map, diff.getStructureForDisplay().tally());
 		}
+		for (int i = 0; i < 16; i++) {
+			map.remove(ChromaBlocks.POWERTREE.getStackOfMetadata(i));
+		}
 		int i = 0;
 		int n = 8;
 		List<ItemStack> c = new ArrayList(map.keySet());
