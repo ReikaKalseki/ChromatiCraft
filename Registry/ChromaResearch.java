@@ -225,6 +225,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	VOIDTRAP(		ChromaTiles.VOIDTRAP,		ResearchLevel.PYLONCRAFT,		ProgressStage.VOIDMONSTERDIE, ProgressStage.CHARGECRYSTAL),
 	PLAYERINFUSER(	ChromaTiles.PLAYERINFUSER,	ResearchLevel.MULTICRAFT,		ProgressStage.INFUSE),
 	SMELTERY(		ChromaTiles.SMELTERYDISTRIBUTOR,ResearchLevel.RUNECRAFT),
+	LAUNCHPAD(		ChromaTiles.LAUNCHPAD,		ResearchLevel.BASICCRAFT),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT,	ProgressStage.ALLCOLORS),
@@ -411,6 +412,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	OPTIMISTRUCT(	ChromaStructures.OPTIMIZER,		StoneTypes.RESORING.ordinal(),			ResearchLevel.ENDGAME,			TieredOres.LUMA.level),
 	VOIDTRAPSTRUCT(	ChromaStructures.VOIDRITUAL,	Blocks.redstone_torch, 5,				ResearchLevel.PYLONCRAFT,		ProgressStage.VOIDMONSTERDIE, ProgressStage.CHARGECRYSTAL),
 	VOIDTRAPSTRUCTN(ChromaStructures.NETHERTRAP,	Blocks.tnt, 0,							ResearchLevel.PYLONCRAFT,		ProgressStage.VOIDMONSTERDIE, ProgressStage.CHARGECRYSTAL),
+	LAUNCHPADSTRUCT(ChromaStructures.LAUNCHPAD,		StoneTypes.ENGRAVED.ordinal(), 			ResearchLevel.BASICCRAFT),
 	;
 
 	private final ItemStack iconItem;

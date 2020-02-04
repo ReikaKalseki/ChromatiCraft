@@ -13,6 +13,8 @@ import java.awt.Color;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLeavesBase;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.command.IEntitySelector;
@@ -39,6 +41,8 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
+import Reika.ChromatiCraft.Block.BlockCrystalTank.CrystalTankAuxTile;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -47,6 +51,7 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.SphericalVector;
@@ -252,43 +257,7 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity, IMo
 			motionY = v[1];
 			motionZ = v[2];
 
-			int tx = 0;
-			int ty = 0;
-			int tz = 0;
-			if (cachedTile != null && cachedTile.getDistanceTo(this) < 8) {
-				tx = cachedTile.xCoord;
-				ty = cachedTile.yCoord;
-				tz = cachedTile.zCoord;
-			}
-			else {
-				cachedTile = null;
-				tx = MathHelper.floor_double(ReikaRandomHelper.getRandomPlusMinus(posX, 3));
-				ty = MathHelper.floor_double(ReikaRandomHelper.getRandomPlusMinus(posY, 3));
-				tz = MathHelper.floor_double(ReikaRandomHelper.getRandomPlusMinus(posZ, 3));
-			}
-			TileEntity te = worldObj.getTileEntity(tx, ty, tz);
-			int amtToSpawn = isAngry ? 120 : 40;
-			if (te instanceof IEnergyHandler) {
-				if (((IEnergyHandler)te).receiveEnergy(ForgeDirection.VALID_DIRECTIONS[rand.nextInt(6)], amtToSpawn, false) > 0) {
-					if (cachedTile == null)
-						cachedTile = new Coordinate(te);
-				}
-				else {
-					cachedTile = null;
-				}
-			}
-			else if (ModList.IC2.isLoaded() && te instanceof IEnergySink) {
-				if (((IEnergySink)te).injectEnergy(ForgeDirection.VALID_DIRECTIONS[rand.nextInt(6)], amtToSpawn, 32) < 50) {
-					if (cachedTile == null)
-						cachedTile = new Coordinate(te);
-				}
-				else {
-					cachedTile = null;
-				}
-			}
-			else {
-				cachedTile = null;
-			}
+			this.doAmbientEffects();
 		}
 
 		colorTransitionTick++;
@@ -313,6 +282,57 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity, IMo
 		}
 
 		fallDistance = 0;
+	}
+
+	private void doAmbientEffects() {
+		Coordinate c = new Coordinate(this);
+		if (c.getBlock(worldObj) == ChromaBlocks.TANK.getBlockInstance()) {
+			CrystalTankAuxTile te = (CrystalTankAuxTile)c.getTileEntity(worldObj);
+			if (te != null) {
+				TileEntityCrystalTank te2 = te.getTankController();
+				if (te2 != null && te2.isEmpty()) {
+					te2.addLiquid(ChromatiCraft.luma, 10);
+				}
+			}
+		}
+
+		int tx = 0;
+		int ty = 0;
+		int tz = 0;
+		if (cachedTile != null && cachedTile.getDistanceTo(this) < 8) {
+			tx = cachedTile.xCoord;
+			ty = cachedTile.yCoord;
+			tz = cachedTile.zCoord;
+		}
+		else {
+			cachedTile = null;
+			tx = MathHelper.floor_double(ReikaRandomHelper.getRandomPlusMinus(posX, 3));
+			ty = MathHelper.floor_double(ReikaRandomHelper.getRandomPlusMinus(posY, 3));
+			tz = MathHelper.floor_double(ReikaRandomHelper.getRandomPlusMinus(posZ, 3));
+		}
+		TileEntity te = worldObj.getTileEntity(tx, ty, tz);
+		int amtToSpawn = isAngry ? 120 : 40;
+		if (te instanceof IEnergyHandler) {
+			if (((IEnergyHandler)te).receiveEnergy(ForgeDirection.VALID_DIRECTIONS[rand.nextInt(6)], amtToSpawn, false) > 0) {
+				if (cachedTile == null)
+					cachedTile = new Coordinate(te);
+			}
+			else {
+				cachedTile = null;
+			}
+		}
+		else if (ModList.IC2.isLoaded() && te instanceof IEnergySink) {
+			if (((IEnergySink)te).injectEnergy(ForgeDirection.VALID_DIRECTIONS[rand.nextInt(6)], amtToSpawn, 32) < 50) {
+				if (cachedTile == null)
+					cachedTile = new Coordinate(te);
+			}
+			else {
+				cachedTile = null;
+			}
+		}
+		else {
+			cachedTile = null;
+		}
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -700,6 +720,22 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity, IMo
 	public void destroy() {
 		if (worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
 			this.setDead();
+	}
+
+	public static boolean isBlockNonColliding(World world, int x, int y, int z, Block block) {
+		if (block == Blocks.stained_glass || block == Blocks.stained_glass_pane || block == Blocks.leaves || block == Blocks.leaves2)
+			return true;
+		if (block == ChromaBlocks.DYELEAF.getBlockInstance() || block == ChromaBlocks.DECAY.getBlockInstance() || block == ChromaBlocks.GLOWLEAF.getBlockInstance())
+			return true;
+		if (block == ChromaBlocks.TANK.getBlockInstance())
+			return true;
+		if (block.getMaterial() == Material.glass && block.getLightOpacity(world, x, y, z) == 0)
+			return true;
+		if (block.getMaterial() == Material.leaves || block instanceof BlockLeavesBase || block.isLeaves(world, x, y, z))
+			return true;
+		if (block == ChromaBlocks.STRUCTSHIELD.getBlockInstance() || block == ChromaBlocks.SPECIALSHIELD.getBlockInstance())
+			return world.getBlockMetadata(x, y, z)%8 == BlockType.GLASS.ordinal();
+		return false;
 	}
 
 }

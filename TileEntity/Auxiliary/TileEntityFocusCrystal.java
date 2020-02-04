@@ -9,7 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Auxiliary;
 
-import java.util.Set;
+import java.util.Collection;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -165,12 +165,30 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 	private FocusConnection connection;
 	private CrystalTier tier = CrystalTier.FLAWED;
 
-	public static float getSummedFocusFactor(FocusAcceleratable f, Set<FocusLocation> locations) {
+	public static float getSummedFocusFactorDirect(FocusAcceleratable f, Collection<Coordinate> locations) {
+		TileEntity te = (TileEntity)f;
+		return getSummedFocusFactorDirect(f, te.worldObj, te.xCoord, te.yCoord, te.zCoord, locations);
+	}
+
+	public static float getSummedFocusFactor(FocusAcceleratable f, Collection<FocusLocation> locations) {
 		TileEntity te = (TileEntity)f;
 		return getSummedFocusFactor(f, te.worldObj, te.xCoord, te.yCoord, te.zCoord, locations);
 	}
 
-	public static float getSummedFocusFactor(FocusAcceleratable acc, World world, int x, int y, int z, Set<FocusLocation> locations) {
+	public static float getSummedFocusFactorDirect(FocusAcceleratable acc, World world, int x, int y, int z, Collection<Coordinate> locations) {
+		float sum = 1;
+		for (Coordinate c : locations) {
+			c = c.offset(x, y, z);
+			if (ChromaTiles.getTile(world, c.xCoord, c.yCoord, c.zCoord) == ChromaTiles.FOCUSCRYSTAL) {
+				TileEntityFocusCrystal te = (TileEntityFocusCrystal)c.getTileEntity(world);
+				sum += te.getTier().efficiencyFactor;
+				te.addConnection(acc, true);
+			}
+		}
+		return sum;
+	}
+
+	public static float getSummedFocusFactor(FocusAcceleratable acc, World world, int x, int y, int z, Collection<FocusLocation> locations) {
 		float sum = 1;
 		for (FocusLocation f : locations) {
 			Coordinate c = f.relativeLocation().offset(x, y, z);

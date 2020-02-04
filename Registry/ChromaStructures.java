@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Auxiliary.Structure.CloakingTowerStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.CompoundRepeaterStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.GateStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.InfusionStructure;
+import Reika.ChromatiCraft.Auxiliary.Structure.LaunchPadStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.LumenTreeStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.MeteorTowerStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.NetworkOptimizerStructureV2;
@@ -100,7 +101,8 @@ public enum ChromaStructures implements StructureEnum<ChromaStructureBase> {
 	PROGRESSLINK(ProgressionLinkerStructure.class),
 	OPTIMIZER(NetworkOptimizerStructureV2.class),
 	VOIDRITUAL(VoidMonsterRitualStructure.class),
-	NETHERTRAP(VoidMonsterNetherStructure.class);
+	NETHERTRAP(VoidMonsterNetherStructure.class),
+	LAUNCHPAD(LaunchPadStructure.class);
 
 	public final boolean requiresColor;
 	private final Class<? extends ChromaStructureBase> structureClass;

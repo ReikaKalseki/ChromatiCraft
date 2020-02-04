@@ -204,6 +204,7 @@ public enum ChromaPackets {
 	SMELTERYFLUIDSEND(8),
 	PROGSYNC(1),
 	ALLOYPATTERN(),
+	LAUNCHFIRE(),
 	;
 
 	public final int numInts;

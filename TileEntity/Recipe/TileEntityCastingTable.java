@@ -1353,6 +1353,69 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 
 	}
 
+	@SideOnly(Side.CLIENT)
+	@ModDependent(ModList.BOTANIA)
+	public void onClickedWithBotaniaWand(ReikaDyeHelper dye1, ReikaDyeHelper dye2) {
+		ReikaSoundHelper.playNormalClientSound(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, "botania:spreaderFire", 1, 1, true);
+		for (int i = 0; i < 8; i++) {
+			double ang = rand.nextDouble()*360;
+			double vy = ReikaRandomHelper.getRandomBetween(0.125, 0.375);
+			double vel = ReikaRandomHelper.getRandomBetween(0.0625, 0.25);
+			double[] v = ReikaPhysicsHelper.polarToCartesian(vel, 0, ang);
+			double g = ReikaRandomHelper.getRandomBetween(0.03125/4, 0.03125);
+			int l = ReikaRandomHelper.getRandomBetween(20, 80);
+			EntityParticleEmitterFX fx = new EntityParticleEmitterFX(worldObj, xCoord+0.5, yCoord+1, zCoord+0.5, v[0], vy, v[2], new BotaniaPetalShower(rand.nextBoolean() ? dye1 : dye2));
+			fx.setVelocityDeltas(0, -g, 0).setLife(l);
+			fx.noClip = true;
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+	}
+
+	@Override
+	public boolean isPlayerAccessible(EntityPlayer var1) {
+		return super.isPlayerAccessible(var1) && mismatch == null;
+	}
+
+	@Override
+	public boolean isUnbreakable(EntityPlayer ep) {
+		return mismatch != null;
+	}
+
+	@Override
+	public ChromaStructures getPrimaryStructure() {
+		switch(this.getTier()) {
+			case CRAFTING:
+				return null;
+			case TEMPLE:
+				return ChromaStructures.CASTING1;
+			case MULTIBLOCK:
+				return ChromaStructures.CASTING2;
+			case PYLON:
+				return ChromaStructures.CASTING3;
+		}
+		return null;
+	}
+
+	@Override
+	public Coordinate getStructureOffset() {
+		return new Coordinate(0, -1, 0);
+	}
+
+	public boolean canStructureBeInspected() {
+		return true;
+	}
+
+	public void onAddRune(World world, int x, int y, int z, EntityPlayer e, ItemStack is) {
+		if (this.isAtLeast(RecipeType.TEMPLE)) {
+			ProgressStage.RUNEUSE.stepPlayerTo(e);
+			hasRunes = true;
+		}
+	}
+
+	public boolean hasRunes() {
+		return hasRunes;
+	}
+
 	public static enum CastingFocusLocation implements FocusLocation {
 
 		N1(-1, 1, -3),
@@ -1447,67 +1510,5 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 
 	}
 	 */
-	@SideOnly(Side.CLIENT)
-	@ModDependent(ModList.BOTANIA)
-	public void onClickedWithBotaniaWand(ReikaDyeHelper dye1, ReikaDyeHelper dye2) {
-		ReikaSoundHelper.playNormalClientSound(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, "botania:spreaderFire", 1, 1, true);
-		for (int i = 0; i < 8; i++) {
-			double ang = rand.nextDouble()*360;
-			double vy = ReikaRandomHelper.getRandomBetween(0.125, 0.375);
-			double vel = ReikaRandomHelper.getRandomBetween(0.0625, 0.25);
-			double[] v = ReikaPhysicsHelper.polarToCartesian(vel, 0, ang);
-			double g = ReikaRandomHelper.getRandomBetween(0.03125/4, 0.03125);
-			int l = ReikaRandomHelper.getRandomBetween(20, 80);
-			EntityParticleEmitterFX fx = new EntityParticleEmitterFX(worldObj, xCoord+0.5, yCoord+1, zCoord+0.5, v[0], vy, v[2], new BotaniaPetalShower(rand.nextBoolean() ? dye1 : dye2));
-			fx.setVelocityDeltas(0, -g, 0).setLife(l);
-			fx.noClip = true;
-			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-		}
-	}
-
-	@Override
-	public boolean isPlayerAccessible(EntityPlayer var1) {
-		return super.isPlayerAccessible(var1) && mismatch == null;
-	}
-
-	@Override
-	public boolean isUnbreakable(EntityPlayer ep) {
-		return mismatch != null;
-	}
-
-	@Override
-	public ChromaStructures getPrimaryStructure() {
-		switch(this.getTier()) {
-			case CRAFTING:
-				return null;
-			case TEMPLE:
-				return ChromaStructures.CASTING1;
-			case MULTIBLOCK:
-				return ChromaStructures.CASTING2;
-			case PYLON:
-				return ChromaStructures.CASTING3;
-		}
-		return null;
-	}
-
-	@Override
-	public Coordinate getStructureOffset() {
-		return new Coordinate(0, -1, 0);
-	}
-
-	public boolean canStructureBeInspected() {
-		return true;
-	}
-
-	public void onAddRune(World world, int x, int y, int z, EntityPlayer e, ItemStack is) {
-		if (this.isAtLeast(RecipeType.TEMPLE)) {
-			ProgressStage.RUNEUSE.stepPlayerTo(e);
-			hasRunes = true;
-		}
-	}
-
-	public boolean hasRunes() {
-		return hasRunes;
-	}
 
 }

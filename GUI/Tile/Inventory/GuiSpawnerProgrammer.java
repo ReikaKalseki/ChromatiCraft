@@ -161,13 +161,11 @@ public class GuiSpawnerProgrammer extends GuiLetterSearchable<String> {
 	protected void actionPerformed(GuiButton b) {
 		switch (b.id) {
 			case 0:
-				if (index > 0)
-					index--;
+				this.decrIndex();
 				ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.SPAWNERPROGRAM.ordinal(), this.getActive(), prog);
 				break;
 			case 1:
-				if (index < list.size()-1)
-					index++;
+				this.incrIndex();
 				ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.SPAWNERPROGRAM.ordinal(), this.getActive(), prog);
 				break;
 			case 2:

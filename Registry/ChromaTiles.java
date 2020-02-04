@@ -135,6 +135,7 @@ import Reika.ChromatiCraft.TileEntity.Transport.TileEntityConduitBridge;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidRelay;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityItemRift;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityLaunchPad;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRFDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRouterHub;
@@ -259,7 +260,8 @@ public enum ChromaTiles implements TileEnum {
 	INJECTOR("chroma.injector",			ChromaBlocks.TILEENTITY2,	TileEntityCastingInjector.class,	5),
 	VOIDTRAP("chroma.voidtrap",			ChromaBlocks.TILEMODELLED4,	TileEntityVoidMonsterTrap.class,	6, "RenderVoidMonsterTrap", ModList.VOIDMONSTER),
 	PLAYERINFUSER("chroma.playerinfuser", ChromaBlocks.TILEMODELLED4, TileEntityPlayerInfuser.class, 	7, "RenderInfuser3"),
-	SMELTERYDISTRIBUTOR("chroma.smeltery", ChromaBlocks.TILEMODELLED4, TileEntitySmelteryDistributor.class, 8, "RenderSmelteryDistributor", ModList.TINKERER);
+	SMELTERYDISTRIBUTOR("chroma.smeltery", ChromaBlocks.TILEMODELLED4, TileEntitySmelteryDistributor.class, 8, "RenderSmelteryDistributor", ModList.TINKERER),
+	LAUNCHPAD("chroma.launchpad",		ChromaBlocks.TILEENTITY2,	TileEntityLaunchPad.class,			7, "RenderLaunchPad");
 
 	private final Class tile;
 	private final String name;
@@ -375,6 +377,7 @@ public enum ChromaTiles implements TileEnum {
 			case VOIDTRAP:
 			case PLAYERINFUSER:
 			case SMELTERYDISTRIBUTOR:
+			case LAUNCHPAD:
 				return true;
 			default:
 				return false;
@@ -717,7 +720,7 @@ public enum ChromaTiles implements TileEnum {
 
 	@SideOnly(Side.CLIENT)
 	public boolean hasBlockRender() {
-		return !this.hasRender() || this == TANK || this == TABLE || this == CONSOLE || this == ALVEARY || this == PYLONLINK;
+		return !this.hasRender() || this == TANK || this == TABLE || this == CONSOLE || this == ALVEARY || this == PYLONLINK || this == LAUNCHPAD;
 	}
 
 	public boolean isPlant() {

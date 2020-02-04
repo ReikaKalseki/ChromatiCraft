@@ -565,14 +565,9 @@ public class ChromaAux {
 							flag = false;
 						}
 						else if (ep instanceof EntityGlowCloud) {
-							if (block.getMaterial() == Material.glass && block.getLightOpacity(world, x, y, z) == 0)
+							if (EntityGlowCloud.isBlockNonColliding(world, x, y, z, block)) {
 								flag = false;
-							else if (block == Blocks.stained_glass || block == Blocks.stained_glass_pane || block == Blocks.leaves || block == Blocks.leaves2)
-								flag = false;
-							else if (block == ChromaBlocks.DYELEAF.getBlockInstance() || block == ChromaBlocks.DECAY.getBlockInstance() || block == ChromaBlocks.GLOWLEAF.getBlockInstance())
-								flag = false;
-							else if (block.getMaterial() == Material.leaves || block instanceof BlockLeavesBase || block.isLeaves(world, x, y, z))
-								flag = false;
+							}
 						}
 						else if (ep instanceof EntityItem) {
 							if (((EntityItem)ep).getEntityItem().getItem() == ChromaItems.FERTILITYSEED.getItemInstance()) {

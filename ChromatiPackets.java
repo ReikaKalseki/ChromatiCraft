@@ -151,6 +151,7 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidRelay;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityLaunchPad;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRFDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRouterHub;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTeleportGate;
@@ -1100,6 +1101,9 @@ public class ChromatiPackets implements PacketHandler {
 							}
 						}
 					}
+					break;
+				case LAUNCHFIRE:
+					((TileEntityLaunchPad)tile).doFX(world, x, y, z);
 					break;
 			}
 		}

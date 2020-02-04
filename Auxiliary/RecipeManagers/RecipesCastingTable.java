@@ -155,6 +155,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ItemCol
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ItemInserterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LampControlRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LampRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LaunchPadRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LumenAlvearyRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LumenBroadcastRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LumenTurretRecipe;
@@ -921,6 +922,10 @@ public class RecipesCastingTable {
 			is = ChromaTiles.VOIDTRAP.getCraftedProduct();
 			this.addRecipe(new VoidTrapRecipe(is, ChromaStacks.voidCoreHigh));
 		}
+
+		is = ChromaTiles.LAUNCHPAD.getCraftedProduct();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "sas", "aga", "rar", 's', ChromaStacks.limeShard, 'r', Items.redstone, 'a', ChromaStacks.auraDust, 'g', ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.ENGRAVED.ordinal()));
+		this.addRecipe(new LaunchPadRecipe(is, sr));
 
 		this.addSpecialRecipes();
 	}

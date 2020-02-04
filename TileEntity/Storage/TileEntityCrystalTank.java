@@ -393,4 +393,8 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 		return (int)Math.round(15*this.getFillPercentage());
 	}
 
+	public void addLiquid(Fluid f, int amt) {
+		tank.addLiquid(amt, f);
+	}
+
 }

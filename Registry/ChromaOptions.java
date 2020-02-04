@@ -96,6 +96,7 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	EPILEPSY("Epilepsy Mode", false),
 	PYLONOVERWORLD("Spawn Pylons in Overworld", true),
 	RFEFFICIENCY("Wireless RF Transmission Efficiency (%)", 100F),
+	LAUNCHPOWER("Launch Pad Power", 1F),
 	;
 
 	private String label;

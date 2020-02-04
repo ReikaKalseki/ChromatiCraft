@@ -7,6 +7,7 @@ import java.util.Locale;
 
 import org.lwjgl.input.Keyboard;
 
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 
@@ -55,6 +56,44 @@ public abstract class GuiLetterSearchable<E> extends GuiChromaBase {
 		return this.getString(list.get(idx)).toLowerCase(Locale.ENGLISH).charAt(0);
 	}
 
+	protected final int getLastIndexOfPreviousLetter() {
+		int idx = index;
+		char at = this.getAlphaKeyAt(idx);
+		char next = at;
+		while (next == at && idx > 0) {
+			idx--;
+			at = this.getAlphaKeyAt(idx);
+		}
+		return idx;
+	}
+
+	protected final int getFirstIndexOfNextLetter() {
+		int idx = index;
+		char at = this.getAlphaKeyAt(idx);
+		char next = at;
+		while (next == at) {
+			idx++;
+			if (idx == list.size())
+				idx = 0;
+			at = this.getAlphaKeyAt(idx);
+		}
+		return idx;
+	}
+
+	protected final void decrIndex() {
+		if (GuiScreen.isShiftKeyDown())
+			index = this.getLastIndexOfPreviousLetter();
+		else if (index > 0)
+			index--;
+	}
+
+	protected final void incrIndex() {
+		if (GuiScreen.isShiftKeyDown())
+			index = this.getFirstIndexOfNextLetter();
+		else if (index < list.size()-1)
+			index++;
+	}
+
 	@Override
 	protected final void keyTyped(char c, int idx) {
 		if (idx == Keyboard.KEY_HOME) {
@@ -62,23 +101,11 @@ public abstract class GuiLetterSearchable<E> extends GuiChromaBase {
 			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 0.6F);
 		}
 		else if (idx == Keyboard.KEY_UP) {
-			char at = this.getAlphaKeyAt(index);
-			char next = at;
-			while (next == at && index > 0) {
-				index--;
-				at = this.getAlphaKeyAt(index);
-			}
+			index = this.getLastIndexOfPreviousLetter();
 			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 0.85F);
 		}
 		else if (idx == Keyboard.KEY_DOWN) {
-			char at = this.getAlphaKeyAt(index);
-			char next = at;
-			while (next == at) {
-				index++;
-				if (index == list.size())
-					index = 0;
-				at = this.getAlphaKeyAt(index);
-			}
+			index = this.getFirstIndexOfNextLetter();
 			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 0.85F);
 		}
 		else if (Character.isLetter(c)) {

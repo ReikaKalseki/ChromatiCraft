@@ -27,6 +27,7 @@ import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.FocusAcceleratable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
@@ -40,10 +41,12 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.HybridTank;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -60,7 +63,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 
 @Strippable(value={"buildcraft.api.transport.IPipeConnection"})
-public class TileEntityChromaCrafter extends InventoriedRelayPowered implements IFluidHandler, OwnedTile, IPipeConnection, OperationInterval, BreakAction {
+public class TileEntityChromaCrafter extends InventoriedRelayPowered implements IFluidHandler, OwnedTile, IPipeConnection, OperationInterval,
+BreakAction, FocusAcceleratable {
 
 	public static final int CRAFTING_DURATION = 300;
 
@@ -156,7 +160,7 @@ public class TileEntityChromaCrafter extends InventoriedRelayPowered implements 
 				recipe = this.checkRecipe();
 				//ReikaJavaLibrary.pConsole(hasEtherBerries+" / "+recipeItems.size()+":"+recipeItems+" > "+recipe);
 				if (recipe != null) {
-					recipeTick = CRAFTING_DURATION;
+					recipeTick = this.getCraftingDuration();
 					this.syncAllData(true);
 				}
 			}
@@ -166,6 +170,12 @@ public class TileEntityChromaCrafter extends InventoriedRelayPowered implements 
 		if (recipeTick > 0) {
 			this.onRecipeTick(world, x, y, z);
 		}
+	}
+
+	private int getCraftingDuration() {
+		int base = CRAFTING_DURATION;
+		float f = this.getAccelerationFactor();
+		return f >= 1 ? (int)(base/f) : base;
 	}
 
 	private PoolRecipe checkRecipe() {
@@ -348,7 +358,7 @@ public class TileEntityChromaCrafter extends InventoriedRelayPowered implements 
 	public float getOperationFraction() {
 		if (recipe == null)
 			return 0;
-		return 1-(float)recipeTick/CRAFTING_DURATION;
+		return 1-(float)recipeTick/this.getCraftingDuration();
 	}
 
 	@Override
@@ -373,6 +383,36 @@ public class TileEntityChromaCrafter extends InventoriedRelayPowered implements 
 		for (int i = 0; i < hasEtherBerries; i++) {
 			ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, ChromaStacks.etherBerries);
 		}
+	}
+
+	@Override
+	public float getAccelerationFactor() {
+		return TileEntityFocusCrystal.getSummedFocusFactorDirect(this, this.getRelativeFocusCrystalLocations())/2; //caps at 6x for turbo, 4x for exq
+	}
+
+	@Override
+	public float getMaximumAcceleratability() {
+		return 4*TileEntityFocusCrystal.CrystalTier.TURBOCHARGED.efficiencyFactor;
+	}
+
+	@Override
+	public float getProgressToNextStep() {
+		return 0;
+	}
+
+	@Override
+	public void recountFocusCrystals() {
+		this.getAccelerationFactor();
+	}
+
+	@Override
+	public Collection<Coordinate> getRelativeFocusCrystalLocations() {
+		Collection<Coordinate> c = new ArrayList();
+		int d = 2;
+		for (int i = 2; i < 6; i++) {
+			c.add(new Coordinate(dirs[i].offsetX*d, 0, dirs[i].offsetZ*d));
+		}
+		return c;
 	}
 
 }
