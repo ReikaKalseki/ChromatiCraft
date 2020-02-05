@@ -84,9 +84,9 @@ public class TileEntityLaunchPad extends TileEntityChromaticBase implements Mult
 
 	@SideOnly(Side.CLIENT)
 	public void doFX(World world, int x, int y, int z) {
-		for (int i = 0; i < 40; i++) {
-			double dx = ReikaRandomHelper.getRandomBetween(x-1, x+2);
-			double dz = ReikaRandomHelper.getRandomBetween(z-1, z+2);
+		for (int i = 0; i < 90; i++) {
+			double dx = ReikaRandomHelper.getRandomBetween(x-1D, x+2);
+			double dz = ReikaRandomHelper.getRandomBetween(z-1D, z+2);
 			double dy = y+1.0625;
 			double v = ReikaRandomHelper.getRandomBetween(2D, 5);
 			EntityBlurFX fx = new EntityBlurFX(world, dx, dy, dz, 0, v, 0);

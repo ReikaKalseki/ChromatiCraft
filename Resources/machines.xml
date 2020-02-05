@@ -798,14 +798,16 @@
 			Prioritizes tool casts over everything, and basins over all other casts
 		</note>
 	</smelterydistributor>
-	<name>
+	<launchpad>
 		<desc>
-
+			It may look nice to have a large tower or other similar elevation change in your constructions, but in practical terms traversing that difference is simply a headache. Getting down is simple enough - drop down a shaft and hope to avoid becoming a wet smear - but getting up is rather more problematic. You tried a whole array of solutions, ranging from a gem imbued with magic flower energy to a pile of slime goo to various levitation constructs to even a simple jetpack, but none of them work easily, cheaply, and quickly, without requiring you rummage through your bag of tools. As is becoming routine, innovation will be required.
 		</desc>
 		<note>
-
+			Will not fire for players who are sneaking
+			
+			Can be enhanced with a ring of liquid ender
 		</note>
-	</name>
+	</launchpad>
 	<name>
 		<desc>
 

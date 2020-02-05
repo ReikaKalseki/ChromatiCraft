@@ -26,6 +26,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.FocusAcceleratable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
@@ -169,6 +170,10 @@ BreakAction, FocusAcceleratable {
 
 		if (recipeTick > 0) {
 			this.onRecipeTick(world, x, y, z);
+		}
+
+		if (world.isRemote && this.hasStructure()) {
+			ChromaFX.doFocusCrystalParticles(world, x, y, z, this);
 		}
 	}
 

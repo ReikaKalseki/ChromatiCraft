@@ -391,13 +391,18 @@ public class PoolRecipes {
 		}
 
 		@ModDependent(ModList.APPENG)
-		public ItemStack programToAEPattern() {
+		public ItemStack programToAEPattern(boolean berries) {
 			Collection<ItemStack> in = new ArrayList();
 			in.add(main);
 			for (ItemStack is : inputs.keySet()) {
 				in.add(ReikaItemHelper.getSizedItemStack(is, inputs.get(is)));
 			}
-			return AEPatternHandling.getEncodedPattern(output, false, false, in.toArray(new ItemStack[in.size()]));
+			ItemStack out = output.copy();
+			if (berries) {
+				out.stackSize *= 2;
+				in.add(ReikaItemHelper.getSizedItemStack(ChromaStacks.etherBerries, 16));
+			}
+			return AEPatternHandling.getEncodedPattern(out, false, false, in.toArray(new ItemStack[in.size()]));
 		}
 	}
 

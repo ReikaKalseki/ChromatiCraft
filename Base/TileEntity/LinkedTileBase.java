@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Base.TileEntity;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -32,7 +33,8 @@ public abstract class LinkedTileBase extends TileEntityChromaticBase implements 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (shouldDrop) {
-			ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, this.getTile().getCraftedProduct());
+			EntityItem ei = ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, this.getTile().getCraftedProduct());
+			ei.lifespan = Integer.MAX_VALUE;
 			this.delete();
 		}
 	}

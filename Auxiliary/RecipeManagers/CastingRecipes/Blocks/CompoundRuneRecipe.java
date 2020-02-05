@@ -1,18 +1,21 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 
+import java.util.Collection;
+
 import net.minecraft.item.ItemStack;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 
 public class CompoundRuneRecipe extends MultiBlockCastingRecipe {
@@ -46,6 +49,12 @@ public class CompoundRuneRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(new ItemStack(ChromaBlocks.RUNE.getBlockInstance(), 1, 13), -4, 2);
 		this.addAuxItem(new ItemStack(ChromaBlocks.RUNE.getBlockInstance(), 1, 14), -4, 0);
 		this.addAuxItem(new ItemStack(ChromaBlocks.RUNE.getBlockInstance(), 1, 15), -4, -2);
+	}
+
+	@Override
+	protected void getRequiredProgress(Collection<ProgressStage> c) {
+		super.getRequiredProgress(c);
+		c.add(ProgressStage.INFUSE);
 	}
 
 	@Override

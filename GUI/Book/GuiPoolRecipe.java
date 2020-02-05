@@ -24,6 +24,7 @@ import net.minecraftforge.common.MinecraftForge;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
 import Reika.ChromatiCraft.Base.GuiBookSection;
@@ -75,8 +76,10 @@ public class GuiPoolRecipe extends GuiBookSection {
 			buttonList.add(new CustomSoundImagedGuiButton(1, j+215, k-3, 10, 12, 193, 6, file, ChromatiCraft.class, this));
 		}
 
-		if (ModList.APPENG.isLoaded() && ChromaResearchManager.instance.playerHasFragment(player, ChromaResearch.CHROMACRAFTER))
-			buttonList.add(new CustomSoundGuiButton(4, j+xSize-27-20-28, k-2, 20, 20, " ", this));
+		if (ModList.APPENG.isLoaded() && ChromaResearchManager.instance.playerHasFragment(player, ChromaResearch.CHROMACRAFTER)) {
+			buttonList.add(new CustomSoundGuiButton(4, j+xSize-27-20-48, k-2, 20, 20, " ", this));
+			buttonList.add(new CustomSoundGuiButton(5, j+xSize-27-20-28, k-2, 20, 20, " ", this));
+		}
 
 		if (NEItrigger && !centeredMouse) {
 			Mouse.setCursorPosition(Display.getWidth() / 2, Display.getHeight() / 2);
@@ -115,10 +118,10 @@ public class GuiPoolRecipe extends GuiBookSection {
 				index++;
 				subpage = Math.min(subpage, this.getMaxSubpage());
 			}
-			else if (button.id == 4) {
+			else if (button.id == 4 || button.id == 5) {
 				PoolRecipe pr = this.getActiveRecipe();
 				if (pr != null)
-					ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.ALLOYPATTERN.ordinal(), pr.ID, PacketTarget.server);
+					ReikaPacketHelper.sendStringIntPacket(ChromatiCraft.packetChannel, ChromaPackets.ALLOYPATTERN.ordinal(), PacketTarget.server, pr.ID, button.id == 5 ? 1 : 0);
 			}
 		}
 		//renderq = 22.5F;
@@ -161,8 +164,16 @@ public class GuiPoolRecipe extends GuiBookSection {
 	}
 
 	protected void drawAuxGraphics(int posX, int posY) {
-		if (ModList.APPENG.isLoaded() && ChromaResearchManager.instance.playerHasFragment(player, ChromaResearch.CHROMACRAFTER))
+		if (ModList.APPENG.isLoaded() && ChromaResearchManager.instance.playerHasFragment(player, ChromaResearch.CHROMACRAFTER)) {
+			api.drawItemStack(itemRender, fontRendererObj, new ItemStack(AppEngHandler.getInstance().getEncodedPattern()), posX+xSize-27-16-48, posY+8);
 			api.drawItemStack(itemRender, fontRendererObj, new ItemStack(AppEngHandler.getInstance().getEncodedPattern()), posX+xSize-27-16-28, posY+8);
+			double sc = 0.5;
+			GL11.glScaled(sc, sc, sc);
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			api.drawItemStack(itemRender, fontRendererObj, ChromaStacks.etherBerries, (int)((posX+xSize-27-16-20)/sc), (int)((posY+16)/sc));
+			GL11.glEnable(GL11.GL_DEPTH_TEST);
+			GL11.glScaled(1/sc, 1/sc, 1/sc);
+		}
 	}
 
 	@Override

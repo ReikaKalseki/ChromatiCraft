@@ -199,13 +199,13 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	private boolean areEnchantsValid(ItemStack is) {
 		Item i = is.getItem();
 		for (Enchantment e : selected.keySet()) {
-			if (!this.isEnchantValid(e, is, i))
+			if (!this.isEnchantValid(e, is, i, true))
 				return false;
 		}
 		return true;
 	}
 
-	private boolean isEnchantValid(Enchantment e, ItemStack is, Item i) {
+	public boolean isEnchantValid(Enchantment e, ItemStack is, Item i, boolean checkLevels) {
 		if (i == Items.book) {
 			if (!e.isAllowedOnBooks()) {
 				return false;
@@ -226,7 +226,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			}
 		}
 
-		if (ReikaEnchantmentHelper.getEnchantmentLevel(e, is) >= selected.get(e))
+		if (checkLevels && ReikaEnchantmentHelper.getEnchantmentLevel(e, is) >= selected.get(e))
 			return false;
 
 		if (i instanceof EnchantableItem) {

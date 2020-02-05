@@ -13,12 +13,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.fluids.Fluid;
@@ -94,30 +95,35 @@ public class GuiAutoEnchanter extends GuiLetterSearchable<Enchantment> {
 				index = 0;
 				break;
 			case 2:
-				this.decrementEnchant(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT));
+				this.decrementEnchant(GuiScreen.isShiftKeyDown(), GuiScreen.isCtrlKeyDown());
 				break;
 			case 3:
-				this.incrementEnchant(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT));
+				this.incrementEnchant(GuiScreen.isShiftKeyDown(), GuiScreen.isCtrlKeyDown());
 				break;
 		}
 		this.initGui();
 	}
 
-	private void incrementEnchant(boolean newType) {
+	private void incrementEnchant(boolean newType, boolean skipInvalid) {
 		Enchantment pre = this.getActive();
 		if (index < list.size()-1) {
 			do {
 				index++;
-			} while(newType && index < list.size()-1 && this.getActive().type != pre.type);
+			} while(index < list.size()-1 && ((newType && this.getActive().type != pre.type) || (skipInvalid && !this.isValidForItem(this.getActive()))));
 		}
 	}
 
-	private void decrementEnchant(boolean newType) {
+	private boolean isValidForItem(Enchantment e) {
+		ItemStack is = ench.getStackInSlot(0);
+		return is == null || ench.isEnchantValid(e, is, is.getItem(), false);
+	}
+
+	private void decrementEnchant(boolean newType, boolean skipInvalid) {
 		Enchantment pre = this.getActive();
 		if (index > 0) {
 			do {
 				index--;
-			} while(newType && index > 0 && this.getActive().type != pre.type);
+			} while(index > 0 && ((newType && this.getActive().type != pre.type) || (skipInvalid && !this.isValidForItem(this.getActive()))));
 		}
 	}
 

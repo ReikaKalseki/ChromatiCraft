@@ -1094,7 +1094,7 @@ public class ChromatiPackets implements PacketHandler {
 						if (slot >= 0 || ep.capabilities.isCreativeMode) {
 							int empty = ReikaInventoryHelper.findEmptySlot(ep.inventory.mainInventory);
 							if (empty >= 0) {
-								ItemStack pattern = pr.programToAEPattern();
+								ItemStack pattern = pr.programToAEPattern(data[0] > 0);
 								ep.inventory.mainInventory[empty] = pattern;
 								if (!ep.capabilities.isCreativeMode)
 									ReikaInventoryHelper.decrStack(slot, ep.inventory.mainInventory);

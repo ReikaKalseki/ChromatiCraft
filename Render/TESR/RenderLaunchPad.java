@@ -66,7 +66,7 @@ public class RenderLaunchPad extends ChromaRenderBase {
 
 			if (tile.isEnhanced()) {
 				this.renderFan(tile, v5, par8, f, 0x00ff00);
-				this.renderFan(tile, v5, par8, f, 0xa0a0a0);
+				this.renderFan(tile, v5, par8, f, 0xffffff);
 			}
 			else {
 				this.renderFan(tile, v5, par8, f, 0xffffff);
