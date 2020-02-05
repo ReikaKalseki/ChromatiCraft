@@ -340,7 +340,7 @@ public class RecipesCastingTable {
 			ItemStack lamp = new ItemStack(ChromaBlocks.LAMP.getBlockInstance(), 1, i);
 
 			IRecipe sr = new ShapedOreRecipe(block, " S ", "SCS", " S ", 'S', "stone", 'C', shard);
-			this.addRecipe(new CrystalStoneRecipe(block, sr));
+			this.addRecipe(new CrystalStoneRecipe(StoneTypes.SMOOTH, 8, sr));
 
 			this.addRecipe(new CrystalSeedRecipe(seed, e, false));
 			this.addRecipe(new CrystalSeedRecipe(seed, e, true));
@@ -374,47 +374,21 @@ public class RecipesCastingTable {
 		this.addRecipe(new FloatingRelayRecipe(ChromaBlocks.FLOATINGRELAY.getStackOf(), ChromaBlocks.RELAY.getStackOfMetadata(16)));
 
 		Block block = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
-		int m = StoneTypes.COLUMN.ordinal();
-		IRecipe sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 2, m), "S", "S", 'S', new ItemStack(block, 1, 0));
-		this.addRecipe(new CrystalStoneRecipe(new ItemStack(block, 2, m), sr));
+		ItemStack smooth = new ItemStack(block, 1, 0);
+		this.addRecipe(new CrystalStoneRecipe(StoneTypes.COLUMN, 2, "S", "S", 'S', smooth));
+		this.addRecipe(new CrystalStoneRecipe(StoneTypes.BRICKS, 4, "SS", "SS", 'S', smooth));
+		this.addRecipe(new CrystalStoneRecipe(StoneTypes.BEAM, 2, "SS", 'S', smooth));
+		this.addRecipe(new CrystalStoneRecipe(StoneTypes.ENGRAVED, 4, " S ", "S S", " S ", 'S', smooth));
+		this.addRecipe(new CrystalStoneRecipe(StoneTypes.EMBOSSED, 5, " S ", "SSS", " S ", 'S', smooth));
+		this.addRecipe(new CrystalStoneRecipe(StoneTypes.CORNER, 5, "SSS", "S  ", "S  ", 'S', smooth));
+		this.addRecipe(new CrystalStoneRecipe(StoneTypes.GROOVE1, 3, "S", "S", "S", 'S', smooth));
+		this.addRecipe(new CrystalStoneRecipe(StoneTypes.GROOVE2, 3, "SSS", 'S', smooth));
+		this.addRecipe(new CrystalStoneRecipe(StoneTypes.STABILIZER, 4, "sSs", "ScS", "sSs", 'S', smooth, 'c', ChromaStacks.chargedWhiteShard, 's', ChromaBlocks.RUNE.getStackOf(CrystalElement.WHITE)));
+		this.addRecipe(new CrystalStoneRecipe(StoneTypes.RESORING, 6, "SSS", "ccc", "SSS", 'S', smooth, 'c', ChromaStacks.chargedWhiteShard));
 
-		m = StoneTypes.BRICKS.ordinal();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 4, m), "SS", "SS", 'S', new ItemStack(block, 1, 0));
-		this.addRecipe(new CrystalStoneRecipe(new ItemStack(block, 4, m), sr));
+		this.addRecipe(new CompoundRuneRecipe(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.MULTICHROMIC.ordinal()), ChromaStacks.iridCrystal));
 
-		m = StoneTypes.BEAM.ordinal();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 2, m), "SS", 'S', new ItemStack(block, 1, 0));
-		this.addRecipe(new CrystalStoneRecipe(new ItemStack(block, 2, m), sr));
-
-		m = StoneTypes.ENGRAVED.ordinal();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 4, m), " S ", "S S", " S ", 'S', new ItemStack(block, 1, 0));
-		this.addRecipe(new CrystalStoneRecipe(new ItemStack(block, 4, m), sr));
-
-		m = StoneTypes.EMBOSSED.ordinal();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 5, m), " S ", "SSS", " S ", 'S', new ItemStack(block, 1, 0));
-		this.addRecipe(new CrystalStoneRecipe(new ItemStack(block, 5, m), sr));
-
-		m = StoneTypes.CORNER.ordinal();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 5, m), "SSS", "S  ", "S  ", 'S', new ItemStack(block, 1, 0));
-		this.addRecipe(new CrystalStoneRecipe(new ItemStack(block, 5, m), sr));
-
-		m = StoneTypes.GROOVE1.ordinal();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 3, 11), "S", "S", "S", 'S', new ItemStack(block, 1, 0));
-		this.addRecipe(new CrystalStoneRecipe(new ItemStack(block, 3, 11), sr));
-
-		m = StoneTypes.GROOVE2.ordinal();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 3, 10), "SSS", 'S', new ItemStack(block, 1, 0));
-		this.addRecipe(new CrystalStoneRecipe(new ItemStack(block, 3, 10), sr));
-
-		m = StoneTypes.STABILIZER.ordinal();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 4, m), "sSs", "ScS", "sSs", 'S', new ItemStack(block, 1, 0), 'c', ChromaStacks.chargedWhiteShard, 's', new ItemStack(ChromaBlocks.RUNE.getBlockInstance(), 1, 15));
-		this.addRecipe(new CrystalStoneRecipe(new ItemStack(block, 4, m), sr));
-
-		m = StoneTypes.RESORING.ordinal();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 6, m), "SSS", "ccc", "SSS", 'S', new ItemStack(block, 1, 0), 'c', ChromaStacks.chargedWhiteShard);
-		this.addRecipe(new CrystalStoneRecipe(new ItemStack(block, 6, m), sr));
-
-		sr = ReikaRecipeHelper.getShapedRecipeFor(ChromaItems.OREPICK.getStackOf(), "EPE", "cSc", "cSc", 'c', ChromaStacks.chromaDust, 'S', Items.stick, 'E', Items.ender_eye, 'P', Items.iron_pickaxe);
+		IRecipe sr = ReikaRecipeHelper.getShapedRecipeFor(ChromaItems.OREPICK.getStackOf(), "EPE", "cSc", "cSc", 'c', ChromaStacks.chromaDust, 'S', Items.stick, 'E', Items.ender_eye, 'P', Items.iron_pickaxe);
 		this.addRecipe(new OrePickRecipe(ChromaItems.OREPICK.getStackOf(), sr));
 
 		sr = ReikaRecipeHelper.getShapedRecipeFor(ChromaItems.ORESILK.getStackOf(), "EPE", "cdc", "cSc", 'c', ChromaStacks.chromaDust, 'S', Items.stick, 'E', Items.emerald, 'P', Items.diamond_pickaxe, 'd', Items.diamond);
@@ -531,8 +505,6 @@ public class RecipesCastingTable {
 		//is = ChromaTiles.FIBER.getCraftedProduct();
 		//sr = ReikaRecipeHelper.getShapedRecipeFor(is, "GgG", "GDG", "GgG", 'G', Blocks.glass, 'D', Items.diamond, 'g', Items.glowstone_dust);
 		//this.addRecipe(new FiberRecipe(is, sr));
-
-		this.addRecipe(new CompoundRuneRecipe(new ItemStack(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 1, 13), ChromaStacks.bindingCrystal));
 
 		this.addRecipe(new IridescentChunkRecipe(ChromaStacks.iridChunk, ChromaStacks.bindingCrystal));
 

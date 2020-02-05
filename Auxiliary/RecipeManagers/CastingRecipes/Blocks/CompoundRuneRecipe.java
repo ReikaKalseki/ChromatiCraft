@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 
 import java.util.Collection;
 
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
@@ -28,10 +29,10 @@ public class CompoundRuneRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(ChromaStacks.auraDust, -2, 2);
 		this.addAuxItem(ChromaStacks.auraDust, 2, 2);
 
-		this.addAuxItem(ChromaStacks.auraDust, 0, -2);
-		this.addAuxItem(ChromaStacks.auraDust, 0, 2);
-		this.addAuxItem(ChromaStacks.auraDust, 2, 0);
-		this.addAuxItem(ChromaStacks.auraDust, -2, 0);
+		this.addAuxItem(ChromaStacks.bindingCrystal, 0, -2);
+		this.addAuxItem(ChromaStacks.bindingCrystal, 0, 2);
+		this.addAuxItem(Items.glowstone_dust, 2, 0);
+		this.addAuxItem(Items.glowstone_dust, -2, 0);
 
 		this.addAuxItem(new ItemStack(ChromaBlocks.RUNE.getBlockInstance(), 1, 0), -4, -4);
 		this.addAuxItem(new ItemStack(ChromaBlocks.RUNE.getBlockInstance(), 1, 1), -2, -4);
@@ -55,6 +56,11 @@ public class CompoundRuneRecipe extends MultiBlockCastingRecipe {
 	protected void getRequiredProgress(Collection<ProgressStage> c) {
 		super.getRequiredProgress(c);
 		c.add(ProgressStage.INFUSE);
+	}
+
+	@Override
+	public final boolean canBeSimpleAutomated() {
+		return true;
 	}
 
 	@Override
