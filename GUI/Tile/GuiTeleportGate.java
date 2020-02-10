@@ -306,7 +306,8 @@ public class GuiTeleportGate extends GuiChromaBase {
 							ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/GateNotFound.png");
 						}
 						else {
-							ReikaTextureHelper.bindRawTexture(img, l.getTextureID());
+							int id = ReikaTextureHelper.bindRawTexture(img, l.getTextureID());
+							ReikaTextureHelper.binder.loadImageOntoTexture(img, id);
 						}
 						double w = img == null ? 854/8D : img.getWidth()/8D;
 						double h = img == null ? 480/8D : img.getHeight()/8D;
