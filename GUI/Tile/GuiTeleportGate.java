@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -180,40 +180,44 @@ public class GuiTeleportGate extends GuiChromaBase {
 		return "teleport";
 	}
 
+	private static double nonlinearScale(double val) {
+		return Math.pow(val, 0.4);
+	}
+
 	private class ConnectionWeb {
 
 		private final ObjectWeb<LinkNode> web = new ObjectWeb();
 
-		private double minX = Integer.MAX_VALUE;
-		private double minZ = Integer.MAX_VALUE;
-		private double maxX = Integer.MIN_VALUE;
-		private double maxZ = Integer.MIN_VALUE;
+		private double renderMinX = Integer.MAX_VALUE;
+		private double renderMinZ = Integer.MAX_VALUE;
+		private double renderMaxX = Integer.MIN_VALUE;
+		private double renderMaxZ = Integer.MIN_VALUE;
 
 		private void addNode(LinkNode l) {
 			web.addNode(l);
 			if (Statuses.OWNED.check(l.statusFlags) && Statuses.STRUCTURE.check(l.statusFlags)) {
 				for (LinkNode l2 : web.objects()) {
-					if (Statuses.POWERED.check(l.statusFlags) || Statuses.POWERED.check(l2.statusFlags)) {
-						if (Statuses.OWNED.check(l2.statusFlags) && Statuses.STRUCTURE.check(l2.statusFlags)) {
+					if (Statuses.OWNED.check(l2.statusFlags) && Statuses.STRUCTURE.check(l2.statusFlags)) {
+						if (Statuses.POWERED.check(l.statusFlags) || Statuses.POWERED.check(l2.statusFlags)) {
 							web.addBilateralConnection(l, l2);
 						}
 					}
 				}
 			}
-			l.renderX = l.location.xCoord;
-			l.renderZ = l.location.zCoord;
-			minX = Math.min(minX, l.location.xCoord);
-			minZ = Math.min(minZ, l.location.zCoord);
-			maxX = Math.max(maxX, l.location.xCoord);
-			maxZ = Math.max(maxZ, l.location.zCoord);
+			l.renderX = nonlinearScale(l.location.xCoord);
+			l.renderZ = nonlinearScale(l.location.zCoord);
+			renderMinX = Math.min(renderMinX, l.location.xCoord);
+			renderMinZ = Math.min(renderMinZ, l.location.zCoord);
+			renderMaxX = Math.max(renderMaxX, l.location.xCoord);
+			renderMaxZ = Math.max(renderMaxZ, l.location.zCoord);
 		}
 
 		private void clear() {
 			web.clear();
-			minX = Integer.MAX_VALUE;
-			minZ = Integer.MAX_VALUE;
-			maxX = Integer.MIN_VALUE;
-			maxZ = Integer.MIN_VALUE;
+			renderMinX = Integer.MAX_VALUE;
+			renderMinZ = Integer.MAX_VALUE;
+			renderMaxX = Integer.MIN_VALUE;
+			renderMaxZ = Integer.MIN_VALUE;
 		}
 
 		@Override
@@ -222,30 +226,46 @@ public class GuiTeleportGate extends GuiChromaBase {
 		}
 
 		private void scaleTo(int sizeX, int sizeY, int elementSize) {
+			sizeX *= 0.95;
+			sizeY *= 0.95;
+			renderMaxX = renderMinX+nonlinearScale(renderMaxX-renderMinX);
+			renderMaxZ = renderMinZ+nonlinearScale(renderMaxZ-renderMinZ);
 			sizeX -= elementSize;
 			sizeY -= elementSize;
 			for (LinkNode l : web.objects()) {
-				l.renderX -= minX;
-				l.renderZ -= minZ;
+				l.renderX -= renderMinX;
+				l.renderZ -= renderMinZ;
 			}
-			maxX -= minX;
-			maxZ -= minZ;
-			double sx = sizeX/maxX;
-			double sz = sizeY/maxZ;
+			renderMaxX -= renderMinX;
+			renderMaxZ -= renderMinZ;
+			double sx = sizeX/renderMaxX;
+			double sz = sizeY/renderMaxZ;
 			double sm = Math.min(sx, sz);
 			for (LinkNode l : web.objects()) {
 				l.renderX *= sm;
 				l.renderZ *= sm;
 			}
-			maxX *= sm;
-			maxZ *= sm;
+			renderMaxX *= sm;
+			renderMaxZ *= sm;
+
+			double dx = renderMinX-elementSize/2D;
+			double dz = renderMinZ-elementSize/2D;
+
+			for (LinkNode l : web.objects()) {
+				l.renderX += dx;
+				l.renderZ += dz;
+			}
+			renderMinX -= dx;
+			renderMaxX -= dx;
+			renderMinZ -= dz;
+			renderMaxZ -= dz;
 		}
 
 		private void render(int j, int k, int s) {
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glEnable(GL11.GL_BLEND);
-			int dx = (int)(-maxX/2D*scaleFactor)+xSize/2+(int)offsetX;
-			int dz = (int)(-maxZ/2D*scaleFactor)+ySize/2+(int)offsetZ;
+			int dx = (int)(-renderMaxX/2D*scaleFactor)+xSize/2+(int)offsetX;
+			int dz = (int)(-renderMaxZ/2D*scaleFactor)+ySize/2+(int)offsetZ;
 			BlendMode.ADDITIVEDARK.apply();
 			for (LinkNode l : web.objects()) {
 				int lx = (int)Math.round(l.renderX*scaleFactor)+dx;
