@@ -31,6 +31,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
@@ -428,6 +429,13 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 	@Override
 	public boolean renderCentralTextureForItem(int meta) {
 		return false;
+	}
+
+	@Override
+	public int isProvidingWeakPower(IBlockAccess iba, int x, int y, int z, int par5) {
+		CrystalTankAuxTile te = (CrystalTankAuxTile)iba.getTileEntity(x, y, z);
+		TileEntityCrystalTank te2 = te.getTankController();
+		return te2 != null && te2.getFluid() == FluidRegistry.getFluid("redstone") ? (int)Math.round(te2.getFillPercentage()*15) : 0;
 	}
 
 	@Override

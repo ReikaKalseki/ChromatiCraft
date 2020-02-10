@@ -50,6 +50,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MultiblockControllerFinder;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.TinkerSmelteryHandler;
+import Reika.DragonAPI.ModInteract.DeepInteract.TinkerSmelteryHandler.CastingBlockWrapper;
 import Reika.DragonAPI.ModInteract.DeepInteract.TinkerSmelteryHandler.SmelteryWrapper;
 import Reika.DragonAPI.ModInteract.Power.ReikaRailCraftHelper;
 import Reika.DragonAPI.ModInteract.Power.ReikaRailCraftHelper.FireboxWrapper;
@@ -178,6 +179,15 @@ public class BlockHeatLamp extends BlockAttachableMini {
 				s.meltPower = temperature*1500/MAXTEMP; //that puts max heat lamp at 1500
 				s.write(te);
 				//TinkerSmelteryHandler.tick(te, temperature*1500/MAXTEMP);
+			}
+			else if (ModList.TINKERER.isLoaded() && this.isCold() && TinkerSmelteryHandler.isCastingBlock(te)) {
+				CastingBlockWrapper s = new CastingBlockWrapper(te);
+				if (s.timer > 1) {
+					int d = -temperature/15;
+					if (d > 0)
+						s.timer = Math.max(1, s.timer-d);
+				}
+				s.write(te);
 			}
 			else if (ModList.RAILCRAFT.isLoaded() && !this.isCold() && ReikaRailCraftHelper.isSolidFirebox(te)) {
 				te = MultiblockControllerFinder.instance.getController(te);

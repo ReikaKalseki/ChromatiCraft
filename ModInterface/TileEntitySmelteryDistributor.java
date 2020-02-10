@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -34,8 +33,6 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.ParticlePath;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
@@ -46,33 +43,13 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.TinkerSmelteryHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntitySmelteryDistributor extends TileEntityChromaticBase {
-
-	private static Class drainClass;
-	private static Method getDirection;
-	private static Class basinClass;
-	private static Class tableClass;
-
-	static {
-		try {
-			drainClass = Class.forName("tconstruct.smeltery.logic.SmelteryDrainLogic");
-			getDirection = drainClass.getDeclaredMethod("getForgeDirection");
-			getDirection.setAccessible(true);
-
-			tableClass = Class.forName("tconstruct.smeltery.logic.CastingTableLogic");
-			basinClass = Class.forName("tconstruct.smeltery.logic.CastingBasinLogic");
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			ChromatiCraft.logger.logError("Could not load TiC smeltery drain or casting handlers!");
-			ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.TINKERER, e);
-		}
-	}
 
 	public static final int SCAN_RADIUS_XZ = 16;
 
@@ -189,10 +166,10 @@ public class TileEntitySmelteryDistributor extends TileEntityChromaticBase {
 				for (int j = -r2; j <= 0; j++) {
 					TileEntity te = world.getTileEntity(x+i, y+j, z+k);
 					if (te != null) {
-						if (te.getClass() == drainClass) {
+						if (te.getClass() == TinkerSmelteryHandler.drainClass()) {
 							drains.add(new SmelteryDrain(te));
 						}
-						else if (te.getClass() == basinClass || te.getClass() == tableClass) {
+						else if (te.getClass() == TinkerSmelteryHandler.basinClass() || te.getClass() == TinkerSmelteryHandler.tableClass()) {
 							targets.add(new CastingBlock(te));
 						}
 					}
@@ -270,7 +247,7 @@ public class TileEntitySmelteryDistributor extends TileEntityChromaticBase {
 
 		private SmelteryDrain(TileEntity te) {
 			location = new Coordinate(te);
-			facing = this.getDirection(te);
+			facing = TinkerSmelteryHandler.getDrainDirection(te);
 		}
 
 		public FluidStack drain(World world, Fluid f, int amt) {
@@ -279,17 +256,7 @@ public class TileEntitySmelteryDistributor extends TileEntityChromaticBase {
 
 		public boolean isValid(World world) {
 			TileEntity te = location.getTileEntity(world);
-			return te != null && te.getClass() == drainClass;
-		}
-
-		private ForgeDirection getDirection(TileEntity te) {
-			try {
-				return (ForgeDirection)getDirection.invoke(te);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				return ForgeDirection.UNKNOWN;
-			}
+			return te != null && te.getClass() == TinkerSmelteryHandler.drainClass();
 		}
 
 		public IFluidHandler getTile(World world) {
@@ -309,7 +276,7 @@ public class TileEntitySmelteryDistributor extends TileEntityChromaticBase {
 
 		private CastingBlock(TileEntity te) {
 			location = new Coordinate(te);
-			isBasin = te.getClass() == basinClass;
+			isBasin = te.getClass() == TinkerSmelteryHandler.basinClass();
 		}
 
 		public int getCapacity(World world, Fluid f) {
@@ -329,7 +296,7 @@ public class TileEntitySmelteryDistributor extends TileEntityChromaticBase {
 
 		public boolean isValid(World world) {
 			TileEntity te = location.getTileEntity(world);
-			return te != null && (te.getClass() == basinClass || te.getClass() == tableClass);
+			return te != null && (te.getClass() == TinkerSmelteryHandler.basinClass() || te.getClass() == TinkerSmelteryHandler.tableClass());
 		}
 
 		@Override

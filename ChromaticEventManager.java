@@ -67,6 +67,7 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager.ForceChunkEvent;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -129,6 +130,7 @@ import Reika.ChromatiCraft.Magic.Artefact.UABombingEffects;
 import Reika.ChromatiCraft.Magic.Artefact.UATrades.UATrade;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAggroMask;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentBossKill;
+import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentDataKeeper;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentPhasingSequence;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentUseRepair;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentWeaponAOE;
@@ -224,6 +226,7 @@ import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Interfaces.Entity.ClampedDamage;
 import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
@@ -241,6 +244,7 @@ import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.FrameBlacklist.FrameUsageEvent;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.IC2RubberLogHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler.ToolPartType;
@@ -275,6 +279,33 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	@ModDependent(ModList.IC2)
+	public void handleRubberLogPlacement(PlayerPlaceBlockEvent evt) {
+		ItemStack held = evt.player.getCurrentEquippedItem();
+		if (held != null && IC2RubberLogHandler.getInstance().isCrop(evt.block, held.getItemDamage()) && IC2RubberLogHandler.getInstance().isRipeCrop(evt.block, held.getItemDamage())) {
+			evt.setCanceled(true);
+			Block b = IC2RubberLogHandler.getInstance().logBlock;
+			ForgeDirection dir = ReikaDirectionHelper.getFromLookDirection(evt.player, false);
+			//ReikaJavaLibrary.pConsole(dir);
+			int meta = IC2RubberLogHandler.getInstance().getMeta(dir.getOpposite());
+			evt.world.setBlock(evt.xCoord, evt.yCoord, evt.zCoord, b, meta, 3);
+			ReikaSoundHelper.playPlaceSound(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, b);
+			held.stackSize--;
+			if (held.stackSize <= 0)
+				held = null;
+			evt.player.setCurrentItemOrArmor(0, held);
+		}
+	}
+
+	@SubscribeEvent
+	public void applyIdentityRetention(BlockEvent.BreakEvent evt) {
+		if (EnchantmentDataKeeper.handleBreak(evt.world, evt.x, evt.y, evt.z, evt.block, evt.blockMetadata, evt.getPlayer())) {
+			evt.setCanceled(true);
+			evt.world.setBlock(evt.x, evt.y, evt.z, Blocks.air);
+		}
 	}
 
 	@SubscribeEvent
@@ -792,7 +823,7 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void autoCollectDirect(EntityJoinWorldEvent evt) {
-		if (collectItemPlayer != null && evt.entity instanceof EntityItem) {
+		if (collectItemPlayer != null && !ReikaInventoryHelper.isFull(collectItemPlayer.inventory) && evt.entity instanceof EntityItem) {
 			EntityItem ei = (EntityItem)evt.entity;
 			if (!MinecraftForge.EVENT_BUS.post(new EntityItemPickupEvent(collectItemPlayer, ei)))
 				ReikaPlayerAPI.addOrDropItem(ei.getEntityItem(), collectItemPlayer);

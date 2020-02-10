@@ -562,7 +562,10 @@ IBeeModifier, IBeeListener {
 	@Override
 	@ModDependent(ModList.FORESTRY)
 	public void onQueenDeath() {
-		movePrincess = this.getSpecies().getUID();
+		IAlleleBeeSpecies bee = this.getSpecies();
+		if (bee == null)
+			ChromatiCraft.logger.logError("Alveary called onQueenDeath with a null queen!");
+		movePrincess = bee != null ? bee.getUID() : null;
 		if (energy.containsAtLeast(geneRepair2.color, geneRepair2.requiredEnergy)) {
 			if (geneRepair2.repairQueen(this))
 				energy.subtract(geneRepair2.color, geneRepair2.requiredEnergy);
@@ -791,7 +794,17 @@ IBeeModifier, IBeeListener {
 
 	@ModDependent(ModList.FORESTRY)
 	public IAlleleBeeSpecies getSpecies() {
-		return this.getQueenItem() != null ? cachedQueen : null;
+		this.validateCachedQueen();
+		return cachedQueen;
+	}
+
+	@ModDependent(ModList.FORESTRY)
+	private void validateCachedQueen() {
+		ItemStack is = this.getQueenItem();
+		if (is == null)
+			cachedQueen = null;
+		else if (cachedQueen == null)
+			this.calcSpecies();
 	}
 
 	@ModDependent(ModList.FORESTRY)

@@ -835,6 +835,11 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		}
 	}
 
+	public void forceOpen(World world) {
+		isComplete = true;
+		this.updateDoors(world);
+	}
+
 	private static class Subgrid implements CloneCallback<Point> {
 
 		private final UUID ID = UUID.randomUUID();

@@ -133,7 +133,7 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 				return new PuzzleProfile[] {new PuzzleProfile(2, 0.5F), new PuzzleProfile(2, 0.4F, true, false), new PuzzleProfile(2, 0.25F, true, true), new PuzzleProfile(3, 0.25F), new PuzzleProfile(3, 0.2F, true, false), new PuzzleProfile(4, 0.2F, true, true)};
 			case 3:
 			default:
-				return new PuzzleProfile[] {new PuzzleProfile(2, 0.5F), new PuzzleProfile(2, 0.4F, true, false), new PuzzleProfile(2, 0.3F, true, true), new PuzzleProfile(2, 0.2F, true, true), new PuzzleProfile(3, 0.2F), new PuzzleProfile(3, 0.15F, true, false), new PuzzleProfile(3, 0.1F, true, true), new PuzzleProfile(4, 0.1F, true, false), new PuzzleProfile(4, 0.1F, true, true)};
+				return new PuzzleProfile[] {new PuzzleProfile(2, 0.5F), new PuzzleProfile(2, 0.4F, true, false), new PuzzleProfile(2, 0.3F, true, true), new PuzzleProfile(2, 0.2F, true, true), new PuzzleProfile(3, 0.2F), new PuzzleProfile(3, 0.15F, true, false), new PuzzleProfile(3, 0.1F, true, true), new PuzzleProfile(4, 0.2F, true, false), new PuzzleProfile(4, 0.1F, true, true)};
 		}
 	}
 
@@ -163,7 +163,9 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 
 	@Override
 	protected void openStructure(World world) {
-
+		for (RayBlendPuzzle rb : puzzles.values()) {
+			rb.forceOpen(world);
+		}
 	}
 
 	@Override

@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -99,15 +100,16 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 				if (te.isRainAffected()) {
 					this.renderRainHalo(te, par8);
 				}
-				if (te.isTurbocharged()) {
-					this.renderHalo(te, par8);
-				}
 				float f = HoldingChecks.MANIPULATOR.getFade();
 				if (f > 0) {
 					UUID uid = te.getCaster();
+					uid = DragonAPICore.Reika_UUID;
 					if (uid != null) {
 						this.renderCasterHalo(te, f, uid, par8);
 					}
+				}
+				if (te.isTurbocharged()) {
+					this.renderHalo(te, par8);
 				}
 			}
 
@@ -162,6 +164,8 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 		clr = ReikaColorAPI.mixColors(clr, 0xffffff, 0.875F+0.125F*(float)Math.sin(te.getTicksExisted()/90D));
 		clr = ReikaColorAPI.getColorWithBrightnessMultiplier(clr, fade);
 		double s = 1.75+0.0625*Math.sin(te.getTicksExisted()/6D);
+		if (te.isTurbocharged())
+			s *= 1.25;
 		CastingTuningManager.instance.getTuningKey(uid).drawIcon(Tessellator.instance, s, clr);
 	}
 

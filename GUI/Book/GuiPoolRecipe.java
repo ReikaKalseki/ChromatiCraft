@@ -77,7 +77,8 @@ public class GuiPoolRecipe extends GuiBookSection {
 		}
 
 		if (ModList.APPENG.isLoaded() && ChromaResearchManager.instance.playerHasFragment(player, ChromaResearch.CHROMACRAFTER)) {
-			buttonList.add(new CustomSoundGuiButton(4, j+xSize-27-20-48, k-2, 20, 20, " ", this));
+			if (this.getActiveRecipe().allowDoubling())
+				buttonList.add(new CustomSoundGuiButton(4, j+xSize-27-20-48, k-2, 20, 20, " ", this));
 			buttonList.add(new CustomSoundGuiButton(5, j+xSize-27-20-28, k-2, 20, 20, " ", this));
 		}
 
@@ -121,7 +122,7 @@ public class GuiPoolRecipe extends GuiBookSection {
 			else if (button.id == 4 || button.id == 5) {
 				PoolRecipe pr = this.getActiveRecipe();
 				if (pr != null)
-					ReikaPacketHelper.sendStringIntPacket(ChromatiCraft.packetChannel, ChromaPackets.ALLOYPATTERN.ordinal(), PacketTarget.server, pr.ID, button.id == 5 ? 1 : 0);
+					ReikaPacketHelper.sendStringIntPacket(ChromatiCraft.packetChannel, ChromaPackets.ALLOYPATTERN.ordinal(), PacketTarget.server, pr.ID, button.id == 5 && this.getActiveRecipe().allowDoubling() ? 1 : 0);
 			}
 		}
 		//renderq = 22.5F;
@@ -165,14 +166,17 @@ public class GuiPoolRecipe extends GuiBookSection {
 
 	protected void drawAuxGraphics(int posX, int posY) {
 		if (ModList.APPENG.isLoaded() && ChromaResearchManager.instance.playerHasFragment(player, ChromaResearch.CHROMACRAFTER)) {
-			api.drawItemStack(itemRender, fontRendererObj, new ItemStack(AppEngHandler.getInstance().getEncodedPattern()), posX+xSize-27-16-48, posY+8);
+			if (this.getActiveRecipe().allowDoubling())
+				api.drawItemStack(itemRender, fontRendererObj, new ItemStack(AppEngHandler.getInstance().getEncodedPattern()), posX+xSize-27-16-48, posY+8);
 			api.drawItemStack(itemRender, fontRendererObj, new ItemStack(AppEngHandler.getInstance().getEncodedPattern()), posX+xSize-27-16-28, posY+8);
-			double sc = 0.5;
-			GL11.glScaled(sc, sc, sc);
-			GL11.glDisable(GL11.GL_DEPTH_TEST);
-			api.drawItemStack(itemRender, fontRendererObj, ChromaStacks.etherBerries, (int)((posX+xSize-27-16-20)/sc), (int)((posY+16)/sc));
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
-			GL11.glScaled(1/sc, 1/sc, 1/sc);
+			if (this.getActiveRecipe().allowDoubling()) {
+				double sc = 0.5;
+				GL11.glScaled(sc, sc, sc);
+				GL11.glDisable(GL11.GL_DEPTH_TEST);
+				api.drawItemStack(itemRender, fontRendererObj, ChromaStacks.etherBerries, (int)((posX+xSize-27-16-20)/sc), (int)((posY+16)/sc));
+				GL11.glEnable(GL11.GL_DEPTH_TEST);
+				GL11.glScaled(1/sc, 1/sc, 1/sc);
+			}
 		}
 	}
 

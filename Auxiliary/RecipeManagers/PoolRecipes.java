@@ -398,7 +398,7 @@ public class PoolRecipes {
 				in.add(ReikaItemHelper.getSizedItemStack(is, inputs.get(is)));
 			}
 			ItemStack out = output.copy();
-			if (berries) {
+			if (berries && this.allowDoubling()) {
 				out.stackSize *= 2;
 				in.add(ReikaItemHelper.getSizedItemStack(ChromaStacks.etherBerries, 16));
 			}

@@ -24,6 +24,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
@@ -131,7 +132,10 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 	}
 
 	public void selectAspect(String asp) {
+		Aspect old = selected;
 		selected = Strings.isNullOrEmpty(asp) ? null : Aspect.aspects.get(asp);
+		if (selected != old)
+			CrystalNetworker.instance.breakPaths(this);
 	}
 
 	public Aspect getAspectForRender() {
