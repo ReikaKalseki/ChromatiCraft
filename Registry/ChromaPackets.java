@@ -13,7 +13,7 @@ import Reika.DragonAPI.Auxiliary.PacketTypes;
 
 public enum ChromaPackets {
 
-	ENCHANTER(2),
+	ENCHANTER(3),
 	ENCHANTERRESET(),
 	SPAWNERPROGRAM(1),
 	SPAWNERDATA(6),

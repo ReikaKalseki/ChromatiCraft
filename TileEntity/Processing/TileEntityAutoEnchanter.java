@@ -358,14 +358,15 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		this.onEnchantChanged(e);
 	}
 
-	public boolean incrementEnchantment(Enchantment e) {
+	public boolean incrementEnchantment(Enchantment e, boolean toMax) {
 		int level = this.getEnchantment(e);
-		return this.setEnchantment(e, level+1);
+		int newlevel = toMax ? this.getMaxEnchantmentLevel(e) : level+1;
+		return this.setEnchantment(e, newlevel);
 	}
 
-	public void decrementEnchantment(Enchantment e) {
+	public void decrementEnchantment(Enchantment e, boolean toZero) {
 		int level = this.getEnchantment(e);
-		int newlevel = Math.max(level-1, 0);
+		int newlevel = toZero ? 0 : Math.max(level-1, 0);
 		this.setEnchantment(e, newlevel);
 	}
 

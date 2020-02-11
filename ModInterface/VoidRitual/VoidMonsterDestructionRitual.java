@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
+import Reika.DragonAPI.Instantiable.Interpolation;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledEvent;
@@ -56,10 +57,20 @@ public class VoidMonsterDestructionRitual {
 	private final EntityPlayer startingPlayer;
 	private final int monsterID;
 	private final World world;
+	private final int targetDuration;
+
+	private final Interpolation healthCurve = new Interpolation(false);
+
+	private int tick;
+	private int effectCooldown = 0;
+	private long lastWorldTick = -1;
 
 	private static final Random rand = new Random();
 	private static final Collection<VoidMonsterDestructionRitual> activeRituals = new HashSet();
 	private static final HashSet<Integer> ritualEntities = new HashSet();
+
+	private static final int MIN_DURATION = 20*60;
+	private static final int MAX_DURATION = 20*60*3;
 
 	public VoidMonsterDestructionRitual(TileEntityVoidMonsterTrap loc, EntityLiving e) {
 		this(new WorldLocation(loc), loc.getPlacer(), e);
@@ -70,6 +81,13 @@ public class VoidMonsterDestructionRitual {
 		center = loc;
 		monsterID = e.getEntityId();
 		world = ep.worldObj;
+		targetDuration = ReikaRandomHelper.getRandomBetween(MIN_DURATION, MAX_DURATION);
+		healthCurve.addPoint(0, 1);
+		for (double d = 0.1; d < 1; d += 0.1) {
+			double f = 1-d;
+			healthCurve.addPoint(ReikaRandomHelper.getRandomPlusMinus(d, 0.045)*targetDuration, ReikaRandomHelper.getRandomPlusMinus(f, 0.2));
+		}
+		healthCurve.addPoint(targetDuration, 0);
 	}
 
 	public EntityLiving getEntity() {
@@ -77,14 +95,29 @@ public class VoidMonsterDestructionRitual {
 	}
 
 	public boolean tick() {
+		if (world.getTotalWorldTime() <= lastWorldTick)
+			return false;
+		lastWorldTick = world.getTotalWorldTime();
+
 		activeRituals.add(this);
+
+		tick++;
+		if (effectCooldown > 0)
+			effectCooldown--;
+
 		EntityVoidMonster e = (EntityVoidMonster)this.getEntity();
 		e.moveTowards(center.xCoord+0.5, center.yCoord+0.5, center.zCoord+0.5, 2);
-		for (Effects ef : Effects.list) {
-			if (rand.nextInt(ef.effectChance) == 0) {
-				ef.doEffectServer(this, e);
+
+		if (effectCooldown == 0) {
+			for (Effects ef : Effects.list) {
+				if (rand.nextInt(ef.effectChance) == 0) {
+					ef.doEffectServer(this, e);
+					effectCooldown = ef.cooldown;
+					break;
+				}
 			}
 		}
+
 		return e.getHealth() <= 0;
 	}
 
@@ -125,6 +158,10 @@ public class VoidMonsterDestructionRitual {
 		}
 	}
 
+	public float getCurrentTargetHealthFraction() {
+		return (float)healthCurve.getValue(tick);
+	}
+
 	@SideOnly(Side.CLIENT)
 	public static void readSync(NBTTagCompound tag) {
 		ritualEntities.clear();
@@ -142,37 +179,41 @@ public class VoidMonsterDestructionRitual {
 	}
 
 	public static enum Effects {
-		COLLAPSING_SPHERE(	70, 20),
-		RAYS(				40, 40),
-		EXPLOSION(			200, 0),
-		WAVE(				400, 20),
-		CURL(				400, 40, 30),
-		STRETCH(			400, 30, 20),
+		COLLAPSING_SPHERE(	70, 20, 40),
+		RAYS(				40, 40, 20),
+		EXPLOSION(			200, 0, 20),
+		WAVE(				400, 20, 120),
+		CURL(				400, 40, 30, 100),
+		STRETCH(			400, 30, 20, 160),
 		;
 
 		private final int effectChance;
 		private final int damageAmount;
 		private final int damageDelay;
+		private final int cooldown;
 
 		@SideOnly(Side.CLIENT)
 		public EffectVisual visuals;
 
 		static Effects[] list = values();
 
-		private Effects(int c, int dmg) {
-			this(c, dmg, 0);
+		private Effects(int c, int dmg, int cl) {
+			this(c, dmg, 0, cl);
 		}
 
-		private Effects(int c, int dmg, int del) {
+		private Effects(int c, int dmg, int del, int cl) {
 			effectChance = c;
+			cooldown = cl;
 			damageAmount = dmg;
 			damageDelay = del;
 		}
 
 		@ModDependent(ModList.VOIDMONSTER)
 		public void doEffectServer(VoidMonsterDestructionRitual rit, EntityLiving e) {
-			DamageSource src = new VoidMonsterRitualDamage(rit.startingPlayer);
-			this.doAttack(e, src, damageAmount);
+			if (e.getHealth()/e.getMaxHealth() >= rit.getCurrentTargetHealthFraction()) {
+				DamageSource src = new VoidMonsterRitualDamage(rit.startingPlayer);
+				this.doAttack(e, src, damageAmount);
+			}
 			switch(this) {
 				case COLLAPSING_SPHERE:
 					break;
@@ -303,7 +344,7 @@ public class VoidMonsterDestructionRitual {
 
 	}
 
-	private static class VoidMonsterRitualDamage extends DamageSource {
+	public static class VoidMonsterRitualDamage extends DamageSource {
 
 		private final EntityPlayer player;
 

@@ -142,6 +142,8 @@ import Reika.ChromatiCraft.ModInterface.Bees.EfficientFlowerCache;
 import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.ChromaAspectManager;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.TileEntityVoidMonsterTrap;
+import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterDestructionRitual;
+import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterDestructionRitual.VoidMonsterRitualDamage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaEnchants;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -279,6 +281,16 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@ModDependent(ModList.VOIDMONSTER)
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void makeRitualMonsterNotAttackable(LivingHurtEvent evt) {
+		if (VoidMonsterDestructionRitual.isFocusOfActiveRitual(evt.entity)) {
+			if (!(evt.source instanceof VoidMonsterRitualDamage)) {
+				evt.setCanceled(true);
+			}
+		}
 	}
 
 	@SubscribeEvent

@@ -334,10 +334,10 @@ public class ChromatiPackets implements PacketHandler {
 					boolean incr = data[1] > 0;
 					TileEntityAutoEnchanter ench = (TileEntityAutoEnchanter)tile;
 					if (incr) {
-						ench.incrementEnchantment(e);
+						ench.incrementEnchantment(e, data[2] > 0);
 					}
 					else {
-						ench.decrementEnchantment(e);
+						ench.decrementEnchantment(e, data[2] > 0);
 					}
 					break;
 				}

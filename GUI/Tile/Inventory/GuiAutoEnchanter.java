@@ -85,10 +85,10 @@ public class GuiAutoEnchanter extends GuiLetterSearchable<Enchantment> {
 	protected void actionPerformed(GuiButton b) {
 		switch (b.id) {
 			case 0:
-				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.ENCHANTER.ordinal(), ench, this.getID(), 0);
+				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.ENCHANTER.ordinal(), ench, this.getID(), 0, GuiScreen.isShiftKeyDown() ? 1 : 0);
 				break;
 			case 1:
-				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.ENCHANTER.ordinal(), ench, this.getID(), 1);
+				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.ENCHANTER.ordinal(), ench, this.getID(), 1, GuiScreen.isShiftKeyDown() ? 1 : 0);
 				break;
 			case 10:
 				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.ENCHANTERRESET.ordinal(), ench);

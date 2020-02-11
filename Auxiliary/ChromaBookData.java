@@ -287,10 +287,18 @@ public class ChromaBookData {
 	}
 
 	public static void drawPoolRecipe(FontRenderer fr, RenderItem ri, PoolRecipe r, int subpage, int posX, int posY) {
+		rand.setSeed(System.currentTimeMillis()/1000);
+		rand.nextBoolean();
 		gui.drawItemStackWithTooltip(ri, fr, r.getOutput(), posX+120, posY+128);
 		gui.drawItemStackWithTooltip(ri, fr, r.getMainInput(), posX+34, posY+91);
 		int i = 0;
 		for (ItemStack is : r.getInputs()) {
+			if (is.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+				ArrayList<ItemStack> li = new ArrayList();
+				is.getItem().getSubItems(is.getItem(), is.getItem().getCreativeTab(), li);
+				if (!li.isEmpty())
+					is = li.get(rand.nextInt(li.size()));
+			}
 			int dx = posX+103+(i%3)*17;
 			int dy = posY+29+(i/3)*17;
 			gui.drawItemStackWithTooltip(ri, fr, is, dx, dy);

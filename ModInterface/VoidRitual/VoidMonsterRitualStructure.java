@@ -559,7 +559,48 @@ public class VoidMonsterRitualStructure extends ChromaStructureBase {
 		array.setBlock(x + 28, y + 5, z + 0, crystalstone, 13);
 		array.setBlock(x + 28, y + 5, z + 28, crystalstone, 13);
 
+		//center
 		array.setFluid(x + 14, y + 4, z + 14, ChromatiCraft.luma);
+
+		array.setFluid(x + 5, y + 1, z + 13, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 5, y + 1, z + 14, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 5, y + 1, z + 15, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 6, y + 1, z + 13, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 6, y + 1, z + 14, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 6, y + 1, z + 15, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 7, y + 1, z + 13, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 7, y + 1, z + 14, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 7, y + 1, z + 15, ChromatiCraft.luma, false, false);
+
+		array.setFluid(x + 13, y + 1, z + 5, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 13, y + 1, z + 6, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 13, y + 1, z + 7, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 14, y + 1, z + 5, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 14, y + 1, z + 6, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 14, y + 1, z + 7, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 15, y + 1, z + 5, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 15, y + 1, z + 6, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 15, y + 1, z + 7, ChromatiCraft.luma, false, false);
+
+		array.setFluid(x + 13, y + 1, z + 21, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 13, y + 1, z + 22, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 13, y + 1, z + 23, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 14, y + 1, z + 21, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 14, y + 1, z + 22, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 14, y + 1, z + 23, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 15, y + 1, z + 21, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 15, y + 1, z + 22, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 15, y + 1, z + 23, ChromatiCraft.luma, false, false);
+
+		array.setFluid(x + 21, y + 1, z + 13, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 21, y + 1, z + 14, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 21, y + 1, z + 15, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 22, y + 1, z + 13, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 22, y + 1, z + 14, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 22, y + 1, z + 15, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 23, y + 1, z + 13, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 23, y + 1, z + 14, ChromatiCraft.luma, false, false);
+		array.setFluid(x + 23, y + 1, z + 15, ChromatiCraft.luma, false, false);
 
 		array.setFluid(x + 16, y + 2, z + 9, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 16, y + 2, z + 11, ChromatiCraft.luma, false, false);
@@ -573,9 +614,6 @@ public class VoidMonsterRitualStructure extends ChromaStructureBase {
 		array.setFluid(x + 12, y + 2, z + 17, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 12, y + 2, z + 19, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 12, y + 3, z + 15, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 13, y + 1, z + 5, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 13, y + 1, z + 6, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 13, y + 1, z + 7, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 11, y + 2, z + 9, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 11, y + 2, z + 10, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 11, y + 2, z + 12, ChromatiCraft.luma, false, false);
@@ -593,23 +631,11 @@ public class VoidMonsterRitualStructure extends ChromaStructureBase {
 		array.setFluid(x + 9, y + 2, z + 11, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 9, y + 2, z + 12, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 9, y + 2, z + 13, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 7, y + 1, z + 13, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 7, y + 1, z + 14, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 7, y + 1, z + 15, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 5, y + 1, z + 13, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 5, y + 1, z + 14, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 5, y + 1, z + 15, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 6, y + 1, z + 13, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 6, y + 1, z + 14, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 6, y + 1, z + 15, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 7, y + 2, z + 15, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 9, y + 2, z + 15, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 9, y + 2, z + 17, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 9, y + 2, z + 18, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 9, y + 2, z + 19, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 13, y + 1, z + 21, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 13, y + 1, z + 22, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 13, y + 1, z + 23, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 13, y + 2, z + 7, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 13, y + 2, z + 8, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 13, y + 2, z + 9, ChromatiCraft.luma, false, false);
@@ -625,20 +651,8 @@ public class VoidMonsterRitualStructure extends ChromaStructureBase {
 		array.setFluid(x + 13, y + 4, z + 13, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 13, y + 4, z + 14, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 13, y + 4, z + 15, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 14, y + 1, z + 5, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 14, y + 1, z + 6, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 14, y + 1, z + 7, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 14, y + 1, z + 21, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 14, y + 1, z + 22, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 14, y + 1, z + 23, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 14, y + 4, z + 13, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 14, y + 4, z + 15, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 15, y + 1, z + 5, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 15, y + 1, z + 6, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 15, y + 1, z + 7, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 15, y + 1, z + 21, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 15, y + 1, z + 22, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 15, y + 1, z + 23, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 15, y + 2, z + 9, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 15, y + 2, z + 10, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 15, y + 2, z + 11, ChromatiCraft.luma, false, false);
@@ -647,8 +661,11 @@ public class VoidMonsterRitualStructure extends ChromaStructureBase {
 		array.setFluid(x + 15, y + 2, z + 18, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 15, y + 2, z + 19, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 15, y + 2, z + 20, ChromatiCraft.luma, false, false);
+
 		array.setFluid(x + 15, y + 2, z + 21, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 15, y + 2, z + 22, ChromatiCraft.luma, false, false);
+
+		//array.setFluid(x + 15, y + 2, z + 22, ChromatiCraft.luma, false, false);
+
 		array.setFluid(x + 15, y + 3, z + 13, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 15, y + 3, z + 15, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 15, y + 3, z + 16, ChromatiCraft.luma, false, false);
@@ -675,15 +692,6 @@ public class VoidMonsterRitualStructure extends ChromaStructureBase {
 		array.setFluid(x + 19, y + 2, z + 17, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 19, y + 2, z + 18, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 19, y + 2, z + 19, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 21, y + 1, z + 13, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 21, y + 1, z + 14, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 21, y + 1, z + 15, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 22, y + 1, z + 13, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 22, y + 1, z + 14, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 22, y + 1, z + 15, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 23, y + 1, z + 13, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 23, y + 1, z + 14, ChromatiCraft.luma, false, false);
-		array.setFluid(x + 23, y + 1, z + 15, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 21, y + 2, z + 13, ChromatiCraft.luma, false, false);
 		array.setFluid(x + 20, y + 2, z + 13, ChromatiCraft.luma, false, false);
 
