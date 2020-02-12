@@ -41,7 +41,10 @@ import io.netty.buffer.ByteBuf;
 public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdditionalSpawnData {
 
 	public static final int FUZZ = 440;
-	public static final double DEVIATION_CHANCE = 0.08;
+	public static final double DEVIATION_CHANCE_BASE = 0.08;
+	public static final double DEVIATION_CHANCE_MAX = 0.4;
+
+	private static final Interpolation deviationCurve = new Interpolation(false);
 
 	public static final int ADDITIONAL_LIFE = 60;
 	public static final double RANGE = 36;//vanilla is 12
@@ -66,6 +69,12 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 		distanceColor.addPoint(FUZZ, 75);
 		distanceColor.addPoint(6000, 180);
 		distanceColor.addPoint(0, 0xffffff);
+
+		deviationCurve.addPoint(0, DEVIATION_CHANCE_MAX);
+		deviationCurve.addPoint(FUZZ, DEVIATION_CHANCE_MAX);
+		double dm = DEVIATION_CHANCE_BASE+(DEVIATION_CHANCE_MAX-DEVIATION_CHANCE_BASE)/2D;
+		deviationCurve.addPoint(1024, dm);
+		deviationCurve.addPoint(4096, DEVIATION_CHANCE_BASE);
 	}
 
 	public EntityEnderEyeT2(World world, double x, double y, double z) {
@@ -93,7 +102,8 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 			colorData = new EncodedPosition(offset, MathHelper.floor_double(finalX), MathHelper.floor_double(finalZ));
 		}
 
-		deviateTime = ReikaRandomHelper.doWithChance(DEVIATION_CHANCE) ? 10+rand.nextInt(80+ADDITIONAL_LIFE-40-10) : -1;
+		Coordinate c = this.getNearestTower();
+		deviateTime = c != null && ReikaRandomHelper.doWithChance(deviationCurve.getValue(c.getDistanceTo(this))) ? 10+rand.nextInt(80+ADDITIONAL_LIFE-40-10) : -1;
 	}
 
 	private double setTarget(double x, double y, double z) {
@@ -113,8 +123,7 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 		return d;
 	}
 
-	/** Only called server side, so it clears the entity and creates a new one */
-	private void deviate() {
+	private Coordinate getNearestTower() {
 		Towers t = LoreManager.instance.getNearestTower(worldObj, posX, posZ);
 		if (t != null) {
 			int x;
@@ -131,27 +140,36 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 				z = t.getRootPosition().chunkZPos;
 				y = 96;
 			}
-			if (deviationTick > 30) {
-				NBTTagCompound data = new NBTTagCompound();
-				this.writeEntityToNBT(data);
-				EntityEnderEyeT2 repl = EntityEnderEyeT2.create(worldObj, posX, posY, posZ, data);
-				repl.moveTowards(x, y, z);
-				repl.deviateTime = -1;
-				worldObj.spawnEntityInWorld(repl);
-				this.setDead();
-			}
-			else {
-				deviationTick++;
-				double dx = x-posX;
-				double dz = z-posZ;
-				double d = ReikaMathLibrary.py3d(dx, 0, dz);
-				double f = deviationTick/30D;
-				//motionX += dx/d*f;
-				//motionZ += dz/d*f;
-				double tx = f*(x-posX)+(1-f)*(finalX-posX);
-				double tz = f*(z-posZ)+(1-f)*(finalZ-posZ);
-				this.setTarget(tx, targetY, tz);
-			}
+			return new Coordinate(x, y, z);
+		}
+		return null;
+	}
+
+	/** Only called server side, so it clears the entity and creates a new one */
+	private void deviate() {
+		Coordinate c = this.getNearestTower();
+		if (c == null)
+			return;
+		if (deviationTick > 30) {
+			NBTTagCompound data = new NBTTagCompound();
+			this.writeEntityToNBT(data);
+			EntityEnderEyeT2 repl = EntityEnderEyeT2.create(worldObj, posX, posY, posZ, data);
+			repl.moveTowards(c.xCoord, c.yCoord, c.zCoord);
+			repl.deviateTime = -1;
+			worldObj.spawnEntityInWorld(repl);
+			this.setDead();
+		}
+		else {
+			deviationTick++;
+			double dx = c.xCoord-posX;
+			double dz = c.zCoord-posZ;
+			double d = ReikaMathLibrary.py3d(dx, 0, dz);
+			double f = deviationTick/30D;
+			//motionX += dx/d*f;
+			//motionZ += dz/d*f;
+			double tx = f*dx+(1-f)*(finalX-posX);
+			double tz = f*dz+(1-f)*(finalZ-posZ);
+			this.setTarget(tx, targetY, tz);
 		}
 	}
 

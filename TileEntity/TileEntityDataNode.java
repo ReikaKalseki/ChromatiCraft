@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.Decoration.BlockMetaAlloyLamp;
+import Reika.ChromatiCraft.Entity.EntityTunnelNuker;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
@@ -59,6 +60,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -197,11 +199,28 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 			}
 		}
 
-		if (tower != null && !world.isRemote && rand.nextInt(800) == 0) {
-			if (!this.spawnMetaAlloy(world, x, y, z)) {
-				for (Coordinate c : metaAlloyPlants.getLocations()) { //verify all flowers
-					if (c.getBlock(world) != ChromaBlocks.METAALLOYLAMP.getBlockInstance())
-						metaAlloyPlants.remove(c);
+		if (tower != null && !world.isRemote) {
+			if (rand.nextInt(800) == 0) {
+				if (!this.spawnMetaAlloy(world, x, y, z)) {
+					for (Coordinate c : metaAlloyPlants.getLocations()) { //verify all flowers
+						if (c.getBlock(world) != ChromaBlocks.METAALLOYLAMP.getBlockInstance())
+							metaAlloyPlants.remove(c);
+					}
+				}
+			}
+			if (rand.nextInt(300) == 0) {
+				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(this);
+				box = box.expand(192, 64, 192);
+				List<EntityTunnelNuker> li = world.getEntitiesWithinAABB(EntityTunnelNuker.class, box);
+				if (li.size() < 8) {
+					if (ReikaWorldHelper.isRadiusLoaded(world, x, z, 6)) {
+						EntityTunnelNuker e = new EntityTunnelNuker(worldObj);
+						int dx = ReikaRandomHelper.getRandomPlusMinus(x, 128);
+						int dz = ReikaRandomHelper.getRandomPlusMinus(z, 128);
+						int dy = world.getTopSolidOrLiquidBlock(dx, dz)+3+rand.nextInt(12);
+						e.setLocationAndAngles(dx+rand.nextDouble(), dy, dz+rand.nextDouble(), rand.nextFloat()*360, 0);
+						world.spawnEntityInWorld(e);
+					}
 				}
 			}
 		}

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -272,7 +272,7 @@ public class EffectAlleles {
 		private static final Random musicRand = new Random();
 
 		private static final MusicKey[] chords = {
-			MusicKey.C5, MusicKey.G4, MusicKey.A4, MusicKey.E4, MusicKey.F4, MusicKey.C4, MusicKey.F4, MusicKey.G4
+				MusicKey.C5, MusicKey.G4, MusicKey.A4, MusicKey.E4, MusicKey.F4, MusicKey.C4, MusicKey.F4, MusicKey.G4
 		};
 
 		private static final ArrayList<MusicKey>[] validNotes = new ArrayList[chords.length];
@@ -598,8 +598,8 @@ public class EffectAlleles {
 
 					Towers t1 = Towers.towerList[(int)((world.getTotalWorldTime()/1200)%Towers.towerList.length)];
 					if (t1.getRootPosition() != null) {
-						double dx = t1.getRootPosition().chunkXPos*16-c.posX-0.5;
-						double dz = t1.getRootPosition().chunkZPos*16-c.posZ-0.5;
+						double dx = t1.getRootPosition().chunkXPos-c.posX-0.5;
+						double dz = t1.getRootPosition().chunkZPos-c.posZ-0.5;
 						double a = -ReikaPhysicsHelper.cartesianToPolarFast(dx, 0, dz)[2]-90;
 						float s = world.rand.nextFloat()+0.25F;
 						EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, px, py, pz, a, 0);

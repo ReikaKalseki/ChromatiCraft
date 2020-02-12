@@ -55,9 +55,15 @@ public class TileEntityLaunchPad extends TileEntityChromaticBase implements Mult
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (!world.isRemote && this.hasStructure()) {
-			boolean flag = charge > 0;
-			AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-1, y+0.9375, z-1, x+2, y+1.0625, z+2);
+			AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-0.75, y+0.9375, z-0.75, x+1.75, y+2.5, z+1.75);
 			List<Entity> li = world.getEntitiesWithinAABB(Entity.class, box);
+			for (Entity e : li) {
+				e.fallDistance = 0;
+			}
+
+			boolean flag = charge > 0;
+			box = AxisAlignedBB.getBoundingBox(x-1, y+0.9375, z-1, x+2, y+1.0625, z+2);
+			li = world.getEntitiesWithinAABB(Entity.class, box);
 			if (li.size() == 1 && li.get(0).isSneaking())
 				li.clear();
 			if (!li.isEmpty()) {

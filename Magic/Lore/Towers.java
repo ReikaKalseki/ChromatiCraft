@@ -64,6 +64,7 @@ public enum Towers {
 		hex = new Hex(1, x, y, z);
 	}
 
+	/** This is BLOCK coords! */
 	public ChunkCoordIntPair getRootPosition() {
 		return position;
 	}

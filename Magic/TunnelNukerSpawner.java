@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2018
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -62,8 +62,8 @@ public class TunnelNukerSpawner implements TickHandler {
 			double ey = 7.5+world.getTopSolidOrLiquidBlock(MathHelper.floor_double(ex), MathHelper.floor_double(ez));
 			ReikaJavaLibrary.pConsole("Spawning tunnel nuker for tower "+t+" @ "+ex+", "+ez);
 			ChunkCoordIntPair p2 = t.getRootPosition();
-			int tx = p2.chunkXPos*16+8;
-			int tz = p2.chunkZPos*16+8;
+			int tx = p2.chunkXPos+8;
+			int tz = p2.chunkZPos+8;
 
 			if (t.getGeneratedLocation() != null) {
 				tx = t.getGeneratedLocation().xCoord;

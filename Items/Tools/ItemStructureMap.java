@@ -72,7 +72,7 @@ public class ItemStructureMap extends ItemChromaTool {
 					for (Towers t : Towers.towerList) {
 						Coordinate c = t.getGeneratedLocation();
 						if (c == null)
-							c = new Coordinate(t.getRootPosition().func_151349_a(64));
+							c = new Coordinate(t.getRootPosition().chunkXPos, 64, t.getRootPosition().chunkZPos);
 						li.add(c);
 					}
 			}

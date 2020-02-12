@@ -26,6 +26,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ItemChromaBasic;
 import Reika.ChromatiCraft.Entity.EntityEnderEyeT2;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.Item.AnimatedSpritesheet;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -137,6 +138,12 @@ public class ItemT2EnderEye extends ItemChromaBasic implements AnimatedSpriteshe
 	@Override
 	public boolean onEntityItemUpdate(EntityItem ei) {
 		ReikaEntityHelper.setInvulnerable(ei, true);
+		if (new Coordinate(ei).getBlock(ei.worldObj) == Blocks.water) {
+			ei.motionY += 0.07;
+			ei.motionX *= 0.85;
+			ei.motionZ *= 0.85;
+			ei.velocityChanged = true;
+		}
 		NBTTagCompound tag = ei.getEntityItem().stackTagCompound;
 		if (tag != null && tag.hasKey("owner")) {
 			UUID uid = UUID.fromString(tag.getString("owner"));

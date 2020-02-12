@@ -282,6 +282,18 @@ public class ChromaticEventManager {
 	private ChromaticEventManager() {
 
 	}
+	/*
+	@SubscribeEvent
+	public void noLaunchpadFallDamage(LivingFallEvent ev) {
+		Coordinate c = new Coordinate(ev.entityLiving.posX, ev.entityLiving.posY-0.5, ev.entityLiving.posZ);
+		ChromaTiles te = ChromaTiles.getTile(ev.entityLiving.worldObj, c.xCoord, c.yCoord, c.zCoord);
+		boolean flag1 = te == ChromaTiles.LAUNCHPAD;
+		boolean flag2 = c.getBlock(ev.entityLiving.worldObj) == ChromaBlocks.PYLONSTRUCT.getBlockInstance();
+		if (flag1 || flag2) {
+			ev.setCanceled(true);
+			ev.distance = 0;
+		}
+	}*/
 
 	@ModDependent(ModList.VOIDMONSTER)
 	@SubscribeEvent(priority = EventPriority.LOWEST)
