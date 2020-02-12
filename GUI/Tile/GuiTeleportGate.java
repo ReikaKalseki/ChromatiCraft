@@ -76,7 +76,7 @@ public class GuiTeleportGate extends GuiChromaBase {
 			l.statusFlags |= dat.statusFlags;
 			web.addNode(l);
 		}
-		web.scaleTo(xSize, ySize, SIZE);
+		web.scaleTo((int)(xSize*0.95), (int)(ySize*0.95), SIZE);
 	}
 
 	@Override
@@ -144,7 +144,8 @@ public class GuiTeleportGate extends GuiChromaBase {
 	public void drawScreen(int mx, int my, float ptick) {
 		super.drawScreen(mx, my, ptick);
 
-		double d = GuiScreen.isCtrlKeyDown() ? -5 : Math.max(-40, -6*scaleFactor);
+		double d = GuiScreen.isCtrlKeyDown() ? 5 : Math.min(40, 2*scaleFactor);
+		d = -d;
 		if (Keyboard.isKeyDown(Keyboard.KEY_PRIOR)) {
 			scaleFactor *= 0.95;
 		}
@@ -180,44 +181,46 @@ public class GuiTeleportGate extends GuiChromaBase {
 		return "teleport";
 	}
 
-	private static double nonlinearScale(double val) {
-		return Math.pow(val, 0.4);
-	}
-
 	private class ConnectionWeb {
 
 		private final ObjectWeb<LinkNode> web = new ObjectWeb();
 
-		private double renderMinX = Integer.MAX_VALUE;
-		private double renderMinZ = Integer.MAX_VALUE;
-		private double renderMaxX = Integer.MIN_VALUE;
-		private double renderMaxZ = Integer.MIN_VALUE;
+		private double minX = Integer.MAX_VALUE;
+		private double minZ = Integer.MAX_VALUE;
+		private double maxX = Integer.MIN_VALUE;
+		private double maxZ = Integer.MIN_VALUE;
+		private double height = 0;
+		private double width = 0;
 
 		private void addNode(LinkNode l) {
 			web.addNode(l);
 			if (Statuses.OWNED.check(l.statusFlags) && Statuses.STRUCTURE.check(l.statusFlags)) {
 				for (LinkNode l2 : web.objects()) {
-					if (Statuses.OWNED.check(l2.statusFlags) && Statuses.STRUCTURE.check(l2.statusFlags)) {
-						if (Statuses.POWERED.check(l.statusFlags) || Statuses.POWERED.check(l2.statusFlags)) {
+					if (Statuses.POWERED.check(l.statusFlags) || Statuses.POWERED.check(l2.statusFlags)) {
+						if (Statuses.OWNED.check(l2.statusFlags) && Statuses.STRUCTURE.check(l2.statusFlags)) {
 							web.addBilateralConnection(l, l2);
 						}
 					}
 				}
 			}
-			l.renderX = nonlinearScale(l.location.xCoord);
-			l.renderZ = nonlinearScale(l.location.zCoord);
-			renderMinX = Math.min(renderMinX, l.location.xCoord);
-			renderMinZ = Math.min(renderMinZ, l.location.zCoord);
-			renderMaxX = Math.max(renderMaxX, l.location.xCoord);
-			renderMaxZ = Math.max(renderMaxZ, l.location.zCoord);
+			l.xPosition = l.location.xCoord;
+			l.zPosition = l.location.zCoord;
+			minX = Math.min(minX, l.location.xCoord);
+			minZ = Math.min(minZ, l.location.zCoord);
+			maxX = Math.max(maxX, l.location.xCoord);
+			maxZ = Math.max(maxZ, l.location.zCoord);
+			width = maxX-minX;
+			height = maxZ-minZ;
 		}
 
 		private void clear() {
 			web.clear();
-			renderMinX = Integer.MAX_VALUE;
-			renderMinZ = Integer.MAX_VALUE;
-			renderMaxX = Integer.MIN_VALUE;
-			renderMaxZ = Integer.MIN_VALUE;
+			minX = Integer.MAX_VALUE;
+			minZ = Integer.MAX_VALUE;
+			maxX = Integer.MIN_VALUE;
+			maxZ = Integer.MIN_VALUE;
+			width = 0;
+			height = 0;
 		}
 
 		@Override
@@ -226,55 +229,61 @@ public class GuiTeleportGate extends GuiChromaBase {
 		}
 
 		private void scaleTo(int sizeX, int sizeY, int elementSize) {
-			sizeX *= 0.95;
-			sizeY *= 0.95;
-			renderMaxX = renderMinX+nonlinearScale(renderMaxX-renderMinX);
-			renderMaxZ = renderMinZ+nonlinearScale(renderMaxZ-renderMinZ);
 			sizeX -= elementSize;
 			sizeY -= elementSize;
 			for (LinkNode l : web.objects()) {
-				l.renderX -= renderMinX;
-				l.renderZ -= renderMinZ;
+				l.xPosition -= minX;
+				l.zPosition -= minZ;
 			}
-			renderMaxX -= renderMinX;
-			renderMaxZ -= renderMinZ;
-			double sx = sizeX/renderMaxX;
-			double sz = sizeY/renderMaxZ;
+			maxX -= minX;
+			maxZ -= minZ;
+			double sx = sizeX/maxX;
+			double sz = sizeY/maxZ;
 			double sm = Math.min(sx, sz);
 			for (LinkNode l : web.objects()) {
-				l.renderX *= sm;
-				l.renderZ *= sm;
+				l.xPosition *= sm;
+				l.zPosition *= sm;
 			}
-			renderMaxX *= sm;
-			renderMaxZ *= sm;
-
-			double dx = renderMinX-elementSize/2D;
-			double dz = renderMinZ-elementSize/2D;
-
+			maxX *= sm;
+			maxZ *= sm;
+			double d = elementSize/2D;
 			for (LinkNode l : web.objects()) {
-				l.renderX += dx;
-				l.renderZ += dz;
+				l.xPosition -= d;
+				l.zPosition -= d;
 			}
-			renderMinX -= dx;
-			renderMaxX -= dx;
-			renderMinZ -= dz;
-			renderMaxZ -= dz;
+			minX -= d;
+			minZ -= d;
+			maxX -= d;
+			maxZ -= d;
+		}
+
+		private double calculateRenderPosition(double base, double center) {
+			return center+Math.signum(base-center)*12*Math.pow(Math.abs(base-center), 0.8);
 		}
 
 		private void render(int j, int k, int s) {
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glEnable(GL11.GL_BLEND);
-			int dx = (int)(-renderMaxX/2D*scaleFactor)+xSize/2+(int)offsetX;
-			int dz = (int)(-renderMaxZ/2D*scaleFactor)+ySize/2+(int)offsetZ;
+			int rootX = (int)(-maxX/2D*scaleFactor)+xSize/2+(int)offsetX;
+			int rootZ = (int)(-maxZ/2D*scaleFactor)+ySize/2+(int)offsetZ;
+			double centerX = j+xSize/2D-offsetX;
+			double centerZ = k+ySize/2D-offsetZ;
 			BlendMode.ADDITIVEDARK.apply();
+			api.drawTooltip(fontRendererObj, offsetX+", "+offsetZ+" @ "+scaleFactor);
+			api.drawTooltipAt(fontRendererObj, centerX+", "+centerZ, j, k);
 			for (LinkNode l : web.objects()) {
-				int lx = (int)Math.round(l.renderX*scaleFactor)+dx;
-				int lz = (int)Math.round(l.renderZ*scaleFactor)+dz;
+				l.renderX = this.calculateRenderPosition(l.xPosition, centerX);
+				l.renderZ = this.calculateRenderPosition(l.zPosition, centerZ);
+				api.drawTooltipAt(fontRendererObj, l.xPosition+" > "+l.renderX, (int)l.renderX, (int)l.renderZ+20);
+			}
+			for (LinkNode l : web.objects()) {
+				int lx = (int)Math.round(l.renderX*scaleFactor)+rootX;
+				int lz = (int)Math.round(l.renderZ*scaleFactor)+rootZ;
 				//if (lx >= 0 && lx <= xSize && lz >= 0 && lz < ySize) {
 				boolean mbox = api.isMouseInBox(j+lx+3, j+lx+s-4, k+lz+3, k+lz+s-4);
 				for (LinkNode l2 : web.getChildren(l)) {
-					int lx2 = (int)Math.round(l2.renderX*scaleFactor)+dx;
-					int lz2 = (int)Math.round(l2.renderZ*scaleFactor)+dz;
+					int lx2 = (int)Math.round(l2.renderX*scaleFactor)+rootX;
+					int lz2 = (int)Math.round(l2.renderZ*scaleFactor)+rootZ;
 					ImmutablePair<java.awt.Point, java.awt.Point> ps = ReikaVectorHelper.clipLine(lx+s/2, lx2+s/2, lz+s/2, lz2+s/2, 0, 0, xSize, ySize);
 					if (ps != null) {
 						int lc = mbox ? 0xffffffff : 0x04040404;
@@ -289,8 +298,8 @@ public class GuiTeleportGate extends GuiChromaBase {
 			ReikaTextureHelper.bindTerrainTexture();
 			for (LinkNode l : web.objects()) {
 				int c = l.getRenderColor();
-				int lx = (int)Math.round(l.renderX*scaleFactor)+dx;
-				int lz = (int)Math.round(l.renderZ*scaleFactor)+dz;
+				int lx = (int)Math.round(l.renderX*scaleFactor)+rootX;
+				int lz = (int)Math.round(l.renderZ*scaleFactor)+rootZ;
 				if (lx >= 0 && lx <= xSize-s && lz >= 0 && lz < ySize-s) {
 					boolean mbox = api.isMouseInBox(j+lx+3, j+lx+s-4, k+lz+3, k+lz+s-4);
 					GL11.glColor3f(ReikaColorAPI.getRed(c)/255F, ReikaColorAPI.getGreen(c)/255F, ReikaColorAPI.getBlue(c)/255F);
@@ -300,14 +309,14 @@ public class GuiTeleportGate extends GuiChromaBase {
 						api.drawRectFrame(lx+1, lz+1, 14, 14, clr);
 					}
 					pointLocs.addRegionByWH(lx, lz, s, s, l);
+					api.drawTooltipAt(fontRendererObj, l.renderX+", "+l.renderZ+" > "+lx+", "+lz, lx, lz);
 					if (mbox) {
 						BufferedImage img = gate.getPreview(l.location);
 						if (img == null) {
 							ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/GateNotFound.png");
 						}
 						else {
-							int id = ReikaTextureHelper.bindRawTexture(img, l.getTextureID());
-							ReikaTextureHelper.binder.loadImageOntoTexture(img, id);
+							ReikaTextureHelper.bindRawTexture(img, l.getTextureID());
 						}
 						double w = img == null ? 854/8D : img.getWidth()/8D;
 						double h = img == null ? 480/8D : img.getHeight()/8D;
@@ -338,6 +347,9 @@ public class GuiTeleportGate extends GuiChromaBase {
 
 		private int statusFlags;
 		private final WorldLocation location;
+
+		private double xPosition;
+		private double zPosition;
 
 		private double renderX;
 		private double renderZ;
@@ -370,7 +382,7 @@ public class GuiTeleportGate extends GuiChromaBase {
 
 		@Override
 		public String toString() {
-			return location.toString()+" ["+renderX+"/"+renderZ+"/"+Integer.toBinaryString(statusFlags)+"]";
+			return location.toString()+" ["+xPosition+"/"+zPosition+"/"+Integer.toBinaryString(statusFlags)+"]";
 		}
 
 		@Override
