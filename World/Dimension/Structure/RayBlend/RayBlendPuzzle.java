@@ -758,7 +758,7 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 					world.setBlock(dx, y, dz, ChromaBlocks.SPECIALSHIELD.getBlockInstance(), light ? 1 : 0);
 				GridSlot gs = this.getAt(i, k);
 				if (RayBlendGenerator.DEBUG) {
-					world.setTileEntity(dx, y+1, dz, ChromaBlocks.RAYBLEND.getBlockInstance(), 0, new RayblendFloorCallback(parent.id, ID, gs.parent.ID, gs.xPos, gs.zPos, false));
+					world.setTileEntity(dx, y+1, dz, ChromaBlocks.RAYBLEND.getBlockInstance(), 0, new RayblendFloorCallback(parent.id, ID, gs.parent.ID, gs.xPos, gs.zPos, false, cages.get(gs.positionKey())));
 				}
 				else {
 					if (gs.isBlocked) {
@@ -766,14 +766,14 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 						//world.setBlock(dx, y+1, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.metadata);
 						//world.setBlock(dx, y+2, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.metadata);
 						world.setBlock(dx, y, dz, ChromaBlocks.DIMGEN.getBlockInstance(), DimDecoTypes.LIFEWATER.ordinal());
-						world.setTileEntity(dx, y+1, dz, ChromaBlocks.RAYBLEND.getBlockInstance(), 0, new RayblendFloorCallback(parent.id, ID, gs.parent.ID, gs.xPos, gs.zPos, true));
+						world.setTileEntity(dx, y+1, dz, ChromaBlocks.RAYBLEND.getBlockInstance(), 0, new RayblendFloorCallback(parent.id, ID, gs.parent.ID, gs.xPos, gs.zPos, true, cages.get(gs.positionKey())));
 					}
 					else if (gs.color != null) {
 						if (gs.appearsAtStart || GENERATE_SOLVED)
 							world.setBlock(dx, y+2, dz, ChromaBlocks.CRYSTAL.getBlockInstance(), gs.color.ordinal());
 						else
 							world.setBlock(dx, y+2, dz, Blocks.air);
-						world.setTileEntity(dx, y+1, dz, ChromaBlocks.RAYBLEND.getBlockInstance(), 0, new RayblendFloorCallback(parent.id, ID, gs.parent.ID, gs.xPos, gs.zPos, false));
+						world.setTileEntity(dx, y+1, dz, ChromaBlocks.RAYBLEND.getBlockInstance(), 0, new RayblendFloorCallback(parent.id, ID, gs.parent.ID, gs.xPos, gs.zPos, false, cages.get(gs.positionKey())));
 					}
 					else {
 						world.setBlock(dx, y+1, dz, Blocks.brick_block);
@@ -1178,20 +1178,22 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		private final int xPos;
 		private final int zPos;
 		private final boolean isBlocked;
+		private final CrystalElement color;
 
-		public RayblendFloorCallback(UUID p, UUID id, UUID grid, int x, int z, boolean blocked) {
+		public RayblendFloorCallback(UUID p, UUID id, UUID grid, int x, int z, boolean blocked, GridCage gc) {
 			parent = p;
 			uid = id;
 			this.grid = grid;
 			xPos = x;
 			zPos = z;
 			isBlocked = blocked;
+			color = gc != null ? gc.blendedColor : null;
 		}
 
 		@Override
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			((TileEntityRayblendFloor)te).uid = parent;
-			((TileEntityRayblendFloor)te).populate(uid, grid, xPos, zPos, isBlocked);
+			((TileEntityRayblendFloor)te).populate(uid, grid, xPos, zPos, isBlocked, color);
 		}
 
 	}

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -18,6 +18,7 @@ import java.util.Set;
 
 import com.chocolate.chocolateQuest.API.RegisterChestItem;
 
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -42,6 +43,7 @@ import Reika.ChromatiCraft.ModInterface.ThaumCraft.CrystalWand;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TieredOreCap;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
@@ -138,6 +140,22 @@ public class ModInteraction {
 		ThaumcraftApi.portableHoleBlackList.add(ChromaBlocks.RUNE.getBlockInstance());
 		ThaumcraftApi.portableHoleBlackList.add(ChromaBlocks.PYLONSTRUCT.getBlockInstance());
 		ThaumcraftApi.portableHoleBlackList.add(ChromaBlocks.PYLON.getBlockInstance());
+
+		if (ModList.THAUMICTINKER.isLoaded()) {
+			try {
+				Class c = Class.forName("thaumic.tinkerer.common.item.foci.ItemFocusDislocation");
+				Field f = c.getDeclaredField("blacklist");
+				ArrayList<Block> li = (ArrayList<Block>)f.get(null);
+				for (ChromaTiles ct : ChromaTiles.TEList) {
+					li.add(ct.getBlock());
+				}
+			}
+			catch (Exception e) {
+				ChromatiCraft.logger.logError("Could not add dislocation focus blacklisting!");
+				ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.THAUMICTINKER, e);
+				e.printStackTrace();
+			}
+		}
 
 		for (int i = 0; i < ThaumIDHandler.Potions.list.length; i++) {
 			Potions p = ThaumIDHandler.Potions.list[i];

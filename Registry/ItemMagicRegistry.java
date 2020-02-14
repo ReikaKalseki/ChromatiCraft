@@ -261,6 +261,11 @@ public class ItemMagicRegistry {
 			this.addElement(ThaumItemHelper.ItemEntry.GOO.getItem(), CrystalElement.GREEN, 1);
 			this.addElement(ThaumItemHelper.ItemEntry.GOO.getItem(), CrystalElement.CYAN, 1);
 			this.addElement(ThaumItemHelper.ItemEntry.GOO.getItem(), CrystalElement.BLACK, 1);
+
+			ItemStack shimmer = ReikaItemHelper.lookupItem("Thaumcraft:blockCustomPlant:2");
+			this.addElement(shimmer, CrystalElement.BLACK, 1);
+			this.addElement(shimmer, CrystalElement.GREEN, 1);
+			this.addElement(shimmer, CrystalElement.WHITE, 1);
 		}
 
 		this.addElement(Items.nether_star, CrystalElement.PINK, 8);

@@ -87,7 +87,7 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	RECEIVEDIMSOUND("Play Dimension Join Sound For Others", true),
 	BIOMEBLEND("Blend CC Biome Edges", true),
 	MIDISIZE("Orchestra MIDI Size Limit (KB)", 80),
-	STRUCTPASSLEVEL("Structure Bypass Usability (0 = None, 1 = Admins Only, 2 = All)", 1),
+	STRUCTPASSLEVEL("Structure Bypass Usability (0 = None, 1 = Admins Only, 2 = All)", 2),
 	SUPERBUILDKEYBIND("Superbuild Ability Activation", Key.LCTRL.toString()),
 	VILLAGERATE("Village Structure Frequency", 1F),
 	NODECHARGESPEED("Crystal-Network-Integrated ThaumCraft Node Improvement Speed", 1F),

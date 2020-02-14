@@ -54,6 +54,9 @@ public class EnchantmentDataKeeper extends ChromaticEnchantment {
 			initHandlers();
 		if (ep == null || ReikaPlayerAPI.isFake(ep))
 			return false;
+		ItemStack tool = ep.getCurrentEquippedItem();
+		if (ChromaEnchants.DATAKEEP.getLevel(tool) <= 0)
+			return false;
 		BlockHandler h = handlers.get(new BlockKey(b, meta));
 		if (h == null)
 			return false;

@@ -16,14 +16,12 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
-import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.RangeTracker;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -197,13 +195,8 @@ public class TileEntityExplosionShield extends CrystalReceiverBase implements Lo
 				Iterator<ChunkPosition> it = e.affectedBlockPositions.iterator();
 				while (it.hasNext()) {
 					ChunkPosition p = it.next();
-					int energy = 50*(int)(Math.pow(2, e.explosionSize));
-					if (te.energy.containsAtLeast(CrystalElement.RED, energy)) {
-						int r = te.getRange();
-						int ry = te.getYRange();
-						if (Math.abs(p.chunkPosX-te.xCoord) <= r && Math.abs(p.chunkPosZ-te.zCoord) <= r && Math.abs(p.chunkPosY-te.yCoord) <= ry) {
-							it.remove();
-						}
+					if (te.isLocationProtectedBy(world, p.chunkPosX, p.chunkPosY, p.chunkPosZ, e.explosionSize)) {
+						it.remove();
 					}
 				}
 				//}
@@ -211,6 +204,29 @@ public class TileEntityExplosionShield extends CrystalReceiverBase implements Lo
 				//}
 			}
 		}
+	}
+
+	public static boolean isLocationProtected(World world, int x, int y, int z, double power) {
+		for (WorldLocation loc : cache) {
+			if (loc.dimensionID == world.provider.dimensionId) {
+				TileEntityExplosionShield te = (TileEntityExplosionShield)loc.getTileEntity(world);
+				if (te.isLocationProtectedBy(world, x, y, z, power))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean isLocationProtectedBy(World world, int x, int y, int z, double power) {
+		int cost = 50*(int)(Math.pow(2, power));
+		if (energy.containsAtLeast(CrystalElement.RED, cost)) {
+			int r = this.getRange();
+			int ry = this.getYRange();
+			if (Math.abs(x-xCoord) <= r && Math.abs(z-zCoord) <= r && Math.abs(y-yCoord) <= ry) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/*
@@ -253,10 +269,6 @@ public class TileEntityExplosionShield extends CrystalReceiverBase implements Lo
 	public void breakBlock() {
 		WorldLocation loc = new WorldLocation(this);
 		cache.remove(loc);
-	}
-
-	public static boolean isDamageBlockable(DamageSource src) {
-		return !(src instanceof PylonDamage);
 	}
 
 	@Override

@@ -119,6 +119,7 @@ public class BlockRayblendFloor extends BlockDimensionStructureTile {
 		private int tileX;
 		private int tileZ;
 		private boolean isBlocked;
+		private CrystalElement cageColor;
 
 		@Override
 		public DimensionStructureType getType() {
@@ -131,6 +132,8 @@ public class BlockRayblendFloor extends BlockDimensionStructureTile {
 		}
 
 		public OverlayColor getOverlayColor() {
+			if (cageColor != null)
+				return cageColor;
 			RayBlendGenerator g = this.getGenerator();
 			return g != null ? g.getCageColor(puzzleID, tileX, tileZ) : null;
 		}
@@ -163,12 +166,13 @@ public class BlockRayblendFloor extends BlockDimensionStructureTile {
 			return false;
 		}
 
-		public void populate(UUID uid, UUID grid, int x, int z, boolean blocked) {
+		public void populate(UUID uid, UUID grid, int x, int z, boolean blocked, CrystalElement e) {
 			puzzleID = uid;
 			gridID = grid;
 			tileX = x;
 			tileZ = z;
 			isBlocked = blocked;
+			cageColor = e;
 		}
 
 		@Override
@@ -182,6 +186,8 @@ public class BlockRayblendFloor extends BlockDimensionStructureTile {
 			NBT.setInteger("tileX", tileX);
 			NBT.setInteger("tileZ", tileZ);
 			NBT.setBoolean("blocked", isBlocked);
+			if (cageColor != null)
+				NBT.setInteger("cage", cageColor.ordinal());
 		}
 
 		@Override
@@ -195,6 +201,8 @@ public class BlockRayblendFloor extends BlockDimensionStructureTile {
 			tileX = NBT.getInteger("tileX");
 			tileZ = NBT.getInteger("tileZ");
 			isBlocked = NBT.getBoolean("blocked");
+			if (NBT.hasKey("cage"))
+				cageColor = CrystalElement.elements[NBT.getInteger("cage")];
 		}
 
 		public UUID getGridID() {

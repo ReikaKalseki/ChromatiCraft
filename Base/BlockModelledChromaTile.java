@@ -150,6 +150,8 @@ public class BlockModelledChromaTile extends BlockChromaTile {
 	@Override
 	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection dir) {
 		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
+		if (c == null)
+			return false;
 		switch(c) {
 			case FARMER:
 				return dir == ForgeDirection.UP || dir == ForgeDirection.DOWN;
