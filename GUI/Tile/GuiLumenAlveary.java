@@ -36,6 +36,8 @@ import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
+import thaumcraft.api.aspects.Aspect;
+
 
 public class GuiLumenAlveary extends GuiChromaBase {
 
@@ -46,9 +48,12 @@ public class GuiLumenAlveary extends GuiChromaBase {
 	private Proportionality<AlvearyEffectControl> globalChart;
 	private final Proportionality<AlvearyEffectControl>[] colorCharts = new Proportionality[16];
 
-	private final MultiMap<CrystalElement, AlvearyEffectControl> controls = new MultiMap();
+	private final ArrayList<AlvearyEffectControl> basicControls = new ArrayList();
+	private final MultiMap<CrystalElement, LumenAlvearyEffectControl> lumenControls = new MultiMap();
+	private final MultiMap<Aspect, VisAlvearyEffectControl> visControls = new MultiMap();
 
 	private CrystalElement selectedColor;
+	private Aspect selectedAspect;
 
 	static {
 		allEffects.addAll(TileEntityLumenAlveary.getEffectSet());
@@ -63,7 +68,11 @@ public class GuiLumenAlveary extends GuiChromaBase {
 
 	private void setData() {
 		activeEffects.clear();
-		controls.clear();
+
+		basicControls.clear();
+		lumenControls.clear();
+		visControls.clear();
+
 		activeEffects.addAll(tile.getSelectedEffects());
 		Collections.sort(activeEffects, TileEntityLumenAlveary.effectSorter);
 		globalChart = new Proportionality(new SortedDeterminator());
@@ -74,18 +83,23 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		for (AlvearyEffect e : activeEffects) {
 			if (e instanceof LumenAlvearyEffect) {
 				LumenAlvearyEffect l = (LumenAlvearyEffect)e;
-				AlvearyEffectControl a = new AlvearyEffectControl(l, controls.get(l.color).size());
+				LumenAlvearyEffectControl a = new LumenAlvearyEffectControl(l, lumenControls.get(l.color).size());
 				a.isActive = activeEffects.contains(a.effect);
 				colorCharts[l.color.ordinal()].addValue(a, l.requiredEnergy);
 				colorCost[l.color.ordinal()] += l.requiredEnergy;
-				controls.addValue(l.color, a);
+				lumenControls.addValue(l.color, a);
 				globalChart.addValue(a, l.requiredEnergy);
 			}
 			else if (ModList.THAUMCRAFT.isLoaded() && e instanceof VisAlvearyEffect) {
 				VisAlvearyEffect v = (VisAlvearyEffect)e;
+				VisAlvearyEffectControl a = new VisAlvearyEffectControl(v, visControls.get(v.aspect).size());
+				a.isActive = activeEffects.contains(a.effect);
+				visControls.addValue(v.aspect, a);
 			}
 			else {
-
+				AlvearyEffectControl a = new AlvearyEffectControl(e, basicControls.size());
+				a.isActive = activeEffects.contains(a.effect);
+				basicControls.add(a);
 			}
 		}
 		for (int i = 0; i < 16; i++) {
@@ -136,7 +150,7 @@ public class GuiLumenAlveary extends GuiChromaBase {
 			colorCharts[selectedColor.ordinal()].setGeometry(x, y, r, 0);
 			colorCharts[selectedColor.ordinal()].render();
 			if (e != null) {
-				api.drawTooltipAt(fontRendererObj, e.effect.getDescription(), a, b);
+				api.drawTooltipAt(fontRendererObj, e.getTooltip(), a, b);
 			}
 		}
 		else {
@@ -172,21 +186,41 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		return "alveary";
 	}
 
-	private static class AlvearyEffectControl implements ColorCallback, Comparable<AlvearyEffectControl> {
+	private static class AlvearyEffectControl implements Comparable<AlvearyEffectControl> {
+
+		protected final AlvearyEffect effect;
+		protected final int index;
+
+		protected boolean isActive = true;
+		protected boolean isHovered = false;
+
+		private AlvearyEffectControl(AlvearyEffect l, int idx) {
+			effect = l;
+			index = idx;
+		}
+
+		public final String getTooltip() {
+			return effect.getDescription()+"\nEnabled: "+isActive;
+		}
+
+		@Override
+		public final int compareTo(AlvearyEffectControl o) {
+			return TileEntityLumenAlveary.effectSorter.compare(effect, o.effect);
+		}
+
+	}
+
+	private static class LumenAlvearyEffectControl extends AlvearyEffectControl implements ColorCallback {
 
 		private final LumenAlvearyEffect effect;
-		private final int index;
 
 		private final int hue;
 
-		private boolean isActive = true;
 		private boolean isColorHovered = false;
-		private boolean isHovered = false;
 
-		private AlvearyEffectControl(LumenAlvearyEffect l, int idx) {
+		private LumenAlvearyEffectControl(LumenAlvearyEffect l, int idx) {
+			super(l, idx);
 			effect = l;
-			index = idx;
-
 			hue = ReikaColorAPI.getHue(l.color.getColor())-45+15*index;
 		}
 
@@ -206,9 +240,17 @@ public class GuiLumenAlveary extends GuiChromaBase {
 			}
 		}
 
-		@Override
-		public int compareTo(AlvearyEffectControl o) {
-			return TileEntityLumenAlveary.effectSorter.compare(effect, o.effect);
+	}
+
+	private static class VisAlvearyEffectControl extends AlvearyEffectControl {
+
+		private final VisAlvearyEffect effect;
+
+		private boolean isAspectHovered = false;
+
+		private VisAlvearyEffectControl(VisAlvearyEffect l, int idx) {
+			super(l, idx);
+			effect = l;
 		}
 
 	}
