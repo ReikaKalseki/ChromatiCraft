@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -36,7 +37,9 @@ import Reika.DragonAPI.Instantiable.Data.CircularDivisionRenderer.IntColorCallba
 import Reika.DragonAPI.Instantiable.Data.Proportionality;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.MapDeterminator;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.SortedDeterminator;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -85,7 +88,6 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		controls.controls.clear();
 		Collection<AlvearyEffect> c = new ArrayList(allEffects);
 
-		controls.children.put(AlvearyEffect.class, new AlvearyEffectControlSet());
 		LumenAlvearyEffectControlSet lset = new LumenAlvearyEffectControlSet();
 		controls.children.put(LumenAlvearyEffect.class, lset);
 		Iterator<AlvearyEffect> it = c.iterator();
@@ -123,6 +125,37 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		Collections.sort(activeEffects, TileEntityLumenAlveary.effectSorter);
 
 		controls.setActiveStates(activeEffects);
+	}
+
+	@Override
+	public void initGui() {
+		super.initGui();
+
+		int j = (width - xSize) / 2;
+		int k = (height - ySize) / 2;
+
+		String file = this.getFullTexturePath();
+		int n = 4;
+		for (int i = 0; i < Categories.list.length; i++) {
+			int x = j+n;
+			int y = k+n+20*i;
+			int u = i == currentCategory.ordinal() ? 198 : 178;
+			int v = i*20;
+			buttonList.add(new CustomSoundImagedGuiButton(i, x, y, 20, 20, u, v, file, ChromatiCraft.class, this));
+		}
+	}
+
+	@Override
+	protected void actionPerformed(GuiButton b) {
+		super.actionPerformed(b);
+		if (b.id < Categories.list.length) {
+			Categories c = Categories.list[b.id];
+			if (c.isValid()) {
+				currentCategory = c;
+				selectedKey = null;
+			}
+		}
+		this.initGui();
 	}
 
 	@Override
@@ -215,8 +248,19 @@ public class GuiLumenAlveary extends GuiChromaBase {
 
 		public final Class<? extends AlvearyEffect> classRef;
 
+		private static final Categories[] list = values();
+
 		private Categories(Class<? extends AlvearyEffect> c) {
 			classRef = c;
+		}
+
+		public boolean isValid() {
+			switch(this) {
+				case VIS:
+					return ModList.THAUMCRAFT.isLoaded();
+				default:
+					return true;
+			}
 		}
 	}
 
@@ -307,10 +351,10 @@ public class GuiLumenAlveary extends GuiChromaBase {
 
 	private static class AlvearyEffectControlSet<K, V extends AlvearyEffectControl, E extends AlvearyEffect> {
 
-		private final MultiMap<K, V> controls = new MultiMap(CollectionType.LIST, new SortedDeterminator());
+		private final MultiMap<K, V> controls = new MultiMap(CollectionType.LIST, this.getDeterminator());
 		final HashMap<Class, AlvearyEffectControlSet> children = new HashMap();
 
-		private final Proportionality<K> buttonsGlobal = new Proportionality(new SortedDeterminator());
+		private final Proportionality<K> buttonsGlobal = new Proportionality(this.getDeterminator());
 		private final HashMap<K, Proportionality<V>> buttonsLocal = new HashMap();
 
 		protected final void addControl(K k, E e) {
@@ -320,14 +364,22 @@ public class GuiLumenAlveary extends GuiChromaBase {
 			buttonsGlobal.addColorRenderer(k, new IntColorCallback(this.getColorForKey(k)));
 			Proportionality<V> p = this.buttonsLocal.get(k);
 			if (p == null) {
-				p = new Proportionality(new SortedDeterminator());
+				p = new Proportionality(this.getDeterminator());
 				this.buttonsLocal.put(k, p);
 			}
 			p.addValue(v, 10);
 		}
 
+		private MapDeterminator getDeterminator() {
+			return this.isSorted() ? new SortedDeterminator() : null;
+		}
+
+		protected boolean isSorted() {
+			return false;
+		}
+
 		public String getKeyName(Object o) {
-			return "";
+			return "Basic";
 		}
 
 		protected int getColorForKey(K k) {
@@ -379,6 +431,11 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		@Override
 		protected int getColorForKey(CrystalElement k) {
 			return k.getColor();
+		}
+
+		@Override
+		protected boolean isSorted() {
+			return true;
 		}
 
 	}
