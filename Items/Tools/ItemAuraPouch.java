@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -112,9 +112,9 @@ public class ItemAuraPouch extends ItemChromaTool implements ActivatedInventoryI
 	}
 
 	@Override
-	public void decrementSlot(ItemStack is, int slot) {
+	public void decrementSlot(ItemStack is, int slot, int amt) {
 		ItemStack[] inv = this.getInventory(is);
-		ReikaInventoryHelper.decrStack(slot, inv);
+		ReikaInventoryHelper.decrStack(slot, inv, amt);
 		this.setItems(is, inv);
 	}
 

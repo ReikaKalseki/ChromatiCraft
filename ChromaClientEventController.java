@@ -1208,7 +1208,7 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 	}
 
 	@SubscribeEvent
-	public void renderSpawners(TileEntityRenderEvent evt) {
+	public void renderSpawners(TileEntityRenderEvent.Post evt) {
 		if (evt.tileEntity.worldObj != null && Chromabilities.SPAWNERSEE.enabledOn(Minecraft.getMinecraft().thePlayer)) {
 			AbilityXRays tx = AbilityHelper.instance.getAbilityXRay(evt.tileEntity);
 			if (tx != null) {

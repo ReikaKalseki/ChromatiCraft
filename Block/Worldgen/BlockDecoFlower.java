@@ -63,6 +63,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -435,7 +436,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 					int rz = ReikaRandomHelper.getRandomPlusMinus(z, 4);
 					int ry = y;
 					int oy = y;
-					while (world.getBlock(rx, ry-1, rz).isAir(world, rx, ry, rz) && ry > 0)
+					while (world.getBlock(rx, ry-1, rz).isAir(world, rx, ry-1, rz) && ry > 0)
 						ry--;
 					if (Math.abs(oy-ry) <= 12 && world.getBlock(rx, ry, rz).isAir(world, rx, ry, rz) && this.canPlantAt(world, rx, ry, rz)) {
 						return new Coordinate(rx, ry, rz);
@@ -594,12 +595,16 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 		private boolean onActiveGrass(World world, int x, int y, int z) {
 			while (world.getBlock(x, y, z) == ChromaBlocks.DECOFLOWER.getBlockInstance())
 				y--;
-			if (world.getBlock(x, y, z) != Blocks.grass && world.getBlock(x, y, z) != Blocks.leaves)
-				return false;
-			if (world.getBlockMetadata(x, y, z) != 0)
+			if (!this.isValidGrass(world, x, y, z))
 				return false;
 			Block b = world.getBlock(x, y-1, z);
 			return b instanceof IFluidBlock && ((IFluidBlock)b).getFluid() == FluidRegistry.getFluid("ender");
+		}
+
+		private boolean isValidGrass(World world, int x, int y, int z) {
+			Block b = world.getBlock(x, y, z);
+			int meta = world.getBlockMetadata(x, y, z);
+			return (b == Blocks.grass && meta == 0) || (ReikaTreeHelper.JUNGLE.isTreeLeaf(b, meta) && ReikaTreeHelper.isNaturalLeaf(world, x, y, z));
 		}
 
 		private boolean matchAt(World world, int x, int y, int z) {

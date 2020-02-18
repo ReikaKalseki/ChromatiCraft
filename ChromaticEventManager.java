@@ -1304,8 +1304,10 @@ public class ChromaticEventManager {
 			if (evt.source.getEntity() instanceof EntityPlayer) {
 				EntityPlayer ep = (EntityPlayer)evt.source.getEntity();
 				float num = evt.ammount/40F;
-				while (num > 1)
+				while (num > 1) {
 					ReikaItemHelper.dropItem(evt.entityLiving, ChromaStacks.voidmonsterEssence);
+					num--;
+				}
 				if (num > 0)
 					if (ReikaRandomHelper.doWithChance(num))
 						ReikaItemHelper.dropItem(evt.entityLiving, ChromaStacks.voidmonsterEssence);

@@ -255,7 +255,8 @@ IBeeModifier, IBeeListener {
 		}
 
 		for (AlvearyEffect ae : effectSet) {
-			selectedEffects.add(ae.ID);
+			if (ae.isOnByDefault())
+				selectedEffects.add(ae.ID);
 		}
 	}
 
@@ -429,6 +430,10 @@ IBeeModifier, IBeeListener {
 		else {
 			selectedEffects.remove(id);
 		}
+	}
+
+	public boolean isEffectSelectedAndActive(AlvearyEffect e) {
+		return selectedEffects.contains(e.ID) && e.isActive(this);
 	}
 
 	@Override
@@ -973,6 +978,10 @@ IBeeModifier, IBeeListener {
 			return false;
 		}
 
+		public boolean isOnByDefault() {
+			return true;
+		}
+
 		protected int tickRate() {
 			return 1;
 		}
@@ -1052,6 +1061,11 @@ IBeeModifier, IBeeListener {
 			te.aspects.reduce(aspect, requiredVis);
 		}
 
+		@Override
+		public boolean isOnByDefault() {
+			return true;
+		}
+
 	}
 
 	private static class ProductionBoostEffect extends VisAlvearyEffect {
@@ -1100,6 +1114,11 @@ IBeeModifier, IBeeListener {
 			}
 		}
 
+		@Override
+		public boolean isOnByDefault() {
+			return false;
+		}
+
 	}
 
 	private static class AutomationEffect extends LumenAlvearyEffect {
@@ -1122,6 +1141,11 @@ IBeeModifier, IBeeListener {
 		@Override
 		protected int tickRate() {
 			return 4;
+		}
+
+		@Override
+		public boolean isOnByDefault() {
+			return true;
 		}
 	}
 
@@ -1313,6 +1337,11 @@ IBeeModifier, IBeeListener {
 		@Override
 		public String getDescription() {
 			return "Genetic Stability";
+		}
+
+		@Override
+		public boolean isOnByDefault() {
+			return true;
 		}
 
 	}
@@ -1531,6 +1560,11 @@ IBeeModifier, IBeeListener {
 			return false;
 		}
 
+		@Override
+		public boolean isOnByDefault() {
+			return true;
+		}
+
 	}
 
 	private static class HumidityMatchingEffect extends LumenAlvearyEffect {
@@ -1584,6 +1618,11 @@ IBeeModifier, IBeeListener {
 			return false;
 		}
 
+		@Override
+		public boolean isOnByDefault() {
+			return true;
+		}
+
 	}
 
 	private static abstract class GeneticRepairEffect extends LumenAlvearyEffect {
@@ -1617,6 +1656,11 @@ IBeeModifier, IBeeListener {
 		}
 
 		protected abstract boolean doRepair(TileEntityLumenAlveary te);
+
+		@Override
+		public final boolean isOnByDefault() {
+			return true;
+		}
 
 	}
 
