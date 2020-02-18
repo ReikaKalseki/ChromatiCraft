@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
@@ -31,6 +32,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Instantiable.Data.CircularDivisionRenderer.ColorCallback;
+import Reika.DragonAPI.Instantiable.Data.CircularDivisionRenderer.IntColorCallback;
 import Reika.DragonAPI.Instantiable.Data.Proportionality;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -48,6 +50,7 @@ public class GuiLumenAlveary extends GuiChromaBase {
 	private final TileEntityLumenAlveary tile;
 	private final ArrayList<AlvearyEffect> activeEffects = new ArrayList();
 	private final AlvearyEffectControlSet controls = new AlvearyEffectControlSet();
+	private Categories currentCategory = Categories.LUMEN;
 	private Object selectedKey;
 
 	static {
@@ -72,18 +75,7 @@ public class GuiLumenAlveary extends GuiChromaBase {
 	}
 
 	private AlvearyEffectControlSet getCurrentControlSet() {
-		if (selectedKey == BASIC_KEY) {
-			return this.getControlSet(AlvearyEffect.class);
-		}
-		else if (selectedKey instanceof CrystalElement) {
-			return this.getControlSet(LumenAlvearyEffect.class);
-		}
-		else if (ModList.THAUMCRAFT.isLoaded() && selectedKey instanceof Aspect) {
-			return this.getControlSet(VisAlvearyEffect.class);
-		}
-		else {
-			return controls;
-		}
+		return this.getControlSet(currentCategory.classRef);
 	}
 
 	private void loadControllers() {
@@ -172,12 +164,13 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		AlvearyEffectControlSet set = this.getCurrentControlSet();
 		Proportionality buttons = set.getCurrentButtonSet(selectedKey);
 
+		String ttip = null;
 		Object hover = buttons.getClickedSection(a, b);
 		if (selectedKey != null) {
 			AlvearyEffectControl e = (AlvearyEffectControl)hover;
 			if (e != null) {
 				e.isHovered = true;
-				api.drawTooltipAt(fontRendererObj, e.getTooltip(), a, b);
+				ttip = e.getTooltip();
 			}
 		}
 		else {
@@ -186,12 +179,20 @@ public class GuiLumenAlveary extends GuiChromaBase {
 				for (AlvearyEffectControl ae2 : c) {
 					ae2.isSetHovered = true;
 				}
-				api.drawTooltipAt(fontRendererObj, String.valueOf(set.getKeyName(selectedKey)+": "+c.size()+" Effects"), a, b);
+				ttip = String.valueOf(set.getKeyName(hover)+": "+c.size()+" Effects");
 			}
 		}
 		buttons.setGeometry(x, y, r, 0);
 		buttons.render();
 		controls.resetHover();
+
+		if (ttip != null) {
+			List<String> li = new ArrayList();
+			for (String s : ttip.split("\\\n")) {
+				li.add(s);
+			}
+			api.drawSplitTooltipAt(fontRendererObj, li, a, b);
+		}
 
 		float lf = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
 		GL11.glLineWidth(4);
@@ -202,6 +203,18 @@ public class GuiLumenAlveary extends GuiChromaBase {
 	@Override
 	public String getGuiTexture() {
 		return "alveary";
+	}
+
+	private static enum Categories {
+		BASIC(AlvearyEffect.class),
+		LUMEN(LumenAlvearyEffect.class),
+		VIS(VisAlvearyEffect.class);
+
+		public final Class<? extends AlvearyEffect> classRef;
+
+		private Categories(Class<? extends AlvearyEffect> c) {
+			classRef = c;
+		}
 	}
 
 	private static class AlvearyEffectControl implements ColorCallback, Comparable<AlvearyEffectControl> {
@@ -268,8 +281,6 @@ public class GuiLumenAlveary extends GuiChromaBase {
 
 		private final VisAlvearyEffect effect;
 
-		private boolean isAspectHovered = false;
-
 		private VisAlvearyEffectControl(VisAlvearyEffect l, int idx) {
 			super(l, idx);
 			effect = l;
@@ -296,6 +307,7 @@ public class GuiLumenAlveary extends GuiChromaBase {
 			V v = this.constructControl(k, e, controls.get(k).size());
 			this.controls.addValue(k, v);
 			buttonsGlobal.addValue(k, 10);
+			buttonsGlobal.addColorRenderer(k, new IntColorCallback(this.getColorForKey(k)));
 			Proportionality<V> p = this.buttonsLocal.get(k);
 			if (p == null) {
 				p = new Proportionality();
@@ -306,6 +318,10 @@ public class GuiLumenAlveary extends GuiChromaBase {
 
 		public String getKeyName(Object o) {
 			return "";
+		}
+
+		protected int getColorForKey(K k) {
+			return 0xffffff;
 		}
 
 		protected V constructControl(K k, E e, int idx) {
@@ -350,6 +366,11 @@ public class GuiLumenAlveary extends GuiChromaBase {
 			return ((CrystalElement)o).displayName;
 		}
 
+		@Override
+		protected int getColorForKey(CrystalElement k) {
+			return k.getColor();
+		}
+
 	}
 
 	private static class VisAlvearyEffectControlSet extends AlvearyEffectControlSet<Aspect, VisAlvearyEffectControl, VisAlvearyEffect> {
@@ -363,6 +384,11 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		@Override
 		public String getKeyName(Object o) {
 			return ((Aspect)o).getName();
+		}
+
+		@Override
+		protected int getColorForKey(Aspect k) {
+			return k.getColor();
 		}
 
 	}
