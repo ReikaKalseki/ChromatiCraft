@@ -35,6 +35,8 @@ import Reika.DragonAPI.Instantiable.Data.CircularDivisionRenderer.ColorCallback;
 import Reika.DragonAPI.Instantiable.Data.CircularDivisionRenderer.IntColorCallback;
 import Reika.DragonAPI.Instantiable.Data.Proportionality;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.SortedDeterminator;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -50,7 +52,7 @@ public class GuiLumenAlveary extends GuiChromaBase {
 	private final TileEntityLumenAlveary tile;
 	private final ArrayList<AlvearyEffect> activeEffects = new ArrayList();
 	private final AlvearyEffectControlSet controls = new AlvearyEffectControlSet();
-	private Categories currentCategory = Categories.LUMEN;
+	private Categories currentCategory = Categories.BASIC;
 	private Object selectedKey;
 
 	static {
@@ -183,6 +185,7 @@ public class GuiLumenAlveary extends GuiChromaBase {
 			}
 		}
 		buttons.setGeometry(x, y, r, 0);
+		buttons.resetColors();
 		buttons.render();
 		controls.resetHover();
 
@@ -241,7 +244,11 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		}
 
 		public int getColor(Object key) {
-			return 0xffffff;
+			return ReikaColorAPI.getColorWithBrightnessMultiplier(0xffffff, this.getBrightnessFlicker());
+		}
+
+		protected final float getBrightnessFlicker() {
+			return (float)(0.75F+0.25F*Math.sin(System.currentTimeMillis()/240D+effect.ID));
 		}
 
 	}
@@ -264,14 +271,16 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		public int getColor(Object key) {
 			//int c = ReikaColorAPI.getModifiedHue(effect.color.getColor(), hue);
 			int c = effect.color.getColor();
-			if (isHovered && isActive) {
-				return ReikaColorAPI.mixColors(c, 0xffffff, 0.75F);
+			c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, this.getBrightnessFlicker());
+			if (isHovered) {
+				return ReikaColorAPI.mixColors(c, 0xffffff, 0.625F);
 			}
 			else if (isSetHovered) {
-				return ReikaColorAPI.mixColors(c, 0xffffff, 0.875F);
+				return ReikaColorAPI.mixColors(c, 0xffffff, 0.8F);
 			}
-			else
+			else {
 				return c;
+			}
 		}
 
 	}
@@ -289,7 +298,8 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		@Override
 		public int getColor(Object key) {
 			int c = effect.aspect.getColor();
-			float f = isHovered && isActive ? 0.75F : isSetHovered ? 0.875F : 1;
+			c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, this.getBrightnessFlicker());
+			float f = isHovered ? 0.625F : isSetHovered ? 0.8F : 1;
 			return ReikaColorAPI.mixColors(c, 0xffffff, f);
 		}
 
@@ -297,10 +307,10 @@ public class GuiLumenAlveary extends GuiChromaBase {
 
 	private static class AlvearyEffectControlSet<K, V extends AlvearyEffectControl, E extends AlvearyEffect> {
 
-		private final MultiMap<K, V> controls = new MultiMap();
+		private final MultiMap<K, V> controls = new MultiMap(CollectionType.LIST, new SortedDeterminator());
 		final HashMap<Class, AlvearyEffectControlSet> children = new HashMap();
 
-		private final Proportionality<K> buttonsGlobal = new Proportionality();
+		private final Proportionality<K> buttonsGlobal = new Proportionality(new SortedDeterminator());
 		private final HashMap<K, Proportionality<V>> buttonsLocal = new HashMap();
 
 		protected final void addControl(K k, E e) {
@@ -310,7 +320,7 @@ public class GuiLumenAlveary extends GuiChromaBase {
 			buttonsGlobal.addColorRenderer(k, new IntColorCallback(this.getColorForKey(k)));
 			Proportionality<V> p = this.buttonsLocal.get(k);
 			if (p == null) {
-				p = new Proportionality();
+				p = new Proportionality(new SortedDeterminator());
 				this.buttonsLocal.put(k, p);
 			}
 			p.addValue(v, 10);
