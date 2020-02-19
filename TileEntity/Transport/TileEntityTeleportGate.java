@@ -85,6 +85,7 @@ import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
@@ -475,18 +476,18 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 			AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(te1).expand(1.5, 1.5, 1.5).offset(0, 1, 0);
 			List<Entity> li = te1.worldObj.getEntitiesWithinAABB(Entity.class, box);
 			for (Entity e : li) {
-				teleport(te1, te2, e);
+				teleportFrom(te1.worldObj, te1.xCoord, te1.yCoord, te1.zCoord, te2, e);
 			}
 		}
 	}
 
-	private static void teleport(TileEntityTeleportGate te1, TileEntityTeleportGate te2, Entity e) {
-		double dx = e.posX-te1.xCoord-0.5;
-		double dy = e.posY-te1.yCoord-0.5;
-		double dz = e.posZ-te1.zCoord-0.5;
+	public static void teleportFrom(World world, int x, int y, int z, TileEntityTeleportGate te2, Entity e) {
+		double dx = e.posX-x-0.5;
+		double dy = e.posY-y-0.5;
+		double dz = e.posZ-z-0.5;
 		if (e instanceof EntityPlayer)
 			te2.cooldowns.put((EntityPlayer)e, 80);
-		if (te1.worldObj.provider.dimensionId != te2.worldObj.provider.dimensionId) {
+		if (world.provider.dimensionId != te2.worldObj.provider.dimensionId) {
 			ReikaEntityHelper.transferEntityToDimension(e, te2.worldObj.provider.dimensionId, new GateTeleporter(te2, dx, dy, dz));
 		}
 		else {
@@ -543,6 +544,17 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 	}
 
 	private void onActivateComplete() {
+		this.doTelegateFX();
+
+		this.triggerTeleport(this, teleportEnd);
+
+		if (teleportEnd != null) {
+			teleportEnd.teleportEnd = null;
+			teleportEnd = null;
+		}
+	}
+
+	private void doTelegateFX() {
 		if (!worldObj.isRemote) {
 			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.ACTIVEGATE.ordinal(), this, 96);
 		}
@@ -559,13 +571,6 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 
 		ChromaSounds.MONUMENTRAY.playSoundAtBlockNoAttenuation(this, 0.75F, 1, 32);
 		ChromaSounds.MONUMENTRAY.playSoundAtBlockNoAttenuation(this, 0.75F, 0.5F, 32);
-
-		this.triggerTeleport(this, teleportEnd);
-
-		if (teleportEnd != null) {
-			teleportEnd.teleportEnd = null;
-			teleportEnd = null;
-		}
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -858,6 +863,44 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 
 	public boolean canStructureBeInspected() {
 		return true;
+	}
+
+	private static Collection<GateData> getAllGatesMeeting(World world, EntityPlayer ep) {
+		Collection<GateData> c = new ArrayList();
+		for (GateData g : cache) {
+			if (world == null || g.location.dimensionID == world.provider.dimensionId) {
+				if (ep == null || g.publicMode || g.isOwnedBy(ep)) {
+					c.add(g);
+				}
+			}
+		}
+		return c;
+	}
+
+	public static WorldLocation getRandomGate(World world, EntityPlayer ep) {
+		if (cache.isEmpty())
+			return null;
+		Collection<GateData> c = getAllGatesMeeting(world, ep);
+		return c.isEmpty() ? null : ReikaJavaLibrary.getRandomCollectionEntry(rand, c).location;
+	}
+
+	public static Collection<GateData> getAllGatesInWorld(World world) {
+		return getAllGatesMeeting(world, null);
+	}
+
+	public static WorldLocation getNearestGate(World world, int x, int y, int z, EntityPlayer ep) {
+		GateData ret = null;
+		double dist = Double.POSITIVE_INFINITY;
+		for (GateData g : cache) {
+			if (g.location.dimensionID == world.provider.dimensionId) {
+				double dd = g.location.getDistanceTo(x, y, z);
+				if (ret == null || dd < dist) {
+					dist = dd;
+					ret = g;
+				}
+			}
+		}
+		return ret != null ? ret.location : null;
 	}
 
 	private static class GateTeleporter extends Teleporter {

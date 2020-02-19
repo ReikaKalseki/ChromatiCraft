@@ -99,10 +99,12 @@ public final class ChromaResearchManager implements ResearchRegistry {
 			this.register(ProgressStage.list[i]);
 		}
 		 */
+
+		this.addLink(ChromaResearch.TELEGATELOCK, ChromaResearch.GATE);
 	}
 
 	private void addLink(ChromaResearch obj, ChromaResearch parent) {
-
+		data.addChild(parent, obj);
 	}
 
 	private ChromaResearch getPriorityResearchFor(EntityPlayer ep) {

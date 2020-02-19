@@ -184,9 +184,9 @@
 	<probe>
 		Normally, when you screw up, you can find and fix the mistake simply enough (barring, perhaps, that time your devices melted into gray slag that kills everything that approaches, forcing you to completely abandon the region). However, there have been times where you have stared for hours and not uncovered your error. Clearly you need a tool which can help you in that regard. Naming it, however, has proven difficult; after your original name - involving some mention that it is effectively some sort of probe - was incessantly met with puerile remarks, you have not had ideas on a suitable replacement.
 	</probe>
-	<name>
-		
-	</name>
+	<telegatelock>
+		Teleportation between previsited points, especially if it needs something built at each end, is of little value if you just want to get home from somewhere to where you never plan to return. A wand with a shiny blue sphere helps a bit, but it is expensive to use and there have been times where it has simply not been able to travel particularly far distances. Airing your grievances over that fact to everyone who will listen (and for that matter, even those who will not) might feel rewarding, but does little to solve your dilemma, so you will need another approach, probably building upon things already constructed.
+	</telegatelock>
 	<name>
 		
 	</name>

@@ -372,6 +372,10 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 		return reloadLevel;
 	}
 
+	public boolean isGating() {
+		return ProgressionManager.instance.isProgressionGating(this);
+	}
+
 	@Override
 	public boolean playerHas(EntityPlayer ep) {
 		return this.isPlayerAtStage(ep);

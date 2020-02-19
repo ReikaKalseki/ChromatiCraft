@@ -226,6 +226,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.SplashG
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.SplineAttackRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.StorageCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.StructureFinderRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.TeleGateLockRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.TeleportWandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.TintedLensRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.TransitionRecipe;
@@ -908,6 +909,8 @@ public class RecipesCastingTable {
 		is = ChromaTiles.LAUNCHPAD.getCraftedProduct();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "sas", "aga", "rar", 's', ChromaStacks.limeShard, 'r', Items.redstone, 'a', ChromaStacks.auraDust, 'g', ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.ENGRAVED.ordinal()));
 		this.addRecipe(new LaunchPadRecipe(is, sr));
+
+		this.addRecipe(new TeleGateLockRecipe(ChromaItems.TELEGATELOCK.getStackOf(), ChromaStacks.resocrystal));
 
 		this.addSpecialRecipes();
 	}

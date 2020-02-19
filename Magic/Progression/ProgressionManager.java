@@ -86,6 +86,8 @@ public class ProgressionManager implements ProgressRegistry {
 
 	private final EnumMap<ProgressStage, ChromaResearch> auxiliaryReference = new EnumMap(ProgressStage.class);
 
+	private final HashSet<ProgressStage> nonGatingProgress = new HashSet();
+
 	//private final Comparator<EntityPlayer> playerProgressionComparator = new PlayerProgressionComparator();
 
 	private ProgressionManager() {
@@ -241,10 +243,27 @@ public class ProgressionManager implements ProgressRegistry {
 		auxiliaryReference.put(ProgressStage.DYETREE, ChromaResearch.DYELEAVES);
 		auxiliaryReference.put(ProgressStage.BALLLIGHTNING, ChromaResearch.BALLLIGHTNING);
 		auxiliaryReference.put(ProgressStage.ALLCOLORS, ChromaResearch.RUNES);
+
+		nonGatingProgress.add(ProgressStage.DIE);
+		nonGatingProgress.add(ProgressStage.VOIDMONSTERDIE);
+		nonGatingProgress.add(ProgressStage.TOWER);
+		nonGatingProgress.add(ProgressStage.ARTEFACT);
+		nonGatingProgress.add(ProgressStage.PYLONLINK);
+		nonGatingProgress.add(ProgressStage.BALLLIGHTNING);
+		nonGatingProgress.add(ProgressStage.FINDSPAWNER);
+		nonGatingProgress.add(ProgressStage.BREAKSPAWNER);
+		nonGatingProgress.add(ProgressStage.HIVE);
+		nonGatingProgress.add(ProgressStage.STRUCTCHEAT);
+		nonGatingProgress.add(ProgressStage.WARPNODE);
+		nonGatingProgress.add(ProgressStage.LUMA);
 	}
 
 	private void addChainedProgression(ProgressStage hook, ProgressStage req, ProgressStage chain) {
 		chains.addValue(hook, new ImmutablePair(req, chain));
+	}
+
+	public boolean isProgressionGating(ProgressStage p) {
+		return !nonGatingProgress.contains(p);
 	}
 
 	public Topology getTopology() {

@@ -68,6 +68,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemPylonFinder;
 import Reika.ChromatiCraft.Items.Tools.ItemSplashGun;
 import Reika.ChromatiCraft.Items.Tools.ItemSplineAttack;
 import Reika.ChromatiCraft.Items.Tools.ItemStructureMap;
+import Reika.ChromatiCraft.Items.Tools.ItemTeleGateLock;
 import Reika.ChromatiCraft.Items.Tools.ItemThrowableGem;
 import Reika.ChromatiCraft.Items.Tools.ItemVacuumGun;
 import Reika.ChromatiCraft.Items.Tools.ItemWarpCapsule;
@@ -187,6 +188,7 @@ public enum ChromaItems implements ItemEnum {
 	LIGHTGUN(51, false,		"chroma.lightgun",		ItemLightGun.class),
 	STRUCTMAP(52, false,	"chroma.structmap",		ItemStructureMap.class),
 	PROBE(53, true,			"chroma.probe",			ItemCrystalProbe.class),
+	TELEGATELOCK(63, false,	"chroma.telegatelock",	ItemTeleGateLock.class),
 	;
 
 	private final int index;

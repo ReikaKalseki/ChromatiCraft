@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -39,6 +39,7 @@ import Reika.DragonAPI.Instantiable.Math.Spline.BasicVariablePoint;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
 import Reika.DragonAPI.Instantiable.ParticleController.SplineMotionController;
 import Reika.DragonAPI.Interfaces.PositionController;
+import Reika.DragonAPI.Interfaces.TileEntity.NonIFluidTank;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -72,7 +73,18 @@ public class TileEntityFluidDistributor extends TileEntityAreaDistributor implem
 				int give = this.tryGiveFluid(fs, simulate, (IFluidHandler)te);
 				if (give > 0) {
 					if (!worldObj.isRemote)
-						this.sendFluid(new FluidStack(fs.getFluid(), give), loc, (IFluidHandler)te);
+						this.sendFluid(new FluidStack(fs.getFluid(), give), loc);
+					fs.amount -= give;
+					add += give;
+					if (fs.amount <= 0)
+						return add;
+				}
+			}
+			else if (te instanceof NonIFluidTank) {
+				int give = this.tryGiveFluid(fs, simulate, (NonIFluidTank)te);
+				if (give > 0) {
+					if (!worldObj.isRemote)
+						this.sendFluid(new FluidStack(fs.getFluid(), give), loc);
 					fs.amount -= give;
 					add += give;
 					if (fs.amount <= 0)
@@ -101,7 +113,19 @@ public class TileEntityFluidDistributor extends TileEntityAreaDistributor implem
 		return add;
 	}
 
-	private void sendFluid(FluidStack fs, WorldLocation loc, IFluidHandler ie) {
+	private int tryGiveFluid(FluidStack fs, boolean simulate, NonIFluidTank ie) {
+		int add = 0;
+		int give = ie.addFluid(fs.getFluid(), fs.amount, simulate);
+		if (give > 0) {
+			fs.amount -= give;
+			add += give;
+			if (fs.amount <= 0)
+				return add;
+		}
+		return add;
+	}
+
+	private void sendFluid(FluidStack fs, WorldLocation loc) {
 		int x = loc.xCoord;
 		int y = loc.yCoord;
 		int z = loc.zCoord;
@@ -214,6 +238,10 @@ public class TileEntityFluidDistributor extends TileEntityAreaDistributor implem
 				return false;
 			}
 			return true;
+		}
+		else if (te instanceof NonIFluidTank) {
+			NonIFluidTank nif = (NonIFluidTank)te;
+			return nif.allowAutomation();
 		}
 		return false;
 	}

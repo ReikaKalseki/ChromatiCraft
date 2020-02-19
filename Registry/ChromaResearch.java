@@ -310,6 +310,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	ENDEREYE(			ChromaItems.ENDEREYE,		ResearchLevel.ENERGYEXPLORE,	ProgressStage.NETHERROOF),
 	LIGHTGUN(			ChromaItems.LIGHTGUN,		ResearchLevel.BASICCRAFT,		ProgressStage.BEDROCK),
 	PROBE(				ChromaItems.PROBE,			ResearchLevel.BASICCRAFT),
+	TELEGATELOCK(		ChromaItems.TELEGATELOCK,	ResearchLevel.ENDGAME),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
@@ -895,30 +896,14 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 			return false;
 		if (this.isMachine() && this.getMachine().isIncomplete())
 			return false;
-		if (this == DEATHPROOF)
-			return false;
-		if (this == BEES)
-			return false;
-		if (this == BEEFRAME)
-			return false;
 		if (this == TINKERTOOLS)
-			return false;
-		if (this == BALLLIGHTNING)
-			return false;
-		if (this == FOCUSCRYSTALS)
-			return false;
-		if (this == LUMA)
-			return false;
-		if (this == SPAWNERBYPASS)
-			return false;
-		if (this == WARPNODE)
 			return false;
 		if (this == TRAPFLOOR)
 			return false;
-		if (this.requiresProgress(ProgressStage.DIE) || this.requiresProgress(ProgressStage.VOIDMONSTERDIE))
-			return false;
-		if (this.requiresProgress(ProgressStage.TOWER) || this.requiresProgress(ProgressStage.ARTEFACT) || this.requiresProgress(ProgressStage.PYLONLINK))
-			return false;
+		for (ProgressStage p : progress) {
+			if (!p.isGating())
+				return false;
+		}
 		return struct == null || !struct.isNatural();
 	}
 

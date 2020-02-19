@@ -18,7 +18,6 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -39,10 +38,10 @@ import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.MapDeterminator;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.SortedDeterminator;
-import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 
 import thaumcraft.api.aspects.Aspect;
 
@@ -54,8 +53,8 @@ public class GuiLumenAlveary extends GuiChromaBase {
 
 	private final TileEntityLumenAlveary tile;
 	private final ArrayList<AlvearyEffect> activeEffects = new ArrayList();
-	private final AlvearyEffectControlSet controls = new AlvearyEffectControlSet();
-	private Categories currentCategory = Categories.BASIC;
+	private final AlvearyEffectControlSet controls = new AlvearyEffectControlSet(AlvearyEffect.class);
+	private Categories currentCategory = null;
 	private Object selectedKey;
 
 	static {
@@ -80,7 +79,7 @@ public class GuiLumenAlveary extends GuiChromaBase {
 	}
 
 	private AlvearyEffectControlSet getCurrentControlSet() {
-		return this.getControlSet(currentCategory.classRef);
+		return currentCategory == null ? controls : this.getControlSet(currentCategory.classRef);
 	}
 
 	private void loadControllers() {
@@ -88,8 +87,10 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		controls.controls.clear();
 		Collection<AlvearyEffect> c = new ArrayList(allEffects);
 
+		AlvearyEffectControlSet bset = new AlvearyEffectControlSet(AlvearyEffect.class);
 		LumenAlvearyEffectControlSet lset = new LumenAlvearyEffectControlSet();
-		controls.children.put(LumenAlvearyEffect.class, lset);
+		controls.addChild(AlvearyEffect.class, bset);
+		controls.addChild(LumenAlvearyEffect.class, lset);
 		Iterator<AlvearyEffect> it = c.iterator();
 		while(it.hasNext()) {
 			AlvearyEffect ae = it.next();
@@ -101,7 +102,7 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		}
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			VisAlvearyEffectControlSet vset = new VisAlvearyEffectControlSet();
-			controls.children.put(VisAlvearyEffect.class, vset);
+			controls.addChild(VisAlvearyEffect.class, vset);
 			it = c.iterator();
 			while(it.hasNext()) {
 				AlvearyEffect ae = it.next();
@@ -113,7 +114,7 @@ public class GuiLumenAlveary extends GuiChromaBase {
 			}
 		}
 		for (AlvearyEffect ae : c) {
-			controls.addControl(BASIC_KEY, ae);
+			bset.addControl(BASIC_KEY, ae);
 		}
 	}
 
@@ -128,37 +129,6 @@ public class GuiLumenAlveary extends GuiChromaBase {
 	}
 
 	@Override
-	public void initGui() {
-		super.initGui();
-
-		int j = (width - xSize) / 2;
-		int k = (height - ySize) / 2;
-
-		String file = this.getFullTexturePath();
-		int n = 4;
-		for (int i = 0; i < Categories.list.length; i++) {
-			int x = j+n;
-			int y = k+n+20*i;
-			int u = i == currentCategory.ordinal() ? 198 : 178;
-			int v = i*20;
-			buttonList.add(new CustomSoundImagedGuiButton(i, x, y, 20, 20, u, v, file, ChromatiCraft.class, this));
-		}
-	}
-
-	@Override
-	protected void actionPerformed(GuiButton b) {
-		super.actionPerformed(b);
-		if (b.id < Categories.list.length) {
-			Categories c = Categories.list[b.id];
-			if (c.isValid()) {
-				currentCategory = c;
-				selectedKey = null;
-			}
-		}
-		this.initGui();
-	}
-
-	@Override
 	protected void mouseClicked(int x, int y, int button) {
 		super.mouseClicked(x, y, button);
 
@@ -166,7 +136,21 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		Proportionality buttons = set.getCurrentButtonSet(selectedKey);
 		Object hover = buttons.getClickedSection(x, y);
 
-		if (selectedKey != null) {
+		if (set.isTopLevel()) {
+			AlvearyEffectControlSet cat = (AlvearyEffectControlSet)hover;
+			selectedKey = null;
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+			if (cat != null) {
+				Categories c = cat.getCategory();
+				if (c.isValid()) {
+					currentCategory = c;
+				}
+			}
+			else {
+				currentCategory = null;
+			}
+		}
+		else if (selectedKey != null) {
 			AlvearyEffectControl e = (AlvearyEffectControl)hover;
 			if (e != null) {
 				e.isActive = !e.isActive;
@@ -182,6 +166,10 @@ public class GuiLumenAlveary extends GuiChromaBase {
 			if (hover != null) {
 				selectedKey = hover;
 				ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+			}
+			else {
+				ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+				currentCategory = null;
 			}
 		}
 	}
@@ -201,7 +189,16 @@ public class GuiLumenAlveary extends GuiChromaBase {
 
 		String ttip = null;
 		Object hover = buttons.getClickedSection(a, b);
-		if (selectedKey != null) {
+		if (set.isTopLevel()) {
+			AlvearyEffectControlSet cat = (AlvearyEffectControlSet)hover;
+			if (cat != null) {
+				ttip = cat.type.getSimpleName().replace("Alveary", "")+"s";
+				if (ttip.equals("Effects"))
+					ttip = "BasicEffects";
+				ttip = ReikaStringParser.splitCamelCase(ttip);
+			}
+		}
+		else if (selectedKey != null) {
 			AlvearyEffectControl e = (AlvearyEffectControl)hover;
 			if (e != null) {
 				e.isHovered = true;
@@ -214,10 +211,18 @@ public class GuiLumenAlveary extends GuiChromaBase {
 				for (AlvearyEffectControl ae2 : c) {
 					ae2.isSetHovered = true;
 				}
-				ttip = String.valueOf(set.getKeyName(hover)+": "+c.size()+" Effects");
+				String pre = set.getKeyName(hover);
+				if (pre == null)
+					pre = "";
+				else
+					pre = pre+": ";
+				ttip = String.valueOf(pre+c.size()+" Effects");
 			}
 		}
-		buttons.setGeometry(x, y, r, 0);
+		int key = System.identityHashCode(set.type);
+		if (selectedKey != null)
+			key ^= System.identityHashCode(selectedKey);
+		buttons.setGeometry(x, y, r, key%360);
 		buttons.resetColors();
 		buttons.render();
 		controls.resetHover();
@@ -254,6 +259,14 @@ public class GuiLumenAlveary extends GuiChromaBase {
 			classRef = c;
 		}
 
+		protected static Categories getByType(Class c) {
+			for (Categories cg : list) {
+				if (cg.classRef == c)
+					return cg;
+			}
+			return null;
+		}
+
 		public boolean isValid() {
 			switch(this) {
 				case VIS:
@@ -288,11 +301,13 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		}
 
 		public int getColor(Object key) {
-			return ReikaColorAPI.getColorWithBrightnessMultiplier(0xffffff, this.getBrightnessFlicker());
+			return ReikaColorAPI.getColorWithBrightnessMultiplier(0xffffff, this.getBrightnessModifier());
 		}
 
-		protected final float getBrightnessFlicker() {
-			return (float)(0.75F+0.25F*Math.sin(System.currentTimeMillis()/240D+effect.ID));
+		protected final float getBrightnessModifier() {
+			float base = isActive ? 0.9375F : 0.375F;
+			double mod = isActive ? 240D : 400D;
+			return (float)(base+0.0625F*Math.sin(System.currentTimeMillis()/mod+effect.ID));
 		}
 
 	}
@@ -315,7 +330,7 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		public int getColor(Object key) {
 			//int c = ReikaColorAPI.getModifiedHue(effect.color.getColor(), hue);
 			int c = effect.color.getColor();
-			c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, this.getBrightnessFlicker());
+			c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, this.getBrightnessModifier());
 			if (isHovered) {
 				return ReikaColorAPI.mixColors(c, 0xffffff, 0.625F);
 			}
@@ -342,20 +357,33 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		@Override
 		public int getColor(Object key) {
 			int c = effect.aspect.getColor();
-			c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, this.getBrightnessFlicker());
+			c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, this.getBrightnessModifier());
 			float f = isHovered ? 0.625F : isSetHovered ? 0.8F : 1;
 			return ReikaColorAPI.mixColors(c, 0xffffff, f);
 		}
 
 	}
 
-	private static class AlvearyEffectControlSet<K, V extends AlvearyEffectControl, E extends AlvearyEffect> {
+	private static class AlvearyEffectControlSet<K, V extends AlvearyEffectControl, E extends AlvearyEffect> implements Comparable<AlvearyEffectControlSet> {
 
 		private final MultiMap<K, V> controls = new MultiMap(CollectionType.LIST, this.getDeterminator());
-		final HashMap<Class, AlvearyEffectControlSet> children = new HashMap();
+		private final HashMap<Class, AlvearyEffectControlSet> children = new HashMap();
 
 		private final Proportionality<K> buttonsGlobal = new Proportionality(this.getDeterminator());
+		private final Proportionality<AlvearyEffectControlSet> childButtons = new Proportionality(new SortedDeterminator());
 		private final HashMap<K, Proportionality<V>> buttonsLocal = new HashMap();
+
+		protected final Class type;
+
+		protected AlvearyEffectControlSet(Class<E> c) {
+			type = c;
+			buttonsGlobal.drawSeparationLines = true;
+			childButtons.drawSeparationLines = true;
+		}
+
+		public final Categories getCategory() {
+			return Categories.getByType(this.type);
+		}
 
 		protected final void addControl(K k, E e) {
 			V v = this.constructControl(k, e, controls.get(k).size());
@@ -365,9 +393,16 @@ public class GuiLumenAlveary extends GuiChromaBase {
 			Proportionality<V> p = this.buttonsLocal.get(k);
 			if (p == null) {
 				p = new Proportionality(this.getDeterminator());
+				p.drawSeparationLines = true;
 				this.buttonsLocal.put(k, p);
 			}
 			p.addValue(v, 10);
+		}
+
+		protected final void addChild(Class c, AlvearyEffectControlSet s) {
+			children.put(c, s);
+			this.childButtons.addValue(s, 10);
+			this.childButtons.addColorRenderer(s, new IntColorCallback(s.getColor()));
 		}
 
 		private MapDeterminator getDeterminator() {
@@ -379,7 +414,11 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		}
 
 		public String getKeyName(Object o) {
-			return "Basic";
+			return null;
+		}
+
+		protected int getColor() {
+			return 0xffffff;
 		}
 
 		protected int getColorForKey(K k) {
@@ -410,12 +449,34 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		}
 
 		public Proportionality getCurrentButtonSet(Object key) {
+			if (this.isTopLevel()) {
+				return this.childButtons;
+			}
 			return key == null ? this.buttonsGlobal : this.buttonsLocal.get(key);
+		}
+
+		public final boolean isTopLevel() {
+			return this.controls.isEmpty() && !this.children.isEmpty();
+		}
+
+		@Override
+		public final int compareTo(AlvearyEffectControlSet o) {
+			//return type.getName().compareToIgnoreCase(o.type.getName());
+			//return ReikaJavaLibrary
+			return Integer.compare(this.getIndex(), o.getIndex());
+		}
+
+		private final int getIndex() {
+			return this.getCategory().ordinal();
 		}
 
 	}
 
 	private static class LumenAlvearyEffectControlSet extends AlvearyEffectControlSet<CrystalElement, LumenAlvearyEffectControl, LumenAlvearyEffect> {
+
+		protected LumenAlvearyEffectControlSet() {
+			super(LumenAlvearyEffect.class);
+		}
 
 		@Override
 		protected LumenAlvearyEffectControl constructControl(CrystalElement k, LumenAlvearyEffect e, int idx) {
@@ -434,6 +495,11 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		}
 
 		@Override
+		protected int getColor() {
+			return 0x22aaff;
+		}
+
+		@Override
 		protected boolean isSorted() {
 			return true;
 		}
@@ -441,6 +507,10 @@ public class GuiLumenAlveary extends GuiChromaBase {
 	}
 
 	private static class VisAlvearyEffectControlSet extends AlvearyEffectControlSet<Aspect, VisAlvearyEffectControl, VisAlvearyEffect> {
+
+		protected VisAlvearyEffectControlSet() {
+			super(VisAlvearyEffect.class);
+		}
 
 		@Override
 		protected VisAlvearyEffectControl constructControl(Aspect k, VisAlvearyEffect e, int idx) {
@@ -456,6 +526,11 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		@Override
 		protected int getColorForKey(Aspect k) {
 			return k.getColor();
+		}
+
+		@Override
+		protected int getColor() {
+			return Aspect.MAGIC.getColor();
 		}
 
 	}

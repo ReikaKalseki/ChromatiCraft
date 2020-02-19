@@ -33,6 +33,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.Linkable;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -58,6 +59,7 @@ import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Flowering;
 import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Life;
 import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Speeds;
 import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Territory;
+import Reika.DragonAPI.ModInteract.Bees.DummyEffectData;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -95,7 +97,7 @@ import thaumcraft.api.visnet.VisNetHandler;
 @Strippable(value={"forestry.api.multiblock.IAlvearyComponent", "forestry.api.multiblock.IAlvearyComponent$BeeModifier",
 		"forestry.api.multiblock.IAlvearyComponent$BeeListener", "forestry.api.apiculture.IBeeModifier", "forestry.api.apiculture.IBeeListener"})
 public class TileEntityLumenAlveary extends TileEntityRelayPowered implements GuiController, IAlvearyComponent, BeeModifier, BeeListener,
-IBeeModifier, IBeeListener {
+IBeeModifier, IBeeListener, Linkable {
 
 	private static final ArrayList<AlvearyEffect> effectSet = new ArrayList();
 	private static final HashSet<AlvearyEffect> continualSet = new HashSet();
@@ -219,6 +221,11 @@ IBeeModifier, IBeeListener {
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			new ProductionBoostEffect();
+			new NoProductionEffect();
+			new EnhancedEffectEffect();
+			new MutationBoostEffect();
+			new FloweringBoostEffect();
+			new RainBoostEffect();
 		}
 	}
 
@@ -940,6 +947,34 @@ IBeeModifier, IBeeListener {
 		return Collections.unmodifiableCollection(effectSet);
 	}
 
+	@Override
+	public void breakBlock() {
+
+	}
+
+	@Override
+	public void reset() {
+
+	}
+
+	@Override
+	public void resetOther() {
+
+	}
+
+	@Override
+	public boolean connectTo(World world, int x, int y, int z) {
+		ChromaTiles te = ChromaTiles.getTile(world, x, y, z);
+		return te == this.getTile() && this.copySettingsFrom((TileEntityLumenAlveary)world.getTileEntity(x, y, z));
+	}
+
+	private boolean copySettingsFrom(TileEntityLumenAlveary te) {
+		te.selectedEffects.clear();
+		te.selectedEffects.addAll(selectedEffects);
+		this.syncAllData(true);
+		return true;
+	}
+
 	public static abstract class AlvearyEffect {
 
 		public final int ID;
@@ -1061,17 +1096,12 @@ IBeeModifier, IBeeListener {
 			te.aspects.reduce(aspect, requiredVis);
 		}
 
-		@Override
-		public boolean isOnByDefault() {
-			return true;
-		}
-
 	}
 
 	private static class ProductionBoostEffect extends VisAlvearyEffect {
 
 		private ProductionBoostEffect() {
-			super(Aspect.ORDER, 20);
+			super(Aspect.ORDER, 4);
 		}
 
 		@Override
@@ -1082,6 +1112,105 @@ IBeeModifier, IBeeListener {
 		@Override
 		public String getDescription() {
 			return "Production Boost";
+		}
+
+		@Override
+		public boolean isOnByDefault() {
+			return true;
+		}
+
+	}
+
+	private static class NoProductionEffect extends VisAlvearyEffect {
+
+		private NoProductionEffect() {
+			super(Aspect.ENTROPY, 1);
+		}
+
+		@Override
+		protected float productionFactor(TileEntityLumenAlveary te) {
+			return 0;
+		}
+
+		@Override
+		public String getDescription() {
+			return "Production Nullification";
+		}
+
+	}
+
+	private static class EnhancedEffectEffect extends VisAlvearyEffect {
+
+		private EnhancedEffectEffect() {
+			super(Aspect.AIR, 20);
+		}
+
+		@Override
+		public String getDescription() {
+			return "Effect Expansion";
+		}
+
+		@Override
+		protected boolean tick(TileEntityLumenAlveary te) {
+			IBeeGenome ibg = te.getBeeGenome();
+			if (ibg != null) {
+				ibg.getEffect().doEffect(ibg, new DummyEffectData(), te.getBeeHousing());
+			}
+			return true;
+		}
+
+	}
+
+	private static class MutationBoostEffect extends VisAlvearyEffect {
+
+		private MutationBoostEffect() {
+			super(Aspect.ENTROPY, 4);
+		}
+
+		@Override
+		public String getDescription() {
+			return "Genetic Instability";
+		}
+
+		@Override
+		protected float mutationFactor(TileEntityLumenAlveary te) {
+			return 1.5F;
+		}
+
+	}
+
+	private static class FloweringBoostEffect extends VisAlvearyEffect {
+
+		private FloweringBoostEffect() {
+			super(Aspect.EARTH, 2);
+		}
+
+		@Override
+		public String getDescription() {
+			return "Gardener";
+		}
+
+		@Override
+		protected float pollinationFactor(TileEntityLumenAlveary te) {
+			return 1.5F;
+		}
+
+	}
+
+	private static class RainBoostEffect extends VisAlvearyEffect {
+
+		private RainBoostEffect() {
+			super(Aspect.WATER, 1);
+		}
+
+		@Override
+		public String getDescription() {
+			return "Precipitative Enhancement";
+		}
+
+		@Override
+		protected float productionFactor(TileEntityLumenAlveary te) {
+			return te.worldObj.isRaining() ? 1.2F : 1;
 		}
 
 	}

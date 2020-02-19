@@ -1,10 +1,13 @@
 package Reika.ChromatiCraft.TileEntity.Transport;
 
+import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -24,6 +27,7 @@ import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Maps.TimerMap;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
@@ -38,6 +42,8 @@ public class TileEntityLaunchPad extends TileEntityChromaticBase implements Mult
 	private int charge;
 	private boolean structure;
 	private boolean enhanced;
+
+	private TimerMap<Entity> currentLaunches = new TimerMap();
 
 	public float getChargeFraction() {
 		return charge/(float)CHARGE_DURATION;
@@ -61,15 +67,26 @@ public class TileEntityLaunchPad extends TileEntityChromaticBase implements Mult
 				e.fallDistance = 0;
 			}
 
+			currentLaunches.tick();
+			for (Entity e : currentLaunches.keySet()) {
+				this.flingEntity(e, false);
+			}
+
 			boolean flag = charge > 0;
 			box = AxisAlignedBB.getBoundingBox(x-1, y+0.9375, z-1, x+2, y+1.0625, z+2);
 			li = world.getEntitiesWithinAABB(Entity.class, box);
+			Iterator<Entity> it = li.iterator();
+			while (it.hasNext()) {
+				Entity e = it.next();
+				if (e instanceof EntityItem || e instanceof EntityXPOrb)
+					it.remove();
+			}
 			if (li.size() == 1 && li.get(0).isSneaking())
 				li.clear();
 			if (!li.isEmpty()) {
 				if (charge == CHARGE_DURATION) {
 					for (Entity e : li) {
-						this.flingEntity(e);
+						this.flingEntity(e, true);
 					}
 					ChromaSounds.KILLAURA.playSoundAtBlockNoAttenuation(this, 1, 0.5F, 90);
 					ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.LAUNCHFIRE.ordinal(), this, 90);
@@ -106,10 +123,10 @@ public class TileEntityLaunchPad extends TileEntityChromaticBase implements Mult
 		}
 	}
 
-	private void flingEntity(Entity e) {
+	private void flingEntity(Entity e, boolean cache) {
 		float v = this.getSpeedFactor();
 		if (e instanceof EntityPlayer) {
-			e.motionY = (3.5+rand.nextDouble()*0.5)*v;
+			e.motionY = Math.max(e.motionY, (3.5+rand.nextDouble()*0.5)*v);
 			e.velocityChanged = true;
 		}
 		else {
@@ -117,6 +134,10 @@ public class TileEntityLaunchPad extends TileEntityChromaticBase implements Mult
 			e.velocityChanged = true;
 		}
 		e.fallDistance = -100;
+
+		if (cache && this.isEnhanced()) {
+			currentLaunches.put(e, ReikaRandomHelper.getRandomBetween(12, 18));
+		}
 	}
 
 	private float getSpeedFactor() {
