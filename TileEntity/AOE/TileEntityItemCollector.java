@@ -38,18 +38,14 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Instantiable.ItemFilter;
-import Reika.DragonAPI.Instantiable.ItemFilter.ItemRule;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Interfaces.Item.CustomMatchingItem;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.ReikaXPFluidHelper;
-import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.MatchMode;
 
 public class TileEntityItemCollector extends InventoriedRelayPowered implements NBTTile, LocationCached, IFluidHandler, RangeUpgradeable {
 
@@ -60,7 +56,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 
 	private final ConfigurableRangeTracker range = new ConfigurableRangeTracker(MAXRANGE, 24, 1);
 
-	private ItemFilter[] filter = new ItemFilter[2*9];
+	private ItemStack[] filter = new ItemStack[2*9];
 	private final StepTimer scanTimer = new StepTimer(200);
 
 	private static final ElementTagCompound required = new ElementTagCompound();
@@ -218,12 +214,10 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 		return false;
 	}
 
-	private boolean match(ItemStack is, ItemFilter filter) {
-		if (ChromaItems.SEED.matchWith(is) && filter instanceof ItemRule) {
-			ItemRule ir = (ItemRule)filter;
-			return ChromaItems.SEED.matchWith(ir.getItem()) && is.getItemDamage()%16 == ir.getItem().getItemDamage()%16;
-		}
-		return filter.matches(is);//ReikaItemHelper.matchStacks(is, filter) && ItemStack.areItemStackTagsEqual(is, filter);
+	private boolean match(ItemStack is, ItemStack filter) {
+		if (ChromaItems.SEED.matchWith(is))
+			return ChromaItems.SEED.matchWith(filter) && is.getItemDamage()%16 == filter.getItemDamage()%16;
+		return ReikaItemHelper.matchStacks(is, filter) && ItemStack.areItemStackTagsEqual(is, filter);
 	}
 
 	private boolean absorbItem(World world, int x, int y, int z, EntityItem ent) {
@@ -335,7 +329,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	private void saveFilter(NBTTagCompound NBT) {
 		NBTTagCompound fil = new NBTTagCompound();
 		for (int i = 0; i < filter.length; i++) {
-			ItemFilter is = filter[i];
+			ItemStack is = filter[i];
 			if (is != null) {
 				NBTTagCompound tag = new NBTTagCompound();
 				is.writeToNBT(tag);
@@ -346,13 +340,13 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	}
 
 	private void readFilter(NBTTagCompound NBT) {
-		filter = new ItemFilter[filter.length];
+		filter = new ItemStack[filter.length];
 		NBTTagCompound fil = NBT.getCompoundTag("filter");
 		for (int i = 0; i < filter.length; i++) {
 			String name = "filter_"+i;
 			if (fil.hasKey(name)) {
 				NBTTagCompound tag = fil.getCompoundTag(name);
-				ItemFilter is = ItemFilter.createFromNBT(tag);
+				ItemStack is = ItemStack.loadItemStackFromNBT(tag);
 				filter[i] = is;
 			}
 		}
@@ -386,20 +380,12 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	}
 
 	public void setMapping(int slot, ItemStack is) {
-		if (is != null && is.getItem() instanceof CustomMatchingItem) {
-			filter[slot] = ((CustomMatchingItem)is.getItem()).getFilter(is);
-		}
-		else {
-			filter[slot] = new ItemRule(is, MatchMode.EXACT);
-		}
+		filter[slot] = is;
 		this.syncAllData(true);
 	}
 
 	public ItemStack getMapping(int slot) {
-		if (filter[slot] == null)
-			return null;
-		ItemStack item = filter[slot].getItem();
-		return item != null ? item.copy() : null;
+		return filter[slot] != null ? filter[slot].copy() : null;
 	}
 
 	@Override

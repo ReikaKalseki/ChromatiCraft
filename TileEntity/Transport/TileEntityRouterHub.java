@@ -40,8 +40,6 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
-import Reika.DragonAPI.Instantiable.ItemFilter;
-import Reika.DragonAPI.Instantiable.ItemFilter.ItemRule;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Collections.InventoryCache;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -430,14 +428,66 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 		return true;
 	}
 
+	public static final class ItemRule {
+
+		private final ItemStack item;
+		public final MatchMode mode;
+
+		public ItemRule(ItemStack is, MatchMode m) {
+			item = ReikaItemHelper.getSizedItemStack(is, is.getMaxStackSize());
+			mode = m;
+		}
+
+		public boolean matches(ItemStack is) {
+			return mode.compare(is, item);
+		}
+
+		@Override
+		public int hashCode() {
+			return item.getItem().hashCode() ^ mode.ordinal();
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o instanceof ItemRule) {
+				ItemRule ir = (ItemRule)o;
+				return ItemStack.areItemStacksEqual(item, ir.item) && mode == ir.mode;
+			}
+			return false;
+		}
+
+		@Override
+		public String toString() {
+			return item+" * "+mode;
+		}
+
+		public ItemStack getItem() {
+			return item.copy();
+		}
+
+		public static ItemRule readFromNBT(NBTTagCompound tag) {
+			ItemStack is = ItemStack.loadItemStackFromNBT(tag);
+			int mode = tag.getInteger("mode");
+			return is != null ? new ItemRule(is, MatchMode.list[mode]) : null;
+		}
+
+		public NBTTagCompound writeToNBT() {
+			NBTTagCompound tag = new NBTTagCompound();
+			tag.setInteger("mode", mode.ordinal());
+			item.writeToNBT(tag);
+			return tag;
+		}
+
+	}
+
 	private static abstract class Connection {
 
 		protected final Coordinate location;
 		protected final ForgeDirection direction;
-		protected final HashSet<ItemFilter> items = new HashSet();
+		protected final HashSet<ItemRule> items = new HashSet();
 		protected final boolean blacklist;
 
-		private Connection(Coordinate c, ForgeDirection dir, boolean blacklist, Collection<ItemFilter> filter) {
+		private Connection(Coordinate c, ForgeDirection dir, boolean blacklist, Collection<ItemRule> filter) {
 			location = c;
 			direction = dir;
 			this.blacklist = blacklist;
@@ -447,7 +497,7 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 		public final boolean allowsItem(ItemStack is) {
 			if (items.isEmpty())
 				return true;
-			for (ItemFilter item : items) {
+			for (ItemRule item : items) {
 				if (item.matches(is))
 					return true;
 			}
@@ -468,7 +518,7 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 			NBT.setInteger("dir", direction.ordinal());
 			NBT.setBoolean("black", blacklist);
 			NBTTagList li = new NBTTagList();
-			for (ItemFilter ir : items) {
+			for (ItemRule ir : items) {
 				li.appendTag(ir.writeToNBT());
 			}
 			NBT.setTag("items", li);
@@ -485,7 +535,7 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 			Collection<ItemRule> set = new HashSet();
 			for (Object o : li.tagList) {
 				NBTTagCompound tag = (NBTTagCompound)o;
-				ItemFilter ir = ItemFilter.createFromNBT(tag);
+				ItemRule ir = ItemRule.readFromNBT(tag);
 				set.add(ir);
 			}
 			try {
@@ -503,7 +553,7 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 
 	private static class Insertion extends Connection {
 
-		private Insertion(Coordinate c, ForgeDirection dir, boolean blacklist, Collection<ItemFilter> filter) {
+		private Insertion(Coordinate c, ForgeDirection dir, boolean blacklist, Collection<ItemRule> filter) {
 			super(c, dir, blacklist, filter);
 		}
 
@@ -538,7 +588,7 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 
 	private static class Extraction extends Connection {
 
-		private Extraction(Coordinate c, ForgeDirection dir, boolean blacklist, Collection<ItemFilter> filter) {
+		private Extraction(Coordinate c, ForgeDirection dir, boolean blacklist, Collection<ItemRule> filter) {
 			super(c, dir, blacklist, filter);
 		}
 

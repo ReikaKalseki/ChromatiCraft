@@ -178,13 +178,13 @@ public class ItemInventoryLinker extends ItemChromaTool {
 		tool.stackTagCompound.setInteger("mode", mode.ordinal());
 	}
 
-	public static ArrayList<ItemFilter> getFilters(ItemStack is) {
-		ArrayList<ItemFilter> li = new ArrayList();
+	public static ArrayList<Filter> getFilters(ItemStack is) {
+		ArrayList<Filter> li = new ArrayList();
 		if (is.stackTagCompound != null && is.stackTagCompound.hasKey("filter")) {
 			NBTTagList items = is.stackTagCompound.getTagList("filter", NBTTypes.COMPOUND.ID);
 			for (NBTTagCompound nbt : ((List<NBTTagCompound>)items.tagList)) {
 				String s = nbt.getString("filterType");
-				ItemFilter f = constructFilter(s);
+				Filter f = constructFilter(s);
 				if (f == null) {
 					ChromatiCraft.logger.logError("Error reading item filter for "+is.getDisplayName()+"; unrecognized type "+s);
 					continue;
@@ -196,15 +196,15 @@ public class ItemInventoryLinker extends ItemChromaTool {
 		return li;
 	}
 
-	public static final HashSet<ItemFilter> getItemList(ItemStack tool) {
+	public static final HashSet<KeyedItemStack> getItemList(ItemStack tool) {
 		if (tool.stackTagCompound == null)
 			tool.stackTagCompound = new NBTTagCompound();
 		if (tool.stackTagCompound.hasKey("items")) {
 			return loadItemList(tool.stackTagCompound.getTagList("items", NBTTypes.COMPOUND.ID));
 		}
-		ArrayList<ItemFilter> li = getFilters(tool);
+		ArrayList<Filter> li = getFilters(tool);
 		HashSet<KeyedItemStack> set = new HashSet();
-		for (ItemFilter f : li) {
+		for (Filter f : li) {
 			KeyedItemStack ks = f.getKey();
 			if (!set.contains(ks))
 				set.add(ks);
@@ -232,10 +232,10 @@ public class ItemInventoryLinker extends ItemChromaTool {
 		tag.setTag("items", li);
 	}
 
-	private static ItemFilter constructFilter(String s) {
+	private static Filter constructFilter(String s) {
 		try {
 			Class c = Class.forName(s);
-			Constructor<ItemFilter> con = c.getDeclaredConstructor();
+			Constructor<Filter> con = c.getDeclaredConstructor();
 			con.setAccessible(true);
 			return con.newInstance();
 		}
@@ -245,12 +245,12 @@ public class ItemInventoryLinker extends ItemChromaTool {
 		}
 	}
 
-	private static void setFilters(ItemStack is, ArrayList<ItemFilter> li) {
+	private static void setFilters(ItemStack is, ArrayList<Filter> li) {
 		if (is.stackTagCompound == null)
 			is.stackTagCompound = new NBTTagCompound();
 		is.stackTagCompound.removeTag("items");
 		NBTTagList items = new NBTTagList();
-		for (ItemFilter f : li) {
+		for (Filter f : li) {
 			NBTTagCompound nbt = new NBTTagCompound();
 			f.writeToNBT(nbt);
 			nbt.setString("filterType", f.getClass().getName());
@@ -340,6 +340,48 @@ public class ItemInventoryLinker extends ItemChromaTool {
 		private Mode next() {
 			return list[(this.ordinal()+1)%list.length];
 		}
+	}
+
+	public static abstract class Filter {
+
+		protected Filter() {
+
+		}
+
+		protected abstract void writeToNBT(NBTTagCompound tag);
+		protected abstract void readFromNBT(NBTTagCompound tag);
+
+		protected abstract KeyedItemStack getKey();
+
+	}
+
+	public static final class ItemFilter extends Filter {
+
+		private ItemStack item;
+
+		private ItemFilter() {
+			super();
+		}
+
+		public ItemFilter(ItemStack is) {
+			item = is.copy();
+		}
+
+		@Override
+		protected void writeToNBT(NBTTagCompound tag) {
+			item.writeToNBT(tag);
+		}
+
+		@Override
+		protected void readFromNBT(NBTTagCompound tag) {
+			item = ItemStack.loadItemStackFromNBT(tag);
+		}
+
+		@Override
+		protected KeyedItemStack getKey() {
+			return new KeyedItemStack(item).setIgnoreMetadata(false).setSized(false).setIgnoreNBT(false).setSimpleHash(true);
+		}
+
 	}
 
 	public static boolean tryLinkItem(EntityPlayer ep, ItemStack is) {
