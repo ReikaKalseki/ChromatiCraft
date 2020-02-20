@@ -1,14 +1,15 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Block.Worldgen;
 
+import java.util.HashMap;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -96,6 +97,12 @@ public class BlockSparkle extends Block {
 		return b == this || b == BlockTypes.list[world.getBlockMetadata(x, y, z)].proxy;
 	}
 
+	private static final HashMap<Block, BlockTypes> lookups = new HashMap();
+
+	public static BlockTypes getByProxy(Block b) {
+		return lookups.get(b);
+	}
+
 	public static enum BlockTypes {
 		DIRT(Blocks.dirt),
 		SAND(Blocks.sand),
@@ -110,6 +117,7 @@ public class BlockSparkle extends Block {
 
 		private BlockTypes(Block b) {
 			proxy = b;
+			lookups.put(b, this);
 		}
 
 		public boolean canFall() {

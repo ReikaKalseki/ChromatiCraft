@@ -17,6 +17,7 @@ import java.util.Random;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.particle.EntityFX;
@@ -30,6 +31,8 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.RainbowTreeEffects;
+import Reika.ChromatiCraft.Block.Worldgen.BlockSparkle;
+import Reika.ChromatiCraft.Block.Worldgen.BlockSparkle.BlockTypes;
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.Artefact.ArtefactSpawner;
@@ -38,15 +41,19 @@ import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees.CrystalBee;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees.PrecursorBee;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -682,6 +689,72 @@ public class EffectAlleles {
 						f = 4*(1-d/4096);
 					if (f >= 1 || ReikaRandomHelper.doWithChance(f))
 						ItemUnknownArtefact.doUA_FX(world, c.posX+0.5, c.posY+0.5, c.posZ+0.5, d <= 256);
+				}
+			}
+			return ied;
+		}
+	}
+
+	static final class SparklifyEffect extends BasicGene implements IAlleleBeeEffect {
+
+		public SparklifyEffect() {
+			super("effect.sparkle", "Glittering", EnumBeeChromosome.EFFECT);
+		}
+
+		@Override
+		public boolean isCombinable() {
+			return true;
+		}
+
+		@Override
+		public IEffectData validateStorage(IEffectData ied) {
+			return ied;
+		}
+
+		@Override
+		public IEffectData doEffect(IBeeGenome ibg, IEffectData ied, IBeeHousing ibh) {
+			if (this.isValidBeeForEffect(ibg.getPrimary()) && this.isValidBeeForEffect(ibg.getSecondary())) {
+				World world = ibh.getWorld();
+				ChunkCoordinates c = ibh.getCoordinates();
+				if (world.rand.nextInt(200) == 0) {
+					int[] r = ChromaBeeHelpers.getEffectiveTerritory(ibh, c, ibg, world.getTotalWorldTime());
+					BlockBox box = BlockBox.block(c).expand(r[0], r[1], r[2]);
+					Coordinate loc = box.getRandomContainedCoordinate(world.rand);
+					Block b = loc.getBlock(world);
+					BlockTypes type = BlockSparkle.getByProxy(b);
+					if (type != null) {
+						loc.setBlock(world, ChromaBlocks.SPARKLE.getBlockInstance(), type.ordinal());
+						ReikaSoundHelper.playBreakSound(world, loc.xCoord, loc.yCoord, loc.zCoord, b);
+					}
+				}
+			}
+			return ied;
+		}
+
+		private boolean isValidBeeForEffect(IAlleleBeeSpecies bee) {
+			return true;//bee == CrystalBees.sparkle;
+		}
+
+		@Override
+		public IEffectData doFX(IBeeGenome ibg, IEffectData ied, IBeeHousing ibh) {
+			if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+				return this.doClientFX(ibg, ied, ibh);
+			return ied;
+		}
+
+		@SideOnly(Side.CLIENT)
+		private IEffectData doClientFX(IBeeGenome ibg, IEffectData ied, IBeeHousing ibh) {
+			if (this.isValidBeeForEffect(ibg.getPrimary()) && this.isValidBeeForEffect(ibg.getSecondary())) {
+				World world = ibh.getWorld();
+				if (world.rand.nextInt(4) == 0) {
+					ChunkCoordinates c = ibh.getCoordinates();
+
+					double px = ReikaRandomHelper.getRandomPlusMinus(c.posX+0.5, 2);
+					double pz = ReikaRandomHelper.getRandomPlusMinus(c.posZ+0.5, 2);
+					double py = ReikaRandomHelper.getRandomBetween(c.posY-1.5, c.posY+4);
+
+					EntityFlareFX fx = new EntityFlareFX(CrystalElement.WHITE, world, px, py, pz);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 				}
 			}
 			return ied;

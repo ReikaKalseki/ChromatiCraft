@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.ModInterface.Bees.EffectAlleles.CrystalEffect;
 import Reika.ChromatiCraft.ModInterface.Bees.EffectAlleles.PolychromaEffect;
 import Reika.ChromatiCraft.ModInterface.Bees.EffectAlleles.PrecursorEffect;
 import Reika.ChromatiCraft.ModInterface.Bees.EffectAlleles.RechargeEffect;
+import Reika.ChromatiCraft.ModInterface.Bees.EffectAlleles.SparklifyEffect;
 import Reika.ChromatiCraft.ModInterface.Bees.FlowerAlleles.CrystalAllele;
 import Reika.ChromatiCraft.ModInterface.Bees.FlowerAlleles.FlowerProviderCrystal;
 import Reika.ChromatiCraft.ModInterface.Bees.FlowerAlleles.FlowerProviderMulti;
@@ -123,6 +124,8 @@ public class CrystalBees {
 	static BasicBee hostile;
 	static BasicBee magical;
 
+	static BasicBee sparkle;
+
 	static BasicBee crystal;
 	static BasicBee purity;
 
@@ -158,6 +161,7 @@ public class CrystalBees {
 	static MultiAllele multiFlower;
 	static PolychromaEffect multiEffect;
 	static RechargeEffect rechargeEffect;
+	static SparklifyEffect sparkleEffect;
 
 	static MetaAlloyAllele metaFlower;
 	static ArtefactEffect uaEffect;
@@ -166,6 +170,7 @@ public class CrystalBees {
 	private static ColorBlendList chromaColor;
 	private static ColorBlendList auraColor;
 	private static ColorBlendList lumenColor;
+	private static ColorBlendList sparkleColor;
 	private static ColorBlendList[] crystalColors;
 	private static ColorBlendList multiColor;
 
@@ -234,6 +239,8 @@ public class CrystalBees {
 		lumenColor = new ColorBlendList(10F, 0x0000ff, 0xffffff, 0x22aaff);
 		crystalColors = new ColorBlendList[16];
 		multiColor = new ColorBlendList(20F);
+
+		sparkleColor = new ColorBlendList(6F, 0xffffff, 0xCEB2FF, 0xffffff, 0xB2CEFF);
 
 		uaColor = new ColorBlendList(10F, 0x7A8499, 0x7A4355, 0x7A8499, 0x7A8499, 0x7A8499, 0x7A8499, 0x7C6275, 0x7A4355, 0xBC542A, 0xFFFF7F, 0xBD7F3A, 0x7A8499, 0x7A8499, 0x7A4355, 0xBC542A, 0xFFFF7F, 0xFFFF00, 0xB6FF00, 0xF1FF00, 0xB6FF00, 0xECFF00, 0xAAEF00, 0x7FA04A, 0x7A8499);
 		precursorColor = new ColorBlendList(25F, 0xffffff, 0x404040, 0x22aaff, 0x404040, 0xDA8CFF, 0x404040, 0xFFF1AD, 0x404040);
@@ -304,6 +311,8 @@ public class CrystalBees {
 		hostile = new BasicBee("Hostile", "Vitreus Inimicus", Speeds.SLOWEST, Life.SHORT, Flowering.SLOW, Fertility.LOW, Territory.DEFAULT, 0xFF6A00, crystalBranch);
 		magical = new BasicBee("Proximal", "Vitreus Proxima", Speeds.NORMAL, Life.NORMAL, Flowering.SLOW, Fertility.NORMAL, Territory.DEFAULT, 0xD53DFF, crystalBranch);
 
+		sparkle = new SparkleBee("Shimmering", "Vitreus Nitidus", Speeds.SLOW, Life.SHORTENED, Flowering.AVERAGE, Fertility.NORMAL, Territory.DEFAULT, 0xCEB2FF, crystalBranch);
+
 		tower = new PrecursorBee("Communicative", "Monumentum Vitreus Notitia", Speeds.SLOWER, Life.LONG, Flowering.SLOWEST, Fertility.LOW, Territory.LARGER, towerColor, EnumTemperature.NORMAL, ProgressStage.TOWER);
 
 		crystal.register();
@@ -313,6 +322,8 @@ public class CrystalBees {
 		luminous.register();
 		hostile.register();
 		magical.register();
+
+		sparkle.register();
 
 		tower.register();
 
@@ -354,6 +365,7 @@ public class CrystalBees {
 		protective.addBreeding("Heroic", crystal, 10);
 		hostile.addBreeding("Demonic", crystal, 10);
 		luminous.addBreeding("Ended", purity, 5);
+		sparkle.addBreeding(luminous, crystal, 8);
 
 		if (ModList.MAGICBEES.isLoaded()) {
 			magical.addBreeding("Imperial", ModList.FORESTRY, "Arcane", ModList.MAGICBEES, 4);
@@ -371,16 +383,19 @@ public class CrystalBees {
 		aura.addBreeding(lumen, beeMap.get(CrystalElement.YELLOW), 3);
 		multi.addBreeding(aura, chroma, 2);
 
-		protective.addProduct(new ItemStack(Blocks.obsidian), 2);
-		hostile.addProduct(new ItemStack(Items.gunpowder), 4);
-		luminous.addProduct(new ItemStack(Items.glowstone_dust), 5);
-		magical.addProduct(ChromaStacks.chromaDust, 5);
+		protective.addSpecialty(new ItemStack(Blocks.obsidian), 2);
+		hostile.addSpecialty(new ItemStack(Items.gunpowder), 4);
+		luminous.addSpecialty(new ItemStack(Items.glowstone_dust), 5);
+		magical.addSpecialty(ChromaStacks.chromaDust, 5);
 		protective.addProduct(Combs.HONEY.getItem(), 10);
 		hostile.addProduct(Combs.HONEY.getItem(), 10);
 		luminous.addProduct(Combs.HONEY.getItem(), 10);
+		sparkle.addProduct(Combs.HONEY.getItem(), 10);
 		magical.addProduct(Combs.HONEY.getItem(), 10);
-		crystal.addProduct(ChromaStacks.crystalPowder, 5);
-		purity.addProduct(new ItemStack(Items.ghast_tear), 1);
+		crystal.addSpecialty(ChromaStacks.crystalPowder, 5);
+		purity.addSpecialty(new ItemStack(Items.ghast_tear), 1);
+		sparkle.addSpecialty(new ItemStack(Items.glowstone_dust), 7);
+		sparkle.addSpecialty(new ItemStack(Items.gold_nugget), 2);
 
 		chroma.addSpecialty(ChromaStacks.iridCrystal, 2);
 		chroma.otherChecks.add(new IridescentShardCheck());
@@ -789,6 +804,40 @@ public class CrystalBees {
 		@Override
 		public int getOutlineColor() {
 			return outline;
+		}
+
+	}
+
+	static class SparkleBee extends BasicBee {
+
+		private SparkleBee(String name, String latin, Speeds s, Life l, Flowering f, Fertility f2, Territory a, int color, BeeBranch branch) {
+			super(name, latin, s, l, f, f2, a, color, branch);
+			this.setEffect(sparkleEffect);
+		}
+
+		@Override
+		public boolean isJubilant(IBeeGenome ibg, IBeeHousing ibh) {
+			return super.isJubilant(ibg, ibh) && ChromatiCraft.isRainbowForest(ibh.getBiome());
+		}
+
+		@Override
+		public String getDescription() {
+			return "This bee makes its surroundings glitter like itself.";
+		}
+
+		@Override
+		public boolean isDominant() {
+			return false;
+		}
+
+		@Override
+		public int getOutlineColor() {
+			return sparkleColor != null ? sparkleColor.getColor(DragonAPICore.getSystemTimeAsInt()/30D) : 0xffffff;
+		}
+
+		@Override
+		public IAlleleBeeEffect getEffectAllele() {
+			return sparkleEffect;
 		}
 
 	}

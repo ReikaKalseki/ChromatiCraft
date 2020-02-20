@@ -27,6 +27,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -130,7 +131,7 @@ public class ChromaCloudRenderer extends IRenderHandler {
 		if (ep.posY > 80)
 			return;
 
-		if (ep.posY < 20) {
+		if (ep.posY < 20 && ChromaDimensionManager.getStructurePlayerIsIn(ep) == null) {
 			ChromaShaders.DIMFLOOR.refresh();
 			ChromaShaders.DIMFLOOR.rampUpIntensity(0.05F, 1.1F);
 			float f = ep.posY <= 10 ? 1 : 1-(float)((ep.posY-10)/10);
