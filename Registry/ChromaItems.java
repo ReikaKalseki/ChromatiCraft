@@ -99,6 +99,7 @@ import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant.Modifier;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
+import Reika.DragonAPI.Instantiable.ItemFilter;
 import Reika.DragonAPI.Interfaces.Registry.ItemEnum;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -609,6 +610,12 @@ public enum ChromaItems implements ItemEnum {
 		if (is == null)
 			return false;
 		return is.getItem() == this.getItemInstance();
+	}
+
+	public boolean matchWith(ItemFilter i) {
+		if (i == null)
+			return false;
+		return i.matches(this.getStackOfMetadata(OreDictionary.WILDCARD_VALUE));
 	}
 
 	public boolean isPlacer() {
