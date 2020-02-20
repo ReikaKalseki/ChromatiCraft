@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 
 import thaumcraft.api.aspects.Aspect;
@@ -47,7 +48,10 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 			DelegateInterface s = this.getInterface(te);
 			if (s != NoInterface.instance) {
 				try {
-					s.tick(te, this.getTier(), this.getPlacer());
+					EntityPlayer ep = this.getPlacer();
+					if (ep == null || (ReikaPlayerAPI.isFake(ep) && !s.canRunWithPlayerOffline()))
+						return EffectResult.CONTINUE;
+					s.tick(te, this.getTier(), ep);
 				}
 				catch (Exception ex) {
 					ChromatiCraft.logger.logError("Could not tick Delegate interface "+s+" for "+te+" @ "+this);
@@ -135,6 +139,8 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 		protected TileEntity getActingTileEntity(TileEntity te) throws Exception {
 			return te;
 		}
+
+		protected abstract boolean canRunWithPlayerOffline();
 	}
 
 	private static class NoInterface extends DelegateInterface { //Used for null
@@ -159,6 +165,11 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 		@Override
 		protected String[] getClasses() {
 			return new String[0];
+		}
+
+		@Override
+		protected boolean canRunWithPlayerOffline() {
+			return false;
 		}
 
 	}
@@ -225,6 +236,11 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 			return new String[]{"thaumcraft.common.tiles.TileDeconstructionTable"};
 		}
 
+		@Override
+		protected boolean canRunWithPlayerOffline() {
+			return false;
+		}
+
 	}
 
 	private static class ChromaCollectorDelegateInterface extends DelegateInterface {
@@ -248,6 +264,11 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 		@Override
 		protected String[] getClasses() {
 			return new String[]{TileEntityCollector.class.getName()};
+		}
+
+		@Override
+		protected boolean canRunWithPlayerOffline() {
+			return false;
 		}
 
 	}
