@@ -294,6 +294,7 @@ public class CrystalBees {
 		multiFlower = new MultiAllele();
 		multiEffect = new PolychromaEffect();
 		rechargeEffect = new RechargeEffect();
+		sparkleEffect = new SparklifyEffect();
 
 		metaFlower = new MetaAlloyAllele();
 		uaEffect = new ArtefactEffect();
@@ -365,7 +366,13 @@ public class CrystalBees {
 		protective.addBreeding("Heroic", crystal, 10);
 		hostile.addBreeding("Demonic", crystal, 10);
 		luminous.addBreeding("Ended", purity, 5);
-		sparkle.addBreeding(luminous, crystal, 8);
+
+		if (ModList.MAGICBEES.isLoaded()) {
+			sparkle.addBreeding("Transmuting", ModList.MAGICBEES, luminous, 8);
+		}
+		else {
+			sparkle.addBreeding("Exotic", ModList.FORESTRY, luminous, 8);
+		}
 
 		if (ModList.MAGICBEES.isLoaded()) {
 			magical.addBreeding("Imperial", ModList.FORESTRY, "Arcane", ModList.MAGICBEES, 4);

@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
 import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary.AlvearyEffect;
 import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary.LumenAlvearyEffect;
+import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary.PoweredAlvearyEffect;
 import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary.VisAlvearyEffect;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -292,7 +293,12 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		}
 
 		public final String getTooltip() {
-			return effect.getDescription()+"\nEnabled: "+isActive;
+			String base = effect.getDescription()+"\nEnabled: "+isActive;
+			if (effect instanceof PoweredAlvearyEffect) {
+				PoweredAlvearyEffect pef = (PoweredAlvearyEffect)effect;
+				base = base+"\n"+pef.getResource()+": "+pef.getCost()+"/t";
+			}
+			return base;
 		}
 
 		@Override

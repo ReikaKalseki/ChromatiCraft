@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -29,6 +29,7 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.ProductCondition;
+import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary.AlvearyEffect;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
@@ -176,6 +177,16 @@ public class ChromaBeeHelpers {
 	public static EntityPlayer getOwner(IBeeHousing ibh) {
 		GameProfile p = ibh.getOwner();
 		return p != null && p.getId() != null ? ibh.getWorld().func_152378_a(p.getId()) : null;
+	}
+
+	public static boolean isLumenAlvearyEffectSelectedAndActive(IBeeHousing ibh, AlvearyEffect e) {
+		TileEntityLumenAlveary te = getLumenAlvearyController(ibh, ibh.getWorld(), ibh.getCoordinates());
+		return te != null && te.isEffectSelectedAndActive(e);
+	}
+
+	public static boolean isLumenAlvearyInfSight(IBeeHousing ibh) {
+		TileEntityLumenAlveary te = getLumenAlvearyController(ibh, ibh.getWorld(), ibh.getCoordinates());
+		return te != null && te.hasInfiniteAwareness();
 	}
 
 	private static class SelectionKey {

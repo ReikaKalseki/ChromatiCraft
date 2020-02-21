@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -47,12 +47,19 @@ public class BlockRainbowSapling extends BlockSapling {
 
 	@Override
 	public void func_149878_d(World world, int x, int y, int z, Random r) {
-		if (this.canGrowAt(world, x, y, z))
-			this.growTree(world, x, y, z, r);
+		if (this.canGrowLargeRainbowTreeAt(world, x, y, z))
+			this.growLargeTree(world, x, y, z, r);
+		else
+			this.tryGrowSmallTree(world, x, y, z, r);
 	}
 
-	public void growTree(World world, int x, int y, int z, Random r)
-	{
+	private void tryGrowSmallTree(World world, int x, int y, int z, Random r) {
+		if (world.isRemote)
+			return;
+		RainbowTreeGenerator.getInstance().tryGenerateSmallRainbowTree(world, x, y, z, r);
+	}
+
+	public void growLargeTree(World world, int x, int y, int z, Random r) {
 		if (world.isRemote)
 			return;
 
@@ -63,7 +70,7 @@ public class BlockRainbowSapling extends BlockSapling {
 		if (id == this)
 			z++;
 
-		RainbowTreeGenerator.getInstance().generateRainbowTree(world, x, y, z, r);
+		RainbowTreeGenerator.getInstance().generateLargeRainbowTree(world, x, y, z, r);
 	}
 
 	@Override
@@ -74,10 +81,11 @@ public class BlockRainbowSapling extends BlockSapling {
 		if (!ReikaItemHelper.matchStacks(is, ReikaDyeHelper.WHITE.getStackOf()))
 			return false;
 		int color = world.getBlockMetadata(x, y, z);
-		if (this.canGrowAt(world, x, y, z))
-			this.growTree(world, x, y, z, r);
+		if (this.canGrowLargeRainbowTreeAt(world, x, y, z))
+			this.growLargeTree(world, x, y, z, r);
 		else
-			world.spawnParticle("happyVillager", x+r.nextDouble(), y+r.nextDouble(), z+r.nextDouble(), 0, 0, 0);
+			this.tryGrowSmallTree(world, x, y, z, r);
+		world.spawnParticle("happyVillager", x+r.nextDouble(), y+r.nextDouble(), z+r.nextDouble(), 0, 0, 0);
 		if (!ep.capabilities.isCreativeMode)
 			is.stackSize--;
 		return true;
@@ -102,7 +110,7 @@ public class BlockRainbowSapling extends BlockSapling {
 		return 0xffffff;
 	}
 
-	public boolean canGrowAt(World world, int x, int y, int z) {
+	public boolean canGrowLargeRainbowTreeAt(World world, int x, int y, int z) {
 		if (y < 4)
 			return false;
 

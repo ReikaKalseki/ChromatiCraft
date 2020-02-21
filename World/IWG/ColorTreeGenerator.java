@@ -58,7 +58,7 @@ public class ColorTreeGenerator implements RetroactiveGenerator, ChromaDecorator
 						int y = world.getTopSolidOrLiquidBlock(x, z);
 						Block b = world.getBlock(x, y, z);
 						if (r.nextInt(this.getRainbowChance(world)) == 0 && RainbowTreeGenerator.getInstance().checkRainbowTreeSpace(world, x, y, z)) {
-							RainbowTreeGenerator.getInstance().generateRainbowTree(world, x, y, z, r);
+							RainbowTreeGenerator.getInstance().generateLargeRainbowTree(world, x, y, z, r);
 						}
 						else {
 							TreeShaper.getInstance().generateRandomWeightedTree(world, x, y, z, ReikaDyeHelper.dyes[r.nextInt(16)], false);

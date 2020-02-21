@@ -36,6 +36,8 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.Linkable;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.ConditionalProductBee;
+import Reika.ChromatiCraft.ModInterface.Bees.EffectAlleles.CrystalEffect;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -105,6 +107,9 @@ IBeeModifier, IBeeListener, Linkable {
 	private static final GeneticRepairEffect geneRepair2;
 	private static final AutomationEffect automation;
 	private static final PlayerRestrictionEffect playerOnlyEffects;
+	private static final InfiniteSightEffect infiniteRange;
+	//private static final EffectIntensificationEffect intensification;
+	private static final OmnipresentEffectEffect omnipresence;
 	private static final EnumMap<CrystalElement, ElementalBoostEffect> colorEffects = new EnumMap(CrystalElement.class);
 
 	public static final Comparator<AlvearyEffect> effectSorter = new Comparator<AlvearyEffect>(){
@@ -218,6 +223,9 @@ IBeeModifier, IBeeListener, Linkable {
 			CrystalElement e = CrystalElement.elements[i];
 			colorEffects.put(e, new ElementalBoostEffect(e));
 		}
+		infiniteRange = new InfiniteSightEffect();
+		//intensification = new EffectIntensificationEffect();
+		omnipresence = new OmnipresentEffectEffect();
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			new ProductionBoostEffect();
@@ -931,7 +939,19 @@ IBeeModifier, IBeeListener, Linkable {
 	}
 
 	public boolean effectsOnlyOnPlayers() {
-		return playerOnlyEffects.isActive(this);
+		return this.isEffectSelectedAndActive(playerOnlyEffects);
+	}
+
+	public boolean hasInfiniteAwareness() {
+		return this.isEffectSelectedAndActive(infiniteRange);
+	}
+	/*
+	public boolean hasIntensification() {
+		return this.isEffectSelectedAndActive(intensification);
+	}
+	 */
+	public boolean hasOmnipresence() {
+		return this.isEffectSelectedAndActive(omnipresence);
 	}
 
 	public boolean isColorBoosted(CrystalElement e) {
@@ -1070,7 +1090,15 @@ IBeeModifier, IBeeListener, Linkable {
 		}
 	}
 
-	public static abstract class VisAlvearyEffect extends AlvearyEffect {
+	public static abstract class PoweredAlvearyEffect extends AlvearyEffect {
+
+		public abstract String getResource();
+
+		public abstract int getCost();
+
+	}
+
+	public static abstract class VisAlvearyEffect extends PoweredAlvearyEffect {
 
 		public final Aspect aspect;
 		public final int requiredVis;
@@ -1078,6 +1106,16 @@ IBeeModifier, IBeeListener, Linkable {
 		protected VisAlvearyEffect(Aspect a, int amt) {
 			aspect = a;
 			requiredVis = amt;
+		}
+
+		@Override
+		public final String getResource() {
+			return aspect.getName();
+		}
+
+		@Override
+		public final int getCost() {
+			return requiredVis;
 		}
 
 		protected boolean consumeOnTick() {
@@ -1094,6 +1132,11 @@ IBeeModifier, IBeeListener, Linkable {
 			int amt = amount*requiredVis;
 			//ReikaJavaLibrary.pConsole(amount+" x "+requiredVis+" = "+amt+", from "+te.aspects.getAmount(aspect));
 			te.aspects.reduce(aspect, requiredVis);
+		}
+
+		@Override
+		public boolean isOnByDefault() {
+			return false;
 		}
 
 	}
@@ -1215,7 +1258,7 @@ IBeeModifier, IBeeListener, Linkable {
 
 	}
 
-	public static abstract class LumenAlvearyEffect extends AlvearyEffect {
+	public static abstract class LumenAlvearyEffect extends PoweredAlvearyEffect {
 
 		public final CrystalElement color;
 		public final int requiredEnergy;
@@ -1224,6 +1267,16 @@ IBeeModifier, IBeeListener, Linkable {
 			super();
 			color = e;
 			requiredEnergy = amt;
+		}
+
+		@Override
+		public final String getResource() {
+			return color.displayName;
+		}
+
+		@Override
+		public final int getCost() {
+			return requiredEnergy;
 		}
 
 		protected boolean consumeOnTick() {
@@ -1880,6 +1933,60 @@ IBeeModifier, IBeeListener, Linkable {
 		@Override
 		protected boolean isActive(TileEntityLumenAlveary te) {
 			return super.isActive(te) && te.getSpecies() == CrystalBees.getElementalBee(color);
+		}
+
+	}
+
+	private static class InfiniteSightEffect extends LumenAlvearyEffect {
+
+		private InfiniteSightEffect() {
+			super(CrystalElement.BLUE, 600);
+		}
+
+		@Override
+		public String getDescription() {
+			return "Infinite View";
+		}
+
+		@Override
+		protected boolean isActive(TileEntityLumenAlveary te) {
+			return super.isActive(te) && te.getSpecies() instanceof ConditionalProductBee;
+		}
+
+	}
+	/*
+	private static class EffectIntensificationEffect extends LumenAlvearyEffect {
+
+		private EffectIntensificationEffect() {
+			super(CrystalElement.PURPLE, 750);
+		}
+
+		@Override
+		public String getDescription() {
+			return "Effect Intensification";
+		}
+
+		@Override
+		protected boolean isActive(TileEntityLumenAlveary te) {
+			return super.isActive(te) && te.getBeeGenome().getEffect() instanceof CrystalEffect;
+		}
+
+	}
+	 */
+	private static class OmnipresentEffectEffect extends LumenAlvearyEffect {
+
+		private OmnipresentEffectEffect() {
+			super(CrystalElement.PURPLE, 1200);
+		}
+
+		@Override
+		public String getDescription() {
+			return "Omnipresence";
+		}
+
+		@Override
+		protected boolean isActive(TileEntityLumenAlveary te) {
+			return super.isActive(te) && te.getBeeGenome().getEffect() instanceof CrystalEffect;
 		}
 
 	}

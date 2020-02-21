@@ -54,8 +54,10 @@ import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Math.Simplex3DGenerator;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.KeySignature;
@@ -78,7 +80,15 @@ import forestry.api.genetics.IEffectData;
 
 public class EffectAlleles {
 
-	static final class CrystalEffect extends BasicGene implements IAlleleBeeEffect {
+	private static abstract class ChromaBeeEffect extends BasicGene implements IAlleleBeeEffect {
+
+		protected ChromaBeeEffect(String uid, String name) {
+			super(uid, name, EnumBeeChromosome.EFFECT);
+		}
+
+	}
+
+	static final class CrystalEffect extends ChromaBeeEffect {
 
 		public final CrystalElement color;
 		private long lastWorldTick = -1;
@@ -87,7 +97,7 @@ public class EffectAlleles {
 		private static boolean spawnBallLightnings = true;
 
 		public CrystalEffect(CrystalElement color) {
-			super("effect.cavecrystal."+color.name().toLowerCase(Locale.ENGLISH), color.displayName+" Aura", EnumBeeChromosome.EFFECT);
+			super("effect.cavecrystal."+color.name().toLowerCase(Locale.ENGLISH), color.displayName+" Aura");
 			this.color = color;
 		}
 
@@ -136,6 +146,11 @@ public class EffectAlleles {
 							break;
 					}
 					List<WeakReference<EntityLivingBase>> li = ChromaBeeHelpers.getEntityList(box, time, world, c, ce, s);
+					if (te.hasOmnipresence()) {
+						EntityPlayer owner = te.getPlacer();
+						if (owner != null && !ReikaPlayerAPI.isFake(owner))
+							li.add(new WeakReference(owner));
+					}
 					boolean boost = te != null && te.isColorBoosted(color);
 					int dur = boost ? 900 : 400;
 					for (WeakReference<EntityLivingBase> w : li) {
@@ -264,7 +279,7 @@ public class EffectAlleles {
 
 	}
 
-	static final class PolychromaEffect extends BasicGene implements IAlleleBeeEffect {
+	static final class PolychromaEffect extends ChromaBeeEffect {
 
 		private long lastWorldTick = -1;
 		private long lastWorldTickClient = -1;
@@ -309,7 +324,7 @@ public class EffectAlleles {
 		}
 
 		public PolychromaEffect() {
-			super("effect.polychroma", "Polychromatic Aura", EnumBeeChromosome.EFFECT);
+			super("effect.polychroma", "Polychromatic Aura");
 		}
 
 		@Override
@@ -472,10 +487,10 @@ public class EffectAlleles {
 
 	}
 
-	static final class RechargeEffect extends BasicGene implements IAlleleBeeEffect {
+	static final class RechargeEffect extends ChromaBeeEffect {
 
 		public RechargeEffect() {
-			super("effect.pylonrecharge", "Lumen Boost", EnumBeeChromosome.EFFECT);
+			super("effect.pylonrecharge", "Lumen Boost");
 		}
 
 		@Override
@@ -543,10 +558,10 @@ public class EffectAlleles {
 		}
 	}
 
-	static final class PrecursorEffect extends BasicGene implements IAlleleBeeEffect {
+	static final class PrecursorEffect extends ChromaBeeEffect {
 
 		public PrecursorEffect() {
-			super("effect.precursor", "Ancient Knowledge", EnumBeeChromosome.EFFECT);
+			super("effect.precursor", "Ancient Knowledge");
 		}
 
 		@Override
@@ -620,10 +635,10 @@ public class EffectAlleles {
 		}
 	}
 
-	static final class ArtefactEffect extends BasicGene implements IAlleleBeeEffect {
+	static final class ArtefactEffect extends ChromaBeeEffect {
 
 		public ArtefactEffect() {
-			super("effect.artefact", "Mysterious Aura", EnumBeeChromosome.EFFECT);
+			super("effect.artefact", "Mysterious Aura");
 		}
 
 		@Override
@@ -695,10 +710,12 @@ public class EffectAlleles {
 		}
 	}
 
-	static final class SparklifyEffect extends BasicGene implements IAlleleBeeEffect {
+	static final class SparklifyEffect extends ChromaBeeEffect {
+
+		private Simplex3DGenerator sparkleNoise;
 
 		public SparklifyEffect() {
-			super("effect.sparkle", "Glittering", EnumBeeChromosome.EFFECT);
+			super("effect.sparkle", "Glittering");
 		}
 
 		@Override
@@ -720,15 +737,28 @@ public class EffectAlleles {
 					int[] r = ChromaBeeHelpers.getEffectiveTerritory(ibh, c, ibg, world.getTotalWorldTime());
 					BlockBox box = BlockBox.block(c).expand(r[0], r[1], r[2]);
 					Coordinate loc = box.getRandomContainedCoordinate(world.rand);
-					Block b = loc.getBlock(world);
-					BlockTypes type = BlockSparkle.getByProxy(b);
-					if (type != null) {
-						loc.setBlock(world, ChromaBlocks.SPARKLE.getBlockInstance(), type.ordinal());
-						ReikaSoundHelper.playBreakSound(world, loc.xCoord, loc.yCoord, loc.zCoord, b);
+					if (this.canSparklify(world, loc)) {
+						Block b = loc.getBlock(world);
+						BlockTypes type = BlockSparkle.getByProxy(b);
+						if (type != null) {
+							loc.setBlock(world, ChromaBlocks.SPARKLE.getBlockInstance(), type.ordinal());
+							ReikaSoundHelper.playBreakSound(world, loc.xCoord, loc.yCoord, loc.zCoord, b);
+						}
 					}
 				}
 			}
 			return ied;
+		}
+
+		private boolean canSparklify(World world, Coordinate loc) {
+			if (sparkleNoise == null || sparkleNoise.seed != world.getSeed()) {
+				sparkleNoise = new Simplex3DGenerator(world.getSeed());
+				sparkleNoise.clampEdge = true;
+				sparkleNoise.setFrequency(0.125);
+				sparkleNoise.addOctave(1.75, 0.25, 0.65);
+				sparkleNoise.addOctave(3, 0.125, 0.2);
+			}
+			return sparkleNoise.getValue(loc.xCoord, loc.yCoord, loc.zCoord) > 0 && ReikaWorldHelper.isExposedToAir(world, loc.xCoord, loc.yCoord, loc.zCoord);
 		}
 
 		private boolean isValidBeeForEffect(IAlleleBeeSpecies bee) {

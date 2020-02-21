@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -80,21 +81,16 @@ public class ProductChecks {
 				return false;
 			if (!ProgressStage.ALLOY.isPlayerAtStage(world, id))
 				return false;
-			TileEntityAuraInfuser te = this.check(world, x, y, z, r2, r2);
+			TileEntityAuraInfuser te = this.check(world, x, y, z, r2, r2, ibh);
 			return te != null && te.hasStructure() && te.isOwnedByPlayer(id);
 		}
 
-		private TileEntityAuraInfuser check(World world, int x, int y, int z, int r, int vr) {
-			boolean last = false;
-			for (int i = -r; i <= r; i += 1) {
-				for (int k = -r; k <= r; k += 1) {
-					for (int h = -vr; h <= vr; h += 1) {
-						int dx = x+i;
-						int dy = y+h;
-						int dz = z+k;
-						if (ChromaTiles.getTile(world, dx, dy, dz) == ChromaTiles.INFUSER) {
-							return (TileEntityAuraInfuser)world.getTileEntity(dx, dy, dz);
-						}
+		private TileEntityAuraInfuser check(World world, int x, int y, int z, int r, int vr, IBeeHousing ibh) {
+			for (WorldLocation loc : TileEntityAuraInfuser.getCache()) {
+				if (loc.isWithinSquare(world, x, y, z, r, vr, r) || ChromaBeeHelpers.isLumenAlvearyInfSight(ibh)) {
+					if (ChromaTiles.getTile(world, loc.xCoord, loc.yCoord, loc.zCoord) == ChromaTiles.INFUSER) {
+						TileEntity te = loc.getTileEntity(world);
+						return te instanceof TileEntityAuraInfuser ? (TileEntityAuraInfuser)te : null;
 					}
 				}
 			}
@@ -123,6 +119,9 @@ public class ProductChecks {
 			TileEntityAuraPoint te = TileEntityAuraPoint.getPoint(ep);
 			if (te == null)
 				return false;
+			TileEntityLumenAlveary tel = ChromaBeeHelpers.getLumenAlvearyController(ibh, world, ibh.getCoordinates());
+			if (tel != null && tel.hasInfiniteAwareness())
+				return true;
 			int[] r = ChromaBeeHelpers.getSearchRange(ibg, ibh);
 			return Math.abs(te.xCoord-x) <= r[0] && Math.abs(te.zCoord-z) <= r[0] && Math.abs(te.yCoord-y) <= r[1];
 		}

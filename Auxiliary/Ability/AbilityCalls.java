@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary.Ability;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
@@ -1004,6 +1005,11 @@ public class AbilityCalls {
 			int x = MathHelper.floor_double(ep.posX);
 			int z = MathHelper.floor_double(ep.posZ);
 
+			long seed = ep.worldObj.getSeed() ^ ep.getUniqueID().hashCode();
+			Random rand = new Random(seed);
+			rand.nextBoolean();
+			rand.nextBoolean();
+
 			for (StructurePair s : ChunkProviderChroma.getStructures()) {
 				if (s.generator.isComplete()) {
 					ChunkCoordIntPair loc = s.generator.getEntryLocation();
@@ -1013,8 +1019,10 @@ public class AbilityCalls {
 					double dz = pz-z;
 					double dist = ReikaMathLibrary.py3d(dx, 0, dz);
 					double ang = ReikaDirectionHelper.getCompassHeading(dx, dz);
-					double factor = Math.pow(dist, 1.6);
-					factor = factor/20000D;
+					double pow = 1.45+0.3+rand.nextDouble();//1.6
+					double factor = Math.pow(dist, pow);
+					double fac = 18000+2000*rand.nextDouble();//20000D;
+					factor = factor/fac;
 					int delay = Math.max(1, (int)factor);
 					//ReikaJavaLibrary.pConsole(s.color+": DD="+dist+", ang="+ang+", factor="+factor+", delay="+delay);
 					ScheduledSoundEvent evt = new DimensionPingEvent(s.color, ep, dist, ang);

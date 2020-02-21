@@ -170,6 +170,7 @@ import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityWirelessSource;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityAuraInfuser;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs.GlowingTreeGen;
@@ -579,6 +580,7 @@ public class ChromaticEventManager {
 		TileEntityExplosionShield.clearCache();
 		TileEntityWirelessSource.clearCache();
 		TileEntityVoidMonsterTrap.clearCache();
+		TileEntityAuraInfuser.clearCache();
 		BlockFakeSky.clearCache();
 		LoreManager.instance.clearOnLogout();
 		WarpNetwork.instance.clear();
@@ -595,6 +597,7 @@ public class ChromaticEventManager {
 		TileEntityMultiBuilder.clearCache();
 		TileEntityExplosionShield.clearCache();
 		TileEntityVoidMonsterTrap.clearCache();
+		TileEntityAuraInfuser.clearCache();
 		BlockFakeSky.clearCache();
 		LoreManager.instance.clearOnLogout();
 		WarpNetwork.instance.clear();
@@ -2285,7 +2288,7 @@ public class ChromaticEventManager {
 				int x = event.x;
 				int y = event.y;
 				int z = event.z;
-				if (sap.canGrowAt(world, x, y, z)) {
+				if (sap.canGrowLargeRainbowTreeAt(world, x, y, z)) {
 					sap.func_149878_d(world, x, y, z, rand);
 					event.setResult(Event.Result.ALLOW);
 				}

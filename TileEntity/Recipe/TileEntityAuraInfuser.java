@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
@@ -48,8 +49,11 @@ import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
+import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -61,7 +65,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 @Strippable(value={"buildcraft.api.transport.IPipeConnection"})
 public abstract class TileEntityAuraInfuser extends InventoriedChromaticBase implements ItemOnRightClick, ItemCollision, OwnedTile, InertIInv,
-IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
+IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable, LocationCached {
 
 	private InertItem item;
 
@@ -79,6 +83,8 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 
 	protected final HashSet<Coordinate> focusCrystalSpots = new HashSet();
 	private final ArrayList<Coordinate> chromaLocations = new ArrayList();
+
+	private static final ThreadSafeSet<WorldLocation> cache = new ThreadSafeSet();
 
 	static {
 		required.addTag(CrystalElement.PURPLE, 500);
@@ -115,6 +121,7 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		this.validateStructure();
+		cache.add(new WorldLocation(this));
 	}
 
 	public final void validateStructure() {
@@ -499,6 +506,18 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
 		this.readOwnerData(is);
+	}
+
+	public final void breakBlock() {
+		cache.remove(new WorldLocation(this));
+	}
+
+	public static void clearCache() {
+		cache.clear();
+	}
+
+	public static Set<WorldLocation> getCache() {
+		return Collections.unmodifiableSet(cache);
 	}
 
 }
