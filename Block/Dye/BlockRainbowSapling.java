@@ -80,7 +80,6 @@ public class BlockRainbowSapling extends BlockSapling {
 			return false;
 		if (!ReikaItemHelper.matchStacks(is, ReikaDyeHelper.WHITE.getStackOf()))
 			return false;
-		int color = world.getBlockMetadata(x, y, z);
 		if (this.canGrowLargeRainbowTreeAt(world, x, y, z))
 			this.growLargeTree(world, x, y, z, r);
 		else

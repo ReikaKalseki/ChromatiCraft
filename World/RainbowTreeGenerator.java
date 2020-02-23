@@ -20,6 +20,7 @@ import net.minecraftforge.common.MinecraftForge;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Event.RainbowTreeEvent;
 import Reika.ChromatiCraft.Auxiliary.Structure.RainbowTreeBlueprint;
+import Reika.ChromatiCraft.Block.Dye.BlockRainbowLeaf.LeafMetas;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -200,7 +201,7 @@ public class RainbowTreeGenerator {
 							int dx = x+i;
 							int dz = z+k;
 							if (world.getBlock(dx, dy, dz).canBeReplacedByLeaves(world, dx, dy, dz))
-								world.setBlock(dx, dy, dz, id);
+								world.setBlock(dx, dy, dz, id, LeafMetas.SMALL.ordinal(), 3);
 						}
 					}
 				}
@@ -212,12 +213,12 @@ public class RainbowTreeGenerator {
 					int dx = x+i;
 					int dz = z+k;
 					if (world.getBlock(dx, y+h, dz).canBeReplacedByLeaves(world, dx, y+h, dz))
-						world.setBlock(dx, y+h, dz, id);
+						world.setBlock(dx, y+h, dz, id, LeafMetas.SMALL.ordinal(), 3);
 				}
 			}
 		}
 		if (world.getBlock(x, y+h+1, z).canBeReplacedByLeaves(world, x, y+h+1, z))
-			world.setBlock(x, y+h+1, z, id);
+			world.setBlock(x, y+h+1, z, id, LeafMetas.SMALL.ordinal(), 3);
 		return true;
 	}
 

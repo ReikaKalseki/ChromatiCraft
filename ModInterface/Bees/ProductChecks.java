@@ -20,6 +20,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.Block.Dye.BlockRainbowLeaf.LeafMetas;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -378,7 +379,12 @@ public class ProductChecks {
 		private final AreaBlockCheck check;
 
 		RainbowTreeCheck() {
-			check = new AreaBlockCheck(new BlockKey(ChromaBlocks.RAINBOWLEAF.getBlockInstance(), 0), 3, 2);
+			MultiKey mk = new MultiKey();
+			for (LeafMetas lm : LeafMetas.list) {
+				if (lm != LeafMetas.PLACED)
+					mk.add(new BlockKey(ChromaBlocks.RAINBOWLEAF.getBlockInstance(), lm.ordinal()));
+			}
+			check = new AreaBlockCheck(mk, 3, 2);
 		}
 
 		@Override

@@ -1030,7 +1030,7 @@ public class ChromatiPackets implements PacketHandler {
 					VoidMonsterDestructionRitual.readSync(NBT);
 					break;
 				case ALVEARYEFFECT:
-					((TileEntityLumenAlveary)tile).setEffectSelectionState(data[0], data[1] > 0);
+					((TileEntityLumenAlveary)tile).setEffectSelectionState(stringdata, data[0] > 0);
 					break;
 				case SUPERBUILD:
 					AbilityCalls.doSuperbuildFX(world, x, y, z, ForgeDirection.VALID_DIRECTIONS[data[0]]);

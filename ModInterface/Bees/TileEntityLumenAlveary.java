@@ -16,7 +16,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 
 import com.google.common.base.Strings;
 import com.mojang.authlib.GameProfile;
@@ -33,7 +35,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.Linkable;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.ConditionalProductBee;
@@ -48,6 +49,7 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Interfaces.TileEntity.CopyableSettings;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
@@ -99,9 +101,9 @@ import thaumcraft.api.visnet.VisNetHandler;
 @Strippable(value={"forestry.api.multiblock.IAlvearyComponent", "forestry.api.multiblock.IAlvearyComponent$BeeModifier",
 		"forestry.api.multiblock.IAlvearyComponent$BeeListener", "forestry.api.apiculture.IBeeModifier", "forestry.api.apiculture.IBeeListener"})
 public class TileEntityLumenAlveary extends TileEntityRelayPowered implements GuiController, IAlvearyComponent, BeeModifier, BeeListener,
-IBeeModifier, IBeeListener, Linkable {
+IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 
-	private static final ArrayList<AlvearyEffect> effectSet = new ArrayList();
+	private static final HashMap<String, AlvearyEffect> effectSet = new HashMap();
 	private static final HashSet<AlvearyEffect> continualSet = new HashSet();
 	private static final HashSet<AlvearyEffect> clientSet = new HashSet();
 	private static final GeneticRepairEffect geneRepair2;
@@ -164,7 +166,7 @@ IBeeModifier, IBeeListener, Linkable {
 
 	private int lightningTicks;
 	private String movePrincess;
-	private final HashSet<Integer> selectedEffects = new HashSet();
+	private final HashSet<String> selectedEffects = new HashSet();
 	private final Collection<AlvearyEffect> activeEffects = new HashSet();
 	private EfficientFlowerCache flowerCache;
 
@@ -239,7 +241,7 @@ IBeeModifier, IBeeListener, Linkable {
 
 	public static String getEffectsAsString() {
 		StringBuilder sb = new StringBuilder();
-		ArrayList<AlvearyEffect> li = new ArrayList(effectSet);
+		ArrayList<AlvearyEffect> li = new ArrayList(effectSet.values());
 		Collections.sort(li, effectSorter);
 		for (AlvearyEffect ae : li) {
 			sb.append(ae.getDescription());
@@ -269,10 +271,7 @@ IBeeModifier, IBeeListener, Linkable {
 			logic = MultiblockManager.logicFactory.createAlvearyLogic();
 		}
 
-		for (AlvearyEffect ae : effectSet) {
-			if (ae.isOnByDefault())
-				selectedEffects.add(ae.ID);
-		}
+		this.resetSelectedEffects();
 	}
 
 	@Override
@@ -353,7 +352,7 @@ IBeeModifier, IBeeListener, Linkable {
 						this.replaceFlowerCacher();
 					activeEffects.clear();
 					if (this.canQueenWork()) {
-						for (AlvearyEffect ae : effectSet) {
+						for (AlvearyEffect ae : effectSet.values()) {
 							if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 								if (ae.tickRate() == 1 || this.getTicksExisted()%ae.tickRate() == 0)
 									if (ae.tick(this))
@@ -432,13 +431,13 @@ IBeeModifier, IBeeListener, Linkable {
 
 	public Collection<AlvearyEffect> getSelectedEffects() {
 		HashSet<AlvearyEffect> set = new HashSet();
-		for (int id : selectedEffects) {
+		for (String id : selectedEffects) {
 			set.add(AlvearyEffect.getEffectByID(id));
 		}
 		return set;
 	}
 
-	public void setEffectSelectionState(int id, boolean active) {
+	public void setEffectSelectionState(String id, boolean active) {
 		if (active) {
 			selectedEffects.add(id);
 		}
@@ -485,7 +484,7 @@ IBeeModifier, IBeeListener, Linkable {
 		ElementTagCompound tag = new ElementTagCompound();
 		if (!this.isAlvearyComplete())
 			return tag;
-		for (AlvearyEffect ae : effectSet) {
+		for (AlvearyEffect ae : effectSet.values()) {
 			if (ae instanceof LumenAlvearyEffect) {
 				LumenAlvearyEffect lae = (LumenAlvearyEffect)ae;
 				tag.addValueToColor(lae.color, lae.requiredEnergy*10);
@@ -572,7 +571,7 @@ IBeeModifier, IBeeListener, Linkable {
 	@Override
 	@ModDependent(ModList.FORESTRY)
 	public void wearOutEquipment(int amount) {
-		for (AlvearyEffect ae : effectSet) {
+		for (AlvearyEffect ae : effectSet.values()) {
 			ae.consumeEnergy(this, amount);
 			ae.onProductionTick(this);
 		}
@@ -644,7 +643,7 @@ IBeeModifier, IBeeListener, Linkable {
 	@ModDependent(ModList.FORESTRY)
 	public float getTerritoryModifier(IBeeGenome genome, float current) {
 		float f = 1;
-		for (AlvearyEffect ae : effectSet) {
+		for (AlvearyEffect ae : effectSet.values()) {
 			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				f *= ae.territoryFactor(this);
 			}
@@ -656,7 +655,7 @@ IBeeModifier, IBeeListener, Linkable {
 	@ModDependent(ModList.FORESTRY)
 	public float getMutationModifier(IBeeGenome genome, IBeeGenome mate, float current) {
 		float f = 1;
-		for (AlvearyEffect ae : effectSet) {
+		for (AlvearyEffect ae : effectSet.values()) {
 			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				f *= ae.mutationFactor(this);
 			}
@@ -668,7 +667,7 @@ IBeeModifier, IBeeListener, Linkable {
 	@ModDependent(ModList.FORESTRY)
 	public float getLifespanModifier(IBeeGenome genome, IBeeGenome mate, float current) {
 		float f = 1;
-		for (AlvearyEffect ae : effectSet) {
+		for (AlvearyEffect ae : effectSet.values()) {
 			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				f *= ae.lifespanFactor(this);
 			}
@@ -680,7 +679,7 @@ IBeeModifier, IBeeListener, Linkable {
 	@ModDependent(ModList.FORESTRY)
 	public float getProductionModifier(IBeeGenome genome, float current) {
 		float f = 1;
-		for (AlvearyEffect ae : effectSet) {
+		for (AlvearyEffect ae : effectSet.values()) {
 			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				f *= ae.productionFactor(this);
 			}
@@ -692,7 +691,7 @@ IBeeModifier, IBeeListener, Linkable {
 	@ModDependent(ModList.FORESTRY)
 	public float getFloweringModifier(IBeeGenome genome, float current) {
 		float f = 1;
-		for (AlvearyEffect ae : effectSet) {
+		for (AlvearyEffect ae : effectSet.values()) {
 			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				f *= ae.pollinationFactor(this);
 			}
@@ -704,7 +703,7 @@ IBeeModifier, IBeeListener, Linkable {
 	@ModDependent(ModList.FORESTRY)
 	public float getGeneticDecay(IBeeGenome genome, float current) {
 		float f = 1;
-		for (AlvearyEffect ae : effectSet) {
+		for (AlvearyEffect ae : effectSet.values()) {
 			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				f *= ae.decayFactor(this);
 			}
@@ -715,7 +714,7 @@ IBeeModifier, IBeeListener, Linkable {
 	@Override
 	@ModDependent(ModList.FORESTRY)
 	public boolean isSealed() {
-		for (AlvearyEffect ae : effectSet) {
+		for (AlvearyEffect ae : effectSet.values()) {
 			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				if (ae.isSealed(this))
 					return true;
@@ -727,7 +726,7 @@ IBeeModifier, IBeeListener, Linkable {
 	@Override
 	@ModDependent(ModList.FORESTRY)
 	public boolean isSelfLighted() {
-		for (AlvearyEffect ae : effectSet) {
+		for (AlvearyEffect ae : effectSet.values()) {
 			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				if (ae.isSelfLit(this))
 					return true;
@@ -739,7 +738,7 @@ IBeeModifier, IBeeListener, Linkable {
 	@Override
 	@ModDependent(ModList.FORESTRY)
 	public boolean isSunlightSimulated() {
-		for (AlvearyEffect ae : effectSet) {
+		for (AlvearyEffect ae : effectSet.values()) {
 			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				if (ae.isSkySimulated(this))
 					return true;
@@ -750,7 +749,7 @@ IBeeModifier, IBeeListener, Linkable {
 
 	@Override
 	public boolean isHellish() {
-		for (AlvearyEffect ae : effectSet) {
+		for (AlvearyEffect ae : effectSet.values()) {
 			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				if (ae.isHellish(this))
 					return true;
@@ -870,8 +869,8 @@ IBeeModifier, IBeeListener, Linkable {
 		if (ModList.FORESTRY.isLoaded())
 			this.getFlowerCache().readFromNBT(data);
 
-		if (data.hasKey("effects"))
-			ReikaNBTHelper.readCollectionFromNBT(selectedEffects, data, "effects");
+		if (data.hasKey("effectsel"))
+			ReikaNBTHelper.readCollectionFromNBT(selectedEffects, data, "effectsel");
 	}
 
 	@Override
@@ -889,7 +888,7 @@ IBeeModifier, IBeeListener, Linkable {
 		if (ModList.FORESTRY.isLoaded())
 			this.getFlowerCache().writeToNBT(data);
 
-		ReikaNBTHelper.writeCollectionToNBT(selectedEffects, data, "effects");
+		ReikaNBTHelper.writeCollectionToNBT(selectedEffects, data, "effectsel");
 	}
 
 	@Override
@@ -964,44 +963,37 @@ IBeeModifier, IBeeListener, Linkable {
 	}
 
 	public static final Collection<AlvearyEffect> getEffectSet() {
-		return Collections.unmodifiableCollection(effectSet);
+		return Collections.unmodifiableCollection(effectSet.values());
 	}
 
 	@Override
-	public void breakBlock() {
-
-	}
-
-	@Override
-	public void reset() {
-
-	}
-
-	@Override
-	public void resetOther() {
-
-	}
-
-	@Override
-	public boolean connectTo(World world, int x, int y, int z) {
-		ChromaTiles te = ChromaTiles.getTile(world, x, y, z);
-		return te == this.getTile() && this.copySettingsFrom((TileEntityLumenAlveary)world.getTileEntity(x, y, z));
-	}
-
-	private boolean copySettingsFrom(TileEntityLumenAlveary te) {
-		te.selectedEffects.clear();
-		te.selectedEffects.addAll(selectedEffects);
+	public boolean copySettingsFrom(TileEntityLumenAlveary te) {
+		selectedEffects.clear();
+		selectedEffects.addAll(te.selectedEffects);
 		this.syncAllData(true);
 		return true;
 	}
 
+	public void clearSelectedEffects() {
+		selectedEffects.clear();
+	}
+
+	public void resetSelectedEffects() {
+		this.clearSelectedEffects();
+
+		for (AlvearyEffect ae : effectSet.values()) {
+			if (ae.isOnByDefault())
+				selectedEffects.add(ae.ID);
+		}
+	}
+
 	public static abstract class AlvearyEffect {
 
-		public final int ID;
+		public final String ID;
 
-		protected AlvearyEffect() {
-			ID = effectSet.size();
-			effectSet.add(this);
+		protected AlvearyEffect(String id) {
+			ID = id;
+			effectSet.put(ID, this);
 			if (this.worksWhenBeesDoNot()) {
 				continualSet.add(this);
 			}
@@ -1010,7 +1002,7 @@ IBeeModifier, IBeeListener, Linkable {
 			}
 		}
 
-		public static AlvearyEffect getEffectByID(int id) {
+		public static AlvearyEffect getEffectByID(String id) {
 			return effectSet.get(id);
 		}
 
@@ -1092,6 +1084,10 @@ IBeeModifier, IBeeListener, Linkable {
 
 	public static abstract class PoweredAlvearyEffect extends AlvearyEffect {
 
+		protected PoweredAlvearyEffect(String id) {
+			super(id);
+		}
+
 		public abstract String getResource();
 
 		public abstract int getCost();
@@ -1103,7 +1099,8 @@ IBeeModifier, IBeeListener, Linkable {
 		public final Aspect aspect;
 		public final int requiredVis;
 
-		protected VisAlvearyEffect(Aspect a, int amt) {
+		protected VisAlvearyEffect(String id, Aspect a, int amt) {
+			super(id);
 			aspect = a;
 			requiredVis = amt;
 		}
@@ -1144,7 +1141,7 @@ IBeeModifier, IBeeListener, Linkable {
 	private static class ProductionBoostEffect extends VisAlvearyEffect {
 
 		private ProductionBoostEffect() {
-			super(Aspect.ORDER, 4);
+			super("visprodboost", Aspect.ORDER, 4);
 		}
 
 		@Override
@@ -1167,7 +1164,7 @@ IBeeModifier, IBeeListener, Linkable {
 	private static class NoProductionEffect extends VisAlvearyEffect {
 
 		private NoProductionEffect() {
-			super(Aspect.ENTROPY, 1);
+			super("visprodstop", Aspect.ENTROPY, 1);
 		}
 
 		@Override
@@ -1185,7 +1182,7 @@ IBeeModifier, IBeeListener, Linkable {
 	private static class EnhancedEffectEffect extends VisAlvearyEffect {
 
 		private EnhancedEffectEffect() {
-			super(Aspect.AIR, 20);
+			super("viseffectboost", Aspect.AIR, 20);
 		}
 
 		@Override
@@ -1207,7 +1204,7 @@ IBeeModifier, IBeeListener, Linkable {
 	private static class MutationBoostEffect extends VisAlvearyEffect {
 
 		private MutationBoostEffect() {
-			super(Aspect.ENTROPY, 4);
+			super("vismutationboost", Aspect.ENTROPY, 4);
 		}
 
 		@Override
@@ -1225,7 +1222,7 @@ IBeeModifier, IBeeListener, Linkable {
 	private static class FloweringBoostEffect extends VisAlvearyEffect {
 
 		private FloweringBoostEffect() {
-			super(Aspect.EARTH, 2);
+			super("visflowerboost", Aspect.EARTH, 2);
 		}
 
 		@Override
@@ -1243,7 +1240,7 @@ IBeeModifier, IBeeListener, Linkable {
 	private static class RainBoostEffect extends VisAlvearyEffect {
 
 		private RainBoostEffect() {
-			super(Aspect.WATER, 1);
+			super("visrainboost", Aspect.WATER, 1);
 		}
 
 		@Override
@@ -1263,8 +1260,8 @@ IBeeModifier, IBeeListener, Linkable {
 		public final CrystalElement color;
 		public final int requiredEnergy;
 
-		protected LumenAlvearyEffect(CrystalElement e, int amt) {
-			super();
+		protected LumenAlvearyEffect(String id, CrystalElement e, int amt) {
+			super(id);
 			color = e;
 			requiredEnergy = amt;
 		}
@@ -1307,7 +1304,7 @@ IBeeModifier, IBeeListener, Linkable {
 
 
 		private AutomationEffect() {
-			super(CrystalElement.GREEN, 100);
+			super("automate", CrystalElement.GREEN, 100);
 		}
 
 		@Override
@@ -1336,7 +1333,7 @@ IBeeModifier, IBeeListener, Linkable {
 		private final int tickRate;
 
 		private AccelerationEffect(int ticks, int cost) {
-			super(CrystalElement.LIGHTBLUE, cost);
+			super("accel_"+ticks, CrystalElement.LIGHTBLUE, cost);
 			tickRate = ticks;
 		}
 
@@ -1390,7 +1387,7 @@ IBeeModifier, IBeeListener, Linkable {
 	private static class LightningProductionEffect extends LumenAlvearyEffect {
 
 		private LightningProductionEffect() {
-			super(CrystalElement.YELLOW, 100);
+			super("lightning", CrystalElement.YELLOW, 100);
 		}
 
 		@Override
@@ -1422,7 +1419,7 @@ IBeeModifier, IBeeListener, Linkable {
 		private static final double mateRewriteChance = 0.01;
 
 		private HistoryRewriteEffect() {
-			super(CrystalElement.GRAY, 40);
+			super("historyrewrite", CrystalElement.GRAY, 40);
 		}
 
 		@Override
@@ -1452,7 +1449,7 @@ IBeeModifier, IBeeListener, Linkable {
 		private static final double geneBalancingChance = 0.005;
 
 		private GeneticBalancingEffect() {
-			super(CrystalElement.WHITE, 80);
+			super("genebalance", CrystalElement.WHITE, 80);
 		}
 
 		@Override
@@ -1503,7 +1500,7 @@ IBeeModifier, IBeeListener, Linkable {
 	private static class GeneticStabilityEffect extends LumenAlvearyEffect {
 
 		private GeneticStabilityEffect() {
-			super(CrystalElement.WHITE, 20);
+			super("genestable", CrystalElement.WHITE, 20);
 		}
 
 		@Override
@@ -1531,7 +1528,7 @@ IBeeModifier, IBeeListener, Linkable {
 	private static class GeneticImmutabilityEffect extends LumenAlvearyEffect {
 
 		private GeneticImmutabilityEffect() {
-			super(CrystalElement.WHITE, 600);
+			super("genelock", CrystalElement.WHITE, 600);
 		}
 
 		@Override
@@ -1554,7 +1551,7 @@ IBeeModifier, IBeeListener, Linkable {
 	private static class GeneticFluxEffect extends LumenAlvearyEffect {
 
 		private GeneticFluxEffect() {
-			super(CrystalElement.BLACK, 60);
+			super("geneflux", CrystalElement.BLACK, 60);
 		}
 
 		@Override
@@ -1572,7 +1569,7 @@ IBeeModifier, IBeeListener, Linkable {
 	private static class ExplorationEffect extends LumenAlvearyEffect {
 
 		private ExplorationEffect() {
-			super(CrystalElement.LIME, 120);
+			super("explore", CrystalElement.LIME, 120);
 		}
 
 		@Override
@@ -1592,7 +1589,7 @@ IBeeModifier, IBeeListener, Linkable {
 		private static final double geneImprovementChance = 0.002;
 
 		private GeneticImprovementEffect() {
-			super(CrystalElement.BLACK, 120);
+			super("geneboost", CrystalElement.BLACK, 120);
 		}
 
 		@Override
@@ -1688,7 +1685,7 @@ IBeeModifier, IBeeListener, Linkable {
 	private static class TemperatureMatchingEffect extends LumenAlvearyEffect {
 
 		private TemperatureMatchingEffect() {
-			super(CrystalElement.ORANGE, 80);
+			super("tempmatch", CrystalElement.ORANGE, 80);
 		}
 
 		@Override
@@ -1752,7 +1749,7 @@ IBeeModifier, IBeeListener, Linkable {
 	private static class HumidityMatchingEffect extends LumenAlvearyEffect {
 
 		private HumidityMatchingEffect() {
-			super(CrystalElement.CYAN, 80);
+			super("humidmatch", CrystalElement.CYAN, 80);
 		}
 
 		@Override
@@ -1812,7 +1809,7 @@ IBeeModifier, IBeeListener, Linkable {
 		private final int tier;
 
 		private GeneticRepairEffect(int tier) {
-			super(CrystalElement.MAGENTA, 100*ReikaMathLibrary.intpow2(24, tier-1));
+			super("repair_"+tier, CrystalElement.MAGENTA, 100*ReikaMathLibrary.intpow2(24, tier-1));
 			this.tier = tier;
 		}
 
@@ -1873,7 +1870,7 @@ IBeeModifier, IBeeListener, Linkable {
 	private static class EternalEffect extends LumenAlvearyEffect {
 
 		private EternalEffect() {
-			super(CrystalElement.RED, 600);
+			super("inflife", CrystalElement.RED, 600);
 		}
 
 		@Override
@@ -1906,7 +1903,7 @@ IBeeModifier, IBeeListener, Linkable {
 	private static class PlayerRestrictionEffect extends LumenAlvearyEffect {
 
 		private PlayerRestrictionEffect() {
-			super(CrystalElement.LIGHTGRAY, 20);
+			super("playeronly", CrystalElement.LIGHTGRAY, 20);
 		}
 
 		@Override
@@ -1921,7 +1918,7 @@ IBeeModifier, IBeeListener, Linkable {
 		private final CrystalElement color;
 
 		private ElementalBoostEffect(CrystalElement e) {
-			super(e, 240);
+			super("elem_"+e.name().toLowerCase(Locale.ENGLISH)+"_boost", e, 240);
 			color = e;
 		}
 
@@ -1940,7 +1937,7 @@ IBeeModifier, IBeeListener, Linkable {
 	private static class InfiniteSightEffect extends LumenAlvearyEffect {
 
 		private InfiniteSightEffect() {
-			super(CrystalElement.BLUE, 600);
+			super("infsight", CrystalElement.BLUE, 600);
 		}
 
 		@Override
@@ -1968,7 +1965,7 @@ IBeeModifier, IBeeListener, Linkable {
 
 		@Override
 		protected boolean isActive(TileEntityLumenAlveary te) {
-			return super.isActive(te) && te.getBeeGenome().getEffect() instanceof CrystalEffect;
+			return super.isActive(te) && te.hasQueen() && te.getBeeGenome().getEffect() instanceof CrystalEffect;
 		}
 
 	}
@@ -1976,7 +1973,7 @@ IBeeModifier, IBeeListener, Linkable {
 	private static class OmnipresentEffectEffect extends LumenAlvearyEffect {
 
 		private OmnipresentEffectEffect() {
-			super(CrystalElement.PURPLE, 1200);
+			super("omnipresent", CrystalElement.PURPLE, 1200);
 		}
 
 		@Override
@@ -1986,7 +1983,7 @@ IBeeModifier, IBeeListener, Linkable {
 
 		@Override
 		protected boolean isActive(TileEntityLumenAlveary te) {
-			return super.isActive(te) && te.getBeeGenome().getEffect() instanceof CrystalEffect;
+			return super.isActive(te) && te.hasQueen() && te.getBeeGenome().getEffect() instanceof CrystalEffect;
 		}
 
 	}

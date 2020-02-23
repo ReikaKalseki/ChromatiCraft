@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.ModInterface.Bees;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -146,17 +147,22 @@ public class EffectAlleles {
 							break;
 					}
 					List<WeakReference<EntityLivingBase>> li = ChromaBeeHelpers.getEntityList(box, time, world, c, ce, s);
-					if (te.hasOmnipresence()) {
+					if (te != null && te.hasOmnipresence()) {
 						EntityPlayer owner = te.getPlacer();
 						if (owner != null && !ReikaPlayerAPI.isFake(owner))
 							li.add(new WeakReference(owner));
 					}
 					boolean boost = te != null && te.isColorBoosted(color);
 					int dur = boost ? 900 : 400;
+					HashSet<Integer> ticked = new HashSet();
 					for (WeakReference<EntityLivingBase> w : li) {
 						EntityLivingBase e = w.get();
-						if (e != null)
+						if (e != null) {
+							if (ticked.contains(e.getEntityId()))
+								continue;
+							ticked.add(e.getEntityId());
 							CrystalPotionController.applyEffectFromColor(dur, boost ? 1 : 0, e, color, CrystalBees.rand.nextInt(240) == 0 && e.getDistanceSq(c.posX+0.5, c.posY+0.5, c.posZ+0.5) < 256);
+						}
 					}
 				}
 				if (spawnBallLightnings && lastWorldTick != time && CrystalBees.rand.nextInt(8000) == 0) {

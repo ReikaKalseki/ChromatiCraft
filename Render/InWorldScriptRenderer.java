@@ -204,8 +204,8 @@ public class InWorldScriptRenderer {
 			GL11.glScaled(sc, sc, sc);
 			int i = 0;
 			LorePanel p = li.get(r);
-			int w = 4*p.size.maxLength*2;
-			double x = 4*(p.size.maxLength+1.5)-4;
+			int w = 4*p.size.maxLength*2-24;
+			double x = 4*(p.size.maxLength+1.5)-16;
 			for (int k = 0; k < p.lineCount; k++) {
 				LoreLine l = p.getLine(k);
 				double tick = -i+0.125*(te.getTicksExisted()+par8);

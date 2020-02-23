@@ -1019,12 +1019,12 @@ public class AbilityCalls {
 					double dz = pz-z;
 					double dist = ReikaMathLibrary.py3d(dx, 0, dz);
 					double ang = ReikaDirectionHelper.getCompassHeading(dx, dz);
-					double pow = 1.45+0.3+rand.nextDouble();//1.6
+					double pow = 1.45+0.3*rand.nextDouble();//1.6
 					double factor = Math.pow(dist, pow);
 					double fac = 18000+2000*rand.nextDouble();//20000D;
 					factor = factor/fac;
 					int delay = Math.max(1, (int)factor);
-					//ReikaJavaLibrary.pConsole(s.color+": DD="+dist+", ang="+ang+", factor="+factor+", delay="+delay);
+					//ReikaJavaLibrary.pConsole(s.color+": DD="+dist+", ang="+ang+", pow="+pow+", fac="+fac+", factor="+factor+", delay="+delay);
 					ScheduledSoundEvent evt = new DimensionPingEvent(s.color, ep, dist, ang);
 					TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(evt), delay);
 				}

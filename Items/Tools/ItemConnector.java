@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Interfaces.TileEntity.CopyableSettings;
 import Reika.DragonAPI.Interfaces.TileEntity.NBTCopyable;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -52,6 +53,9 @@ public class ItemConnector extends ItemChromaTool {
 		}
 		else if (te instanceof Linkable) {
 			return this.tryConnection((Linkable)te, world, x, y, z, is, ep);
+		}
+		else if (te instanceof CopyableSettings) {
+			return this.tryCopySettings((CopyableSettings)te, world, x, y, z, is, ep);
 		}
 		else if (te instanceof NBTCopyable) {
 			if (is.stackTagCompound != null && is.stackTagCompound.hasKey("NBT_transfer")) {
@@ -333,6 +337,78 @@ public class ItemConnector extends ItemChromaTool {
 		return false;
 	}
 
+	private <T> boolean tryCopySettings(CopyableSettings<T> te, World world, int x, int y, int z, ItemStack is, EntityPlayer ep) {
+		if (is.stackTagCompound == null) {
+			is.stackTagCompound = new NBTTagCompound();
+			is.stackTagCompound.setInteger("x1", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("y1", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("z1", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("x2", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("y2", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("z2", Integer.MIN_VALUE);
+		}
+		if (is.stackTagCompound.getInteger("x1") == Integer.MIN_VALUE) {
+			is.stackTagCompound.setInteger("x1", x);
+			is.stackTagCompound.setInteger("y1", y);
+			is.stackTagCompound.setInteger("z1", z);
+			is.stackTagCompound.setInteger("w1", world.provider.dimensionId);
+		}
+		else {
+			is.stackTagCompound.setInteger("x2", x);
+			is.stackTagCompound.setInteger("y2", y);
+			is.stackTagCompound.setInteger("z2", z);
+			is.stackTagCompound.setInteger("w2", world.provider.dimensionId);
+		}
+		int ex = is.stackTagCompound.getInteger("x1");
+		int ey = is.stackTagCompound.getInteger("y1");
+		int ez = is.stackTagCompound.getInteger("z1");
+		int rx = is.stackTagCompound.getInteger("x2");
+		int ry = is.stackTagCompound.getInteger("y2");
+		int rz = is.stackTagCompound.getInteger("z2");
+		World w1 = DimensionManager.getWorld(is.stackTagCompound.getInteger("w1"));
+		World w2 = DimensionManager.getWorld(is.stackTagCompound.getInteger("w2"));
+
+		int dl = Math.abs(ex-rx+ey-ry+ez-rz)-1;
+
+		//ReikaJavaLibrary.pConsole(is.stackTagCompound);
+		//ReikaJavaLibrary.pConsole(dl);
+		//if (is.stackSize >= dl || ep.capabilities.isCreativeMode) {
+		if (rx != Integer.MIN_VALUE && ry != Integer.MIN_VALUE && rz != Integer.MIN_VALUE) {
+			if (ex != Integer.MIN_VALUE && ey != Integer.MIN_VALUE && ez != Integer.MIN_VALUE) {
+				CopyableSettings<T> em = (CopyableSettings<T>)w1.getTileEntity(ex, ey, ez);
+				CopyableSettings<T> rec = (CopyableSettings<T>)w2.getTileEntity(rx, ry, rz);
+
+				//ReikaJavaLibrary.pConsole(rec+"\n"+em);
+				if (em == null) {
+					ReikaChatHelper.writeString("Tile missing at "+ex+", "+ey+", "+ez);
+					is.stackTagCompound = null;
+					return false;
+				}
+				if (rec == null) {
+					ReikaChatHelper.writeString("Tile missing at "+rx+", "+ry+", "+rz);
+					is.stackTagCompound = null;
+					return false;
+				}
+				else if (rec == em) {
+					ReikaChatHelper.writeString("Cannot copy a tile to itself!");
+					is.stackTagCompound = null;
+					return false;
+				}
+				//ReikaJavaLibrary.pConsole(src+":"+tg, Side.SERVER);
+				if (rec.copySettingsFrom((T)em)) {
+					//ReikaJavaLibrary.pConsole("connected", Side.SERVER);
+					ReikaChatHelper.sendChatToPlayer(ep, "Copied settings from "+em+" to "+rec);
+				}
+				else {
+					ReikaChatHelper.sendChatToPlayer(ep, "Copy Failed.");
+				}
+				is.stackTagCompound = null;
+			}
+		}
+		//}
+		return false;
+	}
+
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
 		is.stackTagCompound = null;
@@ -356,6 +432,11 @@ public class ItemConnector extends ItemChromaTool {
 			//if (x2 != Integer.MIN_VALUE)
 			//	li.add(String.format("Anchor 2: %d, %d, %d in DIM%d", x2, y2, z2, w2));
 		}
+	}
+
+	private static enum CopyMode {
+		COPY(),
+		BROADCAST();
 	}
 
 }

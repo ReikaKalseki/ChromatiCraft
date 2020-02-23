@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -82,7 +82,7 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public final int getRenderColor(int dmg) {
-		if (dmg == 3) {
+		if (LeafMetas.list[dmg].hasTimeColor()) {
 			return Color.HSBtoRGB((System.currentTimeMillis()%7200)/7200F, 0.7F, 1F);
 		}
 		//return Color.HSBtoRGB(((System.currentTimeMillis()/60)%360)/360F, 0.8F, 1);
@@ -98,7 +98,7 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 	public final int colorMultiplier(IBlockAccess iba, int x, int y, int z) {
 		int sc = 32;
 		int meta = iba.getBlockMetadata(x, y, z);
-		float hue = meta == 3 ? (System.currentTimeMillis()%7200)/7200F : (float)(ReikaMathLibrary.py3d(x, y*3, z+x)%sc)/sc;
+		float hue = LeafMetas.list[meta].hasTimeColor() ? (System.currentTimeMillis()%7200)/7200F : (float)(ReikaMathLibrary.py3d(x, y*3, z+x)%sc)/sc;
 		boolean dmgd = BiomeRainbowForest.isDamaged(iba, x, z);
 		return Color.HSBtoRGB(hue, dmgd ? 0.4F : 0.7F, dmgd ? 0.6F : 1F);
 	}
@@ -128,21 +128,51 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 		float goldAppleChance = 0.025F;
 		float rareGoldAppleChance = ChromaOptions.getRainbowLeafGoldAppleDropChance(); //0.0025F default
 
+		boolean small = meta == LeafMetas.SMALL.ordinal();
+
 		saplingChance *= (1+fortune);
 		appleChance *= (1+fortune*5);
 		goldAppleChance *= (1+fortune*3);
 		rareGoldAppleChance *= (1+fortune*3);
 
+		if (small) {
+			saplingChance *= 0.1;
+			appleChance *= 0.25;
+			goldAppleChance *= 0.1;
+			rareGoldAppleChance = 0;
+		}
+
 		if (ReikaRandomHelper.doWithChance(saplingChance))
-			li.add(new ItemStack(ChromaBlocks.RAINBOWSAPLING.getBlockInstance(), 1, meta));
+			li.add(new ItemStack(ChromaBlocks.RAINBOWSAPLING.getBlockInstance(), 1, 0));
 		if (ReikaRandomHelper.doWithChance(appleChance))
 			li.add(new ItemStack(Items.apple, 1, 0));
 		if (ReikaRandomHelper.doWithChance(goldAppleChance))
 			li.add(new ItemStack(Items.golden_apple, 1, 0));
 		if (ReikaRandomHelper.doWithChance(rareGoldAppleChance))
 			li.add(new ItemStack(Items.golden_apple, 1, 1));
-		li.addAll(this.getDyes(world, x, y, z, fortune));
+		li.addAll(this.getDyes(world, x, y, z, fortune, small));
 		return li;
+	}
+
+	private final ArrayList<ItemStack> getDyes(World world, int x, int y, int z, int fortune, boolean small) {
+		int drop = this.getDyeDropCount(fortune, small);
+		ArrayList<ItemStack> li = new ArrayList();
+		for (int i = 0; i < drop; i++) {
+			if (ReikaRandomHelper.doWithChance(ChromaOptions.DYEFRAC.getValue())) {
+				li.add(new ItemStack(Items.dye, 1, rand.nextInt(16)));
+			}
+			else {
+				li.add(new ItemStack(ChromaItems.DYE.getItemInstance(), 1, rand.nextInt(16)));
+			}
+		}
+		return li;
+	}
+
+	private int getDyeDropCount(int fortune, boolean small) {
+		int ret = 1+rand.nextInt(3*(1+fortune))+fortune+rand.nextInt(1+fortune*fortune);
+		if (small)
+			ret *= 0.125+0.375*rand.nextDouble();
+		return ret;
 	}
 
 	@Override
@@ -154,20 +184,6 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 					this.dropBlockAsItem(world, x, y, z, li.get(i));
 			}
 		}
-	}
-
-	private final ArrayList<ItemStack> getDyes(World world, int x, int y, int z, int fortune) {
-		int drop = this.getDyeDropCount(fortune);
-		ArrayList<ItemStack> li = new ArrayList();
-		for (int i = 0; i < drop; i++) {
-			if (ReikaRandomHelper.doWithChance(ChromaOptions.DYEFRAC.getValue())) {
-				li.add(new ItemStack(Items.dye, 1, rand.nextInt(16)));
-			}
-			else {
-				li.add(new ItemStack(ChromaItems.DYE.getItemInstance(), 1, rand.nextInt(16)));
-			}
-		}
-		return li;
 	}
 
 	@Override
@@ -184,10 +200,6 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase e, ItemStack is) {
 		if (e instanceof EntityPlayer)
 			world.setBlockMetadataWithNotify(x, y, z, 1, 3);
-	}
-
-	private int getDyeDropCount(int fortune) {
-		return 1+rand.nextInt(3*(1+fortune))+fortune+rand.nextInt(1+fortune*fortune);
 	}
 
 	@Override
@@ -246,12 +258,11 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 
 	@Override
 	public boolean shouldTryDecay(World world, int x, int y, int z, int meta) {
-		return meta%2 == 0;
+		return meta != LeafMetas.PLACED.ordinal();
 	}
 
 	@Override
-	public int getFlammability(IBlockAccess world, int x, int y, int z, ForgeDirection face)
-	{
+	public int getFlammability(IBlockAccess world, int x, int y, int z, ForgeDirection face) {
 		return 90;
 	}
 
@@ -269,17 +280,12 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 
 	@Override
 	public boolean hasTileEntity(int meta) {
-		return TILE ? meta == 2 || meta == 3 : false;
+		return TILE && LeafMetas.list[meta].hasTile();
 	}
 
 	@Override
 	public TileEntity createTileEntity(World world, int meta) {
-		if (TILE) {
-			if (meta == 2 || meta == 3) {
-				return new TileEntityRainbowBeacon();
-			}
-		}
-		return null;
+		return this.hasTileEntity(meta) ? new TileEntityRainbowBeacon() : null;
 	}
 
 	@Override
@@ -330,6 +336,25 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 	@Override
 	public int getMaximumLogSearchDepth() {
 		return 15;
+	}
+
+	public static enum LeafMetas {
+		BASIC,
+		PLACED,
+		TILE,
+		TIMECOLOR,
+		TIMECOLORTILE,
+		SMALL;
+
+		public static final LeafMetas[] list = values();
+
+		public boolean hasTile() {
+			return this == TILE || this == TIMECOLORTILE;
+		}
+
+		public boolean hasTimeColor() {
+			return this == TIMECOLOR || this == TIMECOLORTILE;
+		}
 	}
 
 

@@ -156,7 +156,7 @@ public class GuiLumenAlveary extends GuiChromaBase {
 			if (e != null) {
 				e.isActive = !e.isActive;
 				ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
-				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.ALVEARYEFFECT.ordinal(), tile, e.effect.ID, e.isActive ? 1 : 0);
+				ReikaPacketHelper.sendStringIntPacket(ChromatiCraft.packetChannel, ChromaPackets.ALVEARYEFFECT.ordinal(), tile, e.effect.ID, e.isActive ? 1 : 0);
 			}
 			else {//if (GuiScreen.isShiftKeyDown()) {
 				selectedKey = null;
@@ -313,7 +313,7 @@ public class GuiLumenAlveary extends GuiChromaBase {
 		protected final float getBrightnessModifier() {
 			float base = isActive ? 0.9375F : 0.375F;
 			double mod = isActive ? 240D : 400D;
-			return (float)(base+0.0625F*Math.sin(System.currentTimeMillis()/mod+effect.ID));
+			return (float)(base+0.0625F*Math.sin(System.currentTimeMillis()/mod+effect.hashCode()));
 		}
 
 	}
