@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -62,12 +62,12 @@ public class BlockEnderTNT extends Block {
 	@Override
 	public IIcon getIcon(int s, int meta) {
 		switch(s) {
-		case 0:
-			return bottom;
-		case 1:
-			return top;
-		default:
-			return meta > 0 ? active : side;
+			case 0:
+				return bottom;
+			case 1:
+				return top;
+			default:
+				return meta > 0 ? active : side;
 		}
 	}
 
@@ -153,6 +153,7 @@ public class BlockEnderTNT extends Block {
 			if (target != null && target.getWorld() != null && !target.getWorld().isRemote) {
 				World w = target.dimensionID == worldObj.provider.dimensionId ? worldObj : target.getWorld();
 				new FlyingBlocksExplosion(w, target.xCoord+0.5, target.yCoord+0.5, target.zCoord+0.5, 4).doExplosion();
+				worldObj.setBlockToAir(xCoord, yCoord, zCoord);
 				if (!worldObj.isRemote)
 					worldObj.createExplosion(null, xCoord+0.5, yCoord+0.5, zCoord+0.5, 4, true);
 				String s = owner+" has just detonated Ender TNT at "+target;
@@ -163,7 +164,7 @@ public class BlockEnderTNT extends Block {
 
 		public void setTarget(EntityPlayer ep, int dim, int x, int y, int z) {
 			World ws = DimensionManager.getWorld(dim);
-			if (ep instanceof EntityPlayerMP && ws != null && GuardianStoneManager.instance.doesPlayerHavePermissions(ws, x, y, z, (EntityPlayerMP)ep)) {
+			if (ep instanceof EntityPlayerMP && ws != null && GuardianStoneManager.instance.doesPlayerHavePermissions(ws, x, y, z, ep)) {
 				target = new WorldLocation(dim, x, y, z);
 				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 				owner = ep.getCommandSenderName();

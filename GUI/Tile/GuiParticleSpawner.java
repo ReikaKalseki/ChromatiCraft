@@ -10,6 +10,8 @@
 package Reika.ChromatiCraft.GUI.Tile;
 
 import java.awt.Color;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.lwjgl.opengl.GL11;
@@ -17,6 +19,8 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
@@ -24,11 +28,13 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityParticleSpawner;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityParticleSpawner.VariableValue;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Instantiable.BoundedValue;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Instantiable.GUI.ScrollingButtonList;
+import Reika.DragonAPI.Instantiable.IO.NBTFile;
 import Reika.DragonAPI.Interfaces.IconEnum;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -157,6 +163,9 @@ public class GuiParticleSpawner extends GuiChromaBase {
 			buttonList.add(new CustomSoundImagedGuiButton(i, x, y, 20, 20, u, v, file, ChromatiCraft.class, this));
 		}
 
+		buttonList.add(new CustomSoundImagedGuiButton(-1, j+n, k+n+20*GuiPage.list.length, 20, 20, 152, 173, file, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(-2, j+n, k+n+20+20*GuiPage.list.length, 20, 20, 152, 193, file, ChromatiCraft.class, this));
+
 		switch(page) {
 			case POSITION:
 			case VELOCITY:
@@ -241,7 +250,23 @@ public class GuiParticleSpawner extends GuiChromaBase {
 	@Override
 	protected void actionPerformed(GuiButton b) {
 		super.actionPerformed(b);
-		if (b.id < GuiPage.list.length) {
+		if (b.id == -1) {
+			try {
+				this.saveProgram();
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		else if (b.id == -2) {
+			try {
+				this.loadProgram();
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		else if (b.id < GuiPage.list.length) {
 			page = GuiPage.list[b.id];
 			iconButtons.reset();
 		}
@@ -292,6 +317,30 @@ public class GuiParticleSpawner extends GuiChromaBase {
 		}
 		tile.particles.sendData();
 		this.initGui();
+	}
+
+	private void saveProgram() throws IOException {
+		NBTTagCompound tag = new NBTTagCompound();
+		tile.particles.writeToNBT(tag);
+		ParticleFile nf = new ParticleFile(this.getFile());
+		nf.data = tag;
+		nf.save();
+	}
+
+	private void loadProgram() throws IOException {
+		NBTTagCompound tag = new NBTTagCompound();
+		ParticleFile nf = new ParticleFile(this.getFile());
+		nf.load();
+		if (nf.data != null)
+			tile.particles.readFromNBT(nf.data);
+	}
+
+	private File getFolder() {
+		return new File(new File(DragonAPICore.getMinecraftDirectory(), "ChromatiCraft_Data"), "ParticlePrograms");
+	}
+
+	private File getFile() {
+		return new File(this.getFolder(), DragonAPICore.rand.nextLong()+".par");
 	}
 
 	private void handleModifierButton(int i) {
@@ -731,6 +780,49 @@ public class GuiParticleSpawner extends GuiChromaBase {
 
 		public Number getVariance() {
 			return value.getVariation();
+		}
+
+	}
+
+	private static class ParticleFile extends NBTFile {
+
+		private NBTTagCompound data;
+
+		public ParticleFile(File f) {
+			super(f);
+		}
+
+		@Override
+		protected void readHeader(NBTTagCompound header) {
+
+		}
+
+		@Override
+		protected void writeHeader(NBTTagCompound header) {
+
+		}
+
+		@Override
+		protected void readData(NBTTagList li) {
+			NBTTagCompound tag = li.getCompoundTagAt(0);
+			data = tag != null && !tag.hasNoTags() ? tag : null;
+		}
+
+		@Override
+		protected void writeData(NBTTagList li) {
+			if (data != null) {
+				li.appendTag(data.copy());
+			}
+		}
+
+		@Override
+		protected void readExtraData(NBTTagCompound extra) {
+
+		}
+
+		@Override
+		protected NBTTagCompound writeExtraData() {
+			return null;
 		}
 
 	}

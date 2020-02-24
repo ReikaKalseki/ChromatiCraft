@@ -83,6 +83,7 @@ import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
@@ -223,6 +224,7 @@ import Reika.DragonAPI.Instantiable.Event.SlotEvent.AddToSlotEvent;
 import Reika.DragonAPI.Instantiable.Event.SlotEvent.RemoveFromSlotEvent;
 import Reika.DragonAPI.Instantiable.Event.SpawnerCheckPlayerEvent;
 import Reika.DragonAPI.Instantiable.Event.VillagerTradeEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.ItemEffectRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.SinglePlayerLogoutEvent;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
@@ -263,6 +265,8 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.multiblock.IAlvearyComponent;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.common.entities.monster.EntityWisp;
@@ -283,6 +287,27 @@ public class ChromaticEventManager {
 	private ChromaticEventManager() {
 
 	}
+
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void particleProgramTooltips(ItemEffectRenderEvent evt) {
+		if (this.isParticleProgramBook(evt.getItem()))
+			evt.setResult(Result.ALLOW);
+	}
+
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void particleProgramTooltips(ItemTooltipEvent evt) {
+		if (this.isParticleProgramBook(evt.itemStack)) {
+			evt.toolTip.add("Stores particle spawner program:");
+			//evt.toolTip.addAll(BlockBounds.readFromNBT("particleprogram", evt.itemStack.stackTagCompound).toClearString());
+		}
+	}
+
+	private boolean isParticleProgramBook(ItemStack is) {
+		return is != null && is.getItem() == Items.book && is.stackTagCompound != null && is.stackTagCompound.hasKey("particleprogram");
+	}
+
 	/*
 	@SubscribeEvent
 	public void noLaunchpadFallDamage(LivingFallEvent ev) {

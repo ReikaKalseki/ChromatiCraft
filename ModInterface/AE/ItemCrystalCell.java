@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -16,6 +16,7 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer.ItemRenderType;
@@ -199,6 +200,8 @@ public class ItemCrystalCell extends ItemChromaTool implements SpriteRenderCallb
 	}
 
 	public static boolean isTypeStorable(ItemStack is) {
+		if (is.getItem() == Items.dye)
+			return true;
 		if (is.getItem() instanceof ItemCrystalBasic || is.getItem() instanceof ItemBlockCrystalColors || is.getItem() instanceof ItemBlockCrystal)
 			return true;
 		if (is.getItem() instanceof CrystalTypesProxy && ((CrystalTypesProxy)is.getItem()).isCrystalType(is))

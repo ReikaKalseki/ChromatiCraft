@@ -87,7 +87,7 @@ public enum ElementBufferCapacityBoost {
 	}
 
 	public boolean isGrantedAutomatically() {
-		return this == ALLCOLORS || this == ABILITY;
+		return ingredient == null;//this == ALLCOLORS || this == ABILITY || this == LORECOMPLETE;
 	}
 
 	private NBTTagList getTag(EntityPlayer ep) {

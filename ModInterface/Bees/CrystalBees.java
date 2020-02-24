@@ -21,7 +21,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
@@ -39,6 +38,7 @@ import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.CompoundConditiona
 import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.ConditionalProductBee;
 import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.ConditionalProductProvider;
 import Reika.ChromatiCraft.ModInterface.Bees.EffectAlleles.ArtefactEffect;
+import Reika.ChromatiCraft.ModInterface.Bees.EffectAlleles.ChromaEffect;
 import Reika.ChromatiCraft.ModInterface.Bees.EffectAlleles.CrystalEffect;
 import Reika.ChromatiCraft.ModInterface.Bees.EffectAlleles.PolychromaEffect;
 import Reika.ChromatiCraft.ModInterface.Bees.EffectAlleles.PrecursorEffect;
@@ -160,7 +160,9 @@ public class CrystalBees {
 
 	static MultiAllele multiFlower;
 	static PolychromaEffect multiEffect;
+	static ChromaEffect chromaEffect;
 	static RechargeEffect rechargeEffect;
+
 	static SparklifyEffect sparkleEffect;
 
 	static MetaAlloyAllele metaFlower;
@@ -294,6 +296,8 @@ public class CrystalBees {
 		multiFlower = new MultiAllele();
 		multiEffect = new PolychromaEffect();
 		rechargeEffect = new RechargeEffect();
+		chromaEffect = new ChromaEffect();
+
 		sparkleEffect = new SparklifyEffect();
 
 		metaFlower = new MetaAlloyAllele();
@@ -328,7 +332,7 @@ public class CrystalBees {
 
 		tower.register();
 
-		chroma = new AdvancedBee("Iridescent", "Auram Stellans", Speeds.SLOWER, Life.NORMAL, Flowering.SLOWEST, Fertility.NORMAL, Territory.DEFAULT, chromaColor, EnumTemperature.COLD, ProgressStage.ALLOY);
+		chroma = (AdvancedBee)new AdvancedBee("Iridescent", "Auram Stellans", Speeds.SLOWER, Life.NORMAL, Flowering.SLOWEST, Fertility.NORMAL, Territory.DEFAULT, chromaColor, EnumTemperature.COLD, ProgressStage.ALLOY).setEffect(chromaEffect);
 		lumen = new AdvancedBee("Luminescent", "Auram Ardens", Speeds.NORMAL, Life.SHORTENED, Flowering.SLOWER, Fertility.NORMAL, Territory.DEFAULT, lumenColor, EnumTemperature.NORMAL, ProgressStage.DIMENSION);
 		aura = (AdvancedBee)new AdvancedBee("Radiant", "Auram Pharus", Speeds.SLOW, Life.LONG, Flowering.SLOW, Fertility.NORMAL, Territory.DEFAULT, auraColor, EnumTemperature.ICY, ProgressStage.CTM).setEffect(rechargeEffect);
 		multi = (AdvancedBee)new AdvancedBee("Polychromatic", "Pigmentum Pluralis", Speeds.SLOWEST, Life.ELONGATED, Flowering.AVERAGE, Fertility.LOW, Territory.DEFAULT, multiColor, EnumTemperature.WARM, ProgressStage.CTM).setEffect(multiEffect);
@@ -657,6 +661,8 @@ public class CrystalBees {
 
 		@Override
 		public boolean isJubilant(IBeeGenome ibg, IBeeHousing ibh) {
+			if (!super.isJubilant(ibg, ibh))
+				return false;
 			World world = ibh.getWorld();
 			int x = ibh.getCoordinates().posX;
 			int y = ibh.getCoordinates().posY;
@@ -769,8 +775,7 @@ public class CrystalBees {
 		 */
 		@Override
 		public boolean isJubilant(IBeeGenome ibg, IBeeHousing ibh) {
-			ChunkCoordinates cc = ibh.getCoordinates();
-			return ReikaMathLibrary.isValueInsideBounds(8, 30, ReikaWorldHelper.getAmbientTemperatureAt(ibh.getWorld(), cc.posX, cc.posY, cc.posZ));
+			return ReikaBeeHelper.isDefaultJubilance(this, ibg, ibh);
 		}
 
 		@Override

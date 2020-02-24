@@ -85,9 +85,13 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 
 	public TileEntityRift() {
 		if (ModList.OPENCOMPUTERS.isLoaded() && FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
-			for (int i = 0; i < 6; i++) {
-				sidedOCNode[i] = Network.newNode((Environment)this, Visibility.Network).create();
-			}
+			this.initOCNodes();
+		}
+	}
+
+	private void initOCNodes() {
+		for (int i = 0; i < 6; i++) {
+			sidedOCNode[i] = Network.newNode((Environment)this, Visibility.Network).create();
 		}
 	}
 
@@ -303,8 +307,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 	}
 
 	@Override
-	protected void writeSyncTag(NBTTagCompound NBT)
-	{
+	protected void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
 
 		NBT.setInteger("color", color);
@@ -313,8 +316,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 	}
 
 	@Override
-	protected void readSyncTag(NBTTagCompound NBT)
-	{
+	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 
 		color = NBT.getInteger("color");
@@ -839,13 +841,14 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 
 	@Override
 	protected void onInvalidateOrUnload(World world, int x, int y, int z, boolean invalid) {
+		/* handled in TEBase now
 		if (ModList.OPENCOMPUTERS.isLoaded()) {
 			for (int i = 0; i < 6; i++) {
 				if (sidedOCNode[i] != null) {
 					((Node)sidedOCNode[i]).remove();
 				}
 			}
-		}
+		}*/
 	}
 	/*
 	@Override

@@ -21,6 +21,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -73,6 +74,7 @@ import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.CrystalTier;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFunctionRelay;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
+import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityParticleSpawner;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityGlowFire;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
@@ -463,6 +465,21 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			if (((TileEntityChromaLamp)te).addColor(CrystalElement.elements[is.getItemDamage()%16])) {
 				if (!ep.capabilities.isCreativeMode)
 					is.stackSize--;
+			}
+		}
+
+		if (m == ChromaTiles.PARTICLES && is != null && is.getItem() == Items.book) {
+			TileEntityParticleSpawner tp = (TileEntityParticleSpawner)te;
+			if (is.stackTagCompound != null && is.stackTagCompound.hasKey("particleprogram")) {
+				tp.readCopyableData(is.stackTagCompound.getCompoundTag("particleprogram"));
+				world.markBlockForUpdate(x, y, z);
+				ReikaSoundHelper.playPlaceSound(world, x, y, z, Blocks.stone);
+			}
+			else {
+				is.stackTagCompound = new NBTTagCompound();
+				NBTTagCompound tag = new NBTTagCompound();
+				tp.writeCopyableData(tag);
+				is.stackTagCompound.setTag("particleprogram", tag);
 			}
 		}
 

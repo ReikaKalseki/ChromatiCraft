@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -30,8 +30,12 @@ import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Items.ItemCrystalShard;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.APIPacketHandler.PacketIDs;
+import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.RotaryCraft.API.ReservoirAPI.TankHandler;
 
 public class ReservoirHandlers {
@@ -82,13 +86,15 @@ public class ReservoirHandlers {
 						ei.setDead();
 					flag = true;
 				}
-				else if (!te.worldObj.isRemote && rand.nextInt(20) == 0 && ether < TileEntityChroma.ETHER_SATURATION && ReikaItemHelper.matchStacks(is, ChromaStacks.etherBerries)) {
+				else if (!te.worldObj.isRemote && rand.nextInt(2) == 0 && ether < TileEntityChroma.ETHER_SATURATION && !this.isRecentEtherDissolve(te, fs) && ReikaItemHelper.matchStacks(is, ChromaStacks.etherBerries)) {
 					if (fs.tag == null)
 						fs.tag = new NBTTagCompound();
-					while (ether < TileEntityChroma.ETHER_SATURATION && is.stackSize > 0) {
+					if (ether < TileEntityChroma.ETHER_SATURATION && is.stackSize > 0) {
 						ether = fs.tag.getInteger("ether")+1;
 						fs.tag.setInteger("ether", ether);
+						fs.tag.setLong("etherdissolve", te.worldObj.getTotalWorldTime());
 						is.stackSize--;
+						ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.PARTICLE.ordinal(), te, 24, ReikaParticleHelper.SPELL.ordinal(), 8);
 					}
 					if (is.stackSize <= 0)
 						ei.setDead();
@@ -98,6 +104,10 @@ public class ReservoirHandlers {
 			if (flag && e != null)
 				fs.tag.setInteger("renderColor", BlockActiveChroma.getColor(e, dye));
 			return 0;
+		}
+
+		private boolean isRecentEtherDissolve(TileEntity te, FluidStack fs) {
+			return fs.tag != null && fs.tag.getLong("etherdissolve")+5 >= te.getWorldObj().getTotalWorldTime();
 		}
 	}
 

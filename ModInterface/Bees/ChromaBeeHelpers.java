@@ -43,6 +43,7 @@ import forestry.api.apiculture.IBeeGenome;
 import forestry.api.apiculture.IBeeHousing;
 import forestry.api.apiculture.IBeeModifier;
 import forestry.api.genetics.EnumTolerance;
+import forestry.api.multiblock.IAlvearyComponent;
 import forestry.api.multiblock.IAlvearyController;
 import forestry.api.multiblock.IMultiblockComponent;
 
@@ -238,6 +239,9 @@ public class ChromaBeeHelpers {
 	}
 
 	public static TileEntityLumenAlveary getLumenAlvearyController(IBeeHousing ibh, World world, ChunkCoordinates cc) {
+		if (ibh instanceof IAlvearyComponent) {
+			ibh = ((IAlvearyComponent)ibh).getMultiblockLogic().getController();
+		}
 		if (ibh instanceof IAlvearyController) {
 			Coordinate loc = alvearyControllerLocations.get(cc);
 			if (loc != null) {

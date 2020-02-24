@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.ModInterface.Bees;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -36,10 +37,12 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockSparkle;
 import Reika.ChromatiCraft.Block.Worldgen.BlockSparkle.BlockTypes;
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
+import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Artefact.ArtefactSpawner;
 import Reika.ChromatiCraft.Magic.Artefact.UABombingEffects;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees.CrystalBee;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees.PrecursorBee;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -47,6 +50,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
@@ -60,6 +64,7 @@ import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.KeySignature;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
@@ -77,6 +82,9 @@ import forestry.api.apiculture.IAlleleBeeSpecies;
 import forestry.api.apiculture.IBeeGenome;
 import forestry.api.apiculture.IBeeHousing;
 import forestry.api.genetics.IEffectData;
+import forestry.api.multiblock.IAlvearyComponent;
+import forestry.api.multiblock.IAlvearyController;
+import forestry.api.multiblock.IMultiblockComponent;
 
 
 public class EffectAlleles {
@@ -496,7 +504,7 @@ public class EffectAlleles {
 	static final class RechargeEffect extends ChromaBeeEffect {
 
 		public RechargeEffect() {
-			super("effect.pylonrecharge", "Lumen Boost");
+			super("effect.playerbuffer", "Lumen Balance");
 		}
 
 		@Override
@@ -515,9 +523,42 @@ public class EffectAlleles {
 				World world = ibh.getWorld();
 				ChunkCoordinates c = ibh.getCoordinates();
 				int[] r = ChromaBeeHelpers.getEffectiveTerritory(ibh, c, ibg, world.getTotalWorldTime());
-				ArrayList<TileEntityCrystalPylon> li = CrystalNetworker.instance.getAllNearbyPylons(world, c.posX, c.posY, c.posZ, r[0], true);
-				if (li != null && !li.isEmpty()) {
-					li.get(CrystalBees.rand.nextInt(li.size())).speedRegenShortly(8);
+				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(c.posX, c.posY, c.posZ).expand(r[0], r[1], r[2]);
+				List<WeakReference<EntityLivingBase>> li = ChromaBeeHelpers.getEntityList(box, world.getTotalWorldTime(), world, c, EntityPlayer.class, null);
+				TileEntityLumenAlveary te = ChromaBeeHelpers.getLumenAlvearyController(ibh, world, c);
+				if (te != null && te.hasOmnipresence()) {
+					EntityPlayer owner = te.getPlacer();
+					if (owner != null && !ReikaPlayerAPI.isFake(owner))
+						li.add(new WeakReference(owner));
+				}
+				for (WeakReference<EntityLivingBase> w : li) {
+					EntityLivingBase e = w.get();
+					if (e instanceof EntityPlayer && CrystalBees.rand.nextInt(36) == 0) {
+						EntityPlayer ep = (EntityPlayer)e;
+						if (ProgressStage.CHARGE.isPlayerAtStage(ep) && ProgressStage.USEENERGY.isPlayerAtStage(ep) && ProgressStage.INFUSE.isPlayerAtStage(ep)) {
+							int max = -1;
+							int min = Integer.MAX_VALUE;
+							CrystalElement most = null;
+							CrystalElement least = null;
+							int cap = PlayerElementBuffer.instance.getElementCap(ep);
+							for (int i = 0; i < 16; i++) {
+								CrystalElement clr = CrystalElement.elements[i];
+								int has = PlayerElementBuffer.instance.getPlayerContent(ep, clr);
+								if (has < min) {
+									least = clr;
+									min = has;
+								}
+								if (has > max) {
+									most = clr;
+									max = has;
+								}
+							}
+							int diff = max-min;
+							if (max > 0 && min < cap/2 && diff > cap/4) {
+								PlayerElementBuffer.instance.addToPlayer(ep, least, Math.max(1, Math.min(500, diff/2000)), false);
+							}
+						}
+					}
 				}
 			}
 			return ied;
@@ -559,6 +600,74 @@ public class EffectAlleles {
 					fx = new EntityLaserFX(e, world, px, py, pz, -xyz[0], -xyz[1], -xyz[2]).setScale(s);
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 				}
+			}
+			return ied;
+		}
+	}
+
+	static final class ChromaEffect extends ChromaBeeEffect {
+
+		public ChromaEffect() {
+			super("effect.pylonrecharge", "Power Aura");
+		}
+
+		@Override
+		public boolean isCombinable() {
+			return true;
+		}
+
+		@Override
+		public IEffectData validateStorage(IEffectData ied) {
+			return ied;
+		}
+
+		@Override
+		public IEffectData doEffect(IBeeGenome ibg, IEffectData ied, IBeeHousing ibh) {
+			if (this.isValidBeeForEffect(ibg.getPrimary()) && this.isValidBeeForEffect(ibg.getSecondary())) {
+				World world = ibh.getWorld();
+				ChunkCoordinates c = ibh.getCoordinates();
+				int[] r = ChromaBeeHelpers.getEffectiveTerritory(ibh, c, ibg, world.getTotalWorldTime());
+				ArrayList<TileEntityCrystalPylon> li = CrystalNetworker.instance.getAllNearbyPylons(world, c.posX, c.posY, c.posZ, r[0], true);
+				if (li != null && !li.isEmpty()) {
+					li.get(CrystalBees.rand.nextInt(li.size())).speedRegenShortly(8);
+				}
+			}
+			return ied;
+		}
+
+		private boolean isValidBeeForEffect(IAlleleBeeSpecies bee) {
+			return bee == CrystalBees.chroma;
+		}
+
+		@Override
+		public IEffectData doFX(IBeeGenome ibg, IEffectData ied, IBeeHousing ibh) {
+			if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+				return this.doClientFX(ibg, ied, ibh);
+			return ied;
+		}
+
+		@SideOnly(Side.CLIENT)
+		private IEffectData doClientFX(IBeeGenome ibg, IEffectData ied, IBeeHousing ibh) {
+			if (this.isValidBeeForEffect(ibg.getPrimary()) && this.isValidBeeForEffect(ibg.getSecondary())) {
+				World world = ibh.getWorld();
+				ChunkCoordinates c = ibh.getCoordinates();
+
+				Random rand = CrystalBees.rand;
+				if (ibh instanceof IAlvearyComponent) {
+					ibh = ((IAlvearyComponent)ibh).getMultiblockLogic().getController();
+				}
+				if (ibh instanceof IAlvearyController) {
+					IAlvearyController iac = (IAlvearyController)ibh;
+					Collection<IMultiblockComponent> li = iac.getComponents();
+					IMultiblockComponent imc = ReikaJavaLibrary.getRandomCollectionEntry(rand, li);
+					c = imc.getCoordinates();
+				}
+				int x = c.posX;
+				int y = c.posY;
+				int z = c.posZ;
+				double[] v = ReikaPhysicsHelper.polarToCartesian(ReikaRandomHelper.getRandomBetween(0.03125, 0.125), rand.nextDouble()*90, rand.nextDouble()*360);
+				EntityFX fx = new EntityChromaFluidFX(world, x+rand.nextDouble(), y+rand.nextDouble()*3, z+rand.nextDouble(), v[0], v[1], v[2]).setGravity(0.125F);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 			return ied;
 		}
@@ -664,14 +773,13 @@ public class EffectAlleles {
 				ChunkCoordinates c = ibh.getCoordinates();
 				if (world.rand.nextInt(500) == 0) {
 					int[] r = ChromaBeeHelpers.getEffectiveTerritory(ibh, c, ibg, world.getTotalWorldTime());
-
+					TileEntityLumenAlveary te = ChromaBeeHelpers.getLumenAlvearyController(ibh, world, c);
 					AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(c.posX, c.posY, c.posZ).expand(r[0], r[1], r[2]);
 					List<WeakReference<EntityLivingBase>> li = ChromaBeeHelpers.getEntityList(box, world.getTotalWorldTime(), world, c, EntityPlayer.class, null);
 					for (WeakReference<EntityLivingBase> w : li) {
 						EntityLivingBase e = w.get();
 						if (e instanceof EntityPlayer) {
 							if (world.rand.nextInt(4) == 0) {
-								TileEntityLumenAlveary te = ChromaBeeHelpers.getLumenAlvearyController(ibh, world, c);
 								if (te == null || !te.effectsOnlyOnPlayers())
 									UABombingEffects.instance.trigger(e);
 							}

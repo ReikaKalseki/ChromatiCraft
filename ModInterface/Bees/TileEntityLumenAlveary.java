@@ -944,6 +944,10 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 	public boolean hasInfiniteAwareness() {
 		return this.isEffectSelectedAndActive(infiniteRange);
 	}
+
+	public boolean isIgnoble() {
+		return this.getQueenItem() != null && !ReikaBeeHelper.isPristine(this.getQueenItem());
+	}
 	/*
 	public boolean hasIntensification() {
 		return this.isEffectSelectedAndActive(intensification);

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Render.InWorldScriptRenderer;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -186,6 +187,7 @@ public class RenderAlveary extends ChromaRenderBase {
 			renderBeeGlint = true;
 
 			if (!te.canQueenWork()) {
+				GL11.glPushMatrix();
 				GL11.glRotated(90, 0, 1, 0);
 				GL11.glTranslated(0, -0.25/s, -1/s);
 				ReikaTextureHelper.bindTerrainTexture();
@@ -210,6 +212,7 @@ public class RenderAlveary extends ChromaRenderBase {
 				v5.addVertexWithUV(0, 2/s, 2/s, du, dv);
 				v5.addVertexWithUV(0, 0, 2/s, u, dv);
 				v5.draw();
+				GL11.glPopMatrix();
 			}
 			GL11.glDepthMask(false);
 			GL11.glDisable(GL11.GL_ALPHA_TEST);
@@ -256,14 +259,31 @@ public class RenderAlveary extends ChromaRenderBase {
 
 			GL11.glPushMatrix();
 
+			double a = 180+ReikaPhysicsHelper.cartesianToPolar(RenderManager.renderPosX-te.xCoord, RenderManager.renderPosY-te.yCoord, RenderManager.renderPosZ-te.zCoord)[2];
+			GL11.glRotated(a, 0, 1, 0);
+
+			if (te.isIgnoble()) {
+				GL11.glPushMatrix();
+				GL11.glTranslated(0, 9/s, 0);
+
+				BlendMode.DEFAULT.apply();
+				ReikaTextureHelper.bindFinalTexture(DragonAPICore.class, "Resources/warning.png");
+				v5.startDrawingQuads();
+				v5.setColorRGBA_I(0xffffff, 255);
+				v5.addVertexWithUV(-3/s, 3/s, 0, 0, 0);
+				v5.addVertexWithUV(3/s, 3/s, 0, 1, 0);
+				v5.addVertexWithUV(3/s, -3/s, 0, 1, 1);
+				v5.addVertexWithUV(-3/s, -3/s, 0, 0, 1);
+				v5.draw();
+				GL11.glPopMatrix();
+			}
+
 			if (text) {
 				double s2 = 0.0625;
 				GL11.glScaled(s2, -s2, s2);
 				String sg = ReikaBeeHelper.getBee(is).getDisplayName();
 				FontRenderer f = sg.startsWith(EnumChatFormatting.OBFUSCATED.toString()) ? ChromaFontRenderer.FontType.OBFUSCATED.renderer : ChromaFontRenderer.FontType.GUI.renderer;
 
-				double a = 180+ReikaPhysicsHelper.cartesianToPolar(RenderManager.renderPosX-te.xCoord, RenderManager.renderPosY-te.yCoord, RenderManager.renderPosZ-te.zCoord)[2];
-				GL11.glRotated(a, 0, 1, 0);
 				GL11.glTranslated(-f.getStringWidth(sg)/32D/s2, 0.1875D/s2-ei.hoverStart*0.375/s2-0.125/s2, 0);
 				f.drawString(sg, 0, 0, 0xffffff);
 			}
