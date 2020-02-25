@@ -270,6 +270,9 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
 				return false;
 
+		if (i instanceof ItemShears)
+			return e.type == EnumEnchantmentType.digger || e.type == EnumEnchantmentType.breakable || e.type == EnumEnchantmentType.all;
+
 		return i == Items.book ? true : e.canApply(is);
 	}
 

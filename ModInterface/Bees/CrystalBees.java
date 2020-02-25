@@ -584,6 +584,10 @@ public class CrystalBees {
 		cb.addBreeding(p1, p2, 8);
 	}
 
+	public static Flowering getNoFlowering() {
+		return noFlowering;
+	}
+
 	static class PrecursorBee extends AdvancedBee {
 
 		private static final String description = "Something feels strange about these bees, almost as if they are a link to the past, or some long-lost knowledge.";

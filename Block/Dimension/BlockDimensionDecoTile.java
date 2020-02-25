@@ -139,6 +139,13 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 	}
 
 	@Override
+	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
+		ArrayList<ItemStack> li = new ArrayList();
+		li.add(new ItemStack(this.getItemDropped(metadata, world.rand, fortune), 1, this.damageDropped(metadata)));
+		return li;
+	}
+
+	@Override
 	public boolean canCollideCheck(int meta, boolean liq) {
 		return DimDecoTileTypes.list[meta].isCollideable();
 	}

@@ -327,7 +327,6 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			if (diff > 0) {
 				this.charge(world, x, y, z, max, Math.max(1, (int)diff));
 			}
-			energy = Math.min(energy, max);
 
 			if (world.isRemote) {
 				this.spawnParticle(world, x, y, z);
@@ -405,6 +404,8 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 					}
 				}
 			}
+
+			energy = Math.max(0, Math.min(energy, max));
 
 			//if (world.getClosestPlayer(xCoord, y, z, 25) != null)
 			//	for (int i = 0; i < 500; i++)
