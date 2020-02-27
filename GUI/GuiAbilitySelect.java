@@ -276,7 +276,7 @@ public class GuiAbilitySelect extends GuiScreen {
 		if (a != null && Chromabilities.playerHasAbility(ep, a)) {
 			if (Chromabilities.canPlayerExecuteAt(ep, a)) {
 				ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, ep, 0.75F, 1);
-				Chromabilities.triggerAbility(ep, a, data, true);
+				Chromabilities.triggerAbility(ep, a, data);
 				return true;
 			}
 			else {

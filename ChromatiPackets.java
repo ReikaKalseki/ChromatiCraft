@@ -370,14 +370,15 @@ public class ChromatiPackets implements PacketHandler {
 				case ABILITY: {
 					Ability c = Chromabilities.getAbilityByInt(data[0]);
 					if (Chromabilities.playerHasAbility(ep, c))
-						Chromabilities.triggerAbility(ep, c, data[1], true);
+						Chromabilities.triggerAbility(ep, c, data[1]);
 					break;
 				}
 				case ABILITYSEND: {
 					Entity player = world.getEntityByID(data[0]);
 					if (player instanceof EntityPlayer) {
 						Ability c = Chromabilities.getAbilityByInt(data[1]);
-						Chromabilities.triggerAbility((EntityPlayer)player, c, data[2], false);
+						//Chromabilities.triggerAbility((EntityPlayer)player, c, data[2], false);
+						c.trigger((EntityPlayer)player, data[2]);
 					}
 					break;
 				}

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2018
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -16,6 +16,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -216,8 +217,8 @@ public class EfficientFlowerCache extends HasFlowersCache {
 	private class FlowerMatch implements BlockCheck {
 
 		@Override
-		public boolean matchInWorld(World world, int x, int y, int z) {
-			return checkFlowerAcceptance(cachedFlowerType, world, x, y, z);
+		public boolean matchInWorld(IBlockAccess world, int x, int y, int z) {
+			return world instanceof World && checkFlowerAcceptance(cachedFlowerType, (World)world, x, y, z);
 		}
 
 		@Override

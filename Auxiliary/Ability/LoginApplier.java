@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -26,7 +26,7 @@ class LoginApplier implements PlayerTracker {
 	@Override
 	public void onPlayerLogin(EntityPlayer ep) {
 		if (Chromabilities.REACH.enabledOn(ep)) {
-			Chromabilities.triggerAbility(ep, Chromabilities.REACH, 0, true);
+			Chromabilities.triggerAbility(ep, Chromabilities.REACH, 0);
 		}
 		if (Chromabilities.HEALTH.enabledOn(ep)) {
 			if (ep instanceof EntityPlayerMP) {

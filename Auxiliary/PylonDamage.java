@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,19 +11,27 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.IChatComponent;
 
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 public final class PylonDamage extends DamageSource {
 
 	public final CrystalElement color;
+	public final Coordinate location;
 
-	public PylonDamage(CrystalElement e) {
+	public PylonDamage(CrystalElement e, TileEntity pylon) {
 		super("pylon");
 		color = e;
+		location = pylon != null ? new Coordinate(pylon) : null;
+	}
+
+	public PylonDamage(CrystalElement e) {
+		this(e, null);
 	}
 
 	@Override

@@ -697,6 +697,17 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity, IMo
 		return false;
 	}
 
+	public void aimAwayFrom(double x, double y, double z, double speed) {
+		if (velocity != null) {
+			double dx = -(x-posX);
+			double dy = -(y-posY);
+			double dz = -(z-posZ);
+			velocity.aimFrom(posX, posY, posZ, dx, dy, dz);
+			velocity.magnitude = speed;
+			velocityChanged = true;
+		}
+	}
+
 	@Override
 	public boolean shouldRenderInPass(int pass)
 	{

@@ -50,6 +50,7 @@ import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Block.BlockEncrustedCrystal;
 import Reika.ChromatiCraft.Block.BlockEncrustedCrystal.TileCrystalEncrusted;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
+import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Entity.EntityOverloadingPylonShock;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -847,6 +848,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 		if (e instanceof EntityPlayer) {
 			minTicksBetweenAttack = Math.max(minTicksBetweenAttack-ReikaRandomHelper.getRandomBetween(18, 60), MIN_ATTACK_DELAY);
+		}
+		else if (e instanceof EntityGlowCloud) {
+			((EntityGlowCloud)e).aimAwayFrom(xCoord, yCoord, zCoord, 0.25);
 		}
 	}
 

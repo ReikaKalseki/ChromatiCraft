@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Items.Tools.Wands;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockStairs;
@@ -23,7 +24,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-import Reika.ChromatiCraft.Base.ItemWandBase;
+import Reika.ChromatiCraft.Base.ItemBlockChangingWand;
 import Reika.ChromatiCraft.Block.Decoration.BlockEtherealLight.Flags;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -32,9 +33,9 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
-import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
 import Reika.DragonAPI.Instantiable.PlayerReference;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -43,7 +44,7 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 import Reika.GeoStrata.Registry.GeoBlocks;
 
-public class ItemExcavationWand extends ItemWandBase implements BreakerCallback {
+public class ItemExcavationWand extends ItemBlockChangingWand {
 
 	private static final int MAX_DEPTH = 12;
 	private static final int MAX_DEPTH_BOOST = 18;
@@ -52,7 +53,6 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 
 	public ItemExcavationWand(int index) {
 		super(index);
-		this.addEnergyCost(CrystalElement.BROWN, 1);
 		this.addEnergyCost(CrystalElement.YELLOW, 2);
 	}
 
@@ -71,7 +71,8 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 		return Integer.MAX_VALUE;
 	}
 
-	public static boolean spreadOn(World world, int x, int y, int z, Block b, int meta) {
+	@Override
+	public boolean canSpreadOn(World world, int x, int y, int z, Block b, int meta) {
 		if (world.provider.isSurfaceWorld() && b == Blocks.stone)
 			return false;
 		if (world.provider.isHellWorld && b == Blocks.netherrack)
@@ -87,7 +88,7 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 	@Override
 	public boolean onBlockStartBreak(ItemStack itemstack, int x, int y, int z, EntityPlayer ep) {
 		World world = ep.worldObj;
-		if (!this.spreadOn(world, x, y, z, world.getBlock(x, y, z), world.getBlockMetadata(x, y, z)))
+		if (!this.canSpreadOn(world, x, y, z, world.getBlock(x, y, z), world.getBlockMetadata(x, y, z)))
 			return false;
 		if (!world.isRemote) {
 			ProgressiveBreaker b = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, this.getDepth(ep));
@@ -104,7 +105,7 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 			b.taxiCabDistance = true;
 			b.player = ep;
 			b.hungerFactor = 0.125F;
-			HashSet<BlockKey> set = getSpreadBlocks(world, x, y, z);
+			HashSet<BlockKey> set = this.getSpreadBlocks(world, x, y, z);
 			for (BlockKey bk : set) {
 				b.addBlock(bk);
 			}
@@ -113,9 +114,10 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 		return true;
 	}
 
-	public static HashSet<BlockKey> getSpreadBlocks(World world, int x, int y, int z) {
+	private HashSet<BlockKey> getSpreadBlocks(World world, int x, int y, int z) {
 		HashSet<BlockKey> set = new HashSet();
 		Block bk = world.getBlock(x, y, z);
+		set.add(new BlockKey(bk, world.getBlockMetadata(x, y, z)));
 		if (bk == Blocks.lit_redstone_ore)
 			set.add(new BlockKey(Blocks.redstone_ore));
 		else if (bk == Blocks.redstone_ore)
@@ -172,7 +174,8 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 		return set;
 	}
 
-	public static int getDepth(EntityPlayer ep) {
+	@Override
+	public int getDepth(EntityPlayer ep) {
 		return canUseBoostedEffect(ep) ? MAX_DEPTH_BOOST : MAX_DEPTH;
 	}
 
@@ -216,12 +219,21 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 	}
 
 	private boolean canBreakBlock(World world, int x, int y, int z, Block id, int meta, EntityPlayer ep) {
-		return (world.isRemote || ReikaPlayerAPI.playerCanBreakAt((WorldServer)world, x, y, z, (EntityPlayerMP)ep)) && this.spreadOn(world, x, y, z, id, meta);
+		return (world.isRemote || ReikaPlayerAPI.playerCanBreakAt((WorldServer)world, x, y, z, (EntityPlayerMP)ep)) && this.canSpreadOn(world, x, y, z, id, meta);
 	}
 
 	@Override
 	public void onFinish(ProgressiveBreaker b) {
 		breakers.remove(b.hashCode());
+	}
+
+	@Override
+	public void getSpreadBlocks(World world, int x, int y, int z, BlockArray arr, EntityPlayer ep, ItemStack is) {
+		Set<BlockKey> set = this.getSpreadBlocks(world, x, y, z);
+		if (ep.isSneaking())
+			arr.extraSpread = true;
+		arr.taxiCabDistance = true;
+		arr.recursiveAddMultipleWithBounds(world, x, y, z, set, x-32, y-32, z-32, x+32, y+32, z+32);
 	}
 
 }

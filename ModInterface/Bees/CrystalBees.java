@@ -108,7 +108,7 @@ import forestry.api.core.EnumTemperature;
 import forestry.api.core.ForestryAPI;
 import forestry.api.core.IErrorState;
 import forestry.api.genetics.AlleleManager;
-import forestry.api.genetics.IAllele;
+import forestry.api.genetics.IAlleleFlowers;
 import forestry.api.genetics.IIndividual;
 
 public class CrystalBees {
@@ -606,7 +606,7 @@ public class CrystalBees {
 		}
 
 		@Override
-		public IAllele getFlowerAllele() {
+		public IAlleleFlowers getFlowerAllele() {
 			return metaFlower;
 		}
 
@@ -684,7 +684,7 @@ public class CrystalBees {
 		}
 
 		@Override
-		public IAllele getFlowerAllele() {
+		public IAlleleFlowers getFlowerAllele() {
 			return this == multi ? multiFlower : super.getFlowerAllele();
 		}
 
@@ -808,7 +808,7 @@ public class CrystalBees {
 		}
 
 		@Override
-		public IAllele getFlowerAllele() {
+		public IAlleleFlowers getFlowerAllele() {
 			return Flower.VANILLA.getAllele();
 		}
 
@@ -1028,7 +1028,7 @@ public class CrystalBees {
 		}
 
 		@Override
-		public IAllele getFlowerAllele() {
+		public IAlleleFlowers getFlowerAllele() {
 			return flowerMap.get(color);
 		}
 

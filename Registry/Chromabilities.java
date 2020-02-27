@@ -345,14 +345,14 @@ public enum Chromabilities implements Ability {
 		}
 	}
 
-	public static void triggerAbility(EntityPlayer ep, Ability a, int data, boolean dispatchPacket) {
+	public static void triggerAbility(EntityPlayer ep, Ability a, int data) {
 		if (ep.worldObj.isRemote) {
 			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.ABILITY.ordinal(), getAbilityInt(a), data);
 
 			if (!a.actOnClient())
 				return;
 		}
-		else if (a.actOnClient() && dispatchPacket) { //notify other players
+		else if (a.actOnClient() && a.isPureEventDriven()) { //notify other players
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ABILITYSEND.ordinal(), PacketTarget.allPlayers, getAbilityInt(a), data, ep.getEntityId());
 		}
 

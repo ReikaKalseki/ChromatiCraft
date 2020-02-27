@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Auxiliary.RangedLampPanelingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
+import Reika.ChromatiCraft.Block.Worldgen.BlockSparkle;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.ModInterface.ItemColoredModInteract;
 import Reika.ChromatiCraft.ModInterface.ModInteraction;
@@ -95,6 +96,8 @@ public class ChromaRecipes {
 			ItemStack is = ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(meta);//new ItemStack(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), n, meta);
 			ReikaRecipeHelper.addSmelting(is, basic, 0);
 		}
+
+		ReikaRecipeHelper.addSmelting(BlockSparkle.BlockTypes.SAND.getItem(), BlockSparkle.BlockTypes.GLASS.getItem(), 0.2F);
 	}
 
 	private static ItemStack getShard(CrystalElement color) {

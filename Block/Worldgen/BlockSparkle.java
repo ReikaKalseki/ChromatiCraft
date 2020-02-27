@@ -18,10 +18,12 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 
@@ -109,7 +111,8 @@ public class BlockSparkle extends Block {
 		GRAVEL(Blocks.gravel),
 		COBBLE(Blocks.cobblestone),
 		STONE(Blocks.stone),
-		CLAY(Blocks.clay);
+		CLAY(Blocks.clay),
+		GLASS(Blocks.glass);
 
 		private final Block proxy;
 
@@ -126,6 +129,10 @@ public class BlockSparkle extends Block {
 
 		public Block getBlockProxy() {
 			return proxy;
+		}
+
+		public ItemStack getItem() {
+			return new ItemStack(ChromaBlocks.SPARKLE.getBlockInstance(), 1, this.ordinal());
 		}
 
 		public boolean isGround() {

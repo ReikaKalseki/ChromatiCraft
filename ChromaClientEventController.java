@@ -12,7 +12,6 @@ package Reika.ChromatiCraft;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Set;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -77,12 +76,14 @@ import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHotkeys;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityXRays;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionVoidGaze.VoidGazeLevels;
+import Reika.ChromatiCraft.Auxiliary.Render.BlockChangeCache;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.Render.WorldRenderIntercept;
 import Reika.ChromatiCraft.Auxiliary.Tab.FragmentTab;
 import Reika.ChromatiCraft.Auxiliary.Tab.TabChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaBookGui;
+import Reika.ChromatiCraft.Base.ItemBlockChangingWand;
 import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux;
 import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux.Flags;
 import Reika.ChromatiCraft.Block.BlockFakeSky;
@@ -97,7 +98,6 @@ import Reika.ChromatiCraft.Items.Tools.ItemFloatstoneBoots;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
-import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavationWand;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
@@ -216,10 +216,7 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 
 	//public boolean textureLoadingComplete = false;
 
-	private Coordinate excavatorOverlayOrigin;
-	private BlockKey excavatorOverlayBlock;
-	private boolean excavatorOverlaySpread;
-	private BlockArray cachedExcavatorOverlay;
+	private BlockChangeCache wandBlockCache = new BlockChangeCache();
 
 	private final ArrayList<Integer> snowColors = new ArrayList();
 
@@ -1919,25 +1916,20 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 	@SubscribeEvent(receiveCanceled = true)
 	public void drawExcavatorHighlight(DrawBlockHighlightEvent evt) {
 		if (evt.target != null && evt.target.typeOfHit == MovingObjectType.BLOCK) {
-			if (evt.currentItem != null && ChromaItems.EXCAVATOR.matchWith(evt.currentItem)) {
+			if (evt.currentItem != null && evt.currentItem.getItem() instanceof ItemBlockChangingWand) {
 				World world = Minecraft.getMinecraft().theWorld;
 				int x = evt.target.blockX;
 				int y = evt.target.blockY;
 				int z = evt.target.blockZ;
 				BlockKey bk = BlockKey.getAt(world, x, y, z);
+				ItemBlockChangingWand i = (ItemBlockChangingWand)evt.currentItem.getItem();
 
-				if (!ItemExcavationWand.spreadOn(world, x, y, z, bk.blockID, bk.metadata))
+				if (!i.canSpreadOn(world, x, y, z, bk.blockID, bk.metadata))
 					return;
 
-				Coordinate loc = new Coordinate(x, y, z);
-				boolean sp = Minecraft.getMinecraft().thePlayer.isSneaking();
+				EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 
-				if (!loc.equals(excavatorOverlayOrigin) || !bk.equals(excavatorOverlayBlock) || (excavatorOverlaySpread != sp)) {
-					cachedExcavatorOverlay = null;
-				}
-				excavatorOverlayBlock = bk;
-				excavatorOverlayOrigin = loc;
-				excavatorOverlaySpread = sp;
+				wandBlockCache.updateAndVerifyCache(world, x, y, z, bk, ep, evt.currentItem);
 
 				if (bk.blockID != Blocks.air) {
 					GL11.glPushMatrix();
@@ -1945,7 +1937,7 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 					double p4 = y-TileEntityRendererDispatcher.staticPlayerY;
 					double p6 = z-TileEntityRendererDispatcher.staticPlayerZ;
 					GL11.glTranslated(p2, p4, p6);
-					BlockArray blocks = this.getCachedExcavatorOverlay(world, x, y, z, bk.blockID, bk.metadata);
+					BlockArray blocks = wandBlockCache.getCachedOverlay(world, x, y, z, bk.blockID, bk.metadata, ep, evt.currentItem);
 					ReikaRenderHelper.prepareGeoDraw(true);
 					GL11.glDepthMask(false);
 					BlendMode.DEFAULT.apply();
@@ -1954,8 +1946,8 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 					int r = 255;
 					int g = 255;
 					int b = 255;
-					for (int i = 0; i < blocks.getSize(); i++) {
-						Coordinate c = blocks.getNthBlock(i);
+					for (int m = 0; m < blocks.getSize(); m++) {
+						Coordinate c = blocks.getNthBlock(m);
 						int dx = c.xCoord-x;
 						int dy = c.yCoord-y;
 						int dz = c.zCoord-z;
@@ -2034,20 +2026,6 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 				}
 			}
 		}
-	}
-
-	private BlockArray getCachedExcavatorOverlay(World world, int x, int y, int z, Block id, int meta) {
-		if (cachedExcavatorOverlay == null) {
-			cachedExcavatorOverlay = new BlockArray();
-			cachedExcavatorOverlay.maxDepth = ItemExcavationWand.getDepth(Minecraft.getMinecraft().thePlayer)-1;
-			Set<BlockKey> set = ItemExcavationWand.getSpreadBlocks(world, x, y, z);
-			set.add(new BlockKey(id, meta));
-			if (Minecraft.getMinecraft().thePlayer.isSneaking())
-				cachedExcavatorOverlay.extraSpread = true;
-			cachedExcavatorOverlay.taxiCabDistance = true;
-			cachedExcavatorOverlay.recursiveAddMultipleWithBounds(world, x, y, z, set, x-32, y-32, z-32, x+32, y+32, z+32);
-		}
-		return cachedExcavatorOverlay;
 	}
 
 	@SubscribeEvent

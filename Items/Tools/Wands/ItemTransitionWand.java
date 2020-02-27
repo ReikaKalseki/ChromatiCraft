@@ -17,21 +17,25 @@ import net.minecraft.block.BlockLeaves;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.ItemWandBase;
+import Reika.ChromatiCraft.Base.ItemBlockChangingWand;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
-import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.Search.PropagationCondition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -40,7 +44,7 @@ import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ReikaChiselHandler;
 
-public class ItemTransitionWand extends ItemWandBase implements BreakerCallback {
+public class ItemTransitionWand extends ItemBlockChangingWand {
 
 	private static HashMap<Integer, BlockReplace> breakers = new HashMap();
 
@@ -50,7 +54,6 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 	public ItemTransitionWand(int index) {
 		super(index);
 		this.addEnergyCost(CrystalElement.GRAY, 2);
-		this.addEnergyCost(CrystalElement.BROWN, 1);
 	}
 
 	@Override
@@ -83,7 +86,7 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 					if (!this.setOrGetBlockBox(is, x, y, z))
 						return false;
 				}
-				int depth = mode == TransitionMode.VOLUMETRIC || mode == TransitionMode.COLUMN ? Integer.MAX_VALUE : getDepth(ep);
+				int depth = mode == TransitionMode.VOLUMETRIC || mode == TransitionMode.COLUMN ? Integer.MAX_VALUE : this.getDepth(ep);
 				ProgressiveBreaker br = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, depth);
 				br.call = this;
 				br.drops = false;
@@ -109,6 +112,11 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 		return true;
 	}
 
+	@Override
+	public boolean canSpreadOn(World world, int x, int y, int z, Block b, int meta) {
+		return true;
+	}
+
 	private ItemStack parseItemStack(World world, int x, int y, int z) {
 		Block b = world.getBlock(x, y, z);
 		int meta = world.getBlockMetadata(x, y, z);
@@ -117,7 +125,8 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 		return new ItemStack(b, 1, meta);
 	}
 
-	public static int getDepth(EntityPlayer ep) {
+	@Override
+	public int getDepth(EntityPlayer ep) {
 		return canUseBoostedEffect(ep) ? MAX_DEPTH_BOOST : MAX_DEPTH;
 	}
 
@@ -322,6 +331,72 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 			return TransitionMode.list[idx];
 		}
 		return TransitionMode.CONTIGUOUS;
+	}
+
+	@Override
+	public void getSpreadBlocks(World world, int x, int y, int z, BlockArray arr, EntityPlayer ep, ItemStack is) {
+		final BlockKey bk = BlockKey.getAt(world, x, y, z);
+		switch(this.getMode(is)) {
+			case CONTIGUOUS:
+				arr.recursiveAddWithBoundsMetadata(world, x, y, z, bk.blockID, bk.metadata, x-32, y-32, z-32, x+32, y+32, z+32);
+				break;
+			case AIRONLY:
+				PropagationCondition pc = new PropagationCondition() {
+
+					@Override
+					public boolean isValidLocation(IBlockAccess world, int x, int y, int z) {
+						return bk.matchInWorld(world, x, y, z) && ReikaWorldHelper.isExposedToAir(world, x, y, z);
+					}
+
+				};
+				arr.recursiveAddCallbackWithBounds(world, x, y, z, x-32, y-32, z-32, x+32, y+32, z+32, pc);
+				break;
+			case VOLUMETRIC:
+				BlockBox box = this.getStoredBox(is);
+				if (box == null && is.stackTagCompound != null) {
+					NBTTagCompound tag = is.stackTagCompound.getCompoundTag("bbox");
+					if (tag.func_150296_c().size() == 3) {
+						int x0 = tag.getInteger("minx");
+						int y0 = tag.getInteger("miny");
+						int z0 = tag.getInteger("minz");
+						box = new BlockBox(x0, y0, z0, x, y, z);
+					}
+				}
+				if (box != null) {
+					for (int dx = box.minX; dx <= box.maxX; dx++) {
+						for (int dz = box.minZ; dz <= box.maxZ; dz++) {
+							for (int dy = box.minY; dy <= box.maxY; dy++) {
+								if (world.getBlock(dx, dy, dz) != Blocks.air)
+									arr.addBlockCoordinate(dx, dy, dz);
+							}
+						}
+					}
+				}
+				break;
+			case COLUMN:
+				arr.addBlockCoordinate(x, y, z);
+				int d = 1;
+				boolean flag = true;
+				while (flag) {
+					flag = false;
+					if (bk.matchInWorld(world, x, y+d, z)) {
+						arr.addBlockCoordinate(x, y+d, z);
+						flag = true;
+					}
+					d++;
+				}
+				d = 1;
+				flag = true;
+				while (flag) {
+					flag = false;
+					if (bk.matchInWorld(world, x, y-d, z)) {
+						arr.addBlockCoordinate(x, y-d, z);
+						flag = true;
+					}
+					d++;
+				}
+				break;
+		}
 	}
 
 
