@@ -20,7 +20,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -344,7 +343,7 @@ public class ItemTransitionWand extends ItemBlockChangingWand {
 				PropagationCondition pc = new PropagationCondition() {
 
 					@Override
-					public boolean isValidLocation(IBlockAccess world, int x, int y, int z) {
+					public boolean isValidLocation(World world, int x, int y, int z) {
 						return bk.matchInWorld(world, x, y, z) && ReikaWorldHelper.isExposedToAir(world, x, y, z);
 					}
 

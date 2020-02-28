@@ -193,7 +193,7 @@ public class RainbowTreeGenerator {
 				else {
 					w--;
 				}
-				ReikaJavaLibrary.pConsole("j = "+j+"/"+h+", "+(up ? "up" : "down")+" to "+w);
+				//ReikaJavaLibrary.pConsole("j = "+j+"/"+h+", "+(up ? "up" : "down")+" to "+w);
 				int r = w;
 				for (int i = -r; i <= r; i++) {
 					for (int k = -r; k <= r; k++) {

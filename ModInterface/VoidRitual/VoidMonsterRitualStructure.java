@@ -8,7 +8,6 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -742,7 +741,7 @@ public class VoidMonsterRitualStructure extends ChromaStructureBase {
 		}
 
 		@Override
-		public boolean matchInWorld(IBlockAccess world, int x, int y, int z) {
+		public boolean matchInWorld(World world, int x, int y, int z) {
 			if (block.matchInWorld(world, x, y, z)) {
 				TileEntityLumenWire te = (TileEntityLumenWire)world.getTileEntity(x, y, z);
 				return te.getFacing() == facing;

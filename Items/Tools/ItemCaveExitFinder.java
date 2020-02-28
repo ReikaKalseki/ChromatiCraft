@@ -17,7 +17,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Base.ItemChromaTool;
@@ -47,7 +46,7 @@ public class ItemCaveExitFinder extends ItemChromaTool {
 	private static final PropagationCondition pathFinder = new PropagationCondition() {
 
 		@Override
-		public boolean isValidLocation(IBlockAccess world, int x, int y, int z) {
+		public boolean isValidLocation(World world, int x, int y, int z) {
 			Block b = world.getBlock(x, y, z);
 			return b.isAir(world, x, y, z) || b == ChromaBlocks.HOVER.getBlockInstance() || b == Blocks.wooden_door || b == Blocks.iron_door || b == Blocks.iron_bars || b == ChromaBlocks.TRAIL.getBlockInstance() || ReikaBlockHelper.isLiquid(b) || ReikaWorldHelper.softBlocks(world, x, y, z) || ReikaBlockHelper.isLeaf(world, x, y, z);
 		}
@@ -63,7 +62,7 @@ public class ItemCaveExitFinder extends ItemChromaTool {
 		}
 
 		@Override
-		public boolean isValidLocation(IBlockAccess world, int x, int y, int z) {
+		public boolean isValidLocation(World world, int x, int y, int z) {
 			return pathFinder.isValidLocation(world, x, y, z) && y <= startY;
 		}
 

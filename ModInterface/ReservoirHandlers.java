@@ -153,7 +153,7 @@ public class ReservoirHandlers {
 									ChromaFX.poolRecipeParticles(ei);
 								}
 							}
-							else if (ei.ticksExisted > 20 && rand.nextInt(20/ACCEL_FACTOR) == 0 && !isRecentEtherDissolve(te, fs) && (ei.ticksExisted >= 600 || rand.nextInt((600-ei.ticksExisted)/ACCEL_FACTOR) == 0)) {
+							else if (ei.ticksExisted > 20 && rand.nextInt(20/ACCEL_FACTOR) == 0 && !isRecentEtherDissolve(te, fs) && ei.ticksExisted >= 5 && (ei.ticksExisted >= 600 || rand.nextInt((600-ei.ticksExisted)/ACCEL_FACTOR) == 0)) {
 								PoolRecipes.instance.makePoolRecipe(ei, pr, ether, te.xCoord, te.yCoord, te.zCoord);
 								fs.tag = null;
 								return 1000;

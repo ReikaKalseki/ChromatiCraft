@@ -71,6 +71,11 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 	}
 
 	@Override
+	public void markDirty() {
+		super.markDirty();
+	}
+
+	@Override
 	public void writeToNBT(NBTTagCompound NBT) {
 		super.writeToNBT(NBT);
 
@@ -82,6 +87,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 		super.readFromNBT(NBT);
 
 		particles.readFromNBT(NBT);
+		this.markDirty();
 	}
 
 	@Override
@@ -93,6 +99,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 	public void readCopyableData(NBTTagCompound NBT) {
 		particles.readFromNBT(NBT);
 		particles.location = new Coordinate(this);
+		this.markDirty();
 		this.syncAllData(true);
 	}
 
@@ -213,6 +220,11 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 			particleVelocityZ.writeToNBT("speedZ", NBT);
 
 			location.writeToNBT("loc", NBT);
+		}
+
+		public void readFromNBT(NBTTagCompound NBT, TileEntityParticleSpawner te) {
+			this.readFromNBT(NBT);
+			location = new Coordinate(te);
 		}
 
 		public void readFromNBT(NBTTagCompound NBT) {

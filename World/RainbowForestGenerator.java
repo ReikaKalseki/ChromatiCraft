@@ -26,6 +26,8 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 
 public class RainbowForestGenerator extends WorldGenerator {
 
+	private static final boolean GENERATE_SMALL_RAINBOW_TREES = true;
+
 	//private static Simplex3DGenerator colorOffsetNoise;
 
 	@Override
@@ -35,8 +37,10 @@ public class RainbowForestGenerator extends WorldGenerator {
 			//TreeShaper.getInstance().generateTallTree(world, x, y, z);
 			ReikaDyeHelper color = getColor(x, y, z);
 			if (random.nextInt(10) == 0) {
+				boolean generated = false;
 				if (RainbowTreeGenerator.getInstance().checkRainbowTreeSpace(world, x, y, z)) {
 					RainbowTreeGenerator.getInstance().generateLargeRainbowTree(world, x, y, z, random);
+					generated = true;
 					if (ModList.THAUMCRAFT.isLoaded() && ChromaOptions.ETHEREAL.getState()) {
 						for (int i = 0; i < 8; i++) {
 							int dx = ReikaRandomHelper.getRandomPlusMinus(x, 6);
@@ -56,7 +60,10 @@ public class RainbowForestGenerator extends WorldGenerator {
 						}
 					}
 				}
-				else {
+				else if (GENERATE_SMALL_RAINBOW_TREES && random.nextInt(5) == 0) {
+					generated = RainbowTreeGenerator.getInstance().tryGenerateSmallRainbowTree(world, x, y, z, random);
+				}
+				if (!generated) {
 					TreeShaper.getInstance().generateRandomWeightedTree(world, x, y, z, color, false);
 				}
 			}

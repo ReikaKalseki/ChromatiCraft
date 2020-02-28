@@ -18,6 +18,7 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -55,6 +56,8 @@ public class GuiParticleSpawner extends GuiChromaBase {
 	private float saturation;
 	private float luminosity;
 	private int color;
+
+	private GuiTextField filename;
 
 	private static ArrayList<IconEnum> permittedIcons = new ArrayList();
 
@@ -163,9 +166,6 @@ public class GuiParticleSpawner extends GuiChromaBase {
 			buttonList.add(new CustomSoundImagedGuiButton(i, x, y, 20, 20, u, v, file, ChromatiCraft.class, this));
 		}
 
-		buttonList.add(new CustomSoundImagedGuiButton(-1, j+n, k+n+20*GuiPage.list.length, 20, 20, 152, 173, file, ChromatiCraft.class, this));
-		buttonList.add(new CustomSoundImagedGuiButton(-2, j+n, k+n+20+20*GuiPage.list.length, 20, 20, 152, 193, file, ChromatiCraft.class, this));
-
 		switch(page) {
 			case POSITION:
 			case VELOCITY:
@@ -244,6 +244,19 @@ public class GuiParticleSpawner extends GuiChromaBase {
 					buttonList.add(b);
 				}
 				break;
+			case SAVELOAD:
+				int d = 4;
+				buttonList.add(new CustomSoundImagedGuiButton(-1, j+31+d, k+124, 20, 20, 152, 173, file, ChromatiCraft.class, this));
+				buttonList.add(new CustomSoundImagedGuiButton(-2, j+31-d+xSize-40-18, k+124, 20, 20, 152, 193, file, ChromatiCraft.class, this));
+
+				String s = "";
+				if (filename != null)
+					s = filename.getText();
+				filename = new GuiTextField(fontRendererObj, j+32, k+106, xSize-40, 16);
+				filename.setMaxStringLength(112);
+				filename.setFocused(false);
+				filename.setText(s);
+				break;
 		}
 	}
 
@@ -312,6 +325,8 @@ public class GuiParticleSpawner extends GuiChromaBase {
 					case MODIFIER:
 						this.handleModifierButton(b.id-100);
 						break;
+					case SAVELOAD:
+						break;
 				}
 			}
 		}
@@ -321,7 +336,7 @@ public class GuiParticleSpawner extends GuiChromaBase {
 
 	private void saveProgram() throws IOException {
 		NBTTagCompound tag = new NBTTagCompound();
-		tile.particles.writeToNBT(tag);
+		tile.writeCopyableData(tag);
 		ParticleFile nf = new ParticleFile(this.getFile());
 		nf.data = tag;
 		nf.save();
@@ -331,8 +346,9 @@ public class GuiParticleSpawner extends GuiChromaBase {
 		NBTTagCompound tag = new NBTTagCompound();
 		ParticleFile nf = new ParticleFile(this.getFile());
 		nf.load();
-		if (nf.data != null)
-			tile.particles.readFromNBT(nf.data);
+		if (nf.data != null) {
+			tile.particles.readFromNBT(nf.data, tile);
+		}
 	}
 
 	private File getFolder() {
@@ -340,7 +356,7 @@ public class GuiParticleSpawner extends GuiChromaBase {
 	}
 
 	private File getFile() {
-		return new File(this.getFolder(), DragonAPICore.rand.nextLong()+".par");
+		return new File(this.getFolder(), filename.getText()+".par");
 	}
 
 	private void handleModifierButton(int i) {
@@ -610,6 +626,17 @@ public class GuiParticleSpawner extends GuiChromaBase {
 	@Override
 	protected void mouseClicked(int x, int y, int b) {
 		super.mouseClicked(x, y, b);
+		if (page == GuiPage.SAVELOAD)
+			filename.mouseClicked(x, y, b);
+	}
+
+	@Override
+	protected void keyTyped(char c, int i){
+		if (i != mc.gameSettings.keyBindInventory.getKeyCode() && (filename == null || !filename.isFocused()))
+			super.keyTyped(c, i);
+
+		if (page == GuiPage.SAVELOAD)
+			filename.textboxKeyTyped(c, i);
 	}
 
 	@Override
@@ -618,6 +645,41 @@ public class GuiParticleSpawner extends GuiChromaBase {
 
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
+
+		if (page == GuiPage.SAVELOAD) {
+			api.drawCenteredStringNoShadow(fontRendererObj, "Particle File:", j+xSize/2, k+20, 0x00ff00);
+
+			String path = this.getFile().getParentFile().getAbsolutePath().replace("\\.\\", "\\")+"\\";
+			//String[] split = path.split("\\\\");
+			ArrayList<String> li = new ArrayList();
+			int lastFolder = -1;
+			int i0 = 0;
+			for (int i = 0; i < path.length(); i++) {
+				char c = path.charAt(i);
+				if (c == '\\') {
+					lastFolder = i;
+				}
+				if (i-i0 >= 24) {
+					li.add(path.substring(i0, lastFolder+1));
+					i0 = lastFolder+1;
+				}
+			}
+			li.add(path.substring(i0));
+
+			li.remove(".");
+			for (int i = 0; i < li.size(); i++) {
+				String s = li.get(i);
+				//if (i < li.size()-1)
+				//	s = s+"\\";
+				fontRendererObj.drawString(s, j+35, k+31+i*(fontRendererObj.FONT_HEIGHT+1), 0xffffff);
+			}
+			filename.drawTextBox();
+			if (!filename.isFocused()) {
+				//	fontRendererObj.drawString(input.getText(), input.xPosition+4, input.yPosition+4, 0xa0a0a0);
+			}
+			int dx = fontRendererObj.getStringWidth(filename.getText());
+			//fontRendererObj.drawString(".par", filename.xPosition+4+dx, filename.yPosition+4, 0xffffff);
+		}
 
 		int i = 0;
 		int sy = page == GuiPage.MODIFIER || page == GuiPage.COLOR ? 20 : 24;
@@ -658,7 +720,8 @@ public class GuiParticleSpawner extends GuiChromaBase {
 		COLOR(),
 		ICON(),
 		TIMING(), //life, rate
-		MODIFIER(); //gravity, size, collision
+		MODIFIER(),
+		SAVELOAD(); //gravity, size, collision
 
 		private static final GuiPage[] list = values();
 
@@ -711,6 +774,8 @@ public class GuiParticleSpawner extends GuiChromaBase {
 					options.add(new ToggleOption("Collision", p.particles.particleCollision));
 					options.add(new ToggleOption("Fast Expand", p.particles.rapidExpand));
 					options.add(new ToggleOption("No Slowdown", p.particles.noSlowdown));
+					break;
+				case SAVELOAD:
 					break;
 			}
 		}

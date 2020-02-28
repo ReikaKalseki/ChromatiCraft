@@ -58,7 +58,7 @@ public class TileEntityHoverPad extends TileEntityChromaticBase {
 	private final PlayerMap<Vec3> playerVelocities = new PlayerMap();
 
 	@SideOnly(Side.CLIENT)
-	private ParticleMode playerParticles;
+	private ParticleField playerParticles;
 	private int particleBoost = 20;
 	private int particleExpiry = 100;
 
@@ -228,10 +228,11 @@ public class TileEntityHoverPad extends TileEntityChromaticBase {
 
 	@SideOnly(Side.CLIENT)
 	private void updateMode(ParticleMode to) {
-		ParticleMode prev = playerParticles;
-		playerParticles = to;
-		if (prev != to)
+		ParticleMode prev = playerParticles != null ? playerParticles.mode : null;
+		if (prev != to) {
+			playerParticles = new ParticleField(to);
 			playerParticles.initParticleVectors(this);
+		}
 	}
 
 	private static enum ParticleMode {
@@ -246,10 +247,6 @@ public class TileEntityHoverPad extends TileEntityChromaticBase {
 		public final float particleGravity;
 		public final int particleModulo;
 		public final int particleCount;
-
-		private double particleX[];
-		private double particleY[];
-		private double particleZ[];
 
 		private static final ParticleMode[] list = values();
 
@@ -266,10 +263,24 @@ public class TileEntityHoverPad extends TileEntityChromaticBase {
 			return Math.max(1, base);
 		}
 
+	}
+
+	private static class ParticleField {
+
+		private final ParticleMode mode;
+
+		private double particleX[];
+		private double particleY[];
+		private double particleZ[];
+
+		private ParticleField(ParticleMode m) {
+			mode = m;
+		}
+
 		private void initParticleVectors(TileEntityHoverPad te) {
-			particleX = new double[this.getParticleRate(te)];
-			particleY = new double[this.getParticleRate(te)];
-			particleZ = new double[this.getParticleRate(te)];
+			particleX = new double[mode.getParticleRate(te)];
+			particleY = new double[mode.getParticleRate(te)];
+			particleZ = new double[mode.getParticleRate(te)];
 			this.randomizeParticleLocations(te);
 		}
 
@@ -284,9 +295,9 @@ public class TileEntityHoverPad extends TileEntityChromaticBase {
 
 		@SideOnly(Side.CLIENT)
 		private void doParticles(World world, int x, int y, int z, TileEntityHoverPad te) {
-			int n = this.getParticleRate(te);
+			int n = mode.getParticleRate(te);
 			for (int i = 0; i < n; i++) {
-				if ((te.getTicksExisted()+i*particleModulo/n)%particleModulo == 0) {
+				if ((te.getTicksExisted()+i*mode.particleModulo/n)%mode.particleModulo == 0) {
 					AxisAlignedBB box = te.hoverBox.getRandomComponentBox(true);
 					particleX[i] = ReikaRandomHelper.getRandomBetween(box.minX, box.maxX);
 					particleY[i] = ReikaRandomHelper.getRandomBetween(box.minY, box.maxY);
@@ -295,18 +306,18 @@ public class TileEntityHoverPad extends TileEntityChromaticBase {
 				float s = 1.5F;//+rand.nextFloat();
 				int l = 25;//60+rand.nextInt(40);
 				float g = 0;//mode.particleGravity*1.5F;
-				int c = particleColor;
-				double v = -particleGravity*2;
+				int c = mode.particleColor;
+				double v = -mode.particleGravity*2;
 				double vx = 0;
 				double vz = 0;
-				if (this == MOVE) {
+				if (mode == ParticleMode.MOVE) {
 					double dv = 0.05;
 					EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 					double dd = ReikaMathLibrary.py3d(ep.motionX, 0, ep.motionZ);
 					vx = ep.motionX/dd*dv;
 					vz = ep.motionZ/dd*dv;
 				}
-				if (this == DISABLED) {
+				if (mode == ParticleMode.DISABLED) {
 					l *= 0.4;
 					s *= 0.8;
 				}

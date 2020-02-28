@@ -13,7 +13,6 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
@@ -36,7 +35,7 @@ public class ChromaCheck implements TileEntityCheck {
 	}
 
 	@Override
-	public boolean matchInWorld(IBlockAccess world, int x, int y, int z) {
+	public boolean matchInWorld(World world, int x, int y, int z) {
 		Block b = world.getBlock(x, y, z);
 		if (b == ChromaBlocks.CHROMA.getBlockInstance()) {
 			TileEntityChroma te = (TileEntityChroma)world.getTileEntity(x, y, z);
