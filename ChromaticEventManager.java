@@ -181,6 +181,7 @@ import Reika.ChromatiCraft.World.Dimension.ChromaDimensionTicker;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.ChromatiCraft.World.Dimension.WorldProviderChroma;
 import Reika.ChromatiCraft.World.Dimension.Structure.BridgeGenerator;
+import Reika.CritterPet.Interfaces.TamedMob;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.ModList;
@@ -2045,9 +2046,14 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent(priority=EventPriority.LOWEST)
 	public void rangedInvincibility(LivingAttackEvent evt) {
-		if (evt.entityLiving instanceof EntityPlayer && !((EntityPlayer)evt.entityLiving).capabilities.isCreativeMode) {
-			if (evt.ammount > 0 && TileEntityCrystalBeacon.isDamageBlockable(evt.source)) {
+		if (evt.ammount > 0 && TileEntityCrystalBeacon.isDamageBlockable(evt.source)) {
+			if (evt.entityLiving instanceof EntityPlayer && !((EntityPlayer)evt.entityLiving).capabilities.isCreativeMode) {
 				if (TileEntityCrystalBeacon.isPlayerInvincible((EntityPlayer)evt.entityLiving, evt.ammount)) {
+					evt.setCanceled(true);
+				}
+			}
+			else if (evt.entityLiving instanceof TamedMob) {
+				if (TileEntityCrystalBeacon.isEntityInvincible((EntityLiving)evt.entityLiving, ((TamedMob)evt.entityLiving).getMobOwner(), evt.ammount)) {
 					evt.setCanceled(true);
 				}
 			}

@@ -242,7 +242,7 @@
 	</fabricator>
 	<beacon>
 		<desc>
-			After an unfortunate encounter with an engine intake, you have been desperately seeking a way to protect yourself from the more hazardous situations you always seem to end up in. Recalling the enormous protective power of %s crystal energy to protect, you try building a beacon that radiates the energy into the air. As long as it stays supplied with energy - not an easy task, given the large energy expenditure - you may well be impossible to kill.
+			After an unfortunate encounter with an engine intake, you have been desperately seeking a way to protect yourself from the more hazardous situations you always seem to end up in. Recalling the enormous protective power of %s crystal energy to protect, you try building a beacon that radiates the energy into the air. As long as it stays supplied with energy - not an easy task, given the large energy expenditure - you may well be impossible to kill. Hopefully this should extend to any creatures you keep around, to avoid you having to constantly replace your pets as they wander into assorted machinery.
 		</desc>
 		<note>
 			Uses %dn^%d lumens per half-heart of damage

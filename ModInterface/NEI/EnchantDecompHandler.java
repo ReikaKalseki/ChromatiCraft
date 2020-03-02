@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -108,7 +108,15 @@ public class EnchantDecompHandler extends TemplateRecipeHandler {
 
 	@Override
 	public void loadCraftingRecipes(String outputId, Object... results) {
+		boolean flag = false;
 		if (outputId != null && outputId.equals("ccenchantdecomp")) {
+			flag = true;
+		}
+		else if (outputId != null && outputId.equals("liquid")) {
+			FluidStack fs = (FluidStack)results[0];
+			flag |= fs != null && fs.getFluid() == ChromatiCraft.chroma;
+		}
+		if (flag) {
 			for (int i = 0; i < Enchantment.enchantmentsList.length; i++) {
 				Enchantment e = Enchantment.enchantmentsList[i];
 				if (e != null) {

@@ -86,7 +86,7 @@ public class ReservoirHandlers {
 						ei.setDead();
 					flag = true;
 				}
-				else if (!te.worldObj.isRemote && rand.nextInt(2) == 0 && ether < TileEntityChroma.ETHER_SATURATION && ReikaItemHelper.matchStacks(is, ChromaStacks.etherBerries)) {
+				else if (!te.worldObj.isRemote && getRecentEtherDissolve(te, fs) >= 2 && ether < TileEntityChroma.ETHER_SATURATION && ReikaItemHelper.matchStacks(is, ChromaStacks.etherBerries)) {
 					if (fs.tag == null)
 						fs.tag = new NBTTagCompound();
 					if (ether < TileEntityChroma.ETHER_SATURATION && is.stackSize > 0) {
@@ -153,7 +153,7 @@ public class ReservoirHandlers {
 									ChromaFX.poolRecipeParticles(ei);
 								}
 							}
-							else if (ei.ticksExisted > 20 && rand.nextInt(20/ACCEL_FACTOR) == 0 && !isRecentEtherDissolve(te, fs) && ei.ticksExisted >= 5 && (ei.ticksExisted >= 600 || rand.nextInt((600-ei.ticksExisted)/ACCEL_FACTOR) == 0)) {
+							else if (ei.ticksExisted > 20 && rand.nextInt(20/ACCEL_FACTOR) == 0 && getRecentEtherDissolve(te, fs) >= 5 && ei.ticksExisted >= 5 && (ei.ticksExisted >= 600 || rand.nextInt((600-ei.ticksExisted)/ACCEL_FACTOR) == 0)) {
 								PoolRecipes.instance.makePoolRecipe(ei, pr, ether, te.xCoord, te.yCoord, te.zCoord);
 								fs.tag = null;
 								return 1000;
@@ -169,8 +169,9 @@ public class ReservoirHandlers {
 
 	}
 
-	private static boolean isRecentEtherDissolve(TileEntity te, FluidStack fs) {
-		return fs.tag != null && fs.tag.getLong("etherdissolve")+5 >= te.getWorldObj().getTotalWorldTime();
+	private static long getRecentEtherDissolve(TileEntity te, FluidStack fs) {
+		long val = fs.tag != null ? fs.tag.getLong("etherdissolve") : 0;
+		return te.getWorldObj().getTotalWorldTime()-val;
 	}
 
 }

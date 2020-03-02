@@ -131,7 +131,7 @@ public class BoostedLumenTreeStructure extends LumenTreeStructure {
 		array.setBlock(x, y-14, z-2, crystalstone, StoneTypes.GROOVE2.ordinal());
 		array.setBlock(x+1, y-14, z-2, crystalstone, StoneTypes.GROOVE2.ordinal());
 
-		Block c = ChromaBlocks.CHROMA.getBlockInstance();
+		Block c = ChromaBlocks.MOLTENLUMEN.getBlockInstance();
 
 		array.setBlock(x-3, y-13, z, c, 0);
 		array.setBlock(x-3, y-13, z-1, c, 0);

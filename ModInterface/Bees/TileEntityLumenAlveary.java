@@ -383,10 +383,11 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 					}
 				}
 				else if (!Strings.isNullOrEmpty(movePrincess)) {
-					if (energy.containsAtLeast(automation.color, automation.requiredEnergy)) {
-						this.cycleBees(movePrincess);
-						movePrincess = null;
-						this.drainEnergy(automation.color, automation.requiredEnergy);
+					if (this.isEffectSelectedAndActive(automation) && energy.containsAtLeast(automation.color, automation.requiredEnergy)) {
+						if (this.cycleBees(movePrincess)) {
+							movePrincess = null;
+							this.drainEnergy(automation.color, automation.requiredEnergy);
+						}
 					}
 				}
 			}
@@ -584,7 +585,8 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 		IAlleleBeeSpecies bee = this.getSpecies();
 		if (bee == null)
 			ChromatiCraft.logger.logError("Alveary called onQueenDeath with a null queen!");
-		movePrincess = bee != null ? bee.getUID() : null;
+		if (bee != null)
+			movePrincess = bee.getUID();
 		if (energy.containsAtLeast(geneRepair2.color, geneRepair2.requiredEnergy)) {
 			if (geneRepair2.repairQueen(this))
 				energy.subtract(geneRepair2.color, geneRepair2.requiredEnergy);
@@ -594,12 +596,13 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 		canWork = false;
 	}
 
-	private void cycleBees(String species) {
+	private boolean cycleBees(String species) {
 		//ReikaJavaLibrary.pConsole("Cycling "+movePrincess);
 		IBeeHousing ibh = this.getBeeHousing();
 		IBeeHousingInventory ibhi = ibh.getBeeInventory();
 		ISidedInventory inv = (ISidedInventory)ibhi;
 		ItemStack drone = ibhi.getDrone();
+		boolean flag2 = false;
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
 			ItemStack in = inv.getStackInSlot(i);
 			if (in != null) {
@@ -615,6 +618,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 					if (type == EnumBeeType.PRINCESS && ibhi.getQueen() == null && sp.getUID().equals(species)) {
 						ibhi.setQueen(in);
 						inv.setInventorySlotContents(i, null);
+						flag2 = true;
 					}
 					else if (type == EnumBeeType.DRONE && ReikaItemHelper.areStacksCombinable(drone, in, inv.getInventoryStackLimit())) {
 						int amt = Math.min(drone.getMaxStackSize()-drone.stackSize, in.stackSize);
@@ -623,14 +627,19 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 						in.stackSize -= amt;
 						if (in.stackSize == 0)
 							inv.setInventorySlotContents(i, null);
+						flag2 = true;
 					}
 					else if (type == EnumBeeType.DRONE && drone == null && sp.getUID().equals(species)) {
 						ibhi.setDrone(in);
 						inv.setInventorySlotContents(i, null);
+						flag2 = true;
 					}
 				}
 			}
+			if (flag2)
+				break;
 		}
+		return flag2;
 	}
 
 	@Override
@@ -1349,7 +1358,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 			//max of 16 ticks per tick, so no massive changes (eg 2 prod cycles), and no ingame time passage,
 			//and thus only possible change to canWork is queen death, and even that is called by canWork
 			boolean work = bkl.canWork();
-			for (int i = 0; work && te.canQueenWork() && i < tickRate; i++) {
+			for (int i = 0; work && te.canQueenWork() && i < tickRate*1024; i++) {
 				//te.tickAlveary();
 				bkl.doWork();
 			}

@@ -14,6 +14,8 @@ import java.util.Random;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -230,6 +232,27 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 	}
 
 	public static boolean isPlayerInvincible(EntityPlayer ep, float dmg) {
+		if (updateDamageNBT(ep, dmg))
+			return true;
+		for (WorldLocation loc : cache) {
+			if (loc.dimensionID == ep.worldObj.provider.dimensionId) {
+				TileEntityCrystalBeacon te = (TileEntityCrystalBeacon)loc.getTileEntity(ep.worldObj);
+				int r = te.getRange();
+				if (Math.abs(ep.posY-loc.yCoord) <= r/2) {
+					if (loc.getDistanceTo(ep) <= r) {
+						if (te.isPlacer(ep) && te.prevent(dmg)) {
+							ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
+							return true;
+						}
+					}
+				}
+			}
+		}
+		ep.getEntityData().removeTag(NBT_TAG);
+		return false;
+	}
+
+	private static boolean updateDamageNBT(EntityLivingBase ep, float dmg) {
 		NBTTagCompound tag = ep.getEntityData().getCompoundTag(NBT_TAG);
 		ep.getEntityData().setTag(NBT_TAG, tag);
 		if (ep.worldObj.provider.dimensionId != tag.getInteger("dimension")) {
@@ -245,14 +268,20 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 		}
 		tag.setFloat("damage", dmg);
 		tag.setInteger("dimension", ep.worldObj.provider.dimensionId);
+		return false;
+	}
+
+	public static boolean isEntityInvincible(EntityLiving ep, String owner, float dmg) {
+		if (updateDamageNBT(ep, dmg))
+			return true;
 		for (WorldLocation loc : cache) {
 			if (loc.dimensionID == ep.worldObj.provider.dimensionId) {
 				TileEntityCrystalBeacon te = (TileEntityCrystalBeacon)loc.getTileEntity(ep.worldObj);
 				int r = te.getRange();
 				if (Math.abs(ep.posY-loc.yCoord) <= r/2) {
 					if (loc.getDistanceTo(ep) <= r) {
-						if (te.isPlacer(ep) && te.prevent(dmg)) {
-							ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
+						String n = te.getPlacerName();
+						if (n != null && n.equals(owner) && te.prevent(dmg)) {
 							return true;
 						}
 					}

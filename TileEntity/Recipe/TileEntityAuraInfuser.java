@@ -23,7 +23,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidHandler;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.MultiBlockCheck;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.FocusAcceleratable;
@@ -54,6 +59,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -65,7 +71,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 @Strippable(value={"buildcraft.api.transport.IPipeConnection"})
 public abstract class TileEntityAuraInfuser extends InventoriedChromaticBase implements ItemOnRightClick, ItemCollision, OwnedTile, InertIInv,
-IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable, LocationCached {
+IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable, LocationCached, IFluidHandler {
 
 	private InertItem item;
 
@@ -80,6 +86,8 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable, Lo
 
 	private int focusCrystalTotal;
 	private boolean allExquisite = false;
+
+	private int fluidCooldown = 0;
 
 	protected final HashSet<Coordinate> focusCrystalSpots = new HashSet();
 	private final ArrayList<Coordinate> chromaLocations = new ArrayList();
@@ -100,6 +108,11 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable, Lo
 		}
 		else {
 			craftingTick = 0;
+		}
+
+		if (!world.isRemote) {
+			if (fluidCooldown > 0)
+				fluidCooldown--;
 		}
 
 		if (world.isRemote && hasStructure) {
@@ -133,8 +146,8 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable, Lo
 		struct.getStructure().resetToDefaults();
 		FilledBlockArray arr = struct.getArray(worldObj, xCoord, yCoord, zCoord);
 		hasStructure = arr.matchInWorld();
+		this.collectChromaLocations(arr);
 		if (hasStructure) {
-			this.collectChromaLocations(arr);
 			this.collectFocusCrystalLocations(arr);
 			this.countFocusCrystals(arr);
 		}
@@ -518,6 +531,49 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable, Lo
 
 	public static Set<WorldLocation> getCache() {
 		return Collections.unmodifiableSet(cache);
+	}
+
+	@Override
+	public final int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
+		return this.canFill(from, resource.getFluid()) && resource.amount >= 1000 && (!doFill || this.tryAddBucketToStructure()) ? 1000 : 0;
+	}
+
+	private boolean tryAddBucketToStructure() {
+		Collection<Coordinate> li = this.getChromaLocations();
+		for (Coordinate c : li) {
+			if (c.getBlock(worldObj).isAir(worldObj, c.xCoord, c.yCoord, c.zCoord) || (c.getBlock(worldObj) == ChromaBlocks.CHROMA.getBlockInstance() && c.getBlockMetadata(worldObj) != 0)) {
+				c.setBlock(worldObj, ChromaBlocks.CHROMA.getBlockInstance());
+				ReikaSoundHelper.playSoundFromServerAtBlock(worldObj, c.xCoord, c.yCoord, c.zCoord, "game.neutral.swim", 1, 0.5F+rand.nextFloat(), true);
+				fluidCooldown = 2;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public final FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
+		return null;
+	}
+
+	@Override
+	public final FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
+		return null;
+	}
+
+	@Override
+	public final boolean canFill(ForgeDirection from, Fluid fluid) {
+		return fluidCooldown == 0 && fluid == ChromatiCraft.chroma && !worldObj.isRemote;
+	}
+
+	@Override
+	public final boolean canDrain(ForgeDirection from, Fluid fluid) {
+		return false;
+	}
+
+	@Override
+	public final FluidTankInfo[] getTankInfo(ForgeDirection from) {
+		return new FluidTankInfo[0];
 	}
 
 }
