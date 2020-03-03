@@ -39,6 +39,7 @@ import net.minecraftforge.fluids.IFluidHandler;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.ISBRH.TankBlockRenderer;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
@@ -91,6 +92,8 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
 		ItemStack is = ep.getCurrentEquippedItem();
 		if (ChromaBlocks.TANK.match(is))
+			return false;
+		if (ChromaItems.TRANSITION.matchWith(is))
 			return false;
 		CrystalTankAuxTile te = (CrystalTankAuxTile)world.getTileEntity(x, y, z);
 		TileEntityCrystalTank tk = te.getTankController();

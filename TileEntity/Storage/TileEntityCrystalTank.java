@@ -70,6 +70,8 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 
 	private double capacityIncreaseFactor = 0;
 
+	private boolean capacityUpdatePaused = false;
+
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		//ReikaJavaLibrary.pConsole(this.getCapacity()/1000+":"+tank);
@@ -249,8 +251,22 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 				lighting.setArray(blocks);
 		}
 		this.updateBoostFactor();
+		if (!capacityUpdatePaused)
+			this.applyTankCapacity();
+	}
+
+	public void applyTankCapacity() {
 		if (tank.getLevel() > this.getCapacity())
 			tank.setContents(this.getCapacity(), fluidType);
+	}
+
+	public void pauseCapacityUpdate() {
+		capacityUpdatePaused = true;
+	}
+
+	public void unpauseCapacityUpdate() {
+		capacityUpdatePaused = false;
+		this.applyTankCapacity();
 	}
 
 	@Override

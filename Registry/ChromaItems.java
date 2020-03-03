@@ -54,6 +54,8 @@ import Reika.ChromatiCraft.Items.Tools.ItemCrystalPotion;
 import Reika.ChromatiCraft.Items.Tools.ItemDataCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemDoorKey;
 import Reika.ChromatiCraft.Items.Tools.ItemEfficiencyCrystal;
+import Reika.ChromatiCraft.Items.Tools.ItemEnderBucket;
+import Reika.ChromatiCraft.Items.Tools.ItemEnderBucket.BucketMode;
 import Reika.ChromatiCraft.Items.Tools.ItemEnderCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemFloatstoneBoots;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
@@ -189,6 +191,7 @@ public enum ChromaItems implements ItemEnum {
 	STRUCTMAP(52, false,	"chroma.structmap",		ItemStructureMap.class),
 	PROBE(53, true,			"chroma.probe",			ItemCrystalProbe.class),
 	TELEGATELOCK(63, false,	"chroma.telegatelock",	ItemTeleGateLock.class),
+	ENDERBUCKET(64, true,	"chroma.enderbucket",	ItemEnderBucket.class),
 	;
 
 	private final int index;
@@ -339,6 +342,8 @@ public enum ChromaItems implements ItemEnum {
 				return StatCollector.translateToLocal("chromaunknownartefact."+ItemUnknownArtefact.ArtefactTypes.list[meta].name().toLowerCase(Locale.ENGLISH));
 			case FERTILITYSEED:
 				return this.getBasicName();
+			case ENDERBUCKET:
+				return this.getBasicName()+" ("+BucketMode.list[meta].displayName+" Mode)";
 			default:
 				break;
 		}
@@ -438,6 +443,8 @@ public enum ChromaItems implements ItemEnum {
 				return ItemUnknownArtefact.ArtefactTypes.list.length;
 			case FERTILITYSEED:
 				return 7;
+			case ENDERBUCKET:
+				return 2;
 			default:
 				throw new RegistrationException(ChromatiCraft.instance, "Item "+name+" has subtypes but the number was not specified!");
 		}

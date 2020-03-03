@@ -49,6 +49,7 @@ import Reika.ChromatiCraft.Container.ContainerTelePump;
 import Reika.ChromatiCraft.GUI.GuiAbilitySelect;
 import Reika.ChromatiCraft.GUI.GuiAuraPouch;
 import Reika.ChromatiCraft.GUI.GuiBulkMover;
+import Reika.ChromatiCraft.GUI.GuiEnderBucket;
 import Reika.ChromatiCraft.GUI.GuiFlightWand;
 import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
 import Reika.ChromatiCraft.GUI.GuiItemBurner;
@@ -377,6 +378,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiItemBurner(player);
 			case STRUCTUREPASS:
 				return new GuiStructurePassword(player, (TileEntityStructurePassword)world.getTileEntity(x, y, z));
+			case ENDERBUCKET:
+				return new GuiEnderBucket(player);
 		}
 		return null;
 	}

@@ -735,7 +735,7 @@ public class TileEntityPylonTurboCharger extends TileEntityPylonEnhancer {
 	private boolean checkPylon(World world, int x, int y, int z) {
 		TileEntityCrystalPylon te = this.getPylon(world, x, y, z);
 		if (te != null) {
-			return !te.isEnhanced() && te.getEnergy(te.getColor()) >= (TileEntityCrystalPylon.MAX_ENERGY*3/4) && te.canConduct() && te.getBoosterCrystals(world, x, y+8, z, true).size() == 8;
+			return !te.isEnhanced() && te.getEnergy(te.getColor()) >= (TileEntityCrystalPylon.MAX_ENERGY*3/4) && te.canConduct() && te.getBoosterCrystals(world, x, y+8, z, true).size() == 8 && te.worldObj.canBlockSeeTheSky(te.xCoord, te.yCoord+1, te.zCoord);
 		}
 		return false;
 	}

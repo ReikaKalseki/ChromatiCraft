@@ -42,6 +42,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ClassDependent;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Interfaces.TileEntity.ThermalTile;
@@ -54,13 +55,16 @@ import Reika.DragonAPI.ModInteract.DeepInteract.TinkerSmelteryHandler.CastingBlo
 import Reika.DragonAPI.ModInteract.DeepInteract.TinkerSmelteryHandler.SmelteryWrapper;
 import Reika.DragonAPI.ModInteract.Power.ReikaRailCraftHelper;
 import Reika.DragonAPI.ModInteract.Power.ReikaRailCraftHelper.FireboxWrapper;
+import Reika.DragonAPI.ModRegistry.InterfaceCache;
 import Reika.ReactorCraft.Auxiliary.ReactorCoreTE;
 import Reika.RotaryCraft.API.Interfaces.BasicTemperatureMachine;
 import Reika.RotaryCraft.Auxiliary.Interfaces.TemperatureTE;
 
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import ic2.api.energy.tile.IHeatSource;
+import tuhljin.automagy.api.essentia.IEssentiaDistillery;
 
 public class BlockHeatLamp extends BlockAttachableMini {
 
@@ -201,6 +205,18 @@ public class BlockHeatLamp extends BlockAttachableMini {
 			else if (ModList.THAUMCRAFT.isLoaded() && !this.isCold() && temperature >= 200 && ReikaThaumHelper.isAlchemicalFurnace(te)) {
 				ReikaThaumHelper.setAlchemicalBurnTime(te, temperature/50);
 			}
+			else if (ModList.THAUMCRAFT.isLoaded() && !this.isCold() && temperature >= 200 && ReikaThaumHelper.isAlchemicalFurnace(te)) {
+				ReikaThaumHelper.setAlchemicalBurnTime(te, temperature/50);
+			}
+			else if (Loader.isModLoaded("Automagy") && !this.isCold() && temperature >= 200 && InterfaceCache.ESSENTIADISTILL.instanceOf(te)) {
+				this.setEssentiaDistillery(te);
+			}
+		}
+
+		@ClassDependent("tuhljin.automagy.api.essentia.IEssentiaDistillery")
+		private void setEssentiaDistillery(TileEntity te) {
+			IEssentiaDistillery ied = (IEssentiaDistillery)te;
+			ied.setFurnaceBurnTime(Math.max(ied.getFurnaceBurnTime(), temperature/50));
 		}
 
 		private boolean isCold() {

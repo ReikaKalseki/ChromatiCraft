@@ -83,6 +83,7 @@ import Reika.ChromatiCraft.Items.ItemUnknownArtefact;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
 import Reika.ChromatiCraft.Items.Tools.ItemBulkMover;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
+import Reika.ChromatiCraft.Items.Tools.ItemEnderBucket;
 import Reika.ChromatiCraft.Items.Tools.Powered.ItemStructureFinder;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemFlightWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
@@ -1105,6 +1106,9 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case LAUNCHFIRE:
 					((TileEntityLaunchPad)tile).doFX(world, x, y, z);
+					break;
+				case ENDERBUCKETLINK:
+					((ItemEnderBucket)ep.getCurrentEquippedItem().getItem()).setLinkIndex(ep.getCurrentEquippedItem(), data[0]);
 					break;
 			}
 		}

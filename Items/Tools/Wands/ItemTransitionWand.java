@@ -25,9 +25,12 @@ import net.minecraft.world.WorldServer;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemBlockChangingWand;
+import Reika.ChromatiCraft.Block.BlockCrystalTank.CrystalTankAuxTile;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
@@ -184,6 +187,13 @@ public class ItemTransitionWand extends ItemBlockChangingWand {
 		if (r != null) {
 			boolean exists = world.getPlayerEntityByName(r.player.getCommandSenderName()) != null;
 			if (exists) {
+				if (this.isUpgradingTank(world, x, y, z, id, meta, r)) {
+					CrystalTankAuxTile te = (CrystalTankAuxTile)world.getTileEntity(x, y, z);
+					TileEntityCrystalTank con = te.getTankController();
+					if (con != null) {
+						con.pauseCapacityUpdate();
+					}
+				}
 				ArrayList<ItemStack> li = id.getDrops(world, x, y, z, meta, 0);
 				if (r.silkTouch) {
 					ItemStack is = ReikaBlockHelper.getSilkTouch(world, x, y, z, id, meta, r.player, true);
@@ -210,6 +220,13 @@ public class ItemTransitionWand extends ItemBlockChangingWand {
 			if (exists) {
 				world.setBlock(x, y, z, r.place, r.placeM, 3);
 				ReikaSoundHelper.playPlaceSound(world, x, y, z, r.place);
+				if (this.isUpgradingTank(world, x, y, z, id, meta, r)) {
+					CrystalTankAuxTile te = (CrystalTankAuxTile)world.getTileEntity(x, y, z);
+					TileEntityCrystalTank con = te.getTankController();
+					if (con != null) {
+						con.unpauseCapacityUpdate();
+					}
+				}
 				this.drainPlayer(r.player);
 				if (!r.player.capabilities.isCreativeMode) {
 					if (!ReikaPlayerAPI.findAndDecrItem(r.player, r.place, r.placeM)) {
@@ -238,8 +255,9 @@ public class ItemTransitionWand extends ItemBlockChangingWand {
 				if (((SemiUnbreakable)id).isUnbreakable(world, x, y, z, meta))
 					return false;
 		}
-		if (world.getTileEntity(x, y, z) != null)
+		if (world.getTileEntity(x, y, z) != null && !this.isUpgradingTank(world, x, y, z, id, meta, r)) {
 			return false;
+		}
 		if (r != null) {
 			boolean exists = world.getPlayerEntityByName(r.player.getCommandSenderName()) != null;
 			if (exists) {
@@ -259,6 +277,10 @@ public class ItemTransitionWand extends ItemBlockChangingWand {
 			}
 		}
 		return false;
+	}
+
+	private boolean isUpgradingTank(World world, int x, int y, int z, Block id, int meta, BlockReplace r) {
+		return id == ChromaBlocks.TANK.getBlockInstance() && r.place == id && id.damageDropped(meta) != id.damageDropped(r.placeM);
 	}
 
 	private boolean playerHas(EntityPlayer ep, Block b, int m) {
