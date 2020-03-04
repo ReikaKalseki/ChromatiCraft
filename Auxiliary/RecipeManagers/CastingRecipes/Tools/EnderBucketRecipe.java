@@ -16,15 +16,13 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingR
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 
-public class BeeFrameRecipe extends TempleCastingRecipe {
+public class EnderBucketRecipe extends TempleCastingRecipe {
 
-	public BeeFrameRecipe(ItemStack out, IRecipe recipe) {
+	public EnderBucketRecipe(ItemStack out, IRecipe recipe) {
 		super(out, recipe);
 
-		this.addRuneRingRune(CrystalElement.GREEN);
-		this.addRuneRingRune(CrystalElement.BLACK);
-		this.addRuneRingRune(CrystalElement.LIGHTBLUE);
-		this.addRuneRingRune(CrystalElement.GRAY);
+		this.addRuneRingRune(CrystalElement.LIME);
+		this.addRuneRingRune(CrystalElement.CYAN);
 	}
 
 }

@@ -129,6 +129,7 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityMultiStorage;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityPowerTree;
+import Reika.ChromatiCraft.TileEntity.Storage.TileEntityToolStorage;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityConduitBridge;
@@ -261,7 +262,8 @@ public enum ChromaTiles implements TileEnum {
 	VOIDTRAP("chroma.voidtrap",			ChromaBlocks.TILEMODELLED4,	TileEntityVoidMonsterTrap.class,	6, "RenderVoidMonsterTrap", ModList.VOIDMONSTER),
 	PLAYERINFUSER("chroma.playerinfuser", ChromaBlocks.TILEMODELLED4, TileEntityPlayerInfuser.class, 	7, "RenderInfuser3"),
 	SMELTERYDISTRIBUTOR("chroma.smeltery", ChromaBlocks.TILEMODELLED4, TileEntitySmelteryDistributor.class, 8, "RenderSmelteryDistributor", ModList.TINKERER),
-	LAUNCHPAD("chroma.launchpad",		ChromaBlocks.TILEENTITY2,	TileEntityLaunchPad.class,			7, "RenderLaunchPad");
+	LAUNCHPAD("chroma.launchpad",		ChromaBlocks.TILEENTITY2,	TileEntityLaunchPad.class,			7, "RenderLaunchPad"),
+	TOOLSTORAGE("chroma.toolstorage",	ChromaBlocks.TILEENTITY2,	TileEntityToolStorage.class,		8, "RenderToolStorage");
 
 	private final Class tile;
 	private final String name;

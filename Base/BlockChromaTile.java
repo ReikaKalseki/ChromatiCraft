@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -80,6 +81,7 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
+import Reika.ChromatiCraft.TileEntity.Storage.TileEntityToolStorage;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
@@ -88,6 +90,7 @@ import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Base.BlockTEBase;
 import Reika.DragonAPI.Base.TileEntityBase;
+import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
@@ -755,6 +758,18 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			if (ct == CrystalTier.TURBOCHARGED)
 				currenttip.add("Turbocharged");
 		}
+		if (te instanceof TileEntityDimensionCore) {
+			CrystalElement e = ((TileEntityDimensionCore)te).getColor();
+			currenttip.add("Color: "+e.displayName);
+		}
+		if (te instanceof TileEntityToolStorage) {
+			TileEntityToolStorage ts = (TileEntityToolStorage)te;
+			Map<KeyedItemStack, Integer> map = ts.getItemTypes();
+			for (KeyedItemStack ks : map.keySet()) {
+				int has = map.get(ks);
+				currenttip.add(ks.getDisplayName()+" x"+has);
+			}
+		}
 		if (te instanceof TileEntityCrystalTank) {
 			TileEntityCrystalTank tank = (TileEntityCrystalTank)te;
 			int amt = tank.getLevel();
@@ -766,10 +781,6 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			else {
 				currenttip.add(String.format("Tank: Empty (Capacity %dmB)", capacity));
 			}
-		}
-		else if (te instanceof TileEntityDimensionCore) {
-			CrystalElement e = ((TileEntityDimensionCore)te).getColor();
-			currenttip.add("Color: "+e.displayName);
 		}
 		else if (te instanceof FluidIOChromaticBase) {
 			FluidIOChromaticBase liq = (FluidIOChromaticBase)te;

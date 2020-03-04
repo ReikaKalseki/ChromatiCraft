@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -63,8 +63,7 @@ public abstract class InventoriedCrystalReceiver extends CrystalReceiverBase imp
 		blockMetadata = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
 		worldObj.markTileEntityChunkModified(xCoord, yCoord, zCoord, this);
 
-		if (this.getBlockType() != Blocks.air)
-		{
+		if (this.getBlockType() != Blocks.air) {
 			worldObj.func_147453_f(xCoord, yCoord, zCoord, this.getBlockType());
 		}
 	}
@@ -73,13 +72,11 @@ public abstract class InventoriedCrystalReceiver extends CrystalReceiverBase imp
 		return this.isPlayerAccessible(var1);
 	}
 
-	public final ItemStack decrStackSize(int par1, int par2)
-	{
+	public final ItemStack decrStackSize(int par1, int par2) {
 		return ReikaInventoryHelper.decrStackSize(this, par1, par2);
 	}
 
-	public final ItemStack getStackInSlotOnClosing(int par1)
-	{
+	public final ItemStack getStackInSlotOnClosing(int par1) {
 		return ReikaInventoryHelper.getStackInSlotOnClosing(this, par1);
 	}
 

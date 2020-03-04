@@ -1,6 +1,7 @@
 package Reika.ChromatiCraft.Items.Tools;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -22,9 +23,11 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Block.BlockCrystalTank.CrystalTankAuxTile;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
+import Reika.DragonAPI.Interfaces.TileEntity.PartialTank;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -40,10 +43,6 @@ public class ItemEnderBucket extends ItemChromaTool {
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
-		if (ep.isSneaking()) {
-			is.setItemDamage((is.getItemDamage()+1)%BucketMode.list.length);
-			return is;
-		}
 		MovingObjectPosition mov = this.getMovingObjectPositionFromPlayer(world, ep, true);
 		if (mov != null && mov.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
 			if (this.getMode(is) == BucketMode.PICKUP) {
@@ -53,8 +52,15 @@ public class ItemEnderBucket extends ItemChromaTool {
 			}
 			return is;
 		}
-		ep.openGui(ChromatiCraft.instance, ChromaGuis.ENDERBUCKET.ordinal(), world, 0, 0, 0);
-		return is;
+		else {
+			if (ep.isSneaking()) {
+				is.setItemDamage((is.getItemDamage()+1)%BucketMode.list.length);
+			}
+			else {
+				ep.openGui(ChromatiCraft.instance, ChromaGuis.ENDERBUCKET.ordinal(), world, 0, 0, 0);
+			}
+			return is;
+		}
 	}
 
 	@Override
@@ -109,10 +115,16 @@ public class ItemEnderBucket extends ItemChromaTool {
 			return new ArrayList();
 		ArrayList<TankLink> ret = new ArrayList();
 		NBTTagList li = is.stackTagCompound.getTagList("links", NBTTypes.COMPOUND.ID);
-		for (Object o : li.tagList) {
-			NBTTagCompound tag = (NBTTagCompound)o;
+		Iterator<Object> it = li.tagList.iterator();
+		while (it.hasNext()) {
+			NBTTagCompound tag = (NBTTagCompound)it.next();
 			TankLink tl = TankLink.createFromTag(tag);
-			ret.add(tl);
+			if (ep.worldObj.isRemote || tl.isValid()) {
+				ret.add(tl);
+			}
+			else {
+				it.remove();
+			}
 		}
 		return ret;
 	}
@@ -120,6 +132,10 @@ public class ItemEnderBucket extends ItemChromaTool {
 	private void addFluidHandler(TileEntity te, EntityPlayer ep, ItemStack is) {
 		if (te instanceof CrystalTankAuxTile)
 			te = ((CrystalTankAuxTile)te).getTankController();
+		if (te instanceof PartialTank) {
+			if (!((PartialTank)te).hasTank())
+				te = null;
+		}
 		if (InterfaceCache.BCPIPE.instanceOf(te)) {
 			if (!(((TileGenericPipe)te).pipe.transport instanceof IFluidHandler))
 				te = null;
@@ -194,13 +210,21 @@ public class ItemEnderBucket extends ItemChromaTool {
 	public static class TankLink {
 
 		public final WorldLocation tank;
+		private final BlockKey cachedBlock;
+		private ItemStack cachedIcon;
 
 		private TankLink(TileEntity te) {
-			this(new WorldLocation(te));
+			this(new WorldLocation(te), new BlockKey(te.worldObj.getBlock(te.xCoord, te.yCoord, te.zCoord), te.worldObj.getBlockMetadata(te.xCoord, te.yCoord, te.zCoord)));
 		}
 
-		private TankLink(WorldLocation loc) {
+		private TankLink(WorldLocation loc, BlockKey bk) {
 			tank = loc;
+			cachedBlock = bk;
+			cachedIcon = this.calcItem();
+		}
+
+		public boolean isValid() {
+			return cachedBlock != null && tank.getBlockKey().equals(cachedBlock);
 		}
 
 		public IFluidHandler getTank() {
@@ -208,7 +232,7 @@ public class ItemEnderBucket extends ItemChromaTool {
 			return te instanceof IFluidHandler ? (IFluidHandler)te : null;
 		}
 
-		public ItemStack getIcon() {
+		private ItemStack calcItem() {
 			Block b = tank.getBlock();
 			int meta = tank.getBlockMetadata();
 			if (b instanceof MachineRegistryBlock) {
@@ -219,6 +243,12 @@ public class ItemEnderBucket extends ItemChromaTool {
 				return b.getDrops(tank.getWorld(), tank.xCoord, tank.yCoord, tank.zCoord, tank.getBlockMetadata(), 0).get(0);
 			}
 			return b == Blocks.air ? null : new ItemStack(b, 1, meta);
+		}
+
+		public ItemStack getIcon() {
+			if (cachedIcon == null)
+				cachedIcon = this.calcItem();
+			return cachedIcon != null ? cachedIcon.copy() : null;
 		}
 
 		public String getDisplayName() {
@@ -256,12 +286,26 @@ public class ItemEnderBucket extends ItemChromaTool {
 		}
 
 		public NBTTagCompound writeTag() {
-			return tank.writeToTag();
+			NBTTagCompound tag = tank.writeToTag();
+			cachedBlock.writeToNBT("cache", tag);
+			if (cachedIcon != null) {
+				NBTTagCompound item = new NBTTagCompound();
+				cachedIcon.writeToNBT(item);
+				tag.setTag("item", item);
+			}
+			return tag;
 		}
 
 		public static TankLink createFromTag(NBTTagCompound tag) {
 			WorldLocation loc = WorldLocation.readFromNBT(tag);
-			return new TankLink(loc);
+			BlockKey bk = BlockKey.readFromNBT("cache", tag);
+			TankLink lk = new TankLink(loc, bk);
+			if (tag.hasKey("item")) {
+				NBTTagCompound item = tag.getCompoundTag("item");
+				ItemStack is = ItemStack.loadItemStackFromNBT(item);
+				lk.cachedIcon = is;
+			}
+			return lk;
 		}
 
 	}

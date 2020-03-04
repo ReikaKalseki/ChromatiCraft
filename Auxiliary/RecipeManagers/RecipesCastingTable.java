@@ -201,6 +201,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.CavePat
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.ChainGunRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.DuplicationWandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.EfficiencyCrystalRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.EnderBucketRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.EnderCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.EnhancedPendantRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.ExcavatorRecipe;
@@ -911,6 +912,10 @@ public class RecipesCastingTable {
 		this.addRecipe(new LaunchPadRecipe(is, sr));
 
 		this.addRecipe(new TeleGateLockRecipe(ChromaItems.TELEGATELOCK.getStackOf(), ChromaStacks.resocrystal));
+
+		is = ChromaItems.ENDERBUCKET.getStackOf();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "eae", "sbs", "gsg", 'g', Items.gold_ingot, 'e', ChromaStacks.enderDust, 'b', Items.bucket, 's', ChromaStacks.spaceDust, 'a', ChromaStacks.auraDust);
+		this.addRecipe(new EnderBucketRecipe(is, sr));
 
 		this.addSpecialRecipes();
 	}
