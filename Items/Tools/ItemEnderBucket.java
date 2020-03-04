@@ -26,8 +26,11 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
+
+import buildcraft.transport.TileGenericPipe;
 
 public class ItemEnderBucket extends ItemChromaTool {
 
@@ -41,13 +44,14 @@ public class ItemEnderBucket extends ItemChromaTool {
 			is.setItemDamage((is.getItemDamage()+1)%BucketMode.list.length);
 			return is;
 		}
-		if (this.getMode(is) == BucketMode.PICKUP) {
-			MovingObjectPosition mov = this.getMovingObjectPositionFromPlayer(world, ep, true);
-			if (mov != null && mov.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+		MovingObjectPosition mov = this.getMovingObjectPositionFromPlayer(world, ep, true);
+		if (mov != null && mov.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+			if (this.getMode(is) == BucketMode.PICKUP) {
 				if (BucketMode.PICKUP.process(world, mov.blockX, mov.blockY, mov.blockZ, this.getActiveLink(is, ep))) {
-					return is;
+					ReikaSoundHelper.playSoundFromServerAtBlock(world, mov.blockX, mov.blockY, mov.blockZ, "game.neutral.swim", 0.7F, 0.7F+0.3F*world.rand.nextFloat(), true);
 				}
 			}
+			return is;
 		}
 		ep.openGui(ChromatiCraft.instance, ChromaGuis.ENDERBUCKET.ordinal(), world, 0, 0, 0);
 		return is;
@@ -76,8 +80,9 @@ public class ItemEnderBucket extends ItemChromaTool {
 				}
 				else {
 					if (BucketMode.PLACE.process(world, x, y, z, this.getActiveLink(is, ep))) {
+						ReikaSoundHelper.playSoundFromServerAtBlock(world, x, y, z, "game.neutral.swim", 0.7F, 0.7F+0.3F*world.rand.nextFloat(), true);
 						if (!world.isRemote && flag && !material.isLiquid()) {
-							world.func_147480_a(x, y, z, true);
+							//world.func_147480_a(x, y, z, true);
 						}
 					}
 				}
@@ -115,6 +120,10 @@ public class ItemEnderBucket extends ItemChromaTool {
 	private void addFluidHandler(TileEntity te, EntityPlayer ep, ItemStack is) {
 		if (te instanceof CrystalTankAuxTile)
 			te = ((CrystalTankAuxTile)te).getTankController();
+		if (InterfaceCache.BCPIPE.instanceOf(te)) {
+			if (!(((TileGenericPipe)te).pipe.transport instanceof IFluidHandler))
+				te = null;
+		}
 		if (te == null)
 			return;
 		if (is.stackTagCompound == null)
@@ -156,6 +165,8 @@ public class ItemEnderBucket extends ItemChromaTool {
 		public boolean process(World world, int x, int y, int z, TankLink link) {
 			if (link == null)
 				return false;
+			if (world.isRemote)
+				return true;
 			switch(this) {
 				case PICKUP:
 					FluidStack fs = ReikaWorldHelper.getDrainableFluid(world, x, y, z);
@@ -169,7 +180,9 @@ public class ItemEnderBucket extends ItemChromaTool {
 					Fluid f = link.getCurrentFluidToDrain(false);
 					if (f != null) {
 						link.getCurrentFluidToDrain(true);
-						world.setBlock(x, y, z, f.getBlock());
+						world.setBlock(x, y, z, f.getBlock(), 0, 3);
+						world.markBlockForUpdate(x, y, z);
+						world.getBlock(x, y, z).onNeighborBlockChange(world, x, y, z, f.getBlock());
 						return true;
 					}
 					break;

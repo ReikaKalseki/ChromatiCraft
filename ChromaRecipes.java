@@ -84,6 +84,8 @@ public class ChromaRecipes {
 		GameRegistry.addRecipe(new DoorKeyCopyingRecipe());
 		GameRegistry.addRecipe(new RangedLampPanelingRecipe());
 
+		GameRegistry.addShapelessRecipe(ChromaItems.ENDERBUCKET.getStackOf(), ChromaItems.ENDERBUCKET.getAnyMetaStack());
+
 		loadSmelting();
 	}
 

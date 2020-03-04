@@ -39,13 +39,21 @@ import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
 public class GuiEnderBucket extends GuiScreen implements CustomSoundGui {
 
+	private static final int PER_PAGE = 5;
+
 	private final EntityPlayer player;
 
 	private final int xSize = 195;
 	private final int ySize = 168;
 
+	private int offset;
+	private final int maxOffset;
+	private final ArrayList<TankLink> links;
+
 	public GuiEnderBucket(EntityPlayer ep) {
 		player = ep;
+		links = this.getItem().getLinks(player.getCurrentEquippedItem(), player);
+		maxOffset = Math.max(0, links.size()-PER_PAGE);
 	}
 
 	@Override
@@ -56,11 +64,10 @@ public class GuiEnderBucket extends GuiScreen implements CustomSoundGui {
 		int k = (height - ySize) / 2;
 		String tex = "Textures/GUIs/enderbucket.png";
 
-		ArrayList<TankLink> li = this.getItem().getLinks(player.getCurrentEquippedItem(), player);
 		int h = 24;
-		for (int i = 0; i < li.size(); i++) {
-			TankLink tl = li.get(i);
-			buttonList.add(new CustomSoundImagedGuiButton(0, j+8, k+27+i*h, 180, 24, 0, 168, tex, ChromatiCraft.class, this));
+		for (int i = 0; i < links.size(); i++) {
+			TankLink tl = links.get(i);
+			buttonList.add(new CustomSoundImagedGuiButton(i, j+8, k+27+i*h, 180, 24, 0, 168, tex, ChromatiCraft.class, this));
 		}
 		buttonList.add(new CustomSoundImagedGuiButton(1000, j+8, k+16, 180, 8, 0, 192, tex, ChromatiCraft.class, this));
 		buttonList.add(new CustomSoundImagedGuiButton(1001, j+8, k+150, 180, 8, 0, 200, tex, ChromatiCraft.class, this));
@@ -77,7 +84,14 @@ public class GuiEnderBucket extends GuiScreen implements CustomSoundGui {
 	@Override
 	protected void actionPerformed(GuiButton b) {
 		//this.getItem().setMode(player.getCurrentEquippedItem(), BucketMode.list[b.id]);
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ENDERBUCKETLINK.ordinal(), PacketTarget.server, b.id);
+		if (b.id < 1000) {
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ENDERBUCKETLINK.ordinal(), PacketTarget.server, b.id);
+			player.closeScreen();
+		}
+		int id = b.id-1000;
+		switch(id) {
+
+		}
 		this.initGui();
 	}
 
@@ -90,18 +104,22 @@ public class GuiEnderBucket extends GuiScreen implements CustomSoundGui {
 	@Override
 	public void drawScreen(int x, int y, float ptick) {
 		super.drawScreen(x, y, ptick);
-		ArrayList<TankLink> li = this.getItem().getLinks(player.getCurrentEquippedItem(), player);
 		int h = 24;
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
-		for (int i = 0; i < li.size(); i++) {
-			TankLink tl = li.get(i);
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		GL11.glDisable(GL11.GL_LIGHTING);
+		for (int i = 0; i < links.size(); i++) {
+			GL11.glColor4f(1, 1, 1, 1);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			TankLink tl = links.get(i);
 			int dy = k+35+i*h;
 			fontRendererObj.drawString(tl.getDisplayName(), j+35, dy, 0xffffff);
 			ItemStack is = tl.getIcon();
 			if (is != null) {
 				ReikaGuiAPI.instance.drawItemStack(itemRender, fontRendererObj, is, j+12, dy-4);
 			}
+			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_BLEND);
 			Fluid f = tl.getCurrentFluidToDrain(false);
 			if (f != null) {
@@ -110,10 +128,10 @@ public class GuiEnderBucket extends GuiScreen implements CustomSoundGui {
 				ReikaLiquidRenderer.bindFluidTexture(f);
 				this.drawTexturedModelRectFromIcon(j+168, dy-4, ico, 16, 16);
 			}
-			GL11.glEnable(GL11.GL_BLEND);
 		}
+		GL11.glPopAttrib();
 		GL11.glPushMatrix();
-		GL11.glTranslated(0, 0, -100);
+		GL11.glTranslated(0, 0, -400);
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/GUIs/enderbucket.png");
 		ReikaGuiAPI.instance.drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 		int tx = j+xSize/2;
