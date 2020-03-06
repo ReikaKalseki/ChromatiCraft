@@ -42,7 +42,7 @@ public class RailCraftMultiBlockAcceleration extends Acceleration {
 	}
 
 	@Override
-	protected void tick(TileEntity te, int factor) throws Exception {
+	protected void tick(TileEntity te, int factor, TileEntity accelerator) throws Exception {
 		for (int k = 0; k < factor; k++) {
 			te.updateEntity();
 		}

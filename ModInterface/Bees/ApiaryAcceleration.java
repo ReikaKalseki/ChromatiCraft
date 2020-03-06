@@ -88,7 +88,7 @@ public class ApiaryAcceleration extends Acceleration {
 	}
 
 	@Override
-	protected void tick(TileEntity te, int factor) throws Exception {
+	protected void tick(TileEntity te, int factor, TileEntity accelerator) throws Exception {
 		if (te.worldObj.isRemote)
 			return;
 		IBeeHousing ibh = (IBeeHousing)te;

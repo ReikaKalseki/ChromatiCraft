@@ -218,6 +218,7 @@ public class ModInteraction {
 			ChromatiCraft.logger.logError("Could not add Forestry integration. Check your versions; if you are up-to-date with both mods, notify Reika.");
 		}
 		ApiaryAcceleration.instance.register();
+		ForestryMultifarmAcceleration.instance.register();
 	}
 
 	public static void addTFLoot() {

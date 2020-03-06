@@ -10,7 +10,6 @@
 package Reika.ChromatiCraft.ModInterface.Bees;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -65,6 +64,7 @@ import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Speeds;
 import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Territory;
 import Reika.DragonAPI.ModInteract.Bees.DummyEffectData;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.ForestryMultiblockControllerHandling;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -148,7 +148,6 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 		}
 	};
 
-	private static Method tickMethod;
 	private static Field tempField;
 	private static Field humidField;
 	private static Field flowerCacheField;
@@ -183,11 +182,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 	static {
 		if (ModList.FORESTRY.isLoaded()) {
 			try {
-				Class c = Class.forName("forestry.core.multiblock.MultiblockControllerBase");
-				tickMethod = c.getDeclaredMethod("updateMultiblockEntity");
-				tickMethod.setAccessible(true);
-
-				c = Class.forName("forestry.apiculture.multiblock.AlvearyController");
+				Class c = Class.forName("forestry.apiculture.multiblock.AlvearyController");
 				tempField = c.getDeclaredField("tempChange");
 				tempField.setAccessible(true);
 				humidField = c.getDeclaredField("humidChange");
@@ -613,6 +608,13 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 		canWork = false;
 	}
 
+	public void forceCycleBees() {
+		if (movePrincess != null)
+			this.cycleBees(movePrincess, EnumBeeType.PRINCESS);
+		if (moveDrone != null)
+			this.cycleBees(moveDrone, EnumBeeType.DRONE);
+	}
+
 	private boolean cycleBees(String species, EnumBeeType seek) {
 		//ReikaJavaLibrary.pConsole("Cycling "+movePrincess);
 		IBeeHousing ibh = this.getBeeHousing();
@@ -796,13 +798,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 	@Deprecated
 	private void tickAlveary() {
 		IAlvearyController iac = this.getMultiblockLogic().getController();
-		try {
-			tickMethod.invoke(iac);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			this.writeError(e);
-		}
+		ForestryMultiblockControllerHandling.tickMultiblock(iac, this);
 	}
 
 	@ModDependent(ModList.FORESTRY)
@@ -811,7 +807,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 	}
 
 	@ModDependent(ModList.FORESTRY)
-	private IBeeGenome getBeeGenome() {
+	public IBeeGenome getBeeGenome() {
 		ItemStack is = this.getQueenItem();
 		return is != null ? (IBeeGenome)ReikaBeeHelper.getGenome(is) : null;
 	}

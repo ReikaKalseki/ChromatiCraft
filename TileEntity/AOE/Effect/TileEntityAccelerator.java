@@ -35,7 +35,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 
 	private static final Acceleration blacklistKey = new Acceleration() {
 		@Override
-		public void tick(TileEntity te, int factor) {}
+		public void tick(TileEntity te, int factor, TileEntity accelerator) {}
 
 		@Override
 		public boolean usesParentClasses() {
@@ -112,7 +112,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 			if (a != null) {
 				try {
 					te = a.getActingTileEntity(te);
-					a.tick(te, max);
+					a.tick(te, max, this);
 				}
 				catch (Exception e) {
 					e.printStackTrace();
@@ -198,7 +198,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 
 	public static abstract class Acceleration {
 
-		protected abstract void tick(TileEntity te, int factor) throws Exception;
+		protected abstract void tick(TileEntity te, int factor, TileEntity accelerator) throws Exception;
 
 		public abstract boolean usesParentClasses();
 
@@ -232,7 +232,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 		}
 
 		@Override
-		protected void tick(TileEntity te, int factor) {
+		protected void tick(TileEntity te, int factor, TileEntity accelerator) {
 			accel.tick(factor);
 		}
 

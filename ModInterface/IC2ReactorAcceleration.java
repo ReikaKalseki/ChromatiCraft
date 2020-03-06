@@ -45,7 +45,7 @@ public class IC2ReactorAcceleration extends Acceleration {
 	}
 
 	@Override
-	protected void tick(TileEntity te, int factor) throws Exception {
+	protected void tick(TileEntity te, int factor, TileEntity accelerator) throws Exception {
 		if (te.worldObj.isRemote)
 			return;
 		if (te instanceof IReactorChamber) {
