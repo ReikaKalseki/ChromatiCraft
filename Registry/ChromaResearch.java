@@ -226,6 +226,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	PLAYERINFUSER(	ChromaTiles.PLAYERINFUSER,	ResearchLevel.MULTICRAFT,		ProgressStage.INFUSE),
 	SMELTERY(		ChromaTiles.SMELTERYDISTRIBUTOR,ResearchLevel.RUNECRAFT),
 	LAUNCHPAD(		ChromaTiles.LAUNCHPAD,		ResearchLevel.BASICCRAFT),
+	TOOLSTORAGE(	ChromaTiles.TOOLSTORAGE,	ResearchLevel.BASICCRAFT),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT,	ProgressStage.ALLCOLORS),
@@ -902,7 +903,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 		if (this == TRAPFLOOR)
 			return false;
 		for (ProgressStage p : progress) {
-			if (!p.isGating())
+			if (!p.isGating(level))
 				return false;
 		}
 		return struct == null || !struct.isNatural();

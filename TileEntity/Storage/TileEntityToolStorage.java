@@ -3,8 +3,11 @@ package Reika.ChromatiCraft.TileEntity.Storage;
 import java.util.ArrayList;
 import java.util.Map;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemBow;
@@ -20,11 +23,16 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Maps.CountMap;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
+import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class TileEntityToolStorage extends TileEntityChromaticBase implements IInventory {
@@ -95,7 +103,7 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack is) {
-		return slot == 0 && filter.isItemValid(is);
+		return slot == 0 && filter.isItemValid(is) && allItems.size() < MAX_COUNT;
 	}
 
 	public boolean stepMode() {
@@ -199,20 +207,39 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 	}
 
 	public static enum ToolType {
-		PICK,
-		AXE,
-		SHOVEL,
-		SWORD,
-		BOW,
-		SHEARS,
-		HELMET,
-		CHESTPLATE,
-		LEGS,
-		BOOTS,
-		TINKER,
-		OTHER;
+		PICK(Items.diamond_pickaxe),
+		AXE(Items.iron_axe),
+		SHOVEL(Items.golden_shovel),
+		SWORD(Items.diamond_sword),
+		BOW(Items.bow),
+		SHEARS(Items.shears),
+		HELMET(Items.diamond_helmet),
+		CHESTPLATE(Items.diamond_chestplate),
+		LEGS(Items.diamond_leggings),
+		BOOTS(Items.diamond_boots),
+		TINKER(ModList.TINKERER.isLoaded() ? TinkerToolHandler.Tools.HAMMER.getToolOfMaterials(1, 1, 1, 1) : (ItemStack)null),
+		OTHER((ItemStack)null);
 
 		private static final ToolType[] list = values();
+
+		private final ItemStack icon;
+		private InertItem render;
+
+		@SideOnly(Side.CLIENT)
+		public InertItem getRenderItem() {
+			if (render == null && icon != null) {
+				render = new InertItem(Minecraft.getMinecraft().theWorld, icon);
+			}
+			return render;
+		}
+
+		private ToolType(Item i) {
+			this(new ItemStack(i));
+		}
+
+		private ToolType(ItemStack is) {
+			icon = is;
+		}
 
 		public boolean isItemValid(ItemStack is) {
 			return this.getTypeForTool(is) == this;
@@ -280,11 +307,15 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 				return SHOVEL;
 			if (is.getItem() instanceof ItemSword)
 				return SWORD;
-			return OTHER;
+			return is.getMaxStackSize() == 1 ? OTHER : null;
 		}
 
 		private static boolean isTinker(ItemStack is) {
 			return ModList.TINKERER.isLoaded() && (TinkerToolHandler.getInstance().isTool(is) || TinkerToolHandler.getInstance().isWeapon(is));
+		}
+
+		public String displayName() {
+			return ReikaStringParser.capFirstChar(this.name());
 		}
 	}
 

@@ -764,6 +764,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 		}
 		if (te instanceof TileEntityToolStorage) {
 			TileEntityToolStorage ts = (TileEntityToolStorage)te;
+			//currenttip.add(ts.getFilter().displayName());
 			Map<KeyedItemStack, Integer> map = ts.getItemTypes();
 			for (KeyedItemStack ks : map.keySet()) {
 				int has = map.get(ks);

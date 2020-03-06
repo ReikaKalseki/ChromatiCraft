@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.UUID;
@@ -86,7 +87,7 @@ public class ProgressionManager implements ProgressRegistry {
 
 	private final EnumMap<ProgressStage, ChromaResearch> auxiliaryReference = new EnumMap(ProgressStage.class);
 
-	private final HashSet<ProgressStage> nonGatingProgress = new HashSet();
+	private final HashMap<ProgressStage, ResearchLevel> nonGatingProgress = new HashMap();
 
 	//private final Comparator<EntityPlayer> playerProgressionComparator = new PlayerProgressionComparator();
 
@@ -244,26 +245,29 @@ public class ProgressionManager implements ProgressRegistry {
 		auxiliaryReference.put(ProgressStage.BALLLIGHTNING, ChromaResearch.BALLLIGHTNING);
 		auxiliaryReference.put(ProgressStage.ALLCOLORS, ChromaResearch.RUNES);
 
-		nonGatingProgress.add(ProgressStage.DIE);
-		nonGatingProgress.add(ProgressStage.VOIDMONSTERDIE);
-		nonGatingProgress.add(ProgressStage.TOWER);
-		nonGatingProgress.add(ProgressStage.ARTEFACT);
-		nonGatingProgress.add(ProgressStage.PYLONLINK);
-		nonGatingProgress.add(ProgressStage.BALLLIGHTNING);
-		nonGatingProgress.add(ProgressStage.FINDSPAWNER);
-		nonGatingProgress.add(ProgressStage.BREAKSPAWNER);
-		nonGatingProgress.add(ProgressStage.HIVE);
-		nonGatingProgress.add(ProgressStage.STRUCTCHEAT);
-		nonGatingProgress.add(ProgressStage.WARPNODE);
-		nonGatingProgress.add(ProgressStage.LUMA);
+		nonGatingProgress.put(ProgressStage.DIE, ResearchLevel.CTM);
+		nonGatingProgress.put(ProgressStage.VOIDMONSTERDIE, ResearchLevel.CTM);
+		nonGatingProgress.put(ProgressStage.TOWER, ResearchLevel.CTM);
+		nonGatingProgress.put(ProgressStage.ARTEFACT, ResearchLevel.CTM);
+		nonGatingProgress.put(ProgressStage.PYLONLINK, ResearchLevel.CTM);
+		nonGatingProgress.put(ProgressStage.BALLLIGHTNING, ResearchLevel.CTM);
+		nonGatingProgress.put(ProgressStage.FINDSPAWNER, ResearchLevel.PYLONCRAFT);
+		nonGatingProgress.put(ProgressStage.BREAKSPAWNER, ResearchLevel.CTM);
+		nonGatingProgress.put(ProgressStage.HIVE, ResearchLevel.CTM);
+		nonGatingProgress.put(ProgressStage.STRUCTCHEAT, ResearchLevel.CTM);
+		nonGatingProgress.put(ProgressStage.WARPNODE, ResearchLevel.CTM);
+		nonGatingProgress.put(ProgressStage.LUMA, ResearchLevel.ENDGAME);
+		nonGatingProgress.put(ProgressStage.NETHER, ResearchLevel.RUNECRAFT);
+		nonGatingProgress.put(ProgressStage.END, ResearchLevel.MULTICRAFT);
 	}
 
 	private void addChainedProgression(ProgressStage hook, ProgressStage req, ProgressStage chain) {
 		chains.addValue(hook, new ImmutablePair(req, chain));
 	}
 
-	public boolean isProgressionGating(ProgressStage p) {
-		return !nonGatingProgress.contains(p);
+	public boolean isProgressionGating(ProgressStage p, ResearchLevel level) {
+		ResearchLevel get = nonGatingProgress.get(p);
+		return get == null || level.isAtLeast(get);
 	}
 
 	public Topology getTopology() {

@@ -372,8 +372,8 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 		return reloadLevel;
 	}
 
-	public boolean isGating() {
-		return ProgressionManager.instance.isProgressionGating(this);
+	public boolean isGating(ResearchLevel level) {
+		return ProgressionManager.instance.isProgressionGating(this, level);
 	}
 
 	@Override

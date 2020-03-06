@@ -380,6 +380,7 @@ public enum ChromaTiles implements TileEnum {
 			case PLAYERINFUSER:
 			case SMELTERYDISTRIBUTOR:
 			case LAUNCHPAD:
+			case TOOLSTORAGE:
 				return true;
 			default:
 				return false;
@@ -722,7 +723,7 @@ public enum ChromaTiles implements TileEnum {
 
 	@SideOnly(Side.CLIENT)
 	public boolean hasBlockRender() {
-		return !this.hasRender() || this == TANK || this == TABLE || this == CONSOLE || this == ALVEARY || this == PYLONLINK || this == LAUNCHPAD;
+		return !this.hasRender() || this == TANK || this == TABLE || this == CONSOLE || this == ALVEARY || this == PYLONLINK || this == LAUNCHPAD || this == TOOLSTORAGE;
 	}
 
 	public boolean isPlant() {

@@ -165,7 +165,10 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 	private Coordinate relativeLocation;
 
 	private int lightningTicks;
+
 	private String movePrincess;
+	private String moveDrone;
+
 	private final HashSet<String> selectedEffects = new HashSet();
 	private final Collection<AlvearyEffect> activeEffects = new HashSet();
 	private EfficientFlowerCache flowerCache;
@@ -381,11 +384,20 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 							}
 						}
 					}
+					//ReikaBeeHelper.ageBee(this.worldObj, this.getQueenItem(), 0.8F);
 				}
 				else if (!Strings.isNullOrEmpty(movePrincess)) {
-					if (this.isEffectSelectedAndActive(automation) && energy.containsAtLeast(automation.color, automation.requiredEnergy)) {
-						if (this.cycleBees(movePrincess)) {
+					if (this.canRunAutomation()) {
+						if (this.cycleBees(movePrincess, EnumBeeType.PRINCESS)) {
 							movePrincess = null;
+							this.drainEnergy(automation.color, automation.requiredEnergy);
+						}
+					}
+				}
+				if (!Strings.isNullOrEmpty(moveDrone)) {
+					if (this.canRunAutomation()) {
+						if (this.cycleBees(moveDrone, EnumBeeType.DRONE)) {
+							moveDrone = null;
 							this.drainEnergy(automation.color, automation.requiredEnergy);
 						}
 					}
@@ -395,6 +407,10 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 				canWork = false;
 			}
 		}
+	}
+
+	private boolean canRunAutomation() {
+		return this.isEffectSelectedAndActive(automation) && energy.containsAtLeast(automation.color, automation.requiredEnergy);
 	}
 
 	/** Replace with one that will never scan multiple times in the same tick, and has more advanced anti-lag behavior */
@@ -587,6 +603,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 			ChromatiCraft.logger.logError("Alveary called onQueenDeath with a null queen!");
 		if (bee != null)
 			movePrincess = bee.getUID();
+		moveDrone = movePrincess;
 		if (energy.containsAtLeast(geneRepair2.color, geneRepair2.requiredEnergy)) {
 			if (geneRepair2.repairQueen(this))
 				energy.subtract(geneRepair2.color, geneRepair2.requiredEnergy);
@@ -596,7 +613,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 		canWork = false;
 	}
 
-	private boolean cycleBees(String species) {
+	private boolean cycleBees(String species, EnumBeeType seek) {
 		//ReikaJavaLibrary.pConsole("Cycling "+movePrincess);
 		IBeeHousing ibh = this.getBeeHousing();
 		IBeeHousingInventory ibhi = ibh.getBeeInventory();
@@ -614,6 +631,8 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 				}
 				if (flag) {
 					EnumBeeType type = ReikaBeeHelper.getBeeRoot().getType(in);
+					if (type != seek)
+						continue;
 					IAlleleBeeSpecies sp = (IAlleleBeeSpecies)ReikaBeeHelper.getSpecies(in);
 					if (type == EnumBeeType.PRINCESS && ibhi.getQueen() == null && sp.getUID().equals(species)) {
 						ibhi.setQueen(in);
@@ -870,6 +889,9 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 		movePrincess = data.getString("move");
 		if (movePrincess.isEmpty())
 			movePrincess = null;
+		moveDrone = data.getString("movedr");
+		if (moveDrone.isEmpty())
+			moveDrone = null;
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			aspects.readFromNBT(data);
@@ -889,6 +911,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 			this.getMultiblockLogic().writeToNBT(data);
 
 		data.setString("move", !Strings.isNullOrEmpty(movePrincess) ? movePrincess : "");
+		data.setString("movedr", !Strings.isNullOrEmpty(moveDrone) ? moveDrone : "");
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			aspects.writeToNBT(data);
@@ -1358,7 +1381,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 			//max of 16 ticks per tick, so no massive changes (eg 2 prod cycles), and no ingame time passage,
 			//and thus only possible change to canWork is queen death, and even that is called by canWork
 			boolean work = bkl.canWork();
-			for (int i = 0; work && te.canQueenWork() && i < tickRate*1024; i++) {
+			for (int i = 0; work && te.canQueenWork() && i < tickRate; i++) {
 				//te.tickAlveary();
 				bkl.doWork();
 			}

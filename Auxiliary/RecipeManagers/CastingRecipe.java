@@ -492,6 +492,10 @@ public class CastingRecipe implements APICastingRecipe {
 			runeRing.add(new Coordinate(-2, -1, -1));
 		}
 
+		public static Coordinate getRuneRingRune(CrystalElement e) {
+			return runeRing.get(e.ordinal());
+		}
+
 		private final RuneShape runes = new RuneShape();
 
 		public TempleCastingRecipe(ItemStack out, IRecipe recipe) {

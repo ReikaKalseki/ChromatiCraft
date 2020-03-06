@@ -262,6 +262,7 @@ import Reika.DragonAPI.Instantiable.IO.CustomRecipeList;
 import Reika.DragonAPI.Instantiable.IO.LuaBlock;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerBlockHandler;
@@ -696,6 +697,7 @@ public class RecipesCastingTable {
 		this.addRecipe(new EnchantmentRecipe(ChromaResearch.EXCAVATOR, ChromaItems.EXCAVATOR.getStackOf(), ChromaStacks.enderDust, ChromaStacks.chargedLimeShard, ChromaStacks.beaconDust, ChromaEnchants.AUTOCOLLECT.getEnchantment(), 1));
 		this.addRecipe(new EnchantmentRecipe(ChromaResearch.EXCAVATOR, ChromaItems.EXCAVATOR.getStackOf(), ChromaStacks.energyPowder, ChromaStacks.chargedBrownShard, new ItemStack(Items.diamond), ChromaEnchants.MINETIME.getEnchantment(), 1));
 		this.addRecipe(new EnchantmentRecipe(ChromaResearch.EXCAVATOR, ChromaItems.EXCAVATOR.getStackOf(), ChromaStacks.teleDust, ChromaStacks.chargedBlueShard, ChromaStacks.lumenGem, Enchantment.flame, 1));
+		this.addRecipe(new EnchantmentRecipe(ChromaResearch.EXCAVATOR, ChromaItems.EXCAVATOR.getStackOf(), ChromaStacks.voidDust, ChromaStacks.chargedLightBlueShard, ChromaStacks.floatstone, ChromaEnchants.AIRMINER.getEnchantment(), 1));
 
 		this.addRecipe(new EnchantmentRecipe(ChromaResearch.TRANSITION, ChromaItems.TRANSITION.getStackOf(), ChromaStacks.bindingCrystal, ChromaStacks.chargedGrayShard, ChromaStacks.resonanceDust, Enchantment.silkTouch, 1));
 
@@ -916,6 +918,10 @@ public class RecipesCastingTable {
 		is = ChromaItems.ENDERBUCKET.getStackOf();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "eae", "sbs", "gsg", 'g', Items.gold_ingot, 'e', ChromaStacks.enderDust, 'b', Items.bucket, 's', ChromaStacks.spaceDust, 'a', ChromaStacks.auraDust);
 		this.addRecipe(new EnderBucketRecipe(is, sr));
+
+		is = ChromaTiles.TOOLSTORAGE.getCraftedProduct();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "qgq", "wcw", "wsw", 'q', Items.quartz, 'g', Blocks.glowstone, 'c', ChromaBlocks.LOOTCHEST.getBlockInstance(), 'w', ReikaTreeHelper.OAK.getLog(), 's', Blocks.stone);
+		this.addRecipe(new LaunchPadRecipe(is, sr));
 
 		this.addSpecialRecipes();
 	}

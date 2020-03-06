@@ -60,6 +60,7 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 	private static final ElementTagCompound requestable = new ElementTagCompound();
 
 	private static Field manaField;
+	private static Field spreaderBindField;
 
 	static {
 		if (ModList.BOTANIA.isLoaded()) {
@@ -86,6 +87,9 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 	private static void initFields() throws Exception {
 		manaField = SubTileGenerating.class.getDeclaredField("mana");
 		manaField.setAccessible(true);
+
+		spreaderBindField = SubTileGenerating.class.getDeclaredField("linkedCollector");
+		spreaderBindField.setAccessible(true);
 	}
 
 	private final StepTimer flowerScan = new StepTimer(50);
@@ -117,8 +121,10 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 				energy.subtract(CrystalElement.LIGHTBLUE, requestable.getValue(CrystalElement.LIGHTBLUE));
 			}
 
-			flowerScan.update();
-			poolScan.update();
+			if (this.isTickingNaturally()) {
+				flowerScan.update();
+				poolScan.update();
+			}
 			if (flowerScan.checkCap()) {
 				this.scanAndCache(world, x, y, z, false);
 			}
@@ -285,11 +291,30 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 						boolean flag = !world.getBlock(dx, dy, dz).isAir(world, dx, dy, dz);
 						if (flag) {
 							TileEntity te = world.getTileEntity(dx, dy, dz);
-							if (pools ? this.isValidPool(te) : this.isGeneratingFlower(te))
+							if (pools ? this.isValidPool(te) : this.isGeneratingFlower(te)) {
 								set.add(new Coordinate(dx, dy, dz));
+								if (!pools) {
+									this.bindFlowerToPool(te);
+								}
+							}
 							break;
 						}
 					}
+				}
+			}
+		}
+	}
+
+	@ModDependent(ModList.BOTANIA)
+	private void bindFlowerToPool(TileEntity te) {
+		if (te instanceof ISubTileContainer) {
+			SubTileEntity st = ((ISubTileContainer)te).getSubTile();
+			if (st instanceof SubTileGenerating) {
+				try {
+					spreaderBindField.set(st, this);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		}
