@@ -35,7 +35,7 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	NETHER("Nether Crystals", true),
 	NOPARTICLES("Disable Pendant Particles", true),
 	CRYSTALFARM("Crystal Plants May Drop Shards", true),
-	TILELAG("Max Accelerator Lag in NanoSeconds", 1000000),
+	TILELAG("Max Accelerator Lag in NanoSeconds(Set Negative To Disable Throttling)", 1000000),
 	GUARDIAN("Guardian Stone Range", 16),
 	GUARDCHUNK("Guardian Stone is Full Chunk Height", false),
 	BLOCKPARTICLES("Dye Block Particles", true),

@@ -86,7 +86,7 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 		else if (cooldown < 200)
 			cooldown++;
 
-		checkTimer.setCap(cooldown);
+		checkTimer.setCap(this.isEnhanced() ? cooldown/2 : cooldown);
 
 		if (inv[0] != null && ChromaItems.STORAGE.matchWith(inv[0])) {
 			for (CrystalElement e : ItemStorageCrystal.getStoredTags(inv[0]).elementSet()) {
@@ -150,9 +150,10 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 	private void checkAndRequest() {
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement e = CrystalElement.elements[i];
-			int space = this.getRemainingSpace(e);
-			if (space > this.getEnergy(e)) { // < 50% full
-				this.requestEnergy(e, space);
+			float f = this.getEnergy(e)/(float)this.getMaxStorage(e);
+			float f2 = this.isEnhanced() ? 0.8F : 0.5F;
+			if (f < f2) {
+				this.requestEnergy(e, this.getRemainingSpace(e));
 			}
 		}
 	}

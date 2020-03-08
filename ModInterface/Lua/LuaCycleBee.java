@@ -10,7 +10,7 @@ import forestry.api.multiblock.IAlvearyController;
 @ModDependentMethod(ModList.FORESTRY)
 public class LuaCycleBee extends AlvearyLuaMethod {
 
-	protected LuaCycleBee() {
+	public LuaCycleBee() {
 		super("cycleBee");
 	}
 

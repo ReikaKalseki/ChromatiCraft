@@ -15,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
@@ -73,6 +74,9 @@ public class GuiTransitionWand extends GuiScreen implements CustomSoundGui {
 
 	@Override
 	protected void actionPerformed(GuiButton b) {
+		ItemTransitionWand item = this.getItem();
+		if (item == null)
+			return;
 		this.getItem().setMode(player.getCurrentEquippedItem(), TransitionMode.list[b.id]);
 		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.TRANSITIONWAND.ordinal(), PacketTarget.server, b.id);
 		this.initGui();
@@ -80,6 +84,9 @@ public class GuiTransitionWand extends GuiScreen implements CustomSoundGui {
 
 	@Override
 	public void drawScreen(int x, int y, float ptick) {
+		ItemTransitionWand item = this.getItem();
+		if (item == null)
+			return;
 		super.drawScreen(x, y, ptick);
 		GL11.glPushMatrix();
 		GL11.glTranslated(0, 0, -500);
@@ -108,7 +115,8 @@ public class GuiTransitionWand extends GuiScreen implements CustomSoundGui {
 	}
 
 	private ItemTransitionWand getItem() {
-		return (ItemTransitionWand)player.getCurrentEquippedItem().getItem();
+		Item base = player.getCurrentEquippedItem().getItem();
+		return base instanceof ItemTransitionWand ? (ItemTransitionWand)base : null;
 	}
 
 }

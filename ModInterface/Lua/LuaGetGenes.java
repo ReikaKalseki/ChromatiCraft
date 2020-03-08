@@ -15,7 +15,7 @@ import forestry.api.multiblock.IAlvearyController;
 @ModDependentMethod(ModList.FORESTRY)
 public class LuaGetGenes extends AlvearyLuaMethod {
 
-	protected LuaGetGenes() {
+	public LuaGetGenes() {
 		super("getGenes");
 	}
 

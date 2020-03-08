@@ -33,6 +33,8 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 
 	private static HashMap<Class<? extends TileEntity>, Acceleration> actions = new HashMap();
 
+	private int ticksSinceLagPausedWarning = 100000;
+
 	private static final Acceleration blacklistKey = new Acceleration() {
 		@Override
 		public void tick(TileEntity te, int factor, TileEntity accelerator) {}
@@ -86,7 +88,8 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 	}
 
 	private static long calculateLagLimit() {
-		return Math.max(ChromaOptions.TILELAG.getValue(), 100000L);
+		int base = ChromaOptions.TILELAG.getValue();
+		return base >= 0 ? Math.max(base, 100000L) : -1;
 	}
 
 	public static int getAccelFromTier(int tier) {
@@ -107,6 +110,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 		TileEntity te = this.getAdjacentTileEntity(dir);
 		Acceleration a = this.getAccelerate(te);
 		//ReikaJavaLibrary.pConsole(te+": "+(a != null ? a.getClass() : null));
+		ticksSinceLagPausedWarning++;
 		if (a != blacklistKey) {
 			int max = this.getAccel();
 			if (a != null) {
@@ -118,19 +122,32 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 					e.printStackTrace();
 					this.writeError(e);
 				}
-				if (System.nanoTime()-time >= MAX_LAG)
+				if (MAX_LAG > 0 && System.nanoTime()-time >= MAX_LAG) {
+					this.logLagWarning(time, te);
 					return EffectResult.FINAL_ACTION;
+				}
 			}
 			else {
 				for (int k = 0; k < max; k++) {
 					te.updateEntity();
-					if (System.nanoTime()-time >= MAX_LAG)
+					if (MAX_LAG > 0 && System.nanoTime()-time >= MAX_LAG) {
+						this.logLagWarning(time, te);
 						return EffectResult.FINAL_ACTION;
+					}
 				}
 			}
 			return EffectResult.ACTION;
 		}
 		return EffectResult.CONTINUE;
+	}
+
+	private void logLagWarning(long time, TileEntity te) {
+		if (ticksSinceLagPausedWarning >= 20) {
+			long dur = System.nanoTime()-time;
+			String s = "Tile Accelerator "+this+" is self-throttling due to lag ("+dur+" ns), accelerating "+te;
+			ChromatiCraft.logger.log(s);
+			ticksSinceLagPausedWarning = 0;
+		}
 	}
 
 	private Acceleration getAccelerate(TileEntity te) {

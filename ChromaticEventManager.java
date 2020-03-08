@@ -2044,16 +2044,23 @@ public class ChromaticEventManager {
 		TileEntityExplosionShield.dampenExplosion(evt.world, evt.explosion);
 	}
 
+	@ModDependent(ModList.CRITTERPET)
+	@SubscribeEvent(priority=EventPriority.LOWEST)
+	public void rangedPetInvincibility(LivingAttackEvent evt) {
+		if (evt.ammount > 0 && TileEntityCrystalBeacon.isDamageBlockable(evt.source)) {
+			if (evt.entityLiving instanceof TamedMob) {
+				if (TileEntityCrystalBeacon.isEntityInvincible((EntityLiving)evt.entityLiving, ((TamedMob)evt.entityLiving).getMobOwner(), evt.ammount)) {
+					evt.setCanceled(true);
+				}
+			}
+		}
+	}
+
 	@SubscribeEvent(priority=EventPriority.LOWEST)
 	public void rangedInvincibility(LivingAttackEvent evt) {
 		if (evt.ammount > 0 && TileEntityCrystalBeacon.isDamageBlockable(evt.source)) {
 			if (evt.entityLiving instanceof EntityPlayer && !((EntityPlayer)evt.entityLiving).capabilities.isCreativeMode) {
 				if (TileEntityCrystalBeacon.isPlayerInvincible((EntityPlayer)evt.entityLiving, evt.ammount)) {
-					evt.setCanceled(true);
-				}
-			}
-			else if (evt.entityLiving instanceof TamedMob) {
-				if (TileEntityCrystalBeacon.isEntityInvincible((EntityLiving)evt.entityLiving, ((TamedMob)evt.entityLiving).getMobOwner(), evt.ammount)) {
 					evt.setCanceled(true);
 				}
 			}
