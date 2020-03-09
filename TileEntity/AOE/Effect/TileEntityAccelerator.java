@@ -165,44 +165,49 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 		}
 	}
 
-	private Acceleration getAccelerate(TileEntity te) {
+	private static Acceleration getAccelerate(TileEntity te) {
 		if (te == null)
 			return blacklistKey;
 		if (te instanceof TileEntityAdjacencyUpgrade)
 			return blacklistKey;
 		if (te.isInvalid())
 			return blacklistKey;
-		Class c = te.getClass();
-		while (c.isAnonymousClass())
-			c = c.getSuperclass();
+		Acceleration a = getAccelerate(te.getClass());
+		if (a == null && !te.canUpdate())
+			return blacklistKey;
+		return a;
+	}
+
+	private static Acceleration getAccelerate(Class<? extends TileEntity> c) {
 		Acceleration a = actions.get(c);
-		while (a == null && c != TileEntity.class) {
-			c = c.getSuperclass();
-			a = actions.get(c);
-		}
 		if (a != null)
 			return a;
-		if (!te.canUpdate())
-			return blacklistKey;
+		a = calculateAccelerate(c);
+		actions.put(c, a);
+		return a;
+	}
+
+	private static Acceleration calculateAccelerate(Class<? extends TileEntity> c) {
+		Class parent = c.getSuperclass();
+		if (parent == TileEntity.class)
+			return null;
+		Acceleration a = getAccelerate(parent);
+		if (a != null)
+			return a;
 		String s = c.getSimpleName().toLowerCase(Locale.ENGLISH);
 		if (s.contains("conduit") || s.contains("wire") || s.contains("cable")) { //almost always part of a network object
-			actions.put(c, blacklistKey);
 			return blacklistKey;
 		}
 		if (s.contains("solar")) { //power exploit
-			actions.put(c, blacklistKey);
 			return blacklistKey;
 		}
 		if (s.contains("windturbine") || s.contains("wind turbine") || s.contains("windmill") || s.contains("wind mill")) { //power exploit
-			actions.put(c, blacklistKey);
 			return blacklistKey;
 		}
 		if (s.contains("watermill") || s.contains("water mill")) { //power exploit
-			actions.put(c, blacklistKey);
 			return blacklistKey;
 		}
-		if (te.getClass().getName().contains("appeng")) { //AE will crash
-			actions.put(c, blacklistKey);
+		if (c.getName().contains("appeng")) { //AE will crash
 			return blacklistKey;
 		}
 		return null;

@@ -1,7 +1,10 @@
 package Reika.ChromatiCraft.TileEntity.Storage;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import net.minecraft.client.Minecraft;
@@ -19,14 +22,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
@@ -44,7 +50,16 @@ import appeng.api.AEApi;
 import appeng.api.networking.IGridBlock;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.IActionHost;
+import appeng.api.networking.storage.IStorageGrid;
+import appeng.api.parts.IPart;
+import appeng.api.parts.IPartHost;
+import appeng.api.storage.ICellProvider;
+import appeng.api.storage.IMEInventoryHandler;
+import appeng.api.storage.StorageChannel;
+import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IItemList;
 import appeng.api.util.AECableType;
+import appeng.api.util.DimensionalCoord;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -67,6 +82,23 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 	private MEWorkTracker hasWork = new MEWorkTracker();
 	private final ArrayList<ItemStack> MEStacks = new ArrayList();
 	private final StepTimer updateTimer = new StepTimer(50);
+
+	private static Class storageBusClass;
+	private static Method storageBusSide;
+	private static Method storageBusHost;
+
+	static {
+		try {
+			storageBusClass = Class.forName("appeng.parts.misc.PartStorageBus");
+			storageBusSide = storageBusClass.getMethod("getSide");
+			storageBusHost = storageBusClass.getMethod("getHost");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			ChromatiCraft.logger.logError("Could not load storage bus methods!");
+			ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.APPENG, e);
+		}
+	}
 
 	public TileEntityToolStorage() {
 		if (ModList.APPENG.isLoaded()) {
@@ -233,17 +265,48 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 
 				//ReikaJavaLibrary.pConsole("Rebuilding");
 				MEStacks.clear();
-				Collection<ItemStack> li = network.getRawMESystemContents();
-				for (ItemStack is : li) {
-					if (filter.isItemValid(is)) {
-						MEStacks.add(is);
-					}
-					else {
+				Collection<ItemStack> li = new ArrayList();//network.getRawMESystemContents();
 
+				IStorageGrid isg = (IStorageGrid)this.getActionableNode().getGrid().getCache(IStorageGrid.class);
+				HashSet<ICellProvider> set = MESystemReader.getAllCellContainers(isg);
+				if (set != null) {
+					for (ICellProvider icp : set) {
+						if (this.isStorageBusToSelf(icp))
+							continue;
+						List<IMEInventoryHandler> invs = icp.getCellArray(StorageChannel.ITEMS);
+						for (IMEInventoryHandler inv : invs) {
+							IItemList<IAEItemStack> items = inv.getAvailableItems(StorageChannel.ITEMS.createList());
+							for (IAEItemStack iae : items) {
+								if (iae.isItem() && iae.isMeaningful()) {
+									ItemStack is = iae.getItemStack();
+									if (filter.isItemValid(is)) {
+										MEStacks.add(is);
+									}
+								}
+							}
+						}
 					}
 				}
 			}
 			//network.setRequester(this);
+		}
+	}
+
+	private boolean isStorageBusToSelf(ICellProvider icp) {
+		try {
+			if (icp.getClass() == storageBusClass) {
+				IPart part = (IPart)icp;
+				IPartHost block = (IPartHost)storageBusHost.invoke(part);
+				ForgeDirection dir = (ForgeDirection)storageBusSide.invoke(icp);
+				DimensionalCoord loc = block.getLocation();
+				TileEntity tile = block.getTile().worldObj.getTileEntity(loc.x+dir.offsetX, loc.y+dir.offsetY, loc.z+dir.offsetZ);
+				return tile == this;
+			}
+			return false;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return false;
 		}
 	}
 
