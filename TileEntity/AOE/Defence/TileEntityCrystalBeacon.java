@@ -277,6 +277,8 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 		for (WorldLocation loc : cache) {
 			if (loc.dimensionID == ep.worldObj.provider.dimensionId) {
 				TileEntityCrystalBeacon te = (TileEntityCrystalBeacon)loc.getTileEntity(ep.worldObj);
+				if (te == null && ep.worldObj.isRemote)
+					continue;
 				int r = te.getRange();
 				if (Math.abs(ep.posY-loc.yCoord) <= r/2) {
 					if (loc.getDistanceTo(ep) <= r) {

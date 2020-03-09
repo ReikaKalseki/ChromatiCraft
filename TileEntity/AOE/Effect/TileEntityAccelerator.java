@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements Accelerator {
@@ -32,6 +33,8 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 	public static final long MAX_LAG = calculateLagLimit();
 
 	private static HashMap<Class<? extends TileEntity>, Acceleration> actions = new HashMap();
+
+	public static int debugLevel = 0;
 
 	private int ticksSinceLagPausedWarning = 100000;
 
@@ -65,6 +68,8 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 	}
 
 	public static void blacklistTile(Class<? extends TileEntity> cl) {
+		if (cl == TileEntity.class)
+			throw new IllegalArgumentException("You cannot blacklist the core TE class!");
 		actions.put(cl, blacklistKey);
 	}
 
@@ -79,6 +84,8 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 			return;
 		try {
 			cl = Class.forName(name);
+			if (cl == TileEntity.class)
+				throw new IllegalArgumentException("You cannot blacklist the core TE class!");
 			ChromatiCraft.logger.log("TileEntity \""+name+"\" has been blacklisted from the TileEntity Accelerator, because "+r.message);
 			actions.put(cl, blacklistKey);
 		}
@@ -109,10 +116,15 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 	protected EffectResult tickDirection(World world, int x, int y, int z, ForgeDirection dir, long time) {
 		TileEntity te = this.getAdjacentTileEntity(dir);
 		Acceleration a = this.getAccelerate(te);
-		//ReikaJavaLibrary.pConsole(te+": "+(a != null ? a.getClass() : null));
+		if (debugLevel > 0) {
+			ReikaJavaLibrary.pConsole(te+": "+(a != null ? a.getClass() : null));
+		}
 		ticksSinceLagPausedWarning++;
 		if (a != blacklistKey) {
 			int max = this.getAccel();
+			if (debugLevel > 1) {
+				ReikaJavaLibrary.pConsole(this+" > "+max);
+			}
 			if (a != null) {
 				try {
 					te = a.getActingTileEntity(te);
@@ -129,6 +141,9 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 			}
 			else {
 				for (int k = 0; k < max; k++) {
+					if (debugLevel > 2) {
+						ReikaJavaLibrary.pConsole("Ticked "+te+" "+k+"th time");
+					}
 					te.updateEntity();
 					if (MAX_LAG > 0 && System.nanoTime()-time >= MAX_LAG) {
 						this.logLagWarning(time, te);
@@ -174,7 +189,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 			actions.put(c, blacklistKey);
 			return blacklistKey;
 		}
-		if (s.contains("solar") || s.contains("windmill") || s.contains("watermill")) { //power exploit
+		if (s.contains("solar")) { //power exploit
 			actions.put(c, blacklistKey);
 			return blacklistKey;
 		}
