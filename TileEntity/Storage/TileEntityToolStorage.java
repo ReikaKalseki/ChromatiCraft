@@ -1,6 +1,7 @@
 package Reika.ChromatiCraft.TileEntity.Storage;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 import net.minecraft.client.Minecraft;
@@ -19,23 +20,38 @@ import net.minecraft.item.ItemSword;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.InertItem;
+import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Maps.CountMap;
+import Reika.DragonAPI.Instantiable.ModInteract.BasicAEInterface;
+import Reika.DragonAPI.Instantiable.ModInteract.MEWorkTracker;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler;
 
+import appeng.api.AEApi;
+import appeng.api.networking.IGridBlock;
+import appeng.api.networking.IGridNode;
+import appeng.api.networking.security.IActionHost;
+import appeng.api.util.AECableType;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class TileEntityToolStorage extends TileEntityChromaticBase implements IInventory {
+@Strippable(value={"appeng.api.networking.security.IActionHost"})
+public class TileEntityToolStorage extends TileEntityChromaticBase implements IInventory, IActionHost {
 
 	private static final int MAX_COUNT = 360000;
 
@@ -43,6 +59,25 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 	private final CountMap<KeyedItemStack> types = new CountMap();
 	private ItemStack pendingInput;
 	private ToolType filter = ToolType.OTHER;
+
+	@ModDependent(ModList.APPENG)
+	private MESystemReader network;
+	private Object aeGridBlock;
+	private Object aeGridNode;
+	private MEWorkTracker hasWork = new MEWorkTracker();
+	private final ArrayList<ItemStack> MEStacks = new ArrayList();
+	private final StepTimer updateTimer = new StepTimer(50);
+
+	public TileEntityToolStorage() {
+		if (ModList.APPENG.isLoaded()) {
+			aeGridBlock = new BasicAEInterface(this, this.getTile().getCraftedProduct());
+			aeGridNode = FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER ? AEApi.instance().createGridNode((IGridBlock)aeGridBlock) : null;
+
+			//for (int i = 0; i < lock.length; i++) {
+			//	lock[i] = new CraftingLock();
+			//}
+		}
+	}
 
 	@Override
 	public int getSizeInventory() {
@@ -109,6 +144,8 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 	public boolean stepMode() {
 		if (pendingInput == null && allItems.isEmpty()) {
 			filter = ToolType.list[(filter.ordinal()+1)%ToolType.list.length];
+			MEStacks.clear();
+			updateTimer.setTick(updateTimer.getCap()+2);
 			return true;
 		}
 		return false;
@@ -129,6 +166,92 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 			this.addItem(pendingInput, true);
 			pendingInput = null;
 		}
+
+		updateTimer.update();
+		if (updateTimer.checkCap() && !world.isRemote) {
+			this.buildCache();
+		}
+
+		if (ModList.APPENG.isLoaded()) {
+			if (network != null)
+				network.tick();
+			if (aeGridBlock != null && !world.isRemote) {
+				((BasicAEInterface)aeGridBlock).setPowerCost(1);
+			}
+
+			//ReikaJavaLibrary.pConsole(MEStacks, Side.SERVER);
+			if (!world.isRemote && network != null && !MEStacks.isEmpty() && pendingInput == null) {
+				hasWork.tick();
+				if (hasWork.hasWork()) {
+					//ReikaJavaLibrary.pConsole("Executing tick");
+					if (ModList.APPENG.isLoaded() && network != null && !network.isEmpty)
+						hasWork.reset();
+					this.injectItems();
+				}
+			}
+		}
+	}
+
+	private void injectItems() {
+		//ReikaJavaLibrary.pConsole("Injecting");
+		int idx = rand.nextInt(MEStacks.size());
+		ItemStack is = MEStacks.get(idx);
+		ItemStack copy = is.copy();
+		is = ReikaItemHelper.getSizedItemStack(is, is.getMaxStackSize());
+		int ret = (int)network.removeItem(is, false, true);
+		if (ret > 0) {
+			pendingInput = ReikaItemHelper.getSizedItemStack(is, ret);
+			if (ret >= copy.stackSize)
+				MEStacks.remove(idx);
+			else
+				MEStacks.get(idx).stackSize -= ret;
+		}
+		//ReikaJavaLibrary.pConsole(MEStacks+" after removing "+copy);
+	}
+
+	private void buildCache() {
+		if (ModList.APPENG.isLoaded()) {
+			Object oldNode = aeGridNode;
+			if (aeGridNode == null) {
+				aeGridNode = FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER ? AEApi.instance().createGridNode((IGridBlock)aeGridBlock) : null;
+			}
+			if (aeGridNode != null)
+				((IGridNode)aeGridNode).updateState();
+
+			if (oldNode != aeGridNode || network == null) {
+				if (aeGridNode == null)
+					network = null;
+				else if (network == null)
+					network = new MESystemReader((IGridNode)aeGridNode, this);
+				else
+					network = new MESystemReader((IGridNode)aeGridNode, network);
+			}
+
+			if (network != null) {
+				network.clearCallbacks();
+				network.addGlobalCallback(hasWork);
+
+				//ReikaJavaLibrary.pConsole("Rebuilding");
+				MEStacks.clear();
+				Collection<ItemStack> li = network.getRawMESystemContents();
+				for (ItemStack is : li) {
+					if (filter.isItemValid(is)) {
+						MEStacks.add(is);
+					}
+					else {
+
+					}
+				}
+			}
+			//network.setRequester(this);
+		}
+	}
+
+	@Override
+	protected void onInvalidateOrUnload(World world, int x, int y, int z, boolean invalid) {
+		super.onInvalidateOrUnload(world, x, y, z, invalid);
+		if (ModList.APPENG.isLoaded() && aeGridNode != null)
+			((IGridNode)aeGridNode).destroy();
 	}
 
 	private void addItem(ItemStack is, boolean doSync) {
@@ -204,6 +327,30 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 		}
 
 		filter = ToolType.list[NBT.getInteger("mode")];
+	}
+
+	@Override
+	@ModDependent(ModList.APPENG)
+	public IGridNode getGridNode(ForgeDirection dir) {
+		return (IGridNode)aeGridNode;
+	}
+
+	@Override
+	@ModDependent(ModList.APPENG)
+	public IGridNode getActionableNode() {
+		return (IGridNode)aeGridNode;
+	}
+
+	@Override
+	@ModDependent(ModList.APPENG)
+	public AECableType getCableConnectionType(ForgeDirection dir) {
+		return AECableType.COVERED;
+	}
+
+	@Override
+	@ModDependent(ModList.APPENG)
+	public void securityBreak() {
+
 	}
 
 	public static enum ToolType {
