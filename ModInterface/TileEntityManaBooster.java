@@ -40,6 +40,7 @@ import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
 import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 import vazkii.botania.api.internal.IManaBurst;
 import vazkii.botania.api.mana.IManaPool;
@@ -57,7 +58,6 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 	public static final int BOOST_FACTOR = 6;
 
 	private static final ElementTagCompound required = new ElementTagCompound();
-	private static final ElementTagCompound requestable = new ElementTagCompound();
 
 	private static Field manaField;
 	private static Field spreaderBindField;
@@ -78,9 +78,6 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 		required.addTag(CrystalElement.GRAY, 100);
 		required.addTag(CrystalElement.YELLOW, 100);
 		required.addTag(CrystalElement.LIME, 50);
-
-		requestable.addTag(required);
-		requestable.addTag(CrystalElement.LIGHTBLUE, 400);
 	}
 
 	@ModDependent(ModList.BOTANIA)
@@ -94,63 +91,73 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 
 	private final StepTimer flowerScan = new StepTimer(50);
 	private final StepTimer poolScan = new StepTimer(300);
+	private final StepTimer manaCollection = new StepTimer(8);
+	private final StepTimer maxBurstRate = new StepTimer(4);
 
-	private final ArrayList<Coordinate> poolCache = new ArrayList();
-	private final ArrayList<Coordinate> flowerCache = new ArrayList();
+	private final ArrayList<ManaTarget> poolCache = new ArrayList();
+	private final ArrayList<ManaTarget> flowerCache = new ArrayList();
 	private final PluralMap<ManaPath> pathCache = new PluralMap(2);
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (!world.isRemote) {
-			if (this.getTicksExisted()%8 == 0) {
-				for (CrystalElement e : required.elementSet()) {
-					if (energy.getValue(e) < this.getMaxStorage(e))
-						this.requestEnergy(e, this.getMaxStorage(e)-energy.getValue(e));
-				}
-			}
-
-			if (energy.containsAtLeast(required)) {
-				if (this.getTicksExisted()%8 == 0)
-					energy.subtract(required);
-			}
-			else
-				return;
-
-			boolean accel = energy.getValue(CrystalElement.LIGHTBLUE) >= requestable.getValue(CrystalElement.LIGHTBLUE);
-			if (accel) {
-				energy.subtract(CrystalElement.LIGHTBLUE, requestable.getValue(CrystalElement.LIGHTBLUE));
-			}
-
 			if (this.isTickingNaturally()) {
+				if (this.getTicksExisted()%8 == 0) {
+					for (CrystalElement e : required.elementSet()) {
+						if (energy.getValue(e) < this.getMaxStorage(e))
+							this.requestEnergy(e, this.getMaxStorage(e)-energy.getValue(e));
+					}
+				}
+
 				flowerScan.update();
 				poolScan.update();
-			}
-			if (flowerScan.checkCap()) {
-				this.scanAndCache(world, x, y, z, false);
-			}
-			if (poolScan.checkCap()) {
-				this.scanAndCache(world, x, y, z, true);
+				maxBurstRate.update();
+				if (flowerScan.checkCap()) {
+					this.scanAndCache(world, x, y, z, false);
+				}
+				if (poolScan.checkCap()) {
+					this.scanAndCache(world, x, y, z, true);
+				}
 			}
 
-			if (!flowerCache.isEmpty() && !poolCache.isEmpty() && this.getTicksExisted()%(accel ? 4 : 8) == 0) {
-				int idx = rand.nextInt(flowerCache.size());
-				Coordinate c = flowerCache.get(idx);
-				int mana = this.receiveMana(world, c, Integer.MAX_VALUE, false);
-				if (mana == -1) {
-					flowerCache.remove(idx);
-				}
-				else if (mana > 0) {
-					idx = rand.nextInt(poolCache.size());
-					Coordinate c2 = poolCache.get(idx);
-					int space = this.dumpMana(world, c2, Integer.MAX_VALUE, false);
-					if (space == -1) {
-						poolCache.remove(idx);
-					}
-					else if (space > 0) {
-						int transfer = Math.min(mana, space/BOOST_FACTOR);
-						if (transfer > 0) {
-							this.doManaTransfer(world, c, c2, transfer, accel);
-						}
+			if (!energy.containsAtLeast(required))
+				return;
+
+			boolean accel = false;
+
+			manaCollection.setCap(accel ? 4 : 8);
+			if (!flowerCache.isEmpty() && !poolCache.isEmpty()) {
+				manaCollection.update();
+				if (manaCollection.checkCap() && maxBurstRate.isAtCap())
+					this.distributeMana(world, accel);
+			}
+		}
+	}
+
+	private void distributeMana(World world, boolean accel) {
+		int idx = rand.nextInt(flowerCache.size());
+		ManaFlower c = (ManaFlower)flowerCache.get(idx);
+		if (c.isCooldown(this))
+			return;
+		int mana = this.receiveMana(world, c.location, Integer.MAX_VALUE, false);
+		if (mana == -1) {
+			flowerCache.remove(idx);
+		}
+		else if (mana > 0) {
+			idx = rand.nextInt(poolCache.size());
+			Coordinate c2 = poolCache.get(idx).location;
+			int space = this.dumpMana(world, c2, Integer.MAX_VALUE, false);
+			if (space == -1) {
+				poolCache.remove(idx);
+			}
+			else if (space > 0) {
+				int transfer = Math.min(mana, space/BOOST_FACTOR);
+				if (transfer > 0) {
+					if (this.doManaTransfer(world, c.location, c2, transfer, accel)) {
+						ReikaJavaLibrary.pConsole("Spawning burst at "+world.getTotalWorldTime());
+						energy.subtract(required);
+						c.reset(this);
+						maxBurstRate.reset();
 					}
 				}
 			}
@@ -167,7 +174,7 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 		return 8;
 	}
 
-	private void doManaTransfer(World world, Coordinate from, Coordinate to, int transfer, boolean accelerated) {
+	private boolean doManaTransfer(World world, Coordinate from, Coordinate to, int transfer, boolean accelerated) {
 		//for testing
 		//this.receiveMana(world, from, transfer, true);
 		//this.dumpMana(world, to, transfer*BOOST_FACTOR, true);
@@ -176,7 +183,9 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 		if (path != null) {
 			EntityChromaManaBurst e = new EntityChromaManaBurst(world, transfer, path, accelerated);
 			world.spawnEntityInWorld(e);
+			return true;
 		}
+		return false;
 	}
 
 	private ManaPath getPathForBurst(World world, Coordinate from, Coordinate to) {
@@ -278,7 +287,7 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 	}
 
 	private void scanAndCache(World world, int x, int y, int z, boolean pools) {
-		ArrayList<Coordinate> set = pools ? poolCache : flowerCache;
+		ArrayList<ManaTarget> set = pools ? poolCache : flowerCache;
 		set.clear();
 		int r = pools ? POOL_RANGE : FLOWER_RANGE;
 		for (int i = -r; i <= r; i++) {
@@ -292,8 +301,11 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 						if (flag) {
 							TileEntity te = world.getTileEntity(dx, dy, dz);
 							if (pools ? this.isValidPool(te) : this.isGeneratingFlower(te)) {
-								set.add(new Coordinate(dx, dy, dz));
-								if (!pools) {
+								if (pools) {
+									set.add(new ManaTarget(te));
+								}
+								else {
+									set.add(new ManaFlower(te));
 									this.bindFlowerToPool(te);
 								}
 							}
@@ -380,6 +392,36 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 	//@Override
 	public int getMaxMana() {
 		return Integer.MAX_VALUE;
+	}
+
+	private static class ManaFlower extends ManaTarget {
+
+		private static final int MAX_RATE = 20;
+
+		private int lastReceiveTick;
+
+		private ManaFlower(TileEntity te) {
+			super(te);
+		}
+
+		public boolean isCooldown(TileEntityManaBooster te) {
+			return te.getTicksExisted()-lastReceiveTick < MAX_RATE;
+		}
+
+		public void reset(TileEntityManaBooster te) {
+			lastReceiveTick = te.getTicksExisted();
+		}
+
+	}
+
+	private static class ManaTarget {
+
+		public final Coordinate location;
+
+		protected ManaTarget(TileEntity te) {
+			location = new Coordinate(te);
+		}
+
 	}
 
 	public static class ManaPath {

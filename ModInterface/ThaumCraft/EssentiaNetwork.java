@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.StepTimer;
@@ -41,12 +42,18 @@ import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.ModRegistry.InterfaceCache;
 
+import appeng.api.networking.IGrid;
+import appeng.api.networking.IGridHost;
+import appeng.api.networking.IGridNode;
+import appeng.api.networking.security.IActionHost;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IEssentiaTransport;
+import thaumicenergistics.api.grid.IEssentiaGrid;
 
 
 public class EssentiaNetwork {
@@ -157,6 +164,9 @@ public class EssentiaNetwork {
 		}
 		else if (te.getClass() == centrifugeClass) {
 			return new CentrifugeEndpoint(loc, te);
+		}
+		else if (ModList.APPENG.isLoaded() && InterfaceCache.GRIDHOST.instanceOf(te)) {
+			return new EnergisticsEndpoint(loc, te);
 		}
 		else if (te.getClass().getSimpleName().startsWith("TileThaumatorium")) {
 			return new ThaumatoriumEndpoint(loc, te);
@@ -449,6 +459,48 @@ public class EssentiaNetwork {
 
 	}
 
+	private static class EnergisticsEndpoint extends NetworkEndpoint {
+
+		private EnergisticsEndpoint(Coordinate loc, IEssentiaTransport te) {
+			super(loc, te);
+		}
+
+		@Override
+		public boolean canReceive(World world, boolean isTick) {
+			return true;
+		}
+
+		@Override
+		public boolean canEmit(World world, boolean isTick) {
+			return true;
+		}
+
+		@ModDependent(ModList.APPENG)
+		private IGrid getGrid(World world) {
+			TileEntity te = (TileEntity)this.getTile(world);
+			IGridNode node = te instanceof IActionHost ? ((IActionHost)te).getActionableNode() : ((IGridHost)te).getGridNode(ForgeDirection.UP);
+			return node.getGrid();
+		}
+
+		@Override
+		public int getContents(World world, Aspect a) {
+			IGrid grid = this.getGrid(world);
+			IEssentiaGrid cache = grid.getCache(IEssentiaGrid.class);
+			return (int)Math.min(Integer.MAX_VALUE, cache.getEssentiaAmount(a));
+		}
+		/*
+		public int addAspect(World world, Aspect a, int amount) {
+			IGrid grid = this.getGrid(world);
+			IEssentiaGrid cache = grid.getCache(IEssentiaGrid.class);
+			int fit = cache.injectEssentia(a, amount, Actionable.SIMULATE, source, powered);
+		}
+
+		public int takeAspect(World world, Aspect a, int amount) {
+
+		}
+		 */
+	}
+
 	private static class NetworkEndpoint {
 
 		public final Coordinate point;
@@ -482,7 +534,7 @@ public class EssentiaNetwork {
 			return (IEssentiaTransport)point.getTileEntity(world);
 		}
 
-		public final int getContents(World world, Aspect a) {
+		public int getContents(World world, Aspect a) {
 			IEssentiaTransport tile = this.getTile(world);
 			if (tile instanceof TileEntityAspectJar) {
 				return ((TileEntityAspectJar)tile).getAmount(a);

@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.API.AcceleratorBlacklist.BlacklistReason;
 import Reika.ChromatiCraft.API.Interfaces.Accelerator;
 import Reika.ChromatiCraft.API.Interfaces.CustomAcceleration;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -70,6 +71,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 	public static void blacklistTile(Class<? extends TileEntity> cl) {
 		if (cl == TileEntity.class)
 			throw new IllegalArgumentException("You cannot blacklist the core TE class!");
+		//ChromatiCraft.logger.log("Blacklisting "+cl+" from the accelerator");
 		actions.put(cl, blacklistKey);
 	}
 
@@ -183,11 +185,19 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 		if (a != null)
 			return a;
 		a = calculateAccelerate(c);
+		if (a != null) {
+			if (a == blacklistKey)
+				ChromatiCraft.logger.log("Calculated acceleration blacklist "+a+" for tile class "+c);
+			else
+				ChromatiCraft.logger.log("Calculated acceleration mode "+a+" for tile class "+c);
+		}
 		actions.put(c, a);
 		return a;
 	}
 
 	private static Acceleration calculateAccelerate(Class<? extends TileEntity> c) {
+		if (TileEntityChromaticBase.class.isAssignableFrom(c))
+			return null;
 		Class parent = c.getSuperclass();
 		if (parent == TileEntity.class)
 			return null;
@@ -195,7 +205,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 		if (a != null)
 			return a;
 		String s = c.getSimpleName().toLowerCase(Locale.ENGLISH);
-		if (s.contains("conduit") || s.contains("wire") || s.contains("cable")) { //almost always part of a network object
+		if (s.contains("conduit") || (s.contains("wire") && !s.contains("wireless")) || s.contains("cable")) { //almost always part of a network object
 			return blacklistKey;
 		}
 		if (s.contains("solar")) { //power exploit
