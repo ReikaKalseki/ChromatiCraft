@@ -44,6 +44,7 @@ import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
+import Reika.DragonAPI.ModInteract.ItemHandlers.AppEngHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler;
 
 import appeng.api.AEApi;
@@ -517,7 +518,18 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 				return SHOVEL;
 			if (is.getItem() instanceof ItemSword)
 				return SWORD;
-			return is.getMaxStackSize() == 1 ? OTHER : null;
+			return isValidMiscToolItem(is) ? OTHER : null;
+		}
+
+		private static boolean isValidMiscToolItem(ItemStack is) {
+			if (ModList.APPENG.isLoaded()) {
+				Item i = is.getItem();
+				if (i == AppEngHandler.getInstance().get1KCell() || i == AppEngHandler.getInstance().get4KCell())
+					return false;
+				if (i == AppEngHandler.getInstance().get16KCell() || i == AppEngHandler.getInstance().get64KCell())
+					return false;
+			}
+			return is.getMaxStackSize() == 1;
 		}
 
 		private static boolean isTinker(ItemStack is) {

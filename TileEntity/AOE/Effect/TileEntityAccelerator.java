@@ -49,6 +49,16 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 		}
 	};
 
+	private static final Acceleration defaultKey = new Acceleration() {
+		@Override
+		public void tick(TileEntity te, int factor, TileEntity accelerator) {}
+
+		@Override
+		public boolean usesParentClasses() {
+			return false;
+		}
+	};
+
 	private static boolean doRecursiveChecks = false;
 
 	static {
@@ -127,7 +137,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 			if (debugLevel > 1) {
 				ReikaJavaLibrary.pConsole(this+" > "+max);
 			}
-			if (a != null) {
+			if (a != defaultKey) {
 				try {
 					te = a.getActingTileEntity(te);
 					a.tick(te, max, this);
@@ -197,10 +207,10 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 
 	private static Acceleration calculateAccelerate(Class<? extends TileEntity> c) {
 		if (TileEntityChromaticBase.class.isAssignableFrom(c))
-			return null;
+			return defaultKey;
 		Class parent = c.getSuperclass();
 		if (parent == TileEntity.class)
-			return null;
+			return defaultKey;
 		Acceleration a = getAccelerate(parent);
 		if (a != null)
 			return a;
@@ -220,7 +230,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 		if (c.getName().contains("appeng")) { //AE will crash
 			return blacklistKey;
 		}
-		return null;
+		return defaultKey;
 	}
 
 	@Override

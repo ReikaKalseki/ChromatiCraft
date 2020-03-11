@@ -95,13 +95,15 @@ import forestry.api.multiblock.IMultiblockLogicAlveary;
 import forestry.api.multiblock.MultiblockManager;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.aspects.IEssentiaTransport;
 import thaumcraft.api.visnet.VisNetHandler;
 
 //@SmartStrip
 @Strippable(value={"forestry.api.multiblock.IAlvearyComponent", "forestry.api.multiblock.IAlvearyComponent$BeeModifier",
-		"forestry.api.multiblock.IAlvearyComponent$BeeListener", "forestry.api.apiculture.IBeeModifier", "forestry.api.apiculture.IBeeListener"})
+		"forestry.api.multiblock.IAlvearyComponent$BeeListener", "forestry.api.apiculture.IBeeModifier", "forestry.api.apiculture.IBeeListener",
+"thaumcraft.api.aspects.IEssentiaTransport"})
 public class TileEntityLumenAlveary extends TileEntityRelayPowered implements GuiController, IAlvearyComponent, BeeModifier, BeeListener,
-IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
+IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaTransport {
 
 	private static final HashMap<String, AlvearyEffect> effectSet = new HashMap();
 	private static final HashSet<AlvearyEffect> continualSet = new HashSet();
@@ -456,6 +458,10 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 		else {
 			selectedEffects.remove(id);
 		}
+	}
+
+	public boolean isEffectSelected(AlvearyEffect e) {
+		return selectedEffects.contains(e.ID);
 	}
 
 	public boolean isEffectSelectedAndActive(AlvearyEffect e) {
@@ -996,6 +1002,16 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 
 	public static final Collection<AlvearyEffect> getEffectSet() {
 		return Collections.unmodifiableCollection(effectSet.values());
+	}
+
+	public static final Collection<? extends AlvearyEffect> getEffectSet(Class<? extends AlvearyEffect> c) {
+		ArrayList<AlvearyEffect> li = new ArrayList();
+		for (AlvearyEffect ae : effectSet.values()) {
+			if (c.isAssignableFrom(ae.getClass())) {
+				li.add(ae);
+			}
+		}
+		return li;
 	}
 
 	@Override
@@ -2018,6 +2034,85 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary> {
 			return super.isActive(te) && te.hasQueen() && te.getBeeGenome().getEffect() instanceof CrystalEffect;
 		}
 
+	}
+
+	@Override
+	@ModDependent(ModList.THAUMCRAFT)
+	public boolean isConnectable(ForgeDirection face) {
+		return false;
+	}
+
+	@Override
+	@ModDependent(ModList.THAUMCRAFT)
+	public boolean canInputFrom(ForgeDirection face) {
+		return false;
+	}
+
+	@Override
+	@ModDependent(ModList.THAUMCRAFT)
+	public boolean canOutputTo(ForgeDirection face) {
+		return false;
+	}
+
+	@Override
+	@ModDependent(ModList.THAUMCRAFT)
+	public void setSuction(Aspect aspect, int amount) {
+
+	}
+
+	@Override
+	@ModDependent(ModList.THAUMCRAFT)
+	public Aspect getSuctionType(ForgeDirection face) {
+		return null;
+	}
+
+	@Override
+	@ModDependent(ModList.THAUMCRAFT)
+	public int getSuctionAmount(ForgeDirection face) {
+		return 0;
+	}
+
+	@Override
+	@ModDependent(ModList.THAUMCRAFT)
+	public int takeEssentia(Aspect aspect, int amount, ForgeDirection face) {
+		return 0;
+	}
+
+	@Override
+	@ModDependent(ModList.THAUMCRAFT)
+	public int addEssentia(Aspect aspect, int amount, ForgeDirection face) {
+		if (!aspect.isPrimal())
+			return 0;
+		int space = VIS_LIMIT-aspects.getAmount(aspect);
+		int add = Math.min(space, amount);
+		if (add > 0) {
+			aspects.add(aspect, add);
+		}
+		return add;
+	}
+
+	@Override
+	@ModDependent(ModList.THAUMCRAFT)
+	public Aspect getEssentiaType(ForgeDirection face) {
+		return null;
+	}
+
+	@Override
+	@ModDependent(ModList.THAUMCRAFT)
+	public int getEssentiaAmount(ForgeDirection face) {
+		return 0;
+	}
+
+	@Override
+	@ModDependent(ModList.THAUMCRAFT)
+	public int getMinimumSuction() {
+		return 0;
+	}
+
+	@Override
+	@ModDependent(ModList.THAUMCRAFT)
+	public boolean renderExtendedTube() {
+		return false;
 	}
 
 }

@@ -40,7 +40,6 @@ import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
 import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 import vazkii.botania.api.internal.IManaBurst;
 import vazkii.botania.api.mana.IManaPool;
@@ -154,7 +153,7 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 				int transfer = Math.min(mana, space/BOOST_FACTOR);
 				if (transfer > 0) {
 					if (this.doManaTransfer(world, c.location, c2, transfer, accel)) {
-						ReikaJavaLibrary.pConsole("Spawning burst at "+world.getTotalWorldTime());
+						//ReikaJavaLibrary.pConsole("Spawning burst at "+world.getTotalWorldTime());
 						energy.subtract(required);
 						c.reset(this);
 						maxBurstRate.reset();

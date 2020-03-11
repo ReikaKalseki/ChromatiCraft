@@ -16,9 +16,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
@@ -29,6 +27,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
+import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary.VisAlvearyEffect;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
@@ -52,6 +52,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.aspects.IAspectContainer;
 import thaumcraft.api.aspects.IEssentiaTransport;
 import thaumicenergistics.api.grid.IEssentiaGrid;
 
@@ -66,6 +67,7 @@ public class EssentiaNetwork {
 	private static Field alembicAmountField;
 	private static Class tubeClass;
 	private static Class centrifugeClass;
+	private static Class advancedFurnaceNozzleClass;
 
 	private static final SuctionComparator endpointComparator = new SuctionComparator();
 
@@ -87,6 +89,8 @@ public class EssentiaNetwork {
 				tubeClass = Class.forName("thaumcraft.common.tiles.TileTube");
 
 				centrifugeClass = Class.forName("thaumcraft.common.tiles.TileCentrifuge");
+
+				advancedFurnaceNozzleClass = Class.forName("thaumcraft.common.tiles.TileAlchemyFurnaceAdvancedNozzle");
 			}
 			catch (Exception e) {
 				ChromatiCraft.logger.logError("Could not fetch TC tile classes");
@@ -100,6 +104,10 @@ public class EssentiaNetwork {
 
 	public static Class getCentrifugeClass() {
 		return centrifugeClass;
+	}
+
+	public static Class getAdvancedFurnaceNozzleClass() {
+		return advancedFurnaceNozzleClass;
 	}
 
 	public static EssentiaNetwork getNetwork(World world) {
@@ -156,6 +164,8 @@ public class EssentiaNetwork {
 	private static NetworkEndpoint createEndpoint(Coordinate loc, IEssentiaTransport te) {
 		if (te == null)
 			return null;
+		if (ModList.FORESTRY.isLoaded() && te instanceof TileEntityLumenAlveary)
+			return new AlvearyEndpoint(loc, te);
 		Aspect a = isFilteredJar(te);
 		if (a != null)
 			return new LabelledJarEndpoint(loc, te, a);
@@ -164,6 +174,9 @@ public class EssentiaNetwork {
 		}
 		else if (te.getClass() == centrifugeClass) {
 			return new CentrifugeEndpoint(loc, te);
+		}
+		else if (te.getClass() == advancedFurnaceNozzleClass) {
+			return new AdvancedFurnaceEndpoint(loc, te);
 		}
 		else if (ModList.APPENG.isLoaded() && InterfaceCache.GRIDHOST.instanceOf(te)) {
 			return new EnergisticsEndpoint(loc, te);
@@ -332,6 +345,8 @@ public class EssentiaNetwork {
 		@Override
 		public AspectList getPush(World world) {
 			IEssentiaTransport tile = this.getTile(world);
+			if (tile == null)
+				return null;
 			try {
 				Aspect a = (Aspect)alembicAspectField.get(tile);
 				return a != null ? new AspectList().add(a, alembicAmountField.getInt(tile)) : null;
@@ -354,6 +369,49 @@ public class EssentiaNetwork {
 
 	}
 
+	private static class AdvancedFurnaceEndpoint extends ActiveEndpoint {
+
+		private AdvancedFurnaceEndpoint(Coordinate loc, IEssentiaTransport te) {
+			super(loc, te);
+		}
+
+		@Override
+		public AspectList getPull(World world) {
+			return null;
+		}
+
+		@Override
+		public AspectList getPush(World world) {
+			IEssentiaTransport tile = this.getTile(world);
+			if (tile == null)
+				return null;
+			try {
+				IAspectContainer ias = (IAspectContainer)tile;
+				return ias.getAspects();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+
+		@Override
+		public int addAspect(World world, Aspect a, int amount) { //never allow fill
+			return 0;
+		}
+
+		@Override
+		public boolean canReceive(World world, boolean isTick) {
+			return false;
+		}
+
+		@Override
+		public boolean requiresAdjacency() {
+			return true;
+		}
+
+	}
+
 	private static class LabelledJarEndpoint extends ActiveEndpoint {
 
 		private final Aspect filter;
@@ -365,8 +423,11 @@ public class EssentiaNetwork {
 
 		@Override
 		public AspectList getPull(World world) {
+			IEssentiaTransport tile = this.getTile(world);
+			if (tile == null)
+				return null;
 			try {
-				int amt = 64-amountField.getInt(this.getTile(world));
+				int amt = 64-amountField.getInt(tile);
 				return amt > 0 ? new AspectList().add(filter, amt) : null;
 			}
 			catch (Exception e) {
@@ -397,6 +458,52 @@ public class EssentiaNetwork {
 				return 0;
 			}
 			return super.addAspect(world, a, amount);
+		}
+
+	}
+
+	private static class AlvearyEndpoint extends ActiveEndpoint {
+
+		private AlvearyEndpoint(Coordinate loc, IEssentiaTransport te) {
+			super(loc, te);
+		}
+
+		@Override
+		public AspectList getPull(World world) {
+			TileEntityLumenAlveary tile = this.getAlveary(world);
+			if (tile == null || !tile.isAlvearyComplete())
+				return null;
+			Collection<VisAlvearyEffect> c = (Collection<VisAlvearyEffect>)TileEntityLumenAlveary.getEffectSet(VisAlvearyEffect.class);
+			AspectList al = new AspectList();
+			for (VisAlvearyEffect ve : c) {
+				if (tile.isEffectSelected(ve))
+					al.add(ve.aspect, ve.requiredVis*20);
+			}
+			return al;
+		}
+
+		@Override
+		public AspectList getPush(World world) {
+			return null;
+		}
+
+		@Override
+		public boolean isValid(World world) {
+			return super.isValid(world) && this.getAlveary(world).isAlvearyComplete();
+		}
+
+		private TileEntityLumenAlveary getAlveary(World world) {
+			return (TileEntityLumenAlveary)this.getTile(world);
+		}
+
+		@Override
+		public boolean canEmit(World world, boolean isTick) {
+			return false;
+		}
+
+		@Override
+		public int addAspect(World world, Aspect a, int amount) {
+			return this.getAlveary(world).addEssentia(a, amount, null);
 		}
 
 	}
@@ -478,6 +585,8 @@ public class EssentiaNetwork {
 		@ModDependent(ModList.APPENG)
 		private IGrid getGrid(World world) {
 			TileEntity te = (TileEntity)this.getTile(world);
+			if (te == null)
+				return null;
 			IGridNode node = te instanceof IActionHost ? ((IActionHost)te).getActionableNode() : ((IGridHost)te).getGridNode(ForgeDirection.UP);
 			return node.getGrid();
 		}
@@ -485,6 +594,8 @@ public class EssentiaNetwork {
 		@Override
 		public int getContents(World world, Aspect a) {
 			IGrid grid = this.getGrid(world);
+			if (grid == null)
+				return 0;
 			IEssentiaGrid cache = grid.getCache(IEssentiaGrid.class);
 			return (int)Math.min(Integer.MAX_VALUE, cache.getEssentiaAmount(a));
 		}
@@ -536,6 +647,8 @@ public class EssentiaNetwork {
 
 		public int getContents(World world, Aspect a) {
 			IEssentiaTransport tile = this.getTile(world);
+			if (tile == null)
+				return 0;
 			if (tile instanceof TileEntityAspectJar) {
 				return ((TileEntityAspectJar)tile).getAmount(a);
 			}
@@ -552,6 +665,8 @@ public class EssentiaNetwork {
 
 		public int addAspect(World world, Aspect a, int amount) {
 			IEssentiaTransport tile = this.getTile(world);
+			if (tile == null)
+				return 0;
 			int ret = 0;
 			for (int i = 0; i < 6; i++) {
 				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
@@ -569,6 +684,8 @@ public class EssentiaNetwork {
 
 		public int takeAspect(World world, Aspect a, int amount) {
 			IEssentiaTransport tile = this.getTile(world);
+			if (tile == null)
+				return 0;
 			int ret = 0;
 			for (int i = 0; i < 6; i++) {
 				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
@@ -613,6 +730,10 @@ public class EssentiaNetwork {
 				relay.inertEndpoints.remove(point);
 			}
 			relay = null;
+		}
+
+		public boolean requiresAdjacency() {
+			return false;
 		}
 	}
 
@@ -996,17 +1117,15 @@ public class EssentiaNetwork {
 				return null;
 			//ReikaJavaLibrary.pConsole("Attempting transfer of "+ReikaThaumHelper.aspectsToString(al)+" from "+from+" to "+to);
 			ArrayList<EssentiaPath> ret = new ArrayList();
-			Iterator<Entry<Aspect, Integer>> it = al.aspects.entrySet().iterator();
-			while (it.hasNext()) {
-				Entry<Aspect, Integer> e = it.next();
-				Aspect a = e.getKey();
-				int amt = e.getValue();
+			AspectList it = al.copy();
+			for (Aspect a : it.aspects.keySet()) {
+				int amt = it.getAmount(a);
 				EssentiaPath p = this.transferEssentia(world, from, to, a, Math.min(amt, TileEntityEssentiaRelay.THROUGHPUT));
 				if (p != null) {
 					ret.add(p);
-					e.setValue(amt-p.amount);
-					if (e.getValue() <= 0)
-						it.remove();
+					al.reduce(a, p.amount);
+					if (p.amount >= amt)
+						al.remove(a);
 				}
 			}
 			//ReikaJavaLibrary.pConsole(ret, !ret.isEmpty());
@@ -1178,6 +1297,8 @@ public class EssentiaNetwork {
 				else {
 					end = createEndpoint(c, (IEssentiaTransport)te);
 				}
+				if (end.requiresAdjacency() && c.getTaxicabDistanceTo(position) > 1)
+					return;
 				if (end instanceof ActiveEndpoint) {
 					activeEndpoints.put(c, (ActiveEndpoint)end);
 				}
