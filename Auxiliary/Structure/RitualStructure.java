@@ -130,6 +130,13 @@ public class RitualStructure extends ChromaStructureBase {
 
 		array.remove(x, y, z);
 
+		for (int i = -4; i <= 4; i++) {
+			array.addBlock(x+5, y, z+i, ChromaBlocks.RUNE.getBlockInstance());
+			array.addBlock(x-5, y, z+i, ChromaBlocks.RUNE.getBlockInstance());
+			array.addBlock(x+i, y, z-5, ChromaBlocks.RUNE.getBlockInstance());
+			array.addBlock(x+i, y, z+5, ChromaBlocks.RUNE.getBlockInstance());
+		}
+
 		return array;
 	}
 

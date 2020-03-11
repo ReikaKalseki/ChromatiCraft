@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -54,7 +54,7 @@ public class DuplicationWandRecipe extends PylonCastingRecipe {
 		this.addAuxItem(Items.diamond, 4, -4);
 
 		this.addAuraRequirement(CrystalElement.LIGHTBLUE, 20000);
-		this.addAuraRequirement(CrystalElement.LIME, 10000);
+		this.addAuraRequirement(CrystalElement.GRAY, 10000);
 		this.addAuraRequirement(CrystalElement.BROWN, 15000);
 	}
 

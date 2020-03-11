@@ -47,7 +47,6 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Interfaces.TileEntity.ThermalTile;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MultiblockControllerFinder;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
@@ -160,7 +159,7 @@ public class BlockHeatLamp extends BlockAttachableMini {
 				if (this.canHeat(tl)) {
 					if (this.isCold() ? temperature < tl.getTemperature() : temperature > tl.getTemperature()) {
 						tl.setTemperature(tl.getTemperature()+(this.isCold() ? -1 : 1));
-						ReikaJavaLibrary.pConsole(tl.getTemperature());
+						//ReikaJavaLibrary.pConsole(tl.getTemperature());
 						if (ModList.ROTARYCRAFT.isLoaded() && te instanceof BasicTemperatureMachine)
 							((BasicTemperatureMachine)te).resetAmbientTemperatureTimer();
 					}

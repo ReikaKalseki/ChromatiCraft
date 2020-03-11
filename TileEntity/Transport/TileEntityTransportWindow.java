@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.PlayerTimer;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
@@ -40,7 +41,7 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 
 	private static final HashSet<BlockKey> acceptedFrames = new HashSet();
 
-	private boolean hasStructure;
+	private BlockKey hasStructure;
 	private final WindowTimer cooldowns = new WindowTimer();
 	private WorldLocation target;
 	private WorldLocation source;
@@ -90,6 +91,10 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 		return renderTexture;
 	}
 
+	public boolean canLinkTo(TileEntityTransportWindow te) {
+		return this.matchRenderStates(te) && hasStructure != null && hasStructure.equals(te.hasStructure);
+	}
+
 	public boolean matchRenderStates(TileEntityTransportWindow te) {
 		return te.renderBackPane == renderBackPane && te.renderTexture == renderTexture;
 	}
@@ -97,7 +102,7 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (!world.isRemote) {
-			if (hasStructure) {
+			if (hasStructure != null) {
 				TileEntityTransportWindow te = this.getTarget();
 				if (te != null) {
 					ForgeDirection dir = this.getFacing().getOpposite();
@@ -239,7 +244,7 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 	}
 
 	public boolean doRender() {
-		return hasStructure && renderBackPane;
+		return hasStructure != null && renderBackPane;
 	}
 
 	private boolean canTeleport(ForgeDirection dir, EntityPlayer ep) {
@@ -287,29 +292,44 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 		this.syncAllData(true);
 	}
 
-	private boolean checkStructure(World world, int x, int y, int z) {
-		if (!acceptedFrames.contains(BlockKey.getAt(world, x, y+1, z)) || !acceptedFrames.contains(BlockKey.getAt(world, x, y-1, z)))
-			return false;
+	private BlockKey checkStructure(World world, int x, int y, int z) {
+		BlockKey ret = null;
+		for (Coordinate c : this.getFrameLocations()) {
+			BlockKey bk = BlockKey.getAt(world, x+c.xCoord, y+c.yCoord, z+c.zCoord);
+			if (!acceptedFrames.contains(bk))
+				return null;
+			if (ret != null && !ret.equals(bk))
+				return null;
+			ret = bk;
+		}
+		return ret;
+	}
+
+	private HashSet<Coordinate> getFrameLocations() {
+		HashSet<Coordinate> ret = new HashSet();
+		ret.add(new Coordinate(0, 1, 0));
+		ret.add(new Coordinate(0, -1, 0));
 		if (this.getFacing().offsetX != 0) {
 			for (int i = -1; i <= 1; i++) {
-				if (!acceptedFrames.contains(BlockKey.getAt(world, x, y+i, z-1)) || !acceptedFrames.contains(BlockKey.getAt(world, x, y+i, z+1)))
-					return false;
+				ret.add(new Coordinate(0, i, -1));
+				ret.add(new Coordinate(0, i, +1));
 			}
 		}
 		else {
 			for (int i = -1; i <= 1; i++) {
-				if (!acceptedFrames.contains(BlockKey.getAt(world, x-1, y+i, z)) || !acceptedFrames.contains(BlockKey.getAt(world, x+1, y+i, z)))
-					return false;
+				ret.add(new Coordinate(-1, i, 0));
+				ret.add(new Coordinate(+1, i, 0));
 			}
 		}
-		return true;
+		return ret;
 	}
 
 	@Override
 	protected void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
 
-		NBT.setBoolean("struct", hasStructure);
+		if (hasStructure != null)
+			hasStructure.writeToNBT("frame", NBT);
 
 		if (target != null)
 			target.writeToNBT("tgt", NBT);
@@ -324,7 +344,10 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 
-		hasStructure = NBT.getBoolean("struct");
+		if (NBT.hasKey("struct"))
+			hasStructure = BlockKey.readFromNBT("frame", NBT);
+		else
+			hasStructure = null;
 
 		source = WorldLocation.readFromNBT("src", NBT);
 		target = WorldLocation.readFromNBT("tgt", NBT);

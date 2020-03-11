@@ -402,7 +402,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	@Override
 	public void getTagsToWriteToStack(NBTTagCompound NBT) {
-		this.writeOwnerData(NBT);
+		//this.writeOwnerData(NBT);
 		NBT.setBoolean("boosted", isTurbo);
 		if (casterID != null)
 			NBT.setString("caster", casterID.toString());
@@ -410,7 +410,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
-		this.readOwnerData(is);
+		//this.readOwnerData(is);
 		isTurbo = ReikaItemHelper.matchStacks(is, this.getTile().getCraftedProduct()) && is.stackTagCompound != null && is.stackTagCompound.getBoolean("boosted");
 		casterID = ReikaItemHelper.matchStacks(is, this.getTile().getCraftedProduct()) && is.stackTagCompound != null && is.stackTagCompound.hasKey("caster") ? UUID.fromString(is.stackTagCompound.getString("caster")) : null;
 	}
