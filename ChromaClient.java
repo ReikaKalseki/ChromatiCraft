@@ -155,12 +155,12 @@ import Reika.ChromatiCraft.Render.TESR.Dimension.RenderWaterLock;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Auxiliary.PopupWriter;
 import Reika.DragonAPI.Auxiliary.Trackers.DonatorController;
 import Reika.DragonAPI.Auxiliary.Trackers.DonatorController.Donator;
 import Reika.DragonAPI.Auxiliary.Trackers.KeybindHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.PatreonController;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerSpecificRenderer;
+import Reika.DragonAPI.Auxiliary.Trackers.SettingInterferenceTracker;
 import Reika.DragonAPI.Instantiable.IO.SoundLoader;
 import Reika.DragonAPI.Instantiable.Rendering.ForcedTextureArmorModel;
 import Reika.DragonAPI.Instantiable.Rendering.ItemSpriteSheetRenderer;
@@ -231,6 +231,8 @@ public class ChromaClient extends ChromaCommon {
 		new SoundLoader(ChromaSounds.soundList).register();
 
 		chromaCategory = ReikaRegistryHelper.addSoundCategory("CHROMA", "ChromatiCraft");
+
+		SettingInterferenceTracker.instance.registerSettingHandler(SettingInterferenceTracker.muteInterference);
 	}
 
 	@Override
@@ -516,11 +518,6 @@ public class ChromaClient extends ChromaCommon {
 			else
 				ChromatiCraft.logger.logError("Donator "+s.displayName+" UUID could not be found! Cannot give special render!");
 		}
-	}
-
-	@Override
-	public void logPopupWarning(String msg) {
-		PopupWriter.instance.addMessage(msg);
 	}
 
 }

@@ -186,7 +186,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 			if (Math.abs(e.posX-x-0.5) <= this.getRange() && Math.abs(e.posY-y-0.5) <= this.getYRange() && Math.abs(e.posZ-z-0.5) <= this.getRange()) {
 				if (e instanceof EntityItem) {
 					EntityItem ei = (EntityItem)e;
-					if (this.canAbsorbItem(ei.getEntityItem())) {
+					if (this.canAbsorbItem(ei)) {
 						return this.absorbItem(worldObj, x, y, z, ei);
 					}
 				}
@@ -200,7 +200,10 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 		return false;
 	}
 
-	private boolean canAbsorbItem(ItemStack is) {
+	private boolean canAbsorbItem(EntityItem ei) {
+		if (ei.getEntityData().getBoolean(TileEntityItemInserter.DROP_TAG))
+			return false;
+		ItemStack is = ei.getEntityItem();
 		for (int i = 0; i < filter.length; i++) {
 			if (filter[i] != null) {
 				if (this.match(is, filter[i])) {

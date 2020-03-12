@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -58,6 +58,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class TileEntityItemInserter extends InventoriedChromaticBase implements LinkerCallback {
+
+	public static final String DROP_TAG = "item_inserter_dropped";
 
 	private final Coordinate[] targets = new Coordinate[this.getSizeInventory()];
 	private final HashMap<Coordinate, InsertionType> locations = new HashMap();
@@ -391,6 +393,7 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 					ei.motionX = ei.motionY = ei.motionZ = 0;
 					ei.delayBeforeCanPickup = 0;
 					ei.lifespan = Integer.MAX_VALUE;
+					ei.getEntityData().setBoolean(DROP_TAG, true);
 					MinecraftForge.EVENT_BUS.post(new ItemTossEvent(ei, ep));
 					return true;
 			}

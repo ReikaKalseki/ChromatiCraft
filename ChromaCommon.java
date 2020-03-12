@@ -77,8 +77,4 @@ public class ChromaCommon {
 
 	}
 
-	public void logPopupWarning(String msg) {
-
-	}
-
 }

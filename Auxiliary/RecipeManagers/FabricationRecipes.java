@@ -218,6 +218,26 @@ public class FabricationRecipes {
 			}
 		}
 
+		if (ModList.TINKERER.isLoaded()) {
+			ItemStack redheart = ReikaItemHelper.lookupItem("TConstruct:heartCanister:1");
+			ItemStack yellowheart = ReikaItemHelper.lookupItem("TConstruct:heartCanister:3");
+			if (redheart != null) {
+				tag = new ElementTagCompound();
+				tag.addValueToColor(CrystalElement.MAGENTA, 900);
+				tag.addValueToColor(CrystalElement.PURPLE, 300);
+				tag.addValueToColor(CrystalElement.RED, 100);
+				this.addRecipe(redheart, tag);
+			}
+			if (yellowheart != null) {
+				tag = new ElementTagCompound();
+				tag.addValueToColor(CrystalElement.MAGENTA, 3000);
+				tag.addValueToColor(CrystalElement.PURPLE, 1000);
+				tag.addValueToColor(CrystalElement.RED, 600);
+				tag.addValueToColor(CrystalElement.PINK, 100);
+				this.addRecipe(redheart, tag);
+			}
+		}
+
 		if (ModList.TWILIGHT.isLoaded()) {
 			ItemStack item = ReikaItemHelper.lookupItem("TwilightForest:item.charmOfLife1");
 			if (item != null) {
