@@ -65,6 +65,7 @@ import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Territory;
 import Reika.DragonAPI.ModInteract.Bees.DummyEffectData;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ForestryMultiblockControllerHandling;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -95,15 +96,16 @@ import forestry.api.multiblock.IMultiblockLogicAlveary;
 import forestry.api.multiblock.MultiblockManager;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.aspects.IAspectContainer;
 import thaumcraft.api.aspects.IEssentiaTransport;
 import thaumcraft.api.visnet.VisNetHandler;
 
 //@SmartStrip
 @Strippable(value={"forestry.api.multiblock.IAlvearyComponent", "forestry.api.multiblock.IAlvearyComponent$BeeModifier",
 		"forestry.api.multiblock.IAlvearyComponent$BeeListener", "forestry.api.apiculture.IBeeModifier", "forestry.api.apiculture.IBeeListener",
-"thaumcraft.api.aspects.IEssentiaTransport"})
+		"thaumcraft.api.aspects.IEssentiaTransport", "thaumcraft.api.aspects.IAspectContainer"})
 public class TileEntityLumenAlveary extends TileEntityRelayPowered implements GuiController, IAlvearyComponent, BeeModifier, BeeListener,
-IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaTransport {
+IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaTransport, IAspectContainer {
 
 	private static final HashMap<String, AlvearyEffect> effectSet = new HashMap();
 	private static final HashSet<AlvearyEffect> continualSet = new HashSet();
@@ -2081,14 +2083,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public int addEssentia(Aspect aspect, int amount, ForgeDirection face) {
-		if (!aspect.isPrimal())
-			return 0;
-		int space = VIS_LIMIT-aspects.getAmount(aspect);
-		int add = Math.min(space, amount);
-		if (add > 0) {
-			aspects.add(aspect, add);
-		}
-		return add;
+		return this.addToContainer(aspect, amount);
 	}
 
 	@Override
@@ -2113,6 +2108,58 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 	@ModDependent(ModList.THAUMCRAFT)
 	public boolean renderExtendedTube() {
 		return false;
+	}
+
+	@Override
+	public AspectList getAspects() {
+		return aspects.copy();
+	}
+
+	@Override
+	public void setAspects(AspectList al) {
+
+	}
+
+	@Override
+	public boolean doesContainerAccept(Aspect tag) {
+		return tag.isPrimal();
+	}
+
+	@Override
+	public int addToContainer(Aspect aspect, int amount) {
+		if (!aspect.isPrimal())
+			return 0;
+		int space = VIS_LIMIT-aspects.getAmount(aspect);
+		int add = Math.min(space, amount);
+		if (add > 0) {
+			aspects.add(aspect, add);
+		}
+		return add;
+	}
+
+	@Override
+	public boolean takeFromContainer(Aspect tag, int amount) {
+		return false;
+	}
+
+	@Override
+	public boolean takeFromContainer(AspectList ot) {
+		return false;
+	}
+
+	@Override
+	public boolean doesContainerContainAmount(Aspect tag, int amount) {
+		return aspects.getAmount(tag) >= amount;
+	}
+
+	@Override
+	public boolean doesContainerContain(AspectList ot) {
+		return ReikaThaumHelper.aspectListContains(aspects, ot);
+	}
+
+	@Override
+	public int containerContains(Aspect tag) {
+		return aspects.getAmount(tag);
 	}
 
 }

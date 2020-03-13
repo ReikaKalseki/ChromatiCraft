@@ -57,6 +57,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
+import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerBlockHandler;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
@@ -565,7 +566,7 @@ public class PylonFinder {
 	}
 
 	public static boolean isRainableBiome(BiomeGenBase b) {
-		return !BiomeGlowingCliffs.isGlowingCliffs(b) && (b instanceof BiomeGenDesert || b.getEnableSnow() || b.canSpawnLightningBolt()); //deserts because sandstorms
+		return !BiomeGlowingCliffs.isGlowingCliffs(b) && (b instanceof BiomeGenDesert || ReikaBiomeHelper.doesBiomeHavePrecipitation(b)); //deserts because sandstorms
 	}
 
 	static {

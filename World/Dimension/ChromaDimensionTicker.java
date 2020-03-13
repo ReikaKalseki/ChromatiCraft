@@ -139,7 +139,6 @@ public class ChromaDimensionTicker implements TickHandler {
 		if (world != null && !world.playerEntities.isEmpty()) {
 			if (!ChromaDimensionalAudioHandler.music.isEmpty())
 				ChromaDimensionalAudioHandler.playMusic();
-			ChromaDimensionalAudioHandler.ensureSoundOn();
 			SkyRiverManagerClient.handleSkyRiverMovementClient();
 			for (StructurePair sp : ChunkProviderChroma.structures) {
 				if (sp.generatedDimension == world.provider.dimensionId)

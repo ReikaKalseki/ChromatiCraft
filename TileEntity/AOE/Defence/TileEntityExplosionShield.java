@@ -189,6 +189,8 @@ public class TileEntityExplosionShield extends CrystalReceiverBase implements Lo
 		for (WorldLocation loc : cache) {
 			if (loc.dimensionID == world.provider.dimensionId) {
 				TileEntityExplosionShield te = (TileEntityExplosionShield)loc.getTileEntity(world);
+				if (te == null && world.isRemote)
+					continue;
 				//if (Math.abs(e.explosionY-loc.yCoord-0.5) <= te.rangeY) {
 				//if (ReikaMathLibrary.py3d(e.explosionX-loc.xCoord-0.5, 0, e.explosionZ-loc.zCoord-0.5) <= te.range) {
 				//if (te.canDampen(e)) {

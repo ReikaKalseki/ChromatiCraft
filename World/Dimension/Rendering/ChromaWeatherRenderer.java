@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -107,7 +108,7 @@ public class ChromaWeatherRenderer extends IRenderHandler {
 
 				ChromaDimensionBiome b = (ChromaDimensionBiome)biome;
 
-				if (biome.canSpawnLightningBolt() || biome.getEnableSnow()) {
+				if (ReikaBiomeHelper.doesBiomeHavePrecipitation(biome)) {
 					int rainY = world.getPrecipitationHeight(x, z);
 					int minY = ey-radius;
 					int maxY = ey+radius;

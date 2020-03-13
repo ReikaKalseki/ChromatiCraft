@@ -8,9 +8,7 @@ import org.lwjgl.input.Keyboard;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
-import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.client.audio.SoundHandler;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
 
 import Reika.ChromatiCraft.Auxiliary.MonumentCompletionRitual;
@@ -81,33 +79,6 @@ public class ChromaDimensionalAudioHandler {
 			s = freshTracks.remove(0);
 		}
 		return s.canPlay(ep) ? s : null;
-	}
-
-	@SideOnly(Side.CLIENT)
-	static void ensureSoundOn() {
-		if (Minecraft.getMinecraft().theWorld != null && Minecraft.getMinecraft().theWorld.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
-			for (SoundCategory s : SoundCategory.values()) {
-				if (requiresSounds(s)) {
-					GameSettings gs = Minecraft.getMinecraft().gameSettings;
-					gs.setSoundLevel(s, Math.max(gs.getSoundLevel(s), 0.15F)); //15%
-				}
-			}
-		}
-	}
-
-	@SideOnly(Side.CLIENT)
-	private static boolean requiresSounds(SoundCategory s) {
-		switch(s) {
-			case AMBIENT:
-			case ANIMALS:
-			case BLOCKS:
-			case MASTER:
-			case PLAYERS:
-				//case WEATHER:
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	static class DimensionMusic extends CustomMusic {
