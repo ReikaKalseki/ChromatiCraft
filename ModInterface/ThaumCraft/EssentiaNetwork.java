@@ -22,6 +22,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -38,6 +39,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -220,15 +222,28 @@ public class EssentiaNetwork {
 
 		private final ArrayList<Coordinate> path;
 		private boolean isDirty = false;
+		private final boolean startpointNeedsLOS;
+		private final boolean endpointNeedsLOS;
 
-		private EssentiaPathCache(ArrayList<Coordinate> li) {
+		public final DecimalPosition sourceOffset;
+		public final DecimalPosition targetOffset;
+
+		private EssentiaPathCache(ArrayList<Coordinate> li, boolean losstart, boolean losend, DecimalPosition so, DecimalPosition to) {
 			path = li;
+			startpointNeedsLOS = losstart;
+			endpointNeedsLOS = losend;
+			sourceOffset = so;
+			targetOffset = to;
 		}
 
 		public boolean validate(World world) {
 			for (int i = 0; i < path.size()-1; i++) {
 				Coordinate loc1 = path.get(i);
 				Coordinate loc2 = path.get(i+1);
+				if (!startpointNeedsLOS && i == 0)
+					continue;
+				if (!endpointNeedsLOS && i == path.size()-2)
+					continue;
 				if (!LOS(world, loc1, loc2))
 					return false;
 			}
@@ -252,6 +267,9 @@ public class EssentiaNetwork {
 		public final Coordinate target;
 		public final Coordinate source;
 
+		public final DecimalPosition sourceOffset;
+		public final DecimalPosition targetOffset;
+
 		public final Aspect aspect;
 		public final int amount;
 
@@ -262,6 +280,9 @@ public class EssentiaNetwork {
 
 			target = path.isEmpty() ? null : path.get(0);
 			source = path.isEmpty() ? null : path.get(path.size()-1);
+
+			sourceOffset = p.sourceOffset;
+			targetOffset = p.targetOffset;
 		}
 
 		public void update(World world, int x, int y, int z) {
@@ -272,13 +293,33 @@ public class EssentiaNetwork {
 			for (int i = 0; i < path.size()-1; i++) {
 				Coordinate loc1 = path.get(i);
 				Coordinate loc2 = path.get(i+1);
-				//this.sendParticle(world, loc1.xCoord, loc2.xCoord, loc1.yCoord, loc2.yCoord, loc1.zCoord, loc2.zCoord);
-				ReikaPacketHelper.sendStringIntPacket(ChromatiCraft.packetChannel, ChromaPackets.ESSENTIAPARTICLE.ordinal(), new PacketTarget.RadiusTarget(world, x, y, z, 32), aspect.getTag(), loc1.xCoord, loc2.xCoord, loc1.yCoord, loc2.yCoord, loc1.zCoord, loc2.zCoord, amount);
+				if (i == 0 && sourceOffset != null) {
+					NBTTagCompound tag = new NBTTagCompound();
+					tag.setString("tag", aspect.getTag());
+					tag.setInteger("amt", amount);
+					loc1.writeToNBT("loc1", tag);
+					loc2.writeToNBT("loc2", tag);
+					sourceOffset.writeToNBT("off1", tag);
+					ReikaPacketHelper.sendNBTPacket(ChromatiCraft.packetChannel, ChromaPackets.ESSENTIAPARTICLEWITHOFFSET.ordinal(), tag, new PacketTarget.RadiusTarget(world, x, y, z, 32));
+				}
+				else if (i == path.size()-2 && targetOffset != null) {
+					NBTTagCompound tag = new NBTTagCompound();
+					tag.setString("tag", aspect.getTag());
+					tag.setInteger("amt", amount);
+					loc1.writeToNBT("loc1", tag);
+					loc2.writeToNBT("loc2", tag);
+					targetOffset.writeToNBT("off2", tag);
+					ReikaPacketHelper.sendNBTPacket(ChromatiCraft.packetChannel, ChromaPackets.ESSENTIAPARTICLEWITHOFFSET.ordinal(), tag, new PacketTarget.RadiusTarget(world, x, y, z, 32));
+				}
+				else {
+					//this.sendParticle(world, loc1.xCoord, loc2.xCoord, loc1.yCoord, loc2.yCoord, loc1.zCoord, loc2.zCoord);
+					ReikaPacketHelper.sendStringIntPacket(ChromatiCraft.packetChannel, ChromaPackets.ESSENTIAPARTICLE.ordinal(), new PacketTarget.RadiusTarget(world, x, y, z, 32), aspect.getTag(), loc1.xCoord, loc2.xCoord, loc1.yCoord, loc2.yCoord, loc1.zCoord, loc2.zCoord, amount);
+				}
 			}
 		}
 
 		@SideOnly(Side.CLIENT)
-		public static void sendParticle(World world, int x1, int x2, int y1, int y2, int z1, int z2, String asp, int amt) {
+		public static void sendParticle(World world, double x1, double x2, double y1, double y2, double z1, double z2, String asp, int amt) {
 			Aspect a = Aspect.getAspect(asp);
 			int l = 100;
 			double dx = x2-x1;
@@ -504,6 +545,23 @@ public class EssentiaNetwork {
 		@Override
 		public int addAspect(World world, Aspect a, int amount) {
 			return this.getAlveary(world).addEssentia(a, amount, null);
+		}
+
+		@Override
+		protected DecimalPosition getRayOffset(World world) {
+			TileEntityLumenAlveary te = this.getAlveary(world);
+			if (te != null) {
+				Coordinate c = te.getAlvearyCenter();
+				if (c != null) {
+					return new DecimalPosition(c.xCoord-te.xCoord, c.yCoord-te.yCoord, c.zCoord-te.zCoord);
+				}
+			}
+			return null;
+		}
+
+		@Override
+		protected boolean needsLOS() {
+			return false;
 		}
 
 	}
@@ -734,6 +792,14 @@ public class EssentiaNetwork {
 
 		public boolean requiresAdjacency() {
 			return false;
+		}
+
+		protected DecimalPosition getRayOffset(World world) {
+			return null;
+		}
+
+		protected boolean needsLOS() {
+			return true;
 		}
 	}
 
@@ -1184,7 +1250,7 @@ public class EssentiaNetwork {
 			}
 			ArrayList<Coordinate> li = this.calculatePath(world, from, to);
 			if (li != null && !li.isEmpty()) {
-				path = new EssentiaPathCache(li);
+				path = new EssentiaPathCache(li, from.needsLOS(), to.needsLOS(), from.getRayOffset(world), to.getRayOffset(world));
 				pathList.put(key, path);
 			}
 			return path;
@@ -1287,8 +1353,6 @@ public class EssentiaNetwork {
 			TileEntity te = world.getTileEntity(x, y, z);
 			if (te instanceof IEssentiaTransport && !shouldSkipEndpoint(te)) {
 				Coordinate c = new Coordinate(x, y, z);
-				if (!LOS(world, position, c))
-					return;
 				NetworkEndpoint end = network.endpoints.get(c);
 				if (end != null) {
 					if (this.getDistanceTo(end) >= end.relay.getDistanceTo(end))
@@ -1297,6 +1361,8 @@ public class EssentiaNetwork {
 				else {
 					end = createEndpoint(c, (IEssentiaTransport)te);
 				}
+				if (end.needsLOS() && !LOS(world, position, c))
+					return;
 				if (end.requiresAdjacency() && c.getTaxicabDistanceTo(position) > 1)
 					return;
 				if (end instanceof ActiveEndpoint) {

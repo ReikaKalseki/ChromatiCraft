@@ -220,6 +220,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 		new GeneticRepairEffectI();
 		geneRepair2 = new GeneticRepairEffectII();
 		new EternalEffect();
+		//new RareDropBoostEffect();
 		//new SuppressionEffect(); //not implementable
 		automation = new AutomationEffect();
 		playerOnlyEffects = new PlayerRestrictionEffect();
@@ -309,6 +310,10 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 		return relativeLocation;
 	}
 
+	public Coordinate getAlvearyCenter() {
+		return relativeLocation != null ? relativeLocation.negate().offset(xCoord+1, yCoord+1, zCoord+1) : null;
+	}
+
 	public boolean isAlvearyComplete() {
 		return relativeLocation != null && !multipleBoosters;
 	}
@@ -368,8 +373,11 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 									cost.add(vae.aspect, 1);
 								}
 								for (Aspect a : cost.aspects.keySet()) {
-									if (aspects.getAmount(a) < VIS_LIMIT)
-										aspects.add(a, VisNetHandler.drainVis(world, x, y, z, a, cost.getAmount(a)));
+									if (aspects.getAmount(a) < VIS_LIMIT) {
+										int get = VisNetHandler.drainVis(world, x, y, z, a, cost.getAmount(a));
+										if (get > 0)
+											aspects.add(a, get);
+									}
 								}
 							}
 						}
@@ -1178,7 +1186,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 		protected final void consumeEnergy(TileEntityLumenAlveary te, int amount) {
 			int amt = amount*requiredVis;
 			//ReikaJavaLibrary.pConsole(amount+" x "+requiredVis+" = "+amt+", from "+te.aspects.getAmount(aspect));
-			te.aspects.reduce(aspect, requiredVis);
+			te.aspects.remove(aspect, requiredVis);
 		}
 
 		@Override
@@ -1197,6 +1205,16 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 		@Override
 		protected float productionFactor(TileEntityLumenAlveary te) {
 			return 2;
+		}
+
+		@Override
+		protected void onProductionTick(TileEntityLumenAlveary te) {
+			ItemStack[] items = ReikaBeeHelper.getBee(te.getQueenItem()).produceStacks(te.getBeeHousing());
+			if (items != null) {
+				for (ItemStack is : items) {
+					te.getBeeHousing().getBeeInventory().addProduct(is, false);
+				}
+			}
 		}
 
 		@Override
@@ -2038,6 +2056,31 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 
 	}
 
+	private static class RareDropBoostEffect extends LumenAlvearyEffect {
+
+		private RareDropBoostEffect() {
+			super("rareboost", CrystalElement.PURPLE, 900);
+		}
+
+		@Override
+		protected void onProductionTick(TileEntityLumenAlveary te) {
+			IAlleleBeeSpecies bee = te.getSpecies();
+			HashMap<ItemStack, Float> map = new HashMap(bee.getProductChances());
+			map.putAll(bee.getSpecialtyChances());
+		}
+
+		@Override
+		public String getDescription() {
+			return "Rares Boost";
+		}
+
+		@Override
+		public boolean isOnByDefault() {
+			return false;
+		}
+
+	}
+
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public boolean isConnectable(ForgeDirection face) {
@@ -2112,7 +2155,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 
 	@Override
 	public AspectList getAspects() {
-		return aspects.copy();
+		return !aspects.aspects.isEmpty() ? aspects.copy() : null; //because his code crashes on empty list, but not null one
 	}
 
 	@Override

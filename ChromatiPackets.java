@@ -166,6 +166,7 @@ import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.PacketHandler;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
@@ -807,6 +808,31 @@ public class ChromatiPackets implements PacketHandler {
 				}
 				case ESSENTIAPARTICLE: {
 					EssentiaPath.sendParticle(world, data[0], data[1], data[2], data[3], data[4], data[5], stringdata, data[6]);
+					break;
+				}
+				case ESSENTIAPARTICLEWITHOFFSET: {
+					Coordinate c1 = Coordinate.readFromNBT("loc1", NBT);
+					Coordinate c2 = Coordinate.readFromNBT("loc2", NBT);
+					double dx1 = 0;
+					double dy1 = 0;
+					double dz1 = 0;
+					double dx2 = 0;
+					double dy2 = 0;
+					double dz2 = 0;
+					if (NBT.hasKey("off1")) {
+						DecimalPosition p = DecimalPosition.readFromNBT("off1", NBT);
+						dx1 = p.xCoord;
+						dy1 = p.yCoord;
+						dz1 = p.zCoord;
+					}
+					if (NBT.hasKey("off2")) {
+						DecimalPosition p = DecimalPosition.readFromNBT("off2", NBT);
+						dx2 = p.xCoord;
+						dy2 = p.yCoord;
+						dz2 = p.zCoord;
+					}
+					//ReikaJavaLibrary.pConsole(NBT);
+					EssentiaPath.sendParticle(world, c1.xCoord+dx1, c2.xCoord+dx2, c1.yCoord+dy1, c2.yCoord+dy2, c1.zCoord+dz1, c2.zCoord+dz2, NBT.getString("tag"), NBT.getInteger("amt"));
 					break;
 				}
 				case INSERTERMODE: {

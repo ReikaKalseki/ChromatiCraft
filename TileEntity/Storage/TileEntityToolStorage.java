@@ -119,6 +119,10 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 
 	@Override
 	public ItemStack getStackInSlot(int slot) {
+		if (slot > allItems.size()) {
+			ChromatiCraft.logger.logError("Something tried pulling from an off-list slot #"+slot+"!");
+			return null;
+		}
 		return slot == 0 ? pendingInput : allItems.get(slot-1);
 	}
 
