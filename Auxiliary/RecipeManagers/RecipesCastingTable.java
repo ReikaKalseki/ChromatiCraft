@@ -939,6 +939,10 @@ public class RecipesCastingTable {
 			ItemStack is = ReikaItemHelper.getSizedItemStack(ThaumItemHelper.BlockEntry.ANCIENTROCK.getItem(), 16);
 			IRecipe sr = new ShapedOreRecipe(is, "SdS", "dOd", "SdS", 'S', "stone", 'd', ChromaStacks.auraDust, 'O', Blocks.obsidian);
 			this.addRecipe(new CastingRecipe(is, sr));
+
+			is = ThaumItemHelper.ItemEntry.ZOMBIEBRAIN.getItem();
+			sr = ReikaRecipeHelper.getShapedRecipeFor(is, "lll", "lbl", "lll", 'b', ThaumItemHelper.ItemEntry.DEFUNCTBRAIN.getItem(), 'l', ChromaStacks.lifegel);
+			this.addRecipe(new CastingRecipe(is, sr));
 		}
 
 		if (ModList.FORESTRY.isLoaded()) {

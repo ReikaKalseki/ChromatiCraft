@@ -453,6 +453,11 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 		return con != null ? con.getRedstoneOverride() : 0;
 	}
 
+	@Override
+	public boolean canSilkHarvest(World world, EntityPlayer player, int x, int y, int z, int metadata) {
+		return false;
+	}
+
 	public static class CrystalTankAuxTile extends TileEntity implements IFluidHandler {
 
 		private boolean isLit;

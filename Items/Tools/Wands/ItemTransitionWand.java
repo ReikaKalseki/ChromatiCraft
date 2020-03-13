@@ -124,6 +124,8 @@ public class ItemTransitionWand extends ItemBlockChangingWand {
 		int meta = world.getBlockMetadata(x, y, z);
 		if (b instanceof BlockLeaves)
 			meta = meta&3;
+		else if (b == ChromaBlocks.TANK.getBlockInstance())
+			meta -= meta%2;
 		return new ItemStack(b, 1, meta);
 	}
 

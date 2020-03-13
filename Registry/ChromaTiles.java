@@ -487,9 +487,14 @@ public enum ChromaTiles implements TileEnum {
 			if (chromaMappings.containsKey(id, meta))
 				throw new RegistrationException(ChromatiCraft.instance, "ID/Meta conflict @ "+id+"/"+meta+": "+r+" & "+chromaMappings.get(id, meta));
 			chromaMappings.put(id, meta, r);
-			ItemStack is = r.getCraftedProduct();
-			if (is != null)
-				craftMap.put(is, r);
+			if (r == ChromaTiles.ADJACENCY) {
+				craftMap.put(ChromaItems.ADJACENCY.getAnyMetaStack(), r);
+			}
+			else {
+				ItemStack is = r.getCraftedProduct();
+				if (is != null)
+					craftMap.put(is, r);
+			}
 		}
 	}
 
@@ -531,6 +536,8 @@ public enum ChromaTiles implements TileEnum {
 	public ItemStack getCraftedProduct() {
 		if (this == RIFT)
 			return ChromaItems.RIFT.getStackOf();
+		if (this == ADJACENCY)
+			return ChromaItems.ADJACENCY.getStackOf();
 		if (this == CREATIVEPYLON || this == STRUCTCONTROL)
 			return null;
 		return ChromaItems.PLACER.getStackOfMetadata(this.ordinal());
