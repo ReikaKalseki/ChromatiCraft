@@ -1,6 +1,7 @@
 package Reika.ChromatiCraft.TileEntity.Storage;
 
 import java.lang.reflect.Method;
+import java.lang.Thread;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -121,6 +122,7 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 	public ItemStack getStackInSlot(int slot) {
 		if (slot > allItems.size()) {
 			ChromatiCraft.logger.logError("Something tried pulling from an off-list slot #"+slot+"!");
+			Thread.dumpStack();
 			return null;
 		}
 		return slot == 0 ? pendingInput : allItems.get(slot-1);

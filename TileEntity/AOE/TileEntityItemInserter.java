@@ -389,12 +389,14 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 					return ret == null || ret.stackSize < orig;
 				}
 				case ENTITY:
+					TileEntityItemCollector.haltCollection = true;
 					EntityItem ei = ReikaItemHelper.dropItem(world, c.xCoord+0.5, c.yCoord+c.getBlock(world).getBlockBoundsMaxY()+0.125, c.zCoord+0.5, is);
 					ei.motionX = ei.motionY = ei.motionZ = 0;
 					ei.delayBeforeCanPickup = 0;
 					ei.lifespan = Integer.MAX_VALUE;
 					ei.getEntityData().setBoolean(DROP_TAG, true);
 					MinecraftForge.EVENT_BUS.post(new ItemTossEvent(ei, ep));
+					TileEntityItemCollector.haltCollection = false;
 					return true;
 			}
 			return false;

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2018
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -31,17 +31,17 @@ public class ManaBoosterRecipe extends PylonCastingRecipe {
 		this.addAuxItem(ChromaStacks.lumenGem, -2, 2);
 		this.addAuxItem(ChromaStacks.lumenGem, 2, 2);
 
-		this.addAuxItem(ReikaItemHelper.parseItem("Botania:rune:11"), -2, 0);
-		this.addAuxItem(ReikaItemHelper.parseItem("Botania:rune:11"), 2, 0);
-		this.addAuxItem(ReikaItemHelper.parseItem("Botania:rune:8"), 0, 2);
-		this.addAuxItem(ReikaItemHelper.parseItem("Botania:rune:8"), 0, -2);
+		this.addAuxItem(ReikaItemHelper.parseItem("Botania:rune:11", false), -2, 0);
+		this.addAuxItem(ReikaItemHelper.parseItem("Botania:rune:11", false), 2, 0);
+		this.addAuxItem(ReikaItemHelper.parseItem("Botania:rune:8", false), 0, 2);
+		this.addAuxItem(ReikaItemHelper.parseItem("Botania:rune:8", false), 0, -2);
 
 		for (int i = 0; i < 4; i++) {
 			int idx = i*2-4;
-			this.addAuxItem(ReikaItemHelper.parseItem(ringH[3-i]), 4, idx+2);
-			this.addAuxItem(ReikaItemHelper.parseItem(ringH[3-i]), -4, -idx-2);
-			this.addAuxItem(ReikaItemHelper.parseItem(ringV[i]), idx, 4);
-			this.addAuxItem(ReikaItemHelper.parseItem(ringV[i]), -idx, -4);
+			this.addAuxItem(ReikaItemHelper.parseItem(ringH[3-i], false), 4, idx+2);
+			this.addAuxItem(ReikaItemHelper.parseItem(ringH[3-i], false), -4, -idx-2);
+			this.addAuxItem(ReikaItemHelper.parseItem(ringV[i], false), idx, 4);
+			this.addAuxItem(ReikaItemHelper.parseItem(ringV[i], false), -idx, -4);
 		}
 
 		this.addAuraRequirement(CrystalElement.BLACK, 18000);

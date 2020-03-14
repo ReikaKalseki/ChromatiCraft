@@ -156,6 +156,17 @@ public class FabricationRecipes {
 				tag.addValueToColor(CrystalElement.GREEN, 20000);
 				this.addRecipe(item, tag);
 			}
+
+			item = ReikaItemHelper.lookupItem("Botania:dice");
+			if (item != null) {
+				tag = new ElementTagCompound();
+				tag.addValueToColor(CrystalElement.PINK, 90000);
+				tag.addValueToColor(CrystalElement.BLACK, 120000);
+				tag.addValueToColor(CrystalElement.GREEN, 90000);
+				tag.addValueToColor(CrystalElement.GRAY, 60000);
+				tag.addValueToColor(CrystalElement.PURPLE, 30000);
+				this.addRecipe(item, tag);
+			}
 		}
 
 		if (ModList.BLOODMAGIC.isLoaded()) {

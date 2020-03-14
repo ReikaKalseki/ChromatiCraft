@@ -63,6 +63,8 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 
 	private static final Collection<WorldLocation> cache = new ThreadSafeSet();
 
+	public static boolean haltCollection = false;
+
 	static {
 		required.addTag(CrystalElement.LIME, 25);
 		required.addTag(CrystalElement.BLACK, 5);
@@ -149,6 +151,8 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	}
 
 	public static boolean absorbItem(World world, Entity e) {
+		if (TileEntityItemCollector.haltCollection)
+			return false;
 		Iterator<WorldLocation> it = cache.iterator();
 		while (it.hasNext()) {
 			WorldLocation loc = it.next();

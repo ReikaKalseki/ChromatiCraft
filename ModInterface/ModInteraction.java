@@ -145,6 +145,7 @@ public class ModInteraction {
 			try {
 				Class c = Class.forName("thaumic.tinkerer.common.item.foci.ItemFocusDislocation");
 				Field f = c.getDeclaredField("blacklist");
+				f.setAccessible(true);
 				ArrayList<Block> li = (ArrayList<Block>)f.get(null);
 				for (ChromaTiles ct : ChromaTiles.TEList) {
 					li.add(ct.getBlock());

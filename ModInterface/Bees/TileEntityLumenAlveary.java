@@ -600,8 +600,10 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 	@ModDependent(ModList.FORESTRY)
 	public void wearOutEquipment(int amount) {
 		for (AlvearyEffect ae : effectSet.values()) {
-			ae.consumeEnergy(this, amount);
-			ae.onProductionTick(this);
+			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
+				ae.consumeEnergy(this, amount);
+				ae.onProductionTick(this);
+			}
 		}
 		this.updateRenderItem();
 	}
