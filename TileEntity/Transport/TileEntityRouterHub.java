@@ -54,6 +54,7 @@ import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.ExtractedItem;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.ExtractedItemGroup;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.MatchMode;
+import Reika.DragonAPI.ModRegistry.InterfaceCache;
 
 import appeng.api.AEApi;
 import appeng.api.networking.IGridBlock;
@@ -65,6 +66,7 @@ import cpw.mods.fml.relauncher.Side;
 import forestry.api.apiculture.EnumBeeType;
 import forestry.api.apiculture.IBeeHousing;
 import forestry.api.apiculture.IBeeHousingInventory;
+import forestry.api.multiblock.IAlvearyComponent;
 
 
 @Strippable(value={"appeng.api.networking.security.IActionHost"})
@@ -413,19 +415,24 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 		return INFINITE_EXTENT_AABB;
 	}
 
-	private boolean canExtractItemFrom(ItemStack in, IInventory ii) {
-		if (ModList.FORESTRY.isLoaded() && ii instanceof IBeeHousing) {
-			IBeeHousing ibh = (IBeeHousing)ii;
-			IBeeHousingInventory bhi = ibh.getBeeInventory();
-			EnumBeeType type = ReikaBeeHelper.getBeeRoot().getType(in);
-			if (bhi.getQueen() == null && (type == EnumBeeType.PRINCESS || type == EnumBeeType.QUEEN)) {
-				return false;
+	private boolean canExtractItemFrom(int slot, ItemStack in, IInventory ii, ForgeDirection side) {
+		if (ModList.FORESTRY.isLoaded() && InterfaceCache.BEEHOUSE.instanceOf(ii)) {
+			if (ii instanceof IAlvearyComponent && ii.getClass().getName().endsWith("Sieve")) {
+				return slot < 4;
 			}
-			if (bhi.getDrone() == null && type == EnumBeeType.DRONE) {
-				return false;
+			else {
+				IBeeHousing ibh = (IBeeHousing)ii;
+				IBeeHousingInventory bhi = ibh.getBeeInventory();
+				EnumBeeType type = ReikaBeeHelper.getBeeRoot().getType(in);
+				if (bhi.getQueen() == null && (type == EnumBeeType.PRINCESS || type == EnumBeeType.QUEEN)) {
+					return false;
+				}
+				if (bhi.getDrone() == null && type == EnumBeeType.DRONE) {
+					return false;
+				}
 			}
 		}
-		return true;
+		return !(ii instanceof ISidedInventory) || ((ISidedInventory)ii).canExtractItem(slot, in, side.ordinal());
 	}
 
 	public static final class ItemRule {
@@ -601,16 +608,14 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 			for (int i = 0; i < ii.getSizeInventory(); i++) {
 				ItemStack in = ii.getStackInSlot(i);
 				if (in != null) {
-					if (!(ii instanceof ISidedInventory) || ((ISidedInventory)ii).canExtractItem(i, in, direction.ordinal())) {
-						if (this.allowsItem(in) != blacklist && te.canExtractItemFrom(in, ii)) {
-							int left = te.injectItem(in, true);
-							int amt = in.stackSize-left;
-							if (amt > 0) {
-								ItemStack move = ReikaItemHelper.getSizedItemStack(in, amt);
-								ReikaInventoryHelper.decrStack(i, ii, amt);
-								te.injectItem(move, false);
-								flag = true;
-							}
+					if (te.canExtractItemFrom(i, in, ii, direction) && this.allowsItem(in) != blacklist) {
+						int left = te.injectItem(in, true);
+						int amt = in.stackSize-left;
+						if (amt > 0) {
+							ItemStack move = ReikaItemHelper.getSizedItemStack(in, amt);
+							ReikaInventoryHelper.decrStack(i, ii, amt);
+							te.injectItem(move, false);
+							flag = true;
 						}
 					}
 				}

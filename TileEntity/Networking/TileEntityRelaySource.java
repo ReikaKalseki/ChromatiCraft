@@ -67,7 +67,7 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
-		if (!world.isRemote && this.getCooldown() == 0 && checkTimer.checkCap()) {
+		if (!world.isRemote && /*this.getCooldown() == 0 && */checkTimer.checkCap()) {
 			this.checkAndRequest();
 		}
 

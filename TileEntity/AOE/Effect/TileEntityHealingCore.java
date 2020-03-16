@@ -27,6 +27,9 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.MultiblockControllerFinder;
+
+import cpw.mods.fml.common.registry.GameRegistry;
 
 
 public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
@@ -222,6 +225,84 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 		protected abstract double getReplacedValue(TileEntity te, int tier, Number original) throws Exception;
 
 		protected abstract Field getSetField(TileEntity te) throws Exception;
+
+	}
+
+	private static abstract class ItemSlotRepairInterface extends RepairInterface {
+
+		@Override
+		protected final void tick(TileEntity te, int tier) throws Exception {
+			te = this.getActingTileEntity(te);
+			IInventory ii = this.getInventory(te);
+			if (ii != null) {
+				for (int i = 0; i < ii.getSizeInventory(); i++) {
+					if (this.repairSlot(i)) {
+						ItemStack in = ii.getStackInSlot(0);
+						if (in != null && this.shouldRepairItem(in)) {
+							this.doRepairItem(in, tier);
+						}
+					}
+				}
+			}
+		}
+
+		public abstract boolean repairSlot(int slot);
+
+		public abstract boolean shouldRepairItem(ItemStack is);
+
+		public abstract void doRepairItem(ItemStack is, int tier);
+
+		protected IInventory getInventory(TileEntity te) throws Exception {
+			return te instanceof IInventory ? (IInventory)te : null;
+		}
+
+	}
+
+	private static class RailTurbineInterface extends ItemSlotRepairInterface {
+
+		private Field inventory; //ranges from 0 at 0.00% to 100k at 100% -> each 1000 is 1%
+
+		@Override
+		protected void init() throws Exception {
+			Class c = Class.forName("mods.railcraft.common.blocks.machine.alpha.TileSteamTurbine");
+			inventory = c.getDeclaredField("inv");
+			inventory.setAccessible(true);
+		}
+
+		@Override
+		protected ModList getMod() {
+			return ModList.RAILCRAFT;
+		}
+
+		@Override
+		protected String[] getClasses() {
+			return new String[]{"mods.railcraft.common.blocks.machine.alpha.TileSteamTurbine"};
+		}
+
+		@Override
+		protected IInventory getInventory(TileEntity te) throws Exception {
+			return (IInventory)inventory.get(te);
+		}
+
+		@Override
+		public boolean repairSlot(int slot) {
+			return slot == 0;
+		}
+
+		@Override
+		public boolean shouldRepairItem(ItemStack is) {
+			return is.getItemDamage() > 0 && is.getItem() == GameRegistry.findItem(ModList.RAILCRAFT.modLabel, "part.turbine.rotor");
+		}
+
+		@Override
+		public void doRepairItem(ItemStack is, int tier) {
+			is.setItemDamage(Math.max(is.getItemDamage()-tier, 0));
+		}
+
+		@Override
+		protected TileEntity getActingTileEntity(TileEntity te) throws Exception {
+			return MultiblockControllerFinder.instance.getController(te);
+		}
 
 	}
 

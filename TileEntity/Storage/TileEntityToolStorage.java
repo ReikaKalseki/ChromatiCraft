@@ -1,7 +1,6 @@
 package Reika.ChromatiCraft.TileEntity.Storage;
 
 import java.lang.reflect.Method;
-import java.lang.Thread;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -16,6 +15,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemBow;
+import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemShears;
 import net.minecraft.item.ItemSpade;
@@ -434,6 +434,7 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 		CHESTPLATE(Items.diamond_chestplate),
 		LEGS(Items.diamond_leggings),
 		BOOTS(Items.diamond_boots),
+		BOOK(Items.enchanted_book),
 		TINKER(ModList.TINKERER.isLoaded() ? TinkerToolHandler.Tools.HAMMER.getToolOfMaterials(1, 1, 1, 1) : (ItemStack)null),
 		OTHER((ItemStack)null);
 
@@ -524,6 +525,8 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 				return SHOVEL;
 			if (is.getItem() instanceof ItemSword)
 				return SWORD;
+			if (is.getItem() instanceof ItemEnchantedBook)
+				return BOOK;
 			return isValidMiscToolItem(is) ? OTHER : null;
 		}
 

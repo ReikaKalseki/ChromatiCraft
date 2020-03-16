@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,6 +12,8 @@ package Reika.ChromatiCraft.ModInterface.NEI;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
@@ -32,6 +34,7 @@ import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 import codechicken.nei.PositionedStack;
 import codechicken.nei.recipe.TemplateRecipeHandler;
@@ -112,6 +115,7 @@ public class FabricatorHandler extends TemplateRecipeHandler {
 			}
 		}
 		super.loadCraftingRecipes(outputId, results);
+		Collections.sort(arecipes, new FabricatorRecipeComparator());
 	}
 
 	@Override
@@ -170,6 +174,17 @@ public class FabricatorHandler extends TemplateRecipeHandler {
 			dy += 30;
 			p.renderIcon(itemRender, Minecraft.getMinecraft().fontRenderer, -25, dy);
 		}*/
+
+	}
+
+	private static class FabricatorRecipeComparator implements Comparator<CachedRecipe> {
+
+		@Override
+		public int compare(CachedRecipe o1, CachedRecipe o2) {
+			FabricationRecipeDisplay r1 = (FabricationRecipeDisplay)o1;
+			FabricationRecipeDisplay r2 = (FabricationRecipeDisplay)o2;
+			return ReikaItemHelper.comparator.compare(r1.recipe.getItem(), r2.recipe.getItem());
+		}
 
 	}
 

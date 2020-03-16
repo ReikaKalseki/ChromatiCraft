@@ -133,7 +133,7 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 		//ReikaJavaLibrary.pConsole(FabricationRecipes.recipes().getItemsFabricableWith(ElementTagCompound.getUniformTag(5000)));
-		if (!world.isRemote && this.getCooldown() == 0 && checkTimer.checkCap()) {
+		if (!world.isRemote && /*this.getCooldown() == 0 && */checkTimer.checkCap()) {
 			this.checkAndRequest();
 		}
 
@@ -164,8 +164,9 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 			n = TileEntityAccelerator.getAccelFromTier(n-1);
 		n++;
 		for (CrystalElement e : recipe.energy.elementSet()) {
-			int total = Math.min(this.getMaxStorage(e), 24*recipe.energy.getValue(e)*n);
+			int total = (int)Math.min(this.getMaxStorage(e), 24L*recipe.energy.getValue(e)*n);
 			int space = total-this.getEnergy(e);
+			//ReikaJavaLibrary.pConsole(e+" > "+space);
 			if (space > 0) {
 				this.requestEnergy(e, space);
 			}

@@ -296,7 +296,7 @@ public class GuiLumenAlveary extends GuiChromaBase {
 			String base = effect.getDescription()+"\nEnabled: "+isActive;
 			if (effect instanceof PoweredAlvearyEffect) {
 				PoweredAlvearyEffect pef = (PoweredAlvearyEffect)effect;
-				base = base+"\n"+pef.getResource()+": "+pef.getCost()+"/t";
+				base = base+"\n"+pef.getResource()+": "+pef.getCost()+"/cycle";
 			}
 			return base;
 		}
