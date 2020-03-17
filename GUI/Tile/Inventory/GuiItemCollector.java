@@ -22,8 +22,10 @@ import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerItemCollector;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButtonSneakIcon;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -57,6 +59,9 @@ public class GuiItemCollector extends GuiChromaBase
 		String tex = "Textures/GUIs/buttons.png";
 		buttonList.add(new CustomSoundImagedGuiButtonSneakIcon(0, j+11, k+75, 10, 10, 100, 66, tex, ChromatiCraft.class, this, 100, 86));
 		buttonList.add(new CustomSoundImagedGuiButtonSneakIcon(1, j+83, k+75, 10, 10, 100, 56, tex, ChromatiCraft.class, this, 100, 76));
+
+		buttonList.add(new CustomSoundImagedGuiButton(3, j+120, k+77, 10, 10, 90, 16, tex, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(2, j+132, k+77, 10, 10, 90, 26, tex, ChromatiCraft.class, this));
 	}
 
 	@Override
@@ -70,6 +75,13 @@ public class GuiItemCollector extends GuiChromaBase
 			else
 				vac.decreaseRange(amt);
 		}
+		else if (b.id <= 3) {
+			this.getContainer().stepOffset(player, b.id == 2 ? 1 : -1);
+		}
+	}
+
+	public ContainerItemCollector getContainer() {
+		return (ContainerItemCollector)inventorySlots;
 	}
 	/*
 	@Override
@@ -97,20 +109,48 @@ public class GuiItemCollector extends GuiChromaBase
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
+		GL11.glColor4f(1, 1, 1, 1);
+
+		//ReikaRenderHelper.disableEntityLighting();
+		//ReikaRenderHelper.disableLighting();
 		fontRendererObj.drawString("Filter", xSize-32, 79, 0xffffff);
+		fontRendererObj.drawString("Range: "+vac.getRange(), 28, 76, 0xffffff);
+
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, this.getGuiTexture());
+
+		int offset = this.getContainer().getRowOffset();
 
 		for (int i = 0; i < 2; i++) {
-			for (int k = 0; k < 9; k++) {
-				ItemStack is = vac.getMapping(i*9+k);
-				if (is != null) {
-					int dx = 8+k*18;
-					int dy = 90+i*18;
-					api.drawItemStack(itemRender, fontRendererObj, is, dx, dy);
-				}
-			}
+			int u = 177;
+			int v = 10+(i+offset)*18;
+			int x = 9;
+			int y = 91+i*18;
+			api.drawTexturedModalRect(x, y, u, v, 14, 14);
 		}
 
-		fontRendererObj.drawString("Range: "+vac.getRange(), 28, 76, 0xffffff);
+		int slots = vac.getMaxFilterCount();
+		for (int i = 0; i < 2; i++) {
+			for (int k = 0; k < 9; k++) {
+				int idx = i*9+k+offset*9;
+				ItemStack is = vac.getMapping(idx);
+				int dx = 8+k*18;
+				int dy = 90+i*18;
+				if (is != null) {
+					api.drawItemStack(itemRender, fontRendererObj, is, dx, dy);
+				}
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				GL11.glDisable(GL11.GL_TEXTURE_2D);
+				GL11.glDisable(GL11.GL_DEPTH_TEST);
+				GL11.glDisable(GL11.GL_CULL_FACE);
+				GL11.glColor4f(1, 1, 1, 1);
+				ReikaRenderHelper.disableEntityLighting();
+				ReikaRenderHelper.disableLighting();
+				if (idx >= slots) {
+					drawRect(dx, dy, dx+16, dy+16, 0xa0b06060);
+				}
+				GL11.glPopAttrib();
+			}
+		}
 	}
 
 	@Override

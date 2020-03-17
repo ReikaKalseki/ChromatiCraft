@@ -207,6 +207,7 @@ public enum ChromaPackets {
 	ALLOYPATTERN(1, PacketTypes.STRINGINT),
 	LAUNCHFIRE(),
 	ENDERBUCKETLINK(1),
+	COLLECTORROW(1),
 	;
 
 	public final int numInts;

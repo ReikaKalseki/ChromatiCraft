@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
 import Reika.ChromatiCraft.Auxiliary.RangeTracker.ConfigurableRangeTracker;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -56,7 +57,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 
 	private final ConfigurableRangeTracker range = new ConfigurableRangeTracker(MAXRANGE, 24, 1);
 
-	private ItemStack[] filter = new ItemStack[2*9];
+	private ItemStack[] filter = new ItemStack[5*9];
 	private final StepTimer scanTimer = new StepTimer(200);
 
 	private static final ElementTagCompound required = new ElementTagCompound();
@@ -77,6 +78,13 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 
 	public int getExperience() {
 		return experience;
+	}
+
+	public int getMaxFilterCount() {
+		int adj = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.PURPLE);
+		if (adj <= 0)
+			return 9;
+		return Math.min(filter.length, 9+(9*adj/2));
 	}
 
 	@Override
@@ -208,7 +216,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 		if (ei.getEntityData().getBoolean(TileEntityItemInserter.DROP_TAG))
 			return false;
 		ItemStack is = ei.getEntityItem();
-		for (int i = 0; i < filter.length; i++) {
+		for (int i = 0; i < this.getMaxFilterCount(); i++) {
 			if (filter[i] != null) {
 				if (this.match(is, filter[i])) {
 					return true;
@@ -387,6 +395,8 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	}
 
 	public void setMapping(int slot, ItemStack is) {
+		if (slot >= this.getMaxFilterCount())
+			return;
 		filter[slot] = is;
 		this.syncAllData(true);
 	}

@@ -25,6 +25,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -68,6 +69,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.Music.BlockMusicMemory.Tile
 import Reika.ChromatiCraft.Block.Relay.BlockRelayFilter.TileEntityRelayFilter;
 import Reika.ChromatiCraft.Block.Worldgen.BlockUnknownArtefact;
 import Reika.ChromatiCraft.Container.ContainerBookPages;
+import Reika.ChromatiCraft.Container.ContainerItemCollector;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
 import Reika.ChromatiCraft.Entity.EntityDimensionFlare;
@@ -1135,6 +1137,12 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case ENDERBUCKETLINK:
 					((ItemEnderBucket)ep.getCurrentEquippedItem().getItem()).setLinkIndex(ep.getCurrentEquippedItem(), data[0]);
+					break;
+				case COLLECTORROW:
+					Container c = ep.openContainer;
+					if (c instanceof ContainerItemCollector) {
+						((ContainerItemCollector)c).setRowOffset(data[0]);
+					}
 					break;
 			}
 		}

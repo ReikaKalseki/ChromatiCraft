@@ -224,6 +224,7 @@ import Reika.DragonAPI.Instantiable.Event.SetBlockEvent;
 import Reika.DragonAPI.Instantiable.Event.SlotEvent.AddToSlotEvent;
 import Reika.DragonAPI.Instantiable.Event.SlotEvent.RemoveFromSlotEvent;
 import Reika.DragonAPI.Instantiable.Event.SpawnerCheckPlayerEvent;
+import Reika.DragonAPI.Instantiable.Event.TileEntityMoveEvent;
 import Reika.DragonAPI.Instantiable.Event.VillagerTradeEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.ItemEffectRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.SinglePlayerLogoutEvent;
@@ -247,7 +248,6 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
-import Reika.DragonAPI.ModInteract.DeepInteract.FrameBlacklist.FrameUsageEvent;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.IC2RubberLogHandler;
@@ -1911,7 +1911,7 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
-	public void cancelFramez(FrameUsageEvent evt) {
+	public void cancelFramez(TileEntityMoveEvent evt) {
 		if (!this.isMovable(evt.tile)) {
 			evt.setCanceled(true);
 		}

@@ -96,20 +96,20 @@ public class ChromaBeeHelpers {
 
 	}
 
-	static class CompoundConditionalProductProvider implements ConditionalProductProvider {
+	public static class CompoundConditionalProductProvider implements ConditionalProductProvider {
 
 		private Collection<ConditionalProductProvider> list = new ArrayList();
 		private Collection<ProductCondition> extras = new ArrayList();
 
-		CompoundConditionalProductProvider() {
+		public CompoundConditionalProductProvider() {
 
 		}
 
-		void add(ConditionalProductProvider p) {
+		public void add(ConditionalProductProvider p) {
 			list.add(p);
 		}
 
-		void addGeneral(ProductCondition c) {
+		public void addGeneral(ProductCondition c) {
 			extras.add(c);
 		}
 
@@ -142,6 +142,19 @@ public class ChromaBeeHelpers {
 			for (ProductCondition p : extras) {
 				log.addStatus(p.getDescription(), p.check(world, x, y, z, ibg, ibh));
 			}
+		}
+
+		public boolean isEmpty() {
+			return list.isEmpty() && extras.isEmpty();
+		}
+
+		public boolean checkGeneral(IBeeGenome ibg, IBeeHousing ibh) {
+			ChunkCoordinates cc = ibh.getCoordinates();
+			for (ProductCondition p : extras) {
+				if (!p.check(ibh.getWorld(), cc.posX, cc.posY, cc.posZ, ibg, ibh))
+					return false;
+			}
+			return true;
 		}
 
 	}

@@ -42,6 +42,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
@@ -374,9 +375,14 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 								}
 								for (Aspect a : cost.aspects.keySet()) {
 									if (aspects.getAmount(a) < VIS_LIMIT) {
-										int get = VisNetHandler.drainVis(world, x, y, z, a, cost.getAmount(a));
-										if (get > 0)
-											aspects.add(a, get);
+										if (DragonAPICore.debugtest) {
+											aspects.add(a, VIS_LIMIT-aspects.getAmount(a));
+										}
+										else {
+											int get = VisNetHandler.drainVis(world, x, y, z, a, cost.getAmount(a));
+											if (get > 0)
+												aspects.add(a, get);
+										}
 									}
 								}
 							}

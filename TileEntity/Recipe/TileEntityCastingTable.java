@@ -862,7 +862,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 					}
 				}
 				if (inv[i] != null) {
-					ItemStack container = inv[i].getItem().getContainerItem(inv[i]);
+					ItemStack container = recipe.getContainerItem(inv[i], inv[i].getItem().getContainerItem(inv[i]));
 					if (container == null) {
 						int amt = 1;
 						if (recipe instanceof MultiBlockCastingRecipe)

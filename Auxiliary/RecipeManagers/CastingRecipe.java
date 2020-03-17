@@ -27,6 +27,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -362,6 +363,16 @@ public class CastingRecipe implements APICastingRecipe {
 	}
 
 	public NBTTagCompound getOutputTag(EntityPlayer ep, NBTTagCompound input) {
+		if (input != null) {
+			ChromaTiles tile = ChromaTiles.getTileByCraftedItem(out);
+			if (tile != null && tile.isLumenTile()) {
+				NBTTagCompound ret = new NBTTagCompound();
+				NBTBase nrg = input.getTag("energy");
+				if (nrg != null)
+					ret.setTag("energy", nrg.copy());
+				return ret;
+			}
+		}
 		return null;
 	}
 
@@ -466,6 +477,10 @@ public class CastingRecipe implements APICastingRecipe {
 
 	public int getInputCount() {
 		return ReikaRecipeHelper.getRecipeIngredientCount(recipe);
+	}
+
+	public ItemStack getContainerItem(ItemStack in, ItemStack normal) {
+		return normal;
 	}
 
 	public static class TempleCastingRecipe extends CastingRecipe implements RuneRecipe {

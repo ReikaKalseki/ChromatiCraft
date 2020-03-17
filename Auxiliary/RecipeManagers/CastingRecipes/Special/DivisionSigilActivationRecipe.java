@@ -43,6 +43,11 @@ public class DivisionSigilActivationRecipe extends MultiBlockCastingRecipe {
 		return is;
 	}
 
+	@Override
+	public ItemStack getContainerItem(ItemStack in, ItemStack normal) {
+		return in != null && in.getItem() == sigil ? null : super.getContainerItem(in, normal);
+	}
+
 	public static boolean isLoadable() {
 		return sigil != null;
 	}
