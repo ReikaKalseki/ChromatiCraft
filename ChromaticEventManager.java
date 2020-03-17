@@ -2148,7 +2148,7 @@ public class ChromaticEventManager {
 			if (active == null || ((ActivatedInventoryItem)active.getItem()).isSlotActive(active, i)) {
 				ItemStack in = inv[i];
 				if (in != null && in.getItem() == ChromaItems.LINK.getItemInstance()) {
-					if (ItemInventoryLinker.linksItem(ev.entityPlayer, in, picked)) {
+					if (((ItemInventoryLinker)ChromaItems.LINK.getItemInstance()).matchesItem(ev.entityPlayer, in, picked)) {
 						if (ItemInventoryLinker.processItem(ev.entityPlayer.worldObj, in, picked)) {
 							e.playSound("random.pop", 0.5F, 1);
 							e.setDead();

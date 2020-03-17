@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -18,12 +18,12 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
+import Reika.ChromatiCraft.Base.ItemWithItemFilter;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
-public class ContainerInventoryLinker extends Container {
+public class ContainerItemWithFilter extends Container {
 
 	private static final int width = 9;
 	private static final int height = 3;
@@ -31,7 +31,7 @@ public class ContainerInventoryLinker extends Container {
 	public InventoryCrafting inventory = new InventoryCrafting(this, width, height);
 	private World worldObj;
 
-	public ContainerInventoryLinker(EntityPlayer player, World par2World)
+	public ContainerItemWithFilter(EntityPlayer player, World par2World)
 	{
 		worldObj = par2World;
 		int var6;
@@ -51,7 +51,7 @@ public class ContainerInventoryLinker extends Container {
 
 		ItemStack tool = player.getCurrentEquippedItem();
 		int i = 0;
-		for (KeyedItemStack is : ItemInventoryLinker.getItemList(tool)) {
+		for (KeyedItemStack is : ((ItemWithItemFilter)tool.getItem()).getItemList(tool)) {
 			inventory.setInventorySlotContents(i, is.getItemStack());
 			i++;
 		}
@@ -70,7 +70,7 @@ public class ContainerInventoryLinker extends Container {
 		}
 		else if (slot >= width*height+27) {
 			ItemStack in = ep.inventory.getStackInSlot(slot-width*height-27);
-			if (ChromaItems.LINK.matchWith(in)) {
+			if (in != null && in.getItem() instanceof ItemWithItemFilter) {
 				return ep.inventory.getItemStack();
 			}
 		}
@@ -90,8 +90,8 @@ public class ContainerInventoryLinker extends Container {
 		}
 
 		ItemStack is = ep.getCurrentEquippedItem();
-		if (ChromaItems.LINK.matchWith(is)) {
-			ItemInventoryLinker.setItems(is, li);
+		if (is != null && is.getItem() instanceof ItemWithItemFilter) {
+			((ItemWithItemFilter)ChromaItems.LINK.getItemInstance()).setItems(is, li);
 		}
 	}
 

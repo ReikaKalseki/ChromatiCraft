@@ -35,7 +35,7 @@ import Reika.ChromatiCraft.Container.ContainerCrystalFurnace;
 import Reika.ChromatiCraft.Container.ContainerCrystalTank;
 import Reika.ChromatiCraft.Container.ContainerEnchantDecomposer;
 import Reika.ChromatiCraft.Container.ContainerFluidRelay;
-import Reika.ChromatiCraft.Container.ContainerInventoryLinker;
+import Reika.ChromatiCraft.Container.ContainerItemWithFilter;
 import Reika.ChromatiCraft.Container.ContainerInventoryTicker;
 import Reika.ChromatiCraft.Container.ContainerItemBurner;
 import Reika.ChromatiCraft.Container.ContainerItemCollector;
@@ -51,7 +51,7 @@ import Reika.ChromatiCraft.GUI.GuiAuraPouch;
 import Reika.ChromatiCraft.GUI.GuiBulkMover;
 import Reika.ChromatiCraft.GUI.GuiEnderBucket;
 import Reika.ChromatiCraft.GUI.GuiFlightWand;
-import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
+import Reika.ChromatiCraft.GUI.GuiItemWithFilter;
 import Reika.ChromatiCraft.GUI.GuiItemBurner;
 import Reika.ChromatiCraft.GUI.GuiLoreKeyAssembly;
 import Reika.ChromatiCraft.GUI.GuiOneSlot;
@@ -158,8 +158,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 	public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
 		ChromaGuis gui = ChromaGuis.guiList[id];
 		switch(gui) {
-			case LINK:
-				return new ContainerInventoryLinker(player, world);
+			case ITEMWITHFILTER:
+				return new ContainerItemWithFilter(player, world);
 			case BOOKPAGES:
 				return new ContainerBookPages(player, x);
 			case TILE:
@@ -246,8 +246,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			return ret;
 		}
 		switch(gui) {
-			case LINK:
-				return new GuiInventoryLinker(player, world);
+			case ITEMWITHFILTER:
+				return new GuiItemWithFilter(player, world);
 			case LOREKEY:
 				return new GuiLoreKeyAssembly(player);
 				//case LORE:

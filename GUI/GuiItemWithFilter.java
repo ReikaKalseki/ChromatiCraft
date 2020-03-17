@@ -17,7 +17,7 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Container.ContainerInventoryLinker;
+import Reika.ChromatiCraft.Container.ContainerItemWithFilter;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
@@ -25,11 +25,11 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiInventoryLinker extends GuiContainer
+public class GuiItemWithFilter extends GuiContainer
 {
-	public GuiInventoryLinker(EntityPlayer p5ep, World par2World)
+	public GuiItemWithFilter(EntityPlayer p5ep, World par2World)
 	{
-		super(new ContainerInventoryLinker(p5ep, par2World));
+		super(new ContainerItemWithFilter(p5ep, par2World));
 	}
 
 	/**

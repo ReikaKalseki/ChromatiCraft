@@ -14,7 +14,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 public enum ChromaGuis {
 
 	TILE(),
-	LINK(),
+	ITEMWITHFILTER(),
 	ABILITY(),
 	BOOKNAV(),
 	BOOKPAGES(),

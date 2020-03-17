@@ -34,7 +34,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 
-public class ItemT2EnderEye extends ItemChromaBasic implements AnimatedSpritesheet {
+public class ItemT2EnderEye extends ItemChromaBasic implements AnimatedSpritesheet, OwnableItem {
 
 	public ItemT2EnderEye(int tex) {
 		super(tex);
@@ -180,6 +180,16 @@ public class ItemT2EnderEye extends ItemChromaBasic implements AnimatedSpriteshe
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public boolean isUsableBy(ItemStack is, EntityPlayer ep) {
+		return is.stackTagCompound == null || ep.getUniqueID().toString().equals(is.stackTagCompound.getString("owner"));
+	}
+
+	@Override
+	public boolean isCollectableBy(EntityItem ei, EntityPlayer ep) {
+		return this.isUsableBy(ei.getEntityItem(), ep);
 	}
 
 }

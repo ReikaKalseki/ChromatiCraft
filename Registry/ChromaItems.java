@@ -74,6 +74,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemTeleGateLock;
 import Reika.ChromatiCraft.Items.Tools.ItemThrowableGem;
 import Reika.ChromatiCraft.Items.Tools.ItemVacuumGun;
 import Reika.ChromatiCraft.Items.Tools.ItemWarpCapsule;
+import Reika.ChromatiCraft.Items.Tools.ItemWideCollector;
 import Reika.ChromatiCraft.Items.Tools.Powered.ItemCrystalProbe;
 import Reika.ChromatiCraft.Items.Tools.Powered.ItemOrePick;
 import Reika.ChromatiCraft.Items.Tools.Powered.ItemPurifyCrystal;
@@ -192,6 +193,7 @@ public enum ChromaItems implements ItemEnum {
 	PROBE(53, true,			"chroma.probe",			ItemCrystalProbe.class),
 	TELEGATELOCK(63, false,	"chroma.telegatelock",	ItemTeleGateLock.class),
 	ENDERBUCKET(64, true,	"chroma.enderbucket",	ItemEnderBucket.class),
+	WIDECOLLECTOR(66, false, "chroma.widecollector",ItemWideCollector.class),
 	;
 
 	private final int index;
