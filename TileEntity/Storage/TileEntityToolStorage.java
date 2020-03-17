@@ -545,6 +545,16 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 			return ModList.TINKERER.isLoaded() && (TinkerToolHandler.getInstance().isTool(is) || TinkerToolHandler.getInstance().isWeapon(is));
 		}
 
+		public static String getTypesAsString() {
+			StringBuilder sb = new StringBuilder();
+			for (ToolType type : list) {
+				sb.append(type.displayName());
+				if (type != ToolType.OTHER)
+					sb.append(", ");
+			}
+			return sb.toString();
+		}
+
 		public String displayName() {
 			return ReikaStringParser.capFirstChar(this.name());
 		}

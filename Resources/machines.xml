@@ -808,14 +808,16 @@
 			Can be enhanced with a ring of liquid ender
 		</note>
 	</launchpad>
-	<name>
+	<toolstorage>
 		<desc>
-
+			Nearly every chest you find is likely to have some kind of tool inside, every single one with different durability or enchantments.Having raided a few dozen such structures, and obtained yet more tools from various mobs, you have 247 kinds of gold sword alone and more bronze helmets than you care to count. The usual solution of digitization would need a whole wall of storage drives just for iron pickaxes, given a 63-type limit you have never managed to exceed, and even a filing cabinet stuffed with tools rapidly exceeds capacity, not to mention taking forever to search through. Perhaps you can design something better.
 		</desc>
 		<note>
-
+			Storage modes:
+			
+			%s
 		</note>
-	</name>
+	</toolstorage>
 	<name>
 		<desc>
 
