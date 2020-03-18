@@ -313,6 +313,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	PROBE(				ChromaItems.PROBE,			ResearchLevel.BASICCRAFT),
 	TELEGATELOCK(		ChromaItems.TELEGATELOCK,	ResearchLevel.ENDGAME),
 	ENDERBUCKET(		ChromaItems.ENDERBUCKET,	ResearchLevel.RUNECRAFT,		ProgressStage.END),
+	WIDECOLLECTOR(		ChromaItems.WIDECOLLECTOR,	ResearchLevel.MULTICRAFT),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),

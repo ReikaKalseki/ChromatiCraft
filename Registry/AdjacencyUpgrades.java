@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -120,7 +120,7 @@ public enum AdjacencyUpgrades {
 			case BLUE:
 				break;
 			case PURPLE:
-				return "Improves the performance of adjacent constructs";
+				return String.format("Improves the performance of adjacent constructs, Tier %d", tier);
 			case CYAN:
 				return String.format("Increases fluid capacity %sx", ReikaStringParser.getAutoDecimal(this.getFactor(tier)));
 			case GRAY:
@@ -128,7 +128,7 @@ public enum AdjacencyUpgrades {
 			case LIGHTGRAY:
 				return "Fakes player interaction";
 			case PINK:
-				break;
+				return "Increases construct damage, tier "+tier;
 			case LIME:
 				return String.format("Increases construct range %sx", ReikaStringParser.getAutoDecimal(this.getFactor(tier)));
 			case YELLOW:

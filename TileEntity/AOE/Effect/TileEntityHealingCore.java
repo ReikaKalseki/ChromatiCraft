@@ -38,6 +38,7 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 
 	static {
 		new DecalcificationInterface();
+		new RailTurbineInterface();
 	}
 
 	@Override
@@ -65,7 +66,9 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 			RepairInterface s = this.getInterface(te);
 			if (s != NoInterface.instance) {
 				try {
-					s.tick(te, this.getTier());
+					int r = s.getTickRand(this.getTier());
+					if (r <= 1 || rand.nextInt(r) == 0)
+						s.tick(te, this.getTier());
 				}
 				catch (Exception ex) {
 					ChromatiCraft.logger.logError("Could not tick repair interface "+s+" for "+te+" @ "+this);
@@ -166,6 +169,10 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 
 		protected TileEntity getActingTileEntity(TileEntity te) throws Exception {
 			return te;
+		}
+
+		public int getTickRand(int tier) {
+			return 1;
 		}
 	}
 
@@ -285,6 +292,11 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 		}
 
 		@Override
+		public int getTickRand(int tier) {
+			return 100-tier*10;
+		}
+
+		@Override
 		public boolean repairSlot(int slot) {
 			return slot == 0;
 		}
@@ -296,7 +308,7 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 
 		@Override
 		public void doRepairItem(ItemStack is, int tier) {
-			is.setItemDamage(Math.max(is.getItemDamage()-tier, 0));
+			is.setItemDamage(Math.max(is.getItemDamage()-1, 0));
 		}
 
 		@Override

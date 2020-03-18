@@ -233,6 +233,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.TintedL
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.TransitionRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.VacuumGunRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.WarpCapsuleRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.WideCollectorRecipe;
 import Reika.ChromatiCraft.Base.ItemChromaBasic;
 import Reika.ChromatiCraft.Block.BlockPath;
 import Reika.ChromatiCraft.Block.BlockPath.PathType;
@@ -922,6 +923,8 @@ public class RecipesCastingTable {
 		is = ChromaTiles.TOOLSTORAGE.getCraftedProduct();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "qgq", "wcw", "wsw", 'q', Items.quartz, 'g', Blocks.glowstone, 'c', ChromaBlocks.LOOTCHEST.getBlockInstance(), 'w', ReikaTreeHelper.OAK.getLog(), 's', Blocks.stone);
 		this.addRecipe(new LaunchPadRecipe(is, sr));
+
+		this.addRecipe(new WideCollectorRecipe(ChromaItems.WIDECOLLECTOR.getStackOf(), ChromaTiles.FUNCTIONRELAY.getCraftedProduct()));
 
 		this.addSpecialRecipes();
 	}

@@ -646,7 +646,7 @@ public class EssentiaNetwork {
 			if (te == null)
 				return null;
 			IGridNode node = te instanceof IActionHost ? ((IActionHost)te).getActionableNode() : ((IGridHost)te).getGridNode(ForgeDirection.UP);
-			return node.getGrid();
+			return node != null ? node.getGrid() : null;
 		}
 
 		@Override

@@ -187,6 +187,18 @@
 	<telegatelock>
 		Teleportation between previsited points, especially if it needs something built at each end, is of little value if you just want to get home from somewhere to which you never plan to return. A wand with a shiny blue sphere helps a bit, but it is expensive to use and there have been times where it has simply not been able to travel particularly far distances. Airing your grievances over that fact to everyone who will listen (and for that matter, even those who will not) might feel rewarding, but does little to solve your dilemma, so you will need another approach, probably building upon things already constructed.
 	</telegatelock>
+	<widecollector>
+		The machinery of your tree farm is a maze of piping and wiring, and every time you want to upgrade or refine it you find drops trapped behind multiple layers of other piping, completely inaccessible unless you feel like tearing a big hole to reach it, and then spending the next 20 minutes figuring out what went where or connects to what. You could apply some sort of magnetisation, but then you collect everything spilled from the farm and your inventory fills with sawdust, charcoal, and apples. What you really need is something which can simply increase your collection range, ideally tuned to specific items.
+	</widecollector>
+	<enderbucket>
+		You have a building full of storage tanks of vairous liquids, but that does you little good when you need to place a few buckets of lava across your base, 200 blocks away, or find some liquid ender you want to collect while out exploring. Besides the obvious(ly stupid) option of just running back and forth a dozen times, you could just cart drums around with you, but that is still a massive pain, and a lot of the time you find out you need the liquid when already far from the tanks. Something like a bucket which can be innately linked to one or more tanks would be a much more convenient solution.
+	</enderbucket>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
 	<name>
 		
 	</name>
