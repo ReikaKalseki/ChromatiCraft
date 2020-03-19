@@ -93,7 +93,7 @@ public class TileEntityAvoLaser extends TileEntityRelayPowered implements SidePl
 			attackCooldowns.put(e.getUniqueID(), 40);
 			float base = this.hasPinkRune() ? 12 : 8;//4 hearts, since original does 40/100 damage
 			int adj = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.PINK);
-			double f = adj == 0 ? 1 : AdjacencyUpgrades.PINK.getFactor(adj);
+			double f = adj == 0 ? 1 : AdjacencyUpgrades.PINK.getFactor(adj-1);
 			base *= f;
 			e.attackEntityFrom(this.getDamageSource(), base);
 		}

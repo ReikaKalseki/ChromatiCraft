@@ -18,7 +18,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AcceleratorBlacklist.BlacklistReason;
-import Reika.ChromatiCraft.API.Interfaces.Accelerator;
 import Reika.ChromatiCraft.API.Interfaces.CustomAcceleration;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
@@ -29,7 +28,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
-public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements Accelerator {
+public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 
 	public static final long MAX_LAG = calculateLagLimit();
 
@@ -241,11 +240,6 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 	@Override
 	public int getRedstoneOverride() {
 		return 0;
-	}
-
-	@Override
-	public int getAccelerationFactor() {
-		return this.getAccel();
 	}
 
 	@Override

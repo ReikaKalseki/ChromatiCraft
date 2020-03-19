@@ -12,12 +12,11 @@ package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.API.Interfaces.DamageIncreaser;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 
-public class TileEntityDamageBoost extends TileEntityAdjacencyUpgrade implements DamageIncreaser {
+public class TileEntityDamageBoost extends TileEntityAdjacencyUpgrade {
 
 	private static double[] factors = {
 			1.25,
@@ -47,11 +46,6 @@ public class TileEntityDamageBoost extends TileEntityAdjacencyUpgrade implements
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
 
-	}
-
-	@Override
-	public float getDamageFactor() {
-		return this.getFactor(this.getTier());
 	}
 
 }

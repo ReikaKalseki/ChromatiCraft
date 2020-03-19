@@ -22,7 +22,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.API.CastingAPI;
-import Reika.ChromatiCraft.API.CrystalElementProxy;
+import Reika.ChromatiCraft.API.Interfaces.CrystalElementAccessor.CrystalElementProxy;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 
 import cpw.mods.fml.relauncher.Side;

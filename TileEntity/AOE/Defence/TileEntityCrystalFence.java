@@ -167,7 +167,7 @@ public class TileEntityCrystalFence extends TileEntityRelayPowered implements Ow
 		fence.addPoint(xCoord, yCoord, zCoord);
 		this.findFrom(xCoord, zCoord, outputFace, 0);
 		int adj = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.PINK);
-		double f = adj == 0 ? 1 : AdjacencyUpgrades.PINK.getFactor(adj);
+		double f = adj == 0 ? 1 : AdjacencyUpgrades.PINK.getFactor(adj-1);
 		damageAmount *= f;
 		if (!renderOnly) {
 			colorFade = new boolean[fence.segmentCount()];

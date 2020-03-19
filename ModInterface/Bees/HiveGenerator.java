@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -43,7 +43,7 @@ public class HiveGenerator implements IWorldGenerator {
 	public void onGenCrystal(CrystalGenEvent evt) {
 		int dim = evt.world.provider.dimensionId;
 		if (dim != -1 && dim != 1) {
-			if (evt.color == CrystalElement.WHITE.getAPIProxy()) {
+			if (evt.color == CrystalElement.WHITE) {
 				if (evt.getRandomInt(4) == 0) {
 					Block idb = evt.world.getBlock(evt.xCoord, evt.yCoord-1, evt.zCoord);
 					if (idb.isReplaceableOreGen(evt.world, evt.xCoord, evt.yCoord-1, evt.zCoord, Blocks.stone)) {

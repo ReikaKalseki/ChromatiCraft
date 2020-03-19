@@ -17,7 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
-import Reika.ChromatiCraft.API.CrystalElementProxy;
+import Reika.ChromatiCraft.API.Interfaces.CrystalElementAccessor.CrystalElementProxy;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -310,7 +310,7 @@ public final class AbilityRituals {
 	public void addRitual(Ability a, HashMap<CrystalElementProxy, Integer> elements) {
 		AbilityRitual rit = new AbilityRitual(a);
 		for (CrystalElementProxy e : elements.keySet()) {
-			rit.addAura(CrystalElement.getFromAPI(e), elements.get(e));
+			rit.addAura((CrystalElement)e, elements.get(e));
 		}
 		this.addRitual(rit);
 	}

@@ -37,11 +37,11 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.CastingAPI.FXCallback;
-import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.APICastingRecipe;
 import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.LumenRecipe;
 import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.MultiRecipe;
 import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.RuneRecipe;
+import Reika.ChromatiCraft.API.Interfaces.CrystalElementAccessor.CrystalElementProxy;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.ConfigRecipe;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
@@ -555,7 +555,7 @@ public class CastingRecipe implements APICastingRecipe {
 		}
 
 		protected TempleCastingRecipe addRune(CrystalElementProxy color, int rx, int ry, int rz) {
-			return this.addRune(CrystalElement.getFromAPI(color), rx, ry, rz);
+			return this.addRune((CrystalElement)color, rx, ry, rz);
 		}
 
 		protected TempleCastingRecipe addRune(CrystalElement color, int rx, int ry, int rz) {
@@ -612,7 +612,7 @@ public class CastingRecipe implements APICastingRecipe {
 			HashMap<List<Integer>, CrystalElementProxy> map = new HashMap();
 			Map<Coordinate, CrystalElement> rv = this.getRunes().getRunes();
 			for (Coordinate c : rv.keySet()) {
-				map.put(c.asIntList(), rv.get(c).getAPIProxy());
+				map.put(c.asIntList(), rv.get(c));
 			}
 			return map;
 		}
@@ -908,7 +908,7 @@ public class CastingRecipe implements APICastingRecipe {
 		}
 
 		protected CastingRecipe addAuraRequirement(CrystalElementProxy e, int amt) {
-			return this.addAuraRequirement(CrystalElement.getFromAPI(e), amt);
+			return this.addAuraRequirement((CrystalElement)e, amt);
 		}
 
 		protected CastingRecipe addAuraRequirement(CrystalElement e, int amt) {
@@ -948,7 +948,7 @@ public class CastingRecipe implements APICastingRecipe {
 		}
 
 		public int getEnergyCost(CrystalElementProxy e) {
-			return elements.getValue(CrystalElement.getFromAPI(e));
+			return elements.getValue((CrystalElement)e);
 		}
 
 		@Override

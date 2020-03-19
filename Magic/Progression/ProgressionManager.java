@@ -33,11 +33,11 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraftforge.common.MinecraftForge;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.API.ResearchFetcher;
 import Reika.ChromatiCraft.API.ResearchFetcher.ProgressRegistry;
 import Reika.ChromatiCraft.API.Event.ProgressionEvent;
 import Reika.ChromatiCraft.API.Event.ProgressionEvent.ResearchType;
+import Reika.ChromatiCraft.API.Interfaces.CrystalElementAccessor.CrystalElementProxy;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
@@ -813,7 +813,7 @@ public class ProgressionManager implements ProgressRegistry {
 
 	@Override
 	public boolean playerDiscoveredElement(EntityPlayer ep, CrystalElementProxy e) {
-		return this.hasPlayerDiscoveredColor(ep, CrystalElement.getFromAPI(e));
+		return this.hasPlayerDiscoveredColor(ep, (CrystalElement)e);
 	}
 
 	public boolean hasPlayerCompletedStructureColor(EntityPlayer ep, CrystalElement e) {

@@ -69,7 +69,7 @@ public class EntityMeteorShot extends Entity implements IEntityAdditionalSpawnDa
 		target = e;
 
 		int adj = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(te, CrystalElement.PINK);
-		damageFactor = adj == 0 ? 1 : AdjacencyUpgrades.PINK.getFactor(adj);
+		damageFactor = adj == 0 ? 1 : AdjacencyUpgrades.PINK.getFactor(adj-1);
 
 		double dx = e.posX-posX;
 		double dz = e.posZ-posZ;

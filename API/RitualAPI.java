@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,6 +15,7 @@ import java.util.HashMap;
 import net.minecraft.entity.player.EntityPlayer;
 
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
+import Reika.ChromatiCraft.API.Interfaces.CrystalElementAccessor.CrystalElementProxy;
 
 /** Use this class to add new rituals or test the activity state on existing ones. */
 public class RitualAPI {

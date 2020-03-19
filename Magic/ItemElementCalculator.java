@@ -41,8 +41,8 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.API.ItemElementAPI.ItemInOutHandler;
+import Reika.ChromatiCraft.API.Interfaces.CrystalElementAccessor.CrystalElementProxy;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
@@ -600,7 +600,7 @@ public class ItemElementCalculator {
 				Collection<CrystalElementProxy> c2 = h.getBonusElements();
 				if (c2 != null && !c2.isEmpty()) {
 					for (CrystalElementProxy e : c2) {
-						tag.addValueToColor(CrystalElement.getFromAPI(e), 1);
+						tag.addValueToColor((CrystalElement)e, 1);
 					}
 				}
 			}

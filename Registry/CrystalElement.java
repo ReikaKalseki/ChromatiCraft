@@ -22,7 +22,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 
-import Reika.ChromatiCraft.API.CrystalElementProxy;
+import Reika.ChromatiCraft.API.Interfaces.CrystalElementAccessor.CrystalElementProxy;
 import Reika.ChromatiCraft.Auxiliary.OverlayColor;
 import Reika.ChromatiCraft.Magic.ElementMixer;
 import Reika.ChromatiCraft.Magic.Progression.ProgressAccess;
@@ -38,7 +38,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public enum CrystalElement implements IconEnum, OverlayColor, ProgressAccess {
+public enum CrystalElement implements IconEnum, OverlayColor, ProgressAccess, CrystalElementProxy {
 
 	BLACK("Kuro", 0x191919, EnumChatFormatting.BLACK), //Magic
 	RED("Karmir", 0xFF0000, EnumChatFormatting.DARK_RED), //Endurance
@@ -243,14 +243,6 @@ public enum CrystalElement implements IconEnum, OverlayColor, ProgressAccess {
 		return chat.toString();
 	}
 
-	public CrystalElementProxy getAPIProxy() {
-		return CrystalElementProxy.list[this.ordinal()];
-	}
-
-	public static CrystalElement getFromAPI(CrystalElementProxy e) {
-		return elements[e.ordinal()];
-	}
-
 	public static CrystalElement getByName(String s) {
 		return nameMap.get(s);
 	}
@@ -267,6 +259,11 @@ public enum CrystalElement implements IconEnum, OverlayColor, ProgressAccess {
 	@Override
 	public boolean playerHas(EntityPlayer ep) {
 		return ProgressionManager.instance.hasPlayerDiscoveredColor(ep, this);
+	}
+
+	@Override
+	public String displayName() {
+		return displayName;
 	}
 
 }

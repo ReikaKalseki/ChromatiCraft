@@ -11,6 +11,8 @@ package Reika.ChromatiCraft.API;
 
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.API.Interfaces.CrystalElementAccessor.CrystalElementProxy;
+
 public class RuneAPI {
 
 	public static boolean isRune(World world, int x, int y, int z, CrystalElementProxy e) {

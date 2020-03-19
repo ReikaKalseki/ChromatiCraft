@@ -555,7 +555,7 @@ public final class PylonGenerator implements RetroactiveGenerator {
 			te.validateMultiblock(array);
 		world.func_147451_t(x, y+9, z);
 		this.cachePylon(te);
-		MinecraftForge.EVENT_BUS.post(new PylonGenerationEvent(world, x, y+9, z, rand, broken, e.getAPIProxy()));
+		MinecraftForge.EVENT_BUS.post(new PylonGenerationEvent(world, x, y+9, z, rand, broken, e));
 	}
 
 	private Coordinate getTreeDodgeAttempt(FilledBlockArray array, World world, int x0, int y0, int z0, int tries, int range) {

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -13,7 +13,8 @@ import java.util.Random;
 
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.API.CrystalElementProxy;
+import Reika.ChromatiCraft.API.Interfaces.CrystalElementAccessor;
+import Reika.ChromatiCraft.API.Interfaces.CrystalElementAccessor.CrystalElementProxy;
 import Reika.DragonAPI.Instantiable.Event.WorldGenEvent;
 
 /** Fired when a crystal is generated. */
@@ -24,7 +25,7 @@ public class CrystalGenEvent extends WorldGenEvent {
 
 	public CrystalGenEvent(World world, int x, int y, int z, Random random, int meta) {
 		super(world, x, y, z, random);
-		color = CrystalElementProxy.list[meta%16];
+		color = CrystalElementAccessor.getByIndex(meta%16);
 	}
 
 }
