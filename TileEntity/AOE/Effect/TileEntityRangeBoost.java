@@ -31,6 +31,10 @@ public class TileEntityRangeBoost extends TileEntityAdjacencyUpgrade {
 			4
 	};
 
+	public static double getFactor(int tier) {
+		return factors[tier];
+	}
+
 	@Override
 	protected EffectResult tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime) {
 		TileEntity te = this.getAdjacentTileEntity(dir);
@@ -54,10 +58,6 @@ public class TileEntityRangeBoost extends TileEntityAdjacencyUpgrade {
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
 
-	}
-
-	public static double getFactor(int tier) {
-		return factors[tier];
 	}
 
 }

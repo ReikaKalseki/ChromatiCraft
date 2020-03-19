@@ -115,6 +115,7 @@ public enum ChromaPackets {
 	MONUMENTEND(),
 	DASH(1),
 	FENCETRIGGER(2),
+	FENCEBREAK(),
 	//MAZEDISTREQ(),
 	//MAZEDISTINFO(1);
 	MINERJAM(),

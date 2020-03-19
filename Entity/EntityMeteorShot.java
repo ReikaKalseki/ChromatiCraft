@@ -22,9 +22,12 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFireSmokeFX;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityMeteorTower;
@@ -52,6 +55,7 @@ public class EntityMeteorShot extends Entity implements IEntityAdditionalSpawnDa
 	private int level;
 
 	private Entity target;
+	private double damageFactor;
 
 	private int groundTick;
 
@@ -63,6 +67,9 @@ public class EntityMeteorShot extends Entity implements IEntityAdditionalSpawnDa
 		this.setPosition(te.xCoord+0.5, te.yCoord+0.5+4, te.zCoord+0.5);
 
 		target = e;
+
+		int adj = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(te, CrystalElement.PINK);
+		damageFactor = adj == 0 ? 1 : AdjacencyUpgrades.PINK.getFactor(adj);
 
 		double dx = e.posX-posX;
 		double dz = e.posZ-posZ;
@@ -159,7 +166,7 @@ public class EntityMeteorShot extends Entity implements IEntityAdditionalSpawnDa
 		List<EntityLiving> li = worldObj.getEntitiesWithinAABB(EntityLiving.class, box);
 		for (EntityLiving e : li) {
 			if (e == target || ReikaEntityHelper.isHostile(e)) {
-				double dmg = e == target ? TileEntityMeteorTower.attacks[level].baseDamage : this.getDamage(e);
+				double dmg = e == target ? this.getBaseDamage() : this.getDamage(e);
 				e.setFire(TileEntityMeteorTower.attacks[level].fireDuration);
 				if (dmg > 0) {
 					e.attackEntityFrom(DamageSource.magic, (float)dmg);
@@ -212,7 +219,11 @@ public class EntityMeteorShot extends Entity implements IEntityAdditionalSpawnDa
 	}
 
 	private double getDamage(EntityLiving e) {
-		return TileEntityMeteorTower.attacks[level].baseDamage*(1-0.5*e.getDistanceToEntity(this)/TileEntityMeteorTower.attacks[level].splashRange);
+		return this.getBaseDamage()*(1-0.5*e.getDistanceToEntity(this)/TileEntityMeteorTower.attacks[level].splashRange);
+	}
+
+	private double getBaseDamage() {
+		return TileEntityMeteorTower.attacks[level].baseDamage*damageFactor;
 	}
 
 	@Override

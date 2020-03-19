@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -24,15 +25,20 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityRelayPowered;
 import Reika.ChromatiCraft.Block.BlockCrystalFence.CrystalFenceAuxTile;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Perimeter;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -41,7 +47,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.Note;
 
 //make very expensive, but aux cheaper
-public class TileEntityCrystalFence extends TileEntityRelayPowered implements OwnedTile {
+public class TileEntityCrystalFence extends TileEntityRelayPowered implements OwnedTile, BreakAction {
 
 	private final Perimeter fence = new Perimeter().disallowVertical();
 
@@ -51,6 +57,7 @@ public class TileEntityCrystalFence extends TileEntityRelayPowered implements Ow
 
 	private boolean controller = true;
 	private int mainCount = 1;
+	private int damageAmount;
 
 	public static final int RANGE = 16;
 	public static final int MAX_STEPS = 32;
@@ -97,6 +104,8 @@ public class TileEntityCrystalFence extends TileEntityRelayPowered implements Ow
 				}
 			}
 			else {
+				if (controller && this.getTicksExisted()%10 == 0)
+					this.validateFence(world, x, y, z);
 				if (controller && fence.isClosed() && energy.containsAtLeast(required)) {
 					this.affectEntities();
 				}
@@ -113,6 +122,41 @@ public class TileEntityCrystalFence extends TileEntityRelayPowered implements Ow
 		}
 	}
 
+	private void validateFence(World world, int x, int y, int z) {
+		for (Coordinate c : fence.getPoints()) {
+			if (c.equals(x, y, z))
+				continue;
+			Block b = c.getBlock(world);
+			int meta = c.getBlockMetadata(world);
+			if (b == this.getTile().getBlock() && meta == this.getTile().getBlockMetadata())
+				continue;
+			if (b == ChromaBlocks.FENCE.getBlockInstance())
+				continue;
+			this.onFenceBreak(world, x, y, z, true);
+			return;
+		}
+	}
+
+	public void onFenceBreak(World world, int x, int y, int z) {
+		this.onFenceBreak(world, x, y, z, false);
+	}
+
+	private void onFenceBreak(World world, int x, int y, int z, boolean notify) {
+		if (!world.isRemote && notify) {
+			ChromaSounds.POWERDOWN.playSoundAtBlock(this);
+			for (Coordinate c : fence.getPoints()) {
+				if (c.equals(x, y, z))
+					continue;
+				TileEntity te = c.getTileEntity(world);
+				if (te instanceof TileEntityCrystalFence) {
+					((TileEntityCrystalFence)te).onFenceBreak(world, x, y, z, false);
+				}
+			}
+			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.FENCEBREAK.ordinal(), world, x, y, z, 128);
+		}
+		fence.clear();
+	}
+
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		this.calcFence(false);
@@ -122,6 +166,9 @@ public class TileEntityCrystalFence extends TileEntityRelayPowered implements Ow
 		fence.clear();
 		fence.addPoint(xCoord, yCoord, zCoord);
 		this.findFrom(xCoord, zCoord, outputFace, 0);
+		int adj = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.PINK);
+		double f = adj == 0 ? 1 : AdjacencyUpgrades.PINK.getFactor(adj);
+		damageAmount *= f;
 		if (!renderOnly) {
 			colorFade = new boolean[fence.segmentCount()];
 			chargingTick = 600;
@@ -137,6 +184,8 @@ public class TileEntityCrystalFence extends TileEntityRelayPowered implements Ow
 	}
 
 	private void findFrom(int x, int z, ForgeDirection dir, int step) {
+		damageAmount = 2;
+		mainCount = 0;
 		for (int i = 1; i < RANGE; i++) {
 			int dx = x+dir.offsetX*i;
 			int dz = z+dir.offsetZ*i;
@@ -157,6 +206,7 @@ public class TileEntityCrystalFence extends TileEntityRelayPowered implements Ow
 				TileEntityCrystalFence fen = (TileEntityCrystalFence)te;
 				fen.controller = false;
 				mainCount++;
+				damageAmount += 2;
 				fence.addPoint(dx, yCoord, dz);
 				this.findFrom(dx, dz, fen.outputFace, step+1);
 				return;
@@ -192,7 +242,7 @@ public class TileEntityCrystalFence extends TileEntityRelayPowered implements Ow
 						att = false;
 				}
 				if (att) {
-					e.attackEntityFrom(DamageSource.cactus, 2+2*mainCount);
+					e.attackEntityFrom(DamageSource.cactus, damageAmount);
 					//e.knockBack(null, 0, 0, 0);
 					double dx = e.posX-xCoord-0.5;
 					double dz = e.posZ-zCoord-0.5;
@@ -258,6 +308,7 @@ public class TileEntityCrystalFence extends TileEntityRelayPowered implements Ow
 
 		NBT.setBoolean("enable", controller);
 		NBT.setInteger("main", mainCount);
+		NBT.setInteger("dmg", damageAmount);
 
 		NBT.setInteger("face", outputFace.ordinal());
 
@@ -271,6 +322,7 @@ public class TileEntityCrystalFence extends TileEntityRelayPowered implements Ow
 
 		controller = NBT.getBoolean("enable");
 		mainCount = NBT.getInteger("main");
+		damageAmount = NBT.getInteger("dmg");
 
 		outputFace = dirs[NBT.getInteger("face")];
 
@@ -310,6 +362,11 @@ public class TileEntityCrystalFence extends TileEntityRelayPowered implements Ow
 	@Override
 	public boolean renderModelsInPass1() {
 		return true;
+	}
+
+	@Override
+	public void breakBlock() {
+		this.onFenceBreak(worldObj, xCoord, yCoord, zCoord);
 	}
 
 }

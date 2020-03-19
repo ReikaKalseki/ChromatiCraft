@@ -128,7 +128,7 @@ public enum AdjacencyUpgrades {
 			case LIGHTGRAY:
 				return "Fakes player interaction";
 			case PINK:
-				return "Increases construct damage, tier "+tier;
+				return String.format("Increases construct damage %sx", ReikaStringParser.getAutoDecimal(this.getFactor(tier)));
 			case LIME:
 				return String.format("Increases construct range %sx", ReikaStringParser.getAutoDecimal(this.getFactor(tier)));
 			case YELLOW:
@@ -166,7 +166,7 @@ public enum AdjacencyUpgrades {
 			case LIGHTGRAY:
 				break;
 			case PINK:
-				break;
+				return TileEntityDamageBoost.getFactor(tier);
 			case LIME:
 				return TileEntityRangeBoost.getFactor(tier);
 			case YELLOW:

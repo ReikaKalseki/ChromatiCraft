@@ -773,6 +773,9 @@ public class ChromatiPackets implements PacketHandler {
 				case FENCETRIGGER:
 					((TileEntityCrystalFence)tile).triggerSegment(data[0], data[1] > 0);
 					break;
+				case FENCEBREAK:
+					((TileEntityCrystalFence)tile).onFenceBreak(world, x, y, z);
+					break;
 				case MINERJAM:
 					((TileEntityMiner)tile).doWarningParticles(world, x, y, z);
 					break;

@@ -20,8 +20,10 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -89,7 +91,11 @@ public class TileEntityAvoLaser extends TileEntityRelayPowered implements SidePl
 	private void attack(EntityLivingBase e) {
 		if (!attackCooldowns.containsKey(e.getUniqueID())) {
 			attackCooldowns.put(e.getUniqueID(), 40);
-			e.attackEntityFrom(this.getDamageSource(), this.hasPinkRune() ? 15 : 8); //4 hearts, since original does 40/100 damage
+			float base = this.hasPinkRune() ? 12 : 8;//4 hearts, since original does 40/100 damage
+			int adj = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.PINK);
+			double f = adj == 0 ? 1 : AdjacencyUpgrades.PINK.getFactor(adj);
+			base *= f;
+			e.attackEntityFrom(this.getDamageSource(), base);
 		}
 	}
 
