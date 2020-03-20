@@ -17,7 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
-import Reika.ChromatiCraft.API.Interfaces.CrystalElementAccessor.CrystalElementProxy;
+import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;

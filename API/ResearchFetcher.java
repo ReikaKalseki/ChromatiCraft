@@ -14,7 +14,7 @@ import java.util.HashSet;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
-import Reika.ChromatiCraft.API.Interfaces.CrystalElementAccessor.CrystalElementProxy;
+import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
 
 public class ResearchFetcher {
 

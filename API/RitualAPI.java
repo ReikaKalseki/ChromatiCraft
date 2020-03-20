@@ -15,7 +15,7 @@ import java.util.HashMap;
 import net.minecraft.entity.player.EntityPlayer;
 
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
-import Reika.ChromatiCraft.API.Interfaces.CrystalElementAccessor.CrystalElementProxy;
+import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
 
 /** Use this class to add new rituals or test the activity state on existing ones. */
 public class RitualAPI {

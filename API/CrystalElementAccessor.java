@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.API.Interfaces;
+package Reika.ChromatiCraft.API;
 
 import java.util.Locale;
 
@@ -34,7 +34,7 @@ public class CrystalElementAccessor {
 	}
 
 	public static CrystalElementProxy getByEnum(String name) {
-		return Enum.valueOf(elementClass, name.toUpperCase(Locale.ENGLISH));
+		return (CrystalElementProxy)Enum.valueOf(elementClass, name.toUpperCase(Locale.ENGLISH));
 	}
 
 	public static CrystalElementProxy getByIndex(int idx) {

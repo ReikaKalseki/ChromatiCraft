@@ -13,7 +13,7 @@ import java.util.Random;
 
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.API.Interfaces.CrystalElementAccessor.CrystalElementProxy;
+import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
 import Reika.DragonAPI.Instantiable.Event.WorldGenEvent;
 
 /** Fired when a pylon is successfully generated. */

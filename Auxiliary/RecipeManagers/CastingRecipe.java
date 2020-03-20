@@ -37,11 +37,11 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.CastingAPI.FXCallback;
+import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
 import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.APICastingRecipe;
 import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.LumenRecipe;
 import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.MultiRecipe;
 import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.RuneRecipe;
-import Reika.ChromatiCraft.API.Interfaces.CrystalElementAccessor.CrystalElementProxy;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.ConfigRecipe;
 import Reika.ChromatiCraft.Base.ItemChromaTool;

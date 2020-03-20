@@ -15,7 +15,7 @@ import java.util.List;
 
 import net.minecraft.item.ItemStack;
 
-import Reika.ChromatiCraft.API.Interfaces.CrystalElementAccessor.CrystalElementProxy;
+import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 /** Use this to add custom recipe objects that ChromatiCraft can use for item element value calculation. */

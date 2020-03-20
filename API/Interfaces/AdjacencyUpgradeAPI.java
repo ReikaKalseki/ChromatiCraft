@@ -6,7 +6,8 @@ import java.util.Map;
 
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.API.Interfaces.CrystalElementAccessor.CrystalElementProxy;
+import Reika.ChromatiCraft.API.CrystalElementAccessor;
+import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
 
 public class AdjacencyUpgradeAPI {
 
