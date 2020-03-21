@@ -76,7 +76,10 @@ public class TileEntityFluidRelay extends TileEntityChromaticBase implements Bre
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		cacheTimer.update();
+		if (!world.isRemote) {
+			cacheTimer.setCap(connections.isEmpty() ? 100 : 500);
+			cacheTimer.update();
+		}
 		if (cacheTimer.checkCap() || this.getTicksExisted() == 0) {
 			this.scanAndCache(world, x, y, z);
 		}

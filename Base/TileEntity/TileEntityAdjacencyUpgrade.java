@@ -251,7 +251,7 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 			TileEntity te = core.getAdjacentTileEntity(ForgeDirection.VALID_DIRECTIONS[i]);
 			if (te instanceof TileEntityAdjacencyUpgrade) {
 				TileEntityAdjacencyUpgrade ta = (TileEntityAdjacencyUpgrade)te;
-				if (!ChromaOptions.POWEREDACCEL.getState() || ta.energy.containsAtLeast(ta.getColor(), 100)) {
+				if (ta.canRun(ta.worldObj, ta.xCoord, ta.yCoord, ta.zCoord) && (!ChromaOptions.POWEREDACCEL.getState() || ta.energy.containsAtLeast(ta.getColor(), 100))) {
 					Integer get = set.get(ta.getColor());
 					int has = get != null ? get.intValue() : 0;
 					set.put(ta.getColor(), Math.max(1+ta.getTier(), has));
@@ -271,7 +271,7 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 			TileEntity te = world.getTileEntity(dx, dy, dz);
 			if (te instanceof TileEntityAdjacencyUpgrade) {
 				TileEntityAdjacencyUpgrade ta = (TileEntityAdjacencyUpgrade)te;
-				if (!ChromaOptions.POWEREDACCEL.getState() || ta.energy.containsAtLeast(ta.getColor(), 100)) {
+				if (ta.canRun(ta.worldObj, ta.xCoord, ta.yCoord, ta.zCoord) && (!ChromaOptions.POWEREDACCEL.getState() || ta.energy.containsAtLeast(ta.getColor(), 100))) {
 					Integer get = set.get(ta.getColor());
 					int has = get != null ? get.intValue() : 0;
 					set.put(ta.getColor(), Math.max(1+ta.getTier(), has));

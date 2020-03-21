@@ -121,7 +121,8 @@ public class RenderFluidRelay extends ChromaRenderBase {
 			double s = 0.625+0.25*Math.sin(System.currentTimeMillis()/800D-te.hashCode())+0.1*Math.sin(System.currentTimeMillis()/300D-te.hashCode());
 			GL11.glScaled(s, s, s);
 			float pdist = (float)Minecraft.getMinecraft().thePlayer.getDistance(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
-			cube.render(0, 0, 0, c1, c2, true, pdist);
+			if (pdist <= 24)
+				cube.render(0, 0, 0, c1, c2, true, pdist);
 			GL11.glPopMatrix();
 
 			GL11.glPopMatrix();
@@ -129,32 +130,34 @@ public class RenderFluidRelay extends ChromaRenderBase {
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 
 			Collection<Coordinate> set = te.getConnections();
-			ItemStack is = Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem();
-			if (connectionAlphaTick != te.getWorldObj().getTotalWorldTime() || connectionAlphaPTick != par8) {
-				if (ChromaItems.TOOL.matchWith(is) || ReikaItemHelper.matchStacks(is, ChromaTiles.FLUIDRELAY.getCraftedProduct())) {
-					if (connectionAlphaOverride < 255) {
-						connectionAlphaOverride = Math.min(255, connectionAlphaOverride+3);
+			if (!set.isEmpty()) {
+				ItemStack is = Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem();
+				if (connectionAlphaTick != te.getWorldObj().getTotalWorldTime() || connectionAlphaPTick != par8) {
+					if (ChromaItems.TOOL.matchWith(is) || ReikaItemHelper.matchStacks(is, ChromaTiles.FLUIDRELAY.getCraftedProduct())) {
+						if (connectionAlphaOverride < 255) {
+							connectionAlphaOverride = Math.min(255, connectionAlphaOverride+3);
+						}
 					}
+					else if (connectionAlphaOverride > 0)
+						connectionAlphaOverride -= 2;
+					connectionAlphaTick = te.worldObj.getTotalWorldTime();
+					connectionAlphaPTick = par8;
 				}
-				else if (connectionAlphaOverride > 0)
-					connectionAlphaOverride -= 2;
-				connectionAlphaTick = te.worldObj.getTotalWorldTime();
-				connectionAlphaPTick = par8;
-			}
-			for (Coordinate c : set) {
-				TileEntity o = c.getTileEntity(te.worldObj);
-				if (o != null && o instanceof TileEntityFluidRelay && o.hashCode() > te.hashCode()) { //ensure only one renders of the two
-					int a = Math.max(connectionAlphaOverride, ((int)(240*Math.sin(te.getTicksExisted()/32D+te.hashCode()+System.identityHashCode(o)))-230)*24);
-					if (a > 0) {
-						double d = 0.1875;
-						TileEntityFluidRelay te2 = (TileEntityFluidRelay)o;
-						double x = 0.5+d*te.getFacing().offsetX;
-						double y = 0.5+d*te.getFacing().offsetY;
-						double z = 0.5+d*te.getFacing().offsetZ;
-						double x2 = 0.5+d*te2.getFacing().offsetX;
-						double y2 = 0.5+d*te2.getFacing().offsetY;
-						double z2 = 0.5+d*te2.getFacing().offsetZ;
-						ChromaFX.renderBeam(x, y, z, c.xCoord-te.xCoord+x2, c.yCoord-te.yCoord+y2, c.zCoord-te.zCoord+z2, par8, a, 0.1875);
+				for (Coordinate c : set) {
+					TileEntity o = c.getTileEntity(te.worldObj);
+					if (o != null && o instanceof TileEntityFluidRelay && o.hashCode() > te.hashCode()) { //ensure only one renders of the two
+						int a = Math.max(connectionAlphaOverride, ((int)(240*Math.sin(te.getTicksExisted()/32D+te.hashCode()+System.identityHashCode(o)))-230)*24);
+						if (a > 0) {
+							double d = 0.1875;
+							TileEntityFluidRelay te2 = (TileEntityFluidRelay)o;
+							double x = 0.5+d*te.getFacing().offsetX;
+							double y = 0.5+d*te.getFacing().offsetY;
+							double z = 0.5+d*te.getFacing().offsetZ;
+							double x2 = 0.5+d*te2.getFacing().offsetX;
+							double y2 = 0.5+d*te2.getFacing().offsetY;
+							double z2 = 0.5+d*te2.getFacing().offsetZ;
+							ChromaFX.renderBeam(x, y, z, c.xCoord-te.xCoord+x2, c.yCoord-te.yCoord+y2, c.zCoord-te.zCoord+z2, par8, a, 0.1875);
+						}
 					}
 				}
 			}

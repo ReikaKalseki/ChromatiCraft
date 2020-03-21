@@ -156,8 +156,10 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 	private static Field tempField;
 	private static Field humidField;
 	private static Field flowerCacheField;
+	private static Field beeField;
 	private static Class beeLogicClass;
 	private static Class fakeLogicClass;
+	private static Class beeClass;
 
 	private Object logic;
 
@@ -181,7 +183,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 
 	private boolean multipleBoosters = false;
 
-	private IAlleleBeeSpecies cachedQueen;
+	private IBee cachedQueen;
 	private boolean canWork;
 
 	static {
@@ -196,6 +198,10 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 				beeLogicClass = Class.forName("forestry.apiculture.BeekeepingLogic");
 				flowerCacheField = beeLogicClass.getDeclaredField("hasFlowersCache");
 				flowerCacheField.setAccessible(true);
+				beeField = beeLogicClass.getDeclaredField("queen");
+				beeField.setAccessible(true);
+
+				beeClass = Class.forName("forestry.apiculture.genetics.Bee");
 
 				fakeLogicClass = Class.forName("forestry.apiculture.FakeBeekeepingLogic");
 			}
@@ -345,7 +351,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 					this.doParticles(world, x, y, z);
 
 					for (AlvearyEffect ae : clientSet) {
-						if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
+						if (selectedEffects.contains(ae.ID) && ae.ticksOnClient() && ae.isActive(this)) {
 							if (ae.tickRate() == 1 || this.getTicksExisted()%ae.tickRate() == 0)
 								ae.clientTick(this);
 						}
@@ -832,8 +838,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 
 	@ModDependent(ModList.FORESTRY)
 	public IBeeGenome getBeeGenome() {
-		ItemStack is = this.getQueenItem();
-		return is != null ? (IBeeGenome)ReikaBeeHelper.getGenome(is) : null;
+		return cachedQueen != null ? cachedQueen.getGenome() : null;
 	}
 
 	public boolean hasQueen() {
@@ -862,25 +867,32 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 	@ModDependent(ModList.FORESTRY)
 	public IAlleleBeeSpecies getSpecies() {
 		this.validateCachedQueen();
-		return cachedQueen;
+		return cachedQueen != null ? cachedQueen.getGenome().getPrimary() : null;
 	}
 
 	@ModDependent(ModList.FORESTRY)
 	private void validateCachedQueen() {
 		ItemStack is = this.getQueenItem();
-		if (is == null)
+		if (is == null) {
 			cachedQueen = null;
-		else if (cachedQueen == null)
+		}
+		else if (cachedQueen == null || !cachedQueen.equals(ReikaBeeHelper.getBee(this.getQueenItem()))) {
 			this.calcSpecies();
+		}
 	}
 
 	@ModDependent(ModList.FORESTRY)
 	private void calcSpecies() {
-		IAlleleBeeSpecies type = this.getQueenItem() != null ? this.getBeeGenome().getPrimary() : null;
-		boolean flag = type != cachedQueen;
-		cachedQueen = type;
-		if (flag)
-			this.syncAllData(false);
+		try {
+			IBee repl = (IBee)beeField.get(this.getMultiblockLogic().getController().getBeekeepingLogic());
+			boolean flag = repl != cachedQueen;
+			cachedQueen = repl;
+			if (flag)
+				this.syncAllData(false);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -888,8 +900,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 		super.readSyncTag(data);
 
 		canWork = data.getBoolean("canWork");
-		String queen = data.getString("queen");
-		cachedQueen = queen.isEmpty() ? null : (IAlleleBeeSpecies)AlleleManager.alleleRegistry.getAllele(queen);
+		this.validateCachedQueen();
 	}
 
 	@Override
@@ -897,7 +908,6 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 		super.writeSyncTag(data);
 
 		data.setBoolean("canWork", canWork);
-		data.setString("queen", cachedQueen != null ? cachedQueen.getUID() : "");
 	}
 
 	@Override
@@ -998,7 +1008,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 	}
 
 	public boolean isIgnoble() {
-		return this.getQueenItem() != null && !ReikaBeeHelper.isPristine(this.getQueenItem());
+		return cachedQueen != null && !cachedQueen.isNatural();
 	}
 	/*
 	public boolean hasIntensification() {
@@ -1217,7 +1227,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 
 		@Override
 		protected void onProductionTick(TileEntityLumenAlveary te) {
-			ItemStack[] items = ReikaBeeHelper.getBee(te.getQueenItem()).produceStacks(te.getBeeHousing());
+			ItemStack[] items = te.cachedQueen.produceStacks(te.getBeeHousing());
 			if (items != null) {
 				for (ItemStack is : items) {
 					te.getBeeHousing().getBeeInventory().addProduct(is, false);
@@ -1500,15 +1510,8 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 
 		@Override
 		protected boolean tick(TileEntityLumenAlveary te) {
-			if (ReikaRandomHelper.doWithChance(mateRewriteChance)) {
-				ItemStack queen = te.getQueenItem();
-				if (queen != null) {
-					IIndividual ii = AlleleManager.alleleRegistry.getIndividual(queen);
-					if (ii instanceof IBee) {
-						ReikaBeeHelper.setBeeMate((IBee)ii, (IBee)ii);
-					}
-				}
-			}
+			if (te.cachedQueen != null && ReikaRandomHelper.doWithChance(mateRewriteChance))
+				ReikaBeeHelper.setBeeMate(te.cachedQueen, te.cachedQueen);
 			return true;
 		}
 
@@ -1902,11 +1905,8 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 		}
 
 		private boolean repairQueen(TileEntityLumenAlveary te) {
-			ItemStack is = te.getQueenItem();
-			if (ReikaBeeHelper.isPristine(is))
-				return false;
-			ReikaBeeHelper.setPristine(is, true);
-			te.getBeeHousing().getBeeInventory().setQueen(is);
+			te.cachedQueen.setIsNatural(true);
+			te.updateRenderItem();
 			return true;
 		}
 
@@ -1968,7 +1968,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 
 		@Override
 		protected float lifespanFactor(TileEntityLumenAlveary te) {
-			Life l = (Life)ReikaBeeHelper.getGeneEnum(EnumBeeChromosome.LIFESPAN, ReikaBeeHelper.getBee(te.getQueenItem()).getGenome());
+			Life l = (Life)ReikaBeeHelper.getGeneEnum(EnumBeeChromosome.LIFESPAN, te.cachedQueen.getGenome());
 			if (l == CrystalBees.superLife)
 				return 10000;
 			return 1;

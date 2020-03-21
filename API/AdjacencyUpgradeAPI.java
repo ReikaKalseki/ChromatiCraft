@@ -1,4 +1,4 @@
-package Reika.ChromatiCraft.API.Interfaces;
+package Reika.ChromatiCraft.API;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -6,7 +6,6 @@ import java.util.Map;
 
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.API.CrystalElementAccessor;
 import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
 
 public class AdjacencyUpgradeAPI {
