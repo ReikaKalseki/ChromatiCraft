@@ -17,12 +17,14 @@ import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemPickaxe;
+import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemShears;
 import net.minecraft.item.ItemSpade;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.potion.Potion;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -42,11 +44,14 @@ import Reika.DragonAPI.Instantiable.ModInteract.BasicAEInterface;
 import Reika.DragonAPI.Instantiable.ModInteract.MEWorkTracker;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
+import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
 import Reika.DragonAPI.ModInteract.ItemHandlers.AppEngHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler;
+import Reika.DragonAPI.ModRegistry.InterfaceCache;
 
 import appeng.api.AEApi;
 import appeng.api.networking.IGridBlock;
@@ -435,6 +440,8 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 		LEGS(Items.diamond_leggings),
 		BOOTS(Items.diamond_boots),
 		BOOK(Items.enchanted_book),
+		HORSEARMOR(Items.golden_horse_armor),
+		POTION(ReikaPotionHelper.getPotionItem(Potion.regeneration, false, false, false)),
 		TINKER(ModList.TINKERER.isLoaded() ? TinkerToolHandler.Tools.HAMMER.getToolOfMaterials(1, 1, 1, 1) : (ItemStack)null),
 		OTHER((ItemStack)null);
 
@@ -527,6 +534,12 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 				return SWORD;
 			if (is.getItem() instanceof ItemEnchantedBook)
 				return BOOK;
+			if (is.getItem() == Items.iron_horse_armor || is.getItem() == Items.golden_horse_armor || is.getItem() == Items.diamond_horse_armor)
+				return HORSEARMOR;
+			if (is.getItem() instanceof ItemPotion)
+				return POTION;
+			if (ModList.BOTANIA.isLoaded() && InterfaceCache.BREWITEM.instanceOf(is.getItem()))
+				return POTION;
 			return isValidMiscToolItem(is) ? OTHER : null;
 		}
 
@@ -538,6 +551,8 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 				if (i == AppEngHandler.getInstance().get16KCell() || i == AppEngHandler.getInstance().get64KCell())
 					return false;
 			}
+			if (ModList.FORESTRY.isLoaded() && ReikaBeeHelper.isBee(is))
+				return false;
 			return is.getMaxStackSize() == 1;
 		}
 

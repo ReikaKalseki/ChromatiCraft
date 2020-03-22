@@ -45,6 +45,7 @@ import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.AppEngHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.DragonAPI.ModRegistry.ModOreList;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
@@ -223,6 +224,8 @@ VariableTexture {
 		else if (ModList.THAUMCRAFT.isLoaded() && in.getItem() == ThaumItemHelper.ItemEntry.NUGGETCLUSTER.getItem().getItem()) {
 			return 2*MULTIPLY;
 		}
+		else if (ModList.APPENG.isLoaded() && ReikaItemHelper.matchStackWithBlock(in, AppEngHandler.getInstance().chargedCertusOre))
+			return 4*MULTIPLY;
 		else if (ReikaBlockHelper.isOre(in)) {
 			int ret = 2*MULTIPLY;
 			OreType ore = ReikaOreHelper.getEntryByOreDict(in);

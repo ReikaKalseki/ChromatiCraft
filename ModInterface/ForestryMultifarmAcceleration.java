@@ -46,8 +46,10 @@ public class ForestryMultifarmAcceleration extends Acceleration {
 		IFarmComponent ifr = (IFarmComponent)te;
 		IMultiblockLogicFarm imf = ifr.getMultiblockLogic();
 		IFarmController ifc = imf.getController();
-		for (int k = 0; k < factor; k++) {
-			ForestryMultiblockControllerHandling.tickMultiblock(ifc, accelerator);
+		if (ForestryMultiblockControllerHandling.isMultiblockController(ifc)) {
+			for (int k = 0; k < factor; k++) {
+				ForestryMultiblockControllerHandling.tickMultiblock(ifc, accelerator);
+			}
 		}
 	}
 
