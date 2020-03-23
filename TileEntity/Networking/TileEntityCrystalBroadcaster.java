@@ -193,9 +193,11 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 	}
 
 	@Override
-	public int getSignalDegradation() {
+	public int getSignalDegradation(boolean point) {
 		int base = this.isTurbocharged() ? 1500 : 3000;
-		if (worldObj.isRaining())
+		if (point)
+			base *= 0.25;
+		else if (worldObj.isRaining())
 			base *= 4;
 		return base;
 	}

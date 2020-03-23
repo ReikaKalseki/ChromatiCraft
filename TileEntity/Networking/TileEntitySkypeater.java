@@ -88,13 +88,13 @@ public class TileEntitySkypeater extends CrystalTransmitterBase implements Cryst
 	}
 
 	@Override
-	public int getSignalDegradation() {
+	public int getSignalDegradation(boolean point) {
 		return 0;
 	}
 
 	@Override
-	public int getThoughputBonus() {
-		return 0;
+	public int getThoughputBonus(boolean point) {
+		return point ? 100 : 0;
 	}
 
 	@Override

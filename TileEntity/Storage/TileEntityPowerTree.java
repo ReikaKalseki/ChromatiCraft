@@ -42,8 +42,8 @@ import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalBattery;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.WirelessSource;
-import Reika.ChromatiCraft.Magic.Progression.ProgressionCatchupHandling;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionCatchupHandling;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -53,6 +53,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.DragonAPIInit;
@@ -313,7 +314,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 			for (EntityPlayer ep : this.getOwners(false)) {
 				if (Chromabilities.RECHARGE.enabledOn(ep)) {
-					if (ep.getDistanceSq(x+0.5, y+0.5, z+0.5) <= 2048) {
+					if (TileEntityAuraPoint.hasAuraPoints(ep) || ep.getDistanceSq(x+0.5, y+0.5, z+0.5) <= 2048) {
 						CrystalElement e = CrystalElement.elements[(this.getTicksExisted()/16)%16];
 						if (this.getEnergy(e) > 0) {
 							int cap = PlayerElementBuffer.instance.getElementCap(ep);

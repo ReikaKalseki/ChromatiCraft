@@ -337,7 +337,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	}
 
 	@Override
-	public int getSignalDegradation() {
+	public int getSignalDegradation(boolean point) {
 		return this.isTurbocharged() ? 0 : 10;
 	}
 
@@ -642,7 +642,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	}
 
 	@Override
-	public int getThoughputBonus() {
+	public int getThoughputBonus(boolean point) {
 		return 0;
 	}
 

@@ -102,8 +102,8 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater implem
 	}
 
 	@Override
-	public int getSignalDegradation() {
-		return this.isTurbocharged() ? (this.isEnhancedStructure() ? 10 : 20) : 100;
+	public int getSignalDegradation(boolean point) {
+		return this.isTurbocharged() ? (this.isEnhancedStructure() ? (point ? 0 : 10) : 20) : 100;
 	}
 
 	@Override

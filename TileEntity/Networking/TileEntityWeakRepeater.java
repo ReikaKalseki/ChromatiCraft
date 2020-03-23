@@ -342,7 +342,7 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 	}
 
 	@Override
-	public int getSignalDegradation() {
+	public int getSignalDegradation(boolean point) {
 		return 250;
 	}
 

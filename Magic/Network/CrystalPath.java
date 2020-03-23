@@ -74,7 +74,7 @@ public class CrystalPath implements Comparable<CrystalPath> {
 			dist += Math.sqrt(te.getDistanceSqTo(teprev.getX()+0.5, teprev.getY()+0.5, teprev.getZ()+0.5));
 			if (i < nodes.size()-1) {
 				if (te instanceof CrystalRepeater) {
-					int atten = ((CrystalRepeater)te).getSignalDegradation();
+					int atten = ((CrystalRepeater)te).getSignalDegradation(hasLocus);
 					if (l.isRainable() && transmitter.getWorld().isRaining())
 						atten *= 1.15;
 					loss += atten;

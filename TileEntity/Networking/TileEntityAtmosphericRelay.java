@@ -54,8 +54,8 @@ public class TileEntityAtmosphericRelay extends CrystalTransmitterBase implement
 	}
 
 	@Override
-	public int getSignalDegradation() {
-		return 20000;
+	public int getSignalDegradation(boolean point) {
+		return point ? 1000 : 20000;
 	}
 
 	@Override
@@ -159,7 +159,7 @@ public class TileEntityAtmosphericRelay extends CrystalTransmitterBase implement
 	}
 
 	@Override
-	public int getThoughputBonus() {
+	public int getThoughputBonus(boolean point) {
 		return 0;
 	}
 

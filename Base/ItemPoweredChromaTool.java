@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.Magic.Progression.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Auxiliary.ChunkManager;
@@ -144,6 +145,8 @@ public abstract class ItemPoweredChromaTool extends ItemChromaTool implements Sp
 					}
 					if (loc.getBlock() == ChromaBlocks.CHROMA.getBlockInstance() && loc.getBlockMetadata() == 0)
 						amt *= 1.25;
+					if (TileEntityAuraPoint.isPointWithin(loc.getWorld(), loc.xCoord, loc.yCoord, loc.zCoord, 256))
+						amt *= 2;
 					this.addCharge(is, amt);
 					ReikaPacketHelper.sendEntitySyncPacket(DragonAPIInit.packetChannel, ei, 32);
 					//ReikaJavaLibrary.pConsole(this.getCharge(is)+" (+"+this.getChargeRate(is)+", f="+(this.getCharge(is)/(float)MAX_CHARGE));

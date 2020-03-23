@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2018
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -32,6 +32,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
@@ -72,7 +73,7 @@ public class ItemBottleneckFinder extends ItemChromaTool {
 								}
 								c.add(loc);
 								if (cr instanceof CrystalRepeater) {
-									int loss = ((CrystalRepeater)cr).getSignalDegradation();
+									int loss = ((CrystalRepeater)cr).getSignalDegradation(TileEntityAuraPoint.isPointWithin(world, x, y, z, 512));
 									if (loss > 0) {
 										c = lossLevels.get(loss);
 										if (c == null) {

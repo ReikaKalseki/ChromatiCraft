@@ -92,7 +92,7 @@ public class CrystalFlow extends CrystalPath {
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
 			if (te instanceof CrystalRepeater) {
-				val += ((CrystalRepeater)te).getThoughputBonus();
+				val += ((CrystalRepeater)te).getThoughputBonus(hasLocus);
 			}
 		}
 		return val;
