@@ -11,7 +11,6 @@ package Reika.ChromatiCraft.TileEntity.AOE;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -42,9 +41,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.GlowKnot;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Instantiable.Data.BlockStruct.FastBlockCache;
 import Reika.DragonAPI.Instantiable.Data.Collections.FastPlayerCache;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.Registry.CropType;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
@@ -53,10 +50,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.Registry.ReikaCropHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.DragonAPI.ModRegistry.ModCropList;
 import Reika.VoidMonster.Entity.EntityVoidMonster;
 
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -83,12 +77,14 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 
 	private static final String NBT_TAG = "aurapoint";
 
+	/*
 	private static final int NEW_CROPS_PER_TICK = 256;
 	private static final int CROPS_PER_TICK = 16;
 	private static final int CROP_UPDATES = 8;
 	private static final int CROP_RANGE = 96;
 
 	private static final CropType sugarcane = new SugarCaneCrop();
+	 */
 
 	private int hue;
 	private float saturation;
@@ -96,7 +92,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 	private int hueTarget;
 	private float saturationTarget;
 
-	private final FastBlockCache cache = new FastBlockCache();
+	//private final FastBlockCache crops = new FastBlockCache();
 	private final FastPlayerCache hostilePlayers = new FastPlayerCache();
 
 	private boolean doPVP = true;
@@ -180,11 +176,11 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 	private int getHealRange() {
 		return (int)(Math.min(4+this.getTileEntityAge()/64, 32));
 	}
-
+	/*
 	private int getCropRange() {
 		return (int)(Math.min(1+this.getTileEntityAge()/128, CROP_RANGE));
 	}
-
+	 */
 	private int getLootingLevel() {
 		return (int)Math.min(6, this.getTileEntityAge()/288000); //1 per 4h, max 6 @ 24h
 	}
@@ -251,7 +247,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 			return true;
 		return false;
 	}
-
+	/*
 	private void growCrops(World world, int x, int y, int z) {
 		ArrayList<Coordinate> bks = new ArrayList(cache.getBlocks());
 		Collection<Coordinate> remove = new ArrayList();
@@ -295,12 +291,12 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 			}
 		}
 	}
-
+	 */
 	@SideOnly(Side.CLIENT)
 	public static void doGrowFX(World world, int x, int y, int z) {
 		ReikaParticleHelper.BONEMEAL.spawnAroundBlockWithOutset(world, x, y, z, 4, 0.0625);
 	}
-
+	/*
 	private CropType getCropAt(World world, Coordinate c) {
 		Block b = c.getBlock(world);
 		if (b == Blocks.reeds) {
@@ -312,7 +308,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 			type = ModCropList.getModCrop(b, meta);
 		return type;
 	}
-
+	 */
 	private void healFriendly(World world, int x, int y, int z) {
 		int r = this.getHealRange();
 		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-r, 0, z-r, x+1+r, 256, z+1+r);
@@ -414,7 +410,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 		super.writeToNBT(NBT);
 
 		NBTTagCompound tag = new NBTTagCompound();
-		cache.writeToNBT(tag);
+		//cache.writeToNBT(tag);
 		NBT.setTag("crops", tag);
 
 		tag = new NBTTagCompound();
@@ -426,7 +422,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 	public void readFromNBT(NBTTagCompound NBT) {
 		super.readFromNBT(NBT);
 
-		cache.readFromNBT(NBT.getCompoundTag("crops"));
+		//cache.readFromNBT(NBT.getCompoundTag("crops"));
 		hostilePlayers.readFromNBT(NBT.getCompoundTag("hostile"));
 	}
 
@@ -452,6 +448,12 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 		nbt.setTag(NBT_TAG, tag);
 	}
 
+	public void removePoint() {
+		EntityPlayer ep = this.getPlacer();
+		NBTTagCompound tag = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		tag.removeTag(NBT_TAG);
+	}
+
 	public static TileEntityAuraPoint getPoint(EntityPlayer ep) {
 		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
 		if (nbt.hasKey(NBT_TAG)) {
@@ -465,12 +467,6 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 			}
 		}
 		return null;
-	}
-
-	public void removePoint() {
-		EntityPlayer ep = this.getPlacer();
-		NBTTagCompound tag = ReikaPlayerAPI.getDeathPersistentNBT(ep);
-		tag.removeTag(NBT_TAG);
 	}
 
 	private static class SugarCaneCrop implements CropType {

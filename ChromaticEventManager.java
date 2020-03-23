@@ -876,7 +876,7 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void autoCollectDirect(EntityJoinWorldEvent evt) {
-		if (collectItemPlayer != null && !ReikaInventoryHelper.isFull(collectItemPlayer.inventory) && evt.entity instanceof EntityItem) {
+		if (collectItemPlayer != null && evt.entity instanceof EntityItem && !ReikaInventoryHelper.isFull(collectItemPlayer.inventory)) {
 			EntityItem ei = (EntityItem)evt.entity;
 			if (!MinecraftForge.EVENT_BUS.post(new EntityItemPickupEvent(collectItemPlayer, ei)))
 				ReikaPlayerAPI.addOrDropItem(ei.getEntityItem(), collectItemPlayer);

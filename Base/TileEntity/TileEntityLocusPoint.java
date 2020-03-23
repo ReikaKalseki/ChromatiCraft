@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Base.TileEntity;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -22,6 +23,8 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
@@ -32,11 +35,11 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class TileEntityLocusPoint extends TileEntityChromaticBase implements LocationCached, OwnedTile {
 
-	private static final Collection<WorldLocation> cache = new ThreadSafeSet();
+	private static final MultiMap<Class, WorldLocation> cache = new MultiMap(CollectionType.CONCURRENTSET).setNullEmpty();
 
 	@Override
 	public void breakBlock() {
-		cache.remove(new WorldLocation(this));
+		cache.remove(this.getClass(), new WorldLocation(this));
 	}
 
 	@Override
@@ -95,7 +98,12 @@ public abstract class TileEntityLocusPoint extends TileEntityChromaticBase imple
 	}
 
 	private void cacheTile() {
-		cache.add(new WorldLocation(this));
+		cache.addValue(this.getClass(), new WorldLocation(this));
+	}
+
+	public static Collection<WorldLocation> getCache(Class<? extends TileEntityLocusPoint> c) {
+		Collection<WorldLocation> ret = cache.get(c);
+		return ret != null ? Collections.unmodifiableCollection(ret) : null;
 	}
 
 	@Override

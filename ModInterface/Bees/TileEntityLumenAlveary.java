@@ -611,6 +611,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 	@Override
 	@ModDependent(ModList.FORESTRY)
 	public void wearOutEquipment(int amount) {
+		this.validateCachedQueen();
 		for (AlvearyEffect ae : effectSet.values()) {
 			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				ae.consumeEnergy(this, amount);
@@ -878,23 +879,30 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 		if (is == null) {
 			cachedQueen = null;
 		}
-		else if (cachedQueen == null || !cachedQueen.equals(ReikaBeeHelper.getBee(this.getQueenItem()))) {
+		else if (cachedQueen == null || (!worldObj.isRemote && !cachedQueen.equals(ReikaBeeHelper.getBee(this.getQueenItem())))) {
 			this.calcSpecies();
 		}
 	}
 
 	@ModDependent(ModList.FORESTRY)
 	private void calcSpecies() {
-		try {
-			IBee repl = (IBee)beeField.get(this.getMultiblockLogic().getController().getBeekeepingLogic());
-			boolean flag = repl != cachedQueen;
-			cachedQueen = repl;
-			if (flag)
-				this.syncAllData(false);
+		IBee repl = this.getBee();
+		boolean flag = repl != cachedQueen;
+		cachedQueen = repl;
+		if (flag)
+			this.syncAllData(false);
+	}
+
+	private IBee getBee() {
+		if (!worldObj.isRemote) {
+			try {
+				return (IBee)beeField.get(this.getMultiblockLogic().getController().getBeekeepingLogic());
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		return ReikaBeeHelper.getBee(this.getQueenItem());
 	}
 
 	@Override
@@ -2061,7 +2069,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 
 		@Override
 		protected boolean isActive(TileEntityLumenAlveary te) {
-			return super.isActive(te) && te.hasQueen() && te.getBeeGenome().getEffect() instanceof CrystalEffect;
+			return super.isActive(te) && te.hasQueen() && te.getBeeGenome() != null && te.getBeeGenome().getEffect() instanceof CrystalEffect;
 		}
 
 	}

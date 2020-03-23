@@ -35,7 +35,6 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
@@ -70,7 +69,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 //Structure core, does FX and things
-public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBTTile, PlayerBreakHook {
+public class TileEntityDimensionCore extends TileEntityLocusPoint implements PlayerBreakHook {
 
 	private CrystalElement color = CrystalElement.WHITE;
 	private UUID uid = null;

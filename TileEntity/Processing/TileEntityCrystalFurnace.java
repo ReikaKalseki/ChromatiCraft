@@ -147,8 +147,8 @@ VariableTexture {
 			xp = 0;
 		}
 		ReikaInventoryHelper.decrStack(0, inv);
+		tag.addValueToColor(CrystalElement.LIGHTBLUE, 250);
 		this.drainEnergy(tag);
-		energy.subtract(CrystalElement.LIGHTBLUE, 250);
 	}
 
 	public static float getXPModifier(ItemStack in) {
