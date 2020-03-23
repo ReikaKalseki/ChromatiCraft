@@ -190,6 +190,8 @@ public class ChromaAux {
 					}
 					else if (dat.newBlock == Blocks.mob_spawner) {
 						TileEntityMobSpawner tm = (TileEntityMobSpawner)dat.getTileEntity(world);
+						if (tm == null)
+							continue;
 						if (ReikaSpawnerHelper.getMobSpawnerMobName(tm).toLowerCase(Locale.ENGLISH).contains("wisp")) {
 							ReikaSpawnerHelper.setMobSpawnerMob(tm, ChromaEntities.GLOWCLOUD.entityName);
 						}

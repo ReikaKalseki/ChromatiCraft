@@ -838,6 +838,8 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 
 	@ModDependent(ModList.FORESTRY)
 	public IBeeGenome getBeeGenome() {
+		if (cachedQueen != null && this.hasQueen())
+			this.validateCachedQueen();
 		return cachedQueen != null ? cachedQueen.getGenome() : null;
 	}
 
@@ -1899,7 +1901,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 
 		@Override
 		protected final void onProductionTick(TileEntityLumenAlveary te) {
-			if (this.doRepair(te)) {
+			if (te.cachedQueen != null && this.doRepair(te)) {
 				this.repairQueen(te);
 			}
 		}

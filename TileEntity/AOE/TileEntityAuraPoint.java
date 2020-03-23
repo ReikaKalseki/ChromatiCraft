@@ -148,8 +148,8 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 			this.killEntities(world, x, y, z);
 		if (rand.nextInt(160) == 0)
 			this.healFriendly(world, x, y, z);
-		if (rand.nextInt(2) == 0)
-			this.growCrops(world, x, y, z);
+		//if (rand.nextInt(2) == 0)
+		//	this.growCrops(world, x, y, z);
 	}
 
 	private void killEntities(World world, int x, int y, int z) {
