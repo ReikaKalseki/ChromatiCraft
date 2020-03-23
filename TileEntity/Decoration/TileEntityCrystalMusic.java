@@ -45,7 +45,6 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.MusicScore;
 import Reika.DragonAPI.Instantiable.MusicScore.Note;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.IO.MIDIInterface;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
@@ -290,7 +289,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 	}
 
 	public CrystalReceiver createTemporaryReceiver() {
-		return new TemporaryCrystalReceiver(new WorldLocation(this), 0, 32, 0.35, ResearchLevel.BASICCRAFT);
+		return new TemporaryCrystalReceiver(this, 0, 32, 0.35, ResearchLevel.BASICCRAFT);
 	}
 
 	private void generateParticles(World world, int x, int y, int z, CrystalElement e, int length) {

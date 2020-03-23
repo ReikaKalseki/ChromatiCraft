@@ -70,6 +70,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityGlobeFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.FocusLocation;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
@@ -1025,7 +1026,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 			if (tableXP > 1000000) {
 				EntityPlayer ep = this.getPlacer();
 				if (ep != null && !ReikaPlayerAPI.isFake(ep)) {
-					if (ProgressStage.CTM.isPlayerAtStage(ep)) {
+					if (ProgressStage.CTM.isPlayerAtStage(ep) && TileEntityAuraPoint.hasAuraPoints(ep)) {
 						isEnhanced = true;
 					}
 				}
@@ -1170,7 +1171,12 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 
 	@Override
 	public int maxThroughput() {
-		return isEnhanced ? 1000 : Math.min(1000, Math.max(100, 100*(tableXP/RecipeType.MULTIBLOCK.levelUp-1)));
+		int base = isEnhanced ? 2500 : Math.min(1000, Math.max(100, 100*(tableXP/RecipeType.MULTIBLOCK.levelUp-1)));
+		if (activeRecipe instanceof PylonCastingRecipe) {
+			PylonCastingRecipe pr = (PylonCastingRecipe)activeRecipe;
+			base = Math.min(base, Math.max(1, pr.getRequiredAura().getMinimumValue()/40));
+		}
+		return base;
 	}
 
 	@Override

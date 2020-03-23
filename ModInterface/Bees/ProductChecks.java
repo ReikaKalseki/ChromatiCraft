@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface.Bees;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
@@ -20,6 +21,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowLeaf.LeafMetas;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -114,17 +116,21 @@ public class ProductChecks {
 
 		@Override
 		public boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
-			EntityPlayer ep = ChromaBeeHelpers.getOwner(ibh);
+			UUID ep = ChromaBeeHelpers.getOwner(ibh);
 			if (ep == null)
 				return false;
-			TileEntityAuraPoint te = TileEntityAuraPoint.getPoint(ep);
-			if (te == null)
+			Collection<WorldLocation> c = TileEntityLocusPoint.getCache(TileEntityAuraPoint.class, ep);
+			if (c == null || c.isEmpty())
 				return false;
 			TileEntityLumenAlveary tel = ChromaBeeHelpers.getLumenAlvearyController(ibh, world, ibh.getCoordinates());
 			if (tel != null && tel.hasInfiniteAwareness())
 				return true;
 			int[] r = ChromaBeeHelpers.getSearchRange(ibg, ibh);
-			return Math.abs(te.xCoord-x) <= r[0] && Math.abs(te.zCoord-z) <= r[0] && Math.abs(te.yCoord-y) <= r[1];
+			for (WorldLocation te : c) {
+				if (Math.abs(te.xCoord-x) <= r[0] && Math.abs(te.zCoord-z) <= r[0] && Math.abs(te.yCoord-y) <= r[1])
+					return true;
+			}
+			return false;
 		}
 
 		@Override

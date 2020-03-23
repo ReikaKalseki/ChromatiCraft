@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
@@ -37,6 +38,10 @@ public class TemporaryCrystalReceiver implements CrystalReceiver, WrapperTile {
 
 	private final UUID uid = UUID.randomUUID();
 	private final HashSet<CrystalElement> colorLimit = new HashSet();
+
+	public TemporaryCrystalReceiver(TileEntity te, int t, int r, double br, ResearchLevel rl) {
+		this(new WorldLocation(te), t, r, br, rl);
+	}
 
 	public TemporaryCrystalReceiver(WorldLocation loc, int t, int r, double br, ResearchLevel rl) {
 		location = loc;

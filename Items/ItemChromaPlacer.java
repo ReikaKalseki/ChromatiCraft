@@ -42,7 +42,6 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.CrystalTier;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
@@ -177,7 +176,7 @@ public class ItemChromaPlacer extends Item implements ISize {
 			}
 		}
 		if (m == ChromaTiles.AURAPOINT) {
-			((TileEntityAuraPoint)te).savePoint();
+			//((TileEntityAuraPoint)te).savePoint();
 		}
 		if (m == ChromaTiles.DIMENSIONCORE) {
 			((TileEntityDimensionCore)te).prime(true);

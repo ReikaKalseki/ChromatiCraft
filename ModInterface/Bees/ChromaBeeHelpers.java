@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
 
@@ -188,7 +189,12 @@ public class ChromaBeeHelpers {
 		return new WorldLocation(ibh.getWorld(), c.posX, c.posY, c.posZ);
 	}
 
-	public static EntityPlayer getOwner(IBeeHousing ibh) {
+	public static UUID getOwner(IBeeHousing ibh) {
+		GameProfile p = ibh.getOwner();
+		return p != null && p.getId() != null ? p.getId() : null;
+	}
+
+	public static EntityPlayer getOwnerAsPlayer(IBeeHousing ibh) {
 		GameProfile p = ibh.getOwner();
 		return p != null && p.getId() != null ? ibh.getWorld().func_152378_a(p.getId()) : null;
 	}

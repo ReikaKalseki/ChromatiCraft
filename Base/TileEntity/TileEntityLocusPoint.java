@@ -9,11 +9,15 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
+import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -23,8 +27,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
-import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
+import Reika.DragonAPI.Instantiable.Data.Maps.NestedMap;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
@@ -35,11 +38,14 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class TileEntityLocusPoint extends TileEntityChromaticBase implements LocationCached, OwnedTile {
 
-	private static final MultiMap<Class, WorldLocation> cache = new MultiMap(CollectionType.CONCURRENTSET).setNullEmpty();
+	private static final NestedMap<Class<? extends TileEntityLocusPoint>, UUID, Collection<WorldLocation>> cache = new NestedMap();
 
 	@Override
 	public void breakBlock() {
-		cache.remove(this.getClass(), new WorldLocation(this));
+		Collection<WorldLocation> c = cache.get(this.getClass(), placerUUID);
+		if (c != null) {
+			c.remove(new WorldLocation(this));
+		}
 	}
 
 	@Override
@@ -94,16 +100,38 @@ public abstract class TileEntityLocusPoint extends TileEntityChromaticBase imple
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
-		this.cacheTile();
+		cacheTile(this);
 	}
 
-	private void cacheTile() {
-		cache.addValue(this.getClass(), new WorldLocation(this));
+	private static void cacheTile(TileEntityLocusPoint te) {
+		WorldLocation loc = new WorldLocation(te);
+		Class cl = te.getClass();
+		Collection<WorldLocation> c = cache.get(cl, te.placerUUID);
+		if (c == null) {
+			c = new ThreadSafeSet();
+			cache.put(cl, te.placerUUID, c);
+		}
+		c.add(loc);
 	}
 
-	public static Collection<WorldLocation> getCache(Class<? extends TileEntityLocusPoint> c) {
-		Collection<WorldLocation> ret = cache.get(c);
-		return ret != null ? Collections.unmodifiableCollection(ret) : null;
+	public static Collection<WorldLocation> getCache(Class<? extends TileEntityLocusPoint> cl, EntityPlayer ep) {
+		return getCache(cl, ep.getUniqueID());
+	}
+
+	public static Collection<WorldLocation> getCache(Class<? extends TileEntityLocusPoint> cl, UUID uid) {
+		Collection<WorldLocation> c = cache.get(cl, uid);
+		return c != null ? Collections.unmodifiableCollection(c) : null;
+	}
+
+	public static Collection<WorldLocation> getCaches(Class<? extends TileEntityLocusPoint> cl) {
+		Map<UUID, Collection<WorldLocation>> map = cache.getMap(cl);
+		Collection<WorldLocation> ret = new ArrayList();
+		if (map != null) {
+			for (Collection<WorldLocation> c : map.values()) {
+				ret.addAll(c);
+			}
+		}
+		return ret;
 	}
 
 	@Override

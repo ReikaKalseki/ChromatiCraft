@@ -11,7 +11,9 @@ package Reika.ChromatiCraft.TileEntity.AOE;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -45,7 +47,6 @@ import Reika.DragonAPI.Instantiable.Data.Collections.FastPlayerCache;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.Registry.CropType;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
-import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -100,7 +101,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 	@Override
 	public void breakBlock() {
 		super.breakBlock();
-		this.removePoint();
+		//this.removePoint();
 	}
 
 	public void togglePVP() {
@@ -146,7 +147,23 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 			this.healFriendly(world, x, y, z);
 		//if (rand.nextInt(2) == 0)
 		//	this.growCrops(world, x, y, z);
+		//if (rand.nextInt(200) == 0)
+		//this.regenPylons(world, x, y ,z);
+
 	}
+
+	/*
+	private void regenPylons(World world, int x, int y, int z) {
+		//CrystalNetworker.instance.getNearbyPylons(world, x, y, z, CrystalElement.randomElement(), 512, false);
+		TemporaryCrystalReceiver tr = new TemporaryCrystalReceiver(this, Integer.MAX_VALUE, 48, 0.375, ResearchLevel.CTM);
+		CrystalPath path = CrystalNetworker.instance.getConnectivity(CrystalElement.randomElement(), tr);
+		if (path != null) {
+			if (path.transmitter instanceof TileEntityCrystalPylon) {
+				TileEntityCrystalPylon te = path.transmitter;
+				te.getEnergy()
+			}
+		}
+	}*/
 
 	private void killEntities(World world, int x, int y, int z) {
 		int r = this.getAttackRange();
@@ -439,7 +456,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 
 		doPVP = NBT.getBoolean("pvp");
 	}
-
+	/*
 	public void savePoint() {
 		EntityPlayer ep = this.getPlacer();
 		NBTTagCompound tag = new NBTTagCompound();
@@ -447,14 +464,16 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
 		nbt.setTag(NBT_TAG, tag);
 	}
-
+	 */
+	/*
 	public void removePoint() {
 		EntityPlayer ep = this.getPlacer();
 		NBTTagCompound tag = ReikaPlayerAPI.getDeathPersistentNBT(ep);
 		tag.removeTag(NBT_TAG);
 	}
-
+	 *//*
 	public static TileEntityAuraPoint getPoint(EntityPlayer ep) {
+		/*
 		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
 		if (nbt.hasKey(NBT_TAG)) {
 			NBTTagCompound tag = nbt.getCompoundTag(NBT_TAG);
@@ -467,6 +486,49 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 			}
 		}
 		return null;
+	  *//*
+		Collection<WorldLocation> c = TileEntityLocusPoint.getCache(TileEntityAuraPoint.class, ep);
+		if (c == null || c.isEmpty())
+			return null;
+		TileEntity te = c.iterator().next().getTileEntity();
+		if (te instanceof TileEntityAuraPoint) {
+			return (TileEntityAuraPoint)te;
+		}
+		return null;
+	}*/
+
+	public static Collection<TileEntityAuraPoint> getPoints(EntityPlayer ep) {
+		Collection<WorldLocation> c = TileEntityLocusPoint.getCache(TileEntityAuraPoint.class, ep);
+		Collection<TileEntityAuraPoint> ret = new ArrayList();
+		if (c == null || c.isEmpty())
+			return ret;
+		for (WorldLocation loc : c) {
+			TileEntity te = loc.getTileEntity();
+			if (te instanceof TileEntityAuraPoint) {
+				ret.add((TileEntityAuraPoint)te);
+			}
+		}
+		return ret;
+	}
+
+	public static boolean hasAuraPoints(EntityPlayer ep) {
+		return hasAuraPoints(ep.getUniqueID());
+	}
+
+	public static boolean hasAuraPoints(UUID uid) {
+		if (uid == null)
+			return false;
+		Collection<WorldLocation> c = TileEntityLocusPoint.getCache(TileEntityAuraPoint.class, uid);
+		return c != null && !c.isEmpty();
+	}
+
+	public static boolean isPointWithin(World world, int x, int y, int z, int r) {
+		Collection<WorldLocation> c = TileEntityLocusPoint.getCaches(TileEntityAuraPoint.class);
+		for (WorldLocation loc : c) {
+			if (loc.getDistanceTo(x, y, z) <= r)
+				return true;
+		}
+		return false;
 	}
 
 	private static class SugarCaneCrop implements CropType {

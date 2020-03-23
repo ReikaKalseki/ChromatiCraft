@@ -1593,8 +1593,7 @@ public class ChromaticEventManager {
 	@SubscribeEvent
 	public void markHostile(AttackEntityEvent evt) {
 		if (evt.target instanceof EntityPlayer) {
-			TileEntityAuraPoint te = TileEntityAuraPoint.getPoint(evt.entityPlayer);
-			if (te != null) {
+			for (TileEntityAuraPoint te : TileEntityAuraPoint.getPoints(evt.entityPlayer)) {
 				te.markHostile((EntityPlayer)evt.target);
 			}
 		}

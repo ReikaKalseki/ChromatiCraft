@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldChunk;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 
@@ -34,6 +35,7 @@ public class CrystalPath implements Comparable<CrystalPath> {
 	private final HashSet<CrystalLink> links = new HashSet();
 	protected final CrystalNetworker network;
 	protected final boolean hasRealTarget;
+	public final boolean hasLocus;
 
 	private int attenuation;
 	private int theoreticalRange;
@@ -48,6 +50,7 @@ public class CrystalPath implements Comparable<CrystalPath> {
 		element = e;
 		network = net;
 		hasRealTarget = real;
+		hasLocus = TileEntityAuraPoint.isPointWithin(transmitter.getWorld(), transmitter.getX(), transmitter.getY(), transmitter.getZ(), 1024);
 		this.initialize();
 		//remainingAmount = amt;
 	}

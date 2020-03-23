@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.GlowTendril;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -139,7 +140,7 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 			this.drainEnergy(e, amt);
 			float loss = te.worldObj.provider.dimensionId != worldObj.provider.dimensionId ? 4F : 2F;
 			if (enhancedBroadcasting)
-				loss = Math.max(1, loss/2);
+				loss = TileEntityAuraPoint.hasAuraPoints(placerUUID) ? 0 : Math.max(1, loss/2);
 			te.receiveElement(e, (int)(amt/loss)); //50% loss + another 50% if cross-dimension
 			//ReikaJavaLibrary.pConsole("Moved "+amt+" of "+e+" to "+te+" > "+te.energy);
 			te.syncAllData(false);
