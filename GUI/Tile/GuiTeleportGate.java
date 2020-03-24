@@ -131,10 +131,18 @@ public class GuiTeleportGate extends GuiChromaBase {
 				//ReikaJavaLibrary.pConsole(c);
 				double xc = 0;
 				double zc = 0;
+				double minX = Double.POSITIVE_INFINITY;
+				double minZ = Double.POSITIVE_INFINITY;
+				double maxX = Double.NEGATIVE_INFINITY;
+				double maxZ = Double.NEGATIVE_INFINITY;
 				for (Entry<Rectangle, LinkNode> e : c) {
 					Rectangle r = e.getKey();
 					xc += r.getX();
 					zc += r.getY();
+					minX = Math.min(minX, r.getX());
+					minZ = Math.min(minZ, r.getY());
+					maxX = Math.max(maxX, r.getX());
+					maxZ = Math.max(maxZ, r.getY());
 				}
 				xc /= c.size();
 				zc /= c.size();
@@ -142,6 +150,21 @@ public class GuiTeleportGate extends GuiChromaBase {
 				offsetZ -= zc*scaleFactor;
 				offsetX += xSize/2-SIZE/2D;
 				offsetZ += ySize/2-SIZE/2D;
+				if (c.size() > 1) {
+					/*
+					double wx = web.maxX-web.minX;
+					double wz = web.maxZ-web.minZ;
+					double sx = xSize/wx;
+					double sz = ySize/wz;
+					double fx = (maxX-minX)/wx;
+					double fz = (maxZ-minZ)/wz;
+					 */
+					double fx = (maxX-minX)/xSize;
+					double fz = (maxZ-minZ)/ySize;
+					//ReikaJavaLibrary.pConsole(fx+" , "+fz);
+					double sc = Math.min(1D/fx, 1D/fz);
+					scaleFactor = sc*0.5;
+				}
 			}
 		}
 		zoomBoxStart = null;
@@ -167,7 +190,7 @@ public class GuiTeleportGate extends GuiChromaBase {
 			player.closeScreen();
 			gate.takeSnapshot();
 		}
-		else {
+		else if (scaleFactor == 1) {
 			zoomBoxStart = new Point(x, y);
 		}
 	}

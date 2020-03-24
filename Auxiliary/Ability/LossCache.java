@@ -34,25 +34,34 @@ class LossCache {
 	private final Collection<ElementBufferCapacityBoost> savedBoosts = new ArrayList();
 	private final ElementTagCompound savedEnergy = new ElementTagCompound();
 	private int cap;
+	//private long time;
 
 	private static final double INIT_CHANCE = 10;
 	private static final double INC_CHANCE = 5;
 	private static final double MAX_CHANCE = 80;
+	private static final int DEATH_COOLDOWN = 20*60*5;
 
 	static final String NBT_TAG = "bufferDeathChance";
 
 	LossCache(EntityPlayer ep) {
 		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
-		double chance = nbt.getDouble(NBT_TAG);
-		if (!nbt.hasKey(NBT_TAG)) {
+		NBTTagCompound tag = nbt.getCompoundTag(NBT_TAG);
+		double chance = tag.getDouble("chance");
+		long time = ep.worldObj.getTotalWorldTime();
+		if (!nbt.hasKey(NBT_TAG) || !tag.hasKey("chance")) {
 			chance = INIT_CHANCE;
 		}
 		else {
-			chance += INC_CHANCE;
-			if (chance > MAX_CHANCE)
-				chance = MAX_CHANCE;
+			long prev = tag.getLong("time");
+			if (time > prev+DEATH_COOLDOWN) {
+				chance += INC_CHANCE;
+				if (chance > MAX_CHANCE)
+					chance = MAX_CHANCE;
+			}
 		}
-		nbt.setDouble(NBT_TAG, chance);
+		tag.setDouble("chance", chance);
+		tag.setLong("time", time);
+		nbt.setTag(NBT_TAG, tag);
 		for (Ability a : Chromabilities.getAvailableFrom(ep)) {
 			if (a == Chromabilities.DEATHPROOF || ReikaRandomHelper.doWithChance(chance)) {
 				savedAbilities.add(a);
