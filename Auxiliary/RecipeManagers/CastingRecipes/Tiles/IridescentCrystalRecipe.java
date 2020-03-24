@@ -78,7 +78,7 @@ public class IridescentCrystalRecipe extends PylonCastingRecipe {
 
 	@Override
 	public float getConsecutiveStackingTimeFactor(TileEntityCastingTable te) {
-		return 0.975F;
+		return 0.97489F;
 	}
 
 	@Override
@@ -88,9 +88,8 @@ public class IridescentCrystalRecipe extends PylonCastingRecipe {
 
 	@Override
 	public void onRecipeTick(TileEntityCastingTable te) {
-		int tick = te.getCraftingTick();
 		if (te.worldObj.isRemote) {
-			this.doParticleFX(te, tick);
+			this.doParticleFX(te, te.getCraftingTick(), te.getRecipeTickDuration(this));
 		}
 		else {
 
@@ -98,7 +97,7 @@ public class IridescentCrystalRecipe extends PylonCastingRecipe {
 	}
 
 	@SideOnly(Side.CLIENT)
-	private void doParticleFX(TileEntityCastingTable te, int tick) {
+	private void doParticleFX(TileEntityCastingTable te, int tick, int dur) {
 		double px = te.xCoord+te.getRandom().nextDouble();
 		double pz = te.zCoord+te.getRandom().nextDouble();
 		double vy = 0.125;
@@ -108,7 +107,7 @@ public class IridescentCrystalRecipe extends PylonCastingRecipe {
 		EntityBlurFX fx = new EntityBlurFX(te.worldObj, px, te.yCoord+1, pz, vx, vy, vz).setIcon(ChromaIcons.CHROMA).setBasicBlend().setGravity(g);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
-		int t = this.getDuration()*4-tick;
+		int t = dur-tick;
 		if (t%18 == 0) {
 			CrystalElement e = CrystalElement.elements[t/18%16];
 			for (int i = 0; i < 64; i++) {

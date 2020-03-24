@@ -345,6 +345,10 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		return craftingTick;
 	}
 
+	public int getCraftAmountQueued() {
+		return craftingAmount;
+	}
+
 	private void killCrafting() {
 		craftingTick = 0;
 
@@ -691,6 +695,10 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 	}
 
 	private void setRecipeTickDuration(CastingRecipe r) {
+		craftingTick = this.getRecipeTickDuration(r);
+	}
+
+	public int getRecipeTickDuration(CastingRecipe r) {
 		int t = r.getDuration();
 		if (isEnhanced)
 			t = Math.max(t/r.getEnhancedTableAccelerationFactor(), Math.min(t, 20));
@@ -699,7 +707,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		if (t > 20 && r instanceof MultiBlockCastingRecipe) {
 			t = Math.max(20, (int)(t/this.getAccelerationFactor()));
 		}
-		craftingTick = t;
+		return t;
 	}
 
 	public boolean isReadyToCraft() {
@@ -1295,16 +1303,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 	public float getOperationFraction() {
 		if (activeRecipe == null)
 			return 0;
-		int t = activeRecipe.getDuration();
-		if (isEnhanced)
-			t = Math.max(t/activeRecipe.getEnhancedTableAccelerationFactor(), Math.min(t, 20));
-		if (activeRecipe.canBeStacked())
-			t *= activeRecipe.getRecipeStackedTimeFactor(this, craftingAmount);
-		if (t > 20 && activeRecipe instanceof MultiBlockCastingRecipe) {
-			t = Math.max(20, (int)(t/this.getAccelerationFactor()));
-		}
-		float f = 1F-craftingTick/(float)t;
-		return f;
+		return 1F-craftingTick/(float)this.getRecipeTickDuration(activeRecipe);
 	}
 
 	@Override

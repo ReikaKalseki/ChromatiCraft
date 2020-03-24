@@ -410,10 +410,10 @@ public class CrystalBees {
 
 		chroma.addSpecialty(ChromaStacks.iridCrystal, 2);
 		chroma.otherChecks.add(new IridescentShardCheck());
-		lumen.addSpecialty(ChromaStacks.lumaDust, 2);
+		aura.addSpecialty(ChromaStacks.lumaDust, 2);
 		lumen.otherChecks.add(new AreaBlockCheck(new BlockKey(ChromaBlocks.POWERTREE.getBlockInstance()), 2, 1));
 		lumen.addProduct(new ItemStack(Items.glowstone_dust), 15);
-		aura.addSpecialty(ChromaStacks.echoCrystal, 2);
+		lumen.addSpecialty(ChromaStacks.glowbeans, 4);
 		aura.otherChecks.add(new AuraLocusCheck());
 
 		if (ModList.MAGICBEES.isLoaded()) {

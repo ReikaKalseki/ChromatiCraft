@@ -62,7 +62,7 @@ public class TankExpandingRecipe extends PylonCastingRecipe {
 
 	@Override
 	protected float getConsecutiveStackingTimeFactor(TileEntityCastingTable te) {
-		return 0.4F;
+		return 0.5F;
 	}
 
 }

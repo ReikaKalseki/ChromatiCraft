@@ -1,15 +1,18 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
+import java.util.UUID;
+
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
@@ -17,10 +20,11 @@ import net.minecraftforge.common.DimensionManager;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 
 public final class ProtectionZone {
 
-	public final String creator;
+	public final UUID creator;
 	public final int dimensionID;
 	public final int originX;
 	public final int originY;
@@ -28,8 +32,12 @@ public final class ProtectionZone {
 	public final int range;
 
 	public ProtectionZone(World world, EntityPlayer ep, int x, int y, int z, int r) {
-		creator = ep.getCommandSenderName();
-		dimensionID = world.provider.dimensionId;
+		this(ep.getUniqueID(), world.provider.dimensionId, x, y, z, r);
+	}
+
+	private ProtectionZone(UUID player, int id, int x, int y, int z, int r) {
+		creator = player;
+		dimensionID = id;
 		originX = x;
 		originY = y;
 		originZ = z;
@@ -41,7 +49,7 @@ public final class ProtectionZone {
 	}
 
 	public boolean canPlayerEditIn(EntityPlayer ep) {
-		if (ep.getCommandSenderName().equals(creator))
+		if (ep.getUniqueID().equals(creator))
 			return true;
 		return this.isPlayerOnAuxList(ep);
 	}
@@ -49,15 +57,6 @@ public final class ProtectionZone {
 	private boolean isPlayerOnAuxList(EntityPlayer ep) {
 		TileEntityGuardianStone te = this.getControllingGuardianStone();
 		return te != null ? te.isPlayerInList(ep) : false;
-	}
-
-	private ProtectionZone(String player, int id, int x, int y, int z, int r) {
-		creator = player;
-		dimensionID = id;
-		originX = x;
-		originY = y;
-		originZ = z;
-		range = r;
 	}
 
 	public boolean isBlockInZone(int x, int y, int z) {
@@ -68,7 +67,7 @@ public final class ProtectionZone {
 
 	@Override
 	public String toString() {
-		return "Zone by "+creator+" in world "+dimensionID+" at "+originX+", "+originY+", "+originZ+" (Radius "+range+")";
+		return "Zone by "+creator.toString()+" in world "+dimensionID+" at "+originX+", "+originY+", "+originZ+" (Radius "+range+")";
 	}
 
 	public TileEntityGuardianStone getControllingGuardianStone() {
@@ -86,7 +85,7 @@ public final class ProtectionZone {
 	public String getSerialString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("P:");
-		sb.append(creator);
+		sb.append(creator.toString());
 		sb.append(";");
 
 		sb.append("W:");
@@ -122,7 +121,7 @@ public final class ProtectionZone {
 			int y = Integer.parseInt(s[3]);
 			int z = Integer.parseInt(s[4]);
 			int r = Integer.parseInt(s[5]);
-			return new ProtectionZone(s[0], w, x, y, z, r);
+			return new ProtectionZone(UUID.fromString(s[0]), w, x, y, z, r);
 		}
 		catch (Exception e) {
 			return null;
@@ -148,6 +147,20 @@ public final class ProtectionZone {
 			return true;
 		}
 		return false;
+	}
+
+	public static ProtectionZone readFromNBT(NBTTagCompound NBT) {
+		String owner = NBT.getString("owner");
+		WorldLocation loc = WorldLocation.readFromNBT("loc", NBT);
+		return new ProtectionZone(UUID.fromString(owner), loc.dimensionID, loc.xCoord, loc.yCoord, loc.zCoord, NBT.getInteger("radius"));
+	}
+
+	public NBTTagCompound writeToNBT() {
+		NBTTagCompound NBT = new NBTTagCompound();
+		new WorldLocation(dimensionID, originX, originY, originZ).writeToNBT("loc", NBT);
+		NBT.setString("owner", creator.toString());
+		NBT.setInteger("radius", range);
+		return NBT;
 	}
 
 }

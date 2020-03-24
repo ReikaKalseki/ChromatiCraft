@@ -398,15 +398,18 @@ public class CastingRecipe implements APICastingRecipe {
 
 	public final float getRecipeStackedTimeFactor(TileEntityCastingTable te, int stack) {
 		float f = this.getConsecutiveStackingTimeFactor(te);
+		/* geometric sum, cleaner calc below
 		double t = 0;
 		for (int i = 0; i < stack; i++) {
 			t += Math.pow(f, i);
 		}
 		return (float)t;
+		 */
+		return f == 1 ? stack : (float)((1-Math.pow(f, stack))/(1-f));
 	}
 
 	protected float getConsecutiveStackingTimeFactor(TileEntityCastingTable te) {
-		return 0.9375F;
+		return 0.75F;
 	}
 
 	public float[] getHarmonics() {
@@ -929,6 +932,11 @@ public class CastingRecipe implements APICastingRecipe {
 		@Override
 		public int getDuration() {
 			return 400;
+		}
+
+		@Override
+		protected float getConsecutiveStackingTimeFactor(TileEntityCastingTable te) {
+			return 0.9386F;//0.9375F;
 		}
 
 		@Override

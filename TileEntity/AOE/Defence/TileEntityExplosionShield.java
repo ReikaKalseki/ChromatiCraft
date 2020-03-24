@@ -86,12 +86,8 @@ public class TileEntityExplosionShield extends CrystalReceiverBase implements Lo
 
 	@SideOnly(Side.CLIENT)
 	private void spawnParticles(World world, int x, int y, int z) {
-		double f = this.getRange()*1D/MAXRANGE;
-		double f2 = Math.sqrt(this.getRange()*1D/MAXRANGE);
 		int r = this.getRange();
 		int ry = this.getYRange();
-		int n = (int)Math.ceil(4D*f*f*f);
-		int n2 = (int)Math.ceil(48D*f2*f2*f2);
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 		double mx = xCoord+0.5-r;
 		double my = Math.max(0, yCoord+0.5-ry);
@@ -99,15 +95,27 @@ public class TileEntityExplosionShield extends CrystalReceiverBase implements Lo
 		double ax = xCoord+0.5+r;
 		double ay = yCoord+0.5+ry;
 		double az = zCoord+0.5+r;
+		double mx2 = Math.max(ep.posX-60, mx);
+		//double my2 = Math.max(ep.posY-40, my);
+		double mz2 = Math.max(ep.posZ-60, mz);
+		double ax2 = Math.min(ep.posX+60, ax);
+		//double ay2 = Math.min(ep.posY+40, ay);
+		double az2 = Math.min(ep.posZ+60, az);
+		if (mx2 > ax2 || mz2 >= az2)
+			return;
+		double dx = ax2-mx2;
+		double dy = ay-my;
+		double dz = az2-mz2;
+		/*
+		double r0 = (dx*dy*dz)/(r*r*r);
+		double f = r*r0*1D/MAXRANGE;
+		double f2 = Math.sqrt(r*r0*1D/MAXRANGE);
+		int n = (int)Math.ceil(1D*f*f*f*f);
+		int n2 = (int)Math.ceil(12D*f2*f2*f2*f2);
+		 */
+		int n = (int)Math.ceil(3*dx*dy*dz/(MAXRANGE*MAXRANGE*MAXRANGE));
+		int n2 = 9*n;
 		for (int i = 0; i < n; i++) {
-			double mx2 = Math.max(ep.posX-60, mx);
-			//double my2 = Math.max(ep.posY-40, my);
-			double mz2 = Math.max(ep.posZ-60, mz);
-			double ax2 = Math.min(ep.posX+60, ax);
-			//double ay2 = Math.min(ep.posY+40, ay);
-			double az2 = Math.min(ep.posZ+60, az);
-			if (mx2 > ax2 || mz2 >= az2)
-				continue;
 			double px = ReikaRandomHelper.getRandomBetween(mx2, ax2);
 			double py = ReikaRandomHelper.getRandomBetween(my, ay);
 			double pz = ReikaRandomHelper.getRandomBetween(mz2, az2);
