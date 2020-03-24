@@ -99,6 +99,7 @@ import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
@@ -643,27 +644,29 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 
 					this.setStandLock(true);
 
-					if (activeRecipe.canBeStacked()) {
-						craftingAmount = 1;
-					}
-					else {
-						craftingAmount = inv[4].stackSize;
-						if (activeRecipe instanceof MultiBlockCastingRecipe) {
-							MultiBlockCastingRecipe mult = (MultiBlockCastingRecipe)activeRecipe;
-							HashMap<WorldLocation, ItemMatch> map = mult.getOtherInputs(worldObj, xCoord, yCoord, zCoord);
-							for (WorldLocation loc : map.keySet()) {
-								TileEntityItemStand te = (TileEntityItemStand)loc.getTileEntity(worldObj);//loc.getTileEntity();
-								if (te != null) {
-									craftingAmount = Math.min(craftingAmount, te.getStackInSlot(0).stackSize);
-								}
+					craftingAmount = inv[4].stackSize;
+					if (activeRecipe instanceof MultiBlockCastingRecipe) {
+						MultiBlockCastingRecipe mult = (MultiBlockCastingRecipe)activeRecipe;
+						HashMap<WorldLocation, ItemMatch> map = mult.getOtherInputs(worldObj, xCoord, yCoord, zCoord);
+						for (WorldLocation loc : map.keySet()) {
+							TileEntityItemStand te = (TileEntityItemStand)loc.getTileEntity(worldObj);//loc.getTileEntity();
+							if (te != null) {
+								craftingAmount = Math.min(craftingAmount, te.getStackInSlot(0).stackSize);
 							}
 						}
 					}
 
-					this.setRecipeTickDuration(activeRecipe);
 					if (activeRecipe instanceof PylonCastingRecipe) {
 						this.requestEnergyDifference(this.getRequiredEnergy());
+						ReikaJavaLibrary.pConsole("Energy is "+this.getRequiredEnergy()+" from "+((PylonCastingRecipe)activeRecipe).getRequiredAura());
 					}
+
+					if (!activeRecipe.canBeStacked()) {
+						;//craftingAmount = 1;
+					}
+
+					this.setRecipeTickDuration(activeRecipe);
+					ReikaJavaLibrary.pConsole("Crafting x"+craftingAmount+", time = "+craftingTick+" from "+activeRecipe.getDuration());
 					return true;
 				}
 			}
@@ -1171,10 +1174,10 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 
 	@Override
 	public int maxThroughput() {
-		int base = isEnhanced ? 2500 : Math.min(1000, Math.max(100, 100*(tableXP/RecipeType.MULTIBLOCK.levelUp-1)));
-		if (activeRecipe instanceof PylonCastingRecipe) {
+		int base = Math.min(1000, Math.max(100, 100*(tableXP/RecipeType.MULTIBLOCK.levelUp-1)));
+		if (isEnhanced && activeRecipe instanceof PylonCastingRecipe) {
 			PylonCastingRecipe pr = (PylonCastingRecipe)activeRecipe;
-			base = Math.min(base, Math.max(1, pr.getRequiredAura().getMinimumValue()/40));
+			base = Math.min(2500, Math.max(base, pr.getRequiredAura().getAverageValue()*craftingAmount/40));
 		}
 		return base;
 	}
@@ -1292,15 +1295,15 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 	public float getOperationFraction() {
 		if (activeRecipe == null)
 			return 0;
-		float denom = activeRecipe.getDuration();
-		if (craftingAmount > 1 && activeRecipe.canBeStacked())
-			denom /= activeRecipe.getRecipeStackedTimeFactor(this, craftingAmount);
+		int t = activeRecipe.getDuration();
 		if (isEnhanced)
-			denom /= activeRecipe.getEnhancedTableAccelerationFactor();
-		if (denom > 20 && activeRecipe instanceof MultiBlockCastingRecipe) {
-			denom = Math.max(20, denom/this.getAccelerationFactor());
+			t = Math.max(t/activeRecipe.getEnhancedTableAccelerationFactor(), Math.min(t, 20));
+		if (activeRecipe.canBeStacked())
+			t *= activeRecipe.getRecipeStackedTimeFactor(this, craftingAmount);
+		if (t > 20 && activeRecipe instanceof MultiBlockCastingRecipe) {
+			t = Math.max(20, (int)(t/this.getAccelerationFactor()));
 		}
-		float f = 1F-craftingTick/denom;
+		float f = 1F-craftingTick/(float)t;
 		return f;
 	}
 

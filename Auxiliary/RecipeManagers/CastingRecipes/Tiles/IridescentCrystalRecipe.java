@@ -108,7 +108,7 @@ public class IridescentCrystalRecipe extends PylonCastingRecipe {
 		EntityBlurFX fx = new EntityBlurFX(te.worldObj, px, te.yCoord+1, pz, vx, vy, vz).setIcon(ChromaIcons.CHROMA).setBasicBlend().setGravity(g);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
-		int t = this.getDuration()-tick;
+		int t = this.getDuration()*4-tick;
 		if (t%18 == 0) {
 			CrystalElement e = CrystalElement.elements[t/18%16];
 			for (int i = 0; i < 64; i++) {

@@ -366,13 +366,17 @@ public final class ElementTagCompound {
 	}
 
 	public int getMinimumValue() {
-		int min = 0;
+		int min = Integer.MAX_VALUE;
 		for (CrystalElement e : data.keySet()) {
 			int amt = data.get(e);
 			if (amt < min)
 				min = amt;
 		}
 		return min;
+	}
+
+	public int getAverageValue() {
+		return this.getTotalEnergy()/data.keySet().size();
 	}
 
 	public String toDisplay() {
