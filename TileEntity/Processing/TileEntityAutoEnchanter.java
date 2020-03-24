@@ -48,6 +48,7 @@ import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.ModInteract.ItemHandlers.InfusionEnchantmentHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler;
 
 import cpw.mods.fml.common.Loader;
@@ -479,6 +480,8 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 
 	public static boolean isBlacklisted(Enchantment e) {
 		if (e.getName().toLowerCase(Locale.ENGLISH).startsWith("enchantment.molecule")) //Minechem
+			return true;
+		if (InfusionEnchantmentHandler.instance.isInfusionEnchantment(e))
 			return true;
 		return blacklist.contains(e);
 	}

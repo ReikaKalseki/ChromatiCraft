@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -73,6 +73,8 @@ public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
 		super.initGui();
 		buttonList.clear();
 		pageAge = 0;
+		listOffset = 0;
+		points.clear();
 
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
@@ -98,7 +100,6 @@ public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
 			newLabel.setFocused(false);
 			newLabel.setMaxStringLength(24);
 		}
-		points.clear();
 		if (screen == Screen.SELECT) {
 			points.addAll(AbilityHelper.instance.getTeleportLocations(player));
 			Collections.sort(points);
@@ -215,7 +216,7 @@ public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
 
 		if (screen == Screen.SELECT || screen == Screen.MINIMAP) {
 			int h = 12;
-			int sz = Math.min(MAX_LINES, points.size());
+			int sz = Math.min(MAX_LINES, points.size()-listOffset);
 			for (int i = 0; i < sz; i++) {
 				WarpPoint p = points.get(i+listOffset);
 				int dx = j+8;
@@ -241,7 +242,7 @@ public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
 	}
 
 	private int maxListOffset() {
-		return points.size()-MAX_LINES;
+		return Math.max(0, points.size()-MAX_LINES);
 	}
 
 	private static enum Screen {
