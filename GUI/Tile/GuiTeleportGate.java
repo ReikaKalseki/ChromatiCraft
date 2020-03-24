@@ -9,11 +9,19 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Tile;
 
+import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.Rectangle;
+
+import com.google.common.base.Strings;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -55,6 +63,8 @@ public class GuiTeleportGate extends GuiChromaBase {
 	private double offsetZ = 0;
 	private double scaleFactor = 1;
 
+	private Point zoomBoxStart;
+
 	public GuiTeleportGate(EntityPlayer ep, TileEntityTeleportGate te) {
 		super(new CoreContainer(ep, te), ep, te);
 		gate = te;
@@ -86,6 +96,58 @@ public class GuiTeleportGate extends GuiChromaBase {
 	}
 
 	@Override
+	protected void mouseMovedOrUp(int mx, int my, int b) {
+		super.mouseMovedOrUp(mx, my, b);
+
+		int j = (width - xSize) / 2;
+		int k = (height - ySize) / 2;
+
+		if (b == 0 && zoomBoxStart != null) {
+			int x1 = zoomBoxStart.x;
+			int y1 = zoomBoxStart.y;
+			int x2 = mx;
+			int y2 = my;
+			if (x1 > x2) {
+				int a = x2;
+				x2 = x1;
+				x1 = a;
+			}
+			if (y1 > y2) {
+				int a = y2;
+				y2 = y1;
+				y1 = a;
+			}
+			Rectangle box = new Rectangle(x1-j, y1-k, x2-x1, y2-y1);
+			Collection<Entry<Rectangle, LinkNode>> c = new ArrayList();
+			Map<Rectangle, LinkNode> map = pointLocs.view();
+			for (Entry<Rectangle, LinkNode> e : map.entrySet()) {
+				Rectangle r = e.getKey();
+				//ReikaJavaLibrary.pConsole(zoomBoxStart+", "+r);
+				if (r.intersects(box)) {
+					c.add(e);
+				}
+			}
+			if (!c.isEmpty()) {
+				//ReikaJavaLibrary.pConsole(c);
+				double xc = 0;
+				double zc = 0;
+				for (Entry<Rectangle, LinkNode> e : c) {
+					Rectangle r = e.getKey();
+					xc += r.getX();
+					zc += r.getY();
+				}
+				xc /= c.size();
+				zc /= c.size();
+				offsetX -= xc*scaleFactor;
+				offsetZ -= zc*scaleFactor;
+				offsetX += xSize/2-SIZE/2D;
+				offsetZ += ySize/2-SIZE/2D;
+			}
+		}
+		zoomBoxStart = null;
+	}
+
+	@Override
 	protected void mouseClicked(int x, int y, int b) {
 		super.mouseClicked(x, y, b);
 
@@ -104,6 +166,9 @@ public class GuiTeleportGate extends GuiChromaBase {
 			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
 			player.closeScreen();
 			gate.takeSnapshot();
+		}
+		else {
+			zoomBoxStart = new Point(x, y);
 		}
 	}
 
@@ -129,6 +194,10 @@ public class GuiTeleportGate extends GuiChromaBase {
 		int c = ReikaColorAPI.mixColors(0xffffffff, 0x80808080, Math.min(1, 0.625F+0.5F*(float)Math.sin(System.currentTimeMillis()/400D)));
 		api.drawRectFrame(0, 0, fontRendererObj.getStringWidth(s)+3, fontRendererObj.FONT_HEIGHT+3, c);
 		fontRendererObj.drawString(s, 2, 2, 0xffffff);
+
+		if (zoomBoxStart != null) {
+			api.drawRectFrame(zoomBoxStart.x-j, zoomBoxStart.y-k, par1-zoomBoxStart.x, par2-zoomBoxStart.y, 0x8f8f8f);
+		}
 	}
 
 	@Override
@@ -147,9 +216,13 @@ public class GuiTeleportGate extends GuiChromaBase {
 		double d = GuiScreen.isCtrlKeyDown() ? -5 : Math.max(-40, -6*scaleFactor);
 		if (Keyboard.isKeyDown(Keyboard.KEY_PRIOR)) {
 			scaleFactor *= 0.95;
+			offsetX *= 0.95;
+			offsetZ *= 0.95;
 		}
 		else if (Keyboard.isKeyDown(Keyboard.KEY_NEXT)) {
 			scaleFactor *= 1.05;
+			offsetX *= 1.05;
+			offsetZ *= 1.05;
 		}
 		else if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
 			offsetZ -= d;
@@ -312,7 +385,9 @@ public class GuiTeleportGate extends GuiChromaBase {
 						Tessellator.instance.addVertexWithUV(x, y, 0, 0, 0);
 						Tessellator.instance.draw();
 						ReikaTextureHelper.bindTerrainTexture();
-						String sg = l.location.toString();
+						String sg = l.getName();
+						if (Strings.isNullOrEmpty(sg))
+							sg = l.location.toString();
 						api.drawTooltipAt(fontRendererObj, sg, (int)x+fontRendererObj.getStringWidth(sg)+19, (int)y-(fontRendererObj.FONT_HEIGHT-8));
 					}
 				}
@@ -326,16 +401,22 @@ public class GuiTeleportGate extends GuiChromaBase {
 
 		private int statusFlags;
 		private final WorldLocation location;
+		private final String name;
 
 		private double renderX;
 		private double renderZ;
 
 		private LinkNode(GateData dat) {
 			location = dat.location;
+			name = dat.getName();
 			if (location.dimensionID != Minecraft.getMinecraft().theWorld.provider.dimensionId)
 				this.setFlag(Statuses.DIMENSION);
 			if (dat.isOwnedBy(player))
 				this.setFlag(Statuses.OWNED);
+		}
+
+		public String getName() {
+			return name;
 		}
 
 		private String getTextureID() {

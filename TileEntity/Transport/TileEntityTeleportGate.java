@@ -21,13 +21,18 @@ import java.util.UUID;
 
 import javax.imageio.ImageIO;
 
+import com.google.common.base.Strings;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
@@ -103,6 +108,7 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 	private boolean hasStructure = true;
 	public boolean publicMode = true;
 	private Directionality direction = Directionality.BOTH;
+	private String gateName;
 
 	private int activationTick;
 	private TileEntityTeleportGate teleportEnd;
@@ -179,10 +185,13 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 			}
 		}
 
-		if (this.hasStructure())
+		if (this.hasStructure()) {
+			this.consumeNametags(world, x, y, z);
 			this.doGuiChecks(world, x, y, z);
-		else
+		}
+		else {
 			cooldowns.clear();
+		}
 	}
 
 	public void tickFX() {
@@ -282,6 +291,23 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 
 	public int getActivationTick() {
 		return activationTick;
+	}
+
+	private void consumeNametags(World world, int x, int y, int z) {
+		if (this.getTicksExisted()%8 == 0) {
+			AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-0.75, y, z-0.75, x+1.75, y+1.5, z+1.75);
+			List<EntityItem> li = world.getEntitiesWithinAABB(EntityItem.class, box);
+			for (EntityItem ei : li) {
+				if (ei.isDead)
+					continue;
+				ItemStack is = ei.getEntityItem();
+				if (is.getItem() == Items.name_tag && is.stackTagCompound != null) {
+					this.setName(is.getDisplayName());
+					ei.setDead();
+					return;
+				}
+			}
+		}
 	}
 
 	private void doGuiChecks(World world, int x, int y, int z) {
@@ -812,6 +838,8 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 		activationTick = NBT.getInteger("active");
 
 		direction = Directionality.list[NBT.getInteger("senddir")];
+
+		gateName = NBT.getString("name");
 	}
 
 	@Override
@@ -824,6 +852,9 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 		NBT.setInteger("active", activationTick);
 
 		NBT.setInteger("senddir", direction.ordinal());
+
+		if (!Strings.isNullOrEmpty(gateName))
+			NBT.setString("name", gateName);
 	}
 
 	public boolean isPowered() {
@@ -863,6 +894,12 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 
 	public boolean canStructureBeInspected() {
 		return true;
+	}
+
+	public void setName(String s) {
+		gateName = s;
+		this.syncAllData(true);
+		this.updateCache();
 	}
 
 	private static Collection<GateData> getAllGatesMeeting(World world, EntityPlayer ep) {
@@ -947,9 +984,10 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 		public final int statusFlags;
 		private final Collection<UUID> owners = new HashSet();
 		public final boolean publicMode;
+		private String name;
 
 		private GateData(TileEntityTeleportGate te) {
-			this(new WorldLocation(te), getFlags(te), te.owners, te.publicMode);
+			this(new WorldLocation(te), getFlags(te), te.owners, te.publicMode, te.gateName);
 		}
 
 		private static int getFlags(TileEntityTeleportGate te) {
@@ -961,11 +999,12 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 			return ret;
 		}
 
-		private GateData(WorldLocation loc, int flags, Collection<UUID> c, boolean pb) {
+		private GateData(WorldLocation loc, int flags, Collection<UUID> c, boolean pb, String name) {
 			location = loc;
 			statusFlags = flags;
 			owners.addAll(c);
 			publicMode = pb;
+			this.name = name;
 		}
 
 		private static GateData readFromNBT(NBTTagCompound tag) {
@@ -976,7 +1015,7 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 				NBTTagString s = (NBTTagString)o;
 				set.add(UUID.fromString(s.func_150285_a_()));
 			}
-			return new GateData(loc, tag.getInteger("flags"), set, tag.getBoolean("public"));
+			return new GateData(loc, tag.getInteger("flags"), set, tag.getBoolean("public"), tag.getString("name"));
 		}
 
 		private NBTTagCompound writeToNBT() {
@@ -989,6 +1028,8 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 			}
 			tag.setTag("owners", li);
 			tag.setBoolean("public", publicMode);
+			if (!Strings.isNullOrEmpty(name))
+				tag.setString("name", name);
 			return tag;
 		}
 
@@ -999,6 +1040,10 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 		@Override
 		public String toString() {
 			return location+" ["+Integer.toBinaryString(statusFlags)+"]";
+		}
+
+		public String getName() {
+			return name;
 		}
 	}
 

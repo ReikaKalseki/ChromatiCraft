@@ -273,9 +273,13 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 	private int injectItem(ItemStack is, boolean simulate) {
 		if (DragonAPICore.debugtest)
 			return 0;
+		is = is.copy();
 		if (ModList.APPENG.isLoaded() && network != null) {
 			int left = (int)network.addItem(is, simulate);
-			return left;
+			if (left == 0)
+				return 0;
+			else
+				is.stackSize = left;
 		}
 		int left = ingredients.addItemsToUnderlyingInventories(is, simulate);
 		return left;

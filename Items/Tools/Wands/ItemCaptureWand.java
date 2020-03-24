@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -152,7 +152,12 @@ public class ItemCaptureWand extends ItemWandBase implements EntityCapturingItem
 
 		nbt.setString("name", EntityList.getEntityString(e));
 		NBTTagCompound dat = new NBTTagCompound();
-		e.writeToNBT(dat);
+		try {
+			e.writeToNBT(dat);
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
 		nbt.setTag("data", dat);
 
 		is.stackTagCompound.setTag(NBT_TAG, nbt);
