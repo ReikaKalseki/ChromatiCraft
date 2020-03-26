@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,38 +12,32 @@ package Reika.ChromatiCraft.GUI;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
+import Reika.ChromatiCraft.Base.GuiChromaTool;
 import Reika.ChromatiCraft.Block.BlockHoverBlock.HoverType;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemFlightWand;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
-import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundGui;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
-public class GuiFlightWand extends GuiScreen implements CustomSoundGui {
-
-	private final EntityPlayer player;
+public class GuiFlightWand extends GuiChromaTool {
 
 	private final int xSize = 111;
 	private final int ySize = 166;
 
 	public GuiFlightWand(EntityPlayer ep) {
-		player = ep;
+		super(ep);
 	}
 
 	@Override
 	public void initGui() {
 		super.initGui();
-		buttonList.clear();
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 		String tex = "Textures/GUIs/buttons.png";
@@ -56,14 +50,6 @@ public class GuiFlightWand extends GuiScreen implements CustomSoundGui {
 			b.packedFGColour = md.renderColor;
 			buttonList.add(b);
 		}
-	}
-
-	public void playButtonSound(GuiButton b) {
-		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 1);
-	}
-
-	public void playHoverSound(GuiButton b) {
-		ReikaSoundHelper.playClientSound(ChromaSounds.GUISEL, player, 0.8F, 1);
 	}
 
 	@Override

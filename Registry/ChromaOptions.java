@@ -13,6 +13,7 @@ import java.util.Locale;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.MathHelper;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
@@ -27,6 +28,7 @@ import Reika.DragonAPI.Interfaces.Configuration.StringConfig;
 import Reika.DragonAPI.Interfaces.Configuration.UserSpecificConfig;
 import Reika.DragonAPI.Interfaces.Registry.Dependency;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 
 public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, IntegerConfig, BooleanConfig, DecimalConfig, StringConfig, MatchingConfig, CustomCategoryConfig, UserSpecificConfig, Dependency {
@@ -97,6 +99,7 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	PYLONOVERWORLD("Spawn Pylons in Overworld", true),
 	RFEFFICIENCY("Wireless RF Transmission Efficiency (%)", 100F),
 	LAUNCHPOWER("Launch Pad Power", 1F),
+	FENCEHOPS("Crystal Fence segment count limit", 64),
 	;
 
 	private String label;
@@ -370,6 +373,10 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 			default:
 				return true;
 		}
+	}
+
+	public static int getMaxFenceSections() {
+		return ReikaMathLibrary.ceilPseudo2Exp(MathHelper.clamp_int(FENCEHOPS.getValue(), 16, 256));
 	}
 
 }

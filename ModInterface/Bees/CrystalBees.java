@@ -588,6 +588,10 @@ public class CrystalBees {
 		return noFlowering;
 	}
 
+	public static Flowering getSuperFlowering() {
+		return superFlowering;
+	}
+
 	static class PrecursorBee extends AdvancedBee {
 
 		private static final String description = "Something feels strange about these bees, almost as if they are a link to the past, or some long-lost knowledge.";

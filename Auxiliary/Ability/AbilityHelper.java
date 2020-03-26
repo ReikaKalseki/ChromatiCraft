@@ -1413,7 +1413,7 @@ public class AbilityHelper {
 	@SideOnly(Side.CLIENT)
 	@ModDependent(ModList.FORESTRY)
 	public void showTreeGenes(ItemTooltipEvent evt) {
-		if (ModList.FORESTRY.isLoaded() && ReikaBeeHelper.isTree(evt.itemStack)) {
+		if (ModList.FORESTRY.isLoaded() && (ReikaBeeHelper.isTree(evt.itemStack) || ReikaBeeHelper.isPollen(evt.itemStack))) {
 			if (Chromabilities.BEEALYZE.enabledOn(evt.entityPlayer)) {
 				Iterator<String> it = evt.toolTip.iterator();
 				boolean primed = false;

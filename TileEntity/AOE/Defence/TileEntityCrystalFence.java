@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.Block.BlockCrystalFence.CrystalFenceAuxTile;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -60,7 +61,7 @@ public class TileEntityCrystalFence extends TileEntityRelayPowered implements Ow
 	private int damageAmount;
 
 	public static final int RANGE = 16;
-	public static final int MAX_STEPS = 32;
+	public static final int MAX_STEPS = ChromaOptions.getMaxFenceSections();
 
 	private final StepTimer calcTimer = new StepTimer(100);
 

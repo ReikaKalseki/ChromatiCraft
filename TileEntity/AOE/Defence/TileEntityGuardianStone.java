@@ -36,6 +36,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityGuardianStone extends TileEntityChromaticBase {
 
@@ -128,6 +129,7 @@ public class TileEntityGuardianStone extends TileEntityChromaticBase {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void doAreaParticles(World world, int x, int y, int z) {
 		double minX0 = zone.originX-zone.range;
 		double minY0 = ChromaOptions.GUARDCHUNK.getState() ? 0 : zone.originY-zone.range;

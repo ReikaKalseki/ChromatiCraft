@@ -11,41 +11,34 @@ package Reika.ChromatiCraft.GUI;
 
 import org.lwjgl.opengl.GL11;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
+import Reika.ChromatiCraft.Base.GuiChromaTool;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
-import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundGui;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
-public class GuiTransitionWand extends GuiScreen implements CustomSoundGui {
-
-	private final EntityPlayer player;
+public class GuiTransitionWand extends GuiChromaTool {
 
 	private final int xSize = 228;
 	private final int ySize = 52;
 
 	public GuiTransitionWand(EntityPlayer ep) {
-		player = ep;
+		super(ep);
 	}
 
 	@Override
 	public void initGui() {
 		super.initGui();
-		buttonList.clear();
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 		String tex = "Textures/GUIs/buttons.png";
@@ -56,20 +49,6 @@ public class GuiTransitionWand extends GuiScreen implements CustomSoundGui {
 			int u = md.ordinal() == i ? 18 : 0;
 			buttonList.add(new CustomSoundImagedGuiButton(i, j+8+i*(xSize-10)/l, k+14, 18, 18, u, 0, tex, ChromatiCraft.class, this));
 		}
-	}
-
-	public void playButtonSound(GuiButton b) {
-		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 1);
-	}
-
-	public void playHoverSound(GuiButton b) {
-		ReikaSoundHelper.playClientSound(ChromaSounds.GUISEL, player, 0.8F, 1);
-	}
-
-	@Override
-	public void setWorldAndResolution(Minecraft mc, int x, int y) {
-		super.setWorldAndResolution(mc, x, y);
-		fontRendererObj = ChromaFontRenderer.FontType.GUI.renderer;
 	}
 
 	@Override

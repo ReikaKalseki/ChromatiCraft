@@ -25,24 +25,20 @@ import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Ability.WarpPoint;
 import Reika.ChromatiCraft.Auxiliary.Ability.WarpPointData;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
+import Reika.ChromatiCraft.Base.GuiChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
-import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.RectangleMap;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton;
-import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundGui;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
-public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
+public class GuiTeleportAbility extends GuiChromaTool {
 
 	private final int xSize = 176;
 	private final int ySize = 220;
-
-	private final EntityPlayer player;
 
 	private final ArrayList<WarpPoint> points = new ArrayList();
 
@@ -57,21 +53,12 @@ public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
 	private int pageAge = 0;
 
 	public GuiTeleportAbility(EntityPlayer ep) {
-		player = ep;
-	}
-
-	public void playButtonSound(GuiButton b) {
-		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 1);
-	}
-
-	public void playHoverSound(GuiButton b) {
-		ReikaSoundHelper.playClientSound(ChromaSounds.GUISEL, player, 0.8F, 1);
+		super(ep);
 	}
 
 	@Override
 	public void initGui() {
 		super.initGui();
-		buttonList.clear();
 		pageAge = 0;
 		listOffset = 0;
 		points.clear();

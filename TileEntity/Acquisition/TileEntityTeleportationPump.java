@@ -201,11 +201,12 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 		}
 		if (world.isRemote)
 			return;
-		if (!scanning && fluids.isEmpty() && this.getTicksExisted() == 0) {
+		int boost = (int)Math.ceil(this.getRange()/(float)MAXRANGE);
+		if (boost == 1 && !scanning && fluids.isEmpty() && this.getTicksExisted() == 0) {
 			fastscan = true;
 		}
 		if (scanning || fastscan) {
-			int n = 0;
+			int n = rand.nextInt(boost);
 			while (n == 0 || (fastscan && n < 32)) {
 				int r = this.getRange();
 				for (int i = -r; i <= r; i++) {

@@ -13,9 +13,7 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
@@ -23,26 +21,22 @@ import net.minecraftforge.fluids.Fluid;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
+import Reika.ChromatiCraft.Base.GuiChromaTool;
 import Reika.ChromatiCraft.Items.Tools.ItemEnderBucket;
 import Reika.ChromatiCraft.Items.Tools.ItemEnderBucket.BucketMode;
 import Reika.ChromatiCraft.Items.Tools.ItemEnderBucket.TankLink;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
-import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundGui;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Instantiable.GUI.SubviewableList;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
-public class GuiEnderBucket extends GuiScreen implements CustomSoundGui {
+public class GuiEnderBucket extends GuiChromaTool {
 
 	private static final int PER_PAGE = 5;
-
-	private final EntityPlayer player;
 
 	private final int xSize = 195;
 	private final int ySize = 168;
@@ -51,14 +45,13 @@ public class GuiEnderBucket extends GuiScreen implements CustomSoundGui {
 	private final SubviewableList<TankLink> links;
 
 	public GuiEnderBucket(EntityPlayer ep) {
-		player = ep;
+		super(ep);
 		links = new SubviewableList(this.getItem().getLinks(player.getCurrentEquippedItem(), player), PER_PAGE);
 	}
 
 	@Override
 	public void initGui() {
 		super.initGui();
-		buttonList.clear();
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 		String tex = "Textures/GUIs/enderbucket.png";
@@ -69,14 +62,6 @@ public class GuiEnderBucket extends GuiScreen implements CustomSoundGui {
 		}
 		buttonList.add(new CustomSoundImagedGuiButton(1000, j+8, k+16, 180, 8, 0, 192, tex, ChromatiCraft.class, this));
 		buttonList.add(new CustomSoundImagedGuiButton(1001, j+8, k+150, 180, 8, 0, 200, tex, ChromatiCraft.class, this));
-	}
-
-	public void playButtonSound(GuiButton b) {
-		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 1);
-	}
-
-	public void playHoverSound(GuiButton b) {
-		ReikaSoundHelper.playClientSound(ChromaSounds.GUISEL, player, 0.8F, 1);
 	}
 
 	@Override
@@ -96,12 +81,6 @@ public class GuiEnderBucket extends GuiScreen implements CustomSoundGui {
 				break;
 		}
 		this.initGui();
-	}
-
-	@Override
-	public void setWorldAndResolution(Minecraft mc, int x, int y) {
-		super.setWorldAndResolution(mc, x, y);
-		fontRendererObj = ChromaFontRenderer.FontType.GUI.renderer;
 	}
 
 	@Override

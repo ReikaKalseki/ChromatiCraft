@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -60,6 +60,11 @@ public class GuiAuraPouch extends GuiContainer {
 		BlendMode.DEFAULT.apply();
 		this.drawTexturedModalRect(var5, var6, 0, 0, xSize, ySize);
 		GL11.glDisable(GL11.GL_BLEND);
+	}
+
+	@Override
+	public boolean doesGuiPauseGame() {
+		return false;
 	}
 
 }
