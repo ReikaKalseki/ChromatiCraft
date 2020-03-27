@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.WirelessSource;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 
@@ -38,7 +39,10 @@ public abstract class TileEntityWirelessPowered extends TileEntityChromaticBase 
 		if (DragonAPICore.debugtest && !worldObj.isRemote) {
 			energy.addValueToColor(e, amt);
 		}
-		Collection<WirelessSource> c = CrystalNetworker.instance.getNearTilesOfType(worldObj, xCoord, yCoord, zCoord, WirelessSource.class, this.getReceiveRange(e));
+		int r = this.getReceiveRange(e);
+		if (TileEntityAuraPoint.hasAuraPoints(placerUUID))
+			r *= 1.5;
+		Collection<WirelessSource> c = CrystalNetworker.instance.getNearTilesOfType(worldObj, xCoord, yCoord, zCoord, WirelessSource.class, r);
 		for (WirelessSource s : c) {
 			if (s.canConduct() && s.canTransmitTo(this)) {
 				int ret = s.request(e, amt, xCoord, yCoord, zCoord);

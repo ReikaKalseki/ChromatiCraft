@@ -1439,6 +1439,36 @@ public class AbilityHelper {
 		}
 	}
 
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	@ModDependent(ModList.FORESTRY)
+	public void showButterflyGenes(ItemTooltipEvent evt) {
+		if (ModList.FORESTRY.isLoaded() && (ReikaBeeHelper.isButterfly(evt.itemStack) || ReikaBeeHelper.isCaterpillar(evt.itemStack))) {
+			if (Chromabilities.BEEALYZE.enabledOn(evt.entityPlayer)) {
+				Iterator<String> it = evt.toolTip.iterator();
+				boolean primed = false;
+				while (it.hasNext()) {
+					String s = it.next();
+					if (s.contains("Pristine Stock") || s.contains("Ignoble Stock"))
+						primed = true;
+					if (s.contains("<Unknown genome>"))
+						primed = true;
+					if (s.contains("Forestry"))
+						primed = false;
+					if (primed)
+						it.remove();
+				}
+				if (GuiScreen.isShiftKeyDown()) {
+					ArrayList<String> li = ReikaBeeHelper.getGenesAsStringList(evt.itemStack);
+					evt.toolTip.addAll(evt.toolTip.size(), li);
+				}
+				else {
+					evt.toolTip.add(evt.toolTip.size(), "Hold "+EnumChatFormatting.GREEN+"LSHIFT"+EnumChatFormatting.RESET+" to show genes");
+				}
+			}
+		}
+	}
+
 	@SideOnly(Side.CLIENT)
 	public boolean canRenderEntityXRay(Entity e) {
 		if (ModList.VOIDMONSTER.isLoaded() && e instanceof EntityVoidMonster)

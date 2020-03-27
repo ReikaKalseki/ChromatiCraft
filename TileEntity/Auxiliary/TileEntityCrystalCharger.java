@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -17,6 +17,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -58,6 +59,11 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver impleme
 		}
 	}
 
+	@Override
+	protected void onInventorySlotChanged(int slot) {
+		CrystalNetworker.instance.breakPaths(this);
+	}
+
 	public float getAngle() {
 		return angle;
 	}
@@ -80,7 +86,12 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver impleme
 			CrystalElement e = CrystalElement.elements[i];
 			if (this.isToggled(e)) {
 				int capacity = this.getMaxStorage(e);
-				int space = capacity-this.getEnergy(e);
+				int has = this.getEnergy(e);
+				if (this.hasItem()) {
+					capacity += ItemStorageCrystal.getCapacity(inv[0]);
+					has += ItemStorageCrystal.getStoredEnergy(inv[0], e);
+				}
+				int space = capacity-has;
 				if (space > 0) {
 					this.requestEnergy(e, space);
 				}

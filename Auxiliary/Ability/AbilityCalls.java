@@ -21,6 +21,7 @@ import net.minecraft.block.BlockTNT;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -91,6 +92,7 @@ import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.Base.BlockTieredResource;
 import Reika.DragonAPI.Instantiable.FlyingBlocksExplosion;
+import Reika.DragonAPI.Instantiable.Data.SphericalVector;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
@@ -129,6 +131,10 @@ import Reika.ReactorCraft.Entities.EntityRadiation;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import forestry.api.lepidopterology.ButterflyManager;
+import forestry.api.lepidopterology.EnumFlutterType;
+import forestry.api.lepidopterology.IButterfly;
+import forestry.api.lepidopterology.IEntityButterfly;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.nodes.INode;
@@ -940,6 +946,9 @@ public class AbilityCalls {
 			if (ModList.REACTORCRAFT.isLoaded() && ep.worldObj.rand.nextInt(40) == 0) {
 				cleanRadiation(ep);
 			}
+			if (ModList.FORESTRY.isLoaded()) {
+				attractButterflies(ep);
+			}
 		}
 	}
 
@@ -968,6 +977,40 @@ public class AbilityCalls {
 					}
 				}
 			}
+		}
+	}
+
+	@ModDependent(ModList.FORESTRY)
+	private static void attractButterflies(EntityPlayer ep) {
+		AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(ep, 32);
+		for (EntityCreature e : ((List<EntityCreature>)ep.worldObj.getEntitiesWithinAABB(IEntityButterfly.class, box))) {
+			double dx = ep.posX-e.posX;
+			double dy = ep.posY-e.posY;
+			double dz = ep.posZ-e.posZ;
+			double dd = ReikaMathLibrary.py3d(dx, dy, dz);
+			SphericalVector vec = SphericalVector.fromCartesian(dx, dy, dz);
+			e.rotationPitch = (float)vec.inclination;
+			e.rotationYaw = e.rotationYawHead = (float)vec.rotation;
+			double v = 0.125;
+			double vx = v*dx/dd;
+			double vy = v*dy/dd;
+			double vz = v*dz/dd;
+			e.motionX = vx;
+			e.motionY = vy;
+			e.motionZ = vz;
+			e.velocityChanged = true;
+		}
+	}
+
+	@ModDependent(ModList.FORESTRY)
+	private static void collectButterflies(EntityPlayer ep) {
+		AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(ep, 4);
+		for (IEntityButterfly e : ((List<IEntityButterfly>)ep.worldObj.getEntitiesWithinAABB(IEntityButterfly.class, box))) {
+			IButterfly fly = e.getButterfly();
+			ItemStack is = ButterflyManager.butterflyRoot.getMemberStack(fly, EnumFlutterType.BUTTERFLY.ordinal());
+			ReikaPlayerAPI.addOrDropItem(is, ep);
+			e.getEntity().setDead();
+			ReikaSoundHelper.playSoundAtEntity(ep.worldObj, ep, "random.pop", 0.5F, 2F);
 		}
 	}
 
@@ -1152,6 +1195,10 @@ public class AbilityCalls {
 	public static void doChestCollection(EntityPlayerMP ep) {
 		if (ep.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
 			return;
+
+		if (ModList.FORESTRY.isLoaded())
+			collectButterflies(ep);
+
 		int x = MathHelper.floor_double(ep.posX);
 		int y = MathHelper.floor_double(ep.posY);
 		int z = MathHelper.floor_double(ep.posZ);

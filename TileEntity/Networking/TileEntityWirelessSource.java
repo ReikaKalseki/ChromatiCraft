@@ -254,10 +254,12 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 		int has = this.getEnergy(e);
 		int ret = Math.min(amt, has);
 		int rem = ret;
-		ret /= 1+LOSS_PER_LUMEN;
-		LOSData los = PylonFinder.lineOfSight(worldObj, xCoord, yCoord, zCoord, x, y, z);
-		if (!los.hasLineOfSight)
-			ret /= OCCLUSION_FACTOR;
+		if (!TileEntityAuraPoint.hasAuraPoints(placerUUID)) {
+			ret /= 1+LOSS_PER_LUMEN;
+			LOSData los = PylonFinder.lineOfSight(worldObj, xCoord, yCoord, zCoord, x, y, z);
+			if (!los.hasLineOfSight)
+				ret /= OCCLUSION_FACTOR;
+		}
 		energy.subtract(e, rem);
 		return ret;
 	}

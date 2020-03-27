@@ -551,7 +551,7 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 				if (i == AppEngHandler.getInstance().get16KCell() || i == AppEngHandler.getInstance().get64KCell())
 					return false;
 			}
-			if (ModList.FORESTRY.isLoaded() && ReikaBeeHelper.isBee(is))
+			if (ModList.FORESTRY.isLoaded() && ReikaBeeHelper.isGenedItem(is))
 				return false;
 			return is.getMaxStackSize() == 1;
 		}

@@ -192,6 +192,8 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 			return false;
 		if (e.worldObj.provider.dimensionId != worldObj.provider.dimensionId)
 			return false;
+		if (this.hasRedstoneSignal())
+			return false;
 		if (!energy.containsAtLeast(required))
 			return false;
 		if (e instanceof EntityItem || e instanceof EntityXPOrb) {

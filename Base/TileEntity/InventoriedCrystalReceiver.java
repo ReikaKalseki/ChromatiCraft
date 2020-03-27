@@ -43,6 +43,11 @@ public abstract class InventoriedCrystalReceiver extends CrystalReceiverBase imp
 
 	public final void setInventorySlotContents(int par1, ItemStack is) {
 		inv[par1] = is;
+		this.onInventorySlotChanged(par1);
+	}
+
+	protected void onInventorySlotChanged(int slot) {
+
 	}
 
 	public void openInventory() {}

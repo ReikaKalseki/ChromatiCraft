@@ -27,6 +27,8 @@ import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 
 import buildcraft.core.lib.engines.TileEngineBase;
 import cofh.api.energy.EnergyStorage;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.common.FMLCommonHandler;
 import ic2.api.reactor.IReactor;
 import ic2.api.reactor.IReactorChamber;
 
@@ -355,6 +357,8 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 		@ModDependent(ModList.IC2)
 		protected void tick(TileEntityEnergyIncrease booster, TileEntity te, double boost) throws Exception {
 			te = this.getActingTileEntity(te);
+			if (te == null && FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+				return;
 			IReactor ir = (IReactor)te;
 			//processChambers.invoke(te);
 			if (updateTicker.getInt(te)%20 == 1) { //one tick after reactor recalculates
