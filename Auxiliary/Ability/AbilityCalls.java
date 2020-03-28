@@ -1006,11 +1006,15 @@ public class AbilityCalls {
 	private static void collectButterflies(EntityPlayer ep) {
 		AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(ep, 4);
 		for (IEntityButterfly e : ((List<IEntityButterfly>)ep.worldObj.getEntitiesWithinAABB(IEntityButterfly.class, box))) {
+			if (e.getEntity().isDead || e.getEntity().getHealth() <= 0)
+				continue;
 			IButterfly fly = e.getButterfly();
 			ItemStack is = ButterflyManager.butterflyRoot.getMemberStack(fly, EnumFlutterType.BUTTERFLY.ordinal());
-			ReikaPlayerAPI.addOrDropItem(is, ep);
-			e.getEntity().setDead();
-			ReikaSoundHelper.playSoundAtEntity(ep.worldObj, ep, "random.pop", 0.5F, 2F);
+			if (is != null) {
+				ReikaPlayerAPI.addOrDropItem(is.copy(), ep);
+				e.getEntity().setDead();
+				ReikaSoundHelper.playSoundAtEntity(ep.worldObj, ep, "random.pop", 0.5F, 2F);
+			}
 		}
 	}
 

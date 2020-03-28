@@ -538,7 +538,9 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 
 	private boolean pickRandomColorForSlot(Random rand, GridSlot gs) {
 		HashSet<CrystalElement> set = ReikaJavaLibrary.makeSetFromArray(CrystalElement.elements);
-		set.removeAll(gs.parent.presentColors.keySet());
+		for (GridSlot gs2 : gs.parent.slots.values()) {
+			set.remove(gs2.color);
+		}
 		int x = gs.xPos;
 		int z = gs.zPos;
 		for (int p = 0; p < edgeLength; p++) {

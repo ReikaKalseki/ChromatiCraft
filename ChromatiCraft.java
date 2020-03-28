@@ -790,6 +790,10 @@ public class ChromatiCraft extends DragonAPIMod {
 			ModInteraction.blacklistTardisFromDimension();
 		}
 
+		if (Loader.isModLoaded("dsurround")) {
+			ModInteraction.setGlowcliffAurora();
+		}
+
 		if (ModList.MEKANISM.isLoaded()) {
 			ModInteraction.blacklistMekBoxes();
 		}

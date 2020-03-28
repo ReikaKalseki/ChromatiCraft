@@ -537,7 +537,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 	}
 
 	private void dropMineableBlock(World world, int x, int y, int z, int dx, int dy, int dz, Block id, int meta2) {
-		if (silkTouch) {
+		if (silkTouch && ((MinerBlock)id).allowSilkTouch(meta2)) {
 			this.dropItems(world, x, y, z, ReikaJavaLibrary.makeListFrom(new ItemStack(id, 1, meta2)));
 		}
 		else {

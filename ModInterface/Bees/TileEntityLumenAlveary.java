@@ -751,7 +751,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 	@Override
 	@ModDependent(ModList.FORESTRY)
 	public float getFloweringModifier(IBeeGenome genome, float current) {
-		float f = 100;
+		float f = 1;
 		for (AlvearyEffect ae : effectSet.values()) {
 			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				f *= ae.pollinationFactor(this);

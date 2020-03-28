@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -20,6 +20,8 @@ public interface MinerBlock {
 
 	/** Whether or not to target the block. Args: Block metadata */
 	public boolean isMineable(int meta);
+
+	public boolean allowSilkTouch(int meta);
 
 	/** What items the block will provide when harvested. Normally returns getDrops(world, x, y, z, meta, fortune). */
 	public ArrayList<ItemStack> getHarvestItems(World world, int x, int y, int z, int meta, int fortune);

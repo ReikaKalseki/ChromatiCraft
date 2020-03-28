@@ -459,6 +459,11 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 	}
 
 	@Override
+	public boolean allowSilkTouch(int meta) {
+		return DimDecoTypes.list[meta].canSilkTouch();
+	}
+
+	@Override
 	public boolean isBeaconBase(IBlockAccess world, int x, int y, int z, int beaconX, int beaconY, int beaconZ) {
 		return world.getBlockMetadata(x, y, z) == DimDecoTypes.FLOATSTONE.ordinal();
 	}

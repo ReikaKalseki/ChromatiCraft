@@ -47,6 +47,9 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.KeySignature;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.Note;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 //make very expensive, but aux cheaper
 public class TileEntityCrystalFence extends TileEntityRelayPowered implements OwnedTile, BreakAction {
 
@@ -368,6 +371,12 @@ public class TileEntityCrystalFence extends TileEntityRelayPowered implements Ow
 	@Override
 	public void breakBlock() {
 		this.onFenceBreak(worldObj, xCoord, yCoord, zCoord);
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public double getMaxRenderDistanceSquared() {
+		return super.getMaxRenderDistanceSquared()*16;
 	}
 
 }

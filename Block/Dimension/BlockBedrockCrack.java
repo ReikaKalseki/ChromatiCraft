@@ -125,6 +125,11 @@ public class BlockBedrockCrack extends Block implements MinerBlock {
 	}
 
 	@Override
+	public boolean allowSilkTouch(int meta) {
+		return false;
+	}
+
+	@Override
 	public ArrayList<ItemStack> getHarvestItems(World world, int x, int y, int z, int meta, int fortune) {
 		ArrayList<ItemStack> li = new ArrayList();
 		if (meta == 9) {

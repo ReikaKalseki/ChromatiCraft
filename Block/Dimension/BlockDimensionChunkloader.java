@@ -220,4 +220,9 @@ public class BlockDimensionChunkloader extends Block implements MinerBlock {
 		return Blocks.air;
 	}
 
+	@Override
+	public boolean allowSilkTouch(int meta) {
+		return false;
+	}
+
 }

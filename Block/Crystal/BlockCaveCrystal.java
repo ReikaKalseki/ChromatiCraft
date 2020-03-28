@@ -168,4 +168,9 @@ public class BlockCaveCrystal extends CrystalBlock implements ProgressionTrigger
 	public Block getReplacedBlock(World world, int x, int y, int z) {
 		return Blocks.air;
 	}
+
+	@Override
+	public boolean allowSilkTouch(int meta) {
+		return true;
+	}
 }

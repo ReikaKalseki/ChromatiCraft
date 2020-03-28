@@ -25,6 +25,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.biome.BiomeGenBase;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
@@ -548,6 +549,25 @@ public class ModInteraction {
 		catch (Exception e) {
 			ChromatiCraft.logger.logError("Unable to blacklist Tardis Mod from dimension");
 			ReflectiveFailureTracker.instance.logModReflectiveFailure(new BasicModEntry("TardisMod"), e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void setGlowcliffAurora() {
+		try {
+			Class c = Class.forName("org.blockartistry.mod.DynSurround.data.BiomeRegistry");
+			Method m = c.getDeclaredMethod("get", BiomeGenBase.class);
+			m.setAccessible(true);
+			Object entry = m.invoke(null, ChromatiCraft.glowingcliffs);
+			if (entry != null) {
+				Field f = entry.getClass().getDeclaredField("hasAurora");
+				f.setAccessible(true);
+				f.setBoolean(entry, true);
+			}
+		}
+		catch (Exception e) {
+			ChromatiCraft.logger.logError("Unable to load DynSurround biome data");
+			ReflectiveFailureTracker.instance.logModReflectiveFailure(new BasicModEntry("dsurround"), e);
 			e.printStackTrace();
 		}
 	}
