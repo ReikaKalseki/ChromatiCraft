@@ -108,6 +108,7 @@ public enum Chromabilities implements Ability {
 	private ModList dependency;
 
 	public static final UUID HEALTH_UUID = UUID.fromString("71d6a916-a54b-11e7-abc4-cec278b6b50a");
+	public static final UUID FAKE_UUID = UUID.randomUUID();
 	public static final int MAX_REACH = 128;
 
 	private static long lastNullPlayerDump = -1;

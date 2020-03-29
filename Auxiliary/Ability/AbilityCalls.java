@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.Auxiliary.Ability;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
@@ -934,7 +933,7 @@ public class AbilityCalls {
 				else {
 					//if (b.canSustainPlant(ep.worldObj, dx, dy, dz, ForgeDirection.UP, Blocks.red_flower) && ep.worldObj.getBlock(dx, dy+1, dz).isAir(ep.worldObj, dx, dy+1, dz))
 					if (ep.worldObj.rand.nextInt(b == Blocks.grass ? 18 : 6) == 0) {
-						EntityPlayer fake = ReikaPlayerAPI.getFakePlayerByNameAndUUID((WorldServer)ep.worldObj, "Random", UUID.randomUUID());
+						EntityPlayer fake = ReikaPlayerAPI.getFakePlayerByNameAndUUID((WorldServer)ep.worldObj, "Random", Chromabilities.FAKE_UUID);
 						fake.setCurrentItemOrArmor(0, ReikaItemHelper.bonemeal.copy());
 						ItemDye.applyBonemeal(fake.getCurrentEquippedItem().copy(), ep.worldObj, dx, dy, dz, fake);
 					}

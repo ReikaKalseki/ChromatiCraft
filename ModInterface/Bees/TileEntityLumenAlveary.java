@@ -342,9 +342,9 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 			}
 
 			if (this.isAlvearyComplete()) {
-				if (!world.isRemote && this.getTicksExisted()%8 == 0) {
+				if (!world.isRemote && this.getTicksExisted()%16 == 0) {
 					canWork = this.calcCanWork();
-					this.calcSpecies();
+					this.validateCachedQueen(true);
 				}
 
 				if (world.isRemote) {
@@ -611,7 +611,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 	@Override
 	@ModDependent(ModList.FORESTRY)
 	public void wearOutEquipment(int amount) {
-		this.validateCachedQueen();
+		this.validateCachedQueen(true);
 		for (AlvearyEffect ae : effectSet.values()) {
 			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
 				ae.consumeEnergy(this, amount);
@@ -839,8 +839,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 
 	@ModDependent(ModList.FORESTRY)
 	public IBeeGenome getBeeGenome() {
-		if (cachedQueen != null && this.hasQueen())
-			this.validateCachedQueen();
+		this.validateCachedQueen(false);
 		return cachedQueen != null ? cachedQueen.getGenome() : null;
 	}
 
@@ -869,17 +868,17 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 
 	@ModDependent(ModList.FORESTRY)
 	public IAlleleBeeSpecies getSpecies() {
-		this.validateCachedQueen();
+		this.validateCachedQueen(false);
 		return cachedQueen != null ? cachedQueen.getGenome().getPrimary() : null;
 	}
 
 	@ModDependent(ModList.FORESTRY)
-	private void validateCachedQueen() {
+	private void validateCachedQueen(boolean forceCalc) {
 		ItemStack is = this.getQueenItem();
 		if (is == null) {
 			cachedQueen = null;
 		}
-		else if (cachedQueen == null || (!worldObj.isRemote && !cachedQueen.equals(ReikaBeeHelper.getBee(this.getQueenItem())))) {
+		else if (cachedQueen == null || forceCalc) {
 			this.calcSpecies();
 		}
 	}
@@ -910,7 +909,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 		super.readSyncTag(data);
 
 		canWork = data.getBoolean("canWork");
-		this.validateCachedQueen();
+		this.validateCachedQueen(false);
 	}
 
 	@Override
@@ -1440,7 +1439,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 			IBeekeepingLogic bkl = te.getMultiblockLogic().getController().getBeekeepingLogic();
 			//max of 16 ticks per tick, so no massive changes (eg 2 prod cycles), and no ingame time passage,
 			//and thus only possible change to canWork is queen death, and even that is called by canWork
-			boolean work = bkl.canWork();
+			boolean work = true;//bkl.canWork();
 			for (int i = 0; work && te.canQueenWork() && i < tickRate; i++) {
 				//te.tickAlveary();
 				bkl.doWork();
