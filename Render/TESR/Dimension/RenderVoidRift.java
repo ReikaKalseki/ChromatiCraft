@@ -16,7 +16,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift.TileEntityVoidRift;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -30,7 +30,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 public class RenderVoidRift extends ChromaRenderBase {
 
 	private final double[] wave = new double[2];
-	private final RemoteSourcedAsset texture = new RemoteSourcedAsset(ChromatiCraft.class, "Textures/voidaura-strip_page.png", "https://github.com/ReikaKalseki/ChromatiCraft/tree/master/Textures", "Reika/ChromatiCraft/TextureDL");
+	private final RemoteSourcedAsset texture = ChromaClient.dynamicAssets.createAsset("Textures/voidaura-strip_page.png");
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {

@@ -65,6 +65,10 @@ public class ChromaCommon {
 
 	}
 
+	public void initAssetLoaders() {
+
+	}
+
 	public void registerSounds() {
 
 	}

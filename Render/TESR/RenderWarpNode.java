@@ -19,12 +19,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.client.MinecraftForgeClient;
 
-import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.Worldgen.BlockWarpNode.TileEntityWarpNode;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
+import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -34,12 +35,14 @@ import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public class RenderWarpNode extends ChromaRenderBase {
 
+	private final RemoteSourcedAsset texture = ChromaClient.dynamicAssets.createAsset("Textures/warpnode-small.png");
+
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		TileEntityWarpNode te = (TileEntityWarpNode)tile;
 
 		if (!tile.hasWorldObj() || MinecraftForgeClient.getRenderPass() == 1 || StructureRenderer.isRenderingTiles()) {
-			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/warpnode-small.png");
+			ReikaTextureHelper.bindTexture(texture);
 			int idx = (int)(System.currentTimeMillis()/20%64);
 			double u = idx%8/8D;
 			double v = idx/8/8D;

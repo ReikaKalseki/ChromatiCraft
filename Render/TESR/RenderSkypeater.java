@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -19,10 +19,11 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.client.MinecraftForgeClient;
 
-import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntitySkypeater;
+import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -31,13 +32,15 @@ import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public class RenderSkypeater extends CrystalTransmitterRender {
 
+	private final RemoteSourcedAsset texture = ChromaClient.dynamicAssets.createAsset("Textures/airpeater_small.png");
+
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		super.renderTileEntityAt(tile, par2, par4, par6, par8);
 		TileEntitySkypeater te = (TileEntitySkypeater)tile;
 
 		if (tile.hasWorldObj() && (MinecraftForgeClient.getRenderPass() == 1 || StructureRenderer.isRenderingTiles())) {
-			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/airpeater_small.png");
+			ReikaTextureHelper.bindTexture(texture);
 			int idx = (int)(System.currentTimeMillis()/20%128);
 			double u = idx%16/16D;
 			double v = idx/16/8D;

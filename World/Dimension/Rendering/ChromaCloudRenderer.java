@@ -25,6 +25,7 @@ import net.minecraft.util.Vec3;
 import net.minecraftforge.client.IRenderHandler;
 import net.minecraftforge.client.MinecraftForgeClient;
 
+import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
@@ -56,7 +57,7 @@ public class ChromaCloudRenderer extends IRenderHandler {
 		}
 
 		for (int i = 0; i < 4; i++) {
-			skyTex[i] = new RemoteSourcedAsset(ChromatiCraft.class, "Textures/clouds/dimsky_"+i+".png", "https://github.com/ReikaKalseki/ChromatiCraft/tree/master/Textures/clouds", "Reika/ChromatiCraft/TextureDL");
+			skyTex[i] = ChromaClient.dynamicAssets.createAsset("Textures/clouds/dimsky_"+i+".png");
 		}
 	}
 

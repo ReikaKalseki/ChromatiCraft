@@ -345,6 +345,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			MusicLoader.instance.registerAssets();
 		}
 
+		proxy.initAssetLoaders();
 		proxy.registerSounds();
 
 		for (int i = 0; i < CrystalElement.elements.length; i++) {

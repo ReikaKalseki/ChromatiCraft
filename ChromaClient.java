@@ -161,6 +161,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.KeybindHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.PatreonController;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerSpecificRenderer;
 import Reika.DragonAPI.Auxiliary.Trackers.SettingInterferenceTracker;
+import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset.RemoteSourcedAssetRepository;
 import Reika.DragonAPI.Instantiable.IO.SoundLoader;
 import Reika.DragonAPI.Instantiable.Rendering.ForcedTextureArmorModel;
 import Reika.DragonAPI.Instantiable.Rendering.ItemSpriteSheetRenderer;
@@ -225,6 +226,13 @@ public class ChromaClient extends ChromaCommon {
 	public static KeyBinding key_ability;
 
 	public static SoundCategory chromaCategory;
+
+	public static final RemoteSourcedAssetRepository dynamicAssets = new RemoteSourcedAssetRepository(ChromatiCraft.instance, ChromatiCraft.class, "https://raw.githubusercontent.com/ReikaKalseki/ChromatiCraft/master", "Reika/ChromatiCraft/TextureDL");
+
+	@Override
+	public void initAssetLoaders() {
+		dynamicAssets.addToAssetLoader();
+	}
 
 	@Override
 	public void registerSounds() {
