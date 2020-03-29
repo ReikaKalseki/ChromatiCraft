@@ -104,7 +104,11 @@ public class TileEntityCrystalFence extends TileEntityRelayPowered implements Ow
 					int i = (this.getTicksExisted()/t)%fence.segmentCount();
 					this.triggerSegment(i, false);
 					Note n = KeySignature.C.getScale().get(i%7);
-					ChromaSounds.DING.playSoundAtBlock(this, 1, (float)MusicKey.getByIndex(MusicKey.C5.ordinal()+n.ordinal()+(i/7)*12).getRatio(MusicKey.C5));
+					int offset = (i/7)*12;
+					MusicKey key = MusicKey.getByIndex(MusicKey.C5.ordinal()+n.ordinal()+offset%12);
+					if (key == null)
+						key = MusicKey.A1;
+					ChromaSounds.DING.playSoundAtBlock(this, 1, (float)key.getRatio(MusicKey.C5));
 				}
 			}
 			else {

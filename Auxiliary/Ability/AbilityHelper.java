@@ -173,6 +173,7 @@ public class AbilityHelper {
 	private final PlayerMap<PlayerPath> playerPaths = new PlayerMap();
 
 	private final HashSet<UUID> noClippingMagnet = new HashSet();
+	private final HashMap<UUID, Integer> growAura = new HashMap();
 
 	private final PlayerMap<Long> dashTime = new PlayerMap();
 
@@ -559,6 +560,15 @@ public class AbilityHelper {
 			noClippingMagnet.add(ep.getUniqueID());
 		else
 			noClippingMagnet.remove(ep.getUniqueID());
+	}
+
+	public int getGrowAuraState(EntityPlayer ep) {
+		Integer get = growAura.get(ep.getUniqueID());
+		return get != null ? get.intValue() : 0;
+	}
+
+	public void setGrowAuraState(EntityPlayer ep, int set) {
+		growAura.put(ep.getUniqueID(), set);
 	}
 
 	public int getPlayerDashCooldown(EntityPlayer ep) {

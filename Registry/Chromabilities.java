@@ -386,6 +386,8 @@ public enum Chromabilities implements Ability {
 
 		if (a == MAGNET)
 			AbilityHelper.instance.setNoClippingMagnet(ep, !flag && data > 0);
+		if (a == GROWAURA)
+			AbilityHelper.instance.setGrowAuraState(ep, flag ? data : 0);
 
 		if (a.isTickBased()) {
 
@@ -564,9 +566,10 @@ public enum Chromabilities implements Ability {
 			AbilityCalls.setPlayerMaxHealth(ep, 0);
 		else if (this == MAGNET)
 			AbilityHelper.instance.setNoClippingMagnet(ep, false);
-		else if (this == ORECLIP) {
+		else if (this == ORECLIP)
 			AbilityCalls.setNoclipState(ep, false);
-		}
+		else if (this == GROWAURA)
+			AbilityHelper.instance.setGrowAuraState(ep, 0);
 	}
 
 	public static boolean canPlayerExecuteAt(EntityPlayer ep, Ability a) {
@@ -612,6 +615,8 @@ public enum Chromabilities implements Ability {
 				return AbilityHelper.REACH_SCALE.length-1;
 			case JUMP:
 				return 8;
+			case GROWAURA:
+				return 3;
 			default:
 				return 0;
 		}

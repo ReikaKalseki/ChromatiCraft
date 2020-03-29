@@ -184,6 +184,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 	private boolean multipleBoosters = false;
 
 	private IBee cachedQueen;
+	private boolean workNeedsUpdate;
 	private boolean canWork;
 
 	static {
@@ -344,6 +345,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 			if (this.isAlvearyComplete()) {
 				if (!world.isRemote && this.getTicksExisted()%16 == 0) {
 					canWork = this.calcCanWork();
+					workNeedsUpdate = false;
 					this.validateCachedQueen(true);
 				}
 
@@ -424,6 +426,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 			}
 			else if (!world.isRemote) {
 				canWork = false;
+				workNeedsUpdate = false;
 			}
 		}
 	}
@@ -611,6 +614,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 	@Override
 	@ModDependent(ModList.FORESTRY)
 	public void wearOutEquipment(int amount) {
+		workNeedsUpdate = true;
 		this.validateCachedQueen(true);
 		for (AlvearyEffect ae : effectSet.values()) {
 			if (selectedEffects.contains(ae.ID) && ae.isActive(this)) {
@@ -637,6 +641,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 		//ReikaJavaLibrary.pConsole("Marked to cycle "+movePrincess);
 		cachedQueen = null;
 		canWork = false;
+		workNeedsUpdate = false;
 	}
 
 	public void forceCycleBees() {
@@ -858,6 +863,8 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 
 	@ModDependent(ModList.FORESTRY)
 	public boolean canQueenWork() {
+		if (workNeedsUpdate)
+			canWork = this.calcCanWork();
 		return canWork;
 	}
 
@@ -909,6 +916,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 		super.readSyncTag(data);
 
 		canWork = data.getBoolean("canWork");
+		workNeedsUpdate = false;
 		this.validateCachedQueen(false);
 	}
 

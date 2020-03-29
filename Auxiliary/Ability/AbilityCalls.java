@@ -50,8 +50,10 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.fluids.BlockFluidBase;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -920,25 +922,28 @@ public class AbilityCalls {
 			doGrowthAuraParticles(ep, x, y, z);
 		}
 		else {
+			int power = AbilityHelper.instance.getGrowAuraState(ep);
 			RainbowTreeEffects.doRainbowTreeEffects(ep.worldObj, x, y, z, 4, 0.25, ep.worldObj.rand, false);
-			for (int i = 0; i < 8; i++) {
-				int dx = ReikaRandomHelper.getRandomPlusMinus(x, 8);
-				int dz = ReikaRandomHelper.getRandomPlusMinus(z, 8);
-				int dy = ReikaRandomHelper.getRandomPlusMinus(y, 2);
-				ReikaWorldHelper.fertilizeAndHealBlock(ep.worldObj, dx, dy, dz);
-				Block b = ep.worldObj.getBlock(dx, dy, dz);
-				if (ModList.THAUMCRAFT.isLoaded() && b == ThaumItemHelper.BlockEntry.NODE.getBlock()) {
-					healNodes(ep.worldObj, dx, dy, dz);
-				}
-				else {
-					//if (b.canSustainPlant(ep.worldObj, dx, dy, dz, ForgeDirection.UP, Blocks.red_flower) && ep.worldObj.getBlock(dx, dy+1, dz).isAir(ep.worldObj, dx, dy+1, dz))
-					if (ep.worldObj.rand.nextInt(b == Blocks.grass ? 18 : 6) == 0) {
-						EntityPlayer fake = ReikaPlayerAPI.getFakePlayerByNameAndUUID((WorldServer)ep.worldObj, "Random", Chromabilities.FAKE_UUID);
-						fake.setCurrentItemOrArmor(0, ReikaItemHelper.bonemeal.copy());
-						ItemDye.applyBonemeal(fake.getCurrentEquippedItem().copy(), ep.worldObj, dx, dy, dz, fake);
+			if (power >= 1) {
+				for (int i = 0; i < 8; i++) {
+					int dx = ReikaRandomHelper.getRandomPlusMinus(x, 8);
+					int dz = ReikaRandomHelper.getRandomPlusMinus(z, 8);
+					int dy = ReikaRandomHelper.getRandomPlusMinus(y, 2);
+					ReikaWorldHelper.fertilizeAndHealBlock(ep.worldObj, dx, dy, dz);
+					Block b = ep.worldObj.getBlock(dx, dy, dz);
+					if (power >= 3 && ModList.THAUMCRAFT.isLoaded() && b == ThaumItemHelper.BlockEntry.NODE.getBlock()) {
+						healNodes(ep.worldObj, dx, dy, dz);
 					}
 					else {
-						b.updateTick(ep.worldObj, dx, dy, dz, ep.worldObj.rand);
+						//if (b.canSustainPlant(ep.worldObj, dx, dy, dz, ForgeDirection.UP, Blocks.red_flower) && ep.worldObj.getBlock(dx, dy+1, dz).isAir(ep.worldObj, dx, dy+1, dz))
+						if (power >= 2 && ep.worldObj.rand.nextInt(b == Blocks.grass ? 18 : 6) == 0) {
+							EntityPlayer fake = ReikaPlayerAPI.getFakePlayerByNameAndUUID((WorldServer)ep.worldObj, "Random", Chromabilities.FAKE_UUID);
+							fake.setCurrentItemOrArmor(0, ReikaItemHelper.bonemeal.copy());
+							ItemDye.applyBonemeal(fake.getCurrentEquippedItem().copy(), ep.worldObj, dx, dy, dz, fake);
+						}
+						else {
+							b.updateTick(ep.worldObj, dx, dy, dz, ep.worldObj.rand);
+						}
 					}
 				}
 			}
@@ -1010,9 +1015,13 @@ public class AbilityCalls {
 			IButterfly fly = e.getButterfly();
 			ItemStack is = ButterflyManager.butterflyRoot.getMemberStack(fly, EnumFlutterType.BUTTERFLY.ordinal());
 			if (is != null) {
-				ReikaPlayerAPI.addOrDropItem(is.copy(), ep);
 				e.getEntity().setDead();
 				ReikaSoundHelper.playSoundAtEntity(ep.worldObj, ep, "random.pop", 0.5F, 2F);
+				is = is.copy();
+				if (MinecraftForge.EVENT_BUS.post(new EntityItemPickupEvent(ep, new EntityItem(ep.worldObj, ep.posX, ep.posY, ep.posZ, is)))) {
+					continue;
+				}
+				ReikaPlayerAPI.addOrDropItem(is, ep);
 			}
 		}
 	}

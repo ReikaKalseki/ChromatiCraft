@@ -36,7 +36,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.Search.PropagationCondition
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.Search.TerminationCondition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
-import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.PathMap;
 import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
@@ -44,6 +44,7 @@ import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
 import vazkii.botania.api.internal.IManaBurst;
 import vazkii.botania.api.mana.IManaPool;
 import vazkii.botania.api.mana.spark.ISparkAttachable;
+import vazkii.botania.api.subtile.ISpecialFlower;
 import vazkii.botania.api.subtile.ISubTileContainer;
 import vazkii.botania.api.subtile.SubTileEntity;
 import vazkii.botania.api.subtile.SubTileGenerating;
@@ -95,7 +96,7 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 
 	private final ArrayList<ManaTarget> poolCache = new ArrayList();
 	private final ArrayList<ManaTarget> flowerCache = new ArrayList();
-	private final PluralMap<ManaPath> pathCache = new PluralMap(2);
+	private final PathMap<ManaPath> pathCache = new PathMap();
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -189,7 +190,10 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 
 	private ManaPath getPathForBurst(World world, Coordinate from, Coordinate to) {
 		ManaPath p = pathCache.get(from, to);
-		if (p == null || !p.isValid(world)) {
+		if (p != null && !p.isValid(world)) {
+			p = null;
+		}
+		if (p == null) {
 			p = this.calculateManaPath(world, from, to);
 			pathCache.put(p, from, to);
 		}
@@ -453,7 +457,11 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 
 		public boolean isValid(World world) {
 			for (Coordinate c : coords) {
-				if (!c.getBlock(world).isAir(world, c.xCoord, c.yCoord, c.zCoord))
+				if (c.equals(manaSource) || c.equals(boosterCenter) || c.equals(manaTarget))
+					continue;
+				if (c.getBlock(world) instanceof ISpecialFlower)
+					continue;
+				if (!OpenPathFinder.isValidBlock(world, c.xCoord, c.yCoord, c.zCoord))
 					return false;
 			}
 			return true;
