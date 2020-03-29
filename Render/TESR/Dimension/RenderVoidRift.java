@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift.TileEntityVoidRift;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -28,7 +29,8 @@ import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public class RenderVoidRift extends ChromaRenderBase {
 
-	private double[] wave = new double[2];
+	private final double[] wave = new double[2];
+	private final RemoteSourcedAsset texture = new RemoteSourcedAsset(ChromatiCraft.class, "Textures/voidaura-strip_page.png", "https://github.com/ReikaKalseki/ChromatiCraft/tree/master/Textures", "Reika/ChromatiCraft/TextureDL");
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
@@ -75,7 +77,7 @@ public class RenderVoidRift extends ChromaRenderBase {
 			if (color != null) {
 				float ang = (float)(0.875F+0.125F*Math.sin(System.currentTimeMillis()/800D));
 				color = ReikaColorAPI.getColorWithBrightnessMultiplier(color, ang);
-				ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/voidaura-strip_page.png");
+				ReikaTextureHelper.bindTexture(texture);
 				Tessellator v5 = Tessellator.instance;
 				int h = te.HEIGHT;
 				long tick = System.currentTimeMillis();

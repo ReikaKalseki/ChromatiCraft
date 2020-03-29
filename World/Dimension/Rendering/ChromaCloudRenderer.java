@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -45,11 +46,17 @@ public class ChromaCloudRenderer extends IRenderHandler {
 
 	private final FogStarBrightness[][] fogStarBrightness = new FogStarBrightness[1+FOG_STAR_SECTIONS][1+FOG_STAR_SECTIONS];
 
+	private final RemoteSourcedAsset[] skyTex = new RemoteSourcedAsset[4];
+
 	private ChromaCloudRenderer() {
 		for (int i = 0; i < fogStarBrightness.length; i++) {
 			for (int k = 0; k < fogStarBrightness.length; k++) {
 				fogStarBrightness[i][k] = new FogStarBrightness(DragonAPICore.rand);
 			}
+		}
+
+		for (int i = 0; i < 4; i++) {
+			skyTex[i] = new RemoteSourcedAsset(ChromatiCraft.class, "Textures/clouds/dimsky_"+i+".png", "https://github.com/ReikaKalseki/ChromatiCraft/tree/master/Textures/clouds", "Reika/ChromatiCraft/TextureDL");
 		}
 	}
 
@@ -86,7 +93,7 @@ public class ChromaCloudRenderer extends IRenderHandler {
 		for (int a = -r; a <= r; a++) {
 			for (int b = -r; b <= r; b++) {
 				for (int i = 0; i < 4; i++) {
-					ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/clouds/dimsky_"+i+".png");
+					ReikaTextureHelper.bindTexture(skyTex[i]);
 
 					double s = 0.75+0.25*i;
 					double slide = (((world.getTotalWorldTime()%24000 + ptick)/24000D)*w*s)%w;
