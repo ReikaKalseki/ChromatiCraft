@@ -54,8 +54,9 @@ public class RenderAuraPoint extends RenderLocusPoint {
 
 			if (te.isInWorld()) {
 				EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+				//LOS.update(te);
 				LOS.setOrigins(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5, ep.posX, ep.posY, ep.posZ);
-				if (LOS.isClearLineOfSight(te.worldObj)) {
+				if (LOS.isClearLineOfSight(te)) {
 					double dist = ep.getDistance(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
 					float f = 0;
 					if (dist <= 8) {

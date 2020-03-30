@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -24,6 +25,8 @@ import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTeleportGate;
 import Reika.DragonAPI.Instantiable.RayTracer;
+import Reika.DragonAPI.Instantiable.RayTracer.MultipointChecker;
+import Reika.DragonAPI.Instantiable.RayTracer.RayTracerWithCache;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -33,10 +36,10 @@ import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
 
-public class RenderTeleportGate extends ChromaRenderBase {
+public class RenderTeleportGate extends ChromaRenderBase implements MultipointChecker<TileEntityTeleportGate> {
 
 	private static final double TRACE_RADIUS = 1.5;
-	private static final RayTracer trace = RayTracer.getVisualLOS();
+	private final RayTracerWithCache trace = RayTracer.getMultipointVisualLOSForRenderCulling(this);
 	private static boolean cachedRaytrace;
 	private static long lastTraceTick;
 	private static int lastTraceTileHash;
@@ -49,23 +52,12 @@ public class RenderTeleportGate extends ChromaRenderBase {
 			{0.5, 1.5, 0.5}
 	};
 
-	private static boolean checkRayTrace(TileEntityTeleportGate te) {
-		long time = te.worldObj.getTotalWorldTime();
-		int hash = System.identityHashCode(te);
-		if (time-lastTraceTick < 5 && hash == lastTraceTileHash)
-			return cachedRaytrace;
-		cachedRaytrace = calculateRaytrace(te);
-		lastTraceTileHash = hash;
-		lastTraceTick = time;
-		return cachedRaytrace;
-	}
-
-	private static boolean calculateRaytrace(TileEntityTeleportGate te) {
+	public boolean isClearLineOfSight(TileEntityTeleportGate te, RayTracer trace, World world) {
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 		for (int i = 0; i < RAYTRACES.length; i++) {
 			double[] xyz = RAYTRACES[i];
 			trace.setOrigins(te.xCoord+xyz[0], te.yCoord+xyz[1], te.zCoord+xyz[2], ep.posX, ep.posY, ep.posZ);
-			if (trace.isClearLineOfSight(te.worldObj))
+			if (trace.isClearLineOfSight(world))
 				return true;
 		}
 		return false;
@@ -226,7 +218,7 @@ public class RenderTeleportGate extends ChromaRenderBase {
 
 			if (te.isInWorld() || StructureRenderer.isRenderingTiles()) {
 
-				if (StructureRenderer.isRenderingTiles() || this.checkRayTrace(te)) {
+				if (StructureRenderer.isRenderingTiles() || trace.isClearLineOfSight(te)) {
 					GL11.glPushMatrix();
 					GL11.glTranslated(0, 1.5, 0);
 					GL11.glDisable(GL11.GL_DEPTH_TEST);

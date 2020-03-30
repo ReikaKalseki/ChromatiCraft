@@ -9,10 +9,11 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.DragonAPI.Instantiable.RayTracer;
+import Reika.DragonAPI.Instantiable.RayTracer.RayTracerWithCache;
 
 public class EntityShaderFX extends EntityBlurFX {
 
-	private static final RayTracer LOS = RayTracer.getVisualLOS();
+	private static final RayTracerWithCache LOS = RayTracer.getVisualLOSForRenderCulling();
 
 	private float lensingIntensity;
 	private float lensingFadeRate = 0.05F;
@@ -64,8 +65,9 @@ public class EntityShaderFX extends EntityBlurFX {
 		shaderType.clearOnRender = true;
 
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		//LOS.update(this);
 		LOS.setOrigins(posX, posY, posZ, ep.posX, ep.posY, ep.posZ); //particle posX in world is valid
-		boolean see = LOS.isClearLineOfSight(worldObj);
+		boolean see = LOS.isClearLineOfSight(this);
 		if (!see)
 			return;
 

@@ -32,6 +32,7 @@ import Reika.ChromatiCraft.ModInterface.VoidRitual.TileEntityVoidMonsterTrap.Voi
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.DragonAPI.Instantiable.RayTracer;
+import Reika.DragonAPI.Instantiable.RayTracer.RayTracerWithCache;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Math.VariableEndpointSpline;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
@@ -44,7 +45,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public class RenderVoidMonsterTrap extends ChromaRenderBase {
 
-	protected static final RayTracer LOS = RayTracer.getVisualLOS();
+	protected static final RayTracerWithCache LOS = RayTracer.getVisualLOSForRenderCulling();
 
 	public static boolean netherRender = false;
 
@@ -86,8 +87,9 @@ public class RenderVoidMonsterTrap extends ChromaRenderBase {
 
 		if (te.isInWorld() && te.hasStructure()) {
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+			//LOS.update(te);
 			LOS.setOrigins(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5, ep.posX, ep.posY, ep.posZ);
-			if (LOS.isClearLineOfSight(te.worldObj)) {
+			if (LOS.isClearLineOfSight(te)) {
 				double dist = ep.getDistance(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
 				float f = 0;
 				if (dist <= 16) {

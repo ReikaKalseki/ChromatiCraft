@@ -25,6 +25,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
 import Reika.DragonAPI.Instantiable.RayTracer;
+import Reika.DragonAPI.Instantiable.RayTracer.RayTracerWithCache;
 import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -35,7 +36,7 @@ public abstract class RenderLocusPoint extends ChromaRenderBase {
 
 	private final RemoteSourcedAsset texture = ChromaClient.dynamicAssets.createAsset("Textures/aurapoint2-grid.png");
 
-	protected static final RayTracer LOS = RayTracer.getVisualLOS();
+	protected static final RayTracerWithCache LOS = RayTracer.getVisualLOSForRenderCulling();
 
 	@Override
 	public final void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {

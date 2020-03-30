@@ -34,8 +34,9 @@ public class RenderDimensionCore extends RenderLocusPoint {
 		ChromaShaders.DIMCORE.clearOnRender = true;
 		if (te.isInWorld() && MinecraftForgeClient.getRenderPass() == 1) {
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+			//LOS.update(te);
 			LOS.setOrigins(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5, ep.posX, ep.posY, ep.posZ);
-			if (LOS.isClearLineOfSight(te.worldObj)) {
+			if (LOS.isClearLineOfSight(te)) {
 				ChromaShaders.DIMCORE.setIntensity(1);
 				ChromaShaders.DIMCORE.getShader().addFocus(tile);
 				double dist = ep.getDistance(tile.xCoord+0.5, tile.yCoord+0.5, tile.zCoord+0.5);

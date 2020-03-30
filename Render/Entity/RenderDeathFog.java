@@ -25,20 +25,22 @@ import net.minecraft.util.ResourceLocation;
 import Reika.ChromatiCraft.Entity.EntityDeathFog;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Instantiable.RayTracer;
+import Reika.DragonAPI.Instantiable.RayTracer.RayTracerWithCache;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
 public class RenderDeathFog extends Render {
 
-	private static final RayTracer trace = RayTracer.getVisualLOS();
+	private static final RayTracerWithCache trace = RayTracer.getVisualLOSForRenderCulling();
 
 	@Override
 	public void doRender(Entity e, double par2, double par4, double par6, float par8, float ptick) {
 		EntityDeathFog eb = (EntityDeathFog)e;
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		//trace.update(e);
 		trace.setOrigins(eb.posX, eb.posY, eb.posZ, ep.posX, ep.posY, ep.posZ);
-		if (!trace.isClearLineOfSight(eb.worldObj))
+		if (!trace.isClearLineOfSight(eb))
 			return;
 		ReikaTextureHelper.bindTerrainTexture();
 		Tessellator v5 = Tessellator.instance;

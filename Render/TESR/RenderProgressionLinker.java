@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -24,15 +25,17 @@ import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Models.ModelProgressionLinker;
 import Reika.ChromatiCraft.TileEntity.TileEntityProgressionLinker;
 import Reika.DragonAPI.Instantiable.RayTracer;
+import Reika.DragonAPI.Instantiable.RayTracer.MultipointChecker;
+import Reika.DragonAPI.Instantiable.RayTracer.RayTracerWithCache;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
-public class RenderProgressionLinker extends ChromaRenderBase {
+public class RenderProgressionLinker extends ChromaRenderBase implements MultipointChecker<TileEntityProgressionLinker> {
 
-	private static final RayTracer trace = RayTracer.getVisualLOS();
+	private final RayTracerWithCache trace = RayTracer.getMultipointVisualLOSForRenderCulling(this);
 
 	private final ModelProgressionLinker model = new ModelProgressionLinker();
 
@@ -67,7 +70,7 @@ public class RenderProgressionLinker extends ChromaRenderBase {
 
 				double dy = 0.1875*Math.sin(System.currentTimeMillis()/400D);
 				//RenderDataNode.renderPrism(System.currentTimeMillis()/20D, Tessellator.instance, 1, h, 0.5+dy);
-				if (this.checkRayTrace(te)) {
+				if (trace.isClearLineOfSight(te)) {
 					GL11.glTranslated(0, dy, 0);
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					RenderDataNode.renderFlare(Tessellator.instance, 1, true);
@@ -121,13 +124,13 @@ public class RenderProgressionLinker extends ChromaRenderBase {
 		GL11.glPopAttrib();
 	}
 
-	private boolean checkRayTrace(TileEntityProgressionLinker te) {
+	public boolean isClearLineOfSight(TileEntityProgressionLinker te, RayTracer trace, World world) {
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 		double r = 0.5;
 		for (double i = -r; i <= r; i += r) {
 			for (double k = -r; k <= r; k += r) {
 				trace.setOrigins(te.xCoord+i, te.yCoord, te.zCoord, ep.posX, ep.posY, ep.posZ);
-				if (trace.isClearLineOfSight(te.worldObj))
+				if (trace.isClearLineOfSight(world))
 					return true;
 			}
 		}

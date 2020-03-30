@@ -22,17 +22,19 @@ import net.minecraft.util.ResourceLocation;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.Instantiable.RayTracer;
+import Reika.DragonAPI.Instantiable.RayTracer.RayTracerWithCache;
 
 public class RenderGlowCloud extends Render {
 
-	private static final RayTracer LOS = RayTracer.getVisualLOS();
+	private static final RayTracerWithCache LOS = RayTracer.getVisualLOSForRenderCulling();
 
 	@Override
 	public void doRender(Entity e, double par2, double par4, double par6, float par8, float ptick) {
 		if (e.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+			//LOS.update(e);
 			LOS.setOrigins(e.posX, e.posY, e.posZ, ep.posX, ep.posY, ep.posZ);
-			if (LOS.isClearLineOfSight(e.worldObj)) {
+			if (LOS.isClearLineOfSight(e)) {
 				GL11.glPushMatrix();
 				GL11.glTranslated(par2, par4, par6);
 				ChromaShaders.DIMGLOWCLOUD.setIntensity(1);

@@ -16,18 +16,21 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Render.TESR.RenderDataNode;
 import Reika.DragonAPI.Instantiable.RayTracer;
+import Reika.DragonAPI.Instantiable.RayTracer.MultipointChecker;
+import Reika.DragonAPI.Instantiable.RayTracer.RayTracerWithCache;
 import Reika.DragonAPI.Instantiable.Rendering.MultiSheetItemRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 
-public class DataCrystalRenderer extends MultiSheetItemRenderer {
+public class DataCrystalRenderer extends MultiSheetItemRenderer implements MultipointChecker<EntityItem> {
 
-	private static final RayTracer trace = RayTracer.getVisualLOS();
+	private final RayTracerWithCache trace = RayTracer.getMultipointVisualLOSForRenderCulling(this);
 
 	public DataCrystalRenderer() {
 		super(ChromatiCraft.instance, ChromatiCraft.class);
@@ -38,13 +41,13 @@ public class DataCrystalRenderer extends MultiSheetItemRenderer {
 		return helper != helper.ENTITY_ROTATION && helper != helper.ENTITY_BOBBING;
 	}
 
-	private boolean checkRayTrace(EntityItem ei) {
+	public boolean isClearLineOfSight(EntityItem ei, RayTracer trace, World world) {
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 		double r = 0.5;
 		for (double i = -r; i <= r; i += r) {
 			for (double k = -r; k <= r; k += r) {
 				trace.setOrigins(ei.posX+i, ei.posY, ei.posZ+k, ep.posX, ep.posY, ep.posZ);
-				if (trace.isClearLineOfSight(ei.worldObj))
+				if (trace.isClearLineOfSight(world))
 					return true;
 			}
 		}
@@ -87,7 +90,7 @@ public class DataCrystalRenderer extends MultiSheetItemRenderer {
 			RenderDataNode.renderPrism(0, Tessellator.instance, 1, h, 0);
 			GL11.glPopMatrix();
 
-			if (this.checkRayTrace(ei)) {
+			if (trace.isClearLineOfSight(ei)) {
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
 				GL11.glTranslated(0, -0.75, 0);
 				RenderDataNode.renderFlare(Tessellator.instance, 1, true);
