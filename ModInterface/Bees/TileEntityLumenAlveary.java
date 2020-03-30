@@ -343,7 +343,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 			}
 
 			if (this.isAlvearyComplete()) {
-				if (!world.isRemote && this.getTicksExisted()%16 == 0) {
+				if (!world.isRemote && this.getTicksExisted()%16 == Math.abs(System.identityHashCode(this))%16) {
 					canWork = this.calcCanWork();
 					workNeedsUpdate = false;
 					this.validateCachedQueen(true);

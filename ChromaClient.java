@@ -153,6 +153,7 @@ import Reika.ChromatiCraft.Render.TESR.Dimension.RenderPistonDisplay;
 import Reika.ChromatiCraft.Render.TESR.Dimension.RenderVoidRift;
 import Reika.ChromatiCraft.Render.TESR.Dimension.RenderWaterLock;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
+import Reika.ChromatiCraft.World.Dimension.Rendering.ChromaCloudRenderer;
 import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.DonatorController;
@@ -168,6 +169,7 @@ import Reika.DragonAPI.Instantiable.Rendering.ItemSpriteSheetRenderer;
 import Reika.DragonAPI.Instantiable.Rendering.MultiSheetItemRenderer;
 import Reika.DragonAPI.Instantiable.Rendering.TESRItemRenderer;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -253,6 +255,8 @@ public class ChromaClient extends ChromaCommon {
 		}
 
 		ChromaShaders.registerAll();
+
+		ReikaJavaLibrary.initClass(ChromaCloudRenderer.class);
 
 		RenderingRegistry.registerEntityRenderingHandler(EntityBallLightning.class, new RenderBallLightning());
 		RenderingRegistry.registerEntityRenderingHandler(EntityAbilityFireball.class, new RenderFireball(2));

@@ -457,12 +457,16 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 
 		public boolean isValid(World world) {
 			for (Coordinate c : coords) {
-				if (c.equals(manaSource) || c.equals(boosterCenter) || c.equals(manaTarget))
+				if (c.equals(manaSource) || c.equals(manaTarget))
+					continue;
+				if (c.getTaxicabDistanceTo(boosterCenter.xCoord, boosterCenter.yCoord, boosterCenter.zCoord) <= 1)
 					continue;
 				if (c.getBlock(world) instanceof ISpecialFlower)
 					continue;
-				if (!OpenPathFinder.isValidBlock(world, c.xCoord, c.yCoord, c.zCoord))
+				if (!OpenPathFinder.isValidBlock(world, c.xCoord, c.yCoord, c.zCoord)) {
+					ChromatiCraft.logger.log("Invalidating old mana path: "+c.getBlock(world).getLocalizedName()+" @ "+c);
 					return false;
+				}
 			}
 			return true;
 		}
