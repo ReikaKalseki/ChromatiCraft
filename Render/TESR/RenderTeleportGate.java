@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -37,16 +37,30 @@ public class RenderTeleportGate extends ChromaRenderBase {
 
 	private static final double TRACE_RADIUS = 1.5;
 	private static final RayTracer trace = RayTracer.getVisualLOS();
+	private static boolean cachedRaytrace;
+	private static long lastTraceTick;
+	private static int lastTraceTileHash;
 
 	private static final double[][] RAYTRACES = {
-		{0.5-TRACE_RADIUS, 0, 0.5-TRACE_RADIUS},
-		{0.5+TRACE_RADIUS, 0, 0.5-TRACE_RADIUS},
-		{0.5-TRACE_RADIUS, 0, 0.5+TRACE_RADIUS},
-		{0.5+TRACE_RADIUS, 0, 0.5+TRACE_RADIUS},
-		{0.5, 1.5, 0.5}
+			{0.5-TRACE_RADIUS, 0, 0.5-TRACE_RADIUS},
+			{0.5+TRACE_RADIUS, 0, 0.5-TRACE_RADIUS},
+			{0.5-TRACE_RADIUS, 0, 0.5+TRACE_RADIUS},
+			{0.5+TRACE_RADIUS, 0, 0.5+TRACE_RADIUS},
+			{0.5, 1.5, 0.5}
 	};
 
 	private static boolean checkRayTrace(TileEntityTeleportGate te) {
+		long time = te.worldObj.getTotalWorldTime();
+		int hash = System.identityHashCode(te);
+		if (time-lastTraceTick < 5 && hash == lastTraceTileHash)
+			return cachedRaytrace;
+		cachedRaytrace = calculateRaytrace(te);
+		lastTraceTileHash = hash;
+		lastTraceTick = time;
+		return cachedRaytrace;
+	}
+
+	private static boolean calculateRaytrace(TileEntityTeleportGate te) {
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 		for (int i = 0; i < RAYTRACES.length; i++) {
 			double[] xyz = RAYTRACES[i];

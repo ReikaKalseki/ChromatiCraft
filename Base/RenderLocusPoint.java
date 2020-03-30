@@ -22,15 +22,18 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.MinecraftForgeClient;
 
-import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
 import Reika.DragonAPI.Instantiable.RayTracer;
+import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
 public abstract class RenderLocusPoint extends ChromaRenderBase {
+
+	private final RemoteSourcedAsset texture = ChromaClient.dynamicAssets.createAsset("Textures/aurapoint2-grid.png");
 
 	protected static final RayTracer LOS = RayTracer.getVisualLOS();
 
@@ -77,7 +80,7 @@ public abstract class RenderLocusPoint extends ChromaRenderBase {
 
 		//ReikaJavaLibrary.pConsole(te.getEnergy());
 
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/aurapoint2-grid.png");
+		ReikaTextureHelper.bindTexture(texture);
 
 		for (int i = 0; i < 3; i++) {
 

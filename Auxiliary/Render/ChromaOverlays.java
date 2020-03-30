@@ -36,6 +36,7 @@ import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 
+import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.API.Interfaces.OrePings.OrePingDelegate;
@@ -60,6 +61,7 @@ import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderingLoopEvent;
+import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
@@ -83,6 +85,8 @@ public class ChromaOverlays {
 	private static final int PING_LENGTH = 512;
 	private static final int FADEIN = 16;
 	private static final int FADEOUT = 64;
+
+	private final RemoteSourcedAsset crosshair = ChromaClient.dynamicAssets.createAsset("Textures/crosshair.png");
 
 	private final EnumMap<CrystalElement, Integer> pings = new EnumMap(CrystalElement.class);
 	private final EnumMap<CrystalElement, Integer> pingAng = new EnumMap(CrystalElement.class);
@@ -462,7 +466,7 @@ public class ChromaOverlays {
 	}
 
 	private void renderCustomCrosshair(ScaledResolution res) {
-		ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/crosshair.png");
+		ReikaTextureHelper.bindTexture(crosshair);
 		GL11.glEnable(GL11.GL_BLEND);
 		BlendMode.ADDITIVEDARK.apply();
 		Tessellator v5 = Tessellator.instance;

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,8 +15,9 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.renderer.Tessellator;
 
-import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.ChromaClient;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
+import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset;
 import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
@@ -32,6 +33,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class Aurora {
+
+	private static final RemoteSourcedAsset texture = ChromaClient.dynamicAssets.createAsset("Textures/aurora4.png");
 
 	private static final int HEIGHT = 24;
 
@@ -74,7 +77,7 @@ public class Aurora {
 		GL11.glShadeModel(GL11.GL_SMOOTH);
 		ReikaRenderHelper.disableEntityLighting();
 
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/aurora4.png");
+		ReikaTextureHelper.bindTexture(texture);
 
 		Tessellator v5 = Tessellator.instance;
 		v5.startDrawingQuads();

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,10 +15,12 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.MinecraftForgeClient;
 
+import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Models.ModelCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalBeacon;
+import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -28,6 +30,8 @@ import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 public class RenderCrystalBeacon extends ChromaRenderBase {
 
 	private final ModelCrystalBeacon model = new ModelCrystalBeacon();
+
+	private final RemoteSourcedAsset fireTexture = ChromaClient.dynamicAssets.createAsset("Textures/fire.png");
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
@@ -189,7 +193,7 @@ public class RenderCrystalBeacon extends ChromaRenderBase {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		BlendMode.ADDITIVEDARK.apply();
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/fire.png");
+		ReikaTextureHelper.bindTexture(fireTexture);
 		int r = 3;
 		double u = 0;//(0.0001*System.currentTimeMillis())%8;
 		double du = 1;//u+0.5;

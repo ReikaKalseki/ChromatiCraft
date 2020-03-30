@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -24,8 +24,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.client.MinecraftForgeClient;
 
-import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
+import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -37,6 +38,8 @@ public class CliffFogRenderer {
 	public static final CliffFogRenderer instance = new CliffFogRenderer();
 
 	private static final int CLOUD_COUNT = 48;
+
+	private final RemoteSourcedAsset texture = ChromaClient.dynamicAssets.createAsset("Textures/biomefog_alpha.png");
 
 	private final ArrayList<Cloud> clouds = new ArrayList();
 	private final Random rand = new Random();
@@ -83,7 +86,7 @@ public class CliffFogRenderer {
 		GL11.glShadeModel(GL11.GL_SMOOTH);
 		GL11.glColor4f(1, 1, 1, 1);
 
-		ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/biomefog_alpha.png");
+		ReikaTextureHelper.bindTexture(texture);
 
 		GL11.glTranslated(-RenderManager.renderPosX, -RenderManager.renderPosY, -RenderManager.renderPosZ);
 

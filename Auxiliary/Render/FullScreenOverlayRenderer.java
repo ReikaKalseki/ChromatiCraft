@@ -21,7 +21,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
-import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.Auxiliary.ElementEncodedNumber;
 import Reika.ChromatiCraft.Magic.Lore.KeyAssemblyPuzzle;
 import Reika.ChromatiCraft.Magic.Lore.KeyAssemblyPuzzle.HexCell;
@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator.PylonEntry;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset;
 import Reika.DragonAPI.Instantiable.Math.HexGrid.Hex;
 import Reika.DragonAPI.Instantiable.Math.HexGrid.Point;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -53,6 +54,8 @@ public class FullScreenOverlayRenderer {
 	private boolean rehideGui;
 	private int washout;
 	private CrystalElement washoutColor;
+
+	private final RemoteSourcedAsset pylonAura = ChromaClient.dynamicAssets.createAsset("Textures/aura-bar-half-grid.png");
 
 	private final EnumMap<CrystalElement, Float> factors = new EnumMap(CrystalElement.class);
 
@@ -119,8 +122,7 @@ public class FullScreenOverlayRenderer {
 
 	void renderPylonAura(EntityPlayer ep, int gsc) {
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-		String tex = "Textures/aura-bar-half-grid.png";
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, tex);
+		ReikaTextureHelper.bindTexture(pylonAura);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_BLEND);
 		BlendMode.ADDITIVEDARK.apply();

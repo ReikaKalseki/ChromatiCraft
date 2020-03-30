@@ -24,6 +24,7 @@ import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
@@ -35,6 +36,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -44,6 +46,8 @@ import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class RenderCrystalRepeater extends CrystalTransmitterRender {
+
+	private final RemoteSourcedAsset rangeTexture = ChromaClient.dynamicAssets.createAsset("Textures/repeaterrange3.png");
 
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
@@ -245,7 +249,7 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 		BlendMode.ADDITIVEDARK.apply();
 		GL11.glDepthMask(false);
 
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/repeaterrange3.png");
+		ReikaTextureHelper.bindTexture(rangeTexture);
 		Tessellator var5 = Tessellator.instance;
 		var5.startDrawingQuads();
 		var5.setColorOpaque_I(color);

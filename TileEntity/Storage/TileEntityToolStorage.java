@@ -88,7 +88,7 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 	private Object aeGridNode;
 	private MEWorkTracker hasWork = new MEWorkTracker();
 	private final ArrayList<ItemStack> MEStacks = new ArrayList();
-	private final StepTimer updateTimer = new StepTimer(50);
+	private final StepTimer updateTimer = new StepTimer(200);
 
 	private static Class storageBusClass;
 	private static Method storageBusSide;

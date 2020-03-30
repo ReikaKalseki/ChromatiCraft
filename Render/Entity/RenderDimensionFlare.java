@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -20,8 +20,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 
+import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Entity.EntityDimensionFlare;
+import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -29,9 +31,11 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
 public class RenderDimensionFlare extends Render {
 
+	private final RemoteSourcedAsset texture = ChromaClient.dynamicAssets.createAsset("Textures/dimflare2.png");
+
 	@Override
 	public void doRender(Entity e, double par2, double par4, double par6, float par8, float ptick) {
-		ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/dimflare2.png");
+		ReikaTextureHelper.bindTexture(texture);
 		EntityDimensionFlare eb = (EntityDimensionFlare)e;
 		Tessellator v5 = Tessellator.instance;
 		GL11.glPushMatrix();
