@@ -162,8 +162,8 @@ import Reika.DragonAPI.Auxiliary.Trackers.KeybindHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.PatreonController;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerSpecificRenderer;
 import Reika.DragonAPI.Auxiliary.Trackers.SettingInterferenceTracker;
+import Reika.DragonAPI.Instantiable.IO.DynamicSoundLoader;
 import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset.RemoteSourcedAssetRepository;
-import Reika.DragonAPI.Instantiable.IO.SoundLoader;
 import Reika.DragonAPI.Instantiable.Rendering.ForcedTextureArmorModel;
 import Reika.DragonAPI.Instantiable.Rendering.ItemSpriteSheetRenderer;
 import Reika.DragonAPI.Instantiable.Rendering.MultiSheetItemRenderer;
@@ -229,7 +229,8 @@ public class ChromaClient extends ChromaCommon {
 
 	public static SoundCategory chromaCategory;
 
-	public static final RemoteSourcedAssetRepository dynamicAssets = new RemoteSourcedAssetRepository(ChromatiCraft.instance, ChromatiCraft.class, "https://raw.githubusercontent.com/ReikaKalseki/ChromatiCraft/master", "Reika/ChromatiCraft/TextureDL");
+	public static final RemoteSourcedAssetRepository dynamicAssets = new RemoteSourcedAssetRepository(ChromatiCraft.instance, ChromatiCraft.class, "https://raw.githubusercontent.com/ReikaKalseki/ChromatiCraft/master", "Reika/ChromatiCraft/AssetDL");
+	public static final DynamicSoundLoader soundLoader = new DynamicSoundLoader(ChromaSounds.soundList, dynamicAssets);
 
 	@Override
 	public void initAssetLoaders() {
@@ -238,8 +239,7 @@ public class ChromaClient extends ChromaCommon {
 
 	@Override
 	public void registerSounds() {
-		new SoundLoader(ChromaSounds.soundList).register();
-
+		soundLoader.register();
 		chromaCategory = ReikaRegistryHelper.addSoundCategory("CHROMA", "ChromatiCraft");
 
 		SettingInterferenceTracker.instance.registerSettingHandler(SettingInterferenceTracker.muteInterference);

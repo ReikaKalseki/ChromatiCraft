@@ -18,11 +18,11 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Interfaces.Registry.SoundEnum;
+import Reika.DragonAPI.Interfaces.Registry.DynamicSound;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
-public enum ChromaSounds implements SoundEnum {
+public enum ChromaSounds implements DynamicSound {
 
 	RIFT("rift"),
 	POWERDOWN("powerdown-2"),
@@ -280,5 +280,10 @@ public enum ChromaSounds implements SoundEnum {
 			default:
 				return false;
 		}
+	}
+
+	@Override
+	public String getRelativePath() {
+		return SOUND_FOLDER+name+SOUND_EXT;
 	}
 }
