@@ -1,27 +1,25 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface;
 
-import com.xcompwiz.mystcraft.api.hook.SymbolAPI;
-import com.xcompwiz.mystcraft.api.linking.ILinkInfo;
+import java.util.ArrayList;
+
+import com.xcompwiz.mystcraft.api.MystObjects;
 import com.xcompwiz.mystcraft.api.symbol.IAgeSymbol;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
@@ -30,18 +28,17 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
-import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper.APISegment;
+
+import cpw.mods.fml.common.registry.GameRegistry;
 
 
 public class TileEntityPageExtractor extends InventoriedRelayPowered implements ItemOnRightClick, OperationInterval {
 
-	private static Class bookClass;
 	private static ItemStack lastItem;
 
 	private static final ElementTagCompound required = new ElementTagCompound();
@@ -87,27 +84,18 @@ public class TileEntityPageExtractor extends InventoriedRelayPowered implements 
 
 	private void rebuildSymbolMap(ItemStack is) {
 		symbolMap.clear();
-		if (is != null && is.getItem().getClass() == bookClass) {
-			ILinkInfo link = ReikaMystcraftHelper.getLinkbookLink(is);
-			if (link != null) {
-				Integer dim = link.getDimensionUID();
-				if (dim != null && DimensionManager.isDimensionRegistered(dim)) {
-					DimensionManager.initDimension(dim);
-					WorldServer age = DimensionManager.getWorld(dim);
-					if (age != null) {
-						for (String s : ReikaMystcraftHelper.getAgeSymbols(age)) {
-							IAgeSymbol ia = ((SymbolAPI)ReikaMystcraftHelper.getAPI(APISegment.SYMBOL)).getSymbol(s);
-							//ReikaJavaLibrary.pConsole(s+" > "+ia);
-							if (ia != null) {
-								int rank = ReikaMystcraftHelper.getSymbolRank(ia);
-								double weight = Math.exp(-rank/2D);
-								symbolMap.addEntry(ia, weight);
-							}
-						}
-					}
-				}
+		if (is != null && this.isBook(is)) {
+			ArrayList<IAgeSymbol> li = ReikaMystcraftHelper.getPagesInBook(is, false);
+			for (IAgeSymbol ia : li) {
+				int rank = ReikaMystcraftHelper.getSymbolRank(ia);
+				double weight = Math.exp(-rank/2D);
+				symbolMap.addEntry(ia, weight);
 			}
 		}
+	}
+
+	private boolean isBook(ItemStack is) {
+		return ModList.MYSTCRAFT.isLoaded() && is.getItem() == GameRegistry.findItem(ModList.MYSTCRAFT.modLabel, MystObjects.Items.descriptive_book);
 	}
 
 	private double getConsumptionChance(IAgeSymbol ia) {
@@ -150,7 +138,7 @@ public class TileEntityPageExtractor extends InventoriedRelayPowered implements 
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack is) {
-		return is.getItem().getClass() == bookClass && slot == 0;
+		return this.isBook(is) && slot == 0;
 	}
 
 	@Override
@@ -164,17 +152,6 @@ public class TileEntityPageExtractor extends InventoriedRelayPowered implements 
 	}
 
 	static {
-		if (ModList.MYSTCRAFT.isLoaded()) {
-			try {
-				bookClass = Class.forName("com.xcompwiz.mystcraft.item.ItemAgebook");
-			}
-			catch (Exception e) {
-				ChromatiCraft.logger.logError("Could not initialize page extractor:");
-				e.printStackTrace();
-				ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.MYSTCRAFT, e);
-			}
-		}
-
 		required.addTag(CrystalElement.LIGHTGRAY, 20);
 		required.addTag(CrystalElement.GRAY, 10);
 		required.addTag(CrystalElement.BROWN, 10);

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -57,8 +57,12 @@ public class BlockDyeLeaf extends BlockCustomLeaf {
 	@Override
 	public final int colorMultiplier(IBlockAccess iba, int x, int y, int z) {
 		int dmg = iba.getBlockMetadata(x, y, z);
-		Color c = ReikaDyeHelper.dyes[dmg].getJavaColor();
-		return BiomeRainbowForest.isDamaged(iba, x, z) ? ReikaColorAPI.mixColors(0xa0a0a0, ReikaColorAPI.getColorWithBrightnessMultiplier(c.getRGB(), 0.85F), 0.4F) : c.brighter().getRGB();
+		return getColor(dmg, BiomeRainbowForest.isDamaged(iba, x, z));
+	}
+
+	public static int getColor(int meta, boolean damage) {
+		Color c = ReikaDyeHelper.dyes[meta].getJavaColor();
+		return damage ? ReikaColorAPI.mixColors(0xa0a0a0, ReikaColorAPI.getColorWithBrightnessMultiplier(c.getRGB(), 0.85F), 0.4F) : c.brighter().getRGB();
 	}
 
 	@Override

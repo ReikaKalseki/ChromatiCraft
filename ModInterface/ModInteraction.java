@@ -37,6 +37,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.ModInterface.Bees.ApiaryAcceleration;
+import Reika.ChromatiCraft.ModInterface.Bees.ChromaTrees;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.ChromaAspectManager;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.ChromaAspectMapper;
@@ -202,6 +203,7 @@ public class ModInteraction {
 	public static void addForestry() {
 		try {
 			CrystalBees.register();
+			ChromaTrees.register();
 
 			FlowerManager.flowerRegistry.registerAcceptableFlower(ChromaBlocks.DECOFLOWER.getBlockInstance(), Flowers.ENDERFLOWER.ordinal(), FlowerManager.FlowerTypeVanilla);
 			FlowerManager.flowerRegistry.registerAcceptableFlower(ChromaBlocks.DECOFLOWER.getBlockInstance(), Flowers.GLOWDAISY.ordinal(), FlowerManager.FlowerTypeVanilla);

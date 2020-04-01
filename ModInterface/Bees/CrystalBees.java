@@ -488,6 +488,10 @@ public class CrystalBees {
 		return precursor;
 	}
 
+	public static BeeSpecies getRainbowBee() {
+		return multi;
+	}
+
 	public static int beeCount() {
 		return 16+basicBees.size()+advancedBees.size();
 	}

@@ -81,6 +81,9 @@ import forestry.api.apiculture.IAlleleBeeEffect;
 import forestry.api.apiculture.IAlleleBeeSpecies;
 import forestry.api.apiculture.IBeeGenome;
 import forestry.api.apiculture.IBeeHousing;
+import forestry.api.arboriculture.EnumTreeChromosome;
+import forestry.api.arboriculture.IAlleleLeafEffect;
+import forestry.api.arboriculture.ITreeGenome;
 import forestry.api.genetics.IEffectData;
 import forestry.api.multiblock.IAlvearyComponent;
 import forestry.api.multiblock.IAlvearyController;
@@ -93,6 +96,14 @@ public class EffectAlleles {
 
 		protected ChromaBeeEffect(String uid, String name) {
 			super(uid, name, EnumBeeChromosome.EFFECT);
+		}
+
+	}
+
+	private static abstract class ChromaTreeEffect extends BasicGene implements IAlleleLeafEffect {
+
+		protected ChromaTreeEffect(String uid, String name) {
+			super(uid, name, EnumTreeChromosome.EFFECT);
 		}
 
 	}
@@ -903,5 +914,32 @@ public class EffectAlleles {
 			}
 			return ied;
 		}
+	}
+
+	static final class RainbowEffect extends ChromaTreeEffect {
+
+		RainbowEffect() {
+			super("effect.rainbowleaf", "Protective Aura");
+		}
+
+		@Override
+		public IEffectData doEffect(ITreeGenome genome, IEffectData storedData, World world, int x, int y, int z) {
+			if (world.rand.nextInt(20) > 0)
+				return storedData;
+			double r = Math.min(4, 0.125*Math.pow(1.25*genome.getHeight()*genome.getGirth(), 2));
+			RainbowTreeEffects.doRainbowTreeEffects(world, x, y, z, 1, r, world.rand, false);
+			return storedData;
+		}
+
+		@Override
+		public boolean isCombinable() {
+			return false;
+		}
+
+		@Override
+		public IEffectData validateStorage(IEffectData storedData) {
+			return storedData;
+		}
+
 	}
 }
