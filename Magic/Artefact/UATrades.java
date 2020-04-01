@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic.Artefact;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -69,10 +70,14 @@ public class UATrades implements ConnectionErrorHandler {
 		if (jvm) {
 			File f = new File(DragonAPICore.getMinecraftDirectoryString()+"/ChromatiCraft_Data/eddbcache.json");
 			if (f.exists() && System.currentTimeMillis()-f.lastModified() < 24*3600*1000) { //1d
-				Reader r = ReikaFileReader.getReader(f);
-				if (r != null) {
-					this.loadJSONData(r);
-					return;
+				try (BufferedReader r = ReikaFileReader.getReader(f)) {
+					if (r != null) {
+						this.loadJSONData(r);
+						return;
+					}
+				}
+				catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
 			else {
@@ -82,18 +87,19 @@ public class UATrades implements ConnectionErrorHandler {
 
 		try {
 			URL url = new URL("https://eddb.io/archive/v5/commodities.json"); //dynamically load the prices from eddb, so that the ones in CC can match the ones in E:D in real time, because :D
-			Reader r = ReikaFileReader.getReader(url, 2000, this, null);
-			if (r == null) {
-				throw new IOException("Could not read URL!");
-			}
-			else {
-				this.loadJSONData(r);
-				if (jvm) {
-					File f = new File(DragonAPICore.getMinecraftDirectoryString()+"/ChromatiCraft_Data/eddbcache.json");
-					f.getParentFile().mkdirs();
-					f.delete();
-					ReikaFileReader.copyFile(url.openStream(), new FileOutputStream(f), 4096, null);
-					ChromatiCraft.logger.log("Downloaded eddb.io commodity data for caching.");
+			try (BufferedReader r = ReikaFileReader.getReader(url, 2000, this, null)) {
+				if (r == null) {
+					throw new IOException("Could not read URL!");
+				}
+				else {
+					this.loadJSONData(r);
+					if (jvm) {
+						File f = new File(DragonAPICore.getMinecraftDirectoryString()+"/ChromatiCraft_Data/eddbcache.json");
+						f.getParentFile().mkdirs();
+						f.delete();
+						ReikaFileReader.copyFile(url.openStream(), new FileOutputStream(f), 4096, null);
+						ChromatiCraft.logger.log("Downloaded eddb.io commodity data for caching.");
+					}
 				}
 			}
 		}

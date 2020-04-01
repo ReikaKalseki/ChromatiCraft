@@ -68,6 +68,7 @@ build/
 *.rar
 Resources/lore.xml
 Resources/rosetta.txt
+Sounds_Fallback
 *.sbr
 *.tlb
 *.tli

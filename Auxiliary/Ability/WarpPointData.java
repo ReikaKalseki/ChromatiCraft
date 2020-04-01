@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -17,7 +17,6 @@ import java.util.HashSet;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -147,7 +146,7 @@ public class WarpPointData {
 
 	@SideOnly(Side.CLIENT)
 	private static void readJourneyMapFile(File f, HashSet<WarpPoint> map) {
-		JsonElement e = new JsonParser().parse(ReikaFileReader.getReader(f));
+		JsonElement e = ReikaFileReader.readJSON(f);
 		if (e instanceof JsonObject) {
 			JsonObject j = (JsonObject)e;
 			if (j.getAsJsonPrimitive("enable").getAsBoolean()) {

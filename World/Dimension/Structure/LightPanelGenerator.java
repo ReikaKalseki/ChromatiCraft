@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -36,58 +36,58 @@ import cpw.mods.fml.common.FMLCommonHandler;
 public class LightPanelGenerator extends DimensionStructureGenerator {
 
 	private static final int[] ROW_COUNTS = {
-		3,
-		4,
-		6,
-		6,
-		8,
-		8,
-		10,
-		10,
-		12,
-		12,
-		14,
-		16,
+			3,
+			4,
+			6,
+			6,
+			8,
+			8,
+			10,
+			10,
+			12,
+			12,
+			14,
+			16,
 	};
 
 	private static final int[] SWITCH_COUNTS = {
-		3,
-		3,
-		4,
-		4,
-		5,
-		6,
-		6,
-		8,
-		8,
-		8,
-		10,
-		10,
+			3,
+			3,
+			4,
+			4,
+			5,
+			6,
+			6,
+			8,
+			8,
+			8,
+			10,
+			10,
 	};
 
 	private static final int[] PATTERN_TIERS = {
-		0,
-		0,
-		1,
-		1,
-		2,
-		2,
-		3,
-		3,
-		4,
-		4,
-		5,
-		6,
+			0,
+			0,
+			1,
+			1,
+			2,
+			2,
+			3,
+			3,
+			4,
+			4,
+			5,
+			6,
 	};
 
 	private static final int[][] PREFAB_SIZES = {
-		{3, 3},
-		{4, 4},
-		{4, 6},
-		{4, 8},
-		{5, 8},
-		{6, 10},
-		{8, 12},
+			{3, 3},
+			{4, 4},
+			{4, 6},
+			{4, 8},
+			{5, 8},
+			{6, 10},
+			{8, 12},
 	};
 
 	private static final String PATH = "Structure Data/LightPanel";
@@ -124,30 +124,31 @@ public class LightPanelGenerator extends DimensionStructureGenerator {
 		BufferedImage img = ImageIO.read(new ByteArrayInputStream(Base64.decodeBase64(sg)));//new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		 */
 
-		InputStream in = ChromatiCraft.class.getResourceAsStream(PATH+"/tier"+tier+".png");
-		BufferedImage img = ImageIO.read(in);
+		try(InputStream in = ChromatiCraft.class.getResourceAsStream(PATH+"/tier"+tier+".png")) {
+			BufferedImage img = ImageIO.read(in);
 
-		int bx = x1;
-		int by = y1;
-		while (bx < img.getWidth()) {
-			FixedLightPattern p = new FixedLightPattern(tier, nrw, nsw);
-			for (int k = 0; k < nsw; k++) {
-				for (int i = 0; i < nrw; i++) {
-					for (int l = 0; l < LightType.list.length; l++) {
-						LightType type = LightType.list[l];
-						int x = bx+1+l+k*(LightType.list.length+1);
-						int y = by+1+i;
-						int rgb = img.getRGB(x, y);
-						int value = ReikaMathLibrary.clipLeadingHexBits(rgb & type.renderColor);
-						if (value == 0xff) {
-							p.connect(k, i, type);
+			int bx = x1;
+			int by = y1;
+			while (bx < img.getWidth()) {
+				FixedLightPattern p = new FixedLightPattern(tier, nrw, nsw);
+				for (int k = 0; k < nsw; k++) {
+					for (int i = 0; i < nrw; i++) {
+						for (int l = 0; l < LightType.list.length; l++) {
+							LightType type = LightType.list[l];
+							int x = bx+1+l+k*(LightType.list.length+1);
+							int y = by+1+i;
+							int rgb = img.getRGB(x, y);
+							int value = ReikaMathLibrary.clipLeadingHexBits(rgb & type.renderColor);
+							if (value == 0xff) {
+								p.connect(k, i, type);
+							}
 						}
 					}
 				}
+				if (!p.isEmpty())
+					usablePatterns[tier].add(p);
+				bx += sx;
 			}
-			if (!p.isEmpty())
-				usablePatterns[tier].add(p);
-			bx += sx;
 		}
 		if (usablePatterns[tier].isEmpty())
 			throw new IllegalStateException("This puzzle is unsolvable, as there are no valid patterns for tier "+tier+"!");

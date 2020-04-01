@@ -648,7 +648,8 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 
 					this.setStandLock(true);
 
-					craftingAmount = inv[4].stackSize;
+					craftingAmount = ReikaInventoryHelper.getSmallestStack(inv, 0, 8).stackSize;
+
 					if (activeRecipe instanceof MultiBlockCastingRecipe) {
 						MultiBlockCastingRecipe mult = (MultiBlockCastingRecipe)activeRecipe;
 						HashMap<WorldLocation, ItemMatch> map = mult.getOtherInputs(worldObj, xCoord, yCoord, zCoord);

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -60,8 +60,7 @@ public class TerrainGenGlowingCracks extends ChromaDimensionBiomeTerrainShaper {
 		shieldingThickness = new SimplexNoiseGenerator(seed*2).setFrequency(4D);
 		shieldingDarkThickness = new SimplexNoiseGenerator(-seed*2).setFrequency(4D);
 
-		try {
-			InputStream in = ChromatiCraft.class.getResourceAsStream("Textures/cracks.png");
+		try(InputStream in = ChromatiCraft.class.getResourceAsStream("Textures/cracks.png")) {
 			BufferedImage img = ImageIO.read(in);
 
 			for (int x = 0; x < 1500; x++) {
