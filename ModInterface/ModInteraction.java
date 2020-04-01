@@ -30,6 +30,7 @@ import net.minecraft.world.biome.BiomeGenBase;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
@@ -555,22 +556,49 @@ public class ModInteraction {
 		}
 	}
 
-	public static void setGlowcliffAurora() {
+	public static void setDynSurroundSettings() {
+		ChromatiCraft.logger.log("Adding DynSurrounds biome compat.");
 		try {
 			Class c = Class.forName("org.blockartistry.mod.DynSurround.data.BiomeRegistry");
 			Method m = c.getDeclaredMethod("get", BiomeGenBase.class);
 			m.setAccessible(true);
+			Field f1 = c.getDeclaredField("sounds");
+			Field f2 = c.getDeclaredField("spotSounds");
+			f1.setAccessible(true);
+			f2.setAccessible(true);
 			Object entry = m.invoke(null, ChromatiCraft.glowingcliffs);
 			if (entry != null) {
 				Field f = entry.getClass().getDeclaredField("hasAurora");
 				f.setAccessible(true);
 				f.setBoolean(entry, true);
 			}
+			else {
+				ChromatiCraft.logger.logError("Entry for biome glowcliffs was null.");
+			}
+			for (Biomes b : Biomes.biomeList) {
+				clearSounds(m, f1, f2, b.getBiome());
+				SubBiomes sub = b.getSubBiome();
+				if (sub != null)
+					clearSounds(m, f1, f2, sub.getBiome());
+			}
 		}
 		catch (Exception e) {
 			ChromatiCraft.logger.logError("Unable to load DynSurround biome data");
 			ReflectiveFailureTracker.instance.logModReflectiveFailure(new BasicModEntry("dsurround"), e);
 			e.printStackTrace();
+		}
+	}
+
+	private static void clearSounds(Method m, Field soundField1, Field soundField2, ChromaDimensionBiome biome) throws Exception {
+		Object entry = m.invoke(null, biome);
+		if (entry != null) {
+			List li = (List)soundField1.get(entry);
+			li.clear();
+			li = (List)soundField2.get(entry);
+			li.clear();
+		}
+		else {
+			ChromatiCraft.logger.logError("Entry for biome "+biome.biomeName+" was null.");
 		}
 	}
 }

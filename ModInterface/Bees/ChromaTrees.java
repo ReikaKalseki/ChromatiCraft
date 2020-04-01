@@ -19,9 +19,9 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Territory;
-import Reika.DragonAPI.ModInteract.Bees.TreeAlleleRegistry.Fertility;
 import Reika.DragonAPI.ModInteract.Bees.TreeAlleleRegistry.Heights;
 import Reika.DragonAPI.ModInteract.Bees.TreeAlleleRegistry.Maturation;
+import Reika.DragonAPI.ModInteract.Bees.TreeAlleleRegistry.Saplings;
 import Reika.DragonAPI.ModInteract.Bees.TreeAlleleRegistry.Sappiness;
 import Reika.DragonAPI.ModInteract.Bees.TreeAlleleRegistry.Yield;
 import Reika.DragonAPI.ModInteract.Bees.TreeSpecies;
@@ -30,13 +30,13 @@ import Reika.DragonAPI.ModInteract.Bees.TreeSpecies.TreeBranch;
 
 import forestry.api.arboriculture.EnumGermlingType;
 import forestry.api.arboriculture.IAlleleLeafEffect;
+import forestry.api.arboriculture.ITree;
 import forestry.api.arboriculture.ITreeGenome;
 import forestry.api.genetics.AlleleManager;
 import forestry.api.world.ITreeGenData;
 
 public class ChromaTrees {
 
-	static Fertility superFertility;
 	//yield, sappiness, maturation have better genes not normally obtainable
 
 	static RainbowEffect rainbowEffect;
@@ -44,10 +44,10 @@ public class ChromaTrees {
 	static TreeBranch dyeBranch;
 
 	private static TreeSpecies rainbowTree;
-	private static TreeSpecies[] dyeTrees;
+	private static TreeSpecies[] dyeTrees = new TreeSpecies[16];
 
 	public static void register() {
-		superFertility = Fertility.createNew("extreme", 0.25F, false);
+		//superFertility = Saplings.createNew("extreme", 0.25F, false);
 
 		dyeBranch = new TreeBranch("branch.ccdye", "Dye", "Pigmentum", "These leaves shimmer one or more colors, and seem to be associated with crystal energy.");
 
@@ -57,14 +57,19 @@ public class ChromaTrees {
 			CrystalElement color = CrystalElement.elements[i];
 			DyeTree tree = new DyeTree(color);
 			tree.register();
-			AlleleManager.ersatzSaplings.put(ChromaBlocks.DECAY.getStackOf(color), tree.constructIndividual());
-			AlleleManager.ersatzSaplings.put(ChromaBlocks.DYELEAF.getStackOf(color), tree.constructIndividual());
+			ITree ii = tree.constructIndividual();
+			AlleleManager.ersatzSaplings.put(ChromaBlocks.DECAY.getStackOf(color), ii);
+			AlleleManager.ersatzSaplings.put(ChromaBlocks.DYELEAF.getStackOf(color), ii);
+			AlleleManager.ersatzSpecimen.put(ChromaBlocks.DECAY.getStackOf(color), ii);
+			AlleleManager.ersatzSpecimen.put(ChromaBlocks.DYELEAF.getStackOf(color), ii);
 			dyeTrees[i] = tree;
 		}
 
 		rainbowTree = new RainbowTree();
 		rainbowTree.register();
-		AlleleManager.ersatzSaplings.put(ChromaBlocks.RAINBOWLEAF.getStackOf(), rainbowTree.constructIndividual());
+		ITree tree = rainbowTree.constructIndividual();
+		AlleleManager.ersatzSaplings.put(ChromaBlocks.RAINBOWLEAF.getStackOf(), tree);
+		AlleleManager.ersatzSpecimen.put(ChromaBlocks.RAINBOWLEAF.getStackOf(), tree);
 	}
 
 	private static class RainbowTree extends BasicTreeSpecies {
@@ -119,8 +124,8 @@ public class ChromaTrees {
 		}
 
 		@Override
-		public Fertility getFertility() {
-			return Fertility.LOWEST;
+		public Saplings getSaplingRate() {
+			return Saplings.LOWEST;
 		}
 
 		@Override
@@ -165,7 +170,7 @@ public class ChromaTrees {
 					return false;
 				}
 			}
-			return RainbowTreeGenerator.getInstance().tryGenerateSmallRainbowTree(world, x, y, z, rand);
+			return RainbowTreeGenerator.getInstance().tryGenerateSmallRainbowTree(world, x, y, z, rand, data.getHeightModifier());
 		}
 
 	}
@@ -226,7 +231,14 @@ public class ChromaTrees {
 
 		@Override
 		public Sappiness getSappiness() {
-			return color == CrystalElement.CYAN ? Sappiness.HIGHEST : Sappiness.LOW;
+			switch(color) {
+				case CYAN:
+					return Sappiness.HIGHEST;
+				case YELLOW:
+					return Sappiness.HIGHER;
+				default:
+					return Sappiness.LOW;
+			}
 		}
 
 		@Override
@@ -242,8 +254,15 @@ public class ChromaTrees {
 		}
 
 		@Override
-		public Fertility getFertility() {
-			return color == CrystalElement.MAGENTA ? superFertility : Fertility.HIGH;
+		public Saplings getSaplingRate() {
+			switch(color) {
+				case MAGENTA:
+					return Saplings.HIGHEST;
+				case GREEN:
+					return Saplings.HIGHER;
+				default:
+					return Saplings.HIGH;
+			}
 		}
 
 		@Override

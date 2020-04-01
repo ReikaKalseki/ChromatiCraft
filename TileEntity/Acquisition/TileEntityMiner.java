@@ -170,28 +170,30 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 						if (miningTimer.checkCap()) {
 							if (this.hasEnergy(required)) {
 								ArrayList<Coordinate> li = coords.get(selectedCategory);
-								Coordinate c = li.get(index);
-								int dx = c.xCoord;
-								int dy = c.yCoord;
-								int dz = c.zCoord;
-								Block id = this.parseBlock(world.getBlock(dx, dy, dz));
-								int meta2 = world.getBlockMetadata(dx, dy, dz);
-								//ReikaJavaLibrary.pConsole(readX+":"+dx+", "+dy+", "+readZ+":"+dz+" > "+ores.getSize(), Side.SERVER);
-								this.removeFound(world, dx, dy, dz, id, meta2, selectedCategory);
-								if (id instanceof SpecialOreBlock) {
-									this.dropSpecialOreBlock(world, x, y, z, dx, dy, dz, (SpecialOreBlock)id, meta2);
+								Coordinate c = index >= 0 && index < li.size() ? li.get(index) : null;
+								if (c != null) {
+									int dx = c.xCoord;
+									int dy = c.yCoord;
+									int dz = c.zCoord;
+									Block id = this.parseBlock(world.getBlock(dx, dy, dz));
+									int meta2 = world.getBlockMetadata(dx, dy, dz);
+									//ReikaJavaLibrary.pConsole(readX+":"+dx+", "+dy+", "+readZ+":"+dz+" > "+ores.getSize(), Side.SERVER);
+									this.removeFound(world, dx, dy, dz, id, meta2, selectedCategory);
+									if (id instanceof SpecialOreBlock) {
+										this.dropSpecialOreBlock(world, x, y, z, dx, dy, dz, (SpecialOreBlock)id, meta2);
+									}
+									else if (this.isTieredResource(world, dx, dy, dz, id, meta2)) {
+										this.dropTieredResource(world, x, y, z, dx, dy, dz, id, meta2);
+									}
+									else if (id instanceof MinerBlock) {
+										this.dropMineableBlock(world, x, y, z, dx, dy, dz, id, meta2);
+									}
+									else {
+										this.dropBlock(world, x, y, z, dx, dy, dz, id, meta2);
+									}
+									this.useEnergy(required.copy().scale(this.getEnergyCostScale()));
+									//ReikaJavaLibrary.pConsole("Mining "+id+":"+meta2+" @ "+dx+","+dy+","+dz+"; index="+index);
 								}
-								else if (this.isTieredResource(world, dx, dy, dz, id, meta2)) {
-									this.dropTieredResource(world, x, y, z, dx, dy, dz, id, meta2);
-								}
-								else if (id instanceof MinerBlock) {
-									this.dropMineableBlock(world, x, y, z, dx, dy, dz, id, meta2);
-								}
-								else {
-									this.dropBlock(world, x, y, z, dx, dy, dz, id, meta2);
-								}
-								this.useEnergy(required.copy().scale(this.getEnergyCostScale()));
-								//ReikaJavaLibrary.pConsole("Mining "+id+":"+meta2+" @ "+dx+","+dy+","+dz+"; index="+index);
 								index++;
 								if (index >= li.size()) {
 									this.finishDigging();

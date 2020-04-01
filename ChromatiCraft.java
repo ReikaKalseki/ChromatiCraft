@@ -792,7 +792,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		}
 
 		if (Loader.isModLoaded("dsurround")) {
-			ModInteraction.setGlowcliffAurora();
+			ModInteraction.setDynSurroundSettings();
 		}
 
 		if (ModList.MEKANISM.isLoaded()) {

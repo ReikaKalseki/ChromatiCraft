@@ -14,6 +14,7 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -159,6 +160,10 @@ public class RainbowTreeGenerator {
 	}
 
 	public boolean tryGenerateSmallRainbowTree(World world, int x, int y, int z, Random rand) {
+		return this.tryGenerateSmallRainbowTree(world, x, y, z, rand, 1);
+	}
+
+	public boolean tryGenerateSmallRainbowTree(World world, int x, int y, int z, Random rand, float hf) {
 		Block id = ChromaBlocks.RAINBOWLEAF.getBlockInstance();
 		TreeType wood = this.getLogType(rand);
 		Block log = wood.getLogID();
@@ -167,7 +172,7 @@ public class RainbowTreeGenerator {
 		int meta3 = wood.getLogMetadatas().get(2);
 
 		int h0 = 2+rand.nextInt(3);
-		int h = h0+5+rand.nextInt(7);
+		int h = h0+MathHelper.ceiling_float_int(hf*(5+rand.nextInt(7)));
 		for (int i = 1; i <= h; i++) {
 			if (world.getBlock(x, y+i, z) != Blocks.air) {
 				h = i;
