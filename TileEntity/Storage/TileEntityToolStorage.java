@@ -95,15 +95,17 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 	private static Method storageBusHost;
 
 	static {
-		try {
-			storageBusClass = Class.forName("appeng.parts.misc.PartStorageBus");
-			storageBusSide = storageBusClass.getMethod("getSide");
-			storageBusHost = storageBusClass.getMethod("getHost");
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			ChromatiCraft.logger.logError("Could not load storage bus methods!");
-			ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.APPENG, e);
+		if (ModList.APPENG.isLoaded()) {
+			try {
+				storageBusClass = Class.forName("appeng.parts.misc.PartStorageBus");
+				storageBusSide = storageBusClass.getMethod("getSide");
+				storageBusHost = storageBusClass.getMethod("getHost");
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				ChromatiCraft.logger.logError("Could not load storage bus methods!");
+				ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.APPENG, e);
+			}
 		}
 	}
 

@@ -100,7 +100,7 @@ public class RainbowTreeGenerator {
 		y -= 2;
 		z -= 5;
 
-		BlockArray blocks = RainbowTreeBlueprint.getBlueprint(world, x, y, z);
+		BlockArray blocks = RainbowTreeBlueprint.getBlueprint(world, x, y, z, ReikaTreeHelper.OAK);
 
 		for (int i = 0; i < blocks.getSize(); i++) {
 			Coordinate c = blocks.getNthBlock(i);
@@ -128,17 +128,6 @@ public class RainbowTreeGenerator {
 		ChromatiCraft.logger.debug("Generating Rainbow Tree @ "+x+", "+y+", "+z);
 		MinecraftForge.EVENT_BUS.post(new RainbowTreeEvent(world, x, y, z, rand));
 
-		Block id = ChromaBlocks.RAINBOWLEAF.getBlockInstance();
-		TreeType wood = this.getLogType(rand);
-		Block log = wood.getLogID();
-		int meta = wood.getLogMetadatas().get(0);
-		int meta2 = wood.getLogMetadatas().get(1);
-		int meta3 = wood.getLogMetadatas().get(2);
-
-		//Non-oak wood disabled for now
-		//log = Blocks.log.blockID;
-		//meta = 0;
-
 		for (int dx = x+4; dx <= x+6; dx++) {
 			for (int dz = z+4; dz <= z+6; dz++) {
 				Block block = world.getBlock(dx, y+2, dz);
@@ -156,7 +145,7 @@ public class RainbowTreeGenerator {
 			}
 		}
 
-		RainbowTreeBlueprint.place(world, x, y, z, id, log, meta, meta2, meta3);
+		RainbowTreeBlueprint.getBlueprint(world, x, y, z, this.getLogType(rand)).place();
 	}
 
 	public boolean tryGenerateSmallRainbowTree(World world, int x, int y, int z, Random rand) {

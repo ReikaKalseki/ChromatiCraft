@@ -4,10 +4,13 @@ import java.awt.Color;
 import java.util.Locale;
 import java.util.Random;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
+import Reika.ChromatiCraft.Auxiliary.Structure.RainbowTreeBlueprint;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.ModInterface.Bees.EffectAlleles.RainbowEffect;
@@ -15,9 +18,12 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.RainbowTreeGenerator;
 import Reika.ChromatiCraft.World.TreeShaper;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Territory;
 import Reika.DragonAPI.ModInteract.Bees.TreeAlleleRegistry.Heights;
 import Reika.DragonAPI.ModInteract.Bees.TreeAlleleRegistry.Maturation;
@@ -163,7 +169,24 @@ public class ChromaTrees {
 			boolean big = data.getGirth(world, x, y, z) >= 2 && data.getHeightModifier() >= 1.5;
 			if (big) {
 				if (RainbowTreeGenerator.getInstance().checkRainbowTreeSpace(world, x, y, z)) {
-					RainbowTreeGenerator.getInstance().generateLargeRainbowTree(world, x, y, z, rand);
+					//RainbowTreeGenerator.getInstance().generateLargeRainbowTree(world, x, y, z, rand);
+					FilledBlockArray arr = RainbowTreeBlueprint.getBlueprint(world, x, y, z, ReikaTreeHelper.OAK);
+					for (Coordinate c : arr.keySet()) {
+						BlockKey bk = arr.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord);
+						if (bk.blockID == Blocks.log) {
+							ForgeDirection dir = ForgeDirection.UP;
+							if (bk.metadata == 4) {
+								dir = ForgeDirection.EAST;
+							}
+							else if (bk.metadata == 8) {
+								dir = ForgeDirection.SOUTH;
+							}
+							data.setLogBlock(world, c.xCoord, c.yCoord, c.zCoord, dir);
+						}
+						else {
+							data.setLeaves(world, null, c.xCoord, c.yCoord, c.zCoord);
+						}
+					}
 					return true;
 				}
 				else {
