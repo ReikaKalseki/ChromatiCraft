@@ -97,7 +97,7 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 	@Override
 	public final int colorMultiplier(IBlockAccess iba, int x, int y, int z) {
 		int sc = 32;
-		int meta = iba.getBlockMetadata(x, y, z);
+		int meta = iba.getBlock(x, y, z) == this ? iba.getBlockMetadata(x, y, z) : 0;
 		float hue = LeafMetas.list[meta].hasTimeColor() ? (System.currentTimeMillis()%7200)/7200F : (float)(ReikaMathLibrary.py3d(x, y*3, z+x)%sc)/sc;
 		boolean dmgd = BiomeRainbowForest.isDamaged(iba, x, z);
 		return Color.HSBtoRGB(hue, dmgd ? 0.4F : 0.7F, dmgd ? 0.6F : 1F);

@@ -387,7 +387,7 @@ public enum Chromabilities implements Ability {
 		if (a == MAGNET)
 			AbilityHelper.instance.setNoClippingMagnet(ep, !flag && data > 0);
 		if (a == GROWAURA)
-			AbilityHelper.instance.setGrowAuraState(ep, flag ? data : 0);
+			AbilityHelper.instance.setGrowAuraState(ep, !flag ? data : 0);
 
 		if (a.isTickBased()) {
 
