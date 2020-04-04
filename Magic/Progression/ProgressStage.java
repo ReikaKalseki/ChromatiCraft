@@ -69,7 +69,7 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 	HIVE(			Shareability.ALWAYS,	Reloadability.ALWAYS,	new ItemStack(ChromaBlocks.HIVE.getBlockInstance()), ModList.FORESTRY.isLoaded()),
 	NETHER(			Shareability.SELFONLY,	Reloadability.NEVER,	Blocks.portal), //go to the nether
 	END(			Shareability.SELFONLY,	Reloadability.NEVER,	Blocks.end_portal_frame), //go to the end
-	TWILIGHT(		Shareability.SELFONLY,	Reloadability.NEVER,	ModList.TWILIGHT.isLoaded() ? ModWoodList.CANOPY.getItem() : null, ModList.TWILIGHT.isLoaded()), //Go to the twilight forest
+	TWILIGHT(		Shareability.SELFONLY,	Reloadability.NEVER,	ModList.TWILIGHT.isLoaded() ? ModWoodList.CANOPY.getItem().asItemStack() : null, ModList.TWILIGHT.isLoaded()), //Go to the twilight forest
 	BEDROCK(		Shareability.PROXIMITY,	Reloadability.ALWAYS,	Blocks.bedrock), //Find bedrock
 	CAVERN(			Shareability.ALWAYS,	Reloadability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CLOAK.metadata)), //Cavern structure
 	BURROW(			Shareability.ALWAYS,	Reloadability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.MOSS.metadata)), //Burrow structure

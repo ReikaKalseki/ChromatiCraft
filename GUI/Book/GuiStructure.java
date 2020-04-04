@@ -608,7 +608,7 @@ public class GuiStructure extends GuiBookSection {
 				}
 			}
 			int tick = (int)((System.currentTimeMillis()/1000)%li.size());
-			return li.get(tick).getItem();
+			return li.get(tick).getItem().asItemStack();
 		}
 
 	}

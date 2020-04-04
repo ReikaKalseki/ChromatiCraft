@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -14,13 +14,13 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.IWG.ColorTreeGenerator;
 import Reika.DragonAPI.Exception.InstallationException;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -38,7 +38,7 @@ public class TreeShaper {
 
 	private final Random rand = new Random();
 
-	private final ArrayList<ItemStack> validLogs = new ArrayList();
+	private final ArrayList<BlockKey> validLogs = new ArrayList();
 
 	public boolean isLogTypeEverAllowed(ModWoodList wood) {
 		return wood != ModWoodList.BAMBOO && wood != ModWoodList.LIGHTED && wood != ModWoodList.SLIME && wood != ModWoodList.TAINTED;
@@ -101,19 +101,19 @@ public class TreeShaper {
 		this.generateNormalTree(world, x, y, z, color, forceGen);
 	}
 
-	public ItemStack getLogType() {
+	public BlockKey getLogType() {
 		return validLogs.get(rand.nextInt(validLogs.size()));
 	}
 
 	public void generateNormalTree(World world, int x, int y, int z, ReikaDyeHelper color, boolean force) {
 		if (force || ColorTreeGenerator.canGenerateTree(world, x, z)) {
 			int meta = color.ordinal();
-			ItemStack log = this.getLogType();
+			BlockKey log = this.getLogType();
 			int w = 2;
 			int h = 5+rand.nextInt(3);
 
 			for (int i = 0; i < h; i++) {
-				ReikaWorldHelper.setBlock(world, x, y+i, z, log);
+				log.place(world, x, y+i, z);
 			}
 			for (int i = -w; i <= w; i++) {
 				for (int j = -w; j <= w; j++) {
@@ -151,12 +151,12 @@ public class TreeShaper {
 	public void generateTallTree(World world, int x, int y, int z, ReikaDyeHelper color, boolean force) {
 		if (force || ColorTreeGenerator.canGenerateTree(world, x, z)) {
 			int h = 10+rand.nextInt(3);
-			ItemStack log = this.getLogType();
+			BlockKey log = this.getLogType();
 			int meta = color.ordinal();
 			int w = 2;
 
 			for (int i = 0; i < h; i++) {
-				ReikaWorldHelper.setBlock(world, x, y+i, z, log);
+				log.place(world, x, y+i, z);
 			}
 			for (int i = -1; i <= 1; i++) {
 				for (int j = -1; j <= 1; j++) {
@@ -234,18 +234,18 @@ public class TreeShaper {
 	public void generateLumpyTree(World world, int x, int y, int z, ReikaDyeHelper color, boolean force) {
 		if (force || ColorTreeGenerator.canGenerateTree(world, x, z)) {
 			int h = 8+rand.nextInt(4);
-			ItemStack log = this.getLogType();
+			BlockKey log = this.getLogType();
 			int meta = color.ordinal();
 
 			for (int i = 0; i < h; i++) {
-				ReikaWorldHelper.setBlock(world, x, y+i, z, log);
+				log.place(world, x, y+i, z);
 			}
 
 			for (int i = 1; i < 2; i++) {
 				int dx = x+i;
 				int dy = y+h-2;
 				int dz = z;
-				ReikaWorldHelper.setBlock(world, dx, dy, dz, log);
+				log.place(world, dx, dy, dz);
 				for (int j = -1; j <= 1; j++) {
 					for (int k = -1; k <= 1; k++) {
 						for (int m = -1; m <= 1; m++) {
@@ -258,7 +258,7 @@ public class TreeShaper {
 
 				dx = x-i;
 				dz = z;
-				ReikaWorldHelper.setBlock(world, dx, dy, dz, log);
+				log.place(world, dx, dy, dz);
 				for (int j = -1; j <= 1; j++) {
 					for (int k = -1; k <= 1; k++) {
 						for (int m = -1; m <= 1; m++) {
@@ -271,7 +271,7 @@ public class TreeShaper {
 
 				dx = x;
 				dz = z-i;
-				ReikaWorldHelper.setBlock(world, dx, dy, dz, log);
+				log.place(world, dx, dy, dz);
 				for (int j = -1; j <= 1; j++) {
 					for (int k = -1; k <= 1; k++) {
 						for (int m = -1; m <= 1; m++) {
@@ -284,7 +284,7 @@ public class TreeShaper {
 
 				dx = x;
 				dz = z+i;
-				ReikaWorldHelper.setBlock(world, dx, dy, dz, log);
+				log.place(world, dx, dy, dz);
 				for (int j = -1; j <= 1; j++) {
 					for (int k = -1; k <= 1; k++) {
 						for (int m = -1; m <= 1; m++) {
@@ -298,7 +298,7 @@ public class TreeShaper {
 				dx = x+i;
 				dy = y+h-6;
 				dz = z;
-				ReikaWorldHelper.setBlock(world, dx, dy, dz, log);
+				log.place(world, dx, dy, dz);
 				for (int j = -1; j <= 1; j++) {
 					for (int k = -1; k <= 1; k++) {
 						for (int m = -1; m <= 1; m++) {
@@ -311,7 +311,7 @@ public class TreeShaper {
 
 				dx = x-i;
 				dz = z;
-				ReikaWorldHelper.setBlock(world, dx, dy, dz, log);
+				log.place(world, dx, dy, dz);
 				for (int j = -1; j <= 1; j++) {
 					for (int k = -1; k <= 1; k++) {
 						for (int m = -1; m <= 1; m++) {
@@ -324,7 +324,7 @@ public class TreeShaper {
 
 				dx = x;
 				dz = z-i;
-				ReikaWorldHelper.setBlock(world, dx, dy, dz, log);
+				log.place(world, dx, dy, dz);
 				for (int j = -1; j <= 1; j++) {
 					for (int k = -1; k <= 1; k++) {
 						for (int m = -1; m <= 1; m++) {
@@ -337,7 +337,7 @@ public class TreeShaper {
 
 				dx = x;
 				dz = z+i;
-				ReikaWorldHelper.setBlock(world, dx, dy, dz, log);
+				log.place(world, dx, dy, dz);
 				for (int j = -1; j <= 1; j++) {
 					for (int k = -1; k <= 1; k++) {
 						for (int m = -1; m <= 1; m++) {
@@ -376,7 +376,7 @@ public class TreeShaper {
 		}
 	}
 
-	private boolean canGenerateLeavesAt(World world, int x, int y, int z) {
+	public static boolean canGenerateLeavesAt(World world, int x, int y, int z) {
 		boolean soft = ReikaWorldHelper.softBlocks(world, x, y, z);
 		boolean leaves = world.getBlock(x, y, z) == Blocks.leaves || world.getBlock(x, y, z) == Blocks.leaves2;
 		//ReikaJavaLibrary.pConsole(x+", "+y+", "+z, !soft && !leaves && world.getBlock(x, y, z) != Blocks.log.blockID);

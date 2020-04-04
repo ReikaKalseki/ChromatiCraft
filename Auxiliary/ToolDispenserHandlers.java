@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -54,7 +54,7 @@ public class ToolDispenserHandlers {
 				EntityPlayer ep = ReikaDispenserHelper.getDispenserPlayer(ibs, is);
 				ForgeDirection facing = ForgeDirection.VALID_DIRECTIONS[BlockDispenser.func_149937_b(ibs.getBlockMetadata()).ordinal()];
 				ep.setLocationAndAngles(ibs.getX(), ibs.getY()-1.62, ibs.getZ(), -ReikaDirectionHelper.getRelativeAngle(facing, ForgeDirection.SOUTH), 0);
-				((ProjectileFiringTool)i).fire(is, ibs.getWorld(), ep);
+				((ProjectileFiringTool)i).fire(is, ibs.getWorld(), ep, false);
 			}
 			else {
 				ChromatiCraft.logger.logError("Invalid item "+is.getDisplayName()+" for projectile-tool dispenser action!");

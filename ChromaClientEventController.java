@@ -92,8 +92,8 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.GUI.GuiAuraPouch;
-import Reika.ChromatiCraft.GUI.GuiItemWithFilter;
 import Reika.ChromatiCraft.GUI.GuiItemBurner.ButtonItemBurner;
+import Reika.ChromatiCraft.GUI.GuiItemWithFilter;
 import Reika.ChromatiCraft.Items.Tools.ItemFloatstoneBoots;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
@@ -2029,7 +2029,7 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 	}
 
 	@SubscribeEvent
-	public void renderItemTags(RenderItemInSlotEvent evt) {
+	public void renderItemTags(RenderItemInSlotEvent.Pre evt) {
 		if (GuiScreen.isCtrlKeyDown()) {
 			if (evt.hasItem() && evt.isHovered()) {
 				if (ProgressStage.ALLCOLORS.isPlayerAtStage(Minecraft.getMinecraft().thePlayer)) {

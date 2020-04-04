@@ -560,10 +560,11 @@ public class ModInteraction {
 		ChromatiCraft.logger.log("Adding DynSurrounds biome compat.");
 		try {
 			Class c = Class.forName("org.blockartistry.mod.DynSurround.data.BiomeRegistry");
+			Class c2 = Class.forName("org.blockartistry.mod.DynSurround.data.BiomeRegistry$Entry");
 			Method m = c.getDeclaredMethod("get", BiomeGenBase.class);
 			m.setAccessible(true);
-			Field f1 = c.getDeclaredField("sounds");
-			Field f2 = c.getDeclaredField("spotSounds");
+			Field f1 = c2.getDeclaredField("sounds");
+			Field f2 = c2.getDeclaredField("spotSounds");
 			f1.setAccessible(true);
 			f2.setAccessible(true);
 			Object entry = m.invoke(null, ChromatiCraft.glowingcliffs);

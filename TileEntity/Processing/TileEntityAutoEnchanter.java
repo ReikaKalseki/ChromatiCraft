@@ -172,7 +172,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	}
 
 	private boolean isItemEnchantable(ItemStack is) {
-		if (is.getItem() == Items.book)
+		if (is.getItem() == Items.book || is.getItem() == Items.enchanted_book)
 			return true;
 		if (is.getItem() instanceof EnchantableItem)
 			return true;
@@ -207,7 +207,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	}
 
 	public boolean isEnchantValid(Enchantment e, ItemStack is, Item i, boolean checkLevels) {
-		if (i == Items.book) {
+		if (i == Items.book || i == Items.enchanted_book) {
 			if (!e.isAllowedOnBooks()) {
 				return false;
 			}
@@ -274,7 +274,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		if (i instanceof ItemShears)
 			return e.type == EnumEnchantmentType.digger || e.type == EnumEnchantmentType.breakable || e.type == EnumEnchantmentType.all;
 
-		return i == Items.book ? true : e.canApply(is);
+		return i == Items.book || i == Items.enchanted_book ? true : e.canApply(is);
 	}
 
 	private void applyEnchants() {

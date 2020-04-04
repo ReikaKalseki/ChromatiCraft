@@ -29,6 +29,7 @@ import Reika.DragonAPI.Interfaces.Registry.TreeType;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 
 public class RainbowTreeGenerator {
@@ -107,9 +108,11 @@ public class RainbowTreeGenerator {
 			int dx = c.xCoord;
 			int dy = c.yCoord;
 			int dz = c.zCoord;
+			if (dy < y+2)
+				continue;
 			Block id = world.getBlock(dx, dy, dz);
 			if (id != Blocks.leaves && id != Blocks.leaves2 && id != Blocks.web) {
-				if (id != ChromaBlocks.RAINBOWSAPLING.getBlockInstance() && id != ChromaBlocks.RAINBOWLEAF.getBlockInstance()) {
+				if (id != ChromaBlocks.RAINBOWSAPLING.getBlockInstance() && id != ChromaBlocks.RAINBOWLEAF.getBlockInstance() && id != ForestryHandler.BlockEntry.SAPLING.getBlock()) {
 					if (!ReikaWorldHelper.softBlocks(world, dx, dy, dz)) {
 						//ReikaJavaLibrary.pConsole(id+"@"+Arrays.toString(xyz));
 						return false;
@@ -155,10 +158,6 @@ public class RainbowTreeGenerator {
 	public boolean tryGenerateSmallRainbowTree(World world, int x, int y, int z, Random rand, float hf) {
 		Block id = ChromaBlocks.RAINBOWLEAF.getBlockInstance();
 		TreeType wood = this.getLogType(rand);
-		Block log = wood.getLogID();
-		int meta = wood.getLogMetadatas().get(0);
-		int meta2 = wood.getLogMetadatas().get(1);
-		int meta3 = wood.getLogMetadatas().get(2);
 
 		int h0 = 2+rand.nextInt(3);
 		int h = h0+MathHelper.ceiling_float_int(hf*(5+rand.nextInt(7)));
@@ -176,7 +175,7 @@ public class RainbowTreeGenerator {
 		int w = 0;
 		for (int j = 0; j < h; j++) {
 			int dy = y+j;
-			world.setBlock(x, dy, z, log);
+			world.setBlock(x, dy, z, wood.getLogID(), wood.getLogMetadatas().get(0), 3);
 			if (j >= h0) {
 				boolean canUp = w < 5 && h-j-1 > w;
 				boolean canDown = w > 1;

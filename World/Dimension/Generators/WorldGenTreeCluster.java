@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.World.Dimension.Generators;
 import java.util.Random;
 
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -21,12 +20,12 @@ import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Auxiliary.WorldGenInterceptionRegistry;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Event.SetBlockEvent;
 import Reika.DragonAPI.Interfaces.Registry.TreeType;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 
 public class WorldGenTreeCluster extends ChromaWorldGenerator {
@@ -159,9 +158,9 @@ public class WorldGenTreeCluster extends ChromaWorldGenerator {
 			int lgh = baseLog+dl;
 			int h = lgh+baseHeight+dy;
 			int lh = h-lgh;
-			ItemStack log = gen.type.getItem();
+			BlockKey log = gen.type.getItem();
 			for (int i = 0; i < h; i++) {
-				ReikaWorldHelper.setBlock(world, x, y+i, z, log);
+				log.place(world, x, y+i, z);
 			}
 			y += lgh;
 			switch(this) {
@@ -186,7 +185,7 @@ public class WorldGenTreeCluster extends ChromaWorldGenerator {
 			}
 		}
 
-		private void generateGiant(World world, int x, int y, int z, Random rand, ItemStack log, TreeGen gen, int h) {
+		private void generateGiant(World world, int x, int y, int z, Random rand, BlockKey log, TreeGen gen, int h) {
 			for (int j = 0; j < h; j++) {
 				int r = 1;
 				if (j > 0 && j < h-2)
@@ -202,29 +201,29 @@ public class WorldGenTreeCluster extends ChromaWorldGenerator {
 				for (int i = -r; i <= r; i++) {
 					for (int k = -r; k <= r; k++) {
 						if ((i != 0 || k != 0) && (i*i+k*k <= r*r))
-							ReikaWorldHelper.setBlock(world, x+i, y+j, z+k, this.getLeaf(rand, gen));
+							this.setLeaf(world, x+i, y+j, z+k, rand, gen);
 					}
 				}
 			}
 			for (int i = 0; i < 2; i++)
-				ReikaWorldHelper.setBlock(world, x, y+h+i, z, this.getLeaf(rand, gen));
+				this.setLeaf(world, x, y+h+i, z, rand, gen);
 		}
 
-		private void generateHanging(World world, int x, int y, int z, Random rand, ItemStack log, TreeGen gen) {
+		private void generateHanging(World world, int x, int y, int z, Random rand, BlockKey log, TreeGen gen) {
 			this.generateOak(world, x, y, z, rand, log, gen);
 			for (int dy = y; dy >= y-3; dy--) {
 				for (int k = -2; k <= 2; k++) {
 					if (dy > y-3 || (k >= -1 && k <= 1)) {
-						ReikaWorldHelper.setBlock(world, x-2, dy, z+k, this.getLeaf(rand, gen));
-						ReikaWorldHelper.setBlock(world, x+2, dy, z+k, this.getLeaf(rand, gen));
-						ReikaWorldHelper.setBlock(world, x+k, dy, z+2, this.getLeaf(rand, gen));
-						ReikaWorldHelper.setBlock(world, x+k, dy, z-2, this.getLeaf(rand, gen));
+						this.setLeaf(world, x-2, dy, z+k, rand, gen);
+						this.setLeaf(world, x+2, dy, z+k, rand, gen);
+						this.setLeaf(world, x+k, dy, z+2, rand, gen);
+						this.setLeaf(world, x+k, dy, z-2, rand, gen);
 					}
 				}
 			}
 		}
 
-		private void generateNeedle(World world, int x, int y, int z, Random rand, ItemStack log, TreeGen gen, int h) {
+		private void generateNeedle(World world, int x, int y, int z, Random rand, BlockKey log, TreeGen gen, int h) {
 			for (int dy = y; dy < y+h; dy++) {
 				int r = dy == y || dy == y+h ? 1 : 2;
 				for (int i = 2; i < 6; i++) {
@@ -232,42 +231,42 @@ public class WorldGenTreeCluster extends ChromaWorldGenerator {
 					for (int k = 1; k <= r; k++) {
 						int dx = x+dir.offsetX*k;
 						int dz = z+dir.offsetZ*k;
-						ReikaWorldHelper.setBlock(world, dx, dy, dz, this.getLeaf(rand, gen));
+						this.setLeaf(world, dx, dy, dz, rand, gen);
 					}
 				}
 				if (r > 1) {
-					ReikaWorldHelper.setBlock(world, x+1, dy, z+1, this.getLeaf(rand, gen));
-					ReikaWorldHelper.setBlock(world, x-1, dy, z+1, this.getLeaf(rand, gen));
-					ReikaWorldHelper.setBlock(world, x+1, dy, z-1, this.getLeaf(rand, gen));
-					ReikaWorldHelper.setBlock(world, x-1, dy, z-1, this.getLeaf(rand, gen));
+					this.setLeaf(world, x+1, dy, z+1, rand, gen);
+					this.setLeaf(world, x-1, dy, z+1, rand, gen);
+					this.setLeaf(world, x+1, dy, z-1, rand, gen);
+					this.setLeaf(world, x-1, dy, z-1, rand, gen);
 				}
 			}
-			ReikaWorldHelper.setBlock(world, x, y+h, z, log);
-			ReikaWorldHelper.setBlock(world, x+1, y+h, z, this.getLeaf(rand, gen));
-			ReikaWorldHelper.setBlock(world, x-1, y+h, z, this.getLeaf(rand, gen));
-			ReikaWorldHelper.setBlock(world, x, y+h, z+1, this.getLeaf(rand, gen));
-			ReikaWorldHelper.setBlock(world, x, y+h, z-1, this.getLeaf(rand, gen));
-			ReikaWorldHelper.setBlock(world, x, y+h+1, z, this.getLeaf(rand, gen));
+			log.place(world, x, y+h, z);
+			this.setLeaf(world, x+1, y+h, z, rand, gen);
+			this.setLeaf(world, x-1, y+h, z, rand, gen);
+			this.setLeaf(world, x, y+h, z+1, rand, gen);
+			this.setLeaf(world, x, y+h, z-1, rand, gen);
+			this.setLeaf(world, x, y+h+1, z, rand, gen);
 		}
 
-		private void generateOak(World world, int x, int y, int z, Random rand, ItemStack log, TreeGen gen) {
+		private void generateOak(World world, int x, int y, int z, Random rand, BlockKey log, TreeGen gen) {
 			for (int j = 0; j < 3; j++) {
 				int r = j <= 1 ? 2 : 1;
 				for (int i = -r; i <= r; i++) {
 					for (int k = -r; k <= r; k++) {
 						if (i != 0 || k != 0)
-							ReikaWorldHelper.setBlock(world, x+i, y+j, z+k, this.getLeaf(rand, gen));
+							this.setLeaf(world, x+i, y+j, z+k, rand, gen);
 					}
 				}
 			}
-			ReikaWorldHelper.setBlock(world, x, y+3, z, this.getLeaf(rand, gen));
-			ReikaWorldHelper.setBlock(world, x+1, y+3, z, this.getLeaf(rand, gen));
-			ReikaWorldHelper.setBlock(world, x-1, y+3, z, this.getLeaf(rand, gen));
-			ReikaWorldHelper.setBlock(world, x, y+3, z+1, this.getLeaf(rand, gen));
-			ReikaWorldHelper.setBlock(world, x, y+3, z-1, this.getLeaf(rand, gen));
+			this.setLeaf(world, x, y+3, z, rand, gen);
+			this.setLeaf(world, x+1, y+3, z, rand, gen);
+			this.setLeaf(world, x-1, y+3, z, rand, gen);
+			this.setLeaf(world, x, y+3, z+1, rand, gen);
+			this.setLeaf(world, x, y+3, z-1, rand, gen);
 		}
 
-		private void generateTall(World world, int x, int y, int z, Random rand, ItemStack log, TreeGen gen, int h) {
+		private void generateTall(World world, int x, int y, int z, Random rand, BlockKey log, TreeGen gen, int h) {
 			this.generateNeedle(world, x, y, z, rand, log, gen, h);
 			for (int j = 1; j < h-1; j++) {
 				int r = j >= 2 && j < h-2 ? 3 : 2;
@@ -275,40 +274,44 @@ public class WorldGenTreeCluster extends ChromaWorldGenerator {
 					for (int k = -r; k <= r; k++) {
 						if (i != 0 || k != 0) {
 							if (((i == 0 && Math.abs(k) <= 2) || (k == 0 && Math.abs(i) <= 2)) && (j == 3 || j == h-3)) {
-								ReikaWorldHelper.setBlock(world, x+i, y+j, z+k, log);
+								log.place(world, x+i, y+j, z+k);
 							}
 							else {
 								if ((j == 2 || j == h-3) && ((Math.abs(k) == 2 && Math.abs(i) == 3) || (Math.abs(i) == 2 && Math.abs(k) == 3)))
 									continue;
 								if (Math.abs(i) != r || Math.abs(k) != r || (j >= h/2-1 && j <= h/2+1))
-									ReikaWorldHelper.setBlock(world, x+i, y+j, z+k, this.getLeaf(rand, gen));
+									this.setLeaf(world, x+i, y+j, z+k, rand, gen);
 							}
 						}
 					}
 				}
 			}
-			ReikaWorldHelper.setBlock(world, x, y+h, z, this.getLeaf(rand, gen));
-			ReikaWorldHelper.setBlock(world, x+1, y+h, z, this.getLeaf(rand, gen));
-			ReikaWorldHelper.setBlock(world, x-1, y+h, z, this.getLeaf(rand, gen));
-			ReikaWorldHelper.setBlock(world, x, y+h, z+1, this.getLeaf(rand, gen));
-			ReikaWorldHelper.setBlock(world, x, y+h, z-1, this.getLeaf(rand, gen));
+			this.setLeaf(world, x, y+h, z, rand, gen);
+			this.setLeaf(world, x+1, y+h, z, rand, gen);
+			this.setLeaf(world, x-1, y+h, z, rand, gen);
+			this.setLeaf(world, x, y+h, z+1, rand, gen);
+			this.setLeaf(world, x, y+h, z-1, rand, gen);
 		}
 
-		private void generateWide(World world, int x, int y, int z, Random rand, ItemStack log, TreeGen gen) {
+		private void generateWide(World world, int x, int y, int z, Random rand, BlockKey log, TreeGen gen) {
 			for (int j = 0; j < 4; j++) {
 				int r = j <= 1 ? 3 : j < 3 ? 2 : 1;
 				for (int i = -r; i <= r; i++) {
 					for (int k = -r; k <= r; k++) {
 						if (i != 0 || k != 0 || j == 3)
-							ReikaWorldHelper.setBlock(world, x+i, y+j, z+k, this.getLeaf(rand, gen));
+							this.setLeaf(world, x+i, y+j, z+k, rand, gen);
 					}
 				}
 			}
 		}
 
-		private ItemStack getLeaf(Random rand, TreeGen gen) {
+		private void setLeaf(World world, int x, int y, int z, Random rand, TreeGen gen) {
+			this.getLeaf(rand, gen).place(world, x, y, z);
+		}
+
+		private BlockKey getLeaf(Random rand, TreeGen gen) {
 			if (gen == TreeGen.LIGHT) {
-				return new ItemStack(gen.type.getLeafID(), rand.nextInt(16));
+				return new BlockKey(gen.type.getLeafID(), rand.nextInt(16));
 			}
 			else {
 				return gen.type.getBasicLeaf();

@@ -273,6 +273,8 @@ public class EssentiaNetwork {
 		public final Aspect aspect;
 		public final int amount;
 
+		private long lastParticleTick;
+
 		private EssentiaPath(Aspect a, int amt, EssentiaPathCache p) {
 			aspect = a;
 			amount = amt;
@@ -286,7 +288,11 @@ public class EssentiaNetwork {
 		}
 
 		public void update(World world, int x, int y, int z) {
+			long time = world.getTotalWorldTime();
+			if (time-lastParticleTick <= 2)
+				return;
 			this.doParticles(world, x, y, z);
+			lastParticleTick = time;
 		}
 
 		private void doParticles(World world, int x, int y, int z) {

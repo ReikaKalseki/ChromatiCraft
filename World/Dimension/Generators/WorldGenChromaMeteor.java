@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -92,7 +92,7 @@ public class WorldGenChromaMeteor extends ChromaWorldGenerator {
 	}
 
 	private BlockKey getMeteorBlock() {
-		return ModList.METEORCRAFT.isLoaded() ? new BlockKey(MeteorGenerator.instance.getBlock(MeteorType.STONE, true)) : basicOres.getRandomEntry();
+		return ModList.METEORCRAFT.isLoaded() ? MeteorGenerator.instance.getBlock(MeteorType.STONE, true) : basicOres.getRandomEntry();
 	}
 
 	private void generateTrack(World world, int x, int y, int z, Random rand, int r, int ra, double ang) {

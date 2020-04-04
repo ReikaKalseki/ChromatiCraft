@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -21,7 +21,6 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.TreeShaper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -111,9 +110,9 @@ public class BlockDyeSapling extends BlockSapling {
 			return false;
 		if (ReikaBlockHelper.isLiquid(id))
 			return false;
-		for (int i = 0; i < 6; i++) {
+		for (int i = 1; i < 6; i++) {
 			id = world.getBlock(x, y+i, z);
-			if (!ReikaWorldHelper.softBlocks(world, x, y+i, z) && !(i == 0 && id == ChromaBlocks.DYESAPLING.getBlockInstance()))
+			if (!ReikaWorldHelper.softBlocks(world, x, y+i, z))
 				return false;
 			if (ReikaBlockHelper.isLiquid(id))
 				return false;

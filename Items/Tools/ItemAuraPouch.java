@@ -43,8 +43,8 @@ public class ItemAuraPouch extends ItemChromaTool implements ActivatedInventoryI
 		boolean[] active = this.getActiveSlots(is);
 		for (int i = 0; i < inv.length; i++) {
 			if (active[i] && inv[i] != null) {
-				if (e instanceof EntityPlayer && inv[i].getItem() instanceof ItemProjectileFiringTool && e.ticksExisted%20 == 0) {
-					((ItemProjectileFiringTool)inv[i].getItem()).fire(inv[i], world, (EntityPlayer)e);
+				if (e instanceof EntityPlayer && inv[i].getItem() instanceof ItemProjectileFiringTool && e.ticksExisted%10 == 0) {
+					((ItemProjectileFiringTool)inv[i].getItem()).fire(inv[i], world, (EntityPlayer)e, true);
 				}
 				inv[i].getItem().onUpdate(inv[i], world, e, slot, false);
 			}

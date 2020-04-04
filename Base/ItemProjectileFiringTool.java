@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2018
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -17,6 +17,7 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ProjectileFiringTool;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 
 
@@ -29,14 +30,20 @@ public abstract class ItemProjectileFiringTool extends ItemChromaTool implements
 	@Override
 	public final ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
 		if (!world.isRemote) {
-			this.fire(is, world, ep);
+			this.fire(is, world, ep, false);
 		}
 		return is;
 	}
 
-	public final void fire(ItemStack is, World world, EntityPlayer ep) {
+	public final void fire(ItemStack is, World world, EntityPlayer ep, boolean randomVec) {
 		Entity e = this.createProjectile(is, world, ep);
 		Vec3 vec = ep.getLookVec();
+		if (randomVec) {
+			vec.xCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
+			vec.yCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
+			vec.zCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
+			vec.normalize();
+		}
 		e.setLocationAndAngles(ep.posX+vec.xCoord, ep.posY+vec.yCoord+1.5, ep.posZ+vec.zCoord, 0, 0);
 		world.spawnEntityInWorld(e);
 		ReikaSoundHelper.playSoundAtEntity(world, e, "random.fizz", 2, 0.7F);
@@ -55,14 +62,20 @@ public abstract class ItemProjectileFiringTool extends ItemChromaTool implements
 			if (!world.isRemote) {
 				if (this.handleUseAllowance(ep))
 					return is;
-				this.fire(is, world, ep);
+				this.fire(is, world, ep, false);
 			}
 			return is;
 		}
 
-		public final void fire(ItemStack is, World world, EntityPlayer ep) {
+		public final void fire(ItemStack is, World world, EntityPlayer ep, boolean randomVec) {
 			Entity e = this.createProjectile(is, world, ep);
 			Vec3 vec = ep.getLookVec();
+			if (randomVec) {
+				vec.xCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
+				vec.yCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
+				vec.zCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
+				vec.normalize();
+			}
 			e.setLocationAndAngles(ep.posX+vec.xCoord, ep.posY+vec.yCoord+1.5, ep.posZ+vec.zCoord, 0, 0);
 			world.spawnEntityInWorld(e);
 			ReikaSoundHelper.playSoundAtEntity(world, e, "random.fizz", 2, 0.7F);

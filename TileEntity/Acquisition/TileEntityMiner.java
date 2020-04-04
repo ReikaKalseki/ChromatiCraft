@@ -515,7 +515,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		else {
 			this.dropItems(world, x, y, z, id.getDrops(world, dx, dy, dz, fortuneLevel));
 		}
-		ReikaWorldHelper.setBlock(world, dx, dy, dz, id.getReplacementBlock(world, dx, dy, dz));
+		id.getReplacementBlock(world, dx, dy, dz).place(world, dx, dy, dz);
 	}
 
 	private void dropBlock(World world, int x, int y, int z, int dx, int dy, int dz, Block id, int meta2) {

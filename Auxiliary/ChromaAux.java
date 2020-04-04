@@ -99,6 +99,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ChiselBlockHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
@@ -657,7 +658,7 @@ public class ChromaAux {
 	public static int groundOpacity(IBlockAccess iba, int x, int y, int z, Block b) {
 		if (iba instanceof World) {
 			World w = (World)iba;
-			if (w.getWorldInfo().getTerrainType() == WorldType.FLAT && ReikaObfuscationHelper.isDeObfEnvironment())
+			if (!(ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(w)) && w.getWorldInfo().getTerrainType() == WorldType.FLAT && ReikaObfuscationHelper.isDeObfEnvironment())
 				return b.getLightOpacity();
 			if (!ReikaWorldHelper.isChunkPastNoiseGen(w, x >> 4, z >> 4)) {
 				return b.getLightOpacity();
