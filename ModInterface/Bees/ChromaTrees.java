@@ -91,6 +91,19 @@ public class ChromaTrees {
 		AlleleManager.ersatzSpecimen.put(ChromaBlocks.RAINBOWLEAF.getStackOf(), tree);
 	}
 
+	public static TreeSpecies getRainbowTree() {
+		return rainbowTree;
+	}
+
+	public static TreeSpecies getDyeTree(CrystalElement e, boolean hybrid) {
+		TreeSpecies[] arr = hybrid ? hybridDyeTrees : dyeTrees;
+		return arr[e.ordinal()];
+	}
+
+	public static boolean isDyeTree(IAlleleTreeSpecies ie) {
+		return ie instanceof DyeTreeBase;
+	}
+
 	private static String[] getHybridParents(CrystalElement color) {
 		switch(color) {
 			case BLACK:
@@ -192,7 +205,7 @@ public class ChromaTrees {
 
 		@Override
 		public int getLeafColour(boolean pollinated) {
-			return Color.HSBtoRGB(rand.nextFloat(), 0.7F, 1F);
+			return Color.HSBtoRGB((int)((System.currentTimeMillis()/10)%360)/360F, 0.7F, 1F);
 		}
 
 		@Override
@@ -221,7 +234,7 @@ public class ChromaTrees {
 			if (big) {
 				if (RainbowTreeGenerator.getInstance().checkRainbowTreeSpace(world, x, y, z)) {
 					//RainbowTreeGenerator.getInstance().generateLargeRainbowTree(world, x, y, z, rand);
-					FilledBlockArray arr = RainbowTreeBlueprint.getBlueprint(world, x, y, z, ReikaTreeHelper.OAK);
+					FilledBlockArray arr = RainbowTreeBlueprint.getBlueprint(world, x-5, y-2, z-5, ReikaTreeHelper.OAK);
 					for (Coordinate c : arr.keySet()) {
 						BlockKey bk = arr.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord);
 						if (bk.blockID == Blocks.log) {
