@@ -38,11 +38,17 @@ public class EntityLightShot extends EntityFireball {
 
 	private HashSet<Coordinate> trailCoords = new HashSet();
 
-	public EntityLightShot(World world, EntityPlayer ep) {
+	public EntityLightShot(World world, EntityPlayer ep, boolean randomVec) {
 		super(world);
 		firingPlayer = ep;
 
 		Vec3 vec = ep.getLookVec();
+		if (randomVec) {
+			vec.xCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
+			vec.yCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
+			vec.zCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
+			vec.normalize();
+		}
 		double v = 3.5;
 		motionX = v*vec.xCoord;
 		motionY = v*vec.yCoord;

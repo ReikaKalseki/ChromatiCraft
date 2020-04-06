@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -57,11 +57,17 @@ public class EntityChainGunShot extends EntityFireball {
 	private int immunityTicks = 0;
 	private Entity lastHit = null;
 
-	public EntityChainGunShot(World world, EntityPlayer ep) {
+	public EntityChainGunShot(World world, EntityPlayer ep, boolean randomVec) {
 		super(world);
 		firingPlayer = ep;
 
 		Vec3 vec = ep.getLookVec();
+		if (randomVec) {
+			vec.xCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
+			vec.yCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
+			vec.zCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
+			vec.normalize();
+		}
 		double v = 1.5;
 		motionX = v*vec.xCoord;
 		motionY = v*vec.yCoord;

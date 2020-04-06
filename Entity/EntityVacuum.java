@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -59,12 +59,18 @@ public class EntityVacuum extends Entity implements IEntityAdditionalSpawnData, 
 	private int entityRange = ReikaRandomHelper.getRandomPlusMinus(10, 2);
 	private int blockRange = ReikaRandomHelper.getRandomPlusMinus(6, 2);
 
-	public EntityVacuum(World world, EntityPlayer ep) {
+	public EntityVacuum(World world, EntityPlayer ep, boolean randomVec) {
 		super(world);
 		noClip = true;
 		firingPlayer = ep;
 
 		Vec3 vec = ep.getLookVec();
+		if (randomVec) {
+			vec.xCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
+			vec.yCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
+			vec.zCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
+			vec.normalize();
+		}
 		double v = 0.85;
 		motionX = v*vec.xCoord;
 		motionY = v*vec.yCoord;

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -34,8 +34,8 @@ public class ItemVacuumGun extends ProgressGatedProjectileFiringTool {
 	}
 
 	@Override
-	protected Entity createProjectile(ItemStack is, World world, EntityPlayer ep) {
-		return new EntityVacuum(world, ep);
+	protected Entity createProjectile(ItemStack is, World world, EntityPlayer ep, boolean randomVec) {
+		return new EntityVacuum(world, ep, randomVec);
 	}
 
 }

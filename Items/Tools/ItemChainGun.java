@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -24,8 +24,8 @@ public class ItemChainGun extends ItemProjectileFiringTool {
 	}
 
 	@Override
-	protected Entity createProjectile(ItemStack is, World world, EntityPlayer ep) {
-		return new EntityChainGunShot(world, ep);
+	protected Entity createProjectile(ItemStack is, World world, EntityPlayer ep, boolean randomVec) {
+		return new EntityChainGunShot(world, ep, randomVec);
 	}
 
 }

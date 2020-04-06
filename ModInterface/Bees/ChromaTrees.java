@@ -74,9 +74,11 @@ public class ChromaTrees {
 			tree.register();
 			ITree ii = tree.constructIndividual();
 			AlleleManager.ersatzSaplings.put(ChromaBlocks.DECAY.getStackOf(color), ii);
-			AlleleManager.ersatzSaplings.put(ChromaBlocks.DYELEAF.getStackOf(color), ii);
+			//AlleleManager.ersatzSaplings.put(ChromaBlocks.DYELEAF.getStackOf(color), ii);
 			AlleleManager.ersatzSpecimen.put(ChromaBlocks.DECAY.getStackOf(color), ii);
-			AlleleManager.ersatzSpecimen.put(ChromaBlocks.DYELEAF.getStackOf(color), ii);
+			AlleleManager.ersatzSaplings.put(ChromaBlocks.DYESAPLING.getStackOf(color), ii);
+			AlleleManager.ersatzSpecimen.put(ChromaBlocks.DYESAPLING.getStackOf(color), ii);
+			//AlleleManager.ersatzSpecimen.put(ChromaBlocks.DYELEAF.getStackOf(color), ii);
 			dyeTrees[i] = tree;
 
 			HybridDyeTree tree2 = new HybridDyeTree(color, getHybridParents(color));
@@ -87,8 +89,10 @@ public class ChromaTrees {
 		rainbowTree = new RainbowTree();
 		rainbowTree.register();
 		ITree tree = rainbowTree.constructIndividual();
-		AlleleManager.ersatzSaplings.put(ChromaBlocks.RAINBOWLEAF.getStackOf(), tree);
-		AlleleManager.ersatzSpecimen.put(ChromaBlocks.RAINBOWLEAF.getStackOf(), tree);
+		AlleleManager.ersatzSaplings.put(ChromaBlocks.RAINBOWLEAF.getStackOfMetadata(0), tree);
+		AlleleManager.ersatzSpecimen.put(ChromaBlocks.RAINBOWLEAF.getStackOfMetadata(0), tree);
+		AlleleManager.ersatzSaplings.put(ChromaBlocks.RAINBOWSAPLING.getStackOf(), tree);
+		AlleleManager.ersatzSpecimen.put(ChromaBlocks.RAINBOWSAPLING.getStackOf(), tree);
 	}
 
 	public static TreeSpecies getRainbowTree() {

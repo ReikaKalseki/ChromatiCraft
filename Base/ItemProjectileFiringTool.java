@@ -17,7 +17,6 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ProjectileFiringTool;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 
 
@@ -36,20 +35,14 @@ public abstract class ItemProjectileFiringTool extends ItemChromaTool implements
 	}
 
 	public final void fire(ItemStack is, World world, EntityPlayer ep, boolean randomVec) {
-		Entity e = this.createProjectile(is, world, ep);
+		Entity e = this.createProjectile(is, world, ep, randomVec);
 		Vec3 vec = ep.getLookVec();
-		if (randomVec) {
-			vec.xCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
-			vec.yCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
-			vec.zCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
-			vec.normalize();
-		}
 		e.setLocationAndAngles(ep.posX+vec.xCoord, ep.posY+vec.yCoord+1.5, ep.posZ+vec.zCoord, 0, 0);
 		world.spawnEntityInWorld(e);
 		ReikaSoundHelper.playSoundAtEntity(world, e, "random.fizz", 2, 0.7F);
 	}
 
-	protected abstract Entity createProjectile(ItemStack is, World world, EntityPlayer ep);
+	protected abstract Entity createProjectile(ItemStack is, World world, EntityPlayer ep, boolean randomVec);
 
 	public static abstract class ProgressGatedProjectileFiringTool extends ItemProgressGatedTool implements ProjectileFiringTool {
 
@@ -68,20 +61,14 @@ public abstract class ItemProjectileFiringTool extends ItemChromaTool implements
 		}
 
 		public final void fire(ItemStack is, World world, EntityPlayer ep, boolean randomVec) {
-			Entity e = this.createProjectile(is, world, ep);
+			Entity e = this.createProjectile(is, world, ep, randomVec);
 			Vec3 vec = ep.getLookVec();
-			if (randomVec) {
-				vec.xCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
-				vec.yCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
-				vec.zCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
-				vec.normalize();
-			}
 			e.setLocationAndAngles(ep.posX+vec.xCoord, ep.posY+vec.yCoord+1.5, ep.posZ+vec.zCoord, 0, 0);
 			world.spawnEntityInWorld(e);
 			ReikaSoundHelper.playSoundAtEntity(world, e, "random.fizz", 2, 0.7F);
 		}
 
-		protected abstract Entity createProjectile(ItemStack is, World world, EntityPlayer ep);
+		protected abstract Entity createProjectile(ItemStack is, World world, EntityPlayer ep, boolean randomVec);
 
 	}
 

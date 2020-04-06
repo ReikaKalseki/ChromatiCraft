@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -38,6 +39,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 
 public class BlockDyeLeaf extends BlockCustomLeaf {
@@ -225,7 +227,8 @@ public class BlockDyeLeaf extends BlockCustomLeaf {
 
 	@Override
 	public boolean isMatchingLeaf(IBlockAccess iba, int x, int y, int z, int lookX, int lookY, int lookZ) {
-		return iba.getBlock(lookX, lookY, lookZ) == this && iba.getBlockMetadata(x, y, z) == iba.getBlockMetadata(lookX, lookY, lookZ);
+		Block b = iba.getBlock(lookX, lookY, lookZ);
+		return (ModList.FORESTRY.isLoaded() && b == ForestryHandler.BlockEntry.LEAF.getBlock()) || (b == this && iba.getBlockMetadata(x, y, z) == iba.getBlockMetadata(lookX, lookY, lookZ));
 	}
 
 	@Override

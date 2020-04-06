@@ -214,11 +214,6 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 		TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new TakeImage(new WorldLocation(this), flag)), 2);
 	}
 
-	@SideOnly(Side.CLIENT)
-	public static String getTextureID(WorldLocation loc) {
-		return "telegate "+loc.toString();
-	}
-
 	private static class TakeImage implements ScheduledEvent {
 
 		private final WorldLocation loc;
@@ -233,14 +228,15 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 		public void fire() {
 			Minecraft mc = Minecraft.getMinecraft();
 			File dir = getPreviewFolder();
-			File f = new File(new File(getPreviewFolder(), "screenshots"), getPreviewFilename(loc));
+			String prev = getPreviewFilename(loc);
+			File f = new File(new File(getPreviewFolder(), "screenshots"), prev);
 			if (f.exists())
 				f.delete();
 			f.getParentFile().mkdirs();
-			ScreenShotHelper.saveScreenshot(dir, getPreviewFilename(loc), mc.displayWidth, mc.displayHeight, mc.getFramebuffer());
+			ScreenShotHelper.saveScreenshot(dir, prev, mc.displayWidth, mc.displayHeight, mc.getFramebuffer());
 			mc.gameSettings.hideGUI = unhideGUI;
 			imageCache.remove(loc);
-			ReikaTextureHelper.resetTexture(null, getTextureID(loc));
+			ReikaTextureHelper.resetTexture(prev);
 		}
 
 		@Override
@@ -253,6 +249,11 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 	@SideOnly(Side.CLIENT)
 	private static File getPreviewFolder() {
 		return new File(DragonAPICore.getMinecraftDirectoryString(), "mods/Reika/ChromatiCraft/GateShots");
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static String getTextureID(WorldLocation loc) {
+		return "telegate "+loc.toString();
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -826,6 +827,11 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 	@Override
 	public AxisAlignedBB getRenderBoundingBox() {
 		return this.hasStructure() ? ReikaAABBHelper.getBlockAABB(this).expand(6, 6, 6) : super.getRenderBoundingBox();
+	}
+
+	@Override
+	public double getMaxRenderDistanceSquared()  {
+		return super.getMaxRenderDistanceSquared()*4;
 	}
 
 	@Override

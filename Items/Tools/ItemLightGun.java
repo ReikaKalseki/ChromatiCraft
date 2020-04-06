@@ -24,8 +24,8 @@ public class ItemLightGun extends ItemProjectileFiringTool {
 	}
 
 	@Override
-	protected Entity createProjectile(ItemStack is, World world, EntityPlayer ep) {
-		return new EntityLightShot(world, ep);
+	protected Entity createProjectile(ItemStack is, World world, EntityPlayer ep, boolean randomVec) {
+		return new EntityLightShot(world, ep, randomVec);
 	}
 
 }

@@ -121,6 +121,14 @@ public class GuiStructure extends GuiBookSection {
 		if (page == ChromaResearch.VOIDTRAPSTRUCT || page == ChromaResearch.VOIDTRAPSTRUCTN) {
 			array.setBlock(array.getMidX(), array.getMaxY(), array.getMidZ(), ChromaTiles.VOIDTRAP.getBlock(), ChromaTiles.VOIDTRAP.getBlockMetadata());
 		}
+		if (page == ChromaResearch.GATESTRUCT) {
+			for (int i = 0; i <= 1; i++) {
+				array.setBlock(array.getMidX()+3-i, array.getMinY()+3+i, array.getMidZ(), Blocks.air);
+				array.setBlock(array.getMidX()-3+i, array.getMinY()+3+i, array.getMidZ(), Blocks.air);
+				array.setBlock(array.getMidX(), array.getMinY()+3+i, array.getMidZ()+3-i, Blocks.air);
+				array.setBlock(array.getMidX(), array.getMinY()+3+i, array.getMidZ()-3+i, Blocks.air);
+			}
+		}
 		HashSet<Coordinate> set = new HashSet();
 		switch(page) {
 			case TREESEND:
