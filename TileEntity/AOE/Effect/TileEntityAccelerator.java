@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 import java.util.HashMap;
 import java.util.Locale;
 
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -27,6 +28,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 
 public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 
@@ -36,7 +38,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 
 	public static int debugLevel = 0;
 
-	private int ticksSinceLagPausedWarning = 100000;
+	private int[] lagTimer = new int[6];
 
 	private static final Acceleration blacklistKey = new Acceleration() {
 		@Override
@@ -125,12 +127,15 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 
 	@Override
 	protected EffectResult tickDirection(World world, int x, int y, int z, ForgeDirection dir, long time) {
+		if (lagTimer[dir.ordinal()] > 0) {
+			ReikaParticleHelper.CLOUD.spawnAroundBlock(world, x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ, 4);
+			lagTimer[dir.ordinal()]--;
+		}
 		TileEntity te = this.getAdjacentTileEntity(dir);
 		Acceleration a = this.getAccelerate(te);
 		if (debugLevel > 0) {
 			ReikaJavaLibrary.pConsole(te+": "+(a != null ? a.getClass() : null));
 		}
-		ticksSinceLagPausedWarning++;
 		if (a != blacklistKey) {
 			int max = this.getAccel();
 			if (debugLevel > 1) {
@@ -146,7 +151,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 					this.writeError(e);
 				}
 				if (MAX_LAG > 0 && System.nanoTime()-time >= MAX_LAG) {
-					this.logLagWarning(time, te);
+					this.logLagWarning(time, dir, te);
 					return EffectResult.FINAL_ACTION;
 				}
 			}
@@ -157,7 +162,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 					}
 					te.updateEntity();
 					if (MAX_LAG > 0 && System.nanoTime()-time >= MAX_LAG) {
-						this.logLagWarning(time, te);
+						this.logLagWarning(time, dir, te);
 						return EffectResult.FINAL_ACTION;
 					}
 				}
@@ -167,13 +172,30 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 		return EffectResult.CONTINUE;
 	}
 
-	private void logLagWarning(long time, TileEntity te) {
+	private void logLagWarning(long time, ForgeDirection dir, TileEntity te) {
+		/*
 		if (ticksSinceLagPausedWarning >= 20) {
 			long dur = System.nanoTime()-time;
 			String s = "Tile Accelerator "+this+" is self-throttling due to lag ("+dur+" ns), accelerating "+te;
 			ChromatiCraft.logger.log(s);
 			ticksSinceLagPausedWarning = 0;
-		}
+		}*/
+		lagTimer[dir.ordinal()] = 20;
+	}
+
+	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		if (NBT.hasKey("lag"))
+			lagTimer = NBT.getIntArray("lag");
+	}
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		NBT.setIntArray("lag", lagTimer);
 	}
 
 	private static Acceleration getAccelerate(TileEntity te) {

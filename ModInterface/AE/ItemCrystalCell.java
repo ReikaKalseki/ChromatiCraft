@@ -163,6 +163,9 @@ public class ItemCrystalCell extends ItemChromaTool implements SpriteRenderCallb
 				if (b != null) {
 					n = b.getBasicName();
 				}
+				if (in != null && in.getItem() == Items.dye) {
+					n = "Dye";
+				}
 				li.add(String.format("Stores %s.", n));
 			}
 		}

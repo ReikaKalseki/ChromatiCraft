@@ -251,10 +251,11 @@ public class ProgressionLinking {
 				v5.startDrawingQuads();
 				int a = 220+(int)(32*Math.sin(System.currentTimeMillis()/250D));
 				v5.setColorRGBA_I(0xffffff, a);
-				v5.addVertexWithUV(-s, s, 0, icon.minU, icon.maxV);
-				v5.addVertexWithUV(s, s, 0, icon.maxU, icon.maxV);
-				v5.addVertexWithUV(s, -s, 0, icon.maxU, icon.minV);
-				v5.addVertexWithUV(-s, -s, 0, icon.minU, icon.minV);
+				TextureSubImage ico = icon != null ? icon : new TextureSubImage(ChromaIcons.X.getIcon());
+				v5.addVertexWithUV(-s, s, 0, ico.minU, ico.maxV);
+				v5.addVertexWithUV(s, s, 0, ico.maxU, ico.maxV);
+				v5.addVertexWithUV(s, -s, 0, ico.maxU, ico.minV);
+				v5.addVertexWithUV(-s, -s, 0, ico.minU, ico.minV);
 				v5.draw();
 			}
 		}

@@ -193,7 +193,7 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 	}
 
 	@Override
-	protected final void readSyncTag(NBTTagCompound NBT) {
+	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 
 		tier = NBT.getInteger("tier");
@@ -202,7 +202,7 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 	}
 
 	@Override
-	protected final void writeSyncTag(NBTTagCompound NBT) {
+	protected void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
 
 		NBT.setInteger("tier", tier);
