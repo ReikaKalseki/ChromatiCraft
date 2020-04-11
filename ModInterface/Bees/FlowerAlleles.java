@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -18,20 +18,24 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Block.Dye.BlockRainbowLeaf.LeafMetas;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.ConditionalProductProvider;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.ProductCondition;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray.MultiKey;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.GUI.StatusLogger;
+import Reika.DragonAPI.Interfaces.BlockCheck;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.DragonAPI.ModInteract.Bees.BasicFlowerProvider;
 import Reika.DragonAPI.ModInteract.Bees.BasicGene;
 import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Flowering;
+import Reika.DragonAPI.ModInteract.Bees.BlockCheckFlowerProvider;
 
 import forestry.api.apiculture.EnumBeeChromosome;
 import forestry.api.apiculture.IAlleleBeeSpecies;
@@ -181,7 +185,15 @@ public class FlowerAlleles {
 		static final ItemHashMap<ProductCondition> conditions = new ItemHashMap();
 
 		private FlowerProviderMulti() {
-			super(ChromaBlocks.RAINBOWLEAF.getBlockInstance(), 0, "Rainbow Leaves");
+			super(createKey(), "Rainbow Leaves");
+		}
+
+		private static BlockCheck createKey() {
+			MultiKey mk = new MultiKey();
+			mk.add(new BlockKey(ChromaBlocks.RAINBOWLEAF.getBlockInstance(), LeafMetas.BASIC.ordinal()));
+			mk.add(new BlockKey(ChromaBlocks.RAINBOWLEAF.getBlockInstance(), LeafMetas.SMALL.ordinal()));
+			mk.add(new BlockKey(ChromaBlocks.RAINBOWLEAF.getBlockInstance(), LeafMetas.TILE.ordinal()));
+			return mk;
 		}
 
 		@Override
@@ -338,10 +350,14 @@ public class FlowerAlleles {
 
 	}
 
-	static abstract class ConditionalProductFlowerProvider extends BasicFlowerProvider implements ConditionalProductProvider {
+	static abstract class ConditionalProductFlowerProvider extends BlockCheckFlowerProvider implements ConditionalProductProvider {
 
 		protected ConditionalProductFlowerProvider(Block b, int meta, String name) {
 			super(b, meta, name);
+		}
+
+		protected ConditionalProductFlowerProvider(BlockCheck bk, String name) {
+			super(bk, name);
 		}
 
 		@Override

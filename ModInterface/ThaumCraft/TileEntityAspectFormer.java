@@ -23,11 +23,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -164,7 +166,11 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 
 	private void checkAndRequest(Aspect a) {
 		if (a != null) {
-			ElementTagCompound tag = this.getAspectCost(a).scale(64);
+			int n = 64;
+			int f = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.LIGHTBLUE);
+			if (f > 0)
+				n *= TileEntityAccelerator.getAccelFromTier(f-1);
+			ElementTagCompound tag = this.getAspectCost(a).scale(n);
 			tag.clamp(CAPACITY);
 			currentRequest.add(tag);
 		}
@@ -202,7 +208,9 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 
 	@Override
 	public int maxThroughput() {
-		return 250;
+		int base = 250;
+		int add = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.PURPLE);
+		return base+add*50;
 	}
 
 	@Override
