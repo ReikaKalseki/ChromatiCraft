@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.TimerMap;
 import Reika.DragonAPI.Instantiable.Effects.EntityFluidFX;
 import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicVariablePoint;
@@ -54,23 +55,24 @@ public class TileEntityFluidDistributor extends TileEntityAreaDistributor implem
 
 	private static final HashSet<Class> blacklist = new HashSet();
 	private PluralMap<Spline> splines = new PluralMap(2);
+	private final TimerMap<ParticleChannel> particleDuration = new TimerMap();
 
 	@Override
-	public int fill(ForgeDirection from, FluidStack fs, boolean simulate) {
+	public int fill(ForgeDirection from, FluidStack fs, boolean doFill) {
 		if (this.hasRedstoneSignal())
 			return 0;
 		this.addInput(new WorldLocation(this).move(from, 1));
-		return this.tryDistributeFluid(worldObj, fs, simulate);
+		return this.tryDistributeFluid(worldObj, fs, doFill);
 	}
 
-	private int tryDistributeFluid(World world, FluidStack fs, boolean simulate) {
+	private int tryDistributeFluid(World world, FluidStack fs, boolean doFill) {
 		int add = 0;
 		Iterator<WorldLocation> it = this.getTargets();
 		while (it.hasNext()) {
 			WorldLocation loc = it.next();
 			TileEntity te = loc.getTileEntity(world);
 			if (te instanceof IFluidHandler) {
-				int give = this.tryGiveFluid(fs, simulate, (IFluidHandler)te);
+				int give = this.tryGiveFluid(fs, doFill, (IFluidHandler)te);
 				if (give > 0) {
 					if (!worldObj.isRemote)
 						this.sendFluid(new FluidStack(fs.getFluid(), give), loc);
@@ -81,7 +83,7 @@ public class TileEntityFluidDistributor extends TileEntityAreaDistributor implem
 				}
 			}
 			else if (te instanceof NonIFluidTank) {
-				int give = this.tryGiveFluid(fs, simulate, (NonIFluidTank)te);
+				int give = this.tryGiveFluid(fs, doFill, (NonIFluidTank)te);
 				if (give > 0) {
 					if (!worldObj.isRemote)
 						this.sendFluid(new FluidStack(fs.getFluid(), give), loc);
@@ -98,11 +100,11 @@ public class TileEntityFluidDistributor extends TileEntityAreaDistributor implem
 		return add;
 	}
 
-	private int tryGiveFluid(FluidStack fs, boolean simulate, IFluidHandler ie) {
+	private int tryGiveFluid(FluidStack fs, boolean doFill, IFluidHandler ie) {
 		int add = 0;
 		for (int i = 0; i < 6; i++) {
 			ForgeDirection dir = dirs[i];
-			int give = ie.fill(dir, fs, simulate);
+			int give = ie.fill(dir, fs, doFill);
 			if (give > 0) {
 				fs.amount -= give;
 				add += give;
@@ -113,9 +115,9 @@ public class TileEntityFluidDistributor extends TileEntityAreaDistributor implem
 		return add;
 	}
 
-	private int tryGiveFluid(FluidStack fs, boolean simulate, NonIFluidTank ie) {
+	private int tryGiveFluid(FluidStack fs, boolean doFill, NonIFluidTank ie) {
 		int add = 0;
-		int give = ie.addFluid(fs.getFluid(), fs.amount, simulate);
+		int give = ie.addFluid(fs.getFluid(), fs.amount, doFill);
 		if (give > 0) {
 			fs.amount -= give;
 			add += give;
@@ -135,6 +137,11 @@ public class TileEntityFluidDistributor extends TileEntityAreaDistributor implem
 	@SideOnly(Side.CLIENT)
 	public void sendFluidToClient(int x, int y, int z, Fluid f, int amt) {
 		WorldLocation loc = new WorldLocation(worldObj, x, y, z);
+		particleDuration.put(new ParticleChannel(loc, f, amt), 20);
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void sendFluidToClient(WorldLocation loc, Fluid f, int amt) {
 		Spline spl = this.getOrCreateSpline(f, loc);
 		spl.update();
 		if (rand.nextInt(3) > 0)
@@ -151,7 +158,7 @@ public class TileEntityFluidDistributor extends TileEntityAreaDistributor implem
 		float s = (float)(0.5+ReikaMathLibrary.logbase(amt, 10)/4D);
 		PositionController p = new SplineMotionController(l, spl);
 		//MotionController p = TargetMotionController(x+0.5, y+0.5, z+0.5, 0.0625/16);
-		double[] angs = ReikaPhysicsHelper.cartesianToPolar(x-xCoord, y-yCoord, z-zCoord);
+		double[] angs = ReikaPhysicsHelper.cartesianToPolar(loc.xCoord-xCoord, loc.yCoord-yCoord, loc.zCoord-zCoord);
 		double theta = -angs[1]+60*Math.sin(this.getTicksExisted()/64D);
 		double phi = -angs[2]+90+60*Math.cos(this.getTicksExisted()/32D);
 		double[] vel = ReikaPhysicsHelper.polarToCartesian(0.125, theta, phi);
@@ -191,6 +198,10 @@ public class TileEntityFluidDistributor extends TileEntityAreaDistributor implem
 
 		if (world.isRemote) {
 			this.doParticles(world, x, y, z);
+			particleDuration.tick();
+			for (ParticleChannel pc : particleDuration.keySet()) {
+				this.sendFluidToClient(pc.location, pc.fluid, pc.amount);
+			}
 		}
 	}
 
@@ -274,6 +285,20 @@ public class TileEntityFluidDistributor extends TileEntityAreaDistributor implem
 	@Override
 	public FluidTankInfo[] getTankInfo(ForgeDirection from) {
 		return new FluidTankInfo[0];
+	}
+
+	private static class ParticleChannel {
+
+		private final WorldLocation location;
+		private final Fluid fluid;
+		private final int amount;
+
+		private ParticleChannel(WorldLocation loc, Fluid f, int amt) {
+			location = loc;
+			fluid = f;
+			amount = amt;
+		}
+
 	}
 
 }

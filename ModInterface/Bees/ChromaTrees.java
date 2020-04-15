@@ -1,6 +1,7 @@
 package Reika.ChromatiCraft.ModInterface.Bees;
 
 import java.awt.Color;
+import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Random;
 
@@ -10,6 +11,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.common.BiomeDictionary.Type;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
@@ -21,12 +23,21 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.RainbowTreeGenerator;
 import Reika.ChromatiCraft.World.TreeShaper;
+import Reika.DragonAPI.IO.DirectResourceManager;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Territory;
+import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Tolerance;
+import Reika.DragonAPI.ModInteract.Bees.ButterflyAlleleRegistry.Fertility;
+import Reika.DragonAPI.ModInteract.Bees.ButterflyAlleleRegistry.Life;
+import Reika.DragonAPI.ModInteract.Bees.ButterflyAlleleRegistry.Size;
+import Reika.DragonAPI.ModInteract.Bees.ButterflyAlleleRegistry.Speeds;
+import Reika.DragonAPI.ModInteract.Bees.ButterflySpecies;
+import Reika.DragonAPI.ModInteract.Bees.ButterflySpecies.BasicButterflySpecies;
+import Reika.DragonAPI.ModInteract.Bees.ButterflySpecies.ButterflyBranch;
 import Reika.DragonAPI.ModInteract.Bees.TreeAlleleRegistry.Heights;
 import Reika.DragonAPI.ModInteract.Bees.TreeAlleleRegistry.Maturation;
 import Reika.DragonAPI.ModInteract.Bees.TreeAlleleRegistry.Saplings;
@@ -38,6 +49,8 @@ import Reika.DragonAPI.ModInteract.Bees.TreeSpecies.TraitsTree;
 import Reika.DragonAPI.ModInteract.Bees.TreeSpecies.TreeBranch;
 import Reika.DragonAPI.ModInteract.Bees.TreeTraits;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.arboriculture.EnumGermlingType;
 import forestry.api.arboriculture.IAlleleFruit;
 import forestry.api.arboriculture.IAlleleGrowth;
@@ -45,6 +58,8 @@ import forestry.api.arboriculture.IAlleleLeafEffect;
 import forestry.api.arboriculture.IAlleleTreeSpecies;
 import forestry.api.arboriculture.ITree;
 import forestry.api.arboriculture.ITreeGenome;
+import forestry.api.core.EnumHumidity;
+import forestry.api.core.EnumTemperature;
 import forestry.api.genetics.AlleleManager;
 import forestry.api.genetics.IAllele;
 import forestry.api.world.ITreeGenData;
@@ -56,10 +71,17 @@ public class ChromaTrees {
 	static RainbowEffect rainbowEffect;
 
 	static TreeBranch dyeBranch;
+	static ButterflyBranch dyeFlyBranch;
 
 	private static TreeSpecies rainbowTree;
 	private static TreeSpecies[] dyeTrees = new TreeSpecies[16];
 	private static TreeSpecies[] hybridDyeTrees = new TreeSpecies[16];
+
+	private static ButterflySpecies[] butterflies = new ButterflySpecies[16];
+	private static ButterflySpecies rainbowButterfly;
+
+	private static Fertility superFertility;
+	private static Life superLife;
 
 	public static void register() {
 		//superFertility = Saplings.createNew("extreme", 0.25F, false);
@@ -67,6 +89,9 @@ public class ChromaTrees {
 		dyeBranch = new TreeBranch("branch.ccdye", "Dye", "Pigmentum", "These leaves shimmer one or more colors, and seem to be associated with crystal energy.");
 
 		rainbowEffect = new RainbowEffect();
+
+		superFertility = Fertility.createNewFromBee(CrystalBees.getSuperFertility());
+		superLife = Life.createNewFromBee(CrystalBees.getSuperLife());
 
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement color = CrystalElement.elements[i];
@@ -81,6 +106,10 @@ public class ChromaTrees {
 			//AlleleManager.ersatzSpecimen.put(ChromaBlocks.DYELEAF.getStackOf(color), ii);
 			dyeTrees[i] = tree;
 
+			DyeButterfly fly = new DyeButterfly(color);
+			fly.register();
+			butterflies[i] = fly;
+
 			HybridDyeTree tree2 = new HybridDyeTree(color, getHybridParents(color));
 			tree2.register();
 			hybridDyeTrees[i] = tree2;
@@ -93,6 +122,9 @@ public class ChromaTrees {
 		AlleleManager.ersatzSpecimen.put(ChromaBlocks.RAINBOWLEAF.getStackOfMetadata(0), tree);
 		AlleleManager.ersatzSaplings.put(ChromaBlocks.RAINBOWSAPLING.getStackOf(), tree);
 		AlleleManager.ersatzSpecimen.put(ChromaBlocks.RAINBOWSAPLING.getStackOf(), tree);
+
+		rainbowButterfly = new RainbowButterfly();
+		rainbowButterfly.register();
 	}
 
 	public static TreeSpecies getRainbowTree() {
@@ -106,6 +138,14 @@ public class ChromaTrees {
 
 	public static boolean isDyeTree(IAlleleTreeSpecies ie) {
 		return ie instanceof DyeTreeBase;
+	}
+
+	public static ButterflySpecies getRainbowButterfly() {
+		return rainbowButterfly;
+	}
+
+	public static ButterflySpecies getDyeButterfly(CrystalElement e) {
+		return butterflies[e.ordinal()];
 	}
 
 	private static String[] getHybridParents(CrystalElement color) {
@@ -442,6 +482,229 @@ public class ChromaTrees {
 		@Override
 		public final boolean isCounted() {
 			return true;
+		}
+
+	}
+
+	private static abstract class ChromaButterflySpecies extends BasicButterflySpecies {
+
+		private ChromaButterflySpecies(String name, String uid, String sci) {
+			super(name, uid, sci, "Reika", dyeFlyBranch);
+		}
+
+		@Override
+		public final EnumSet<Type> getSpawnBiomes() {
+			return EnumSet.of(Type.MAGICAL);
+		}
+
+		@Override
+		public final boolean strictSpawnMatch() {
+			return true;
+		}
+
+		@Override
+		public boolean isDominant() {
+			return false;
+		}
+
+		@Override
+		public final EnumTemperature getTemperature() {
+			return EnumTemperature.NORMAL;
+		}
+
+		@Override
+		public final EnumHumidity getHumidity() {
+			return EnumHumidity.NORMAL;
+		}
+
+		@Override
+		public float getFlightDistance() {
+			return 0;
+		}
+
+		@Override
+		public Reika.DragonAPI.ModInteract.Bees.ButterflyAlleleRegistry.Territory getTerritorySize() {
+			return Reika.DragonAPI.ModInteract.Bees.ButterflyAlleleRegistry.Territory.DEFAULT;
+		}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public final String getEntityTexture() {
+			return DirectResourceManager.getResource("Reika/ChromatiCraft/Textures/Butterflies/"+this.getTextureName().toLowerCase(Locale.ENGLISH)+".png").toString();
+		}
+
+		protected abstract String getTextureName();
+
+	}
+
+	private static class DyeButterfly extends ChromaButterflySpecies {
+
+		private final CrystalElement color;
+
+		private DyeButterfly(CrystalElement e) {
+			super(e.displayName+" Dye Leaflet", "chroma.dyefly"+e.name().toLowerCase(Locale.ENGLISH), "Pigmentum "+e.displayName);
+			color = e;
+		}
+
+		@Override
+		public boolean isFireproof() {
+			return color == CrystalElement.ORANGE;
+		}
+
+		@Override
+		public boolean isTolerantFlyer() {
+			return color == CrystalElement.CYAN;
+		}
+
+		@Override
+		public boolean isNocturnal() {
+			return color == CrystalElement.BLUE;
+		}
+
+		@Override
+		public float getRarity() {
+			return 0.4F;
+		}
+
+		@Override
+		public String getDescription() {
+			return "Vibrantly glowing "+ReikaDyeHelper.dyes[color.ordinal()].colorName+", this butterfly seems to have adapted itself to "+color.displayName+".";
+		}
+
+		@Override
+		protected String getTextureName() {
+			return color.name();
+		}
+
+		@Override
+		public int getMetabolism() {
+			if (color == CrystalElement.LIGHTBLUE)
+				return 5;
+			if (color == CrystalElement.LIGHTGRAY)
+				return 1;
+			return 3;
+		}
+
+		@Override
+		public int getTemperatureTolerance() {
+			if (color == CrystalElement.GRAY)
+				return 3;
+			return 0;
+		}
+
+		@Override
+		public int getHumidityTolerance() {
+			if (color == CrystalElement.GRAY)
+				return 3;
+			return 0;
+		}
+
+		@Override
+		public Tolerance getHumidityToleranceDir() {
+			if (color == CrystalElement.GRAY)
+				return Tolerance.BOTH;
+			return Tolerance.NONE;
+		}
+
+		@Override
+		public Tolerance getTemperatureToleranceDir() {
+			if (color == CrystalElement.GRAY)
+				return Tolerance.BOTH;
+			return Tolerance.NONE;
+		}
+
+		@Override
+		public Speeds getSpeed() {
+			if (color == CrystalElement.LIME)
+				return Speeds.FASTEST;
+			return Speeds.NORMAL;
+		}
+
+		@Override
+		public Size getSize() {
+			return Size.AVERAGE;
+		}
+
+		@Override
+		public Fertility getFertility() {
+			if (color == CrystalElement.MAGENTA)
+				return superFertility;
+			return Fertility.NORMAL;
+		}
+
+		@Override
+		public Life getLifespan() {
+			if (color == CrystalElement.RED)
+				return superLife;
+			return Life.NORMAL;
+		}
+
+	}
+
+	private static class RainbowButterfly extends ChromaButterflySpecies {
+
+		private RainbowButterfly() {
+			super("Shimmering Leaflet", "chroma.rainbowfly", "Pigmentum Pluralis");
+		}
+
+		@Override
+		public float getRarity() {
+			return 0.75F;
+		}
+
+		@Override
+		public String getDescription() {
+			return "Shining every color of the spectrum, there is clearly something special about this butterfly.";
+		}
+
+		@Override
+		protected String getTextureName() {
+			return "rainbow";
+		}
+
+		@Override
+		public int getMetabolism() {
+			return 2;
+		}
+
+		@Override
+		public int getTemperatureTolerance() {
+			return 0;
+		}
+
+		@Override
+		public int getHumidityTolerance() {
+			return 0;
+		}
+
+		@Override
+		public Tolerance getHumidityToleranceDir() {
+			return Tolerance.NONE;
+		}
+
+		@Override
+		public Tolerance getTemperatureToleranceDir() {
+			return Tolerance.NONE;
+		}
+
+		@Override
+		public Speeds getSpeed() {
+			return Speeds.NORMAL;
+		}
+
+		@Override
+		public Size getSize() {
+			return Size.LARGER;
+		}
+
+		@Override
+		public Fertility getFertility() {
+			return Fertility.HIGH;
+		}
+
+		@Override
+		public Life getLifespan() {
+			return Life.SHORT;
 		}
 
 	}

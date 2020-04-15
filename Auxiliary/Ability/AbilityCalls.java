@@ -20,7 +20,6 @@ import net.minecraft.block.BlockTNT;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -50,10 +49,8 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.fluids.BlockFluidBase;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -93,7 +90,6 @@ import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.Base.BlockTieredResource;
 import Reika.DragonAPI.Instantiable.FlyingBlocksExplosion;
-import Reika.DragonAPI.Instantiable.Data.SphericalVector;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
@@ -126,16 +122,13 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 import Reika.ReactorCraft.Entities.EntityRadiation;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import forestry.api.lepidopterology.ButterflyManager;
-import forestry.api.lepidopterology.EnumFlutterType;
-import forestry.api.lepidopterology.IButterfly;
-import forestry.api.lepidopterology.IEntityButterfly;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.nodes.INode;
@@ -951,7 +944,7 @@ public class AbilityCalls {
 				cleanRadiation(ep);
 			}
 			if (ModList.FORESTRY.isLoaded()) {
-				attractButterflies(ep);
+				ReikaBeeHelper.attractButterflies(ep.worldObj, ep.posX, ep.posY, ep.posZ, 32);
 			}
 		}
 	}
@@ -980,48 +973,6 @@ public class AbilityCalls {
 						n.setNodeType(t == NodeType.HUNGRY || t == NodeType.TAINTED ? NodeType.DARK : t == NodeType.DARK ? NodeType.UNSTABLE : NodeType.NORMAL);
 					}
 				}
-			}
-		}
-	}
-
-	@ModDependent(ModList.FORESTRY)
-	private static void attractButterflies(EntityPlayer ep) {
-		AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(ep, 32);
-		for (EntityCreature e : ((List<EntityCreature>)ep.worldObj.getEntitiesWithinAABB(IEntityButterfly.class, box))) {
-			double dx = ep.posX-e.posX;
-			double dy = ep.posY-e.posY;
-			double dz = ep.posZ-e.posZ;
-			double dd = ReikaMathLibrary.py3d(dx, dy, dz);
-			SphericalVector vec = SphericalVector.fromCartesian(dx, dy, dz);
-			e.rotationPitch = (float)vec.inclination;
-			e.rotationYaw = e.rotationYawHead = (float)vec.rotation;
-			double v = 0.125;
-			double vx = v*dx/dd;
-			double vy = v*dy/dd;
-			double vz = v*dz/dd;
-			e.motionX = vx;
-			e.motionY = vy;
-			e.motionZ = vz;
-			e.velocityChanged = true;
-		}
-	}
-
-	@ModDependent(ModList.FORESTRY)
-	private static void collectButterflies(EntityPlayer ep) {
-		AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(ep, 4);
-		for (IEntityButterfly e : ((List<IEntityButterfly>)ep.worldObj.getEntitiesWithinAABB(IEntityButterfly.class, box))) {
-			if (e.getEntity().isDead || e.getEntity().getHealth() <= 0)
-				continue;
-			IButterfly fly = e.getButterfly();
-			ItemStack is = ButterflyManager.butterflyRoot.getMemberStack(fly, EnumFlutterType.BUTTERFLY.ordinal());
-			if (is != null) {
-				e.getEntity().setDead();
-				ReikaSoundHelper.playSoundAtEntity(ep.worldObj, ep, "random.pop", 0.5F, 2F);
-				is = is.copy();
-				if (MinecraftForge.EVENT_BUS.post(new EntityItemPickupEvent(ep, new EntityItem(ep.worldObj, ep.posX, ep.posY, ep.posZ, is)))) {
-					continue;
-				}
-				ReikaPlayerAPI.addOrDropItem(is, ep);
 			}
 		}
 	}
@@ -1209,7 +1160,7 @@ public class AbilityCalls {
 			return;
 
 		if (ModList.FORESTRY.isLoaded())
-			collectButterflies(ep);
+			ReikaBeeHelper.collectButterflies(ep.worldObj, ReikaAABBHelper.getEntityCenteredAABB(ep, 4), ep);
 
 		int x = MathHelper.floor_double(ep.posX);
 		int y = MathHelper.floor_double(ep.posY);

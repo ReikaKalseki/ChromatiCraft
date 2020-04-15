@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.chocolate.chocolateQuest.API.RegisterChestItem;
+import com.google.common.base.Throwables;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -58,6 +59,7 @@ import Reika.DragonAPI.Instantiable.BasicModEntry;
 import Reika.DragonAPI.Instantiable.Formula.MathExpression;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
@@ -215,6 +217,8 @@ public class ModInteraction {
 			FlowerManager.flowerRegistry.registerAcceptableFlower(ChromaBlocks.DECOFLOWER.getBlockInstance(), Flowers.VOIDREED.ordinal(), FlowerManager.FlowerTypeMushrooms);
 		}
 		catch (Exception e) {
+			if (ReikaObfuscationHelper.isDeObfEnvironment())
+				Throwables.propagate(e);
 			e.printStackTrace();
 			ChromatiCraft.logger.logError("Could not add Forestry integration. Check your versions; if you are up-to-date with both mods, notify Reika.");
 		}
