@@ -61,6 +61,7 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	private ForgeDirection spilled;
 
 	private boolean directDrainUpgrade;
+	private boolean lockedToCurrent;
 
 	public TileEntityAspectJar() {
 		if (ModList.THAUMCRAFT.isLoaded())
@@ -217,6 +218,14 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 		return directDrainUpgrade;
 	}
 
+	public void setLockedToCurrent(boolean lock) {
+		lockedToCurrent = lock;
+	}
+
+	public boolean isLockedToCurrent() {
+		return lockedToCurrent;
+	}
+
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public AspectList getAspects() {
@@ -252,7 +261,7 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public boolean doesContainerAccept(Aspect tag) {
-		return tank.canAccept(tag);
+		return lockedToCurrent ? tank.getLevel(tag) > 0 : tank.canAccept(tag);
 	}
 
 	@Override
@@ -351,7 +360,7 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public int addEssentia(Aspect aspect, int amount, ForgeDirection face) {
-		return tank.canAccept(aspect) ? tank.addAspect(aspect, amount) : 0;
+		return this.doesContainerAccept(aspect) ? tank.addAspect(aspect, amount) : 0;
 	}
 
 	@Override
@@ -386,6 +395,7 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 			tank.writeToNBT(NBT);
 
 		NBT.setBoolean("direct", directDrainUpgrade);
+		NBT.setBoolean("locked", lockedToCurrent);
 	}
 
 	@Override
@@ -396,6 +406,7 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 			tank.readFromNBT(NBT);
 
 		directDrainUpgrade = NBT.getBoolean("direct");
+		lockedToCurrent = NBT.getBoolean("locked");
 	}
 
 	@Override

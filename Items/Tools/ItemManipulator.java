@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.ModInterface.TileEntityFloatingLandmark;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeRecharger;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectJar;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityEssentiaRelay;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -163,6 +164,12 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 		if (t == ChromaTiles.LANDMARK) {
 			TileEntityFloatingLandmark te = (TileEntityFloatingLandmark)tile;
 			te.anchor();
+			return true;
+		}
+		if (t == ChromaTiles.ASPECTJAR) {
+			TileEntityAspectJar te = (TileEntityAspectJar)tile;
+			te.setLockedToCurrent(!te.isLockedToCurrent());
+			ChromaSounds.USE.playSoundAtBlock(te);
 			return true;
 		}
 		if (t == ChromaTiles.PYLONTURBO) {

@@ -1183,7 +1183,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 
 		public abstract String getResource();
 
-		public abstract int getCost();
+		public abstract float getCost();
 
 	}
 
@@ -1191,6 +1191,10 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 
 		public final Aspect aspect;
 		public final int requiredVis;
+
+		private int removeTick;
+
+		public static final int MULTIPLIER = 10;
 
 		protected VisAlvearyEffect(String id, Aspect a, int amt) {
 			super(id);
@@ -1204,8 +1208,8 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 		}
 
 		@Override
-		public final int getCost() {
-			return requiredVis;
+		public final float getCost() {
+			return requiredVis/(float)MULTIPLIER;
 		}
 
 		protected boolean consumeOnTick() {
@@ -1219,6 +1223,11 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 
 		@Override
 		protected final void consumeEnergy(TileEntityLumenAlveary te, int amount) {
+			if (removeTick > 0) {
+				removeTick--;
+				return;
+			}
+			removeTick = MULTIPLIER;
 			int amt = amount*requiredVis;
 			//ReikaJavaLibrary.pConsole(amount+" x "+requiredVis+" = "+amt+", from "+te.aspects.getAmount(aspect));
 			te.aspects.remove(aspect, requiredVis);
@@ -1375,7 +1384,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 		}
 
 		@Override
-		public final int getCost() {
+		public final float getCost() {
 			return requiredEnergy;
 		}
 

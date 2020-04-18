@@ -6,6 +6,10 @@ import net.minecraft.item.ItemStack;
 
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -46,6 +50,8 @@ public enum HoldingChecks {
 	private boolean match(ItemStack is) {
 		switch(this) {
 			case MANIPULATOR:
+				if (ModList.THAUMCRAFT.isLoaded() && this.isManipulatorFocusWand(is))
+					return true;
 				return ChromaItems.TOOL.matchWith(is);
 			case FOCUSCRYSTAL:
 				return ChromaItems.PLACER.matchWith(is) && is.getItemDamage() == ChromaTiles.FOCUSCRYSTAL.ordinal();
@@ -54,6 +60,11 @@ public enum HoldingChecks {
 			default:
 				return false;
 		}
+	}
+
+	@ModDependent(ModList.THAUMCRAFT)
+	private boolean isManipulatorFocusWand(ItemStack is) {
+		return is.getItem() == ThaumItemHelper.ItemEntry.WAND.getItem().getItem() && ReikaThaumHelper.getWandFocus(is) == ChromaItems.MANIPFOCUS.getItemInstance();
 	}
 
 }

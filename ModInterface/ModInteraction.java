@@ -526,6 +526,23 @@ public class ModInteraction {
 			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("ROD_CRYSTALWAND", "Fashioning a wand from crystals", "chromaticraft", ir, costFactor, 2, 0, root, ref).setSpecial().setParents("ROD_silverwood", "CAP_thaumium", "SCEPTRE");
 		}
 
+		{
+			AspectList al = new AspectList();
+			al.add(Aspect.MAGIC, 10);
+			al.add(Aspect.CRYSTAL, 10);
+			al.add(ChromaAspectManager.instance.SIGNAL, 10);
+			ItemStack[] recipe = {
+					ThaumItemHelper.ItemEntry.BALANCED.getItem(),
+					new ItemStack(Items.quartz),
+					ChromaStacks.rawCrystal,
+					ThaumItemHelper.ItemEntry.BALANCED.getItem(),
+					new ItemStack(Items.quartz),
+					ChromaStacks.rawCrystal,
+			};
+			InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("MANIPFOCUS", ChromaItems.MANIPFOCUS.getStackOf(), 0, al, ChromaItems.TOOL.getStackOf(), recipe);
+			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("MANIPFOCUS", "Why have two wands when you can have one?", "chromaticraft", ir, costFactor, 2, -2, root, ref).setParents("BASICTHAUMATURGY", "INFUSION");
+		}
+
 		TieredOreCap.addRecipes();
 
 		ThaumcraftApi.addWarpToResearch("ROD_CRYSTALWAND", 2);

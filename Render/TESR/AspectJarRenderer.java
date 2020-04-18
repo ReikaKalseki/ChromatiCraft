@@ -98,8 +98,12 @@ public class AspectJarRenderer extends ChromaRenderBase {
 		GL11.glTranslated(par2, par4, par6);
 		GL11.glTranslated(0.5, 0.01, 0.5);
 		GL11.glScalef(1.0F, -1.0F, -1.0F);
-		if (te.isInWorld() && te.hasDirectDrainUpgrade() && MinecraftForgeClient.getRenderPass() == 1)
-			this.renderUpgradeFlare(te, par8);
+		if (te.isInWorld() && MinecraftForgeClient.getRenderPass() == 1) {
+			if (te.hasDirectDrainUpgrade())
+				this.renderUpgradeFlare(te, par8);
+			if (te.isLockedToCurrent())
+				this.renderLockFlare(te, par8);
+		}
 		try {
 			ForgeDirection sp = te.getSpill();
 			if (sp != null) {
@@ -124,6 +128,68 @@ public class AspectJarRenderer extends ChromaRenderBase {
 			throw new RuntimeException("Could not render ThaumCraft jar model!");
 		}
 		GL11.glPopMatrix();
+	}
+
+	private void renderLockFlare(TileEntityAspectJar te, float par8) {
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glDisable(GL11.GL_LIGHTING);
+		BlendMode.ADDITIVEDARK.apply();
+		ReikaRenderHelper.disableEntityLighting();
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+
+		ReikaTextureHelper.bindTerrainTexture();
+		IIcon ico = ChromaIcons.LATTICE.getIcon();
+		float u = ico.getMinU();
+		float dv = ico.getMinV();
+		float du = ico.getMaxU();
+		float v = ico.getMaxV();
+
+		Tessellator v5 = Tessellator.instance;
+		GL11.glDisable(GL11.GL_CULL_FACE);
+
+		double o = 0.01;
+		double w = 0.3125;
+		double h = 0.75;
+
+		v5.startDrawingQuads();
+		v5.setBrightness(240);
+		v5.setColorOpaque_I(primalAspectColors.getColor(te.getTicksExisted()+par8));
+		v5.addVertexWithUV(-w-o, 0+o, w+o, u, v);
+		v5.addVertexWithUV(w+o, 0+o, w+o, du, v);
+		v5.addVertexWithUV(w+o, -h-o, w+o, du, dv);
+		v5.addVertexWithUV(-w-o, -h-o, w+o, u, dv);
+
+		v5.addVertexWithUV(-w-o, 0+o, -w-o, u, v);
+		v5.addVertexWithUV(w+o, 0+o, -w-o, du, v);
+		v5.addVertexWithUV(w+o, -h-o, -w-o, du, dv);
+		v5.addVertexWithUV(-w-o, -h-o, -w-o, u, dv);
+
+		v5.addVertexWithUV(-w-o, 0+o, -w-o, u, v);
+		v5.addVertexWithUV(-w-o, 0+o, w+o, du, v);
+		v5.addVertexWithUV(-w-o, -h-o, w+o, du, dv);
+		v5.addVertexWithUV(-w-o, -h-o, -w-o, u, dv);
+
+		v5.addVertexWithUV(w+o, 0+o, -w-o, u, v);
+		v5.addVertexWithUV(w+o, 0+o, w+o, du, v);
+		v5.addVertexWithUV(w+o, -h-o, w+o, du, dv);
+		v5.addVertexWithUV(w+o, -h-o, -w-o, u, dv);
+
+		v5.addVertexWithUV(-w-o, -h-o, -w-o, u, v);
+		v5.addVertexWithUV(w+o, -h-o, -w-o, du, v);
+		v5.addVertexWithUV(w+o, -h-o, w+o, du, dv);
+		v5.addVertexWithUV(-w-o, -h-o, w+o, u, dv);
+
+		v5.addVertexWithUV(-w-o, 0+o, -w-o, u, v);
+		v5.addVertexWithUV(w+o, 0+o, -w-o, du, v);
+		v5.addVertexWithUV(w+o, 0+o, w+o, du, dv);
+		v5.addVertexWithUV(-w-o, 0+o, w+o, u, dv);
+		v5.draw();
+
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		BlendMode.DEFAULT.apply();
+		GL11.glPopAttrib();
 	}
 
 	private void renderUpgradeFlare(TileEntityAspectJar te, float par8) {
