@@ -64,7 +64,7 @@ public enum HoldingChecks {
 
 	@ModDependent(ModList.THAUMCRAFT)
 	private boolean isManipulatorFocusWand(ItemStack is) {
-		return is.getItem() == ThaumItemHelper.ItemEntry.WAND.getItem().getItem() && ReikaThaumHelper.getWandFocus(is) == ChromaItems.MANIPFOCUS.getItemInstance();
+		return is != null && is.getItem() == ThaumItemHelper.ItemEntry.WAND.getItem().getItem() && ReikaThaumHelper.getWandFocus(is) == ChromaItems.MANIPFOCUS.getItemInstance();
 	}
 
 }

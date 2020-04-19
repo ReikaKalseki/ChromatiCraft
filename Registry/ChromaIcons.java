@@ -80,6 +80,7 @@ public enum ChromaIcons implements IconEnum {
 	FRAME("frame"),
 	//PINWHEEL("pinwheel"),
 	LATTICE("lattice"),
+	LATTICEITEM("lattice"),
 	REGIONS("regions"),
 	CAUSTICS("caustics"),
 	CAUSTICS_GENTLE("caustics-g"),
@@ -166,7 +167,17 @@ public enum ChromaIcons implements IconEnum {
 	public static void registerAll(TextureMap ico) {
 		for (int i = 0; i < iconList.length; i++) {
 			ChromaIcons c = iconList[i];
-			c.register(ico);
+			if (c.isOnSheet(ico.getTextureType()))
+				c.register(ico);
+		}
+	}
+
+	private boolean isOnSheet(int sheet) {
+		switch(this) {
+			case LATTICEITEM:
+				return sheet == 1;
+			default:
+				return sheet == 0;
 		}
 	}
 

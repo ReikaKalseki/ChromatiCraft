@@ -1,16 +1,23 @@
 package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.wands.ItemFocusBasic;
@@ -20,6 +27,12 @@ public class ItemManipulatorFocus extends ItemFocusBasic {
 
 	public ItemManipulatorFocus(int idx) {
 		this.setCreativeTab(ChromatiCraft.tabChromaTools);
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	protected String getIconString() {
+		return "chromaticraft:manip-focus";
 	}
 
 	@Override
@@ -34,6 +47,45 @@ public class ItemManipulatorFocus extends ItemFocusBasic {
 			return null;
 		ChromaItems.TOOL.getItemInstance().onItemUse(ChromaItems.TOOL.getStackOf(), player, world, mov.blockX, mov.blockY, mov.blockZ, mov.sideHit, (float)mov.hitVec.xCoord, (float)mov.hitVec.yCoord, (float)mov.hitVec.zCoord);
 		return null;
+	}
+
+	@Override
+	public EnumRarity getRarity(ItemStack focusstack)
+	{
+		return EnumRarity.uncommon;
+	}
+
+	@SideOnly(Side.CLIENT)
+	@Override
+	public IIcon getIconFromDamage(int par1) {
+		return itemIcon;
+	}
+
+	/**
+	 * What color will the focus orb be rendered on the held wand
+	 */
+	@Override
+	@SideOnly(Side.CLIENT)
+	public int getFocusColor(ItemStack focusstack) {
+		return CrystalElement.getBlendedColor(Minecraft.getMinecraft().thePlayer.ticksExisted, 12);
+	}
+
+	/**
+	 * Does the focus have ornamentation like the focus of the nine hells. Ornamentation is a standard icon rendered in a cross around the focus
+	 */
+	@Override
+	@SideOnly(Side.CLIENT)
+	public IIcon getOrnament(ItemStack focusstack) {
+		return null;//ChromaIcons.SUNFLARE.getIcon();
+	}
+
+	/**
+	 * An icon to be rendered inside the focus itself
+	 */
+	@Override
+	@SideOnly(Side.CLIENT)
+	public IIcon getFocusDepthLayerIcon(ItemStack focusstack) {
+		return ChromaIcons.LATTICEITEM.getIcon();
 	}
 
 }

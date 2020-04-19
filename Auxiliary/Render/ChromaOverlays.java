@@ -40,6 +40,7 @@ import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.API.Interfaces.OrePings.OrePingDelegate;
+import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.ItemWandBase;
@@ -195,7 +196,7 @@ public class ChromaOverlays {
 			this.renderFlareMessages(gsc);
 			GL11.glPopMatrix();
 		}
-		else if (evt.type == ElementType.CROSSHAIRS && (ChromaItems.TOOL.matchWith(is) || !renderCursor)) {
+		else if (evt.type == ElementType.CROSSHAIRS && (HoldingChecks.MANIPULATOR.isClientHolding() || !renderCursor)) {
 			if (renderCursor)
 				this.renderCustomCrosshair(evt.resolution);
 			evt.setCanceled(true);

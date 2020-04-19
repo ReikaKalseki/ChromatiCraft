@@ -506,7 +506,7 @@ public class ChromaClient extends ChromaCommon {
 	private void registerSpriteSheets() {
 		for (int i = 0; i < ChromaItems.itemList.length; i++) {
 			ChromaItems c = ChromaItems.itemList[i];
-			if (!c.isPlacer() && c != ChromaItems.POTION)
+			if (!c.isPlacer() && c != ChromaItems.POTION && c != ChromaItems.MANIPFOCUS)
 				MinecraftForgeClient.registerItemRenderer(ChromaItems.itemList[i].getItemInstance(), items);
 		}
 	}

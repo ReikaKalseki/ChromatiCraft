@@ -27,4 +27,9 @@
 			Be it your material reserves, your power storage, your food supply, or, as now, your wand capacity, it is never enough. The once-seemingly-vast hundred or two vis you managed to pack into a white wooden stick now show how small they truly are. Recalling your experiences with iridescent crystal and its amplification power on the Crystal Pylons, you wonder if you can find another use. It might even gain other special powers from doing so. Besides, what is the worst that could happen?
 		</page1>
 	</rod_crystalwand>
+	<manipfocus>
+		<page1>
+			Near every kind of construct you deal with has its own kind of tool to tune it; the machinery in your base alone has mandated four kinds of wrenches, two hammers, and a screwdriver. Magical constructs are no exception, with one set requiring what amounts to crystals on a stick, another being petals on a stick, and another...metals on a stick. Either way, the last of these can accept upgrades that add some kind of function, from digging to throwing fire to making your friend unable to remove random blocks from their base. Given this, as well as the fact that you have found out a way to imprint one such upgrade with one of your wrench variants, you might be able to replicate at least one of your other magical manipulation tools.
+		</page1>
+	</manipfocus>
 </researches>
