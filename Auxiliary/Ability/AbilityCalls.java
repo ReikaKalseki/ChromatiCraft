@@ -944,7 +944,7 @@ public class AbilityCalls {
 				cleanRadiation(ep);
 			}
 			if (ModList.FORESTRY.isLoaded()) {
-				ReikaBeeHelper.attractButterflies(ep.worldObj, ep.posX, ep.posY, ep.posZ, 32);
+				ReikaBeeHelper.attractButterflies(ep.worldObj, ep.posX, ep.posY, ep.posZ, 32, null);
 			}
 		}
 	}
