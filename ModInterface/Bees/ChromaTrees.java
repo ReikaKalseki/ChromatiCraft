@@ -499,7 +499,7 @@ public class ChromaTrees {
 
 		@Override
 		public final boolean strictSpawnMatch() {
-			return true;
+			return false;
 		}
 
 		@Override

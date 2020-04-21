@@ -38,6 +38,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.Search.PropagationCondition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -367,7 +368,7 @@ public class ItemTransitionWand extends ItemBlockChangingWand {
 				PropagationCondition pc = new PropagationCondition() {
 
 					@Override
-					public boolean isValidLocation(World world, int x, int y, int z) {
+					public boolean isValidLocation(World world, int x, int y, int z, Coordinate from) {
 						return bk.matchInWorld(world, x, y, z) && ReikaWorldHelper.isExposedToAir(world, x, y, z);
 					}
 
