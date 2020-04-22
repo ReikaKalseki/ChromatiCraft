@@ -193,6 +193,21 @@ public class ChromaTrees {
 		}
 
 		@Override
+		protected final String getIconMod(boolean pollen) {
+			return "chromaticraft";
+		}
+
+		@Override
+		protected final String getIconFolderRoot(boolean pollen) {
+			return "forestry/trees";
+		}
+
+		@Override
+		protected final String getSaplingIconName() {
+			return "sapling";//"rainbow-sapling";
+		}
+
+		@Override
 		public String getDescription() {
 			return ChromaDescriptions.getHoverText("rainbowleaf");
 		}
@@ -264,7 +279,7 @@ public class ChromaTrees {
 
 		@Override
 		public int getIconColour(int renderPass) {
-			return this.getGermlingColour(EnumGermlingType.SAPLING, renderPass);
+			return this.getLeafColour(false);
 		}
 
 		@Override
@@ -324,6 +339,11 @@ public class ChromaTrees {
 					break;
 				}
 			}
+		}
+
+		@Override
+		public boolean hasEffect() {
+			return true;
 		}
 
 		@Override
@@ -397,6 +417,11 @@ public class ChromaTrees {
 			TreeShaper.getInstance().generateRandomWeightedTree(world, x, y, z, ReikaDyeHelper.dyes[color.ordinal()], true);
 		}
 
+		@Override
+		public boolean hasEffect() {
+			return false;
+		}
+
 	}
 
 	private static abstract class DyeTreeBase extends TraitsTree {
@@ -406,6 +431,21 @@ public class ChromaTrees {
 		protected DyeTreeBase(CrystalElement e, String name, String uid, String latinName, TreeTraits traits) {
 			super(name, uid, latinName, "Reika", dyeBranch, traits);
 			color = e;
+		}
+
+		@Override
+		protected final String getIconMod(boolean pollen) {
+			return "chromaticraft";
+		}
+
+		@Override
+		protected final String getIconFolderRoot(boolean pollen) {
+			return "forestry/trees";
+		}
+
+		@Override
+		protected final String getSaplingIconName() {
+			return "sapling";//"dye-sapling-"+color.name().toLowerCase(Locale.ENGLISH);
 		}
 
 		@Override
@@ -430,7 +470,7 @@ public class ChromaTrees {
 
 		@Override
 		public final int getIconColour(int renderPass) {
-			return this.getGermlingColour(EnumGermlingType.SAPLING, renderPass);
+			return this.getLeafColour(false);
 		}
 
 		@Override
@@ -467,11 +507,6 @@ public class ChromaTrees {
 		@Override
 		public final IAlleleGrowth getGrowthAllele() {
 			return this.getLightGrowth();
-		}
-
-		@Override
-		public final boolean hasEffect() {
-			return false;
 		}
 
 		@Override

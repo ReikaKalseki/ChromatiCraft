@@ -207,7 +207,7 @@ public class CrystalBees {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public void registerIcons(IIconRegister register) {
-			icon = register.registerIcon("chromaticraft:forestry-no-conditionals");
+			icon = register.registerIcon("chromaticraft:forestry/no-conditionals");
 		}
 
 		@Override
@@ -637,6 +637,11 @@ public class CrystalBees {
 		}
 
 		@Override
+		protected String getIconFolderRoot() {
+			return "forestry/bees";
+		}
+
+		@Override
 		public boolean simplifiedIconSystem() {
 			return true;
 		}
@@ -722,6 +727,11 @@ public class CrystalBees {
 		@Override
 		protected String getIconCategory() {
 			return "crystal";
+		}
+
+		@Override
+		protected String getIconFolderRoot() {
+			return "forestry/bees";
 		}
 
 		@Override
@@ -1126,6 +1136,11 @@ public class CrystalBees {
 		@Override
 		protected String getIconCategory() {
 			return "crystal";
+		}
+
+		@Override
+		protected String getIconFolderRoot() {
+			return "forestry/bees";
 		}
 
 		@Override
