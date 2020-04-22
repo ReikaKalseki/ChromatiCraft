@@ -7,9 +7,12 @@ import java.util.Random;
 
 import com.mojang.authlib.GameProfile;
 
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.BiomeDictionary.Type;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -20,6 +23,7 @@ import Reika.ChromatiCraft.Block.Dye.BlockDyeLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.ModInterface.Bees.EffectAlleles.RainbowEffect;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.RainbowTreeGenerator;
 import Reika.ChromatiCraft.World.TreeShaper;
@@ -27,7 +31,10 @@ import Reika.DragonAPI.IO.DirectResourceManager;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Territory;
 import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Tolerance;
@@ -51,17 +58,21 @@ import Reika.DragonAPI.ModInteract.Bees.TreeTraits;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import forestry.api.arboriculture.EnumFruitFamily;
 import forestry.api.arboriculture.EnumGermlingType;
+import forestry.api.arboriculture.EnumTreeChromosome;
 import forestry.api.arboriculture.IAlleleFruit;
 import forestry.api.arboriculture.IAlleleGrowth;
 import forestry.api.arboriculture.IAlleleLeafEffect;
 import forestry.api.arboriculture.IAlleleTreeSpecies;
+import forestry.api.arboriculture.IFruitProvider;
 import forestry.api.arboriculture.ITree;
 import forestry.api.arboriculture.ITreeGenome;
 import forestry.api.core.EnumHumidity;
 import forestry.api.core.EnumTemperature;
 import forestry.api.genetics.AlleleManager;
 import forestry.api.genetics.IAllele;
+import forestry.api.genetics.IFruitFamily;
 import forestry.api.world.ITreeGenData;
 
 public class ChromaTrees {
@@ -83,6 +94,32 @@ public class ChromaTrees {
 	private static Fertility superFertility;
 	private static Life superLife;
 
+	private static final IAlleleFruit[] berryFruit = new IAlleleFruit[16];
+
+	private static final IFruitFamily berryFamily = new IFruitFamily() {
+
+		@Override
+		public String getUID() {
+			return "chromaberry";
+		}
+
+		@Override
+		public String getName() {
+			return "Chroma Berries";
+		}
+
+		@Override
+		public String getScientific() {
+			return "pigmentum elementum";
+		}
+
+		@Override
+		public String getDescription() {
+			return "Chroma Berries";
+		}
+
+	};
+
 	public static void register() {
 		//superFertility = Saplings.createNew("extreme", 0.25F, false);
 
@@ -95,6 +132,9 @@ public class ChromaTrees {
 
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement color = CrystalElement.elements[i];
+
+			berryFruit[i] = new BerryFruit(color);
+
 			DyeTree tree = new DyeTree(color, DyeTreeTypes.list[i].traits);
 			tree.register();
 			ITree ii = tree.constructIndividual();
@@ -190,6 +230,9 @@ public class ChromaTrees {
 
 		protected RainbowTree() {
 			super("Rainbow", "chroma.rainbow", "Pigmentum Pluralis", "Reika", dyeBranch);
+			this.addSuitableFruit(EnumFruitFamily.POMES);
+			this.addSuitableFruit(EnumFruitFamily.NUX);
+			this.addSuitableFruit(EnumFruitFamily.PRUNES);
 		}
 
 		@Override
@@ -431,6 +474,7 @@ public class ChromaTrees {
 		protected DyeTreeBase(CrystalElement e, String name, String uid, String latinName, TreeTraits traits) {
 			super(name, uid, latinName, "Reika", dyeBranch, traits);
 			color = e;
+			this.addSuitableFruit(EnumFruitFamily.POMES);
 		}
 
 		@Override
@@ -496,7 +540,7 @@ public class ChromaTrees {
 
 		@Override
 		public final IAlleleFruit getFruitAllele() {
-			return this.getNoFruit();
+			return berryFruit[color.ordinal()];
 		}
 
 		@Override
@@ -517,6 +561,136 @@ public class ChromaTrees {
 		@Override
 		public final boolean isCounted() {
 			return true;
+		}
+
+	}
+
+	private static class BerryFruit implements IAlleleFruit {
+
+		private final CrystalElement color;
+		private final IFruitProvider fruit;
+
+		private BerryFruit(CrystalElement e) {
+			color = e;
+			fruit = new BerryProvider(e);
+			AlleleManager.alleleRegistry.registerAllele(this, EnumTreeChromosome.FRUITS);
+		}
+
+		@Override
+		public String getUID() {
+			return "fruit.chromaberry."+color.name().toLowerCase(Locale.ENGLISH);
+		}
+
+		@Override
+		public boolean isDominant() {
+			return false;
+		}
+
+		@Override
+		public String getName() {
+			return color.displayName+" Berries";
+		}
+
+		@Override
+		public String getUnlocalizedName() {
+			return this.getName();//"chromaberry."+color.name().toLowerCase(Locale.ENGLISH);
+		}
+
+		@Override
+		public IFruitProvider getProvider() {
+			return fruit;
+		}
+
+	}
+
+	private static class BerryProvider implements IFruitProvider {
+
+		private final CrystalElement color;
+
+		private BerryProvider(CrystalElement e) {
+			color = e;
+		}
+
+		@Override
+		public IFruitFamily getFamily() {
+			return berryFamily;
+		}
+
+		@Override
+		public int getColour(ITreeGenome genome, IBlockAccess world, int x, int y, int z, int ripeningTime) {
+			float f = ripeningTime/(float)this.getRipeningPeriod();
+			int c = color.getColor();
+			if (f <= 0.625)
+				return 0xffffff;
+			else if (f >= 1)
+				return c;
+			return ReikaColorAPI.mixColors(c, 0xffffff, (f-0.625F)/0.375F);
+		}
+
+		@Override
+		public boolean markAsFruitLeaf(ITreeGenome genome, World world, int x, int y, int z) {
+			return true;
+		}
+
+		@Override
+		public int getRipeningPeriod() {
+			return 5;
+		}
+
+		@Override
+		public ItemStack[] getProducts() {
+			return new ItemStack[] {ChromaItems.BERRY.getStackOf(color)};
+		}
+
+		@Override
+		public ItemStack[] getSpecialty() {
+			return new ItemStack[0];
+		}
+
+		@Override
+		public ItemStack[] getFruits(ITreeGenome genome, World world, int x, int y, int z, int ripeningTime) {
+			float f = ripeningTime/(float)this.getRipeningPeriod();
+			if (f >= 1)
+				f += 0.05;
+			double fnum = Math.min(12, Math.pow(f, 2)+ReikaRandomHelper.getRandomBetween(0, 5));
+			int num = 0;
+			while (fnum > 0) {
+				if (fnum >= 1) {
+					num++;
+					fnum--;
+				}
+				else {
+					if (ReikaRandomHelper.doWithChance(fnum))
+						num++;
+					fnum = 0;
+				}
+			}
+			return new ItemStack[] {ReikaItemHelper.getSizedItemStack(ChromaItems.BERRY.getStackOf(color), num)};
+		}
+
+		@Override
+		public String getDescription() {
+			return color.displayName+" chroma berries.";
+		}
+
+		@Override
+		public short getIconIndex(ITreeGenome genome, IBlockAccess world, int x, int y, int z, int ripeningTime, boolean fancy) {
+			return 1000;
+		}
+
+		@Override
+		public boolean requiresFruitBlocks() {
+			return false;
+		}
+
+		@Override
+		public boolean trySpawnFruitBlock(ITreeGenome genome, World world, int x, int y, int z) {
+			return false;
+		}
+
+		@Override
+		public void registerIcons(IIconRegister register) {
+
 		}
 
 	}
