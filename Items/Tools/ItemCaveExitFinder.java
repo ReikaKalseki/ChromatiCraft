@@ -22,10 +22,10 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Block.BlockChromaTrail.TileChromaTrail;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.AbstractSearch.PropagationCondition;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.AbstractSearch.TerminationCondition;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
-import Reika.DragonAPI.Instantiable.Data.BlockStruct.Search;
-import Reika.DragonAPI.Instantiable.Data.BlockStruct.Search.PropagationCondition;
-import Reika.DragonAPI.Instantiable.Data.BlockStruct.Search.TerminationCondition;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.BreadthFirstSearch;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
@@ -97,7 +97,7 @@ public class ItemCaveExitFinder extends ItemChromaTool {
 		boolean deep = ep.isSneaking();
 		if (!deep && skyFinder.isValidTerminus(world, x, y, z))
 			return is;
-		Search s = new Search(x, y, z);
+		BreadthFirstSearch s = new BreadthFirstSearch(x, y, z);
 		PropagationCondition f = deep ? new DownwardsFinder(y) : pathFinder;
 		TerminationCondition t = skyFinder;
 		if (deep) {

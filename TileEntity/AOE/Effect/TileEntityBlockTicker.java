@@ -36,8 +36,10 @@ public class TileEntityBlockTicker extends TileEntityAdjacencyUpgrade {
 			int dz = z+dir.offsetZ;
 			Block b = world.getBlock(dx, dy, dz);
 			if (this.canTickBlock(b)) {
-				b.updateTick(world, dx, dy, dz, rand);
-				MinecraftForge.EVENT_BUS.post(new BlockTickEvent(world, dx, dy, dz, b, UpdateFlags.FORCED.flag));
+				if (!world.isRemote) {
+					b.updateTick(world, dx, dy, dz, rand);
+					MinecraftForge.EVENT_BUS.post(new BlockTickEvent(world, dx, dy, dz, b, UpdateFlags.FORCED.flag));
+				}
 				ret = EffectResult.ACTION;
 			}
 		}
