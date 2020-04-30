@@ -64,6 +64,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Objects.LineType;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -79,6 +80,7 @@ public class ProgressionManager implements ProgressRegistry {
 
 	private final SequenceMap<ProgressStage> progressMap = new SequenceMap();
 	private final MultiMap<ProgressStage, ImmutablePair<ProgressStage, ProgressStage>> chains = new MultiMap();
+	private final MultiMap<ProgressStage, ProgressLink> visualDependencies = new MultiMap();
 
 	private final MultiMap<String, ProgressStage> playerMap = new MultiMap(CollectionType.HASHSET);
 
@@ -180,8 +182,20 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.TUNECAST,	ProgressStage.MULTIBLOCK);
 
 		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.BLOWREPEATER);
-		progressMap.addParent(ProgressStage.REPEATER, 	new EitherProgress(ProgressStage.FOCUSCRYSTAL, ProgressStage.RELAYS));
+		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.ENERGYIDEA);
 		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.TUNECAST);
+
+		progressMap.addParent(ProgressStage.ENERGYIDEA, 	ProgressStage.USEENERGY);
+
+		progressMap.addParent(ProgressStage.RELAYS, 	ProgressStage.USEENERGY);
+
+		visualDependencies.addValue(ProgressStage.ENERGYIDEA, new ProgressLink(ProgressStage.RELAYS, LineType.DOTTED));
+		visualDependencies.addValue(ProgressStage.ENERGYIDEA, new ProgressLink(ProgressStage.FOCUSCRYSTAL, LineType.DOTTED));
+
+		this.addChainedProgression(ProgressStage.FOCUSCRYSTAL, ProgressStage.USEENERGY, ProgressStage.ENERGYIDEA);
+		this.addChainedProgression(ProgressStage.RELAYS, ProgressStage.USEENERGY, ProgressStage.ENERGYIDEA);
+		this.addChainedProgression(ProgressStage.USEENERGY, ProgressStage.FOCUSCRYSTAL, ProgressStage.ENERGYIDEA);
+		this.addChainedProgression(ProgressStage.USEENERGY, ProgressStage.RELAYS, ProgressStage.ENERGYIDEA);
 
 		progressMap.addParent(ProgressStage.STORAGE, 	ProgressStage.MULTIBLOCK);
 
@@ -744,6 +758,18 @@ public class ProgressionManager implements ProgressRegistry {
 
 	}
 
+	public static class ProgressLink {
+
+		public final ProgressStage parent;
+		public final LineType type;
+
+		public ProgressLink(ProgressStage p, LineType line) {
+			parent = p;
+			type = line;
+		}
+
+	}
+
 	public void giveAuxiliaryResearch(EntityPlayer ep, ProgressStage p) {
 		if (ChromaOptions.EASYFRAG.getState()) {
 			ChromaResearch r = auxiliaryReference.get(p);
@@ -893,6 +919,10 @@ public class ProgressionManager implements ProgressRegistry {
 			//ProgressStage.USEENERGY.giveToPlayer(ep, false);
 			ProgressStage.BYPASSWEAK.stepPlayerTo(ep);
 		}
+	}
+
+	public Collection<ProgressLink> getVisualDependencies(ProgressStage p) {
+		return Collections.unmodifiableCollection(visualDependencies.get(p));
 	}
 
 	private static class AlphabeticProgressComparator implements Comparator<ProgressStage> {

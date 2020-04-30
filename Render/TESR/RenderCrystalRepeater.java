@@ -44,6 +44,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Objects.LineType;
 
 public class RenderCrystalRepeater extends CrystalTransmitterRender {
 
@@ -322,7 +323,7 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 						GL11.glDisable(GL11.GL_TEXTURE_2D);
 						GL11.glEnable(GL11.GL_LINE_STIPPLE);
 						GL11.glLineWidth(6);
-						GL11.glLineStipple(24, (short)0xAAAA);
+						LineType.DASHED.setMode(128);
 						BlendMode.DEFAULT.apply();
 
 						Tessellator v5 = Tessellator.instance;

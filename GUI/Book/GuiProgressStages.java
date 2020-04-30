@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Book;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Base.GuiScrollingPage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionManager.ProgressLink;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -44,6 +46,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
+import Reika.DragonAPI.Objects.LineType;
 
 public class GuiProgressStages extends GuiScrollingPage {
 
@@ -151,12 +154,16 @@ public class GuiProgressStages extends GuiScrollingPage {
 	}
 
 	private void renderLine(int posX, int posY, ProgressStage p) {
-		Collection<ProgressStage> c = map.getParents(p);
+		Collection<ProgressLink> c = new ArrayList();
+		for (ProgressStage p2 : map.getParents(p)) {
+			c.add(new ProgressLink(p2, LineType.SOLID));
+		}
+		c.addAll(ProgressionManager.instance.getVisualDependencies(p));
 		int dx = -offsetX+posX+12;
 		int dy = -offsetY+posY+36;
 		Point pt = renderPositions.get(p);
-		for (ProgressStage par : c) {
-			Point pt2 = renderPositions.get(par);
+		for (ProgressLink par : c) {
+			Point pt2 = renderPositions.get(par.parent);
 			int x1 = dx+pt.getX()+elementWidth/2;
 			int y1 = dy+pt.getY();
 			/*
@@ -173,8 +180,8 @@ public class GuiProgressStages extends GuiScrollingPage {
 
 			ImmutablePair<java.awt.Point, java.awt.Point> ps = ReikaVectorHelper.clipLine(x1, x2, y1, y2, posX+8, posY+26, posX+xSize-8, posY+ySize/2+6);
 			if (ps != null) {
-				int clr = p == active || par == active ? (par.isPlayerAtStage(player) ? 0x00ff00 : 0xff4040) : 0xffffff;
-				api.drawLine(ps.left.x, ps.left.y, ps.right.x, ps.right.y, clr);
+				int clr = p == active || par.parent == active ? (par.parent.isPlayerAtStage(player) ? 0x00ff00 : 0xff4040) : 0xffffff;
+				api.drawLine(ps.left.x, ps.left.y, ps.right.x, ps.right.y, clr, par.type);
 			}
 		}
 	}
@@ -191,7 +198,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 	}
 
 	private boolean elementOnScreen(ProgressStage p, int posX, int posY, int x, int y) {
-		return x >= posX+8 && x <= posX+xSize-elementWidth-8 && y >= posY+24 && y-posY+elementHeight < ySize/2;
+		return x >= posX+8 && x <= posX+xSize-elementWidth-8 && y >= posY+24-2 && y-posY+elementHeight < ySize/2+15;
 	}
 
 	private void renderElement(ProgressStage p, int x, int y) {

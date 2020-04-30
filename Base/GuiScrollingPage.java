@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Base;
 import org.lwjgl.input.Keyboard;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -56,8 +57,11 @@ public abstract class GuiScrollingPage extends ChromaBookGui {
 		topY = (height - ySize) / 2;
 
 		int sp = Math.max(1, 180/Math.max(1, ReikaRenderHelper.getFPS()));
-		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+		if (GuiScreen.isShiftKeyDown()) {
 			sp *= 2;
+		}
+		else if (GuiScreen.isCtrlKeyDown()) {
+			sp = Math.max(1, sp/2);
 		}
 		if (Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindForward.getKeyCode()) || Keyboard.isKeyDown(Keyboard.KEY_UP)) {
 			offsetY -= sp;
