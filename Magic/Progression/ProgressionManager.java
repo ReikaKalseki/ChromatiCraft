@@ -33,8 +33,8 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraftforge.common.MinecraftForge;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.API.ResearchFetcher;
 import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
+import Reika.ChromatiCraft.API.ResearchFetcher;
 import Reika.ChromatiCraft.API.ResearchFetcher.ProgressRegistry;
 import Reika.ChromatiCraft.API.Event.ProgressionEvent;
 import Reika.ChromatiCraft.API.Event.ProgressionEvent.ResearchType;
@@ -121,6 +121,7 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.RUNEUSE,	ProgressStage.CASTING);
 
 		progressMap.addParent(ProgressStage.MULTIBLOCK,	ProgressStage.RUNEUSE);
+		progressMap.addParent(ProgressStage.MULTIBLOCK, ProgressStage.VILLAGECASTING);
 
 		progressMap.addParent(ProgressStage.LINK, 		ProgressStage.PYLON);
 		progressMap.addParent(ProgressStage.LINK, 		ProgressStage.REPEATER);
@@ -179,7 +180,7 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.TUNECAST,	ProgressStage.MULTIBLOCK);
 
 		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.BLOWREPEATER);
-		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.VILLAGECASTING);
+		progressMap.addParent(ProgressStage.REPEATER, 	new EitherProgress(ProgressStage.FOCUSCRYSTAL, ProgressStage.RELAYS));
 		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.TUNECAST);
 
 		progressMap.addParent(ProgressStage.STORAGE, 	ProgressStage.MULTIBLOCK);

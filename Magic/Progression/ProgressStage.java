@@ -112,6 +112,7 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 	BYPASSWEAK(		Shareability.ALWAYS,	Reloadability.ALWAYS,	(ItemStack)null),
 	TUNECAST(		Shareability.SELFONLY,	Reloadability.TRIGGER,	(ItemStack)null),
 	PYLONLINK(		Shareability.SELFONLY,	Reloadability.TRIGGER,	ChromaTiles.PYLONLINK.getCraftedProduct()),
+	RELAYS(			Shareability.PROXIMITY, Reloadability.TRIGGER,	ChromaTiles.RELAYSOURCE.getCraftedProduct()),
 	NEVER(			Shareability.SELFONLY,	Reloadability.NEVER,	(ItemStack)null, false), //used as a no-trigger placeholder
 	;
 
