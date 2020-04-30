@@ -79,7 +79,7 @@ public class ProgressionManager implements ProgressRegistry {
 	private static final String STRUCTURE_NBT_TAG = "Structure_Color_Completion";
 
 	private final SequenceMap<ProgressLink> progressMap = new SequenceMap();
-	private final MultiMap<ProgressStage, ImmutablePair<ProgressStage, ProgressStage>> chains = new MultiMap();
+	private final MultiMap<ProgressStage, ImmutablePair<ProgressStage, ProgressChain>> chains = new MultiMap();
 
 	private final MultiMap<String, ProgressStage> playerMap = new MultiMap(CollectionType.HASHSET);
 
@@ -174,9 +174,6 @@ public class ProgressionManager implements ProgressRegistry {
 		//addProgressPrereq(ProgressStage.BYPASSWEAK, 	ProgressStage.USEENERGY);
 		this.addProgressPrereq(ProgressStage.BYPASSWEAK, 	ProgressStage.TUNECAST);
 
-		this.addChainedProgression(ProgressStage.BYPASSWEAK, ProgressStage.BLOWREPEATER, false);
-
-		this.addChainedProgression(ProgressStage.TUNECAST, ProgressStage.BYPASSWEAK, true);
 
 		this.addProgressPrereq(ProgressStage.TUNECAST,	ProgressStage.RUNEUSE);
 		this.addProgressPrereq(ProgressStage.TUNECAST,	ProgressStage.CHROMA);
@@ -189,10 +186,6 @@ public class ProgressionManager implements ProgressRegistry {
 		this.addProgressPrereq(ProgressStage.ENERGYIDEA, 	ProgressStage.USEENERGY);
 
 		this.addProgressPrereq(ProgressStage.RELAYS, 	ProgressStage.USEENERGY);
-
-		this.addChainedProgression(ProgressStage.FOCUSCRYSTAL, ProgressStage.USEENERGY, ProgressStage.ENERGYIDEA, true);
-		this.addChainedProgression(ProgressStage.RELAYS, ProgressStage.ENERGYIDEA, true);
-		this.addChainedProgression(ProgressStage.USEENERGY, ProgressStage.FOCUSCRYSTAL, ProgressStage.ENERGYIDEA, true);
 
 		this.addProgressPrereq(ProgressStage.STORAGE, 	ProgressStage.MULTIBLOCK);
 
@@ -272,20 +265,25 @@ public class ProgressionManager implements ProgressRegistry {
 		nonGatingProgress.put(ProgressStage.LUMA, ResearchLevel.ENDGAME);
 		nonGatingProgress.put(ProgressStage.NETHER, ResearchLevel.RUNECRAFT);
 		nonGatingProgress.put(ProgressStage.END, ResearchLevel.MULTICRAFT);
+
+		this.addChainedProgression(ProgressStage.BYPASSWEAK, ProgressStage.BLOWREPEATER, false, false);
+		this.addChainedProgression(ProgressStage.TUNECAST, ProgressStage.BYPASSWEAK, true, false);
+		this.addChainedProgression(ProgressStage.FOCUSCRYSTAL, ProgressStage.ENERGYIDEA, true, true);
+		this.addChainedProgression(ProgressStage.RELAYS, ProgressStage.ENERGYIDEA, true, false);
 	}
 
 	private void addProgressPrereq(ProgressStage p, ProgressStage prereq) {
 		progressMap.addParent(new ProgressLink(p), new ProgressLink(prereq));
 	}
 
-	private void addChainedProgression(ProgressStage hook, ProgressStage chain, boolean notify) {
-		this.addChainedProgression(hook, hook, chain, notify);
-	}
-
-	private void addChainedProgression(ProgressStage hook, ProgressStage req, ProgressStage chain, boolean notify) {
-		chains.addValue(hook, new ImmutablePair(req, chain));
-		if (!progressMap.hasElementAsParent(new ProgressLink(hook)))
-			progressMap.addParent(new ProgressLink(chain), new ProgressLink(hook, LineType.DASHED, notify));
+	private void addChainedProgression(ProgressStage hook, ProgressStage chain, boolean notify, boolean retro) {
+		chains.addValue(hook, new ImmutablePair(hook, new ProgressChain(chain, notify, retro)));
+		progressMap.addParent(new ProgressLink(chain), new ProgressLink(hook, LineType.DASHED));
+		if (retro) {
+			for (ProgressStage par : this.getPrereqs(chain)) {
+				chains.addValue(par, new ImmutablePair(hook, new ProgressChain(chain, notify, false)));
+			}
+		}
 	}
 
 	public boolean isProgressionGating(ProgressStage p, ResearchLevel level) {
@@ -384,9 +382,9 @@ public class ProgressionManager implements ProgressRegistry {
 		if (!this.canStepPlayerTo(ep, s))
 			return false;
 		this.setPlayerStage(ep, s, true, notify, syncToCoop);
-		for (ImmutablePair<ProgressStage, ProgressStage> chained : chains.get(s)) {
+		for (ImmutablePair<ProgressStage, ProgressChain> chained : chains.get(s)) {
 			if (this.isPlayerAtStage(ep, chained.left))
-				this.stepPlayerTo(ep, chained.right, notify, syncToCoop);
+				this.stepPlayerTo(ep, chained.right.progress, notify && chained.right.notifyOnTrigger, syncToCoop);
 		}
 		return true;
 	}
@@ -771,20 +769,42 @@ public class ProgressionManager implements ProgressRegistry {
 
 	}
 
+	public static class ProgressChain {
+
+		public final ProgressStage progress;
+		public final boolean notifyOnTrigger;
+		public final boolean applyRetroactively;
+
+		public ProgressChain(ProgressStage p, boolean notify, boolean retro) {
+			progress = p;
+			notifyOnTrigger = notify;
+			applyRetroactively = retro;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o instanceof ProgressChain && ((ProgressChain)o).progress == progress;
+		}
+
+		@Override
+		public int hashCode() {
+			return progress.hashCode();
+		}
+
+	}
+
 	public static class ProgressLink {
 
 		public final ProgressStage parent;
 		public final LineType type;
-		public final boolean notifyOnTrigger;
 
 		public ProgressLink(ProgressStage p) {
-			this(p, LineType.SOLID, true);
+			this(p, LineType.SOLID);
 		}
 
-		public ProgressLink(ProgressStage p, LineType line, boolean notify) {
+		public ProgressLink(ProgressStage p, LineType line) {
 			parent = p;
 			type = line;
-			notifyOnTrigger = notify;
 		}
 
 		@Override
