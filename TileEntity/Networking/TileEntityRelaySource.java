@@ -21,6 +21,8 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionCatchupHandling;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
@@ -246,6 +248,9 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 
 	public void onDrain(CrystalElement e, int amt) {
 		drainValue[e.ordinal()] += amt;
+		if (worldObj.isRemote) {
+			ProgressionCatchupHandling.instance.attemptSync(this, 8, ProgressStage.RELAYS, true);
+		}
 	}
 
 	public boolean isEnhanced() {

@@ -35,7 +35,11 @@ public class ProgressionCatchupHandling {
 	}
 
 	public void attemptSync(TileEntityBase te, double maxDist, ProgressStage p) {
-		if (te.getTicksExisted()%10 == 0) {
+		this.attemptSync(te, maxDist, p, false);
+	}
+
+	public void attemptSync(TileEntityBase te, double maxDist, ProgressStage p, boolean ignoreTime) {
+		if (ignoreTime || te.getTicksExisted()%10 == 0) {
 			if (progressPacketCooldown > 0)
 				progressPacketCooldown--;
 			if (progressPacketCooldown < 20)

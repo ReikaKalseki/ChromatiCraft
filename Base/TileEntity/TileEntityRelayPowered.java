@@ -20,6 +20,7 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.Magic.Network.RelayNetworker;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionCatchupHandling;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityEfficiencyUpgrade;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
@@ -108,6 +109,9 @@ public abstract class TileEntityRelayPowered extends TileEntityChromaticBase imp
 			te.onDrain(e, trans);
 			energy.addValueToColor(e, trans);
 			ProgressStage.RELAYS.stepPlayerTo(this.getPlacer());
+			if (worldObj.isRemote) {
+				ProgressionCatchupHandling.instance.attemptSync(this, 8, ProgressStage.RELAYS, true);
+			}
 			return has >= amt;
 		}
 		return false;
