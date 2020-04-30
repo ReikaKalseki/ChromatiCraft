@@ -348,6 +348,29 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 			tessellator.draw();
 			GL11.glPopAttrib();
 		}
+		else if (this == ENERGYIDEA) {
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/infoicons.png");
+			int idx = 32;
+			double u = idx%16/16D;
+			double v = idx/16/16D;
+			double du = u+1/16D;
+			double dv = v+1/16D;
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glColor4f(1, 1, 1, 1);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.ADDITIVEDARK.apply();
+			double w = 1*s;
+			double h = 1*s;
+			Tessellator tessellator = Tessellator.instance;
+			tessellator.startDrawingQuads();
+			tessellator.addVertexWithUV((x - w), (y + h), 0, u, dv);
+			tessellator.addVertexWithUV((x + w), (y + h), 0, du, dv);
+			tessellator.addVertexWithUV((x + w), (y - h), 0, du, v);
+			tessellator.addVertexWithUV((x - w), (y - h), 0, u, v);
+			tessellator.draw();
+			GL11.glPopAttrib();
+		}
 		else {
 			ItemStack is = icon;
 			if (this == BYPASSWEAK) {
