@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Book;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -46,7 +45,6 @@ import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
-import Reika.DragonAPI.Objects.LineType;
 
 public class GuiProgressStages extends GuiScrollingPage {
 
@@ -56,8 +54,8 @@ public class GuiProgressStages extends GuiScrollingPage {
 	private ProgressStage active;
 
 	//private ArrayList<ProgressStage> stages = new ArrayList();
-	private final Topology<ProgressStage> map = ProgressionManager.instance.getTopology();
-	private final Map<ProgressStage, Integer> levels = map.getDepthMap();
+	private final Topology<ProgressLink> map = ProgressionManager.instance.getTopology();
+	private final Map<ProgressLink, Integer> levels = map.getDepthMap();
 	private final EnumMap<ProgressStage, Point> renderPositions = new EnumMap(ProgressStage.class);
 	private final EnumMap<ProgressStage, Rectangle> locations = new EnumMap(ProgressStage.class);
 
@@ -84,13 +82,13 @@ public class GuiProgressStages extends GuiScrollingPage {
 
 		//ReikaJavaLibrary.pConsole("------------------------------");
 		final HashMap<Integer, Integer> offsets = new HashMap();
-		for (ProgressStage p : levels.keySet()) {
+		for (ProgressLink p : levels.keySet()) {
 			int depth = levels.get(p);
 			int d = offsets.containsKey(depth) ? offsets.get(depth) : 0;
 			int dx = d*(elementWidth+spacingX);
 			int dy = depth*(elementHeight+spacingY);
 			offsets.put(depth, d+1);
-			renderPositions.put(p, new Point(dx, dy));
+			renderPositions.put(p.parent, new Point(dx, dy));
 			elementWidth = 20;//Math.max(elementWidth, Minecraft.getMinecraft().fontRenderer.getStringWidth(p.getTitleString())+20);
 			maxX = Math.max(maxX, dx+elementWidth);
 			maxY = Math.max(maxY, dy+elementHeight);
@@ -148,20 +146,16 @@ public class GuiProgressStages extends GuiScrollingPage {
 	}
 
 	private void renderLines(int posX, int posY) {
-		for (ProgressStage p : levels.keySet()) {
+		for (ProgressLink p : levels.keySet()) {
 			this.renderLine(posX, posY, p);
 		}
 	}
 
-	private void renderLine(int posX, int posY, ProgressStage p) {
-		Collection<ProgressLink> c = new ArrayList();
-		for (ProgressStage p2 : map.getParents(p)) {
-			c.add(new ProgressLink(p2, LineType.SOLID));
-		}
-		c.addAll(ProgressionManager.instance.getVisualDependencies(p));
+	private void renderLine(int posX, int posY, ProgressLink p) {
+		Collection<ProgressLink> c = map.getParents(p);
 		int dx = -offsetX+posX+12;
 		int dy = -offsetY+posY+36;
-		Point pt = renderPositions.get(p);
+		Point pt = renderPositions.get(p.parent);
 		for (ProgressLink par : c) {
 			Point pt2 = renderPositions.get(par.parent);
 			int x1 = dx+pt.getX()+elementWidth/2;
@@ -180,15 +174,15 @@ public class GuiProgressStages extends GuiScrollingPage {
 
 			ImmutablePair<java.awt.Point, java.awt.Point> ps = ReikaVectorHelper.clipLine(x1, x2, y1, y2, posX+8, posY+26, posX+xSize-8, posY+ySize/2+6);
 			if (ps != null) {
-				int clr = p == active || par.parent == active ? (par.parent.isPlayerAtStage(player) ? 0x00ff00 : 0xff4040) : 0xffffff;
+				int clr = p.parent == active || par.parent == active ? (par.parent.isPlayerAtStage(player) ? 0x00ff00 : 0xff4040) : 0xffffff;
 				api.drawLine(ps.left.x, ps.left.y, ps.right.x, ps.right.y, clr, par.type);
 			}
 		}
 	}
 
 	private void renderElements(int posX, int posY) {
-		for (ProgressStage p : levels.keySet()) {
-			Point pt = renderPositions.get(p);
+		for (ProgressLink p : levels.keySet()) {
+			Point pt = renderPositions.get(p.parent);
 			int x = -offsetX+posX+12+pt.getX();
 			int y = -offsetY+posY+36+pt.getY();
 
@@ -197,12 +191,13 @@ public class GuiProgressStages extends GuiScrollingPage {
 		}
 	}
 
-	private boolean elementOnScreen(ProgressStage p, int posX, int posY, int x, int y) {
+	private boolean elementOnScreen(ProgressLink p, int posX, int posY, int x, int y) {
 		return x >= posX+8 && x <= posX+xSize-elementWidth-8 && y >= posY+24-2 && y-posY+elementHeight < ySize/2+15;
 	}
 
-	private void renderElement(ProgressStage p, int x, int y) {
+	private void renderElement(ProgressLink pl, int x, int y) {
 		//draw
+		ProgressStage p = pl.parent;
 		int color = 0xffffff;
 		boolean see = this.renderClearText(p, player);
 		drawRect(x, y, x+elementWidth, y+elementHeight, 0xff444444);

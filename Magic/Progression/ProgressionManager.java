@@ -78,9 +78,8 @@ public class ProgressionManager implements ProgressRegistry {
 	private static final String COLOR_NBT_TAG = "Chroma_Element_Discovery";
 	private static final String STRUCTURE_NBT_TAG = "Structure_Color_Completion";
 
-	private final SequenceMap<ProgressStage> progressMap = new SequenceMap();
+	private final SequenceMap<ProgressLink> progressMap = new SequenceMap();
 	private final MultiMap<ProgressStage, ImmutablePair<ProgressStage, ProgressStage>> chains = new MultiMap();
-	private final MultiMap<ProgressStage, ProgressLink> visualDependencies = new MultiMap();
 
 	private final MultiMap<String, ProgressStage> playerMap = new MultiMap(CollectionType.HASHSET);
 
@@ -115,138 +114,136 @@ public class ProgressionManager implements ProgressRegistry {
 	}
 
 	private void load() {
-		progressMap.addParent(ProgressStage.CASTING,	ProgressStage.CRYSTALS);
+		this.addProgressPrereq(ProgressStage.CASTING,	ProgressStage.CRYSTALS);
 
-		progressMap.addParent(ProgressStage.ALLCOLORS,	ProgressStage.PYLON);
+		this.addProgressPrereq(ProgressStage.ALLCOLORS,	ProgressStage.PYLON);
 
-		progressMap.addParent(ProgressStage.RUNEUSE,	ProgressStage.ALLCOLORS);
-		progressMap.addParent(ProgressStage.RUNEUSE,	ProgressStage.CASTING);
+		this.addProgressPrereq(ProgressStage.RUNEUSE,	ProgressStage.ALLCOLORS);
+		this.addProgressPrereq(ProgressStage.RUNEUSE,	ProgressStage.CASTING);
 
-		progressMap.addParent(ProgressStage.MULTIBLOCK,	ProgressStage.RUNEUSE);
-		progressMap.addParent(ProgressStage.MULTIBLOCK, ProgressStage.VILLAGECASTING);
+		this.addProgressPrereq(ProgressStage.MULTIBLOCK,	ProgressStage.RUNEUSE);
+		this.addProgressPrereq(ProgressStage.MULTIBLOCK, ProgressStage.VILLAGECASTING);
 
-		progressMap.addParent(ProgressStage.LINK, 		ProgressStage.PYLON);
-		progressMap.addParent(ProgressStage.LINK, 		ProgressStage.REPEATER);
+		this.addProgressPrereq(ProgressStage.LINK, 		ProgressStage.PYLON);
+		this.addProgressPrereq(ProgressStage.LINK, 		ProgressStage.REPEATER);
 
-		progressMap.addParent(ProgressStage.USEENERGY, 	ProgressStage.PYLON);
-		progressMap.addParent(ProgressStage.USEENERGY, 	ProgressStage.RUNEUSE);
+		this.addProgressPrereq(ProgressStage.USEENERGY, 	ProgressStage.PYLON);
+		this.addProgressPrereq(ProgressStage.USEENERGY, 	ProgressStage.RUNEUSE);
 
-		progressMap.addParent(ProgressStage.CHARGE, 	ProgressStage.PYLON);
-		progressMap.addParent(ProgressStage.CHARGE, 	ProgressStage.CRYSTALS);
+		this.addProgressPrereq(ProgressStage.CHARGE, 	ProgressStage.PYLON);
+		this.addProgressPrereq(ProgressStage.CHARGE, 	ProgressStage.CRYSTALS);
 
-		progressMap.addParent(ProgressStage.FOCUSCRYSTAL, 	ProgressStage.CRYSTALS);
+		this.addProgressPrereq(ProgressStage.FOCUSCRYSTAL, 	ProgressStage.CRYSTALS);
 
-		progressMap.addParent(ProgressStage.BREAKSPAWNER, 	ProgressStage.FINDSPAWNER);
+		this.addProgressPrereq(ProgressStage.BREAKSPAWNER, 	ProgressStage.FINDSPAWNER);
 
-		progressMap.addParent(ProgressStage.ABILITY, 	ProgressStage.CHARGE);
-		progressMap.addParent(ProgressStage.ABILITY, 	ProgressStage.LINK);
+		this.addProgressPrereq(ProgressStage.ABILITY, 	ProgressStage.CHARGE);
+		this.addProgressPrereq(ProgressStage.ABILITY, 	ProgressStage.LINK);
 
-		progressMap.addParent(ProgressStage.SHOCK, 		ProgressStage.PYLON);
+		this.addProgressPrereq(ProgressStage.SHOCK, 		ProgressStage.PYLON);
 
-		progressMap.addParent(ProgressStage.MAKECHROMA, ProgressStage.CASTING);
+		this.addProgressPrereq(ProgressStage.MAKECHROMA, ProgressStage.CASTING);
 
-		progressMap.addParent(ProgressStage.SHARDCHARGE, ProgressStage.MAKECHROMA);
-		progressMap.addParent(ProgressStage.SHARDCHARGE, ProgressStage.RUNEUSE);
-		progressMap.addParent(ProgressStage.SHARDCHARGE, ProgressStage.DYETREE);
+		this.addProgressPrereq(ProgressStage.SHARDCHARGE, ProgressStage.MAKECHROMA);
+		this.addProgressPrereq(ProgressStage.SHARDCHARGE, ProgressStage.RUNEUSE);
+		this.addProgressPrereq(ProgressStage.SHARDCHARGE, ProgressStage.DYETREE);
 
-		progressMap.addParent(ProgressStage.CHROMA, 	ProgressStage.MAKECHROMA);
-		//progressMap.addParent(ProgressStage.CHROMA, 	ProgressStage.RUNEUSE);
-		//progressMap.addParent(ProgressStage.CHROMA, 	ProgressStage.MULTIBLOCK);
+		this.addProgressPrereq(ProgressStage.CHROMA, 	ProgressStage.MAKECHROMA);
+		//addProgressPrereq(ProgressStage.CHROMA, 	ProgressStage.RUNEUSE);
+		//addProgressPrereq(ProgressStage.CHROMA, 	ProgressStage.MULTIBLOCK);
 
-		progressMap.addParent(ProgressStage.ALLOY, 		ProgressStage.SHARDCHARGE);
-		progressMap.addParent(ProgressStage.ALLOY, 		ProgressStage.MULTIBLOCK);
-		progressMap.addParent(ProgressStage.ALLOY, 		ProgressStage.CHROMA);
+		this.addProgressPrereq(ProgressStage.ALLOY, 		ProgressStage.SHARDCHARGE);
+		this.addProgressPrereq(ProgressStage.ALLOY, 		ProgressStage.MULTIBLOCK);
+		this.addProgressPrereq(ProgressStage.ALLOY, 		ProgressStage.CHROMA);
 
-		progressMap.addParent(ProgressStage.INFUSE, 	ProgressStage.ALLOY);
+		this.addProgressPrereq(ProgressStage.INFUSE, 	ProgressStage.ALLOY);
 
 		if (ProgressStage.VOIDMONSTER.active) {
-			progressMap.addParent(ProgressStage.VOIDMONSTER,	ProgressStage.BEDROCK);
-			progressMap.addParent(ProgressStage.VOIDMONSTERDIE,	ProgressStage.VOIDMONSTER);
+			this.addProgressPrereq(ProgressStage.VOIDMONSTER,	ProgressStage.BEDROCK);
+			this.addProgressPrereq(ProgressStage.VOIDMONSTERDIE,	ProgressStage.VOIDMONSTER);
 		}
 
-		progressMap.addParent(ProgressStage.NETHER, 	ProgressStage.BEDROCK);
-		progressMap.addParent(ProgressStage.NETHERROOF, ProgressStage.NETHER);
-		progressMap.addParent(ProgressStage.NETHERSTRUCT, ProgressStage.NETHERROOF);
+		this.addProgressPrereq(ProgressStage.NETHER, 	ProgressStage.BEDROCK);
+		this.addProgressPrereq(ProgressStage.NETHERROOF, ProgressStage.NETHER);
+		this.addProgressPrereq(ProgressStage.NETHERSTRUCT, ProgressStage.NETHERROOF);
 
-		progressMap.addParent(ProgressStage.END, 		ProgressStage.NETHER);
+		this.addProgressPrereq(ProgressStage.END, 		ProgressStage.NETHER);
 
-		progressMap.addParent(ProgressStage.BLOWREPEATER, 	ProgressStage.USEENERGY);
+		this.addProgressPrereq(ProgressStage.BLOWREPEATER, 	ProgressStage.USEENERGY);
 
-		//progressMap.addParent(ProgressStage.BYPASSWEAK, 	ProgressStage.USEENERGY);
-		progressMap.addParent(ProgressStage.BYPASSWEAK, 	ProgressStage.TUNECAST);
+		//addProgressPrereq(ProgressStage.BYPASSWEAK, 	ProgressStage.USEENERGY);
+		this.addProgressPrereq(ProgressStage.BYPASSWEAK, 	ProgressStage.TUNECAST);
 
 		this.addChainedProgression(ProgressStage.USEENERGY, ProgressStage.BYPASSWEAK, ProgressStage.BLOWREPEATER);
 
-		progressMap.addParent(ProgressStage.TUNECAST,	ProgressStage.RUNEUSE);
-		progressMap.addParent(ProgressStage.TUNECAST,	ProgressStage.CHROMA);
-		progressMap.addParent(ProgressStage.TUNECAST,	ProgressStage.MULTIBLOCK);
+		this.addProgressPrereq(ProgressStage.TUNECAST,	ProgressStage.RUNEUSE);
+		this.addProgressPrereq(ProgressStage.TUNECAST,	ProgressStage.CHROMA);
+		this.addProgressPrereq(ProgressStage.TUNECAST,	ProgressStage.MULTIBLOCK);
 
-		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.BLOWREPEATER);
-		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.ENERGYIDEA);
-		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.TUNECAST);
+		this.addProgressPrereq(ProgressStage.REPEATER, 	ProgressStage.BLOWREPEATER);
+		this.addProgressPrereq(ProgressStage.REPEATER, 	ProgressStage.ENERGYIDEA);
+		this.addProgressPrereq(ProgressStage.REPEATER, 	ProgressStage.TUNECAST);
 
-		progressMap.addParent(ProgressStage.ENERGYIDEA, 	ProgressStage.USEENERGY);
+		this.addProgressPrereq(ProgressStage.ENERGYIDEA, 	ProgressStage.USEENERGY);
 
-		progressMap.addParent(ProgressStage.RELAYS, 	ProgressStage.USEENERGY);
-
-		visualDependencies.addValue(ProgressStage.ENERGYIDEA, new ProgressLink(ProgressStage.RELAYS, LineType.DOTTED));
-		visualDependencies.addValue(ProgressStage.ENERGYIDEA, new ProgressLink(ProgressStage.FOCUSCRYSTAL, LineType.DOTTED));
+		this.addProgressPrereq(ProgressStage.RELAYS, 	ProgressStage.USEENERGY);
 
 		this.addChainedProgression(ProgressStage.FOCUSCRYSTAL, ProgressStage.USEENERGY, ProgressStage.ENERGYIDEA);
 		this.addChainedProgression(ProgressStage.RELAYS, ProgressStage.USEENERGY, ProgressStage.ENERGYIDEA);
 		this.addChainedProgression(ProgressStage.USEENERGY, ProgressStage.FOCUSCRYSTAL, ProgressStage.ENERGYIDEA);
 		this.addChainedProgression(ProgressStage.USEENERGY, ProgressStage.RELAYS, ProgressStage.ENERGYIDEA);
 
-		progressMap.addParent(ProgressStage.STORAGE, 	ProgressStage.MULTIBLOCK);
+		this.addProgressPrereq(ProgressStage.STORAGE, 	ProgressStage.MULTIBLOCK);
 
-		progressMap.addParent(ProgressStage.CHARGECRYSTAL, 	ProgressStage.STORAGE);
+		this.addProgressPrereq(ProgressStage.CHARGECRYSTAL, 	ProgressStage.STORAGE);
 
-		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.LINK);
-		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.STORAGE);
-		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.CHARGE);
-		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.INFUSE);
+		this.addProgressPrereq(ProgressStage.POWERCRYSTAL, ProgressStage.LINK);
+		this.addProgressPrereq(ProgressStage.POWERCRYSTAL, ProgressStage.STORAGE);
+		this.addProgressPrereq(ProgressStage.POWERCRYSTAL, ProgressStage.CHARGE);
+		this.addProgressPrereq(ProgressStage.POWERCRYSTAL, ProgressStage.INFUSE);
 
-		progressMap.addParent(ProgressStage.POWERTREE, 	ProgressStage.POWERCRYSTAL);
+		this.addProgressPrereq(ProgressStage.POWERTREE, 	ProgressStage.POWERCRYSTAL);
 
-		progressMap.addParent(ProgressStage.DIE,		ProgressStage.CHARGE);
+		this.addProgressPrereq(ProgressStage.DIE,		ProgressStage.CHARGE);
 
-		progressMap.addParent(ProgressStage.KILLDRAGON,	ProgressStage.END);
+		this.addProgressPrereq(ProgressStage.KILLDRAGON,	ProgressStage.END);
 
-		progressMap.addParent(ProgressStage.KILLWITHER,	ProgressStage.NETHER);
+		this.addProgressPrereq(ProgressStage.KILLWITHER,	ProgressStage.NETHER);
 
-		progressMap.addParent(ProgressStage.KILLDRAGON,	ProgressStage.KILLMOB);
-		progressMap.addParent(ProgressStage.KILLWITHER,	ProgressStage.KILLMOB);
+		this.addProgressPrereq(ProgressStage.KILLDRAGON,	ProgressStage.KILLMOB);
+		this.addProgressPrereq(ProgressStage.KILLWITHER,	ProgressStage.KILLMOB);
 
-		progressMap.addParent(ProgressStage.DIMENSION,	ProgressStage.ALLCOLORS);
-		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.END);
-		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.NETHERSTRUCT);
-		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.POWERCRYSTAL);
-		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.RAINBOWFOREST);
-		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.CAVERN);
-		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.BURROW);
-		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.OCEAN);
-		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.DESERTSTRUCT);
-		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.SNOWSTRUCT);
+		this.addProgressPrereq(ProgressStage.DIMENSION,	ProgressStage.ALLCOLORS);
+		this.addProgressPrereq(ProgressStage.DIMENSION, 	ProgressStage.END);
+		this.addProgressPrereq(ProgressStage.DIMENSION, 	ProgressStage.NETHERSTRUCT);
+		this.addProgressPrereq(ProgressStage.DIMENSION, 	ProgressStage.POWERCRYSTAL);
+		this.addProgressPrereq(ProgressStage.DIMENSION, 	ProgressStage.RAINBOWFOREST);
+		this.addProgressPrereq(ProgressStage.DIMENSION, 	ProgressStage.CAVERN);
+		this.addProgressPrereq(ProgressStage.DIMENSION, 	ProgressStage.BURROW);
+		this.addProgressPrereq(ProgressStage.DIMENSION, 	ProgressStage.OCEAN);
+		this.addProgressPrereq(ProgressStage.DIMENSION, 	ProgressStage.DESERTSTRUCT);
+		this.addProgressPrereq(ProgressStage.DIMENSION, 	ProgressStage.SNOWSTRUCT);
 
-		progressMap.addParent(ProgressStage.TURBOCHARGE,	ProgressStage.DIMENSION);
-		progressMap.addParent(ProgressStage.TURBOCHARGE,	ProgressStage.POWERTREE);
-		progressMap.addParent(ProgressStage.TURBOCHARGE,	ProgressStage.STRUCTCOMPLETE);
+		this.addProgressPrereq(ProgressStage.TURBOCHARGE,	ProgressStage.DIMENSION);
+		this.addProgressPrereq(ProgressStage.TURBOCHARGE,	ProgressStage.POWERTREE);
+		this.addProgressPrereq(ProgressStage.TURBOCHARGE,	ProgressStage.STRUCTCOMPLETE);
 
-		progressMap.addParent(ProgressStage.STRUCTCOMPLETE,	ProgressStage.ABILITY);
-		progressMap.addParent(ProgressStage.STRUCTCOMPLETE,	ProgressStage.DIMENSION);
+		this.addProgressPrereq(ProgressStage.STRUCTCOMPLETE,	ProgressStage.ABILITY);
+		this.addProgressPrereq(ProgressStage.STRUCTCOMPLETE,	ProgressStage.DIMENSION);
 
-		progressMap.addParent(ProgressStage.STRUCTCHEAT,	ProgressStage.DIMENSION);
+		this.addProgressPrereq(ProgressStage.STRUCTCHEAT,	ProgressStage.DIMENSION);
 
-		progressMap.addParent(ProgressStage.ALLCORES,	ProgressStage.STRUCTCOMPLETE);
+		this.addProgressPrereq(ProgressStage.ALLCORES,	ProgressStage.STRUCTCOMPLETE);
 
-		progressMap.addParent(ProgressStage.CTM,		ProgressStage.ALLCORES);
+		this.addProgressPrereq(ProgressStage.CTM,		ProgressStage.ALLCORES);
 
-		progressMap.addParent(ProgressStage.PYLONLINK, 	ProgressStage.TOWER);
+		this.addProgressPrereq(ProgressStage.PYLONLINK, 	ProgressStage.TOWER);
 
 		for (int i = 0; i < ProgressStage.list.length; i++) {
 			ProgressStage p = ProgressStage.list[i];
-			if (p.active && !progressMap.hasElementAsParent(p) && !progressMap.hasElementAsChild(p)) {
-				progressMap.addChildless(p);
+			ProgressLink pl = new ProgressLink(p);
+			if (p.active && !progressMap.hasElementAsParent(pl) && !progressMap.hasElementAsChild(pl)) {
+				progressMap.addChildless(pl);
 			}
 		}
 
@@ -276,8 +273,14 @@ public class ProgressionManager implements ProgressRegistry {
 		nonGatingProgress.put(ProgressStage.END, ResearchLevel.MULTICRAFT);
 	}
 
+	private void addProgressPrereq(ProgressStage p, ProgressStage prereq) {
+		progressMap.addParent(new ProgressLink(p), new ProgressLink(prereq));
+	}
+
 	private void addChainedProgression(ProgressStage hook, ProgressStage req, ProgressStage chain) {
 		chains.addValue(hook, new ImmutablePair(req, chain));
+		progressMap.addParent(new ProgressLink(chain), new ProgressLink(hook, LineType.DASHED));
+		progressMap.addParent(new ProgressLink(chain), new ProgressLink(req, LineType.DASHED));
 	}
 
 	public boolean isProgressionGating(ProgressStage p, ResearchLevel level) {
@@ -394,11 +397,11 @@ public class ProgressionManager implements ProgressRegistry {
 	}
 
 	public boolean playerHasPrerequisites(EntityPlayer ep, ProgressStage s) {
-		Collection<ProgressStage> c = progressMap.getParents(s);
+		Collection<ProgressLink> c = progressMap.getParents(new ProgressLink(s));
 		if (c == null || c.isEmpty())
 			return true;
-		for (ProgressStage s2 : c) {
-			if (!this.isPlayerAtStage(ep, s2))
+		for (ProgressLink s2 : c) {
+			if (!this.isPlayerAtStage(ep, s2.parent))
 				return false;
 		}
 		return true;
@@ -409,30 +412,34 @@ public class ProgressionManager implements ProgressRegistry {
 	}
 	 */
 	public Collection<ProgressStage> getPrereqs(ProgressStage s) {
-		return Collections.unmodifiableCollection(progressMap.getParents(s));
+		ArrayList<ProgressStage> li = new ArrayList();
+		for (ProgressLink l : progressMap.getParents(new ProgressLink(s))) {
+			li.add(l.parent);
+		}
+		return li;
 	}
 
 	public ProgressStage[] getPrereqsArray(ProgressStage s) {
-		Collection<ProgressStage> c = progressMap.getParents(s);
+		Collection<ProgressStage> c = this.getPrereqs(s);
 		return c != null ? c.toArray(new ProgressStage[c.size()]) : new ProgressStage[0];
 	}
 
-	Collection<ProgressStage> getRecursiveParents(ProgressStage p) {
-		return progressMap.getRecursiveParents(p);
+	Collection<ProgressLink> getRecursiveParents(ProgressStage p) {
+		return progressMap.getRecursiveParents(new ProgressLink(p));
 	}
 
 	boolean isOneStepAway(EntityPlayer ep, ProgressStage s) {
 		if (this.isPlayerAtStage(ep, s))
 			return false;
-		Collection<ProgressStage> c = progressMap.getParents(s);
+		Collection<ProgressLink> c = progressMap.getParents(new ProgressLink(s));
 		if (c == null || c.isEmpty())
 			return false;
-		for (ProgressStage par : c) {
-			if (this.isPlayerAtStage(ep, par))
+		for (ProgressLink par : c) {
+			if (this.isPlayerAtStage(ep, par.parent))
 				return false;
-			Collection<ProgressStage> c2 = progressMap.getParents(par);
-			for (ProgressStage par2 : c2) {
-				if (!this.isPlayerAtStage(ep, par))
+			Collection<ProgressLink> c2 = progressMap.getParents(par);
+			for (ProgressLink par2 : c2) {
+				if (!this.isPlayerAtStage(ep, par.parent))
 					return false;
 			}
 		}
@@ -486,14 +493,15 @@ public class ProgressionManager implements ProgressRegistry {
 		NBTTagList li = this.getNBTList(ep);
 		NBTBase tag = new NBTTagString(s.name());
 		boolean flag = false;
+		ProgressLink ls = new ProgressLink(s);
 		if (set) {
 			//ReikaJavaLibrary.pConsole(ReikaStringParser.padToLength(tag.toString(), 24, " ")+" out of "+li+",\t=\t"+li.tagList.contains(tag));
 			if (!li.tagList.contains(tag)) {
 				flag = true;
 				li.appendTag(tag);
-				Collection<ProgressStage> c = progressMap.getRecursiveParents(s);
-				for (ProgressStage s2 : c) {
-					NBTBase tag2 = new NBTTagString(s2.name());
+				Collection<ProgressLink> c = progressMap.getRecursiveParents(ls);
+				for (ProgressLink s2 : c) {
+					NBTBase tag2 = new NBTTagString(s2.parent.name());
 					if (!li.tagList.contains(tag2))
 						li.tagList.add(tag2);
 				}
@@ -503,9 +511,9 @@ public class ProgressionManager implements ProgressRegistry {
 			if (li.tagList.contains(tag)) {
 				flag = true;
 				li.tagList.remove(tag);
-				Collection<ProgressStage> c = progressMap.getRecursiveChildren(s);
-				for (ProgressStage s2 : c) {
-					NBTBase tag2 = new NBTTagString(s2.name());
+				Collection<ProgressLink> c = progressMap.getRecursiveChildren(ls);
+				for (ProgressLink s2 : c) {
+					NBTBase tag2 = new NBTTagString(s2.parent.name());
 					li.tagList.remove(tag2);
 				}
 			}
@@ -763,9 +771,23 @@ public class ProgressionManager implements ProgressRegistry {
 		public final ProgressStage parent;
 		public final LineType type;
 
+		public ProgressLink(ProgressStage p) {
+			this(p, LineType.SOLID);
+		}
+
 		public ProgressLink(ProgressStage p, LineType line) {
 			parent = p;
 			type = line;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o instanceof ProgressLink && ((ProgressLink)o).parent == parent;
+		}
+
+		@Override
+		public int hashCode() {
+			return parent.hashCode();
 		}
 
 	}
@@ -919,10 +941,6 @@ public class ProgressionManager implements ProgressRegistry {
 			//ProgressStage.USEENERGY.giveToPlayer(ep, false);
 			ProgressStage.BYPASSWEAK.stepPlayerTo(ep);
 		}
-	}
-
-	public Collection<ProgressLink> getVisualDependencies(ProgressStage p) {
-		return Collections.unmodifiableCollection(visualDependencies.get(p));
 	}
 
 	private static class AlphabeticProgressComparator implements Comparator<ProgressStage> {
