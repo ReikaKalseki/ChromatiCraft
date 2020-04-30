@@ -155,7 +155,7 @@ public class ChromaOverlays {
 
 		int gsc = evt.resolution.getScaleFactor();
 		if (evt.type == ElementType.HELMET) {
-			if (ChromaItems.TOOL.matchWith(is)) {
+			if (HoldingChecks.MANIPULATOR.isClientHolding()) {
 				MouseoverOverlayRenderer.instance.renderTileOverlays(ep, gsc);
 			}
 

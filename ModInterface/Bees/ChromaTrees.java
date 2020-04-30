@@ -52,6 +52,7 @@ import Reika.DragonAPI.ModInteract.Bees.TreeAlleleRegistry.Sappiness;
 import Reika.DragonAPI.ModInteract.Bees.TreeAlleleRegistry.Yield;
 import Reika.DragonAPI.ModInteract.Bees.TreeSpecies;
 import Reika.DragonAPI.ModInteract.Bees.TreeSpecies.BasicTreeSpecies;
+import Reika.DragonAPI.ModInteract.Bees.TreeSpecies.NoLocaleDescriptionFruit;
 import Reika.DragonAPI.ModInteract.Bees.TreeSpecies.TraitsTree;
 import Reika.DragonAPI.ModInteract.Bees.TreeSpecies.TreeBranch;
 import Reika.DragonAPI.ModInteract.Bees.TreeTraits;
@@ -603,7 +604,7 @@ public class ChromaTrees {
 
 	}
 
-	private static class BerryProvider implements IFruitProvider {
+	private static class BerryProvider implements IFruitProvider, NoLocaleDescriptionFruit {
 
 		private final CrystalElement color;
 
@@ -668,9 +669,15 @@ public class ChromaTrees {
 			return new ItemStack[] {ReikaItemHelper.getSizedItemStack(ChromaItems.BERRY.getStackOf(color), num)};
 		}
 
+		/** This is in fact a locale key, and is automatically prepended with "for." */
 		@Override
 		public String getDescription() {
-			return color.displayName+" chroma berries.";
+			return color.displayName;
+		}
+
+		@Override
+		public String getDirectDescription() {
+			return color.displayName+" Chroma Berries";
 		}
 
 		@Override
