@@ -623,7 +623,6 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 						isTuned |= CastingTuningManager.instance.getTuningKey(ep).check(this);
 						if (isTuned) {
 							ProgressStage.TUNECAST.stepPlayerTo(ep);
-							ProgressionManager.instance.bypassWeakRepeaters(ep);
 						}
 					}
 				}

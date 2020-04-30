@@ -192,7 +192,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 	}
 
 	private boolean elementOnScreen(ProgressLink p, int posX, int posY, int x, int y) {
-		return x >= posX+8 && x <= posX+xSize-elementWidth-8 && y >= posY+24-2 && y-posY+elementHeight < ySize/2+15;
+		return x >= posX+8 && x <= posX+xSize-elementWidth-8 && y >= posY+24+1 && y-posY+elementHeight < ySize/2+8;
 	}
 
 	private void renderElement(ProgressLink pl, int x, int y) {
