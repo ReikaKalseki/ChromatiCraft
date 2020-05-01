@@ -734,7 +734,7 @@
 			...Except when they explode trying.
 		</reveal>
 		<desc>
-			Wooden repeaters might have been a mistake
+			Wood and chroma repeaters might have been a mistake
 		</desc>
 	</blowrepeater>
 	<chargecrystal>
@@ -891,6 +891,34 @@
 			A way to make use of multiple pylons per color
 		</desc>
 	</pylonlink>
+	<relays>
+		<title>
+			Compact Transmission
+		</title>
+		<hint>
+			Not all constructs are amenable to normal energy transfer, being used indoors or in large numbers.
+		</hint>
+		<reveal>
+			Fortunately, they seem to be receptive to a scaled-down and more orthogonal method of conduction.
+		</reveal>
+		<desc>
+			Transmitting energy in confined spaces
+		</desc>
+	</relays>
+	<energyidea>
+		<title>
+			Refined Transmission
+		</title>
+		<hint>
+			Wood and chroma repeaters are of marginal quality.
+		</hint>
+		<reveal>
+			And these crystals surely hold the key to something better.
+		</reveal>
+		<desc>
+			Insight into lumen transmission
+		</desc>
+	</energyidea>
 	<name>
 		<title>
 			
@@ -904,5 +932,33 @@
 		<desc>
 			
 		</desc>
-	</name>v
+	</name>
+	<name>
+		<title>
+			
+		</title>
+		<hint>
+			
+		</hint>
+		<reveal>
+			
+		</reveal>
+		<desc>
+			
+		</desc>
+	</name>
+	<name>
+		<title>
+			
+		</title>
+		<hint>
+			
+		</hint>
+		<reveal>
+			
+		</reveal>
+		<desc>
+			
+		</desc>
+	</name>
 </progression>

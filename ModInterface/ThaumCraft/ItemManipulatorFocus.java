@@ -13,7 +13,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.ASM.ClassReparenter.Reparent;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 
 import cpw.mods.fml.relauncher.Side;
@@ -22,7 +22,7 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.wands.ItemFocusBasic;
 
-@Strippable("thaumcraft.api.wands.ItemFocusBasic")
+@Reparent(value = {"thaumcraft.api.wands.ItemFocusBasic", "net.minecraft.item.Item"})
 public class ItemManipulatorFocus extends ItemFocusBasic {
 
 	public ItemManipulatorFocus(int idx) {
