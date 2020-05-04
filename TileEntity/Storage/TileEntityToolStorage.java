@@ -3,9 +3,12 @@ package Reika.ChromatiCraft.TileEntity.Storage;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -27,6 +30,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.Potion;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldSavedData;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -39,9 +43,11 @@ import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.CountMap;
 import Reika.DragonAPI.Instantiable.ModInteract.BasicAEInterface;
 import Reika.DragonAPI.Instantiable.ModInteract.MEWorkTracker;
+import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
@@ -73,14 +79,16 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 
 @Strippable(value={"appeng.api.networking.security.IActionHost"})
-public class TileEntityToolStorage extends TileEntityChromaticBase implements IInventory, IActionHost {
+public class TileEntityToolStorage extends TileEntityChromaticBase implements IInventory, IActionHost, BreakAction {
 
 	private static final int MAX_COUNT = 360000;
 
-	private final ArrayList<ItemStack> allItems = new ArrayList();
+	private static final HashMap<UUID, ArrayList<ItemStack>> itemData = new HashMap();
+
 	private final CountMap<KeyedItemStack> types = new CountMap();
 	private ItemStack pendingInput;
 	private ToolType filter = ToolType.OTHER;
+	private UUID identifier = UUID.randomUUID();
 
 	@ModDependent(ModList.APPENG)
 	private MESystemReader network;
@@ -120,19 +128,69 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 		}
 	}
 
+	private static void loadItemData(NBTTagCompound data) {
+		ChromatiCraft.logger.log("Loading tool crate data from disk: "+data);
+		itemData.clear();
+		NBTTagList list = data.getTagList("data", NBTTypes.COMPOUND.ID);
+		for (Object o : list.tagList) {
+			NBTTagCompound NBT = (NBTTagCompound)o;
+			NBTTagList items = NBT.getTagList("Items", NBTTypes.COMPOUND.ID);
+			ArrayList<ItemStack> li = new ArrayList();
+			for (int i = 0; i < items.tagCount(); i++) {
+				NBTTagCompound tag = items.getCompoundTagAt(i);
+				li.add(ItemStack.loadItemStackFromNBT(tag));
+			}
+			UUID key = UUID.fromString(NBT.getString("id"));
+			itemData.put(key, li);
+		}
+	}
+
+	private static void saveItemData(NBTTagCompound data) {
+		NBTTagList list = new NBTTagList();
+		for (Entry<UUID, ArrayList<ItemStack>> e : itemData.entrySet()) {
+			NBTTagCompound NBT = new NBTTagCompound();
+			UUID key = e.getKey();
+			ArrayList<ItemStack> li = e.getValue();
+			NBTTagList nbttaglist = new NBTTagList();
+			for (ItemStack is : li) {
+				NBTTagCompound tag = new NBTTagCompound();
+				is.writeToNBT(tag);
+				nbttaglist.appendTag(tag);
+			}
+			NBT.setTag("Items", nbttaglist);
+			NBT.setString("id", key.toString());
+			list.appendTag(NBT);
+		}
+		data.setTag("data", list);
+	}
+
+	private ArrayList<ItemStack> getItems() {
+		return this.getOrCreateItemList();
+	}
+
+	private ArrayList<ItemStack> getOrCreateItemList() {
+		ArrayList<ItemStack> ret = itemData.get(identifier);
+		if (ret == null) {
+			ret = new ArrayList();
+			itemData.put(identifier, ret);
+		}
+		return ret;
+	}
+
 	@Override
 	public int getSizeInventory() {
-		return allItems.size()+1;
+		return this.getItems().size()+1;
 	}
 
 	@Override
 	public ItemStack getStackInSlot(int slot) {
-		if (slot > allItems.size()) {
+		ArrayList<ItemStack> li = this.getItems();
+		if (slot > li.size()) {
 			ChromatiCraft.logger.logError("Something tried pulling from an off-list slot #"+slot+"!");
 			Thread.dumpStack();
 			return null;
 		}
-		return slot == 0 ? pendingInput : allItems.get(slot-1);
+		return slot == 0 ? pendingInput : li.get(slot-1);
 	}
 
 	public final ItemStack decrStackSize(int par1, int par2) {
@@ -184,11 +242,11 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack is) {
-		return slot == 0 && filter.isItemValid(is) && allItems.size() < MAX_COUNT;
+		return slot == 0 && filter.isItemValid(is) && this.getItems().size() < MAX_COUNT;
 	}
 
 	public boolean stepMode() {
-		if (pendingInput == null && allItems.isEmpty()) {
+		if (pendingInput == null && this.getItems().isEmpty()) {
 			filter = ToolType.list[(filter.ordinal()+1)%ToolType.list.length];
 			MEStacks.clear();
 			updateTimer.setTick(updateTimer.getCap()+2);
@@ -237,6 +295,11 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 				}
 			}
 		}
+	}
+
+	@Override
+	protected void onFirstTick(World world, int x, int y, int z) {
+		WorldToolCrateData.initItemData(world).setDirty(true);
 	}
 
 	private void injectItems() {
@@ -333,7 +396,9 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 	}
 
 	private void addItem(ItemStack is, boolean doSync) {
-		allItems.add(is);
+		this.getItems().add(is);
+		if (worldObj != null)
+			WorldToolCrateData.initItemData(worldObj).setDirty(true);
 		KeyedItemStack ks = this.key(is);
 		types.increment(ks, is.stackSize);
 		if (doSync)
@@ -341,9 +406,11 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 	}
 
 	private void removeItem(int slot, boolean doSync) {
-		ItemStack is = allItems.remove(slot);
+		ItemStack is = this.getItems().remove(slot);
 		if (is == null)
 			return;
+		if (worldObj != null)
+			WorldToolCrateData.initItemData(worldObj).setDirty(true);
 		KeyedItemStack ks = this.key(is);
 		types.subtract(ks, is.stackSize);
 		if (doSync)
@@ -367,21 +434,13 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 	public void writeToNBT(NBTTagCompound NBT) {
 		super.writeToNBT(NBT);
 
-		NBTTagList nbttaglist = new NBTTagList();
-
-		for (ItemStack is : allItems) {
-			NBTTagCompound tag = new NBTTagCompound();
-			is.writeToNBT(tag);
-			nbttaglist.appendTag(tag);
-		}
-
-		NBT.setTag("Items", nbttaglist);
-
 		if (pendingInput != null) {
 			NBTTagCompound tag = new NBTTagCompound();
 			pendingInput.writeToNBT(tag);
 			NBT.setTag("pending", tag);
 		}
+
+		NBT.setString("boxid", identifier.toString());
 
 		NBT.setInteger("mode", filter.ordinal());
 	}
@@ -390,13 +449,20 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 	public void readFromNBT(NBTTagCompound NBT) {
 		super.readFromNBT(NBT);
 
-		NBTTagList li = NBT.getTagList("Items", NBTTypes.COMPOUND.ID);
-		allItems.clear();
-		types.clear();
+		if (NBT.hasKey("boxid")) {
+			identifier = UUID.fromString(NBT.getString("boxid"));
+		}
 
-		for (int i = 0; i < li.tagCount(); i++) {
-			NBTTagCompound tag = li.getCompoundTagAt(i);
-			this.addItem(ItemStack.loadItemStackFromNBT(tag), false);
+		if (NBT.hasKey("Items")) {
+			NBTTagList li = NBT.getTagList("Items", NBTTypes.COMPOUND.ID);
+			ChromatiCraft.logger.log("Loading legacy tool crate data from NBT: "+li);
+			this.getItems().clear();
+			types.clear();
+
+			for (int i = 0; i < li.tagCount(); i++) {
+				NBTTagCompound tag = li.getCompoundTagAt(i);
+				this.addItem(ItemStack.loadItemStackFromNBT(tag), false);
+			}
 		}
 
 		if (NBT.hasKey("pending")) {
@@ -429,6 +495,11 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 	@ModDependent(ModList.APPENG)
 	public void securityBreak() {
 
+	}
+
+	@Override
+	public void breakBlock() {
+		itemData.remove(new WorldLocation(this));
 	}
 
 	public static enum ToolType {
@@ -596,6 +667,38 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 
 		public String displayName() {
 			return ReikaStringParser.capFirstChar(this.name());
+		}
+	}
+
+	public static class WorldToolCrateData extends WorldSavedData {
+
+		private static final String IDENTIFIER = "ToolCrateItems";
+
+		public WorldToolCrateData() {
+			super(IDENTIFIER);
+		}
+
+		public WorldToolCrateData(String s) {
+			super(s);
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound NBT) {
+			loadItemData(NBT);
+		}
+
+		@Override
+		public void writeToNBT(NBTTagCompound NBT) {
+			saveItemData(NBT);
+		}
+
+		private static WorldToolCrateData initItemData(World world) {
+			WorldToolCrateData data = (WorldToolCrateData)world.loadItemData(WorldToolCrateData.class, IDENTIFIER);
+			if (data == null) {
+				data = new WorldToolCrateData();
+				world.setItemData(IDENTIFIER, data);
+			}
+			return data;
 		}
 	}
 
