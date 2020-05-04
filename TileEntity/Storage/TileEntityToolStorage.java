@@ -209,6 +209,7 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (pendingInput != null) {
+			//ReikaJavaLibrary.pConsole(pendingInput+" > "+pendingInput.getDisplayName());
 			this.addItem(pendingInput, true);
 			pendingInput = null;
 		}
@@ -350,7 +351,7 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 	}
 
 	private KeyedItemStack key(ItemStack is) {
-		return new KeyedItemStack(is).setIgnoreMetadata(true).setIgnoreNBT(true).setSized(false).setSimpleHash(true);
+		return new KeyedItemStack(is).setIgnoreMetadata(!filter.isDamageImportant()).setIgnoreNBT(!filter.isNBTImportant()).setSized(false).setSimpleHash(true);
 	}
 
 	public Map<KeyedItemStack, Integer> getItemTypes() {
@@ -458,6 +459,27 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 				render = new InertItem(Minecraft.getMinecraft().theWorld, icon);
 			}
 			return render;
+		}
+
+		public boolean isDamageImportant() {
+			switch(this) {
+				case POTION:
+				case OTHER:
+					return true;
+				default:
+					return false;
+			}
+		}
+
+		public boolean isNBTImportant() {
+			switch(this) {
+				case TINKER:
+				case BOOK:
+				case OTHER:
+					return true;
+				default:
+					return false;
+			}
 		}
 
 		private ToolType(Item i) {
