@@ -49,8 +49,10 @@ import Reika.DragonAPI.Instantiable.ModInteract.BasicAEInterface;
 import Reika.DragonAPI.Instantiable.ModInteract.MEWorkTracker;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.KeyedItemStackConverter;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
@@ -207,7 +209,7 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 			pendingInput = is;
 		}
 		else if (is == null) {
-			this.removeItem(slot-1, true);
+			this.removeItem(slot-1);
 		}
 		else {
 			throw new IllegalArgumentException("Something tried to insert into an invalid slot!");
@@ -268,7 +270,7 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (pendingInput != null) {
 			//ReikaJavaLibrary.pConsole(pendingInput+" > "+pendingInput.getDisplayName());
-			this.addItem(pendingInput, true);
+			this.addItem(pendingInput);
 			pendingInput = null;
 		}
 
@@ -300,6 +302,16 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		WorldToolCrateData.initItemData(world).setDirty(true);
+		this.initTypeData();
+		ReikaJavaLibrary.pConsole("types");
+	}
+
+	private void initTypeData() {
+		types.clear();
+		for (ItemStack is : this.getItems()) {
+			KeyedItemStack ks = this.key(is);
+			types.increment(ks, is.stackSize);
+		}
 	}
 
 	private void injectItems() {
@@ -395,17 +407,17 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 			((IGridNode)aeGridNode).destroy();
 	}
 
-	private void addItem(ItemStack is, boolean doSync) {
+	private void addItem(ItemStack is) {
 		this.getItems().add(is);
 		if (worldObj != null)
 			WorldToolCrateData.initItemData(worldObj).setDirty(true);
 		KeyedItemStack ks = this.key(is);
 		types.increment(ks, is.stackSize);
-		if (doSync)
-			this.syncAllData(true);
+		if (worldObj != null)
+			this.syncAllData(false);
 	}
 
-	private void removeItem(int slot, boolean doSync) {
+	private void removeItem(int slot) {
 		ItemStack is = this.getItems().remove(slot);
 		if (is == null)
 			return;
@@ -413,8 +425,8 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 			WorldToolCrateData.initItemData(worldObj).setDirty(true);
 		KeyedItemStack ks = this.key(is);
 		types.subtract(ks, is.stackSize);
-		if (doSync)
-			this.syncAllData(true);
+		if (worldObj != null)
+			this.syncAllData(false);
 	}
 
 	private KeyedItemStack key(ItemStack is) {
@@ -461,7 +473,7 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 
 			for (int i = 0; i < li.tagCount(); i++) {
 				NBTTagCompound tag = li.getCompoundTagAt(i);
-				this.addItem(ItemStack.loadItemStackFromNBT(tag), false);
+				this.addItem(ItemStack.loadItemStackFromNBT(tag));
 			}
 		}
 
@@ -471,6 +483,24 @@ public class TileEntityToolStorage extends TileEntityChromaticBase implements II
 		}
 
 		filter = ToolType.list[NBT.getInteger("mode")];
+	}
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		NBTTagCompound tag = new NBTTagCompound();
+		types.writeToNBT(tag, KeyedItemStackConverter.instance);
+		NBT.setTag("types", tag);
+	}
+
+	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		if (NBT.hasKey("types")) {
+			types.readFromNBT(NBT.getCompoundTag("types"), KeyedItemStackConverter.instance);
+		}
 	}
 
 	@Override
