@@ -13,8 +13,8 @@ import net.minecraft.util.IIcon;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityMassStorage;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.TileEntity.Storage.TileEntityToolStorage;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -22,7 +22,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 
-public class RenderToolStorage extends ChromaRenderBase {
+public class RenderMassStorage extends ChromaRenderBase {
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
@@ -31,7 +31,7 @@ public class RenderToolStorage extends ChromaRenderBase {
 
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
-		TileEntityToolStorage te = (TileEntityToolStorage)tile;
+		TileEntityMassStorage te = (TileEntityMassStorage)tile;
 		GL11.glPushMatrix();
 		GL11.glTranslated(par2, par4, par6);
 		if (te.isInWorld() && MinecraftForgeClient.getRenderPass() == 1)
@@ -39,7 +39,7 @@ public class RenderToolStorage extends ChromaRenderBase {
 		GL11.glPopMatrix();
 	}
 
-	private void renderItem(TileEntityToolStorage te, float par8) {
+	private void renderItem(TileEntityMassStorage te, float par8) {
 		EntityItem ei = te.getFilterItemRender();
 		if (ei != null && ReikaItemHelper.matchStackWithBlock(ei.getEntityItem(), Blocks.stone))
 			ei = null;

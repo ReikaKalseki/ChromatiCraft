@@ -264,8 +264,8 @@ public enum ChromaTiles implements TileEnum {
 	PLAYERINFUSER("chroma.playerinfuser", ChromaBlocks.TILEMODELLED4, TileEntityPlayerInfuser.class, 	7, "RenderInfuser3"),
 	SMELTERYDISTRIBUTOR("chroma.smeltery", ChromaBlocks.TILEMODELLED4, TileEntitySmelteryDistributor.class, 8, "RenderSmelteryDistributor", ModList.TINKERER),
 	LAUNCHPAD("chroma.launchpad",		ChromaBlocks.TILEENTITY2,	TileEntityLaunchPad.class,			7, "RenderLaunchPad"),
-	TOOLSTORAGE("chroma.toolstorage",	ChromaBlocks.TILEENTITY2,	TileEntityToolStorage.class,		8, "RenderToolStorage"),
-	BEESTORAGE("chroma.beestorage",		ChromaBlocks.TILEENTITY2,	TileEntityBeeStorage.class,			9, "RenderBeeStorage", ModList.FORESTRY);
+	TOOLSTORAGE("chroma.toolstorage",	ChromaBlocks.TILEENTITY2,	TileEntityToolStorage.class,		8, "RenderMassStorage"),
+	BEESTORAGE("chroma.beestorage",		ChromaBlocks.TILEENTITY2,	TileEntityBeeStorage.class,			9, "RenderMassStorage", ModList.FORESTRY);
 
 	private final Class tile;
 	private final String name;
