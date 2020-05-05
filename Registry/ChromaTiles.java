@@ -37,6 +37,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.ModInterface.TileEntityBeeStorage;
 import Reika.ChromatiCraft.ModInterface.TileEntityFloatingLandmark;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.ModInterface.TileEntityManaBooster;
@@ -263,7 +264,8 @@ public enum ChromaTiles implements TileEnum {
 	PLAYERINFUSER("chroma.playerinfuser", ChromaBlocks.TILEMODELLED4, TileEntityPlayerInfuser.class, 	7, "RenderInfuser3"),
 	SMELTERYDISTRIBUTOR("chroma.smeltery", ChromaBlocks.TILEMODELLED4, TileEntitySmelteryDistributor.class, 8, "RenderSmelteryDistributor", ModList.TINKERER),
 	LAUNCHPAD("chroma.launchpad",		ChromaBlocks.TILEENTITY2,	TileEntityLaunchPad.class,			7, "RenderLaunchPad"),
-	TOOLSTORAGE("chroma.toolstorage",	ChromaBlocks.TILEENTITY2,	TileEntityToolStorage.class,		8, "RenderToolStorage");
+	TOOLSTORAGE("chroma.toolstorage",	ChromaBlocks.TILEENTITY2,	TileEntityToolStorage.class,		8, "RenderToolStorage"),
+	BEESTORAGE("chroma.beestorage",		ChromaBlocks.TILEENTITY2,	TileEntityBeeStorage.class,			9, "RenderBeeStorage", ModList.FORESTRY);
 
 	private final Class tile;
 	private final String name;
@@ -381,6 +383,7 @@ public enum ChromaTiles implements TileEnum {
 			case SMELTERYDISTRIBUTOR:
 			case LAUNCHPAD:
 			case TOOLSTORAGE:
+			case BEESTORAGE:
 				return true;
 			default:
 				return false;
@@ -730,7 +733,7 @@ public enum ChromaTiles implements TileEnum {
 
 	@SideOnly(Side.CLIENT)
 	public boolean hasBlockRender() {
-		return !this.hasRender() || this == TANK || this == TABLE || this == CONSOLE || this == ALVEARY || this == PYLONLINK || this == LAUNCHPAD || this == TOOLSTORAGE;
+		return !this.hasRender() || this == TANK || this == TABLE || this == CONSOLE || this == ALVEARY || this == PYLONLINK || this == LAUNCHPAD || this == TOOLSTORAGE || this == BEESTORAGE;
 	}
 
 	public boolean isPlant() {

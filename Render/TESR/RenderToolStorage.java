@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.client.MinecraftForgeClient;
@@ -18,6 +19,7 @@ import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 
 public class RenderToolStorage extends ChromaRenderBase {
@@ -38,7 +40,9 @@ public class RenderToolStorage extends ChromaRenderBase {
 	}
 
 	private void renderItem(TileEntityToolStorage te, float par8) {
-		EntityItem ei = te.getFilter().getRenderItem();
+		EntityItem ei = te.getFilterItemRender();
+		if (ei != null && ReikaItemHelper.matchStackWithBlock(ei.getEntityItem(), Blocks.stone))
+			ei = null;
 		GL11.glPushMatrix();
 		GL11.glTranslated(0.5, 1.25, 0.5);
 		double s = 1;

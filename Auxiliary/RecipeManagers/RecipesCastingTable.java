@@ -114,6 +114,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.Automat
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AvoLaserRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.BatteryRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.BeaconRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.BeeStorageRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.BiomePainterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CastingInjectorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CaveLighterRecipe;
@@ -186,6 +187,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.Smelter
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.SpawnerReprogrammerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.StandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.TelePumpRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ToolStorageRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.TransportWindowRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.VoidTrapRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.WarpGateRecipe;
@@ -264,6 +266,7 @@ import Reika.DragonAPI.Instantiable.IO.LuaBlock;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.AppEngHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerBlockHandler;
@@ -921,8 +924,8 @@ public class RecipesCastingTable {
 		this.addRecipe(new EnderBucketRecipe(is, sr));
 
 		is = ChromaTiles.TOOLSTORAGE.getCraftedProduct();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "qgq", "wcw", "wsw", 'q', Items.quartz, 'g', Blocks.glowstone, 'c', ChromaBlocks.LOOTCHEST.getBlockInstance(), 'w', ReikaTreeHelper.OAK.getLog(), 's', Blocks.stone);
-		this.addRecipe(new LaunchPadRecipe(is, sr));
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "qgq", "aca", "wsw", 'a', ModList.APPENG.isLoaded() ? AppEngHandler.getInstance().get16KStorage() : ReikaTreeHelper.OAK.getLog(), 'q', Items.quartz, 'g', Blocks.glowstone, 'c', ChromaBlocks.LOOTCHEST.getBlockInstance(), 'w', ReikaTreeHelper.OAK.getLog(), 's', Blocks.stone);
+		this.addRecipe(new ToolStorageRecipe(is, sr));
 
 		this.addRecipe(new WideCollectorRecipe(ChromaItems.WIDECOLLECTOR.getStackOf(), ChromaTiles.FUNCTIONRELAY.getCraftedProduct()));
 
@@ -973,6 +976,10 @@ public class RecipesCastingTable {
 			CastingRecipe r = new BeeConversionRecipe();
 			this.addRecipe(r);
 			moddedItemRecipes.add(r);
+
+			is = ChromaTiles.BEESTORAGE.getCraftedProduct();
+			sr = ReikaRecipeHelper.getShapedRecipeFor(is, "qgq", "aca", "wsw", 'a', ModList.APPENG.isLoaded() ? AppEngHandler.getInstance().get64KStorage() : ReikaTreeHelper.OAK.getLog(), 'q', Items.quartz, 'g', Blocks.glowstone, 'c', ChromaTiles.TOOLSTORAGE.getCraftedProduct(), 'w', ReikaTreeHelper.OAK.getLog(), 's', Blocks.stone);
+			this.addRecipe(new BeeStorageRecipe(is, sr));
 		}
 
 		if (ModList.TINKERER.isLoaded()) {

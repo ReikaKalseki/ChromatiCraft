@@ -55,6 +55,7 @@ import Reika.ChromatiCraft.Base.TileEntity.FluidEmitterChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.FluidIOChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityMassStorage;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
@@ -81,7 +82,6 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
-import Reika.ChromatiCraft.TileEntity.Storage.TileEntityToolStorage;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
@@ -471,6 +471,15 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			}
 		}
 
+		if (is != null && te instanceof TileEntityMassStorage) {
+			TileEntityMassStorage ts = (TileEntityMassStorage)te;
+			if (ts.isItemValidForSlot(0, is)) {
+				ts.setInventorySlotContents(0, is.copy());
+				ep.setCurrentItemOrArmor(0, null);
+				return true;
+			}
+		}
+
 		if (m == ChromaTiles.PARTICLES && is != null && is.getItem() == Items.book) {
 			TileEntityParticleSpawner tp = (TileEntityParticleSpawner)te;
 			if (is.stackTagCompound != null && is.stackTagCompound.hasKey("particleprogram")) {
@@ -762,8 +771,8 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			CrystalElement e = ((TileEntityDimensionCore)te).getColor();
 			currenttip.add("Color: "+e.displayName);
 		}
-		if (te instanceof TileEntityToolStorage) {
-			TileEntityToolStorage ts = (TileEntityToolStorage)te;
+		if (te instanceof TileEntityMassStorage) {
+			TileEntityMassStorage ts = (TileEntityMassStorage)te;
 			//currenttip.add(ts.getFilter().displayName());
 			Map<KeyedItemStack, Integer> map = ts.getItemTypes();
 			for (KeyedItemStack ks : map.keySet()) {
