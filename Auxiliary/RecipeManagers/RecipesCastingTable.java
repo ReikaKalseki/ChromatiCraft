@@ -978,7 +978,13 @@ public class RecipesCastingTable {
 			moddedItemRecipes.add(r);
 
 			is = ChromaTiles.BEESTORAGE.getCraftedProduct();
-			sr = ReikaRecipeHelper.getShapedRecipeFor(is, "qgq", "aca", "wsw", 'a', ModList.APPENG.isLoaded() ? AppEngHandler.getInstance().get64KStorage() : ReikaTreeHelper.OAK.getLog(), 'q', Items.quartz, 'g', Blocks.glowstone, 'c', ChromaTiles.TOOLSTORAGE.getCraftedProduct(), 'w', ReikaTreeHelper.OAK.getLog(), 's', Blocks.stone);
+			Object g2 = ReikaItemHelper.lookupItem("gendustry:BeeReceptacle");
+			Object g = ReikaItemHelper.lookupItem("gendustry:GeneticsProcessor");
+			if (g == null)
+				g = ForestryHandler.CraftingMaterials.WOVENSILK.getItem();
+			if (g2 == null)
+				g2 = ChromaStacks.bindingCrystal;
+			sr = ReikaRecipeHelper.getShapedRecipeFor(is, "aga", "pcp", "iwi", 'i', Items.gold_ingot, 'p', ModList.APPENG.isLoaded() ? AppEngHandler.getInstance().get64KStorage() : "ingotBronze", 'a', g2, 'g', g, 'c', ChromaTiles.TOOLSTORAGE.getCraftedProduct(), 'w', "ingotBronze");
 			this.addRecipe(new BeeStorageRecipe(is, sr));
 		}
 

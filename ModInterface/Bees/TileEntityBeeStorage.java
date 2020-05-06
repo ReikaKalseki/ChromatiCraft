@@ -1,4 +1,4 @@
-package Reika.ChromatiCraft.ModInterface;
+package Reika.ChromatiCraft.ModInterface.Bees;
 
 import java.util.Collection;
 
@@ -58,7 +58,7 @@ public class TileEntityBeeStorage extends TileEntityMassStorage {
 
 	@Override
 	protected void onTick(World world, int x, int y, int z) {
-		if (world.isRemote && this.getTicksExisted()%20 == 0) {
+		if (world.isRemote && this.getTicksExisted()%20 == Math.abs(System.identityHashCode(this))%20) {
 			Collection<KeyedItemStack> li = this.getItemTypes().keySet();
 			KeyedItemStack is = li.isEmpty() ? null : ReikaJavaLibrary.getRandomCollectionEntry(rand, li);
 			render.setEntityItemStack(is != null ? is.getItemStack() : new ItemStack(Blocks.stone));
