@@ -138,14 +138,13 @@ public class BlockCrystalTile extends BlockChromaTile {
 
 		}
 		else {
-			boolean silk = EnchantmentHelper.getSilkTouchModifier(ep);
 			TileEntityChromaticBase te = (TileEntityChromaticBase)world.getTileEntity(x, y, z);
 			if (!te.isUnHarvestable()) {
 				/*
 				if (te instanceof TileEntityWeakRepeater && !((TileEntityWeakRepeater)te).hasRemainingLife())
 					return;
 				 */
-				if (silk || !c.needsSilkTouch()) {
+				if (this.isFullyHarvestable(world, x, y, z, meta, ep, c, te)) {
 					ItemStack is = this.getHarvestedItemStack(world, x, y, z, meta, c);
 					if (c.hasNBTVariants()) {
 						if (is == null) {
@@ -162,6 +161,10 @@ public class BlockCrystalTile extends BlockChromaTile {
 				}
 			}
 		}
+	}
+
+	protected boolean isFullyHarvestable(World world, int x, int y, int z, int meta, EntityPlayer ep, ChromaTiles c, TileEntityChromaticBase te) {
+		return EnchantmentHelper.getSilkTouchModifier(ep) || !c.needsSilkTouch();
 	}
 
 	protected ItemStack getHarvestedItemStack(World world, int x, int y, int z, int meta, ChromaTiles c) {

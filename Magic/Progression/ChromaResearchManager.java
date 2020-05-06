@@ -107,6 +107,25 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		data.addChild(parent, obj);
 	}
 
+	public Collection<ProgressAccess> getResearchLevelAdvancementBlocks(EntityPlayer ep) {
+		Collection<ChromaResearch> c = this.getResearchLevelMissingFragments(ep);
+	}
+
+	public HashSet<ChromaResearch> getResearchLevelMissingFragments(EntityPlayer ep) {
+		Collection<ChromaResearch> cp = ChromaResearchManager.instance.getFragments(ep);
+		HashSet<ChromaResearch> missing = new HashSet(ChromaResearchManager.instance.getResearchForLevel(this.getPlayerResearchLevel(ep)));
+		//ReikaJavaLibrary.pConsole(missing+" - "+cp+" = ");
+		missing.removeAll(cp);
+		this.removeAllDummiedFragments(missing);
+		Iterator<ChromaResearch> it = missing.iterator();
+		while (it.hasNext()) {
+			ChromaResearch r = it.next();
+			if (!r.isGating())
+				it.remove();
+		}
+		return missing;
+	}
+
 	private ChromaResearch getPriorityResearchFor(EntityPlayer ep) {
 		Collection<ChromaResearchTarget> c = priority.get(this.getPlayerResearchLevel(ep));
 		WeightedRandom<ChromaResearch> wr = new WeightedRandom();

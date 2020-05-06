@@ -265,7 +265,7 @@ public enum ChromaTiles implements TileEnum {
 	SMELTERYDISTRIBUTOR("chroma.smeltery", ChromaBlocks.TILEMODELLED4, TileEntitySmelteryDistributor.class, 8, "RenderSmelteryDistributor", ModList.TINKERER),
 	LAUNCHPAD("chroma.launchpad",		ChromaBlocks.TILEENTITY2,	TileEntityLaunchPad.class,			7, "RenderLaunchPad"),
 	TOOLSTORAGE("chroma.toolstorage",	ChromaBlocks.TILEENTITY2,	TileEntityToolStorage.class,		8, "RenderMassStorage"),
-	BEESTORAGE("chroma.beestorage",		ChromaBlocks.TILEENTITY2,	TileEntityBeeStorage.class,			9, "RenderMassStorage", ModList.FORESTRY);
+	BEESTORAGE("chroma.beestorage",		ChromaBlocks.TILEMODELLED4,	TileEntityBeeStorage.class,			9, "RenderBeeStorage", ModList.FORESTRY);
 
 	private final Class tile;
 	private final String name;
@@ -733,7 +733,7 @@ public enum ChromaTiles implements TileEnum {
 
 	@SideOnly(Side.CLIENT)
 	public boolean hasBlockRender() {
-		return !this.hasRender() || this == TANK || this == TABLE || this == CONSOLE || this == ALVEARY || this == PYLONLINK || this == LAUNCHPAD || this == TOOLSTORAGE || this == BEESTORAGE;
+		return !this.hasRender() || this == TANK || this == TABLE || this == CONSOLE || this == ALVEARY || this == PYLONLINK || this == LAUNCHPAD || this == TOOLSTORAGE;
 	}
 
 	public boolean isPlant() {

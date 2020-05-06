@@ -9,10 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
+import java.util.ArrayList;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
@@ -21,7 +25,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.Interfaces.NaturalNetworkTile;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -38,6 +44,7 @@ import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Interfaces.TileEntity.PlayerBreakHook;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 import vazkii.botania.api.mana.ILaputaImmobile;
 
@@ -102,6 +109,36 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 			return super.getPlayerRelativeBlockHardness(ep, world, x, y, z)*8;
 		}
 		return super.getPlayerRelativeBlockHardness(ep, world, x, y, z);
+	}
+
+	@Override
+	protected boolean isFullyHarvestable(World world, int x, int y, int z, int meta, EntityPlayer ep, ChromaTiles c, TileEntityChromaticBase te) {
+		if (c == ChromaTiles.WEAKREPEATER) {
+			TileEntityWeakRepeater tile = (TileEntityWeakRepeater)te;
+			if (tile.isRuptured())
+				return false;
+		}
+		return super.isFullyHarvestable(world, x, y, z, meta, ep, c, te);
+	}
+
+	@Override
+	public ArrayList<ItemStack> getPieces(World world, int x, int y, int z) {
+		ArrayList<ItemStack> li = new ArrayList();
+		switch(ChromaTiles.getTile(world, x, y, z)) {
+			case WEAKREPEATER:
+				int n = ReikaRandomHelper.getRandomBetween(3, 8);
+				for (int i = 0; i < n; i++)
+					li.add(new ItemStack(Items.stick));
+				n = ReikaRandomHelper.getRandomBetween(1, 3);
+				for (int i = 0; i < n; i++)
+					li.add(ChromaStacks.crystalPowder);
+				if (world.rand.nextBoolean())
+					li.add(new ItemStack(Items.glowstone_dust));
+				break;
+			default:
+				break;
+		}
+		return li;
 	}
 
 	@Override

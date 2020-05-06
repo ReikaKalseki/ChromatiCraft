@@ -984,7 +984,7 @@ public class RecipesCastingTable {
 				g = ForestryHandler.CraftingMaterials.WOVENSILK.getItem();
 			if (g2 == null)
 				g2 = ChromaStacks.bindingCrystal;
-			sr = ReikaRecipeHelper.getShapedRecipeFor(is, "aga", "pcp", "iwi", 'i', Items.gold_ingot, 'p', ModList.APPENG.isLoaded() ? AppEngHandler.getInstance().get64KStorage() : "ingotBronze", 'a', g2, 'g', g, 'c', ChromaTiles.TOOLSTORAGE.getCraftedProduct(), 'w', "ingotBronze");
+			sr = new ShapedOreRecipe(is, "aga", "pcp", "qwq", 'q', new ItemStack(Blocks.quartz_block), 'p', ModList.APPENG.isLoaded() ? AppEngHandler.getInstance().get64KStorage() : "ingotBronze", 'a', g2, 'g', g, 'c', ChromaTiles.TOOLSTORAGE.getCraftedProduct(), 'w', "ingotBronze");
 			this.addRecipe(new BeeStorageRecipe(is, sr));
 		}
 

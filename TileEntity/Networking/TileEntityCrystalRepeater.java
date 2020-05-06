@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Networking;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -439,13 +440,17 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	@Override
 	public final void drop() {
 		//ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, this.getTile().getCraftedProduct());
-		if (!this.shouldDrop())
-			return;
+		ArrayList<ItemStack> li = new ArrayList();
+		this.getSneakPopDrops(li);
+		ReikaItemHelper.dropItems(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, li);
+		this.delete();
+	}
+
+	protected void getSneakPopDrops(ArrayList<ItemStack> li) {
 		ItemStack is = this.getTile().getCraftedProduct();
 		is.stackTagCompound = new NBTTagCompound();
 		this.getTagsToWriteToStack(is.stackTagCompound);
-		ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, is);
-		this.delete();
+		li.add(is);
 	}
 
 	@Override

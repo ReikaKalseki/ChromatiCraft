@@ -358,19 +358,12 @@ public class ProgressModifyCommand extends DragonCommandBase {
 			case "debug": {
 				rerender = false;
 				if (args[1].equals("all") || args[1].equals("fragment") || args[1].equals("research")) {
-					for (int i = 0; i < ResearchLevel.levelList.length; i++) {
-						ResearchLevel rl = ResearchLevel.levelList[i];
-						Collection<ChromaResearch> c = ChromaResearchManager.instance.getResearchForLevel(rl);
-					}
 					ResearchLevel pl = ChromaResearchManager.instance.getPlayerResearchLevel(ep);
 					Collection<ChromaResearch> cp = ChromaResearchManager.instance.getFragments(ep);
 					sendChatToSender(ics, "Player research: ");
 					sendChatToSender(ics, "Level "+pl);
 					sendChatToSender(ics, "Fragments: "+cp);
-					Collection<ChromaResearch> missing = new ArrayList(ChromaResearchManager.instance.getResearchForLevel(pl));
-					//ReikaJavaLibrary.pConsole(missing+" - "+cp+" = ");
-					missing.removeAll(cp);
-					ChromaResearchManager.instance.removeAllDummiedFragments(missing);
+					Collection<ChromaResearch> missing = ChromaResearchManager.instance.getResearchLevelMissingFragments(ep);
 					//ReikaJavaLibrary.pConsole(missing);
 					sendChatToSender(ics, "Can step to "+pl.post()+": F="+pl.post().canProgressTo(ep)+" && R="+missing.isEmpty());
 					sendChatToSender(ics, "Missing research for "+pl+": "+missing);

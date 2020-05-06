@@ -1,25 +1,31 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Items.Tools;
 
+import java.util.Locale;
+
 import net.minecraft.block.Block;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.API.Interfaces.EnchantableItem;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.DragonAPI.Interfaces.Item.ToolSprite;
 
-public class ItemMultiTool extends ItemChromaTool implements ToolSprite {
+import cpw.mods.fml.common.eventhandler.Event.Result;
+
+public class ItemMultiTool extends ItemChromaTool implements ToolSprite, EnchantableItem {
 
 	public ItemMultiTool(int index) {
 		super(index);
@@ -59,6 +65,11 @@ public class ItemMultiTool extends ItemChromaTool implements ToolSprite {
 			is.damageItem(1, elb);
 		}
 		return true;
+	}
+
+	@Override
+	public Result getEnchantValidity(Enchantment e, ItemStack is) {
+		return e == Enchantment.unbreaking || e == Enchantment.efficiency || e == Enchantment.silkTouch || e == Enchantment.fortune || e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound") ? Result.ALLOW : Result.DENY;
 	}
 
 }

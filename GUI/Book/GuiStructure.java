@@ -444,6 +444,9 @@ public class GuiStructure extends GuiBookSection {
 			else if (ChromaBlocks.LUMA.match(is)) {
 				is2 = ChromaItems.BUCKET.getStackOfMetadata(3);
 			}
+			else if (ChromaBlocks.MOLTENLUMEN.match(is)) {
+				is2 = ChromaItems.BUCKET.getStackOfMetadata(4);
+			}
 			else if (ChromaBlocks.RUNE.match(is)) {
 				is2 = ChromaBlocks.RUNE.getStackOfMetadata(getElementByTick());
 			}

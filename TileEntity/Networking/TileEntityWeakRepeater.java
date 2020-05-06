@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Networking;
 
+import java.util.ArrayList;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -19,6 +21,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
+import Reika.ChromatiCraft.Block.BlockCrystalPylon;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.DynamicRepeater;
@@ -332,8 +335,11 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 	}
 
 	@Override
-	protected boolean shouldDrop() {
-		return eolTicks == 0 && !this.isRuptured();//this.hasRemainingLife();
+	protected void getSneakPopDrops(ArrayList<ItemStack> li) {
+		if (eolTicks == 0 && !this.isRuptured())//this.hasRemainingLife();
+			super.getSneakPopDrops(li);
+		else
+			li.addAll(((BlockCrystalPylon)this.getBlockType()).getPieces(worldObj, xCoord, yCoord, zCoord));
 	}
 
 	@Override
@@ -412,7 +418,7 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 					for (int i = 0; i < 6; i++) {
 						ReikaWorldHelper.ignite(world, x+te.dirs[i].offsetX, y+te.dirs[i].offsetY, z+te.dirs[i].offsetZ);
 					}
-					world.newExplosion(null, x+0.5, y+0.5, z+0.5, 2, true, true);
+					world.newExplosion(null, x+0.5, y+0.5, z+0.5, 2, !world.isRemote, !world.isRemote);
 					break;
 				case RUPTURE:
 					ReikaSoundHelper.playSoundAtBlock(world, x, y, z, "random.fizz", 2, 0.5F);

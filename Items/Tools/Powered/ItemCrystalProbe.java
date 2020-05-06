@@ -254,23 +254,25 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool implements Dynamical
 					MultiBlockChromaTile te = (MultiBlockChromaTile)world.getTileEntity(x, y, z);
 					if (te.canStructureBeInspected()) {
 						ChromaStructures str = te.getPrimaryStructure();
-						Coordinate c = te.getStructureOffset();
-						if (c == null)
-							c = new Coordinate(0, 0, 0);
-						str.getStructure().resetToDefaults();
-						switch(str) {
-							case RITUAL:
-								((RitualStructure)str.getStructure()).initializeEnhance(true, false);
-								break;
-							default:
-								break;
-						}
-						CrystalElement e = str.requiresColor ? ((ColoredMultiBlockChromaTile)te).getColor() : null;
-						FilledBlockArray arr = str.requiresColor ? str.getArray(world, x, y, z, e) : str.getArray(world, x+c.xCoord, y+c.yCoord, z+c.zCoord);
-						if (!arr.matchInWorld(StructureErrorOverlays.instance)) {
+						if (str != null) {
+							Coordinate c = te.getStructureOffset();
+							if (c == null)
+								c = new Coordinate(0, 0, 0);
+							str.getStructure().resetToDefaults();
+							switch(str) {
+								case RITUAL:
+									((RitualStructure)str.getStructure()).initializeEnhance(true, false);
+									break;
+								default:
+									break;
+							}
+							CrystalElement e = str.requiresColor ? ((ColoredMultiBlockChromaTile)te).getColor() : null;
+							FilledBlockArray arr = str.requiresColor ? str.getArray(world, x, y, z, e) : str.getArray(world, x+c.xCoord, y+c.yCoord, z+c.zCoord);
+							if (!arr.matchInWorld(StructureErrorOverlays.instance)) {
 
+							}
+							return true;
 						}
-						return true;
 					}
 					return false;
 				default:

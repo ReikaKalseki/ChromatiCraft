@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import net.minecraft.block.Block;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -23,6 +24,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 
+import Reika.ChromatiCraft.API.Interfaces.EnchantableItem;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.DragonAPI.Interfaces.Item.ToolSprite;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -33,9 +35,10 @@ import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.ModRegistry.ModOreList;
 
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.relauncher.Side;
 
-public class ItemOreSilker extends ItemChromaTool implements ToolSprite {
+public class ItemOreSilker extends ItemChromaTool implements ToolSprite, EnchantableItem {
 
 	public ItemOreSilker(int index) {
 		super(index);
@@ -104,6 +107,11 @@ public class ItemOreSilker extends ItemChromaTool implements ToolSprite {
 			is.damageItem(1, elb);
 		}
 		return true;
+	}
+
+	@Override
+	public Result getEnchantValidity(Enchantment e, ItemStack is) {
+		return e == Enchantment.unbreaking || e == Enchantment.efficiency || e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound") ? Result.ALLOW : Result.DENY;
 	}
 
 }

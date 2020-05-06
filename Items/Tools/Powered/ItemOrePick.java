@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import net.minecraft.block.Block;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -25,6 +26,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 
+import Reika.ChromatiCraft.API.Interfaces.EnchantableItem;
 import Reika.ChromatiCraft.API.Interfaces.OrePings.OrePingDelegate;
 import Reika.ChromatiCraft.Auxiliary.Render.OreOverlayRenderer;
 import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
@@ -33,7 +35,9 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Interfaces.Item.ToolSprite;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 
-public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite {
+import cpw.mods.fml.common.eventhandler.Event.Result;
+
+public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite, EnchantableItem {
 
 	private static final float SONAR_COST = 0.025F; //40 uses
 	private static final float SCAN_COST = 0.0015F;
@@ -221,6 +225,11 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite {
 	@Override
 	protected int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is) {
 		return is.stackTagCompound.getBoolean("ore") ? 8 : 1;
+	}
+
+	@Override
+	public Result getEnchantValidity(Enchantment e, ItemStack is) {
+		return e == Enchantment.unbreaking || e == Enchantment.efficiency || e == Enchantment.fortune || e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound") ? Result.ALLOW : Result.DENY;
 	}
 
 }
