@@ -1,20 +1,9 @@
-/*******************************************************************************
- * @author Reika Kalseki
- *
- * Copyright 2017
- *
- * All rights reserved.
- * Distribution of the software in any form is only allowed with
- * explicit, prior permission from the owner.
- ******************************************************************************/
-package Reika.ChromatiCraft.GUI.Book;
+package Reika.ChromatiCraft.Base;
 
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Point;
 import org.lwjgl.util.Rectangle;
@@ -28,15 +17,12 @@ import net.minecraft.util.IIcon;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
-import Reika.ChromatiCraft.Base.GuiScrollingPage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
-import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager.ProgressLink;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.DragonAPICore;
-import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap.Topology;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
@@ -44,29 +30,25 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
-import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 
-public class GuiProgressStages extends GuiScrollingPage {
+public abstract class GuiProgressStages extends GuiScrollingPage {
 
 	private int randomIndex;
 	private int clearLength;
 
 	private ProgressStage active;
 
-	//private ArrayList<ProgressStage> stages = new ArrayList();
-	private final Topology<ProgressLink> map = ProgressionManager.instance.getTopology();
-	private final Map<ProgressLink, Integer> levels = map.getDepthMap();
-	private final EnumMap<ProgressStage, Point> renderPositions = new EnumMap(ProgressStage.class);
-	private final EnumMap<ProgressStage, Rectangle> locations = new EnumMap(ProgressStage.class);
-
-	private int elementWidth = 0;
-	private int elementHeight = 20;
+	protected int elementWidth = 0;
+	protected int elementHeight = 20;
 
 	private static final int spacingX = 30;//60;//30;//80;
 	private static final int spacingY = 15;//25;//15;//30;
 
-	public GuiProgressStages(EntityPlayer ep) {
-		super(ChromaGuis.PROGRESS, ep, 256, 220, 242, 112);
+	private final EnumMap<ProgressStage, Point> renderPositions = new EnumMap(ProgressStage.class);
+	private final EnumMap<ProgressStage, Rectangle> locations = new EnumMap(ProgressStage.class);
+
+	public GuiProgressStages(ChromaGuis g, EntityPlayer ep) {
+		super(g, ep, 256, 220, 242, 112);
 
 		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())
 			ChromaDescriptions.reload();
@@ -81,7 +63,11 @@ public class GuiProgressStages extends GuiScrollingPage {
 		 */
 
 		//ReikaJavaLibrary.pConsole("------------------------------");
+	}
+
+	protected final void initMap() {
 		final HashMap<Integer, Integer> offsets = new HashMap();
+		Map<ProgressLink, Integer> levels = this.getDepthMap();
 		for (ProgressLink p : levels.keySet()) {
 			int depth = levels.get(p);
 			int d = offsets.containsKey(depth) ? offsets.get(depth) : 0;
@@ -104,22 +90,18 @@ public class GuiProgressStages extends GuiScrollingPage {
 			maxX = 0;
 	}
 
-	/*
-	private static Map<ProgressLink, Integer> modifyDepths(Map<ProgressLink, Integer> map) {
-		Map<ProgressLink, Integer> ret = new HashMap();
-		for (Entry<ProgressLink, Integer> e : map.entrySet()) {
-			ProgressLink p = e.getKey();
-			int l = e.getValue();
-			ResearchLevel rl = ChromaResearchManager.instance.getEarliestResearchLevelRequiring(p.parent);
-			//if (rl != null)
-			//l += rl.ordinal()*2;
-			ret.put(p, l);
-		}
-		return ret;
-	}*/
+	protected final ProgressStage getActive() {
+		return active;
+	}
+
+	protected final Point getRenderPosition(ProgressStage p) {
+		return renderPositions.get(p);
+	}
+
+	protected abstract Map<ProgressLink, Integer> getDepthMap();
 
 	@Override
-	public void initGui() {
+	public final void initGui() {
 		super.initGui();
 
 		int j = (width - xSize) / 2;
@@ -128,14 +110,32 @@ public class GuiProgressStages extends GuiScrollingPage {
 		String file = "Textures/GUIs/Handbook/buttons.png";
 
 		this.addAuxButton(new CustomSoundImagedGuiButton(10, j+xSize, k, 22, 39, 42, 126, file, ChromatiCraft.class, this), "Return");
+
+		this.addAuxButton(new CustomSoundImagedGuiButton(20, j-13, k-7, 13, 35, 15, 185, file, ChromatiCraft.class, this), "Tree");
+		this.addAuxButton(new CustomSoundImagedGuiButton(21, j-13, k+27, 13, 35, 15, 185, file, ChromatiCraft.class, this), "Levels");
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton button) {
+	protected final void actionPerformed(GuiButton button) {
 		super.actionPerformed(button);
 		if (button.id == 10) {
 			this.goTo(ChromaGuis.BOOKNAV, null);
 			this.resetOffset();
+		}
+		else if (button.id >= 20) {
+			ChromaGuis c = null;
+			switch(button.id) {
+				case 20:
+					c = ChromaGuis.PROGRESS;
+					break;
+				case 21:
+					c = ChromaGuis.PROGRESSBYTIER;
+					break;
+			}
+			if (c != null && c != guiType) {
+				this.goTo(c, null);
+				this.resetOffset();
+			}
 		}
 		this.initGui();
 	}
@@ -143,61 +143,11 @@ public class GuiProgressStages extends GuiScrollingPage {
 	@Override
 	public void drawScreen(int x, int y, float f) {
 		super.drawScreen(x, y, f);
-
-		int posX = (width - xSize) / 2;
-		int posY = (height - ySize) / 2 - 8;
-
-		super.drawScreen(x, y, f);
-
-		this.renderTree(posX, posY);
-		this.renderText(posX, posY);
-
-		//ReikaJavaLibrary.pConsole(offsetX+"/"+maxX+","+offsetY+"/"+maxY);
-	}
-
-	private void renderTree(int posX, int posY) {
 		locations.clear();
-		this.renderLines(posX, posY);
-		this.renderElements(posX, posY);
 	}
 
-	private void renderLines(int posX, int posY) {
-		for (ProgressLink p : levels.keySet()) {
-			this.renderLine(posX, posY, p);
-		}
-	}
-
-	private void renderLine(int posX, int posY, ProgressLink p) {
-		Collection<ProgressLink> c = map.getParents(p);
-		int dx = -offsetX+posX+12;
-		int dy = -offsetY+posY+36;
-		Point pt = renderPositions.get(p.parent);
-		for (ProgressLink par : c) {
-			Point pt2 = renderPositions.get(par.parent);
-			int x1 = dx+pt.getX()+elementWidth/2;
-			int y1 = dy+pt.getY();
-			/*
-			if (this.elementOnScreen(p, posX, posY, x1, y1)) {
-				int x2 = dx+pt2.getX()+elementWidth/2;
-				int y2 = dy+pt2.getY()+elementHeight;
-				if (this.elementOnScreen(par, posX, posY, x2, y2)) {
-					api.drawLine(x1, y1, x2, y2, 0xffffff);
-				}
-			}
-			 */
-			int x2 = dx+pt2.getX()+elementWidth/2;
-			int y2 = dy+pt2.getY()+elementHeight;
-
-			ImmutablePair<java.awt.Point, java.awt.Point> ps = ReikaVectorHelper.clipLine(x1, x2, y1, y2, posX+8, posY+26, posX+xSize-8, posY+ySize/2+6);
-			if (ps != null) {
-				int clr = p.parent == active || par.parent == active ? (par.parent.isPlayerAtStage(player) ? 0x00ff00 : 0xff4040) : 0xffffff;
-				api.drawLine(ps.left.x, ps.left.y, ps.right.x, ps.right.y, clr, par.type);
-			}
-		}
-	}
-
-	private void renderElements(int posX, int posY) {
-		for (ProgressLink p : levels.keySet()) {
+	protected final void renderElements(int posX, int posY) {
+		for (ProgressLink p : this.getDepthMap().keySet()) {
 			Point pt = renderPositions.get(p.parent);
 			int x = -offsetX+posX+12+pt.getX();
 			int y = -offsetY+posY+36+pt.getY();
@@ -307,7 +257,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 		return p.isPlayerAtStage(player) || p.playerHasPrerequisites(player);
 	}
 
-	private void renderText(int posX, int posY) {
+	protected final void renderText(int posX, int posY) {
 		int c = 0xffffff;
 		int px = posX+descX;
 
@@ -348,7 +298,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 	}
 
 	@Override
-	protected void mouseClicked(int x, int y, int b) {
+	protected final void mouseClicked(int x, int y, int b) {
 		super.mouseClicked(x, y, b);
 
 		ProgressStage p = this.getUnderMouse(x, y);
@@ -394,34 +344,4 @@ public class GuiProgressStages extends GuiScrollingPage {
 		clearLength = Math.min(Math.max(4, rand.nextInt(s.length())), Math.min(rand.nextInt(3) == 0 ? 12 : 6, s.length()-randomIndex));
 	}
 
-
-	@Override
-	public String getBackgroundTexture() {
-		return "Textures/GUIs/Handbook/progress.png";
-	}
-	/*
-	@Override
-	public String getPageTitle() {
-		return subpage > 0 ? this.getStage().getTitleString() : "Research Notes";
-	}
-
-	private ProgressStage getStage() {
-		return subpage > 0 ? stages.get(subpage-1) : null;
-	}
-
-	@Override
-	protected int getMaxSubpage() {
-		return stages.size();
-	}
-
-	@Override
-	protected PageType getGuiLayout() {
-		return PageType.PLAIN;
-	}
-	 */
-
-	@Override
-	protected String getScrollingTexture() {
-		return "Textures/GUIs/Handbook/navbcg.png";
-	}
 }

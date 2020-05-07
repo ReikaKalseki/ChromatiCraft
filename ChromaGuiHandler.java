@@ -35,12 +35,12 @@ import Reika.ChromatiCraft.Container.ContainerCrystalFurnace;
 import Reika.ChromatiCraft.Container.ContainerCrystalTank;
 import Reika.ChromatiCraft.Container.ContainerEnchantDecomposer;
 import Reika.ChromatiCraft.Container.ContainerFluidRelay;
-import Reika.ChromatiCraft.Container.ContainerItemWithFilter;
 import Reika.ChromatiCraft.Container.ContainerInventoryTicker;
 import Reika.ChromatiCraft.Container.ContainerItemBurner;
 import Reika.ChromatiCraft.Container.ContainerItemCollector;
 import Reika.ChromatiCraft.Container.ContainerItemFabricator;
 import Reika.ChromatiCraft.Container.ContainerItemInserter;
+import Reika.ChromatiCraft.Container.ContainerItemWithFilter;
 import Reika.ChromatiCraft.Container.ContainerMiner;
 import Reika.ChromatiCraft.Container.ContainerRouterFilter;
 import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
@@ -51,8 +51,8 @@ import Reika.ChromatiCraft.GUI.GuiAuraPouch;
 import Reika.ChromatiCraft.GUI.GuiBulkMover;
 import Reika.ChromatiCraft.GUI.GuiEnderBucket;
 import Reika.ChromatiCraft.GUI.GuiFlightWand;
-import Reika.ChromatiCraft.GUI.GuiItemWithFilter;
 import Reika.ChromatiCraft.GUI.GuiItemBurner;
+import Reika.ChromatiCraft.GUI.GuiItemWithFilter;
 import Reika.ChromatiCraft.GUI.GuiLoreKeyAssembly;
 import Reika.ChromatiCraft.GUI.GuiOneSlot;
 import Reika.ChromatiCraft.GUI.GuiTeleportAbility;
@@ -69,7 +69,8 @@ import Reika.ChromatiCraft.GUI.Book.GuiNavigation;
 import Reika.ChromatiCraft.GUI.Book.GuiNotes;
 import Reika.ChromatiCraft.GUI.Book.GuiPackChanges;
 import Reika.ChromatiCraft.GUI.Book.GuiPoolRecipe;
-import Reika.ChromatiCraft.GUI.Book.GuiProgressStages;
+import Reika.ChromatiCraft.GUI.Book.GuiProgressByLevel;
+import Reika.ChromatiCraft.GUI.Book.GuiProgressTree;
 import Reika.ChromatiCraft.GUI.Book.GuiRitual;
 import Reika.ChromatiCraft.GUI.Book.GuiStructure;
 import Reika.ChromatiCraft.GUI.Book.GuiToolDescription;
@@ -357,7 +358,9 @@ public class ChromaGuiHandler implements IGuiHandler {
 			case STRUCTURE:
 				return new GuiStructure(player, ChromaResearch.researchList[x]);
 			case PROGRESS:
-				return new GuiProgressStages(player);
+				return new GuiProgressTree(player);
+			case PROGRESSBYTIER:
+				return new GuiProgressByLevel(player);
 			case REFRAGMENT:
 				return new GuiFragmentRecovery(player);
 			case NOTES:
