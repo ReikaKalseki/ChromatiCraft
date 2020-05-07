@@ -48,6 +48,7 @@ public class BlockEverFluid extends BlockContainer {
 		this.setTickRandomly(true);
 		this.setResistance(60000);
 		this.disableStats();
+		this.setBlockUnbreakable();
 
 		if (DragonAPICore.isReikasComputer())
 			this.setCreativeTab(ChromatiCraft.tabChromaGen);

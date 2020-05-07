@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.LumenRecipe;
 import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.MultiRecipe;
 import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.RuneRecipe;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.ConfigRecipe;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -70,7 +71,9 @@ import Reika.DragonAPI.Instantiable.Data.Maps.CountMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Recipe.ItemMatch;
 import Reika.DragonAPI.Instantiable.Recipe.RecipePattern;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -419,6 +422,12 @@ public class CastingRecipe implements APICastingRecipe {
 	public final void setOwner(ItemStack crafted, EntityPlayer ep) {
 		if (crafted.getItem() instanceof ItemChromaTool) {
 			((ItemChromaTool)crafted.getItem()).setOwner(crafted, ep);
+		}
+		ChromaTiles te = ChromaTiles.getTileByCraftedItem(crafted);
+		if (te != null && OwnedTile.class.isAssignableFrom(te.getTEClass())) {
+			if (crafted.stackTagCompound == null)
+				crafted.stackTagCompound = new NBTTagCompound();
+			ReikaNBTHelper.writeCollectionToNBT(ReikaJavaLibrary.makeListFrom(ep.getUniqueID()), crafted.stackTagCompound, "owners", ReikaNBTHelper.UUIDConverter.instance);
 		}
 	}
 

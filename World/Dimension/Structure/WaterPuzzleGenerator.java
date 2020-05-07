@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -121,10 +121,10 @@ public class WaterPuzzleGenerator extends DimensionStructureGenerator {
 		for (int i = 0; i <= 4; i++) {
 			world.setBlock(dx, y+WaterFloor.HEIGHT+i, dz, Blocks.air);
 			if (i > 0) {
-				world.setBlock(dx+1, y+WaterFloor.HEIGHT+i, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.ordinal());
-				world.setBlock(dx-1, y+WaterFloor.HEIGHT+i, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.ordinal());
-				world.setBlock(dx, y+WaterFloor.HEIGHT+i, dz+1, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.ordinal());
-				world.setBlock(dx, y+WaterFloor.HEIGHT+i, dz-1, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.ordinal());
+				world.setBlock(dx+1, y+WaterFloor.HEIGHT+i, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.metadata);
+				world.setBlock(dx-1, y+WaterFloor.HEIGHT+i, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.metadata);
+				world.setBlock(dx, y+WaterFloor.HEIGHT+i, dz+1, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.metadata);
+				world.setBlock(dx, y+WaterFloor.HEIGHT+i, dz-1, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.metadata);
 			}
 		}
 		world.setTileEntity(dx, y+WaterFloor.HEIGHT+4, dz, ChromaBlocks.EVERFLUID.getBlockInstance(), 0, new EverFluidCallback(id, 0));

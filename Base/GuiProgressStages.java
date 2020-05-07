@@ -1,8 +1,8 @@
 package Reika.ChromatiCraft.Base;
 
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.Map;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Point;
@@ -18,6 +18,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager.ProgressLink;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -41,8 +42,8 @@ public abstract class GuiProgressStages extends GuiScrollingPage {
 	protected int elementWidth = 0;
 	protected int elementHeight = 20;
 
-	private static final int spacingX = 30;//60;//30;//80;
-	private static final int spacingY = 15;//25;//15;//30;
+	protected static final int spacingX = 30;//60;//30;//80;
+	protected static final int spacingY = 15;//25;//15;//30;
 
 	private final EnumMap<ProgressStage, Point> renderPositions = new EnumMap(ProgressStage.class);
 	private final EnumMap<ProgressStage, Rectangle> locations = new EnumMap(ProgressStage.class);
@@ -67,9 +68,8 @@ public abstract class GuiProgressStages extends GuiScrollingPage {
 
 	protected final void initMap() {
 		final HashMap<Integer, Integer> offsets = new HashMap();
-		Map<ProgressLink, Integer> levels = this.getDepthMap();
-		for (ProgressLink p : levels.keySet()) {
-			int depth = levels.get(p);
+		for (ProgressLink p : this.getProgress()) {
+			int depth = this.getDepth(p);
 			int d = offsets.containsKey(depth) ? offsets.get(depth) : 0;
 			int dx = d*(elementWidth+spacingX);
 			//if (map.getByDepth(depth).size() == 1 && (map.getParents(p) == null || map.getParents(p).isEmpty()))
@@ -90,6 +90,9 @@ public abstract class GuiProgressStages extends GuiScrollingPage {
 			maxX = 0;
 	}
 
+	protected abstract int getDepth(ProgressLink p);
+	protected abstract Collection<ProgressLink> getProgress();
+
 	protected final ProgressStage getActive() {
 		return active;
 	}
@@ -97,8 +100,6 @@ public abstract class GuiProgressStages extends GuiScrollingPage {
 	protected final Point getRenderPosition(ProgressStage p) {
 		return renderPositions.get(p);
 	}
-
-	protected abstract Map<ProgressLink, Integer> getDepthMap();
 
 	@Override
 	public final void initGui() {
@@ -147,7 +148,7 @@ public abstract class GuiProgressStages extends GuiScrollingPage {
 	}
 
 	protected final void renderElements(int posX, int posY) {
-		for (ProgressLink p : this.getDepthMap().keySet()) {
+		for (ProgressLink p : this.getProgress()) {
 			Point pt = renderPositions.get(p.parent);
 			int x = -offsetX+posX+12+pt.getX();
 			int y = -offsetY+posY+36+pt.getY();
@@ -177,6 +178,40 @@ public abstract class GuiProgressStages extends GuiScrollingPage {
 		double t = (System.currentTimeMillis()/5D+p.hashCode()*23)%360;
 		border = ReikaColorAPI.mixColors(border, 0xffffff, 0.5F+0.25F*(float)Math.sin(Math.toRadians(t)));
 		api.drawRectFrame(x, y, elementWidth, elementHeight, border); //temp
+		if (guiType == ChromaGuis.PROGRESSBYTIER) {
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			ReikaTextureHelper.bindTerrainTexture();
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glDepthMask(false);
+			GL11.glColor4f(1, 1, 1, 1);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			BlendMode.ADDITIVEDARK.apply();
+			Collection<ProgressStage> par = ProgressionManager.instance.getPrereqs(p);
+			if (par.isEmpty()) {
+				GL11.glColor4f(0.1F, 0.5F, 1, 1);
+				api.drawTexturedModelRectFromIcon(x, y, ChromaIcons.RIFTHALO.getIcon(), elementWidth, elementHeight);
+			}
+			else {
+				int cl = 0xff0000;
+				if (p.isPlayerAtStage(player)) {
+					cl = 0x00ff00;
+				}
+				else {
+					for (ProgressStage p2 : par) {
+						if (p2.isPlayerAtStage(player)) {
+							cl = 0xffff00;
+							break;
+						}
+					}
+				}
+				float r = ReikaColorAPI.getRed(cl)/255F;
+				float g = ReikaColorAPI.getGreen(cl)/255F;
+				float b = ReikaColorAPI.getBlue(cl)/255F;
+				GL11.glColor4f(r, g, b, 1);
+				api.drawTexturedModelRectFromIcon(x-10, y-10, ChromaIcons.ROSEFLARE.getIcon(), elementWidth+20, elementHeight+20);
+			}
+			GL11.glPopAttrib();
+		}
 		if (see || near) {
 			String s = see ? p.getTitleString() : EnumChatFormatting.OBFUSCATED.toString()+p.getTitleString();//p.name();
 			if (!see)

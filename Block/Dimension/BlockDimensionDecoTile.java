@@ -31,13 +31,18 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.DecoType;
+import Reika.ChromatiCraft.Base.BlockDyeTypes;
+import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBounds;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -218,6 +223,10 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 	@Override
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		int meta = world.getBlockMetadata(x, y, z);
+		if (meta >= DimDecoTileTypes.list.length) {
+			ChromatiCraft.logger.logError("Invalid meta for dim deco tile @ "+new Coordinate(x, y, z)+"!");
+			return ReikaAABBHelper.getBlockAABB(x, y, z);
+		}
 		return DimDecoTileTypes.list[meta].isCollideable() ? ReikaAABBHelper.getBlockAABB(x, y, z) : null;
 	}
 
@@ -288,6 +297,10 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 					if (worldObj.rand.nextBoolean()) {
 						double vy = ReikaRandomHelper.getRandomPlusMinus(0.0625, 0.01);
 						int c = ReikaColorAPI.getModifiedHue(0xff0000, (int)((DragonAPICore.getLaunchTime()+(xCoord+yCoord+zCoord)*8)%360));
+						Block b = worldObj.getBlock(xCoord, yCoord-1, zCoord);
+						if (b instanceof CrystalTypeBlock || b instanceof BlockDyeTypes) {
+							c = CrystalElement.elements[worldObj.getBlockMetadata(xCoord, yCoord-1, zCoord)].getColor();
+						}
 						ChromaIcons ico = ChromaIcons.FADE;
 						switch(Math.abs(System.identityHashCode(this)%6)) {
 							case 0:

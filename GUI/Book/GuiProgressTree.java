@@ -133,7 +133,12 @@ public class GuiProgressTree extends GuiProgressStages {
 	}
 
 	@Override
-	protected Map<ProgressLink, Integer> getDepthMap() {
-		return levels;
+	protected int getDepth(ProgressLink p) {
+		return levels.get(p);
+	}
+
+	@Override
+	protected Collection<ProgressLink> getProgress() {
+		return levels.keySet();
 	}
 }

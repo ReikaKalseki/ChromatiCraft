@@ -1758,44 +1758,29 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 					if (AbilityHelper.instance.canReachBoostSelect(ep.worldObj, x, y, z, ep)) {
 						double dd = ReikaMathLibrary.py3d(x+0.5-ep.posX, y+0.5-ep.posY, z+0.5-ep.posZ);
 						GL11.glPushMatrix();
+						GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 						double s = 1.5;
 						GL11.glScaled(s, s, s);
 						String sg = String.format("%.3fm", dd);
 						FontRenderer f = ChromaFontRenderer.FontType.HUD.renderer;
 						f.drawString(sg, evt.resolution.getScaledWidth()/3+4, evt.resolution.getScaledHeight()/3-9, 0xffffff);
 						GL11.glPopMatrix();
+						GL11.glPopAttrib();
 						Block b = Minecraft.getMinecraft().theWorld.getBlock(x, y, z);
+						GL11.glPushMatrix();
+						GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+						GL11.glDepthMask(false);
+
 						if (b != null && b != Blocks.air) {
 							int sz = 16;
 							int dx = evt.resolution.getScaledWidth()/2-sz*5/4;
 							int dy = evt.resolution.getScaledHeight()/2-sz*5/4;
-							/*
-						IIcon ico = b.getIcon(Minecraft.getMinecraft().theWorld, x, y, z, 1);
-						if (ico != null) {
-							float u = ico.getMinU();
-							float v = ico.getMinV();
-							float du = ico.getMaxU();
-							float dv = ico.getMaxV();
-							Tessellator v5 = Tessellator.instance;
-							ReikaTextureHelper.bindTerrainTexture();
-							v5.startDrawingQuads();
-							v5.addVertexWithUV(dx, dy+sz, 0, u, dv);
-							v5.addVertexWithUV(dx+sz, dy+sz, 0, du, dv);
-							v5.addVertexWithUV(dx+sz, dy, 0, du, v);
-							v5.addVertexWithUV(dx, dy, 0, u, v);
-							v5.draw();
-						}
-							 */
-							GL11.glPushMatrix();
-							GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-							GL11.glDepthMask(false);
 
 							boolean back = b == Blocks.chest;
 							if (back)
 								GL11.glFrontFace(GL11.GL_CW);
 							int meta = Minecraft.getMinecraft().theWorld.getBlockMetadata(x, y, z);
 							ReikaTextureHelper.bindTerrainTexture();
-							//ReikaJavaLibrary.pConsole(b+":"+b.getRenderType());
 							if (b instanceof MachineRegistryBlock) {
 								TileEnum t = ((MachineRegistryBlock)b).getMachine(Minecraft.getMinecraft().theWorld, x, y, z);
 								if (t != null) {
@@ -1819,25 +1804,6 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 								RenderBlocks.getInstance().renderBlockAsItem(b, meta, 1);
 							}
 							else {
-								/*
-							if (b.hasTileEntity(meta)) {
-								TileEntity te = Minecraft.getMinecraft().theWorld.getTileEntity(x, y, z);
-								TileEntitySpecialRenderer tesr = TileEntityRendererDispatcher.instance.getSpecialRenderer(te);
-								if (tesr != null) {
-									dx *= 1.375;
-									dy *= 1.375;
-									GL11.glTranslated(dx-54, dy-16, 0);
-									GL11.glRotated(180, 0, 0, 1);
-									GL11.glRotated(45, 0, 1, 0);
-									double d = 16;
-									GL11.glScaled(d, d, d);
-									tesr.renderTileEntityAt(te, 0, 0, 0, ReikaRenderHelper.getPartialTickTime());
-									GL11.glPopAttrib();
-									GL11.glPopMatrix();
-									return;
-								}
-							}
-								 */
 								try {
 									ArrayList<ItemStack> li = b.getDrops(Minecraft.getMinecraft().theWorld, x, y, z, meta, 0);
 									if (!li.isEmpty()) {
@@ -1871,14 +1837,14 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 		if (evt.target != null && evt.target.typeOfHit == MovingObjectType.BLOCK) {
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 			if (Chromabilities.REACH.enabledOn(ep)) {
-				GL11.glPushMatrix();
-				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 				World world = Minecraft.getMinecraft().theWorld;
 				int x = evt.target.blockX;
 				int y = evt.target.blockY;
 				int z = evt.target.blockZ;
 
 				if (AbilityHelper.instance.canReachBoostSelect(world, x, y, z, ep)) {
+					GL11.glPushMatrix();
+					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 					double p2 = x-TileEntityRendererDispatcher.staticPlayerX;
 					double p4 = y-TileEntityRendererDispatcher.staticPlayerY;
 					double p6 = z-TileEntityRendererDispatcher.staticPlayerZ;
@@ -1900,14 +1866,12 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 					int c = ReikaColorAPI.mixColors(CrystalElement.LIME.getColor(), CrystalElement.PURPLE.getColor(), r);
 					RenderGlobal.drawOutlinedBoundingBox(box, c);
 
-					GL11.glPopAttrib();
-					GL11.glPopMatrix();
-
-					GL11.glDepthMask(true);
-					GL11.glDisable(GL11.GL_BLEND);
 					GL11.glLineWidth(2.0F);
 
 					evt.setCanceled(true);
+
+					GL11.glPopAttrib();
+					GL11.glPopMatrix();
 				}
 			}
 		}

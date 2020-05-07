@@ -17,7 +17,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map.Entry;
 import java.util.UUID;
 
 import net.minecraft.client.gui.FontRenderer;
@@ -301,33 +300,25 @@ public class ProgressionManager implements ProgressRegistry {
 		return progressMap.getTopology(/*this.constructResearchLevelDepthMap(5)*/);//.sort(new AlphabeticalProgressComparator());
 	}
 
-	public HashMap<ProgressLink, Integer> constructResearchLevelDepthMap(int factor) {
-		HashMap<ProgressLink, Integer> ret = new HashMap();
+	public HashMap<ProgressLink, ProgressTier> constructResearchLevelDepthMap() {
+		HashMap<ProgressLink, ProgressTier> ret = new HashMap();
 		for (ProgressStage p : ProgressStage.list) {
 			ResearchLevel rl = ChromaResearchManager.instance.getEarliestResearchLevelRequiring(p);
 			if (rl != null) {
-				ret.put(new ProgressLink(p), rl.ordinal()*factor);
+				ret.put(new ProgressLink(p), new ProgressTier(rl));
 			}
 		}
-		HashSet<Integer> set = new HashSet(ret.values());
-		ArrayList<Integer> li = new ArrayList(set);
+		HashSet<ProgressTier> set = new HashSet(ret.values());
+		ArrayList<ProgressTier> li = new ArrayList(set);
 		Collections.sort(li);
-		if (li.get(li.size()-1) != li.size()-1) {
+		if (li.get(li.size()-1).index != li.size()-1) {
 			HashMap<Integer, Integer> convert = new HashMap();
 			for (int idx = 0; idx < li.size(); idx++) {
-				int val = li.get(idx);
-				if (idx != val) {
-					convert.put(val, idx);
-				}
+				int val = li.get(idx).index;
+				convert.put(val, idx);
 			}
-			if (!convert.isEmpty()) {
-				for (Entry<Integer, Integer> e : convert.entrySet()) {
-					for (ProgressLink p : ret.keySet()) {
-						if (ret.get(p) == e.getKey()) {
-							ret.put(p, e.getValue());
-						}
-					}
-				}
+			for (ProgressTier pt : ret.values()) {
+				pt.index = convert.get(pt.index);
 			}
 		}
 		return ret;
@@ -878,6 +869,38 @@ public class ProgressionManager implements ProgressRegistry {
 		@Override
 		public String toString() {
 			return parent.toString();
+		}
+
+	}
+
+	public static class ProgressTier implements Comparable<ProgressTier> {
+
+		public final ResearchLevel level;
+
+		private int index;
+
+		private ProgressTier(ResearchLevel rl) {
+			level = rl;
+			index = rl.ordinal();
+		}
+
+		public int getIndex() {
+			return index;
+		}
+
+		@Override
+		public int hashCode() {
+			return level.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o instanceof ProgressTier && ((ProgressTier)o).level == level;
+		}
+
+		@Override
+		public int compareTo(ProgressTier o) {
+			return level.compareTo(o.level);
 		}
 
 	}

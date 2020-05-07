@@ -17,6 +17,7 @@ import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
@@ -33,6 +34,7 @@ import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Interfaces.Item.ToolSprite;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 
 import cpw.mods.fml.common.eventhandler.Event.Result;
@@ -70,7 +72,7 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite, En
 			type.getPrimary().writeToNBT(tag);
 			is.stackTagCompound.setTag("oreType", tag);
 		}
-		return true;//type != null;
+		return ep instanceof EntityPlayerMP && !ReikaPlayerAPI.isMiningWith((EntityPlayerMP)ep, is);//type != null;
 	}
 
 	@Override
