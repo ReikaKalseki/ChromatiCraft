@@ -297,7 +297,7 @@ public class ProgressionManager implements ProgressRegistry {
 	}
 
 	public Topology getTopology() {
-		return progressMap.getTopology(this.constructResearchLevelDepthMap());//.sort(new AlphabeticalProgressComparator());
+		return progressMap.getTopology(/*this.constructResearchLevelDepthMap()*/);//.sort(new AlphabeticalProgressComparator());
 	}
 
 	private HashMap<ProgressLink, Integer> constructResearchLevelDepthMap() {

@@ -86,6 +86,8 @@ public class GuiProgressStages extends GuiScrollingPage {
 			int depth = levels.get(p);
 			int d = offsets.containsKey(depth) ? offsets.get(depth) : 0;
 			int dx = d*(elementWidth+spacingX);
+			//if (map.getByDepth(depth).size() == 1 && (map.getParents(p) == null || map.getParents(p).isEmpty()))
+			//	dx = (int)(1.5*(elementWidth+spacingX));
 			int dy = depth*(elementHeight+spacingY);
 			offsets.put(depth, d+1);
 			renderPositions.put(p.parent, new Point(dx, dy));
