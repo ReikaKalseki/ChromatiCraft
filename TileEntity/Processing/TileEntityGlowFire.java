@@ -82,7 +82,6 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 	private RunningAverage averageOutputValue = new RunningAverage();
 
 	private int temperatureBoost;
-	private boolean smothered;
 
 	//private ItemStack output;
 
@@ -114,7 +113,8 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (world.isRemote) {
 			particles.update();
-			if (!this.isSmothered() || rand.nextInt(4) == 0)
+			int n = Math.round(1F+this.isSmothered()*4);
+			if (rand.nextInt(n) == 0)
 				this.doParticles(world, x, y, z);
 		}
 		else {
@@ -146,8 +146,13 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 		}
 	}
 
-	public boolean isSmothered() {
-		return smothered;
+	public float isSmothered() {
+		double f = this.getValueRatio();
+		if (f <= 1)
+			return 0;
+		if (f >= 2.5)
+			return 1;
+		return (float)((f-1)/1.5);
 	}
 
 	public int getTemperatureBoost() {
@@ -168,13 +173,11 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 			flag = this.craftAndDrop(in);
 			flag2 |= flag;
 		}
-		double over = (averageOutputValue.getAverage()-temperatureBoost)/averageIngredientValue.getAverage();
-		if (temperatureBoost == 0 && averageIngredientValue.getAverage() > 0 && over >= 1) {
-			if (ReikaRandomHelper.doWithChance(Math.min(0.25, over/16D))) {
-				smothered = true;
-			}
-		}
 		return flag2;
+	}
+
+	private double getValueRatio() {
+		return (averageOutputValue.getAverage()-temperatureBoost)/averageIngredientValue.getAverage();
 	}
 
 	private boolean craftAndDrop(ItemStack in) {
@@ -281,7 +284,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 					is.stackSize--;
 					if (is.stackSize <= 0)
 						ei.setDead();
-					energy.addTag(tag);
+					energy.addTag(this.getScaledBurnValue(is, tag));
 					averageIngredientValue.addValue(tag.getTotalEnergy());
 					ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.FIRECONSUMEITEM.ordinal(), this, 32, tag.keySetAsBits());
 				}
@@ -315,6 +318,15 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 		if (tag != null && tag.isEmpty())
 			tag = null;
 		return tag;
+	}
+
+	private ElementTagCompound getScaledBurnValue(ItemStack is, ElementTagCompound tag) {
+		int[] data = tag.toArray();
+		double f = Math.min(2.5, 1D/this.getValueRatio());
+		for (int i = 0; i < 16; i++) {
+			data[i] = (int)(data[i]*f);
+		}
+		return new ElementTagCompound(data);
 	}
 
 	public static ElementTagCompound getCost(ItemStack is) {
@@ -481,10 +493,12 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 		float s = primary ? 2.2F : 1.25F;
 		double[] v = ReikaPhysicsHelper.polarToCartesian(0.125/l0*6D, theta, phi);
 		int c = ReikaColorAPI.getModifiedHue(0x1070ff, (int)(215+70*Math.sin(timer/40D)));
-		if (this.isSmothered()) {
-			c = ReikaColorAPI.getModifiedHue(c, rand.nextInt(60));
-			c = ReikaColorAPI.getModifiedSat(c, 0.5F);
-			c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, 0.5F+0.25F*rand.nextFloat());
+		float f = this.isSmothered();
+		if (f > 0) {
+			int c2 = ReikaColorAPI.getModifiedHue(c, rand.nextInt(60));
+			c2 = ReikaColorAPI.getModifiedSat(c2, 0.5F);
+			c2 = ReikaColorAPI.getColorWithBrightnessMultiplier(c2, 0.5F+0.25F*rand.nextFloat());
+			c = ReikaColorAPI.mixColors(c2, c, f);
 		}
 		EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.5, z+0.5, v[0], v[1], v[2]).setColor(c).setScale(s).setLife(l);
 		if (primary) {
@@ -578,7 +592,6 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 		super.readSyncTag(NBT);
 
 		energy.readFromNBT("energy", NBT);
-		smothered = NBT.getBoolean("smother");
 		temperatureBoost = NBT.getInteger("temp");
 	}
 
@@ -587,7 +600,6 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 		super.writeSyncTag(NBT);
 
 		energy.writeToNBT("energy", NBT);
-		NBT.setBoolean("smother", smothered);
 		NBT.setInteger("temp", temperatureBoost);
 	}
 

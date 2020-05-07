@@ -108,7 +108,15 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	}
 
 	public Collection<ProgressAccess> getResearchLevelAdvancementBlocks(EntityPlayer ep) {
-		Collection<ChromaResearch> c = this.getResearchLevelMissingFragments(ep);
+		Collection<ChromaResearch> li = this.getResearchLevelMissingFragments(ep);
+		HashSet<ProgressAccess> c = new HashSet(li);
+		for (ChromaResearch r : li) {
+			for (ProgressStage s : r.getRequiredProgress()) {
+				if (!s.isPlayerAtStage(ep))
+					c.add(s);
+			}
+		}
+		return c;
 	}
 
 	public HashSet<ChromaResearch> getResearchLevelMissingFragments(EntityPlayer ep) {

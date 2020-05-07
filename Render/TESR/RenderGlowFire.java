@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityGlowFire;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -109,7 +110,8 @@ public class RenderGlowFire extends ChromaRenderBase {
 
 		//v5.startDrawingQuads();
 		v5.startDrawing(GL11.GL_TRIANGLE_STRIP);
-		v5.setColorOpaque_I(te.isSmothered() ? 0xff7020 : 0xffffff);
+		int c = ReikaColorAPI.mixColors(0xff7020, 0xffffff, te.isSmothered());
+		v5.setColorOpaque_I(c);
 
 		/*
 		v5.addVertexWithUV(-1, -1, 0, u, v);

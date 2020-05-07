@@ -54,6 +54,15 @@ public final class ElementTagCompound {
 		this.addTag(CrystalElement.WHITE, w);
 	}
 
+	public ElementTagCompound(int[] data) {
+		this();
+		if (data.length != 16)
+			throw new IllegalArgumentException("You must specify exactly sixteen elements!");
+		for (int i = 0; i < 16; i++) {
+			this.addTag(CrystalElement.elements[i], data[i]);
+		}
+	}
+
 	public boolean addTag(CrystalElement e, int value) {
 		if (value <= 0)
 			return false;
@@ -416,6 +425,14 @@ public final class ElementTagCompound {
 			val = val | (1 << e.ordinal());
 		}
 		return val;
+	}
+
+	public int[] toArray() {
+		int[] ret = new int[16];
+		for (int i = 0; i < 16; i++) {
+			ret[i] = this.getValue(CrystalElement.elements[i]);
+		}
+		return ret;
 	}
 
 	public boolean isPrimaryOnly() {

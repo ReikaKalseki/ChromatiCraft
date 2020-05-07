@@ -645,8 +645,11 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 				((NBTTile)te).getTagsToWriteToStack(nbt);
 				is.stackTagCompound = (NBTTagCompound)(!nbt.hasNoTags() ? nbt.copy() : null);
 			}
-			if (m == ChromaTiles.GLOWFIRE && ((TileEntityGlowFire)te).isSmothered())
-				is = ChromaStacks.transformCore.copy();
+			if (m == ChromaTiles.GLOWFIRE) {
+				float f = ((TileEntityGlowFire)te).isSmothered();
+				if (f > 0 && ReikaRandomHelper.doWithChance(f))
+					is = ChromaStacks.transformCore.copy();
+			}
 			if (m == ChromaTiles.PYLONLINK)
 				is = ChromaBlocks.PYLONSTRUCT.getStackOf();
 			if (m == ChromaTiles.PYLONTURBO && ((TileEntityChromaticBase)te).getOwners(false).isEmpty()) //fix for ones in accidental worldgen
