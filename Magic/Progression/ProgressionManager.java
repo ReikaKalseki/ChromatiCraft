@@ -291,8 +291,24 @@ public class ProgressionManager implements ProgressRegistry {
 		return get == null || level.isAtLeast(get);
 	}
 
+	public ResearchLevel getEarliestAllowedGate(ProgressStage p) {
+		ResearchLevel get = nonGatingProgress.get(p);
+		return get != null ? get : ResearchLevel.ENTRY;
+	}
+
 	public Topology getTopology() {
-		return progressMap.getTopology();//.sort(new AlphabeticalProgressComparator());
+		return progressMap.getTopology(this.constructResearchLevelDepthMap());//.sort(new AlphabeticalProgressComparator());
+	}
+
+	private HashMap<ProgressLink, Integer> constructResearchLevelDepthMap() {
+		HashMap<ProgressLink, Integer> ret = new HashMap();
+		for (ProgressStage p : ProgressStage.list) {
+			ResearchLevel rl = ChromaResearchManager.instance.getEarliestResearchLevelRequiring(p);
+			if (rl != null) {
+				ret.put(new ProgressLink(p), rl.ordinal()*5);
+			}
+		}
+		return ret;
 	}
 
 	private Collection<ProgressStage> getPlayerData(EntityPlayer ep) {
@@ -835,6 +851,11 @@ public class ProgressionManager implements ProgressRegistry {
 		@Override
 		public int hashCode() {
 			return parent.hashCode();
+		}
+
+		@Override
+		public String toString() {
+			return parent.toString();
 		}
 
 	}

@@ -586,13 +586,16 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	}
 
 	public ResearchLevel getEarliestResearchLevelRequiring(ProgressStage p) {
+		ResearchLevel min = ProgressionManager.instance.getEarliestAllowedGate(p);
 		ResearchLevel rl = null;
 		for (ChromaResearch r : ChromaResearch.getAllObtainableFragments()) {
-			if (r.requiresProgress(p)) {
+			if (r.isGating() && r.requiresProgress(p)) {
 				if (rl == null || rl.isAtLeast(r.level))
 					rl = r.level;
 			}
 		}
+		if (rl != null && min.isAtLeast(rl))
+			rl = min;
 		return rl;
 	}
 

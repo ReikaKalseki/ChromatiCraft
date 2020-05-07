@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.lwjgl.opengl.GL11;
@@ -30,11 +29,9 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Base.GuiScrollingPage;
-import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager.ProgressLink;
-import Reika.ChromatiCraft.Magic.Progression.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -58,7 +55,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 
 	//private ArrayList<ProgressStage> stages = new ArrayList();
 	private final Topology<ProgressLink> map = ProgressionManager.instance.getTopology();
-	private final Map<ProgressLink, Integer> levels = modifyDepths(map.getDepthMap());
+	private final Map<ProgressLink, Integer> levels = map.getDepthMap();
 	private final EnumMap<ProgressStage, Point> renderPositions = new EnumMap(ProgressStage.class);
 	private final EnumMap<ProgressStage, Rectangle> locations = new EnumMap(ProgressStage.class);
 
@@ -105,6 +102,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 			maxX = 0;
 	}
 
+	/*
 	private static Map<ProgressLink, Integer> modifyDepths(Map<ProgressLink, Integer> map) {
 		Map<ProgressLink, Integer> ret = new HashMap();
 		for (Entry<ProgressLink, Integer> e : map.entrySet()) {
@@ -114,11 +112,9 @@ public class GuiProgressStages extends GuiScrollingPage {
 			//if (rl != null)
 			//l += rl.ordinal()*2;
 			ret.put(p, l);
-
-			-
 		}
 		return ret;
-	}
+	}*/
 
 	@Override
 	public void initGui() {
