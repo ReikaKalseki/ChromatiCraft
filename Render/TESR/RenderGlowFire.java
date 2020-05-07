@@ -110,7 +110,10 @@ public class RenderGlowFire extends ChromaRenderBase {
 
 		//v5.startDrawingQuads();
 		v5.startDrawing(GL11.GL_TRIANGLE_STRIP);
-		int c = ReikaColorAPI.mixColors(0xff7020, 0xffffff, te.isSmothered());
+		int c = 0xffffff;
+		float fc = te.isSmothered();
+		if (fc > 0)
+			c = ReikaColorAPI.mixColors(0xff7020, c, fc);
 		v5.setColorOpaque_I(c);
 
 		/*

@@ -148,8 +148,9 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 
 	public float isSmothered() {
 		double f = this.getValueRatio();
-		if (f <= 1)
+		if (f <= 1 || f == Double.NaN || f == Double.POSITIVE_INFINITY || f == Double.NEGATIVE_INFINITY)
 			return 0;
+		f = Math.pow(f, 0.75);
 		if (f >= 2.5)
 			return 1;
 		return (float)((f-1)/1.5);
@@ -177,6 +178,8 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 	}
 
 	private double getValueRatio() {
+		if (averageOutputValue.getAverage() == 0)
+			return 1;
 		return (averageOutputValue.getAverage()-temperatureBoost)/averageIngredientValue.getAverage();
 	}
 

@@ -585,4 +585,15 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		return this.getPlayerResearchLevel(ep).name();
 	}
 
+	public ResearchLevel getEarliestResearchLevelRequiring(ProgressStage p) {
+		ResearchLevel rl = null;
+		for (ChromaResearch r : ChromaResearch.getAllObtainableFragments()) {
+			if (r.requiresProgress(p)) {
+				if (rl == null || rl.isAtLeast(r.level))
+					rl = r.level;
+			}
+		}
+		return rl;
+	}
+
 }
