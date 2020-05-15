@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -49,6 +49,11 @@ public class LumenChunkRecipe extends PylonCastingRecipe implements CoreRecipe {
 
 	@Override
 	public boolean canBeStacked() {
+		return true;
+	}
+
+	@Override
+	public boolean canGiveDoubleOutput() {
 		return true;
 	}
 

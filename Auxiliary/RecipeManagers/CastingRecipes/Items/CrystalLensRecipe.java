@@ -37,6 +37,11 @@ public class CrystalLensRecipe extends MultiBlockCastingRecipe {
 	}
 
 	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
+	}
+
+	@Override
 	public int getTypicalCraftedAmount() {
 		return 64;
 	}

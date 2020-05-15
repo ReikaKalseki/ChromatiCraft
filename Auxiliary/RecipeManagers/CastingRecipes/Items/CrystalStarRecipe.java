@@ -61,6 +61,11 @@ public class CrystalStarRecipe extends MultiBlockCastingRecipe implements ShardG
 	}
 
 	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
+	}
+
+	@Override
 	public int getDuration() {
 		return 4*super.getDuration();
 	}

@@ -487,6 +487,10 @@ public class CastingRecipe implements APICastingRecipe {
 		return false;
 	}
 
+	public boolean canGiveDoubleOutput() {
+		return false;
+	}
+
 	public int getInputCount() {
 		return ReikaRecipeHelper.getRecipeIngredientCount(recipe);
 	}

@@ -39,4 +39,9 @@ public class StoneRuneRecipe extends TempleCastingRecipe implements CoreRecipe {
 		return 4;
 	}
 
+	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
+	}
+
 }

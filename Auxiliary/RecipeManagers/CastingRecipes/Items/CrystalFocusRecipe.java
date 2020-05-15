@@ -36,6 +36,11 @@ public class CrystalFocusRecipe extends MultiBlockCastingRecipe {
 	}
 
 	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
+	}
+
+	@Override
 	public int getTypicalCraftedAmount() {
 		return 32;
 	}

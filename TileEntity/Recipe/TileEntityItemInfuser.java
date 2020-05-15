@@ -1,6 +1,7 @@
 package Reika.ChromatiCraft.TileEntity.Recipe;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
@@ -9,10 +10,12 @@ import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
@@ -55,8 +58,12 @@ public class TileEntityItemInfuser extends TileEntityAuraInfuser {
 
 	@Override
 	protected void onCraft() {
-		inv[0] = ReikaItemHelper.getSizedItemStack(ChromaStacks.iridCrystal, inv[0].stackSize);
-		ProgressStage.INFUSE.stepPlayerTo(this.getCraftingPlayer());
+		int n = inv[0].stackSize;
+		EntityPlayer ep = this.getCraftingPlayer();
+		if (!ReikaPlayerAPI.isFake(ep) && Chromabilities.DOUBLECRAFT.enabledOn(ep))
+			n *= 2;
+		inv[0] = ReikaItemHelper.getSizedItemStack(ChromaStacks.iridCrystal, n);
+		ProgressStage.INFUSE.stepPlayerTo(ep);
 	}
 
 	@Override

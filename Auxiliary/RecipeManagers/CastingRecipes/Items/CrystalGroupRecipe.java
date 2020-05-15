@@ -44,6 +44,11 @@ public class CrystalGroupRecipe extends TempleCastingRecipe implements ShardGrou
 		return true;
 	}
 
+	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
+	}
+
 	private static IRecipe getRecipe(ItemStack out, CrystalElement e1, CrystalElement e2, CrystalElement e3, CrystalElement e4, ItemStack ctr, boolean chg) {
 		return ReikaRecipeHelper.getShapedRecipeFor(out, " A ", "BIC", " D ", 'A', getShardType(e1, chg), 'B', getShardType(e2, chg), 'C', getShardType(e3, chg), 'D', getShardType(e4, chg), 'I', ctr);
 	}

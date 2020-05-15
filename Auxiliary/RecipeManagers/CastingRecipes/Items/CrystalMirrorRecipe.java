@@ -38,6 +38,10 @@ public class CrystalMirrorRecipe extends MultiBlockCastingRecipe {
 		return true;
 	}
 
+	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
+	}
 
 	@Override
 	public int getTypicalCraftedAmount() {

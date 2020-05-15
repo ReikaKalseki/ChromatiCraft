@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -20,12 +20,19 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeDecorator;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.BiomeGenForest;
+import net.minecraft.world.gen.feature.WorldGenAbstractTree;
 
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 
 public class BiomeEnderForest extends BiomeGenForest {
+
+	private final WorldGenAbstractTree enderOakLarge = new EnderOakGenerator(3, 7, 5, 15, 6, 0.15F, 4, 0.15F);
+	private final WorldGenAbstractTree enderOakSmall = new EnderOakGenerator(2, 4, 3, 5, 3, 0, 0, 0.1F);
+
+	private final WeightedRandom<WorldGenAbstractTree> treeTypes = new WeightedRandom();
 
 	public BiomeEnderForest(int id) {
 		super(id, 0);
@@ -43,6 +50,11 @@ public class BiomeEnderForest extends BiomeGenForest {
 		spawnableMonsterList.add(new SpawnListEntry(EntityCreeper.class, 1, 1, 4));
 		spawnableMonsterList.add(new SpawnListEntry(EntitySpider.class, 1, 1, 4));
 		spawnableMonsterList.add(new SpawnListEntry(EntitySkeleton.class, 1, 1, 4));
+
+		treeTypes.addEntry(worldGeneratorTrees, 20);
+		treeTypes.addEntry(worldGeneratorBigTree, 4);
+		treeTypes.addEntry(enderOakSmall, 50);
+		treeTypes.addEntry(enderOakLarge, 10);
 	}
 
 	@Override
@@ -115,6 +127,12 @@ public class BiomeEnderForest extends BiomeGenForest {
 		else {
 			super.plantFlower(world, rand, x, y, z);
 		}
+	}
+
+	@Override
+	public WorldGenAbstractTree func_150567_a(Random rand) {
+		treeTypes.setRNG(rand);
+		return treeTypes.getRandomEntry();
 	}
 
 }

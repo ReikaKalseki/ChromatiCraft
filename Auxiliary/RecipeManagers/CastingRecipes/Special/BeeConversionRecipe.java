@@ -149,4 +149,9 @@ public class BeeConversionRecipe extends PylonCastingRecipe {
 		return true;
 	}
 
+	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
+	}
+
 }

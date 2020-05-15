@@ -35,6 +35,7 @@ import Reika.ChromatiCraft.Magic.Artefact.ArtefactWithDataCrystalAlloyingEffect;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayList;
@@ -161,6 +162,9 @@ public class PoolRecipes {
 		pr.makeFrom(li);
 		ReikaEntityHelper.decrEntityItemStack(ei, 1);
 		int n = pr.allowDoubling() && ReikaRandomHelper.doWithChance(BlockActiveChroma.getDoublingChance(ether)) ? 2 : 1;
+		EntityPlayer ep = ReikaItemHelper.getDropper(ei);
+		if (Chromabilities.DOUBLECRAFT.enabledOn(ep))
+			n *= 2;
 		int n2 = n*pr.getOutput().stackSize;
 		for (int i = 0; i < n2; i++) {
 			EntityItem newitem = ReikaItemHelper.dropItem(ei, ReikaItemHelper.getSizedItemStack(pr.getOutput(), 1));
@@ -174,7 +178,7 @@ public class PoolRecipes {
 			ei.worldObj.setBlock(x, y, z, Blocks.air);
 		}
 		ReikaWorldHelper.causeAdjacentUpdates(ei.worldObj, x, y, z);
-		ProgressStage.ALLOY.stepPlayerTo(ReikaItemHelper.getDropper(ei));
+		ProgressStage.ALLOY.stepPlayerTo(ep);
 	}
 
 	public void loadCustomPoolRecipes() {

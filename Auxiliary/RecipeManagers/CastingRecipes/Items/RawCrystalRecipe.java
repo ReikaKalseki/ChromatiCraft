@@ -31,4 +31,9 @@ public class RawCrystalRecipe extends CastingRecipe implements CoreRecipe {
 		return true;
 	}
 
+	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
+	}
+
 }

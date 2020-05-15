@@ -39,4 +39,9 @@ public class EnhancedRuneRecipe extends TempleCastingRecipe implements CoreRecip
 		return 8;
 	}
 
+	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
+	}
+
 }

@@ -42,6 +42,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
@@ -166,11 +167,15 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 		if (energy.isEmpty())
 			return false;
 		ItemStack in = inv[0];
+		ItemStack out = in.copy();
+		EntityPlayer ep = this.getPlacer();
+		if (ep != null && !ReikaPlayerAPI.isFake(ep) && Chromabilities.DOUBLECRAFT.enabledOn(ep))
+			out.stackSize *= 2;
 		inv[0] = null;
 		boolean flag = true;
 		boolean flag2 = false;
 		while(flag) {
-			this.dropItem(in);
+			this.dropItem(out);
 			flag = this.craftAndDrop(in);
 			flag2 |= flag;
 		}

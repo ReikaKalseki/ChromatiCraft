@@ -48,4 +48,9 @@ public class RuneRecipe extends CastingRecipe implements CoreRecipe {
 		c.add(ProgressStage.ALLCOLORS);
 	}
 
+	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
+	}
+
 }

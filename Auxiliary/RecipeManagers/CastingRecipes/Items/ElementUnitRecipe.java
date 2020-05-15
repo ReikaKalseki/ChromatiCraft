@@ -55,4 +55,9 @@ public class ElementUnitRecipe extends MultiBlockCastingRecipe {
 		return true;
 	}
 
+	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
+	}
+
 }

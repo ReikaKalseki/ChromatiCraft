@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -37,6 +37,11 @@ public class LumenCoreRecipe extends PylonCastingRecipe implements ShardGrouping
 		this.addAuraRequirement(CrystalElement.BLACK, 60000);
 		this.addAuraRequirement(CrystalElement.YELLOW, 60000);
 		this.addAuraRequirement(CrystalElement.BLUE, 60000);
+	}
+
+	@Override
+	public boolean canGiveDoubleOutput() {
+		return false;
 	}
 
 }

@@ -33,6 +33,11 @@ public class CrystalClusterRecipe extends TempleCastingRecipe implements ShardGr
 		return true;
 	}
 
+	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
+	}
+
 	private static IRecipe getRecipe(ItemStack out) {
 		int mod = (out.getItemDamage()-ChromaStacks.primaryCluster.getItemDamage())%2;
 		ItemStack is1 = ChromaItems.CLUSTER.getStackOfMetadata(2*mod);

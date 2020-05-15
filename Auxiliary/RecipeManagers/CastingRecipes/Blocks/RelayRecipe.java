@@ -42,4 +42,9 @@ public class RelayRecipe extends MultiBlockCastingRecipe implements EnergyLinkin
 		return 8;
 	}
 
+	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
+	}
+
 }

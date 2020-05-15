@@ -40,4 +40,9 @@ public class IridescentChunkRecipe extends MultiBlockCastingRecipe {
 		return true;
 	}
 
+	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
+	}
+
 }

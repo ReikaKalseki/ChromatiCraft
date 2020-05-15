@@ -63,6 +63,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.BotaniaPetalShower;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
@@ -923,6 +924,8 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 			count--;
 
 			ItemStack toadd = ReikaItemHelper.getSizedItemStack(out, activeRecipe.getOutput().stackSize);
+			if  (Chromabilities.DOUBLECRAFT.enabledOn(craftingPlayer))
+				toadd.stackSize *= 2;
 			NBTTagCompound NBTout = NBTin != null ? (NBTTagCompound)NBTin.copy() : null;
 			if (NBTout != null) {
 				ReikaNBTHelper.combineNBT(NBTout, toadd.stackTagCompound);

@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.TileEntity.Acquisition;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -31,10 +32,12 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
@@ -208,7 +211,11 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 			((IFluidHandler)te).fill(ForgeDirection.UP, new FluidStack(((FluidRecipe)recipe).fluid, 1000), true);
 		}
 		else {
-			ReikaInventoryHelper.addOrSetStack(recipe.output.copy(), inv, 1);
+			int n = 1;
+			EntityPlayer ep = this.getPlacer();
+			if (ep != null && !ReikaPlayerAPI.isFake(ep) && Chromabilities.DOUBLECRAFT.enabledOn(ep))
+				n = 2;
+			ReikaInventoryHelper.addOrSetStack(recipe.output.copy(), inv, n);
 		}
 		energy.subtract(recipe.energy);
 		progress = 0;
