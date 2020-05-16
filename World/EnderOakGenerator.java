@@ -14,7 +14,9 @@ import net.minecraft.world.gen.feature.WorldGenAbstractTree;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
+import Reika.DragonAPI.Instantiable.Math.LobulatedCurve;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
@@ -51,7 +53,7 @@ public class EnderOakGenerator extends WorldGenAbstractTree {
 			return false;
 		int trunk = ReikaRandomHelper.getRandomBetween(minTrunkBaseHeight, maxTrunkBaseHeight, rand);
 		int leaf = ReikaRandomHelper.getRandomBetween(minFoliageHeight, maxFoliageHeight, rand);
-		Tree tree = new Tree(trunk, leaf);
+		Tree tree = new Tree(rand, trunk, leaf);
 		tree.calculate(world, rand, x, y, z);
 		if (tree.canPlace(world)) {
 			tree.place(world);
@@ -72,14 +74,22 @@ public class EnderOakGenerator extends WorldGenAbstractTree {
 		private final int totalHeight;
 
 		private int lowestLeafY = 999;
-		private int currentRadius = 0;
-		private float currentRadiusExponent = 0.5F;
 
-		private Tree(int ht, int hl) {
+		private final LobulatedCurve leafBottom;
+		private final LobulatedCurve leafMiddle;
+		private final LobulatedCurve leafTop;
+
+		private Tree(Random rand, int ht, int hl) {
 			trunkHeight = ht;
 			leafHeight = hl;
 			totalHeight = ht+hl;
-			currentRadius = Math.min(3, (int)(maxFoliageRadius*0.8));
+
+			leafBottom = LobulatedCurve.fromMinMaxRadii(minFoliageRadius, Math.max(minFoliageRadius, maxFoliageRadius*0.8), 3);
+			leafMiddle = LobulatedCurve.fromMinMaxRadii(minFoliageRadius, maxFoliageRadius, 3);
+			leafTop = LobulatedCurve.fromMinMaxRadii(minFoliageRadius, Math.max(minFoliageRadius, maxFoliageRadius*0.5), 3);
+			leafBottom.generate(rand);
+			leafMiddle.generate(rand);
+			leafTop.generate(rand);
 		}
 
 		private void calculate(World world, Random rand, int x, int y, int z) {
@@ -139,15 +149,11 @@ public class EnderOakGenerator extends WorldGenAbstractTree {
 		}
 
 		private void generateLayer(World world, Random rand, int x, int y, int z, int h, Coordinate core) {
-			this.permuteRadius(rand, h);
-			int r = currentRadius+2;
-			for (int i = -r; i <= r; i++) {
-				for (int k = -r; k <= r; k++) {
-					double ia = Math.pow(Math.abs(i), 1D/currentRadiusExponent);
-					double ka = Math.pow(Math.abs(k), 1D/currentRadiusExponent);
-					double d = Math.pow(Math.abs(ia+ka), currentRadiusExponent);
-					//double d = ReikaMathLibrary.py3d(i, 0, k);
-					if (d <= currentRadius+0.5) {
+			for (int i = -maxFoliageRadius-2; i <= maxFoliageRadius+2; i++) {
+				for (int k = -maxFoliageRadius-2; k <= maxFoliageRadius+2; k++) {
+					double r = this.getRadiusAt(h, i, k);
+					double d = ReikaMathLibrary.py3d(i, 0, k);
+					if (d <= r+0.5) {
 						Coordinate c = new Coordinate(x+i, core.yCoord, z+k);
 						leaves.addValue(c.yCoord, c);
 						lowestLeafY = Math.min(lowestLeafY, c.yCoord);
@@ -156,41 +162,30 @@ public class EnderOakGenerator extends WorldGenAbstractTree {
 			}
 		}
 
-		private void permuteRadius(Random rand, int y) {
-			if (currentRadius == 0 || rand.nextInt(3) > 0) {
-				boolean incr = currentRadius < maxFoliageRadius;
-				boolean decr = currentRadius > minFoliageRadius;
-				if (incr && decr) {
-					currentRadius += rand.nextBoolean() ? 1 : -1;
-				}
-				else if (incr) {
-					currentRadius++;
-				}
-				else if (decr) {
-					currentRadius--;
-				}
+		private double getRadiusAt(int h, int i, int k) {
+			double midY = leafHeight/2D;
+			double dy = h-trunkHeight;
+			int dh = totalHeight-h;
+			LobulatedCurve l1 = null;
+			LobulatedCurve l2 = null;
+			double f = 0;
+			if (h < midY) {
+				l1 = leafBottom;
+				l2 = leafMiddle;
+				f = h/midY;
 			}
-			if (rand.nextInt(2) == 0) {
-				boolean incr = currentRadiusExponent < 0.65F;
-				boolean decr = currentRadiusExponent > 0.35F;
-				int sign = 0;
-				if (incr && decr) {
-					sign = rand.nextBoolean() ? 1 : -1;
-				}
-				else if (incr) {
-					sign = 1;
-				}
-				else if (decr) {
-					sign = -1;
-				}
-				currentRadiusExponent += sign*ReikaRandomHelper.getRandomBetween(0.025, 0.1, rand);
+			else {
+				l1 = leafMiddle;
+				l2 = leafTop;
+				f = (h-midY)/midY;
 			}
-			int r = maxFoliageRadius;
-			int dh = totalHeight-y;
+			double ang = Math.toDegrees(Math.atan2(i, k));
+			double r1 = l1.getRadius(ang);
+			double r2 = l2.getRadius(ang);
+			double r = r2*f+r1*(1-f);
+			r = MathHelper.clamp_double(r, minFoliageRadius, maxFoliageRadius);
 			r = Math.min(r, dh);
-			currentRadius = MathHelper.clamp_int(currentRadius, minFoliageRadius, r);
-			currentRadius = Math.min(currentRadius, r); //in case minFoliageRadius > r
-			currentRadiusExponent = MathHelper.clamp_float(currentRadiusExponent, 0.35F, 0.65F);
+			return r;
 		}
 
 		private boolean canPlace(World world) {
@@ -213,7 +208,7 @@ public class EnderOakGenerator extends WorldGenAbstractTree {
 			if (ReikaWorldHelper.softBlocks(world, x, y, z))
 				return true;
 			Block b = world.getBlock(x, y, z);
-			return b.canBeReplacedByLeaves(world, x, y, z) || b.isLeaves(world, x, y, z);
+			return b.canBeReplacedByLeaves(world, x, y, z) || EnderOakGenerator.super.isReplaceable(world, x, y, z);
 		}
 
 		private void place(World world) {
