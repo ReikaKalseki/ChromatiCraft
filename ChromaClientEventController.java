@@ -43,6 +43,7 @@ import net.minecraft.entity.monster.EntitySilverfish;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
@@ -71,6 +72,7 @@ import net.minecraftforge.client.event.RenderWorldEvent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent17;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHotkeys;
@@ -248,6 +250,24 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 				break;
 			}
 		}
+	}
+
+	@SubscribeEvent
+	public void particleProgramTooltips(ItemEffectRenderEvent evt) {
+		if (this.isParticleProgramBook(evt.getItem()))
+			evt.setResult(Result.ALLOW);
+	}
+
+	@SubscribeEvent
+	public void particleProgramTooltips(ItemTooltipEvent evt) {
+		if (this.isParticleProgramBook(evt.itemStack)) {
+			evt.toolTip.add("Stores particle spawner program:");
+			//evt.toolTip.addAll(BlockBounds.readFromNBT("particleprogram", evt.itemStack.stackTagCompound).toClearString());
+		}
+	}
+
+	private boolean isParticleProgramBook(ItemStack is) {
+		return is != null && is.getItem() == Items.book && is.stackTagCompound != null && is.stackTagCompound.hasKey("particleprogram");
 	}
 
 	@SubscribeEvent

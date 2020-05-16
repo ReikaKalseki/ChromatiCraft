@@ -83,7 +83,6 @@ import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
@@ -189,6 +188,10 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ClassDependent;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.RayTracer;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.AbstractSearch.PropagationCondition;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.AbstractSearch.TerminationCondition;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.BreadthFirstSearch;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Event.AttackAggroEvent;
@@ -215,6 +218,7 @@ import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Instantiable.Event.ItemStackUpdateEvent;
 import Reika.DragonAPI.Instantiable.Event.ItemUpdateEvent;
 import Reika.DragonAPI.Instantiable.Event.LavaSpawnFireEvent;
+import Reika.DragonAPI.Instantiable.Event.LeafDecayEvent;
 import Reika.DragonAPI.Instantiable.Event.MobTargetingEvent;
 import Reika.DragonAPI.Instantiable.Event.PigZombieAggroSpreadEvent;
 import Reika.DragonAPI.Instantiable.Event.PlayerKeepInventoryEvent;
@@ -226,7 +230,6 @@ import Reika.DragonAPI.Instantiable.Event.SlotEvent.RemoveFromSlotEvent;
 import Reika.DragonAPI.Instantiable.Event.SpawnerCheckPlayerEvent;
 import Reika.DragonAPI.Instantiable.Event.TileEntityMoveEvent;
 import Reika.DragonAPI.Instantiable.Event.VillagerTradeEvent;
-import Reika.DragonAPI.Instantiable.Event.Client.ItemEffectRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.SinglePlayerLogoutEvent;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
@@ -246,6 +249,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
@@ -266,8 +270,6 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.multiblock.IAlvearyComponent;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.common.entities.monster.EntityWisp;
@@ -290,23 +292,41 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
-	@SideOnly(Side.CLIENT)
-	public void particleProgramTooltips(ItemEffectRenderEvent evt) {
-		if (this.isParticleProgramBook(evt.getItem()))
-			evt.setResult(Result.ALLOW);
-	}
-
-	@SubscribeEvent
-	@SideOnly(Side.CLIENT)
-	public void particleProgramTooltips(ItemTooltipEvent evt) {
-		if (this.isParticleProgramBook(evt.itemStack)) {
-			evt.toolTip.add("Stores particle spawner program:");
-			//evt.toolTip.addAll(BlockBounds.readFromNBT("particleprogram", evt.itemStack.stackTagCompound).toClearString());
+	public void stopEnderOakDecay(LeafDecayEvent evt) {
+		if (evt.world instanceof World) {
+			BiomeGenBase b = evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord);
+			if (ChromatiCraft.isEnderForest(b) && evt.world.getBlock(evt.xCoord, evt.yCoord, evt.zCoord) == ReikaTreeHelper.OAK.getLogID()) {
+				if (!this.canEnderOakDecay((World)evt.world, evt.xCoord, evt.yCoord, evt.zCoord)) {
+					evt.setResult(Result.DENY);
+				}
+			}
 		}
 	}
 
-	private boolean isParticleProgramBook(ItemStack is) {
-		return is != null && is.getItem() == Items.book && is.stackTagCompound != null && is.stackTagCompound.hasKey("particleprogram");
+	protected boolean canEnderOakDecay(World world, final int x, final int y, final int z) {
+		TerminationCondition t = new TerminationCondition(){
+
+			@Override
+			public boolean isValidTerminus(World world, int dx, int dy, int dz) {
+				Block b = world.getBlock(dx, dy, dz);
+				return b.isWood(world, x, y, z) && ReikaTreeHelper.getTree(b, world.getBlockMetadata(dx, dy, dz)) == ReikaTreeHelper.OAK;
+			}
+		};
+
+		PropagationCondition c = new PropagationCondition(){
+
+			@Override
+			public boolean isValidLocation(World world, int dx, int dy, int dz, Coordinate from) {
+				return ReikaTreeHelper.getTree(world.getBlock(dx, dy, dz), world.getBlockMetadata(dx, dy, dz)) == ReikaTreeHelper.OAK;
+			}
+
+		};
+
+		BreadthFirstSearch s = new BreadthFirstSearch(x, y, z);
+		s.limit = BlockBox.block(x, y, z).expand(7, 15, 7);
+		s.depthLimit = 32;
+		s.complete(world, c, t);
+		return s.getResult().isEmpty();
 	}
 
 	/*
