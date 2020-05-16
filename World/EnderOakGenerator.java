@@ -106,6 +106,8 @@ public class EnderOakGenerator extends WorldGenAbstractTree {
 						branches.put(c, new Branch(c, rand.nextFloat()*360, theta));
 					}
 				}
+				if (branches.size() == 1) //prevent lopsidedness
+					branches.clear();
 				if (!branches.isEmpty()) {
 					for (Branch b : branches.values()) {
 						b.calculate(world, rand);
