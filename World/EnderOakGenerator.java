@@ -16,6 +16,7 @@ import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
@@ -25,18 +26,20 @@ public class EnderOakGenerator extends WorldGenAbstractTree {
 	public final int maxTrunkBaseHeight;
 	public final int minFoliageHeight;
 	public final int maxFoliageHeight;
+	public final int minFoliageRadius;
 	public final int maxFoliageRadius;
 	public final float branchChancePerLevel;
 	public final int maxBranchLength;
 	public final float columnChancePerLeaf;
 
-	public EnderOakGenerator(int h0, int h1, int f0, int f1, int fr, float b, int bl, float c) {
+	public EnderOakGenerator(int h0, int h1, int f0, int f1, int fr0, int fr1, float b, int bl, float c) {
 		super(false);
 		minTrunkBaseHeight = h0;
 		maxTrunkBaseHeight = h1;
 		minFoliageHeight = f0;
 		maxFoliageHeight = f1;
-		maxFoliageRadius = fr;
+		minFoliageRadius = fr0;
+		maxFoliageRadius = fr1;
 		branchChancePerLevel = b;
 		maxBranchLength = bl;
 		columnChancePerLeaf = c;
@@ -44,6 +47,8 @@ public class EnderOakGenerator extends WorldGenAbstractTree {
 
 	@Override
 	public boolean generate(World world, Random rand, int x, int y, int z) {
+		if (!ReikaPlantHelper.SAPLING.canPlantAt(world, x, y, z))
+			return false;
 		int trunk = ReikaRandomHelper.getRandomBetween(minTrunkBaseHeight, maxTrunkBaseHeight, rand);
 		int leaf = ReikaRandomHelper.getRandomBetween(minFoliageHeight, maxFoliageHeight, rand);
 		Tree tree = new Tree(trunk, leaf);
@@ -74,12 +79,13 @@ public class EnderOakGenerator extends WorldGenAbstractTree {
 			trunkHeight = ht;
 			leafHeight = hl;
 			totalHeight = ht+hl;
+			currentRadius = Math.min(3, (int)(maxFoliageRadius*0.8));
 		}
 
 		private void calculate(World world, Random rand, int x, int y, int z) {
 			for (int h = 0; h <= totalHeight; h++) {
 				Coordinate core = new Coordinate(x, y+h, z);
-				if (h == totalHeight)
+				if (h >= totalHeight-1)
 					leaves.addValue(core.yCoord, core);
 				else
 					logs.add(core);
@@ -89,15 +95,18 @@ public class EnderOakGenerator extends WorldGenAbstractTree {
 			}
 			if (branchChancePerLevel > 0) {
 				for (int yl : leaves.keySet()) {
-					if (rand.nextFloat() < branchChancePerLevel) {
+					int dh = y+totalHeight-yl;
+					if (dh > 2 && rand.nextFloat() < branchChancePerLevel) {
 						Coordinate c = new Coordinate(x, yl, z);
-						branches.put(c, new Branch(c, rand.nextFloat()*360, (float)ReikaRandomHelper.getRandomPlusMinus(0F, 30F, rand)));
+						float theta = (float)ReikaRandomHelper.getRandomPlusMinus(0F, 30F, rand);
+						theta = Math.min(theta, Math.max(0, 10*(dh-3)));
+						branches.put(c, new Branch(c, rand.nextFloat()*360, theta));
 					}
 				}
 				if (!branches.isEmpty()) {
 					for (Branch b : branches.values()) {
 						b.calculate(world, rand);
-						logs.addAll(b.leaves);
+						logs.addAll(b.logs);
 						Collection<Coordinate> li = new ArrayList(b.leaves);
 						li.removeAll(logs);
 						for (Coordinate c : li) {
@@ -108,28 +117,34 @@ public class EnderOakGenerator extends WorldGenAbstractTree {
 			}
 			if (columnChancePerLeaf > 0) {
 				Collection<Coordinate> li = leaves.get(lowestLeafY);
+				HashSet<Coordinate> leavesToAdd = new HashSet();
 				for (Coordinate c : li) {
 					if (rand.nextFloat() < columnChancePerLeaf) {
 						for (int y2 = lowestLeafY; y2 >= 0; y2--) {
 							if (this.canReplace(world, c.xCoord, y2, c.zCoord)) {
 								Coordinate c2 = new Coordinate(c.xCoord, y2, c.zCoord);
-								leaves.addValue(c.yCoord, c2);
+								leavesToAdd.add(c2);
 							}
 						}
 					}
 				}
+				for (Coordinate c : leavesToAdd) {
+					leaves.addValue(c.yCoord, c);
+				}
 			}
+
 		}
 
 		private void generateLayer(World world, Random rand, int x, int y, int z, int h, Coordinate core) {
-			this.permuteRadius(rand);
+			this.permuteRadius(rand, h);
 			int r = currentRadius+2;
 			for (int i = -r; i <= r; i++) {
 				for (int k = -r; k <= r; k++) {
-					double ia = Math.signum(i)*Math.pow(Math.abs(i), 1D/currentRadiusExponent);
-					double ka = Math.signum(k)*Math.pow(Math.abs(k), 1D/currentRadiusExponent);
-					double d = Math.pow(ia+ka, currentRadiusExponent);
-					if (d <= currentRadius) {
+					double ia = Math.pow(Math.abs(i), 1D/currentRadiusExponent);
+					double ka = Math.pow(Math.abs(k), 1D/currentRadiusExponent);
+					double d = Math.pow(Math.abs(ia+ka), currentRadiusExponent);
+					//double d = ReikaMathLibrary.py3d(i, 0, k);
+					if (d <= currentRadius+0.5) {
 						Coordinate c = new Coordinate(x+i, core.yCoord, z+k);
 						leaves.addValue(c.yCoord, c);
 						lowestLeafY = Math.min(lowestLeafY, c.yCoord);
@@ -138,10 +153,10 @@ public class EnderOakGenerator extends WorldGenAbstractTree {
 			}
 		}
 
-		private void permuteRadius(Random rand) {
+		private void permuteRadius(Random rand, int y) {
 			if (currentRadius == 0 || rand.nextInt(3) > 0) {
 				boolean incr = currentRadius < maxFoliageRadius;
-				boolean decr = currentRadius > 1;
+				boolean decr = currentRadius > minFoliageRadius;
 				if (incr && decr) {
 					currentRadius += rand.nextBoolean() ? 1 : -1;
 				}
@@ -167,7 +182,11 @@ public class EnderOakGenerator extends WorldGenAbstractTree {
 				}
 				currentRadiusExponent += sign*ReikaRandomHelper.getRandomBetween(0.025, 0.1, rand);
 			}
-			currentRadius = MathHelper.clamp_int(currentRadius, 0, maxFoliageRadius);
+			int r = maxFoliageRadius;
+			int dh = totalHeight-y;
+			r = Math.min(r, dh);
+			currentRadius = MathHelper.clamp_int(currentRadius, minFoliageRadius, r);
+			currentRadius = Math.min(currentRadius, r); //in case minFoliageRadius > r
 			currentRadiusExponent = MathHelper.clamp_float(currentRadiusExponent, 0.35F, 0.65F);
 		}
 
@@ -199,6 +218,8 @@ public class EnderOakGenerator extends WorldGenAbstractTree {
 				c.setBlock(world, ReikaTreeHelper.OAK.getLogID(), ReikaTreeHelper.OAK.getBaseLogMeta(), 2);
 			}
 			for (Coordinate c : leaves.allValues(false)) {
+				if (logs.contains(c))
+					continue;
 				c.setBlock(world, ReikaTreeHelper.OAK.getLeafID(), ReikaTreeHelper.OAK.getBaseLeafMeta(), 2);
 			}
 		}
@@ -223,7 +244,7 @@ public class EnderOakGenerator extends WorldGenAbstractTree {
 			}
 
 			private void calculate(World world, Random rand) {
-				int l = ReikaRandomHelper.getRandomBetween(2, maxBranchLength);
+				int l = Math.min((int)(leafHeight*0.67), ReikaRandomHelper.getRandomBetween(2, maxBranchLength));
 				for (double d = 0.5; d <= l; d += 0.5) {
 					double dx = root.xCoord+0.5+xStep*d;
 					double dy = root.yCoord+0.5+yStep*d;

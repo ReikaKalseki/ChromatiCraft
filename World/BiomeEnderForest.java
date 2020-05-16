@@ -29,8 +29,9 @@ import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 
 public class BiomeEnderForest extends BiomeGenForest {
 
-	private final WorldGenAbstractTree enderOakLarge = new EnderOakGenerator(3, 7, 5, 15, 6, 0.15F, 4, 0.15F);
-	private final WorldGenAbstractTree enderOakSmall = new EnderOakGenerator(2, 4, 3, 5, 3, 0, 0, 0.1F);
+	private final WorldGenAbstractTree enderOakLarge = new EnderOakGenerator(3, 7, 5, 12, 3, 5, 0.15F, 6, 0.15F);
+	private final WorldGenAbstractTree enderOakSmall = new EnderOakGenerator(2, 4, 3, 5, 2, 3, 0, 0, 0.1F);
+	private final WorldGenAbstractTree enderOakNarrow = new EnderOakGenerator(6, 12, 6, 15, 1, 2, 0.35F, 5, 0F);
 
 	private final WeightedRandom<WorldGenAbstractTree> treeTypes = new WeightedRandom();
 
@@ -55,6 +56,7 @@ public class BiomeEnderForest extends BiomeGenForest {
 		treeTypes.addEntry(worldGeneratorBigTree, 4);
 		treeTypes.addEntry(enderOakSmall, 50);
 		treeTypes.addEntry(enderOakLarge, 10);
+		treeTypes.addEntry(enderOakNarrow, 6);
 	}
 
 	@Override
