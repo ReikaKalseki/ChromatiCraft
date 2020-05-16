@@ -125,6 +125,9 @@ public class EnderOakGenerator extends WorldGenAbstractTree {
 								Coordinate c2 = new Coordinate(c.xCoord, y2, c.zCoord);
 								leavesToAdd.add(c2);
 							}
+							else {
+								break;
+							}
 						}
 					}
 				}
