@@ -16,6 +16,7 @@ import net.minecraft.nbt.NBTTagString;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Auxiliary.IconLookupRegistry;
+import Reika.DragonAPI.Instantiable.Rendering.TextureSlot;
 import Reika.DragonAPI.Instantiable.Rendering.TextureSubImage;
 import Reika.DragonAPI.Interfaces.IconEnum;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
@@ -212,9 +213,9 @@ public class ProgressionLinking {
 	public static class LinkFailure {
 
 		private static final LinkFailure INVALID = new LinkFailure("Invalid Players", ChromaIcons.NOENTER);
-		private static final LinkFailure REGIONS = new LinkFailure("Progression Too Different", ChromaIcons.X);
-		private static final LinkFailure LEVELS = new LinkFailure("Mismatched Levels", ChromaIcons.X);
-		private static final LinkFailure TOO_LATE = new LinkFailure("Too Late", ChromaIcons.NOENTER);
+		private static final LinkFailure REGIONS = new LinkFailure("Progression Too Different", getInfoIconSlot(0, 4));
+		private static final LinkFailure LEVELS = new LinkFailure("Mismatched Levels", getInfoIconSlot(0, 3));
+		private static final LinkFailure TOO_LATE = new LinkFailure("Too Late", getInfoIconSlot(0, 5));
 
 		public final String text;
 		private final String iconName;
@@ -227,12 +228,28 @@ public class ProgressionLinking {
 			iconName = null;
 		}
 
+		private static TextureSlot getInfoIconSlot(int x, int y) {
+			return TextureSlot.fromSpritesheet(ChromatiCraft.class, "Textures/infoicons.png", x, y, 16);
+		}
+
+		private LinkFailure(String s, TextureSlot ico) {
+			text = s;
+			progress = null;
+			iconName = null;
+			if (ico == null)
+				throw new IllegalArgumentException("Null texture!");
+			icon = ico;
+		}
+
 		private LinkFailure(String s, IconEnum ico) {
 			text = s;
 			progress = null;
 			if (ico == null)
 				throw new IllegalArgumentException("Null icon!");
+			if (ico.getIcon() == null)
+				throw new IllegalArgumentException("No-data icon!");
 			iconName = ico.name();
+			icon = new TextureSubImage(ico.getIcon());
 		}
 
 		@Override
@@ -247,7 +264,7 @@ public class ProgressionLinking {
 			}
 			else {
 				BlendMode.DEFAULT.apply();
-				ReikaTextureHelper.bindTerrainTexture();
+				this.bindTexture();
 				v5.startDrawingQuads();
 				int a = 220+(int)(32*Math.sin(System.currentTimeMillis()/250D));
 				v5.setColorRGBA_I(0xffffff, a);
@@ -260,6 +277,15 @@ public class ProgressionLinking {
 			}
 		}
 
+		private void bindTexture() {
+			if (icon instanceof TextureSlot) {
+				((TextureSlot)icon).bindTexture();
+			}
+			else {
+				ReikaTextureHelper.bindTerrainTexture();
+			}
+		}
+
 		public NBTTagCompound writeToNBT() {
 			NBTTagCompound ret = new NBTTagCompound();
 			ret.setString("label", text);
@@ -268,7 +294,8 @@ public class ProgressionLinking {
 			}
 			if (icon != null)
 				ret.setTag("icon", icon.writeToNBT());
-			ret.setString("iconName", iconName);
+			if (iconName != null)
+				ret.setString("iconName", iconName);
 			return ret;
 		}
 
@@ -276,8 +303,14 @@ public class ProgressionLinking {
 			if (NBT.hasKey("prog")) {
 				return new LinkFailure(ProgressStage.list[NBT.getInteger("prog")]);
 			}
-			else {
+			else if (NBT.hasKey("iconName")) {
 				return new LinkFailure(NBT.getString("label"), IconLookupRegistry.instance.getIcon(NBT.getString("iconName")));
+			}
+			else if (NBT.hasKey("icon")) {
+				return new LinkFailure(NBT.getString("label"), TextureSlot.readFromNBT(NBT.getCompoundTag("icon")));
+			}
+			else {
+				return new LinkFailure(NBT.getString("label")+" (+invalid data)", ChromaIcons.X); //error
 			}
 		}
 

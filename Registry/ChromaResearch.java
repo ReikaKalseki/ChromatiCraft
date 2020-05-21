@@ -52,6 +52,7 @@ import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
+import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.Bases;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
@@ -1066,7 +1067,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 		}
 		if (this == GLOW) {
 			ArrayList<ItemStack> li = new ArrayList();
-			for (int i = 0; i < 48; i++) {
+			for (int i = 0; i < 16*Bases.baseList.length; i++) {
 				li.add(ChromaBlocks.GLOW.getStackOfMetadata(i));
 			}
 			return li;

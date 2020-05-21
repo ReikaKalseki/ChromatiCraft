@@ -292,18 +292,20 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
-	public void stopEnderOakDecay(LeafDecayEvent evt) {
+	public void stopBiggerOakDecay(LeafDecayEvent evt) {
 		if (evt.world instanceof World) {
 			BiomeGenBase b = evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord);
-			if (ChromatiCraft.isEnderForest(b) && evt.world.getBlock(evt.xCoord, evt.yCoord, evt.zCoord) == ReikaTreeHelper.OAK.getLogID()) {
-				if (!this.canEnderOakDecay((World)evt.world, evt.xCoord, evt.yCoord, evt.zCoord)) {
-					evt.setResult(Result.DENY);
+			if (ChromatiCraft.isEnderForest(b) || BiomeGlowingCliffs.isGlowingCliffs(b)) {
+				if (evt.world.getBlock(evt.xCoord, evt.yCoord, evt.zCoord) == ReikaTreeHelper.OAK.getLogID()) {
+					if (!this.canBiomeOakDecay((World)evt.world, evt.xCoord, evt.yCoord, evt.zCoord)) {
+						evt.setResult(Result.DENY);
+					}
 				}
 			}
 		}
 	}
 
-	protected boolean canEnderOakDecay(World world, final int x, final int y, final int z) {
+	protected boolean canBiomeOakDecay(World world, final int x, final int y, final int z) {
 		TerminationCondition t = new TerminationCondition(){
 
 			@Override
