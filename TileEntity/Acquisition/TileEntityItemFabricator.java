@@ -35,6 +35,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -138,6 +139,11 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 		//ReikaJavaLibrary.pConsole(FabricationRecipes.recipes().getItemsFabricableWith(ElementTagCompound.getUniformTag(5000)));
 		if (!world.isRemote && /*this.getCooldown() == 0 && */checkTimer.checkCap()) {
 			this.checkAndRequest();
+		}
+
+		if (DragonAPICore.debugtest) {
+			for (CrystalElement e : CrystalElement.elements)
+				energy.setTag(e, this.getMaxStorage(e));
 		}
 
 		//ReikaJavaLibrary.pConsole(recipe.energy+" <"+craftingTick+"> "+energy, Side.SERVER);

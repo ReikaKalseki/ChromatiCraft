@@ -294,7 +294,7 @@ public class ChromaticEventManager {
 	@SubscribeEvent
 	public void stopBiggerOakDecay(LeafDecayEvent evt) {
 		if (evt.world instanceof World) {
-			BiomeGenBase b = evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord);
+			BiomeGenBase b = ((World)evt.world).getBiomeGenForCoords(evt.xCoord, evt.zCoord);
 			if (ChromatiCraft.isEnderForest(b) || BiomeGlowingCliffs.isGlowingCliffs(b)) {
 				if (evt.world.getBlock(evt.xCoord, evt.yCoord, evt.zCoord) == ReikaTreeHelper.OAK.getLogID()) {
 					if (!this.canBiomeOakDecay((World)evt.world, evt.xCoord, evt.yCoord, evt.zCoord)) {

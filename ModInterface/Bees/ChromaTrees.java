@@ -666,6 +666,8 @@ public class ChromaTrees {
 					fnum = 0;
 				}
 			}
+			if (num <= 0)
+				return new ItemStack[0];
 			return new ItemStack[] {ReikaItemHelper.getSizedItemStack(ChromaItems.BERRY.getStackOf(color), num)};
 		}
 
