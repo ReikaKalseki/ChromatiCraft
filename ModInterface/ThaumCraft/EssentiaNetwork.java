@@ -1175,6 +1175,10 @@ public class EssentiaNetwork {
 		private boolean canTransfer(World world, NetworkEndpoint from, NetworkEndpoint to, boolean isTick) {
 			if (isBeingDestroyed)
 				return false;
+			if (from == null || to == null) {
+				ChromatiCraft.logger.logError("Tried to transfer essentia with a null endpoint!");
+				return false;
+			}
 			if (from == to || from.point.equals(to.point))
 				return false;
 			if (from instanceof LabelledJarEndpoint)
