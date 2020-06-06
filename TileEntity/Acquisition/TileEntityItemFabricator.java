@@ -221,7 +221,7 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 			EntityPlayer ep = this.getPlacer();
 			if (ep != null && !ReikaPlayerAPI.isFake(ep) && Chromabilities.DOUBLECRAFT.enabledOn(ep))
 				n = 2;
-			ReikaInventoryHelper.addOrSetStack(recipe.output.copy(), inv, n);
+			ReikaInventoryHelper.addOrSetStack(ReikaItemHelper.getSizedItemStack(recipe.output, n), inv, 1);
 		}
 		energy.subtract(recipe.energy);
 		progress = 0;
