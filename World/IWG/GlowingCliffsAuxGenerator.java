@@ -41,8 +41,9 @@ import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Math.LobulatedCurve;
-import Reika.DragonAPI.Instantiable.Math.Simplex3DGenerator;
-import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
+import Reika.DragonAPI.Instantiable.Math.Noise.NoiseGeneratorBase;
+import Reika.DragonAPI.Instantiable.Math.Noise.Simplex3DGenerator;
+import Reika.DragonAPI.Instantiable.Math.Noise.SimplexNoiseGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ControllableOreVein.ExposedOreVein;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Interfaces.Registry.OreType;
@@ -68,9 +69,9 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 	private static final BlockKey DIRT = new BlockKey(Blocks.dirt);//new BlockKey(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.DIRT.getMeta(false, true));
 	private static final BlockKey GRASS = new BlockKey(Blocks.grass);//new BlockKey(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.GRASS.getMeta(false, true));
 
-	private SimplexNoiseGenerator contours;
-	private SimplexNoiseGenerator islandFrequency;
-	private Simplex3DGenerator crystalNoise;
+	private NoiseGeneratorBase contours;
+	private NoiseGeneratorBase islandFrequency;
+	private NoiseGeneratorBase crystalNoise;
 	private long noiseSeed;
 
 	private final WeightedRandom<TreeType> treeRand = new WeightedRandom();

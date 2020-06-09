@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2018
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -10,7 +10,8 @@
 package Reika.ChromatiCraft.World.Dimension.Biome;
 
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
-import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
+import Reika.DragonAPI.Instantiable.Math.Noise.NoiseGeneratorBase;
+import Reika.DragonAPI.Instantiable.Math.Noise.SimplexNoiseGenerator;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
@@ -20,7 +21,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class MonumentBiome extends StructureBiome {
 
-	private final SimplexNoiseGenerator colorBlend = new SimplexNoiseGenerator(System.currentTimeMillis()).setFrequency(1/32D);
+	private final NoiseGeneratorBase colorBlend = new SimplexNoiseGenerator(System.currentTimeMillis()).setFrequency(1/32D);
 
 	public MonumentBiome(int id, String n, Biomes t) {
 		super(id, n, t);

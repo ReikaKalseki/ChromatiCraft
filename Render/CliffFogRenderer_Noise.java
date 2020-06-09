@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -22,7 +22,8 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
-import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
+import Reika.DragonAPI.Instantiable.Math.Noise.NoiseGeneratorBase;
+import Reika.DragonAPI.Instantiable.Math.Noise.SimplexNoiseGenerator;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -41,11 +42,11 @@ public class CliffFogRenderer_Noise {
 	private static final int MINHEIGHT = 4;
 	private static final int MAXHEIGHT = 12;
 
-	private final SimplexNoiseGenerator cloudNoiseA = new SimplexNoiseGenerator(System.currentTimeMillis()).addOctave(2, 0.5).addOctave(4, 0.125).addOctave(8, 0.125).setFrequency(1/24D*RESOLUTION);
-	private final SimplexNoiseGenerator cloudNoiseB = new SimplexNoiseGenerator(System.currentTimeMillis()*2).addOctave(2, 0.5).addOctave(4, 0.125).addOctave(8, 0.125).setFrequency(1/24D*RESOLUTION);
+	private final NoiseGeneratorBase cloudNoiseA = new SimplexNoiseGenerator(System.currentTimeMillis()).addOctave(2, 0.5).addOctave(4, 0.125).addOctave(8, 0.125).setFrequency(1/24D*RESOLUTION);
+	private final NoiseGeneratorBase cloudNoiseB = new SimplexNoiseGenerator(System.currentTimeMillis()*2).addOctave(2, 0.5).addOctave(4, 0.125).addOctave(8, 0.125).setFrequency(1/24D*RESOLUTION);
 
-	private final SimplexNoiseGenerator cloudHeight = new SimplexNoiseGenerator(-System.currentTimeMillis()).addOctave(2, 0.25).setFrequency(1/80D*RESOLUTION);
-	private final SimplexNoiseGenerator cloudThickness = new SimplexNoiseGenerator(~System.currentTimeMillis()).setFrequency(1/12D*RESOLUTION);
+	private final NoiseGeneratorBase cloudHeight = new SimplexNoiseGenerator(-System.currentTimeMillis()).addOctave(2, 0.25).setFrequency(1/80D*RESOLUTION);
+	private final NoiseGeneratorBase cloudThickness = new SimplexNoiseGenerator(~System.currentTimeMillis()).setFrequency(1/12D*RESOLUTION);
 
 	private CloudVertex[][] clouds;
 

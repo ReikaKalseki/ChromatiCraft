@@ -18,7 +18,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.ChromaDimensionBiomeType;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.SubBiomes;
-import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
+import Reika.DragonAPI.Instantiable.Math.Noise.SimplexNoiseGenerator;
 import Reika.DragonAPI.Interfaces.CustomMapColorBiome;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;

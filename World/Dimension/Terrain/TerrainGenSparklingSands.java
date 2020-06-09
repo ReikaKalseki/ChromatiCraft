@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -24,26 +24,27 @@ import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.ChromaDimensionBiomeType;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
-import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
+import Reika.DragonAPI.Instantiable.Math.Noise.NoiseGeneratorBase;
+import Reika.DragonAPI.Instantiable.Math.Noise.SimplexNoiseGenerator;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class TerrainGenSparklingSands extends ChromaDimensionBiomeTerrainShaper {
 
-	private final SimplexNoiseGenerator beachTypeNoise;
-	private final SimplexNoiseGenerator heightNoise;
-	private final SimplexNoiseGenerator duneNoise;
-	private final SimplexNoiseGenerator duneHeightNoise;
-	private final SimplexNoiseGenerator beachTypeOffsetNoise;
-	private final SimplexNoiseGenerator sparkleChoiceNoise;
+	private final NoiseGeneratorBase beachTypeNoise;
+	private final NoiseGeneratorBase heightNoise;
+	private final NoiseGeneratorBase duneNoise;
+	private final NoiseGeneratorBase duneHeightNoise;
+	private final NoiseGeneratorBase beachTypeOffsetNoise;
+	private final NoiseGeneratorBase sparkleChoiceNoise;
 
 	private static final int SHORE_Y = 63+ChunkProviderChroma.VERTICAL_OFFSET; // less than this == water
 	private static final int LAYER_THICKNESS = 3;
 
 	private static final ArrayList<BlockKey>[] HEIGHT_LEVELS = new ArrayList[]{
-		ReikaJavaLibrary.makeListFrom(new BlockKey(ChromaBlocks.SPARKLE.getBlockInstance(), BlockTypes.CLAY.ordinal())),
-		ReikaJavaLibrary.makeListFrom(new BlockKey(ChromaBlocks.SPARKLE.getBlockInstance(), BlockTypes.SAND.ordinal()), new BlockKey(ChromaBlocks.SPARKLE.getBlockInstance(), BlockTypes.GRAVEL.ordinal())),
-		ReikaJavaLibrary.makeListFrom(new BlockKey(ChromaBlocks.SPARKLE.getBlockInstance(), BlockTypes.DIRT.ordinal()), new BlockKey(ChromaBlocks.SPARKLE.getBlockInstance(), BlockTypes.STONE.ordinal())),
+			ReikaJavaLibrary.makeListFrom(new BlockKey(ChromaBlocks.SPARKLE.getBlockInstance(), BlockTypes.CLAY.ordinal())),
+			ReikaJavaLibrary.makeListFrom(new BlockKey(ChromaBlocks.SPARKLE.getBlockInstance(), BlockTypes.SAND.ordinal()), new BlockKey(ChromaBlocks.SPARKLE.getBlockInstance(), BlockTypes.GRAVEL.ordinal())),
+			ReikaJavaLibrary.makeListFrom(new BlockKey(ChromaBlocks.SPARKLE.getBlockInstance(), BlockTypes.DIRT.ordinal()), new BlockKey(ChromaBlocks.SPARKLE.getBlockInstance(), BlockTypes.STONE.ordinal())),
 	};
 
 	private static final int UNDERWATER_LAYERS = 1;

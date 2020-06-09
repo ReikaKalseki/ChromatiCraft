@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -20,7 +20,8 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
-import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
+import Reika.DragonAPI.Instantiable.Math.Noise.NoiseGeneratorBase;
+import Reika.DragonAPI.Instantiable.Math.Noise.SimplexNoiseGenerator;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -30,8 +31,8 @@ public class CliffFogRenderer_Noise2 {
 
 	public static final CliffFogRenderer_Noise2 instance = new CliffFogRenderer_Noise2();
 
-	private final SimplexNoiseGenerator cloudNoise = new SimplexNoiseGenerator(System.currentTimeMillis()).addOctave(2, 0.5).addOctave(4, 0.125).addOctave(8, 0.125).setFrequency(1/24D);
-	private final SimplexNoiseGenerator cloudFreqNoise = new SimplexNoiseGenerator(-System.currentTimeMillis()).setFrequency(1/36D);
+	private final NoiseGeneratorBase cloudNoise = new SimplexNoiseGenerator(System.currentTimeMillis()).addOctave(2, 0.5).addOctave(4, 0.125).addOctave(8, 0.125).setFrequency(1/24D);
+	private final NoiseGeneratorBase cloudFreqNoise = new SimplexNoiseGenerator(-System.currentTimeMillis()).setFrequency(1/36D);
 
 	private CliffFogRenderer_Noise2() {
 

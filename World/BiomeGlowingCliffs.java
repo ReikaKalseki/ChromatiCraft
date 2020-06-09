@@ -41,7 +41,8 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.WorldgenProfiler;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
-import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
+import Reika.DragonAPI.Instantiable.Math.Noise.NoiseGeneratorBase;
+import Reika.DragonAPI.Instantiable.Math.Noise.SimplexNoiseGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ModifiableBigTree;
 import Reika.DragonAPI.Instantiable.Worldgen.ModifiableSmallTrees;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -57,10 +58,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class BiomeGlowingCliffs extends BiomeGenBase {
 
-	private static final SimplexNoiseGenerator hueShift = new SimplexNoiseGenerator(System.currentTimeMillis()).setFrequency(1/8D);
-	private static final SimplexNoiseGenerator lumShift = new SimplexNoiseGenerator(-System.currentTimeMillis()).setFrequency(1/6D);
-	private static final SimplexNoiseGenerator waterColorMix = new SimplexNoiseGenerator(~System.currentTimeMillis()).setFrequency(1/10D);
-	private static final SimplexNoiseGenerator skyColorMix = new SimplexNoiseGenerator(~System.currentTimeMillis()*2).setFrequency(1/20D);
+	private static final NoiseGeneratorBase hueShift = new SimplexNoiseGenerator(System.currentTimeMillis()).setFrequency(1/8D);
+	private static final NoiseGeneratorBase lumShift = new SimplexNoiseGenerator(-System.currentTimeMillis()).setFrequency(1/6D);
+	private static final NoiseGeneratorBase waterColorMix = new SimplexNoiseGenerator(~System.currentTimeMillis()).setFrequency(1/10D);
+	private static final NoiseGeneratorBase skyColorMix = new SimplexNoiseGenerator(~System.currentTimeMillis()*2).setFrequency(1/20D);
 	//private final SimplexNoiseGenerator fogDensityXZ = new SimplexNoiseGenerator(2*System.currentTimeMillis()).setFrequency(1/24D);
 	//private final SimplexNoiseGenerator fogDensityXY = new SimplexNoiseGenerator(-4*System.currentTimeMillis()).setFrequency(1/18D);
 	//private final SimplexNoiseGenerator fogDensityYZ = new SimplexNoiseGenerator(5*System.currentTimeMillis()).setFrequency(1/18D);

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -28,7 +28,8 @@ import net.minecraftforge.fluids.FluidRegistry;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
+import Reika.DragonAPI.Instantiable.Math.Noise.NoiseGeneratorBase;
+import Reika.DragonAPI.Instantiable.Math.Noise.SimplexNoiseGenerator;
 import Reika.DragonAPI.Interfaces.ColorController;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -39,8 +40,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockLiquidLumen extends BlockFluidClassic {
 
-	private static final SimplexNoiseGenerator hueNoise = new SimplexNoiseGenerator(System.currentTimeMillis()).setFrequency(1/32D);
-	private static final SimplexNoiseGenerator saturationNoise = new SimplexNoiseGenerator(-System.currentTimeMillis()).setFrequency(1/20D);
+	private static final NoiseGeneratorBase hueNoise = new SimplexNoiseGenerator(System.currentTimeMillis()).setFrequency(1/32D);
+	private static final NoiseGeneratorBase saturationNoise = new SimplexNoiseGenerator(-System.currentTimeMillis()).setFrequency(1/20D);
 
 	private static final ColorController particleColor = new ColorController() {
 

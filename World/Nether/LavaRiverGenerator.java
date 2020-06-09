@@ -26,7 +26,7 @@ import Reika.DragonAPI.Auxiliary.WorldGenInterceptionRegistry;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Maps.ThresholdMapping;
 import Reika.DragonAPI.Instantiable.Event.SetBlockEvent;
-import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
+import Reika.DragonAPI.Instantiable.Math.Noise.SimplexNoiseGenerator;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 @Strippable(value="com.xcompwiz.mystcraft.api.world.logic.IPopulate")

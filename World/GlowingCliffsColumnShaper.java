@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -27,26 +27,27 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.Instantiable.Interpolation;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
+import Reika.DragonAPI.Instantiable.Math.Noise.NoiseGeneratorBase;
+import Reika.DragonAPI.Instantiable.Math.Noise.SimplexNoiseGenerator;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 
 public class GlowingCliffsColumnShaper {
 
-	private final SimplexNoiseGenerator landmassControl; //rough height map
-	private final SimplexNoiseGenerator upperPlateauTop;
-	private final SimplexNoiseGenerator upperPlateauBottom;
-	private final SimplexNoiseGenerator upperPlateauEdge;
-	private final SimplexNoiseGenerator middlePlateauCaveDepth;
-	private final SimplexNoiseGenerator middlePlateauTop;
-	private final SimplexNoiseGenerator middlePlateauBottom;
-	private final SimplexNoiseGenerator middlePlateauEdge;
-	private final SimplexNoiseGenerator lowerPlateauCaveDepth;
-	private final SimplexNoiseGenerator shoreHeight;
-	private final SimplexNoiseGenerator dirtThickness;
-	private final SimplexNoiseGenerator oceanDepth;
-	private final SimplexNoiseGenerator caveCeilNoise;
+	private final NoiseGeneratorBase landmassControl; //rough height map
+	private final NoiseGeneratorBase upperPlateauTop;
+	private final NoiseGeneratorBase upperPlateauBottom;
+	private final NoiseGeneratorBase upperPlateauEdge;
+	private final NoiseGeneratorBase middlePlateauCaveDepth;
+	private final NoiseGeneratorBase middlePlateauTop;
+	private final NoiseGeneratorBase middlePlateauBottom;
+	private final NoiseGeneratorBase middlePlateauEdge;
+	private final NoiseGeneratorBase lowerPlateauCaveDepth;
+	private final NoiseGeneratorBase shoreHeight;
+	private final NoiseGeneratorBase dirtThickness;
+	private final NoiseGeneratorBase oceanDepth;
+	private final NoiseGeneratorBase caveCeilNoise;
 
 	//private final SimplexNoiseGenerator islandLowerNoise;
 	//private final SimplexNoiseGenerator islandUpperNoise;

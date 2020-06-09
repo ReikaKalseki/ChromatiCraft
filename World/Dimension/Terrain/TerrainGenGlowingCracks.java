@@ -29,18 +29,19 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
-import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
+import Reika.DragonAPI.Instantiable.Math.Noise.NoiseGeneratorBase;
+import Reika.DragonAPI.Instantiable.Math.Noise.SimplexNoiseGenerator;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 
 public class TerrainGenGlowingCracks extends ChromaDimensionBiomeTerrainShaper {
 
-	//private final SimplexNoiseGenerator crackShapeA;
-	//private final SimplexNoiseGenerator crackShapeB;
-	//private final SimplexNoiseGenerator crackShapeC;
+	//private final NoiseGeneratorBase crackShapeA;
+	//private final NoiseGeneratorBase crackShapeB;
+	//private final NoiseGeneratorBase crackShapeC;
 
-	private final SimplexNoiseGenerator shieldingThickness;
-	private final SimplexNoiseGenerator shieldingDarkThickness;
+	private final NoiseGeneratorBase shieldingThickness;
+	private final NoiseGeneratorBase shieldingDarkThickness;
 
 	public static final int CRACK_DEPTH = 12;
 	private static final int MIN_SHIELD_THICKNESS = 2;

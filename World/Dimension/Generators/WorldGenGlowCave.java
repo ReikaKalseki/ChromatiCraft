@@ -33,10 +33,11 @@ import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Instantiable.Interpolation;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
-import Reika.DragonAPI.Instantiable.Math.SimplexNoiseGenerator;
 import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
+import Reika.DragonAPI.Instantiable.Math.Noise.NoiseGeneratorBase;
+import Reika.DragonAPI.Instantiable.Math.Noise.SimplexNoiseGenerator;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -54,7 +55,7 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 	private static final int FULL_BEDROCK_Y = 8;
 	private static final int MAX_BEDROCK_Y = 32;//28;//24;
 
-	private final SimplexNoiseGenerator wallSelectionNoise;
+	private final NoiseGeneratorBase wallSelectionNoise;
 
 	public WorldGenGlowCave(DimensionGenerators g, Random rand, long seed) {
 		super(g, rand, seed);
