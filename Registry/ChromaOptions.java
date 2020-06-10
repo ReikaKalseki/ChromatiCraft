@@ -100,6 +100,7 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	RFEFFICIENCY("Wireless RF Transmission Efficiency (%)", 100F),
 	LAUNCHPOWER("Launch Pad Power", 1F),
 	FENCEHOPS("Crystal Fence segment count limit", 64),
+	STRUCTTRIES("Structure Generation Attempts Per Chunk - affects worldgen CPU use and structure rarity", 10),
 	;
 
 	private String label;
@@ -377,6 +378,10 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 
 	public static int getMaxFenceSections() {
 		return ReikaMathLibrary.ceilPseudo2Exp(MathHelper.clamp_int(FENCEHOPS.getValue(), 16, 256));
+	}
+
+	public static int getStructureTriesPerChunk() {
+		return MathHelper.clamp_int(STRUCTTRIES.getValue(), 2, 100);
 	}
 
 }

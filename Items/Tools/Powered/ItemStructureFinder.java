@@ -82,7 +82,7 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 				return false;
 			}
 
-			WorldLocation loc = DungeonGenerator.instance.getNearestStructure(TYPES[type], world, e.posX, e.posY, e.posZ, RANGE);
+			WorldLocation loc = DungeonGenerator.instance.getNearestZone(TYPES[type], world, e.posX, e.posZ, RANGE);
 			if (loc != null) {
 				double dist = loc.getDistanceTo(e);
 				if (dist <= FUZZ) {

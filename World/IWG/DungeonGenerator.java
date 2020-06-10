@@ -9,21 +9,16 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.IWG;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashSet;
-import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.Random;
-import java.util.Stack;
-import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
-import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityCreeper;
@@ -31,20 +26,17 @@ import net.minecraft.entity.monster.EntitySilverfish;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntityMobSpawner;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.ChestGenHooks;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fluids.BlockFluidBase;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -65,14 +57,13 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldChunk;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Instantiable.Data.Maps.TileEntityCache;
-import Reika.DragonAPI.Instantiable.IO.NBTFile;
+import Reika.DragonAPI.Instantiable.Math.Noise.VoronoiNoiseGenerator;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Interfaces.Registry.TreeType;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
@@ -85,123 +76,64 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-
 public class DungeonGenerator implements RetroactiveGenerator {
 
 	public static final DungeonGenerator instance = new DungeonGenerator();
 
 	private final ForgeDirection[] dirs = ForgeDirection.values();
 
-	private final ArrayList<ChromaStructures> structs = new ArrayList();
-
-	private final ConcurrentHashMap<ChromaStructures, TileEntityCache<Coordinate>> generatedStructures;
-	private final EnumMap<ChromaStructures, Stack<StructureGeneration>> currentGenerationQueue = new EnumMap(ChromaStructures.class);
-
-	private String baseFilepath;
-
-	private boolean needsSave;
+	private EnumMap<ChromaStructures, VoronoiNoiseGenerator> structs = new EnumMap(ChromaStructures.class);
+	//private final HashSet<WorldChunk> deadChunks = new HashSet();
 
 	private DungeonGenerator() {
-		structs.add(ChromaStructures.CAVERN);
-		structs.add(ChromaStructures.BURROW);
-		structs.add(ChromaStructures.OCEAN);
-		structs.add(ChromaStructures.DESERT);
-		structs.add(ChromaStructures.SNOWSTRUCT);
-
-		generatedStructures = new ConcurrentHashMap();
-
-		for (ChromaStructures s : structs) {
-			generatedStructures.put(s, new TileEntityCache());
-			currentGenerationQueue.put(s, new Stack());
-		}
+		structs.put(ChromaStructures.CAVERN, null);
+		structs.put(ChromaStructures.BURROW, null);
+		structs.put(ChromaStructures.OCEAN, null);
+		structs.put(ChromaStructures.DESERT, null);
+		structs.put(ChromaStructures.SNOWSTRUCT, null);
 
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
+	private void updateNoisemaps(World world) {
+		for (Entry<ChromaStructures, VoronoiNoiseGenerator> e : structs.entrySet()) {
+			VoronoiNoiseGenerator v = e.getValue();
+			ChromaStructures s = e.getKey();
+			long sd = world.getSeed() ^ (s.ordinal()*41381);
+			if (v == null || v.seed != sd) {
+				v = (VoronoiNoiseGenerator)new VoronoiNoiseGenerator(sd).setFrequency(1D/this.getNoiseScale(s));
+				e.setValue(v);
+			}
+		}
+	}
+
 	public Collection<ChromaStructures> getStructureTypes() {
-		return Collections.unmodifiableCollection(structs);
+		return Collections.unmodifiableCollection(structs.keySet());
 	}
 
-	public void initLevelData(MinecraftServer instance) {
-		baseFilepath = DimensionManager.getCurrentSaveRootDirectory()+"/ChromatiCraft_Data/StructureCache/";
-		this.loadData();
-	}
-
-	private final String getFilepath(ChromaStructures s) {
-		return baseFilepath+s.name().toLowerCase()+".dat";
-	}
-
-	private void loadData() {
-		for (ChromaStructures s : structs) {
-			generatedStructures.put(s, new TileEntityCache());
+	public Collection<WorldLocation> getNearbyZones(ChromaStructures s, World world, double x, double z, double r) {
+		this.updateNoisemaps(world);
+		Collection<DecimalPosition> li = structs.get(s).getCellsWithin(x, 0, z, r);
+		Collection<WorldLocation> ret = new ArrayList();
+		for (DecimalPosition d : li) {
+			if (!this.isChunkDead(world, d.xCoord, d.zCoord))
+				ret.add(new WorldLocation(world, d));
 		}
-
-		for (ChromaStructures s : structs) {
-			File f = new File(this.getFilepath(s));
-			StructureFile pf = new StructureFile(f);
-			TileEntityCache<Coordinate> cache = generatedStructures.get(s);
-			try {
-				pf.load();
-				for (WorldLocation loc : pf.entries) {
-					cache.put(loc, new Coordinate(loc));
-				}
-			}
-			catch (Throwable e) {
-				ChromatiCraft.logger.logError("Could not load structure cache: "+f.getName()+"; try deleting the file '"+f.getAbsolutePath()+"'");
-				e.printStackTrace();
-			}
-		}
-
-		needsSave = false;
+		return ret;
 	}
 
-	private void saveData() {
-		for (ChromaStructures s : structs) {
-			File f = new File(this.getFilepath(s));
-			StructureFile pf = new StructureFile(f);
-			for (WorldLocation p : generatedStructures.get(s).keySet()) {
-				pf.entries.add(p);
-			}
-			try {
-				pf.save();
-			}
-			catch (Exception e) {
-				ChromatiCraft.logger.logError("Could not save structure cache: "+f.getName());
-				e.printStackTrace();
-			}
-		}
-
-		needsSave = false;
+	public WorldLocation getNearestZone(ChromaStructures s, World world, double x, double z, double r) {
+		return this.getNearestZone(s, world, x, z, r, null);
 	}
 
-	@SubscribeEvent
-	public void saveData(WorldEvent.Save evt) {
-		if (needsSave)
-			this.saveData();
-	}
-
-	public void printCache(ICommandSender ics) {
-		ReikaJavaLibrary.pConsole("["+FMLCommonHandler.instance().getEffectiveSide()+"] Cache Debug: "+generatedStructures);
-	}
-
-	public Collection<WorldLocation> getNearbyStructures(ChromaStructures s, World world, double x, double y, double z, double r) {
-		return generatedStructures.get(s).getAllLocationsNear(new WorldLocation(world, (int)Math.round(x), (int)Math.round(y), (int)Math.round(z)), r);
-	}
-
-	public WorldLocation getNearestStructure(ChromaStructures s, World world, double x, double y, double z, double r) {
-		return this.getNearestStructure(s, world, x, y, z, r, null);
-	}
-
-	public WorldLocation getNearestStructure(ChromaStructures s, World world, double x, double y, double z, double r, WorldLocation exclude) {
-		Collection<WorldLocation> c = generatedStructures.get(s).getAllLocationsNear(new WorldLocation(world, (int)Math.round(x), (int)Math.round(y), (int)Math.round(z)), r);
+	public WorldLocation getNearestZone(ChromaStructures s, World world, double x, double z, double r, WorldLocation exclude) {
+		Collection<WorldLocation> c = this.getNearbyZones(s, world, MathHelper.floor_double(x), MathHelper.floor_double(z), r);
 		WorldLocation closest = null;
 		double d = Double.POSITIVE_INFINITY;
 		for (WorldLocation loc : c) {
 			if (exclude != null && exclude.equals(loc))
 				continue;
-			double dist = loc.getDistanceTo(x, y, z);
+			double dist = loc.getDistanceTo(x, loc.yCoord, z);
 			if ((closest == null || dist < d) && dist <= r) {
 				d = dist;
 				closest = loc;
@@ -210,30 +142,40 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		return closest;
 	}
 
-	public boolean isStructureWithin(ChromaStructures s, World world, int x, int y, int z, double r) {
-		return this.getNearestStructure(s, world, x, y, z, r) != null;
+	private boolean isChunkDead(World world, double x, double z) {
+		//WorldChunk wc = new WorldChunk(world, MathHelper.floor_double(d.xCoord), MathHelper.floor_double(d.zCoord));
+		Chunk c = world.getChunkFromBlockCoords(MathHelper.floor_double(x), MathHelper.floor_double(z));
 	}
 
-	public void generateStructure(ChromaStructures s, TileEntityStructControl te) {
-		WorldLocation loc = new WorldLocation(te);
-		if (!generatedStructures.get(s).containsKey(loc)) {
-			generatedStructures.get(s).put(loc, new Coordinate(te));
-			needsSave = true;
+	private void markChunkDead(World world, int x, int z) {
+
+	}
+
+	private int getNoiseScale(ChromaStructures s) {
+		switch(s) {
+			case DESERT:
+				return 512;
+			case OCEAN:
+				return 1024;
+			case CAVERN:
+				return 144;
+			case BURROW:
+				return 256;
+			case SNOWSTRUCT:
+				return 768;
+			default:
+				return 1;
 		}
 	}
 
-	public void deleteStructure(ChromaStructures s, TileEntityStructControl te) {
-		WorldLocation loc = new WorldLocation(te);
-		if (generatedStructures.get(s).containsKey(loc)) {
-			generatedStructures.get(s).remove(loc);
-			needsSave = true;
-		}
+	public void onGenerateStructure(ChromaStructures s, TileEntityStructControl te) {
+
 	}
 
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
 		if (this.canGenerateIn(world)) {
-			for (ChromaStructures s : structs) {
+			for (ChromaStructures s : structs.keySet()) {
 				this.checkChunk(world, chunkX, chunkZ, random, s);
 			}
 		}
@@ -242,202 +184,182 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	private boolean checkChunk(World world, int chunkX, int chunkZ, Random random, ChromaStructures s) {
 		if (this.isGennableChunk(world, chunkX*16, chunkZ*16, random, s)) {
 			//ReikaWorldHelper.forceGenAndPopulate(world, chunkX*16, chunkZ*16, s == Structures.OCEAN ? 2 : 1); causes extra structures
-			currentGenerationQueue.get(s).push(new StructureGeneration(s, world, chunkX*16, chunkZ*16));
-			boolean flag = false;
-			if (this.tryGenerate(world, chunkX*16, chunkZ*16, random, s)) {
-				flag = true;
+			if (this.tryGenerateInChunk(world, chunkX*16, chunkZ*16, random, s, ChromaOptions.getStructureTriesPerChunk())) {
 				//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+chunkX*16+", "+chunkZ*16);
+				return true;
 			}
-			StructureGeneration done = currentGenerationQueue.get(s).pop();
-			if (done.isDelayed) {
-				ChromatiCraft.logger.log("Delayed "+done+" succeeded");
+			else {
+				ChromatiCraft.logger.log("Failed to generate a "+s.name()+" at "+chunkX*16+", "+chunkZ*16+"; this grid cell is dead");
+				deadChunks.add(new WorldChunk(world, chunkX, chunkZ));
 			}
-			for (StructureGeneration del : done.delayed) {
-				//ChromatiCraft.logger.log("Re-running delayed generator "+del);
-				if (this.checkChunk(world, del.location.chunk.chunkXPos >> 4, del.location.chunk.chunkZPos >> 4, random, del.type)) {
-					//ChromatiCraft.logger.log("Delayed generator "+gen+" failed exclusion zone, would have maybe been a duplicate");
-				}
-			}
-			return flag;
 		}
 		return false;
 	}
 
-	private boolean tryGenerate(World world, int cx, int cz, Random r, ChromaStructures s) {
-		int x = cx + r.nextInt(16);
-		int z = cz + r.nextInt(16);
-		s.getStructure().resetToDefaults();
-		switch(s) {
-			case CAVERN: {
-				int y = 10+r.nextInt(40);
-				int tries = 0;
-				while (tries < 10 && !this.isValidCavernLocation(world, x, y, z, ChromaStructures.CAVERN.getArray(world, x, y, z))) {
-					y = 10+r.nextInt(40);
-					x = cx + r.nextInt(16);
-					z = cz + r.nextInt(16);
-					tries++;
-				}
-				FilledBlockArray struct = ChromaStructures.CAVERN.getArray(world, x, y, z);
-				if (this.isValidCavernLocation(world, x, y, z, struct)) {
-					struct.place(2);
-					//generate tunnel
-					for (int i = 7; i < 18; i++) {
-						int dx = x+i;
-						Block b = world.getBlock(dx, y, z);
-						Block b2 = world.getBlock(dx, y-1, z);
-						if (b.isAir(world, dx, y, z) && b2.isAir(world, dx, y-1, z)) {
-							break;
-						}
-						else {
-							world.setBlock(dx, y, z, Blocks.air);
-							world.setBlock(dx, y-1, z, Blocks.air);
-							//ReikaJavaLibrary.pConsole("Digging tunnel @ depth "+i);
-						}
-					}
-					//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+x+","+y+","+z);
-					world.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
-					TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x, y, z);
-					te.generate(s, CrystalElement.WHITE);
-					this.generateStructure(s, te);
-					this.populateChests(s, struct, r);
-					return true;
-				}
-				return false;
-			}
-			case BURROW: {
-				int y = world.getTopSolidOrLiquidBlock(x, z)-1;
-				CrystalElement e = CrystalElement.randomElement();
-				FilledBlockArray arr = ChromaStructures.BURROW.getArray(world, x, y, z, e);
-				if (this.isValidBurrowLocation(world, x, y, z, arr)) {
-					arr.place(2);
-					this.convertDirtToGrass(arr);
-					//world.setBlockMetadataWithNotify(x-7, y-5, z-2, 5, 3); //that chest that never points right
-					//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+x+","+y+","+z);
-					world.setBlock(x-5, y-8, z-2, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
-					TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x-5, y-8, z-2);
-					te.generate(s, e);
-					this.generateStructure(s, te);
-					this.populateChests(s, arr, r);
-					return true;
-				}
-				return false;
-			}
-			case OCEAN: {
-				int d = 3;
-				int y = world.getTopSolidOrLiquidBlock(x, z)-d;
-				Block b = world.getBlock(x, y+d, z);
-				int tries = 0;
-				while (b != Blocks.water && b != Blocks.flowing_water && tries < 10) {
-					x = cx + r.nextInt(16);
-					z = cz + r.nextInt(16);
-					b = world.getBlock(x, y+d, z);
-					tries++;
-				}
-				if (b == Blocks.water || b == Blocks.flowing_water) {
-					//ReikaJavaLibrary.pConsole("Attempting gen @ "+x+", "+y+", "+z);
-					//while (b == Blocks.water || b == Blocks.flowing_water && y > 0) {
-					//	y--;
-					//	b = world.getBlock(x, y, z);
-					//}
-					FilledBlockArray struct = ChromaStructures.OCEAN.getArray(world, x, y, z);
-					if (y > 0 && this.isValidOceanLocation(world, x, y, z, struct)) {
-						struct.place(2);
-						world.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
-						TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x, y, z);
-						te.generate(s, CrystalElement.WHITE);
-						this.generateStructure(s, te);
-						this.populateChests(s, struct, r);
-						this.programSpawners(s, struct);
-						this.mossify(s, struct, r);
-						this.generatePit(world, x, y, z);
-						return true;
-					}
-				}
-				return false;
-			}
-			case DESERT: {
-				int y = world.getTopSolidOrLiquidBlock(x, z);
-				if (world.getBlock(x, y-1, z) != Blocks.sand)
-					return false;
-
-				y -= 8;
-				Block b = world.getBlock(x, y, z);
-				BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
-				if (this.isValidBiomeForDesertStruct(biome)) {
-
-					x -= 7;
-					y -= 3;
-					z -= 7;
-
-					FilledBlockArray struct = ChromaStructures.DESERT.getArray(world, x, y, z);
-					DesertStructure.getTerrain(struct, x, y, z);
-					if (this.isValidDesertLocation(world, x, y, z, struct)) {
-						struct.place(2);
-
-						world.setBlock(x+7, y+3, z+7, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
-						TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x+7, y+3, z+7);
-						te.generate(s, CrystalElement.WHITE);
-						this.generateStructure(s, te);
-						this.populateChests(s, struct, r);
-						this.programSpawners(s, struct);
-						for (int k = 0; k < struct.getSize(); k++) {
-							Coordinate c = struct.getNthBlock(k);
-							if (c.yCoord > struct.getMaxY()-2) {
-								Block b1 = c.offset(0, 1, 0).getBlock(world);
-								Block b2 = c.offset(0, -1, 0).getBlock(world);
-								if (b1 == Blocks.air && b2 == Blocks.sand && ReikaRandomHelper.doWithChance(20+30D*Math.abs(Math.abs(c.xCoord-struct.getMidX())+Math.abs(c.zCoord-struct.getMidZ()))/7D)) {
-									c.setBlock(world, Blocks.air);
+	private boolean tryGenerateInChunk(World world, int cx, int cz, Random r, ChromaStructures s, int tries) {
+		boolean flag = false;
+		int n = 0;
+		while (!flag && n < tries) {
+			int x = cx + r.nextInt(16);
+			int z = cz + r.nextInt(16);
+			s.getStructure().resetToDefaults();
+			n++;
+			switch(s) {
+				default:
+					break;
+				case CAVERN: {
+					int y = 10+r.nextInt(40);
+					if (this.isValidCavernLocation(world, x, y, z, ChromaStructures.CAVERN.getArray(world, x, y, z))) {
+						FilledBlockArray struct = ChromaStructures.CAVERN.getArray(world, x, y, z);
+						if (this.isValidCavernLocation(world, x, y, z, struct)) {
+							struct.place(2);
+							//generate tunnel
+							for (int i = 7; i < 18; i++) {
+								int dx = x+i;
+								Block b = world.getBlock(dx, y, z);
+								Block b2 = world.getBlock(dx, y-1, z);
+								if (b.isAir(world, dx, y, z) && b2.isAir(world, dx, y-1, z)) {
+									break;
+								}
+								else {
+									world.setBlock(dx, y, z, Blocks.air);
+									world.setBlock(dx, y-1, z, Blocks.air);
+									//ReikaJavaLibrary.pConsole("Digging tunnel @ depth "+i);
 								}
 							}
+							//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+x+","+y+","+z);
+							world.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
+							TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x, y, z);
+							te.generate(s, CrystalElement.WHITE);
+							this.onGenerateStructure(s, te);
+							this.populateChests(s, struct, r);
+							flag = true;
 						}
-						for (int k1 = struct.getMinX(); k1 <= struct.getMaxX(); k1++) {
-							for (int k2 = struct.getMinZ(); k2 <= struct.getMaxZ(); k2++) {
-								Coordinate c = new Coordinate(k1, world.getTopSolidOrLiquidBlock(k1, k2), k2);
-								if (c.getBlock(world) == Blocks.air && c.offset(0, -1, 0).getBlock(world) == Blocks.sand && ReikaRandomHelper.doWithChance(2)) {
-									if (c.offset(1, 0, 0).getBlock(world) == Blocks.air && c.offset(-1, 0, 0).getBlock(world) == Blocks.air) {
-										if (c.offset(0, 0, 1).getBlock(world) == Blocks.air && c.offset(0, 0, -1).getBlock(world) == Blocks.air) {
-											c.setBlock(world, Blocks.cactus);
-											if (ReikaRandomHelper.doWithChance(40)) {
-												c.offset(0, 1, 0).setBlock(world, Blocks.cactus);
-												if (ReikaRandomHelper.doWithChance(40))
-													c.offset(0, 2, 0).setBlock(world, Blocks.cactus);
+					}
+				}
+				case BURROW: {
+					int y = world.getTopSolidOrLiquidBlock(x, z)-1;
+					CrystalElement e = CrystalElement.randomElement();
+					FilledBlockArray arr = ChromaStructures.BURROW.getArray(world, x, y, z, e);
+					if (this.isValidBurrowLocation(world, x, y, z, arr)) {
+						arr.place(2);
+						this.convertDirtToGrass(arr);
+						//world.setBlockMetadataWithNotify(x-7, y-5, z-2, 5, 3); //that chest that never points right
+						//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+x+","+y+","+z);
+						world.setBlock(x-5, y-8, z-2, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
+						TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x-5, y-8, z-2);
+						te.generate(s, e);
+						this.onGenerateStructure(s, te);
+						this.populateChests(s, arr, r);
+						flag = true;
+					}
+				}
+				case OCEAN: {
+					int d = 3;
+					int y = world.getTopSolidOrLiquidBlock(x, z)-d;
+					Block b = world.getBlock(x, y+d, z);
+					if (b == Blocks.water || b == Blocks.flowing_water) {
+						//ReikaJavaLibrary.pConsole("Attempting gen @ "+x+", "+y+", "+z);
+						//while (b == Blocks.water || b == Blocks.flowing_water && y > 0) {
+						//	y--;
+						//	b = world.getBlock(x, y, z);
+						//}
+						FilledBlockArray struct = ChromaStructures.OCEAN.getArray(world, x, y, z);
+						if (y > 0 && this.isValidOceanLocation(world, x, y, z, struct)) {
+							struct.place(2);
+							world.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
+							TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x, y, z);
+							te.generate(s, CrystalElement.WHITE);
+							this.onGenerateStructure(s, te);
+							this.populateChests(s, struct, r);
+							this.programSpawners(s, struct);
+							this.mossify(s, struct, r);
+							this.generatePit(world, x, y, z);
+							flag = true;
+						}
+					}
+				}
+				case DESERT: {
+					int y = world.getTopSolidOrLiquidBlock(x, z);
+					if (world.getBlock(x, y-1, z) != Blocks.sand)
+						continue;
+
+					y -= 8;
+					Block b = world.getBlock(x, y, z);
+					BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
+					if (this.isValidBiomeForDesertStruct(biome)) {
+
+						x -= 7;
+						y -= 3;
+						z -= 7;
+
+						FilledBlockArray struct = ChromaStructures.DESERT.getArray(world, x, y, z);
+						DesertStructure.getTerrain(struct, x, y, z);
+						if (this.isValidDesertLocation(world, x, y, z, struct)) {
+							struct.place(2);
+
+							world.setBlock(x+7, y+3, z+7, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
+							TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x+7, y+3, z+7);
+							te.generate(s, CrystalElement.WHITE);
+							this.onGenerateStructure(s, te);
+							this.populateChests(s, struct, r);
+							this.programSpawners(s, struct);
+							for (int k = 0; k < struct.getSize(); k++) {
+								Coordinate c = struct.getNthBlock(k);
+								if (c.yCoord > struct.getMaxY()-2) {
+									Block b1 = c.offset(0, 1, 0).getBlock(world);
+									Block b2 = c.offset(0, -1, 0).getBlock(world);
+									if (b1 == Blocks.air && b2 == Blocks.sand && ReikaRandomHelper.doWithChance(20+30D*Math.abs(Math.abs(c.xCoord-struct.getMidX())+Math.abs(c.zCoord-struct.getMidZ()))/7D)) {
+										c.setBlock(world, Blocks.air);
+									}
+								}
+							}
+							for (int k1 = struct.getMinX(); k1 <= struct.getMaxX(); k1++) {
+								for (int k2 = struct.getMinZ(); k2 <= struct.getMaxZ(); k2++) {
+									Coordinate c = new Coordinate(k1, world.getTopSolidOrLiquidBlock(k1, k2), k2);
+									if (c.getBlock(world) == Blocks.air && c.offset(0, -1, 0).getBlock(world) == Blocks.sand && ReikaRandomHelper.doWithChance(2)) {
+										if (c.offset(1, 0, 0).getBlock(world) == Blocks.air && c.offset(-1, 0, 0).getBlock(world) == Blocks.air) {
+											if (c.offset(0, 0, 1).getBlock(world) == Blocks.air && c.offset(0, 0, -1).getBlock(world) == Blocks.air) {
+												c.setBlock(world, Blocks.cactus);
+												if (ReikaRandomHelper.doWithChance(40)) {
+													c.offset(0, 1, 0).setBlock(world, Blocks.cactus);
+													if (ReikaRandomHelper.doWithChance(40))
+														c.offset(0, 2, 0).setBlock(world, Blocks.cactus);
+												}
 											}
 										}
 									}
 								}
 							}
+							//too dry for moss//this.mossify(s, struct, r);
+							flag = true;
 						}
-						//too dry for moss//this.mossify(s, struct, r);
-						return true;
 					}
 				}
-				return false;
-			}
-			case SNOWSTRUCT: {
-				int y = world.getTopSolidOrLiquidBlock(x, z)-1;
-				FilledBlockArray arr = ChromaStructures.SNOWSTRUCT.getArray(world, x, y, z, r);
-				if (this.isValidSnowStructLocation(world, x, y, z, arr)) {
-					arr.offset(0, -6, 0);
-					arr.place(2);
-					this.mossify(s, arr, r);
-					this.convertDirtToGrass(arr);
-					this.programSpawners(s, arr);
-					this.removeAdjacentTrees(arr);
-					this.cleanupSnowEntrances(arr);
-					this.addMissingSupport(arr, Blocks.stone, 0, 5);
-					this.addSnowCover(arr, 4);
-					world.setBlock(x+8, y-3, z+6, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
-					TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x+8, y-3, z+6);
-					te.generate(s, CrystalElement.WHITE);
-					this.generateStructure(s, te);
-					this.populateChests(s, arr, r);
-					return true;
+				case SNOWSTRUCT: {
+					int y = world.getTopSolidOrLiquidBlock(x, z)-1;
+					FilledBlockArray arr = ChromaStructures.SNOWSTRUCT.getArray(world, x, y, z, r);
+					if (this.isValidSnowStructLocation(world, x, y, z, arr)) {
+						arr.offset(0, -6, 0);
+						arr.place(2);
+						this.mossify(s, arr, r);
+						this.convertDirtToGrass(arr);
+						this.programSpawners(s, arr);
+						this.removeAdjacentTrees(arr);
+						this.cleanupSnowEntrances(arr);
+						this.addMissingSupport(arr, Blocks.stone, 0, 5);
+						this.addSnowCover(arr, 4);
+						world.setBlock(x+8, y-3, z+6, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
+						TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x+8, y-3, z+6);
+						te.generate(s, CrystalElement.WHITE);
+						this.onGenerateStructure(s, te);
+						this.populateChests(s, arr, r);
+						flag = true;
+					}
 				}
-				return false;
 			}
-			default:
-				return false;
 		}
+		return flag;
 	}
 
 	private boolean isValidBiomeForDesertStruct(BiomeGenBase biome) {
@@ -957,76 +879,11 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	}
 
 	private boolean isGennableChunk(World world, int x, int z, Random r, ChromaStructures s) {
+		this.updateNoisemaps(world);
 		if (this.isVoidWorld(world, x, z))
 			return false;
-		int mind = this.getMinSeparation(s);
-		Stack<StructureGeneration> li = currentGenerationQueue.get(s);
-		for (StructureGeneration sg : li) {
-			if (sg.location.dimensionID == world.provider.dimensionId) {
-				double dist = ReikaMathLibrary.py3d(sg.location.chunk.chunkXPos-x, 0, sg.location.chunk.chunkZPos-z);
-				if (dist < mind) {
-					StructureGeneration del = new StructureGeneration(s, world, x, z);
-					del.isDelayed = true;
-					sg.delayed.add(del);
-					//ChromatiCraft.logger.log("Delayed a "+del+" because it was triggered by a too-close "+sg);
-					return false;
-				}
-			}
-		}
-		if (this.isStructureWithin(s, world, x, 48, z, mind)) {
-			return false;
-		}
-		BiomeGenBase b = world.getBiomeGenForCoords(x, z);
-		if (!this.isValidBiome(s, b))
-			return false;
-		switch(s) {
-			case OCEAN:
-				return r.nextInt(/*32*/6) == 0;
-			case CAVERN:
-				return r.nextInt(/*48*/5) == 0;
-			case BURROW:
-				return r.nextInt(/*64*/8) == 0;
-			case DESERT:
-				return r.nextInt(/*120*/10) == 0;
-			case SNOWSTRUCT:
-				return r.nextInt(/*120*/3) == 0;
-			default:
-				return false;
-		}
-	}
-
-	private boolean isValidBiome(ChromaStructures s, BiomeGenBase b) {
-		switch(s) {
-			case OCEAN:
-				return ReikaBiomeHelper.isOcean(b);
-			case CAVERN:
-				return true;
-			case BURROW:
-				return b.topBlock == Blocks.grass && !this.isValidBiome(ChromaStructures.SNOWSTRUCT, b);
-			case DESERT:
-				return b.topBlock == Blocks.sand;
-			case SNOWSTRUCT:
-				return b.topBlock == Blocks.grass && b.getEnableSnow() && ReikaBiomeHelper.getBiomeDecorator(b).treesPerChunk < 1 && !b.biomeName.toLowerCase(Locale.ENGLISH).contains("forest");
-			default:
-				return false;
-		}
-	}
-
-	public int getMinSeparation(ChromaStructures s) {
-		switch(s) {
-			case DESERT:
-				return 512;
-			case OCEAN:
-				return 1024;
-			case CAVERN:
-				return 128;
-			case BURROW:
-				return 192;
-			case SNOWSTRUCT:
-				return 768;
-			default:
-				return 0;
-		}
+		VoronoiNoiseGenerator gen = structs.get(s);
+		return gen.chunkContainsCenter(x, z);
 	}
 
 	private boolean canGenerateIn(World world) {
@@ -1063,76 +920,6 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	@Override
 	public String getIDString() {
 		return "ChromatiCraft Prefab Structures";
-	}
-
-	private static class StructureFile extends NBTFile {
-
-		private final HashSet<WorldLocation> entries = new HashSet();
-
-		private StructureFile(File f) {
-			super(f);
-			//encryptData = true;
-		}
-
-		@Override
-		protected void readHeader(NBTTagCompound header) {
-
-		}
-
-		@Override
-		protected void readData(NBTTagList li) {
-			for (Object o : li.tagList) {
-				NBTTagCompound tag = (NBTTagCompound)o;
-				WorldLocation loc = WorldLocation.readFromNBT(tag);
-				if (loc != null)
-					entries.add(loc);
-			}
-		}
-
-		@Override
-		protected void readExtraData(NBTTagCompound extra) {
-
-		}
-
-		@Override
-		protected void writeHeader(NBTTagCompound header) {
-
-		}
-
-		@Override
-		protected void writeData(NBTTagList li) {
-			for (WorldLocation loc : entries) {
-				NBTTagCompound tag = loc.writeToTag();
-				li.appendTag(tag);
-			}
-		}
-
-		@Override
-		protected NBTTagCompound writeExtraData() {
-			return null;
-		}
-
-	}
-
-	private static class StructureGeneration {
-
-		private final ChromaStructures type;
-		/** In block coords */
-		private final WorldChunk location;
-
-		private final ArrayList<StructureGeneration> delayed = new ArrayList();
-		private boolean isDelayed;
-
-		private StructureGeneration(ChromaStructures s, World world, int chunkX, int chunkZ) {
-			type = s;
-			location = new WorldChunk(world, chunkX, chunkZ);
-		}
-
-		@Override
-		public String toString() {
-			return type.getDisplayName()+" @ "+location.toString();
-		}
-
 	}
 
 }

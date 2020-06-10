@@ -74,7 +74,6 @@ import Reika.ChromatiCraft.Auxiliary.Command.PylonCacheCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.RecipeReloadCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.RedecorateCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.ReshufflePylonCommand;
-import Reika.ChromatiCraft.Auxiliary.Command.StructureCacheCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.StructureGenCommand;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaDecorator;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LoadRegistry;
@@ -882,7 +881,6 @@ public class ChromatiCraft extends DragonAPIMod {
 		evt.registerServerCommand(new DimensionGeneratorCommand());
 		evt.registerServerCommand(new RecipeReloadCommand());
 		evt.registerServerCommand(new PylonCacheCommand());
-		evt.registerServerCommand(new StructureCacheCommand());
 		evt.registerServerCommand(new CrystalNetCommand());
 		evt.registerServerCommand(new ReshufflePylonCommand());
 		evt.registerServerCommand(new RedecorateCommand());
@@ -897,7 +895,6 @@ public class ChromatiCraft extends DragonAPIMod {
 			isOfflineMode = false;
 		}
 
-		DungeonGenerator.instance.initLevelData(evt.getServer());
 		ProgressionLoadHandler.instance.initLevelData(evt.getServer());
 		ProgressionLoadHandler.instance.load();
 		OreOverlayRenderer.instance.loadOres();

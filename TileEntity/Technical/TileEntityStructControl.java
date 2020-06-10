@@ -40,7 +40,6 @@ import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock.Passability;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.LootChestAccessEvent;
-import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
@@ -74,7 +73,6 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -472,11 +470,11 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	public void onFirstTick(World world, int x, int y, int z) {
 		if (struct != null) {
 			this.initArray(world, x, y, z);
-			if (this.checkExclusionZone(world, x, y, z))
-				return;
+			//if (this.checkExclusionZone(world, x, y, z))
+			//	return;
 			this.calcCrystals(world, x, y, z);
 			this.regenerate();
-			DungeonGenerator.instance.generateStructure(struct, this);
+			DungeonGenerator.instance.onGenerateStructure(struct, this);
 		}
 		LootChestWatcher.instance.cache(this);
 		this.syncAllData(true);
@@ -504,7 +502,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				break;
 		}
 	}
-
+	/*
 	private boolean checkExclusionZone(World world, int x, int y, int z) {
 		double dist = DungeonGenerator.instance.getMinSeparation(struct)*0.8;
 		WorldLocation src = new WorldLocation(this);
@@ -537,7 +535,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			return true;
 		}
 		return false;
-	}
+	}*/
 
 	private void regenerate() {
 		int ver = ((GeneratedStructureBase)this.getStructureType().getStructure()).getStructureVersion();
@@ -779,8 +777,6 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			}
 		}
 		LootChestWatcher.instance.remove(this);
-		if (struct != null)
-			DungeonGenerator.instance.deleteStructure(struct, this);
 		if (monument != null && monument.isRunning() && !monument.isComplete()) {
 			monument.endRitual();
 		}
