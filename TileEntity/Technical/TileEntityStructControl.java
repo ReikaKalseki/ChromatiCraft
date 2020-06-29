@@ -125,6 +125,10 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			}
 		}
 
+		if (struct != null && !world.isRemote) {
+			DungeonGenerator.instance.recacheStructureTile(this);
+		}
+
 		if (!triggered && struct != null && this.getTicksExisted()%4 == 0) {
 			List<EntityPlayer> li = world.playerEntities;
 			for (EntityPlayer ep : li) {
@@ -775,6 +779,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 						break;
 				}
 			}
+			DungeonGenerator.instance.removeStructureTile(this);
 		}
 		LootChestWatcher.instance.remove(this);
 		if (monument != null && monument.isRunning() && !monument.isComplete()) {

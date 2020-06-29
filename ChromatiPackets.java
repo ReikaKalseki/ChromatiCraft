@@ -41,6 +41,7 @@ import Reika.ChromatiCraft.Auxiliary.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Auxiliary.RecursiveCastingAutomationSystem;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityCalls;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
+import Reika.ChromatiCraft.Auxiliary.Command.StructureMapCommand;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CastingAutomationBlock;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
@@ -164,6 +165,7 @@ import Reika.ChromatiCraft.World.Dimension.OuterRegionsEvents;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverManagerClient;
 import Reika.ChromatiCraft.World.Dimension.StructureCalculator;
 import Reika.ChromatiCraft.World.Dimension.Structure.RayBlend.RayBlendPuzzle;
+import Reika.ChromatiCraft.World.IWG.DungeonGenerator.StructureGenStatus;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
@@ -1146,6 +1148,19 @@ public class ChromatiPackets implements PacketHandler {
 					if (c instanceof ContainerItemCollector) {
 						((ContainerItemCollector)c).setRowOffset(data[0]);
 					}
+					break;
+				case STRUCTMAPSTART:
+					StructureMapCommand.startCollecting(data[0], stringdata, data[1], data[2], data[3], data[4]);
+					break;
+				case STRUCTMAPDAT:
+					int hash = data[0];
+					for (int i = 0; i < StructureMapCommand.PACKET_COMPILE; i++) {
+						int a = 1+i*3;
+						StructureMapCommand.addDataPoint(hash, data[a], data[a+1], StructureGenStatus.list[data[a+2]]);
+					}
+					break;
+				case STRUCTMAPEND:
+					StructureMapCommand.finishCollectingAndMakeImage(data[0]);
 					break;
 			}
 		}

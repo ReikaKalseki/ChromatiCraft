@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
+import Reika.ChromatiCraft.Auxiliary.Command.StructureMapCommand;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
 
 public enum ChromaPackets {
@@ -209,6 +210,9 @@ public enum ChromaPackets {
 	LAUNCHFIRE(),
 	ENDERBUCKETLINK(1),
 	COLLECTORROW(1),
+	STRUCTMAPSTART(5),
+	STRUCTMAPDAT(1+3*StructureMapCommand.PACKET_COMPILE),
+	STRUCTMAPEND(1),
 	;
 
 	public final int numInts;

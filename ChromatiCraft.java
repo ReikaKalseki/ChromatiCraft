@@ -75,6 +75,7 @@ import Reika.ChromatiCraft.Auxiliary.Command.RecipeReloadCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.RedecorateCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.ReshufflePylonCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.StructureGenCommand;
+import Reika.ChromatiCraft.Auxiliary.Command.StructureMapCommand;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaDecorator;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LoadRegistry;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionBetterSaturation;
@@ -886,6 +887,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		evt.registerServerCommand(new RedecorateCommand());
 		evt.registerServerCommand(new PlaceStructureCommand());
 		evt.registerServerCommand(new NodeWrapperInspectionCommand());
+		evt.registerServerCommand(new StructureMapCommand());
 
 		if (MinecraftServer.getServer() != null && !MinecraftServer.getServer().isServerInOnlineMode()) {
 			isOfflineMode = true;

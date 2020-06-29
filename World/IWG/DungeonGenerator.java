@@ -9,10 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.IWG;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Random;
 
@@ -26,17 +29,20 @@ import net.minecraft.entity.monster.EntitySilverfish;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.ChestGenHooks;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fluids.BlockFluidBase;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -60,6 +66,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldChunk;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.IO.NBTFile.SimpleNBTFile;
 import Reika.DragonAPI.Instantiable.Math.Noise.VoronoiNoiseGenerator;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Interfaces.Registry.TreeType;
@@ -76,6 +83,8 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+
 public class DungeonGenerator implements RetroactiveGenerator {
 
 	public static final DungeonGenerator instance = new DungeonGenerator();
@@ -83,7 +92,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	private final ForgeDirection[] dirs = ForgeDirection.values();
 
 	private EnumMap<ChromaStructures, VoronoiNoiseGenerator> structs = new EnumMap(ChromaStructures.class);
-	//private final HashSet<WorldChunk> deadChunks = new HashSet();
+	private EnumMap<ChromaStructures, HashMap<WorldChunk, StructureGenStatus>> statusMap = new EnumMap(ChromaStructures.class);
 
 	private DungeonGenerator() {
 		structs.put(ChromaStructures.CAVERN, null);
@@ -111,22 +120,23 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		return Collections.unmodifiableCollection(structs.keySet());
 	}
 
-	public Collection<WorldLocation> getNearbyZones(ChromaStructures s, World world, double x, double z, double r) {
+	public Collection<WorldLocation> getNearbyZones(ChromaStructures s, WorldServer world, double x, double z, double r) {
 		this.updateNoisemaps(world);
 		Collection<DecimalPosition> li = structs.get(s).getCellsWithin(x, 0, z, r);
+		//ReikaJavaLibrary.pConsole("Found all potential zones within "+r+" of "+x+", "+z+": "+li);
 		Collection<WorldLocation> ret = new ArrayList();
 		for (DecimalPosition d : li) {
-			if (!this.isChunkDead(world, d.xCoord, d.zCoord))
+			if (!this.isChunkDead(world, d.xCoord, d.zCoord, s))
 				ret.add(new WorldLocation(world, d));
 		}
 		return ret;
 	}
 
-	public WorldLocation getNearestZone(ChromaStructures s, World world, double x, double z, double r) {
+	public WorldLocation getNearestZone(ChromaStructures s, WorldServer world, double x, double z, double r) {
 		return this.getNearestZone(s, world, x, z, r, null);
 	}
 
-	public WorldLocation getNearestZone(ChromaStructures s, World world, double x, double z, double r, WorldLocation exclude) {
+	public WorldLocation getNearestZone(ChromaStructures s, WorldServer world, double x, double z, double r, WorldLocation exclude) {
 		Collection<WorldLocation> c = this.getNearbyZones(s, world, MathHelper.floor_double(x), MathHelper.floor_double(z), r);
 		WorldLocation closest = null;
 		double d = Double.POSITIVE_INFINITY;
@@ -142,13 +152,126 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		return closest;
 	}
 
-	private boolean isChunkDead(World world, double x, double z) {
-		//WorldChunk wc = new WorldChunk(world, MathHelper.floor_double(d.xCoord), MathHelper.floor_double(d.zCoord));
-		Chunk c = world.getChunkFromBlockCoords(MathHelper.floor_double(x), MathHelper.floor_double(z));
+	private boolean isChunkDead(WorldServer world, double x, double z, ChromaStructures s) {
+		WorldChunk wc = new WorldChunk(world, MathHelper.floor_double(x) >> 4, MathHelper.floor_double(z) >> 4);
+		//Chunk c = world.getChunkFromBlockCoords(MathHelper.floor_double(x), MathHelper.floor_double(z));
+		/*
+		if (ReikaWorldHelper.isChunkGenerated(world, MathHelper.floor_double(x), MathHelper.floor_double(z))) {
+
+		}
+		else {
+			return false;
+		}*/
+		StructureGenStatus stat = this.getStatusCache(s).get(wc);
+		if (stat == null) { //no data yet
+			stat = StructureGenStatus.INERT;
+			this.getStatusCache(s).put(wc, stat);
+		}
+		return stat.isGenerated() && !stat.hasStructure();
 	}
 
-	private void markChunkDead(World world, int x, int z) {
+	/** In CHUNK coords */
+	public StructureGenStatus getGenStatus(ChromaStructures s, WorldServer world, int x, int z) {
+		Collection<WorldLocation> c = this.getNearbyZones(s, world, x, z, 32);
+		HashMap<WorldChunk, StructureGenStatus> cache = this.getStatusCache(s);
+		for (WorldLocation loc : c) {
+			WorldChunk wc = new WorldChunk(world, loc.xCoord >> 4, loc.zCoord >> 4);
+			if (!cache.containsKey(wc))
+				cache.put(wc, StructureGenStatus.PLANNED);
+		}
+		WorldChunk wc = new WorldChunk(world, x, z);
+		StructureGenStatus stat = cache.get(wc);
+		return stat != null ? stat : StructureGenStatus.INERT;
+	}
 
+	/** In CHUNK coords */
+	private void markChunkStatus(World world, int x, int z, ChromaStructures s, StructureGenStatus stat) {
+		//ReikaJavaLibrary.pConsole("Marking "+x*16+", "+z*16+" as "+stat);
+		WorldChunk wc = new WorldChunk(world, x, z);
+		this.getStatusCache(s).put(wc, stat);
+	}
+
+	public void recacheStructureTile(TileEntityStructControl te) {
+		this.markChunkStatus(te.worldObj, te.xCoord >> 4, te.zCoord >> 4, te.getStructureType(), StructureGenStatus.SUCCESS);
+	}
+
+	public void removeStructureTile(TileEntityStructControl te) {
+		this.markChunkStatus(te.worldObj, te.xCoord >> 4, te.zCoord >> 4, te.getStructureType(), StructureGenStatus.REMOVED);
+	}
+
+	private HashMap<WorldChunk, StructureGenStatus> getStatusCache(ChromaStructures s) {
+		HashMap<WorldChunk, StructureGenStatus> set = statusMap.get(s);
+		if (set == null) {
+			try {
+				set = this.loadStatusCache();
+			}
+			catch (IOException e) {
+				ChromatiCraft.logger.logError("Could not load structure status cache!");
+				e.printStackTrace();
+				set = new HashMap();
+			}
+			statusMap.put(s, set);
+		}
+		return set;
+	}
+
+	private HashMap<WorldChunk, StructureGenStatus> loadStatusCache() throws IOException {
+		HashMap<WorldChunk, StructureGenStatus> ret = new HashMap();
+		SimpleNBTFile nf = new SimpleNBTFile(this.getStatusCacheFile());
+		nf.load();
+		if (nf.data != null) {
+			this.loadStatusCacheFromNBT(nf.data);
+		}
+		return ret;
+	}
+
+	@SubscribeEvent
+	public void saveStatusCache(WorldEvent.Save evt) throws IOException {
+		if (evt.world.provider.dimensionId == 0) {
+			NBTTagCompound tag = new NBTTagCompound();
+			this.writeStatusCacheToNBT(tag);
+			SimpleNBTFile nf = new SimpleNBTFile(this.getStatusCacheFile());
+			nf.data = tag;
+			nf.save();
+		}
+	}
+
+	private void loadStatusCacheFromNBT(NBTTagCompound data) {
+		for (Object o : data.func_150296_c()) {
+			String sg = (String)o;
+			NBTTagCompound tag = data.getCompoundTag(sg);
+			ChromaStructures s = ChromaStructures.valueOf(sg);
+			HashMap<WorldChunk, StructureGenStatus> map = this.loadMapFromNBT(s, tag);
+			statusMap.put(s, map);
+		}
+	}
+
+	private void writeStatusCacheToNBT(NBTTagCompound nbt) {
+		for (ChromaStructures s : statusMap.keySet()) {
+			HashMap<WorldChunk, StructureGenStatus> map = statusMap.get(s);
+			NBTTagCompound tag = new NBTTagCompound();
+			this.writeMapToNBT(tag, map);
+		}
+	}
+
+	private HashMap<WorldChunk, StructureGenStatus> loadMapFromNBT(ChromaStructures s, NBTTagCompound tag) {
+		HashMap<WorldChunk, StructureGenStatus> map = new HashMap();
+		for (Object o : tag.func_150296_c()) {
+			String sg = (String)o;
+			WorldChunk wc = WorldChunk.fromSerialString(sg);
+			map.put(wc, StructureGenStatus.valueOf(tag.getString(sg)));
+		}
+		return map;
+	}
+
+	private void writeMapToNBT(NBTTagCompound tag, HashMap<WorldChunk, StructureGenStatus> map) {
+		for (Entry<WorldChunk, StructureGenStatus> e : map.entrySet()) {
+			tag.setString(e.getKey().toSerialString(), e.getValue().name());
+		}
+	}
+
+	private File getStatusCacheFile() {
+		return new File(DimensionManager.getCurrentSaveRootDirectory(), "ChromatiCraft_Data/StructureStatus.dat");
 	}
 
 	private int getNoiseScale(ChromaStructures s) {
@@ -185,18 +308,24 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		if (this.isGennableChunk(world, chunkX*16, chunkZ*16, random, s)) {
 			//ReikaWorldHelper.forceGenAndPopulate(world, chunkX*16, chunkZ*16, s == Structures.OCEAN ? 2 : 1); causes extra structures
 			if (this.tryGenerateInChunk(world, chunkX*16, chunkZ*16, random, s, ChromaOptions.getStructureTriesPerChunk())) {
-				//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+chunkX*16+", "+chunkZ*16);
+				this.markChunkStatus(world, chunkX, chunkZ, s, StructureGenStatus.SUCCESS);
+				ChromatiCraft.logger.log("CC STRUCTURE STATUS: Successful generation of "+s.name()+" at "+chunkX*16+", "+chunkZ*16);
 				return true;
 			}
 			else {
-				ChromatiCraft.logger.log("Failed to generate a "+s.name()+" at "+chunkX*16+", "+chunkZ*16+"; this grid cell is dead");
-				deadChunks.add(new WorldChunk(world, chunkX, chunkZ));
+				ChromatiCraft.logger.log("CC STRUCTURE STATUS: Failed to generate a "+s.name()+" at "+chunkX*16+", "+chunkZ*16+"; this grid cell is dead");
+				this.markChunkStatus(world, chunkX, chunkZ, s, StructureGenStatus.FAILURE);
 			}
+		}
+		else {
+			//ChromatiCraft.logger.log("CC STRUCTURE STATUS: Not generating a "+s.name()+" at "+chunkX*16+", "+chunkZ*16+"; not planned");
+			//this.markChunkStatus(world, chunkX << 4, chunkZ << 4, s, StructureStatus.INERT);
 		}
 		return false;
 	}
 
 	private boolean tryGenerateInChunk(World world, int cx, int cz, Random r, ChromaStructures s, int tries) {
+		this.markChunkStatus(world, cx >> 4, cz >> 4, s, StructureGenStatus.GENERATING);
 		boolean flag = false;
 		int n = 0;
 		while (!flag && n < tries) {
@@ -920,6 +1049,31 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	@Override
 	public String getIDString() {
 		return "ChromatiCraft Prefab Structures";
+	}
+
+	public static enum StructureGenStatus {
+		INERT(0x000000),
+		PLANNED(0xffffff),
+		GENERATING(0x22aaff),
+		SUCCESS(0x00ff00),
+		FAILURE(0xff0000),
+		REMOVED(0xffff00);
+
+		public static final StructureGenStatus[] list = values();
+
+		public final int renderColor;
+
+		private StructureGenStatus(int c) {
+			renderColor = c;
+		}
+
+		public boolean hasStructure() {
+			return this == SUCCESS || this == PLANNED || this == GENERATING;
+		}
+
+		public boolean isGenerated() {
+			return this == SUCCESS || this == FAILURE || this == REMOVED;
+		}
 	}
 
 }

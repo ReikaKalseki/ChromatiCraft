@@ -21,7 +21,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
@@ -35,7 +34,7 @@ import Reika.DragonAPI.Instantiable.BoundedValue;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Instantiable.GUI.ScrollingButtonList;
-import Reika.DragonAPI.Instantiable.IO.NBTFile;
+import Reika.DragonAPI.Instantiable.IO.NBTFile.SimpleNBTFile;
 import Reika.DragonAPI.Interfaces.IconEnum;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -337,14 +336,13 @@ public class GuiParticleSpawner extends GuiChromaBase {
 	private void saveProgram() throws IOException {
 		NBTTagCompound tag = new NBTTagCompound();
 		tile.writeCopyableData(tag);
-		ParticleFile nf = new ParticleFile(this.getFile());
+		SimpleNBTFile nf = new SimpleNBTFile(this.getFile());
 		nf.data = tag;
 		nf.save();
 	}
 
 	private void loadProgram() throws IOException {
-		NBTTagCompound tag = new NBTTagCompound();
-		ParticleFile nf = new ParticleFile(this.getFile());
+		SimpleNBTFile nf = new SimpleNBTFile(this.getFile());
 		nf.load();
 		if (nf.data != null) {
 			tile.particles.readFromNBT(nf.data, tile);
@@ -845,49 +843,6 @@ public class GuiParticleSpawner extends GuiChromaBase {
 
 		public Number getVariance() {
 			return value.getVariation();
-		}
-
-	}
-
-	private static class ParticleFile extends NBTFile {
-
-		private NBTTagCompound data;
-
-		public ParticleFile(File f) {
-			super(f);
-		}
-
-		@Override
-		protected void readHeader(NBTTagCompound header) {
-
-		}
-
-		@Override
-		protected void writeHeader(NBTTagCompound header) {
-
-		}
-
-		@Override
-		protected void readData(NBTTagList li) {
-			NBTTagCompound tag = li.getCompoundTagAt(0);
-			data = tag != null && !tag.hasNoTags() ? tag : null;
-		}
-
-		@Override
-		protected void writeData(NBTTagList li) {
-			if (data != null) {
-				li.appendTag(data.copy());
-			}
-		}
-
-		@Override
-		protected void readExtraData(NBTTagCompound extra) {
-
-		}
-
-		@Override
-		protected NBTTagCompound writeExtraData() {
-			return null;
 		}
 
 	}

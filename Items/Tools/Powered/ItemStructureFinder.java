@@ -18,6 +18,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
@@ -82,7 +83,7 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 				return false;
 			}
 
-			WorldLocation loc = DungeonGenerator.instance.getNearestZone(TYPES[type], world, e.posX, e.posZ, RANGE);
+			WorldLocation loc = DungeonGenerator.instance.getNearestZone(TYPES[type], (WorldServer)world, e.posX, e.posZ, RANGE);
 			if (loc != null) {
 				double dist = loc.getDistanceTo(e);
 				if (dist <= FUZZ) {
@@ -93,7 +94,7 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 				}
 				else {
 					double px = ReikaRandomHelper.getRandomPlusMinus(loc.xCoord+0.5, FUZZ);
-					double py = ReikaRandomHelper.getRandomPlusMinus(loc.yCoord+0.5, FUZZ);
+					double py = ReikaRandomHelper.getRandomPlusMinus(e.posY, FUZZ);
 					double pz = ReikaRandomHelper.getRandomPlusMinus(loc.zCoord+0.5, FUZZ);
 					this.sendParticle(e, px, py, pz, TYPES[type], false);
 				}
