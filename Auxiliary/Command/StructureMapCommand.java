@@ -11,13 +11,9 @@ package Reika.ChromatiCraft.Auxiliary.Command;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Random;
-
-import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommandSender;
@@ -26,7 +22,6 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.WorldServer;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.World.IWG.DungeonGenerator;
@@ -34,12 +29,10 @@ import Reika.ChromatiCraft.World.IWG.DungeonGenerator.StructureGenStatus;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Command.DragonCommandBase;
-import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.IO.MapOutput;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -93,29 +86,12 @@ public class StructureMapCommand extends DragonCommandBase {
 		StructureGenStatus[][] data = new StructureGenStatus[range*2+1][range*2+1];
 		for (int i = -range; i <= range; i++) {
 			for (int k = -range; k <= range; k++) {
-				data[i+range][k+range] = StructureGenStatus.INERT;
+				int rx = x+i*16;
+				int rz = z+k*16;
+				StructureGenStatus st = DungeonGenerator.instance.isGennableChunk(ep.worldObj, rx, rz, s) ? StructureGenStatus.PLANNED : StructureGenStatus.INERT;
+				StructureGenStatus at = DungeonGenerator.instance.getGenStatus(s, (WorldServer)ep.worldObj, rx >> 4, rz >> 4);
+				data[i+range][k+range] = st;
 			}
-		}
-		Collection<WorldLocation> li = DungeonGenerator.instance.getNearbyZones(s, (WorldServer)ep.worldObj, x, z, range*16+256);
-		ChromatiCraft.logger.log("CC structure map request @ "+x+", "+z+" over "+(range*range)+" chunks: "+li.size()+"="+li.toString());
-		HashSet<ImmutablePair> set = new HashSet();
-		for (WorldLocation loc : li) {
-			int dx = (loc.xCoord-x) >> 4;
-			int dz = (loc.zCoord-z) >> 4;
-		ImmutablePair p = new ImmutablePair(dx, dz);
-		if (set.contains(p)) {
-			ReikaJavaLibrary.pConsole(loc+" > "+dx+", "+dz+" created a duplicate!");
-			continue;
-		}
-		set.add(new ImmutablePair(dx, dz));
-		if (Math.abs(dx) <= range && Math.abs(dz) <= range) {
-			StructureGenStatus st = StructureGenStatus.PLANNED;
-			StructureGenStatus at = DungeonGenerator.instance.getGenStatus(s, (WorldServer)ep.worldObj, loc.xCoord >> 4, loc.zCoord >> 4);
-			if (at != StructureGenStatus.INERT)
-				st = at;
-			data[range+dx][range+dz] = st;
-			//ReikaJavaLibrary.pConsole(loc+" > "+dx+", "+dz);
-		}
 		}
 		int cx = x >> 4;
 		int cz = z >> 4;

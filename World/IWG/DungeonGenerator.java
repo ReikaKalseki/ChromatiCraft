@@ -283,6 +283,23 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 	}
 
+	private int getExclusionZone(ChromaStructures s) {
+		switch(s) {
+			case DESERT:
+				return 256;
+			case OCEAN:
+				return 512;
+			case CAVERN:
+				return 64;
+			case BURROW:
+				return 64;
+			case SNOWSTRUCT:
+				return 256;
+			default:
+				return 1;
+		}
+	}
+
 	public void onGenerateStructure(ChromaStructures s, TileEntityStructControl te) {
 
 	}
@@ -297,7 +314,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	}
 
 	private boolean checkChunk(World world, int chunkX, int chunkZ, Random random, ChromaStructures s) {
-		if (this.isGennableChunk(world, chunkX*16, chunkZ*16, random, s)) {
+		if (!this.isVoidWorld(world, chunkX*16, chunkZ*16) && this.isGennableChunk(world, chunkX*16, chunkZ*16, s)) {
 			//ReikaWorldHelper.forceGenAndPopulate(world, chunkX*16, chunkZ*16, s == Structures.OCEAN ? 2 : 1); causes extra structures
 			ChunkCoordIntPair pos = this.tryGenerateInChunk(world, chunkX*16, chunkZ*16, random, s, ChromaOptions.getStructureTriesPerChunk());
 			if (pos != null) {
@@ -1018,12 +1035,22 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	}
 
 	/** Block coords */
-	private boolean isGennableChunk(World world, int x, int z, Random r, ChromaStructures s) {
+	public boolean isGennableChunk(World world, int x, int z, ChromaStructures s) {
 		this.updateNoisemaps(world);
-		if (this.isVoidWorld(world, x, z))
+		ArrayList<WorldLocation> c = new ArrayList(this.getNearbyZones(s, (WorldServer)world, x, z, this.getExclusionZone(s)));
+		if (c.isEmpty())
 			return false;
-		WorldLocation nearest = this.getNearestZone(s, (WorldServer)world, x, z, 32, null);
-		return nearest != null && (x >> 4 == nearest.xCoord >> 4) && (z >> 4 == nearest.zCoord >> 4);
+		WorldLocation usable = null;
+		if (c.size() == 1)
+			usable = c.get(0);
+		else
+			usable = this.getBestFromCluster(c);
+		return usable != null && (x >> 4 == usable.xCoord >> 4) && (z >> 4 == usable.zCoord >> 4);
+	}
+
+	private WorldLocation getBestFromCluster(ArrayList<WorldLocation> c) {
+		Collections.sort(c);
+		return c.get(0);
 	}
 
 	private boolean canGenerateIn(World world) {
