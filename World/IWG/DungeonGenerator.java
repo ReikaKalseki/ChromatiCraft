@@ -110,7 +110,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			ChromaStructures s = e.getKey();
 			long sd = world.getSeed() ^ (s.ordinal()*41381);
 			if (v == null || v.seed != sd) {
-				v = (VoronoiNoiseGenerator)new VoronoiNoiseGenerator(sd).setFrequency(1D/this.getNoiseScale(s));
+				v = (VoronoiNoiseGenerator)new VoronoiNoiseGenerator(sd).setFrequency(0.1D/this.getNoiseScale(s));
 				e.setValue(v);
 			}
 		}
@@ -125,9 +125,17 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		Collection<DecimalPosition> li = structs.get(s).getCellsWithin(x, 0, z, r);
 		//ReikaJavaLibrary.pConsole("Found all potential zones within "+r+" of "+x+", "+z+": "+li);
 		Collection<WorldLocation> ret = new ArrayList();
+		HashMap<WorldChunk, StructureGenStatus> cache = this.getStatusCache(s);
 		for (DecimalPosition d : li) {
-			if (!this.isChunkDead(world, d.xCoord, d.zCoord, s))
-				ret.add(new WorldLocation(world, d));
+			int cx = MathHelper.floor_double(d.xCoord) >> 4;
+			int cz = MathHelper.floor_double(d.zCoord) >> 4;
+			WorldChunk wc = new WorldChunk(world, cx, cz);
+			StructureGenStatus get = cache.get(wc);
+			if (get == null)
+				cache.put(wc, StructureGenStatus.PLANNED);
+			if (get != null && get.isGenerated() && !get.hasStructure())
+				continue;
+			ret.add(new WorldLocation(world, d));
 		}
 		return ret;
 	}
@@ -150,24 +158,6 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			}
 		}
 		return closest;
-	}
-
-	private boolean isChunkDead(WorldServer world, double x, double z, ChromaStructures s) {
-		WorldChunk wc = new WorldChunk(world, MathHelper.floor_double(x) >> 4, MathHelper.floor_double(z) >> 4);
-		//Chunk c = world.getChunkFromBlockCoords(MathHelper.floor_double(x), MathHelper.floor_double(z));
-		/*
-		if (ReikaWorldHelper.isChunkGenerated(world, MathHelper.floor_double(x), MathHelper.floor_double(z))) {
-
-		}
-		else {
-			return false;
-		}*/
-		StructureGenStatus stat = this.getStatusCache(s).get(wc);
-		if (stat == null) { //no data yet
-			stat = StructureGenStatus.INERT;
-			this.getStatusCache(s).put(wc, stat);
-		}
-		return stat.isGenerated() && !stat.hasStructure();
 	}
 
 	/** In CHUNK coords */
@@ -1007,12 +997,13 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		return world.getBlock(x, 0, z) == Blocks.air || world.canBlockSeeTheSky(x, 1, z);
 	}
 
+	/** Block coords */
 	private boolean isGennableChunk(World world, int x, int z, Random r, ChromaStructures s) {
 		this.updateNoisemaps(world);
 		if (this.isVoidWorld(world, x, z))
 			return false;
-		VoronoiNoiseGenerator gen = structs.get(s);
-		return gen.chunkContainsCenter(x, z);
+		WorldLocation nearest = this.getNearestZone(s, (WorldServer)world, x, z, 32, null);
+		return nearest != null && (x >> 4 == nearest.xCoord >> 4) && (z >> 4 == nearest.zCoord >> 4);
 	}
 
 	private boolean canGenerateIn(World world) {

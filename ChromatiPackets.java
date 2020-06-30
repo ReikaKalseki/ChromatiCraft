@@ -1150,7 +1150,7 @@ public class ChromatiPackets implements PacketHandler {
 					}
 					break;
 				case STRUCTMAPSTART:
-					StructureMapCommand.startCollecting(data[0], stringdata, data[1], data[2], data[3], data[4]);
+					StructureMapCommand.startCollecting(ChromaStructures.values()[data[5]], data[0], stringdata, data[1], data[2], data[3], data[4]);
 					break;
 				case STRUCTMAPDAT:
 					int hash = data[0];
