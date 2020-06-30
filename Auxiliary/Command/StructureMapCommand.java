@@ -103,11 +103,17 @@ public class StructureMapCommand extends DragonCommandBase {
 			int dx = (loc.xCoord-x) >> 4;
 			int dz = (loc.zCoord-z) >> 4;
 		ImmutablePair p = new ImmutablePair(dx, dz);
-		if (set.contains(p))
+		if (set.contains(p)) {
 			ReikaJavaLibrary.pConsole(loc+" > "+dx+", "+dz+" created a duplicate!");
+			continue;
+		}
 		set.add(new ImmutablePair(dx, dz));
 		if (Math.abs(dx) <= range && Math.abs(dz) <= range) {
-			data[range+dx][range+dz] = StructureGenStatus.PLANNED;
+			StructureGenStatus st = StructureGenStatus.PLANNED;
+			StructureGenStatus at = DungeonGenerator.instance.getGenStatus(s, (WorldServer)ep.worldObj, loc.xCoord >> 4, loc.zCoord >> 4);
+			if (at != StructureGenStatus.INERT)
+				st = at;
+			data[range+dx][range+dz] = st;
 			//ReikaJavaLibrary.pConsole(loc+" > "+dx+", "+dz);
 		}
 		}

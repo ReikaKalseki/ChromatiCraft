@@ -32,6 +32,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldType;
@@ -110,7 +111,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			ChromaStructures s = e.getKey();
 			long sd = world.getSeed() ^ (s.ordinal()*41381);
 			if (v == null || v.seed != sd) {
-				v = (VoronoiNoiseGenerator)new VoronoiNoiseGenerator(sd).setFrequency(0.1D/this.getNoiseScale(s));
+				v = (VoronoiNoiseGenerator)new VoronoiNoiseGenerator(sd ^ (world.getSaveHandler().getWorldDirectory().getAbsolutePath().hashCode() + s.ordinal())).setFrequency(0.75D/this.getNoiseScale(s));
+				v.randomFactor = 0.55;
 				e.setValue(v);
 			}
 		}
@@ -122,7 +124,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 
 	public Collection<WorldLocation> getNearbyZones(ChromaStructures s, WorldServer world, double x, double z, double r) {
 		this.updateNoisemaps(world);
-		Collection<DecimalPosition> li = structs.get(s).getCellsWithin(x, 0, z, r);
+		Collection<DecimalPosition> li = structs.get(s).getCellsWithin2D(x, z, r);
 		//ReikaJavaLibrary.pConsole("Found all potential zones within "+r+" of "+x+", "+z+": "+li);
 		Collection<WorldLocation> ret = new ArrayList();
 		HashMap<WorldChunk, StructureGenStatus> cache = this.getStatusCache(s);
@@ -297,8 +299,9 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	private boolean checkChunk(World world, int chunkX, int chunkZ, Random random, ChromaStructures s) {
 		if (this.isGennableChunk(world, chunkX*16, chunkZ*16, random, s)) {
 			//ReikaWorldHelper.forceGenAndPopulate(world, chunkX*16, chunkZ*16, s == Structures.OCEAN ? 2 : 1); causes extra structures
-			if (this.tryGenerateInChunk(world, chunkX*16, chunkZ*16, random, s, ChromaOptions.getStructureTriesPerChunk())) {
-				this.markChunkStatus(world, chunkX, chunkZ, s, StructureGenStatus.SUCCESS);
+			ChunkCoordIntPair pos = this.tryGenerateInChunk(world, chunkX*16, chunkZ*16, random, s, ChromaOptions.getStructureTriesPerChunk());
+			if (pos != null) {
+				this.markChunkStatus(world, pos.chunkXPos, pos.chunkZPos, s, StructureGenStatus.SUCCESS);
 				ChromatiCraft.logger.log("CC STRUCTURE STATUS: Successful generation of "+s.name()+" at "+chunkX*16+", "+chunkZ*16);
 				return true;
 			}
@@ -314,13 +317,15 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		return false;
 	}
 
-	private boolean tryGenerateInChunk(World world, int cx, int cz, Random r, ChromaStructures s, int tries) {
+	private ChunkCoordIntPair tryGenerateInChunk(World world, int cx, int cz, Random r, ChromaStructures s, int tries) {
 		this.markChunkStatus(world, cx >> 4, cz >> 4, s, StructureGenStatus.GENERATING);
 		boolean flag = false;
 		int n = 0;
 		while (!flag && n < tries) {
 			int x = cx + r.nextInt(16);
 			int z = cz + r.nextInt(16);
+			int rx = x;
+			int rz = z;
 			s.getStructure().resetToDefaults();
 			n++;
 			switch(s) {
@@ -353,6 +358,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 							this.onGenerateStructure(s, te);
 							this.populateChests(s, struct, r);
 							flag = true;
+							rx = te.xCoord;
+							rz = te.zCoord;
 						}
 					}
 				}
@@ -371,6 +378,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						this.onGenerateStructure(s, te);
 						this.populateChests(s, arr, r);
 						flag = true;
+						rx = te.xCoord;
+						rz = te.zCoord;
 					}
 				}
 				case OCEAN: {
@@ -395,6 +404,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 							this.mossify(s, struct, r);
 							this.generatePit(world, x, y, z);
 							flag = true;
+							rx = te.xCoord;
+							rz = te.zCoord;
 						}
 					}
 				}
@@ -452,6 +463,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 							}
 							//too dry for moss//this.mossify(s, struct, r);
 							flag = true;
+							rx = te.xCoord;
+							rz = te.zCoord;
 						}
 					}
 				}
@@ -474,11 +487,18 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						this.onGenerateStructure(s, te);
 						this.populateChests(s, arr, r);
 						flag = true;
+						rx = te.xCoord;
+						rz = te.zCoord;
 					}
 				}
 			}
+			if (flag) {
+				if (rx != cx || rz != cz)
+					this.markChunkStatus(world, cx >> 4, cz >> 4, s, StructureGenStatus.INERT);
+				return new ChunkCoordIntPair(rx >> 4, rz >> 4);
+			}
 		}
-		return flag;
+		return null;
 	}
 
 	private boolean isValidBiomeForDesertStruct(BiomeGenBase biome) {
