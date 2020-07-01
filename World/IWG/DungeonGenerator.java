@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Random;
 
@@ -122,7 +123,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		return Collections.unmodifiableCollection(structs.keySet());
 	}
 
-	public Collection<WorldLocation> getNearbyZones(ChromaStructures s, WorldServer world, double x, double z, double r) {
+	private Collection<WorldLocation> getNearbyZones(ChromaStructures s, WorldServer world, double x, double z, double r) {
 		this.updateNoisemaps(world);
 		Collection<DecimalPosition> li = structs.get(s).getCellsWithin2D(x, z, r);
 		//ReikaJavaLibrary.pConsole("Found all potential zones within "+r+" of "+x+", "+z+": "+li);
@@ -135,18 +136,18 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			StructureGenStatus get = cache.get(wc);
 			if (get == null)
 				cache.put(wc, StructureGenStatus.PLANNED);
-			if (get != null && get.isGenerated() && !get.hasStructure())
+			if (get != null && get.isFinalized() && !get.hasStructure())
 				continue;
 			ret.add(new WorldLocation(world, d));
 		}
 		return ret;
 	}
 
-	public WorldLocation getNearestZone(ChromaStructures s, WorldServer world, double x, double z, double r) {
+	private WorldLocation getNearestZone(ChromaStructures s, WorldServer world, double x, double z, double r) {
 		return this.getNearestZone(s, world, x, z, r, null);
 	}
 
-	public WorldLocation getNearestZone(ChromaStructures s, WorldServer world, double x, double z, double r, WorldLocation exclude) {
+	private WorldLocation getNearestZone(ChromaStructures s, WorldServer world, double x, double z, double r, WorldLocation exclude) {
 		Collection<WorldLocation> c = this.getNearbyZones(s, world, MathHelper.floor_double(x), MathHelper.floor_double(z), r);
 		WorldLocation closest = null;
 		double d = Double.POSITIVE_INFINITY;
@@ -162,18 +163,54 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		return closest;
 	}
 
-	/** In CHUNK coords */
+	/** Block coords! */
+	public WorldLocation getNearestRealStructure(ChromaStructures s, WorldServer world, double x, double z, double r, boolean requireGenned) {
+		this.updateNoisemaps(world);
+		Collection<DecimalPosition> li = structs.get(s).getCellsWithin2D(x, z, r);
+		Iterator<DecimalPosition> it = li.iterator();
+		while (it.hasNext()) {
+			DecimalPosition loc = it.next();
+			StructureGenStatus stat = this.getGenStatus(s, world, MathHelper.floor_double(loc.xCoord), MathHelper.floor_double(loc.zCoord));
+			if (!stat.hasStructure() && stat.isFinalized())
+				it.remove();
+			else if (requireGenned && !stat.isGenerated())
+				it.remove();
+		}
+		if (li.isEmpty())
+			return null;
+		DecimalPosition closest = null;
+		double d = Double.POSITIVE_INFINITY;
+		for (DecimalPosition loc : li) {
+			double dist = loc.getDistanceTo(x, loc.yCoord, z);
+			if ((closest == null || dist < d) && dist <= r) {
+				d = dist;
+				closest = loc;
+			}
+		}
+		return new WorldLocation(world, closest);
+	}
+
+	/** In BLOCK coords */
 	public StructureGenStatus getGenStatus(ChromaStructures s, WorldServer world, int x, int z) {
+		boolean gennable = this.isGennableChunk(world, x, z, s);
+		boolean genned = ReikaWorldHelper.isChunkGenerated(world, x, z);
+		StructureGenStatus def = gennable ? StructureGenStatus.PLANNED : StructureGenStatus.INERT;
+		if (def == StructureGenStatus.INERT && genned)
+			def = StructureGenStatus.INERT_GEN;
 		Collection<WorldLocation> c = this.getNearbyZones(s, world, x, z, 32);
 		HashMap<WorldChunk, StructureGenStatus> cache = this.getStatusCache(s);
 		for (WorldLocation loc : c) {
 			WorldChunk wc = new WorldChunk(world, loc.xCoord >> 4, loc.zCoord >> 4);
 			if (!cache.containsKey(wc))
-				cache.put(wc, StructureGenStatus.PLANNED);
+				cache.put(wc, def);
 		}
-		WorldChunk wc = new WorldChunk(world, x, z);
+		WorldChunk wc = new WorldChunk(world, x >> 4, z >> 4);
 		StructureGenStatus stat = cache.get(wc);
-		return stat != null ? stat : StructureGenStatus.INERT;
+		if (stat == StructureGenStatus.INERT && genned) {
+			stat = StructureGenStatus.INERT_GEN;
+			cache.put(wc, stat);
+		}
+		return stat != null ? stat : def;
 	}
 
 	/** In CHUNK coords */
@@ -319,11 +356,11 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			ChunkCoordIntPair pos = this.tryGenerateInChunk(world, chunkX*16, chunkZ*16, random, s, ChromaOptions.getStructureTriesPerChunk());
 			if (pos != null) {
 				this.markChunkStatus(world, pos.chunkXPos, pos.chunkZPos, s, StructureGenStatus.SUCCESS);
-				ChromatiCraft.logger.log("CC STRUCTURE STATUS: Successful generation of "+s.name()+" at "+chunkX*16+", "+chunkZ*16);
+				//ChromatiCraft.logger.log("CC STRUCTURE STATUS: Successful generation of "+s.name()+" at "+chunkX*16+", "+chunkZ*16);
 				return true;
 			}
 			else {
-				ChromatiCraft.logger.log("CC STRUCTURE STATUS: Failed to generate a "+s.name()+" at "+chunkX*16+", "+chunkZ*16+"; this grid cell is dead");
+				//ChromatiCraft.logger.log("CC STRUCTURE STATUS: Failed to generate a "+s.name()+" at "+chunkX*16+", "+chunkZ*16+"; this grid cell is dead");
 				this.markChunkStatus(world, chunkX, chunkZ, s, StructureGenStatus.FAILURE);
 			}
 		}
@@ -379,6 +416,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 							rz = te.zCoord;
 						}
 					}
+					break;
 				}
 				case BURROW: {
 					int y = world.getTopSolidOrLiquidBlock(x, z)-1;
@@ -398,6 +436,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						rx = te.xCoord;
 						rz = te.zCoord;
 					}
+					break;
 				}
 				case OCEAN: {
 					int d = 3;
@@ -425,6 +464,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 							rz = te.zCoord;
 						}
 					}
+					break;
 				}
 				case DESERT: {
 					int y = world.getTopSolidOrLiquidBlock(x, z);
@@ -484,6 +524,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 							rz = te.zCoord;
 						}
 					}
+					break;
 				}
 				case SNOWSTRUCT: {
 					int y = world.getTopSolidOrLiquidBlock(x, z)-1;
@@ -508,6 +549,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						rz = te.zCoord;
 					}
 				}
+				break;
 			}
 			if (flag) {
 				if (rx != cx || rz != cz)
@@ -1041,15 +1083,29 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		if (c.isEmpty())
 			return false;
 		WorldLocation usable = null;
-		if (c.size() == 1)
+		if (c.size() == 1) {
 			usable = c.get(0);
-		else
+		}
+		else {
 			usable = this.getBestFromCluster(c);
-		return usable != null && (x >> 4 == usable.xCoord >> 4) && (z >> 4 == usable.zCoord >> 4);
+			for (WorldLocation loc : c) {
+				if (loc != usable) {
+					this.markChunkStatus(world, loc.xCoord >> 4, loc.zCoord >> 4, s, StructureGenStatus.CLUSTERED);
+				}
+			}
+		}
+		return (x >> 4 == usable.xCoord >> 4) && (z >> 4 == usable.zCoord >> 4);
 	}
 
 	private WorldLocation getBestFromCluster(ArrayList<WorldLocation> c) {
-		Collections.sort(c);
+		Collections.sort(c);/*
+		ReikaJavaLibrary.pConsole("Structure cluster of size "+c.size()+": "+c);
+		if (c.size() == 2) {
+			double d = c.get(0).getDistanceTo(c.get(1));
+			if (d <= 80) {
+				ReikaJavaLibrary.pConsole("Distance is only "+d+"!");
+			}
+		}*/
 		return c.get(0);
 	}
 
@@ -1091,10 +1147,12 @@ public class DungeonGenerator implements RetroactiveGenerator {
 
 	public static enum StructureGenStatus {
 		INERT(0x000000),
+		INERT_GEN(0x303030),
 		PLANNED(0xffffff),
 		GENERATING(0x22aaff),
 		SUCCESS(0x00ff00),
 		FAILURE(0xff0000),
+		CLUSTERED(0xff00ff),
 		REMOVED(0xffff00);
 
 		public static final StructureGenStatus[] list = values();
@@ -1110,7 +1168,11 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 
 		public boolean isGenerated() {
-			return this == SUCCESS || this == FAILURE || this == REMOVED;
+			return this == SUCCESS || this == FAILURE || this == REMOVED || this == INERT_GEN;
+		}
+
+		public boolean isFinalized() {
+			return this.isGenerated() || this == CLUSTERED;
 		}
 	}
 

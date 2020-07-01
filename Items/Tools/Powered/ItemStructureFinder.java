@@ -30,11 +30,14 @@ import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.World.IWG.DungeonGenerator;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher;
+import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Formula.MathExpression;
 import Reika.DragonAPI.Instantiable.Formula.PeriodicExpression;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.ParticleController.FlashColorController;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -83,19 +86,20 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 				return false;
 			}
 
-			WorldLocation loc = DungeonGenerator.instance.getNearestZone(TYPES[type], (WorldServer)world, e.posX, e.posZ, RANGE);
+			WorldLocation loc = DungeonGenerator.instance.getNearestRealStructure(TYPES[type], (WorldServer)world, e.posX, e.posZ, RANGE, false);
 			if (loc != null) {
 				double dist = loc.getDistanceTo(e);
-				if (dist <= FUZZ) {
-					double px = ReikaRandomHelper.getRandomPlusMinus(e.posX, FUZZ);
-					double py = ReikaRandomHelper.getRandomPlusMinus(e.posY, FUZZ);
-					double pz = ReikaRandomHelper.getRandomPlusMinus(e.posZ, FUZZ);
+				double fz = ReikaObfuscationHelper.isDeObfEnvironment() && KeyWatcher.instance.isKeyDown(e, Key.LCTRL) && ReikaPlayerAPI.isReika(e) ? 0 : FUZZ;
+				if (dist <= fz) {
+					double px = ReikaRandomHelper.getRandomPlusMinus(e.posX, fz);
+					double py = ReikaRandomHelper.getRandomPlusMinus(e.posY, fz);
+					double pz = ReikaRandomHelper.getRandomPlusMinus(e.posZ, fz);
 					this.sendParticle(e, px, py, pz, TYPES[type], true);
 				}
 				else {
-					double px = ReikaRandomHelper.getRandomPlusMinus(loc.xCoord+0.5, FUZZ);
-					double py = ReikaRandomHelper.getRandomPlusMinus(e.posY, FUZZ);
-					double pz = ReikaRandomHelper.getRandomPlusMinus(loc.zCoord+0.5, FUZZ);
+					double px = ReikaRandomHelper.getRandomPlusMinus(loc.xCoord+0.5, fz);
+					double py = ReikaRandomHelper.getRandomPlusMinus(e.posY, fz);
+					double pz = ReikaRandomHelper.getRandomPlusMinus(loc.zCoord+0.5, fz);
 					this.sendParticle(e, px, py, pz, TYPES[type], false);
 				}
 			}

@@ -88,13 +88,15 @@ public class StructureMapCommand extends DragonCommandBase {
 			for (int k = -range; k <= range; k++) {
 				int rx = x+i*16;
 				int rz = z+k*16;
-				StructureGenStatus st = DungeonGenerator.instance.isGennableChunk(ep.worldObj, rx, rz, s) ? StructureGenStatus.PLANNED : StructureGenStatus.INERT;
-				StructureGenStatus at = DungeonGenerator.instance.getGenStatus(s, (WorldServer)ep.worldObj, rx >> 4, rz >> 4);
+				StructureGenStatus st = StructureGenStatus.PLANNED;
+				StructureGenStatus at = DungeonGenerator.instance.getGenStatus(s, (WorldServer)ep.worldObj, rx, rz);
+				if (at != null)
+					st = at;
 				data[i+range][k+range] = st;
 			}
 		}
 		int cx = x >> 4;
-		int cz = z >> 4;
+			int cz = z >> 4;
 		for (int i = -range; i <= range; i++) {
 			for (int k = -range; k <= range; k++) {
 				int dx = x+i;
