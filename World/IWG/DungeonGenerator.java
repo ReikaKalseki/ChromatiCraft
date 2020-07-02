@@ -68,6 +68,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldChunk;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Data.Maps.TileEntityCache;
 import Reika.DragonAPI.Instantiable.IO.NBTFile.SimpleNBTFile;
 import Reika.DragonAPI.Instantiable.Math.Noise.VoronoiNoiseGenerator;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
@@ -95,6 +96,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 
 	private EnumMap<ChromaStructures, VoronoiNoiseGenerator> structs = new EnumMap(ChromaStructures.class);
 	private EnumMap<ChromaStructures, HashMap<WorldChunk, StructureGenStatus>> statusMap = new EnumMap(ChromaStructures.class);
+	private EnumMap<ChromaStructures, TileEntityCache<StructureGenData>> structureMap = new EnumMap(ChromaStructures.class);
 
 	private DungeonGenerator() {
 		structs.put(ChromaStructures.CAVERN, null);
@@ -166,11 +168,14 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	/** Block coords! */
 	public WorldLocation getNearestRealStructure(ChromaStructures s, WorldServer world, double x, double z, double r, boolean requireGenned) {
 		this.updateNoisemaps(world);
-		Collection<DecimalPosition> li = structs.get(s).getCellsWithin2D(x, z, r);
-		Iterator<DecimalPosition> it = li.iterator();
+		WorldLocation src = new WorldLocation(world, x, 0, z);
+		TileEntityCache<StructureGenData> cache = structureMap.get(s);
+		Collection<WorldLocation> li = cache.getAllLocationsNear(src, r);
+		Iterator<WorldLocation> it = li.iterator();
 		while (it.hasNext()) {
-			DecimalPosition loc = it.next();
-			StructureGenStatus stat = this.getGenStatus(s, world, MathHelper.floor_double(loc.xCoord), MathHelper.floor_double(loc.zCoord));
+			WorldLocation loc = it.next();
+			StructureGenData dat = cache.get(loc);
+			StructureGenStatus stat = this.getGenStatus(s, world, dat.rootLocation.chunk.chunkXPos << 4, dat.rootLocation.chunk.chunkZPos << 4);
 			if (!stat.hasStructure() && stat.isFinalized())
 				it.remove();
 			else if (requireGenned && !stat.isGenerated())
@@ -178,16 +183,16 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 		if (li.isEmpty())
 			return null;
-		DecimalPosition closest = null;
+		WorldLocation closest = null;
 		double d = Double.POSITIVE_INFINITY;
-		for (DecimalPosition loc : li) {
+		for (WorldLocation loc : li) {
 			double dist = loc.getDistanceTo(x, loc.yCoord, z);
 			if ((closest == null || dist < d) && dist <= r) {
 				d = dist;
 				closest = loc;
 			}
 		}
-		return new WorldLocation(world, closest);
+		return closest;
 	}
 
 	/** In BLOCK coords */
@@ -1174,6 +1179,37 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		public boolean isFinalized() {
 			return this.isGenerated() || this == CLUSTERED;
 		}
+	}
+
+	private static class StructureGenData {
+
+		private StructureGenStatus status;
+		private final WorldChunk rootLocation;
+		private Coordinate generatedLocation;
+
+		private StructureGenData(WorldChunk wc, StructureGenStatus def) {
+			status = def;
+			rootLocation = wc;
+		}
+
+		public static StructureGenData readFromNBT(NBTTagCompound tag) {
+			StructureGenStatus stat = StructureGenStatus.valueOf(tag.getString("status"));
+			StructureGenData ret = new StructureGenData(WorldChunk.fromSerialString(tag.getString("chunk")), stat);
+			if (tag.hasKey("location"))
+				ret.generatedLocation = Coordinate.readFromNBT("location", tag);
+			return ret;
+		}
+
+		public NBTTagCompound writeToNBT() {
+			NBTTagCompound ret = new NBTTagCompound();
+			ret.setString("status", status.name());
+			ret.setString("chunk", rootLocation.toSerialString());
+			if (generatedLocation != null) {
+				generatedLocation.writeToNBT("location", ret);
+			}
+			return ret;
+		}
+
 	}
 
 }
