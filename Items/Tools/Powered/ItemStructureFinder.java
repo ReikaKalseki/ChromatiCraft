@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -30,16 +29,16 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.World.IWG.DungeonGenerator;
+import Reika.ChromatiCraft.World.IWG.DungeonGenerator.StructureSeekData;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
-import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Formula.MathExpression;
 import Reika.DragonAPI.Instantiable.Formula.PeriodicExpression;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.ParticleController.FlashColorController;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
-import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -84,42 +83,40 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 
 			int type = this.getStructureType(is);
 			if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
-				this.sendParticle(e, e.posX, -50, e.posZ, TYPES[type], false);
+				this.sendParticle(e, e.posX, -50, e.posZ, TYPES[type], false, true);
 				return false;
 			}
 
-			WorldLocation loc = DungeonGenerator.instance.getNearestRealStructure(TYPES[type], (WorldServer)world, e.posX, e.posZ, RANGE, false);
+			StructureSeekData loc = DungeonGenerator.instance.getNearestRealStructure(TYPES[type], (WorldServer)world, e.posX, e.posZ, RANGE, false);
 			if (loc != null) {
-				double dist = loc.getDistanceTo(e);
+				double dist = loc.location.getDistanceTo(e);
 				double fz = ReikaObfuscationHelper.isDeObfEnvironment() && KeyWatcher.instance.isKeyDown(e, Key.LCTRL) && ReikaPlayerAPI.isReika(e) ? 0 : FUZZ;
 				if (dist <= fz) {
 					double px = ReikaRandomHelper.getRandomPlusMinus(e.posX, fz);
 					double py = ReikaRandomHelper.getRandomPlusMinus(e.posY, fz);
 					double pz = ReikaRandomHelper.getRandomPlusMinus(e.posZ, fz);
-					this.sendParticle(e, px, py, pz, TYPES[type], true);
+					this.sendParticle(e, px, py, pz, TYPES[type], true, loc.isKnownSuccess);
 				}
 				else {
-					double px = ReikaRandomHelper.getRandomPlusMinus(loc.xCoord+0.5, fz);
+					double px = ReikaRandomHelper.getRandomPlusMinus(loc.location.xCoord+0.5, fz);
 					double py = ReikaRandomHelper.getRandomPlusMinus(e.posY, fz);
-					double pz = ReikaRandomHelper.getRandomPlusMinus(loc.zCoord+0.5, fz);
-					this.sendParticle(e, px, py, pz, TYPES[type], false);
+					double pz = ReikaRandomHelper.getRandomPlusMinus(loc.location.zCoord+0.5, fz);
+					this.sendParticle(e, px, py, pz, TYPES[type], false, loc.isKnownSuccess);
 				}
 			}
 		}
 		return true;
 	}
 
-	private void sendParticle(EntityPlayer ep, double sx, double sy, double sz, ChromaStructures s, boolean close) {
+	private void sendParticle(EntityPlayer ep, double sx, double sy, double sz, ChromaStructures s, boolean close, boolean genned) {
 		if (ep instanceof EntityPlayerMP) {
 			PacketTarget pt = new PacketTarget.PlayerTarget((EntityPlayerMP)ep);
-			ReikaPacketHelper.sendPositionPacket(ChromatiCraft.packetChannel, ChromaPackets.STRUCTFIND.ordinal(), ep.worldObj, sx, sy, sz, pt, s.ordinal(), close ? 1 : 0);
+			ReikaPacketHelper.sendPositionPacket(ChromatiCraft.packetChannel, ChromaPackets.STRUCTFIND.ordinal(), ep.worldObj, sx, sy, sz, pt, s.ordinal(), close ? 1 : 0, genned ? 1 : 0);
 		}
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void doHeldFX(EntityPlayer ep, double sx, double sy, double sz, ChromaStructures s, boolean close) {
-		if (GuiScreen.isCtrlKeyDown() && rand.nextInt(20) == 0)
-			ReikaChatHelper.write(sx+", "+sz);
+	public static void doHeldFX(EntityPlayer ep, double sx, double sy, double sz, ChromaStructures s, boolean close, boolean genned) {
 		double[] xyz = ReikaPhysicsHelper.polarToCartesian(0.0625, -ep.rotationPitch, ep.rotationYawHead+90+60);
 		double px = ep.posX+xyz[0];
 		double py = ep.posY+xyz[1];
@@ -129,12 +126,20 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 		double dz = sz-pz;
 		double dd = ReikaMathLibrary.py3d(dx, dy, dz);
 		double v = 0.03125/2;
-		double vx = dx/dd*v;
-		double vy = dy/dd*v;
-		double vz = dz/dd*v;
 		float sc = 0.125F+rand.nextFloat()*0.25F;
 		int l = 10;
 		int c = COLORS[s.ordinal()];
+		if (!genned) {
+			if (ep.getRNG().nextInt(3) == 0)
+				return;
+			c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, 0.5F);
+			l = 15;
+			sc *= 1.25;
+			v *= 0.67;
+		}
+		double vx = dx/dd*v;
+		double vy = dy/dd*v;
+		double vz = dz/dd*v;
 		EntityBlurFX fx = new EntityBlurFX(ep.worldObj, px, py, pz, vx, vy, vz);
 		if (close) {
 			l *= 2;
@@ -147,7 +152,9 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 			fx.motionY *= 0.375;
 			fx.motionZ *= 0.375;
 		}
-		fx.setLife(10).setScale(sc).setColor(c);
+		if (!genned)
+			fx.setIcon(ChromaIcons.FADE_GENTLE);
+		fx.setLife(l).setScale(sc).setColor(c);
 		if (sy == -50) {
 			fx.setLife(40+rand.nextInt(21));
 			fx.setColliding();

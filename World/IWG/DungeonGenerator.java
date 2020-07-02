@@ -166,7 +166,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	}
 
 	/** Block coords! */
-	public WorldLocation getNearestRealStructure(ChromaStructures s, WorldServer world, double x, double z, double r, boolean requireGenned) {
+	public StructureSeekData getNearestRealStructure(ChromaStructures s, WorldServer world, double x, double z, double r, boolean requireGenned) {
 		this.updateNoisemaps(world);
 		WorldLocation src = new WorldLocation(world, x, 0, z);
 		TileEntityCache<StructureGenData> cache = structureMap.get(s);
@@ -183,7 +183,9 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			else if (stat == StructureGenStatus.INERT || stat == StructureGenStatus.INERT_GEN)
 				it.remove();
 		}
+		boolean genned = true;
 		if (!requireGenned && li.isEmpty()) { //no generated valid, consult noise
+			genned = false;
 			Collection<DecimalPosition> li2 = structs.get(s).getCellsWithin2D(x, z, r);
 			Iterator<DecimalPosition> it2 = li2.iterator();
 			while (it2.hasNext()) {
@@ -194,6 +196,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				else if (requireGenned && !stat.isGenerated())
 					it2.remove();
 				else if (stat == StructureGenStatus.INERT || stat == StructureGenStatus.INERT_GEN)
+					it2.remove();
+				else if (!isValidBiomeNear(world, MathHelper.floor_double(loc.xCoord), MathHelper.floor_double(loc.zCoord), s))
 					it2.remove();
 			}
 			if (li2.isEmpty())
@@ -213,7 +217,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				closest = loc;
 			}
 		}
-		return closest;
+		return new StructureSeekData(closest, genned);
 	}
 
 	/** In BLOCK coords */
@@ -223,6 +227,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		StructureGenStatus def = gennable ? StructureGenStatus.PLANNED : StructureGenStatus.INERT;
 		if (def == StructureGenStatus.INERT && genned)
 			def = StructureGenStatus.INERT_GEN;
+		if (def == StructureGenStatus.PLANNED && !isValidBiomeNear(world, x, z, s))
+			def = StructureGenStatus.FAILURE;
 		Collection<WorldLocation> c = this.getNearbyZones(s, world, x, z, 32);
 		HashMap<WorldChunk, StructureGenStatus> cache = this.getStatusCache(s);
 		for (WorldLocation loc : c) {
@@ -1237,6 +1243,18 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				generatedLocation.writeToNBT("location", ret);
 			}
 			return ret;
+		}
+
+	}
+
+	public static class StructureSeekData {
+
+		public final WorldLocation location;
+		public final boolean isKnownSuccess;
+
+		private StructureSeekData(WorldLocation loc, boolean b) {
+			location = loc;
+			isKnownSuccess = b;
 		}
 
 	}
