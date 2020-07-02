@@ -94,7 +94,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	private final ForgeDirection[] dirs = ForgeDirection.values();
 
 	private EnumMap<ChromaStructures, VoronoiNoiseGenerator> structs = new EnumMap(ChromaStructures.class);
-	private EnumMap<ChromaStructures, HashMap<WorldChunk, StructureGenData>> statusMap = new EnumMap(ChromaStructures.class);
+	private EnumMap<ChromaStructures, HashMap<WorldChunk, StructureGenStatus>> statusMap = new EnumMap(ChromaStructures.class);
 
 	private DungeonGenerator() {
 		structs.put(ChromaStructures.CAVERN, null);
@@ -128,15 +128,15 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		Collection<DecimalPosition> li = structs.get(s).getCellsWithin2D(x, z, r);
 		//ReikaJavaLibrary.pConsole("Found all potential zones within "+r+" of "+x+", "+z+": "+li);
 		Collection<WorldLocation> ret = new ArrayList();
-		HashMap<WorldChunk, StructureGenData> cache = this.getStatusCache(s);
+		HashMap<WorldChunk, StructureGenStatus> cache = this.getStatusCache(s);
 		for (DecimalPosition d : li) {
 			int cx = MathHelper.floor_double(d.xCoord) >> 4;
 			int cz = MathHelper.floor_double(d.zCoord) >> 4;
 			WorldChunk wc = new WorldChunk(world, cx, cz);
-			StructureGenData get = cache.get(wc);
+			StructureGenStatus get = cache.get(wc);
 			if (get == null)
-				cache.put(wc, new StructureGenData(StructureGenStatus.PLANNED));
-			if (get != null && get.status.isFinalized() && !get.status.hasStructure())
+				cache.put(wc, StructureGenStatus.PLANNED);
+			if (get != null && get.isFinalized() && !get.hasStructure())
 				continue;
 			ret.add(new WorldLocation(world, d));
 		}
@@ -198,34 +198,26 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		if (def == StructureGenStatus.INERT && genned)
 			def = StructureGenStatus.INERT_GEN;
 		Collection<WorldLocation> c = this.getNearbyZones(s, world, x, z, 32);
-		HashMap<WorldChunk, StructureGenData> cache = this.getStatusCache(s);
+		HashMap<WorldChunk, StructureGenStatus> cache = this.getStatusCache(s);
 		for (WorldLocation loc : c) {
 			WorldChunk wc = new WorldChunk(world, loc.xCoord >> 4, loc.zCoord >> 4);
 			if (!cache.containsKey(wc))
-				cache.put(wc, new StructureGenData(def));
+				cache.put(wc, def);
 		}
 		WorldChunk wc = new WorldChunk(world, x >> 4, z >> 4);
-		StructureGenData stat = cache.get(wc);
-		if (stat != null && stat.status == StructureGenStatus.INERT && genned) {
-			stat.status = StructureGenStatus.INERT_GEN;
+		StructureGenStatus stat = cache.get(wc);
+		if (stat == StructureGenStatus.INERT && genned) {
+			stat = StructureGenStatus.INERT_GEN;
 			cache.put(wc, stat);
 		}
-		return stat != null ? stat.status : def;
+		return stat != null ? stat : def;
 	}
 
 	/** In CHUNK coords */
 	private void markChunkStatus(World world, int x, int z, ChromaStructures s, StructureGenStatus stat) {
 		//ReikaJavaLibrary.pConsole("Marking "+x*16+", "+z*16+" as "+stat);
 		WorldChunk wc = new WorldChunk(world, x, z);
-		HashMap<WorldChunk, StructureGenData> map = this.getStatusCache(s);
-		StructureGenData data = map.get(wc);
-		if (data == null) {
-			data = new StructureGenData(stat);
-			map.put(wc, data);
-		}
-		else {
-			data.status = stat;
-		}
+		this.getStatusCache(s).put(wc, stat);
 	}
 
 	public void recacheStructureTile(TileEntityStructControl te) {
@@ -236,8 +228,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		this.markChunkStatus(te.worldObj, te.xCoord >> 4, te.zCoord >> 4, te.getStructureType(), StructureGenStatus.REMOVED);
 	}
 
-	private HashMap<WorldChunk, StructureGenData> getStatusCache(ChromaStructures s) {
-		HashMap<WorldChunk, StructureGenData> set = statusMap.get(s);
+	private HashMap<WorldChunk, StructureGenStatus> getStatusCache(ChromaStructures s) {
+		HashMap<WorldChunk, StructureGenStatus> set = statusMap.get(s);
 		if (set == null) {
 			try {
 				set = this.loadStatusCache();
@@ -252,8 +244,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		return set;
 	}
 
-	private HashMap<WorldChunk, StructureGenData> loadStatusCache() throws IOException {
-		HashMap<WorldChunk, StructureGenData> ret = new HashMap();
+	private HashMap<WorldChunk, StructureGenStatus> loadStatusCache() throws IOException {
+		HashMap<WorldChunk, StructureGenStatus> ret = new HashMap();
 		SimpleNBTFile nf = new SimpleNBTFile(this.getStatusCacheFile());
 		nf.load();
 		if (nf.data != null) {
@@ -278,32 +270,32 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			String sg = (String)o;
 			NBTTagCompound tag = data.getCompoundTag(sg);
 			ChromaStructures s = ChromaStructures.valueOf(sg);
-			HashMap<WorldChunk, StructureGenData> map = this.loadMapFromNBT(s, tag);
+			HashMap<WorldChunk, StructureGenStatus> map = this.loadMapFromNBT(s, tag);
 			statusMap.put(s, map);
 		}
 	}
 
 	private void writeStatusCacheToNBT(NBTTagCompound nbt) {
 		for (ChromaStructures s : statusMap.keySet()) {
-			HashMap<WorldChunk, StructureGenData> map = statusMap.get(s);
+			HashMap<WorldChunk, StructureGenStatus> map = statusMap.get(s);
 			NBTTagCompound tag = new NBTTagCompound();
 			this.writeMapToNBT(tag, map);
 		}
 	}
 
-	private HashMap<WorldChunk, StructureGenData> loadMapFromNBT(ChromaStructures s, NBTTagCompound tag) {
-		HashMap<WorldChunk, StructureGenData> map = new HashMap();
+	private HashMap<WorldChunk, StructureGenStatus> loadMapFromNBT(ChromaStructures s, NBTTagCompound tag) {
+		HashMap<WorldChunk, StructureGenStatus> map = new HashMap();
 		for (Object o : tag.func_150296_c()) {
 			String sg = (String)o;
 			WorldChunk wc = WorldChunk.fromSerialString(sg);
-			map.put(wc, StructureGenData.readFromNBT(tag.getCompoundTag(sg)));
+			map.put(wc, StructureGenStatus.valueOf(tag.getString(sg)));
 		}
 		return map;
 	}
 
-	private void writeMapToNBT(NBTTagCompound tag, HashMap<WorldChunk, StructureGenData> map) {
-		for (Entry<WorldChunk, StructureGenData> e : map.entrySet()) {
-			tag.setTag(e.getKey().toSerialString(), e.getValue().writeToNBT());
+	private void writeMapToNBT(NBTTagCompound tag, HashMap<WorldChunk, StructureGenStatus> map) {
+		for (Entry<WorldChunk, StructureGenStatus> e : map.entrySet()) {
+			tag.setString(e.getKey().toSerialString(), e.getValue().name());
 		}
 	}
 
@@ -1182,34 +1174,6 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		public boolean isFinalized() {
 			return this.isGenerated() || this == CLUSTERED;
 		}
-	}
-
-	private static class StructureGenData {
-
-		private StructureGenStatus status;
-		private Coordinate generatedLocation;
-
-		private StructureGenData(StructureGenStatus def) {
-			status = def;
-		}
-
-		public static StructureGenData readFromNBT(NBTTagCompound tag) {
-			StructureGenStatus stat = StructureGenStatus.valueOf(tag.getString("status"));
-			StructureGenData ret = new StructureGenData(stat);
-			if (tag.hasKey("location"))
-				ret.generatedLocation = Coordinate.readFromNBT("location", tag);
-			return ret;
-		}
-
-		public NBTTagCompound writeToNBT() {
-			NBTTagCompound ret = new NBTTagCompound();
-			ret.setString("status", status.name());
-			if (generatedLocation != null) {
-				generatedLocation.writeToNBT("location", ret);
-			}
-			return ret;
-		}
-
 	}
 
 }
