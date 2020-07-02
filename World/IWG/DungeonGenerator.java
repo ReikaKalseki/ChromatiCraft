@@ -99,11 +99,11 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	private EnumMap<ChromaStructures, TileEntityCache<StructureGenData>> structureMap = new EnumMap(ChromaStructures.class);
 
 	private DungeonGenerator() {
-		structs.put(ChromaStructures.CAVERN, null);
-		structs.put(ChromaStructures.BURROW, null);
-		structs.put(ChromaStructures.OCEAN, null);
-		structs.put(ChromaStructures.DESERT, null);
-		structs.put(ChromaStructures.SNOWSTRUCT, null);
+		ChromaStructures[] li = {ChromaStructures.CAVERN, ChromaStructures.BURROW, ChromaStructures.OCEAN, ChromaStructures.DESERT, ChromaStructures.SNOWSTRUCT};
+		for (ChromaStructures s : li) {
+			structs.put(s, null);
+			structureMap.put(s, new TileEntityCache());
+		}
 
 		MinecraftForge.EVENT_BUS.register(this);
 	}
@@ -175,11 +175,32 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		while (it.hasNext()) {
 			WorldLocation loc = it.next();
 			StructureGenData dat = cache.get(loc);
-			StructureGenStatus stat = this.getGenStatus(s, world, dat.rootLocation.chunk.chunkXPos << 4, dat.rootLocation.chunk.chunkZPos << 4);
+			StructureGenStatus stat = dat.status;
 			if (!stat.hasStructure() && stat.isFinalized())
 				it.remove();
 			else if (requireGenned && !stat.isGenerated())
 				it.remove();
+			else if (stat == StructureGenStatus.INERT || stat == StructureGenStatus.INERT_GEN)
+				it.remove();
+		}
+		if (!requireGenned && li.isEmpty()) { //no generated valid, consult noise
+			Collection<DecimalPosition> li2 = structs.get(s).getCellsWithin2D(x, z, r);
+			Iterator<DecimalPosition> it2 = li2.iterator();
+			while (it2.hasNext()) {
+				DecimalPosition loc = it2.next();
+				StructureGenStatus stat = this.getGenStatus(s, world, MathHelper.floor_double(loc.xCoord), MathHelper.floor_double(loc.zCoord));
+				if (!stat.hasStructure() && stat.isFinalized())
+					it2.remove();
+				else if (requireGenned && !stat.isGenerated())
+					it2.remove();
+				else if (stat == StructureGenStatus.INERT || stat == StructureGenStatus.INERT_GEN)
+					it2.remove();
+			}
+			if (li2.isEmpty())
+				return null;
+			for (DecimalPosition loc : li2) {
+				li.add(new WorldLocation(world, loc));
+			}
 		}
 		if (li.isEmpty())
 			return null;
@@ -223,6 +244,14 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		//ReikaJavaLibrary.pConsole("Marking "+x*16+", "+z*16+" as "+stat);
 		WorldChunk wc = new WorldChunk(world, x, z);
 		this.getStatusCache(s).put(wc, stat);
+		TileEntityCache<StructureGenData> cache = structureMap.get(s);
+		WorldLocation loc = new WorldLocation(world, x << 4, 0, z << 4);
+		StructureGenData data = cache.get(loc);
+		if (data == null) {
+			data = new StructureGenData(wc, stat);
+			cache.put(loc, data);
+		}
+		data.status = stat;
 	}
 
 	public void recacheStructureTile(TileEntityStructControl te) {

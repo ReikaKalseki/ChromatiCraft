@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -38,6 +39,7 @@ import Reika.DragonAPI.Instantiable.Formula.PeriodicExpression;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.ParticleController.FlashColorController;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -116,6 +118,8 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 
 	@SideOnly(Side.CLIENT)
 	public static void doHeldFX(EntityPlayer ep, double sx, double sy, double sz, ChromaStructures s, boolean close) {
+		if (GuiScreen.isCtrlKeyDown() && rand.nextInt(20) == 0)
+			ReikaChatHelper.write(sx+", "+sz);
 		double[] xyz = ReikaPhysicsHelper.polarToCartesian(0.0625, -ep.rotationPitch, ep.rotationYawHead+90+60);
 		double px = ep.posX+xyz[0];
 		double py = ep.posY+xyz[1];
