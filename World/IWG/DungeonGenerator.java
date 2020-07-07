@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Random;
 
@@ -197,7 +198,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					it2.remove();
 				else if (stat == StructureGenStatus.INERT || stat == StructureGenStatus.INERT_GEN)
 					it2.remove();
-				else if (!isValidBiomeNear(world, MathHelper.floor_double(loc.xCoord), MathHelper.floor_double(loc.zCoord), s))
+				else if (!this.isValidBiomeNear(world, MathHelper.floor_double(loc.xCoord), MathHelper.floor_double(loc.zCoord), s))
 					it2.remove();
 			}
 			if (li2.isEmpty())
@@ -222,18 +223,18 @@ public class DungeonGenerator implements RetroactiveGenerator {
 
 	/** In BLOCK coords */
 	public StructureGenStatus getGenStatus(ChromaStructures s, WorldServer world, int x, int z) {
-		boolean gennable = this.isGennableChunk(world, x, z, s);
+		StructureGenStatus def = this.isGennableChunk(world, x, z, s);
 		boolean genned = ReikaWorldHelper.isChunkGenerated(world, x, z);
-		StructureGenStatus def = gennable ? StructureGenStatus.PLANNED : StructureGenStatus.INERT;
 		if (def == StructureGenStatus.INERT && genned)
 			def = StructureGenStatus.INERT_GEN;
-		if (def == StructureGenStatus.PLANNED && !isValidBiomeNear(world, x, z, s))
-			def = StructureGenStatus.FAILURE;
+		//if (def == StructureGenStatus.PLANNED && !this.isValidBiomeNear(world, x, z, s))
+		//	def = StructureGenStatus.FAILURE;
 		Collection<WorldLocation> c = this.getNearbyZones(s, world, x, z, 32);
 		HashMap<WorldChunk, StructureGenStatus> cache = this.getStatusCache(s);
 		for (WorldLocation loc : c) {
 			WorldChunk wc = new WorldChunk(world, loc.xCoord >> 4, loc.zCoord >> 4);
-			if (!cache.containsKey(wc))
+			StructureGenStatus get = cache.get(wc);
+			if (get == null || def.canOverwrite(get))
 				cache.put(wc, def);
 		}
 		WorldChunk wc = new WorldChunk(world, x >> 4, z >> 4);
@@ -391,10 +392,13 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	}
 
 	private boolean checkChunk(World world, int chunkX, int chunkZ, Random random, ChromaStructures s) {
-		if (!this.isVoidWorld(world, chunkX*16, chunkZ*16) && this.isGennableChunk(world, chunkX*16, chunkZ*16, s)) {
+		if (!this.isVoidWorld(world, chunkX*16, chunkZ*16) && this.isGennableChunk(world, chunkX*16, chunkZ*16, s) == StructureGenStatus.PLANNED) {
 			//ReikaWorldHelper.forceGenAndPopulate(world, chunkX*16, chunkZ*16, s == Structures.OCEAN ? 2 : 1); causes extra structures
 			ChunkCoordIntPair pos = this.tryGenerateInChunk(world, chunkX*16, chunkZ*16, random, s, ChromaOptions.getStructureTriesPerChunk());
+			if (pos == null)
+				pos = this.tryGenerateInChunksAround(world, chunkX*16, chunkZ*16, random, s, ChromaOptions.getStructureTriesPerChunk());
 			if (pos != null) {
+				this.markChunkStatus(world, chunkX, chunkZ, s, StructureGenStatus.INERT_GEN);
 				this.markChunkStatus(world, pos.chunkXPos, pos.chunkZPos, s, StructureGenStatus.SUCCESS);
 				//ChromatiCraft.logger.log("CC STRUCTURE STATUS: Successful generation of "+s.name()+" at "+chunkX*16+", "+chunkZ*16);
 				return true;
@@ -409,6 +413,25 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			//this.markChunkStatus(world, chunkX << 4, chunkZ << 4, s, StructureStatus.INERT);
 		}
 		return false;
+	}
+
+	private ChunkCoordIntPair tryGenerateInChunksAround(World world, int cx, int cz, Random rnd, ChromaStructures s, int tries) {
+		int r = 16;
+		while (r <= 48) {
+			for (int i = -r; i <= r; i += 16) {
+				for (int k = -r; k <= r; k += 16) {
+					if (i == 0 && k == 0)
+						continue;
+					int dx = cx+i;
+					int dz = cz+k;
+					ChunkCoordIntPair ret = this.tryGenerateInChunk(world, dx, dz, rnd, s, tries);
+					if (ret != null)
+						return ret;
+				}
+			}
+			r += 16;
+		}
+		return null;
 	}
 
 	private ChunkCoordIntPair tryGenerateInChunk(World world, int cx, int cz, Random r, ChromaStructures s, int tries) {
@@ -593,15 +616,16 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			}
 			if (flag) {
 				if (rx != cx || rz != cz)
-					this.markChunkStatus(world, cx >> 4, cz >> 4, s, StructureGenStatus.INERT);
+					this.markChunkStatus(world, cx >> 4, cz >> 4, s, StructureGenStatus.INERT_GEN);
 				return new ChunkCoordIntPair(rx >> 4, rz >> 4);
 			}
 		}
+		this.markChunkStatus(world, cx >> 4, cz >> 4, s, StructureGenStatus.INERT_GEN);
 		return null;
 	}
 
 	private boolean isValidBiomeForDesertStruct(BiomeGenBase biome) {
-		return BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.SANDY) && !BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.MESA);
+		return biome.topBlock == Blocks.sand && BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.SANDY) && !BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.MESA);
 	}
 
 	private boolean isValidDesertLocation(World world, int x, int y, int z, FilledBlockArray struct) {
@@ -622,6 +646,42 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		if (world.getBlock(struct.getMaxX(), struct.getMinY()+3, struct.getMaxZ()) == Blocks.air)
 			return false;
 		return true;
+	}
+
+	/** BLOCK coords */
+	private boolean isValidBiomeNear(World world, int x, int z, ChromaStructures s) {
+		for (int i = -32; i <= 32; i += 8) {
+			for (int k = -32; k <= 32; k += 8) {
+				if (this.isValidBiomeAt(world, x, z, s))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	/** Does not gen the chunks, but uses planned biomes; BLOCK coords */
+	private boolean isValidBiomeAt(World world, int x, int z, ChromaStructures s) {
+		BiomeGenBase biome = world.getWorldChunkManager().getBiomeGenAt(x, z);
+		return this.isValidBiome(s, biome);
+	}
+
+	private boolean isValidBiome(ChromaStructures s, BiomeGenBase b) {
+		if (ReikaBiomeHelper.isOcean(b))
+			return s == ChromaStructures.OCEAN;
+		switch(s) {
+			case OCEAN:
+				return ReikaBiomeHelper.isOcean(b);
+			case CAVERN:
+				return true;
+			case BURROW:
+				return b.topBlock == Blocks.grass && !this.isValidBiome(ChromaStructures.SNOWSTRUCT, b);
+			case DESERT:
+				return this.isValidBiomeForDesertStruct(b);
+			case SNOWSTRUCT:
+				return b.topBlock == Blocks.grass && b.getEnableSnow() && ReikaBiomeHelper.getBiomeDecorator(b).treesPerChunk < 1 && !b.biomeName.toLowerCase(Locale.ENGLISH).contains("forest");
+			default:
+				return false;
+		}
 	}
 
 	private static FilledBlockArray getPitSlice(World world, int x, int y, int z) {
@@ -1117,11 +1177,23 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	}
 
 	/** Block coords */
-	public boolean isGennableChunk(World world, int x, int z, ChromaStructures s) {
+	public StructureGenStatus isGennableChunk(World world, int x, int z, ChromaStructures s) {
 		this.updateNoisemaps(world);
 		ArrayList<WorldLocation> c = new ArrayList(this.getNearbyZones(s, (WorldServer)world, x, z, this.getExclusionZone(s)));
 		if (c.isEmpty())
-			return false;
+			return StructureGenStatus.INERT;
+		StructureGenStatus failret = StructureGenStatus.INERT;
+		Iterator<WorldLocation> it = c.iterator();
+		while (it.hasNext()) {
+			WorldLocation loc = it.next();
+			if (!this.isValidBiomeNear(world, loc.xCoord, loc.zCoord, s)) {
+				it.remove();
+				if ((x >> 4 == loc.xCoord >> 4) && (z >> 4 == loc.zCoord >> 4))
+					failret = StructureGenStatus.BIOMEFAIL;
+			}
+		}
+		if (c.isEmpty())
+			return failret;
 		WorldLocation usable = null;
 		if (c.size() == 1) {
 			usable = c.get(0);
@@ -1134,7 +1206,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				}
 			}
 		}
-		return (x >> 4 == usable.xCoord >> 4) && (z >> 4 == usable.zCoord >> 4);
+		return (x >> 4 == usable.xCoord >> 4) && (z >> 4 == usable.zCoord >> 4) ? StructureGenStatus.PLANNED : StructureGenStatus.INERT;
 	}
 
 	private WorldLocation getBestFromCluster(ArrayList<WorldLocation> c) {
@@ -1188,6 +1260,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	public static enum StructureGenStatus {
 		INERT(0x000000),
 		INERT_GEN(0x303030),
+		BIOMEFAIL(0xff9020),
 		PLANNED(0xffffff),
 		GENERATING(0x22aaff),
 		SUCCESS(0x00ff00),
@@ -1212,7 +1285,15 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 
 		public boolean isFinalized() {
-			return this.isGenerated() || this == CLUSTERED;
+			return this.isGenerated() || this == CLUSTERED || this == BIOMEFAIL;
+		}
+
+		public boolean canOverwrite(StructureGenStatus g) {
+			if (this == INERT_GEN && g == PLANNED)
+				return false;
+			if (this.isFinalized() && !g.isFinalized())
+				return true;
+			return false;
 		}
 	}
 
