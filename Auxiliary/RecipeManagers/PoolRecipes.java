@@ -77,7 +77,7 @@ public class PoolRecipes {
 		pr = this.addRecipe(ChromaItems.DATACRYSTAL.getCraftedProduct(2), ChromaItems.DATACRYSTAL.getStackOf(), ReikaItemHelper.getSizedItemStack(ChromaStacks.crystalPowder, 18)).addProgress(ProgressStage.TOWER);
 		pr.allowDoubling = false;
 
-		pr = this.addRecipe(ChromaItems.STRUCTMAP.getStackOf(), ChromaItems.DATACRYSTAL.getStackOf(), ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.ARTIFACT.ordinal()), ChromaBlocks.METAALLOYLAMP.getStackOf(), ReikaItemHelper.getSizedItemStack(ChromaStacks.crysleaf, 12)).addProgress(ProgressStage.TOWER).addProgress(ProgressStage.ARTEFACT);
+		pr = this.addRecipe(ChromaItems.STRUCTMAP.getStackOf(), ChromaItems.DATACRYSTAL.getStackOf(), ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.ARTIFACT.ordinal()), ChromaBlocks.METAALLOYLAMP.getStackOf(), ChromaItems.ENDEREYE.getCraftedProduct(12)).addProgress(ProgressStage.TOWER).addProgress(ProgressStage.ARTEFACT);
 		pr.effects.add(ArtefactWithDataCrystalAlloyingEffect.instance);
 		pr.allowDoubling = false;
 	}

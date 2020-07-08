@@ -137,6 +137,7 @@ import Reika.ChromatiCraft.Render.Item.DataCrystalRenderer;
 import Reika.ChromatiCraft.Render.Item.EnderCrystalRenderer;
 import Reika.ChromatiCraft.Render.Item.LootChestRenderer;
 import Reika.ChromatiCraft.Render.Item.PortalItemRenderer;
+import Reika.ChromatiCraft.Render.Item.StructureMapRenderer;
 import Reika.ChromatiCraft.Render.TESR.CrystalPlantRenderer;
 import Reika.ChromatiCraft.Render.TESR.RenderAvoLamp;
 import Reika.ChromatiCraft.Render.TESR.RenderColoredAltar;
@@ -165,7 +166,6 @@ import Reika.DragonAPI.Auxiliary.Trackers.SettingInterferenceTracker;
 import Reika.DragonAPI.Instantiable.IO.DynamicSoundLoader;
 import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset.RemoteSourcedAssetRepository;
 import Reika.DragonAPI.Instantiable.Rendering.ForcedTextureArmorModel;
-import Reika.DragonAPI.Instantiable.Rendering.ItemSpriteSheetRenderer;
 import Reika.DragonAPI.Instantiable.Rendering.MultiSheetItemRenderer;
 import Reika.DragonAPI.Instantiable.Rendering.TESRItemRenderer;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
@@ -177,7 +177,7 @@ import cpw.mods.fml.client.registry.RenderingRegistry;
 
 public class ChromaClient extends ChromaCommon {
 
-	public static final ItemSpriteSheetRenderer items = new MultiSheetItemRenderer(ChromatiCraft.instance, ChromatiCraft.class);
+	public static final MultiSheetItemRenderer items = new MultiSheetItemRenderer(ChromatiCraft.instance, ChromatiCraft.class);
 
 	//public static final ItemMachineRenderer machineItems = new ItemMachineRenderer();
 
@@ -289,6 +289,7 @@ public class ChromaClient extends ChromaCommon {
 		this.registerBlockSheets();
 
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.DATACRYSTAL.getItemInstance(), new DataCrystalRenderer());
+		MinecraftForgeClient.registerItemRenderer(ChromaItems.STRUCTMAP.getItemInstance(), new StructureMapRenderer(items));
 
 		RenderSlime slimeRenderer = (RenderSlime)RenderManager.instance.entityRenderMap.get(EntitySlime.class);
 		slimeRenderer.scaleAmount = new ColorizableSlimeModel(0);

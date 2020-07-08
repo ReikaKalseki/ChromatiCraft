@@ -270,29 +270,30 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	}
 
 	private HashMap<WorldChunk, StructureGenStatus> getStatusCache(ChromaStructures s) {
-		HashMap<WorldChunk, StructureGenStatus> set = statusMap.get(s);
-		if (set == null) {
+		if (statusMap.isEmpty()) {
 			try {
-				set = this.loadStatusCache();
+				this.loadStatusCache();
 			}
 			catch (IOException e) {
 				ChromatiCraft.logger.logError("Could not load structure status cache!");
 				e.printStackTrace();
-				set = new HashMap();
 			}
+		}
+		HashMap<WorldChunk, StructureGenStatus> set = statusMap.get(s);
+		if (set == null) {
+			set = new HashMap();
 			statusMap.put(s, set);
 		}
 		return set;
 	}
 
-	private HashMap<WorldChunk, StructureGenStatus> loadStatusCache() throws IOException {
+	private void loadStatusCache() throws IOException {
 		HashMap<WorldChunk, StructureGenStatus> ret = new HashMap();
 		SimpleNBTFile nf = new SimpleNBTFile(this.getStatusCacheFile());
 		nf.load();
 		if (nf.data != null) {
 			this.loadStatusCacheFromNBT(nf.data);
 		}
-		return ret;
 	}
 
 	@SubscribeEvent
@@ -321,6 +322,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			HashMap<WorldChunk, StructureGenStatus> map = statusMap.get(s);
 			NBTTagCompound tag = new NBTTagCompound();
 			this.writeMapToNBT(tag, map);
+			nbt.setTag(s.name(), tag);
 		}
 	}
 
@@ -445,6 +447,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			int rz = z;
 			s.getStructure().resetToDefaults();
 			n++;
+			if (!this.isValidBiome(s, world.getBiomeGenForCoords(x, z)))
+				continue;
 			switch(s) {
 				default:
 					break;
@@ -666,19 +670,18 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	}
 
 	private boolean isValidBiome(ChromaStructures s, BiomeGenBase b) {
-		if (ReikaBiomeHelper.isOcean(b))
-			return s == ChromaStructures.OCEAN;
+		boolean ocean = ReikaBiomeHelper.isOcean(b);
 		switch(s) {
 			case OCEAN:
-				return ReikaBiomeHelper.isOcean(b);
+				return ocean;
 			case CAVERN:
 				return true;
 			case BURROW:
-				return b.topBlock == Blocks.grass && !this.isValidBiome(ChromaStructures.SNOWSTRUCT, b);
+				return !ocean && b.topBlock == Blocks.grass && !this.isValidBiome(ChromaStructures.SNOWSTRUCT, b);
 			case DESERT:
-				return this.isValidBiomeForDesertStruct(b);
+				return !ocean && this.isValidBiomeForDesertStruct(b);
 			case SNOWSTRUCT:
-				return b.topBlock == Blocks.grass && b.getEnableSnow() && ReikaBiomeHelper.getBiomeDecorator(b).treesPerChunk < 1 && !b.biomeName.toLowerCase(Locale.ENGLISH).contains("forest");
+				return !ocean && b.topBlock == Blocks.grass && b.getEnableSnow() && ReikaBiomeHelper.getBiomeDecorator(b).treesPerChunk < 1 && !b.biomeName.toLowerCase(Locale.ENGLISH).contains("forest");
 			default:
 				return false;
 		}
