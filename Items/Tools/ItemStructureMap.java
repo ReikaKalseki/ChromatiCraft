@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items.Tools;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.Map.Entry;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
@@ -32,14 +34,17 @@ import net.minecraft.world.gen.ChunkProviderGenerate;
 import net.minecraft.world.gen.structure.MapGenStronghold;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureStart;
+import net.minecraftforge.classloading.FMLForgePlugin;
 import net.minecraftforge.client.IItemRenderer.ItemRenderType;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.World.IWG.DungeonGenerator;
 import Reika.ChromatiCraft.World.IWG.DungeonGenerator.StructureGenStatus;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.Item.SpriteRenderCallback;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
@@ -47,7 +52,9 @@ import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaReflectionHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -65,22 +72,20 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
 		if (!world.isRemote) {
-			if (is.stackTagCompound == null || !is.stackTagCompound.hasKey(TAG_NAME)) {
+			if (is.stackTagCompound != null && is.stackTagCompound.hasKey(TAG_NAME)) {
 
 			}
 			else if (ep.isSneaking()) {
-				is.setItemDamage((is.getItemDamage()+1)%StructureSearch.list.length);
-			}
-			else {
 				StructureSearch s = StructureSearch.list[is.getItemDamage()];
 				int x0 = MathHelper.floor_double(ep.posX);
 				int z0 = MathHelper.floor_double(ep.posZ);
-				HashMap<Coordinate, StructurePresence> data = s.getLocations((WorldServer)world, x0, z0);
+				StructureMapData data = s.getLocations((WorldServer)world, x0, z0);
 				if (is.stackTagCompound == null)
 					is.stackTagCompound = new NBTTagCompound();
-				this.writeDataToItem(data, is);
-				is.stackTagCompound.setInteger("rootX", x0);
-				is.stackTagCompound.setInteger("rootZ", z0);
+				is.stackTagCompound.setTag(TAG_NAME, data.writeToNBT());
+			}
+			else {
+				is.setItemDamage((is.getItemDamage()+1)%StructureSearch.list.length);
 			}
 		}
 		return is;
@@ -89,20 +94,8 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 	@Override
 	public void onUpdate(ItemStack is, World world, Entity e, int slot, boolean held) {
 		if (held && is.stackTagCompound != null && is.stackTagCompound.hasKey(TAG_NAME)) {
-			NBTTagList tag = is.stackTagCompound.getTagList(TAG_NAME, NBTTypes.COMPOUND.ID);
 
 		}
-	}
-
-	private void writeDataToItem(HashMap<Coordinate, StructurePresence> data, ItemStack is) {
-		NBTTagList tag = new NBTTagList();
-		for (Entry<Coordinate, StructurePresence> e : data.entrySet()) {
-			NBTTagCompound val = new NBTTagCompound();
-			e.getKey().writeToNBT("loc", val);
-			val.setString("state", e.getValue().name());
-			tag.appendTag(val);
-		}
-		is.stackTagCompound.setTag("mapdata", tag);
 	}
 
 	@Override
@@ -111,8 +104,8 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 		li.add("Seeking "+StructureSearch.list[is.getItemDamage()].displayName());
 		if (is.stackTagCompound != null && is.stackTagCompound.hasKey(TAG_NAME)) {
 			if (GuiScreen.isCtrlKeyDown()) {
-				NBTTagList tag = is.stackTagCompound.getTagList(TAG_NAME, NBTTypes.COMPOUND.ID);
-				li.add("Map has found "+tag.tagCount()+" structures.");
+				StructureMapData map = StructureMapData.readFromNBT(is.stackTagCompound.getCompoundTag(TAG_NAME));
+				map.addTooltip(li);
 			}
 			else {
 				li.add("Map is populated.");
@@ -136,6 +129,7 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 	public static void renderMap(ItemStack item, float ptick, EntityPlayer ep) {
 		if (item.stackTagCompound == null || !item.stackTagCompound.hasKey(TAG_NAME))
 			return;
+		StructureMapData data = StructureMapData.readFromNBT(item.stackTagCompound.getCompoundTag(TAG_NAME));
 		ReikaRenderHelper.disableEntityLighting();
 		ReikaRenderHelper.disableLighting();
 		Tessellator v5 = Tessellator.instance;
@@ -143,7 +137,10 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 		GL11.glColor4f(1, 1, 1, 1);
 		BlendMode.DEFAULT.apply();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/structmapoverlay.png");
+		StructureSearch type = StructureSearch.list[item.getItemDamage()];
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/StructureMap/overlay_typed.png");
+		double ou = (type.ordinal()%4)/4D;
+		double ov = (type.ordinal()/4)/4D;
 		v5.startDrawingQuads();
 		v5.setBrightness(240);
 		v5.setColorOpaque_I(0xffffff);
@@ -153,30 +150,45 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 		int px = MathHelper.floor_double(ep.posX+(ep.lastTickPosX-ep.posX)*ptick);
 		int pz = MathHelper.floor_double(ep.posZ+(ep.lastTickPosZ-ep.posZ)*ptick);
 		 */
-		int px = item.stackTagCompound.getInteger("rootX");
-		int pz = item.stackTagCompound.getInteger("rootZ");
-		StructureSearch type = StructureSearch.list[item.getItemDamage()];
+		int px = data.originX;
+		int pz = data.originZ;
 		int max = type.getSearchRange();
-		v5.addVertexWithUV(0 - b0, 128 + b0, rz, 0, 1);
-		v5.addVertexWithUV(128 + b0, 128 + b0, rz, 1, 1);
-		v5.addVertexWithUV(128 + b0, 0 - b0, rz, 1, 0);
-		v5.addVertexWithUV(0 - b0, 0 - b0, rz, 0, 0);
+		if (max == -1) {
+			px = data.bounds.getCenterX();
+			pz = data.bounds.getCenterZ();
+			Coordinate far = data.bounds.getFarthestPointFrom(px, data.bounds.getCenterY(), pz);
+			max = Math.max(Math.abs(far.xCoord-px), Math.abs(far.zCoord-pz));
+		}
+		v5.addVertexWithUV(0 - b0, 128 + b0, rz, ou, ov+0.25);
+		v5.addVertexWithUV(128 + b0, 128 + b0, rz, ou+0.25, ov+0.25);
+		v5.addVertexWithUV(128 + b0, 0 - b0, rz, ou+0.25, ov);
+		v5.addVertexWithUV(0 - b0, 0 - b0, rz, ou, ov);
 		v5.draw();
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		RenderItem ri = new RenderItem();
+		ri.zLevel = -150;
+		ri.renderItemIntoGUI(Minecraft.getMinecraft().fontRenderer, Minecraft.getMinecraft().renderEngine, ReikaItemHelper.stoneBricks.asItemStack(), 0, 0);
+		GL11.glPopAttrib();
+		//GL11.glDisable(GL11.GL_TEXTURE_2D);
 		int d = 12;
-		NBTTagList li = item.stackTagCompound.getTagList(TAG_NAME, NBTTypes.COMPOUND.ordinal());
-		GL11.glPointSize(2);
-		v5.startDrawing(GL11.GL_POINTS);
+		//GL11.glPointSize(2);
+		GL11.glDepthMask(false);
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/StructureMap/marker.png");
+		//v5.startDrawing(GL11.GL_POINTS);
+		v5.startDrawingQuads();
 		v5.setBrightness(240);
-		v5.setColorOpaque_I(0x000000);
-		for (Object o : li.tagList) {
-			NBTTagCompound tag = (NBTTagCompound)o;
-			Coordinate loc = Coordinate.readFromNBT("loc", tag);
-			StructurePresence s = StructurePresence.valueOf(tag.getString("state"));
+		double sc = 2;
+		for (Entry<Coordinate, StructurePresence> e : data.map.entrySet()) {
+			Coordinate loc = e.getKey();
+			StructurePresence s = e.getValue();
 			int x = (int)Math.round((loc.xCoord-px)*40D/max+64);
 			int z = (int)Math.round((loc.zCoord-pz)*40D/max+64);
 			v5.setColorOpaque_I(s.renderColor);
-			v5.addVertex(x, z, rz*2);
+			//v5.addVertex(x, z, rz*2);
+			v5.addVertexWithUV(x-sc, z+sc, rz*2, 0, 1);
+			v5.addVertexWithUV(x+sc, z+sc, rz*2, 1, 1);
+			v5.addVertexWithUV(x+sc, z-sc, rz*2, 1, 0);
+			v5.addVertexWithUV(x-sc, z-sc, rz*2, 0, 0);
 		}
 		v5.draw();
 	}
@@ -217,6 +229,8 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 		}
 
 		public String displayName() {
+			if (this == TOWERS)
+				return ChromaFontRenderer.FontType.OBFUSCATED.id+"GlowingTowers";
 			if (structure != null) {
 				return structure.getDisplayName();
 			}
@@ -224,8 +238,10 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 		}
 
 		/** Return coords are absolute, not relative */
-		private HashMap<Coordinate, StructurePresence> getLocations(WorldServer world, int x0, int z0) {
+		private StructureMapData getLocations(WorldServer world, int x0, int z0) {
 			HashMap<Coordinate, StructurePresence> li = new HashMap();
+			int cc = 0;
+			BlockBox bounds = BlockBox.nothing();
 			if (structure != null) {
 				int range = 128;
 				for (int i = -range; i <= range; i++) {
@@ -234,7 +250,12 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 						int rz = z0+k*16;
 						StructureGenStatus at = DungeonGenerator.instance.getGenStatus(structure, world, rx, rz);
 						if (at.hasStructure()) {
-							li.put(new Coordinate(rx, 0, rz), at.isFinalized() ? StructurePresence.CONFIRMED : StructurePresence.EXPECTED);
+							Coordinate c = new Coordinate(rx, 0, rz);
+							boolean cf = at.isFinalized();
+							if (cf)
+								cc++;
+							bounds = bounds.addCoordinate(c.xCoord, c.yCoord, c.zCoord);
+							li.put(c, cf ? StructurePresence.CONFIRMED : StructurePresence.EXPECTED);
 						}
 					}
 				}
@@ -243,17 +264,31 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 				switch(this) {
 					case STRONGHOLD:
 						MapGenStronghold mg = ((ChunkProviderGenerate)world.theChunkProviderServer.currentChunkProvider).strongholdGenerator;
+						Field f = ReikaReflectionHelper.getProtectedInheritedField(mg, FMLForgePlugin.RUNTIME_DEOBF ? "field_75039_c" : "worldObj");
+						f.setAccessible(true);
+						try {
+							f.set(mg, world);
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+						}
+						ReikaObfuscationHelper.invoke("canSpawnStructureAtCoords", mg, 0, 0); //populate the map
 						List li0 = (List)ReikaObfuscationHelper.invoke("getCoordList", mg);
 						if (li0 != null) {
 							for (Object o : li0) {
-								li.put(new Coordinate((ChunkPosition)o).to2D(), StructurePresence.EXPECTED);
+								Coordinate c = new Coordinate((ChunkPosition)o).to2D();
+								bounds = bounds.addCoordinate(c.xCoord, c.yCoord, c.zCoord);
+								li.put(c, StructurePresence.EXPECTED);
 							}
 						}
 						for (StructureStart ss : ((Map<Long, StructureStart>)mg.structureMap).values()) {
 							if (ss.isSizeableStructure()) {
 								StructureBoundingBox sbb = ss.getBoundingBox();
 								if (sbb != null) {
-									li.put(new Coordinate(sbb.getCenterX(), 0, sbb.getCenterZ()), StructurePresence.CONFIRMED);
+									Coordinate c = new Coordinate(sbb.getCenterX(), 0, sbb.getCenterZ());
+									bounds = bounds.addCoordinate(c.xCoord, c.yCoord, c.zCoord);
+									li.put(c, StructurePresence.CONFIRMED);
+									cc++;
 								}
 							}
 						}
@@ -263,14 +298,78 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 							Coordinate c = t.getGeneratedLocation();
 							if (c == null)
 								c = new Coordinate(t.getRootPosition().chunkXPos, 0, t.getRootPosition().chunkZPos);
-							li.put(c, ReikaWorldHelper.isChunkGenerated(world, c.xCoord, c.zCoord) ? StructurePresence.CONFIRMED : StructurePresence.EXPECTED);
+							bounds = bounds.addCoordinate(c.xCoord, c.yCoord, c.zCoord);
+							boolean cf = ReikaWorldHelper.isChunkGenerated(world, c.xCoord, c.zCoord);
+							if (cf)
+								cc++;
+							li.put(c, cf ? StructurePresence.CONFIRMED : StructurePresence.EXPECTED);
 						}
 						break;
 					default:
 						break;
 				}
 			}
-			return li;
+			return new StructureMapData(li, x0, z0, cc, bounds);
+		}
+
+	}
+
+	private static class StructureMapData {
+
+		private final HashMap<Coordinate, StructurePresence> map;
+		private final int originX;
+		private final int originZ;
+		private final BlockBox bounds;
+		private final int confirmedCount;
+
+		private StructureMapData(HashMap<Coordinate, StructurePresence> data, int x, int z, int cc, BlockBox box) {
+			map = data;
+			originX = x;
+			originZ = z;
+			confirmedCount = cc;
+			bounds = box;
+		}
+
+		public void addTooltip(List li) {
+			li.add("Confirmed "+confirmedCount+"/"+map.size()+" locations.");
+		}
+
+		public static StructureMapData readFromNBT(NBTTagCompound data) {
+			HashMap<Coordinate, StructurePresence> values = new HashMap();
+			NBTTagList li = data.getTagList("mapdata", NBTTypes.COMPOUND.ordinal());
+			int cc = 0;
+			for (Object o : li.tagList) {
+				NBTTagCompound tag = (NBTTagCompound)o;
+				Coordinate loc = Coordinate.readFromNBT("loc", tag);
+				StructurePresence s = StructurePresence.valueOf(tag.getString("state"));
+				if (s == StructurePresence.CONFIRMED)
+					cc++;
+				values.put(loc, s);
+			}
+
+			NBTTagCompound meta = data.getCompoundTag("metadata");
+			return new StructureMapData(values, meta.getInteger("rootX"), meta.getInteger("rootZ"), cc, BlockBox.readFromNBT(meta));
+		}
+
+		private NBTTagCompound writeToNBT() {
+			NBTTagCompound ret = new NBTTagCompound();
+			NBTTagList tag = new NBTTagList();
+			for (Entry<Coordinate, StructurePresence> e : map.entrySet()) {
+				NBTTagCompound val = new NBTTagCompound();
+				e.getKey().writeToNBT("loc", val);
+				val.setString("state", e.getValue().name());
+				tag.appendTag(val);
+			}
+
+			NBTTagCompound meta = new NBTTagCompound();
+			bounds.writeToNBT(meta);
+			meta.setInteger("rootX", originX);
+			meta.setInteger("rootZ", originZ);
+
+			ret.setTag("mapdata", tag);
+			ret.setTag("metadata", meta);
+
+			return ret;
 		}
 
 	}

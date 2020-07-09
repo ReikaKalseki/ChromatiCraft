@@ -124,7 +124,7 @@ public class StructureMapRenderer implements IItemRenderer {
 	private void drawBackground() {
 		GL11.glEnable(GL11.GL_BLEND);
 		BlendMode.DEFAULT.apply();
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/structmapbcg.png");
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/StructureMap/bcg.png");
 		Tessellator tessellator = Tessellator.instance;
 		GL11.glNormal3f(0.0F, 0.0F, -1.0F);
 		tessellator.startDrawingQuads();
