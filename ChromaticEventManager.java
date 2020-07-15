@@ -1820,27 +1820,29 @@ public class ChromaticEventManager {
 	@SubscribeEvent
 	public void doPoolRecipes(ItemUpdateEvent evt) {
 		EntityItem ei = evt.entityItem;
-		if (rand.nextInt(5) == 0) {
+		boolean rng = rand.nextInt(5) == 0;
+		if (rng || ei.getEntityData().getBoolean("chromaalloy")) {
 			//ReikaJavaLibrary.pConsole(ei+" : "+ReikaItemHelper.getDropper(ei));
 			if (PoolRecipes.instance.canAlloyItem(ei)) {
 				PoolRecipe out = PoolRecipes.instance.getPoolRecipe(ei);
 				if (out != null) {
-					if (!ei.getEntityData().getBoolean("chromaaalloy")) {
+					if (!ei.getEntityData().getBoolean("chromaalloy")) {
 						out.initialize(ei);
 						ei.getEntityData().setBoolean("chromaalloy", true);
 					}
 					out.doFX(ei);
+					int min = out.getMinDuration();
 					if (ei.worldObj.isRemote) {
 						ChromaFX.poolRecipeParticles(ei);
 					}
-					else if (ei.ticksExisted > 20) {
+					else if (rng && ei.ticksExisted >= min && ei.ticksExisted > 20) {
 						int x = MathHelper.floor_double(ei.posX);
 						int y = MathHelper.floor_double(ei.posY);
 						int z = MathHelper.floor_double(ei.posZ);
 						TileEntityChroma te = (TileEntityChroma)ei.worldObj.getTileEntity(x, y, z);
 						int ether = te.getEtherCount();
 						int n = BlockActiveChroma.getSpeedMultiplier(ether);
-						if (rand.nextInt(20/n) == 0 && (ei.ticksExisted >= 600/n || rand.nextInt((600-ei.ticksExisted)/n) == 0)) {
+						if (rand.nextInt(20/n) == 0 && (ei.ticksExisted-min >= 600/n || rand.nextInt((600-ei.ticksExisted+min)/n) == 0)) {
 							te.clear();
 							PoolRecipes.instance.makePoolRecipe(ei, out, ether, x, y, z);
 						}

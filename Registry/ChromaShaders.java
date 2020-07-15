@@ -43,6 +43,9 @@ public enum ChromaShaders implements ShaderHook {
 	VOIDRITUAL$SPHERE(),
 	VOIDRITUAL$WORLD(ShaderDomain.WORLD),
 
+	ARTEALLOY$SHOCK(),
+	ARTEALLOY$GLOW(),
+
 	MONUMENTRITUAL();
 
 	private final ShaderDomain domain;

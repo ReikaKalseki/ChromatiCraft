@@ -111,6 +111,8 @@ public enum ChromaSounds implements DynamicSound {
 	TOWERAMBIENT("tower_ambient2"),
 	CASTTUNEREJECT("casttunereject"),
 	DINGCHARGE("dingcharge"),
+	ARTEALLOY("artealloy2"),
+	ARTEALLOYHIT("artealloy-hit2"),
 	;
 
 	public static final ChromaSounds[] soundList = values();

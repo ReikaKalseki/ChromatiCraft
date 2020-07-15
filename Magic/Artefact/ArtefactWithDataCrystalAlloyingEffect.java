@@ -25,17 +25,21 @@ public class ArtefactWithDataCrystalAlloyingEffect implements AlloyingEffect {
 		rand.setSeed(ei.getEntityId());
 		rand.nextBoolean();
 		rand.nextBoolean();
+		ei.getEntityData().setBoolean("artealloy", true);
 	}
 
 	@Override
 	public void doEffect(EntityItem ei) {
 		int tick = ei.ticksExisted;
+		//ReikaJavaLibrary.pConsole(ei.worldObj.isRemote+" @ "+tick+" for "+ei.getEntityItem());
 		if (ei.worldObj.isRemote) {
 			this.doClientFX(ei);
 		}
 		else {
-			if (tick%176 == 2)
-				ChromaSounds.CASTTUNEREJECT.playSound(ei, 2, 1);
+			if (tick%48 == 0)
+				ChromaSounds.ARTEALLOY.playSound(ei, 2, 1);
+			if (tick > 10 && rand.nextInt(90) == 0)
+				ChromaSounds.ARTEALLOYHIT.playSound(ei, 2, 1);
 		}
 	}
 

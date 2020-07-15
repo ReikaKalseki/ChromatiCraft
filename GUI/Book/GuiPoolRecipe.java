@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.GUI.Book;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -44,11 +45,21 @@ import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.AppEngHandler;
 
 import codechicken.nei.NEIClientConfig;
 
 public class GuiPoolRecipe extends GuiBookSection {
+
+	private static final Comparator<PoolRecipe> recipeSorter = new Comparator<PoolRecipe>() {
+
+		@Override
+		public int compare(PoolRecipe o1, PoolRecipe o2) {
+			return String.CASE_INSENSITIVE_ORDER.compare(o1.ID, o2.ID);
+		}
+
+	};
 
 	private final ArrayList<PoolRecipe> recipes;
 	private int index = 0;
@@ -83,6 +94,8 @@ public class GuiPoolRecipe extends GuiBookSection {
 				buttonList.add(new CustomSoundGuiButton(4, j+xSize-27-20-48, k-2, 20, 20, " ", this));
 			buttonList.add(new CustomSoundGuiButton(5, j+xSize-27-20-28, k-2, 20, 20, " ", this));
 		}
+		if (ReikaObfuscationHelper.isDeObfEnvironment())
+			buttonList.add(new CustomSoundGuiButton(6, j+xSize-27, k+18, 20, 20, " ", this));
 
 		if (NEItrigger && !centeredMouse) {
 			Mouse.setCursorPosition(Display.getWidth() / 2, Display.getHeight() / 2);
@@ -125,6 +138,11 @@ public class GuiPoolRecipe extends GuiBookSection {
 				PoolRecipe pr = this.getActiveRecipe();
 				if (pr != null)
 					ReikaPacketHelper.sendStringIntPacket(ChromatiCraft.packetChannel, ChromaPackets.ALLOYPATTERN.ordinal(), PacketTarget.server, pr.ID, button.id == 5 && this.getActiveRecipe().allowDoubling() ? 1 : 0);
+			}
+			else if (button.id == 6) {
+				PoolRecipe pr = this.getActiveRecipe();
+				if (pr != null)
+					ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.ALLOYITEMS.ordinal(), pr.ID, PacketTarget.server);
 			}
 		}
 		//renderq = 22.5F;

@@ -80,6 +80,7 @@ public class PoolRecipes {
 		pr = this.addRecipe(ChromaItems.STRUCTMAP.getStackOf(), new ItemStack(Items.map), new ItemStack(Items.compass), ChromaItems.DATACRYSTAL.getStackOf(), ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.ARTIFACT.ordinal()), ChromaBlocks.METAALLOYLAMP.getStackOf(), ChromaItems.ENDEREYE.getCraftedProduct(12), ReikaItemHelper.getSizedItemStack(ChromaStacks.auraDust, 64), ReikaItemHelper.getSizedItemStack(ChromaStacks.spaceDust, 48), new ItemStack(Items.glowstone_dust, 32)).addProgress(ProgressStage.TOWER).addProgress(ProgressStage.ARTEFACT);
 		pr.effects.add(ArtefactWithDataCrystalAlloyingEffect.instance);
 		pr.allowDoubling = false;
+		pr.minDuration = 20*60*2; //two minutes
 	}
 
 	private PoolRecipe addRecipe(ItemStack out, ItemStack main, ItemStack... ingredients) {
@@ -248,6 +249,8 @@ public class PoolRecipes {
 		private final ItemHashMap<NBTTagCompound> NBTMatches = new ItemHashMap().setOneWay();
 		private final ArrayList<AlloyingEffect> effects = new ArrayList();
 
+		private int minDuration = 0;
+
 		private PoolRecipe(String id, ItemStack out, ItemStack m, ItemStack... input) {
 			ID = id;
 			output = out.copy();
@@ -355,6 +358,10 @@ public class PoolRecipes {
 				}
 			}
 			return false;
+		}
+
+		public int getMinDuration() {
+			return minDuration;
 		}
 
 		public ItemStack getMainInput() {

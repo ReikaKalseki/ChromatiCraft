@@ -175,6 +175,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.PacketHandler;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.DataPacket;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.PacketObj;
@@ -1122,7 +1123,7 @@ public class ChromatiPackets implements PacketHandler {
 				case PROGSYNC:
 					ProgressionLinking.instance.attemptSyncTriggerProgressFor(ep, ProgressStage.list[data[0]]);
 					break;
-				case ALLOYPATTERN:
+				case ALLOYPATTERN: {
 					PoolRecipe pr = PoolRecipes.instance.getByID(stringdata);
 					if (pr != null) {
 						int slot = ReikaInventoryHelper.locateInInventory(AppEngHandler.getInstance().getBlankPattern(), ep.inventory.mainInventory, false);
@@ -1134,6 +1135,16 @@ public class ChromatiPackets implements PacketHandler {
 								if (!ep.capabilities.isCreativeMode)
 									ReikaInventoryHelper.decrStack(slot, ep.inventory.mainInventory);
 							}
+						}
+					}
+					break;
+				}
+				case ALLOYITEMS:
+					PoolRecipe pr = PoolRecipes.instance.getByID(stringdata);
+					if (pr != null) {
+						ReikaPlayerAPI.addOrDropItem(pr.getMainInput(), ep);
+						for (ItemStack is : pr.getInputs()) {
+							ReikaPlayerAPI.addOrDropItem(is, ep);
 						}
 					}
 					break;
