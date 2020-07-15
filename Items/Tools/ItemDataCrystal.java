@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.InscriptionRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.InscriptionRecipes.InscriptionRecipe;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -168,7 +169,7 @@ public class ItemDataCrystal extends ItemChromaTool {
 			if (motionY < 0 && motionY < -0.125) {
 				motionY = -0.125;
 			}
-			if (this.handleWaterMovement())
+			if (this.handleWaterMovement() && new Coordinate(this).getBlock(worldObj) != ChromaBlocks.CHROMA.getBlockInstance())
 				motionY += 0.05;
 			velocityChanged = true;
 		}

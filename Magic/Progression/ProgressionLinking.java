@@ -24,6 +24,7 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -246,7 +247,7 @@ public class ProgressionLinking {
 			progress = null;
 			if (ico == null)
 				throw new IllegalArgumentException("Null icon!");
-			if (ico.getIcon() == null)
+			if (ico.getIcon() == null && FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
 				throw new IllegalArgumentException("No-data icon!");
 			iconName = ico.name();
 			icon = new TextureSubImage(ico.getIcon());

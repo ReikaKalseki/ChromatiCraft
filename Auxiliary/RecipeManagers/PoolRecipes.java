@@ -38,6 +38,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayList;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.IO.CustomRecipeList;
@@ -74,10 +75,9 @@ public class PoolRecipes {
 		pr = this.addRecipe(ChromaStacks.complexIngot, ChromaStacks.experienceGem, ChromaStacks.chromaIngot, ChromaStacks.enderIngot, ChromaStacks.waterIngot, ChromaStacks.spaceIngot, ChromaStacks.fieryIngot, ChromaStacks.auraIngot, ChromaStacks.conductiveIngot);
 		//pr.allowDoubling = false;
 
-		pr = this.addRecipe(ChromaItems.DATACRYSTAL.getCraftedProduct(2), ChromaItems.DATACRYSTAL.getStackOf(), ReikaItemHelper.getSizedItemStack(ChromaStacks.crystalPowder, 18)).addProgress(ProgressStage.TOWER);
-		pr.allowDoubling = false;
+		pr = this.addRecipe(ChromaItems.DATACRYSTAL.getStackOf(), ChromaItems.DATACRYSTAL.getStackOf(), ReikaItemHelper.getSizedItemStack(ChromaStacks.crystalPowder, 18)).addProgress(ProgressStage.TOWER);
 
-		pr = this.addRecipe(ChromaItems.STRUCTMAP.getStackOf(), ChromaItems.DATACRYSTAL.getStackOf(), ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.ARTIFACT.ordinal()), ChromaBlocks.METAALLOYLAMP.getStackOf(), ChromaItems.ENDEREYE.getCraftedProduct(12)).addProgress(ProgressStage.TOWER).addProgress(ProgressStage.ARTEFACT);
+		pr = this.addRecipe(ChromaItems.STRUCTMAP.getStackOf(), new ItemStack(Items.map), new ItemStack(Items.compass), ChromaItems.DATACRYSTAL.getStackOf(), ChromaItems.ARTEFACT.getStackOfMetadata(ArtefactTypes.ARTIFACT.ordinal()), ChromaBlocks.METAALLOYLAMP.getStackOf(), ChromaItems.ENDEREYE.getCraftedProduct(12), ReikaItemHelper.getSizedItemStack(ChromaStacks.auraDust, 64), ReikaItemHelper.getSizedItemStack(ChromaStacks.spaceDust, 48), new ItemStack(Items.glowstone_dust, 32)).addProgress(ProgressStage.TOWER).addProgress(ProgressStage.ARTEFACT);
 		pr.effects.add(ArtefactWithDataCrystalAlloyingEffect.instance);
 		pr.allowDoubling = false;
 	}
@@ -254,7 +254,12 @@ public class PoolRecipes {
 			main = m;
 
 			for (int i = 0; i < input.length; i++) {
-				inputs.put(input[i], input[i].stackSize);
+				if (inputs.containsKey(input[i]))
+					throw new RegistrationException(ChromatiCraft.instance, "You cannot have two stacks of "+input[i]+"!");
+				int amt = input[i].stackSize;
+				if (amt > input[i].getMaxStackSize())
+					throw new RegistrationException(ChromatiCraft.instance, "Stack size of "+input[i]+" too big!");
+				inputs.put(input[i], amt);
 			}
 		}
 
@@ -394,6 +399,12 @@ public class PoolRecipes {
 			}
 		}
 
+		public void initialize(EntityItem ei) {
+			for (AlloyingEffect c : effects) {
+				c.initialize(ei);
+			}
+		}
+
 		@ModDependent(ModList.APPENG)
 		public ItemStack programToAEPattern(boolean berries) {
 			Collection<ItemStack> in = new ArrayList();
@@ -458,6 +469,7 @@ public class PoolRecipes {
 
 	public static interface AlloyingEffect {
 
+		void initialize(EntityItem ei);
 		void doEffect(EntityItem ei);
 		void onFinish(EntityItem ei, EntityItem result);
 

@@ -20,11 +20,18 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
@@ -43,6 +50,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -479,5 +487,48 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 			icon.animationMetadata = new ShuffledIconControl(idx, icon.animationMetadata, ShuffledIconControl.ANIMATION_SECTIONS_GLOWCAVE, ShuffledIconControl.ANIMATION_SECTION_LENGTH_GLOWCAVE);
 		}
 	}*/
+
+	@Override
+	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity e) {
+		super.onEntityCollidedWithBlock(world, x, y, z, e);
+		if (e instanceof EntityLivingBase) {
+			EntityLivingBase elb = (EntityLivingBase)e;
+			int meta = world.getBlockMetadata(x, y, z);
+			switch(DimDecoTypes.list[meta]) {
+				case AQUA:
+					elb.extinguish();
+					//replenish thirst for enviromine?
+					break;
+				case LIFEWATER:
+					if (elb instanceof EntityMob && ((EntityMob)elb).getCreatureAttribute() == EnumCreatureAttribute.UNDEAD)
+						elb.attackEntityFrom(DamageSource.magic, 4);
+					else
+						elb.heal(2); //1 heart per tick
+					break;
+				case MIASMA:
+					ArrayList<PotionEffect> map = new ArrayList();
+					for (Object o : elb.getActivePotionEffects()) {
+						PotionEffect ef = (PotionEffect)o;
+						Potion p = Potion.potionTypes[ef.getPotionID()];
+						if (ReikaPotionHelper.isBadEffect(p)) {
+
+						}
+						else {
+							int time = Math.max(20*60*20, ef.getDuration());
+							PotionEffect repl = new PotionEffect(p.id, time, ef.getAmplifier());
+							repl.setCurativeItems(ef.getCurativeItems());
+							map.add(repl);
+						}
+					}
+					for (PotionEffect ef : map) {
+						elb.removePotionEffect(ef.getPotionID());
+						elb.addPotionEffect(ef);
+					}
+					break;
+				default:
+					break;
+			}
+		}
+	}
 
 }

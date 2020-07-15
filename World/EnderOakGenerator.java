@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenAbstractTree;
@@ -247,6 +248,8 @@ public class EnderOakGenerator extends WorldGenAbstractTree {
 			if (ReikaWorldHelper.softBlocks(world, x, y, z))
 				return true;
 			Block b = world.getBlock(x, y, z);
+			if (b == Blocks.grass || b == Blocks.dirt)
+				return false;
 			return b.canBeReplacedByLeaves(world, x, y, z) || EnderOakGenerator.super.isReplaceable(world, x, y, z);
 		}
 

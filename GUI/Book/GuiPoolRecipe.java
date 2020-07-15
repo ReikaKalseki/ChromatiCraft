@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.GUI.Book;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -56,6 +57,7 @@ public class GuiPoolRecipe extends GuiBookSection {
 	public GuiPoolRecipe(EntityPlayer ep, int offset, boolean nei) {
 		super(ChromaGuis.ALLOYING, ep, ChromaResearch.ALLOYS, 256, 220, nei);
 		recipes = new ArrayList(PoolRecipes.instance.getAllPoolRecipesForPlayer(ep));
+		Collections.sort(recipes, recipeSorter);
 		index = offset;
 	}
 
