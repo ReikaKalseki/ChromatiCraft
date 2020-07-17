@@ -85,10 +85,8 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 		}
 		if (flag) {
 			EntityPlayer ep = this.getPlacer();
-			if (ep != null) {
-				ProgressStage.ENERGYUNDERSTAND.stepPlayerTo(ep);
+			if (ep != null)
 				ProgressStage.USEENERGY.stepPlayerTo(ep);
-			}
 		}
 		return flag;
 	}

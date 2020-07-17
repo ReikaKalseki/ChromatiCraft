@@ -108,7 +108,6 @@ public abstract class TileEntityRelayPowered extends TileEntityChromaticBase imp
 			te.drainEnergy(e, trans);
 			te.onDrain(e, trans);
 			energy.addValueToColor(e, trans);
-			ProgressStage.ENERGYUNDERSTAND.stepPlayerTo(this.getPlacer());
 			ProgressStage.RELAYS.stepPlayerTo(this.getPlacer());
 			if (worldObj.isRemote) {
 				ProgressionCatchupHandling.instance.attemptSync(this, 8, ProgressStage.RELAYS, true);

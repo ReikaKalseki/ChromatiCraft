@@ -515,7 +515,6 @@ public class ChromaAux {
 			if (PlayerElementBuffer.instance.addToPlayer(player, e, add, true))
 				te.drain(e, drain);
 			ProgressStage.CHARGE.stepPlayerTo(player);
-			ProgressStage.ENERGYUNDERSTAND.stepPlayerTo(player);
 			if (te instanceof TileEntityCrystalPylon)
 				ProgressionManager.instance.setPlayerDiscoveredColor(player, ((TileEntityCrystalPylon)te).getColor(), true, true);
 			if (player.worldObj.isRemote) {
