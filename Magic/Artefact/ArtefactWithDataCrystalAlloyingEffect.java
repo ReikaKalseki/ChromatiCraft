@@ -5,14 +5,16 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.AlloyingEffect;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
@@ -25,6 +27,7 @@ import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.DelayedKnockback;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledEvent;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -69,7 +72,7 @@ public class ArtefactWithDataCrystalAlloyingEffect implements AlloyingEffect {
 		else {
 			if (tick%45 == 0)
 				ChromaSounds.ARTEALLOY.playSoundNoAttenuation(ei.worldObj, ei.posX, ei.posY, ei.posZ, 2, 1, 96);
-			if (tick > 10 && rand.nextInt(90) == 0) {
+			if (fireTick == 0 && tick > 10 && rand.nextInt(90) == 0) {
 				List<EntityLivingBase> li = ei.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, ReikaAABBHelper.getEntityCenteredAABB(ei, 12));
 				for (EntityLivingBase e : li) {
 					TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new DelayedKnockback(e, new DecimalPosition(ei), 5, 0.5)), 12);
@@ -83,7 +86,19 @@ public class ArtefactWithDataCrystalAlloyingEffect implements AlloyingEffect {
 
 	@SideOnly(Side.CLIENT)
 	private void doClientFX(EntityItem ei) {
-
+		int n = ReikaRandomHelper.getRandomBetween(2, 7);
+		for (int i = 0; i < n; i++) {
+			double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
+			double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
+			double vy = ReikaRandomHelper.getRandomBetween(0.1875, 0.4);
+			if (ReikaRandomHelper.doWithChance(15))
+				vy += 0.375;
+			float s = (float)ReikaRandomHelper.getRandomPlusMinus(1.5, 2.5);
+			float g = (float)ReikaRandomHelper.getRandomBetween(0.03125, 0.125)*(float)(vy/0.125)*1.5F;
+			EntityBlurFX fx1 = new EntityBlurFX(Minecraft.getMinecraft().theWorld, ei.posX, ei.posY, ei.posZ, vx, vy, vz);
+			fx1.setColor(0xffffff).setGravity(g).setScale(s).setLife(40).setRapidExpand().setIcon(ChromaIcons.FADE_RAY);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx1);
+		}
 	}
 
 	public void doBurst(EntityItem ei) {
@@ -98,6 +113,9 @@ public class ArtefactWithDataCrystalAlloyingEffect implements AlloyingEffect {
 
 	@Override
 	public void onFinish(EntityItem ei, EntityItem result) {
+		Coordinate c = new Coordinate(ei);
+		if (c.getBlock(ei.worldObj) == ChromaBlocks.CHROMA.getBlockInstance())
+			c.setBlock(ei.worldObj, Blocks.air);
 		ReikaEntityHelper.setInvulnerable(ei, true);
 		ReikaEntityHelper.setInvulnerable(result, true);
 		ei.worldObj.newExplosion(ei, ei.posX, ei.posY, ei.posZ, 6, true, true);
@@ -124,9 +142,11 @@ public class ArtefactWithDataCrystalAlloyingEffect implements AlloyingEffect {
 				double pz = ReikaRandomHelper.getRandomPlusMinus(position.zCoord, 0.25);
 				double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.125);
 				double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.125);
-				double vy = ReikaRandomHelper.getRandomBetween(0.03125, 0.125);
+				double vy = ReikaRandomHelper.getRandomBetween(0.03125, 0.25);
 				float s = (float)ReikaRandomHelper.getRandomPlusMinus(5, 2.5);
-				EntityFX fx1 = new EntityBlurFX(Minecraft.getMinecraft().theWorld, px, py, pz, vx, vy, vz).setColor(0xffffff).setScale(s).setLife(24).setRapidExpand();
+				EntityBlurFX fx1 = new EntityBlurFX(Minecraft.getMinecraft().theWorld, px, py, pz, vx, vy, vz);
+				int c = ReikaColorAPI.getModifiedHue(0xff0000, ReikaRandomHelper.getRandomBetween(20, 45));
+				fx1.setColor(c).setScale(s).setLife(30).setRapidExpand().setIcon(ChromaIcons.FADE_GENTLE);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx1);
 			}
 		}

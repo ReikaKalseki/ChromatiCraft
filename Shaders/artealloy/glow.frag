@@ -1,9 +1,11 @@
+uniform float distance;
+
 void main() {
 	vec2 nodeXY = getScreenPos(0, 0, 0);
 	
 	float distv = distsq(nodeXY, texcoord);
 	float d = 0.9+0.2*sin(time*0.043)+0.04*sin(time*0.293);
-	float distfac_color = max(0.0, min(1.0, d-8.0*distv));
+	float distfac_color = max(0.0, min(1.25, d-0.045*distv*distance));
 	//float distfac_color = max(0.0, min(1.0, 1.0-50.0*distv));
 	//float distfac_color2 = max(0.0, min(1.0, 1.0-150.0*distv));
 	float distfac_vertex = max(0.0, min(1.0, 1.5-15.0*distv));

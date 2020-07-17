@@ -98,12 +98,13 @@ public class DataCrystalRenderer extends MultiSheetItemRenderer implements Multi
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
 				GL11.glTranslated(0, -0.75, 0);
 				if (artealloy) {
-					ChromaShaders.ARTEALLOY$GLOW.setIntensity(1);
+					ChromaShaders.ARTEALLOY$GLOW.setIntensity(Math.min(1, ChromaShaders.ARTEALLOY$GLOW.getIntensity()+0.2F));
 					//ChromaShaders.ARTEALLOY$GLOW.lingerTime = 4;
 					ChromaShaders.ARTEALLOY$GLOW.rampDownAmount = 0.008F;
 					ChromaShaders.ARTEALLOY$GLOW.rampDownFactor = 0.99F;
 					ChromaShaders.ARTEALLOY$GLOW.getShader().setFocus(ei);
 					ChromaShaders.ARTEALLOY$GLOW.getShader().setMatricesToCurrent();
+					ChromaShaders.ARTEALLOY$GLOW.getShader().setField("distance", ei.getDistanceSqToEntity(Minecraft.getMinecraft().thePlayer));
 
 					int fire = ArtefactWithDataCrystalAlloyingEffect.instance.getFireTick();
 					ChromaShaders.ARTEALLOY$SHOCK.clearOnRender = true;
