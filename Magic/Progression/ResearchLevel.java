@@ -23,8 +23,7 @@ public enum ResearchLevel implements ProgressElement {
 	RAWEXPLORE(),
 	BASICCRAFT(),
 	RUNECRAFT(),
-	CHARGESELF(), //?
-	ENERGYEXPLORE(),
+	ENERGY(),
 	MULTICRAFT(),
 	NETWORKING(),
 	PYLONCRAFT(),
@@ -41,12 +40,10 @@ public enum ResearchLevel implements ProgressElement {
 		switch(this) {
 			case ENTRY:
 				return true;
-			case CHARGESELF:
-				return ProgressStage.CHARGE.isPlayerAtStage(ep);
 			case RAWEXPLORE:
 				return ProgressStage.CRYSTALS.isPlayerAtStage(ep);
-			case ENERGYEXPLORE:
-				return ProgressStage.PYLON.isPlayerAtStage(ep);
+			case ENERGY:
+				return ProgressStage.CHARGE.isPlayerAtStage(ep) && ProgressStage.PYLON.isPlayerAtStage(ep);
 			case BASICCRAFT:
 				return ProgressStage.ANYSTRUCT.isPlayerAtStage(ep);
 			case RUNECRAFT:

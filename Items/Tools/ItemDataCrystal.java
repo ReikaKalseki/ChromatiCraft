@@ -193,7 +193,7 @@ public class ItemDataCrystal extends ItemChromaTool {
 
 	@Override
 	public boolean showDurabilityBar(ItemStack is) {
-		return is.stackTagCompound != null;
+		return is.stackTagCompound != null && !is.stackTagCompound.getBoolean("tooltip");
 	}
 
 	@Override

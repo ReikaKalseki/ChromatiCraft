@@ -31,7 +31,7 @@
 		This world is strange, confusing, and unknown. You have no idea what drives or forms it, something you will need to learn before you can possibly begin to exploit it and bend the forces to your needs. Fortunately for you, you have a notebook of sorts, though you will need to populate it with information you collect as you explore and experiment.
 	</start>
 	<lexicon>
-		Seeing as you are learning this as you go along, you will be required to piece together your understanding from various fragments of information; rarely will one item or event hold all of the information you need. In particular, various notes, though incomplete on their own, might become more complete when assembled together. Also, for some reason, sneaking when navigating the book accelerates the process.
+		Seeing as you are learning this as you go along, you will be required to piece together your understanding from various fragments of information, supplemented by your own reasoning and experimentation; rarely will one item or event hold all of the information you need. In particular, various notes, though incomplete on their own, might become more complete when thought of together. Also, for some reason, sneaking when navigating the book accelerates the process.
 	</lexicon>
 	<crafting>
 		At first, the casting table seemed identical to a wooden worktable, but you soon realized that in that form it can only make the most basic of items. In all likelihood, you will need to build a structure around the table to help focus the energy and allow you to advance your crafting. Additionally, the directionality to the recipes is likely important; one can only hope that the logical mapping of upwards to North has been chosen.
@@ -100,7 +100,7 @@
 		It is becoming clear at this point that in order to properly harness and manipulate crystal energies, you are going to need more than a simple block here or there. In particular, anything involving crafting, handling energy, or infusing one thing into another seems to require a fairly large construction. Given their size and number, and possible environmental considerations, it would be wise to build most or all of these - especially any that have anything to do with crafting or the pylons - outside.
 	</multiblocks>
 	<pylonlink>
-		Having connected various colors of pylon to your network, you quickly learned that their energy sources are not infinite; they will deplete and require significant time to recharge. You may be able to find a way to improve that later, but in the meantime, the fact you have half a dozen pylons of any given color, but useless without also being directly connected with repeaters, proved too irksome to leave be. However, a clue learned from a strange structure with a beaconlike aura pointed you in a new direction: linking the pylons themselves. If you can pull this off, they will effectively become one large energy buffer, with recharge rate to match.
+		Having connected various colors of pylon to your network, you quickly learned that their energy sources are not infinite; they will deplete and require significant time to recharge. You may to find a way to improve that later, but for now, the fact you have many pylons of any given color, all useless without being directly connected with repeaters, proves too irksome to ignore. However, a clue from a strange structure with a beaconlike aura provided an insight: linking the pylons themselves. If you can pull this off, they will effectively become one large energy buffer, with recharge rate to match.
 	</pylonlink>
 	<name>
 		

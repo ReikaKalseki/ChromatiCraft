@@ -28,7 +28,7 @@
 		Searching for and harvesting crystals is often a tedious task; however, you have found a way to imbue the magic off of the shards onto a plant, turning it into a brillant crystal flower that can help supplement your shard requirements.
 	</seed>
 	<fragment>
-		Scattered around the world are scraps of information on the fundamental elements of the universe or its applications. You will likely find those useful later. They can be added to your lexicon by shift-right-clicking with the book in hand.
+		Scattered around the world are scraps of information on the fundamental elements of the universe, that is, the laws on which it operates. Combining those and some of your own research, you should be able to form a complete enough understanding so as to allow you to devise applications for those laws to suit your needs. Fragments can be added to your lexicon by opening the book while sneaking.
 	</fragment>
 	<berries>
 		When harvesting the colored trees from around the world, you noticed that in addition to saplings and apples, they drop berries of the same color. They are too foul-tasting to be of much use for sustenance, but you can feel the tingle of energy contained within, making them a viable way to augment your own energy stores. They may also play a key role in enriching the power of crystal shards, though you will need some magical solvent.
@@ -61,10 +61,10 @@
 		-Unimplemented-
 	</branches>
 	<artefact>
-		In certain regions of the world, you seem to be able to rarely find an odd, star-shaped...thing buried just below the surface. It has proven actively dangerous to carry, and the villagers you sold it to learned that the hard way. Whatever it is, and whoever made it, you probably do not want to get too many of these in one place...
+		In certain regions of the world, you seem to be able to rarely find an odd, star-shaped...thing buried just below the surface. It has proven actively dangerous to carry, and the villagers you sold it to learned that the hard way (though the profit you earned doing so makes that something of a non-issue in your eyes). Whatever it is, and whoever made it, you probably do not want to get too many of these in one place, or to let them get too close to fragile technology...
 	</artefact>
 	<inscription>
-		Scattered around the world - far more rarely than the pylons they slightly resemble - are towers, crested with a crystal that glows brightly and which seems to contain information inside its ordered structure. That is all well and good, but you might be able to use the crystal as a makeshift chisel as well, carving designs into stone for...something.
+		Scattered around the world - far more rarely than the pylons they slightly resemble - are towers, crested with a crystal that glows brightly and which seems to contain information inside its ordered structure. That is all well and good, but you might be able to use the crystal as a makeshift chisel as well, carving designs into stone for...something. It will probably have other more...refined uses as well.
 	</inscription>
 	<proxessence>
 		This dust seems to have some sort of resonant property, almost like it is a tangible form of the world in which you found it. One wonders what significance that might have...

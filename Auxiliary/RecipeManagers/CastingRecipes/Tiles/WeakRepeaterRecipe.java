@@ -69,7 +69,7 @@ public class WeakRepeaterRecipe extends TempleCastingRecipe implements CoreRecip
 
 	@Override
 	public boolean canRunRecipe(TileEntity te, EntityPlayer ep) {
-		return super.canRunRecipe(te, ep) && ChromaResearchManager.instance.getPlayerResearchLevel(ep).ordinal() >= ResearchLevel.ENERGYEXPLORE.ordinal();
+		return super.canRunRecipe(te, ep) && ChromaResearchManager.instance.getPlayerResearchLevel(ep).ordinal() >= ResearchLevel.ENERGY.ordinal();
 	}
 
 	@Override

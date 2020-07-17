@@ -25,6 +25,7 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
@@ -88,6 +89,10 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		priority.addValue(ResearchLevel.NETWORKING, new ChromaResearchTarget(ChromaResearch.REPEATERSTRUCT, 25));
 		priority.addValue(ResearchLevel.NETWORKING, new ChromaResearchTarget(ChromaResearch.COMPOUNDSTRUCT, 2));
 
+		priority.addValue(ResearchLevel.ENERGY, new ChromaResearchTarget(ChromaResearch.ENERGY, 100));
+		priority.addValue(ResearchLevel.ENERGY, new ChromaResearchTarget(ChromaResearch.SELFCHARGE, 50));
+		priority.addValue(ResearchLevel.ENERGY, new ChromaResearchTarget(ChromaResearch.TRANSMISSION, 20));
+
 		priority.shuffleValues();
 
 		/*
@@ -101,6 +106,8 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		 */
 
 		this.addLink(ChromaResearch.TELEGATELOCK, ChromaResearch.GATE);
+		this.addLink(ChromaResearch.TRANSMISSION, ChromaResearch.ENERGY);
+		this.addLink(ChromaResearch.RELAY, ChromaResearch.ENERGY);
 	}
 
 	private void addLink(ChromaResearch obj, ChromaResearch parent) {
@@ -321,7 +328,19 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	}
 
 	public ResearchLevel getPlayerResearchLevel(EntityPlayer ep) {
-		return ResearchLevel.levelList[this.getRootProgressionNBT(ep).getInteger("research_level")];
+		NBTTagCompound base = this.getRootProgressionNBT(ep);
+		NBTBase tag = base.getTag("research_level");
+		if (tag instanceof NBTTagString) {
+			return ResearchLevel.valueOf(((NBTTagString)tag).func_150285_a_());
+		}
+		else {
+			int idx = base.getInteger("research_level");
+			if (idx > ResearchLevel.ENERGY.ordinal())
+				idx--;
+			ResearchLevel ret = ResearchLevel.levelList[idx];
+			base.setString("research_level", ret.name());
+			return ret;
+		}
 	}
 
 	public void maxPlayerResearch(EntityPlayer ep, boolean notify) {
@@ -410,10 +429,10 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	}
 
 	private boolean movePlayerTo(EntityPlayer ep, ResearchLevel rl) {
-		NBTTagCompound tag = ChromaResearchManager.instance.getRootProgressionNBT(ep);
-		int has = tag.getInteger("research_level");
-		if (has != rl.ordinal()) {
-			tag.setInteger("research_level", rl.ordinal());
+		ResearchLevel at = this.getPlayerResearchLevel(ep);
+		if (at != rl) {
+			NBTTagCompound tag = ChromaResearchManager.instance.getRootProgressionNBT(ep);
+			tag.setString("research_level", rl.name());
 			return true;
 		}
 		return false;
