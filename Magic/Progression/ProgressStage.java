@@ -114,6 +114,7 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 	PYLONLINK(		Shareability.SELFONLY,	Reloadability.TRIGGER,	ChromaTiles.PYLONLINK.getCraftedProduct()),
 	RELAYS(			Shareability.PROXIMITY, Reloadability.TRIGGER,	ChromaTiles.RELAYSOURCE.getCraftedProduct()),
 	ENERGYIDEA(		Shareability.SELFONLY,	Reloadability.NEVER,	(ItemStack)null),
+	ENERGYUNDERSTAND(Shareability.SELFONLY,	Reloadability.NEVER,	(ItemStack)null),
 	NEVER(			Shareability.SELFONLY,	Reloadability.NEVER,	(ItemStack)null, false), //used as a no-trigger placeholder
 	;
 
@@ -297,6 +298,31 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 			tessellator.draw();
 			GL11.glPopAttrib();
 		}
+		else if (this == ENERGYUNDERSTAND) {
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/infoicons.png");
+			int idx = 24;
+			double u = idx%8/8D;
+			double v = idx/8/8D;
+			double du = u+1/8D;
+			double dv = v+1/8D;
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glColor4f(1, 1, 1, 1);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.ADDITIVE2.apply();
+			int d = 2;
+			int w = 16;
+			int h = 16;
+			Tessellator tessellator = Tessellator.instance;
+			tessellator.startDrawingQuads();
+			tessellator.setColorOpaque_I(CrystalElement.getBlendedColor((int)Minecraft.getMinecraft().theWorld.getTotalWorldTime(), 10));
+			tessellator.addVertexWithUV((x + 0 - d), (y + h + d), 0, u, dv);
+			tessellator.addVertexWithUV((x + w + d), (y + h + d), 0, du, dv);
+			tessellator.addVertexWithUV((x + w + d), (y + 0 - d), 0, du, v);
+			tessellator.addVertexWithUV((x + 0 - d), (y + 0 - d), 0, u, v);
+			tessellator.draw();
+			GL11.glPopAttrib();
+		}
 		else {
 			ReikaGuiAPI.instance.drawItemStack(ri, fr, icon, x, y);
 		}
@@ -355,6 +381,29 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 			double v = idx/16/16D;
 			double du = u+1/16D;
 			double dv = v+1/16D;
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glColor4f(1, 1, 1, 1);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.ADDITIVEDARK.apply();
+			double w = 1*s;
+			double h = 1*s;
+			Tessellator tessellator = Tessellator.instance;
+			tessellator.startDrawingQuads();
+			tessellator.addVertexWithUV((x - w), (y + h), 0, u, dv);
+			tessellator.addVertexWithUV((x + w), (y + h), 0, du, dv);
+			tessellator.addVertexWithUV((x + w), (y - h), 0, du, v);
+			tessellator.addVertexWithUV((x - w), (y - h), 0, u, v);
+			tessellator.draw();
+			GL11.glPopAttrib();
+		}
+		else if (this == ENERGYUNDERSTAND) {
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/infoicons.png");
+			int idx = 24;
+			double u = idx%8/8D;
+			double v = idx/8/8D;
+			double du = u+1/8D;
+			double dv = v+1/8D;
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glColor4f(1, 1, 1, 1);
 			GL11.glDisable(GL11.GL_LIGHTING);

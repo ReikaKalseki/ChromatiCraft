@@ -125,8 +125,10 @@ public class ProgressionManager implements ProgressRegistry {
 		this.addProgressPrereq(ProgressStage.LINK, 		ProgressStage.PYLON);
 		this.addProgressPrereq(ProgressStage.LINK, 		ProgressStage.REPEATER);
 
-		this.addProgressPrereq(ProgressStage.USEENERGY, 	ProgressStage.PYLON);
-		this.addProgressPrereq(ProgressStage.USEENERGY, 	ProgressStage.RUNEUSE);
+		this.addProgressPrereq(ProgressStage.ENERGYUNDERSTAND, 	ProgressStage.RUNEUSE);
+		this.addProgressPrereq(ProgressStage.ENERGYUNDERSTAND, 	ProgressStage.CHARGE);
+
+		this.addProgressPrereq(ProgressStage.USEENERGY, 	ProgressStage.ENERGYUNDERSTAND);
 
 		this.addProgressPrereq(ProgressStage.CHARGE, 	ProgressStage.PYLON);
 		this.addProgressPrereq(ProgressStage.CHARGE, 	ProgressStage.CRYSTALS);
