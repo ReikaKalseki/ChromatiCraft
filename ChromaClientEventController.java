@@ -39,7 +39,6 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntitySilverfish;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.player.EntityPlayer;
@@ -250,17 +249,6 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 				}
 				break;
 			}
-		}
-	}
-
-	@SubscribeEvent
-	public void handleArteAlloyShaderRender(EntityRenderEvent evt) {
-		if (evt.entity instanceof EntityItem && evt.entity.getEntityData().getBoolean("artealloy")) {
-			ChromaShaders.ARTEALLOY$GLOW.setIntensity(1);
-			//ChromaShaders.ARTEALLOY$GLOW.lingerTime = 4;
-			ChromaShaders.ARTEALLOY$GLOW.rampDownAmount = 0.008F;
-			ChromaShaders.ARTEALLOY$GLOW.rampDownFactor = 0.99F;
-			ChromaShaders.ARTEALLOY$GLOW.getShader().addFocus(evt.entity);
 		}
 	}
 

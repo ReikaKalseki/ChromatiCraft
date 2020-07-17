@@ -702,16 +702,19 @@ public class RenderDataNode extends ChromaRenderBase {
 		double h = te.isInWorld() ? 1.5 : 1;
 		double t = StructureRenderer.isRenderingTiles() ? System.currentTimeMillis()/50D : te.getTicksExisted();
 		double dy = te.isInWorld() ? 0.5+te.getExtension1()+te.getExtension2()+0.0625*Math.sin((t/8D)%(2*Math.PI)) : -0.5;
-		this.renderPrism(te.isInWorld() ? t*2 : System.currentTimeMillis()/20D, v5, f, h, dy);
+		this.renderPrism(te.isInWorld() ? t*2 : System.currentTimeMillis()/20D, v5, f, h, dy, false);
 	}
 
-	public static void renderPrism(double tick, Tessellator v5, float colorFactor, double h, double dy) {
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/datanode.png");
+	public static void renderPrism(double tick, Tessellator v5, float colorFactor, double h, double dy, boolean orangeglow) {
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, orangeglow ? "Textures/datanode_orange.png" : "Textures/datanode.png");
 
 		double s = 0.125*0.875;
 
-		int c1 = 0xa0e0ff;
+		int c1 = 0xa0e0ff;//orangeglow ? ReikaColorAPI.getModifiedHue(0xff0000, (int)(33+12*Math.sin(tick/24D))) : 0xa0e0ff; //orange 0xffb070
 		int c2 = 0xffffff;
+		if (orangeglow) {
+			c1 = 0xffffff;
+		}
 
 		c1 = ReikaColorAPI.getColorWithBrightnessMultiplier(c1, colorFactor);
 		c2 = ReikaColorAPI.getColorWithBrightnessMultiplier(c2, colorFactor);

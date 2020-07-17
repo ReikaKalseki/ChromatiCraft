@@ -214,6 +214,7 @@ public enum ChromaPackets {
 	STRUCTMAPDAT(1+3*StructureMapCommand.PACKET_COMPILE),
 	STRUCTMAPEND(1),
 	ALLOYITEMS(0, PacketTypes.STRING),
+	ARTEALLOYBURST(1),
 	;
 
 	public final int numInts;

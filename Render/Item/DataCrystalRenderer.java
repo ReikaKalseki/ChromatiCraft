@@ -19,6 +19,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Magic.Artefact.ArtefactWithDataCrystalAlloyingEffect;
+import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.ChromatiCraft.Render.TESR.RenderDataNode;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.RayTracer.MultipointChecker;
@@ -87,13 +89,36 @@ public class DataCrystalRenderer extends MultiSheetItemRenderer implements Multi
 			double h = 1.25;
 			GL11.glTranslated(0, -h/2, 0);
 
-			RenderDataNode.renderPrism(0, Tessellator.instance, 1, h, 0);
+			boolean artealloy = ei.getEntityData().getBoolean("artealloy");
+
+			RenderDataNode.renderPrism(0, Tessellator.instance, 1, h, 0, artealloy);
 			GL11.glPopMatrix();
 
-			if (trace.isClearLineOfSight(ei)) {
+			if (artealloy || trace.isClearLineOfSight(ei)) {
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
 				GL11.glTranslated(0, -0.75, 0);
-				RenderDataNode.renderFlare(Tessellator.instance, 1, true);
+				if (artealloy) {
+					ChromaShaders.ARTEALLOY$GLOW.setIntensity(1);
+					//ChromaShaders.ARTEALLOY$GLOW.lingerTime = 4;
+					ChromaShaders.ARTEALLOY$GLOW.rampDownAmount = 0.008F;
+					ChromaShaders.ARTEALLOY$GLOW.rampDownFactor = 0.99F;
+					ChromaShaders.ARTEALLOY$GLOW.getShader().setFocus(ei);
+					ChromaShaders.ARTEALLOY$GLOW.getShader().setMatricesToCurrent();
+
+					int fire = ArtefactWithDataCrystalAlloyingEffect.instance.getFireTick();
+					ChromaShaders.ARTEALLOY$SHOCK.clearOnRender = true;
+					float f = fire > 0 && fire <= 35 ? (float)Math.pow(fire/35F, 2) : 0;
+					ChromaShaders.ARTEALLOY$SHOCK.setIntensity(f);
+					ChromaShaders.ARTEALLOY$SHOCK.getShader().setFocus(ei);
+					ChromaShaders.ARTEALLOY$SHOCK.getShader().setMatricesToCurrent();
+					double size = 1-fire/35F;
+					double thickness = 0.125;
+					ChromaShaders.ARTEALLOY$SHOCK.getShader().setField("size", size);
+					ChromaShaders.ARTEALLOY$SHOCK.getShader().setField("thickness", thickness);
+				}
+				else {
+					RenderDataNode.renderFlare(Tessellator.instance, 1, true);
+				}
 			}
 
 			GL11.glPopAttrib();

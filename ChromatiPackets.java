@@ -92,6 +92,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemFlightWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Magic.Artefact.ArtefactWithDataCrystalAlloyingEffect;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Magic.Network.PylonLinkNetwork;
@@ -1172,6 +1173,12 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case STRUCTMAPEND:
 					StructureMapCommand.finishCollectingAndMakeImage(data[0]);
+					break;
+				case ARTEALLOYBURST:
+					Entity e = world.getEntityByID(data[0]);
+					if (e instanceof EntityItem) {
+						ArtefactWithDataCrystalAlloyingEffect.instance.doBurst((EntityItem)e);
+					}
 					break;
 			}
 		}
