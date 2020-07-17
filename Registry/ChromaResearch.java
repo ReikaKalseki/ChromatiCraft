@@ -108,7 +108,8 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	INTRO("Introduction", ""),
 	START("Getting Started",				new ItemStack(Blocks.dirt),								ResearchLevel.ENTRY),
 	LEXICON("The Lexicon",					ChromaItems.HELP.getStackOf(),							ResearchLevel.ENTRY),
-	ELEMENTS("Crystal Energy", 				ChromaItems.ELEMENTAL.getStackOf(CrystalElement.BLUE),	ResearchLevel.BASICCRAFT,	ProgressStage.ALLCOLORS),
+	ENERGY("Crystal Energy", 				new ItemStack(Blocks.dirt),								ResearchLevel.ENERGYEXPLORE,ProgressStage.ALLCOLORS, ProgressStage.CHARGE),
+	ELEMENTS("Crystal Elements", 			ChromaItems.ELEMENTAL.getStackOf(CrystalElement.BLUE),	ResearchLevel.BASICCRAFT,	ProgressStage.ALLCOLORS),
 	CRYSTALS("Crystals", 					ChromaBlocks.CRYSTAL.getStackOfMetadata(4), 			ResearchLevel.ENTRY, 		ProgressStage.CRYSTALS),
 	PYLONS("Pylons", 						ChromaTiles.PYLON.getCraftedProduct(), 					ResearchLevel.ENTRY, 		ProgressStage.PYLON),
 	STRUCTURES("Scattered Structures",		ChromaBlocks.PYLONSTRUCT.getStackOf(),					ResearchLevel.RAWEXPLORE),
@@ -745,6 +746,36 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 			tessellator.addVertexWithUV((x + 0 - d), (y + h + d), 0, u, dv);
 			tessellator.addVertexWithUV((x + w + d), (y + h + d), 0, du, dv);
 			tessellator.addVertexWithUV((x + w + d), (y + 0 - d), 0, du, v);
+			tessellator.addVertexWithUV((x + 0 - d), (y + 0 - d), 0, u, v);
+			tessellator.draw();
+			GL11.glPopAttrib();
+			return;
+		}
+		else if (this == ENERGY) {
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/infoicons.png");
+			int idx = 24;
+			double u = idx%8/8D;
+			double v = idx/8/8D;
+			double du = u+1/8D;
+			double dv = v+1/8D;
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glColor4f(1, 1, 1, 1);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.ADDITIVEDARK.apply();
+			GL11.glShadeModel(GL11.GL_SMOOTH);
+			int d = 2;
+			int w = 16;
+			int h = 16;
+			Tessellator tessellator = Tessellator.instance;
+			tessellator.startDrawingQuads();
+			tessellator.setColorOpaque_I(CrystalElement.getBlendedColor(Minecraft.getMinecraft().thePlayer.ticksExisted, 10));
+			tessellator.addVertexWithUV((x + 0 - d), (y + h + d), 0, u, dv);
+			tessellator.setColorOpaque_I(CrystalElement.getBlendedColor(Minecraft.getMinecraft().thePlayer.ticksExisted+5, 10));
+			tessellator.addVertexWithUV((x + w + d), (y + h + d), 0, du, dv);
+			tessellator.setColorOpaque_I(CrystalElement.getBlendedColor(Minecraft.getMinecraft().thePlayer.ticksExisted+15, 10));
+			tessellator.addVertexWithUV((x + w + d), (y + 0 - d), 0, du, v);
+			tessellator.setColorOpaque_I(CrystalElement.getBlendedColor(Minecraft.getMinecraft().thePlayer.ticksExisted+10, 10));
 			tessellator.addVertexWithUV((x + 0 - d), (y + 0 - d), 0, u, v);
 			tessellator.draw();
 			GL11.glPopAttrib();

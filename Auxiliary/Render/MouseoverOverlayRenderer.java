@@ -40,6 +40,7 @@ import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.ProductCondition;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.NodeRecharger;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire.CheckType;
@@ -102,7 +103,7 @@ public class MouseoverOverlayRenderer {
 				GL11.glPopMatrix();
 				GL11.glPopAttrib();
 			}
-			if (te instanceof FocusAcceleratable) {
+			if (te instanceof FocusAcceleratable && ChromaResearch.FOCUSCRYSTALS.playerHas(ep)) {
 				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 				GL11.glPushMatrix();
 				this.renderAccelerationOverlay(ep, gsc, (FocusAcceleratable)te);
