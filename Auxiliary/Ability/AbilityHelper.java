@@ -301,7 +301,7 @@ public class AbilityHelper {
 
 	@SubscribeEvent
 	public void superbuild(PlayerPlaceBlockEvent evt) {
-		if (!evt.world.isRemote && Chromabilities.SUPERBUILD.enabledOn(evt.player) && KeyWatcher.instance.isKeyDown(evt.player, ChromatiCraft.config.getSuperbuildKey())) {
+		if (!evt.world.isRemote && Chromabilities.SUPERBUILD.enabledOn(evt.player) && evt.getItem().stackSize > 1 && KeyWatcher.instance.isKeyDown(evt.player, ChromatiCraft.config.getSuperbuildKey())) {
 			AbilityCalls.superbuild(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, evt.side, evt.block, evt.metadata, evt.getItem(), evt.player);
 			//Chromabilities.SUPERBUILD.setToPlayer(evt.player, false);
 		}

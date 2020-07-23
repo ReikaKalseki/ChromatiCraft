@@ -45,19 +45,8 @@ public class ItemConnector extends ItemChromaTool {
 		if (world.isRemote)
 			return true;
 		TileEntity te = world.getTileEntity(x, y, z);
-		if (te instanceof LinkedTile) {
-			return this.connectRift((LinkedTile)te, world, x, y, z, is, ep);
-		}
-		else if (te instanceof TileEntityTransportWindow) {
-			return this.connectWindow((TileEntityTransportWindow)te, world, x, y, z, is, ep);
-		}
-		else if (te instanceof Linkable) {
-			return this.tryConnection((Linkable)te, world, x, y, z, is, ep);
-		}
-		else if (te instanceof CopyableSettings) {
-			return this.tryCopySettings((CopyableSettings)te, world, x, y, z, is, ep);
-		}
-		else if (te instanceof NBTCopyable) {
+
+		if (te instanceof NBTCopyable) {
 			if (is.stackTagCompound != null && is.stackTagCompound.hasKey("NBT_transfer")) {
 				((NBTCopyable)te).readCopyableData(is.stackTagCompound.getCompoundTag("NBT_transfer"));
 				is.stackTagCompound = null;
@@ -78,8 +67,7 @@ public class ItemConnector extends ItemChromaTool {
 			is.stackTagCompound.setTag("callback", tag);
 			return true;
 		}
-
-		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment() && ep.capabilities.isCreativeMode) {
+		else if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment() && ep.capabilities.isCreativeMode) {
 			if (is.stackTagCompound != null && is.stackTagCompound.getBoolean("noneuclid")) {
 
 				int dx = is.stackTagCompound.getInteger("x1");
@@ -109,8 +97,7 @@ public class ItemConnector extends ItemChromaTool {
 				return true;
 			}
 		}
-
-		if (is.stackTagCompound != null && is.stackTagCompound.hasKey("callback")) {
+		else if (is.stackTagCompound != null && is.stackTagCompound.hasKey("callback")) {
 			WorldLocation loc = WorldLocation.readFromNBT(is.stackTagCompound.getCompoundTag("callback"));
 			if (loc != null) {
 				TileEntity tile = loc.getTileEntity();
@@ -121,11 +108,52 @@ public class ItemConnector extends ItemChromaTool {
 				}
 			}
 		}
+		else {
+			Linkage l = Linkage.getLink(te);
+			if (l == null) {
+				ReikaChatHelper.sendChatToPlayer(ep, "Invalid tile.");
+				is.stackTagCompound = null;
+				return false;
+			}
+			Linkage[] ls = this.getLinks(is);
+			if (ls == null || ls[0] == null || ls[1] == null || ls[0] != ls[1]) {
+				ReikaChatHelper.sendChatToPlayer(ep, "Invalid tiles.");
+				is.stackTagCompound = null;
+				return false;
+			}
+			return l.tryLink(is, ep, te);
+		}
 		is.stackTagCompound = null;
 		return false;
 	}
 
-	private boolean connectRift(LinkedTile te, World world, int x, int y, int z, ItemStack is, EntityPlayer ep) {
+	private Linkage[] getLinks(ItemStack is) {
+		if (is.stackTagCompound == null)
+			return null;
+		TileEntity te1 = null;
+		TileEntity te2 = null;
+		if (is.stackTagCompound.hasKey("x1")) {
+			int x1 = is.stackTagCompound.getInteger("x1");
+			int y1 = is.stackTagCompound.getInteger("y1");
+			int z1 = is.stackTagCompound.getInteger("z1");
+			int dim1 = is.stackTagCompound.getInteger("w1");
+			World w1 = DimensionManager.getWorld(dim1);
+			if (w1 != null)
+				te1 = w1.getTileEntity(x1, y1, z1);
+		}
+		if (is.stackTagCompound.hasKey("x2")) {
+			int x2 = is.stackTagCompound.getInteger("x2");
+			int y2 = is.stackTagCompound.getInteger("y2");
+			int z2 = is.stackTagCompound.getInteger("z2");
+			int dim2 = is.stackTagCompound.getInteger("w2");
+			World w2 = DimensionManager.getWorld(dim2);
+			if (w2 != null)
+				te2 = w2.getTileEntity(x2, y2, z2);
+		}
+		return new Linkage[]{Linkage.getLink(te1), Linkage.getLink(te2)};
+	}
+
+	private static boolean connectRift(LinkedTile te, World world, int x, int y, int z, ItemStack is, EntityPlayer ep) {
 		if (is.stackTagCompound == null) {
 			is.stackTagCompound = new NBTTagCompound();
 			is.stackTagCompound.setInteger("x1", Integer.MIN_VALUE);
@@ -162,21 +190,18 @@ public class ItemConnector extends ItemChromaTool {
 
 		if (x1 != Integer.MIN_VALUE && y1 != Integer.MIN_VALUE && z1 != Integer.MIN_VALUE) {
 			if (x1 != Integer.MIN_VALUE && y2 != Integer.MIN_VALUE && z2 != Integer.MIN_VALUE) {
-				LinkedTile rf1 = (LinkedTile)world.getTileEntity(x1, y1, z1);
-				LinkedTile rf2 = (LinkedTile)world.getTileEntity(x2, y2, z2);
+				TileEntity te1 = world.getTileEntity(x1, y1, z1);
+				TileEntity te2 = world.getTileEntity(x2, y2, z2);
+				if (!(te1 instanceof LinkedTile && te2 instanceof LinkedTile)) {
+					ReikaChatHelper.sendChatToPlayer(ep, "Link failed.");
+					is.stackTagCompound = null;
+					return false;
+				}
+				LinkedTile rf1 = (LinkedTile)te1;
+				LinkedTile rf2 = (LinkedTile)te2;
 
 				//ReikaJavaLibrary.pConsole(rec+"\n"+em);
-				if (rf1 == null) {
-					ReikaChatHelper.writeString("Tile missing at "+x1+", "+y1+", "+z1);
-					is.stackTagCompound = null;
-					return false;
-				}
-				if (rf2 == null) {
-					ReikaChatHelper.writeString("Tile missing at "+x2+", "+y2+", "+z2);
-					is.stackTagCompound = null;
-					return false;
-				}
-				else if (rf1 == rf2) {
+				if (rf1 == rf2) {
 					ReikaChatHelper.writeString("Cannot link a rift to itself!");
 					is.stackTagCompound = null;
 					return false;
@@ -196,7 +221,7 @@ public class ItemConnector extends ItemChromaTool {
 		return false;
 	}
 
-	private boolean connectWindow(TileEntityTransportWindow te, World world, int x, int y, int z, ItemStack is, EntityPlayer ep) {
+	private static boolean connectWindow(TileEntityTransportWindow te, World world, int x, int y, int z, ItemStack is, EntityPlayer ep) {
 		if (is.stackTagCompound == null) {
 			is.stackTagCompound = new NBTTagCompound();
 			is.stackTagCompound.setInteger("x1", Integer.MIN_VALUE);
@@ -259,7 +284,7 @@ public class ItemConnector extends ItemChromaTool {
 		return false;
 	}
 
-	private boolean tryConnection(Linkable te, World world, int x, int y, int z, ItemStack is, EntityPlayer ep) {
+	private static boolean tryConnection(Linkable te, World world, int x, int y, int z, ItemStack is, EntityPlayer ep) {
 		if (is.stackTagCompound == null) {
 			is.stackTagCompound = new NBTTagCompound();
 			is.stackTagCompound.setInteger("x1", Integer.MIN_VALUE);
@@ -337,7 +362,7 @@ public class ItemConnector extends ItemChromaTool {
 		return false;
 	}
 
-	private <T> boolean tryCopySettings(CopyableSettings<T> te, World world, int x, int y, int z, ItemStack is, EntityPlayer ep) {
+	private static <T> boolean tryCopySettings(CopyableSettings<T> te, World world, int x, int y, int z, ItemStack is, EntityPlayer ep) {
 		if (is.stackTagCompound == null) {
 			is.stackTagCompound = new NBTTagCompound();
 			is.stackTagCompound.setInteger("x1", Integer.MIN_VALUE);
@@ -437,6 +462,53 @@ public class ItemConnector extends ItemChromaTool {
 	private static enum CopyMode {
 		COPY(),
 		BROADCAST();
+	}
+
+	private static enum Linkage {
+		RIFT,
+		WINDOW,
+		LINKABLE,
+		SETTINGS;
+
+		private Linkage() {
+
+		}
+
+		private static Linkage getLink(TileEntity te) {
+			if (te == null)
+				return null;
+			if (te instanceof LinkedTile) {
+				return RIFT;
+			}
+			else if (te instanceof TileEntityTransportWindow) {
+				return WINDOW;
+			}
+			else if (te instanceof Linkable) {
+				return LINKABLE;
+			}
+			else if (te instanceof CopyableSettings) {
+				return SETTINGS;
+			}
+			return null;
+		}
+
+		private boolean tryLink(ItemStack is, EntityPlayer ep, TileEntity te) {
+			switch(this) {
+				case RIFT: {
+					return connectRift((LinkedTile)te, te.worldObj, te.xCoord, te.yCoord, te.zCoord, is, ep);
+				}
+				case WINDOW: {
+					return connectWindow((TileEntityTransportWindow)te, te.worldObj, te.xCoord, te.yCoord, te.zCoord, is, ep);
+				}
+				case LINKABLE: {
+					return tryConnection((Linkable)te, te.worldObj, te.xCoord, te.yCoord, te.zCoord, is, ep);
+				}
+				case SETTINGS: {
+					return tryCopySettings((CopyableSettings)te, te.worldObj, te.xCoord, te.yCoord, te.zCoord, is, ep);
+				}
+			}
+			return false;
+		}
 	}
 
 }

@@ -13,7 +13,6 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import Reika.ChromatiCraft.Auxiliary.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
-import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.Instantiable.IO.CustomMusic;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
@@ -37,34 +36,32 @@ public class ChromaDimensionalAudioHandler {
 
 	@SideOnly(Side.CLIENT)
 	static void playMusic() {
-		if (Minecraft.getMinecraft().theWorld != null && Minecraft.getMinecraft().theWorld.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
-			if (!MonumentCompletionRitual.areRitualsRunning()) {
-				SoundHandler sh = Minecraft.getMinecraft().getSoundHandler();
-				StreamThread th = ReikaSoundHelper.getStreamingThread(sh);
-				if (th == null || !th.isAlive()) {
-					sh.stopSounds();
-					ReikaSoundHelper.restartStreamingSystem(sh);
-				}
-				//ReikaJavaLibrary.pConsole(s.path+":"+sh.isSoundPlaying(s));
-				if (currentMusic != null && ReikaObfuscationHelper.isDeObfEnvironment() && Keyboard.isKeyDown(Keyboard.KEY_END)) {
-					sh.stopSound(currentMusic);
-					musicCooldown = 0;
-				}
-				if (currentMusic != null && sh.isSoundPlaying(currentMusic)) {
-					return;
-				}
-				if (musicCooldown > 0) {
-					musicCooldown--;
-					return;
-				}
-
-				DimensionMusic s = selectTrack(Minecraft.getMinecraft().thePlayer);
-				if (s != null)
-					s.play(sh);
-
-				currentMusic = s;
-				musicCooldown = 300+rand.nextInt(900);
+		if (!MonumentCompletionRitual.areRitualsRunning()) {
+			SoundHandler sh = Minecraft.getMinecraft().getSoundHandler();
+			StreamThread th = ReikaSoundHelper.getStreamingThread(sh);
+			if (th == null || !th.isAlive()) {
+				sh.stopSounds();
+				ReikaSoundHelper.restartStreamingSystem(sh);
 			}
+			//ReikaJavaLibrary.pConsole(s.path+":"+sh.isSoundPlaying(s));
+			if (currentMusic != null && ReikaObfuscationHelper.isDeObfEnvironment() && Keyboard.isKeyDown(Keyboard.KEY_END)) {
+				sh.stopSound(currentMusic);
+				musicCooldown = 0;
+			}
+			if (currentMusic != null && sh.isSoundPlaying(currentMusic)) {
+				return;
+			}
+			if (musicCooldown > 0) {
+				musicCooldown--;
+				return;
+			}
+
+			DimensionMusic s = selectTrack(Minecraft.getMinecraft().thePlayer);
+			if (s != null)
+				s.play(sh);
+
+			currentMusic = s;
+			musicCooldown = 300+rand.nextInt(900);
 		}
 	}
 

@@ -20,7 +20,6 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
@@ -34,8 +33,6 @@ public class SkyRiverManagerClient {
 	@SideOnly(Side.CLIENT)
 	public static void handleSkyRiverMovementClient() {
 		World w = Minecraft.getMinecraft().theWorld;
-		if (w == null || w.provider.dimensionId != ExtraChromaIDs.DIMID.getValue())
-			return;
 
 		EntityPlayer pl = Minecraft.getMinecraft().thePlayer;
 

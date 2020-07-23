@@ -139,7 +139,7 @@ public class ChromaDimensionTicker implements TickHandler {
 	@SideOnly(Side.CLIENT)
 	private void tickClient() {
 		World world = Minecraft.getMinecraft().theWorld;
-		if (world != null && !world.playerEntities.isEmpty()) {
+		if (world != null && !world.playerEntities.isEmpty() && world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
 			if (!ChromaDimensionalAudioHandler.music.isEmpty())
 				ChromaDimensionalAudioHandler.playMusic();
 			SkyRiverManagerClient.handleSkyRiverMovementClient();
