@@ -48,7 +48,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaJVMParser;
 
 public class UATrades implements ConnectionErrorHandler {
 
-	public static final int MAX_TRADE_YIELD = 64;
+	public static final int BASE_TRADE_YIELD = 48;
 
 	public static final UATrades instance = new UATrades();
 
@@ -169,7 +169,7 @@ public class UATrades implements ConnectionErrorHandler {
 
 	private static int calcValue(String id) {
 		int price = instance.prices.get(id);
-		return price*MAX_TRADE_YIELD/instance.MAX_PRICE;
+		return price*BASE_TRADE_YIELD/instance.MAX_PRICE;
 	}
 
 	public static abstract class UATypeTrade extends MerchantRecipe implements PlayerSpecificTrade {

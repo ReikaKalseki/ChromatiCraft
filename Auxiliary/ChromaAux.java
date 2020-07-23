@@ -502,28 +502,34 @@ public class ChromaAux {
 	}
 
 	public static boolean chargePlayerFromPylon(EntityPlayer player, ChargingPoint te, CrystalElement e, int count) {
-		int add = Math.max(1, (int)(PlayerElementBuffer.instance.getChargeSpeed(player)*te.getChargeRateMultiplier(player, e)));
-		int n = PlayerElementBuffer.instance.getChargeInefficiency(player);
-		int drain = add*n;
-		int energy = te.getEnergy(e);
-		if (drain > energy) {
-			drain = energy;
-			add = drain/n;
-		}
-		if (te.canConduct() && te.allowCharging(player, e) && add > 0 && PlayerElementBuffer.instance.canPlayerAccept(player, e, add)) {
-			te.onUsedBy(player, e);
-			if (PlayerElementBuffer.instance.addToPlayer(player, e, add, true))
-				te.drain(e, drain);
-			ProgressStage.CHARGE.stepPlayerTo(player);
-			if (te instanceof TileEntityCrystalPylon)
-				ProgressionManager.instance.setPlayerDiscoveredColor(player, ((TileEntityCrystalPylon)te).getColor(), true, true);
-			if (player.worldObj.isRemote) {
-				//this.spawnParticles(player, e);
-				ChromaFX.createPylonChargeBeam(te, player, (count%20)/20D, e);
+		if (te.canConduct() && te.allowCharging(player, e) && allowPlayerChargingAt(player, te, e)) {
+			int add = Math.max(1, (int)(PlayerElementBuffer.instance.getChargeSpeed(player)*te.getChargeRateMultiplier(player, e)));
+			int n = PlayerElementBuffer.instance.getChargeInefficiency(player);
+			int drain = add*n;
+			int energy = te.getEnergy(e);
+			if (drain > energy) {
+				drain = energy;
+				add = drain/n;
 			}
-			return true;
+			if (add > 0 && PlayerElementBuffer.instance.canPlayerAccept(player, e, add)) {
+				te.onUsedBy(player, e);
+				if (PlayerElementBuffer.instance.addToPlayer(player, e, add, true))
+					te.drain(e, drain);
+				ProgressStage.CHARGE.stepPlayerTo(player);
+				if (te instanceof TileEntityCrystalPylon)
+					ProgressionManager.instance.setPlayerDiscoveredColor(player, ((TileEntityCrystalPylon)te).getColor(), true, true);
+				if (player.worldObj.isRemote) {
+					//this.spawnParticles(player, e);
+					ChromaFX.createPylonChargeBeam(te, player, (count%20)/20D, e);
+				}
+				return true;
+			}
 		}
 		return false;
+	}
+
+	private static boolean allowPlayerChargingAt(EntityPlayer player, ChargingPoint te, CrystalElement e) {
+		return true;
 	}
 
 	public static List<AxisAlignedBB> interceptEntityCollision(World world, Entity e, AxisAlignedBB box) {

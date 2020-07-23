@@ -29,13 +29,16 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.MusicLoader;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionalAudioHandler.DimensionMusic;
+import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenGlowCave;
 import Reika.DragonAPI.Auxiliary.Trackers.RemoteAssetLoader.RemoteAssetsDownloadCompleteEvent;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.IO.DirectResourceManager;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -143,6 +146,22 @@ public class ChromaDimensionTicker implements TickHandler {
 			for (StructurePair sp : ChunkProviderChroma.structures) {
 				if (sp.generatedDimension == world.provider.dimensionId)
 					sp.generator.updateTick(world);
+			}
+			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+			double my = WorldGenGlowCave.MAX_BEDROCK_Y+4;
+			int n = ep.posY <= 0 ? 6 : 18;
+			if (ep.posY <= my && ep.ticksExisted%n == 0) {
+				float mf = 0.66F;
+				double denom = my-WorldGenGlowCave.FULL_BEDROCK_Y;
+				double num = ep.posY-WorldGenGlowCave.FULL_BEDROCK_Y;
+				float f = ep.posY <= WorldGenGlowCave.FULL_BEDROCK_Y ? mf : mf*(float)Math.pow(1D-num/denom, 1.25);
+				float p = 1;
+				if (ep.posY <= 0) {
+					f = Math.max(0.25F, (float)Math.max(0, 1D+ep.posY/64D));
+					f *= 0.5;
+					p += ep.posY*0.002;
+				}
+				ReikaSoundHelper.playClientSound(ChromaSounds.LOWAMBIENT_SHORT, ep, f, p, false);
 			}
 		}
 	}

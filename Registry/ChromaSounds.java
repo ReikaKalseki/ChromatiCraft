@@ -113,6 +113,8 @@ public enum ChromaSounds implements DynamicSound {
 	DINGCHARGE("dingcharge"),
 	ARTEALLOY("artealloy2b"),
 	ARTEALLOYHIT("artealloy-hit2"),
+	LOWAMBIENT("lowambient_fade"),
+	LOWAMBIENT_SHORT("lowambient_fade_short"),
 	;
 
 	public static final ChromaSounds[] soundList = values();

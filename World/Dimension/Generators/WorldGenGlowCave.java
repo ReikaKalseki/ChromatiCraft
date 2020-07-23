@@ -52,8 +52,8 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 
 	private static final double MAX_CRACK_CHANCE = 0.066;//0.08;
 	private static final int MAX_CRACK_Y = 20;//16;//14;
-	private static final int FULL_BEDROCK_Y = 8;
-	private static final int MAX_BEDROCK_Y = 32;//28;//24;
+	public static final int FULL_BEDROCK_Y = 8;
+	public static final int MAX_BEDROCK_Y = 32;//28;//24;
 
 	private final NoiseGeneratorBase wallSelectionNoise;
 

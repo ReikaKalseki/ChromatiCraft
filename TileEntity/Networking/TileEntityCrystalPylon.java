@@ -1375,7 +1375,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	@Override
 	public boolean allowCharging(EntityPlayer ep, CrystalElement e) {
-		return this.playerCanUse(ep);
+		return true;
 	}
 
 	@Override
