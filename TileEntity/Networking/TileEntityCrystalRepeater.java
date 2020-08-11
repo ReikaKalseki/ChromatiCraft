@@ -632,10 +632,6 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		ReikaSoundHelper.playBreakSound(world, x, y, z, Blocks.glass);
 	}
 
-	public void onTransfer(CrystalSource src, CrystalReceiver r, CrystalElement e, int amt) {
-
-	}
-
 	@Override
 	public int getPathPriority() {
 		return 10;

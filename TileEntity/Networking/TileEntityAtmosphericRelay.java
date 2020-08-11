@@ -20,7 +20,6 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
-import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.PylonConnector;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -115,11 +114,6 @@ public class TileEntityAtmosphericRelay extends CrystalTransmitterBase implement
 	@Override
 	public boolean checkConnectivity() {
 		return false;
-	}
-
-	@Override
-	public void onTransfer(CrystalSource src, CrystalReceiver r, CrystalElement element, int amt) {
-
 	}
 
 	@Override

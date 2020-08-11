@@ -27,6 +27,6 @@ public interface CrystalRepeater extends CrystalReceiver, CrystalTransmitter {
 
 	public boolean checkConnectivity();
 
-	public void onTransfer(CrystalSource src, CrystalReceiver r, CrystalElement element, int amt);
+	//public void onTransfer(CrystalSource src, CrystalReceiver r, CrystalElement element, int amt);
 
 }

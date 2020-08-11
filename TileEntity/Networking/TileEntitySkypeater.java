@@ -16,7 +16,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
-import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.NaturalNetworkTile;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -115,11 +114,6 @@ public class TileEntitySkypeater extends CrystalTransmitterBase implements Cryst
 	@Override
 	public boolean checkConnectivity() {
 		return false;
-	}
-
-	@Override
-	public void onTransfer(CrystalSource src, CrystalReceiver r, CrystalElement element, int amt) {
-
 	}
 
 	@Override

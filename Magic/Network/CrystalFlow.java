@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic.Network;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
@@ -21,11 +22,12 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.DynamicRepeater;
+import Reika.ChromatiCraft.Magic.Interfaces.ReactiveRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.WrapperTile;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 
-public class CrystalFlow extends CrystalPath {
+public final class CrystalFlow extends CrystalPath {
 
 	private static final int MIN_THROUGHPUT = 10;
 
@@ -42,7 +44,7 @@ public class CrystalFlow extends CrystalPath {
 		this(net, r, p.element, amt, p.nodes, maxthru);
 	}
 
-	protected CrystalFlow(CrystalNetworker net, CrystalReceiver r, CrystalElement e, int amt, List<WorldLocation> li, int maxthru) {
+	protected CrystalFlow(CrystalNetworker net, CrystalReceiver r, CrystalElement e, int amt, List li, int maxthru) {
 		super(net, !(r instanceof WrapperTile), e, li);
 		requestedAmount = amt;
 		totalCost = requestedAmount+this.getSignalLoss();
@@ -53,58 +55,46 @@ public class CrystalFlow extends CrystalPath {
 		maxFlow = this.calcEffectiveThroughput(maxthru);
 		if (maxFlow > 0 || totalCost == 0)
 			this.buildLeyLines();
+		for (PathNode p : nodes) {
+			p.flush();
+		}
 	}
 
 	private int calcEffectiveThroughput(int maxthru) {
-		int base = this.getMinMaxFlow();
+		int insured = MIN_THROUGHPUT;
+		int bonus = 0;
+		int base = Math.min(transmitter.maxThroughput(), receiver.maxThroughput());
+		ArrayList<DynamicRepeater> dynamics = new ArrayList();
+		for (int i = 1; i < nodes.size()-1; i++) {
+			PathNode pn = nodes.get(i);
+			CrystalNetworkTile te = nodes.get(i).getTile(true);
+			base = Math.min(base, te.maxThroughput());
+			if (pn.isRepeater()) {
+				insured = Math.max(insured, ((CrystalRepeater)te).getThoughputInsurance());
+				bonus += ((CrystalRepeater)te).getThoughputBonus(hasLocus);
+			}
+			if (DynamicRepeater.class.isAssignableFrom(pn.tileClass)) {
+				dynamics.add((DynamicRepeater)te);
+			}
+		}
+
 		if (base == 0)
 			return 0;
+
+		int result = Math.min(Math.max(insured, base-this.getThroughputPenalty(base)+bonus), Math.min(maxthru, base));
+
 		if (CrystalNetworkLogger.getLogLevel().isAtLeast(LoggingLevel.PATHCALC)) {
 			CrystalNetworkLogger.logPathCalculation("base", base);
-			CrystalNetworkLogger.logPathCalculation("bonus", this.getThoughputBonus());
-			CrystalNetworkLogger.logPathCalculation("insured", this.getInsuredThroughput());
-			CrystalNetworkLogger.logPathCalculation("max-base", Math.min(maxthru, base));
-			CrystalNetworkLogger.logPathCalculation("totalthru", Math.min(Math.max(this.getInsuredThroughput(), base-this.getSignalLoss()+this.getThoughputBonus()), Math.min(maxthru, base)));
+			CrystalNetworkLogger.logPathCalculation("bonus", bonus);
+			CrystalNetworkLogger.logPathCalculation("insured", insured);
+			CrystalNetworkLogger.logPathCalculation("max/base", Math.min(maxthru, base));
+			CrystalNetworkLogger.logPathCalculation("totalthru", result);
 		}
-		int result = Math.min(Math.max(this.getInsuredThroughput(), base-this.getThroughputPenalty(base)+this.getThoughputBonus()), Math.min(maxthru, base));
-		for (int i = 1; i < nodes.size()-1; i++) {
-			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
-			if (te instanceof DynamicRepeater) {
-				result = ((DynamicRepeater)te).getModifiedThoughput(result, transmitter, receiver);
-			}
+
+		for (DynamicRepeater dr : dynamics) {
+			result = dr.getModifiedThoughput(result, transmitter, receiver);
 		}
 		return result;
-	}
-
-	private int getInsuredThroughput() {
-		int val = MIN_THROUGHPUT;
-		for (int i = 1; i < nodes.size()-1; i++) {
-			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
-			if (te instanceof CrystalRepeater) {
-				val = Math.max(val, ((CrystalRepeater)te).getThoughputInsurance());
-			}
-		}
-		return val;
-	}
-
-	private int getThoughputBonus() {
-		int val = 0;
-		for (int i = 1; i < nodes.size()-1; i++) {
-			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
-			if (te instanceof CrystalRepeater) {
-				val += ((CrystalRepeater)te).getThoughputBonus(hasLocus);
-			}
-		}
-		return val;
-	}
-
-	private int getMinMaxFlow() {
-		int max = Math.min(transmitter.maxThroughput(), receiver.maxThroughput());
-		for (int i = 1; i < nodes.size()-1; i++) {
-			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
-			max = Math.min(max, te.maxThroughput());
-		}
-		return max;
 	}
 
 	private int getThroughputPenalty(int rawthru) {
@@ -136,24 +126,24 @@ public class CrystalFlow extends CrystalPath {
 
 	private void buildLeyLines() {
 		//nodes.getFirst().getTileEntity().NOT A TILE
-		WorldLocation locs = nodes.get(nodes.size()-2);
-		CrystalReceiver r = PylonFinder.getReceiverAt(locs, true);
+		PathNode locs = nodes.get(nodes.size()-2);
+		CrystalReceiver r = (CrystalReceiver)locs.getTile(true);
 		ImmutableTriple<Double, Double, Double> offset = r.getTargetRenderOffset(element);
 		double sx = offset != null ? offset.left : 0;
 		double sy = offset != null ? offset.middle : 0;
 		double sz = offset != null ? offset.right : 0;
-		CrystalSource src = PylonFinder.getSourceAt(nodes.get(nodes.size()-1), true);
-		src.addTarget(locs, element, sx, sy, sz, r.getIncomingBeamRadius());
+		CrystalSource src = (CrystalSource)nodes.get(nodes.size()-1).getTile(true);
+		src.addTarget(locs.location, element, sx, sy, sz, r.getIncomingBeamRadius());
 		for (int i = 1; i < nodes.size()-1; i++) {
-			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
+			CrystalNetworkTile te = nodes.get(i).getTile(true);
 			if (te instanceof CrystalTransmitter) {
-				WorldLocation tg = nodes.get(i-1);
-				r = PylonFinder.getReceiverAt(tg, true);
+				PathNode tg = nodes.get(i-1);
+				r = (CrystalReceiver)tg.getTile(true);
 				offset = r.getTargetRenderOffset(element);
 				double dx = offset != null ? offset.left : 0;
 				double dy = offset != null ? offset.middle : 0;
 				double dz = offset != null ? offset.right : 0;
-				((CrystalTransmitter)te).addTarget(tg, element, dx, dy, dz, r.getIncomingBeamRadius());
+				((CrystalTransmitter)te).addTarget(tg.location, element, dx, dy, dz, r.getIncomingBeamRadius());
 			}/*
 					if (te instanceof CrystalReceiver) {
 						WorldLocation src = nodes.get(i+1);
@@ -168,10 +158,10 @@ public class CrystalFlow extends CrystalPath {
 		sb.append(nodes.size());
 		sb.append("[");
 		int i = 0;
-		for (WorldLocation loc : nodes) {
+		for (PathNode loc : nodes) {
 			sb.append(i);
 			sb.append("=");
-			sb.append(loc.getTileEntity());
+			sb.append(loc.toString());
 			sb.append(";");
 			i++;
 		}
@@ -180,11 +170,11 @@ public class CrystalFlow extends CrystalPath {
 	}
 
 	void resetTiles() {
-		PylonFinder.getSourceAt(nodes.get(nodes.size()-1), true).removeTarget(nodes.get(nodes.size()-2), element);
+		((CrystalSource)nodes.get(nodes.size()-1).getTile(true)).removeTarget(nodes.get(nodes.size()-2).location, element);
 		for (int i = 1; i < nodes.size()-1; i++) {
-			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
+			CrystalNetworkTile te = nodes.get(i).getTile(true);
 			if (te instanceof CrystalTransmitter) {
-				WorldLocation tg = nodes.get(i-1);
+				WorldLocation tg = nodes.get(i-1).location;
 				((CrystalTransmitter)te).removeTarget(tg, element);
 			}/*
 			if (te instanceof CrystalReceiver) {
@@ -218,10 +208,12 @@ public class CrystalFlow extends CrystalPath {
 	}
 
 	void tickRepeaters(int amt) {
-		for (int i = 1; i < nodes.size()-1; i++) {
-			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
-			if (te instanceof CrystalRepeater) {
-				((CrystalRepeater)te).onTransfer(transmitter, receiver, element, amt);
+		if (this.hasReactiveRepeaters()) {
+			for (int i = 1; i < nodes.size()-1; i++) {
+				if (ReactiveRepeater.class.isAssignableFrom(nodes.get(i).tileClass)) {
+					CrystalNetworkTile te = nodes.get(i).getTile(true);
+					((ReactiveRepeater)te).onTransfer(transmitter, receiver, element, amt);
+				}
 			}
 		}
 	}

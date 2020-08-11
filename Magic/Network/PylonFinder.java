@@ -132,7 +132,7 @@ public class PylonFinder {
 		//ReikaJavaLibrary.pConsole(this.toString());
 		if (this.isComplete()) {
 			ArrayList<WorldLocation> li = new ArrayList(nodes);
-			CrystalPath path = new CrystalPath(net, !(target instanceof WrapperTile), element, CrystalPath.cleanRoute(net, element, li));
+			CrystalPath path = new CrystalPath(net, !(target instanceof WrapperTile), element, CrystalPath.cleanLocRoute(net, element, li));
 			if (!(target instanceof WrapperTile))
 				this.addValidPath(path);
 			return path;
@@ -161,7 +161,7 @@ public class PylonFinder {
 			if (lastSkypeaterType != null) {
 				this.optimizeSkypeaterRoute(li);
 			}
-			CrystalFlow flow = new CrystalFlow(net, target, element, amount, CrystalPath.cleanRoute(net, element, li), maxthru);
+			CrystalFlow flow = new CrystalFlow(net, target, element, amount, CrystalPath.cleanLocRoute(net, element, li), maxthru);
 			//ReikaJavaLibrary.pConsole(flow.checkLineOfSight()+":"+flow);
 			if (!(target instanceof WrapperTile))
 				this.addValidPath(flow.asPath());
@@ -283,8 +283,8 @@ public class PylonFinder {
 			}
 		}
 		for (int i = 0; i < p.nodes.size(); i++) {
-			WorldLocation loc = p.nodes.get(i);
-			CrystalNetworkTile te = this.getNetTileAt(loc, true);
+			PathNode loc = p.nodes.get(i);
+			CrystalNetworkTile te = loc.getTile(true);
 			if (te instanceof CrystalRepeater) {
 				CrystalRepeater tile = (CrystalRepeater)te;
 				tile.setSignalDepth(p.element, p.nodes.size()-1-i);

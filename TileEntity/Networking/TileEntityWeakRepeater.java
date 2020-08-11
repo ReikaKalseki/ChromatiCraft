@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Block.BlockCrystalPylon;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.DynamicRepeater;
+import Reika.ChromatiCraft.Magic.Interfaces.ReactiveRepeater;
 import Reika.ChromatiCraft.Magic.Network.CrystalLink;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -52,7 +53,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements DynamicRepeater {
+public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements DynamicRepeater, ReactiveRepeater {
 
 	//public static final int MAX_LUMENS_MIN = 30000;
 	//public static final int MAX_LUMENS_MAX = 80000;
