@@ -11,6 +11,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenAbstractTree;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
@@ -144,6 +145,14 @@ public class EnderOakGenerator extends WorldGenAbstractTree {
 				HashSet<Coordinate> leavesToAdd = new HashSet();
 				for (Coordinate c : li) {
 					if (c.xCoord == x && c.zCoord == z)
+						continue;
+					int n = 0;
+					for (int i = 2; i < 6; i++) {
+						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+						if (li.contains(new Coordinate(c.xCoord+dir.offsetX, c.yCoord, c.zCoord+dir.offsetZ)))
+							n++;
+					}
+					if (n == 4) //all four sides have a leaf -> not edge
 						continue;
 					if (rand.nextFloat() < columnChancePerLeaf) {
 						for (int y2 = lowestLeafY; y2 >= 0; y2--) {

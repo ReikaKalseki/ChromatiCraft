@@ -42,6 +42,8 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver impleme
 			this.checkAndRequest();
 		}
 
+		energy.clear();
+
 		if (this.hasItem()) {
 			for (CrystalElement e : energy.elementSet()) {
 				if (this.isToggled(e)) {
