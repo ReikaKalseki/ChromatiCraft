@@ -86,7 +86,7 @@ public class UATrades implements ConnectionErrorHandler {
 		}
 
 		try {
-			URL url = new URL("https://eddb.io/archive/v5/commodities.json"); //dynamically load the prices from eddb, so that the ones in CC can match the ones in E:D in real time, because :D
+			URL url = new URL("https://eddb.io/archive/v6/commodities.json"); //dynamically load the prices from eddb, so that the ones in CC can match the ones in E:D in real time, because :D
 			try (BufferedReader r = ReikaFileReader.getReader(url, 2000, this, null)) {
 				if (r == null) {
 					throw new IOException("Could not read URL!");
