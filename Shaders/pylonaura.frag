@@ -72,19 +72,36 @@ void main() {
 	float d = min(dx, dy);
 	float f = max(0.0, intensity-d*0.018);
 		
+	vec2 pix = vec2(texcoord.x, texcoord.y);
+	pix.x = roundToNearest(pix.x, 4.0/(float(screenWidth)));
+	pix.y = roundToNearest(pix.y, 4.0/(float(screenHeight)));
+		
 	float tx = float(time)*0.3;
 	float ty = float(time)*0.3;
-	tx *= (texcoord.x-0.5);
-	ty *= (texcoord.y-0.5);
+	//tx *= (pix.x-0.5)*0.72;
+	//ty *= (pix.y-0.5)*0.72;
+	//tx *= -(pix.y-0.5);
+	//ty *= -(pix.x-0.5);
+	
+	float sx = 2*(0.5-pix.x);
+	float sy = 2*(0.5-pix.y);
+	tx *= sx;
+	ty *= sy;
+	
 	/*
 	if (texcoord.x > 0.5) {
 		tx *= -1;
 	}
 	if (texcoord.y > 0.5) {
 		ty *= -1;
-	}
-	*/
-	f *= 0.5+0.5*snoise(texcoord*vec2(screenWidth, screenHeight)*0.09+vec2(tx, ty));
+	}*/
+	
+	vec2 pix2 = vec2(texcoord.x, texcoord.y);
+	float sc = min(8.0, 1.0/max(0.01, intensity));
+	pix2.x = roundToNearest(pix2.x, sc/(float(screenWidth)));
+	pix2.y = roundToNearest(pix2.y, sc/(float(screenHeight)));
+	
+	f *= 0.5+0.5*snoise(pix2*vec2(screenWidth, screenHeight)*0.09+vec2(tx, ty)*0.4);
 	f = min(max(f, 0.0), 1.0);
 	
 	float r = float(hazeRed)/255.0*f;
