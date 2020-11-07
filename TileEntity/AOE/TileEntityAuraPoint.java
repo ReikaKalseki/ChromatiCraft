@@ -39,7 +39,6 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.GlowKnot;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
@@ -204,7 +203,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 
 	private void attack(World world, int x, int y, int z, EntityLivingBase e) {
 		float dmg = this.getAttackDamage(e);
-		ChromaAux.doPylonAttack(CrystalElement.WHITE, e, dmg, false, this.getLootingLevel());
+		ChromaAux.doPylonAttack(null, e, dmg, false, this.getLootingLevel());
 		ChromaSounds.DISCHARGE.playSound(e.worldObj, e.posX, e.posY, e.posZ, 1, 1);
 		ChromaSounds.DISCHARGE.playSound(e, 0.5F, 1);
 

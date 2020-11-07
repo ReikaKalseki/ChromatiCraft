@@ -101,6 +101,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.Artefact.ArtefactSpawner;
 import Reika.ChromatiCraft.Magic.Artefact.UABombingEffects;
+import Reika.ChromatiCraft.Magic.Artefact.UATrades;
 import Reika.ChromatiCraft.Magic.Lore.RosettaStone;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionLoadHandler;
@@ -274,7 +275,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	public static PotionVoidGaze voidGaze;
 	public static PotionLumenRegen lumenRegen;
 
-	public static final PylonDamage[] pylonDamage = new PylonDamage[16];
+	public static final PylonDamage[] pylonDamage = new PylonDamage[17];
 
 	public static EnumCreatureType glowCloudType = EnumHelper.addCreatureType("glowcloud", EntityGlowCloud.class, 24, Material.air, true, false);
 
@@ -351,6 +352,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			pylonDamage[i] = new PylonDamage(CrystalElement.elements[i]);
 		}
+		pylonDamage[16] = new PylonDamage(null);
 
 		MinecraftForge.EVENT_BUS.register(GuardianStoneManager.instance);
 		MinecraftForge.EVENT_BUS.register(ChromaticEventManager.instance);
@@ -767,6 +769,8 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		//CliffFogRenderer.instance.initialize();
 		GlowingCliffsAuxGenerator.instance.initialize();
+
+		UATrades.instance.loadData();
 
 		WorldGenInterceptionRegistry.instance.addWatcher(ChromaAux.populationWatcher);
 		WorldGenInterceptionRegistry.instance.addIWGWatcher(ChromaAux.slimeIslandBlocker);

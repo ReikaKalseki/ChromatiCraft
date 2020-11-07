@@ -97,6 +97,7 @@ public class ChromaStacks {
 	public static final ItemStack snowLoot	 		= ChromaItems.TIERED.getStackOfMetadata(25);
 	public static final ItemStack bedrockloot		= ChromaItems.TIERED.getStackOfMetadata(26);
 	public static final ItemStack bedrockloot2		= ChromaItems.TIERED.getStackOfMetadata(27);
+	public static final ItemStack voidOpal			= ChromaItems.TIERED.getStackOfMetadata(28);
 
 	public static final ItemStack miasma			= ChromaItems.DIMGEN.getStackOfMetadata(0);
 	public static final ItemStack floatstone		= ChromaItems.DIMGEN.getStackOfMetadata(1);

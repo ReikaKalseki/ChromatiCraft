@@ -17,6 +17,7 @@ import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
@@ -42,6 +43,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.IO.ReikaFileReader.ConnectionErrorHandler;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Interfaces.PlayerSpecificTrade;
 import Reika.DragonAPI.Libraries.Java.ReikaJVMParser;
 
@@ -56,8 +58,13 @@ public class UATrades implements ConnectionErrorHandler {
 	private int MAX_PRICE = -1;
 
 	private final ArrayList<Class<? extends UATypeTrade>> tradeList = new ArrayList();
+	private final MultiMap<String, EDCommodityHook> externalHooks = new MultiMap().setNullEmpty();
 
 	private UATrades() {
+
+	}
+
+	public void loadData() {
 		this.loadDefaults();
 
 		for (Class c : this.getClass().getDeclaredClasses()) {
@@ -86,7 +93,7 @@ public class UATrades implements ConnectionErrorHandler {
 		}
 
 		try {
-			URL url = new URL("https://eddb.io/archive/v5/commodities.json"); //dynamically load the prices from eddb, so that the ones in CC can match the ones in E:D in real time, because :D
+			URL url = new URL("https://eddb.io/archive/v6/commodities.json"); //dynamically load the prices from eddb, so that the ones in CC can match the ones in E:D in real time, because :D
 			try (BufferedReader r = ReikaFileReader.getReader(url, 2000, this, null)) {
 				if (r == null) {
 					throw new IOException("Could not read URL!");
@@ -109,7 +116,10 @@ public class UATrades implements ConnectionErrorHandler {
 		catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
 
+	public void registerCommodityHook(EDCommodityHook ech) {
+		externalHooks.addValue(ech.getCommodityID(), ech);
 	}
 
 	private void loadJSONData(Reader r) {
@@ -129,6 +139,14 @@ public class UATrades implements ConnectionErrorHandler {
 						int price = obj.get("average_price").getAsInt();
 						prices.put(data, price);
 						ChromatiCraft.logger.log("Loading price data for "+data+" from eddb.io database: "+price+" CR");
+						Collection<EDCommodityHook> c = externalHooks.get(data);
+						if (c != null) {
+							for (EDCommodityHook eh : c) {
+								JsonElement max = obj.get("max_sell_price");
+								JsonElement upper = obj.get("sell_price_upper_average");
+								eh.onPriceReceived(price, upper != null ? upper.getAsInt() : price, max != null ? max.getAsInt() : price);
+							}
+						}
 					}
 				}
 			}
@@ -138,6 +156,9 @@ public class UATrades implements ConnectionErrorHandler {
 	private void loadDefaults() {
 		this.addPrice("Thargoid Sensor", 288000); //sells for ~288kCr anywhere, though a bit more outside the pleiades
 		this.addPrice("Meta-Alloys", 114000);  //sells for ~114kCr in the bubble
+		for (EDCommodityHook eh : externalHooks.allValues(false)) {
+			this.addPrice(eh.getCommodityID(), 0);
+		}
 	}
 
 	private void addPrice(String id, int val) {
@@ -157,6 +178,26 @@ public class UATrades implements ConnectionErrorHandler {
 				}
 			}
 		}
+		for (EDCommodityHook eh : externalHooks.allValues(false)) {
+			MerchantRecipe trade = eh.createTrade();
+			if (!this.hasTrade(ev.buyingList, trade)) {
+				try {
+					ev.buyingList.add(trade);
+				}
+				catch (Exception e) {
+					ChromatiCraft.logger.logError("Could not add delegated trade "+trade+" to villager!");
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	private boolean hasTrade(MerchantRecipeList li, MerchantRecipe tr) {
+		for (Object r : li) {
+			if (r.getClass() == tr.getClass())
+				return true;
+		}
+		return false;
 	}
 
 	private boolean hasTrade(MerchantRecipeList li, Class<? extends UATypeTrade> tr) {
@@ -213,6 +254,19 @@ public class UATrades implements ConnectionErrorHandler {
 		}
 
 	}
+	/*
+	public static class VoidOpalTrade extends UATypeTrade {
+
+		VoidOpalTrade() {
+			super(ChromaStacks.voidOpal, "Void Opals");
+		}
+
+		@Override
+		public boolean isValid(EntityPlayer ep) {
+			return true;
+		}
+
+	}*/
 
 	@Override
 	public void onServerRedirected() {
@@ -232,6 +286,14 @@ public class UATrades implements ConnectionErrorHandler {
 	@Override
 	public void onServerNotFound() {
 		ChromatiCraft.logger.logError("Could not load commodity price data - server not found!");
+	}
+
+	public static interface EDCommodityHook {
+
+		String getCommodityID();
+		MerchantRecipe createTrade();
+		void onPriceReceived(int average, int upper, int max);
+
 	}
 
 }

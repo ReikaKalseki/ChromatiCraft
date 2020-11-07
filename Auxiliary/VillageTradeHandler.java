@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,7 +15,6 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.village.MerchantRecipeList;
 
 import Reika.ChromatiCraft.Magic.Artefact.UATrades;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 import cpw.mods.fml.common.registry.VillagerRegistry.IVillageTradeHandler;
 
@@ -25,7 +24,7 @@ public class VillageTradeHandler implements IVillageTradeHandler {
 	public static final VillageTradeHandler instance = new VillageTradeHandler();
 
 	private VillageTradeHandler() {
-		ReikaJavaLibrary.initClass(UATrades.class);
+
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -26,7 +26,6 @@ import Reika.ChromatiCraft.Auxiliary.ChromaTeleporter;
 import Reika.ChromatiCraft.Entity.EntityDimensionFlare;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
@@ -88,7 +87,7 @@ public class OuterRegionsEvents {
 			}
 			else {
 				if (!ep.capabilities.isCreativeMode)
-					ChromaAux.doPylonAttack(CrystalElement.WHITE, ep, dmg, false);
+					ChromaAux.doPylonAttack(null, ep, dmg, false);
 				ReikaEntityHelper.knockbackEntity(e, ep, ep.worldObj.rand.nextDouble());
 				return false;
 			}

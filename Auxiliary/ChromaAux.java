@@ -368,12 +368,12 @@ public class ChromaAux {
 
 		float last = e.getHealth();
 
-		e.attackEntityFrom(ChromatiCraft.pylonDamage[color.ordinal()], amt);
+		e.attackEntityFrom(ChromatiCraft.pylonDamage[color == null ? 16 : color.ordinal()], amt);
 
 		if (e.getHealth() > Math.max(0, last-originalAmt)) {
 			if (originalAmt >= last) { //kill
 				e.setHealth(0.1F);
-				e.attackEntityFrom(ChromatiCraft.pylonDamage[color.ordinal()], Float.MAX_VALUE);
+				e.attackEntityFrom(ChromatiCraft.pylonDamage[color == null ? 16 : color.ordinal()], Float.MAX_VALUE);
 			}
 			else
 				e.setHealth(last-originalAmt);

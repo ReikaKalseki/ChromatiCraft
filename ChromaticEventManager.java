@@ -1285,7 +1285,7 @@ public class ChromaticEventManager {
 							mob.onDeath(src);
 						}
 						else {
-							ChromaAux.doPylonAttack(CrystalElement.PINK, mob, dmg, false);
+							ChromaAux.doPylonAttack(null, mob, dmg, false);
 						}
 					}
 					else {
@@ -1770,6 +1770,7 @@ public class ChromaticEventManager {
 				String path = DimensionManager.getCurrentSaveRootDirectory().getAbsolutePath().replaceAll("\\\\", "/").replaceAll("/\\./", "/");
 				File dim = new File(path+"/DIM1");
 				if (dim.exists() && dim.isDirectory()) {
+					ChromatiCraft.logger.log("Deleting unloaded end.");
 					ReikaFileReader.deleteFolderWithContents(dim, 100);
 				}
 			}
@@ -1868,9 +1869,12 @@ public class ChromaticEventManager {
 					float pierce = EnchantmentPhasingSequence.getPenetratingDamage(evt.ammount, lvl);
 					float leftover = EnchantmentPhasingSequence.getSpilloverDamage(evt.ammount, lvl);
 					evt.entityLiving.attackEntityFrom(src, leftover);
+					/*
 					DamageSource src2 = elb instanceof EntityPlayer ? DamageSource.causePlayerDamage((EntityPlayer)elb) : DamageSource.causeMobDamage(elb);
 					src2.setDamageIsAbsolute().setDamageBypassesArmor();
 					evt.entityLiving.attackEntityFrom(src2, pierce);
+					 */
+					ChromaAux.doPylonAttack(null, evt.entityLiving, pierce, false);
 					applyingPhasing = false;
 				}
 			}
