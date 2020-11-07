@@ -121,6 +121,7 @@ public class FullScreenOverlayRenderer {
 	}
 
 	void renderPylonAura(EntityPlayer ep, int gsc) {
+		/*
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		ReikaTextureHelper.bindTexture(pylonAura);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -131,12 +132,16 @@ public class FullScreenOverlayRenderer {
 		double w = Minecraft.getMinecraft().displayWidth/gsc;
 		double h = Minecraft.getMinecraft().displayHeight/gsc;
 		double z = -1000;
-
+		 */
 		float maxIntensity = -1;
 
 		CrystalElement glowColor = null;
 		Coordinate glowCenter = null;
 		float glowIntensity = 0;
+
+		int hazeRed = 0;
+		int hazeGreen = 0;
+		int hazeBlue = 0;
 
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];
@@ -144,6 +149,7 @@ public class FullScreenOverlayRenderer {
 			PylonEntry c = containsColor ? null : PylonGenerator.instance.getNearestPylonSpawn(ep.worldObj, ep.posX, ep.posY, ep.posZ, e);
 			double dd = containsColor ? 0 : c != null ? c.location.getDistanceTo(ep.posX, ep.posY, ep.posZ) : Double.POSITIVE_INFINITY;
 			if (containsColor || dd < 32) {
+				/*
 				int step = 40;
 				int frame = (int)((System.currentTimeMillis()/step)%20+e.ordinal()*1.25F)%20;
 				int imgw = 4;//20;
@@ -152,6 +158,7 @@ public class FullScreenOverlayRenderer {
 				double du = u+1D/imgw;
 				double v = frame/imgw/(double)imgh;
 				double dv = v+1D/imgh;
+				 */
 				int alpha = 255;
 				float cache = containsColor ? factors.get(e) : 0;
 				float bright = Math.min(1, (float)(1.5-dd/24));
@@ -173,7 +180,9 @@ public class FullScreenOverlayRenderer {
 						}
 						glowCenter = c != null ? new Coordinate(c.location) : null;
 					}
-					int color = ReikaColorAPI.getColorWithBrightnessMultiplier(e.getColor(), Math.min(1, res));
+					float mult = Math.min(1, res);
+					/*
+					//int color = ReikaColorAPI.getColorWithBrightnessMultiplier(e.getColor(), mult);
 					v5.startDrawingQuads();
 					v5.setBrightness(240);
 					v5.setColorRGBA_I(color, alpha);
@@ -181,16 +190,31 @@ public class FullScreenOverlayRenderer {
 					v5.addVertexWithUV(w, h, z, du, dv);
 					v5.addVertexWithUV(w, 0, z, du, v);
 					v5.addVertexWithUV(0, 0, z, u, v);
-					v5.draw();
+					v5.draw();*/
+					int red = (int)(mult*e.getRed());
+					int green = (int)(mult*e.getGreen());
+					int blue = (int)(mult*e.getBlue());
+					hazeRed = Math.min(255, hazeRed+red);
+					hazeGreen = Math.min(255, hazeGreen+green);
+					hazeBlue = Math.min(255, hazeBlue+blue);
 				}
 			}
 		}
+		/*
 		GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
 		BlendMode.DEFAULT.apply();
 		//GL11.glDisable(GL11.GL_DEPTH_TEST); //turn off depth testing to avoid this occluding other elements
 		GL11.glPopAttrib();
+		 */
 
-		ChromaShaders.PYLON.setIntensity(glowIntensity);
+		ChromaShaders.PYLONAURA.setIntensity(maxIntensity);
+		if (maxIntensity > 0) {
+			ChromaShaders.PYLONAURA.getShader().setField("hazeRed", hazeRed);
+			ChromaShaders.PYLONAURA.getShader().setField("hazeGreen", hazeGreen);
+			ChromaShaders.PYLONAURA.getShader().setField("hazeBlue", hazeBlue);
+		}
+
+		ChromaShaders.PYLON.setIntensity(glowIntensity*0);
 		if (glowColor != null) {
 			ChromaShaders.PYLON.getShader().setField("pylonRed", glowColor.getRed());
 			ChromaShaders.PYLON.getShader().setField("pylonGreen", glowColor.getGreen());
