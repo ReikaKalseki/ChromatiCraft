@@ -148,7 +148,7 @@ public class FullScreenOverlayRenderer {
 			boolean containsColor = factors.containsKey(e);
 			PylonEntry c = containsColor ? null : PylonGenerator.instance.getNearestPylonSpawn(ep.worldObj, ep.posX, ep.posY, ep.posZ, e);
 			double dd = containsColor ? 0 : c != null ? c.location.getDistanceTo(ep.posX, ep.posY, ep.posZ) : Double.POSITIVE_INFINITY;
-			if (containsColor || dd < 32) {
+			if (containsColor || dd < 36) {
 				/*
 				int step = 40;
 				int frame = (int)((System.currentTimeMillis()/step)%20+e.ordinal()*1.25F)%20;
@@ -161,7 +161,7 @@ public class FullScreenOverlayRenderer {
 				 */
 				int alpha = 255;
 				float cache = containsColor ? factors.get(e) : 0;
-				float bright = Math.min(1, (float)(1.5-dd/24));
+				float bright = Math.min(1, (float)(1.75-dd/24));
 				float res = Math.max(cache, bright);
 				if (containsColor) {
 					if (cache > 0.01)
@@ -203,8 +203,8 @@ public class FullScreenOverlayRenderer {
 		/*
 		GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
 		BlendMode.DEFAULT.apply();
-		//GL11.glDisable(GL11.GL_DEPTH_TEST); //turn off depth testing to avoid this occluding other elements
-		GL11.glPopAttrib();
+			//GL11.glDisable(GL11.GL_DEPTH_TEST); //turn off depth testing to avoid this occluding other elements
+			GL11.glPopAttrib();
 		 */
 
 		ChromaShaders.PYLONAURA.setIntensity(maxIntensity);
@@ -214,7 +214,7 @@ public class FullScreenOverlayRenderer {
 			ChromaShaders.PYLONAURA.getShader().setField("hazeBlue", hazeBlue);
 		}
 
-		ChromaShaders.PYLON.setIntensity(glowIntensity*0);
+		ChromaShaders.PYLON.setIntensity(glowIntensity);
 		if (glowColor != null) {
 			ChromaShaders.PYLON.getShader().setField("pylonRed", glowColor.getRed());
 			ChromaShaders.PYLON.getShader().setField("pylonGreen", glowColor.getGreen());

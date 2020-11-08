@@ -67,17 +67,22 @@ float snoise(vec2 v)
 void main() {
     vec4 orig = texture2D(bgl_RenderedTexture, texcoord);
 	
-	float dx = min(texcoord.x, 1.0-texcoord.x)*float(screenWidth);
-	float dy = min(texcoord.y, 1.0-texcoord.y)*float(screenHeight);
-	float d = min(dx, dy);
-	float f = max(0.0, intensity-d*0.018);
+	//float dx = min(texcoord.x, 1.0-texcoord.x)*float(screenWidth)/float(screenHeight);
+	//float dy = min(texcoord.y, 1.0-texcoord.y)*float(screenHeight*0.0+1.0);
+	//float d = min(dx, dy);
+	float dx = (texcoord.x-0.5)*2.0;//*float(screenWidth)/float(screenHeight);
+	float dy = (texcoord.y-0.5)*2.0;
+	float d = 1.0-min(1.0, pow(dx*dx*dx*dx*dx*dx*dx*dx+dy*dy*dy*dy*dy*dy*dy*dy, 0.125));
+	float df = 1+0.25*snoise(texcoord*150.0*vec2(float(screenWidth)/float(screenHeight), 1.0));
+	float f = max(0.0, intensity-(d*0.018*1000.0*0.4+0.125)*df);
 		
 	vec2 pix = vec2(texcoord.x, texcoord.y);
 	pix.x = roundToNearest(pix.x, 4.0/(float(screenWidth)));
 	pix.y = roundToNearest(pix.y, 4.0/(float(screenHeight)));
 		
-	float tx = float(time)*0.3;
-	float ty = float(time)*0.3;
+	float t = float(time)+5000.0;
+	float tx = float(t)*0.3;
+	float ty = float(t)*0.3;
 	//tx *= (pix.x-0.5)*0.72;
 	//ty *= (pix.y-0.5)*0.72;
 	//tx *= -(pix.y-0.5);
@@ -101,7 +106,8 @@ void main() {
 	pix2.x = roundToNearest(pix2.x, sc/(float(screenWidth)));
 	pix2.y = roundToNearest(pix2.y, sc/(float(screenHeight)));
 	
-	f *= 0.5+0.5*snoise(pix2*vec2(screenWidth, screenHeight)*0.09+vec2(tx, ty)*0.4);
+	float ns = snoise(pix2*vec2(screenWidth, screenHeight)*0.09+vec2(tx, ty)*0.4);
+	f *= 0.5+0.5*min(1.0, ns*ns*ns*3.0);
 	f = min(max(f, 0.0), 1.0);
 	
 	float r = float(hazeRed)/255.0*f;
