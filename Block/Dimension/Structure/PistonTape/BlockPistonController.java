@@ -196,6 +196,9 @@ public class BlockPistonController extends BlockDimensionStructureTile {
 
 		@Override
 		protected void onRightClick() {
+			this.setDoor(currentDoor+1);
+			TilePistonController te = (TilePistonController)worldObj.getTileEntity(xCoord, yCoord+1, zCoord);
+			te.setDoor(currentDoor);
 			this.getStage().cycle(worldObj);
 		}
 

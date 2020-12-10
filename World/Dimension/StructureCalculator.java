@@ -41,6 +41,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class StructureCalculator extends ThreadedGenerator {
 
+	public static boolean allowUnfinishedStructures;
+
 	private final Random seededRand;
 	private final int maxAttempts;
 	private final Thread callerThread;
@@ -220,8 +222,10 @@ public class StructureCalculator extends ThreadedGenerator {
 
 	private ArrayList<DimensionStructureType> getUsableStructures() {
 		ArrayList<DimensionStructureType> li = ReikaJavaLibrary.makeListFromArray(DimensionStructureType.types);
-		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())
+		if (allowUnfinishedStructures && DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) {
 			return li;
+		}
+		allowUnfinishedStructures = true;
 		Iterator<DimensionStructureType> it = li.iterator();
 		while (it.hasNext()) {
 			DimensionStructureType d = it.next();

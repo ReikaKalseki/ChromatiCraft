@@ -29,11 +29,12 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Math.Noise.NoiseGeneratorBase;
 import Reika.DragonAPI.Instantiable.Math.Noise.SimplexNoiseGenerator;
+import Reika.DragonAPI.Instantiable.Worldgen.TerrainShaper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 
-public class GlowingCliffsColumnShaper {
+public class GlowingCliffsColumnShaper extends TerrainShaper {
 
 	private final NoiseGeneratorBase landmassControl; //rough height map
 	private final NoiseGeneratorBase upperPlateauTop;
@@ -102,9 +103,6 @@ public class GlowingCliffsColumnShaper {
 	private static final BlockKey BIOME_DIRT = DIRT;//new BlockKey(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.DIRT.getMeta(false, false));
 	private static final BlockKey BIOME_GRASS = GRASS;//new BlockKey(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.GRASS.getMeta(false, false));
 
-	private Block[] blockColumn;
-	private byte[] metaColumn;
-
 	public GlowingCliffsColumnShaper(long seed) {
 		landmassControl = new SimplexNoiseGenerator(seed).setFrequency(1D/*/128D*//*/192D*//*/160D*//144D).addOctave(2.5, 0.5).addOctave(6, 0.125);
 		landmassControl.clampEdge = true;
@@ -130,14 +128,8 @@ public class GlowingCliffsColumnShaper {
 		//islandRiverNoise = new SimplexNoiseGenerator(~seed*4).setFrequency(1/32D);
 	}
 
-	public void generateColumn(World world, int x, int z, Random rand, Block[] blocks, byte[] metas, BiomeGenBase biome) {
-		blockColumn = blocks;
-		metaColumn = metas;
-
-		for (int i = 0; i < 256; i++) {
-			this.setBlock(x, i, z, Blocks.air);
-		}
-
+	@Override
+	protected void generateColumn(World world, int x, int z, Random rand, BiomeGenBase biome) {
 		//ReikaJavaLibrary.pConsole("Genning "+x+", "+z+" with arrays S="+blocks.length);
 
 		int dirtt = (int)ReikaMathLibrary.normalizeToBounds(dirtThickness.getValue(x, z), 1, 4);
@@ -175,28 +167,6 @@ public class GlowingCliffsColumnShaper {
 			this.setBlock(x, i, z, Blocks.bedrock);
 		}
 		 */
-	}
-
-	private void cleanColumn(World world, int x, int z, BiomeGenBase biome) {
-		int pos = this.calcPosIndex(x, z);
-		BlockKey stone = this.getStone(biome);
-		BlockKey dirt = this.getDirt(biome);
-		BlockKey grass = this.getGrass(biome);
-		for (int i = 1; i < 256; i++) {
-			int idx = pos+i;
-			if (blockColumn[idx] == dirt.blockID) {
-				if (blockColumn[idx-1] == Blocks.air || blockColumn[idx-1] == null || blockColumn[idx-1] == ChromaBlocks.DECOFLOWER.getBlockInstance() || blockColumn[idx-1] == ChromaBlocks.TIEREDPLANT.getBlockInstance()) {
-					this.setBlock(x, i, z, stone.blockID, stone.metadata);
-					//ReikaJavaLibrary.pConsole("Replaced dirt @ "+x+", "+i+", "+z+" with stone since was unsupported.");
-				}
-			}
-			else if (i < 255 && blockColumn[idx] == grass.blockID) {
-				if (blockColumn[idx+1] != Blocks.air && blockColumn[idx+1] != null && blockColumn[idx+1] != ChromaBlocks.DECOFLOWER.getBlockInstance() && blockColumn[idx+1] != Blocks.sapling) {
-					this.setBlock(x, i, z, dirt.blockID, dirt.metadata);
-					//ReikaJavaLibrary.pConsole("Replaced grass @ "+x+", "+i+", "+z+" with dirt since was shadowed.");
-				}
-			}
-		}
 	}
 
 	/*
@@ -531,49 +501,24 @@ public class GlowingCliffsColumnShaper {
 		}
 	}
 
-	private void setBlock(int x, int y, int z, Block b) {
-		this.setBlock(x, y, z, b, 0);
-	}
-
-	private void setBlock(int x, int y, int z, Block b, int meta) {
-		if (meta < 0)
-			throw new IllegalArgumentException("Negative metadata @ "+x+", "+y+", "+z+"!");
-		//int cx = x-x%16;
-		//if (cx < 0)
-		//	cx -= 16;
-		//int cz = z-z%16;
-		//if (cz < 0)
-		//	cz -= 16;
-		//int dx = ChunkSplicedGenerationCache.modAndAlign(x);//x-cx;
-		//int dz = ChunkSplicedGenerationCache.modAndAlign(z);//z-cz;
-		//int x = chunkX*16+dx;
-		//int z = chunkZ*16+dz;
-		//int d = (dx*16+dz);
-		//int posIndex = d*blockColumn.length/256;
-
-		int posIndex = this.calcPosIndex(x, z);
-
-		blockColumn[posIndex+y] = b;
-		metaColumn[posIndex+y] = (byte)meta;
-	}
-
-	private int calcPosIndex(int x, int z) {
-		int dx = x & 15;
-		int dz = z & 15;
-		int d = 256;//blockColumn.length / 256;
-		return (dx * 16 + dz) * d;
-	}
-
-	private BlockKey getStone(BiomeGenBase biome) {
+	@Override
+	protected BlockKey getStone(BiomeGenBase biome) {
 		return BiomeGlowingCliffs.isGlowingCliffs(biome) ? BIOME_STONE : STONE;
 	}
 
-	private BlockKey getDirt(BiomeGenBase biome) {
+	@Override
+	protected BlockKey getDirt(BiomeGenBase biome) {
 		return BiomeGlowingCliffs.isGlowingCliffs(biome) ? BIOME_DIRT : DIRT;
 	}
 
-	private BlockKey getGrass(BiomeGenBase biome) {
+	@Override
+	protected BlockKey getGrass(BiomeGenBase biome) {
 		return BiomeGlowingCliffs.isGlowingCliffs(biome) ? BIOME_GRASS : GRASS;
+	}
+
+	@Override
+	protected boolean isPlant(Block b) {
+		return b == ChromaBlocks.DECOFLOWER.getBlockInstance() || b == ChromaBlocks.TIEREDPLANT.getBlockInstance() || b == Blocks.sapling;
 	}
 
 	public GlowCliffRegion getRegion(World world, int x, int z, BiomeGenBase b) {

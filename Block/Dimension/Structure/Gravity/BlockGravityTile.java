@@ -370,8 +370,8 @@ public class BlockGravityTile extends BlockDimensionStructureTile {
 			if (otherLocation != null) {
 				DecimalPosition p2 = new DecimalPosition(otherLocation.offset(new Coordinate(this).negate())).offset(-0.5, -0.5, -0.5);
 				linkRender = new LightningBolt(new DecimalPosition(0, 0, 0), p2, 8);
-				linkRender.variance *= 0.375;
-				linkRender.velocity *= 0.0625*1.5;
+				linkRender.scaleVariance(0.375);
+				linkRender.scaleVelocity(0.0625*1.5);
 			}
 		}
 

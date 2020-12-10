@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -55,8 +55,8 @@ public class RenderPylonTurboCharger extends ChromaRenderBase {
 
 				DecimalPosition end = new DecimalPosition(px+0.5, py+0.5, pz+0.5);
 				LightningBolt b = new LightningBolt(new DecimalPosition(0.5, 0.5, 0.5), end, 4+i*4);
-				b.variance = 0.375;
-				b.velocity = 0.0625;
+				b.setVariance(0.375);
+				b.setVelocity(0.0625);
 				bolts[i][k] = b;
 			}
 		}

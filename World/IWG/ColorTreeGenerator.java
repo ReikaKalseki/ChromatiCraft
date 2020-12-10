@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -20,6 +20,7 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.BiomeDictionary;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.Interfaces.DyeTreeBlocker;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaDecorator;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.ModInterface.MystPages;
@@ -144,6 +145,8 @@ public class ColorTreeGenerator implements RetroactiveGenerator, ChromaDecorator
 				return false;
 			}
 		}
+		if (biome instanceof DyeTreeBlocker)
+			return false;
 		BiomeDecorator dec = biome.theBiomeDecorator;
 		if (biome == BiomeGenBase.ocean || biome == BiomeGenBase.frozenOcean)
 			return false;

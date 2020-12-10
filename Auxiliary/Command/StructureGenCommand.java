@@ -18,6 +18,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
+import Reika.ChromatiCraft.World.Dimension.StructureCalculator;
 import Reika.ChromatiCraft.World.Dimension.ThreadedGenerators;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Command.DragonCommandBase;
@@ -32,6 +33,15 @@ public class StructureGenCommand extends DragonCommandBase {
 		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) {
 			EntityPlayer ep = this.getCommandSenderAsPlayer(ics);
 			ReikaChatHelper.sendChatToPlayer(ep, "Generating structures...");
+			if (args.length > 0) {
+				if (args[0].equals("finished")) {
+					StructureCalculator.allowUnfinishedStructures = false;
+					if (args.length > 1)
+						args = Arrays.copyOfRange(args, 1, args.length);
+					else
+						args = new String[0];
+				}
+			}
 			ChunkProviderChroma.triggerGenerator(ThreadedGenerators.STRUCTURE);
 			ReikaChatHelper.sendChatToPlayer(ep, "Generation complete.");
 			if (args.length > 0) {

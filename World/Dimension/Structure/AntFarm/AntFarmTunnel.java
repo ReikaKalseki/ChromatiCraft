@@ -55,8 +55,9 @@ public class AntFarmTunnel extends StructurePiece<AntFarmGenerator> {
 		DecimalPosition d2 = new DecimalPosition(point2);
 		LightningBolt b = new LightningBolt(d1, d2, curvature); //was 6, then 2, then 3
 		double len = d1.getDistanceTo(d2);
-		b.variance = Math.min(6, len/8D); //was 12, L/4
-		b.velocity = b.variance*2;
+		double var = Math.min(6, len/8D);
+		b.setVariance(var); //was 12, L/4
+		b.setVelocity(var*2);
 		b.update();
 		Spline s = new Spline(SplineType.CHORDAL);
 		for (int i = 0; i <= b.nsteps; i++) {

@@ -596,7 +596,7 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 	@SubscribeEvent
 	public void cliffWaterColor(WaterColorEvent evt) {
 		if (BiomeGlowingCliffs.isGlowingCliffs(evt.getBiome())) {
-			evt.color = ChromatiCraft.glowingcliffs.getWaterColor(evt.world, evt.x, evt.y, evt.z, evt.getLightLevel());
+			evt.color = ChromatiCraft.glowingcliffs.getWaterColor(evt.access, evt.xCoord, evt.yCoord, evt.zCoord, evt.getLightLevel());
 		}
 	}
 

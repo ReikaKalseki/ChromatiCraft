@@ -1,24 +1,22 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
-import java.util.Random;
-
-import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeDecorator;
 import net.minecraft.world.biome.BiomeGenBase;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.DragonAPI.Instantiable.IO.ModLogger;
+import Reika.DragonAPI.Instantiable.Worldgen.StackableBiomeDecorator;
 
-public class DecoratorEnderForest extends BiomeDecorator {
+public class DecoratorEnderForest extends StackableBiomeDecorator {
 
 	EnderPoolGenerator gen = new EnderPoolGenerator();
 
@@ -59,20 +57,8 @@ public class DecoratorEnderForest extends BiomeDecorator {
 	}
 
 	@Override
-	public void decorateChunk(World par1World, Random par2Random, BiomeGenBase biome, int par3, int par4)
-	{
-		if (currentWorld != null) {
-			ChromatiCraft.logger.logError("Already decorating!!");
-		}
-		else {
-			currentWorld = par1World;
-			randomGenerator = par2Random;
-			chunk_X = par3;
-			chunk_Z = par4;
-			this.genDecorations(biome);
-			currentWorld = null;
-			randomGenerator = null;
-		}
+	protected ModLogger getLogger() {
+		return ChromatiCraft.logger;
 	}
 
 

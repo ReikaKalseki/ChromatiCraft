@@ -161,8 +161,8 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 	private void createBolts(Coordinate c) {
 		for (int i = 0; i < 3; i++) {
 			LightningBolt b = new LightningBolt(new DecimalPosition(this), new DecimalPosition(c), 8);
-			b.variance = 0.25;
-			b.velocity = 0.0625;
+			b.setVariance(0.25);
+			b.setVelocity(0.0625);
 			bolts.addValue(c, b);
 		}
 	}

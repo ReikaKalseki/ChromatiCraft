@@ -166,6 +166,7 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 		for (DoorSection s : doors) {
 			s.forceOpenDoor(world);
 		}
+		pings = ReikaArrayHelper.getTrueArray(doorCount);
 	}
 
 	public void validate(int door) {

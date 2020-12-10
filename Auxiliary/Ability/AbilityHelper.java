@@ -1666,7 +1666,9 @@ public class AbilityHelper {
 				double z2 = r*Math.sin(a2);
 				LightningBolt b1 = new LightningBolt(p1, new DecimalPosition(x1, -1.6, z1), 3);
 				LightningBolt b2 = new LightningBolt(p1, new DecimalPosition(x2, 0.5, z2), 3);
-				b1.velocity = b2.velocity = b1.velocity/32D;
+				b1.scaleVelocity(1/32D);
+				b2.setVelocity(b1);
+				//b1.velocity = b2.velocity = b1.velocity/32D;
 				//b1.variance = b2.variance = b1.variance*2D;
 				c.add(b1);
 				c.add(b2);

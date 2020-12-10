@@ -177,7 +177,7 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 				double ez = ReikaRandomHelper.getRandomPlusMinus(z+0.5, dr);
 				double ey = ReikaRandomHelper.getRandomBetween(y+0.05, y+6);
 				LightningBolt b = new LightningBolt(new DecimalPosition(x+0.5, y+0.5, z+0.5), new DecimalPosition(ex, ey, ez), 4);
-				b.variance = 0.375;
+				b.setVariance(0.375);
 				b.update();
 				int l = 20+rand.nextInt(20);
 				for (int i = 0; i < b.nsteps; i++) {

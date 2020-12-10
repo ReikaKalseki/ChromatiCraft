@@ -114,7 +114,7 @@ public class OuterRegionsEvents {
 		ReikaSoundHelper.playClientSound(ChromaSounds.FLAREATTACK, ep, 1, e.getIdentity().soundPitch);
 		int n = 4+ep.worldObj.rand.nextInt(4);
 		LightningBolt b = new LightningBolt(new DecimalPosition(e), new DecimalPosition(ep).offset(0, -0.8, 0), n);
-		b.variance *= 2;
+		b.scaleVariance(2);
 		b.update();
 		int clr = e.getIdentity().flareColor;
 		for (int i = 0; i < b.nsteps; i++) {

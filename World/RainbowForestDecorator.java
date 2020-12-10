@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -20,7 +20,6 @@ import static net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.Ev
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.init.Blocks;
-import net.minecraft.world.biome.BiomeDecorator;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.feature.WorldGenLiquids;
 import net.minecraft.world.gen.feature.WorldGenerator;
@@ -29,17 +28,20 @@ import net.minecraftforge.event.terraingen.DecorateBiomeEvent;
 import net.minecraftforge.event.terraingen.TerrainGen;
 import net.minecraftforge.fluids.BlockFluidBase;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Worldgen.BlockSparkle;
 import Reika.ChromatiCraft.Block.Worldgen.BlockSparkle.BlockTypes;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.IO.ModLogger;
+import Reika.DragonAPI.Instantiable.Worldgen.StackableBiomeDecorator;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 
-public class RainbowForestDecorator extends BiomeDecorator {
+public class RainbowForestDecorator extends StackableBiomeDecorator {
 
 	private RainbowForestGenerator gen = new RainbowForestGenerator();
 
@@ -255,6 +257,11 @@ public class RainbowForestDecorator extends BiomeDecorator {
 		}
 
 		MinecraftForge.EVENT_BUS.post(new DecorateBiomeEvent.Post(currentWorld, randomGenerator, chunk_X, chunk_Z));
+	}
+
+	@Override
+	protected ModLogger getLogger() {
+		return ChromatiCraft.logger;
 	}
 
 }

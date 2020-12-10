@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -418,7 +418,7 @@ public class MonumentCompletionRitual {
 					Coordinate c = TileEntityDimensionCore.getLocation(e).offset(x, y, z);
 					DecimalPosition end = new DecimalPosition(c.xCoord+0.5, c.yCoord+0.5, c.zCoord+0.5);
 					LightningBolt b = new LightningBolt(new DecimalPosition(x+0.5, y+0.5, z+0.5), end, 8);
-					b.variance = 0.675;
+					b.setVariance(0.675);
 					b.update();
 					int l = 5+rand.nextInt(20);
 					for (int i = 0; i < b.nsteps; i++) {

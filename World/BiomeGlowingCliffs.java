@@ -224,7 +224,7 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 				else {
 					if (WorldgenProfiler.profilingEnabled())
 						WorldgenProfiler.startGenerator(world, "Luminous cliff terrain shaping", chunkX, chunkZ);
-					terrain.generateColumn(world, x, z, new Random(chunkX*341873128712L+chunkZ*132897987541L), blockArray, metaArray, b);
+					terrain.generateColumn(world, x, z, chunkX, chunkZ, blockArray, metaArray, b);
 					if (WorldgenProfiler.profilingEnabled())
 						WorldgenProfiler.onRunGenerator(world, "Luminous cliff terrain shaping", chunkX, chunkZ);
 				}
