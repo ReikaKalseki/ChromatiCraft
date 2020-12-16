@@ -98,7 +98,7 @@ public class ItemConnector extends ItemChromaTool {
 			}
 		}
 		else if (is.stackTagCompound != null && is.stackTagCompound.hasKey("callback")) {
-			WorldLocation loc = WorldLocation.readFromNBT(is.stackTagCompound.getCompoundTag("callback"));
+			WorldLocation loc = WorldLocation.readTag(is.stackTagCompound.getCompoundTag("callback"));
 			if (loc != null) {
 				TileEntity tile = loc.getTileEntity();
 				if (tile instanceof LinkerCallback) {

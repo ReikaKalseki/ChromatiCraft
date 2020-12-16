@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.DoorKeyCopyingRecipe;
 import Reika.ChromatiCraft.Auxiliary.LegacyTileAcceleratorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RangedLampPanelingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.InscriptionRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
@@ -37,6 +38,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.IO.CustomRecipeList;
 import Reika.DragonAPI.Instantiable.Recipe.ShapelessNBTRecipe;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
@@ -110,8 +112,10 @@ public class ChromaRecipes {
 
 		RecipesCastingTable.instance.addPostLoadRecipes();
 
+		CustomRecipeList.addFieldLookup("chromaticraft_stack", ChromaStacks.class);
 		RecipesCastingTable.instance.loadCustomRecipeFiles();
 		PoolRecipes.instance.loadCustomPoolRecipes();
+		InscriptionRecipes.instance.loadCustomInscriptionRecipes();
 
 		if (ModList.ROTARYCRAFT.isLoaded()) {
 			for (int i = 0; i < CrystalElement.elements.length; i++) {

@@ -98,7 +98,7 @@ public class WarpNetwork {
 			NBTTagList li = entry.getTagList("map", NBTTypes.COMPOUND.ID);
 			for (Object o2 : li.tagList) {
 				NBTTagCompound tag = (NBTTagCompound)o2;
-				WorldLocation loc = WorldLocation.readFromNBT(tag);
+				WorldLocation loc = WorldLocation.readTag(tag);
 				double d = tag.getDouble("angle");
 				map.put(d, loc);
 			}

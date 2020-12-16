@@ -184,7 +184,6 @@ public class PoolRecipes {
 
 	public void loadCustomPoolRecipes() {
 		CustomRecipeList crl = new CustomRecipeList(ChromatiCraft.instance, "alloying");
-		crl.addFieldLookup("chromaticraft_stack", ChromaStacks.class);
 		crl.load();
 		for (LuaBlock lb : crl.getEntries()) {
 			Exception e = null;

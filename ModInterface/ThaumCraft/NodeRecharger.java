@@ -135,7 +135,7 @@ public class NodeRecharger implements TickHandler {
 	}
 
 	private void loadLocation(NBTTagCompound tag) {
-		WorldLocation loc = WorldLocation.readFromNBT(tag);
+		WorldLocation loc = WorldLocation.readTag(tag);
 		TileEntity te = loc.getTileEntity();
 		if (!(te instanceof INode)) {
 			ChromatiCraft.logger.logError("Data saved a TC aura node at "+loc+", but the node was deleted between world save and reload?!");

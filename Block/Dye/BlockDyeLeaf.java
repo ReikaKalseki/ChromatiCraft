@@ -248,4 +248,9 @@ public class BlockDyeLeaf extends BlockCustomLeaf {
 		return 5;
 	}
 
+	@Override
+	protected int getMetaLimit() {
+		return 16;
+	}
+
 }

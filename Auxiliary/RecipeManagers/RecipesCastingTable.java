@@ -1214,7 +1214,6 @@ public class RecipesCastingTable {
 
 	public final void loadCustomRecipeFiles() {
 		CustomRecipeList crl = new CustomRecipeList(ChromatiCraft.instance, "castingtable");
-		crl.addFieldLookup("chromaticraft_stack", ChromaStacks.class);
 		crl.load();
 		for (LuaBlock lb : crl.getEntries()) {
 			Exception e = null;

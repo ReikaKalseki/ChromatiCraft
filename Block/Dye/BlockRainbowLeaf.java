@@ -338,6 +338,11 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 		return 15;
 	}
 
+	@Override
+	protected int getMetaLimit() {
+		return LeafMetas.list.length;
+	}
+
 	public static enum LeafMetas {
 		BASIC,
 		PLACED,

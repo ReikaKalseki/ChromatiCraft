@@ -251,7 +251,7 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 			super.writeToNBT(NBT);
 
 			color.writeToNBT(NBT);
-			door.writeToNBT("door", NBT);
+			door.writeToNBT("doorLoc", NBT);
 		}
 
 		@Override
@@ -259,7 +259,7 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 			super.readFromNBT(NBT);
 
 			color.readFromNBT(NBT);
-			door = Coordinate.readFromNBT("door", NBT);
+			door = Coordinate.readFromNBT("doorLoc", NBT);
 		}
 
 		public void setTarget(Coordinate c) {

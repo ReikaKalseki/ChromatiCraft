@@ -632,7 +632,7 @@ public class AbilityHelper {
 		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep).getCompoundTag(AE_LOC_TAG);
 		if (nbt == null || nbt.hasNoTags())
 			return null;
-		WorldLocation c = WorldLocation.readFromNBT(nbt);
+		WorldLocation c = WorldLocation.readTag(nbt);
 		if (c == null) {
 			return null;
 		}

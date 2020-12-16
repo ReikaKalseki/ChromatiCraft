@@ -297,7 +297,7 @@ public class ItemEnderBucket extends ItemChromaTool {
 		}
 
 		public static TankLink createFromTag(NBTTagCompound tag) {
-			WorldLocation loc = WorldLocation.readFromNBT(tag);
+			WorldLocation loc = WorldLocation.readTag(tag);
 			BlockKey bk = BlockKey.readFromNBT("cache", tag);
 			TankLink lk = new TankLink(loc, bk);
 			if (tag.hasKey("item")) {

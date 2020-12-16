@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -22,7 +22,6 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
-import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Base.ItemChromaBasic;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
@@ -94,7 +93,6 @@ public class InscriptionRecipes {
 
 	public void loadCustomInscriptionRecipes() {
 		CustomRecipeList crl = new CustomRecipeList(ChromatiCraft.instance, "inscription");
-		crl.addFieldLookup("chromaticraft_stack", ChromaStacks.class);
 		crl.load();
 		for (LuaBlock lb : crl.getEntries()) {
 			Exception e = null;

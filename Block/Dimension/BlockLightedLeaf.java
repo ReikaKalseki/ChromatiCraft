@@ -217,4 +217,9 @@ public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBloc
 		return 12;
 	}
 
+	@Override
+	protected int getMetaLimit() {
+		return 1;
+	}
+
 }
