@@ -23,7 +23,8 @@ public class CCParticleEngine extends ParticleEngine {
 		super();
 	}
 
-	public void registerClasses() {
+	@Override
+	protected void registerClasses() {
 		ThrottleableEffectRenderer.getRegisteredInstance().registerDelegateRenderer(EntityCCBlurFX.class, this);
 		ThrottleableEffectRenderer.getRegisteredInstance().registerDelegateRenderer(EntityCCFloatingSeedsFX.class, this);
 		ThrottleableEffectRenderer.getRegisteredInstance().registerDelegateRenderer(EntityShaderFX.class, this);
