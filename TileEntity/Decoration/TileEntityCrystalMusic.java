@@ -39,8 +39,8 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.MusicScore;
 import Reika.DragonAPI.Instantiable.MusicScore.Note;
@@ -313,7 +313,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 			double v = ReikaRandomHelper.getRandomPlusMinus(0.25, 0.125);
 			int c = CrystalElement.randomElement().getColor();
 
-			EntityFX fx = new EntityBlurFX(world, x+0.5+dx, y+0.5+dy, z+0.5+dz, -dx*v, -dy*v, -dz*v).setLife(l).setColor(c).setGravity(0);
+			EntityFX fx = new EntityCCBlurFX(world, x+0.5+dx, y+0.5+dy, z+0.5+dz, -dx*v, -dy*v, -dz*v).setLife(l).setColor(c).setGravity(0);
 			fx.noClip = false;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
@@ -330,7 +330,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 			int l = 10+rand.nextInt(40);
 			float g = -(float)ReikaRandomHelper.getRandomBetween(0.015125, 0.125);
 
-			EntityFX fx = new EntityFloatingSeedsFX(world, px, py, pz, 0, 90).setLife(l).setColor(e.getColor()).setGravity(g);
+			EntityFX fx = new EntityCCFloatingSeedsFX(world, px, py, pz, 0, 90).setLife(l).setColor(e.getColor()).setGravity(g);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 
@@ -348,7 +348,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 				double pz = zCoord+0.5+f*dz;
 
 				int clr = e.getColor();
-				EntityFX fx = new EntityBlurFX(world, px, py, pz).setLife(l).setNoSlowdown().setScale(s).setColor(clr);
+				EntityFX fx = new EntityCCBlurFX(world, px, py, pz).setLife(l).setNoSlowdown().setScale(s).setColor(clr);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}

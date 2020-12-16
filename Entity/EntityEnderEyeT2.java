@@ -21,7 +21,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Interpolation;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -219,8 +219,8 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 				int c = ReikaColorAPI.getModifiedHue(0xff0000, ReikaRandomHelper.getRandomBetween(75, 180));
 				if (rand.nextInt(6) > 0)
 					c = (int)distanceColor.getValue(totalDistance);
-				EntityBlurFX fx = new EntityBlurFX(worldObj, dx, dy, dz).setLife(l).setScale(s).setColor(c);
-				fx.setRapidExpand().setAlphaFading().setIcon(ChromaIcons.FADE_GENTLE);
+				EntityCCBlurFX fx = (EntityCCBlurFX)new EntityCCBlurFX(worldObj, dx, dy, dz).setLife(l).setScale(s).setColor(c);
+				fx.setIcon(ChromaIcons.FADE_GENTLE).setRapidExpand().setAlphaFading();
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}
@@ -234,10 +234,10 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 			double r = 3;
 			double l = t/lf;
 			Vec3 vec = ReikaVectorHelper.getPointAroundVector(Vec3.createVectorHelper(motionX, motionY, motionZ), r, ang);
-			EntityBlurFX fx = new EntityBlurFX(worldObj, posX+vec.xCoord, posY+vec.yCoord, posZ+vec.zCoord);
+			EntityCCBlurFX fx = new EntityCCBlurFX(worldObj, posX+vec.xCoord, posY+vec.yCoord, posZ+vec.zCoord);
 			float s = 7.5F;
 			fx.setLife(180).setScale(s).setColor(c);
-			fx.setRapidExpand().setAlphaFading().setIcon(ChromaIcons.FADE_BASICBLEND).setBasicBlend();
+			fx.setIcon(ChromaIcons.FADE_BASICBLEND).setRapidExpand().setAlphaFading().setBasicBlend();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

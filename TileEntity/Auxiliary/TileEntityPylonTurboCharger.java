@@ -40,14 +40,15 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
-import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -176,7 +177,7 @@ public class TileEntityPylonTurboCharger extends TileEntityPylonEnhancer {
 		int g = 192+rand.nextInt(64);
 		int b = 192+rand.nextInt(64);
 
-		EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(r, g, b).setScale(s).setGravity(0).setLife(l);
+		EntityFX fx = new EntityCCBlurFX(world, px, py, pz).setColor(r, g, b).setScale(s).setGravity(0).setLife(l);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
@@ -461,7 +462,7 @@ public class TileEntityPylonTurboCharger extends TileEntityPylonEnhancer {
 
 				int l = 10+rand.nextInt(10);
 				float s = (float)ReikaRandomHelper.getRandomBetween(2, 7.5);
-				EntityFX fx = new EntityBlurFX(world, px, py, pz, vx, vy, vz).fadeColors(0xffffff, te.getColor().getColor()).setScale(s).setLife(l).setRapidExpand();
+				EntityFX fx = new EntityCCBlurFX(world, px, py, pz, vx, vy, vz).fadeColors(0xffffff, te.getColor().getColor()).setScale(s).setLife(l).setRapidExpand();
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}
@@ -477,7 +478,8 @@ public class TileEntityPylonTurboCharger extends TileEntityPylonEnhancer {
 				float s = (float)ReikaRandomHelper.getRandomBetween(2D, 3D);
 				int c1 = this.getPylon(world, x, y, z).getColor().getColor();
 				int l = 30+rand.nextInt(20);
-				EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.5+8, z+0.5, xyz[0], xyz[1], xyz[2]).setRapidExpand().setScale(s).setLife(l).setGravity(0).fadeColors(0xffffff, c1);
+				EntityCCBlurFX fx = new EntityCCBlurFX(world, x+0.5, y+0.5+8, z+0.5, xyz[0], xyz[1], xyz[2]);
+				fx.setRapidExpand().setScale(s).setLife(l).setGravity(0).fadeColors(0xffffff, c1);
 				IIcon ico = null;
 				switch(rand.nextInt(4)) {
 					case 0:
@@ -503,13 +505,13 @@ public class TileEntityPylonTurboCharger extends TileEntityPylonEnhancer {
 		double v = ReikaRandomHelper.getRandomPlusMinus(0.125, 0.0625);
 		int c1 = this.getPylon(world, x, y, z).getColor().getColor();
 		int l = 30+rand.nextInt(20);
-		EntityFX fx = new EntityBlurFX(world, x+0.5, y+0.5+8, z+0.5, 0, v, 0).setRapidExpand().setScale(s).setLife(l).setGravity(0).fadeColors(0xffffff, c1);
+		EntityFX fx = new EntityCCBlurFX(world, x+0.5, y+0.5+8, z+0.5, 0, v, 0).setRapidExpand().setScale(s).setLife(l).setGravity(0).fadeColors(0xffffff, c1);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		s = (float)ReikaRandomHelper.getRandomBetween(2D, 3D);
 		l = 30+rand.nextInt(20);
 		v = ReikaRandomHelper.getRandomPlusMinus(0.125, 0.0625);
-		fx = new EntityBlurFX(world, x+0.5, y+0.5+8, z+0.5, 0, -v, 0).setRapidExpand().setScale(s).setLife(l).setGravity(0).fadeColors(0xffffff, c1);
+		fx = new EntityCCBlurFX(world, x+0.5, y+0.5+8, z+0.5, 0, -v, 0).setRapidExpand().setScale(s).setLife(l).setGravity(0).fadeColors(0xffffff, c1);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
@@ -534,7 +536,7 @@ public class TileEntityPylonTurboCharger extends TileEntityPylonEnhancer {
 						float s = (float)ReikaRandomHelper.getRandomBetween(2D, 4D);
 						int l = 40+rand.nextInt(120);
 						int c1 = te.getColor().getColor();
-						EntityFX fx = new EntityBlurFX(world, x+0.5, y+0.5+8, z+0.5, xyz[0], xyz[1], xyz[2]).setRapidExpand().setScale(s).setLife(l).setGravity(0).fadeColors(0xffffff, c1);
+						EntityFX fx = new EntityCCBlurFX(world, x+0.5, y+0.5+8, z+0.5, xyz[0], xyz[1], xyz[2]).setRapidExpand().setScale(s).setLife(l).setGravity(0).fadeColors(0xffffff, c1);
 						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					}
 				}
@@ -560,7 +562,7 @@ public class TileEntityPylonTurboCharger extends TileEntityPylonEnhancer {
 						float s = (float)ReikaRandomHelper.getRandomPlusMinus(3D, 1D);
 						int l = 40+rand.nextInt(120);
 						float g = -(float)ReikaRandomHelper.getRandomPlusMinus(0.0625, 0.03125);
-						EntityFX fx = new EntityFloatingSeedsFX(world, dx, dy, dz, 0, 90).setLife(l).setScale(s).setColor(c).setGravity(g);
+						EntityFX fx = new EntityCCFloatingSeedsFX(world, dx, dy, dz, 0, 90).setLife(l).setScale(s).setColor(c).setGravity(g);
 						((EntityFloatingSeedsFX)fx).freedom = 40;
 						((EntityFloatingSeedsFX)fx).angleVelocity = 1.25;
 						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
@@ -612,7 +614,7 @@ public class TileEntityPylonTurboCharger extends TileEntityPylonEnhancer {
 					float s = (float)ReikaRandomHelper.getRandomBetween(1.5, 3);
 					double th = 60*Math.sin(a+i*Math.PI/6D);
 					int l = 40;
-					EntityFX fx = new EntityFloatingSeedsFX(world, x+0.5, y+8.5, z+0.5, a1, th).setRapidExpand().setLife(l).setScale(s).fadeColors(0xffffff, te.getColor().getColor());
+					EntityFX fx = new EntityCCFloatingSeedsFX(world, x+0.5, y+8.5, z+0.5, a1, th).setRapidExpand().setLife(l).setScale(s).fadeColors(0xffffff, te.getColor().getColor());
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 				}
 				break;

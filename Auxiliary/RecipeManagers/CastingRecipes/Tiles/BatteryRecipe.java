@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -19,7 +19,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRe
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -142,7 +142,7 @@ public class BatteryRecipe extends PylonCastingRecipe {
 			double vy = dc*0.0625*1.5*(0.75+idx/2D);
 			double dy = te.yCoord+0.5;
 			float g = 0.0625F*(float)dc;
-			EntityFX fx = new EntityBlurFX(te.worldObj, dx, dy, dz, 0, vy, 0).setLife(60).setGravity(g).setColor(e.getColor()).setScale(1.5F);
+			EntityFX fx = new EntityCCBlurFX(te.worldObj, dx, dy, dz, 0, vy, 0).setLife(60).setGravity(g).setColor(e.getColor()).setScale(1.5F);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

@@ -14,13 +14,13 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomRenderFX;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.ParticleEngine;
-import Reika.ChromatiCraft.Render.ParticleEngine.RenderMode;
-import Reika.ChromatiCraft.Render.ParticleEngine.RenderModeFlags;
-import Reika.ChromatiCraft.Render.ParticleEngine.TextureMode;
+import Reika.DragonAPI.Instantiable.Rendering.ParticleEngine;
+import Reika.DragonAPI.Instantiable.Rendering.ParticleEngine.RenderMode;
+import Reika.DragonAPI.Instantiable.Rendering.ParticleEngine.RenderModeFlags;
+import Reika.DragonAPI.Instantiable.Rendering.ParticleEngine.TextureMode;
+import Reika.DragonAPI.Interfaces.Entity.CustomRenderFX;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
 public class EntityBallLightningFX extends EntityFX implements CustomRenderFX {
@@ -87,7 +87,7 @@ public class EntityBallLightningFX extends EntityFX implements CustomRenderFX {
 			double px = posX+jitterX;
 			double py = posY+jitterY;
 			double pz = posZ+jitterZ;
-			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityBlurFX(worldObj, px, py, pz).setScale(s).setIcon(ChromaIcons.CENTER).setColor((int)(particleRed*255), (int)(particleGreen*255), (int)(particleBlue*255)));
+			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityCCBlurFX(worldObj, px, py, pz).setIcon(ChromaIcons.CENTER).setScale(s).setColor((int)(particleRed*255), (int)(particleGreen*255), (int)(particleBlue*255)));
 		}
 
 		if (particleAge == particleMaxAge) {
@@ -163,7 +163,7 @@ public class EntityBallLightningFX extends EntityFX implements CustomRenderFX {
 
 	@Override
 	public final TextureMode getTexture() {
-		return ParticleEngine.instance.blockTex;
+		return ParticleEngine.blockTex;
 	}
 
 	@Override

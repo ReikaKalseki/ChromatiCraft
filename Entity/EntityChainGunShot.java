@@ -37,7 +37,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -127,7 +127,7 @@ public class EntityChainGunShot extends EntityFireball {
 			double pz = posZ+motionZ*d;
 			int l = 20+rand.nextInt(80);
 			float s = (float)ReikaRandomHelper.getRandomPlusMinus(6D, 1D);
-			EntityFX fx = new EntityBlurFX(worldObj, px, py, pz, 0, 0, 0).setRapidExpand().setLife(l).setScale(s).setColor(0, 192, 255);
+			EntityFX fx = new EntityCCBlurFX(worldObj, px, py, pz, 0, 0, 0).setRapidExpand().setLife(l).setScale(s).setColor(0, 192, 255);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
@@ -256,7 +256,7 @@ public class EntityChainGunShot extends EntityFireball {
 			float s = 0.5F+e.worldObj.rand.nextFloat()*4;
 			int l = 5+e.worldObj.rand.nextInt(75)*(1+e.worldObj.rand.nextInt(2));
 			CrystalElement c = e.worldObj.rand.nextBoolean() ? CrystalElement.BLACK : CrystalElement.PINK;
-			EntityFX fx = new EntityBlurFX(c, e.worldObj, rx, ry, rz, vx, vy, vz).setNoSlowdown().setScale(s).setRapidExpand().setLife(l);
+			EntityFX fx = new EntityCCBlurFX(c, e.worldObj, rx, ry, rz, vx, vy, vz).setNoSlowdown().setScale(s).setRapidExpand().setLife(l);
 			fx.noClip = false;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
@@ -276,7 +276,7 @@ public class EntityChainGunShot extends EntityFireball {
 			float s = 0.5F+ec.rand.nextFloat()*4;
 			int l = 5+ec.rand.nextInt(75)*(1+ec.rand.nextInt(2));
 			int color = ReikaColorAPI.getModifiedHue(0x0000ff, ReikaRandomHelper.getRandomPlusMinus(240, 60));
-			EntityFX fx = new EntityBlurFX(ec.worldObj, rx, ry, rz, vx, vy, vz).setNoSlowdown().setScale(s).setRapidExpand().setLife(l).setColor(color);
+			EntityFX fx = new EntityCCBlurFX(ec.worldObj, rx, ry, rz, vx, vy, vz).setNoSlowdown().setScale(s).setRapidExpand().setLife(l).setColor(color);
 			fx.noClip = false;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}

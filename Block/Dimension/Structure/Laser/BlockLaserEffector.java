@@ -39,7 +39,7 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.LaserEffectorRenderer;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.World.Dimension.Structure.LaserPuzzleGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
@@ -426,7 +426,7 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 				double y = ReikaRandomHelper.getRandomPlusMinus(yCoord+0.5, 0.5);
 				double z = ReikaRandomHelper.getRandomPlusMinus(zCoord+0.5, 0.75);
 				int l = ReikaRandomHelper.getRandomBetween(8, 30);
-				EntityFX fx = new EntityBlurFX(worldObj, x, y, z).setColor(this.getRenderColor()).setLife(l);
+				EntityFX fx = new EntityCCBlurFX(worldObj, x, y, z).setColor(this.getRenderColor()).setLife(l);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}

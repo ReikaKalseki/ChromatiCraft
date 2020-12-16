@@ -37,9 +37,10 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Interfaces.Block.Submergeable;
@@ -191,7 +192,7 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 				double rrx = ReikaRandomHelper.getRandomPlusMinus(rx, f);
 				double rry = ReikaRandomHelper.getRandomPlusMinus(ry, f);
 				double rrz = ReikaRandomHelper.getRandomPlusMinus(rz, f);
-				fx = new EntityBlurFX(e, world, rrx, rry, rrz, 0, 0, 0).setLife(l).setScale(s2).setIcon(ChromaIcons.SPARKLEPARTICLE).enableAlphaTest();
+				fx = new EntityCCBlurFX(e, world, rrx, rry, rrz, 0, 0, 0).setIcon(ChromaIcons.SPARKLEPARTICLE).setLife(l).setScale(s2).enableAlphaTest();
 				if (rand.nextBoolean())
 					((EntityBlurFX)fx).setRapidExpand();
 				if (rand.nextBoolean())
@@ -202,7 +203,7 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 		else {
 			double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.35);
 			double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.35);
-			fx = new EntityFloatingSeedsFX(world, rx, y+0.5, rz, 0, 90, ChromaIcons.CENTER.getIcon()).setColor(e.getColor()).setScale(4).setLife(120).setColliding();
+			fx = new EntityCCFloatingSeedsFX(world, rx, y+0.5, rz, 0, 90, ChromaIcons.CENTER).setColor(e.getColor()).setScale(4).setLife(120).setColliding();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

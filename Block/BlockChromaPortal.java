@@ -45,7 +45,7 @@ import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityBallLightningFX;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
@@ -53,6 +53,7 @@ import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
@@ -306,7 +307,7 @@ public class BlockChromaPortal extends Block {
 			float g = -(float)ReikaRandomHelper.getRandomPlusMinus(0.125, 0.0625);
 			int color = CrystalElement.getBlendedColor(ticks, 40);
 			int l = ReikaRandomHelper.getRandomPlusMinus(80, 40);
-			EntityBlurFX fx = new EntityBlurFX(worldObj, px, yCoord+1.25, pz, 0, 0, 0).setGravity(g).setLife(l).setColor(color);
+			EntityBlurFX fx = new EntityCCBlurFX(worldObj, px, yCoord+1.25, pz, 0, 0, 0).setGravity(g).setLife(l).setColor(color);
 			fx.noClip = true;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
@@ -344,7 +345,7 @@ public class BlockChromaPortal extends Block {
 			double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
 			double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
 			float g = -(float)ReikaRandomHelper.getRandomPlusMinus(0.125, 0.0625);
-			EntityBlurFX fx = new EntityBlurFX(worldObj, xCoord+0.5, yCoord+8.25, zCoord+0.5, vx, 0, vz).setGravity(g);
+			EntityBlurFX fx = new EntityCCBlurFX(worldObj, xCoord+0.5, yCoord+8.25, zCoord+0.5, vx, 0, vz).setGravity(g);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 

@@ -50,7 +50,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager.TuningThresholds;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenCentral;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenChromaMountains;
@@ -597,7 +597,7 @@ public class ChromaDimensionManager {
 						if (ReikaMathLibrary.py3d(sx-ep.posX, sy-ep.posY, sz-ep.posZ) > dr1)
 							continue;
 
-						EntityBlurFX fx = new EntityBlurFX(world, sx, sy, sz);
+						EntityCCBlurFX fx = new EntityCCBlurFX(world, sx, sy, sz);
 						float sc = 3.5F;//2;
 						float br = 0.08F;//0.2F;
 						if (ReikaMathLibrary.py3d(sx-ep.posX, sy-ep.posY, sz-ep.posZ) > dr2) {
@@ -607,7 +607,7 @@ public class ChromaDimensionManager {
 						if (br <= 0)
 							continue;
 						int l = ReikaRandomHelper.getRandomBetween(80, 180);
-						fx.setAlphaFading().setScale(sc).setColor(ReikaColorAPI.getColorWithBrightnessMultiplier(0x22aaff, br)).setRapidExpand().setLife(l).setIcon(ChromaIcons.FADE_GENTLE);
+						fx.setIcon(ChromaIcons.FADE_GENTLE).setAlphaFading().setScale(sc).setColor(ReikaColorAPI.getColorWithBrightnessMultiplier(0x22aaff, br)).setRapidExpand().setLife(l);
 						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 					}

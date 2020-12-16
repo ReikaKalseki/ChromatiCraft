@@ -30,7 +30,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
@@ -186,7 +186,7 @@ public class EntitySplashGunShot extends EntityFireball {
 			int l = 20+e.worldObj.rand.nextInt(20);
 			CrystalElement c = e.worldObj.rand.nextBoolean() ? CrystalElement.WHITE : CrystalElement.PINK;
 			int clr = ReikaColorAPI.getModifiedSat(ReikaColorAPI.getColorWithBrightnessMultiplier(c.getColor(), 0.4F), 2);
-			EntityBlurFX fx = new EntityBlurFX(e.worldObj, rx, ry, rz, vp[0], vp[1], vp[2]);
+			EntityCCBlurFX fx = new EntityCCBlurFX(e.worldObj, rx, ry, rz, vp[0], vp[1], vp[2]);
 			fx.setRapidExpand().setAlphaFading().setScale(s).setLife(l).setColor(clr).setColliding().setDrag(0.875);
 			fx.noClip = false;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
@@ -214,9 +214,9 @@ public class EntitySplashGunShot extends EntityFireball {
 					float s = 2F;
 					int clr = e.getColor();
 					DecimalPosition dd = DecimalPosition.interpolate(pos1, pos2, r);
-					EntityFX fx = new EntityBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s).setColor(clr).setLife(l).setRapidExpand();
+					EntityFX fx = new EntityCCBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s).setColor(clr).setLife(l).setRapidExpand();
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-					EntityFX fx2 = new EntityBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s/2.5F).setColor(0xffffff).setLife(l).setRapidExpand();
+					EntityFX fx2 = new EntityCCBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s/2.5F).setColor(0xffffff).setLife(l).setRapidExpand();
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 				}
 			}

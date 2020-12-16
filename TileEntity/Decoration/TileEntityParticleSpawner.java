@@ -20,7 +20,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Auxiliary.IconLookupRegistry;
 import Reika.DragonAPI.Instantiable.BoundedValue;
@@ -156,7 +156,8 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 				}
 				else {
 					ChromaIcons ico = (ChromaIcons)particleIcon;
-					EntityBlurFX fx = new EntityBlurFX(world, px, py, pz, vx, vy, vz).setGravity(g).setLife(l).setScale(s).setColor(particleColor);
+					EntityCCBlurFX fx = new EntityCCBlurFX(world, px, py, pz, vx, vy, vz);
+					fx.setGravity(g).setLife(l).setScale(s).setColor(particleColor);
 					fx.setIcon(ico);
 					if (particleCollision)
 						fx.setColliding();

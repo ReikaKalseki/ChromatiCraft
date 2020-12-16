@@ -20,7 +20,8 @@ import Reika.ChromatiCraft.Block.Decoration.BlockEtherealLight.Flags;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Interfaces.Entity.DestroyOnUnload;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -115,7 +116,7 @@ public class EntityTunnelNuker extends EntityLiving implements DestroyOnUnload {
 		float s = (e.getRNG().nextFloat()*0.75F+0.25F)*7;
 		int l = ReikaRandomHelper.getRandomBetween(10, 60);
 		int c = ReikaColorAPI.getModifiedHue(0xff0000, e.getRNG().nextInt(60));
-		EntityBlurFX fx = new EntityBlurFX(e.worldObj, e.posX, e.posY+0.9, e.posZ);
+		EntityBlurFX fx = new EntityCCBlurFX(e.worldObj, e.posX, e.posY+0.9, e.posZ);
 		fx.setRapidExpand().setAlphaFading().setScale(s).setLife(l).setColor(c);//.setPositionController();
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}

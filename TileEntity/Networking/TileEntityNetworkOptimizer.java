@@ -17,8 +17,9 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
@@ -110,7 +111,7 @@ public class TileEntityNetworkOptimizer extends CrystalReceiverBase implements M
 		double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
 		double vy = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
 		double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
-		EntityBlurFX fx = new EntityBlurFX(world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble(), vx, vy, vz);
+		EntityBlurFX fx = new EntityCCBlurFX(world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble(), vx, vy, vz);
 		fx.setColor(CrystalElement.elements[clr].getColor()).setColliding();
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}

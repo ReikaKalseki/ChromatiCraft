@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -22,7 +22,8 @@ import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
+import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -89,9 +90,8 @@ public class PotionLumarhea extends ChromaPotion {
 
 	@SideOnly(Side.CLIENT)
 	private void spawnParticle(EntityLivingBase e, CrystalElement c) {
-		EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(e.worldObj, e.posX, e.posY-0.52, e.posZ, 270+e.rotationYaw, -15);
+		EntityFloatingSeedsFX fx = new EntityCCFloatingSeedsFX(e.worldObj, e.posX, e.posY-0.52, e.posZ, 270+e.rotationYaw, -15, ChromaIcons.FADE_GENTLE);
 		fx.setColor(c.getColor());
-		fx.setIcon(ChromaIcons.FADE_GENTLE);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 

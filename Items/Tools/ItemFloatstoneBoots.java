@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -31,7 +31,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ASM.InterfaceInjector.Injectable;
 import Reika.DragonAPI.Interfaces.Item.MultisheetItem;
@@ -109,13 +109,13 @@ public class ItemFloatstoneBoots extends ItemArmor implements MultisheetItem, IS
 				double dx = r*Math.cos(a);
 				double dz = r*Math.sin(a);
 				double dy = 0.1875D*1.5;
-				EntityFX fx = new EntityBlurFX(world, ep.posX+dx, ep.posY-1.62-dy, ep.posZ+dz, 0, 0.03125, 0).setColor(c).setLife(10);
+				EntityFX fx = new EntityCCBlurFX(world, ep.posX+dx, ep.posY-1.62-dy, ep.posZ+dz, 0, 0.03125, 0).setColor(c).setLife(10);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 
 			double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
 			double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
-			EntityFX fx = new EntityBlurFX(world, ep.posX, ep.posY-1.62, ep.posZ, vx, -0.25, vz).setColor(c).setLife(15).setRapidExpand().setScale(1.5F);
+			EntityFX fx = new EntityCCBlurFX(world, ep.posX, ep.posY-1.62, ep.posZ, vx, -0.25, vz).setColor(c).setLife(15).setRapidExpand().setScale(1.5F);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

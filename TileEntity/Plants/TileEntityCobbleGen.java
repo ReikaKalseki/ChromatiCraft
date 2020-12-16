@@ -38,7 +38,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
@@ -46,6 +46,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.BlockMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Effects.EntityFluidFX;
 import Reika.DragonAPI.Instantiable.ParticleController.AttractiveMotionController;
 import Reika.DragonAPI.Interfaces.MotionController;
@@ -260,10 +261,10 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant implements Operati
 			EntityBlurFX fx;
 			double[] vel = ReikaPhysicsHelper.polarToCartesian(v, 0, i);
 			if (success) {
-				fx = new EntityBlurFX(world, x+0.5, y+0.125, z+0.5, vel[0], -0.125, vel[2]).setGravity(-0.125F);
+				fx = new EntityCCBlurFX(world, x+0.5, y+0.125, z+0.5, vel[0], -0.125, vel[2]).setGravity(-0.125F);
 			}
 			else {
-				fx = new EntityBlurFX(world, x+0.5, y+0.125, z+0.5, vel[0], 0, vel[2]).setNoSlowdown().setIcon(ChromaIcons.SPARKLE);
+				fx = new EntityCCBlurFX(world, x+0.5, y+0.125, z+0.5, vel[0], 0, vel[2]).setIcon(ChromaIcons.SPARKLE).setNoSlowdown();
 			}
 			int c = tag == null || tag.isEmpty() ? 0x22aaff : ReikaJavaLibrary.getRandomCollectionEntry(rand, tag.elementSet()).getColor();
 			fx.setColor(c).setRapidExpand();
@@ -493,7 +494,7 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant implements Operati
 						double dx = x+0.5+r*Math.sin(a+ri);
 						double dy = y-4;
 						double dz = z+0.5+r*Math.cos(a+ri);
-						EntityFX fx = new EntityBlurFX(CrystalElement.ORANGE, world, dx, dy, dz, 0, 0.1875, 0).setScale(2.5F).setNoSlowdown().setLife(25).setIcon(ChromaIcons.TRIDOT);
+						EntityFX fx = new EntityCCBlurFX(CrystalElement.ORANGE, world, dx, dy, dz, 0, 0.1875, 0).setIcon(ChromaIcons.TRIDOT).setScale(2.5F).setNoSlowdown().setLife(25);
 						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					}
 					break;

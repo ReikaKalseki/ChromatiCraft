@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -15,7 +15,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 
 
-public class EntityFireSmokeFX extends EntityBlurFX {
+public class EntityFireSmokeFX extends EntityCCBlurFX {
 
 	public final int startColor;
 

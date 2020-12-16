@@ -29,7 +29,7 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockSpiral;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -147,7 +147,7 @@ public class TileEntityCaveLighter extends TileEntityChromaticBase implements Ra
 			double rx = xCoord+rand.nextDouble();
 			double ry = yCoord+rand.nextDouble();
 			double rz = zCoord+rand.nextDouble();
-			EntityFX fx = new EntityBlurFX(worldObj, rx, ry, rz).setColor(c).setGravity(-0.03125F).setLife(30).setScale(1.25F);
+			EntityFX fx = new EntityCCBlurFX(worldObj, rx, ry, rz).setColor(c).setGravity(-0.03125F).setLife(30).setScale(1.25F);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
@@ -163,7 +163,7 @@ public class TileEntityCaveLighter extends TileEntityChromaticBase implements Ra
 			double rx = xCoord+0.5+dx;
 			double ry = yCoord+0.5+dy;
 			double rz = zCoord+0.5+dz;
-			EntityFX fx = new EntityBlurFX(worldObj, rx, ry, rz, dx*v, dy*v, dz*v).setColor(0xffffff).setGravity(0).setLife(60).setScale(1.75F).setRapidExpand();
+			EntityFX fx = new EntityCCBlurFX(worldObj, rx, ry, rz, dx*v, dy*v, dz*v).setColor(0xffffff).setGravity(0).setLife(60).setScale(1.75F).setRapidExpand();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 		ReikaSoundHelper.playClientSound(ChromaSounds.CAST, xCoord+0.5, yCoord+0.5, zCoord+0.5, 1, 1);
@@ -180,7 +180,7 @@ public class TileEntityCaveLighter extends TileEntityChromaticBase implements Ra
 			double pz = zCoord+0.5+r*Math.sin(ang);
 			int c = BlockEtherealLight.getParticleColor(worldObj, y);
 			float s = (float)(2-(r/mr)*2);
-			EntityFX fx = new EntityBlurFX(worldObj, px, yCoord+0.5, pz).setColor(c).setGravity(0).setLife(80).setScale(s).setRapidExpand().setIcon(ChromaIcons.CENTER);
+			EntityFX fx = new EntityCCBlurFX(worldObj, px, yCoord+0.5, pz).setIcon(ChromaIcons.CENTER).setColor(c).setGravity(0).setLife(80).setScale(s).setRapidExpand();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

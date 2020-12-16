@@ -22,7 +22,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverGenerator;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverGenerator.RiverPoint;
 import Reika.DragonAPI.Instantiable.ParticleController.CollectingPositionController;
@@ -130,7 +130,7 @@ public class SkyRiverRenderer {
 
 						int l = ReikaRandomHelper.getRandomBetween(15, 30);
 						PositionController pc = new CollectingPositionController(px, py, pz, tx, ty, tz, l);
-						EntityFX fx = new EntityBlurFX(Minecraft.getMinecraft().theWorld, px, py, pz).setLife(l).setScale(14).setPositionController(pc).setColor(clr).setIcon(ChromaIcons.FADE_GENTLE);
+						EntityFX fx = new EntityCCBlurFX(Minecraft.getMinecraft().theWorld, px, py, pz).setIcon(ChromaIcons.FADE_GENTLE).setLife(l).setScale(14).setPositionController(pc).setColor(clr);
 
 						//ReikaJavaLibrary.pConsole(fx);
 
@@ -171,7 +171,7 @@ public class SkyRiverRenderer {
 						vz = ReikaRandomHelper.getRandomPlusMinus(vz, 0.125);
 
 						int l = ReikaRandomHelper.getRandomBetween(30, 80);
-						EntityFX fx = new EntityBlurFX(Minecraft.getMinecraft().theWorld, px, py, pz, vx, vy, vz).setLife(l).setScale(14).setColor(clr).setIcon(ChromaIcons.FADE_GENTLE);
+						EntityFX fx = new EntityCCBlurFX(Minecraft.getMinecraft().theWorld, px, py, pz, vx, vy, vz).setIcon(ChromaIcons.FADE_GENTLE).setLife(l).setScale(14).setColor(clr);
 
 						//ReikaJavaLibrary.pConsole(fx);
 

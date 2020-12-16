@@ -40,14 +40,15 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.ProximityMap;
+import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer.StructureRenderingParticleSpawner;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -256,7 +257,7 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 			double px = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 4);
 			double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 4);
 			double py = ReikaRandomHelper.getRandomBetween(y+3.5, y+5);
-			EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(0xa0e0ff).setLife(30).setIcon(ChromaIcons.FADE_RAY).setScale(0.5F);
+			EntityFX fx = new EntityCCBlurFX(world, px, py, pz).setIcon(ChromaIcons.FADE_RAY).setColor(0xa0e0ff).setLife(30).setScale(0.5F);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 
@@ -287,9 +288,9 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 		double dz = t.getRootPosition().chunkZPos-tower.getRootPosition().chunkZPos;
 		double a = -ReikaPhysicsHelper.cartesianToPolar(dx, 0, dz)[2]-90;
 		float s = rand.nextFloat()+0.25F;
-		EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, px, py, pz, a, 0);
+		EntityFloatingSeedsFX fx = new EntityCCFloatingSeedsFX(world, px, py, pz, a, 0, ChromaIcons.FADE);
 		fx.freedom *= 0.5;
-		fx.setColor(0xa0e0ff).setLife(120).setIcon(ChromaIcons.FADE).setScale(s);
+		fx.setColor(0xa0e0ff).setLife(120).setScale(s);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
@@ -387,7 +388,7 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 		//ReikaSoundHelper.playClientSound(ChromaSounds.MONUMENTRAY, x+0.5, y+0.5, z+0.5, 2, 0.4F, false);
 
 		for (double a = 0; a < 360; a += 1) {
-			EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, x+0.5, y+4.5, z+0.5, a, 0);
+			EntityFloatingSeedsFX fx = new EntityCCFloatingSeedsFX(world, x+0.5, y+4.5, z+0.5, a, 0);
 			fx.setColor(0xa0e0ff).setLife(120).setRapidExpand();
 			fx.particleVelocity *= 2;
 			fx.freedom *= 2;
@@ -404,10 +405,10 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 		 */
 
 		for (double i = 0; i <= 64; i += 0.25) {
-			EntityFX fx = new EntityBlurFX(world, x+0.5, y+4.5+i, z+0.5).setColor(0xa0e0ff).setLife(120).setRapidExpand().setAlphaFading().setScale(4);
+			EntityFX fx = new EntityCCBlurFX(world, x+0.5, y+4.5+i, z+0.5).setColor(0xa0e0ff).setLife(120).setRapidExpand().setAlphaFading().setScale(4);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
-			fx = new EntityBlurFX(world, x+0.5, y+4.5+i, z+0.5).setColor(0xffffff).setLife(120).setAlphaFading().setScale(1.5F);
+			fx = new EntityCCBlurFX(world, x+0.5, y+4.5+i, z+0.5).setColor(0xffffff).setLife(120).setAlphaFading().setScale(1.5F);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

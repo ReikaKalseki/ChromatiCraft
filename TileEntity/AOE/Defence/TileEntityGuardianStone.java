@@ -29,7 +29,8 @@ import Reika.ChromatiCraft.Auxiliary.ProtectionZone;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -236,7 +237,7 @@ public class TileEntityGuardianStone extends TileEntityChromaticBase {
 				l *= 8;
 			else if (edge)
 				l *= 4;
-			EntityBlurFX fx = new EntityBlurFX(world, px, py, pz).setScale(s).setLife(l);
+			EntityBlurFX fx = new EntityCCBlurFX(world, px, py, pz).setScale(s).setLife(l);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

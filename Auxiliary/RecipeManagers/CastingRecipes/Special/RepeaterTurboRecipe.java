@@ -25,10 +25,12 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
+import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
@@ -149,9 +151,9 @@ public class RepeaterTurboRecipe extends PylonCastingRecipe implements EnergyLin
 			Random rand = te.getRandom();
 			int l = 10+rand.nextInt(10);
 			float s = 2+rand.nextFloat()*3;
-			EntityFloatingSeedsFX fx1 = (EntityFloatingSeedsFX)new EntityFloatingSeedsFX(te.worldObj, x, y, z, rand.nextDouble()*360, rand.nextDouble()*360).setScale(s).setColor(CrystalElement.randomElement().getColor()).setLife(l).setIcon(ChromaIcons.FADE_GENTLE);
+			EntityFloatingSeedsFX fx1 = (EntityFloatingSeedsFX)new EntityCCFloatingSeedsFX(te.worldObj, x, y, z, rand.nextDouble()*360, rand.nextDouble()*360, ChromaIcons.FADE_GENTLE).setScale(s).setColor(CrystalElement.randomElement().getColor()).setLife(l);
 			fx1.particleVelocity *= 2;
-			EntityBlurFX fx2 = new EntityBlurFX(te.worldObj, x, y, z).setIcon(ChromaIcons.FLARE).setScale(s*0.75F).lockTo(fx1).setLife(l);
+			EntityBlurFX fx2 = new EntityCCBlurFX(te.worldObj, x, y, z).setIcon(ChromaIcons.FLARE).setScale(s*0.75F).lockTo(fx1).setLife(l);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx1);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 		}

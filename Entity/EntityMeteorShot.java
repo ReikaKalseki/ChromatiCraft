@@ -28,7 +28,7 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFireSmokeFX;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityMeteorTower;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
@@ -193,7 +193,7 @@ public class EntityMeteorShot extends Entity implements IEntityAdditionalSpawnDa
 				double py = ReikaRandomHelper.getRandomBetween(e.posY-0.5, e.posY+1);
 				int c = ReikaColorAPI.RGBtoHex(255, e.rand.nextInt(256), 0);
 				float s = (float)ReikaRandomHelper.getRandomBetween(4F, 10F);
-				EntityFX fx = new EntityBlurFX(e.worldObj, px, py, pz).setScale(s).setColor(c);
+				EntityFX fx = new EntityCCBlurFX(e.worldObj, px, py, pz).setScale(s).setColor(c);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 			double d = e.getDistanceSqToEntity(Minecraft.getMinecraft().thePlayer);

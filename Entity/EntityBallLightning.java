@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -36,10 +36,11 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.DragonAPI.Instantiable.Data.SphericalVector;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget.DimensionTarget;
 import Reika.DragonAPI.Interfaces.Entity.DestroyOnUnload;
@@ -315,7 +316,7 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 	@SideOnly(Side.CLIENT)
 	private void gluonParticles(EntityBallLightning other, double dx, double dy, double dz, float frac) {
 		int c = ReikaColorAPI.mixColors(other.getRenderColor(), this.getRenderColor(), frac);
-		EntityBlurFX fx = new EntityBlurFX(worldObj, dx, dy, dz);
+		EntityBlurFX fx = new EntityCCBlurFX(worldObj, dx, dy, dz);
 		fx.setLife(5).setColor(c);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}

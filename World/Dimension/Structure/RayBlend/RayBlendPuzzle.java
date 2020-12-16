@@ -41,7 +41,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.World.Dimension.Structure.RayBlendGenerator;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
@@ -641,8 +641,8 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 	private static void doPingParticle(World world, CrystalElement e, int x, int y, int z) {
 		for (double i = 0.25; i <= 0.75; i += 0.25) {
 			for (double k = 0.25; k <= 0.75; k += 0.25) {
-				EntityBlurFX fx = new EntityBlurFX(world, x+i, y+0.5, z+k);
-				fx.setColor(e.getColor()).setScale(5).setLife(60).setIcon(ChromaIcons.CENTER).setRapidExpand().setAlphaFading();
+				EntityCCBlurFX fx = new EntityCCBlurFX(world, x+i, y+0.5, z+k);
+				fx.setIcon(ChromaIcons.CENTER).setColor(e.getColor()).setScale(5).setLife(60).setRapidExpand().setAlphaFading();
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}
@@ -1159,13 +1159,13 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 		@SideOnly(Side.CLIENT)
 		public static void doParticle(World world, double x, double y, double z, CrystalElement e, boolean mix) {
 			if (mix) {
-				EntityBlurFX fx = new EntityBlurFX(world, x, y, z);
-				fx.setColor(e.getColor()).setScale(3).setLife(60).setIcon(ChromaIcons.FADE).setRapidExpand().setAlphaFading();
+				EntityCCBlurFX fx = new EntityCCBlurFX(world, x, y, z);
+				fx.setIcon(ChromaIcons.FADE).setColor(e.getColor()).setScale(3).setLife(60).setRapidExpand().setAlphaFading();
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 			else {
-				EntityBlurFX fx = new EntityBlurFX(world, x, y, z);
-				fx.setColor(e.getColor()).setScale(2).setLife(60).setIcon(ChromaIcons.FADE).setRapidExpand().setAlphaFading();
+				EntityCCBlurFX fx = new EntityCCBlurFX(world, x, y, z);
+				fx.setIcon(ChromaIcons.FADE).setColor(e.getColor()).setScale(2).setLife(60).setRapidExpand().setAlphaFading();
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}

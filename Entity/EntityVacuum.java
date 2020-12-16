@@ -30,7 +30,7 @@ import net.minecraft.world.WorldServer;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
 import Reika.DragonAPI.Instantiable.EntityTumblingBlock;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
@@ -158,7 +158,7 @@ public class EntityVacuum extends Entity implements IEntityAdditionalSpawnData, 
 			float s = 0.5F+e.worldObj.rand.nextFloat()*4;
 			int l = 5+e.worldObj.rand.nextInt(20)*(1+e.worldObj.rand.nextInt(2));
 			CrystalElement c = CrystalElement.randomElement();
-			EntityFX fx = new EntityBlurFX(c, e.worldObj, rx, ry, rz, vp[0], vp[1], vp[2]).setNoSlowdown().setScale(s).setRapidExpand().setLife(l);
+			EntityFX fx = new EntityCCBlurFX(c, e.worldObj, rx, ry, rz, vp[0], vp[1], vp[2]).setNoSlowdown().setScale(s).setRapidExpand().setLife(l);
 			fx.noClip = false;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}

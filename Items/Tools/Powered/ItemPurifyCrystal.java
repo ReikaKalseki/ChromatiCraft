@@ -20,7 +20,7 @@ import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.Orbit;
 import Reika.DragonAPI.Instantiable.ParticleController.OrbitMotionController;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -60,7 +60,7 @@ public class ItemPurifyCrystal extends ItemPoweredChromaTool {
 			p.thetaSpeed = ReikaRandomHelper.getRandomBetween(1.5, 5);
 			int l = 60+itemRand.nextInt(120);
 			float s = (float)ReikaRandomHelper.getRandomPlusMinus(1, 0.25);
-			EntityFX fx = new EntityBlurFX(e.worldObj, e.posX, e.posY, e.posZ).setPositionController(p).setLife(l).setIcon(ChromaIcons.CENTER).setScale(s);
+			EntityFX fx = new EntityCCBlurFX(e.worldObj, e.posX, e.posY, e.posZ).setIcon(ChromaIcons.CENTER).setPositionController(p).setLife(l).setScale(s);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

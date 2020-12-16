@@ -52,7 +52,7 @@ import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPICore;
@@ -339,14 +339,14 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 			double dx = x+rand.nextDouble()*2;
 			double dy = y+0.9375+rand.nextDouble()*0.125;
 			double dz = z+rand.nextDouble()*2-1;
-			EntityBlurFX fx = new EntityBlurFX(world, dx, dy, dz);
+			EntityCCBlurFX fx = new EntityCCBlurFX(world, dx, dy, dz);
 			int c = CrystalElement.getBlendedColor(this.getTicksExisted(), 40);
 			float g = -(float)ReikaRandomHelper.getRandomBetween(0.03125, 0.0625);
 			float s = (float)ReikaRandomHelper.getRandomBetween(1.5, 3);
-			fx.setColor(c).setIcon(ChromaIcons.FLARE).setGravity(g).setScale(s);
+			fx.setIcon(ChromaIcons.FLARE).setColor(c).setGravity(g).setScale(s);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-			EntityBlurFX fx2 = new EntityBlurFX(world, dx, dy, dz);
-			fx2.setColor(ReikaColorAPI.getColorWithBrightnessMultiplier(c, 0.7F)).setIcon(ChromaIcons.FADE_GENTLE).setGravity(g).setScale(s).lockTo(fx);
+			EntityCCBlurFX fx2 = new EntityCCBlurFX(world, dx, dy, dz);
+			fx2.setIcon(ChromaIcons.FADE_GENTLE).setColor(ReikaColorAPI.getColorWithBrightnessMultiplier(c, 0.7F)).setGravity(g).setScale(s).lockTo(fx);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 		}
 	}

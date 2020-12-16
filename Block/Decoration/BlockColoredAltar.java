@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.DragonAPI.Instantiable.CubeRotation;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -115,7 +115,7 @@ public class BlockColoredAltar extends CrystalTypeBlock {
 				int l = 20+rand.nextInt(20);
 				float s = (float)ReikaRandomHelper.getRandomPlusMinus(2F, 1F);
 				double dang = ReikaRandomHelper.getRandomPlusMinus(ang, 10);
-				EntityFX fx = new EntityBlurFX(e, worldObj, dx, dy, dz, 0, 0, 0).setGravity(g).setLife(l).setScale(s).setColliding(dang);
+				EntityFX fx = new EntityCCBlurFX(e, worldObj, dx, dy, dz, 0, 0, 0).setGravity(g).setLife(l).setScale(s).setColliding(dang);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 
@@ -140,7 +140,7 @@ public class BlockColoredAltar extends CrystalTypeBlock {
 					r = g = b = avg;
 				}
 
-				EntityFX fx = new EntityBlurFX(worldObj, dx, dy, dz, 0, 0, 0).setGravity(0).setLife(l).setScale(s).setColor(r, g, b);
+				EntityFX fx = new EntityCCBlurFX(worldObj, dx, dy, dz, 0, 0, 0).setGravity(0).setLife(l).setScale(s).setColor(r, g, b);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 

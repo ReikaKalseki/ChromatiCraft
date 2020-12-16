@@ -37,11 +37,12 @@ import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
+import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
@@ -100,13 +101,13 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 			double px = xCoord+rand.nextDouble();//+0.5;
 			double py = yCoord+rand.nextDouble();//0.5;
 			double pz = zCoord+rand.nextDouble();//0.5;
-			EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(worldObj, px, py, pz, -angs[2]+270, angs[1]-90);
+			EntityFloatingSeedsFX fx = new EntityCCFloatingSeedsFX(worldObj, px, py, pz, -angs[2]+270, angs[1]-90, ChromaIcons.CENTER);
 			fx.angleVelocity = 2.5;
 			fx.particleVelocity = v;
 			fx.freedom = 10;
 			int c = tag == null || tag.isEmpty() ? 0x22aaff : ReikaJavaLibrary.getRandomCollectionEntry(rand, tag.elementSet()).getColor();
 			AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).expand(dx, dy, dz);
-			fx.setColor(c).setLife(100).setScale(2.5F).setIcon(ChromaIcons.CENTER).markDestination(x, y, z).setNoSlowdown().bound(box);
+			fx.setColor(c).setLife(100).setScale(2.5F).markDestination(x, y, z).setNoSlowdown().bound(box);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

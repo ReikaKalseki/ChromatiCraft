@@ -18,7 +18,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Base.BlockAttachableMini;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.ParticlePath;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
@@ -237,7 +237,7 @@ public class RFWeb {
 		ForgeDirection d1 = ((BlockAttachableMini)world.getBlock(x1, y1, z1)).getSide(world, x1, y1, z1);
 		ForgeDirection d2 = ((BlockAttachableMini)world.getBlock(x2, y2, z2)).getSide(world, x2, y2, z2);
 		ParticlePath p = ParticlePath.getPath(world, new BlockVector(x1, y1, z1, d1), new BlockVector(x2, y2, z2, d2), 0.375, 0.7);
-		EntityBlurFX fx = new EntityBlurFX(world, x1+0.5, y1+0.5, z1+0.5);
+		EntityCCBlurFX fx = new EntityCCBlurFX(world, x1+0.5, y1+0.5, z1+0.5);
 		List<DecimalPosition> path = p != null ? p.getPath() : null;
 		int l = p != null ? Math.max(10, 3*path.size()/2) : 90;
 		float s = Math.max(0.8F, Math.min(2.4F, amt*2.4F/THROUGHPUT));
@@ -261,7 +261,7 @@ public class RFWeb {
 			fx.setColor(0xff9090).setNoSlowdown();
 		}
 		if (p != null) {
-			EntityBlurFX fx2 = new EntityBlurFX(world, x1+0.5, y1+0.5, z1+0.5);
+			EntityCCBlurFX fx2 = new EntityCCBlurFX(world, x1+0.5, y1+0.5, z1+0.5);
 			fx2.setColor(0xffffff).setScale(s/2F).setLife(l).setAlphaFading().forceIgnoreLimits();
 			fx2.setPositionController(new SplineMotionController(l, p.spline).setTick(-6));
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);

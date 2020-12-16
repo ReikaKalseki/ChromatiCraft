@@ -29,9 +29,10 @@ import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -126,7 +127,7 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 			double py = ReikaRandomHelper.getRandomPlusMinus(y+0.25, 0.5)+0.5;
 			float g = (float)ReikaRandomHelper.getRandomBetween(0.03125, 0.1);
 			int l = ReikaRandomHelper.getRandomPlusMinus(40, 100);
-			EntityBlurFX fx = new EntityBlurFX(world, px, py, pz).setColor(color).setGravity(g).setLife(l).setScale(1.25F).setRapidExpand().setIcon(ChromaIcons.FADE_GENTLE);
+			EntityBlurFX fx = new EntityCCBlurFX(world, px, py, pz).setIcon(ChromaIcons.FADE_GENTLE).setColor(color).setGravity(g).setLife(l).setScale(1.25F).setRapidExpand();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

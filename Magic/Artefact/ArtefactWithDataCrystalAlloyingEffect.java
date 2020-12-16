@@ -17,7 +17,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
@@ -95,8 +95,8 @@ public class ArtefactWithDataCrystalAlloyingEffect implements AlloyingEffect {
 				vy += 0.375;
 			float s = (float)ReikaRandomHelper.getRandomPlusMinus(1.5, 2.5);
 			float g = (float)ReikaRandomHelper.getRandomBetween(0.03125, 0.125)*(float)(vy/0.125)*1.5F;
-			EntityBlurFX fx1 = new EntityBlurFX(Minecraft.getMinecraft().theWorld, ei.posX, ei.posY, ei.posZ, vx, vy, vz);
-			fx1.setColor(0xffffff).setGravity(g).setScale(s).setLife(40).setRapidExpand().setIcon(ChromaIcons.FADE_RAY);
+			EntityCCBlurFX fx1 = new EntityCCBlurFX(Minecraft.getMinecraft().theWorld, ei.posX, ei.posY, ei.posZ, vx, vy, vz);
+			fx1.setIcon(ChromaIcons.FADE_RAY).setColor(0xffffff).setGravity(g).setScale(s).setLife(40).setRapidExpand();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx1);
 		}
 	}
@@ -144,9 +144,9 @@ public class ArtefactWithDataCrystalAlloyingEffect implements AlloyingEffect {
 				double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.125);
 				double vy = ReikaRandomHelper.getRandomBetween(0.03125, 0.25);
 				float s = (float)ReikaRandomHelper.getRandomPlusMinus(5, 2.5);
-				EntityBlurFX fx1 = new EntityBlurFX(Minecraft.getMinecraft().theWorld, px, py, pz, vx, vy, vz);
+				EntityCCBlurFX fx1 = new EntityCCBlurFX(Minecraft.getMinecraft().theWorld, px, py, pz, vx, vy, vz);
 				int c = ReikaColorAPI.getModifiedHue(0xff0000, ReikaRandomHelper.getRandomBetween(20, 45));
-				fx1.setColor(c).setScale(s).setLife(30).setRapidExpand().setIcon(ChromaIcons.FADE_GENTLE);
+				fx1.setIcon(ChromaIcons.FADE_GENTLE).setColor(c).setScale(s).setLife(30).setRapidExpand();
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx1);
 			}
 		}

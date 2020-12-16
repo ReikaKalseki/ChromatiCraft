@@ -30,7 +30,7 @@ import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
@@ -103,7 +103,7 @@ public class BlockUnknownArtefact extends Block {
 			double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.75);
 			int l = ReikaRandomHelper.getRandomBetween(8, 12);
 			float f = (float)ReikaRandomHelper.getRandomBetween(0.5, 1);
-			EntityFX fx = new EntityBlurFX(world, px, py, pz, vx, vy, vz).setColor(0xffffff).setScale(f).setLife(l);
+			EntityFX fx = new EntityCCBlurFX(world, px, py, pz, vx, vy, vz).setColor(0xffffff).setScale(f).setLife(l);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

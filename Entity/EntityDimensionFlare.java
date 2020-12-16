@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -27,8 +27,9 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.World.Dimension.OuterRegionsEvents;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Formula.MathExpression;
 import Reika.DragonAPI.Instantiable.Formula.PeriodicExpression;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
@@ -137,7 +138,7 @@ public class EntityDimensionFlare extends Entity/*Living*/ {
 			double a1 = angs[1]+dir.angle1-90;
 			double a2 = -angs[2]+90+dir.angle2;
 			double[] v = ReikaPhysicsHelper.polarToCartesian(vel, a1, a2);
-			EntityBlurFX fx = new EntityBlurFX(worldObj, posX, posY, posZ, v[0], v[1], v[2]).setColor(dir.color).setScale(1.5F+rand.nextFloat()*1.5F);
+			EntityBlurFX fx = new EntityCCBlurFX(worldObj, posX, posY, posZ, v[0], v[1], v[2]).setColor(dir.color).setScale(1.5F+rand.nextFloat()*1.5F);
 			double d = rand.nextDouble()*360;
 			MathExpression e = new PeriodicExpression().addWave(1, 1, d).addWave(0.5, 2, d+90).addWave(0.125, 4, d).normalize();
 			fx.setColorController(new FlashColorController(e, dir.color, 0x000000));
@@ -149,7 +150,7 @@ public class EntityDimensionFlare extends Entity/*Living*/ {
 			int idx = rand.nextInt(trailColors.size());
 			ColorDirection dir = trailColors.get(idx);
 			double[] xyz = ReikaPhysicsHelper.polarToCartesian(1.25, rand.nextDouble()*360, rand.nextDouble()*360);
-			EntityBlurFX fx = new EntityBlurFX(worldObj, posX+xyz[0], posY+xyz[1], posZ+xyz[2]).setColor(dir.color).setScale(0.75F+rand.nextFloat()*0.5F);
+			EntityBlurFX fx = new EntityCCBlurFX(worldObj, posX+xyz[0], posY+xyz[1], posZ+xyz[2]).setColor(dir.color).setScale(0.75F+rand.nextFloat()*0.5F);
 			double d = rand.nextDouble()*360;
 			fx.setMotionController(new EntityLockMotionController(this, 0.03125/4, 0.125*8, 0.875));
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
@@ -159,7 +160,7 @@ public class EntityDimensionFlare extends Entity/*Living*/ {
 			int idx = rand.nextInt(trailColors.size());
 			ColorDirection dir = trailColors.get(idx);
 			double[] xyz = ReikaPhysicsHelper.polarToCartesian(0.625, rand.nextDouble()*360, rand.nextDouble()*360);
-			EntityBlurFX fx = new EntityBlurFX(worldObj, posX+xyz[0]-motionX, posY+xyz[1]-motionY, posZ+xyz[2]-motionZ, motionX, motionY, motionZ).setColor(dir.color);
+			EntityBlurFX fx = new EntityCCBlurFX(worldObj, posX+xyz[0]-motionX, posY+xyz[1]-motionY, posZ+xyz[2]-motionZ, motionX, motionY, motionZ).setColor(dir.color);
 			fx.setScale(2.5F+rand.nextFloat()*1F).setLife(20).setRapidExpand();
 			double d = rand.nextDouble()*360;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);

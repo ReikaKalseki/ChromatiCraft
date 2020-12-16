@@ -25,7 +25,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAreaDistributor;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -128,8 +128,8 @@ public class TileEntityRFDistributor extends TileEntityAreaDistributor implement
 				double py = yCoord+0.5+dy/dd*d;
 				double pz = zCoord+0.5+dz/dd*d;
 				float s = (float)(1.5+ReikaMathLibrary.logbase(rf, 10)*(1D-d*d*12));
-				EntityFX fx = new EntityBlurFX(worldObj, px, py, pz, vx, vy, vz).setColor(0xff0000).setLife(l).setScale(s).setRapidExpand().markDestination(x, y, z);
-				EntityFX fx2 = new EntityBlurFX(worldObj, px, py, pz, vx, vy, vz).setColor(0xffffff).setLife(l).setScale(s/2).setRapidExpand().markDestination(x, y, z);
+				EntityFX fx = new EntityCCBlurFX(worldObj, px, py, pz, vx, vy, vz).setColor(0xff0000).setLife(l).setScale(s).setRapidExpand().markDestination(x, y, z);
+				EntityFX fx2 = new EntityCCBlurFX(worldObj, px, py, pz, vx, vy, vz).setColor(0xffffff).setLife(l).setScale(s/2).setRapidExpand().markDestination(x, y, z);
 				fx.noClip = true;
 				fx2.noClip = true;
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
@@ -175,8 +175,8 @@ public class TileEntityRFDistributor extends TileEntityAreaDistributor implement
 			int l = 20+rand.nextInt(60);
 			float s = 1.5F;
 			AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z);
-			EntityFX fx = new EntityBlurFX(world, px, py, pz, vx, vy, vz).setColor(0xff0000).setLife(l).setScale(s).setRapidExpand().bound(box);
-			EntityFX fx2 = new EntityBlurFX(world, px, py, pz, vx, vy, vz).setColor(0xffffff).setLife(l).setScale(s/2).setRapidExpand().bound(box);
+			EntityFX fx = new EntityCCBlurFX(world, px, py, pz, vx, vy, vz).setColor(0xff0000).setLife(l).setScale(s).setRapidExpand().bound(box);
+			EntityFX fx2 = new EntityCCBlurFX(world, px, py, pz, vx, vy, vz).setColor(0xffffff).setLife(l).setScale(s/2).setRapidExpand().bound(box);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 		}

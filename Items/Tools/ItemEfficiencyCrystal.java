@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.Orbit;
 import Reika.DragonAPI.Instantiable.ParticleController.OrbitMotionController;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -56,7 +56,7 @@ public class ItemEfficiencyCrystal extends ItemChromaTool {
 			p.thetaSpeed = ReikaRandomHelper.getRandomBetween(1.5, 5);
 			int l = 60+itemRand.nextInt(120);
 			float s = (float)ReikaRandomHelper.getRandomPlusMinus(1, 0.25)*0.5F;
-			EntityFX fx = new EntityBlurFX(e.worldObj, e.posX, e.posY, e.posZ).setPositionController(p).setLife(l).setIcon(ChromaIcons.CHROMA).setBasicBlend().setScale(s);
+			EntityFX fx = new EntityCCBlurFX(e.worldObj, e.posX, e.posY, e.posZ).setIcon(ChromaIcons.CHROMA).setPositionController(p).setLife(l).setBasicBlend().setScale(s);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

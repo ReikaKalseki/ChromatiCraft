@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -21,7 +21,8 @@ import net.minecraft.util.ResourceLocation;
 
 import Reika.ChromatiCraft.ModInterface.EntityChromaManaBurst;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -78,7 +79,7 @@ public class RenderChromaManaBurst extends Render {
 
 		float s = Math.min(6, Math.max(fs, 0.0625F));
 		//ReikaJavaLibrary.pConsole(eb.getMana()+" > "+s);
-		EntityBlurFX fx = new EntityBlurFX(e.worldObj, e.posX, e.posY, e.posZ).setColor(c1).setScale(s);
+		EntityBlurFX fx = new EntityCCBlurFX(e.worldObj, e.posX, e.posY, e.posZ).setColor(c1).setScale(s);
 		fx.setAlphaFading().setRapidExpand().setLife(10);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		GL11.glPopAttrib();

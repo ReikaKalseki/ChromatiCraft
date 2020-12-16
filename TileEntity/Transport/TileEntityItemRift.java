@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -22,9 +22,10 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Interfaces.TileEntity.Connectable;
 import Reika.DragonAPI.Interfaces.TileEntity.SidePlacedTile;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
@@ -89,7 +90,7 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements Screw
 			double px = x+0.5+dir.offsetX*d+left.offsetX*cos;
 			double py = y+0.5+dir.offsetY*d+sin;
 			double pz = z+0.5+dir.offsetZ*d+left.offsetZ*cos;
-			EntityBlurFX fx = new EntityBlurFX(CrystalElement.LIGHTBLUE, world, px, py, pz, 0, 0, 0);
+			EntityBlurFX fx = new EntityCCBlurFX(CrystalElement.LIGHTBLUE, world, px, py, pz, 0, 0, 0);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 

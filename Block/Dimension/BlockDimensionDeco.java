@@ -46,7 +46,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Render.ISBRH.DimensionDecoRenderer;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -383,7 +383,7 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 					pz = ReikaRandomHelper.getRandomBetween(z-o, z+1+o);
 				}
 				float s = 1+r.nextFloat();
-				EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(c).setLife(l).setRapidExpand().setIcon(ChromaIcons.FLARE).setScale(s);
+				EntityFX fx = new EntityCCBlurFX(world, px, py, pz).setIcon(ChromaIcons.FLARE).setColor(c).setLife(l).setRapidExpand().setScale(s);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}
@@ -441,7 +441,7 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 				pz = ReikaRandomHelper.getRandomBetween(z-o, z+1+o);
 			}
 			float s = 1+rand.nextFloat();
-			EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(c).setLife(l).setRapidExpand().setIcon(ChromaIcons.FLARE).setScale(s);
+			EntityFX fx = new EntityCCBlurFX(world, px, py, pz).setIcon(ChromaIcons.FLARE).setColor(c).setLife(l).setRapidExpand().setScale(s);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

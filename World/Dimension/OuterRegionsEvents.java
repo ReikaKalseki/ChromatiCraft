@@ -26,7 +26,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaTeleporter;
 import Reika.ChromatiCraft.Entity.EntityDimensionFlare;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -126,7 +126,7 @@ public class OuterRegionsEvents {
 				int l = 20;
 				int a = (int)(2*f);
 				DecimalPosition dd = DecimalPosition.interpolate(pos1, pos2, r);
-				EntityFX fx = new EntityBlurFX(ep.worldObj, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s).setColor(clr).setLife(l).setRapidExpand().freezeLife(a);
+				EntityFX fx = new EntityCCBlurFX(ep.worldObj, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s).setColor(clr).setLife(l).setRapidExpand().freezeLife(a);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}

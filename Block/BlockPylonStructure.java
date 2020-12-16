@@ -35,7 +35,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Render.ISBRH.CrystallineStoneRenderer;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityPowerTree;
@@ -428,9 +428,9 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 				pz += dir.offsetZ/2D+o*dir.offsetZ;
 				px = rand.nextDouble()*(1+o*2)-o;
 			}
-			EntityBlurFX fx = new EntityBlurFX(world, x+px, y+rand.nextDouble(), z+pz);
+			EntityCCBlurFX fx = new EntityCCBlurFX(world, x+px, y+rand.nextDouble(), z+pz);
 			int rgb = ReikaColorAPI.RGBtoHex(rand.nextBoolean() ? 255 : 0, rand.nextBoolean() ? 255 : 0, rand.nextBoolean() ? 255 : 0);
-			fx.setColor(rgb).setIcon(ChromaIcons.CENTER).setAlphaFading().setRapidExpand();
+			fx.setIcon(ChromaIcons.CENTER).setColor(rgb).setAlphaFading().setRapidExpand();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

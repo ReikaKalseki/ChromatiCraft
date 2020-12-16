@@ -27,11 +27,12 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
-import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
@@ -118,7 +119,7 @@ public class TileEntityChromaCrystal extends TileEntityPylonEnhancer {
 			double px = x+rand.nextDouble();
 			double py = y+rand.nextDouble();
 			double pz = z+rand.nextDouble();
-			EntityFloatingSeedsFX fx = (EntityFloatingSeedsFX)new EntityFloatingSeedsFX(world, px, py, pz, 0, 90).setIcon(ChromaIcons.CHROMA).setLife(80);
+			EntityFloatingSeedsFX fx = (EntityFloatingSeedsFX)new EntityCCFloatingSeedsFX(world, px, py, pz, 0, 90, ChromaIcons.CHROMA).setLife(80);
 			fx.particleVelocity = 0.125;
 			fx.freedom *= 2;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);

@@ -81,7 +81,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher;
@@ -1729,7 +1729,7 @@ public class AbilityHelper {
 			double py = ep.posY-1.62+rand.nextDouble()*1.8;
 			double v = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
 			float s = (float)ReikaRandomHelper.getRandomBetween(0.75, 1.5);
-			EntityFX fx = new EntityBlurFX(ep.worldObj, px, py, pz, 0, v, 0).setColor(clr).setGravity(0).setScale(s);
+			EntityFX fx = new EntityCCBlurFX(ep.worldObj, px, py, pz, 0, v, 0).setColor(clr).setGravity(0).setScale(s);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

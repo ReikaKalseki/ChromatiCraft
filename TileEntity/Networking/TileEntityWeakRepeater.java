@@ -34,7 +34,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBallLightningFX;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
@@ -127,9 +127,9 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 		float s = 2+rand.nextFloat()*5;
 		CrystalElement e = CrystalElement.elements[(this.getTicksExisted()/16)%16];
 		int l = 10+rand.nextInt(10);
-		EntityFX fx = new EntityBlurFX(world, dx, dy, dz).setRapidExpand().setColor(e.getColor()).setScale(s).setLife(l).setIcon(ChromaIcons.TURBO);
-		EntityFX fxb = new EntityBlurFX(world, dx, dy, dz).setRapidExpand().setColor(e.getColor()).setScale(s/1.125F).setLife(l).setIcon(ChromaIcons.TURBO);
-		EntityFX fx2 = new EntityBlurFX(world, dx, dy, dz).setRapidExpand().setColor(0x000000).setScale(s/2.5F).setBasicBlend().setIcon(ChromaIcons.TRANSFADE).setLife(l);
+		EntityFX fx = new EntityCCBlurFX(world, dx, dy, dz).setIcon(ChromaIcons.TURBO).setRapidExpand().setColor(e.getColor()).setScale(s).setLife(l);
+		EntityFX fxb = new EntityCCBlurFX(world, dx, dy, dz).setIcon(ChromaIcons.TURBO).setRapidExpand().setColor(e.getColor()).setScale(s/1.125F).setLife(l);
+		EntityFX fx2 = new EntityCCBlurFX(world, dx, dy, dz).setIcon(ChromaIcons.TRANSFADE).setRapidExpand().setColor(0x000000).setScale(s/2.5F).setBasicBlend().setLife(l);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fxb);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
@@ -150,9 +150,9 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 			double dy = y+rand.nextDouble();
 			double dz = z+rand.nextDouble();
 			float s = 5+2.5F*rand.nextFloat();
-			EntityFX fx = new EntityBlurFX(world, dx, dy, dz, vel[0], vel[1], vel[2]).setRapidExpand().setColor(c1).setScale(s);
-			EntityFX fx1 = new EntityBlurFX(world, dx, dy, dz, vel[0], vel[1], vel[2]).setRapidExpand().setColor(c2).setScale(s*0.5F).lockTo(fx);
-			EntityFX fx2 = new EntityBlurFX(world, dx, dy, dz, vel[0], vel[1], vel[2]).setRapidExpand().setColor(c3).setScale(s*0.25F).setIcon(ChromaIcons.TRANSFADE).setBasicBlend().lockTo(fx);
+			EntityFX fx = new EntityCCBlurFX(world, dx, dy, dz, vel[0], vel[1], vel[2]).setRapidExpand().setColor(c1).setScale(s);
+			EntityFX fx1 = new EntityCCBlurFX(world, dx, dy, dz, vel[0], vel[1], vel[2]).setRapidExpand().setColor(c2).setScale(s*0.5F).lockTo(fx);
+			EntityFX fx2 = new EntityCCBlurFX(world, dx, dy, dz, vel[0], vel[1], vel[2]).setIcon(ChromaIcons.TRANSFADE).setRapidExpand().setColor(c3).setScale(s*0.25F).setBasicBlend().lockTo(fx);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx1);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
@@ -189,9 +189,9 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 						double dx = pos1.xCoord+r*(pos2.xCoord-pos1.xCoord);
 						double dy = pos1.yCoord+r*(pos2.yCoord-pos1.yCoord);
 						double dz = pos1.zCoord+r*(pos2.zCoord-pos1.zCoord);
-						EntityFX fx = new EntityBlurFX(world, dx, dy, dz).setScale(s).setColor(clr).setLife(l).setRapidExpand();
+						EntityFX fx = new EntityCCBlurFX(world, dx, dy, dz).setScale(s).setColor(clr).setLife(l).setRapidExpand();
 						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-						EntityFX fx2 = new EntityBlurFX(world, dx, dy, dz).setScale(s/2F).setColor(0xffffff).setLife(l).setRapidExpand();
+						EntityFX fx2 = new EntityCCBlurFX(world, dx, dy, dz).setScale(s/2F).setColor(0xffffff).setLife(l).setRapidExpand();
 						Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 					}
 				}

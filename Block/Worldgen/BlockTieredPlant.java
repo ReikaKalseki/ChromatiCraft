@@ -42,10 +42,11 @@ import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -404,20 +405,20 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 					double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.005);
 					double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.005);
 					int g = r.nextInt(255);
-					EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.95, z+0.5, vx, 0, vz).setGravity(0.015F).setColor(0, g, 255).setScale(2);
+					EntityBlurFX fx = new EntityCCBlurFX(world, x+0.5, y+0.95, z+0.5, vx, 0, vz).setGravity(0.015F).setColor(0, g, 255).setScale(2);
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					break;
 				}
 				case 1: {
 					float g = 0.02F+0.005F*r.nextFloat();
-					EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.65, z+0.5, 0, 0, 0).setGravity(g).setScale(2);
+					EntityBlurFX fx = new EntityCCBlurFX(world, x+0.5, y+0.65, z+0.5, 0, 0, 0).setGravity(g).setScale(2);
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					break;
 				}
 				case 2: {
 					float g = 0.04F+0.01F*r.nextFloat();
 					int red = r.nextInt(255);
-					EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.375, z+0.5, 0, 0, 0).setColor(red, 0, 255).setGravity(-g).setScale(4);
+					EntityBlurFX fx = new EntityCCBlurFX(world, x+0.5, y+0.375, z+0.5, 0, 0, 0).setColor(red, 0, 255).setGravity(-g).setScale(4);
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					break;
 				}
@@ -426,7 +427,7 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 					int gr = r.nextInt(255);
 					double px = x+rand.nextDouble();
 					double pz = z+rand.nextDouble();
-					EntityBlurFX fx = new EntityBlurFX(world, px, y+0.75, pz, 0, 0, 0).setColor(0, 255, gr).setGravity(g).setScale(2);
+					EntityBlurFX fx = new EntityCCBlurFX(world, px, y+0.75, pz, 0, 0, 0).setColor(0, 255, gr).setGravity(g).setScale(2);
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					break;
 				}
@@ -435,7 +436,7 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 					int gr = r.nextInt(255);
 					double px = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.25);
 					double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.25);
-					EntityBlurFX fx = new EntityBlurFX(world, px, y+0.75, pz, 0, 0, 0).setColor(255, gr, 0).setGravity(-g).setScale(2);
+					EntityBlurFX fx = new EntityCCBlurFX(world, px, y+0.75, pz, 0, 0, 0).setColor(255, gr, 0).setGravity(-g).setScale(2);
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					break;
 				}

@@ -24,7 +24,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Base.ParticleEntity;
 import Reika.DragonAPI.Instantiable.RGBColorData;
 import Reika.DragonAPI.Interfaces.Registry.SoundEnum;
@@ -114,7 +114,7 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 			double px = ReikaRandomHelper.getRandomPlusMinus(posX, r[i]);
 			double py = ReikaRandomHelper.getRandomPlusMinus(posY, r[i]);
 			double pz = ReikaRandomHelper.getRandomPlusMinus(posZ, r[i]);
-			EntityFX fx = new EntityBlurFX(worldObj, px, py, pz).setColor(color.getRenderColor()).setIcon(ChromaIcons.FADE_GENTLE).setLife(l).setScale(s);
+			EntityFX fx = new EntityCCBlurFX(worldObj, px, py, pz).setIcon(ChromaIcons.FADE_GENTLE).setColor(color.getRenderColor()).setLife(l).setScale(s);
 			mc.effectRenderer.addEffect(fx);
 		}
 	}
@@ -149,7 +149,7 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 			double px = ReikaRandomHelper.getRandomPlusMinus(posX, 0.75);
 			double py = ReikaRandomHelper.getRandomPlusMinus(posY, 0.75);
 			double pz = ReikaRandomHelper.getRandomPlusMinus(posZ, 0.75);
-			EntityFX fx = new EntityBlurFX(worldObj, px, py, pz).setColor(color.getRenderColor()).setIcon(ChromaIcons.FADE_RAY).setLife(l).setScale(s);
+			EntityFX fx = new EntityCCBlurFX(worldObj, px, py, pz).setIcon(ChromaIcons.FADE_RAY).setColor(color.getRenderColor()).setLife(l).setScale(s);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

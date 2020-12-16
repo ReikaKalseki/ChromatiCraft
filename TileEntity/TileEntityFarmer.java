@@ -24,10 +24,11 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFunctionRelay;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFunctionRelay.RelayFunctions;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Interfaces.Registry.CropType;
 import Reika.DragonAPI.Interfaces.Registry.CropType.CropMethods;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
@@ -112,7 +113,7 @@ public class TileEntityFarmer extends TileEntityRelayPowered {
 		double vx = v*(tx-xCoord);
 		double vy = v*(ty-yCoord);
 		double vz = v*(tz-zCoord);
-		EntityBlurFX fx = new EntityBlurFX(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, vx, vy, vz).setColor(0, 192, 0);
+		EntityBlurFX fx = new EntityCCBlurFX(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, vx, vy, vz).setColor(0, 192, 0);
 		fx.setScale(4).setLife(10).forceIgnoreLimits();
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}

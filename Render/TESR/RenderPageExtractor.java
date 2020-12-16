@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -28,7 +28,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.ModInterface.TileEntityPageExtractor;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicVariablePoint;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
@@ -162,8 +162,8 @@ public class RenderPageExtractor extends ChromaRenderBase {
 					r /= 2;
 				}
 				if (te.isInWorld() && !Minecraft.getMinecraft().isGamePaused()) {
-					EntityBlurFX fx = new EntityBlurFX(te.worldObj, te.xCoord+0.5+pos.xCoord*r, te.yCoord+0.5+pos.yCoord*r, te.zCoord+0.5+pos.zCoord*r);
-					fx.setRapidExpand().setScale(0.625F).setLife(8).setAlphaFading().setIcon(ChromaIcons.FADE_GENTLE);
+					EntityCCBlurFX fx = new EntityCCBlurFX(te.worldObj, te.xCoord+0.5+pos.xCoord*r, te.yCoord+0.5+pos.yCoord*r, te.zCoord+0.5+pos.zCoord*r);
+					fx.setIcon(ChromaIcons.FADE_GENTLE).setRapidExpand().setScale(0.625F).setLife(8).setAlphaFading();
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 				}
 				point.update();
@@ -187,36 +187,36 @@ public class RenderPageExtractor extends ChromaRenderBase {
 
 			ChromaIcons[] icons = hasBook ?
 					new ChromaIcons[]{
-					ChromaIcons.HEXFLARE,
-					ChromaIcons.BLURFLARE,
-					ChromaIcons.RADIATE,
+							ChromaIcons.HEXFLARE,
+							ChromaIcons.BLURFLARE,
+							ChromaIcons.RADIATE,
 			}
 			:
 				new ChromaIcons[]{
-							ChromaIcons.CONCENTRIC2REV,
-							ChromaIcons.ROSES_WHITE,
-					};
+						ChromaIcons.CONCENTRIC2REV,
+						ChromaIcons.ROSES_WHITE,
+							};
 
-					for (int i = 0; i < icons.length; i++) {
-						IIcon ico = icons[i].getIcon();
+							for (int i = 0; i < icons.length; i++) {
+								IIcon ico = icons[i].getIcon();
 
-						double sb = hasBook ? 0.75 : 0.5;
+								double sb = hasBook ? 0.75 : 0.5;
 
-						double s = sb-0.1875*i;
+								double s = sb-0.1875*i;
 
-						double u = ico.getMinU();
-						double v = ico.getMinV();
-						double du = ico.getMaxU();
-						double dv = ico.getMaxV();
+								double u = ico.getMinU();
+								double v = ico.getMinV();
+								double du = ico.getMaxU();
+								double dv = ico.getMaxV();
 
-						v5.startDrawingQuads();
-						v5.setBrightness(240);
-						v5.addVertexWithUV(-s, s, 0, u, dv);
-						v5.addVertexWithUV(s, s, 0, du, dv);
-						v5.addVertexWithUV(s, -s, 0, du, v);
-						v5.addVertexWithUV(-s, -s, 0, u, v);
-						v5.draw();
-					}
+								v5.startDrawingQuads();
+								v5.setBrightness(240);
+								v5.addVertexWithUV(-s, s, 0, u, dv);
+								v5.addVertexWithUV(s, s, 0, du, dv);
+								v5.addVertexWithUV(s, -s, 0, du, v);
+								v5.addVertexWithUV(-s, -s, 0, u, v);
+								v5.draw();
+							}
 		}
 
 		GL11.glPopMatrix();

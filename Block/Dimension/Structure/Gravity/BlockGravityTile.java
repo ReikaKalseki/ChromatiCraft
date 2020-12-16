@@ -46,7 +46,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.PulsingRadius;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.World.Dimension.Structure.GravityPuzzleGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -539,7 +539,7 @@ public class BlockGravityTile extends BlockDimensionStructureTile {
 				int l = ReikaRandomHelper.getRandomBetween(20, 40);
 				float s = 1+worldObj.rand.nextFloat()*0.67F;
 				float g = -(float)ReikaRandomHelper.getRandomBetween(0.03125, 0.125);
-				EntityFX fx = new EntityBlurFX(worldObj, px, py, pz).setColor(color.getColor()).setGravity(g).setScale(s).setLife(l);
+				EntityFX fx = new EntityCCBlurFX(worldObj, px, py, pz).setColor(color.getColor()).setGravity(g).setScale(s).setLife(l);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}

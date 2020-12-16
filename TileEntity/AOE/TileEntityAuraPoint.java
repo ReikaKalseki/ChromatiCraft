@@ -40,7 +40,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.GlowKnot;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Collections.FastPlayerCache;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -239,7 +239,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 				pz = ReikaRandomHelper.getRandomPlusMinus(pz, 0.25);
 				float sc = 2.5F+(float)((1-f2)*20);
 				sc = (float)ReikaRandomHelper.getRandomPlusMinus(sc, 0.25);
-				EntityFX fx = new EntityBlurFX(e.worldObj, px, py, pz).setScale(sc).setRapidExpand().setLife(10).setIcon(ChromaIcons.FLARE);
+				EntityFX fx = new EntityCCBlurFX(e.worldObj, px, py, pz).setIcon(ChromaIcons.FLARE).setScale(sc).setRapidExpand().setLife(10);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}

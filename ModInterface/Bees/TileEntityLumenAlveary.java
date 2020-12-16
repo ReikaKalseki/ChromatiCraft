@@ -41,7 +41,7 @@ import Reika.ChromatiCraft.ModInterface.Bees.EffectAlleles.CrystalEffect;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
@@ -515,8 +515,8 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 			int c2 = 0xffffff;
 			int c1 = 0xa07740;
 			float s = 1.5F*(float)ReikaRandomHelper.getRandomPlusMinus(1, 0.25);
-			EntityFX fx1 = new EntityBlurFX(world, px, py, pz).setLife(l).setColor(c1).setIcon(ChromaIcons.HEXFLARE2).setScale(s);
-			EntityFX fx2 = new EntityBlurFX(world, px, py, pz).setLife(l).setColor(c2).setIcon(ChromaIcons.HEXFLARE2).setScale(s/2F);
+			EntityFX fx1 = new EntityCCBlurFX(world, px, py, pz).setIcon(ChromaIcons.HEXFLARE2).setLife(l).setColor(c1).setScale(s);
+			EntityFX fx2 = new EntityCCBlurFX(world, px, py, pz).setIcon(ChromaIcons.HEXFLARE2).setScale(s/2F).setLife(l).setColor(c2);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx1);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 		}

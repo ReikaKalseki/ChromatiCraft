@@ -20,9 +20,10 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRe
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
@@ -104,7 +105,7 @@ public class IridescentCrystalRecipe extends PylonCastingRecipe {
 		double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
 		double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
 		float g = (float)ReikaRandomHelper.getRandomBetween(0D, 0.125);
-		EntityBlurFX fx = new EntityBlurFX(te.worldObj, px, te.yCoord+1, pz, vx, vy, vz).setIcon(ChromaIcons.CHROMA).setBasicBlend().setGravity(g);
+		EntityBlurFX fx = new EntityCCBlurFX(te.worldObj, px, te.yCoord+1, pz, vx, vy, vz).setIcon(ChromaIcons.CHROMA).setBasicBlend().setGravity(g);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		int t = dur-tick;
@@ -115,7 +116,7 @@ public class IridescentCrystalRecipe extends PylonCastingRecipe {
 				pz = te.zCoord+te.getRandom().nextDouble();
 				vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.125);
 				vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.125);
-				fx = new EntityBlurFX(te.worldObj, px, te.yCoord+1, pz, vx, vy, vz).setIcon(ChromaIcons.FADE_STAR).setColor(e.getColor());
+				fx = new EntityCCBlurFX(te.worldObj, px, te.yCoord+1, pz, vx, vy, vz).setIcon(ChromaIcons.FADE_STAR).setColor(e.getColor());
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 			float f = (float)CrystalMusicManager.instance.getDingPitchScale(e);

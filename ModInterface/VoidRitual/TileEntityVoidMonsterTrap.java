@@ -37,7 +37,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire.WireWatcher;
 import Reika.DragonAPI.ModList;
@@ -263,8 +263,8 @@ Linkable, ChunkLoadingTile, BreakAction, InertIInv {
 			float f = (float)ReikaRandomHelper.getRandomPlusMinus(0.6, 0.2);
 			double vel = ReikaRandomHelper.getRandomBetween(0.0625, 0.25);
 			double[] v = ReikaPhysicsHelper.polarToCartesian(vel, rand.nextDouble()*360, rand.nextDouble()*360);
-			EntityFX fx1 = new EntityBlurFX(world, dx, dy, dz, v[0], v[1], v[2]).setScale(s).setLife(l).setColor(c1).setBasicBlend().setIcon(ChromaIcons.TRANSFADE);
-			EntityFX fx2 = new EntityBlurFX(world, dx, dy, dz, v[0], v[1], v[2]).setScale(s*f).setLife(l).setColor(c2).setBasicBlend().setIcon(ChromaIcons.TRANSFADE).lockTo(fx1);
+			EntityFX fx1 = new EntityCCBlurFX(world, dx, dy, dz, v[0], v[1], v[2]).setIcon(ChromaIcons.TRANSFADE).setScale(s).setLife(l).setColor(c1).setBasicBlend();
+			EntityFX fx2 = new EntityCCBlurFX(world, dx, dy, dz, v[0], v[1], v[2]).setIcon(ChromaIcons.TRANSFADE).setScale(s*f).setLife(l).setColor(c2).setBasicBlend().lockTo(fx1);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx1);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 		}

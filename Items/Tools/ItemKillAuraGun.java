@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -30,8 +30,9 @@ import Reika.ChromatiCraft.Base.ItemProgressGatedTool;
 import Reika.ChromatiCraft.Registry.ChromaEnchants;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
+import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Instantiable.ParticleController.CollectingPositionController;
 import Reika.DragonAPI.Interfaces.PositionController;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -123,7 +124,7 @@ public class ItemKillAuraGun extends ItemProgressGatedTool {
 					ico = ChromaIcons.NODE2;
 					break;
 			}
-			EntityFloatingSeedsFX fx = (EntityFloatingSeedsFX)new EntityFloatingSeedsFX(ep.worldObj, lx, ly, lz, phi, theta).setColor(0xffffff).setNoSlowdown().setScale(s).setIcon(ico);
+			EntityFloatingSeedsFX fx = (EntityFloatingSeedsFX)new EntityCCFloatingSeedsFX(ep.worldObj, lx, ly, lz, phi, theta, ico).setColor(0xffffff).setNoSlowdown().setScale(s);
 			fx.particleVelocity *= 2*ReikaRandomHelper.getRandomPlusMinus(4D, 1.5D);
 			fx.freedom *= ReikaRandomHelper.getRandomPlusMinus(1.5D, 0.5D);
 			fx.angleVelocity *= ReikaRandomHelper.getRandomPlusMinus(1D, 0.75D);
@@ -243,7 +244,7 @@ public class ItemKillAuraGun extends ItemProgressGatedTool {
 			double vz = -v*dx;
 			int t = 6+itemRand.nextInt(5);
 			PositionController p = new CollectingPositionController(px, py, pz, lx, ly, lz, t);
-			EntityFX fx = new EntityBlurFX(ep.worldObj, px, py, pz).setLife(t).setScale(0.5F).setPositionController(p).setIcon(ChromaIcons.FLARE);
+			EntityFX fx = new EntityCCBlurFX(ep.worldObj, px, py, pz).setIcon(ChromaIcons.FLARE).setLife(t).setScale(0.5F).setPositionController(p);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

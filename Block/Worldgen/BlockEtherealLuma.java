@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -32,7 +32,7 @@ import Reika.ChromatiCraft.Auxiliary.Potions.PotionVoidGaze.VoidGazeLevels;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 
@@ -103,14 +103,14 @@ public class BlockEtherealLuma extends BlockFluidClassic {
 			double pz = z+r.nextDouble();
 			int l = 5+r.nextInt(40);
 			float s = 0.75F;
-			EntityFX fx = new EntityBlurFX(world, px, py, pz).setIcon(ChromaIcons.SPARKLEPARTICLE).setBasicBlend().setLife(l).setAlphaFading().setScale(s);
+			EntityFX fx = new EntityCCBlurFX(world, px, py, pz).setIcon(ChromaIcons.SPARKLEPARTICLE).setBasicBlend().setLife(l).setAlphaFading().setScale(s);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 			if (r.nextInt(4) == 0) {
 				float g = -(float)ReikaRandomHelper.getRandomBetween(0.03125, 0.125);
 				s = (float)ReikaRandomHelper.getRandomBetween(1D, 2D);
 				l = 20+r.nextInt(30);
-				fx = new EntityBlurFX(world, px, py, pz).setIcon(ChromaIcons.FADE_GENTLE).setLife(l).setScale(s).setGravity(g).setRapidExpand();
+				fx = new EntityCCBlurFX(world, px, py, pz).setIcon(ChromaIcons.FADE_GENTLE).setLife(l).setScale(s).setGravity(g).setRapidExpand();
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}

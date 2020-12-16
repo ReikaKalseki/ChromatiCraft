@@ -38,7 +38,7 @@ import Reika.ChromatiCraft.Magic.Network.TargetData;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
@@ -50,6 +50,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
 import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
@@ -208,7 +209,7 @@ public class ChromaFX {
 
 		float s = (float)(1.875+0.5*Math.sin(Math.toRadians(dist*360)));
 		MotionController m = new EntityLockMotionController(ep, 0.03125/8, 0.125*4, 0.875);
-		EntityFX fx = new EntityBlurFX(e, te.getWorld(), x, y, z, 0, 0, 0).setScale(s).setNoSlowdown().setLife((int)dd*10).setMotionController(m);
+		EntityFX fx = new EntityCCBlurFX(e, te.getWorld(), x, y, z, 0, 0, 0).setScale(s).setNoSlowdown().setLife((int)dd*10).setMotionController(m);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
@@ -456,8 +457,8 @@ public class ChromaFX {
 
 			//int c = ReikaColorAPI.mixColors(0xffffff, ReikaColorAPI.RGBtoHex(96, 192, 255), rand.nextFloat());
 
-			EntityBlurFX fx = new EntityBlurFX(world, px, py, pz, vx, 0, vz).setScale(s).setLife(l);//.setColor(c);
-			EntityBlurFX fx2 = new EntityBlurFX(world, px, py, pz, -vx, 0, -vz).setScale(s).setLife(l);//.setColor(c);
+			EntityBlurFX fx = new EntityCCBlurFX(world, px, py, pz, vx, 0, vz).setScale(s).setLife(l);//.setColor(c);
+			EntityBlurFX fx2 = new EntityCCBlurFX(world, px, py, pz, -vx, 0, -vz).setScale(s).setLife(l);//.setColor(c);
 
 			switch(rand.nextInt(3)) {
 				case 0:
@@ -485,7 +486,7 @@ public class ChromaFX {
 		double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
 		double vy = ReikaRandomHelper.getRandomPlusMinus(0.1875, 0.0625);
 		double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
-		EntityFX fx = new EntityBlurFX(world, x+0.5, y+0.125, z+0.5, vx, vy, vz).setColor(0, 192, 0).setScale(1).setLife(20).setGravity(0.25F);
+		EntityFX fx = new EntityCCBlurFX(world, x+0.5, y+0.125, z+0.5, vx, vy, vz).setColor(0, 192, 0).setScale(1).setLife(20).setGravity(0.25F);
 		fx.noClip = true;
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
@@ -506,7 +507,7 @@ public class ChromaFX {
 			double ddy = src.posY-vec.yCoord*f;
 			double ddz = src.posZ-vec.zCoord*f;
 			int c = ReikaColorAPI.mixColors(tgt.getRenderColor(), src.getRenderColor(), (float)f);
-			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityBlurFX(world, ddx, ddy, ddz).setColor(c).setLife(8));
+			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityCCBlurFX(world, ddx, ddy, ddz).setColor(c).setLife(8));
 		}
 		src.doBoltClient(tgt);
 		tgt.doBoltClient(src);
@@ -778,7 +779,7 @@ public class ChromaFX {
 					int l = ReikaRandomHelper.getRandomBetween(8, 40);
 					float s = (float)ReikaRandomHelper.getRandomBetween(0.25, 1.25);
 					int clr = FOCUS_CRYSTAL_PARTICLES.getColor(world.getTotalWorldTime()/8D);
-					EntityBlurFX fx = new EntityBlurFX(world, px, py, pz, v[0], v[1], v[2]);
+					EntityCCBlurFX fx = new EntityCCBlurFX(world, px, py, pz, v[0], v[1], v[2]);
 					ChromaIcons ico = ChromaIcons.FADE;
 					switch(rand.nextInt(4)) {
 						case 0:
@@ -788,9 +789,9 @@ public class ChromaFX {
 							ico = ChromaIcons.FLARE;
 							break;
 					}
-					fx.setColor(clr).setLife(l).setScale(s).setGravity(g).setRapidExpand().setAlphaFading().setIcon(ico);
-					EntityBlurFX fx2 = new EntityBlurFX(world, px, py, pz, v[0], v[1], v[2]);
-					fx2.setColor(0xffffff).setLife(l).setScale(s*0.6F).setGravity(g).setRapidExpand().setAlphaFading().setIcon(ico).lockTo(fx);
+					fx.setIcon(ico).setColor(clr).setLife(l).setScale(s).setGravity(g).setRapidExpand().setAlphaFading();
+					EntityCCBlurFX fx2 = new EntityCCBlurFX(world, px, py, pz, v[0], v[1], v[2]);
+					fx2.setIcon(ico).setColor(0xffffff).setLife(l).setScale(s*0.6F).setGravity(g).setRapidExpand().setAlphaFading().lockTo(fx);
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 				}
@@ -815,7 +816,7 @@ public class ChromaFX {
 				int l = 20;
 				int a = (int)(2*f);
 				DecimalPosition dd = DecimalPosition.interpolate(pos1, pos2, r);
-				EntityFX fx = new EntityBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s).setColor(e.getColor()).setLife(l).setRapidExpand().freezeLife(a);
+				EntityFX fx = new EntityCCBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s).setColor(e.getColor()).setLife(l).setRapidExpand().freezeLife(a);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}

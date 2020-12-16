@@ -76,9 +76,9 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBallLightningFX;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
-import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityChromaCrystal;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger;
@@ -92,6 +92,8 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
+import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
@@ -629,7 +631,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	private void doJarRejectionParticles(World world, int x, int y, int z) {
 		ReikaParticleHelper.EXPLODE.spawnAroundBlockWithOutset(world, x, y, z, 0, 0, 0, 16, 0.25);
 		for (int i = 0; i < 256; i++) {
-			EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, x+0.5, y+0.5, z+0.5, rand.nextDouble()*360, -90+rand.nextDouble()*180);
+			EntityFloatingSeedsFX fx = new EntityCCFloatingSeedsFX(world, x+0.5, y+0.5, z+0.5, rand.nextDouble()*360, -90+rand.nextDouble()*180);
 			fx.setColor(color.getColor()).setScale(2+rand.nextFloat()*8).setLife(40+rand.nextInt(120));
 			fx.particleVelocity = 0.5;
 			fx.angleVelocity *= 2;
@@ -727,7 +729,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			double pz = dz+0.5;
 			//EntityRuneFX fx = new EntityRuneFX(world, dx+0.5, dy+0.5, dz+0.5, vx, vy, vz, color);
 			float sc = (float)(2F+Math.sin(4*Math.toRadians(this.getTicksExisted()+i*90/blocks.size())));
-			EntityBlurFX fx = new EntityBlurFX(color, world, px, py, pz, vx, vy, vz).setScale(sc).setLife(38).setNoSlowdown();
+			EntityBlurFX fx = new EntityCCBlurFX(color, world, px, py, pz, vx, vy, vz).setScale(sc).setLife(38).setNoSlowdown();
 			//EntityLaserFX fx = new EntityLaserFX(color, world, px, py, pz, vx, vy, vz).setScale(3);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			i++;
@@ -805,7 +807,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		for (int i = 0; i < n; i++) {
 			float s = 1+rand.nextFloat()*2;
 			int l = 30+rand.nextInt(50);
-			EntityFX fx = new EntityFloatingSeedsFX(world, x+0.5, y+0.5, z+0.5, rand.nextDouble()*360, rand.nextDouble()*360).setColor(color.getColor()).setScale(s).setLife(l).setIcon(ChromaIcons.NODE2);
+			EntityFX fx = new EntityCCFloatingSeedsFX(world, x+0.5, y+0.5, z+0.5, rand.nextDouble()*360, rand.nextDouble()*360, ChromaIcons.NODE2).setColor(color.getColor()).setScale(s).setLife(l);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 		ReikaSoundHelper.playClientSound(ChromaSounds.DISCHARGE, x+0.5, y+0.5, z+0.5, 1, 1, false);
@@ -939,7 +941,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			for (int i = 0; i < n; i++) {
 				float s = (float)ReikaRandomHelper.getRandomPlusMinus(2D, 1);
 				int l = 10+rand.nextInt(50);
-				EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, x+0.5, y+0.5, z+0.5, rand.nextInt(360), ReikaRandomHelper.getRandomPlusMinus(0, 90));
+				EntityFloatingSeedsFX fx = new EntityCCFloatingSeedsFX(world, x+0.5, y+0.5, z+0.5, rand.nextInt(360), ReikaRandomHelper.getRandomPlusMinus(0, 90));
 				fx.fadeColors(ReikaColorAPI.mixColors(color.getColor(), 0xffffff, 0.375F), color.getColor()).setScale(s).setLife(l).setRapidExpand();
 				fx.freedom *= 3;
 				fx.angleVelocity *= 3;

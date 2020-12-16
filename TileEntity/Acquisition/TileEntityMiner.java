@@ -41,7 +41,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityRangeBoost;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
@@ -52,6 +52,7 @@ import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Interfaces.Block.SpecialOreBlock;
 import Reika.DragonAPI.Interfaces.Registry.OreType;
@@ -443,45 +444,45 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 
 		int color = CrystalElement.getBlendedColor(this.getTicksExisted(), 40);
 
-		EntityBlurFX fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
+		EntityBlurFX fx = new EntityCCBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		px = x+1-particleX;
 		py = y+1-particleY;
-		fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
+		fx = new EntityCCBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		pz = z+1;
 		px = x+1-particleX;
 		py = y+particleY;
-		fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
+		fx = new EntityCCBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		px = x+particleX;
 		py = y+1-particleY;
-		fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
+		fx = new EntityCCBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		px = x;
 		pz = z+particleX;
 		py = y+particleY;
-		fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
+		fx = new EntityCCBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		pz = z+1-particleX;
 		py = y+1-particleY;
-		fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
+		fx = new EntityCCBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		px = x+1;
 		pz = z+1-particleX;
 		py = y+particleY;
-		fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
+		fx = new EntityCCBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		pz = z+particleX;
 		py = y+1-particleY;
-		fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
+		fx = new EntityCCBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		double d = 0.05;

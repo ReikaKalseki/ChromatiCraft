@@ -121,7 +121,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.BiomeFXRenderer;
 import Reika.ChromatiCraft.Render.CliffFogRenderer;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityShaderFX;
 import Reika.ChromatiCraft.Render.TESR.RenderAlveary;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
@@ -319,7 +319,8 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 							EntityShaderFX fx = new EntityShaderFX(ep.worldObj, px, py, pz, vx, 0, vz, 1, ChromaShaders.CRYSTALLIZEPARTICLE);
 							int c0 = ReikaJavaLibrary.getRandomListEntry(rand, snowColors);
 							int c = ReikaColorAPI.mixColors(c0, 0xffffff, (float)ReikaRandomHelper.getRandomBetween(0, 0.25));
-							fx.setRendering(true).setClip(0.5F).setAcceleration(ax, 0, az).setRapidExpand().setColliding().setAlphaFading().setLife(l).setGravity(g).setScale(s).setColor(c).setIcon(ChromaIcons.FADE);
+							fx.setRendering(true).setClip(0.5F).setAcceleration(ax, 0, az);
+							fx.setIcon(ChromaIcons.FADE).setRapidExpand().setColliding().setAlphaFading().setLife(l).setGravity(g).setScale(s).setColor(c);
 							Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 						}
 					}
@@ -631,7 +632,7 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 				int mdy = MathHelper.floor_double(dy);
 				int mdz = MathHelper.floor_double(dz);
 				if (ep.worldObj.getBlock(mdx, mdy, mdz).isAir(ep.worldObj, mdx, mdy, mdz)) {
-					EntityFX fx = new EntityBlurFX(ep.worldObj, dx, dy, dz).setLife(8).setAlphaFading().setIcon(ChromaIcons.FLARE).setScale(1.5F);
+					EntityFX fx = new EntityCCBlurFX(ep.worldObj, dx, dy, dz).setIcon(ChromaIcons.FLARE).setLife(8).setAlphaFading().setScale(1.5F);
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 				}
 			}
@@ -2115,7 +2116,7 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 			int l = 20+world.rand.nextInt(20);
 			CrystalElement c = CrystalElement.randomElement();
 			int clr = ReikaColorAPI.getModifiedSat(ReikaColorAPI.getColorWithBrightnessMultiplier(c.getColor(), 0.4F), 2);
-			EntityBlurFX fx = new EntityBlurFX(world, rx, ry, rz, vp[0], vp[1], vp[2]);
+			EntityCCBlurFX fx = new EntityCCBlurFX(world, rx, ry, rz, vp[0], vp[1], vp[2]);
 			fx.setRapidExpand().setAlphaFading().setScale(s).setLife(l).setColor(clr).setColliding().setDrag(0.875);
 			fx.noClip = false;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);

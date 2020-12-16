@@ -17,7 +17,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 
 
-public class EntityFireFX extends EntityBlurFX {
+public class EntityFireFX extends EntityCCBlurFX {
 
 	private int color1;
 	private int color2;

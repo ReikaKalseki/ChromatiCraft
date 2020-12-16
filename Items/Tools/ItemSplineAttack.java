@@ -31,9 +31,10 @@ import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.DelayedAttack;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledSoundEvent;
@@ -128,7 +129,7 @@ public class ItemSplineAttack extends ItemChromaTool {
 		ColorController clr = new BlendListColorController(cbl);
 		int i = 0;
 		for (DecimalPosition pos : trail) {
-			EntityBlurFX fx = new EntityBlurFX(world, pos.xCoord, pos.yCoord, pos.zCoord).setLife(15).setScale(2).setAlphaFading();
+			EntityBlurFX fx = new EntityCCBlurFX(world, pos.xCoord, pos.yCoord, pos.zCoord).setLife(15).setScale(2).setAlphaFading();
 			fx.setColorController(clr).freezeLife(i/64);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			i++;

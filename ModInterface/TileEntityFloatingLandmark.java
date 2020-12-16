@@ -14,8 +14,8 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -84,7 +84,7 @@ public class TileEntityFloatingLandmark extends TileEntityChromaticBase implemen
 		double dz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, r);
 		double a1 = rand.nextDouble()*360;
 		double a2 = rand.nextDouble()*360;
-		EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, dx, dy, dz, a1, a2);
+		EntityCCFloatingSeedsFX fx = new EntityCCFloatingSeedsFX(world, dx, dy, dz, a1, a2);
 		fx.particleVelocity *= ReikaRandomHelper.getRandomBetween(0.25, 0.5);
 		fx.angleVelocity *= 4;
 		fx.freedom *= 1.6;
@@ -210,7 +210,7 @@ public class TileEntityFloatingLandmark extends TileEntityChromaticBase implemen
 			double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125/8D);
 			double vy = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125/8D);
 			double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125/8D);
-			EntityBlurFX fx = new EntityBlurFX(world, dx, dy, dz, vx, vy, vz);
+			EntityCCBlurFX fx = new EntityCCBlurFX(world, dx, dy, dz, vx, vy, vz);
 			int hue = (int)((this.getTicksExisted()*2+dx*3+dy*1+dz*2)%360);
 			int c = ReikaColorAPI.getModifiedHue(0xff0000, hue);
 			int l = ReikaRandomHelper.getRandomBetween(10, 40);
@@ -233,7 +233,7 @@ public class TileEntityFloatingLandmark extends TileEntityChromaticBase implemen
 					ico = ChromaIcons.RINGFLARE;
 					break;
 			}
-			fx.setColor(c).setLife(l).setScale(s).setIcon(ico);
+			fx.setIcon(ico).setColor(c).setLife(l).setScale(s);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

@@ -29,7 +29,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityAreaDistributor;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
@@ -218,8 +218,8 @@ public class TileEntityFluidDistributor extends TileEntityAreaDistributor implem
 			int l = 20+rand.nextInt(60);
 			float s = 1.5F;
 			AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z);
-			EntityFX fx = new EntityBlurFX(world, px, py, pz, vx, vy, vz).setColor(0x2255ff).setLife(l).setScale(s).setRapidExpand().bound(box).setIcon(ChromaIcons.BLURFLARE);
-			EntityFX fx2 = new EntityBlurFX(world, px, py, pz, vx, vy, vz).setColor(0xffffff).setLife(l).setScale(s/2.5F).setRapidExpand().bound(box);
+			EntityFX fx = new EntityCCBlurFX(world, px, py, pz, vx, vy, vz).setIcon(ChromaIcons.BLURFLARE).setColor(0x2255ff).setLife(l).setScale(s).setRapidExpand().bound(box);
+			EntityFX fx2 = new EntityCCBlurFX(world, px, py, pz, vx, vy, vz).setColor(0xffffff).setLife(l).setScale(s/2.5F).setRapidExpand().bound(box);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 		}

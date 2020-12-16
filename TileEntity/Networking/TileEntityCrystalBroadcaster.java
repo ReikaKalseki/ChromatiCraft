@@ -35,7 +35,7 @@ import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -298,7 +298,8 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 			int l = ReikaRandomHelper.getRandomBetween(100, 400);
 			float s = 2+rand.nextFloat()*2;
 			int c = ReikaColorAPI.mixColors(e.getColor(), 0xffffff, 0.5F+rand.nextFloat()*0.5F);
-			EntityBlurFX fx = new EntityBlurFX(worldObj, px, py, pz, vx, 0, vz).setColor(c).setScale(s).setLife(l);
+			EntityCCBlurFX fx = new EntityCCBlurFX(worldObj, px, py, pz, vx, 0, vz);
+			fx.setColor(c).setScale(s).setLife(l);
 			switch(rand.nextInt(8)) {
 				case 0:
 					fx.setIcon(ChromaIcons.BIGFLARE);

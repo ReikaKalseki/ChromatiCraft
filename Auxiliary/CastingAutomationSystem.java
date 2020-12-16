@@ -29,7 +29,7 @@ import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
@@ -547,7 +547,7 @@ public class CastingAutomationSystem {
 					break;
 				case 2:
 				default:
-					fx = new EntityBlurFX(world, px, py, pz).setColor(color).setGravity(g);
+					fx = new EntityCCBlurFX(world, px, py, pz).setColor(color).setGravity(g);
 					break;
 			}
 			fx.motionY = 0.03125+rand.nextDouble()*0.0625;

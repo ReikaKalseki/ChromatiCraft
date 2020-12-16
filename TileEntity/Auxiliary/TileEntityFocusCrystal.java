@@ -26,7 +26,7 @@ import Reika.ChromatiCraft.Block.BlockPylonStructure;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
@@ -261,7 +261,7 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 			double py = ReikaRandomHelper.getRandomPlusMinus(y+0.375, vr/2);
 			int l = 6+rand.nextInt(6);
 			int c = this.getTier().getRenderColor(this.getTicksExisted()+ReikaRenderHelper.getPartialTickTime()+System.identityHashCode(this));
-			EntityFX fx = new EntityBlurFX(world, px, py, pz).setIcon(ChromaIcons.FLARE).setLife(l).setColor(c);
+			EntityFX fx = new EntityCCBlurFX(world, px, py, pz).setIcon(ChromaIcons.FLARE).setLife(l).setColor(c);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -27,7 +27,7 @@ import net.minecraftforge.common.MinecraftForge;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemChromaBasic;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
@@ -118,7 +118,7 @@ public class ItemFertilitySeed extends ItemChromaBasic implements BreakerCallbac
 			int c = ReikaColorAPI.getModifiedHue(0x00ff00, ReikaRandomHelper.getRandomBetween(80, 150));
 			float f = 0.5F+rand.nextFloat();
 			int l = ReikaRandomHelper.getRandomBetween(10, maxl);
-			EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(c).setScale(f).setLife(l);
+			EntityFX fx = new EntityCCBlurFX(world, px, py, pz).setColor(c).setScale(f).setLife(l);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

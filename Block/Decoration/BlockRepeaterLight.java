@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -21,8 +21,9 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -32,7 +33,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class BlockRepeaterLight extends Block {
 
 	public static final ChromaTiles[] MODELS = {
-		ChromaTiles.REPEATER, ChromaTiles.COMPOUND, ChromaTiles.BROADCAST, ChromaTiles.WEAKREPEATER
+			ChromaTiles.REPEATER, ChromaTiles.COMPOUND, ChromaTiles.BROADCAST, ChromaTiles.WEAKREPEATER
 	};
 
 	public static int getMetadataFor(ChromaTiles c) {
@@ -81,7 +82,7 @@ public class BlockRepeaterLight extends Block {
 			double px = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.675);
 			double py = ReikaRandomHelper.getRandomPlusMinus(y+0.5, 0.675);
 			double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.675);
-			EntityBlurFX fx = new EntityBlurFX(world, px, py, pz).setColor(0xffffff);
+			EntityBlurFX fx = new EntityCCBlurFX(world, px, py, pz).setColor(0xffffff);
 			fx.setLife(10).setGravity(0).setAlphaFading();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}

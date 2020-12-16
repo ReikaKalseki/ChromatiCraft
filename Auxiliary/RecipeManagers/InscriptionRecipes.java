@@ -32,7 +32,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayMap;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.IO.CustomRecipeList;
@@ -176,7 +176,7 @@ public class InscriptionRecipes {
 				double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.75);
 				int c = cbl.getRandomBlendedColor(world.rand);
 				int l = ReikaRandomHelper.getRandomBetween(10, 30);
-				EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(c).setScale(1+world.rand.nextFloat()).setLife(l);
+				EntityFX fx = new EntityCCBlurFX(world, px, py, pz).setColor(c).setScale(1+world.rand.nextFloat()).setLife(l);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 			ReikaSoundHelper.playClientSound(ChromaSounds.CAST, x+0.5, y+0.5, z+0.5, 1, 1);

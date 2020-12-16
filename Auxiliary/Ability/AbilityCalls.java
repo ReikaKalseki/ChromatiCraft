@@ -76,7 +76,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFireFX;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
@@ -97,6 +97,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledBlockPlace;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledPacket;
@@ -155,7 +156,7 @@ public class AbilityCalls {
 			double dx = ep.posX+d*lx;
 			double dy = ep.posY+d*ly;
 			double dz = ep.posZ+d*lz;
-			EntityBlurFX fx = new EntityBlurFX(world, dx, dy, dz).setLife(5).setAlphaFading().setScale(0.5F).setColor(c);
+			EntityBlurFX fx = new EntityCCBlurFX(world, dx, dy, dz).setLife(5).setAlphaFading().setScale(0.5F).setColor(c);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
@@ -880,7 +881,7 @@ public class AbilityCalls {
 			float f = (float)(r/maxr);
 			float s = (float)ReikaRandomHelper.getRandomPlusMinus(8D, 4D)+4*(1-f);
 			int c = f < 0.5 ? ReikaColorAPI.mixColors(0xffffff, 0x00a0ff, 1-(f*2)) : ReikaColorAPI.mixColors(0x0000ff, 0x00a0ff, (f-0.5F)*2);
-			EntityFX fx = new EntityBlurFX(ep.worldObj, rx, ry, rz, vx, vy, vz).setColor(c).setScale(s).setLife(l).setRapidExpand().setColliding();
+			EntityFX fx = new EntityCCBlurFX(ep.worldObj, rx, ry, rz, vx, vy, vz).setColor(c).setScale(s).setLife(l).setRapidExpand().setColliding();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 
@@ -897,12 +898,12 @@ public class AbilityCalls {
 			double vy = ReikaRandomHelper.getRandomPlusMinus(0, 0.125);
 			float s = (float)ReikaRandomHelper.getRandomPlusMinus(16D, 4D);
 			int c = 0xa000ff;
-			EntityFX fx = new EntityBlurFX(ep.worldObj, rx, ry, rz, vx, vy, vz).setColor(c).setScale(s).setLife(l).setRapidExpand().setColliding();
+			EntityFX fx = new EntityCCBlurFX(ep.worldObj, rx, ry, rz, vx, vy, vz).setColor(c).setScale(s).setLife(l).setRapidExpand().setColliding();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 
 		for (double dy = py; dy < 1024; dy += 1) {
-			EntityFX fx = new EntityBlurFX(ep.worldObj, px, dy, pz).setColor(0xffffff).setScale(16).setLife(120).setRapidExpand();
+			EntityFX fx = new EntityCCBlurFX(ep.worldObj, px, dy, pz).setColor(0xffffff).setScale(16).setLife(120).setRapidExpand();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
@@ -1000,7 +1001,7 @@ public class AbilityCalls {
 			double dz = ep.posZ+r*Math.sin(Math.toRadians(a));
 			int c = CrystalElement.MAGENTA.getColor();
 			int l = 20+ep.worldObj.rand.nextInt(20);
-			EntityFX fx = new EntityBlurFX(ep.worldObj, dx, dy, dz).setGravity(g).setScale(s).setColor(c).setLife(l).setRapidExpand().setIcon(ChromaIcons.CENTER);
+			EntityFX fx = new EntityCCBlurFX(ep.worldObj, dx, dy, dz).setIcon(ChromaIcons.CENTER).setGravity(g).setScale(s).setColor(c).setLife(l).setRapidExpand();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 		//}
@@ -1150,7 +1151,7 @@ public class AbilityCalls {
 
 	@SideOnly(Side.CLIENT)
 	private static void createSuperbuildParticle(World world, double px, double py, double pz) {
-		EntityBlurFX fx = new EntityBlurFX(world, px, py, pz).setLife(30).setScale(0.625F).setRapidExpand().setAlphaFading();
+		EntityBlurFX fx = new EntityCCBlurFX(world, px, py, pz).setLife(30).setScale(0.625F).setRapidExpand().setAlphaFading();
 		fx.setColorController(new BlendListColorController(new ColorBlendList(10, 0xffffff, 0x22aaff, 0x0000ff, 0x000000)));
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}

@@ -23,7 +23,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -87,8 +87,8 @@ public abstract class TileEntityLocusPoint extends TileEntityChromaticBase imple
 			double[] xyz = ReikaPhysicsHelper.polarToCartesian(v, theta, phi);
 
 			int l = ReikaRandomHelper.getRandomPlusMinus(20, 10);
-			EntityFX fx = new EntityBlurFX(world, x+0.5, y+0.5, z+0.5, xyz[0], xyz[1], xyz[2]).setColor(color).setScale(2).setLife(l);
-			EntityFX fx2 = new EntityBlurFX(world, x+0.5, y+0.5, z+0.5, xyz[0], xyz[1], xyz[2]).setColor(0xffffff).setScale(1.1F).setLife(l);
+			EntityFX fx = new EntityCCBlurFX(world, x+0.5, y+0.5, z+0.5, xyz[0], xyz[1], xyz[2]).setColor(color).setScale(2).setLife(l);
+			EntityFX fx2 = new EntityCCBlurFX(world, x+0.5, y+0.5, z+0.5, xyz[0], xyz[1], xyz[2]).setColor(0xffffff).setScale(1.1F).setLife(l);
 			fx.noClip = false;
 			fx2.noClip = false;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);

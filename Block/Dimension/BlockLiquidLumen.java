@@ -27,7 +27,8 @@ import net.minecraftforge.fluids.FluidRegistry;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Math.Noise.NoiseGeneratorBase;
 import Reika.DragonAPI.Instantiable.Math.Noise.SimplexNoiseGenerator;
 import Reika.DragonAPI.Interfaces.ColorController;
@@ -98,14 +99,15 @@ public class BlockLiquidLumen extends BlockFluidClassic {
 			double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.125);
 			double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.125);
 			double vy = ReikaRandomHelper.getRandomBetween(0, 0.25);
-			EntityBlurFX fx = new EntityBlurFX(world, px, y+0.9375-s/16, pz, vx, vy, vz).setColor(this.getColor(px, pz)).setGravity(g).setScale(s).setLife(l);
-			fx.setAlphaFading().setIcon(ChromaIcons.FADE_GENTLE.getIcon()).setColorController(particleColor);
+			EntityCCBlurFX fx = new EntityCCBlurFX(world, px, y+0.9375-s/16, pz, vx, vy, vz);
+			fx.setColor(this.getColor(px, pz)).setGravity(g).setScale(s).setLife(l);
+			fx.setIcon(ChromaIcons.FADE_GENTLE.getIcon()).setAlphaFading().setColorController(particleColor);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 		if (r.nextInt(150) == 0) {
 			double px = x+r.nextDouble();
 			double pz = z+r.nextDouble();
-			EntityBlurFX fx = new EntityBlurFX(world, px, y+0.9375, pz, 0, 0.75, 0).setColor(this.getColor(px, pz)).setScale(5F).setLife(120).setIcon(ChromaIcons.SPARKLEPARTICLE).setBasicBlend();
+			EntityBlurFX fx = new EntityCCBlurFX(world, px, y+0.9375, pz, 0, 0.75, 0).setIcon(ChromaIcons.SPARKLEPARTICLE).setColor(this.getColor(px, pz)).setScale(5F).setLife(120).setBasicBlend();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

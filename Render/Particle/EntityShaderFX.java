@@ -11,7 +11,7 @@ import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.RayTracer.RayTracerWithCache;
 
-public class EntityShaderFX extends EntityBlurFX {
+public class EntityShaderFX extends EntityCCBlurFX {
 
 	private static final RayTracerWithCache LOS = RayTracer.getVisualLOSForRenderCulling();
 

@@ -39,7 +39,7 @@ import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBounds;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -321,8 +321,8 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 								ico = ChromaIcons.NODE2;
 								break;
 						}
-						EntityBlurFX fx = new EntityBlurFX(worldObj, xCoord+0.5, yCoord+0.9, zCoord+0.5, 0, vy, 0);
-						fx.setRapidExpand().setScale(4).setColor(c).setIcon(ico).forceIgnoreLimits();
+						EntityCCBlurFX fx = new EntityCCBlurFX(worldObj, xCoord+0.5, yCoord+0.9, zCoord+0.5, 0, vy, 0);
+						fx.setRapidExpand().setScale(4).setColor(c).forceIgnoreLimits();
 						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					}
 					break;

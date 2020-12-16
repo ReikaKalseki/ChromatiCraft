@@ -28,9 +28,10 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
@@ -143,7 +144,7 @@ public class BlockVoidRift extends Block {
 				float g = -(float)ReikaRandomHelper.getRandomPlusMinus(0.125, 0.0625);
 				int l = 40+rand.nextInt(80);
 				float s = (float)ReikaRandomHelper.getRandomBetween(2.5, 6);
-				EntityBlurFX fx = new EntityBlurFX(world, px, y+1, pz).fadeColors(0xffffff, this.getColor().getColor()).setScale(s).setLife(l).setGravity(g).setRapidExpand();
+				EntityBlurFX fx = new EntityCCBlurFX(world, px, y+1, pz).fadeColors(0xffffff, this.getColor().getColor()).setScale(s).setLife(l).setGravity(g).setRapidExpand();
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}

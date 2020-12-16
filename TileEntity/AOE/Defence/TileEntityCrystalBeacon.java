@@ -33,10 +33,11 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -120,7 +121,7 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 		double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, d);
 		double py = ReikaRandomHelper.getRandomPlusMinus(y+1.5+0.5*(1+Math.sin(Math.toRadians(angle))), d);
 		CrystalElement c = CrystalElement.randomElement();//CrystalElement.elements[(this.getTicksExisted()/16)%16];
-		EntityBlurFX fx = new EntityBlurFX(c, world, px, py, pz, 0, 0, 0).setScale(2F).setLife(10).setIcon(ChromaIcons.CENTER);
+		EntityBlurFX fx = new EntityCCBlurFX(c, world, px, py, pz, 0, 0, 0).setIcon(ChromaIcons.CENTER).setScale(2F).setLife(10);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		if (energy.contains(CrystalElement.RED) && hasStructure) {
@@ -131,7 +132,7 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 			pz = z+0.5+r*Math.sin(Math.toRadians(a));
 			py = y+ReikaRandomHelper.getRandomBetween(0.25, 1.5);
 			float g = (float)ReikaRandomHelper.getRandomPlusMinus(0, 0.125);
-			fx = new EntityBlurFX(c, world, px, py, pz, 0, v, 0).setScale(1F).setLife(30).setIcon(ChromaIcons.FADE_GENTLE).setColor(CrystalElement.RED.getColor()).setRapidExpand().setGravity(g);
+			fx = new EntityCCBlurFX(c, world, px, py, pz, 0, v, 0).setIcon(ChromaIcons.FADE_GENTLE).setScale(1F).setLife(30).setColor(CrystalElement.RED.getColor()).setRapidExpand().setGravity(g);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 			int[][] dir = {
@@ -164,8 +165,8 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 				double vx = 0;
 				double vy = 0;
 				double vz = 0;
-				fx = new EntityBlurFX(c, world, px, py, pz, vx, vy, vz).setScale(1.5F).setLife(10).setIcon(ChromaIcons.NODE2).setColor(CrystalElement.RED.getColor());
-				EntityFX fx2 = new EntityBlurFX(c, world, px, py, pz, vx, vy, vz).setScale(0.75F).setLife(10).setIcon(ChromaIcons.NODE2).setColor(0xffffff);
+				fx = new EntityCCBlurFX(c, world, px, py, pz, vx, vy, vz).setIcon(ChromaIcons.NODE2).setScale(1.5F).setLife(10).setColor(CrystalElement.RED.getColor());
+				EntityFX fx2 = new EntityCCBlurFX(c, world, px, py, pz, vx, vy, vz).setIcon(ChromaIcons.NODE2).setScale(0.75F).setLife(10).setColor(0xffffff);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 			}
@@ -195,7 +196,7 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 								pz = ep.posZ+r*Math.sin(ang);
 								py = ep.posY-0.6+0.6*Math.sin(t*0.017);
 
-								fx = new EntityBlurFX(world, px, py, pz).setScale(0.7F).setLife(8).setIcon(ChromaIcons.CENTER);
+								fx = new EntityCCBlurFX(world, px, py, pz).setIcon(ChromaIcons.CENTER).setScale(0.7F).setLife(8);
 								int clr = ReikaColorAPI.getColorWithBrightnessMultiplier(CrystalElement.RED.getColor(), ap);
 								fx.setColor(clr);
 								Minecraft.getMinecraft().effectRenderer.addEffect(fx);

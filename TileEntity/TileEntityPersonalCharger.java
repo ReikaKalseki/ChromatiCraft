@@ -24,7 +24,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
@@ -91,10 +91,10 @@ public class TileEntityPersonalCharger extends CrystalReceiverBase implements Ch
 		double py = ReikaRandomHelper.getRandomPlusMinus(y, 0.375);
 		float g = rand.nextFloat()*0.25F;
 		float s = 2F;
-		EntityFX fx = new EntityBlurFX(color, world, px, py, pz, 0, 0, 0).setScale(s).setLife(100).setGravity(g);
+		EntityFX fx = new EntityCCBlurFX(color, world, px, py, pz, 0, 0, 0).setScale(s).setLife(100).setGravity(g);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
-		fx = new EntityBlurFX(world, px, py, pz, 0, 0, 0).setScale(s*0.5F).setLife(100).setGravity(g).setColor(0xffffff);
+		fx = new EntityCCBlurFX(world, px, py, pz, 0, 0, 0).setScale(s*0.5F).setLife(100).setGravity(g).setColor(0xffffff);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		double d = rand.nextDouble()*3;

@@ -38,12 +38,13 @@ import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Progression.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Auxiliary.ChunkManager;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Interfaces.Entity.ChunkLoadingEntity;
 import Reika.DragonAPI.Interfaces.Item.SpriteRenderCallback;
@@ -169,7 +170,7 @@ public abstract class ItemPoweredChromaTool extends ItemChromaTool implements Sp
 				double v = 0.125+0.0625*Math.sin(ei.age/250D);
 				double vx = v*Math.cos(Math.toRadians(ang+i));
 				double vz = v*Math.sin(Math.toRadians(ang+i));
-				EntityBlurFX fx = new EntityBlurFX(ei.worldObj, ei.posX, (int)ei.posY+0.25, ei.posZ, vx, 0, vz).setLife(40).setRapidExpand().setScale(1.5F);
+				EntityBlurFX fx = new EntityCCBlurFX(ei.worldObj, ei.posX, (int)ei.posY+0.25, ei.posZ, vx, 0, vz).setLife(40).setRapidExpand().setScale(1.5F);
 				fx.setColor(this.getColor().getColor());
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
@@ -178,7 +179,7 @@ public abstract class ItemPoweredChromaTool extends ItemChromaTool implements Sp
 			double v = ReikaRandomHelper.getRandomPlusMinus(0.125, 0.0625);
 			double[] vel = ReikaPhysicsHelper.polarToCartesian(v, itemRand.nextDouble()*360, itemRand.nextDouble()*360);
 			float s = 1+itemRand.nextFloat();
-			EntityBlurFX fx = new EntityBlurFX(ei.worldObj, ei.posX, (int)ei.posY+0.25, ei.posZ, vel[0], vel[1], vel[2]).setLife(40).setScale(s).setColliding();
+			EntityBlurFX fx = new EntityCCBlurFX(ei.worldObj, ei.posX, (int)ei.posY+0.25, ei.posZ, vel[0], vel[1], vel[2]).setLife(40).setScale(s).setColliding();
 			fx.setColor(this.getColor().getColor());
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}

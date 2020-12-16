@@ -40,10 +40,11 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -186,8 +187,8 @@ public class TileEntityMeteorTower extends CrystalReceiverBase implements NBTTil
 		double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 2.5);
 		float s = (float)ReikaRandomHelper.getRandomBetween(2D, 3D);
 		float g = (float)ReikaRandomHelper.getRandomPlusMinus(0D, 0.25);
-		EntityFX fx1 = new EntityBlurFX(world, px, py, pz).setColor(COLORS[tier]).setScale(s).setLife(40).setGravity(g).setColliding();
-		EntityFX fx2 = new EntityBlurFX(world, px, py, pz).setColor(0xffffff).setScale(s*0.5F).setLife(40).setGravity(g).setColliding().lockTo(fx1).setIcon(ChromaIcons.FADE_RAY);
+		EntityFX fx1 = new EntityCCBlurFX(world, px, py, pz).setColor(COLORS[tier]).setScale(s).setLife(40).setGravity(g).setColliding();
+		EntityFX fx2 = new EntityCCBlurFX(world, px, py, pz).setIcon(ChromaIcons.FADE_RAY).setColor(0xffffff).setScale(s*0.5F).setLife(40).setGravity(g).setColliding().lockTo(fx1);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx1);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 	}
@@ -202,8 +203,8 @@ public class TileEntityMeteorTower extends CrystalReceiverBase implements NBTTil
 			double py = ReikaRandomHelper.getRandomPlusMinus(posY, 0.75);
 			double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 1);
 			float s = 2.5F+4F*(float)f;
-			EntityFX fx1 = new EntityBlurFX(world, px, py, pz).setColor(COLORS[tier]).setScale(s).setLife(8).setRapidExpand();
-			EntityFX fx2 = new EntityBlurFX(world, px, py, pz).setColor(0xffffff).setScale(s*0.67F).setLife(8).setRapidExpand().lockTo(fx1);
+			EntityFX fx1 = new EntityCCBlurFX(world, px, py, pz).setColor(COLORS[tier]).setScale(s).setLife(8).setRapidExpand();
+			EntityFX fx2 = new EntityCCBlurFX(world, px, py, pz).setColor(0xffffff).setScale(s*0.67F).setLife(8).setRapidExpand().lockTo(fx1);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx1);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 		}
@@ -219,7 +220,7 @@ public class TileEntityMeteorTower extends CrystalReceiverBase implements NBTTil
 			float s = 2.5F;
 			double a1 = rand.nextDouble()*360;
 			double a2 = rand.nextDouble()*360;
-			EntityFloatingSeedsFX fx = (EntityFloatingSeedsFX)new EntityFloatingSeedsFX(world, px, py, pz, a1, a2).setColor(COLORS[tier]).setScale(s).setLife(40).setRapidExpand().setIcon(ChromaIcons.NODE2);
+			EntityFloatingSeedsFX fx = (EntityFloatingSeedsFX)new EntityCCFloatingSeedsFX(world, px, py, pz, a1, a2, ChromaIcons.NODE2).setColor(COLORS[tier]).setScale(s).setLife(40).setRapidExpand();
 			fx.particleVelocity *= 4;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
@@ -229,8 +230,8 @@ public class TileEntityMeteorTower extends CrystalReceiverBase implements NBTTil
 			double py = ReikaRandomHelper.getRandomPlusMinus(posY, 0.75);
 			double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 1.5);
 			float s = 7.5F;
-			EntityFX fx1 = new EntityBlurFX(world, px, py, pz).setColor(COLORS[tier]).setScale(s).setLife(12).setRapidExpand();
-			EntityFX fx2 = new EntityBlurFX(world, px, py, pz).setColor(0xffffff).setScale(s*0.67F).setLife(12).setRapidExpand().lockTo(fx1);
+			EntityFX fx1 = new EntityCCBlurFX(world, px, py, pz).setColor(COLORS[tier]).setScale(s).setLife(12).setRapidExpand();
+			EntityFX fx2 = new EntityCCBlurFX(world, px, py, pz).setColor(0xffffff).setScale(s*0.67F).setLife(12).setRapidExpand().lockTo(fx1);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx1);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 		}

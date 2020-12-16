@@ -62,7 +62,7 @@ import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityShaderFX;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Auxiliary.ChunkManager;
@@ -395,14 +395,14 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 			for (double t = dt; t <= dt+0.75*8; t += 0.5) {
 				float s = 2.75F*(float)f;//*(float)(1-(t-dt)/4D);
 				DecimalPosition p = o.getPosition(x+0.5, y+0.5+1.5, z+0.5, t);
-				EntityFX fx = new EntityBlurFX(world, p.xCoord, p.yCoord, p.zCoord).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
+				EntityFX fx = new EntityCCBlurFX(world, p.xCoord, p.yCoord, p.zCoord).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 
 			for (double t = dt; t <= dt+0.75*8; t += 0.5) {
 				float s = 2.75F;//*(float)(1-(t-dt)/4D);
 				DecimalPosition p = o.getPosition(x+0.5, y+0.5+1.5, z+0.5, -t+200);
-				EntityFX fx = new EntityBlurFX(world, p.xCoord, p.yCoord, p.zCoord).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
+				EntityFX fx = new EntityCCBlurFX(world, p.xCoord, p.yCoord, p.zCoord).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 
@@ -420,7 +420,7 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 				double ang = rand.nextDouble()*360;
 				double px = x+0.5+r*Math.cos(ang);
 				double pz = z+0.5+r*Math.sin(ang);
-				EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(c).setScale(sc).setLife(l).setAlphaFading().forceIgnoreLimits();
+				EntityFX fx = new EntityCCBlurFX(world, px, py, pz).setColor(c).setScale(sc).setLife(l).setAlphaFading().forceIgnoreLimits();
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}
@@ -617,7 +617,7 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 			double dd = ReikaMathLibrary.py3d(dx, 0, dz);
 			double vx = dx*v/dd;
 			double vz = dz*v/dd;
-			EntityFX fx = new EntityBlurFX(world, px, py, pz, vx, 0, vz).setColor(this.getRenderColor()).setRapidExpand().forceIgnoreLimits().setScale(s).setLife(l).setGravity(g);
+			EntityFX fx = new EntityCCBlurFX(world, px, py, pz, vx, 0, vz).setColor(this.getRenderColor()).setRapidExpand().forceIgnoreLimits().setScale(s).setLife(l).setGravity(g);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
@@ -651,7 +651,7 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 				double px = x+0.5+r*Math.cos(ang1);
 				double pz = z+0.5+r*Math.sin(ang1);
 				double py = y+0.5+1.5+0.5*Math.sin(t/32D);
-				EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
+				EntityFX fx = new EntityCCBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
 				if (GuiScreen.isCtrlKeyDown())
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 				else
@@ -661,7 +661,7 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 
 				px = x+0.5+r*Math.cos(-ang1);
 				pz = z+0.5+r*Math.sin(-ang1);
-				fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
+				fx = new EntityCCBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
 				if (GuiScreen.isCtrlKeyDown())
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 				else
@@ -672,7 +672,7 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 
 				px = x+0.5+r*Math.cos(ang2);
 				pz = z+0.5+r*Math.sin(ang2);
-				fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
+				fx = new EntityCCBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
 				if (GuiScreen.isCtrlKeyDown())
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 				else
@@ -682,7 +682,7 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 
 				px = x+0.5+r*Math.cos(-ang2);
 				pz = z+0.5+r*Math.sin(-ang2);
-				fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
+				fx = new EntityCCBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
 				if (GuiScreen.isCtrlKeyDown())
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 				else
@@ -693,7 +693,7 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 					py = y+0.5+r*Math.cos(-ang4);
 					pz = z+0.5+r*Math.sin(-ang4);
 					if (py >= y-0.5) {
-						fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
+						fx = new EntityCCBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
 						if (GuiScreen.isCtrlKeyDown())
 							Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 						else
@@ -704,7 +704,7 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 					py = y+0.5+r*Math.cos(ang4);
 					pz = z+0.5+r*Math.sin(ang4);
 					if (py >= y-0.5) {
-						fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
+						fx = new EntityCCBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
 						if (GuiScreen.isCtrlKeyDown())
 							Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 						else
@@ -717,7 +717,7 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 					py = y+0.5+r*Math.cos(-ang4+Math.PI/2);
 					px = x+0.5+r*Math.sin(-ang4+Math.PI/2);
 					if (py >= y-0.5) {
-						fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
+						fx = new EntityCCBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
 						if (GuiScreen.isCtrlKeyDown())
 							Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 						else
@@ -728,7 +728,7 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 					py = y+0.5+r*Math.cos(ang4+Math.PI/2);
 					px = x+0.5+r*Math.sin(ang4+Math.PI/2);
 					if (py >= y-0.5) {
-						fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
+						fx = new EntityCCBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l).forceIgnoreLimits();
 						if (GuiScreen.isCtrlKeyDown())
 							Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 						else
@@ -749,7 +749,7 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 			double py = y;
 			double vy = ReikaRandomHelper.getRandomBetween(0D, 0.0625);
 			float g = -(float)ReikaRandomHelper.getRandomBetween(0.03125/2, 0.125);
-			EntityFX fx = new EntityBlurFX(world, px, py, pz, 0, vy, 0).setColor(c).setRapidExpand().forceIgnoreLimits().setScale(s).setLife(l).setGravity(g);
+			EntityFX fx = new EntityCCBlurFX(world, px, py, pz, 0, vy, 0).setColor(c).setRapidExpand().forceIgnoreLimits().setScale(s).setLife(l).setGravity(g);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 
@@ -759,7 +759,7 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 		double py = ReikaRandomHelper.getRandomPlusMinus(ty+1.5, 0.75);
 
 		CollectingPositionController p = new CollectingPositionController(px, py, pz, x+0.5, ty, z+0.5, l);
-		EntityFX fx = new EntityBlurFX(world, px, py, pz).setPositionController(p).setColor(c).setLife(l).forceIgnoreLimits();
+		EntityFX fx = new EntityCCBlurFX(world, px, py, pz).setPositionController(p).setColor(c).setLife(l).forceIgnoreLimits();
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		if (rand.nextInt(4) == 0) {

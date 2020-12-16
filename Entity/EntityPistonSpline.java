@@ -9,7 +9,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonTarge
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.RGBColorData;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Math.Spline;
@@ -72,12 +72,12 @@ public class EntityPistonSpline extends EntitySplineProjectile {
 			float s = (float)ReikaRandomHelper.getRandomBetween(2.25, 3.75);
 			float g = rand.nextInt(3) > 0 ? 0 : (float)ReikaRandomHelper.getRandomBetween(0, 0.125);
 			int c = color.getRenderColor();//ReikaColorAPI.mixColors(color.getRenderColor(), 0xffffff, 0.75F);
-			EntityBlurFX fx = new EntityBlurFX(worldObj, px, py, pz);
+			EntityCCBlurFX fx = new EntityCCBlurFX(worldObj, px, py, pz);
 			fx.setColor(c).setLife(l).setScale(s).setGravity(g);
 			fx.setIcon(ChromaIcons.FADE_GENTLE).setAlphaFading().setRapidExpand().forceIgnoreLimits();
 			mc.effectRenderer.addEffect(fx);
 
-			EntityBlurFX fx2 = new EntityBlurFX(worldObj, px, py, pz);
+			EntityCCBlurFX fx2 = new EntityCCBlurFX(worldObj, px, py, pz);
 			fx2.setColor(0xffffff).setLife(l).setScale(s*0.72F).setGravity(g).forceIgnoreLimits();
 			fx2.setIcon(ChromaIcons.FADE).setAlphaFading().setRapidExpand();
 			fx2.lockTo(fx);
@@ -117,8 +117,8 @@ public class EntityPistonSpline extends EntitySplineProjectile {
 		if (b == ChromaBlocks.PISTONTARGET.getBlockInstance()) {
 			Coordinate end = this.getFinalPathBlock();
 			if (end != null && end.equals(x, y, z)) {
-			((BlockPistonTarget)b).receiveSplineParticle(world, x, y, z, this);
-			return true;
+				((BlockPistonTarget)b).receiveSplineParticle(world, x, y, z, this);
+				return true;
 			}
 		}
 		return false;//!b.isAir(world, x, y, z);

@@ -33,9 +33,10 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Block.Decoration.BlockEtherealLight;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicVariablePoint;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
@@ -138,7 +139,7 @@ public class BlockChromaTrail extends BlockContainer {
 				//SplineMotionController s = new SplineMotionController(l2, overallPath).setTick(pathIndex*l2/l);
 				ListOfPositionsController s = new ListOfPositionsController(l, overallPath);
 				float f = 1.5F*((6-t)/6F);
-				EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.5, z+0.5).setLife(l*3/2).setScale(f).setColliding();
+				EntityBlurFX fx = new EntityCCBlurFX(world, x+0.5, y+0.5, z+0.5).setLife(l*3/2).setScale(f).setColliding();
 				fx.setAlphaFading().setRapidExpand().setPositionController(s).setColorController(BlockEtherealLight.colorController);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
@@ -149,7 +150,7 @@ public class BlockChromaTrail extends BlockContainer {
 					double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.0625);
 					int l = 10+world.rand.nextInt(31);
 					float f = 0.75F+world.rand.nextFloat()*0.75F;
-					EntityBlurFX fx = new EntityBlurFX(world, px, py, pz).setLife(l).setScale(f);
+					EntityBlurFX fx = new EntityCCBlurFX(world, px, py, pz).setLife(l).setScale(f);
 					int c = ReikaColorAPI.mixColors(0xffffff, BlockEtherealLight.colorController.getColor(fx), world.rand.nextFloat()*0.375F);
 					fx.setColor(c);
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
@@ -160,9 +161,9 @@ public class BlockChromaTrail extends BlockContainer {
 						pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.5);
 						l = 25+world.rand.nextInt(51);
 						f *= 2;
-						fx = new EntityBlurFX(world, px, py, pz).setLife(l).setScale(f);
+						fx = new EntityCCBlurFX(world, px, py, pz).setIcon(ChromaIcons.FADE_GENTLE).setLife(l).setScale(f);
 						c = ReikaColorAPI.getModifiedHue(c, ReikaRandomHelper.getRandomPlusMinus(ReikaColorAPI.getHue(c), 60));
-						fx.setColor(c).setIcon(ChromaIcons.FADE_GENTLE);
+						fx.setColor(c);
 						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					}
 				}

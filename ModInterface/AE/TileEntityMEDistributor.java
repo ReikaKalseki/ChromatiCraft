@@ -26,7 +26,7 @@ import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
@@ -299,7 +299,7 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 		vz = ReikaRandomHelper.getRandomPlusMinus(vz, 0.008);
 		float s = (float)ReikaRandomHelper.getRandomPlusMinus(1.25, 0.25);
 		int l = 40+rand.nextInt(30);
-		EntityFX fx = new EntityBlurFX(world, dx, dy, dz, vx, vy, vz).setRapidExpand().setLife(l).setScale(s).setColor(135, 90, 165);
+		EntityFX fx = new EntityCCBlurFX(world, dx, dy, dz, vx, vy, vz).setRapidExpand().setLife(l).setScale(s).setColor(135, 90, 165);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
@@ -316,7 +316,7 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 				double dx = x-dir.offsetX+rand.nextDouble();
 				double dy = y-dir.offsetY+rand.nextDouble();
 				double dz = z-dir.offsetZ+rand.nextDouble();
-				EntityFX fx = new EntityBlurFX(world, dx, dy, dz).setRapidExpand().setLife(l).setScale(s).setColor(32, 150, 255);
+				EntityFX fx = new EntityCCBlurFX(world, dx, dy, dz).setRapidExpand().setLife(l).setScale(s).setColor(32, 150, 255);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}
@@ -325,7 +325,7 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 				double dx = x-dir.offsetX+rand.nextDouble();
 				double dy = y-dir.offsetY+rand.nextDouble();
 				double dz = z-dir.offsetZ+rand.nextDouble();
-				EntityFX fx = new EntityBlurFX(e, world, dx, dy, dz, 0, 0, 0).setRapidExpand().setLife(l).setScale(s);
+				EntityFX fx = new EntityCCBlurFX(e, world, dx, dy, dz, 0, 0, 0).setRapidExpand().setLife(l).setScale(s);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}

@@ -36,7 +36,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.Music.MusicPuzzle;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
@@ -234,7 +234,8 @@ public class BlockMusicMemory extends BlockDimensionStructureTile {
 				px -= 0.75;
 			double pz = dz+0.5;
 			double py = yCoord+0.5;
-			EntityBlurFX fx = new EntityBlurFX(worldObj, px, py, pz).setColor(e.getColor()).setLife(30).setScale(3F).setRapidExpand().setAlphaFading();
+			EntityCCBlurFX fx = new EntityCCBlurFX(worldObj, px, py, pz);
+			fx.setColor(e.getColor()).setLife(30).setScale(3F).setRapidExpand().setAlphaFading();
 			switch(idx) {
 				case 0:
 					fx.setIcon(ChromaIcons.RING0);

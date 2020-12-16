@@ -39,7 +39,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.StepTimer;
@@ -102,7 +102,7 @@ public class TileEntityLumenTurret extends TileEntityChromaticBase {
 			float g = -(float)ReikaRandomHelper.getRandomPlusMinus(0.0625, 0.03125);
 			float s = (float)ReikaRandomHelper.getRandomPlusMinus(1.25, 0.25);
 			int l = 10+rand.nextInt(30);
-			EntityFX fx = new EntityBlurFX(world, x+0.5, y+0.625, z+0.5).setColor(u.color.getColor()).setGravity(g).setLife(l).setScale(s);
+			EntityFX fx = new EntityCCBlurFX(world, x+0.5, y+0.625, z+0.5).setColor(u.color.getColor()).setGravity(g).setLife(l).setScale(s);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

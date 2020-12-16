@@ -13,12 +13,12 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomRenderFX;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.ParticleEngine.CustomTextureMode;
-import Reika.ChromatiCraft.Render.ParticleEngine.RenderMode;
-import Reika.ChromatiCraft.Render.ParticleEngine.RenderModeFlags;
-import Reika.ChromatiCraft.Render.ParticleEngine.TextureMode;
+import Reika.DragonAPI.Instantiable.Rendering.ParticleEngine.CustomTextureMode;
+import Reika.DragonAPI.Instantiable.Rendering.ParticleEngine.RenderMode;
+import Reika.DragonAPI.Instantiable.Rendering.ParticleEngine.RenderModeFlags;
+import Reika.DragonAPI.Instantiable.Rendering.ParticleEngine.TextureMode;
+import Reika.DragonAPI.Interfaces.Entity.CustomRenderFX;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 
 import cpw.mods.fml.relauncher.Side;

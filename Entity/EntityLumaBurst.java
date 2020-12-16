@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -18,8 +18,9 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Gravity.BlockGravityTile.GravityTiles;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Base.ParticleEntity;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper.CubeDirections;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -144,7 +145,7 @@ public class EntityLumaBurst extends ParticleEntity {
 			double py = posY-(posY-lastTickPosY)*d;
 			double pz = posZ-(posZ-lastTickPosZ)*d;
 			int c = ReikaColorAPI.mixColors(color.getColor(), 0x000000, 0.5F);
-			EntityBlurFX fx = new EntityBlurFX(worldObj, px, py, pz).setColor(c).setAlphaFading().setScale(0.5F).setLife(4).setAge((int)Math.round(d));
+			EntityBlurFX fx = new EntityCCBlurFX(worldObj, px, py, pz).setColor(c).setAlphaFading().setScale(0.5F).setLife(4).setAge((int)Math.round(d));
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

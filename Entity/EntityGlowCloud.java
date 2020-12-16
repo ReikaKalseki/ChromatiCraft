@@ -50,12 +50,13 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.SphericalVector;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.ParticleController.CollectingPositionController;
 import Reika.DragonAPI.Interfaces.Entity.DestroyOnUnload;
@@ -377,7 +378,7 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity, IMo
 		double pz = ReikaRandomHelper.getRandomPlusMinus(posZ, d);
 		int l = ReikaRandomHelper.getRandomBetween(10, 60);
 		float s = 2+rand.nextFloat()*2;
-		EntityFX fx = new EntityBlurFX(worldObj, px, py, pz).setColor(c).setLife(l).setScale(s).setAlphaFading().setRapidExpand();//.setColliding();
+		EntityFX fx = new EntityCCBlurFX(worldObj, px, py, pz).setColor(c).setLife(l).setScale(s).setAlphaFading().setRapidExpand();//.setColliding();
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, 0.4F);
@@ -385,7 +386,7 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity, IMo
 		px = ReikaRandomHelper.getRandomPlusMinus(posX, d);
 		py = ReikaRandomHelper.getRandomPlusMinus(posY, d);
 		pz = ReikaRandomHelper.getRandomPlusMinus(posZ, d);
-		fx = new EntityBlurFX(worldObj, px, py, pz).setColor(c).setLife(l/2).setScale(s*3).setAlphaFading().setRapidExpand();//.setColliding();
+		fx = new EntityCCBlurFX(worldObj, px, py, pz).setColor(c).setLife(l/2).setScale(s*3).setAlphaFading().setRapidExpand();//.setColliding();
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
@@ -568,7 +569,7 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity, IMo
 			double py = posY+xyz[1];//ReikaRandomHelper.getRandomPlusMinus(posY, 1);
 			double pz = posZ+xyz[2];//ReikaRandomHelper.getRandomPlusMinus(posZ, 1);
 			double v = 0.375;
-			EntityBlurFX fx = new EntityBlurFX(worldObj, px, py, pz, xyz[0]*v, xyz[1]*v, xyz[2]*v);
+			EntityBlurFX fx = new EntityCCBlurFX(worldObj, px, py, pz, xyz[0]*v, xyz[1]*v, xyz[2]*v);
 			int t = ReikaRandomHelper.getRandomBetween(20, 60);
 			int t2 = (int)(t*(0.5+rand.nextDouble()));
 			float s = 1+2*rand.nextFloat();
@@ -643,7 +644,7 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity, IMo
 			double px = posX+xyz[0];//ReikaRandomHelper.getRandomPlusMinus(posX, 1);
 			double py = posY+xyz[1];//ReikaRandomHelper.getRandomPlusMinus(posY, 1);
 			double pz = posZ+xyz[2];//ReikaRandomHelper.getRandomPlusMinus(posZ, 1);
-			EntityBlurFX fx = new EntityBlurFX(worldObj, px, py, pz);
+			EntityBlurFX fx = new EntityCCBlurFX(worldObj, px, py, pz);
 			int t = ReikaRandomHelper.getRandomBetween(10, 30);
 			int t2 = (int)(t*(0.5+rand.nextDouble()));
 			float s = 1+2*rand.nextFloat();

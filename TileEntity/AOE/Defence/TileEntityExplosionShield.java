@@ -27,9 +27,10 @@ import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
@@ -126,7 +127,7 @@ public class TileEntityExplosionShield extends CrystalReceiverBase implements Lo
 			if (b.isOpaqueCube() && b.renderAsNormalBlock() && b.getRenderType() == 0) { //skip ones inside the ground/walls/etc
 				continue;
 			}
-			EntityBlurFX fx = new EntityBlurFX(world, px, py, pz);
+			EntityBlurFX fx = new EntityCCBlurFX(world, px, py, pz);
 			fx.setLife(ReikaRandomHelper.getRandomBetween(5, 100)).setScale(1+rand.nextFloat()).setColor(CrystalElement.RED.getColor());
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
@@ -160,10 +161,10 @@ public class TileEntityExplosionShield extends CrystalReceiverBase implements Lo
 			}
 			int l = ReikaRandomHelper.getRandomBetween(5, 100);
 			float s = 1.5F+rand.nextFloat()*1.5F;
-			EntityBlurFX fx = new EntityBlurFX(world, px, py, pz);
+			EntityCCBlurFX fx = new EntityCCBlurFX(world, px, py, pz);
 			fx.setLife(l).setScale(s).setColor(CrystalElement.RED.getColor());
-			EntityBlurFX fx2 = new EntityBlurFX(world, px, py, pz).lockTo(fx);
-			fx2.setLife(l).setScale(s*0.5F).setColor(0xffffff).setIcon(ChromaIcons.FADE_GENTLE);
+			EntityCCBlurFX fx2 = new EntityCCBlurFX(world, px, py, pz);
+			fx2.setIcon(ChromaIcons.FADE_GENTLE).setLife(l).setScale(s*0.5F).setColor(0xffffff).lockTo(fx);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 		}

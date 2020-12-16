@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -19,11 +19,12 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalFuse;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Base.InertEntity;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -103,7 +104,7 @@ public class EntityOverloadingPylonShock extends InertEntity implements IEntityA
 
 	@SideOnly(Side.CLIENT)
 	private void doParticles(World world, double x, double y, double z) {
-		EntityBlurFX fx = new EntityBlurFX(world, x, y, z);
+		EntityBlurFX fx = new EntityCCBlurFX(world, x, y, z);
 		fx.setAlphaFading().setRapidExpand().setScale(32).setColor(color.getColor()).setLife(12);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}

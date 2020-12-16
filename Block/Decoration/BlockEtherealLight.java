@@ -26,7 +26,8 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Interfaces.ColorController;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -130,7 +131,7 @@ public class BlockEtherealLight extends Block {
 				int r = ReikaColorAPI.getRed(c);//32;
 				int g = ReikaColorAPI.getGreen(c);//127;
 				int b = ReikaColorAPI.getBlue(c);//255;
-				EntityBlurFX fx = new EntityBlurFX(world, rx, ry, rz, vx, 0, vz).setGravity(gv).setLife(l).setScale(1.5F).setColor(r, g, b).setRapidExpand().setColliding();
+				EntityBlurFX fx = new EntityCCBlurFX(world, rx, ry, rz, vx, 0, vz).setGravity(gv).setLife(l).setScale(1.5F).setColor(r, g, b).setRapidExpand().setColliding();
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}

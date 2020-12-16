@@ -35,12 +35,13 @@ import Reika.ChromatiCraft.ModInterface.ThaumCraft.EssentiaNetwork.EssentiaSubne
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
@@ -206,7 +207,7 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 			double dz = z+(z2-z)*d;
 			int c = isNode ? 0x6f6fff : 0x6fff6f;
 			float s = 0.5F+(float)(2*Math.min(d, 1-d));
-			EntityBlurFX fx = new EntityBlurFX(world, dx+0.5, dy+0.5, dz+0.5).setScale(s).setColor(c).setAlphaFading().setLife(10).setIcon(ChromaIcons.CENTER);
+			EntityBlurFX fx = new EntityCCBlurFX(world, dx+0.5, dy+0.5, dz+0.5).setIcon(ChromaIcons.CENTER).setScale(s).setColor(c).setAlphaFading().setLife(10);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

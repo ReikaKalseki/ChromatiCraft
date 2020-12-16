@@ -24,7 +24,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Block.Decoration.BlockEtherealLight.Flags;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
@@ -109,7 +109,7 @@ public class EntityLightShot extends EntityFireball {
 			double pz = posZ+motionZ*d;
 			int l = 20+rand.nextInt(80);
 			float s = (float)ReikaRandomHelper.getRandomPlusMinus(6D, 1D);
-			EntityFX fx = new EntityBlurFX(worldObj, px, py, pz, 0, 0, 0).setRapidExpand().setLife(l).setScale(s).setColor(0, 192, 255);
+			EntityFX fx = new EntityCCBlurFX(worldObj, px, py, pz, 0, 0, 0).setRapidExpand().setLife(l).setScale(s).setColor(0, 192, 255);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

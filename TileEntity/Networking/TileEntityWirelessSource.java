@@ -28,11 +28,12 @@ import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.GlowTendril;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.ParticleController.AttractiveMotionController;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
@@ -183,7 +184,7 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 			double v = ReikaRandomHelper.getRandomBetween(0.03125, 0.125);
 			double[] vel = ReikaPhysicsHelper.polarToCartesian(v, rand.nextDouble()*360, rand.nextDouble()*360);
 			float g = rand.nextBoolean() ? 0.0625F : -0.0625F;
-			EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.5, z+0.5, vel[0], vel[1], vel[2]).setColor(c).setRapidExpand().setGravity(g);
+			EntityBlurFX fx = new EntityCCBlurFX(world, x+0.5, y+0.5, z+0.5, vel[0], vel[1], vel[2]).setColor(c).setRapidExpand().setGravity(g);
 			if (rand.nextBoolean())
 				fx.setColliding();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
@@ -194,22 +195,22 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 			double px = x-2.5;
 			double pz = z+d;
 			AttractiveMotionController am = new AttractiveMotionController(this, 0.03125/24, 0.1875, 0.9875);
-			EntityBlurFX fx = new EntityBlurFX(world, px, y-3, pz).setColor(c).setAlphaFading().setRapidExpand().setGravity(-0.0625F).setMotionController(am).setLife(80);
+			EntityBlurFX fx = new EntityCCBlurFX(world, px, y-3, pz).setColor(c).setAlphaFading().setRapidExpand().setGravity(-0.0625F).setMotionController(am).setLife(80);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 			px = x+3.5;
 			pz = z+1-d;
-			fx = new EntityBlurFX(world, px, y-3, pz).setColor(c).setAlphaFading().setRapidExpand().setGravity(-0.0625F).setMotionController(am).setLife(80);
+			fx = new EntityCCBlurFX(world, px, y-3, pz).setColor(c).setAlphaFading().setRapidExpand().setGravity(-0.0625F).setMotionController(am).setLife(80);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 			pz = z+3.5;
 			px = x+d;
-			fx = new EntityBlurFX(world, px, y-3, pz).setColor(c).setAlphaFading().setRapidExpand().setGravity(-0.0625F).setMotionController(am).setLife(80);
+			fx = new EntityCCBlurFX(world, px, y-3, pz).setColor(c).setAlphaFading().setRapidExpand().setGravity(-0.0625F).setMotionController(am).setLife(80);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 			pz = z-2.5;
 			px = x+1-d;
-			fx = new EntityBlurFX(world, px, y-3, pz).setColor(c).setAlphaFading().setRapidExpand().setGravity(-0.0625F).setMotionController(am).setLife(80);
+			fx = new EntityCCBlurFX(world, px, y-3, pz).setColor(c).setAlphaFading().setRapidExpand().setGravity(-0.0625F).setMotionController(am).setLife(80);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

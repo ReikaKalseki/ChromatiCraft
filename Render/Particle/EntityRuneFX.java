@@ -12,12 +12,12 @@ package Reika.ChromatiCraft.Render.Particle;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomRenderFX;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.ParticleEngine;
-import Reika.ChromatiCraft.Render.ParticleEngine.RenderMode;
-import Reika.ChromatiCraft.Render.ParticleEngine.RenderModeFlags;
-import Reika.ChromatiCraft.Render.ParticleEngine.TextureMode;
+import Reika.DragonAPI.Instantiable.Rendering.ParticleEngine;
+import Reika.DragonAPI.Instantiable.Rendering.ParticleEngine.RenderMode;
+import Reika.DragonAPI.Instantiable.Rendering.ParticleEngine.RenderModeFlags;
+import Reika.DragonAPI.Instantiable.Rendering.ParticleEngine.TextureMode;
+import Reika.DragonAPI.Interfaces.Entity.CustomRenderFX;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -128,7 +128,7 @@ public class EntityRuneFX extends EntityFX implements CustomRenderFX {
 
 	@Override
 	public TextureMode getTexture() {
-		return ParticleEngine.instance.blockTex;
+		return ParticleEngine.blockTex;
 	}
 
 	@Override

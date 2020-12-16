@@ -28,7 +28,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
 import Reika.DragonAPI.Instantiable.CompoundAABB;
@@ -321,8 +321,8 @@ public class TileEntityHoverPad extends TileEntityChromaticBase {
 					l *= 0.4;
 					s *= 0.8;
 				}
-				EntityBlurFX fx = new EntityBlurFX(world, particleX[i], particleY[i], particleZ[i], vx, v, vz);
-				fx.setGravity(g).setColor(c).setLife(l).setScale(s).setIcon(ChromaIcons.FADE_GENTLE);
+				EntityCCBlurFX fx = new EntityCCBlurFX(world, particleX[i], particleY[i], particleZ[i], vx, v, vz);
+				fx.setIcon(ChromaIcons.FADE_GENTLE).setGravity(g).setColor(c).setLife(l).setScale(s);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}

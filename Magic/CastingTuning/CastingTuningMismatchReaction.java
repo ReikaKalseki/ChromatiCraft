@@ -16,7 +16,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.DragonAPI.Instantiable.Formula.MathExpression;
 import Reika.DragonAPI.Instantiable.Formula.PeriodicExpression;
@@ -126,8 +126,8 @@ public class CastingTuningMismatchReaction {
 			float s = (float)ReikaRandomHelper.getRandomBetween(7.5, 15);
 			int l = ReikaRandomHelper.getRandomBetween(20, 80);
 			double vy = ReikaRandomHelper.getRandomBetween(0.125, 1);
-			EntityBlurFX fx = new EntityBlurFX(tile.worldObj, tile.xCoord+0.5, tile.yCoord+0.5, tile.zCoord+0.5, 0, vy, 0);
-			fx.setScale(s).setColor(0xffffff).setLife(l).setIcon(ChromaIcons.FADE_GENTLE);
+			EntityCCBlurFX fx = new EntityCCBlurFX(tile.worldObj, tile.xCoord+0.5, tile.yCoord+0.5, tile.zCoord+0.5, 0, vy, 0);
+			fx.setIcon(ChromaIcons.FADE_GENTLE).setScale(s).setColor(0xffffff).setLife(l);
 			fx.forceIgnoreLimits().setRapidExpand();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
@@ -146,8 +146,8 @@ public class CastingTuningMismatchReaction {
 				double vv = ReikaRandomHelper.getRandomBetween(0, 0.125);
 				double ra = ReikaRandomHelper.getRandomBetween(1D, 4);
 				SpiralMotionController m = new SpiralMotionController(tile.xCoord+0.5, tile.zCoord+0.5, ra, vv, r, 0, ang);
-				EntityBlurFX fx = new EntityBlurFX(tile.worldObj, dx, dy, dz);
-				fx.setScale(s).setColor(c).setLife(l).setGravity(g).setIcon(ChromaIcons.FADE_GENTLE);
+				EntityCCBlurFX fx = new EntityCCBlurFX(tile.worldObj, dx, dy, dz);
+				fx.setIcon(ChromaIcons.FADE_GENTLE).setScale(s).setColor(c).setLife(l).setGravity(g);
 				fx.forceIgnoreLimits().setRapidExpand().setAlphaFading().setMotionController(m).setPositionController(m);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
@@ -166,11 +166,11 @@ public class CastingTuningMismatchReaction {
 			float s = (float)ReikaRandomHelper.getRandomBetween(10D, 20);
 			int l = ReikaRandomHelper.getRandomBetween(10, 40)*2;
 			float g = (float)ReikaRandomHelper.getRandomBetween(v*0.5, v);//(float)ReikaRandomHelper.getRandomBetween(0.0625, 0.5);
-			EntityBlurFX fx = new EntityBlurFX(tile.worldObj, tile.xCoord+0.5, tile.yCoord+1, tile.zCoord+0.5, vx, v, vz);
+			EntityCCBlurFX fx = new EntityCCBlurFX(tile.worldObj, tile.xCoord+0.5, tile.yCoord+1, tile.zCoord+0.5, vx, v, vz);
 			double d = particleRand.nextDouble()*360;
 			MathExpression e = new PeriodicExpression().addWave(1, 1, d).addWave(0.5, 2, d+90).addWave(0.125, 4, d).normalize();
 			ColorController blink = new FlashColorController(e, 0xa0a0a0, 0x707070);
-			fx.setScale(s).setColor(0xffffff).setLife(l).setGravity(g).setIcon(ChromaIcons.FADE).setColorController(blink);
+			fx.setIcon(ChromaIcons.FADE).setScale(s).setColor(0xffffff).setLife(l).setGravity(g).setColorController(blink);
 			fx.forceIgnoreLimits().setRapidExpand();
 			fx.noClip = false;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);

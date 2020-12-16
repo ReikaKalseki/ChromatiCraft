@@ -34,12 +34,13 @@ import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.ChromatiCraft.Entity.EntityPistonSpline;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.ISBRH.PistonTargetRenderer;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.TapeStage;
 import Reika.DragonAPI.Instantiable.RGBColorData;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
 import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
@@ -193,7 +194,7 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 				}
 				float s = (float)ReikaRandomHelper.getRandomBetween(0.8, 1.5);
 				int l = ReikaRandomHelper.getRandomBetween(10, 40);
-				EntityBlurFX fx = new EntityBlurFX(worldObj, x, y, z);
+				EntityBlurFX fx = new EntityCCBlurFX(worldObj, x, y, z);
 				fx.setColor(color.getRenderColor()).setScale(s).setLife(l);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}

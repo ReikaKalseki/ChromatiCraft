@@ -25,7 +25,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.TimerMap;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -112,12 +112,12 @@ public class TileEntityLaunchPad extends TileEntityChromaticBase implements Mult
 			double dz = ReikaRandomHelper.getRandomBetween(z-1D, z+2);
 			double dy = y+1.0625;
 			double v = ReikaRandomHelper.getRandomBetween(2D, 5);
-			EntityBlurFX fx = new EntityBlurFX(world, dx, dy, dz, 0, v, 0);
+			EntityCCBlurFX fx = new EntityCCBlurFX(world, dx, dy, dz, 0, v, 0);
 			int l = ReikaRandomHelper.getRandomBetween(10, 60);
 			float s = (float)ReikaRandomHelper.getRandomBetween(0.5, 1.2);
-			EntityBlurFX fx2 = new EntityBlurFX(world, dx, dy, dz, 0, v, 0);
-			fx.setLife(l).setScale(s).setColor(0x00ff00).setAlphaFading().setRapidExpand().setIcon(ChromaIcons.CENTER).setColliding();
-			fx2.setLife(l).setScale(s*0.4F).setColor(0xffffff).setAlphaFading().setRapidExpand().setIcon(ChromaIcons.CENTER).setColliding().lockTo(fx2);
+			EntityCCBlurFX fx2 = new EntityCCBlurFX(world, dx, dy, dz, 0, v, 0);
+			fx.setIcon(ChromaIcons.CENTER).setColliding().setLife(l).setScale(s).setColor(0x00ff00).setAlphaFading().setRapidExpand();
+			fx2.setIcon(ChromaIcons.CENTER).setLife(l).setScale(s*0.4F).setColor(0xffffff).setAlphaFading().setRapidExpand().setColliding().lockTo(fx2);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 		}

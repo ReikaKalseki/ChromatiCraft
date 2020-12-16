@@ -27,11 +27,12 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -196,7 +197,7 @@ public class PylonTurboRecipe extends PylonCastingRecipe {
 		ReikaSoundHelper.playClientSound(ChromaSounds.ORB, x, y, z, 1, 0.5F);
 		for (double a = 0; a < 360; a += 2) {
 			float s = (float)ReikaRandomHelper.getRandomBetween(2D, 5D);
-			EntityFloatingSeedsFX fx = (EntityFloatingSeedsFX)new EntityFloatingSeedsFX(te.worldObj, x, y, z, a, 0).setScale(s).setNoSlowdown();
+			EntityFloatingSeedsFX fx = (EntityFloatingSeedsFX)new EntityCCFloatingSeedsFX(te.worldObj, x, y, z, a, 0).setScale(s).setNoSlowdown();
 			int c = CrystalElement.getBlendedColor((int)a, 360/16);
 			fx.setColor(c);
 			fx.particleVelocity = 0.25;
@@ -233,7 +234,7 @@ public class PylonTurboRecipe extends PylonCastingRecipe {
 			int l = 20+rand.nextInt(60);
 			float g = 2*(float)ReikaRandomHelper.getRandomBetween(0.03125, 0.25);
 			double v = ReikaRandomHelper.getRandomBetween(0.125, 0.5);
-			EntityFX fx = new EntityBlurFX(te.worldObj, px, py, pz, 0, v, 0).setRapidExpand().setScale(s).setColor(c).setLife(l).setIcon(ChromaIcons.FADE_RAY).setColliding().setGravity(g);
+			EntityFX fx = new EntityCCBlurFX(te.worldObj, px, py, pz, 0, v, 0).setIcon(ChromaIcons.FADE_RAY).setRapidExpand().setScale(s).setColor(c).setLife(l).setColliding().setGravity(g);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
@@ -256,15 +257,15 @@ public class PylonTurboRecipe extends PylonCastingRecipe {
 			double s = ms-Math.abs(d)*ms/r;
 			double s2 = s*0.5;
 			double s3 = s*0.25;
-			EntityFX fx = new EntityBlurFX(te.worldObj, x, dy, z, 0, v, 0).setNoSlowdown().setRapidExpand().setScale((float)s).setColor(c1).setLife(l).setIcon(ChromaIcons.FADE_STAR);
-			EntityFX fx2 = new EntityBlurFX(te.worldObj, x, dy, z, 0, v, 0).setNoSlowdown().setRapidExpand().setScale((float)s2).setColor(c2).setLife(l).setIcon(ChromaIcons.FADE_STAR).lockTo(fx);
-			EntityFX fx3 = new EntityBlurFX(te.worldObj, x, dy, z, 0, v, 0).setNoSlowdown().setRapidExpand().setScale((float)s3).setColor(c3).setLife(l).setIcon(ChromaIcons.FADE_STAR).lockTo(fx);
+			EntityFX fx = new EntityCCBlurFX(te.worldObj, x, dy, z, 0, v, 0).setIcon(ChromaIcons.FADE_STAR).setNoSlowdown().setRapidExpand().setScale((float)s).setColor(c1).setLife(l);
+			EntityFX fx2 = new EntityCCBlurFX(te.worldObj, x, dy, z, 0, v, 0).setIcon(ChromaIcons.FADE_STAR).setNoSlowdown().setRapidExpand().setScale((float)s2).setColor(c2).setLife(l).lockTo(fx);
+			EntityFX fx3 = new EntityCCBlurFX(te.worldObj, x, dy, z, 0, v, 0).setIcon(ChromaIcons.FADE_STAR).setNoSlowdown().setRapidExpand().setScale((float)s3).setColor(c3).setLife(l).lockTo(fx);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx3);
 		}
 
-		EntityFX fx = new EntityBlurFX(te.worldObj, x, y, z).setRapidExpand().setScale(24).setColor(c1).setLife(l).setIcon(ChromaIcons.RINGFLARE);
+		EntityFX fx = new EntityCCBlurFX(te.worldObj, x, y, z).setIcon(ChromaIcons.RINGFLARE).setRapidExpand().setScale(24).setColor(c1).setLife(l);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 

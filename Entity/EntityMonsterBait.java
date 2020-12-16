@@ -12,7 +12,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Base.InertEntity;
 import Reika.DragonAPI.Instantiable.ParticleController.EntityLockMotionController;
@@ -109,7 +109,7 @@ public class EntityMonsterBait extends InertEntity implements IEntityAdditionalS
 			float g = (float)ReikaRandomHelper.getRandomPlusMinus(0, 0.035);
 			int l = Math.min(life, ReikaRandomHelper.getRandomBetween(10, 80));
 			float s = (float)ReikaRandomHelper.getRandomBetween(0.5, 2);
-			EntityBlurFX fx = new EntityBlurFX(worldObj, posX+xyz[0], posY+xyz[1], posZ+xyz[2]);
+			EntityCCBlurFX fx = new EntityCCBlurFX(worldObj, posX+xyz[0], posY+xyz[1], posZ+xyz[2]);
 			fx.setGravity(g).setLife(l).setScale(s);
 			fx.setIcon(ChromaIcons.FADE_GENTLE).setAlphaFading().setRapidExpand().forceIgnoreLimits();
 			if (currentEntity != null) {

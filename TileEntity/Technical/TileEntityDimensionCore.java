@@ -47,14 +47,15 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Interfaces.TileEntity.PlayerBreakHook;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -431,7 +432,7 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements Pla
 							int l = 80;
 							float g = (float)ReikaRandomHelper.getRandomPlusMinus(0.03125, 0.0150625);
 							float s = 2*(float)ReikaRandomHelper.getRandomPlusMinus(1.25, 0.5);
-							EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, px, py, pz, 0, -90);
+							EntityFloatingSeedsFX fx = new EntityCCFloatingSeedsFX(world, px, py, pz, 0, -90);
 							fx = (EntityFloatingSeedsFX)fx.setGravity(g).setScale(s).setLife(l).setColor(color.getColor());
 							fx.angleVelocity *= 3;
 							fx.freedom *= 5;
@@ -469,7 +470,7 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements Pla
 			double pz = z1+0.5+f*dz;
 
 			int clr = ReikaColorAPI.mixColors(e1.getColor(), e2.getColor(), 1-(float)f);
-			EntityFX fx = new EntityBlurFX(world, px, py, pz).setLife(l).setNoSlowdown().setScale(s).setColor(clr);
+			EntityFX fx = new EntityCCBlurFX(world, px, py, pz).setLife(l).setNoSlowdown().setScale(s).setColor(clr);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

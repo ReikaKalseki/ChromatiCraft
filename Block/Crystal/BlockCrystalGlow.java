@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -36,7 +36,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalGlowRenderer;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -85,7 +85,7 @@ public class BlockCrystalGlow extends CrystalTypeBlock {
 		int type = rand.nextInt(3);
 		switch(type) {
 			case 0:
-				fx = new EntityBlurFX(this.getCrystalElement(world, x, y, z), world, rx, ry, rz, vx, 0, vz).setScale(1+rand.nextFloat()).setGravity(g);
+				fx = new EntityCCBlurFX(this.getCrystalElement(world, x, y, z), world, rx, ry, rz, vx, 0, vz).setScale(1+rand.nextFloat()).setGravity(g);
 				break;
 			case 1:
 				fx = new EntityCenterBlurFX(this.getCrystalElement(world, x, y, z), world, rx, ry, rz, vx, 0, vz).setScale(1+rand.nextFloat()).setGravity(g);

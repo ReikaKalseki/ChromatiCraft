@@ -32,7 +32,7 @@ import Reika.ChromatiCraft.Magic.Artefact.UABombingEffects;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.Interpolation;
 import Reika.DragonAPI.Interfaces.Item.AnimatedSpritesheet;
 import Reika.DragonAPI.Interfaces.Item.MetadataSpecificTrade;
@@ -225,8 +225,8 @@ public class ItemUnknownArtefact extends ItemChromaMulti implements AnimatedSpri
 			int l = ReikaRandomHelper.getRandomBetween(10, 40);
 			double s = 6+rand.nextDouble()*9;
 			int c = ReikaColorAPI.mixColors(0x003010, 0x000030, rand.nextFloat());
-			EntityBlurFX fx = new EntityBlurFX(world, px, py, pz);
-			fx.setColor(c).setLife(l).setScale((float)s).setAlphaFading().setIcon(ChromaIcons.FADE_CLOUD);
+			EntityCCBlurFX fx = new EntityCCBlurFX(world, px, py, pz);
+			fx.setIcon(ChromaIcons.FADE_CLOUD).setColor(c).setLife(l).setScale((float)s).setAlphaFading();
 			if (renderThroughGround)
 				fx.setNoDepthTest();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
@@ -242,8 +242,8 @@ public class ItemUnknownArtefact extends ItemChromaMulti implements AnimatedSpri
 			double vx = ReikaRandomHelper.getRandomPlusMinus(0, maxv);
 			double vy = ReikaRandomHelper.getRandomPlusMinus(0, maxv);
 			double vz = ReikaRandomHelper.getRandomPlusMinus(0, maxv);
-			EntityBlurFX fx = new EntityBlurFX(world, px, py, pz, vx, vy, vz);
-			fx.setColor(0xffffff).setLife(l).setRapidExpand().setIcon(ChromaIcons.FADE_STAR);
+			EntityCCBlurFX fx = new EntityCCBlurFX(world, px, py, pz, vx, vy, vz);
+			fx.setIcon(ChromaIcons.FADE_STAR).setColor(0xffffff).setLife(l).setRapidExpand();
 			if (renderThroughGround)
 				fx.setNoDepthTest();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);

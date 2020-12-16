@@ -32,7 +32,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.LightedTreeBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Render.ShuffledIconControl;
 import Reika.ChromatiCraft.Render.ISBRH.GlowTreeRenderer;
-import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
@@ -97,7 +97,7 @@ public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBloc
 			float s = 1+rand.nextFloat();
 			double wind = (world.getWorldTime()%24000)/24000D*360;
 			double ang = ReikaRandomHelper.getRandomPlusMinus(10D, 5D);
-			EntityFX fx = new EntityFloatingSeedsFX(world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble(), wind, ang).setColor(0xFFDD87)/*.setRapidExpand()*/.setLife(l).setGravity(0).setScale(s);
+			EntityFX fx = new EntityCCFloatingSeedsFX(world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble(), wind, ang).setColor(0xFFDD87)/*.setRapidExpand()*/.setLife(l).setGravity(0).setScale(s);
 			fx.noClip = true;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}

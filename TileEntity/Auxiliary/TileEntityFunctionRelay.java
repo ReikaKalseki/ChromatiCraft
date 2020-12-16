@@ -19,9 +19,10 @@ import net.minecraftforge.common.ForgeHooks;
 
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaCropHelper;
@@ -69,7 +70,7 @@ public class TileEntityFunctionRelay extends TileEntityChromaticBase {
 				double px = x+0.5+xyz[0];
 				double py = y+0.5+xyz[1];
 				double pz = z+0.5+xyz[2];
-				EntityBlurFX fx = new EntityBlurFX(world, px, py, pz).setLife(l).setAlphaFading();
+				EntityBlurFX fx = new EntityCCBlurFX(world, px, py, pz).setLife(l).setAlphaFading();
 				ColorBlendList cbl = new ColorBlendList(l*4/*/4F*/, 0xff00ff, 0xffff00, 0xff00ff, 0x00ffff);
 				fx.setColor(cbl.getColor(this.getTicksExisted()+Math.abs((int)(d*d2/512D))));
 				//fx.setPositionController(new PulsingSpherePositionController(l*4, x+0.5, y+0.5, z+0.5, 1, 1.25, theta, phi)).setColorController(new BlendListColorController(cbl));

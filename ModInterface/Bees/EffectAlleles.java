@@ -49,10 +49,10 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
-import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
@@ -259,7 +259,7 @@ public class EffectAlleles {
 									break;
 							}
 							if (ReikaWorldHelper.isPositionEmpty(world, px, py, pz)) {
-								EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(color.getColor()).setScale(2).setIcon(ChromaIcons.FADE_RAY);
+								EntityFX fx = new EntityCCBlurFX(world, px, py, pz).setIcon(ChromaIcons.FADE_RAY).setColor(color.getColor()).setScale(2);
 								Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 							}
 						}
@@ -445,10 +445,10 @@ public class EffectAlleles {
 						double py = ReikaRandomHelper.getRandomBetween(box.minY, box.maxY);
 						double pz = ReikaRandomHelper.getRandomBetween(box.minZ, box.maxZ);
 						if (ReikaWorldHelper.isPositionEmpty(world, px, py, pz)) {
-							EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, px, py, pz, 0, 90);
+							EntityCCFloatingSeedsFX fx = new EntityCCFloatingSeedsFX(world, px, py, pz, 0, 90);
 							fx.angleVelocity *= 2;
 							fx.freedom *= 4;
-							fx.setScale(2+CrystalBees.rand.nextFloat()).setCyclingColor(0.2F);
+							fx.setCyclingColor(0.2F).setScale(2+CrystalBees.rand.nextFloat());
 							Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 						}
 					}
@@ -750,9 +750,9 @@ public class EffectAlleles {
 						double dz = t1.getRootPosition().chunkZPos-c.posZ-0.5;
 						double a = -ReikaPhysicsHelper.cartesianToPolarFast(dx, 0, dz)[2]-90;
 						float s = world.rand.nextFloat()+0.25F;
-						EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, px, py, pz, a, 0);
+						EntityCCFloatingSeedsFX fx = new EntityCCFloatingSeedsFX(world, px, py, pz, a, 0);
 						fx.freedom *= 0.5;
-						fx.setColor(0xa0e0ff).setLife(120).setIcon(ChromaIcons.FADE).setScale(s);
+						fx.setIcon(ChromaIcons.FADE).setColor(0xa0e0ff).setLife(120).setScale(s);
 						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					}
 				}

@@ -27,7 +27,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.World.IWG.DungeonGenerator;
 import Reika.ChromatiCraft.World.IWG.DungeonGenerator.StructureSeekData;
 import Reika.DragonAPI.DragonAPICore;
@@ -140,7 +140,7 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 		double vx = dx/dd*v;
 		double vy = dy/dd*v;
 		double vz = dz/dd*v;
-		EntityBlurFX fx = new EntityBlurFX(ep.worldObj, px, py, pz, vx, vy, vz);
+		EntityCCBlurFX fx = new EntityCCBlurFX(ep.worldObj, px, py, pz, vx, vy, vz);
 		if (close) {
 			l *= 2;
 			sc *= 0.5;

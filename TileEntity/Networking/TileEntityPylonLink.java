@@ -26,7 +26,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.Network.PylonLinkNetwork;
 import Reika.ChromatiCraft.Magic.Network.PylonLinkNetwork.PylonNode;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Auxiliary.ChunkManager;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
@@ -119,7 +119,7 @@ public class TileEntityPylonLink extends TileEntityChromaticBase implements Loca
 			double py = y+1.05;
 			float g = -(float)ReikaRandomHelper.getRandomBetween(0.03125/4, 0.03125);
 			float s = (float)ReikaRandomHelper.getRandomBetween(0.375, 0.5);
-			EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(c).setGravity(g).setScale(s).setRapidExpand().setAlphaFading();
+			EntityFX fx = new EntityCCBlurFX(world, px, py, pz).setColor(c).setGravity(g).setScale(s).setRapidExpand().setAlphaFading();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 
@@ -134,7 +134,7 @@ public class TileEntityPylonLink extends TileEntityChromaticBase implements Loca
 			double py = y+1.05;
 			float g = -(float)ReikaRandomHelper.getRandomBetween(0.03125/4, 0.03125);
 			float s = (float)ReikaRandomHelper.getRandomBetween(0.375, 0.5);
-			EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(c).setGravity(g).setScale(s).setRapidExpand().setAlphaFading();
+			EntityFX fx = new EntityCCBlurFX(world, px, py, pz).setColor(c).setGravity(g).setScale(s).setRapidExpand().setAlphaFading();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 
@@ -142,7 +142,7 @@ public class TileEntityPylonLink extends TileEntityChromaticBase implements Loca
 			double px = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.03125);
 			double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.03125);
 			double py = y+1+4.5+4.5*Math.sin(this.getTicksExisted()/64D*(1+i/8D)+i*5);
-			EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(c).setScale(1.25F).setRapidExpand().setAlphaFading().setLife(12);
+			EntityFX fx = new EntityCCBlurFX(world, px, py, pz).setColor(c).setScale(1.25F).setRapidExpand().setAlphaFading().setLife(12);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

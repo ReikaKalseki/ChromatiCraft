@@ -44,11 +44,12 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.Instantiable.Data.RunningAverage;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.DelayableSchedulableEvent;
 import Reika.DragonAPI.Instantiable.Rendering.FXCollection;
@@ -411,7 +412,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 					double rz = z+rand.nextDouble();
 					float s = 1+rand.nextFloat();
 					int l = 12+rand.nextInt(18);
-					EntityFX fx = new EntityBlurFX(world, rx, ry, rz).setColor(e.getColor()).setLife(l).setScale(s).setRapidExpand();
+					EntityFX fx = new EntityCCBlurFX(world, rx, ry, rz).setColor(e.getColor()).setLife(l).setScale(s).setRapidExpand();
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 				}
 			}
@@ -454,7 +455,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 		}
 		int n = 20+rand.nextInt(90);
 		for (int i = 0; i < n; i++) {
-			EntityFX fx = new EntityFloatingSeedsFX(world, x+0.5, y+0.5, z+0.5, rand.nextDouble()*360, ReikaRandomHelper.getRandomPlusMinus(0, 10D)).setColor(li.get(rand.nextInt(li.size()))).setColliding();
+			EntityFX fx = new EntityCCFloatingSeedsFX(world, x+0.5, y+0.5, z+0.5, rand.nextDouble()*360, ReikaRandomHelper.getRandomPlusMinus(0, 10D)).setColor(li.get(rand.nextInt(li.size()))).setColliding();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
@@ -508,7 +509,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 			c2 = ReikaColorAPI.getColorWithBrightnessMultiplier(c2, 0.5F+0.25F*rand.nextFloat());
 			c = ReikaColorAPI.mixColors(c2, c, f);
 		}
-		EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.5, z+0.5, v[0], v[1], v[2]).setColor(c).setScale(s).setLife(l);
+		EntityBlurFX fx = new EntityCCBlurFX(world, x+0.5, y+0.5, z+0.5, v[0], v[1], v[2]).setColor(c).setScale(s).setLife(l);
 		if (primary) {
 			fx.setRapidExpand();
 		}

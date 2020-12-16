@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -31,9 +31,10 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant.Modifier;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.ParticleController.SpiralMotionController;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -102,16 +103,17 @@ public class BlockCrystalPlant extends Block {
 			double a = Math.toRadians(r.nextDouble()*360);
 			double px = x+0.5+rad*Math.cos(a);
 			double pz = z+0.5+rad*Math.sin(a);
-			EntityBlurFX fx = new EntityBlurFX(world, px, y+r.nextDouble(), pz);
-			fx.setIcon(ChromaIcons.BIGFLARE).setLife(5);
+			EntityBlurFX fx = new EntityCCBlurFX(world, px, y+r.nextDouble(), pz).setIcon(ChromaIcons.BIGFLARE);
+			fx.setLife(5);
 			fx.setColor(ReikaColorAPI.mixColors(te.getColor().getColor(), 0xffffff, 0.8F));
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 			if (te.canHarvest()) {
 				for (int i = 0; i < 4; i++) {
 					float s = (float)ReikaRandomHelper.getRandomBetween(0.25, 1);
-					fx = new EntityBlurFX(world, x+0.5, y+1.03125+0.1875*r.nextDouble(), z+0.5).setLife(20).setRapidExpand().setScale(s);
-					fx.setColor(ReikaColorAPI.mixColors(te.getColor().getColor(), 0xffffff, 0.5F)).setIcon(ChromaIcons.FADE_CLOUD);
+					fx = new EntityCCBlurFX(world, x+0.5, y+1.03125+0.1875*r.nextDouble(), z+0.5).setLife(20).setRapidExpand().setScale(s);
+					fx.setColor(ReikaColorAPI.mixColors(te.getColor().getColor(), 0xffffff, 0.5F));
+					((EntityCCBlurFX)fx).setIcon(ChromaIcons.FADE_CLOUD);
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 				}
 			}
@@ -119,11 +121,11 @@ public class BlockCrystalPlant extends Block {
 			if (te.is(Modifier.BOOSTED)) {
 				px = x+r.nextDouble();
 				pz = z+r.nextDouble();
-				fx = new EntityBlurFX(world, px, y+r.nextDouble(), pz).setColor(te.getColor().getColor());
+				fx = new EntityCCBlurFX(world, px, y+r.nextDouble(), pz).setColor(te.getColor().getColor());
 				fx.setGravity(-0.03125F);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 				float fs = (float)ReikaRandomHelper.getRandomBetween(0.125, 0.75);
-				EntityFX fx2 = new EntityBlurFX(world, px, fx.posY, pz).setColor(0xffffff).lockTo(fx).setScale(fs);
+				EntityFX fx2 = new EntityCCBlurFX(world, px, fx.posY, pz).setColor(0xffffff).lockTo(fx).setScale(fs);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 			}
 			if (te.is(Modifier.PRIMAL)) {
@@ -134,12 +136,12 @@ public class BlockCrystalPlant extends Block {
 				double v = 0;//0.03125;
 				double vx = v*Math.cos(a);
 				double vz = v*Math.sin(a);
-				fx = new EntityBlurFX(world, px, y+0.9375, pz, vx, 0, vz).setColor(te.getColor().getColor()).setRapidExpand();
+				fx = new EntityCCBlurFX(world, px, y+0.9375, pz, vx, 0, vz).setColor(te.getColor().getColor()).setRapidExpand();
 				SpiralMotionController m = new SpiralMotionController(x+0.5, z+0.5, 15, 0.015, rad, 0, a);
 				fx.setMotionController(m).setPositionController(m).setLife(100);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 				float fs = (float)ReikaRandomHelper.getRandomBetween(0.125, 0.75);
-				EntityFX fx2 = new EntityBlurFX(world, px, fx.posY, pz).setColor(0xffffff).lockTo(fx).setScale(fs).setRapidExpand().setLife(100);
+				EntityFX fx2 = new EntityCCBlurFX(world, px, fx.posY, pz).setColor(0xffffff).lockTo(fx).setScale(fs).setRapidExpand().setLife(100);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 			}
 		}

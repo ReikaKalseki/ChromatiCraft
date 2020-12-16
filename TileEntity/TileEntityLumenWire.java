@@ -33,12 +33,13 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Rendering.FXCollection;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.RedstoneTile;
@@ -380,7 +381,7 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 		int p = rand.nextInt(4);
 		int hue = ReikaRandomHelper.getRandomPlusMinus(ReikaColorAPI.getHue(check.renderColor), 60);
 		int c = ReikaColorAPI.getModifiedHue(check.renderColor, hue);
-		EntityBlurFX fx = new EntityBlurFX(world, dx, dy, dz).setLife(l).setColor(c).setScale(s).setIcon(ChromaIcons.ROSES_WHITE);
+		EntityBlurFX fx = new EntityCCBlurFX(world, dx, dy, dz).setIcon(ChromaIcons.ROSES_WHITE).setLife(l).setColor(c).setScale(s);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 

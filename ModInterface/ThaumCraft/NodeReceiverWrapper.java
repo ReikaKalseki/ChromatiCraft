@@ -50,13 +50,14 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -696,7 +697,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 			double va = rand.nextDouble()*360;
 			double vx = v*Math.cos(Math.toDegrees(va));
 			double vz = v*Math.sin(Math.toDegrees(va));
-			EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.5, z+0.5, vx, 0, vz).setColor(color).setGravity(gv).setScale(2).setRapidExpand();
+			EntityBlurFX fx = new EntityCCBlurFX(world, x+0.5, y+0.5, z+0.5, vx, 0, vz).setColor(color).setGravity(gv).setScale(2).setRapidExpand();
 			fx.noClip = true;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
@@ -716,7 +717,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 			double ry = ReikaRandomHelper.getRandomPlusMinus(0, v);
 			double rz = ReikaRandomHelper.getRandomPlusMinus(0, v);
 			int color = a.getColor();
-			EntityBlurFX fx = new EntityBlurFX(world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble(), rx, ry, rz).setColor(color);
+			EntityBlurFX fx = new EntityCCBlurFX(world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble(), rx, ry, rz).setColor(color);
 			fx.noClip = true;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
@@ -777,7 +778,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		for (double d = -1; d <= 1; d += 0.125) {
 			Aspect a = ReikaJavaLibrary.getRandomCollectionEntry(rand, wrap.node.getAspects().aspects.keySet());
 			int color = a.getColor();
-			EntityBlurFX fx = new EntityBlurFX(world, dx, dy+d, dz).setColor(color).setScale(2.5F-2*(float)Math.abs(d)).setRapidExpand().setLife(20);
+			EntityBlurFX fx = new EntityCCBlurFX(world, dx, dy+d, dz).setColor(color).setScale(2.5F-2*(float)Math.abs(d)).setRapidExpand().setLife(20);
 			fx.noClip = true;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}

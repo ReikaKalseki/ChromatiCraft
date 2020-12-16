@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -29,7 +29,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SidedBlock;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -120,7 +120,7 @@ public class BlockMetaAlloyLamp extends Block implements SidedBlock {
 			int l = ReikaRandomHelper.getRandomBetween(10, 40);
 			double s = 5+rand.nextDouble()*5;
 			int c = ReikaColorAPI.getColorWithBrightnessMultiplier(ReikaColorAPI.mixColors(0x006020, 0x000060, rand.nextFloat()), 0.5F+rand.nextFloat()*0.5F);
-			EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(c).setLife(l).setScale((float)s).setAlphaFading().setIcon(ChromaIcons.FADE_CLOUD);
+			EntityFX fx = new EntityCCBlurFX(world, px, py, pz).setIcon(ChromaIcons.FADE_CLOUD).setColor(c).setLife(l).setScale((float)s).setAlphaFading();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

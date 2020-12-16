@@ -128,7 +128,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
-import Reika.ChromatiCraft.Render.ParticleEngine;
+import Reika.ChromatiCraft.Render.CCParticleEngine;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityOreCreator;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
@@ -488,7 +488,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			FMLCommonHandler.instance().bus().register(MobSonarRenderer.instance);
 			FMLCommonHandler.instance().bus().register(StructureErrorOverlays.instance);
 			MinecraftForge.EVENT_BUS.register(MobSonarRenderer.instance);
-			ParticleEngine.instance.register();
+			CCParticleEngine.instance.register();
 		}
 
 		rainbowforest = new BiomeRainbowForest(ExtraChromaIDs.RAINBOWFOREST.getValue());

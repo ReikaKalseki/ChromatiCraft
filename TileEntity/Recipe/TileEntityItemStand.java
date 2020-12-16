@@ -30,7 +30,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
@@ -98,7 +98,7 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 			int r = e != null ? e.getRed() : 0;
 			int g = e != null ? e.getGreen() : 96;
 			int b = e != null ? e.getBlue() : 255;
-			EntityFX fx = new EntityBlurFX(world, rx, ry, rz, 0, 0, 0).setColor(r, g, b).setGravity(gv).setLife(l);
+			EntityFX fx = new EntityCCBlurFX(world, rx, ry, rz, 0, 0, 0).setColor(r, g, b).setGravity(gv).setLife(l);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

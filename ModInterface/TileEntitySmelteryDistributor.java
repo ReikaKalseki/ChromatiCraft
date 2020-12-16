@@ -32,7 +32,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.ParticlePath;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
@@ -90,7 +90,7 @@ public class TileEntitySmelteryDistributor extends TileEntityChromaticBase {
 			int l = (int)(90*f2);
 			float s = 0.75F+(float)(1.25*f2);
 			IIcon ico = ReikaLiquidRenderer.getFluidIconSafe(f);
-			EntityFX fx = new EntityBlurFX(worldObj, pos.xCoord, pos.yCoord, pos.zCoord).setLife(l).setScale(s).setIcon(ico).setRapidExpand().setAlphaFading().setBasicBlend();
+			EntityFX fx = new EntityCCBlurFX(worldObj, pos.xCoord, pos.yCoord, pos.zCoord).setIcon(ico).setLife(l).setScale(s).setRapidExpand().setAlphaFading().setBasicBlend();
 			fx.noClip = true;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
@@ -228,8 +228,8 @@ public class TileEntitySmelteryDistributor extends TileEntityChromaticBase {
 			double vx = ReikaRandomHelper.getRandomPlusMinus(0, v);
 			double vz = ReikaRandomHelper.getRandomPlusMinus(0, v);
 			double vy = ReikaRandomHelper.getRandomBetween(0, 1.25*g);
-			EntityFX fx = new EntityBlurFX(world, px, py, pz, vx, vy, vz).setColor(0xFFA700).setLife(l).setScale(s).setGravity(g).setRapidExpand().setIcon(ChromaIcons.FADE_RAY);
-			EntityFX fx2 = new EntityBlurFX(world, px, py, pz, vx, vy, vz).setColor(0xffffff).setLife(l).setScale(s/2.5F).setGravity(g).setRapidExpand();
+			EntityFX fx = new EntityCCBlurFX(world, px, py, pz, vx, vy, vz).setIcon(ChromaIcons.FADE_RAY).setColor(0xFFA700).setLife(l).setScale(s).setGravity(g).setRapidExpand();
+			EntityFX fx2 = new EntityCCBlurFX(world, px, py, pz, vx, vy, vz).setColor(0xffffff).setLife(l).setScale(s/2.5F).setGravity(g).setRapidExpand();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 		}

@@ -28,9 +28,9 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
-import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.ChromatiCraft.World.Dimension.Structure.MonumentGenerator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
+import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.ParticleController.SpiralMotionController;
@@ -333,7 +334,7 @@ public class MonumentCompletionRitual {
 			double[] xyz = ReikaPhysicsHelper.polarToCartesian(v, theta, phi);
 			int c = CrystalElement.randomElement().getColor();
 			int l = 30+rand.nextInt(40);
-			EntityFloatingSeedsFX fx = (EntityFloatingSeedsFX)new EntityFloatingSeedsFX(world, x+0.5, y+0.5, z+0.5, phi, theta).setColor(c).setScale(6).setLife(l);
+			EntityFloatingSeedsFX fx = (EntityFloatingSeedsFX)new EntityCCFloatingSeedsFX(world, x+0.5, y+0.5, z+0.5, phi, theta).setColor(c).setScale(6).setLife(l);
 			fx.particleVelocity *= 3;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
@@ -428,9 +429,9 @@ public class MonumentCompletionRitual {
 							float s = 5F;
 							int clr = e.getColor();
 							DecimalPosition dd = DecimalPosition.interpolate(pos1, pos2, r);
-							EntityFX fx = new EntityBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s).setColor(clr).setLife(l).setRapidExpand();
+							EntityFX fx = new EntityCCBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s).setColor(clr).setLife(l).setRapidExpand();
 							Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-							EntityFX fx2 = new EntityBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s/2.5F).setColor(0xffffff).setLife(l).setRapidExpand();
+							EntityFX fx2 = new EntityCCBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s/2.5F).setColor(0xffffff).setLife(l).setRapidExpand();
 							Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 						}
 					}
@@ -447,7 +448,7 @@ public class MonumentCompletionRitual {
 						float s = 2+rand.nextFloat()*12;
 						double hue = ReikaPhysicsHelper.cartesianToPolar(dx-x-0.5, dy-y-0.5, dz-z-0.5)[2];
 						int c = ReikaColorAPI.getModifiedHue(0xff0000, (int)(hue));
-						EntityFX fx = new EntityBlurFX(world, dx, dy, dz).setScale(s).setColor(c).setLife(l).setRapidExpand().setIcon(ChromaIcons.BIGFLARE);
+						EntityFX fx = new EntityCCBlurFX(world, dx, dy, dz).setIcon(ChromaIcons.BIGFLARE).setScale(s).setColor(c).setLife(l).setRapidExpand();
 						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					}
 					break;
@@ -463,7 +464,7 @@ public class MonumentCompletionRitual {
 						int c = CrystalElement.getBlendedColor((int)((a+180-12.25)*2), 45);
 						int l = 60+rand.nextInt(40);
 						float g = (float)ReikaRandomHelper.getRandomPlusMinus(0, 0.125);
-						EntityFX fx = new EntityBlurFX(world, dx, dy, dz).setScale(s).setColor(c).setLife(l).setRapidExpand().setGravity(g).setIcon(ChromaIcons.CENTER);
+						EntityFX fx = new EntityCCBlurFX(world, dx, dy, dz).setIcon(ChromaIcons.CENTER).setScale(s).setColor(c).setLife(l).setRapidExpand().setGravity(g);
 						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					}
 					break;
@@ -481,7 +482,7 @@ public class MonumentCompletionRitual {
 							int l = 120+rand.nextInt(120);
 							SpiralMotionController m = new SpiralMotionController(x+0.5, z+0.5, 5-i/4D, (0.25*(1+i/4D))/4D, r, 0.0625, ang);
 							ColorController clr = new AngleColorController(x+0.5, z+0.5, 5-i/4D, (0.25*(1+i/4D))/4D, r, 0.0625, ang);
-							EntityFX fx = new EntityBlurFX(world, dx, dy, dz).setScale(s).setColor(c).setLife(l).setRapidExpand().setMotionController(m).setPositionController(m).setColorController(clr);
+							EntityFX fx = new EntityCCBlurFX(world, dx, dy, dz).setScale(s).setColor(c).setLife(l).setRapidExpand().setMotionController(m).setPositionController(m).setColorController(clr);
 							Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 						}
 					}
