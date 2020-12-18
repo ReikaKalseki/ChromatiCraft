@@ -681,7 +681,7 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity, IMo
 				int n = rand.nextInt(8);
 				int r = rand.nextInt(64);
 				AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(e, r);
-				List<EntityGlowCloud> li = worldObj.getEntitiesWithinAABBExcludingEntity(this, box, new ReikaEntityHelper.ClassEntitySelector(this.getClass()));
+				List<EntityGlowCloud> li = worldObj.getEntitiesWithinAABBExcludingEntity(this, box, new ReikaEntityHelper.ClassEntitySelector(this.getClass(), true));
 				for (int i = 0; i < Math.min(n, li.size()); i++) {
 					li.get(i).isAngry = true;
 				}

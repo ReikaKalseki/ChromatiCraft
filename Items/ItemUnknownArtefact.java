@@ -333,7 +333,7 @@ public class ItemUnknownArtefact extends ItemChromaMulti implements AnimatedSpri
 	@Override
 	public int getFrameOffset(ItemStack is) {
 		int hash = System.identityHashCode(is);
-		if (is.stackTagCompound.getBoolean("tooltip"))
+		if (is.stackTagCompound != null && is.stackTagCompound.getBoolean("tooltip"))
 			hash = 0;
 		return hash%this.getFrameCount(is);
 	}

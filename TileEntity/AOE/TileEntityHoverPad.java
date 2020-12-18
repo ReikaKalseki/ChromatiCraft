@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.TileEntity.AOE;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
@@ -198,7 +199,7 @@ public class TileEntityHoverPad extends TileEntityChromaticBase {
 		ids.add(new BlockKey(ChromaBlocks.PAD.getBlockInstance(), 0));
 		ids.add(new BlockKey(this.getTile().getBlock(), this.getTile().getBlockMetadata()));
 		b.recursiveAddMultipleWithBounds(world, x, y, z, ids, x-32, y, z-32, x+32, y, z+32);
-		HashSet<Coordinate> set = new HashSet(b.keySet());
+		Set<Coordinate> set = b.keySet();
 		for (Coordinate c : set) {
 			Block b1 = c.getBlock(world);
 			if (b1 == ChromaBlocks.PAD.getBlockInstance()) {

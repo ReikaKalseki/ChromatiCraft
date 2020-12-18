@@ -209,7 +209,6 @@ import Reika.DragonAPI.Instantiable.Event.EntitySpawnerCheckEvent;
 import Reika.DragonAPI.Instantiable.Event.FarmlandTrampleEvent;
 import Reika.DragonAPI.Instantiable.Event.FireSpreadEvent;
 import Reika.DragonAPI.Instantiable.Event.GenLayerBeachEvent;
-import Reika.DragonAPI.Instantiable.Event.GenLayerBeachEvent.BeachTypeEvent;
 import Reika.DragonAPI.Instantiable.Event.GenLayerRiverEvent;
 import Reika.DragonAPI.Instantiable.Event.GetPlayerLookEvent;
 import Reika.DragonAPI.Instantiable.Event.GrassSustainCropEvent;
@@ -742,17 +741,9 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
-	public void preventCliffBeaches(BeachTypeEvent evt) {
-		if (evt.sourceBiomeID == ExtraChromaIDs.LUMINOUSCLIFFS.getValue()) {
-			//evt.deleteBeach();
-			evt.biomeID = ExtraChromaIDs.LUMINOUSEDGE.getValue();
-		}
-	}
-
-	@SubscribeEvent
 	public void preventCliffBeaches(GenLayerBeachEvent evt) {
-		if (evt.originalBiomeID == ExtraChromaIDs.LUMINOUSCLIFFS.getValue()) {
-			;//evt.setResult(Result.DENY);
+		if (evt.originalBiomeID.biomeID == ExtraChromaIDs.LUMINOUSCLIFFS.getValue()) {
+			evt.beachIDToPlace = ExtraChromaIDs.LUMINOUSEDGE.getValue();
 		}
 	}
 
