@@ -18,8 +18,9 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Render.ISBRH.BedrockCrackRenderer;
 import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Base.BlockReplaceOnBreak;
 
-public class BlockBedrockCrack extends Block implements MinerBlock {
+public class BlockBedrockCrack extends BlockReplaceOnBreak implements MinerBlock {
 
 	private static final IIcon[] crackOverlay = new IIcon[10];
 
@@ -64,21 +65,15 @@ public class BlockBedrockCrack extends Block implements MinerBlock {
 		}
 		return li;
 	}
-	/*
-	@Override
-	public void harvestBlock(World world, EntityPlayer ep, int x, int y, int z, int meta) {
-		//ReikaBlockHelper.doBlockHarvest(world, ep, x, y, z, meta, this, this.harvesters);
-	}*/
 
 	@Override
-	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest) {
-		int meta = world.getBlockMetadata(x, y, z);
-		if (willHarvest && meta > 0) {
-			return world.setBlockMetadataWithNotify(x, y, z, meta-1, 3);
-		}
-		else {
-			return world.setBlock(x, y, z, Blocks.bedrock);
-		}
+	public Block getBlockReplacedWith(EntityPlayer ep, int x, int y, int z, int oldMeta, boolean willHarvest) {
+		return willHarvest && oldMeta > 0 ? this : Blocks.bedrock;
+	}
+
+	@Override
+	public int getMetaReplacedWith(EntityPlayer ep, int x, int y, int z, int oldMeta, boolean willHarvest) {
+		return Math.max(0, oldMeta-1);
 	}
 
 	@Override

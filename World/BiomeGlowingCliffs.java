@@ -45,6 +45,7 @@ import Reika.DragonAPI.Instantiable.Math.Noise.NoiseGeneratorBase;
 import Reika.DragonAPI.Instantiable.Math.Noise.SimplexNoiseGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ModifiableBigTree;
 import Reika.DragonAPI.Instantiable.Worldgen.ModifiableSmallTrees;
+import Reika.DragonAPI.Interfaces.WinterBiomeStrengthControl;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -56,7 +57,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class BiomeGlowingCliffs extends BiomeGenBase {
+public class BiomeGlowingCliffs extends BiomeGenBase implements WinterBiomeStrengthControl {
 
 	private static final NoiseGeneratorBase hueShift = new SimplexNoiseGenerator(System.currentTimeMillis()).setFrequency(1/8D);
 	private static final NoiseGeneratorBase lumShift = new SimplexNoiseGenerator(-System.currentTimeMillis()).setFrequency(1/6D);
@@ -258,6 +259,11 @@ public class BiomeGlowingCliffs extends BiomeGenBase {
 
 	public WorldGenAbstractTree getUndergroundTreeGen(Random rand, boolean construct, int bigChance) {
 		return rand.nextInt(bigChance) == 0 ? construct ? new GlowingTreeGenerator() : glowTree : construct ? new SmallGlowingTreeGenerator() : smallGlowTrees;
+	}
+
+	@Override
+	public float getStrength(World world, EntityPlayer ep) {
+		return 0F;
 	}
 
 	public static boolean isGlowingCliffs(BiomeGenBase b) {
