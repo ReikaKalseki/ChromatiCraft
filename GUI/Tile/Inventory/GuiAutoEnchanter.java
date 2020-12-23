@@ -36,6 +36,7 @@ import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class GuiAutoEnchanter extends GuiLetterSearchable<Enchantment> {
 
@@ -66,6 +67,13 @@ public class GuiAutoEnchanter extends GuiLetterSearchable<Enchantment> {
 	@Override
 	public void initGui() {
 		super.initGui();
+
+		for (int i = 0; i < Enchantment.enchantmentsList.length; i++) {
+			Enchantment e = Enchantment.enchantmentsList[i];
+			if (e != null) {
+				ReikaJavaLibrary.pConsole(e.effectId+" = "+e.getName()+" = "+TileEntityAutoEnchanter.isBlacklisted(e));
+			}
+		}
 
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;

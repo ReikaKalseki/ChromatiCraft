@@ -109,6 +109,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.BotaniaHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.DartItemHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
@@ -346,6 +347,8 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			return false;
 		}
 		if (is != null && ReikaItemHelper.matchStackWithBlock(is, ChromaBlocks.ROUTERNODE.getBlockInstance()))
+			return false;
+		if (is != null && ModList.THAUMCRAFT.isLoaded() && is.getItem() == ThaumItemHelper.ItemEntry.WAND.getItem().getItem() && ReikaThaumHelper.getWandFocus(is) == ChromaItems.MANIPFOCUS.getItemInstance())
 			return false;
 
 		if (m == ChromaTiles.STAND && ep.isSneaking() && is == null) {

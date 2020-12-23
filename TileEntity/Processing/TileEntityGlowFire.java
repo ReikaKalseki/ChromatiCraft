@@ -302,7 +302,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 	}
 
 	private boolean isConsumableItem(EntityItem ei) {
-		if (ei.getEntityData().getBoolean(DROP_TAG))
+		if (ei.getEntityData().getBoolean(DROP_TAG) || ei.getEntityData().hasKey(ReikaItemHelper.PLAYER_DEATH_DROP_KEY))
 			return false;
 		EntityPlayer ep = ReikaItemHelper.getDropper(ei);
 		if (ep == null || ReikaPlayerAPI.isFake(ep) || ep.getDistanceSqToEntity(ei) >= 64)

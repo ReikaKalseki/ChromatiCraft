@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -180,17 +180,13 @@ public class ItemChromaBook extends ItemChromaTool {
 		return is.stackTagCompound.getTagList("pages", NBTTypes.STRING.ID).tagCount();
 	}
 
-	public static void recoverFragment(EntityPlayer ep, ChromaResearch r) {
-		boolean cr = ep.capabilities.isCreativeMode;
-		ItemStack[] inv = ep.inventory.mainInventory;
-		int ink = cr ? -1 : checkForInk(inv);
-		if (cr || ink >= 0) {
-			int paper = cr ? -1 : ReikaInventoryHelper.locateInInventory(Items.paper, inv);
-			if (cr || paper >= 0) {
-				ReikaInventoryHelper.decrStack(paper, inv);
-				ReikaInventoryHelper.decrStack(ink, inv);
-			}
-		}
+	public static void recoverFragment(EntityPlayer ep, ChromaResearch r, ItemStack book) {
+		ReikaInventoryHelper.findAndDecrStack(Items.paper, -1, ep.inventory.mainInventory);
+		ReikaInventoryHelper.findAndDecrStack(ReikaItemHelper.inksac, ep.inventory.mainInventory);
+		ItemChromaBook item = (ItemChromaBook)book.getItem();
+		ArrayList<ChromaResearch> li = item.getItemList(book);
+		li.add(r);
+		item.setItems(book, li);
 	}
 
 	public static int checkForInk(ItemStack[] inv) {

@@ -262,7 +262,7 @@ public class BiomeGlowingCliffs extends BiomeGenBase implements WinterBiomeStren
 	}
 
 	@Override
-	public float getStrength(World world, EntityPlayer ep) {
+	public float getWinterSkyStrength(World world, EntityPlayer ep) {
 		return 0F;
 	}
 

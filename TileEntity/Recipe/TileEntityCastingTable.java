@@ -246,17 +246,15 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 			c = c.offset(x, y, z);
 			c.setBlock(world, ChromaBlocks.RUNE.getBlockInstance(), e.ordinal());
 		}
-		 */
 
-		/*
 		Collection<CastingRecipe> li = RecipesCastingTable.instance.getAllRecipes();
 		for (CastingRecipe cr : li) {
 			if (cr instanceof TempleCastingRecipe) {
 				TempleCastingRecipe t = (TempleCastingRecipe)cr;
-				Map<Coordinate, CrystalElement> map = t.getRunes().getRunes();
-				for (Coordinate c : map.keySet()) {
+				Map<Coordinate, CrystalElement> map2 = t.getRunes().getRunes();
+				for (Coordinate c : map2.keySet()) {
 					Coordinate c2 = c.offset(x, y, z);
-					CrystalElement e = map.get(c);
+					CrystalElement e = map2.get(c);
 					c2.setBlock(world, ChromaBlocks.RUNE.getBlockInstance(), e.ordinal());
 				}
 			}
@@ -671,7 +669,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 					}
 
 					this.setRecipeTickDuration(activeRecipe);
-					ReikaJavaLibrary.pConsole("Crafting x"+craftingAmount+", time = "+craftingTick+" from "+activeRecipe.getDuration());
+					//ReikaJavaLibrary.pConsole("Crafting x"+craftingAmount+", time = "+craftingTick+" from "+activeRecipe.getDuration());
 					return true;
 				}
 			}

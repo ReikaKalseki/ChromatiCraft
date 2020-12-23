@@ -24,7 +24,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -184,7 +183,6 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.AppEngHandler;
 
@@ -497,13 +495,7 @@ public class ChromatiPackets implements PacketHandler {
 				}
 				case RERESEARCH: {
 					ChromaResearch r = ChromaResearch.researchList[data[0]];
-					ReikaInventoryHelper.findAndDecrStack(Items.paper, -1, ep.inventory.mainInventory);
-					ReikaInventoryHelper.findAndDecrStack(ReikaItemHelper.inksac, ep.inventory.mainInventory);
-					ItemChromaBook book = (ItemChromaBook)ep.getCurrentEquippedItem().getItem();
-					ArrayList<ChromaResearch> li = book.getItemList(ep.getCurrentEquippedItem());
-					li.add(r);
-					book.setItems(ep.getCurrentEquippedItem(), li);
-					book.recoverFragment(ep, r);
+					ItemChromaBook.recoverFragment(ep, r, ep.getCurrentEquippedItem());
 					break;
 				}
 				case BIOMEPAINT: {

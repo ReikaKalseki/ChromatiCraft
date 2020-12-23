@@ -50,8 +50,7 @@ public class ItemManipulatorFocus extends ItemFocusBasic {
 	}
 
 	@Override
-	public EnumRarity getRarity(ItemStack focusstack)
-	{
+	public EnumRarity getRarity(ItemStack focusstack) {
 		return EnumRarity.uncommon;
 	}
 

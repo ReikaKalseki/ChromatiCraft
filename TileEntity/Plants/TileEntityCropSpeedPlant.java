@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -34,19 +34,19 @@ import Reika.DragonAPI.ModRegistry.ModCropList;
 public class TileEntityCropSpeedPlant extends TileEntityMagicPlant {
 
 	private static double[][] growthDistrib = {
-		{0, 0, 4, 0, 0},
-		{0, 0, 8, 0, 0},
-		{4, 8, 0, 8, 4},
-		{0, 0, 8, 0, 0},
-		{0, 0, 4, 0, 0},
+			{0, 0, 4, 0, 0},
+			{0, 0, 8, 0, 0},
+			{4, 8, 0, 8, 4},
+			{0, 0, 8, 0, 0},
+			{0, 0, 4, 0, 0},
 	};
 
 	private static double[][] hydrateDistrib = {
-		{0, 1, 4, 1, 0},
-		{1, 2, 6, 2, 1},
-		{4, 6, 4, 6, 4},
-		{1, 2, 6, 2, 1},
-		{0, 1, 4, 1, 0},
+			{0, 1, 4, 1, 0},
+			{1, 2, 6, 2, 1},
+			{4, 6, 4, 6, 4},
+			{1, 2, 6, 2, 1},
+			{0, 1, 4, 1, 0},
 	};
 
 	private static final WeightedRandom<Coordinate> growthRand = WeightedRandom.fromArray(growthDistrib);
@@ -68,8 +68,7 @@ public class TileEntityCropSpeedPlant extends TileEntityMagicPlant {
 			return;
 		if (rand.nextInt(4) == 0)
 			this.hydrateFarmland(world, x, y, z);
-		double n = 0.1;
-		n *= Math.min(4, 1+this.getAccelerationPlants());
+		double n = 0.5+this.getAccelerationPlants()/2D;
 		while (n >= 1) {
 			this.growCrop(world, x, y, z);
 			n -= 1;
