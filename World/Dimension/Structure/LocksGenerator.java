@@ -71,7 +71,14 @@ public class LocksGenerator extends DimensionStructureGenerator {
 
 		this.generatePasswordTile(x, posY, z);
 
-		new LocksLoot(this).generate(world, c.xCoord-dir.offsetZ*4+dir.offsetX*6, c.yCoord, c.zCoord-dir.offsetX*4+dir.offsetZ*6); //6 was 7
+		boolean flip = genOrder.size()%2 == 1;
+		int dx = -dir.offsetZ*4+dir.offsetX*6;
+		int dz = -dir.offsetX*4+dir.offsetZ*6;
+		if (flip) {
+			dx += 8;
+			dz = -45;
+		}
+		new LocksLoot(this, flip).generate(world, c.xCoord+dx, c.yCoord, c.zCoord+dz); //6 was 7
 	}
 
 	private Coordinate genRooms(int x, int y, int z, ForgeDirection dir, Random rand) {

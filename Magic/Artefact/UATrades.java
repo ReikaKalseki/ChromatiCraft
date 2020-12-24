@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 
+import org.apache.commons.codec.Charsets;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -77,7 +79,7 @@ public class UATrades implements ConnectionErrorHandler {
 		if (jvm) {
 			File f = new File(DragonAPICore.getMinecraftDirectoryString()+"/ChromatiCraft_Data/eddbcache.json");
 			if (f.exists() && System.currentTimeMillis()-f.lastModified() < 24*3600*1000) { //1d
-				try (BufferedReader r = ReikaFileReader.getReader(f)) {
+				try (BufferedReader r = ReikaFileReader.getReader(f, Charsets.UTF_8)) {
 					if (r != null) {
 						this.loadJSONData(r);
 						return;
