@@ -118,6 +118,7 @@ import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Items.ItemFertilitySeed;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
+import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Items.Tools.ItemFloatstoneBoots;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Items.Tools.Powered.ItemPurifyCrystal;
@@ -293,9 +294,26 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void rightClickLexicon(ClickSlotEvent evt) {
-		if (evt.buttonID == 1 && ChromaItems.HELP.matchWith(evt.getItem())) {
+		if (ChromaItems.HELP.matchWith(evt.itemInSlot)) {
 			//evt.player.openGui(ChromatiCraft.instance, ChromaGuis.BOOKEMPTIES.ordinal(), evt.player.worldObj, 0, 0, 0);
-			evt.setCanceled(true);
+			ItemStack cur = evt.player.inventory.getItemStack();
+			if (ChromaItems.FRAGMENT.matchWith(cur)) {
+				int amt = evt.buttonID == 0 ? cur.stackSize : 1;
+				ItemChromaBook.addBlanks(evt.itemInSlot, amt);
+				cur.stackSize -= amt;
+				if (cur.stackSize <= 0)
+					evt.player.inventory.setItemStack(null);
+				evt.setCanceled(true);
+			}
+			else if (cur == null && evt.buttonID == 1) {
+				int stored = ItemChromaBook.getBlanksStored(evt.itemInSlot);
+				if (stored > 0) {
+					int take = 1;//Math.min(8, stored);
+					ItemChromaBook.addBlanks(evt.itemInSlot, -take);
+					evt.player.inventory.setItemStack(ChromaItems.FRAGMENT.getCraftedProduct(take));
+					evt.setCanceled(true);
+				}
+			}
 		}
 	}
 

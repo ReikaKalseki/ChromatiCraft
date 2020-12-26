@@ -310,6 +310,7 @@ public class ChromaClient extends ChromaCommon {
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.ADJACENCY.getItemInstance(), ChromatiCraft.instance.isLocked() ? null : placer);
 
 		if (!ChromatiCraft.instance.isLocked())
+			ReikaRegistryHelper.instantiateAndRegisterISBRHs(ChromatiCraft.instance, ChromaISBRH.values());
 
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGuardianStone.class, new GuardianStoneRenderer());
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPlant.class, new CrystalPlantRenderer());

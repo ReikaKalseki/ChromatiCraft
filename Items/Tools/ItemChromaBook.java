@@ -94,6 +94,8 @@ public class ItemChromaBook extends ItemChromaTool {
 		}
 		else {
 			li.add(String.format("Has %d of %d pages.", this.getNumberPages(is), ChromaResearch.getAllObtainableFragments().size()));
+			int blanks = this.getBlanksStored(is);
+			li.add(String.format("Has %d extra blank fragment%s.", blanks, blanks == 1 ? "" : "s"));
 		}
 	}
 
@@ -105,13 +107,13 @@ public class ItemChromaBook extends ItemChromaTool {
 		return ChromaItems.HELP.matchWith(is) && is.stackTagCompound != null ? is.stackTagCompound.getInteger("blanks") : 0;
 	}
 
-	public static void addBlank(ItemStack is) {
+	public static void addBlanks(ItemStack is, int amt) {
 		if (ChromaItems.HELP.matchWith(is)) {
 			if (is.stackTagCompound == null) {
 				is.stackTagCompound = new NBTTagCompound();
 			}
 			int get = is.stackTagCompound.getInteger("blanks");
-			is.stackTagCompound.setInteger("blanks", get+1);
+			is.stackTagCompound.setInteger("blanks", get+amt);
 		}
 	}
 
