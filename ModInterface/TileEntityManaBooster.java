@@ -29,9 +29,6 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.ASM.InterfaceInjector.Injectable;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.StepTimer;
-import Reika.DragonAPI.Instantiable.Data.BlockStruct.AbstractSearch.LocationTerminus;
-import Reika.DragonAPI.Instantiable.Data.BlockStruct.AbstractSearch.PropagationCondition;
-import Reika.DragonAPI.Instantiable.Data.BlockStruct.AbstractSearch.TerminationCondition;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BreadthFirstSearch;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.OpenPathFinder;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -202,13 +199,8 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 
 	private ManaPath calculateManaPath(World world, Coordinate from, Coordinate to) {
 		Coordinate mid = new Coordinate(this);
-		PropagationCondition f = new OpenPathFinder(from, mid, 40);
-		TerminationCondition t = new LocationTerminus(mid);
-		//Search s = new Search(from.xCoord, from.yCoord, from.zCoord);
-		LinkedList<Coordinate> li = BreadthFirstSearch.getPath(world, from.xCoord, from.yCoord, from.zCoord, t, f);
-		f = new OpenPathFinder(mid, to, 40);
-		t = new LocationTerminus(to);
-		LinkedList<Coordinate> li2 = BreadthFirstSearch.getPath(world, mid.xCoord, mid.yCoord, mid.zCoord, t, f);
+		LinkedList<Coordinate> li = BreadthFirstSearch.getOpenPathBetween(world, from, mid, 40);
+		LinkedList<Coordinate> li2 = BreadthFirstSearch.getOpenPathBetween(world, mid, to, 40);
 		if (li != null && li2 != null) {
 			HashSet<Coordinate> set = new HashSet();
 
