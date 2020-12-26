@@ -21,6 +21,7 @@ import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 
 public class TileEntityDeathFogEmitter extends InventoriedChromaticBase implements OneSlotMachine {
@@ -32,7 +33,7 @@ public class TileEntityDeathFogEmitter extends InventoriedChromaticBase implemen
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (!world.isRemote) {
+		if (!world.isRemote && ReikaWorldHelper.isRadiusLoaded(world, x, z, 2)) {
 			boolean flag = false;
 			if (ReikaItemHelper.matchStacks(inv[0], ChromaStacks.voidmonsterEssence)) {
 				flag = true;

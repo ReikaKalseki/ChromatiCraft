@@ -18,6 +18,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 import Reika.DragonAPI.Base.InertEntity;
+import Reika.DragonAPI.Interfaces.Entity.DestroyOnUnload;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -25,7 +26,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import io.netty.buffer.ByteBuf;
 
-public class EntityDeathFog extends InertEntity implements IEntityAdditionalSpawnData {
+public class EntityDeathFog extends InertEntity implements IEntityAdditionalSpawnData, DestroyOnUnload {
 
 	public static final int MIN_LIFE = 40; //2s
 	public static final int MAX_LIFE = 300; //15s
@@ -143,7 +144,7 @@ public class EntityDeathFog extends InertEntity implements IEntityAdditionalSpaw
 		return ReikaEntityHelper.isHostile(e) && e.getHealth() > 0 && !e.isDead;
 	}
 
-	private void destroy() {
+	public void destroy() {
 		this.setDead();
 	}
 

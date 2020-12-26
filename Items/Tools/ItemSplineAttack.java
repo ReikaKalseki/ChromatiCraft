@@ -12,8 +12,8 @@ package Reika.ChromatiCraft.Items.Tools;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.IEntitySelector;
@@ -21,6 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
@@ -33,6 +34,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
+import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
@@ -44,6 +46,8 @@ import Reika.DragonAPI.Instantiable.Math.Spline.SplineType;
 import Reika.DragonAPI.Instantiable.ParticleController.BlendListColorController;
 import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Interfaces.ColorController;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -52,10 +56,28 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemSplineAttack extends ItemChromaTool {
 
-	private final IEntitySelector attackableSelector = new IEntitySelector() {
+	public static final int MAX_RANGE = 40;
+	public static final int MAX_HOPS = 6;
+	public static final int COOLDOWN = 10;
+
+	private final Random rand = new Random();
+
+	private static RayTracer losTrace = RayTracer.getVisualLOS();
+
+	private static class SplineTargeting implements IEntitySelector {
+
+		private Entity sourceEntity;
 
 		@Override
 		public boolean isEntityApplicable(Entity e) {
+			return e != sourceEntity && this.isValidType(e) && (sourceEntity == null || this.hasLOS(sourceEntity, e));
+		}
+
+		private boolean hasLOS(Entity e1, Entity e2) {
+
+		}
+
+		private boolean isValidType(Entity e) {
 			if (e instanceof EntityPlayer) {
 				EntityPlayer ep = (EntityPlayer)e;
 				if (ep.capabilities.isCreativeMode)
@@ -68,11 +90,13 @@ public class ItemSplineAttack extends ItemChromaTool {
 
 	};
 
+	private final SplineTargeting attackableSelector = new SplineTargeting();
+
 	private final Comparator<EntityLivingBase> entitySorter = new Comparator<EntityLivingBase>() {
 
 		@Override
 		public int compare(EntityLivingBase o1, EntityLivingBase o2) {
-			return Integer.compare(o1.hashCode(), o2.hashCode());
+			return Integer.compare(o1.getEntityId(), o2.getEntityId());
 		}
 
 	};
@@ -83,11 +107,24 @@ public class ItemSplineAttack extends ItemChromaTool {
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
-		ArrayList<EntityLivingBase> li = this.getAttackableEntities(world, ep);
-		if (li.isEmpty())
+		if (is.stackTagCompound == null)
+			is.stackTagCompound = new NBTTagCompound();
+		if (world.getTotalWorldTime()-is.stackTagCompound.getLong("lastFire") < COOLDOWN) {
+			ChromaSounds.ERROR.playSound(ep);
 			return is;
-		//if (world.isRemote)
-		//	Collections.shuffle(li);
+		}
+		rand.setSeed(ep.getUniqueID().getLeastSignificantBits() ^ ep.getUniqueID().getMostSignificantBits() + (ep.worldObj.getTotalWorldTime() << 7));
+		rand.nextBoolean();
+		EntityLivingBase tgt = this.getFirstEntityTarget(world, ep);
+		if (tgt == null)
+			return is;
+		ArrayList<EntityLivingBase> li = new ArrayList();
+		EntityLivingBase from = tgt;
+		while (from != null) {
+			li.add(from);
+			List<EntityLivingBase> next = li.size() < MAX_HOPS ? this.getAttackableEntitiesFrom(world, from) : null;
+			from = next == null || next.isEmpty() ? null : ReikaJavaLibrary.getRandomListEntry(rand, next);
+		}
 		Collections.sort(li, entitySorter);
 		Spline s = new Spline(SplineType.CHORDAL);
 		if (world.isRemote) {
@@ -105,18 +142,22 @@ public class ItemSplineAttack extends ItemChromaTool {
 		//List<Note> n = KeySignature.D.getScale();
 		//float f = 0.5F*(float)MusicKey.D4.getInterval(n.get(ReikaRandomHelper.getSafeRandomInt(n.size())).ordinal()).getRatio(MusicKey.D4);
 		float f = 0.5F*(float)(CrystalMusicManager.instance.getRandomScaledDing(CrystalElement.BLACK)/CrystalMusicManager.instance.getDingPitchScale(CrystalElement.BLACK));
+		int maxdur = -1;
 		for (EntityLivingBase e : li) {
 			if (!world.isRemote) {
-				TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new DelayedAttack(e, DamageSource.causeIndirectMagicDamage(ep, ep), 6)), i*4);//e.attackEntityFrom(DamageSource.magic, 6);
+				int tick = i*4;
+				maxdur = Math.max(tick, maxdur);
+				TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new DelayedAttack(e, DamageSource.causeIndirectMagicDamage(ep, ep), 6)), tick);
 				ScheduledSoundEvent ev = new ScheduledSoundEvent(ChromaSounds.ORB_LO, ep, 0.5F, f);
 				ev.attenuate = false;
 				ev.broadcastRange = 96;
-				TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(ev), i*4);//e.attackEntityFrom(DamageSource.magic, 6);
+				TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(ev), tick);
 			}
 			if (world.isRemote)
 				s.addPoint(new BasicSplinePoint(new DecimalPosition(e.posX, e.posY+e.height/2, e.posZ)));
 			i++;
 		}
+		is.stackTagCompound.setLong("lastfire", world.getTotalWorldTime()+maxdur);
 		if (world.isRemote)
 			this.doTrail(world, s);
 		return is;
@@ -136,18 +177,35 @@ public class ItemSplineAttack extends ItemChromaTool {
 		}
 	}
 
-	private ArrayList<EntityLivingBase> getAttackableEntities(World world, EntityPlayer ep) {
-		HashSet<EntityLivingBase> li = new HashSet();
+	private EntityLivingBase getFirstEntityTarget(World world, EntityPlayer ep) {
 		Vec3 vec = ep.getLookVec();
-		for (double d = 0; d < 40 && li.size() < 32; d += 1) {
+		for (double d = 0; d <= MAX_RANGE; d += 1) {
 			double dx = ep.posX+vec.xCoord*d;
 			double dy = ep.posY+1.62+vec.yCoord*d;
 			double dz = ep.posZ+vec.zCoord*d;
 			double r = 1+d/4D;
 			AxisAlignedBB box = AxisAlignedBB.getBoundingBox(dx, dy, dz, dx, dy, dz).expand(r, r, r);
-			li.addAll(world.getEntitiesWithinAABBExcludingEntity(ep, box, attackableSelector));
+			attackableSelector.sourceEntity = ep;
+			List<EntityLivingBase> li = world.getEntitiesWithinAABBExcludingEntity(ep, box, attackableSelector);
+			attackableSelector.sourceEntity = null;
+			if (!li.isEmpty()) {
+				return ReikaJavaLibrary.getRandomListEntry(rand, li);
+			}
 		}
-		return new ArrayList(li);
+		return null;
+	}
+
+	private List<EntityLivingBase> getAttackableEntitiesFrom(World world, Entity from) {
+		for (double d = 1; d <= MAX_RANGE; d += Math.sqrt(d)) {
+			d = Math.ceil(d);
+			AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(from, d);
+			attackableSelector.sourceEntity = from;
+			List<EntityLivingBase> li = world.getEntitiesWithinAABBExcludingEntity(from, box, attackableSelector);
+			attackableSelector.sourceEntity = null;
+			if (!li.isEmpty())
+				return li;
+		}
+		return null;
 	}
 
 }

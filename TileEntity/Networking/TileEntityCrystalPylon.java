@@ -384,7 +384,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				this.spawnLightning(world, x, y, z);
 			}
 
-			if (!world.isRemote && ChromaOptions.BALLLIGHTNING.getState() && energy >= this.getCapacity()/2 && rand.nextInt(1000) == 0 && EntityBallLightning.canSpawnHere(world, x+0.5, y+0.5, z+0.5)) {
+			if (!world.isRemote && ChromaOptions.BALLLIGHTNING.getState() && energy >= this.getCapacity()/2 && rand.nextInt(1000) == 0 && ReikaWorldHelper.isRadiusLoaded(world, x, z, 2) && EntityBallLightning.canSpawnHere(world, x+0.5, y+0.5, z+0.5)) {
 				world.spawnEntityInWorld(new EntityBallLightning(world, color, x+0.5, y+0.5, z+0.5).setPylon().setNoDrops());
 			}
 
