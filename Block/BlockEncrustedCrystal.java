@@ -25,9 +25,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.ISBRH.CrystalEncrustingRenderer;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
@@ -101,13 +101,13 @@ public class BlockEncrustedCrystal extends CrystalTypeBlock {
 
 	@Override
 	public boolean canRenderInPass(int pass) {
-		CrystalEncrustingRenderer.renderPass = pass;
+		ChromaISBRH.encrusted.setRenderPass(pass);
 		return pass <= 1;
 	}
 
 	@Override
 	public final int getRenderType() {
-		return ChromatiCraft.proxy.encrustedRender;
+		return ChromaISBRH.encrusted.getRenderID();
 	}
 
 	@Override

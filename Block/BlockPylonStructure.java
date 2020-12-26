@@ -31,10 +31,10 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
-import Reika.ChromatiCraft.Render.ISBRH.CrystallineStoneRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
@@ -173,7 +173,7 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.crystalStoneRender;
+		return ChromaISBRH.crystalStone.getRenderID();
 	}
 
 	@Override
@@ -183,7 +183,7 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 
 	@Override
 	public boolean canRenderInPass(int pass) {
-		CrystallineStoneRenderer.renderPass = pass;
+		ChromaISBRH.crystalStone.setRenderPass(pass);
 		return pass <= 1;
 	}
 

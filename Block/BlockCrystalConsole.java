@@ -27,10 +27,9 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Render.ISBRH.ConsoleRenderer;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
 import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
@@ -252,7 +251,7 @@ public class BlockCrystalConsole extends BlockContainer implements ConnectedText
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.consoleRender;
+		return ChromaISBRH.console.getRenderID();
 	}
 
 	@Override
@@ -263,7 +262,7 @@ public class BlockCrystalConsole extends BlockContainer implements ConnectedText
 	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean canRenderInPass(int pass) {
-		ConsoleRenderer.renderPass = pass;
+		ChromaISBRH.console.setRenderPass(pass);
 		return pass <= 1;
 	}
 

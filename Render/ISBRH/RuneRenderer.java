@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -18,11 +18,14 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Interfaces.ISBRH;
+import Reika.DragonAPI.Base.ISBRH;
 
-public class RuneRenderer implements ISBRH {
+public class RuneRenderer extends ISBRH {
+
+	public RuneRenderer(int id) {
+		super(id);
+	}
 
 	@Override
 	public void renderInventoryBlock(Block b, int metadata, int modelId, RenderBlocks rb) {
@@ -158,11 +161,6 @@ public class RuneRenderer implements ISBRH {
 	@Override
 	public boolean shouldRender3DInInventory(int modelId) {
 		return true;
-	}
-
-	@Override
-	public int getRenderId() {
-		return ChromatiCraft.proxy.runeRender;
 	}
 
 

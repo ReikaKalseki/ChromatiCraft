@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Interfaces.MinerBlock;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Render.ISBRH.BedrockCrackRenderer;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Base.BlockReplaceOnBreak;
@@ -105,13 +105,13 @@ public class BlockBedrockCrack extends BlockReplaceOnBreak implements MinerBlock
 
 	@Override
 	public final boolean canRenderInPass(int pass) {
-		BedrockCrackRenderer.renderPass = pass;
+		ChromaISBRH.bedrockCrack.setRenderPass(pass);
 		return true;
 	}
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.bedrockCrackRender;
+		return ChromaISBRH.bedrockCrack.getRenderID();
 	}
 
 	@Override

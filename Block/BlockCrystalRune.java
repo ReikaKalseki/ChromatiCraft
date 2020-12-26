@@ -22,10 +22,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.BlockDyeTypes;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
@@ -151,7 +151,7 @@ public class BlockCrystalRune extends BlockDyeTypes implements SemiUnbreakable {
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.runeRender;
+		return ChromaISBRH.rune.getRenderID();
 	}
 
 	@Override

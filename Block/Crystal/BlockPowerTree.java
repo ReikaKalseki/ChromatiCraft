@@ -32,6 +32,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -170,7 +171,7 @@ public class BlockPowerTree extends Block implements IWailaDataProvider {
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.treeRender;
+		return ChromaISBRH.tree.getRenderID();
 	}
 
 	@Override

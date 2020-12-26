@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.ISBRH;
 
-import java.util.Random;
-
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.block.Block;
@@ -20,18 +18,18 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Decoration.BlockMetaAlloyLamp;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
-import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 
 
-public class MetaAlloyRenderer implements ISBRH {
+public class MetaAlloyRenderer extends ISBRH {
 
-	private final Random rand = new Random();
+	public MetaAlloyRenderer(int id) {
+		super(id);
+	}
 
 	@Override
 	public void renderInventoryBlock(Block block, int metadata, int modelId, RenderBlocks renderer) {
@@ -212,18 +210,9 @@ public class MetaAlloyRenderer implements ISBRH {
 		tv5.render();
 	}
 
-	private long calcSeed(int x, int y, int z) {
-		return Minecraft.getMinecraft().theWorld.getSeed() ^ 60*new Coordinate(x, y, z).hashCode();
-	}
-
 	@Override
 	public boolean shouldRender3DInInventory(int modelId) {
 		return true;
-	}
-
-	@Override
-	public int getRenderId() {
-		return ChromatiCraft.proxy.metaAlloyRender;
 	}
 
 }

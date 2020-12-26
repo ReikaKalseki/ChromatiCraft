@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -23,13 +23,15 @@ import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.TileEntityCrystalGlow;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
-import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 
-public class CrystalGlowRenderer implements ISBRH {
+public class CrystalGlowRenderer extends ISBRH {
 
-	public static int renderPass;
+	public CrystalGlowRenderer(int id) {
+		super(id);
+	}
 
 	@Override
 	public void renderInventoryBlock(Block block, int metadata, int modelId, RenderBlocks renderer) {
@@ -176,25 +178,25 @@ public class CrystalGlowRenderer implements ISBRH {
 		v5.addVertexWithUV(0.5-w-ew, h, 0.5-l, u, dv);
 
 		switch(dir) {
-		case DOWN:
-			v5.invertY();
-			break;
-		case EAST:
-			v5.rotateYtoX();
-			break;
-		case NORTH:
-			v5.rotateYtoZ();
-			v5.invertZ();
-			break;
-		case SOUTH:
-			v5.rotateYtoZ();
-			break;
-		case WEST:
-			v5.rotateYtoX();
-			v5.invertX();
-			break;
-		default:
-			break;
+			case DOWN:
+				v5.invertY();
+				break;
+			case EAST:
+				v5.rotateYtoX();
+				break;
+			case NORTH:
+				v5.rotateYtoZ();
+				v5.invertZ();
+				break;
+			case SOUTH:
+				v5.rotateYtoZ();
+				break;
+			case WEST:
+				v5.rotateYtoX();
+				v5.invertX();
+				break;
+			default:
+				break;
 		}
 
 		v5.render();
@@ -287,25 +289,25 @@ public class CrystalGlowRenderer implements ISBRH {
 
 
 		switch(dir) {
-		case DOWN:
-			v5.invertY();
-			break;
-		case EAST:
-			v5.rotateYtoX();
-			break;
-		case NORTH:
-			v5.rotateYtoZ();
-			v5.invertZ();
-			break;
-		case SOUTH:
-			v5.rotateYtoZ();
-			break;
-		case WEST:
-			v5.rotateYtoX();
-			v5.invertX();
-			break;
-		default:
-			break;
+			case DOWN:
+				v5.invertY();
+				break;
+			case EAST:
+				v5.rotateYtoX();
+				break;
+			case NORTH:
+				v5.rotateYtoZ();
+				v5.invertZ();
+				break;
+			case SOUTH:
+				v5.rotateYtoZ();
+				break;
+			case WEST:
+				v5.rotateYtoX();
+				v5.invertX();
+				break;
+			default:
+				break;
 		}
 
 		v5.render();
@@ -317,11 +319,6 @@ public class CrystalGlowRenderer implements ISBRH {
 	@Override
 	public boolean shouldRender3DInInventory(int modelId) {
 		return true;
-	}
-
-	@Override
-	public int getRenderId() {
-		return 0;
 	}
 
 }

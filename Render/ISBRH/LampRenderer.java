@@ -19,15 +19,16 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Decoration.BlockRangedLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.DragonAPI.Interfaces.ISBRH;
+import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 
-public class LampRenderer implements ISBRH {
+public class LampRenderer extends ISBRH {
 
-	public static int renderPass;
+	public LampRenderer(int id) {
+		super(id);
+	}
 
 	@Override
 	public void renderInventoryBlock(Block b, int metadata, int modelId, RenderBlocks rb) {
@@ -159,11 +160,6 @@ public class LampRenderer implements ISBRH {
 	@Override
 	public boolean shouldRender3DInInventory(int modelId) {
 		return true;
-	}
-
-	@Override
-	public int getRenderId() {
-		return ChromatiCraft.proxy.lampRender;
 	}
 
 }

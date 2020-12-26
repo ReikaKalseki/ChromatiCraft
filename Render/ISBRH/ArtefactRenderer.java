@@ -10,26 +10,25 @@
 package Reika.ChromatiCraft.Render.ISBRH;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.IIcon;
-import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.IBlockAccess;
 
-import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList.TessellatorVertex;
-import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 
 
-public class ArtefactRenderer implements ISBRH {
+public class ArtefactRenderer extends ISBRH {
 
-	private final Random rand = new Random();
+	public ArtefactRenderer(int id) {
+		super(id);
+	}
 
 	@Override
 	public void renderInventoryBlock(Block block, int metadata, int modelId, RenderBlocks renderer) {
@@ -173,10 +172,6 @@ public class ArtefactRenderer implements ISBRH {
 		tv5.render();
 	}
 
-	private long calcSeed(int x, int y, int z) {
-		return ChunkCoordIntPair.chunkXZ2Int(x, z) ^ y;
-	}
-
 	private void renderDirtChunks(IBlockAccess world, int x, int y, int z, RenderBlocks rb) {
 		int n = 6+rand.nextInt(7);
 		for (int i = 0; i < n; i++) {
@@ -194,11 +189,6 @@ public class ArtefactRenderer implements ISBRH {
 	@Override
 	public boolean shouldRender3DInInventory(int modelId) {
 		return false;
-	}
-
-	@Override
-	public int getRenderId() {
-		return ChromatiCraft.proxy.artefactRender;
 	}
 
 }

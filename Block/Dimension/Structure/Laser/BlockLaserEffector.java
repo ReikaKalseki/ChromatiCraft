@@ -29,16 +29,15 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.ISBRH.LaserEffectorRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.World.Dimension.Structure.LaserPuzzleGenerator;
 import Reika.DragonAPI.DragonAPICore;
@@ -103,13 +102,13 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 
 	@Override
 	public boolean canRenderInPass(int pass) {
-		LaserEffectorRenderer.renderPass = pass;
+		ChromaISBRH.lasereffect.setRenderPass(pass);
 		return pass <= 1;
 	}
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.lasereffectRender;
+		return ChromaISBRH.lasereffect.getRenderID();
 	}
 
 	@Override

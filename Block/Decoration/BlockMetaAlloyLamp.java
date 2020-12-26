@@ -28,6 +28,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SidedBlock;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.ModList;
@@ -135,7 +136,7 @@ public class BlockMetaAlloyLamp extends Block implements SidedBlock {
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.metaAlloyRender;
+		return ChromaISBRH.metaAlloy.getRenderID();
 	}
 
 	@Override

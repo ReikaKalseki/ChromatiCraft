@@ -39,9 +39,9 @@ import net.minecraftforge.fluids.IFluidHandler;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Render.ISBRH.TankBlockRenderer;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
@@ -163,7 +163,7 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.tankRender;
+		return ChromaISBRH.tank.getRenderID();
 	}
 
 	@Override
@@ -173,7 +173,7 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 
 	@Override
 	public boolean canRenderInPass(int pass) {
-		TankBlockRenderer.renderPass = pass;
+		ChromaISBRH.tank.setRenderPass(pass);
 		return pass <= 1;
 	}
 

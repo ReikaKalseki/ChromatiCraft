@@ -32,6 +32,7 @@ public enum ChromaGuis {
 	PROGRESSBYTIER(),
 	REFRAGMENT(),
 	NOTES(),
+	BOOKEMPTIES(),
 	AURAPOUCH(),
 	TRANSITION(),
 	TELEPORT(),
@@ -48,7 +49,7 @@ public enum ChromaGuis {
 	public static final ChromaGuis[] guiList = values();
 
 	public boolean isLexiconGUI() {
-		return ReikaMathLibrary.isValueInsideBoundsIncl(BOOKNAV.ordinal(), NOTES.ordinal(), this.ordinal());
+		return ReikaMathLibrary.isValueInsideBoundsIncl(BOOKNAV.ordinal(), BOOKEMPTIES.ordinal(), this.ordinal());
 	}
 
 }

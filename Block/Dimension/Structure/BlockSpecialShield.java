@@ -22,11 +22,11 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage.StructureInterfaceTile;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 
@@ -44,7 +44,7 @@ public class BlockSpecialShield extends BlockStructureShield {
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.specialShieldRender;
+		return ChromaISBRH.specialShield.getRenderID();
 	}
 
 	@Override

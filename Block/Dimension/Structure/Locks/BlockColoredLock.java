@@ -29,10 +29,10 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
@@ -127,7 +127,7 @@ public class BlockColoredLock extends BlockDimensionStructureTile {
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.colorLockRender;
+		return ChromaISBRH.colorLock.getRenderID();
 	}
 
 	@Override

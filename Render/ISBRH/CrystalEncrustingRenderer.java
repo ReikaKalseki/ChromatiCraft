@@ -10,7 +10,6 @@
 package Reika.ChromatiCraft.Render.ISBRH;
 
 import java.util.Collection;
-import java.util.Random;
 
 import org.lwjgl.opengl.GL11;
 
@@ -19,28 +18,22 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
-import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.BlockEncrustedCrystal;
 import Reika.ChromatiCraft.Block.BlockEncrustedCrystal.CrystalGrowth;
 import Reika.ChromatiCraft.Block.BlockEncrustedCrystal.TileCrystalEncrusted;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Instantiable.CubePoints;
 import Reika.DragonAPI.Instantiable.GridDistortion;
 import Reika.DragonAPI.Instantiable.GridDistortion.OffsetGroup;
-import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 
-public class CrystalEncrustingRenderer implements ISBRH {
-
-	public static int renderPass;
-
-	private final Random rand = new Random();
+public class CrystalEncrustingRenderer extends ISBRH {
 
 	private static final int MIN_SEGMENTS = 4;
 	private static final int MAX_SEGMENTS = 8;
@@ -48,6 +41,10 @@ public class CrystalEncrustingRenderer implements ISBRH {
 	private final GridDistortion[] distortions = new GridDistortion[MAX_SEGMENTS-MIN_SEGMENTS+1];
 
 	private final CubePoints renderBlock = CubePoints.fullBlock();
+
+	public CrystalEncrustingRenderer(int id) {
+		super(id);
+	}
 
 	@Override
 	public void renderInventoryBlock(Block bk, int metadata, int modelId, RenderBlocks rb) {
@@ -252,20 +249,8 @@ public class CrystalEncrustingRenderer implements ISBRH {
 		}
 	}
 
-	private long calcSeed(int x, int y, int z) {
-		return ChunkCoordIntPair.chunkXZ2Int(x, z) ^ y;
-	}
-
 	@Override
 	public boolean shouldRender3DInInventory(int modelId) {
 		return true;
 	}
-
-	@Override
-	public int getRenderId() {
-		return ChromatiCraft.proxy.encrustedRender;
-	}
-
-
-
 }

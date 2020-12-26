@@ -17,21 +17,24 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.OverlayColor;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockRayblendFloor.TileEntityRayblendFloor;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockSpecialShield;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Instantiable.Rendering.EdgeDetectionRenderer;
-import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 
 
-public class RayBlendFloorRenderer implements ISBRH {
+public class RayBlendFloorRenderer extends ISBRH {
 
 	private final RayBlendGridRenderer edge = (RayBlendGridRenderer)new RayBlendGridRenderer().setIcons(BlockSpecialShield.edgeIcons);
+
+	public RayBlendFloorRenderer(int id) {
+		super(id);
+	}
 
 	@Override
 	public void renderInventoryBlock(Block b, int metadata, int modelId, RenderBlocks rb) {
@@ -136,11 +139,6 @@ public class RayBlendFloorRenderer implements ISBRH {
 	@Override
 	public boolean shouldRender3DInInventory(int modelId) {
 		return true;
-	}
-
-	@Override
-	public int getRenderId() {
-		return ChromatiCraft.proxy.rayblendFloorRender;
 	}
 
 	private static class RayBlendGridRenderer extends EdgeDetectionRenderer {

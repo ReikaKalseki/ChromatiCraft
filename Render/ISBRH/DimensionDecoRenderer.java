@@ -23,27 +23,23 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.DecoType;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDecoTile;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDecoTile.DimDecoTileTypes;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
-import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
-public class DimensionDecoRenderer implements ISBRH {
-
-	public static int renderPass;
+public class DimensionDecoRenderer extends ISBRH {
 
 	//private final ISBRHModel latticeModel = new LatticeModel();
 
 	private static double[][][] latticeRotations = new double[3][4][6];
-	private static Random rand = new Random();
 
 	static {
 		for (int i = 0; i < latticeRotations.length; i++) {
@@ -53,6 +49,10 @@ public class DimensionDecoRenderer implements ISBRH {
 				}
 			}
 		}
+	}
+
+	public DimensionDecoRenderer(int id) {
+		super(id);
 	}
 
 	@Override
@@ -669,11 +669,6 @@ public class DimensionDecoRenderer implements ISBRH {
 	@Override
 	public boolean shouldRender3DInInventory(int modelId) {
 		return true;
-	}
-
-	@Override
-	public int getRenderId() {
-		return ChromatiCraft.proxy.dimgenRender;
 	}
 
 }

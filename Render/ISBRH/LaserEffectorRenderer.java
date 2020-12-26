@@ -22,18 +22,15 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.La
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.LaserEffectType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
-import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 
 
-public class LaserEffectorRenderer implements ISBRH {
+public class LaserEffectorRenderer extends ISBRH {
 
-	public static int renderPass;
-
-	@Override
-	public void renderInventoryBlock(Block block, int metadata, int modelId, RenderBlocks renderer) {
-
+	public LaserEffectorRenderer(int id) {
+		super(id);
 	}
 
 	@Override
@@ -668,11 +665,6 @@ public class LaserEffectorRenderer implements ISBRH {
 	@Override
 	public boolean shouldRender3DInInventory(int modelId) {
 		return false;
-	}
-
-	@Override
-	public int getRenderId() {
-		return 0;
 	}
 
 }

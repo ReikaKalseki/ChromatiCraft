@@ -20,14 +20,13 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
+import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
-import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
-public class TieredOreRenderer implements ISBRH {
+public class TieredOreRenderer extends ISBRH {
 
 	//private final GeodeModel geode = new GeodeModel();
 
@@ -38,7 +37,8 @@ public class TieredOreRenderer implements ISBRH {
 
 	//private final HashMap<Coordinate, Long> renderMap = new HashMap();
 
-	public TieredOreRenderer() {
+	public TieredOreRenderer(int id) {
+		super(id);
 		for (int a = 0; a < 16; a++) {
 			for (int i = 0; i < numSections+1; i++) {
 				for (int k = 0; k < numSections+1; k++) {
@@ -448,11 +448,6 @@ public class TieredOreRenderer implements ISBRH {
 	@Override
 	public boolean shouldRender3DInInventory(int modelId) {
 		return true;
-	}
-
-	@Override
-	public int getRenderId() {
-		return ChromatiCraft.proxy.oreRender;
 	}
 
 

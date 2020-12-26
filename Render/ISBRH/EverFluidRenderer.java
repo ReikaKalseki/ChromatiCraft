@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -17,20 +17,21 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.IFluidBlock;
 
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
+import Reika.DragonAPI.Base.ISBRH;
 
-public class EverFluidRenderer implements ISimpleBlockRenderingHandler
-{
-	public static EverFluidRenderer instance = new EverFluidRenderer();
+public class EverFluidRenderer extends ISBRH {
 
 	static final float LIGHT_Y_NEG = 0.5F;
 	static final float LIGHT_Y_POS = 1.0F;
 	static final float LIGHT_XZ_NEG = 0.8F;
 	static final float LIGHT_XZ_POS = 0.6F;
 	static final double RENDER_OFFSET = 0.0010000000474974513D;
+
+	public EverFluidRenderer(int id) {
+		super(id);
+	}
 
 	public float getFluidHeightAverage(float[] flow) {
 		float total = 0;
@@ -290,11 +291,13 @@ public class EverFluidRenderer implements ISimpleBlockRenderingHandler
 
 	@Override
 	public boolean shouldRender3DInInventory(int modelId){ return false; }
+
+	/*
 	@Override
 	public int getRenderId()
 	{
 		return FluidRegistry.renderIdFluid;
-	}
+	}*/
 
 
 	private IIcon getIcon(IIcon icon)

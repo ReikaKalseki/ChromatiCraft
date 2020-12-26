@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -23,6 +23,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.KeySignature;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
@@ -69,7 +70,7 @@ public class BlockCaveIndicator extends Block {
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.caveIndicatorRender;
+		return ChromaISBRH.caveIndicator.getRenderID();
 	}
 
 	@Override

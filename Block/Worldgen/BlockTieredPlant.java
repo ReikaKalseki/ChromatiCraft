@@ -32,8 +32,6 @@ import net.minecraftforge.common.EnumPlantType;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.ChromaClient;
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LoadRegistry;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PlantDropManager;
@@ -41,6 +39,7 @@ import Reika.ChromatiCraft.Base.BlockChromaTiered;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
@@ -371,7 +370,7 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.plantRender;
+		return ChromaISBRH.plant.getRenderID();
 	}
 
 	@Override
@@ -386,7 +385,7 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 
 	@Override
 	public boolean canRenderInPass(int pass) {
-		ChromaClient.plant.renderPass = pass;
+		ChromaISBRH.plant.setRenderPass(pass);
 		return pass <= 1;
 	}
 

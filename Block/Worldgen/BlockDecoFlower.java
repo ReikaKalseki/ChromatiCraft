@@ -46,6 +46,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LoadRegistry;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PlantDropManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
@@ -103,7 +104,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.flowerRender;
+		return ChromaISBRH.flower.getRenderID();
 	}
 
 	@Override

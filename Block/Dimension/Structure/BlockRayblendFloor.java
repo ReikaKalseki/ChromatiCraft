@@ -12,12 +12,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.OverlayColor;
 import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.RayBlendGenerator;
@@ -45,7 +45,7 @@ public class BlockRayblendFloor extends BlockDimensionStructureTile {
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.rayblendFloorRender;
+		return ChromaISBRH.rayblendFloor.getRenderID();
 	}
 
 	@Override

@@ -35,7 +35,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Render.ISBRH.CrystalGlowRenderer;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
@@ -99,7 +99,7 @@ public class BlockCrystalGlow extends CrystalTypeBlock {
 
 	@Override
 	public final int getRenderType() {
-		return ChromatiCraft.proxy.glowRender;
+		return ChromaISBRH.glow.getRenderID();
 	}
 
 	@Override
@@ -118,9 +118,8 @@ public class BlockCrystalGlow extends CrystalTypeBlock {
 	}
 
 	@Override
-	public boolean canRenderInPass(int pass)
-	{
-		CrystalGlowRenderer.renderPass = pass;
+	public boolean canRenderInPass(int pass) {
+		ChromaISBRH.glow.setRenderPass(pass);
 		return pass <= 1;
 	}
 

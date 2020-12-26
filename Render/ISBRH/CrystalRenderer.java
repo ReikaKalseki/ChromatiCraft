@@ -19,19 +19,21 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidRegistry;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
+import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
-import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
-public class CrystalRenderer implements ISBRH {
+public class CrystalRenderer extends ISBRH {
 
-	public static int renderPass;
 	public static boolean renderAllArmsInInventory = false;
 	public static int staticColor = -1;
+
+	public CrystalRenderer(int id) {
+		super(id);
+	}
 
 	@Override
 	public void renderInventoryBlock(Block b, int meta, int modelID, RenderBlocks rb) {
@@ -547,11 +549,6 @@ public class CrystalRenderer implements ISBRH {
 	@Override
 	public boolean shouldRender3DInInventory(int model) {
 		return true;
-	}
-
-	@Override
-	public int getRenderId() {
-		return ChromatiCraft.proxy.crystalRender;
 	}
 
 }

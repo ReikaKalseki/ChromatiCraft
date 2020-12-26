@@ -1,15 +1,13 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.ISBRH;
-
-import java.util.Random;
 
 import org.lwjgl.opengl.GL11;
 
@@ -21,12 +19,14 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 
 import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone.Variants;
-import Reika.DragonAPI.Interfaces.ISBRH;
+import Reika.DragonAPI.Base.ISBRH;
 
 
-public class CliffStoneRenderer implements ISBRH {
+public class CliffStoneRenderer extends ISBRH {
 
-	private final Random rand = new Random();
+	public CliffStoneRenderer(int id) {
+		super(id);
+	}
 
 	@Override
 	public void renderInventoryBlock(Block b, int metadata, int modelId, RenderBlocks rb) {
@@ -89,11 +89,6 @@ public class CliffStoneRenderer implements ISBRH {
 	@Override
 	public boolean shouldRender3DInInventory(int modelId) {
 		return true;
-	}
-
-	@Override
-	public int getRenderId() {
-		return -1;//ChromatiCraft.proxy.cliffstoneRender;
 	}
 
 }

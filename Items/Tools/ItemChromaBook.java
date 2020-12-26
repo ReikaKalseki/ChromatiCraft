@@ -101,6 +101,20 @@ public class ItemChromaBook extends ItemChromaTool {
 		return ChromaItems.HELP.matchWith(is) && is.stackTagCompound != null && is.stackTagCompound.getBoolean("creative");
 	}
 
+	public static int getBlanksStored(ItemStack is) {
+		return ChromaItems.HELP.matchWith(is) && is.stackTagCompound != null ? is.stackTagCompound.getInteger("blanks") : 0;
+	}
+
+	public static void addBlank(ItemStack is) {
+		if (ChromaItems.HELP.matchWith(is)) {
+			if (is.stackTagCompound == null) {
+				is.stackTagCompound = new NBTTagCompound();
+			}
+			int get = is.stackTagCompound.getInteger("blanks");
+			is.stackTagCompound.setInteger("blanks", get+1);
+		}
+	}
+
 	@SideOnly(Side.CLIENT)
 	private void resetGuis() {
 		GuiNavigation.resetOffset();

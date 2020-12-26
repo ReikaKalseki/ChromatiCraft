@@ -28,7 +28,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
-import Reika.ChromatiCraft.Render.ISBRH.SelectiveGlassRenderer;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
@@ -68,13 +68,13 @@ public class BlockSelectiveGlass extends Block implements ConnectedTextureGlass 
 
 	@Override
 	public boolean canRenderInPass(int pass) {
-		SelectiveGlassRenderer.renderPass = pass;
+		ChromaISBRH.selective.setRenderPass(pass);
 		return pass <= 1;
 	}
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.selectiveRender;
+		return ChromaISBRH.selective.getRenderID();
 	}
 	/*
 	@Override

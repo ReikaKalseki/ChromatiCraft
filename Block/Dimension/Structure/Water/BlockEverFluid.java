@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.World.Dimension.Structure.WaterPuzzleGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
@@ -264,7 +265,7 @@ public class BlockEverFluid extends BlockContainer {
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.everfluidRender;
+		return ChromaISBRH.everfluid.getRenderID();
 	}
 
 	@Override

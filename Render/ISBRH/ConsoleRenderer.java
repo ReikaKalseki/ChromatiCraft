@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -20,20 +20,15 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
-import Reika.DragonAPI.Interfaces.ISBRH;
+import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
 
 
-public class ConsoleRenderer implements ISBRH {
+public class ConsoleRenderer extends ISBRH {
 
-	private static final ForgeDirection[] dirs = ForgeDirection.values();
-
-	public static int renderPass = 0;
-
-	public ConsoleRenderer() {
-
+	public ConsoleRenderer(int id) {
+		super(id);
 	}
 
 	@Override
@@ -325,11 +320,6 @@ public class ConsoleRenderer implements ISBRH {
 	@Override
 	public boolean shouldRender3DInInventory(int model) {
 		return true;
-	}
-
-	@Override
-	public int getRenderId() {
-		return ChromatiCraft.proxy.consoleRender;
 	}
 
 	private void setFaceBrightness(Tessellator v5, ForgeDirection dir) {

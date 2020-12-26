@@ -21,11 +21,10 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
 import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityChromaCrystal;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
@@ -62,7 +61,7 @@ public class BlockRainbowCrystal extends BlockCrystalTileNonCube implements Crys
 
 	@Override
 	public final int getRenderType() {
-		return ChromatiCraft.proxy.crystalRender;
+		return ChromaISBRH.crystal.getRenderID();
 	}
 
 	@Override
@@ -71,9 +70,8 @@ public class BlockRainbowCrystal extends BlockCrystalTileNonCube implements Crys
 	}
 
 	@Override
-	public boolean canRenderInPass(int pass)
-	{
-		CrystalRenderer.renderPass = pass;
+	public boolean canRenderInPass(int pass) {
+		ChromaISBRH.crystal.setRenderPass(pass);
 		return pass <= 1;
 	}
 

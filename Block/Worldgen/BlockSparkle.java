@@ -24,6 +24,7 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 
@@ -86,7 +87,7 @@ public class BlockSparkle extends Block {
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.sparkleRender;
+		return ChromaISBRH.sparkle.getRenderID();
 	}
 
 	@Override

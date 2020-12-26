@@ -17,12 +17,15 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlass;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Interfaces.ISBRH;
+import Reika.DragonAPI.Base.ISBRH;
 
-public class CrystalGlassRenderer implements ISBRH {
+public class CrystalGlassRenderer extends ISBRH {
+
+	public CrystalGlassRenderer(int id) {
+		super(id);
+	}
 
 	@Override
 	public void renderInventoryBlock(Block b, int metadata, int modelId, RenderBlocks rb) {
@@ -177,12 +180,6 @@ public class CrystalGlassRenderer implements ISBRH {
 	public boolean shouldRender3DInInventory(int modelId) {
 		return true;
 	}
-
-	@Override
-	public int getRenderId() {
-		return ChromatiCraft.proxy.glassRender;
-	}
-
 
 
 }

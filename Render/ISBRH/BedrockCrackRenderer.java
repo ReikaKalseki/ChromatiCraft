@@ -19,16 +19,13 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Dimension.BlockBedrockCrack;
-import Reika.DragonAPI.Interfaces.ISBRH;
+import Reika.DragonAPI.Base.ISBRH;
 
-public class BedrockCrackRenderer implements ISBRH {
+public class BedrockCrackRenderer extends ISBRH {
 
-	public static int renderPass;
-
-	public BedrockCrackRenderer() {
-
+	public BedrockCrackRenderer(int id) {
+		super(id);
 	}
 
 	@Override
@@ -142,12 +139,5 @@ public class BedrockCrackRenderer implements ISBRH {
 	public boolean shouldRender3DInInventory(int modelId) {
 		return true;
 	}
-
-	@Override
-	public int getRenderId() {
-		return ChromatiCraft.proxy.bedrockCrackRender;
-	}
-
-
 
 }

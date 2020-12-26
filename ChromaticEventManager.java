@@ -225,6 +225,7 @@ import Reika.DragonAPI.Instantiable.Event.PlayerPlaceBlockEvent;
 import Reika.DragonAPI.Instantiable.Event.PlayerSprintEvent;
 import Reika.DragonAPI.Instantiable.Event.SetBlockEvent;
 import Reika.DragonAPI.Instantiable.Event.SlotEvent.AddToSlotEvent;
+import Reika.DragonAPI.Instantiable.Event.SlotEvent.ClickSlotEvent;
 import Reika.DragonAPI.Instantiable.Event.SlotEvent.RemoveFromSlotEvent;
 import Reika.DragonAPI.Instantiable.Event.SpawnerCheckPlayerEvent;
 import Reika.DragonAPI.Instantiable.Event.TileEntityMoveEvent;
@@ -288,6 +289,14 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	public void rightClickLexicon(ClickSlotEvent evt) {
+		if (evt.buttonID == 1 && ChromaItems.HELP.matchWith(evt.getItem())) {
+			//evt.player.openGui(ChromatiCraft.instance, ChromaGuis.BOOKEMPTIES.ordinal(), evt.player.worldObj, 0, 0, 0);
+			evt.setCanceled(true);
+		}
 	}
 
 	@SubscribeEvent

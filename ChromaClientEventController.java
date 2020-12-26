@@ -108,6 +108,7 @@ import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterRitualClientEffect
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -779,7 +780,7 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 				//ChromatiCraft.logger.debug("Checking render pass of "+b+":"+meta+" @ "+evt.xCoord+"."+evt.yCoord+","+evt.zCoord+" for pass "+evt.renderPass+": "+b.canRenderInPass(evt.renderPass));
 				if (b.canRenderInPass(evt.renderPass)) {
 					int type = b.getRenderType();
-					if (type == 0 || type == ChromatiCraft.proxy.oreRender || ReikaBlockHelper.isOre(b, meta) || b.renderAsNormalBlock() || b.isOpaqueCube()) {
+					if (type == 0 || type == ChromaISBRH.ore.getRenderID() || ReikaBlockHelper.isOre(b, meta) || b.renderAsNormalBlock() || b.isOpaqueCube()) {
 						//ChromatiCraft.logger.debug("Rendering "+b+":"+meta+" @ "+evt.xCoord+"."+evt.yCoord+","+evt.zCoord);
 						evt.render.enableAO = false;
 						Tessellator.instance.setBrightness(240);

@@ -30,8 +30,8 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LightedTreeBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Render.ShuffledIconControl;
-import Reika.ChromatiCraft.Render.ISBRH.GlowTreeRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -84,7 +84,7 @@ public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBloc
 
 	@Override
 	public boolean canRenderInPass(int pass) {
-		GlowTreeRenderer.renderPass = pass;
+		ChromaISBRH.glowTree.setRenderPass(pass);
 		return pass <= 1;
 	}
 
@@ -170,7 +170,7 @@ public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBloc
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.glowTreeRender;
+		return ChromaISBRH.glowTree.getRenderID();
 	}
 
 	@Override

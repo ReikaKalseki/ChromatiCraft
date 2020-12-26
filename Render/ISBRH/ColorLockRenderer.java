@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -19,16 +19,17 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockColoredLock.TileEntityColorLock;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Interfaces.ISBRH;
+import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 
-public class ColorLockRenderer implements ISBRH {
+public class ColorLockRenderer extends ISBRH {
 
-	public static int renderPass;
+	public ColorLockRenderer(int id) {
+		super(id);
+	}
 
 	@Override
 	public void renderInventoryBlock(Block b, int metadata, int modelId, RenderBlocks rb) {
@@ -166,12 +167,4 @@ public class ColorLockRenderer implements ISBRH {
 	public boolean shouldRender3DInInventory(int modelId) {
 		return true;
 	}
-
-	@Override
-	public int getRenderId() {
-		return ChromatiCraft.proxy.colorLockRender;
-	}
-
-
-
 }

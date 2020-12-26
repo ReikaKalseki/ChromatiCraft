@@ -33,10 +33,10 @@ import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
@@ -121,7 +121,7 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 
 	@Override
 	public final int getRenderType() {
-		return ChromatiCraft.proxy.crystalRender;
+		return ChromaISBRH.crystal.getRenderID();
 	}
 
 	@Override
@@ -140,9 +140,8 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 	}
 
 	@Override
-	public boolean canRenderInPass(int pass)
-	{
-		CrystalRenderer.renderPass = pass;
+	public boolean canRenderInPass(int pass) {
+		ChromaISBRH.crystal.setRenderPass(pass);
 		return pass <= 1;
 	}
 

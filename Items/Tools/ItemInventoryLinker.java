@@ -21,8 +21,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemWithItemFilter;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
@@ -37,6 +39,12 @@ public class ItemInventoryLinker extends ItemWithItemFilter {
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float a, float b, float c) {
 		TileEntity te = world.getTileEntity(x, y, z);
 		if (te instanceof IInventory) {
+			IInventory ii = (IInventory)te;
+			if (ii.getSizeInventory() <= 0) {
+				ChromaSounds.ERROR.playSoundAtBlock(te);
+				ChromatiCraft.logger.logError("Cannot link to size-zero inventory!");
+				return false;
+			}
 			this.link(is, te);
 			return true;
 		}

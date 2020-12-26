@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -20,13 +20,15 @@ import net.minecraft.world.IBlockAccess;
 
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
-import Reika.DragonAPI.Interfaces.ISBRH;
+import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
-public class TieredPlantRenderer implements ISBRH {
+public class TieredPlantRenderer extends ISBRH {
 
-	public int renderPass;
+	public TieredPlantRenderer(int id) {
+		super(id);
+	}
 
 	@Override
 	public void renderInventoryBlock(Block b, int metadata, int modelId, RenderBlocks renderer) {
@@ -130,11 +132,6 @@ public class TieredPlantRenderer implements ISBRH {
 	@Override
 	public boolean shouldRender3DInInventory(int modelId) {
 		return true;
-	}
-
-	@Override
-	public int getRenderId() {
-		return 0;
 	}
 
 }

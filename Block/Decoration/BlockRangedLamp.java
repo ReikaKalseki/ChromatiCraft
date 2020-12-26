@@ -27,10 +27,10 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.ISBRH.LampRenderer;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
@@ -169,13 +169,13 @@ public class BlockRangedLamp extends Block {
 
 	@Override
 	public boolean canRenderInPass(int pass) {
-		LampRenderer.renderPass = pass;
+		ChromaISBRH.lamp.setRenderPass(pass);
 		return pass <= 1;
 	}
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.lampRender;
+		return ChromaISBRH.lamp.getRenderID();
 	}
 
 	@Override

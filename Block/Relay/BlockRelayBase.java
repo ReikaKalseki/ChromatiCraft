@@ -24,8 +24,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.ISBRH.RelayRenderer;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
@@ -95,7 +95,7 @@ public abstract class BlockRelayBase extends Block {
 
 	@Override
 	public final int getRenderType() {
-		return ChromatiCraft.proxy.relayRender;
+		return ChromaISBRH.relay.getRenderID();
 	}
 
 	@Override
@@ -105,7 +105,7 @@ public abstract class BlockRelayBase extends Block {
 
 	@Override
 	public final boolean canRenderInPass(int pass) {
-		RelayRenderer.renderPass = pass;
+		ChromaISBRH.relay.setRenderPass(pass);
 		return true;
 	}
 

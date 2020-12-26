@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -25,28 +25,22 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
 
 
-public class SelectiveGlassRenderer implements ISBRH {
+public class SelectiveGlassRenderer extends ISBRH {
 
 	private static final Random rand = new Random();
-
-	//public final int renderID;
-
-	private static final ForgeDirection[] dirs = ForgeDirection.values();
-
-	public static int renderPass = 0;
 
 	private final WeightedRandom<CrystalElement> possibleRunes = new WeightedRandom();
 
 	private long lastRerender = System.currentTimeMillis();
 
-	public SelectiveGlassRenderer() {
-		//renderID = ID;
+	public SelectiveGlassRenderer(int id) {
+		super(id);
 
 		possibleRunes.addEntry(CrystalElement.RED, 20);
 		possibleRunes.addEntry(CrystalElement.BLACK, 5);
@@ -428,11 +422,6 @@ public class SelectiveGlassRenderer implements ISBRH {
 	@Override
 	public boolean shouldRender3DInInventory(int model) {
 		return true;
-	}
-
-	@Override
-	public int getRenderId() {
-		return 0;//renderID;
 	}
 
 	private void setFaceBrightness(Tessellator v5, ForgeDirection dir, float a) {

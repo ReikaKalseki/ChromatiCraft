@@ -132,11 +132,6 @@ public class BlockCliffStone extends Block implements RockProofStone, IWrappable
 	}
 
 	@Override
-	public int getRenderType() {
-		return ChromatiCraft.proxy.cliffstoneRender;
-	}
-
-	@Override
 	public IIcon getIcon(int s, int meta) {
 		Variants v = Variants.getVariant(meta);
 		//return v.proxy.getIcon(s, 0);

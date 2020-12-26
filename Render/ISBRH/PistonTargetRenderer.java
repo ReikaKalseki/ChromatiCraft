@@ -18,14 +18,15 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonTarget;
 import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonTarget.PistonTargetTile;
-import Reika.DragonAPI.Interfaces.ISBRH;
+import Reika.DragonAPI.Base.ISBRH;
 
-public class PistonTargetRenderer implements ISBRH {
+public class PistonTargetRenderer extends ISBRH {
 
-	public static int renderPass;
+	public PistonTargetRenderer(int id) {
+		super(id);
+	}
 
 	@Override
 	public void renderInventoryBlock(Block b, int metadata, int modelId, RenderBlocks rb) {
@@ -106,12 +107,5 @@ public class PistonTargetRenderer implements ISBRH {
 	public boolean shouldRender3DInInventory(int modelId) {
 		return true;
 	}
-
-	@Override
-	public int getRenderId() {
-		return ChromatiCraft.proxy.pistonRender;
-	}
-
-
 
 }

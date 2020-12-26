@@ -31,10 +31,10 @@ import net.minecraftforge.common.EnumPlantType;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityMagicPlant;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -169,12 +169,12 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.plantRender2;
+		return ChromaISBRH.plant2.getRenderID();
 	}
 
 	@Override
 	public boolean canRenderInPass(int pass) {
-		ChromaClient.plant2.renderPass = pass;
+		ChromaISBRH.plant2.setRenderPass(pass);
 		return pass <= 0;
 	}
 

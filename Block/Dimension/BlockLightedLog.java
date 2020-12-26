@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -21,7 +21,7 @@ import net.minecraft.util.IIcon;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LightedTreeBlock;
-import Reika.ChromatiCraft.Render.ISBRH.GlowTreeRenderer;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -43,7 +43,7 @@ public class BlockLightedLog extends BlockLog implements LightedTreeBlock {
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.glowTreeRender;
+		return ChromaISBRH.glowTree.getRenderID();
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class BlockLightedLog extends BlockLog implements LightedTreeBlock {
 
 	@Override
 	public boolean canRenderInPass(int pass) {
-		GlowTreeRenderer.renderPass = pass;
+		ChromaISBRH.glowTree.setRenderPass(pass);
 		return pass <= 1;
 	}
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -16,16 +16,13 @@ import net.minecraft.world.IBlockAccess;
 
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
-import Reika.DragonAPI.Interfaces.ISBRH;
+import Reika.DragonAPI.Base.ISBRH;
 
 
-public class DecoFlowerRenderer implements ISBRH {
+public class DecoFlowerRenderer extends ISBRH {
 
-	public int renderPass;
-
-	@Override
-	public void renderInventoryBlock(Block block, int metadata, int modelId, RenderBlocks renderer) {
-
+	public DecoFlowerRenderer(int id) {
+		super(id);
 	}
 
 	@Override
@@ -40,11 +37,6 @@ public class DecoFlowerRenderer implements ISBRH {
 	@Override
 	public boolean shouldRender3DInInventory(int modelId) {
 		return false;
-	}
-
-	@Override
-	public int getRenderId() {
-		return 0;
 	}
 
 }

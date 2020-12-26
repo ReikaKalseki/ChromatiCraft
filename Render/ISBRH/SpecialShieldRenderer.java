@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -17,16 +17,19 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockSpecialShield;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Instantiable.Rendering.EdgeDetectionRenderer;
-import Reika.DragonAPI.Interfaces.ISBRH;
 
 
-public class SpecialShieldRenderer implements ISBRH {
+public class SpecialShieldRenderer extends ISBRH {
 
 	private final EdgeDetectionRenderer edge = new EdgeDetectionRenderer(ChromaBlocks.SPECIALSHIELD.getBlockInstance()).setIcons(BlockSpecialShield.edgeIcons);
+
+	public SpecialShieldRenderer(int id) {
+		super(id);
+	}
 
 	@Override
 	public void renderInventoryBlock(Block b, int metadata, int modelId, RenderBlocks rb) {
@@ -163,11 +166,6 @@ public class SpecialShieldRenderer implements ISBRH {
 	@Override
 	public boolean shouldRender3DInInventory(int modelId) {
 		return true;
-	}
-
-	@Override
-	public int getRenderId() {
-		return ChromatiCraft.proxy.specialShieldRender;
 	}
 
 }

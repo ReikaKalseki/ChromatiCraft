@@ -43,9 +43,9 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Interfaces.MinerBlock;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.DecoType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Render.ISBRH.DimensionDecoRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
@@ -292,7 +292,7 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 
 	@Override
 	public final int getRenderType() {
-		return ChromatiCraft.proxy.dimgenRender;
+		return ChromaISBRH.dimgen.getRenderID();
 	}
 
 	@Override
@@ -332,7 +332,7 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 
 	@Override
 	public final boolean canRenderInPass(int pass) {
-		DimensionDecoRenderer.renderPass = pass;
+		ChromaISBRH.dimgen.setRenderPass(pass);
 		return pass <= 1;
 	}
 

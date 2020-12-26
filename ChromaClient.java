@@ -71,6 +71,7 @@ import Reika.ChromatiCraft.ModInterface.EntityChromaManaBurst;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
 import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
@@ -99,38 +100,6 @@ import Reika.ChromatiCraft.Render.Entity.RenderTNTPinball;
 import Reika.ChromatiCraft.Render.Entity.RenderThrownGem;
 import Reika.ChromatiCraft.Render.Entity.RenderTunnelNuker;
 import Reika.ChromatiCraft.Render.Entity.RenderVacuum;
-import Reika.ChromatiCraft.Render.ISBRH.ArtefactRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.BedrockCrackRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.CaveIndicatorRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.CliffStoneRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.ColorLockRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.ConsoleRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.CrystalEncrustingRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.CrystalFenceRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.CrystalGlassRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.CrystalGlowRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.CrystallineStoneRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.DecoFlowerRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.DecoPlantRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.DimensionDecoRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.EverFluidRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.GlowTreeRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.LampRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.LaserEffectorRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.MetaAlloyRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.PistonTargetRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.PowerTreeRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.RayBlendFloorRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.RelayRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.RuneRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.SelectiveGlassRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.SparklingBlockRender;
-import Reika.ChromatiCraft.Render.ISBRH.SpecialShieldRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.TankBlockRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.TieredOreRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.TieredPlantRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.VoidRiftRenderer;
 import Reika.ChromatiCraft.Render.Item.AltarItemRenderer;
 import Reika.ChromatiCraft.Render.Item.ChromaItemRenderer;
 import Reika.ChromatiCraft.Render.Item.DataCrystalRenderer;
@@ -185,43 +154,6 @@ public class ChromaClient extends ChromaCommon {
 	private static final HashMap<ChromaItems, String> armorAssets = new HashMap();
 
 	private static final ChromaItemRenderer placer = new ChromaItemRenderer();
-
-	private static final CrystalRenderer crystal = new CrystalRenderer();
-	private static final RuneRenderer rune = new RuneRenderer();
-	private static final CrystallineStoneRenderer crystalstone = new CrystallineStoneRenderer();
-	private static final TankBlockRenderer tank = new TankBlockRenderer();
-	private static final PowerTreeRenderer tree = new PowerTreeRenderer();
-	private static final LampRenderer lamp = new LampRenderer();
-	private static final RelayRenderer relay = new RelayRenderer();
-	private static final CrystalGlowRenderer glow = new CrystalGlowRenderer();
-	private static final VoidRiftRenderer vrift = new VoidRiftRenderer();
-	private static final DimensionDecoRenderer dimgen = new DimensionDecoRenderer();
-	private static final GlowTreeRenderer glowtree = new GlowTreeRenderer();
-	private static final ColorLockRenderer colorlock = new ColorLockRenderer();
-	private static SpecialShieldRenderer specialshield;
-	private static final CrystalGlassRenderer glass = new CrystalGlassRenderer();
-	private static final ConsoleRenderer console = new ConsoleRenderer();
-	private static final CrystalFenceRenderer fence = new CrystalFenceRenderer();
-	private static final SelectiveGlassRenderer selective = new SelectiveGlassRenderer();
-	private static final LaserEffectorRenderer lasereffect = new LaserEffectorRenderer();
-	private static RayBlendFloorRenderer rayblendfloor;
-	private static final PistonTargetRenderer pistonRenderer = new PistonTargetRenderer();
-	private static final CrystalEncrustingRenderer encrusted = new CrystalEncrustingRenderer();
-
-	private static final ArtefactRenderer artefact = new ArtefactRenderer();
-	private static final MetaAlloyRenderer metaalloy = new MetaAlloyRenderer();
-
-	//private static FiberRenderer fiber;
-
-	private static final TieredOreRenderer ore = new TieredOreRenderer();
-	public static final TieredPlantRenderer plant = new TieredPlantRenderer();
-	public static final DecoPlantRenderer plant2 = new DecoPlantRenderer();
-	public static final DecoFlowerRenderer flower = new DecoFlowerRenderer();
-	public static final SparklingBlockRender sparkle = new SparklingBlockRender();
-	public static final EverFluidRenderer everfluid = new EverFluidRenderer();
-	public static final CliffStoneRenderer cliffstone = new CliffStoneRenderer();
-	public static final CaveIndicatorRenderer indicator = new CaveIndicatorRenderer();
-	private static final BedrockCrackRenderer bedrockcrack = new BedrockCrackRenderer();
 
 	private static final EnderCrystalRenderer csr = new EnderCrystalRenderer();
 
@@ -378,7 +310,6 @@ public class ChromaClient extends ChromaCommon {
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.ADJACENCY.getItemInstance(), ChromatiCraft.instance.isLocked() ? null : placer);
 
 		if (!ChromatiCraft.instance.isLocked())
-			this.renderISBRHs();
 
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGuardianStone.class, new GuardianStoneRenderer());
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPlant.class, new CrystalPlantRenderer());
@@ -393,111 +324,6 @@ public class ChromaClient extends ChromaCommon {
 		MinecraftForgeClient.registerItemRenderer(ChromaBlocks.COLORALTAR.getItem(), new AltarItemRenderer());
 		MinecraftForgeClient.registerItemRenderer(ChromaBlocks.LOOTCHEST.getItem(), new LootChestRenderer());
 		MinecraftForgeClient.registerItemRenderer(ChromaBlocks.AVOLAMP.getItem(), new TESRItemRenderer());
-	}
-
-
-	private void renderISBRHs() {
-		crystalRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(crystalRender, crystal);
-
-		runeRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(runeRender, rune);
-
-		crystalStoneRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(crystalStoneRender, crystalstone);
-
-		tankRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(tankRender, tank);
-
-		treeRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(treeRender, tree);
-
-		lampRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(lampRender, lamp);
-
-		relayRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(relayRender, relay);
-
-		glowRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(glowRender, glow);
-
-		vriftRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(vriftRender, vrift);
-
-		dimgenRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(dimgenRender, dimgen);
-
-		glowTreeRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(glowTreeRender, glowtree);
-
-		colorLockRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(colorLockRender, colorlock);
-
-		glassRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(glassRender, glass);
-
-		consoleRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(consoleRender, console);
-
-		fenceRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(fenceRender, fence);
-
-		specialShieldRender = RenderingRegistry.getNextAvailableRenderId();
-		specialshield = new SpecialShieldRenderer();
-		RenderingRegistry.registerBlockHandler(specialShieldRender, specialshield);
-
-		selectiveRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(selectiveRender, selective);
-
-		lasereffectRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(lasereffectRender, lasereffect);
-
-		rayblendFloorRender = RenderingRegistry.getNextAvailableRenderId();
-		rayblendfloor = new RayBlendFloorRenderer();
-		RenderingRegistry.registerBlockHandler(rayblendFloorRender, rayblendfloor);
-
-		pistonRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(pistonRender, pistonRenderer);
-
-		encrustedRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(encrustedRender, encrusted);
-
-		artefactRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(artefactRender, artefact);
-
-		metaAlloyRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(metaAlloyRender, metaalloy);
-
-		//fiberRender = RenderingRegistry.getNextAvailableRenderId();
-		//fiber = new FiberRenderer(fiberRender);
-		//RenderingRegistry.registerBlockHandler(fiberRender, fiber);
-
-		oreRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(oreRender, ore);
-
-		plantRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(plantRender, plant);
-
-		plantRender2 = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(plantRender2, plant2);
-
-		flowerRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(flowerRender, flower);
-
-		sparkleRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(sparkleRender, sparkle);
-
-		everfluidRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(everfluidRender, everfluid);
-
-		cliffstoneRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(cliffstoneRender, cliffstone);
-
-		caveIndicatorRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(caveIndicatorRender, indicator);
-
-		bedrockCrackRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(bedrockCrackRender, bedrockcrack);
 	}
 
 	private void registerBlockSheets() {

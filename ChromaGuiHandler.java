@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage.T
 import Reika.ChromatiCraft.Block.Relay.BlockRelayFilter.TileEntityRelayFilter;
 import Reika.ChromatiCraft.Container.ContainerAuraPouch;
 import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
+import Reika.ChromatiCraft.Container.ContainerBookEmpties;
 import Reika.ChromatiCraft.Container.ContainerBookPages;
 import Reika.ChromatiCraft.Container.ContainerBulkMover;
 import Reika.ChromatiCraft.Container.ContainerCastingAuto;
@@ -59,6 +60,7 @@ import Reika.ChromatiCraft.GUI.GuiTeleportAbility;
 import Reika.ChromatiCraft.GUI.GuiTransitionWand;
 import Reika.ChromatiCraft.GUI.Book.GuiAbilityDesc;
 import Reika.ChromatiCraft.GUI.Book.GuiBasicInfo;
+import Reika.ChromatiCraft.GUI.Book.GuiBookEmpties;
 import Reika.ChromatiCraft.GUI.Book.GuiBookPages;
 import Reika.ChromatiCraft.GUI.Book.GuiCastingRecipe;
 import Reika.ChromatiCraft.GUI.Book.GuiCraftableDesc;
@@ -163,6 +165,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new ContainerItemWithFilter(player, world);
 			case BOOKPAGES:
 				return new ContainerBookPages(player, x);
+			case BOOKEMPTIES:
+				return new ContainerBookEmpties(player);
 			case TILE:
 				TileEntity te = world.getTileEntity(x, y, z);
 
@@ -336,6 +340,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiNavigation(player);
 			case BOOKPAGES:
 				return new GuiBookPages(player, x);
+			case BOOKEMPTIES:
+				return new GuiBookEmpties(player);
 			case MACHINEDESC:
 				return new GuiMachineDescription(player, ChromaResearch.researchList[x]);
 			case TOOLDESC:

@@ -18,12 +18,14 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
-import Reika.DragonAPI.Interfaces.ISBRH;
+import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 
-public class DecoPlantRenderer implements ISBRH {
+public class DecoPlantRenderer extends ISBRH {
 
-	public int renderPass;
+	public DecoPlantRenderer(int id) {
+		super(id);
+	}
 
 	@Override
 	public void renderInventoryBlock(Block b, int metadata, int modelId, RenderBlocks renderer) {
@@ -93,11 +95,6 @@ public class DecoPlantRenderer implements ISBRH {
 	@Override
 	public boolean shouldRender3DInInventory(int modelId) {
 		return true;
-	}
-
-	@Override
-	public int getRenderId() {
-		return 0;
 	}
 
 }

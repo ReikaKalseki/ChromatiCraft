@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -16,6 +16,7 @@ import net.minecraft.world.IBlockAccess;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 
@@ -37,7 +38,7 @@ public class BlockCrystalGlass extends CrystalTypeBlock {
 
 	@Override
 	public final int getRenderType() {
-		return ChromatiCraft.proxy.glassRender;
+		return ChromaISBRH.glass.getRenderID();
 	}
 
 	@Override

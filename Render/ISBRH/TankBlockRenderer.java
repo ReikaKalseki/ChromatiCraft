@@ -20,19 +20,18 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.BlockCrystalTank.CrystalTankAuxTile;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
-import Reika.DragonAPI.Interfaces.ISBRH;
+import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
 
 
-public class TankBlockRenderer implements ISBRH {
+public class TankBlockRenderer extends ISBRH {
 
-	private static final ForgeDirection[] dirs = ForgeDirection.values();
-
-	public static int renderPass = 0;
+	public TankBlockRenderer(int id) {
+		super(id);
+	}
 
 	@Override
 	public void renderInventoryBlock(Block block, int metadata, int modelID, RenderBlocks rb) {
@@ -370,11 +369,6 @@ public class TankBlockRenderer implements ISBRH {
 	@Override
 	public boolean shouldRender3DInInventory(int model) {
 		return true;
-	}
-
-	@Override
-	public int getRenderId() {
-		return ChromatiCraft.proxy.tankRender;
 	}
 
 	private void setFaceBrightness(Tessellator v5, ForgeDirection dir, int mix) {

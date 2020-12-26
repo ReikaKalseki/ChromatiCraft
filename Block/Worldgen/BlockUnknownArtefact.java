@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact;
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact.ArtefactTypes;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -53,7 +54,7 @@ public class BlockUnknownArtefact extends Block {
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.artefactRender;
+		return ChromaISBRH.artefact.getRenderID();
 	}
 
 	@Override

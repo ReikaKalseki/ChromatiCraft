@@ -24,7 +24,6 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LaserPulseEffect;
 import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
@@ -32,8 +31,8 @@ import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Block.BlockChromaDoor;
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.ChromatiCraft.Entity.EntityPistonSpline;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.ChromatiCraft.Render.ISBRH.PistonTargetRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.TapeStage;
@@ -118,7 +117,7 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.pistonRender;
+		return ChromaISBRH.piston.getRenderID();
 	}
 	/*
 	@Override
@@ -138,7 +137,7 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 
 	@Override
 	public boolean canRenderInPass(int pass) {
-		PistonTargetRenderer.renderPass = pass;
+		ChromaISBRH.piston.setRenderPass(pass);
 		return pass <= 1;
 	}
 

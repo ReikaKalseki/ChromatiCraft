@@ -27,6 +27,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
@@ -59,7 +60,7 @@ public class BlockVoidRift extends Block {
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.vriftRender;
+		return ChromaISBRH.vrift.getRenderID();
 	}
 
 	@Override

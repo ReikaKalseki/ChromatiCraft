@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -23,20 +23,13 @@ import Reika.ChromatiCraft.Block.Relay.BlockLumenRelay;
 import Reika.ChromatiCraft.Block.Relay.BlockRelayBase.TileRelayBase;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
-import Reika.DragonAPI.Interfaces.ISBRH;
 
-public class RelayRenderer implements ISBRH {
+public class RelayRenderer extends ISBRH {
 
-	public static int renderPass;
-
-	public RelayRenderer() {
-
-	}
-
-	@Override
-	public void renderInventoryBlock(Block block, int metadata, int modelId, RenderBlocks renderer) {
-		//NO-OP
+	public RelayRenderer(int id) {
+		super(id);
 	}
 
 	@Override
@@ -301,11 +294,6 @@ public class RelayRenderer implements ISBRH {
 	@Override
 	public boolean shouldRender3DInInventory(int modelId) {
 		return false;
-	}
-
-	@Override
-	public int getRenderId() {
-		return 0;
 	}
 
 }
