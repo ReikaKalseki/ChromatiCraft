@@ -52,6 +52,8 @@ public enum ChromaEnchants implements EnchantmentEnum {
 	private final Class enchantmentClass;
 	private final ExtraChromaIDs enchantmentID;
 
+	public static final String OVERENCHANT_TAG = "cc_overenchant";
+
 	public static final ChromaEnchants[] enchantmentList = values();
 
 	private ChromaEnchants(Class<? extends Enchantment> c, ExtraChromaIDs id) {
@@ -90,7 +92,19 @@ public enum ChromaEnchants implements EnchantmentEnum {
 	}
 
 	public int getLevel(ItemStack tool) {
-		return ReikaEnchantmentHelper.getEnchantmentLevel(this.getEnchantment(), tool);
+		if (tool.stackTagCompound == null)
+			return 0;
+		Enchantment e = this.getEnchantment();
+		int lim = e.getMaxLevel()-1;
+		int has = ReikaEnchantmentHelper.getEnchantmentLevel(this.getEnchantment(), tool);
+		if (has > lim) {
+			tool.stackTagCompound.setBoolean(OVERENCHANT_TAG, true);
+			return lim;
+		}
+		else {
+			tool.stackTagCompound.setBoolean(OVERENCHANT_TAG, false);
+		}
+		return has;
 	}
 
 }

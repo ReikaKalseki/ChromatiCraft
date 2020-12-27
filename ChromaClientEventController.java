@@ -107,6 +107,7 @@ import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterDestructionRitual;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterRitualClientEffects;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaEnchants;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -143,6 +144,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Event.ItemStackUpdateEvent;
 import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
 import Reika.DragonAPI.Instantiable.Event.ProfileEvent;
 import Reika.DragonAPI.Instantiable.Event.ProfileEvent.ProfileEventWatcher;
@@ -186,6 +188,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -249,6 +252,23 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 					Minecraft.getMinecraft().gameSettings.hideGUI = false;
 				}
 				break;
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void overenchantedTools(ItemStackUpdateEvent evt) {
+		if (evt.held && evt.holder == Minecraft.getMinecraft().thePlayer && evt.item.stackTagCompound != null && evt.item.stackTagCompound.getBoolean(ChromaEnchants.OVERENCHANT_TAG)) {
+			if (Minecraft.getMinecraft().gameSettings.thirdPersonView == 0) {
+				Vec3 vec = evt.holder.getLookVec();
+				Vec3 vec2 = ReikaVectorHelper.rotateVector(vec, 0, 53, 0);
+				double d = 0.3;
+				double px = ReikaRandomHelper.getRandomPlusMinus(evt.holder.posX+vec2.xCoord*d, 0.03125);
+				double py = ReikaRandomHelper.getRandomPlusMinus(evt.holder.posY, evt.holder.height/4);
+				double pz = ReikaRandomHelper.getRandomPlusMinus(evt.holder.posZ+vec2.zCoord*d, 0.03125);
+				EntityCCBlurFX fx = new EntityCCBlurFX(evt.holder.worldObj, px, py, pz);
+				fx.setIcon(ChromaIcons.HEXFLARE).setColor(0x00A7A7).setLife(10).setScale(0.25F).setRapidExpand();
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}
 	}

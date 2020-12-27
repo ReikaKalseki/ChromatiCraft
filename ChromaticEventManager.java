@@ -715,7 +715,7 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void allowCliffGrassCrops(GrassSustainCropEvent evt) {
-		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord))) {
+		if (BiomeGlowingCliffs.isGlowingCliffs(evt.getBiome())) {
 			evt.setResult(Result.ALLOW);
 		}
 	}
