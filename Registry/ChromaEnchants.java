@@ -92,7 +92,7 @@ public enum ChromaEnchants implements EnchantmentEnum {
 	}
 
 	public int getLevel(ItemStack tool) {
-		if (tool.stackTagCompound == null)
+		if (tool == null || tool.stackTagCompound == null)
 			return 0;
 		Enchantment e = this.getEnchantment();
 		int lim = e.getMaxLevel()-1;

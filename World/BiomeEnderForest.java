@@ -26,8 +26,12 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
+import Reika.DragonAPI.Interfaces.CustomMapColorBiome;
 
-public class BiomeEnderForest extends BiomeGenForest {
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+public class BiomeEnderForest extends BiomeGenForest implements CustomMapColorBiome {
 
 	private final WorldGenAbstractTree enderOakLarge = new EnderOakGenerator(3, 7, 5, 12, 3, 5, 0.15F, 6, 0.15F);
 	private final WorldGenAbstractTree enderOakSmall = new EnderOakGenerator(2, 4, 3, 5, 2, 3, 0, 0, 0.1F);
@@ -135,6 +139,12 @@ public class BiomeEnderForest extends BiomeGenForest {
 	public WorldGenAbstractTree func_150567_a(Random rand) {
 		treeTypes.setRNG(rand);
 		return treeTypes.getRandomEntry();
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public int getMapColor(World world, int x, int z) {
+		return 0xC872DB;
 	}
 
 }

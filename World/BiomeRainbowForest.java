@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -32,6 +32,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Worldgen.ModSpawnEntry;
+import Reika.DragonAPI.Interfaces.CustomMapColorBiome;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
@@ -39,7 +40,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BiomeRainbowForest extends BiomeGenBase {
+public class BiomeRainbowForest extends BiomeGenBase implements CustomMapColorBiome {
 
 	private final Random rand = new Random();
 
@@ -195,6 +196,12 @@ public class BiomeRainbowForest extends BiomeGenBase {
 		else {
 			super.plantFlower(world, rand, x, y, z);
 		}
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public int getMapColor(World world, int x, int z) {
+		return 0x8888FF;
 	}
 
 	public static boolean isMobAllowed(EntityLivingBase e) {

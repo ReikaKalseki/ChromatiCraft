@@ -45,6 +45,7 @@ import Reika.DragonAPI.Instantiable.Math.Noise.NoiseGeneratorBase;
 import Reika.DragonAPI.Instantiable.Math.Noise.SimplexNoiseGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ModifiableBigTree;
 import Reika.DragonAPI.Instantiable.Worldgen.ModifiableSmallTrees;
+import Reika.DragonAPI.Interfaces.CustomMapColorBiome;
 import Reika.DragonAPI.Interfaces.WinterBiomeStrengthControl;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -57,7 +58,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class BiomeGlowingCliffs extends BiomeGenBase implements WinterBiomeStrengthControl {
+public class BiomeGlowingCliffs extends BiomeGenBase implements WinterBiomeStrengthControl, CustomMapColorBiome {
 
 	private static final NoiseGeneratorBase hueShift = new SimplexNoiseGenerator(System.currentTimeMillis()).setFrequency(1/8D);
 	private static final NoiseGeneratorBase lumShift = new SimplexNoiseGenerator(-System.currentTimeMillis()).setFrequency(1/6D);
@@ -264,6 +265,12 @@ public class BiomeGlowingCliffs extends BiomeGenBase implements WinterBiomeStren
 	@Override
 	public float getWinterSkyStrength(World world, EntityPlayer ep) {
 		return 0F;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public int getMapColor(World world, int x, int z) {
+		return 0x22aaff;
 	}
 
 	public static boolean isGlowingCliffs(BiomeGenBase b) {

@@ -125,6 +125,11 @@ public enum ChromaEntities implements EntityEnum {
 	}
 
 	@Override
+	public boolean hasGlobalID() {
+		return false;
+	}
+
+	@Override
 	public boolean hasSpawnEgg() {
 		return hasEgg;
 	}
