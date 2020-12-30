@@ -204,8 +204,8 @@ public class EntitySplashGunShot extends EntityFireball {
 		if (src != null && tgt != null) {
 			CrystalElement e = world.rand.nextBoolean() ? CrystalElement.WHITE : CrystalElement.PINK;
 			LightningBolt b = new LightningBolt(new DecimalPosition(src), new DecimalPosition(tgt), 6);
-			b.setVariance(0.125);
-			b.update();
+			b.setVariance(0.5);
+			b.maximize();
 			int l = 5+world.rand.nextInt(5);
 			for (int i = 0; i < b.nsteps; i++) {
 				DecimalPosition pos1 = b.getPosition(i);

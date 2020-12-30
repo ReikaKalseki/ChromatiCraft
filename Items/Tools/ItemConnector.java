@@ -108,7 +108,8 @@ public class ItemConnector extends ItemChromaTool {
 				}
 			}
 		}
-		else {
+
+		{
 			Linkage l = Linkage.getLink(te);
 			if (l == null) {
 				ReikaChatHelper.sendChatToPlayer(ep, "Invalid tile.");
@@ -117,14 +118,12 @@ public class ItemConnector extends ItemChromaTool {
 			}
 			Linkage[] ls = this.getLinks(is);
 			if (ls == null || ls[0] == null || ls[1] == null || ls[0] != ls[1]) {
-				ReikaChatHelper.sendChatToPlayer(ep, "Invalid tiles.");
-				is.stackTagCompound = null;
-				return false;
+				//ReikaChatHelper.sendChatToPlayer(ep, "Invalid tiles.");
+				//is.stackTagCompound = null;
+				//return false;
 			}
 			return l.tryLink(is, ep, te);
 		}
-		is.stackTagCompound = null;
-		return false;
 	}
 
 	private Linkage[] getLinks(ItemStack is) {

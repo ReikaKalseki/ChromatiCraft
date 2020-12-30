@@ -10,12 +10,10 @@
 package Reika.ChromatiCraft.Render.ISBRH;
 
 import java.util.List;
-import java.util.Random;
 
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
@@ -437,7 +435,7 @@ public class DimensionDecoRenderer extends ISBRH {
 						},
 				};
 
-				for (int n = 0; n < 2; n++) {
+				for (int n = 0; n <= 2; n++) {
 					double[] da = ao[n][0];
 					double[] db = ao[n][1];
 					double ap = p[n][0];
@@ -618,10 +616,11 @@ public class DimensionDecoRenderer extends ISBRH {
 					vt5.addVertexWithUVColor(0.5-w, 0.5+l, 0.5+w, du, dv, c);
 					vt5.addVertexWithUVColor(0.5-w, 0.5+l, 0.5-w, du, v, c);
 
-					Random r = new Random(Minecraft.getMinecraft().theWorld.getSeed());
-					double dx = r.nextDouble()*0.5-0.5;
-					double dy = r.nextDouble()*0.5-0.5;
-					double dz = r.nextDouble()*0.5-0.5;
+					rand.setSeed(this.calcSeed(x, y, z));
+					rand.nextBoolean();
+					double dx = rand.nextDouble()*0.5-0.5;
+					double dy = rand.nextDouble()*0.5-0.5;
+					double dz = rand.nextDouble()*0.5-0.5;
 					vt5.offset(dx, dy, dz);
 
 					vt5.rotateNonOrthogonal(latticeRotations[0][i][n], latticeRotations[1][j][n], latticeRotations[2][k][n]);

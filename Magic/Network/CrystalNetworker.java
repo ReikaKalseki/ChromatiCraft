@@ -119,7 +119,7 @@ public class CrystalNetworker implements TickHandler {
 	@SubscribeEvent
 	public void markChunkCache(SetBlockEvent.Post evt) {
 		if (!evt.world.isRemote) {
-			WorldChunk wc = new WorldChunk(evt.world, evt.chunkLocation);
+			WorldChunk wc = new WorldChunk(evt.dimensionID(), evt.chunkLocation);
 			Collection<CrystalLink> c = losCache.get(wc);
 			if (c != null) {
 				Coordinate loc = new Coordinate(evt.xCoord, evt.yCoord, evt.zCoord);
@@ -140,7 +140,7 @@ public class CrystalNetworker implements TickHandler {
 						//ReikaJavaLibrary.pConsole("Invalidating LOS for "+l+" (#"+System.identityHashCode(l)+")");
 
 						//Kill active flows if blocked
-						for (CrystalFlow p : flows.get(evt.world.provider.dimensionId)) {
+						for (CrystalFlow p : flows.get(evt.dimensionID())) {
 							if (!toBreak.contains(p) && p.containsLink(l) && !p.checkLineOfSight(l)) { //make only link check, not entire path
 								CrystalNetworkLogger.logFlowBreak(p, FlowFail.SIGHT);
 								this.schedulePathBreak(p);

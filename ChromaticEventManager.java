@@ -251,7 +251,6 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
@@ -390,7 +389,7 @@ public class ChromaticEventManager {
 			ForgeDirection dir = ReikaDirectionHelper.getFromLookDirection(evt.player, false);
 			//ReikaJavaLibrary.pConsole(dir);
 			int meta = IC2RubberLogHandler.getInstance().getMeta(dir.getOpposite());
-			evt.world.setBlock(evt.xCoord, evt.yCoord, evt.zCoord, b, meta, 3);
+			evt.setBlock(b, meta, 3);
 			ReikaSoundHelper.playPlaceSound(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, b);
 			held.stackSize--;
 			if (held.stackSize <= 0)
@@ -722,7 +721,7 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void createCliffFarmland(BlockTillEvent evt) {
-		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.x, evt.z))) {
+		if (BiomeGlowingCliffs.isGlowingCliffs(evt.getBiome())) {
 			//ReikaJavaLibrary.pConsole(evt.x+","+evt.y+","+evt.z+": "+evt.world.getBlock(evt.x, evt.y+1, evt.z).isOpaqueCube());
 			evt.tilledBlock = ChromaBlocks.CLIFFSTONE.getBlockInstance();
 			evt.tilledMeta = Variants.FARMLAND.getMeta(false, false);
@@ -733,8 +732,8 @@ public class ChromaticEventManager {
 	public void preventCliffStackedGrass(BlockDeathEvent evt) {
 		if (evt.getClass() != BlockDeathEvent.class)
 			return;
-		if (evt.world.getBlock(evt.xCoord, evt.yCoord+1, evt.zCoord).isOpaqueCube()) {
-			if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord)) || evt.world.getBlock(evt.xCoord, evt.yCoord-1, evt.zCoord) == ChromaBlocks.CLIFFSTONE.getBlockInstance()) {
+		if (evt.getBlock(0, 1, 0).isOpaqueCube()) {
+			if (BiomeGlowingCliffs.isGlowingCliffs(evt.getBiome()) || evt.getBlock(0, -1, 0) == ChromaBlocks.CLIFFSTONE.getBlockInstance()) {
 				//ReikaJavaLibrary.pConsole(evt.x+","+evt.y+","+evt.z+": "+evt.world.getBlock(evt.x, evt.y+1, evt.z).isOpaqueCube());
 				evt.setResult(Result.ALLOW);
 			}
@@ -745,8 +744,8 @@ public class ChromaticEventManager {
 	public void preventCliffStackedGrass(BlockSpreadEvent evt) {
 		if (evt.getClass() != BlockSpreadEvent.class)
 			return;
-		if (evt.world.getBlock(evt.xCoord, evt.yCoord+1, evt.zCoord).isOpaqueCube()) {
-			if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord)) || evt.world.getBlock(evt.xCoord, evt.yCoord-1, evt.zCoord) == ChromaBlocks.CLIFFSTONE.getBlockInstance()) {
+		if (evt.getBlock(0, 1, 0).isOpaqueCube()) {
+			if (BiomeGlowingCliffs.isGlowingCliffs(evt.getBiome()) || evt.getBlock(0, -1, 0) == ChromaBlocks.CLIFFSTONE.getBlockInstance()) {
 				//ReikaJavaLibrary.pConsole(evt.x+","+evt.y+","+evt.z+": "+evt.world.getBlock(evt.x, evt.y+1, evt.z).isOpaqueCube());
 				evt.setResult(Result.DENY);
 			}
@@ -755,14 +754,14 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void preventCliffFire(LavaSpawnFireEvent evt) {
-		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.x, evt.z))) {
+		if (BiomeGlowingCliffs.isGlowingCliffs(evt.getBiome())) {
 			evt.setCanceled(true);
 		}
 	}
 
 	@SubscribeEvent
 	public void preventCliffFire(FireSpreadEvent evt) {
-		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord))) {
+		if (BiomeGlowingCliffs.isGlowingCliffs(evt.getBiome())) {
 			evt.setCanceled(true);
 		}
 	}
@@ -818,7 +817,7 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void preventCliffsFreeze(IceFreezeEvent evt) {
-		if (BiomeGlowingCliffs.isGlowingCliffs(evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord))) {
+		if (BiomeGlowingCliffs.isGlowingCliffs(evt.getBiome())) {
 			evt.setResult(Result.DENY);
 		}
 	}
@@ -1043,7 +1042,7 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void banDimensionBlocks(PlayerPlaceBlockEvent evt) {
-		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+		if (evt.dimensionID() == ExtraChromaIDs.DIMID.getValue()) {
 			Block b = evt.block;
 			int meta = evt.metadata;
 			if (ChromaDimensionManager.isBannedDimensionBlock(b, meta)) {
@@ -1060,7 +1059,7 @@ public class ChromaticEventManager {
 			int meta = evt.getMetadata();
 			if (ChromaDimensionManager.isBannedDimensionBlock(b, meta)) {
 				//ArrayList<ItemStack> li = b.getDrops(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, meta, 0);
-				evt.world.setBlock(evt.xCoord, evt.yCoord, evt.zCoord, Blocks.air);
+				evt.setBlock(Blocks.air);
 				//ReikaItemHelper.dropItems(evt.world, evt.xCoord+0.5, evt.yCoord+0.5, evt.zCoord+0.5, li);
 				ReikaSoundHelper.playSoundAtBlock(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, "random.explode");
 				ReikaParticleHelper.EXPLODE.spawnAroundBlock(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, 2);
@@ -1130,7 +1129,7 @@ public class ChromaticEventManager {
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void applyCorruptedAura(BlockTickEvent evt) {
 		if (ModList.MYSTCRAFT.isLoaded() && MystPages.Pages.CORRUPTED.existsInWorld(evt.world) && ReikaRandomHelper.doWithChance(10)) {
-			BiomeGenBase b = evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord);
+			BiomeGenBase b = evt.getBiome();
 			if (ChromatiCraft.isRainbowForest(b)) {
 				BiomeGenBase b2 = BiomeGenBase.desert;
 				if (ModList.THAUMCRAFT.isLoaded()) {
@@ -1138,7 +1137,7 @@ public class ChromaticEventManager {
 					if (id >= 0)
 						b2 = BiomeGenBase.biomeList[id];
 				}
-				ReikaWorldHelper.setBiomeForXZ(evt.world, evt.xCoord, evt.zCoord, b2);
+				evt.setBiome(b2);
 			}
 		}
 	}
@@ -2165,7 +2164,7 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void preventDimensionIce(IceFreezeEvent evt) {
-		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+		if (evt.dimensionID() == ExtraChromaIDs.DIMID.getValue()) {
 			evt.setResult(Result.DENY);
 		}
 	}

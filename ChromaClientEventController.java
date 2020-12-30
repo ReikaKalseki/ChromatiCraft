@@ -380,12 +380,12 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 
 	@SubscribeEvent
 	public void updateRedstoneTorchIcons(RenderBlockAtPosEvent evt) {
-		if (ChromaticEventManager.instance.isCrystallineRedstoneTorch(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, evt.block, evt.getMetadata())) {
-			Tessellator.instance.setBrightness(evt.block.getMixedBrightnessForBlock(evt.world, evt.xCoord, evt.yCoord, evt.zCoord));
+		if (ChromaticEventManager.instance.isCrystallineRedstoneTorch(evt.access, evt.xCoord, evt.yCoord, evt.zCoord, evt.block, evt.getMetadata())) {
+			Tessellator.instance.setBrightness(evt.block.getMixedBrightnessForBlock(evt.access, evt.xCoord, evt.yCoord, evt.zCoord));
 			Tessellator.instance.setColorOpaque_I(0xffffff);
 			evt.continueRendering = true;
 			evt.setCanceled(true);
-			ReikaRenderHelper.renderTorch(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, BlockPylonStructure.getIconOverride(evt.block), Tessellator.instance, evt.render, 0.625, 0.0625);
+			ReikaRenderHelper.renderTorch(evt.access, evt.xCoord, evt.yCoord, evt.zCoord, BlockPylonStructure.getIconOverride(evt.block), Tessellator.instance, evt.render, 0.625, 0.0625);
 		}
 	}
 
@@ -404,7 +404,7 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 			}
 		}
 		 */
-		if (ChromaDimensionManager.isStructureBiome(evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord))) {
+		if (ChromaDimensionManager.isStructureBiome(evt.getBiome())) {
 			f = Math.max(0.005F, DimensionTuningManager.TuningThresholds.STRUCTUREBIOMES.getTuningFraction(ep));
 		}
 		Random r = new Random(new Coordinate(evt.xCoord, evt.yCoord, evt.zCoord).hashCode());
@@ -416,8 +416,8 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 				IIcon ico = evt.render.getIconSafe(ChromaIcons.BLANK.getIcon());
 				Tessellator.instance.setColorOpaque_I(0xffffff);
-				Tessellator.instance.setBrightness(evt.block.getMixedBrightnessForBlock(evt.world, evt.xCoord, evt.yCoord, evt.zCoord));
-				boolean side = b.shouldSideBeRendered(evt.world, evt.xCoord+dir.offsetX, evt.yCoord+dir.offsetY, evt.zCoord+dir.offsetZ, i);
+				Tessellator.instance.setBrightness(evt.block.getMixedBrightnessForBlock(evt.access, evt.xCoord, evt.yCoord, evt.zCoord));
+				boolean side = b.shouldSideBeRendered(evt.access, evt.xCoord+dir.offsetX, evt.yCoord+dir.offsetY, evt.zCoord+dir.offsetZ, i);
 				if (side) {
 					evt.continueRendering = true;
 					//ChromatiCraft.logger.debug("Rendering side "+dir);
@@ -758,7 +758,7 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 		//ReikaJavaLibrary.pConsole("CLIENT RENDER NOCLIP "+AbilityHelper.instance.isNoClipEnabled);
 		if (AbilityHelper.instance.isNoClipEnabled) {
 			Block b = evt.block;
-			int meta = evt.world.getBlockMetadata(evt.xCoord, evt.yCoord, evt.zCoord);
+			int meta = evt.getMetadata();
 			//ChromatiCraft.logger.debug("Checking render of "+b+":"+meta+" @ "+evt.xCoord+"."+evt.yCoord+","+evt.zCoord);
 			if (!AbilityHelper.instance.isBlockOreclippable(Minecraft.getMinecraft().theWorld, evt.xCoord, evt.yCoord, evt.zCoord, b, meta)) {
 				//Tessellator.instance.setColorRGBA_I(b.colorMultiplier(evt.world, evt.xCoord, evt.yCoord, evt.zCoord), 96);
@@ -808,8 +808,8 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 						for (int i = 0; i < 6; i++) {
 							ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 							Tessellator.instance.setBrightness(240);
-							IIcon ico = evt.render.getIconSafe(b.getIcon(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, i));
-							boolean side = b.shouldSideBeRendered(evt.world, evt.xCoord+dir.offsetX, evt.yCoord+dir.offsetY, evt.zCoord+dir.offsetZ, i);
+							IIcon ico = evt.render.getIconSafe(b.getIcon(evt.access, evt.xCoord, evt.yCoord, evt.zCoord, i));
+							boolean side = b.shouldSideBeRendered(evt.access, evt.xCoord+dir.offsetX, evt.yCoord+dir.offsetY, evt.zCoord+dir.offsetZ, i);
 							double o = side ? 0.001 : 0;
 							if ((side || (dir == ForgeDirection.UP && evt.yCoord == 0)) || b != Blocks.bedrock) {
 								//ChromatiCraft.logger.debug("Rendering side "+dir);
