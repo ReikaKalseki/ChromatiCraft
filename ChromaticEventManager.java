@@ -1283,7 +1283,11 @@ public class ChromaticEventManager {
 	@SubscribeEvent
 	public void applyBossKill(LivingAttackEvent evt) {
 		DamageSource src = evt.source;
+		if (src instanceof LumenTurretDamage)
+			return;
 		if (evt.entity.worldObj.isRemote)
+			return;
+		if (evt.entityLiving.isDead || evt.entityLiving.getHealth() <= 0)
 			return;
 		if (src.getEntity() instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)src.getEntity();

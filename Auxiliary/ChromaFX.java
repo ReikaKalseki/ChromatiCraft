@@ -805,8 +805,8 @@ public class ChromaFX {
 		ReikaSoundHelper.playClientSound(ChromaSounds.MONUMENTRAY, ep, 1, (float)CrystalMusicManager.instance.getDingPitchScale(e), false);
 		int n = 4+world.rand.nextInt(4);
 		LightningBolt b = new LightningBolt(new DecimalPosition(x+0.5, y+0.5, z+0.5), new DecimalPosition(ep).offset(0, -0.25, 0), n);
-		b.scaleVariance(2);
-		b.update();
+		b.scaleVariance(0.5);
+		b.maximize();
 		for (int i = 0; i < b.nsteps; i++) {
 			DecimalPosition pos1 = b.getPosition(i);
 			DecimalPosition pos2 = b.getPosition(i+1);

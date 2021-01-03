@@ -199,7 +199,7 @@ public class TileEntityHoverPad extends TileEntityChromaticBase {
 		ids.add(new BlockKey(ChromaBlocks.PAD.getBlockInstance(), 0));
 		ids.add(new BlockKey(this.getTile().getBlock(), this.getTile().getBlockMetadata()));
 		b.recursiveAddMultipleWithBounds(world, x, y, z, ids, x-32, y, z-32, x+32, y, z+32);
-		Set<Coordinate> set = b.keySet();
+		Set<Coordinate> set = new HashSet(b.keySet());
 		for (Coordinate c : set) {
 			Block b1 = c.getBlock(world);
 			if (b1 == ChromaBlocks.PAD.getBlockInstance()) {
