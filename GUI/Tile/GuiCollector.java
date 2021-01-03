@@ -19,7 +19,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerCollector;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
-import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
+import Reika.DragonAPI.Libraries.Rendering.ReikaLiquidRenderer;
 
 public class GuiCollector extends GuiChromaBase {
 

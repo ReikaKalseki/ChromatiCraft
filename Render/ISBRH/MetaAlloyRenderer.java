@@ -21,8 +21,8 @@ import net.minecraft.world.IBlockAccess;
 import Reika.ChromatiCraft.Block.Decoration.BlockMetaAlloyLamp;
 import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
 
 public class MetaAlloyRenderer extends ISBRH {

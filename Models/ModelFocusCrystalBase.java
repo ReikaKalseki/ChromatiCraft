@@ -17,7 +17,7 @@ import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.Base.ChromaModelBase;
 import Reika.DragonAPI.Instantiable.Rendering.LODModelPart;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
 
 public abstract class ModelFocusCrystalBase extends ChromaModelBase {

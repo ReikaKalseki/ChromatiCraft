@@ -18,7 +18,7 @@ import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Models.ModelItemRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityItemRift;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
-import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
 public class RenderItemRift extends ChromaRenderBase {
 

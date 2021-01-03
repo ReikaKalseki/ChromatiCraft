@@ -19,10 +19,10 @@ import Reika.DragonAPI.Instantiable.ParticleController.EntityLockMotionControlle
 import Reika.DragonAPI.Interfaces.MotionController;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.VoidMonster.Auxiliary.VoidMonsterBait;
 
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;

@@ -19,7 +19,7 @@ import Reika.DragonAPI.Instantiable.Rendering.ParticleEngine.RenderMode;
 import Reika.DragonAPI.Instantiable.Rendering.ParticleEngine.RenderModeFlags;
 import Reika.DragonAPI.Instantiable.Rendering.ParticleEngine.TextureMode;
 import Reika.DragonAPI.Interfaces.Entity.CustomRenderFX;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

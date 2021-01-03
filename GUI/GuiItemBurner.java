@@ -23,10 +23,10 @@ import Reika.ChromatiCraft.Container.ContainerItemBurner;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
-import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
 
 public class GuiItemBurner extends GuiContainer {
 

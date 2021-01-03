@@ -12,7 +12,7 @@ package Reika.ChromatiCraft.Render.Particle;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
 
 public class EntityFireSmokeFX extends EntityCCBlurFX {

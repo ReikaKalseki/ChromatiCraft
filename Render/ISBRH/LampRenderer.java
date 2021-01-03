@@ -22,7 +22,7 @@ import net.minecraft.world.IBlockAccess;
 import Reika.ChromatiCraft.Block.Decoration.BlockRangedLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Base.ISBRH;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
 public class LampRenderer extends ISBRH {
 

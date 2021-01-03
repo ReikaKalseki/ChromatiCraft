@@ -21,7 +21,7 @@ import net.minecraft.world.IBlockAccess;
 import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList.TessellatorVertex;
-import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
 
 public class ArtefactRenderer extends ISBRH {

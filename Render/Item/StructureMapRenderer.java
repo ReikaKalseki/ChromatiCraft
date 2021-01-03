@@ -24,9 +24,9 @@ import net.minecraftforge.client.IItemRenderer;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Items.Tools.ItemStructureMap;
 import Reika.DragonAPI.Instantiable.Rendering.MultiSheetItemRenderer;
-import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
 
 public class StructureMapRenderer implements IItemRenderer {

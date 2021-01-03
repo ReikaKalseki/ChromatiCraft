@@ -27,9 +27,9 @@ import Reika.ChromatiCraft.World.Dimension.SkyRiverGenerator;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverGenerator.RiverPoint;
 import Reika.DragonAPI.Instantiable.ParticleController.CollectingPositionController;
 import Reika.DragonAPI.Interfaces.PositionController;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 import cpw.mods.fml.relauncher.Side;

@@ -26,7 +26,7 @@ import Reika.ChromatiCraft.Base.ChromaModelBase;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.TESR.RenderColoredAltar;
 import Reika.DragonAPI.Instantiable.Rendering.LODModelPart;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
 public class ModelColoredAltar extends ChromaModelBase
 {

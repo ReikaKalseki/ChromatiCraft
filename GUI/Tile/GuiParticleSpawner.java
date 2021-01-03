@@ -36,9 +36,9 @@ import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Instantiable.GUI.ScrollingButtonList;
 import Reika.DragonAPI.Instantiable.IO.NBTFile.SimpleNBTFile;
 import Reika.DragonAPI.Interfaces.IconEnum;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
 
 public class GuiParticleSpawner extends GuiChromaBase {

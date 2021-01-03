@@ -23,7 +23,7 @@ import Reika.ChromatiCraft.Magic.Progression.ProgressionManager.ProgressTier;
 import Reika.ChromatiCraft.Magic.Progression.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Objects.LineType;
 
 public class GuiProgressByLevel extends GuiProgressStages {

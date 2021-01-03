@@ -17,8 +17,8 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.item.ItemStack;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
 
 @Deprecated
 public class GuiMIDIDisc extends GuiScreen {

@@ -20,8 +20,8 @@ import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.ChromaDimensio
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.SubBiomes;
 import Reika.DragonAPI.Instantiable.Math.Noise.SimplexNoiseGenerator;
 import Reika.DragonAPI.Interfaces.CustomMapColorBiome;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
 public abstract class ChromaDimensionBiome extends BiomeGenBase implements CustomMapColorBiome {
 

@@ -19,7 +19,7 @@ import net.minecraft.world.IBlockAccess;
 
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
 import Reika.DragonAPI.Base.ISBRH;
-import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
 public class DecoPlantRenderer extends ISBRH {
 

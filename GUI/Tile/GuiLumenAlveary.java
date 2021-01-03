@@ -39,10 +39,10 @@ import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.MapDeterminator;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.SortedDeterminator;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
 import thaumcraft.api.aspects.Aspect;
 

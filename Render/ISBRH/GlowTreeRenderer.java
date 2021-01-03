@@ -20,7 +20,7 @@ import net.minecraft.world.IBlockAccess;
 
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LightedTreeBlock;
 import Reika.DragonAPI.Base.ISBRH;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
 public class GlowTreeRenderer extends ISBRH {
 

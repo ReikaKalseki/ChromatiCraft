@@ -23,7 +23,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockColoredLock.Tile
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Base.ISBRH;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
 public class ColorLockRenderer extends ISBRH {
 

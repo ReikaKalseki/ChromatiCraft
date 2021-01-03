@@ -16,7 +16,7 @@ import net.minecraft.util.AxisAlignedBB;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
 
 public class TargetData {

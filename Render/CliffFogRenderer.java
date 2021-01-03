@@ -27,9 +27,9 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset;
-import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 

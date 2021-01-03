@@ -30,8 +30,8 @@ import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Instantiable.CubePoints;
 import Reika.DragonAPI.Instantiable.GridDistortion;
 import Reika.DragonAPI.Instantiable.GridDistortion.OffsetGroup;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
 public class CrystalEncrustingRenderer extends ISBRH {
 

@@ -6,7 +6,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
 
 public class EntityCCFloatingSeedsFX extends EntityFloatingSeedsFX {
