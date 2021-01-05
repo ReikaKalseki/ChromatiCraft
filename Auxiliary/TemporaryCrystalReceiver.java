@@ -69,7 +69,7 @@ public class TemporaryCrystalReceiver implements CrystalReceiver, WrapperTile {
 
 	@Override
 	public double getDistanceSqTo(double x, double y, double z) {
-		return location.getSquareDistanceTo(x, y, z);
+		return location.getSquaredDistance(x, y, z);
 	}
 
 	@Override

@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -184,14 +185,13 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 	}
 
 	public static boolean isWithinSkyRiver(EntityPlayer player, RiverPoint closestPoint) {
-		DecimalPosition plPos = new DecimalPosition(player);
 		if (closestPoint == null)
 			return false; // No point in range? not even close to a river.
-		return isBetween(closestPoint.prev, closestPoint.position, plPos) || isBetween(closestPoint.position, closestPoint.next, plPos);
+		return isBetween(closestPoint.prev, closestPoint.position, player) || isBetween(closestPoint.position, closestPoint.next, player);
 	}
 
-	public static boolean isBetween(DecimalPosition pos1, DecimalPosition pos2, DecimalPosition toCheck) {
-		double dst = ReikaVectorHelper.getDistFromPointToLine(pos1.xCoord, pos1.yCoord, pos1.zCoord, pos2.xCoord, pos2.yCoord, pos2.zCoord, toCheck.xCoord, toCheck.yCoord, toCheck.zCoord);
+	public static boolean isBetween(DecimalPosition pos1, DecimalPosition pos2, Entity toCheck) {
+		double dst = ReikaVectorHelper.getDistFromPointToLine(pos1.xCoord, pos1.yCoord, pos1.zCoord, pos2.xCoord, pos2.yCoord, pos2.zCoord, toCheck.posX, toCheck.posY, toCheck.posZ);
 		return dst < RIVER_TUNNEL_RADIUS;
 	}
 

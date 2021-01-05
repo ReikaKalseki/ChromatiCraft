@@ -183,6 +183,8 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	}
 
 	public boolean checkAbsorb(Entity e) {
+		if (e.isDead)
+			return false;
 		int x = xCoord;
 		int y = yCoord;
 		int z = zCoord;

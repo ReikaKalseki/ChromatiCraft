@@ -296,7 +296,7 @@ public class ChromaticEventManager {
 		if (ChromaItems.HELP.matchWith(evt.itemInSlot)) {
 			//evt.player.openGui(ChromatiCraft.instance, ChromaGuis.BOOKEMPTIES.ordinal(), evt.player.worldObj, 0, 0, 0);
 			ItemStack cur = evt.player.inventory.getItemStack();
-			if (ChromaItems.FRAGMENT.matchWith(cur)) {
+			if (ChromaItems.FRAGMENT.matchWith(cur) && cur.stackTagCompound == null) {
 				int amt = evt.buttonID == 0 ? cur.stackSize : 1;
 				ItemChromaBook.addBlanks(evt.itemInSlot, amt);
 				cur.stackSize -= amt;
