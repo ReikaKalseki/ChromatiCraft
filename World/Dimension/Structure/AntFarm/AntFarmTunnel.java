@@ -58,7 +58,7 @@ public class AntFarmTunnel extends StructurePiece<AntFarmGenerator> {
 		double var = Math.min(6, len/8D);
 		b.setVariance(var); //was 12, L/4
 		b.setVelocity(var*2);
-		b.update();
+		b.maximize();
 		Spline s = new Spline(SplineType.CHORDAL);
 		for (int i = 0; i <= b.nsteps; i++) {
 			s.addPoint(new BasicSplinePoint(b.getPosition(i)));

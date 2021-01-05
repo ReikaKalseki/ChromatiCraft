@@ -1654,7 +1654,7 @@ public class AbilityHelper {
 				playerBolts.put(ep, c);
 			}
 			c.clear();
-			DecimalPosition p1 = new DecimalPosition(0, -0.75, 0);
+			DecimalPosition p1 = new DecimalPosition(0, -0.75+0.5, 0);
 			int n = 3;
 			double r = 3;
 			for (int i = 0; i < n; i++) {
