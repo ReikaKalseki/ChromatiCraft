@@ -120,11 +120,20 @@ public class ProgressOverlayRenderer {
 		}
 
 		if (p instanceof ProgressStage) {
-			ChromaShaders.GAINPROGRESS.setIntensity(1);
-			ChromaShaders.GAINPROGRESS.refresh();
-			ChromaShaders.GAINPROGRESS.lingerTime = 30;
-			ChromaShaders.GAINPROGRESS.rampDownAmount = 0.004F;
-			ChromaShaders.GAINPROGRESS.rampDownFactor = 0.997F;
+			if (ChromaOptions.PROGSHADER.getState()) {
+				ChromaShaders.GAINPROGRESS.setIntensity(1.0625F);
+				ChromaShaders.GAINPROGRESS.refresh();
+				ChromaShaders.GAINPROGRESS.lingerTime = 0;
+				ChromaShaders.GAINPROGRESS.rampDownAmount = 0.009F;
+				ChromaShaders.GAINPROGRESS.rampDownFactor = 0.99F;
+			}
+			else {
+				ChromaShaders.GAINPROGRESS.setIntensity(1);
+				ChromaShaders.GAINPROGRESS.refresh();
+				ChromaShaders.GAINPROGRESS.lingerTime = 30;
+				ChromaShaders.GAINPROGRESS.rampDownAmount = 0.004F;
+				ChromaShaders.GAINPROGRESS.rampDownFactor = 0.997F;
+			}
 		}
 		//ReikaJavaLibrary.pConsole("Adding "+p+" to map ("+progressFlags.keySet().contains(p)+"), set is "+progressFlags.keySet());
 	}

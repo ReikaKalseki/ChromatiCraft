@@ -101,6 +101,7 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	LAUNCHPOWER("Launch Pad Power", 1F),
 	FENCEHOPS("Crystal Fence segment count limit", 64),
 	STRUCTTRIES("Structure Generation Attempts Per Flagged Chunk - affects worldgen CPU use and structure rarity", 20),
+	PROGSHADER("Use Alternate Progress Shader", false),
 	;
 
 	private String label;
@@ -333,6 +334,7 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 			case PROGRESSDURATION:
 			case PROGRESSNOTIFY_SELF:
 			case EPILEPSY:
+			case PROGSHADER:
 				return true;
 			default:
 				return false;

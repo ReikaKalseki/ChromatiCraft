@@ -2,8 +2,6 @@ package Reika.ChromatiCraft.Registry;
 
 import java.util.Locale;
 
-import net.minecraft.util.MathHelper;
-
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.IO.Shaders.ShaderHook;
@@ -82,10 +80,13 @@ public enum ChromaShaders implements ShaderHook {
 		try {
 			String path = "Shaders/";
 			id = this.name().toLowerCase(Locale.ENGLISH);
+			if (this == GAINPROGRESS && ChromaOptions.PROGSHADER.getState()) {
+				id = "gainprogress2";
+			}
 			int idx = id.indexOf('$');
 			if (idx >= 0) {
+				path = path+id.substring(0, idx)+"/";
 				id = id.substring(idx+1);
-				path = path+this.name().toLowerCase(Locale.ENGLISH).substring(0, idx)+"/";
 			}
 			shader = ShaderRegistry.createShader(ChromatiCraft.instance, id, ChromatiCraft.class, path, domain);
 			shader.setHook(this);
@@ -112,7 +113,7 @@ public enum ChromaShaders implements ShaderHook {
 	}
 
 	public void setIntensity(float f) {
-		intensity = MathHelper.clamp_float(f, 0, 1);
+		intensity = f;//MathHelper.clamp_float(f, 0, 1);
 	}
 
 	public void rampUpIntensity(float linear, float factor) {
