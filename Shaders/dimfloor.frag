@@ -1,3 +1,5 @@
+#import color
+
 uniform float starFactor;
 
 void main() {

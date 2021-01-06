@@ -1,3 +1,5 @@
+#import color
+
 void main() {
 	vec4 color = texture2D(bgl_RenderedTexture, texcoord);
 	

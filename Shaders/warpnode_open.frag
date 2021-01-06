@@ -1,3 +1,6 @@
+#import math
+#import geometry
+
 uniform float distance;
 uniform float scale;
 uniform float washout;

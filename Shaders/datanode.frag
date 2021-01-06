@@ -1,3 +1,7 @@
+#import math
+#import geometry
+#import color
+
 void main() {
 	vec2 nodeXY = getScreenPos(0, 3.875, 0);
 	

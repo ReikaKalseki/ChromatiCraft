@@ -1,3 +1,5 @@
+#import color
+
 uniform int pylonRed;
 uniform int pylonGreen;
 uniform int pylonBlue;

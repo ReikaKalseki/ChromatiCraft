@@ -1,3 +1,5 @@
+#import math
+
 //uniform float density; //ie how many "real" pixels per display pixel (pixelation level)
 
 void main() {

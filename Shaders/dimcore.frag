@@ -1,3 +1,7 @@
+#import math
+#import geometry
+#import color
+
 uniform int coreRed;
 uniform int coreGreen;
 uniform int coreBlue;

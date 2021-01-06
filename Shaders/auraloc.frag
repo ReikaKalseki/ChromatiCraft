@@ -1,3 +1,7 @@
+#import math
+#import geometry
+#import color
+
 void main() {
 	vec2 locusXY = getScreenPos(0.5, 0.5, 0.5);
 	

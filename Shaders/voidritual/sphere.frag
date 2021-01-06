@@ -1,3 +1,6 @@
+#import math
+#import geometry
+
 uniform float size;
 uniform float thickness;
 

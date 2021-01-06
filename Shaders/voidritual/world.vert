@@ -1,10 +1,9 @@
+#import chunk
+#import math
+
 varying vec4 vLightMapColor;
 
 uniform sampler2D bgl_LightMapTexture;
-
-uniform int chunkX;
-uniform int chunkY;
-uniform int chunkZ;
 
 uniform float waveRadius;
 uniform float waveThickness;
@@ -16,36 +15,6 @@ uniform float curlMovementY;
 uniform float stretchFactor;
 uniform float stretchRadius;
 uniform float stretchApplication;
-
-float getX(vec4 vert) {
-	return vert.x+float(chunkX);
-}
-
-float getY(vec4 vert) {
-	return vert.y+float(chunkY);
-}
-
-float getZ(vec4 vert) {
-	return vert.z+float(chunkZ);
-}
-
-vec3 getReal(vec4 vert) {
-	return vec3(getX(vert), getY(vert), getZ(vert));
-}
-
-float getDistance(vec3 diff) {
-	diff = abs(diff);
-	return sqrt(diff.x*diff.x+diff.y*diff.y+diff.z*diff.z);
-}
-
-float getDistanceXZ(vec3 diff) {
-	diff = abs(diff);
-	return sqrt(diff.x*diff.x+diff.z*diff.z);
-}
-
-vec3 getRelativeCoord(vec3 real) {
-	return real-vec3(float(chunkX), float(chunkY), float(chunkZ));
-}
 
 void main() {
     vec4 vert = gl_Vertex;
