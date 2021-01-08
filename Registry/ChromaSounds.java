@@ -169,13 +169,13 @@ public enum ChromaSounds implements DynamicSound {
 	public void playSound(World world, double x, double y, double z, float vol, float pitch) {
 		if (world.isRemote)
 			return;
-		ReikaSoundHelper.playSound(this, ChromatiCraft.packetChannel, world, x, y, z, vol/* *this.getModulatedVolume()*/, pitch);
+		ReikaSoundHelper.playSound(this, world, x, y, z, vol/* *this.getModulatedVolume()*/, pitch);
 	}
 
 	public void playSound(World world, double x, double y, double z, float vol, float pitch, boolean attenuate) {
 		if (world.isRemote)
 			return;
-		ReikaSoundHelper.playSound(this, ChromatiCraft.packetChannel, world, x, y, z, vol/* *this.getModulatedVolume()*/, pitch, attenuate);
+		ReikaSoundHelper.playSound(this, world, x, y, z, vol/* *this.getModulatedVolume()*/, pitch, attenuate);
 	}
 
 	public void playSoundAtBlock(World world, int x, int y, int z, float vol, float pitch) {
@@ -198,7 +198,7 @@ public enum ChromaSounds implements DynamicSound {
 		if (world.isRemote)
 			return;
 		//ReikaSoundHelper.playSound(this, ChromatiCraft.packetChannel, te.worldObj, x, y, z, vol/* *this.getModulatedVolume()*/, pitch, false);
-		ReikaPacketHelper.sendSoundPacket(ChromatiCraft.packetChannel, this, world, x, y, z, vol, pitch, false, broadcast);
+		ReikaPacketHelper.sendSoundPacket(this, world, x, y, z, vol, pitch, false, broadcast);
 	}
 
 	public void playSoundAtBlock(TileEntity te) {
@@ -219,15 +219,6 @@ public enum ChromaSounds implements DynamicSound {
 
 	public URL getURL() {
 		return ChromatiCraft.class.getResource(SOUND_DIR+name+SOUND_EXT);
-	}
-
-	public static ChromaSounds getSoundByName(String name) {
-		for (int i = 0; i < soundList.length; i++) {
-			if (soundList[i].name().equals(name))
-				return soundList[i];
-		}
-		ChromatiCraft.logger.logError("\""+name+"\" does not correspond to a registered sound!");
-		return null;
 	}
 
 	@Override

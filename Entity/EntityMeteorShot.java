@@ -142,7 +142,7 @@ public class EntityMeteorShot extends Entity implements IEntityAdditionalSpawnDa
 		}
 
 		if (!worldObj.isRemote && !isDead && !this.impacted() && ticksExisted%5 == 0)
-			ReikaPacketHelper.sendSoundPacket(ChromatiCraft.packetChannel, ChromaSounds.METEOR, worldObj, posX, posY, posZ, 0.75F, 1, false, 64);
+			ReikaPacketHelper.sendSoundPacket(ChromaSounds.METEOR, worldObj, posX, posY, posZ, 0.75F, 1, false, 64);
 	}
 
 	@SideOnly(Side.CLIENT)

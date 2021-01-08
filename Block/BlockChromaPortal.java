@@ -259,11 +259,11 @@ public class BlockChromaPortal extends Block {
 			DimensionTuningManager.instance.tunePlayer(ep, tuning);
 			ReikaEntityHelper.transferEntityToDimension(ep, dim, new ChromaTeleporter(dim));
 			if (ProgressStage.DIMENSION.stepPlayerTo(ep)) {
-				ReikaSoundHelper.broadcastSound(ChromaSounds.GOTODIM, ChromatiCraft.packetChannel, 1, 1);
+				ReikaSoundHelper.broadcastSound(ChromaSounds.GOTODIM, 1, 1);
 			}
 			else {
 				ChromaSounds.GOTODIM.playSoundAtBlockNoAttenuation(this, 1, 1, 32);
-				ReikaSoundHelper.playSound(ChromaSounds.GOTODIM, ChromatiCraft.packetChannel, ep.worldObj, 0, 1024, 0, 1, 1, false);
+				ReikaSoundHelper.playSound(ChromaSounds.GOTODIM, ep.worldObj, 0, 1024, 0, 1, 1, false);
 				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.DIMSOUND.ordinal(), PacketTarget.allPlayers);
 			}
 			tuning *= 0.4;

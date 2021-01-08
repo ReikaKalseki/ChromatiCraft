@@ -75,7 +75,6 @@ import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
-import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Entity.RenderAurora;
 import Reika.ChromatiCraft.Render.Entity.RenderBallLightning;
@@ -132,8 +131,6 @@ import Reika.DragonAPI.Auxiliary.Trackers.KeybindHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.PatreonController;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerSpecificRenderer;
 import Reika.DragonAPI.Auxiliary.Trackers.SettingInterferenceTracker;
-import Reika.DragonAPI.Instantiable.IO.DynamicSoundLoader;
-import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset.RemoteSourcedAssetRepository;
 import Reika.DragonAPI.Instantiable.Rendering.ForcedTextureArmorModel;
 import Reika.DragonAPI.Instantiable.Rendering.MultiSheetItemRenderer;
 import Reika.DragonAPI.Instantiable.Rendering.TESRItemRenderer;
@@ -160,9 +157,6 @@ public class ChromaClient extends ChromaCommon {
 	public static KeyBinding key_ability;
 
 	public static SoundCategory chromaCategory;
-
-	public static final RemoteSourcedAssetRepository dynamicAssets = new RemoteSourcedAssetRepository(ChromatiCraft.instance, ChromatiCraft.class, "https://raw.githubusercontent.com/ReikaKalseki/ChromatiCraft/master", "Reika/ChromatiCraft/AssetDL");
-	public static final DynamicSoundLoader soundLoader = new DynamicSoundLoader(ChromaSounds.soundList, dynamicAssets);
 
 	@Override
 	public void initAssetLoaders() {

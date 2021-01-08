@@ -11,9 +11,16 @@ package Reika.ChromatiCraft;
 
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.DragonAPI.Instantiable.IO.DynamicSoundLoader;
+import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset.RemoteSourcedAssetRepository;
+
 public class ChromaCommon {
 
 	public static int armor;
+
+	public static final RemoteSourcedAssetRepository dynamicAssets = new RemoteSourcedAssetRepository(ChromatiCraft.instance, ChromatiCraft.class, "https://raw.githubusercontent.com/ReikaKalseki/ChromatiCraft/master", "Reika/ChromatiCraft/AssetDL");
+	public static final DynamicSoundLoader soundLoader = new DynamicSoundLoader(ChromaSounds.class, dynamicAssets);
 
 	public void registerRenderers()
 	{
