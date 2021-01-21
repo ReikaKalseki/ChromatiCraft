@@ -648,7 +648,7 @@ public class ChromaOverlays {
 	}
 
 	private void syncBuffer(EntityPlayer ep) {
-		ReikaPlayerAPI.syncCustomDataFromClient(ep);
+		ReikaPlayerAPI.requestCustomDataSyncFromClient(ep);
 	}
 
 	private void renderAbilityStatus(EntityPlayer ep, int gsc) {

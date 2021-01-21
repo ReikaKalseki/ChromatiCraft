@@ -209,7 +209,7 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 			int i = -1;
 			for (Coordinate c : li) {
 				if (i%4 == 0 && c != li.getLast()) {
-					if (!c.equals(to) && !c.equals(from) && !c.equals(mid) && OpenPathFinder.isValidBlock(world, c.xCoord, c.yCoord, c.zCoord))
+					if (!c.equals(to) && !c.equals(from) && !c.equals(mid) && OpenPathFinder.isEmptyBlock(world, c.xCoord, c.yCoord, c.zCoord))
 						set.add(c);
 					s1.addPoint(new BasicSplinePoint(new DecimalPosition(c)));
 				}
@@ -222,7 +222,7 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 			i = -1;
 			for (Coordinate c : li2) {
 				if (i%4 == 0 && c != li2.getLast()) {
-					if (!c.equals(to) && !c.equals(from) && !c.equals(mid) && OpenPathFinder.isValidBlock(world, c.xCoord, c.yCoord, c.zCoord))
+					if (!c.equals(to) && !c.equals(from) && !c.equals(mid) && OpenPathFinder.isEmptyBlock(world, c.xCoord, c.yCoord, c.zCoord))
 						set.add(c);
 					s2.addPoint(new BasicSplinePoint(new DecimalPosition(c)));
 				}
@@ -457,7 +457,7 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 					continue;
 				if (c.getBlock(world) instanceof ISpecialFlower)
 					continue;
-				if (!OpenPathFinder.isValidBlock(world, c.xCoord, c.yCoord, c.zCoord)) {
+				if (!OpenPathFinder.isEmptyBlock(world, c.xCoord, c.yCoord, c.zCoord)) {
 					ChromatiCraft.logger.log("Invalidating old mana path: "+c.getBlock(world).getLocalizedName()+" @ "+c);
 					return false;
 				}

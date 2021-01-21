@@ -171,7 +171,7 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 		double s = 1.75+0.0625*Math.sin(te.getTicksExisted()/6D);
 		if (te.isTurbocharged())
 			s *= 1.25;
-		CastingTuningManager.instance.getTuningKey(uid).drawIcon(Tessellator.instance, s, clr);
+		CastingTuningManager.instance.getTuningKey(te.worldObj, uid).drawIcon(Tessellator.instance, s, clr);
 	}
 
 	private void renderRainHalo(TileEntityCrystalRepeater te, float par8) {

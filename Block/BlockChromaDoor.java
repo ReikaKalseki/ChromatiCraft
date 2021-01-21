@@ -457,6 +457,11 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 			return this.isOwner(ep);
 		}
 
+		@Override
+		public boolean allowMining(EntityPlayer ep) {
+			return this.isOwner(ep);
+		}
+
 	}
 
 }

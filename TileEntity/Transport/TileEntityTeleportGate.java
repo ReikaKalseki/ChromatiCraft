@@ -248,7 +248,7 @@ MultiBlockChromaTile, StructureRenderingParticleSpawner {
 
 	@SideOnly(Side.CLIENT)
 	private static File getPreviewFolder() {
-		return new File(DragonAPICore.getMinecraftDirectoryString(), "mods/Reika/ChromatiCraft/GateShots");
+		return new File(DragonAPICore.getMinecraftDirectory(), "mods/Reika/ChromatiCraft/GateShots");
 	}
 
 	@SideOnly(Side.CLIENT)

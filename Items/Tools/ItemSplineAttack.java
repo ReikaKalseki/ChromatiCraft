@@ -10,10 +10,12 @@
 package Reika.ChromatiCraft.Items.Tools;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
@@ -28,6 +30,7 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
+import Reika.ChromatiCraft.Auxiliary.Ability.LightCast;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -35,6 +38,9 @@ import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BreadthFirstSearch;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.OpenPathFinder;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
@@ -84,6 +90,47 @@ public class ItemSplineAttack extends ItemChromaTool {
 
 	};
 
+	private static class PathFinder extends OpenPathFinder {
+
+		private static final HashSet<BlockKey> passableBlocks = new HashSet();
+
+		private static void initPassable() {
+			if (passableBlocks.isEmpty()) {
+				for (BlockKey bk : RayTracer.getTransparentBlocks())
+					passableBlocks.add(bk);
+				for (Block bk : LightCast.getPassthroughBlocks())
+					passableBlocks.add(new BlockKey(bk));
+			}
+		}
+
+		public PathFinder(Coordinate c1, Coordinate c2, int r) {
+			super(c1, c2, r);
+		}
+
+		@Override
+		protected boolean isValidBlock(World world, int x, int y, int z) {
+			return super.isValidBlock(world, x, y, z) || this.isPassableBlock(world, x, y, z);
+		}
+
+		private boolean isPassableBlock(World world, int x, int y, int z) {
+			initPassable();
+			BlockKey bk = BlockKey.getAt(world, x, y, z);
+			return passableBlocks.contains(bk);
+		}
+	}
+
+	private static class EntityTarget {
+
+		private final EntityLivingBase entity;
+		private final LinkedList<Coordinate> path;
+
+		private EntityTarget(EntityLivingBase e, LinkedList<Coordinate> li) {
+			entity = e;
+			path = li;
+		}
+
+	}
+
 	private final SplineTargeting attackableSelector = new SplineTargeting();
 
 	public ItemSplineAttack(int index) {
@@ -107,7 +154,7 @@ public class ItemSplineAttack extends ItemChromaTool {
 		EntityTarget from = tgt;
 		while (from != null) {
 			li.add(from);
-			List<EntityTarget> next = li.size() < MAX_HOPS ? this.getAttackableEntitiesFrom(world, from.entity, li) : null;
+			List<EntityTarget> next = li.size() < MAX_HOPS ? this.getAttackableEntitiesFrom(world, from.entity, ep, li) : null;
 			from = next == null || next.isEmpty() ? null : ReikaJavaLibrary.getRandomListEntry(rand, next);
 		}
 		Spline s = new Spline(SplineType.CHORDAL);
@@ -178,6 +225,8 @@ public class ItemSplineAttack extends ItemChromaTool {
 			List<EntityLivingBase> li = world.getEntitiesWithinAABBExcludingEntity(ep, box, attackableSelector);
 			ArrayList<EntityTarget> li2 = new ArrayList();
 			for (EntityLivingBase e : li) {
+				if (e == ep)
+					continue;
 				LinkedList<Coordinate> pos = this.getPath(ep, e);
 				if (pos != null) {
 					li2.add(new EntityTarget(e, pos));
@@ -198,16 +247,19 @@ public class ItemSplineAttack extends ItemChromaTool {
 			li.add(new Coordinate(to));
 			return li;
 		}
-		return BreadthFirstSearch.getOpenPathBetween(from.worldObj, new Coordinate(from), new Coordinate(to), 16);
+		BlockBox box = BlockBox.between(from, to).expand(8, 6, 8);
+		return BreadthFirstSearch.getOpenPathBetween(from.worldObj, new Coordinate(from), new Coordinate(to), 16, box);
 	}
 
-	private List<EntityTarget> getAttackableEntitiesFrom(World world, EntityLivingBase from, List<EntityTarget> path) {
+	private List<EntityTarget> getAttackableEntitiesFrom(World world, EntityLivingBase from, EntityPlayer owner, List<EntityTarget> path) {
 		for (double d = 1; d <= MAX_RANGE; d += Math.sqrt(d)) {
 			d = Math.ceil(d);
 			AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(from, d);
 			List<EntityLivingBase> li = world.getEntitiesWithinAABBExcludingEntity(from, box, attackableSelector);
 			ArrayList<EntityTarget> li2 = new ArrayList();
 			for (EntityLivingBase e : li) {
+				if (e == owner)
+					continue;
 				boolean flag = true;
 				for (EntityTarget at : path) {
 					if (at.entity == e) {
@@ -224,18 +276,6 @@ public class ItemSplineAttack extends ItemChromaTool {
 				return li2;
 		}
 		return null;
-	}
-
-	private static class EntityTarget {
-
-		private final EntityLivingBase entity;
-		private final LinkedList<Coordinate> path;
-
-		private EntityTarget(EntityLivingBase e, LinkedList<Coordinate> li) {
-			entity = e;
-			path = li;
-		}
-
 	}
 
 }

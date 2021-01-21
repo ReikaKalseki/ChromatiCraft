@@ -237,6 +237,11 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 	}
 
 	@Override
+	public boolean allowMining(EntityPlayer ep) {
+		return true;
+	}
+
+	@Override
 	public final ChromaTiles getTile() {
 		return ChromaTiles.ADJACENCY;
 	}

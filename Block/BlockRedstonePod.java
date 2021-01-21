@@ -150,6 +150,11 @@ public class BlockRedstonePod extends BlockAttachableMini {
 		}
 
 		@Override
+		public boolean allowMining(EntityPlayer ep) {
+			return true;
+		}
+
+		@Override
 		public void syncAllData(boolean fullNBT) {
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}

@@ -50,6 +50,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
 import Reika.ChromatiCraft.Base.TileEntity.FluidEmitterChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.FluidIOChromaticBase;
@@ -178,6 +179,10 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 		}
 		if (te instanceof ConditionalUnbreakability) {
 			if (((ConditionalUnbreakability)te).isUnbreakable(ep))
+				return -1;
+		}
+		if (te instanceof SneakPop) {
+			if (!((SneakPop)te).allowMining(ep))
 				return -1;
 		}
 		if (te instanceof TileEntityDataNode)

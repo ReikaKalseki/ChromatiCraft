@@ -102,6 +102,11 @@ public class TileEntityAtmosphericRelay extends CrystalTransmitterBase implement
 	}
 
 	@Override
+	public boolean allowMining(EntityPlayer ep) {
+		return this.canDrop(ep);
+	}
+
+	@Override
 	public int getSignalDepth(CrystalElement e) {
 		return depth;
 	}

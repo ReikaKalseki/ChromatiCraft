@@ -83,7 +83,7 @@ public enum Towers {
 		double r = radius*MathHelper.clamp_double(DragonOptions.WORLDSIZE.getValue()/5000D, 0.5, 5);
 		HexGrid grid = new HexGrid(9, r, true, MapShape.HEXAGON).flower();
 
-		Random rand = new Random(world.getSeed()); // ^ world.getSaveHandler().getWorldDirectory().getAbsolutePath().toString().hashCode()
+		Random rand = new Random(world.getSeed()); // ^ world.getSaveHandler().getWorldDirectory().getCanonicalPath().toString().hashCode()
 
 		double a = rand.nextDouble()*360;
 		double dx = -TOWER_OFFSET_RADIUS+rand.nextDouble()*TOWER_OFFSET_RADIUS*2+DragonOptions.WORLDCENTERX.getValue();

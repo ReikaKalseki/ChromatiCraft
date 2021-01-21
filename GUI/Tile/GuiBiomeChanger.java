@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -35,6 +35,7 @@ import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter.Brush;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter.PaintElement;
+import Reika.DragonAPI.Interfaces.CustomMapColorBiome;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
@@ -387,6 +388,9 @@ public class GuiBiomeChanger extends GuiChromaBase {
 				int n = 10;
 				c = ((dx+dz)%n+n)%n >= n/2 ? ReikaColorAPI.getColorWithBrightnessMultiplier(color, 0.5F) : ReikaColorAPI.getColorWithBrightnessMultiplier(color, 0.25F);
 				c = 0xff000000 | c;
+			}
+			if (biome instanceof CustomMapColorBiome) {
+				c = ((CustomMapColorBiome)biome).getMapColor(Minecraft.getMinecraft().theWorld, x*2, y*2);
 			}
 			api.drawRect(x, y, s, s, c, true);
 		}

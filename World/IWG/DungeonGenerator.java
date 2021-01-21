@@ -63,6 +63,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -115,7 +116,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			ChromaStructures s = e.getKey();
 			long sd = world.getSeed() ^ (s.ordinal()*41381);
 			if (v == null || v.seed != sd) {
-				v = (VoronoiNoiseGenerator)new VoronoiNoiseGenerator(sd ^ (world.getSaveHandler().getWorldDirectory().getAbsolutePath().hashCode() + s.ordinal())).setFrequency(0.75D/this.getNoiseScale(s));
+				v = (VoronoiNoiseGenerator)new VoronoiNoiseGenerator(sd ^ (ReikaFileReader.getRealPath(world.getSaveHandler().getWorldDirectory()).hashCode() + s.ordinal())).setFrequency(0.75D/this.getNoiseScale(s));
 				v.randomFactor = 0.55;
 				e.setValue(v);
 			}

@@ -31,8 +31,8 @@ public class BlockChromaPlantTile extends BlockChromaTile {
 
 	private final IIcon[][] icons = new IIcon[16][8];
 
-	public BlockChromaPlantTile(Material xMaterial) {
-		super(xMaterial);
+	public BlockChromaPlantTile(Material mat) {
+		super(mat);
 		this.setLightLevel(0.5F);
 		stepSound = soundTypeGrass;
 		blockHardness = 0;

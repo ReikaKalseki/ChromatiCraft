@@ -1788,8 +1788,8 @@ public class ChromaticEventManager {
 	public void deleteEnd(WorldEvent.Unload evt) {
 		if (ChromaOptions.DELEND.getState() && !ModList.ENDEREXPANSION.isLoaded()) {
 			if (evt.world.provider.dimensionId == 1 && !evt.world.isRemote) {
-				String path = DimensionManager.getCurrentSaveRootDirectory().getAbsolutePath().replaceAll("\\\\", "/").replaceAll("/\\./", "/");
-				File dim = new File(path+"/DIM1");
+				File path = DimensionManager.getCurrentSaveRootDirectory();
+				File dim = new File(path, "DIM1");
 				if (dim.exists() && dim.isDirectory()) {
 					ChromatiCraft.logger.log("Deleting unloaded end.");
 					ReikaFileReader.deleteFolderWithContents(dim, 100);

@@ -66,7 +66,7 @@ public class AbilityHotkeys {
 		CachedAbilitySelection cab = new CachedAbilitySelection(a, data);
 		NBTTagCompound tag = cab.writeToNBT();
 		li.setTag("slot"+slot, tag);
-		ReikaPlayerAPI.syncCustomDataFromClient(ep);
+		ReikaPlayerAPI.sendCustomDataFromClient(ep);
 
 		ReikaChatHelper.sendChatToPlayer(ep, "Saved ability "+a.getDisplayName()+" to ability hotkey slot "+slot+" with power level "+data);
 	}

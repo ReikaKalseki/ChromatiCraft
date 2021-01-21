@@ -77,7 +77,7 @@ public class UATrades implements ConnectionErrorHandler {
 
 		boolean jvm = ReikaJVMParser.isArgumentPresent("useCachedEDDBForCC");
 		if (jvm) {
-			File f = new File(DragonAPICore.getMinecraftDirectoryString()+"/ChromatiCraft_Data/eddbcache.json");
+			File f = new File(DragonAPICore.getMinecraftDirectory(), "ChromatiCraft_Data/eddbcache.json");
 			if (f.exists() && System.currentTimeMillis()-f.lastModified() < 24*3600*1000) { //1d
 				try (BufferedReader r = ReikaFileReader.getReader(f, Charsets.UTF_8)) {
 					if (r != null) {
@@ -103,7 +103,7 @@ public class UATrades implements ConnectionErrorHandler {
 				else {
 					this.loadJSONData(r);
 					if (jvm) {
-						File f = new File(DragonAPICore.getMinecraftDirectoryString()+"/ChromatiCraft_Data/eddbcache.json");
+						File f = new File(DragonAPICore.getMinecraftDirectory(), "ChromatiCraft_Data/eddbcache.json");
 						f.getParentFile().mkdirs();
 						f.delete();
 						ReikaFileReader.copyFile(url.openStream(), new FileOutputStream(f), 4096, null);

@@ -1,14 +1,15 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
+import java.io.File;
 import java.util.Collection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -26,12 +27,12 @@ public class MusicLoader {
 
 	public static final MusicLoader instance = new MusicLoader();
 
-	private static final String mcDir = DragonAPICore.getMinecraftDirectoryString();
+	private static final File mcDir = DragonAPICore.getMinecraftDirectory();
 
 	private static final String hashURL = "https://cache.techjargaming.com/reika/list.php?dir=ccmusic/";
 	//private static final String musicURL = "https://cache.techjargaming.com";
 
-	public static final String musicPath = mcDir+"/mods/Reika/ChromatiCraft/Music/";
+	public static final File musicPath = new File(mcDir, "mods/Reika/ChromatiCraft/Music");
 
 	private final MusicFolder folder = new MusicFolder();
 
@@ -69,7 +70,7 @@ public class MusicLoader {
 		}
 
 		@Override
-		public String getLocalPath() {
+		public File getLocalStorageFolder() {
 			return musicPath;
 		}
 	}

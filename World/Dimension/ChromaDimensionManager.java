@@ -334,8 +334,8 @@ public class ChromaDimensionManager {
 		DimensionStructureGenerator.resetCachedGenerators();
 		getChunkProvider(world).clearCaches(!serverStopping);
 		System.gc();
-		String path = DimensionManager.getCurrentSaveRootDirectory().getAbsolutePath().replaceAll("\\\\", "/").replaceAll("/\\./", "/");
-		File dim = new File(path+"/DIM"+ExtraChromaIDs.DIMID.getValue());
+		File path = DimensionManager.getCurrentSaveRootDirectory();
+		File dim = new File(path, "DIM"+ExtraChromaIDs.DIMID.getValue());
 		if (dim.exists() && dim.isDirectory()) {
 			boolean del = ReikaFileReader.deleteFolderWithContents(dim, 100);
 			if (!del) {
@@ -352,8 +352,7 @@ public class ChromaDimensionManager {
 		dimensionAge = 0;
 		playersInStructures.clear();
 		System.gc();
-		String path = DragonAPICore.getMinecraftDirectoryString()+"mods/VoxelMods/voxelMap/cache/";
-		File f = new File(path);
+		File f = new File(DragonAPICore.getMinecraftDirectory(), "mods/VoxelMods/voxelMap/cache");
 		if (f.exists() && f.isDirectory()) {
 			File[] saves = f.listFiles();
 			for (int i = 0; i < saves.length; i++) {

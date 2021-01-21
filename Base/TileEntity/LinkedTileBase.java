@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Base.TileEntity;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -37,6 +38,11 @@ public abstract class LinkedTileBase extends TileEntityChromaticBase implements 
 			ei.lifespan = Integer.MAX_VALUE;
 			this.delete();
 		}
+	}
+
+	@Override
+	public final boolean allowMining(EntityPlayer ep) {
+		return false;
 	}
 
 	public final void drop() {

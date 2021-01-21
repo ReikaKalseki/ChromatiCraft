@@ -16,5 +16,7 @@ public interface SneakPop {
 	public void drop();
 
 	public boolean canDrop(EntityPlayer ep);
+	
+	public boolean allowMining(EntityPlayer ep);
 
 }

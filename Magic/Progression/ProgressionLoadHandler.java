@@ -24,6 +24,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Magic.CastingTuning.CastingTuningManager;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler.PlayerTracker;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
@@ -98,6 +99,7 @@ public class ProgressionLoadHandler implements PlayerTracker {
 	public void onPlayerLogin(EntityPlayer player) {
 		this.updateProgressCache(player);
 		ProgressionLinking.instance.attemptSyncAllInGroup(player);
+		CastingTuningManager.instance.calculateAndCacheKey(player);
 	}
 
 	@Override

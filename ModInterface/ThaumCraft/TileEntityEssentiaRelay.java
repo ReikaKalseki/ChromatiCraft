@@ -409,6 +409,11 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 	}
 
 	@Override
+	public boolean allowMining(EntityPlayer ep) {
+		return false;
+	}
+
+	@Override
 	public final void drop() {
 		//ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, this.getTile().getCraftedProduct());
 		//if (!this.shouldDrop())

@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.World.Dimension;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Iterator;
@@ -104,11 +105,11 @@ public class StructureCalculator extends ThreadedGenerator {
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			return clientDimensionSeed;
 		}
-		File f = new File(DragonAPICore.getMinecraftDirectoryString()+"/ChromatiCraft_Data/DimensionGen.dat");
+		File f = new File(DragonAPICore.getMinecraftDirectory(), "ChromatiCraft_Data/DimensionGen.dat");
 		try {
 			if (f.exists()) {
 				try {
-					ArrayList<String> li = ReikaFileReader.getFileAsLines(f, true);
+					ArrayList<String> li = ReikaFileReader.getFileAsLines(f, true, Charset.defaultCharset());
 					if (!li.isEmpty()) {
 						String s = li.get(0);
 						s = s.substring(s.indexOf(':')+1);

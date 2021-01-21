@@ -460,6 +460,11 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		return placerUUID == null || ep.getUniqueID().equals(placerUUID);
 	}
 
+	@Override
+	public boolean allowMining(EntityPlayer ep) {
+		return this.canDrop(ep);
+	}
+
 	protected boolean shouldDrop() {
 		return true;
 	}

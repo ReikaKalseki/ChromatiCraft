@@ -148,7 +148,7 @@ public class ChromaHelpData {
 		if (!has) {
 			tag.setBoolean(sg, true);
 			nbt.setTag(NBT_TAG, tag);
-			ReikaPlayerAPI.syncCustomDataFromClient(ep);
+			ReikaPlayerAPI.sendCustomDataFromClient(ep);
 		}
 	}
 

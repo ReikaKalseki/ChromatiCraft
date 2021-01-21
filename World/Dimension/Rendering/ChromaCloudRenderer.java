@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Auxiliary.Trackers.SpecialDayTracker;
 import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -93,8 +94,13 @@ public class ChromaCloudRenderer extends IRenderHandler {
 		int r = 2;
 		for (int a = -r; a <= r; a++) {
 			for (int b = -r; b <= r; b++) {
-				for (int i = 0; i < 4; i++) {
-					ReikaTextureHelper.bindTexture(skyTex[i]);
+				boolean flag = SpecialDayTracker.instance.loadAprilTextures();
+				int n = flag ? 1 : 4;
+				for (int i = 0; i < n; i++) {
+					if (flag)
+						ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/clouds/dimsky_april.png");
+					else
+						ReikaTextureHelper.bindTexture(skyTex[i]);
 
 					double s = 0.75+0.25*i;
 					double slide = (((world.getTotalWorldTime()%24000 + ptick)/24000D)*w*s)%w;
@@ -110,7 +116,7 @@ public class ChromaCloudRenderer extends IRenderHandler {
 					c1 *= Math.min(1, Math.max(0, playerY/64D));
 					c2 *= Math.min(1, Math.max(0, playerY/64D));
 
-					double mult = 0.625+0.375*Math.sin(System.currentTimeMillis()/2000D+i*Math.PI/2);
+					double mult = flag ? 1 : 0.625+0.375*Math.sin(System.currentTimeMillis()/2000D+i*Math.PI/2);
 
 					c1 *= mult;
 					c2 *= mult;

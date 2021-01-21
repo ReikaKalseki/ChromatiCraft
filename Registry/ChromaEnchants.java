@@ -95,14 +95,16 @@ public enum ChromaEnchants implements EnchantmentEnum {
 		if (tool == null || tool.stackTagCompound == null)
 			return 0;
 		Enchantment e = this.getEnchantment();
-		int lim = e.getMaxLevel()-1;
+		int lim = e.getMaxLevel();
 		int has = ReikaEnchantmentHelper.getEnchantmentLevel(this.getEnchantment(), tool);
 		if (has > lim) {
 			tool.stackTagCompound.setBoolean(OVERENCHANT_TAG, true);
 			return lim;
 		}
 		else {
-			tool.stackTagCompound.setBoolean(OVERENCHANT_TAG, false);
+			tool.stackTagCompound.removeTag(OVERENCHANT_TAG);
+			if (tool.stackTagCompound.hasNoTags())
+				tool.stackTagCompound = null;
 		}
 		return has;
 	}
