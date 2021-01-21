@@ -47,6 +47,7 @@ import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonDrainedEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonFullyChargedEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonRechargedEvent;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalBase;
 import Reika.ChromatiCraft.Block.BlockEncrustedCrystal;
 import Reika.ChromatiCraft.Block.BlockEncrustedCrystal.TileCrystalEncrusted;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
@@ -1417,6 +1418,11 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	public boolean hasBroadcastUpgrade() {
 		return broadcast;
+	}
+
+	@Override
+	public double getMaximumBeamRadius() {
+		return TileEntityCrystalBase.DEFAULT_BEAM_RADIUS;
 	}
 
 }

@@ -267,7 +267,7 @@ public enum ChromaTiles implements TileEnum {
 	LAUNCHPAD("chroma.launchpad",		ChromaBlocks.TILEENTITY2,	TileEntityLaunchPad.class,			7, "RenderLaunchPad"),
 	TOOLSTORAGE("chroma.toolstorage",	ChromaBlocks.TILEENTITY2,	TileEntityToolStorage.class,		8, "RenderMassStorage"),
 	BEESTORAGE("chroma.beestorage",		ChromaBlocks.TILEMODELLED4,	TileEntityBeeStorage.class,			9, "RenderBeeStorage", ModList.FORESTRY),
-	NETWORKITEM("chroma.networkitem",	ChromaBlocks.TILEENTITY2,	TileEntityNetworkItemTransporter.class, 9);
+	NETWORKITEM("chroma.networkitem",	ChromaBlocks.TILEMODELLED4,	TileEntityNetworkItemTransporter.class, 10, "RenderItemNetwork");
 
 	private final Class tile;
 	private final String name;

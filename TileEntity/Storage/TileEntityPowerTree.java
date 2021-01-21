@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityWirelessPowered;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree.TileEntityPowerTreeAux;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
@@ -870,6 +871,11 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	public boolean canStructureBeInspected() {
 		return true;
+	}
+
+	@Override
+	public double getMaximumBeamRadius() {
+		return TileEntityCrystalBase.DEFAULT_BEAM_RADIUS;
 	}
 
 }

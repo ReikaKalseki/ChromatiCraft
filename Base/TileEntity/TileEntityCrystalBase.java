@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -25,6 +25,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class TileEntityCrystalBase extends TileEntityChromaticBase implements CrystalNetworkTile {
+
+	public static final double DEFAULT_BEAM_RADIUS = 0.35;
 
 	private UUID uniqueID = CrystalNetworker.instance.getNewUniqueID();
 
@@ -126,11 +128,11 @@ public abstract class TileEntityCrystalBase extends TileEntityChromaticBase impl
 	}
 
 	public double getIncomingBeamRadius() {
-		return 0.35;
+		return DEFAULT_BEAM_RADIUS;
 	}
 
 	public double getOutgoingBeamRadius() {
-		return 0.35;
+		return DEFAULT_BEAM_RADIUS;
 	}
 
 	public void onPathCompleted(CrystalFlow p) {

@@ -15,6 +15,7 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
@@ -115,6 +116,11 @@ public class TileEntityCreativeSource extends CrystalTransmitterBase implements 
 	@Override
 	public int getPathPriority() {
 		return Integer.MAX_VALUE;
+	}
+
+	@Override
+	public double getMaximumBeamRadius() {
+		return TileEntityCrystalBase.DEFAULT_BEAM_RADIUS;
 	}
 
 }

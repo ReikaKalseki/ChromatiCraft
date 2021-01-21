@@ -38,6 +38,7 @@ public final class CrystalFlow extends CrystalPath {
 	private final int throughputLimit;
 
 	private int remainingAmount;
+
 	private int throttle = Integer.MAX_VALUE;
 
 	CrystalFlow(CrystalNetworker net, CrystalPath p, CrystalReceiver r, int amt, int maxthru) {
@@ -72,9 +73,9 @@ public final class CrystalFlow extends CrystalPath {
 			if (pn.isRepeater()) {
 				insured = Math.max(insured, ((CrystalRepeater)te).getThoughputInsurance());
 				bonus += ((CrystalRepeater)te).getThoughputBonus(hasLocus);
-			}
-			if (DynamicRepeater.class.isAssignableFrom(pn.tileClass)) {
-				dynamics.add((DynamicRepeater)te);
+				if (DynamicRepeater.class.isAssignableFrom(pn.tileClass)) {
+					dynamics.add((DynamicRepeater)te);
+				}
 			}
 		}
 
@@ -133,7 +134,7 @@ public final class CrystalFlow extends CrystalPath {
 		double sy = offset != null ? offset.middle : 0;
 		double sz = offset != null ? offset.right : 0;
 		CrystalSource src = (CrystalSource)nodes.get(nodes.size()-1).getTile(true);
-		src.addTarget(locs.location, element, sx, sy, sz, r.getIncomingBeamRadius());
+		src.addTarget(locs.location, element, sx, sy, sz, Math.min(r.getIncomingBeamRadius(), src.getMaximumBeamRadius()));
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = nodes.get(i).getTile(true);
 			if (te instanceof CrystalTransmitter) {
@@ -143,7 +144,7 @@ public final class CrystalFlow extends CrystalPath {
 				double dx = offset != null ? offset.left : 0;
 				double dy = offset != null ? offset.middle : 0;
 				double dz = offset != null ? offset.right : 0;
-				((CrystalTransmitter)te).addTarget(tg.location, element, dx, dy, dz, r.getIncomingBeamRadius());
+				((CrystalTransmitter)te).addTarget(tg.location, element, dx, dy, dz, Math.min(r.getIncomingBeamRadius(), src.getMaximumBeamRadius()));
 			}/*
 					if (te instanceof CrystalReceiver) {
 						WorldLocation src = nodes.get(i+1);

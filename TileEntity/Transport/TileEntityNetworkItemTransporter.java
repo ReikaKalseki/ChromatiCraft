@@ -1,5 +1,7 @@
 package Reika.ChromatiCraft.TileEntity.Transport;
 
+import java.util.Set;
+
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -45,8 +47,17 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 		if (inv[slot] != null)
 			num -= inv[slot].stackSize;
 		currentRequest = ReikaItemHelper.getSizedItemStack(requestFilters[slot-12], num);
+		Set<CrystalElement> c = this.getRequiredColorsForItem(currentRequest);
+		c.add(CrystalElement.LIME);
+		for (CrystalElement e : c) {
+			if (!CrystalNetworker.instance.checkConnectivity(e, this)) {
+				currentRequest = null;
+				return;
+			}
+		}
 		int amt = currentRequest.stackSize*1000;
-		CrystalNetworker.instance.makeRequest(this, CrystalElement.LIME, amt, world, this.getReceiveRange(), amt/4, SourceValidityRule.ALWAYS);
+		for (CrystalElement e : c)
+			CrystalNetworker.instance.makeRequest(this, e, amt, world, this.getReceiveRange(), amt/4, SourceValidityRule.ALWAYS);
 	}
 
 	private int getNextSlotToRequest() {
@@ -75,6 +86,10 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 		return this.getSlotToSendTo(te) >= 0;
 	}
 
+	private static Set<CrystalElement> getRequiredColorsForItem(ItemStack is) {
+
+	}
+
 	@Override
 	public int getSendRange() {
 		return 32;
@@ -101,7 +116,7 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 
 	@Override
 	public boolean isConductingElement(CrystalElement e) {
-		return e == CrystalElement.LIME;
+		return true;
 	}
 
 	@Override
@@ -160,7 +175,7 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 
 	@Override
 	public int getEnergy(CrystalElement e) {
-		return e == CrystalElement.LIME ? 1000*this.getInventoryStackLimit() : 0;
+		return 1000*this.getInventoryStackLimit();
 	}
 
 	@Override
@@ -226,6 +241,20 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack is) {
 		return i < 12;
+	}
+
+	@Override
+	public double getIncomingBeamRadius() {
+		return 0.125;
+	}
+
+	@Override
+	public double getOutgoingBeamRadius() {
+		return this.getIncomingBeamRadius();
+	}
+
+	public double getMaximumBeamRadius() {
+		return this.getOutgoingBeamRadius();
 	}
 
 }

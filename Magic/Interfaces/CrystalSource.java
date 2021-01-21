@@ -28,4 +28,6 @@ public interface CrystalSource extends CrystalTransmitter, LumenTile {
 
 	public boolean playerCanUse(EntityPlayer ep);
 
+	public double getMaximumBeamRadius();
+
 }
