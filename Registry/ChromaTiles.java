@@ -138,6 +138,7 @@ import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidRelay;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityItemRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityLaunchPad;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityNetworkItemTransporter;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRFDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRouterHub;
@@ -265,7 +266,8 @@ public enum ChromaTiles implements TileEnum {
 	SMELTERYDISTRIBUTOR("chroma.smeltery", ChromaBlocks.TILEMODELLED4, TileEntitySmelteryDistributor.class, 8, "RenderSmelteryDistributor", ModList.TINKERER),
 	LAUNCHPAD("chroma.launchpad",		ChromaBlocks.TILEENTITY2,	TileEntityLaunchPad.class,			7, "RenderLaunchPad"),
 	TOOLSTORAGE("chroma.toolstorage",	ChromaBlocks.TILEENTITY2,	TileEntityToolStorage.class,		8, "RenderMassStorage"),
-	BEESTORAGE("chroma.beestorage",		ChromaBlocks.TILEMODELLED4,	TileEntityBeeStorage.class,			9, "RenderBeeStorage", ModList.FORESTRY);
+	BEESTORAGE("chroma.beestorage",		ChromaBlocks.TILEMODELLED4,	TileEntityBeeStorage.class,			9, "RenderBeeStorage", ModList.FORESTRY),
+	NETWORKITEM("chroma.networkitem",	ChromaBlocks.TILEENTITY2,	TileEntityNetworkItemTransporter.class, 9);
 
 	private final Class tile;
 	private final String name;

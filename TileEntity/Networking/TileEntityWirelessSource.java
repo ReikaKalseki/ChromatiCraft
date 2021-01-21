@@ -143,7 +143,7 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 			float loss = inter ? 4F : 2F; //50% loss + another 50% if cross-dimension
 			if (enhancedBroadcasting)
 				loss = TileEntityAuraPoint.hasAuraPoints(placerUUID) ? 1 : (inter ? 2 : 1.25F);
-			te.receiveElement(e, (int)(amt/loss));
+			te.receiveElement(null, e, (int)(amt/loss));
 			//ReikaJavaLibrary.pConsole("Moved "+amt+" of "+e+" to "+te+" > "+te.energy);
 			te.syncAllData(false);
 			return true;

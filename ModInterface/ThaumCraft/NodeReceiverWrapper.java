@@ -38,6 +38,7 @@ import Reika.ChromatiCraft.Auxiliary.Render.MouseoverOverlayRenderer;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenRequestingTile;
 import Reika.ChromatiCraft.Magic.Interfaces.NotifiedNetworkTile;
@@ -220,7 +221,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	}
 
 	@Override
-	public int receiveElement(CrystalElement e, int amt) {
+	public int receiveElement(CrystalSource src, CrystalElement e, int amt) {
 		amt = Math.max(1, MathHelper.floor_float(amt*this.getEfficiencyFactor()));
 		int add = Math.min(this.getRemainingSpace(e), amt);
 		if (add > 0) {
@@ -861,6 +862,10 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	@Override
 	public void triggerBottleneckDisplay(int duration) {
 
+	}
+
+	public boolean canBeSuppliedBy(CrystalSource te, CrystalElement e) {
+		return true;
 	}
 
 	public void load(NBTTagCompound tag, boolean sync) {

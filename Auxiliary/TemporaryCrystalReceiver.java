@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.WrapperTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
@@ -130,7 +131,7 @@ public class TemporaryCrystalReceiver implements CrystalReceiver, WrapperTile {
 	}
 
 	@Override
-	public int receiveElement(CrystalElement e, int amt) {
+	public int receiveElement(CrystalSource src, CrystalElement e, int amt) {
 		return 1;
 	}
 
@@ -180,6 +181,10 @@ public class TemporaryCrystalReceiver implements CrystalReceiver, WrapperTile {
 
 	public void addColorRestriction(CrystalElement e) {
 		colorLimit.add(e);
+	}
+
+	public boolean canBeSuppliedBy(CrystalSource te, CrystalElement e) {
+		return this.isConductingElement(e);
 	}
 
 }

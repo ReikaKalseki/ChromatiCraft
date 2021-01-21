@@ -15,8 +15,9 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public interface CrystalReceiver extends CrystalNetworkTile, EnergyBeamReceiver {
 
-	/** Returns the amount successfully added. */
-	public int receiveElement(CrystalElement e, int amt);
+	/** Returns the amount successfully added.
+	 * @param src TODO*/
+	public int receiveElement(CrystalSource src, CrystalElement e, int amt);
 
 	public void onPathBroken(CrystalFlow p, FlowFail f);
 
@@ -27,6 +28,8 @@ public interface CrystalReceiver extends CrystalNetworkTile, EnergyBeamReceiver 
 	public boolean canReceiveFrom(CrystalTransmitter r);
 
 	public boolean needsLineOfSightFromTransmitter(CrystalTransmitter r);
+
+	public boolean canBeSuppliedBy(CrystalSource te, CrystalElement e);
 
 	//public void markSource(WorldLocation loc);
 

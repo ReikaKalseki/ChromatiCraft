@@ -114,7 +114,7 @@ public class PylonFinder {
 	}
 
 	CrystalPath findPylon() {
-		return this.findPylonWith(new SourceValidityRule());
+		return this.findPylonWith(SourceValidityRule.ALWAYS);
 	}
 
 	CrystalPath findPylonWith(SourceValidityRule rule) {
@@ -141,7 +141,7 @@ public class PylonFinder {
 	}
 
 	CrystalFlow findPylon(int amount, int maxthru) {
-		return this.findPylon(amount, maxthru, new SourceValidityRule());
+		return this.findPylon(amount, maxthru, SourceValidityRule.ALWAYS);
 	}
 
 	CrystalFlow findPylon(int amount, int maxthru, SourceValidityRule rule) {
@@ -431,7 +431,7 @@ public class PylonFinder {
 		if (te instanceof TileEntityCrystalPylon)
 			if (((TileEntityCrystalPylon)te).enhancing)
 				return false;
-		return te.canSupply(target, element) && (user == null || te.playerCanUse(user)) && rule.isValid(te, element);
+		return te.canSupply(target, element) && target.canBeSuppliedBy(te, element) && (user == null || te.playerCanUse(user)) && rule.isValid(te, element);
 	}
 
 	/*

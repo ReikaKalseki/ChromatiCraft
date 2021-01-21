@@ -258,12 +258,17 @@ public class CrystalNetworker implements TickHandler {
 	}
 
 	public boolean makeRequest(CrystalReceiver r, CrystalElement e, int amount, World world, int range, int maxthru) {
+		//require the source have at least 10% of the requested amount, or be at least 75% full
+		SourceValidityRule rule = new SourceValidityRule(0, amount/10, 0.75F);
+		return this.makeRequest(r, e, amount, world, range, maxthru, rule);
+	}
+
+	public boolean makeRequest(CrystalReceiver r, CrystalElement e, int amount, World world, int range, int maxthru, SourceValidityRule rule) {
 		if (amount <= 0)
 			return false;
 		if (this.hasFlowTo(r, e, world))
 			return false;
 		EntityPlayer ep = r.getPlacerUUID() != null ? world.func_152378_a(r.getPlacerUUID()) : null;
-		SourceValidityRule rule = new SourceValidityRule(0, amount/10, 0.75F); //require the source have at least 10% of the requested amount, or be at least 75% full
 		CrystalFlow p = new PylonFinder(e, r, ep).findPylon(amount, maxthru, rule);
 		//ReikaJavaLibrary.pConsole(p, Side.SERVER);
 		CrystalNetworkLogger.logRequest(r, e, amount, p);
@@ -316,8 +321,8 @@ public class CrystalNetworker implements TickHandler {
 							int amt = p.drain();
 							CrystalNetworkLogger.logFlowTick(p, amt);
 							if (amt > 0) {
-								int add = p.receiver.receiveElement(p.element, amt);
-								p.transmitter.drain(p.element, amt);
+								int add = p.receiver.receiveElement(p.transmitter, p.element, amt);
+								p.transmitter.drain(p.element, add);
 								if (add > 0)
 									p.tickRepeaters(add);
 								if (p.isComplete()) {

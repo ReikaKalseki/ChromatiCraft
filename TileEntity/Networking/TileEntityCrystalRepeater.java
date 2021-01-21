@@ -350,7 +350,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	}
 
 	@Override
-	public final int receiveElement(CrystalElement e, int amt) {
+	public final int receiveElement(CrystalSource src, CrystalElement e, int amt) {
 		return 1;
 	}
 
@@ -699,6 +699,10 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	public boolean canStructureBeInspected() {
 		return false;
+	}
+
+	public boolean canBeSuppliedBy(CrystalSource te, CrystalElement e) {
+		return true;
 	}
 
 }

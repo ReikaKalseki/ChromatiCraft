@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenRequestingTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
@@ -142,7 +143,7 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 	}
 
 	@Override
-	public final int receiveElement(CrystalElement e, int amt) {
+	public final int receiveElement(CrystalSource src, CrystalElement e, int amt) {
 		int add = Math.min(amt, this.getMaxStorage(e)-amt);
 		energy.addValueToColor(e, amt);
 		this.clamp(e);
@@ -230,6 +231,11 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 
 	@Override
 	public boolean needsLineOfSightFromTransmitter(CrystalTransmitter r) {
+		return true;
+	}
+
+	@Override
+	public boolean canBeSuppliedBy(CrystalSource te, CrystalElement e) {
 		return true;
 	}
 

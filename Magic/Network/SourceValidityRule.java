@@ -9,7 +9,9 @@ public class SourceValidityRule {
 	public int minAmount;
 	public float fullOverride;
 
-	public SourceValidityRule() {
+	public static final SourceValidityRule ALWAYS = new SourceValidityRule();
+
+	private SourceValidityRule() {
 		this(0, 0, -1);
 	}
 

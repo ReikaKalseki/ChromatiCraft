@@ -20,6 +20,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.PylonConnector;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -33,7 +34,7 @@ public class TileEntityAtmosphericRelay extends CrystalTransmitterBase implement
 	private boolean hasStructure = true;
 
 	@Override
-	public int receiveElement(CrystalElement e, int amt) {
+	public int receiveElement(CrystalSource src, CrystalElement e, int amt) {
 		return 1;
 	}
 
@@ -175,6 +176,10 @@ public class TileEntityAtmosphericRelay extends CrystalTransmitterBase implement
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
 		this.readOwnerData(is);
+	}
+
+	public boolean canBeSuppliedBy(CrystalSource te, CrystalElement e) {
+		return true;
 	}
 
 }
