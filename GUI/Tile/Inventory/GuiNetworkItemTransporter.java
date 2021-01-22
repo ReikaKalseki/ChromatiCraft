@@ -90,8 +90,8 @@ public class GuiNetworkItemTransporter extends GuiChromaBase
 
 	@Override
 	protected final void func_146977_a(Slot slot) {
-		if (GuiScreen.isCtrlKeyDown() && slot.slotNumber >= 12) {
-			api.drawItemStack(itemRender, fontRendererObj, is, dx, dy);
+		if (GuiScreen.isCtrlKeyDown() && slot.slotNumber >= 12 && slot.inventory == net) {
+			api.drawItemStack(itemRender, fontRendererObj, net.getFilter(slot.slotNumber-12), slot.xDisplayPosition, slot.yDisplayPosition);
 		}
 		else {
 			super.func_146977_a(slot);

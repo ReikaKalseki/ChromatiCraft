@@ -155,7 +155,7 @@ public abstract class GuiChromaBase extends GuiContainer implements CustomSoundG
 	}
 
 	@Override
-	protected final void func_146977_a(Slot slot) {
+	protected void func_146977_a(Slot slot) {
 		super.func_146977_a(slot);
 		if (Keyboard.isKeyDown(DragonOptions.DEBUGKEY.getValue()) && DragonOptions.TABNBT.getState()) {
 			ReikaTextureHelper.bindFontTexture();

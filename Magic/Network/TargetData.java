@@ -32,6 +32,7 @@ public class TargetData {
 	public TargetData(CrystalTarget tg) {
 		position = new DecimalPosition(tg.location).offset(tg.offsetX, tg.offsetY, tg.offsetZ);
 		targetWidth = tg.endWidth;
+		maximumWidth = tg.widthLimit;
 		TileEntity te = tg.location.getTileEntity();
 		targetClass = te != null ? te.getClass() : void.class;
 		source = tg.source;

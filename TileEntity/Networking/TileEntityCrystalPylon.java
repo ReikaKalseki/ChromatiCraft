@@ -546,11 +546,11 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	private void shortCircuitWith(World world, int x, int y, int z, TileEntityCrystalPylon te) {
 		double sp = EntityOverloadingPylonShock.getRandomSpeed();
 		int l = (int)sp;
-		this.addSelfTickingTarget(new WorldLocation(te), color, 0, 0, 0, this.getOutgoingBeamRadius()*2.5, l);
+		this.addSelfTickingTarget(new WorldLocation(te), color, 0, 0, 0, this.getOutgoingBeamRadius()*2.5, Double.POSITIVE_INFINITY, l);
 		ArrayList<Coordinate> li = ReikaJavaLibrary.makeListFrom(new Coordinate(this), new Coordinate(te));
 		world.spawnEntityInWorld(new EntityOverloadingPylonShock(world, this, li, sp, 1));
 		if (te.getColor() != color) {
-			this.addSelfTickingTarget(new WorldLocation(te), te.getColor(), 0, 0, 0, te.getOutgoingBeamRadius()*2.5, l);
+			this.addSelfTickingTarget(new WorldLocation(te), te.getColor(), 0, 0, 0, te.getOutgoingBeamRadius()*2.5, Double.POSITIVE_INFINITY, l);
 			if (rand.nextInt(8) == 0) {
 				te.destabilize();
 			}

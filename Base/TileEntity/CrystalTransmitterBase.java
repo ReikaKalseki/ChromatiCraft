@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -41,8 +41,8 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 	}
 
 	@Override
-	public final void addTarget(WorldLocation loc, CrystalElement e, double dx, double dy, double dz, double w) {
-		CrystalTarget tg = new CrystalTarget(this, loc, e, dx, dy, dz, w);
+	public final void addTarget(WorldLocation loc, CrystalElement e, double dx, double dy, double dz, double w, double maxW) {
+		CrystalTarget tg = new CrystalTarget(this, loc, e, dx, dy, dz, w, maxW);
 		if (!worldObj.isRemote) {
 			if (!targets.contains(tg))
 				targets.add(tg);
@@ -51,8 +51,8 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 	}
 
 	@Override
-	public final void addSelfTickingTarget(WorldLocation loc, CrystalElement e, double dx, double dy, double dz, double w, int duration) {
-		TickingCrystalTarget tg = new TickingCrystalTarget(this, loc, e, dx, dy, dz, w, duration);
+	public final void addSelfTickingTarget(WorldLocation loc, CrystalElement e, double dx, double dy, double dz, double w, double maxW, int duration) {
+		TickingCrystalTarget tg = new TickingCrystalTarget(this, loc, e, dx, dy, dz, w, maxW, duration);
 		if (!worldObj.isRemote) {
 			if (!targets.contains(tg)) {
 				targets.add(tg);

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -25,20 +25,21 @@ public class CrystalTarget {
 	public final double offsetX;
 	public final double offsetY;
 	public final double offsetZ;
+	public final double widthLimit;
 
 	public CrystalTarget(WorldLocation src, WorldLocation target, CrystalElement color, double w) {
-		this(src, target, color, 0, 0, 0, w);
+		this(src, target, color, 0, 0, 0, w, w);
 	}
 
 	public CrystalTarget(CrystalNetworkTile src, WorldLocation target, CrystalElement color, double w) {
-		this(PylonFinder.getLocation(src), target, color, 0, 0, 0, w);
+		this(PylonFinder.getLocation(src), target, color, 0, 0, 0, w, w);
 	}
 
-	public CrystalTarget(CrystalNetworkTile src, WorldLocation target, CrystalElement color, double dx, double dy, double dz, double w) {
-		this(PylonFinder.getLocation(src), target, color, dx, dy, dz, w);
+	public CrystalTarget(CrystalNetworkTile src, WorldLocation target, CrystalElement color, double dx, double dy, double dz, double w, double maxW) {
+		this(PylonFinder.getLocation(src), target, color, dx, dy, dz, w, maxW);
 	}
 
-	public CrystalTarget(WorldLocation src, WorldLocation target, CrystalElement color, double dx, double dy, double dz, double w) {
+	public CrystalTarget(WorldLocation src, WorldLocation target, CrystalElement color, double dx, double dy, double dz, double w, double maxW) {
 		if (src == null)
 			throw new IllegalArgumentException("Cannot supply null source!");
 		if (target == null)
@@ -52,6 +53,7 @@ public class CrystalTarget {
 		offsetY = dy;
 		offsetZ = dz;
 		endWidth = w;
+		widthLimit = maxW;
 	}
 
 	public void writeToNBT(String name, NBTTagCompound NBT) {
@@ -63,6 +65,7 @@ public class CrystalTarget {
 		tag.setDouble("dy", offsetY);
 		tag.setDouble("dz", offsetZ);
 		tag.setDouble("width", endWidth);
+		tag.setDouble("maxw", widthLimit);
 		location.writeToNBT("loc", tag);
 		source.writeToNBT("src", tag);
 		NBT.setTag(name, tag);
@@ -81,7 +84,8 @@ public class CrystalTarget {
 		double dy = tag.getDouble("dy");
 		double dz = tag.getDouble("dz");
 		double w = tag.getDouble("width");
-		return loc != null && src != null && e != null ? new CrystalTarget(src, loc, e, dx, dy, dz, w) : null;
+		double maxw = tag.getDouble("maxw");
+		return loc != null && src != null && e != null ? new CrystalTarget(src, loc, e, dx, dy, dz, w, maxw) : null;
 	}
 
 	@Override
@@ -113,8 +117,8 @@ public class CrystalTarget {
 			lifespan = l;
 		}
 
-		public TickingCrystalTarget(CrystalNetworkTile src, WorldLocation target, CrystalElement color, double dx, double dy, double dz, double w, int l) {
-			super(src, target, color, dx, dy, dz, w);
+		public TickingCrystalTarget(CrystalNetworkTile src, WorldLocation target, CrystalElement color, double dx, double dy, double dz, double w, double maxW, int l) {
+			super(src, target, color, dx, dy, dz, w, maxW);
 			lifespan = l;
 		}
 

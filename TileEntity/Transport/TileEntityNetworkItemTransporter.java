@@ -32,72 +32,95 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmitter implements CrystalSource, CrystalReceiver, NBTTile {
 
-	private ItemStack[] requestFilters = new ItemStack[12];
+	private Request[] requestFilters = new Request[12];
 
-	private ItemStack currentRequest;
-	private ItemStack lastRequest;
+	private Request currentRequest;
+	private Request lastRequest;
 
 	private EntityItem entity;
+
+	public TileEntityNetworkItemTransporter() {
+		for (int i = 0; i < requestFilters.length; i++) {
+			requestFilters[i] = new Request(i);
+		}
+	}
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
 		if (!world.isRemote) {
-			int slotToSend = this.getNextSlotToRequest();
-			if (slotToSend >= 0) {
-				this.tryFindItem(world, x, y, z, slotToSend);
+			for (int i = 0; i < requestFilters.length; i++) {
+				if (requestFilters[i].cooldown > 0) {
+					requestFilters[i].cooldown--;
+				}
 			}
-			else {
-				currentRequest = null;
-			}
-			if (!ReikaItemHelper.matchStacks(currentRequest, lastRequest)) {
-				CrystalNetworker.instance.breakPaths(this);
-				this.syncAllData(true);
+			if (currentRequest == null) {
+				Request req = this.getNextSlotToRequest();
+				if (req != null) {
+					boolean success = this.tryFindItem(world, x, y, z, req);
+					req.cooldown = success ? 3000*0 : 200;
+				}
+				else {
+					currentRequest = null;
+				}
+				if (currentRequest != lastRequest) {
+					if (currentRequest == null)
+						CrystalNetworker.instance.breakPaths(this);
+					this.syncAllData(true);
+				}
 			}
 			lastRequest = currentRequest;
 		}
 		else {
-			if (!ReikaItemHelper.matchStacks(currentRequest, lastRequest)) {
-				entity = currentRequest != null ? new InertItem(world, ReikaItemHelper.getSizedItemStack(currentRequest, 1)) : null;
+			if (currentRequest != lastRequest) {
+				entity = currentRequest != null ? new InertItem(world, ReikaItemHelper.getSizedItemStack(currentRequest.item, 1)) : null;
 			}
 			lastRequest = currentRequest;
 		}
 	}
 
-	private void tryFindItem(World world, int x, int y, int z, int slot) {
-		int num = Math.min(this.getInventoryStackLimit(), requestFilters[slot-12].getMaxStackSize());
-		if (inv[slot] != null)
-			num -= inv[slot].stackSize;
-		currentRequest = ReikaItemHelper.getSizedItemStack(requestFilters[slot-12], num);
-		Set<CrystalElement> c = this.getRequiredColorsForItem(currentRequest);
-		for (CrystalElement e : c) {
-			if (!CrystalNetworker.instance.checkConnectivity(e, this)) {
-				currentRequest = null;
-				return;
-			}
-		}
-		int amt = currentRequest.stackSize*1000;
-		for (CrystalElement e : c)
-			CrystalNetworker.instance.makeRequest(this, e, amt, world, this.getReceiveRange(), amt/4, SourceValidityRule.ALWAYS);
-	}
-
-	private int[] getSlotsToRequest() {
+	private Request getNextSlotToRequest() {
 		for (int i = 0; i < requestFilters.length; i++) {
-			if (requestFilters[i] != null) {
-				int slot = i+12;
-				if (inv[slot] == null || inv[slot].stackSize < inv[slot].getMaxStackSize()) {
-					return slot;
+			Request r = requestFilters[i];
+			if (r.item != null && r.cooldown == 0) {
+				if (inv[r.inventorySlot] == null || inv[r.inventorySlot].stackSize < requestFilters[i].requestAmount) {
+					return r;
 				}
 			}
 		}
-		return -1;
+		return null;
+	}
+
+	private boolean tryFindItem(World world, int x, int y, int z, Request slot) {
+		int num = slot.requestAmount;
+		if (inv[slot.inventorySlot] != null)
+			num -= inv[slot.inventorySlot].stackSize;
+		if (num > 0) {
+			currentRequest = slot;
+			slot.currentAmount = num;
+			Set<CrystalElement> c = this.getRequiredColorsForItem(currentRequest.item);
+			for (CrystalElement e : c) {
+				if (!CrystalNetworker.instance.checkConnectivity(e, this)) {
+					currentRequest = null;
+					return false;
+				}
+			}
+			int amt = currentRequest.currentAmount*1000;
+			for (CrystalElement e : c)
+				if (!CrystalNetworker.instance.makeRequest(this, e, amt, world, this.getReceiveRange(), amt/4, SourceValidityRule.ALWAYS))
+					return false;
+			return true;
+		}
+		return false;
 	}
 
 	private int getSlotToSendTo(TileEntityNetworkItemTransporter requester) {
-		ItemStack look = requester.currentRequest;
+		ItemStack look = requester.currentRequest != null ? requester.currentRequest.item : null;
+		if (look == null)
+			return -1;
 		for (int i = 0; i < 12; i++) {
-			if (ReikaItemHelper.matchStacks(look, inv[i])) {
+			if (inv[i] != null && ReikaItemHelper.matchStacks(look, inv[i])) {
 				return i;
 			}
 		}
@@ -223,13 +246,14 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 			if (is != null) {
 				int items = Math.max(1, amt/1000);
 				ItemStack is2 = ReikaItemHelper.getSizedItemStack(is, items);
-				int added = ReikaInventoryHelper.addStackAndReturnCount(is2, this, 12, inv.length-1);
+				//int added = ReikaInventoryHelper.addStackAndReturnCount(is2, this, 12, inv.length-1);
+				int added = ReikaInventoryHelper.addStackAndReturnCount(is2, this, currentRequest.inventorySlot, currentRequest.inventorySlot);
 				//ReikaJavaLibrary.pConsole("Added "+added+" to "+this+" at "+worldObj.getTotalWorldTime()+", inv: "+Arrays.toString(inv));
 				if (added > 0) {
 					ReikaInventoryHelper.decrStack(slot, sender.inv, added);
 					//ReikaJavaLibrary.pConsole("Removed "+added+" from "+sender+" at "+worldObj.getTotalWorldTime()+", inv: "+Arrays.toString(sender.inv));
-					currentRequest.stackSize -= added;
-					if (currentRequest.stackSize <= 0) {
+					currentRequest.currentAmount -= added;
+					if (currentRequest.currentAmount <= 0) {
 						currentRequest = null;
 					}
 				}
@@ -304,11 +328,7 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 
 		this.saveFilters(NBT);
 
-		if (currentRequest != null) {
-			NBTTagCompound req = new NBTTagCompound();
-			currentRequest.writeToNBT(req);
-			NBT.setTag("request", req);
-		}
+		NBT.setInteger("request", currentRequest != null ? currentRequest.index : -1);
 	}
 
 	@Override
@@ -316,35 +336,27 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 		super.readFromNBT(NBT);
 
 		this.readFilters(NBT);
-		if (NBT.hasKey("request"))
-			currentRequest = ItemStack.loadItemStackFromNBT(NBT.getCompoundTag("request"));
-		else
-			currentRequest = null;
+		int idx = NBT.getInteger("request");
+		currentRequest = idx >= 0 ? requestFilters[idx] : null;
 	}
 
 	private void saveFilters(NBTTagCompound NBT) {
 		NBTTagCompound fil = new NBTTagCompound();
 		for (int i = 0; i < requestFilters.length; i++) {
-			ItemStack is = requestFilters[i];
-			if (is != null) {
-				NBTTagCompound tag = new NBTTagCompound();
-				is.writeToNBT(tag);
-				fil.setTag("filter_"+i, tag);
-			}
+			Request is = requestFilters[i];
+			NBTTagCompound tag = new NBTTagCompound();
+			is.writeToNBT(tag);
+			fil.setTag("filter_"+i, tag);
 		}
 		NBT.setTag("filter", fil);
 	}
 
 	private void readFilters(NBTTagCompound NBT) {
-		requestFilters = new ItemStack[requestFilters.length];
 		NBTTagCompound fil = NBT.getCompoundTag("filter");
 		for (int i = 0; i < requestFilters.length; i++) {
 			String name = "filter_"+i;
-			if (fil.hasKey(name)) {
-				NBTTagCompound tag = fil.getCompoundTag(name);
-				ItemStack is = ItemStack.loadItemStackFromNBT(tag);
-				requestFilters[i] = is;
-			}
+			NBTTagCompound tag = fil.getCompoundTag(name);
+			requestFilters[i].readFromNBT(tag);
 		}
 	}
 
@@ -361,12 +373,60 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 	}
 
 	public void setFilter(int slot, ItemStack is) {
-		requestFilters[slot] = is;
-		this.syncAllData(true);
+		requestFilters[slot].setItem(is);
+		if (!worldObj.isRemote)
+			this.syncAllData(true);
 	}
 
 	public ItemStack getFilter(int slot) {
-		return requestFilters[slot] != null ? requestFilters[slot].copy() : null;
+		return requestFilters[slot].item != null ? requestFilters[slot].item.copy() : null;
+	}
+
+	private class Request {
+
+		public final int index;
+		public final int inventorySlot;
+
+		private ItemStack item;
+		private int cooldown;
+		private int requestAmount;
+
+		private int currentAmount;
+
+		private Request(int i) {
+			inventorySlot = i+12;
+			index = i;
+		}
+
+		public void readFromNBT(NBTTagCompound tag) {
+			cooldown = tag.getInteger("cool");
+			requestAmount = tag.getInteger("req");
+			currentAmount = tag.getInteger("amt");
+			if (tag.hasKey("item")) {
+				NBTTagCompound val = tag.getCompoundTag("item");
+				item = ItemStack.loadItemStackFromNBT(val);
+			}
+			else {
+				item = null;
+			}
+		}
+
+		public void writeToNBT(NBTTagCompound tag) {
+			tag.setInteger("cool", cooldown);
+			tag.setInteger("req", requestAmount);
+			tag.setInteger("amt", currentAmount);
+			if (item != null) {
+				NBTTagCompound val = new NBTTagCompound();
+				item.writeToNBT(val);
+				tag.setTag("item", val);
+			}
+		}
+
+		private void setItem(ItemStack is) {
+			item = is != null ? is.copy() : null;
+			requestAmount = is != null ? Math.min(is.getMaxStackSize(), TileEntityNetworkItemTransporter.this.getInventoryStackLimit()) : 0;
+		}
+
 	}
 
 }

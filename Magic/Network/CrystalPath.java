@@ -214,7 +214,7 @@ public class CrystalPath implements Comparable<CrystalPath> {
 		double sx = offset != null ? offset.left : 0;
 		double sy = offset != null ? offset.middle : 0;
 		double sz = offset != null ? offset.right : 0;
-		src.addSelfTickingTarget(locs.location, element, sx, sy, sz, r.getIncomingBeamRadius(), ticks);
+		src.addSelfTickingTarget(locs.location, element, sx, sy, sz, r.getIncomingBeamRadius(), transmitter.getMaximumBeamRadius(), ticks);
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = nodes.get(i).getTile(true);
 			if (te instanceof CrystalTransmitter) {
@@ -224,7 +224,7 @@ public class CrystalPath implements Comparable<CrystalPath> {
 				double dx = offset != null ? offset.left : 0;
 				double dy = offset != null ? offset.middle : 0;
 				double dz = offset != null ? offset.right : 0;
-				((CrystalTransmitter)te).addSelfTickingTarget(tg.location, element, dx, dy, dz, r.getIncomingBeamRadius(), ticks);
+				((CrystalTransmitter)te).addSelfTickingTarget(tg.location, element, dx, dy, dz, r.getIncomingBeamRadius(), transmitter.getMaximumBeamRadius(), ticks);
 			}/*
 			if (te instanceof CrystalReceiver) {
 				WorldLocation src = nodes.get(i+1);
