@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -36,6 +37,7 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 
 	private Request currentRequest;
 	private Request lastRequest;
+	private int lastItemInput = 3000;
 
 	private EntityItem entity;
 
@@ -51,24 +53,24 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 
 		if (!world.isRemote) {
 			for (int i = 0; i < requestFilters.length; i++) {
-				if (requestFilters[i].cooldown > 0) {
-					requestFilters[i].cooldown--;
-				}
+				requestFilters[i].tick();
 			}
-			if (currentRequest == null) {
-				Request req = this.getNextSlotToRequest();
+			lastItemInput++;
+			if ((currentRequest == null && lastItemInput >= 300) || (currentRequest.ticksSinceReceived > 5 && currentRequest.currentAmount > 0)) {
+				Request req = currentRequest != null ? currentRequest : this.getNextSlotToRequest();
+				ReikaJavaLibrary.pConsole("Request slot is "+req, Side.SERVER, req != null);
 				if (req != null) {
 					boolean success = this.tryFindItem(world, x, y, z, req);
 					req.cooldown = success ? 3000*0 : 200;
-				}
-				else {
-					currentRequest = null;
 				}
 				if (currentRequest != lastRequest) {
 					if (currentRequest == null)
 						CrystalNetworker.instance.breakPaths(this);
 					this.syncAllData(true);
 				}
+			}
+			else {
+				//ReikaJavaLibrary.pConsole("Request still active");
 			}
 			lastRequest = currentRequest;
 		}
@@ -99,10 +101,12 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 		if (num > 0) {
 			currentRequest = slot;
 			slot.currentAmount = num;
+			ReikaJavaLibrary.pConsole("Current seek request set to "+slot, Side.SERVER);
 			Set<CrystalElement> c = this.getRequiredColorsForItem(currentRequest.item);
 			for (CrystalElement e : c) {
 				if (!CrystalNetworker.instance.checkConnectivity(e, this)) {
 					currentRequest = null;
+					ReikaJavaLibrary.pConsole("Request nulled, connectivity failed "+e, Side.SERVER);
 					return false;
 				}
 			}
@@ -110,6 +114,7 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 			for (CrystalElement e : c)
 				if (!CrystalNetworker.instance.makeRequest(this, e, amt, world, this.getReceiveRange(), amt/4, SourceValidityRule.ALWAYS))
 					return false;
+			ReikaJavaLibrary.pConsole("Request for "+currentRequest+" success", Side.SERVER);
 			return true;
 		}
 		return false;
@@ -168,7 +173,7 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 
 	@Override
 	public int maxThroughput() {
-		return 64000;
+		return 4000; //max 4 items/tick per node
 	}
 
 	@Override
@@ -247,15 +252,20 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 				int items = Math.max(1, amt/1000);
 				ItemStack is2 = ReikaItemHelper.getSizedItemStack(is, items);
 				//int added = ReikaInventoryHelper.addStackAndReturnCount(is2, this, 12, inv.length-1);
-				int added = ReikaInventoryHelper.addStackAndReturnCount(is2, this, currentRequest.inventorySlot, currentRequest.inventorySlot);
+				int added = ReikaInventoryHelper.addStackAndReturnCount(is2.copy(), this, currentRequest.inventorySlot, currentRequest.inventorySlot);
+				ReikaJavaLibrary.pConsole("Attempting to satisfy "+currentRequest+" with "+is2+" = "+added, Side.SERVER);
 				//ReikaJavaLibrary.pConsole("Added "+added+" to "+this+" at "+worldObj.getTotalWorldTime()+", inv: "+Arrays.toString(inv));
 				if (added > 0) {
 					ReikaInventoryHelper.decrStack(slot, sender.inv, added);
 					//ReikaJavaLibrary.pConsole("Removed "+added+" from "+sender+" at "+worldObj.getTotalWorldTime()+", inv: "+Arrays.toString(sender.inv));
 					currentRequest.currentAmount -= added;
+					currentRequest.ticksSinceReceived = 0;
+					lastItemInput = 0;
 					if (currentRequest.currentAmount <= 0) {
+						currentRequest.cooldown = 600;
 						currentRequest = null;
 					}
+					ReikaJavaLibrary.pConsole("Request set to "+currentRequest+" because of add of "+added, Side.SERVER);
 				}
 				return added*1000;
 			}
@@ -329,6 +339,7 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 		this.saveFilters(NBT);
 
 		NBT.setInteger("request", currentRequest != null ? currentRequest.index : -1);
+		NBT.setInteger("lastin", lastItemInput);
 	}
 
 	@Override
@@ -338,6 +349,9 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 		this.readFilters(NBT);
 		int idx = NBT.getInteger("request");
 		currentRequest = idx >= 0 ? requestFilters[idx] : null;
+		ReikaJavaLibrary.pConsole("Request "+currentRequest+" set via tile NBT", Side.SERVER);
+
+		lastItemInput = NBT.getInteger("lastin");
 	}
 
 	private void saveFilters(NBTTagCompound NBT) {
@@ -389,6 +403,7 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 
 		private ItemStack item;
 		private int cooldown;
+		private int ticksSinceReceived;
 		private int requestAmount;
 
 		private int currentAmount;
@@ -398,15 +413,25 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 			index = i;
 		}
 
+		private void tick() {
+			if (cooldown > 0) {
+				cooldown--;
+			}
+			ticksSinceReceived++;
+		}
+
 		public void readFromNBT(NBTTagCompound tag) {
 			cooldown = tag.getInteger("cool");
 			requestAmount = tag.getInteger("req");
 			currentAmount = tag.getInteger("amt");
+			ticksSinceReceived = tag.getInteger("lastrec");
 			if (tag.hasKey("item")) {
 				NBTTagCompound val = tag.getCompoundTag("item");
+				ReikaJavaLibrary.pConsole(this+" item set to "+item+" from NBT", Side.SERVER);
 				item = ItemStack.loadItemStackFromNBT(val);
 			}
 			else {
+				ReikaJavaLibrary.pConsole(this+" item nulled from NBT", Side.SERVER);
 				item = null;
 			}
 		}
@@ -415,6 +440,7 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 			tag.setInteger("cool", cooldown);
 			tag.setInteger("req", requestAmount);
 			tag.setInteger("amt", currentAmount);
+			tag.setInteger("lastrec", ticksSinceReceived);
 			if (item != null) {
 				NBTTagCompound val = new NBTTagCompound();
 				item.writeToNBT(val);
@@ -423,8 +449,14 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 		}
 
 		private void setItem(ItemStack is) {
+			ReikaJavaLibrary.pConsole(this+" item set to "+is+" direct", Side.SERVER);
 			item = is != null ? is.copy() : null;
 			requestAmount = is != null ? Math.min(is.getMaxStackSize(), TileEntityNetworkItemTransporter.this.getInventoryStackLimit()) : 0;
+		}
+
+		@Override
+		public String toString() {
+			return index+"/"+inventorySlot+" = "+item+" #"+currentAmount+"/"+requestAmount+" @ "+cooldown+"/"+ticksSinceReceived;
 		}
 
 	}

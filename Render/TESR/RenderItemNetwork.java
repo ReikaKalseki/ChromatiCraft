@@ -6,7 +6,6 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MathHelper;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
@@ -33,11 +32,11 @@ public class RenderItemNetwork extends CrystalTransmitterRender {
 	private void renderItem(TileEntityNetworkItemTransporter te, float par8) {
 		EntityItem ei = te.getEntityItem();
 		if (ei != null) {
-			double s = 2;
+			double s = 1;
 			double s2 = s;//0.25;
 			float tick = par8+te.getTicksExisted();
 			ei.age = 0;
-			ei.hoverStart = MathHelper.sin(tick/4F * 0.2F + 0.2F);
+			ei.hoverStart = 0;
 			ei.rotationYaw = 0;
 			//for (double dt = -0.0625; dt <= 0.0625; dt += 0.0625) {
 			boolean blend = true;//Math.abs(dt) < 0.125;
