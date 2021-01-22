@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.Container.ContainerItemFabricator;
 import Reika.ChromatiCraft.Container.ContainerItemInserter;
 import Reika.ChromatiCraft.Container.ContainerItemWithFilter;
 import Reika.ChromatiCraft.Container.ContainerMiner;
+import Reika.ChromatiCraft.Container.ContainerNetworkItemTransporter;
 import Reika.ChromatiCraft.Container.ContainerRouterFilter;
 import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
 import Reika.ChromatiCraft.Container.ContainerStructurePassword;
@@ -102,6 +103,7 @@ import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiItemCollector;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiItemFabricator;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiItemInserter;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiMiner;
+import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiNetworkItemTransporter;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiSpawnerProgrammer;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiStructurePassword;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiTelePump;
@@ -142,6 +144,7 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCrystalBrewer;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidRelay;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityNetworkItemTransporter;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTeleportGate;
 import Reika.DragonAPI.Base.CoreContainer;
@@ -212,6 +215,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 					return new ContainerRouterFilter(player, (RouterFilter)te);
 				if (te instanceof TileEntityFluxMaker)
 					return new ContainerFluxMaker(player, (TileEntityFluxMaker)te);
+				if (te instanceof TileEntityNetworkItemTransporter)
+					return new ContainerNetworkItemTransporter(player, (TileEntityNetworkItemTransporter)te);
 
 				if (te instanceof ItemOnRightClick)
 					return null;
@@ -326,6 +331,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 					return new GuiFluxMaker(player, (TileEntityFluxMaker)te);
 				if (te instanceof TileEntityLumenAlveary)
 					return new GuiLumenAlveary(player, (TileEntityLumenAlveary)te);
+				if (te instanceof TileEntityNetworkItemTransporter)
+					return new GuiNetworkItemTransporter(player, (TileEntityNetworkItemTransporter)te);
 
 				if (te instanceof OneSlotMachine) {
 					return new GuiOneSlot(player, (TileEntityChromaticBase)te);

@@ -14,7 +14,6 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -32,9 +31,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiItemCollector extends GuiChromaBase
-{
-	private IInventory upperItemCollectorInventory;
+public class GuiItemCollector extends GuiChromaBase {
+
 	private TileEntityItemCollector vac;
 
 	private int inventoryRows = 0;
@@ -42,7 +40,6 @@ public class GuiItemCollector extends GuiChromaBase
 	public GuiItemCollector(EntityPlayer p5ep, TileEntityItemCollector te)
 	{
 		super(new ContainerItemCollector(p5ep, te), p5ep, te);
-		upperItemCollectorInventory = p5ep.inventory;
 		allowUserInput = false;
 		short var3 = 222;
 		int var4 = var3 - 108;

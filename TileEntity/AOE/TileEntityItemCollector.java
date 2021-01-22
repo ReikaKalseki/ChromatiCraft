@@ -316,15 +316,13 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	}
 
 	@Override
-	protected void readSyncTag(NBTTagCompound NBT)
-	{
+	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 		experience = NBT.getInteger("xp");
 	}
 
 	@Override
-	protected void writeSyncTag(NBTTagCompound NBT)
-	{
+	protected void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
 		NBT.setInteger("xp", experience);
 	}
@@ -333,7 +331,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	public void writeToNBT(NBTTagCompound NBT) {
 		super.writeToNBT(NBT);
 
-		this.saveFilter(NBT);
+		this.saveFilters(NBT);
 		range.writeToNBT(NBT);
 	}
 
@@ -341,11 +339,11 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	public void readFromNBT(NBTTagCompound NBT) {
 		super.readFromNBT(NBT);
 
-		this.readFilter(NBT);
+		this.readFilters(NBT);
 		range.readFromNBT(NBT);
 	}
 
-	private void saveFilter(NBTTagCompound NBT) {
+	private void saveFilters(NBTTagCompound NBT) {
 		NBTTagCompound fil = new NBTTagCompound();
 		for (int i = 0; i < filter.length; i++) {
 			ItemStack is = filter[i];
@@ -358,7 +356,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 		NBT.setTag("filter", fil);
 	}
 
-	private void readFilter(NBTTagCompound NBT) {
+	private void readFilters(NBTTagCompound NBT) {
 		filter = new ItemStack[filter.length];
 		NBTTagCompound fil = NBT.getCompoundTag("filter");
 		for (int i = 0; i < filter.length; i++) {
@@ -373,14 +371,14 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 
 	@Override
 	public void getTagsToWriteToStack(NBTTagCompound NBT) {
-		this.saveFilter(NBT);
+		this.saveFilters(NBT);
 	}
 
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
 		if (is.stackTagCompound == null)
 			return;
-		this.readFilter(is.stackTagCompound);
+		this.readFilters(is.stackTagCompound);
 	}
 
 	@Override

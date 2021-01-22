@@ -325,6 +325,7 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 		return 0.25;
 	}
 
+	@SideOnly(Side.CLIENT)
 	public EntityItem getEntityItem() {
 		return entity;
 	}

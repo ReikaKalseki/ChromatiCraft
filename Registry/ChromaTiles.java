@@ -386,6 +386,7 @@ public enum ChromaTiles implements TileEnum {
 			case LAUNCHPAD:
 			case TOOLSTORAGE:
 			case BEESTORAGE:
+			case NETWORKITEM:
 				return true;
 			default:
 				return false;

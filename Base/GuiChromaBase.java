@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -159,7 +159,7 @@ public abstract class GuiChromaBase extends GuiContainer implements CustomSoundG
 		super.func_146977_a(slot);
 		if (Keyboard.isKeyDown(DragonOptions.DEBUGKEY.getValue()) && DragonOptions.TABNBT.getState()) {
 			ReikaTextureHelper.bindFontTexture();
-			fontRendererObj.drawString(String.format("%d", slot.getSlotIndex()), slot.xDisplayPosition+1, slot.yDisplayPosition+1, 0x888888);
+			fontRendererObj.drawString(String.format("%d", slot.getSlotIndex()), slot.xDisplayPosition+1, slot.yDisplayPosition+1, 0x888888*0);
 		}
 	}
 

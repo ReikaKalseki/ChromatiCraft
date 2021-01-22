@@ -10,10 +10,10 @@
 package Reika.ChromatiCraft.Magic;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Iterator;
+import java.util.Set;
 
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -103,7 +103,7 @@ public final class ElementTagCompound {
 	}
 
 	/** Map.keySet() */
-	public Collection<CrystalElement> elementSet() {
+	public Set<CrystalElement> elementSet() {
 		return Collections.unmodifiableSet(data.keySet());
 	}
 

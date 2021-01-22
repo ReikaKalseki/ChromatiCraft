@@ -271,7 +271,7 @@ public class ChromaFX {
 		}
 	}
 
-	public static void drawEnergyTransferBeams(WorldLocation src, Collection<CrystalTarget> li, double r, int sides, double tick) {
+	public static void drawEnergyTransferBeams(WorldLocation src, Collection<CrystalTarget> li, double r0, int sides, double tick) {
 		if (!li.isEmpty()) {
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			ReikaRenderHelper.disableLighting();
@@ -283,9 +283,12 @@ public class ChromaFX {
 			GL11.glTranslated(0.5, 0.5, 0.5);
 			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "/Reika/ChromatiCraft/Textures/beam.png");
 
+			double r = r0;
+
 			MultiMap<TargetData, CrystalElement> map = ChromaAux.getBeamColorMixes(li);
 			for (TargetData pos : map.keySet()) {
 				if (pos.isRenderable()) {
+					r = Math.min(r, pos.maximumWidth);
 					List<CrystalElement> lc = (List<CrystalElement>)map.get(pos);
 					int clr = getBlendedColorFromElementList(lc, tick, 0.125);
 					if (pos.targetClass == TileEntityAtmosphericRelay.class) {

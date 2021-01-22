@@ -181,10 +181,11 @@ public class CrystalPath implements Comparable<CrystalPath> {
 			return false;
 		}
 		if (hasRealTarget) {
-			CrystalNetworkTile tile = PylonFinder.getNetTileAt(origin, false);
-			if (tile == null || !tile.canConduct() || !tile.isConductingElement(element)) {
+			CrystalReceiver tile = PylonFinder.getReceiverAt(origin, false);
+			if (tile == null || !tile.canConduct() || !tile.isConductingElement(element))
 				return false;
-			}
+			if (!tile.canBeSuppliedBy(transmitter, element) || !transmitter.canSupply(tile, element))
+				return false;
 		}
 		for (int i = hasRealTarget ? 0 : 1; i < nodes.size()-2; i++) {
 			PathNode tgt = nodes.get(i);
