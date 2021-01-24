@@ -691,6 +691,8 @@ public enum ChromaTiles implements TileEnum {
 				return 0.75;
 			case PROGRESSLINK:
 				return 0.375;
+			case NETWORKITEM:
+				return 0.875;
 			default:
 				return 1;
 		}

@@ -16,6 +16,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
+import net.minecraft.util.EnumChatFormatting;
 
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerNetworkItemTransporter;
@@ -60,6 +61,19 @@ public class GuiNetworkItemTransporter extends GuiChromaBase
 		super.drawGuiContainerBackgroundLayer(f, a, b);
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
+
+		for (int h = 0; h < 9; h++) {
+			if (h == 4)
+				continue;
+			for (int i = 0; i < 3; i++) {
+				int dx = j+8+h*18;
+				int dy = k+17+i*18;
+				int v = 27;
+				if (h > 4)
+					v = GuiScreen.isCtrlKeyDown() ? 44 : 10;
+				this.drawTexturedModalRect(dx, dy, 186, v, 16, 16);
+			}
+		}
 	}
 
 	@Override
@@ -90,8 +104,23 @@ public class GuiNetworkItemTransporter extends GuiChromaBase
 
 	@Override
 	protected final void func_146977_a(Slot slot) {
-		if (GuiScreen.isCtrlKeyDown() && slot.slotNumber >= 12 && slot.inventory == net) {
-			api.drawItemStack(itemRender, fontRendererObj, net.getFilter(slot.slotNumber-12), slot.xDisplayPosition, slot.yDisplayPosition);
+		if (slot.slotNumber >= 12 && slot.inventory == net) {
+			if (this.isMouseOverSlot(slot, api.getMouseRealX(), api.getMouseRealY())) {
+				String s = "Hold "+EnumChatFormatting.GREEN+"CTRL"+EnumChatFormatting.RESET+" to see/set filters";
+				int dx = 25;
+				if (GuiScreen.isCtrlKeyDown()) {
+					s = "Release "+EnumChatFormatting.GREEN+"CTRL"+EnumChatFormatting.RESET+" to see received items";
+					dx = 61;
+				}
+				api.drawTooltip(fontRendererObj, s, -fontRendererObj.getStringWidth(s)+dx, -28);
+			}
+
+			if (GuiScreen.isCtrlKeyDown()) {
+				api.drawItemStack(itemRender, fontRendererObj, net.getFilter(slot.slotNumber-12), slot.xDisplayPosition, slot.yDisplayPosition);
+			}
+			else {
+				super.func_146977_a(slot);
+			}
 		}
 		else {
 			super.func_146977_a(slot);

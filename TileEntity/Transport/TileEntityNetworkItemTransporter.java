@@ -1,14 +1,18 @@
 package Reika.ChromatiCraft.TileEntity.Transport;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
@@ -21,17 +25,24 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Network.SourceValidityRule;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.InertItem;
+import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmitter implements CrystalSource, CrystalReceiver, NBTTile {
+public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmitter implements CrystalSource, CrystalReceiver, NBTTile, BreakAction {
+
+	private static final int EXCLUSION_RANGE = 64;
 
 	private Request[] requestFilters = new Request[12];
 
@@ -39,7 +50,15 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 	private Request lastRequest;
 	private int lastItemInput = 3000;
 
+	private HashSet<Coordinate> nearby = new HashSet();
+	private boolean isBlocked;
+
 	private EntityItem entity;
+
+	@SideOnly(Side.CLIENT)
+	public double itemRotation;
+	@SideOnly(Side.CLIENT)
+	public double itemOffset;
 
 	public TileEntityNetworkItemTransporter() {
 		for (int i = 0; i < requestFilters.length; i++) {
@@ -56,21 +75,28 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 				requestFilters[i].tick();
 			}
 			lastItemInput++;
-			if ((currentRequest == null && lastItemInput >= 300) || (currentRequest.ticksSinceReceived > 5 && currentRequest.currentAmount > 0)) {
-				Request req = currentRequest != null ? currentRequest : this.getNextSlotToRequest();
-				ReikaJavaLibrary.pConsole("Request slot is "+req, Side.SERVER, req != null);
-				if (req != null) {
-					boolean success = this.tryFindItem(world, x, y, z, req);
-					req.cooldown = success ? 3000*0 : 200;
-				}
-				if (currentRequest != lastRequest) {
-					if (currentRequest == null)
-						CrystalNetworker.instance.breakPaths(this);
-					this.syncAllData(true);
-				}
+
+			isBlocked = this.isBlocked(world);
+			if (isBlocked) {
+
 			}
 			else {
-				//ReikaJavaLibrary.pConsole("Request still active");
+				if ((currentRequest == null && lastItemInput >= 200) || (currentRequest != null && currentRequest.ticksSinceReceived > 5 && currentRequest.currentAmount > 0)) {
+					Request req = currentRequest != null ? currentRequest : this.getNextSlotToRequest();
+					//ReikaJavaLibrary.pConsole("Request slot is "+req, Side.SERVER, req != null);
+					if (req != null) {
+						boolean success = this.tryFindItem(world, x, y, z, req);
+						req.cooldown = success ? 3000*0 : 200;
+					}
+					if (currentRequest != lastRequest) {
+						if (currentRequest == null)
+							CrystalNetworker.instance.breakPaths(this);
+						this.syncAllData(true);
+					}
+				}
+				else {
+					//ReikaJavaLibrary.pConsole("Request still active");
+				}
 			}
 			lastRequest = currentRequest;
 		}
@@ -79,6 +105,87 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 				entity = currentRequest != null ? new InertItem(world, ReikaItemHelper.getSizedItemStack(currentRequest.item, 1)) : null;
 			}
 			lastRequest = currentRequest;
+			this.doFX(world, x, y, z);
+			itemOffset = Math.pow(Math.max(0, 1+Math.sin(this.getTicksExisted()*0.1)), 4)*0.03125;
+			itemRotation += 9*Math.max(0, (0.625-itemOffset)/0.5);
+		}
+	}
+
+	private boolean isBlocked(World world) {
+		for (Coordinate c : nearby) {
+			TileEntity te = c.getTileEntity(world);
+			if (te instanceof TileEntityNetworkItemTransporter) {
+				TileEntityNetworkItemTransporter net = (TileEntityNetworkItemTransporter)te;
+				if (this.sharesItemRequest(net))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean sharesItemRequest(TileEntityNetworkItemTransporter net) {
+		HashSet<KeyedItemStack> set = new HashSet();
+		for (int i = 0; i < requestFilters.length; i++) {
+			if (requestFilters[i].item != null) {
+				set.add(new KeyedItemStack(requestFilters[i].item).setIgnoreNBT(true).setSized(false).setSimpleHash(true));
+			}
+		}
+		if (set.isEmpty())
+			return false;
+		for (int i = 0; i < net.requestFilters.length; i++) {
+			if (net.requestFilters[i].item != null) {
+				KeyedItemStack ks = new KeyedItemStack(net.		requestFilters[i].item).setIgnoreNBT(true).setSized(false).setSimpleHash(true);
+				if (set.contains(ks))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	protected void onFirstTick(World world, int x, int y, int z) {
+		super.onFirstTick(world, x, y, z);
+
+		if (!world.isRemote) {
+			Coordinate here = new Coordinate(this);
+			Collection<TileEntityNetworkItemTransporter> c = CrystalNetworker.instance.getNearTilesOfType(this, TileEntityNetworkItemTransporter.class, EXCLUSION_RANGE);
+			for (TileEntityNetworkItemTransporter te : c) {
+				if (te == this)
+					continue;
+				nearby.add(new Coordinate(te));
+				te.nearby.add(here);
+			}
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void doFX(World world, int x, int y, int z) {
+		double a = (this.getTicksExisted()*12)%360;
+		double r = 0.125;
+		double dh = (this.getTicksExisted()%20)/100D;
+		ArrayList<CrystalElement> e = currentRequest != null ? new ArrayList(this.getRequiredColorsForItem(currentRequest.item)) : null;
+		for (int i = 0; i < 3; i++) {
+			double h0 = i*0.125;
+			double h = h0+dh;
+			double ang = Math.toRadians(a-i*180);
+			double px = x+0.5+r*Math.cos(ang);
+			double py = y+0.25+h0;
+			double pz = z+0.5+r*Math.sin(ang);
+			EntityCCBlurFX fx = new EntityCCBlurFX(world, px, py, pz);
+			int c = e == null || e.isEmpty() ? 0x22aaff : e.get(i%e.size()).getColor();
+			fx.setScale(0.6F).setColor(c).setLife(30).setAlphaFading();
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+		if (isBlocked) {
+			double px = rand.nextBoolean() ? 0.3125 : 0.6875;
+			double pz = rand.nextBoolean() ? 0.3125 : 0.6875;
+			double py = 0.875;
+			EntityCCBlurFX fx = new EntityCCBlurFX(world, x+px, y+py, z+pz);
+			float s = (float)ReikaRandomHelper.getRandomBetween(0.8, 1.2);
+			float g = -(float)ReikaRandomHelper.getRandomBetween(0.03125, 0.0625);
+			int l = ReikaRandomHelper.getRandomBetween(90, 150);
+			fx.setIcon(ChromaIcons.FADE_CLOUD).setScale(s).setColor(0xff0000).setLife(l).setGravity(g).setRapidExpand().setAlphaFading();
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
 
@@ -101,12 +208,12 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 		if (num > 0) {
 			currentRequest = slot;
 			slot.currentAmount = num;
-			ReikaJavaLibrary.pConsole("Current seek request set to "+slot, Side.SERVER);
+			//ReikaJavaLibrary.pConsole("Current seek request set to "+slot, Side.SERVER);
 			Set<CrystalElement> c = this.getRequiredColorsForItem(currentRequest.item);
 			for (CrystalElement e : c) {
 				if (!CrystalNetworker.instance.checkConnectivity(e, this)) {
 					currentRequest = null;
-					ReikaJavaLibrary.pConsole("Request nulled, connectivity failed "+e, Side.SERVER);
+					//ReikaJavaLibrary.pConsole("Request nulled, connectivity failed "+e, Side.SERVER);
 					return false;
 				}
 			}
@@ -114,7 +221,7 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 			for (CrystalElement e : c)
 				if (!CrystalNetworker.instance.makeRequest(this, e, amt, world, this.getReceiveRange(), amt/4, SourceValidityRule.ALWAYS))
 					return false;
-			ReikaJavaLibrary.pConsole("Request for "+currentRequest+" success", Side.SERVER);
+			//ReikaJavaLibrary.pConsole("Request for "+currentRequest+" success", Side.SERVER);
 			return true;
 		}
 		return false;
@@ -178,7 +285,7 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 
 	@Override
 	public boolean canConduct() {
-		return true;
+		return !isBlocked;
 	}
 
 	@Override
@@ -237,7 +344,7 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 
 	@Override
 	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
-		return null;
+		return new ImmutableTriple(0D, 0.1875, 0D);
 	}
 
 	@Override
@@ -253,7 +360,7 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 				ItemStack is2 = ReikaItemHelper.getSizedItemStack(is, items);
 				//int added = ReikaInventoryHelper.addStackAndReturnCount(is2, this, 12, inv.length-1);
 				int added = ReikaInventoryHelper.addStackAndReturnCount(is2.copy(), this, currentRequest.inventorySlot, currentRequest.inventorySlot);
-				ReikaJavaLibrary.pConsole("Attempting to satisfy "+currentRequest+" with "+is2+" = "+added, Side.SERVER);
+				//ReikaJavaLibrary.pConsole("Attempting to satisfy "+currentRequest+" with "+is2+" = "+added, Side.SERVER);
 				//ReikaJavaLibrary.pConsole("Added "+added+" to "+this+" at "+worldObj.getTotalWorldTime()+", inv: "+Arrays.toString(inv));
 				if (added > 0) {
 					ReikaInventoryHelper.decrStack(slot, sender.inv, added);
@@ -265,7 +372,7 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 						currentRequest.cooldown = 600;
 						currentRequest = null;
 					}
-					ReikaJavaLibrary.pConsole("Request set to "+currentRequest+" because of add of "+added, Side.SERVER);
+					//ReikaJavaLibrary.pConsole("Request set to "+currentRequest+" because of add of "+added, Side.SERVER);
 				}
 				return added*1000;
 			}
@@ -325,11 +432,15 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 	@Override
 	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
+
+		isBlocked = NBT.getBoolean("blocked");
 	}
 
 	@Override
 	protected void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
+
+		NBT.setBoolean("blocked", isBlocked);
 	}
 
 	@Override
@@ -349,7 +460,7 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 		this.readFilters(NBT);
 		int idx = NBT.getInteger("request");
 		currentRequest = idx >= 0 ? requestFilters[idx] : null;
-		ReikaJavaLibrary.pConsole("Request "+currentRequest+" set via tile NBT", Side.SERVER);
+		//ReikaJavaLibrary.pConsole("Request "+currentRequest+" set via tile NBT", Side.SERVER);
 
 		lastItemInput = NBT.getInteger("lastin");
 	}
@@ -396,6 +507,18 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 		return requestFilters[slot].item != null ? requestFilters[slot].item.copy() : null;
 	}
 
+	@Override
+	public void breakBlock() {
+		Coordinate here = new Coordinate(this);
+		for (Coordinate c : nearby) {
+			TileEntity te = c.getTileEntity(worldObj);
+			if (te instanceof TileEntityNetworkItemTransporter) {
+				((TileEntityNetworkItemTransporter)te).nearby.remove(here);
+			}
+		}
+		nearby.clear();
+	}
+
 	private class Request {
 
 		public final int index;
@@ -427,11 +550,11 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 			ticksSinceReceived = tag.getInteger("lastrec");
 			if (tag.hasKey("item")) {
 				NBTTagCompound val = tag.getCompoundTag("item");
-				ReikaJavaLibrary.pConsole(this+" item set to "+item+" from NBT", Side.SERVER);
+				//ReikaJavaLibrary.pConsole(this+" item set to "+item+" from NBT", Side.SERVER);
 				item = ItemStack.loadItemStackFromNBT(val);
 			}
 			else {
-				ReikaJavaLibrary.pConsole(this+" item nulled from NBT", Side.SERVER);
+				//ReikaJavaLibrary.pConsole(this+" item nulled from NBT", Side.SERVER);
 				item = null;
 			}
 		}
@@ -449,7 +572,7 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 		}
 
 		private void setItem(ItemStack is) {
-			ReikaJavaLibrary.pConsole(this+" item set to "+is+" direct", Side.SERVER);
+			//ReikaJavaLibrary.pConsole(this+" item set to "+is+" direct", Side.SERVER);
 			item = is != null ? is.copy() : null;
 			requestAmount = is != null ? Math.min(is.getMaxStackSize(), TileEntityNetworkItemTransporter.this.getInventoryStackLimit()) : 0;
 		}

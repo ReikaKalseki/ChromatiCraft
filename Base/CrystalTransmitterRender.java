@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -22,7 +22,7 @@ import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 public abstract class CrystalTransmitterRender extends ChromaRenderBase {
 
 	@Override
-	public final String getImageFileName(RenderFetcher te) {
+	public String getImageFileName(RenderFetcher te) {
 		return "";
 	}
 

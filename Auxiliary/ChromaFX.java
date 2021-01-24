@@ -249,7 +249,7 @@ public class ChromaFX {
 						double dz = pos.position.zCoord-z-0.5;
 						//double dd = ReikaMathLibrary.py3d(dx, dy, dz);
 						double dr = rand.nextDouble();
-						float s = (float)(15D/0.35*ReikaMathLibrary.linterpolate(dr, 0, 1, r, pos.targetWidth));
+						float s = (float)(15D/0.35*ReikaMathLibrary.linterpolate(dr, 0, 1, Math.min(pos.maximumWidth, r), Math.min(pos.maximumWidth, pos.targetWidth)));
 						//ReikaJavaLibrary.pConsole(dr+" @ "+r+" > "+pos.right+" = "+s);
 						double px = dx*dr+x+0.5;
 						double py = dy*dr+y+0.5;
