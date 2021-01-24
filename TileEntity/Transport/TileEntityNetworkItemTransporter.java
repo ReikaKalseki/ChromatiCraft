@@ -51,6 +51,7 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 	private int lastItemInput = 3000;
 
 	private HashSet<Coordinate> nearby = new HashSet();
+	private HashSet<KeyedItemStack> requestKeys = new HashSet();
 	private boolean isBlocked;
 
 	private EntityItem entity;
@@ -124,19 +125,11 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 	}
 
 	private boolean sharesItemRequest(TileEntityNetworkItemTransporter net) {
-		HashSet<KeyedItemStack> set = new HashSet();
-		for (int i = 0; i < requestFilters.length; i++) {
-			if (requestFilters[i].item != null) {
-				set.add(new KeyedItemStack(requestFilters[i].item).setIgnoreNBT(true).setSized(false).setSimpleHash(true));
-			}
-		}
-		if (set.isEmpty())
+		if (requestKeys.isEmpty() || net.requestKeys.isEmpty())
 			return false;
-		for (int i = 0; i < net.requestFilters.length; i++) {
-			if (net.requestFilters[i].item != null) {
-				KeyedItemStack ks = new KeyedItemStack(net.		requestFilters[i].item).setIgnoreNBT(true).setSized(false).setSimpleHash(true);
-				if (set.contains(ks))
-					return true;
+		for (KeyedItemStack ks : net.requestKeys) {
+			if (requestKeys.contains(ks)) {
+				return true;
 			}
 		}
 		return false;
@@ -145,6 +138,8 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
+
+		this.buildFilterSet();
 
 		if (!world.isRemote) {
 			Coordinate here = new Coordinate(this);
@@ -483,6 +478,7 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 			NBTTagCompound tag = fil.getCompoundTag(name);
 			requestFilters[i].readFromNBT(tag);
 		}
+		this.buildFilterSet();
 	}
 
 	@Override
@@ -499,8 +495,18 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 
 	public void setFilter(int slot, ItemStack is) {
 		requestFilters[slot].setItem(is);
+		this.buildFilterSet();
 		if (!worldObj.isRemote)
 			this.syncAllData(true);
+	}
+
+	private void buildFilterSet() {
+		requestKeys.clear();
+		for (int i = 0; i < requestFilters.length; i++) {
+			if (requestFilters[i].item != null) {
+				requestKeys.add(new KeyedItemStack(requestFilters[i].item).setIgnoreNBT(true).setSized(false).setSimpleHash(true));
+			}
+		}
 	}
 
 	public ItemStack getFilter(int slot) {

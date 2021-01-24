@@ -296,17 +296,17 @@ public class ChromaFX {
 						GL11.glEnable(GL11.GL_BLEND);
 						ReikaTextureHelper.bindTexture(ChromatiCraft.class, "/Reika/ChromatiCraft/Textures/beam_trans.png");
 						DecimalPosition pos2 = DecimalPosition.interpolate(src.xCoord+0.5, src.yCoord+0.5, src.zCoord+0.5, pos.position.xCoord, pos.position.yCoord, pos.position.zCoord, 0.5).offset(0, 192, 0);
-						drawEnergyTransferBeam(src, pos2, clr, r, pos.targetWidth, sides, tick, false);
+						drawEnergyTransferBeam(src, pos2, clr, r, Math.min(pos.maximumWidth, pos.targetWidth), sides, tick, false);
 						GL11.glPushMatrix();
 						GL11.glTranslated(pos2.xCoord-src.xCoord-0.5, pos2.yCoord-src.yCoord-0.5, pos2.zCoord-src.zCoord-0.5);
-						drawEnergyTransferBeam(pos2, pos.position, clr, r, pos.targetWidth, sides, tick, false);
+						drawEnergyTransferBeam(pos2, pos.position, clr, r,  Math.min(pos.maximumWidth, pos.targetWidth), sides, tick, false);
 						GL11.glPopMatrix();
 						ReikaTextureHelper.bindTexture(ChromatiCraft.class, "/Reika/ChromatiCraft/Textures/beam.png");
 						GL11.glPopAttrib();
 					}
 					else {
 						//ReikaJavaLibrary.pConsole("Rendering beam from "+src+" to "+pos.position);
-						drawEnergyTransferBeam(src, pos.position, clr, r, pos.targetWidth, sides, tick, false);
+						drawEnergyTransferBeam(src, pos.position, clr, r,  Math.min(pos.maximumWidth, pos.targetWidth), sides, tick, false);
 					}
 				}
 			}

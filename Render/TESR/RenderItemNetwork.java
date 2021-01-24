@@ -71,12 +71,50 @@ public class RenderItemNetwork extends CrystalTransmitterRender {
 			double dv = ico.getMaxV();
 			double s = 0.375;
 			v5.setColorRGBA_I(0xffffff, 255);
-			v5.addVertexWithUV(0.5-s, 0.19+i*0.05, 0.5+s, u, dv);
-			v5.addVertexWithUV(0.5+s, 0.19+i*0.05, 0.5+s, du, dv);
-			v5.addVertexWithUV(0.5+s, 0.19+i*0.05, 0.5-s, du, v);
-			v5.addVertexWithUV(0.5-s, 0.19+i*0.05, 0.5-s, u, v);
+			v5.addVertexWithUV(0.5-s, 0.19+i*0.01, 0.5+s, u, dv);
+			v5.addVertexWithUV(0.5+s, 0.19+i*0.01, 0.5+s, du, dv);
+			v5.addVertexWithUV(0.5+s, 0.19+i*0.01, 0.5-s, du, v);
+			v5.addVertexWithUV(0.5-s, 0.19+i*0.01, 0.5-s, u, v);
 		}
+
 		v5.draw();
+
+		float f11 = 0.76F;
+		GL11.glColor4f(0.5F * f11, 0.25F * f11, 0.8F * f11, 1.0F);
+		ReikaTextureHelper.bindEnchantmentTexture();
+		double u = -(te.getTicksExisted()+par8)*0.03;
+		double u2 = (te.getTicksExisted()+par8)*0.01;
+		double du = u+1;
+		double v = 0;
+		double dv = v+1;
+		v5.startDrawingQuads();
+		double s = 0.065;
+		v5.addVertexWithUV(0.5-s, 0.76, 0.5+s, u2, 1);
+		v5.addVertexWithUV(0.5+s, 0.76, 0.5+s, u2, 1);
+		v5.addVertexWithUV(0.5+s, 0.76, 0.5-s, u2, 0);
+		v5.addVertexWithUV(0.5-s, 0.76, 0.5-s, u2, 0);
+
+		v5.addVertexWithUV(0.5+s, 0.125, 0.5-s, u, v);
+		v5.addVertexWithUV(0.5+s, 0.76, 0.5-s, du, v);
+		v5.addVertexWithUV(0.5+s, 0.76, 0.5+s, du, dv);
+		v5.addVertexWithUV(0.5+s, 0.125, 0.5+s, u, dv);
+
+		v5.addVertexWithUV(0.5-s, 0.125, 0.5+s, u, dv);
+		v5.addVertexWithUV(0.5-s, 0.76, 0.5+s, du, dv);
+		v5.addVertexWithUV(0.5-s, 0.76, 0.5-s, du, v);
+		v5.addVertexWithUV(0.5-s, 0.125, 0.5-s, u, v);
+
+		v5.addVertexWithUV(0.5-s, 0.125, 0.5-s, u, v);
+		v5.addVertexWithUV(0.5-s, 0.76, 0.5-s, du, v);
+		v5.addVertexWithUV(0.5+s, 0.76, 0.5-s, du, dv);
+		v5.addVertexWithUV(0.5+s, 0.125, 0.5-s, u, dv);
+
+		v5.addVertexWithUV(0.5+s, 0.125, 0.5+s, u, dv);
+		v5.addVertexWithUV(0.5+s, 0.76, 0.5+s, du, dv);
+		v5.addVertexWithUV(0.5-s, 0.76, 0.5+s, du, v);
+		v5.addVertexWithUV(0.5-s, 0.125, 0.5+s, u, v);
+		v5.draw();
+
 		GL11.glPopAttrib();
 	}
 

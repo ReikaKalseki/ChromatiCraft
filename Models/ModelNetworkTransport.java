@@ -2,10 +2,13 @@ package Reika.ChromatiCraft.Models;
 
 import java.util.ArrayList;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.Base.ChromaModelBase;
 import Reika.DragonAPI.Instantiable.Rendering.LODModelPart;
+import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
 public class ModelNetworkTransport extends ChromaModelBase {
 	//fields
@@ -301,7 +304,6 @@ public class ModelNetworkTransport extends ChromaModelBase {
 		Shape4a.render(f5);
 		Shape4b.render(f5);
 		Shape4.render(f5);
-		Shape9.render(f5);
 		Shape5a2.render(f5);
 		Shape1b2.render(f5);
 		Shape6.render(f5);
@@ -315,9 +317,17 @@ public class ModelNetworkTransport extends ChromaModelBase {
 		Shape10b.render(f5);
 		Shape7a.render(f5);
 		Shape7b.render(f5);
-		Shape86.render(f5);
 		Shape7.render(f5);
 		Shape7c.render(f5);
+		Shape1b.render(f5);
+		Shape52.render(f5);
+		Shape10.render(f5);
+		Shape10c.render(f5);
+		Shape10a.render(f5);
+
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		ReikaRenderHelper.disableEntityLighting();
+
 		Shape85.render(f5);
 		Shape83.render(f5);
 		Shape8.render(f5);
@@ -325,11 +335,26 @@ public class ModelNetworkTransport extends ChromaModelBase {
 		Shape84.render(f5);
 		Shape87.render(f5);
 		Shape88.render(f5);
-		Shape1b.render(f5);
-		Shape52.render(f5);
-		Shape10.render(f5);
-		Shape10c.render(f5);
-		Shape10a.render(f5);
+		Shape86.render(f5);
+
+		Shape9.render(f5);
+		/*
+		float f11 = 0.76F;
+		GL11.glColor4f(0.5F * f11, 0.25F * f11, 0.8F * f11, 1.0F);
+		GL11.glMatrixMode(GL11.GL_TEXTURE);
+		GL11.glTranslated(0, System.currentTimeMillis()/100D, 0);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		ReikaTextureHelper.bindEnchantmentTexture();
+		BlendMode.OVERLAYDARK.apply();
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glDepthMask(false);
+		Shape9.render(f5);
+		GL11.glMatrixMode(GL11.GL_TEXTURE);
+		GL11.glLoadIdentity();
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		 */
+		GL11.glPopAttrib();
 	}
 
 }
