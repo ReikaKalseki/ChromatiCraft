@@ -176,33 +176,38 @@ public class CrystalPath implements Comparable<CrystalPath> {
 		return true;
 	}
 
-	public final boolean stillValid() {
+	public final CachedPathValidity stillValid() {
+		if (transmitter.isInvalid() || (hasRealTarget && PylonFinder.getNetTileAt(origin, false) == null))
+			return CachedPathValidity.BROKEN;
 		if (!transmitter.canConduct() || !transmitter.isConductingElement(element)) {
-			return false;
+			return CachedPathValidity.DORMANT;
 		}
 		if (hasRealTarget) {
 			CrystalReceiver tile = PylonFinder.getReceiverAt(origin, false);
-			if (tile == null || !tile.canConduct() || !tile.isConductingElement(element))
-				return false;
+			if (!tile.canConduct() || !tile.isConductingElement(element))
+				return CachedPathValidity.DORMANT;
 			if (!tile.canBeSuppliedBy(transmitter, element) || !transmitter.canSupply(tile, element))
-				return false;
+				return CachedPathValidity.DORMANT;
 		}
 		for (int i = hasRealTarget ? 0 : 1; i < nodes.size()-2; i++) {
 			PathNode tgt = nodes.get(i);
 			PathNode src = nodes.get(i+1);
 			CrystalTransmitter sr = (CrystalTransmitter)src.getTile(false);
 			CrystalReceiver rec = (CrystalReceiver)tgt.getTile(false);
-			if (sr == null || !sr.canConduct() || !sr.isConductingElement(element)) {
-				return false;
+			if (sr == null || rec == null) {
+				return CachedPathValidity.BROKEN;
+			}
+			if (!sr.canConduct() || !sr.isConductingElement(element)) {
+				return CachedPathValidity.DORMANT;
 			}
 			if (sr.needsLineOfSightToReceiver(rec) || rec.needsLineOfSightFromTransmitter(sr)) {
 				CrystalLink l = network.getLink(tgt.location, src.location);
 				if (!l.hasLineOfSight()) {
-					return false;
+					return CachedPathValidity.BLOCKED;
 				}
 			}
 		}
-		return true;
+		return CachedPathValidity.VALID;
 	}
 
 	public final void blink(int ticks, CrystalReceiver r) {

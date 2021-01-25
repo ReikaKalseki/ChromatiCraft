@@ -230,6 +230,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	LAUNCHPAD(		ChromaTiles.LAUNCHPAD,		ResearchLevel.BASICCRAFT),
 	TOOLSTORAGE(	ChromaTiles.TOOLSTORAGE,	ResearchLevel.BASICCRAFT),
 	BEESTORAGE(		ChromaTiles.BEESTORAGE,		ResearchLevel.RUNECRAFT),
+	NETWORKTRANSPORT(ChromaTiles.NETWORKITEM,	ResearchLevel.PYLONCRAFT),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT,	ProgressStage.ALLCOLORS),

@@ -826,6 +826,22 @@
 			Stores any variants of one "species format" like pollen, princesses, or larvae
 		</note>
 	</beestorage>
+	<networkitem>
+		<desc>
+			Occasionally, a far-flung outpost requires a steady supply of some kind of item, and the distances involved make anything short of outright teleportation - which is often costly enough to not be worth it for the value of the outpost - impractical at best. However, often times these outposts have some kind of supply from your crystal network, for example to feed an extraction machine. Seeing as you already have a long-range conduction system in place, it might be possible to convert items to and from a form that is more amenable to a similar means of transport...
+		</desc>
+		<note>
+
+		</note>
+	</networkitem>
+	<unused>
+		<desc>
+			Deep in a cave under a forest of giant pink trees and jumping green spiders, you found a crack in the ground filled with innumerable quantities of 
+		</desc>
+		<note>
+
+		</note>
+	</unused>
 	<name>
 		<desc>
 
@@ -842,4 +858,60 @@
 
 		</note>
 	</name>
+	<name>
+		<desc>
+
+		</desc>
+		<note>
+
+		</note>
+	</name>
+	<name>
+		<desc>
+
+		</desc>
+		<note>
+
+		</note>
+	</name>
+	<name>
+		<desc>
+
+		</desc>
+		<note>
+
+		</note>
+	</name>
+	<name>
+		<desc>
+
+		</desc>
+		<note>
+
+		</note>
+	</name>
+	<name>
+		<desc>
+
+		</desc>
+		<note>
+
+		</note>
+	</name>
+	<name>
+		<desc>
+
+		</desc>
+		<note>
+
+		</note>
+	</name>
+	<name>
+		<desc>
+
+		</desc>
+		<note>
+
+		</note>
+	</name>v
 </machines>

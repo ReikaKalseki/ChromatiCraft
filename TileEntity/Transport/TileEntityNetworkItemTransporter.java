@@ -100,6 +100,9 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 				}
 			}
 			lastRequest = currentRequest;
+
+			if (this.getTicksExisted()%200 == 0)
+				this.syncAllData(true);
 		}
 		else {
 			if (currentRequest != lastRequest) {

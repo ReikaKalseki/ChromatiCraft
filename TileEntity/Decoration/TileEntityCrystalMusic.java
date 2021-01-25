@@ -29,7 +29,6 @@ import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.TemporaryCrystalReceiver;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
-import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Network.CrystalPath;
 import Reika.ChromatiCraft.Magic.Progression.ResearchLevel;
@@ -67,7 +66,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 
 	private MusicScore track = new MusicScore(16);
 
-	private CrystalReceiver receiver;
+	private TemporaryCrystalReceiver receiver;
 	private final CrystalPath[] networkConnections = new CrystalPath[16];
 
 	private static final MusicScore demoTrack;
@@ -279,7 +278,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 			c.setBlock(world, ChromaBlocks.LAMP.getBlockInstance(), e.ordinal());
 		if (b instanceof CrystalBlock && c.getBlockMetadata(world) == e.ordinal()) {
 			this.generateParticles(world, c.xCoord, c.yCoord, c.zCoord, e, length);
-			if (networkConnections[e.ordinal()] != null && networkConnections[e.ordinal()].stillValid()) {
+			if (networkConnections[e.ordinal()] != null && networkConnections[e.ordinal()].stillValid().canConduct()) {
 				//ReikaJavaLibrary.pConsole(networkConnections[e.ordinal()]);
 				networkConnections[e.ordinal()].blink(MathHelper.clamp_int(length/2, 1, 40), receiver);
 			}
@@ -288,7 +287,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 		return false;
 	}
 
-	public CrystalReceiver createTemporaryReceiver() {
+	public TemporaryCrystalReceiver createTemporaryReceiver() {
 		return new TemporaryCrystalReceiver(this, 0, 32, 0.35, ResearchLevel.BASICCRAFT);
 	}
 
@@ -446,6 +445,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 		if (receiver != null) {
 			CrystalNetworker.instance.breakPaths(receiver);
 			CrystalNetworker.instance.removeTile(receiver);
+			receiver.destroy();
 		}
 		for (int i = 0; i < networkConnections.length; i++) {
 			if (networkConnections[i] != null)

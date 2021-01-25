@@ -15,6 +15,7 @@ import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
 import Reika.ChromatiCraft.Models.ModelNetworkTransport;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityNetworkItemTransporter;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -38,9 +39,10 @@ public class RenderItemNetwork extends CrystalTransmitterRender {
 		GL11.glPushMatrix();
 		GL11.glTranslated(par2, par4, par6);
 		this.renderModel(te, model);
-		if (te.isInWorld() && MinecraftForgeClient.getRenderPass() == 1) {
+		if (MinecraftForgeClient.getRenderPass() == 1 || !te.isInWorld()) {
 			this.renderSprites(te, par8);
-			this.renderItem(te, par8);
+			if (te.isInWorld())
+				this.renderItem(te, par8);
 		}
 		GL11.glPopMatrix();
 	}
@@ -60,11 +62,13 @@ public class RenderItemNetwork extends CrystalTransmitterRender {
 		ReikaTextureHelper.bindTerrainTexture();
 		IIcon[] icons = {
 				Blocks.glowstone.blockIcon,
-				ChromaIcons.ECLIPSEFLARE.getIcon(),
-				ChromaIcons.RINGS.getIcon(),
+				te.isInWorld() ? ChromaIcons.ECLIPSEFLARE.getIcon() : null,
+						te.isInWorld() ? ChromaIcons.RINGS.getIcon() : null,
 		};
 		for (int i = 0; i < icons.length; i++) {
 			IIcon ico = icons[i];
+			if (ico == null)
+				continue;
 			double u = ico.getMinU();
 			double v = ico.getMinV();
 			double du = ico.getMaxU();
@@ -79,11 +83,14 @@ public class RenderItemNetwork extends CrystalTransmitterRender {
 
 		v5.draw();
 
+		BlendMode.OVERLAYDARK.apply();
+
 		float f11 = 0.76F;
 		GL11.glColor4f(0.5F * f11, 0.25F * f11, 0.8F * f11, 1.0F);
 		ReikaTextureHelper.bindEnchantmentTexture();
-		double u = -(te.getTicksExisted()+par8)*0.03;
-		double u2 = (te.getTicksExisted()+par8)*0.01;
+		double t = te.isInWorld() ? te.getTicksExisted()+par8 : ((System.currentTimeMillis()-DragonAPICore.getLaunchTime())/70D);
+		double u = -t*0.03;
+		double u2 = t*0.01;
 		double du = u+1;
 		double v = 0;
 		double dv = v+1;

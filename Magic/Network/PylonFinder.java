@@ -248,11 +248,10 @@ public class PylonFinder {
 				Iterator<CrystalPath> it = c.iterator();
 				while (it.hasNext()) {
 					CrystalPath p = it.next();
-					if (!p.stillValid()) {
-						//ReikaJavaLibrary.pConsole("rem "+p, Side.SERVER);
+					CachedPathValidity state = p.stillValid();
+					if (!state.shouldKeep())
 						it.remove();
-					}
-					else
+					if (state.canConduct())
 						return p;
 				}
 			}

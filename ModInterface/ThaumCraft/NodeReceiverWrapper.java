@@ -1108,6 +1108,11 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		return (int)(age%Integer.MAX_VALUE);
 	}
 
+	@Override
+	public boolean isInvalid() {
+		return ((TileEntity)node).isInvalid();
+	}
+
 	public void debug(ArrayList<String> li) {
 		li.add("Status: "+status);
 		li.add("Age: "+age);

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -43,6 +43,9 @@ public interface CrystalNetworkTile {
 	public UUID getPlacerUUID();
 
 	public void triggerBottleneckDisplay(int duration);
+
+	/** TileEntity isInvalid, ie has it been removed from the world */
+	public boolean isInvalid();
 
 	//public ResearchLevel getResearchTier();
 

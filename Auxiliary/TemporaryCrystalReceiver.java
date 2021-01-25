@@ -40,6 +40,8 @@ public class TemporaryCrystalReceiver implements CrystalReceiver, WrapperTile {
 	private final UUID uid = UUID.randomUUID();
 	private final HashSet<CrystalElement> colorLimit = new HashSet();
 
+	private boolean destroyed = false;
+
 	public TemporaryCrystalReceiver(TileEntity te, int t, int r, double br, ResearchLevel rl) {
 		this(new WorldLocation(te), t, r, br, rl);
 	}
@@ -51,6 +53,10 @@ public class TemporaryCrystalReceiver implements CrystalReceiver, WrapperTile {
 		range = r;
 		beamRadius = br;
 		level = rl;
+	}
+
+	public void destroy() {
+		destroyed = true;
 	}
 
 	@Override
@@ -185,6 +191,11 @@ public class TemporaryCrystalReceiver implements CrystalReceiver, WrapperTile {
 
 	public boolean canBeSuppliedBy(CrystalSource te, CrystalElement e) {
 		return this.isConductingElement(e);
+	}
+
+	@Override
+	public boolean isInvalid() {
+		return destroyed;
 	}
 
 }

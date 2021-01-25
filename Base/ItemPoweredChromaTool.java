@@ -152,6 +152,7 @@ public abstract class ItemPoweredChromaTool extends ItemChromaTool implements Sp
 					ReikaPacketHelper.sendEntitySyncPacket(DragonAPIInit.packetChannel, ei, 32);
 					//ReikaJavaLibrary.pConsole(this.getCharge(is)+" (+"+this.getChargeRate(is)+", f="+(this.getCharge(is)/(float)MAX_CHARGE));
 				}
+				r.destroy();
 			}
 		}
 		else {
