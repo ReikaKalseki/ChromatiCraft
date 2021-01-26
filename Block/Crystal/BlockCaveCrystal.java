@@ -64,7 +64,7 @@ public class BlockCaveCrystal extends CrystalBlock implements ProgressionTrigger
 	@Override
 	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int meta, int fortune) {
 		ArrayList<ItemStack> li = new ArrayList();
-		int num = this.getNumberDrops(meta, fortune);
+		int num = this.getNumberDrops(rand, fortune);
 		EntityPlayer ep = harvesters.get();
 		if (ep != null)
 			num = DimensionTuningManager.instance.getTunedDropCount(ep, num, 1, Integer.MAX_VALUE);
@@ -91,7 +91,31 @@ public class BlockCaveCrystal extends CrystalBlock implements ProgressionTrigger
 		return ReikaAABBHelper.getBlockAABB(x, y, z).contract(0.03125, 0, 0.03125);
 	}
 
-	private int getNumberDrops(int meta, int fortune) {
+	/**
+	 Approx equals 4+2*fortune:<br><br>
+Fortune 0 average: 4.513 = 4<br>
+Fortune 1 average: 6.5059 = 6<br>
+Fortune 2 average: 8.5229 = 8<br>
+Fortune 3 average: 10.4932 = 10<br>
+Fortune 4 average: 12.5796 = 12<br>
+Fortune 5 average: 14.5277 = 14<br>
+Fortune 6 average: 16.5918 = 16<br>
+Fortune 7 average: 18.5853 = 18<br>
+Fortune 8 average: 20.449 = 20<br>
+Fortune 9 average: 22.5409 = 22<br>
+Fortune 10 average: 24.572 = 24<br>
+Fortune 11 average: 26.6424 = 26<br>
+Fortune 12 average: 28.3735 = 28<br>
+Fortune 13 average: 30.7102 = 30<br>
+Fortune 14 average: 32.1941 = 32<br>
+Fortune 15 average: 34.6519 = 34<br>
+Fortune 16 average: 36.2285 = 36<br>
+Fortune 17 average: 38.3125 = 38<br>
+Fortune 18 average: 40.5295 = 40<br>
+Fortune 19 average: 42.1995 = 42<br>
+Fortune 20 average: 44.3653 = 44<br>
+	 */
+	public static int getNumberDrops(Random rand, int fortune) {
 		return 1+rand.nextInt(6+fortune)+(1+fortune)*rand.nextInt(3)+rand.nextInt(1+fortune);
 	}
 

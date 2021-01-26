@@ -52,6 +52,9 @@ import forestry.api.recipes.RecipeManagers;
 
 public class ChromaRecipes {
 
+	/** Since drops ~ 4+2*F, F ~ D/2-4 = 5 */
+	public static final int GRINDER_SHARDS = 18;
+
 	public static void addRecipes() {
 
 		for (int i = 0; i < ReikaDyeHelper.dyes.length; i++) {
@@ -124,7 +127,7 @@ public class ChromaRecipes {
 				BlockColorInterface.addGPRBlockColor(ChromaBlocks.CRYSTAL.getBlockInstance(), i, color.getColor());
 				BlockColorInterface.addGPRBlockColor(ChromaBlocks.LAMP.getBlockInstance(), i, color.getColor());
 				BlockColorInterface.addGPRBlockColor(ChromaBlocks.SUPER.getBlockInstance(), i, color.getColor());
-				RecipeInterface.grinder.addAPIRecipe(new ItemStack(ChromaBlocks.CRYSTAL.getBlockInstance(), 1, i), ReikaItemHelper.getSizedItemStack(shard, 18));
+				RecipeInterface.grinder.addAPIRecipe(new ItemStack(ChromaBlocks.CRYSTAL.getBlockInstance(), 1, i), ReikaItemHelper.getSizedItemStack(shard, GRINDER_SHARDS));
 				RecipeInterface.grinder.addAPIRecipe(new ItemStack(ChromaBlocks.LAMP.getBlockInstance(), 1, i), ReikaItemHelper.getSizedItemStack(shard, 4));
 				RecipeInterface.grinder.addAPIRecipe(shard, ChromaStacks.crystalPowder);
 			}
