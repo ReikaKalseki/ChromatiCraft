@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,14 +11,12 @@ package Reika.ChromatiCraft.Render.TESR;
 
 import org.lwjgl.opengl.GL11;
 
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Models.ModelItemRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityItemRift;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
-import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
 public class RenderItemRift extends ChromaRenderBase {
 
@@ -44,33 +42,33 @@ public class RenderItemRift extends ChromaRenderBase {
 			int dz = 0;
 			int dy = 1;
 			switch(te.getFacing()) {
-			case EAST:
-				rot = 270;
-				dx = 1;
-				break;
-			case WEST:
-				rot = 90;
-				dz = 1;
-				break;
-			case SOUTH:
-				rot = 180;
-				dx = 1;
-				dz = 1;
-				break;
-			case NORTH:
-				rot = 0;
-				break;
-			case DOWN:
-				rotx = 270;
-				dy = 0;
-				break;
-			case UP:
-				rotx = 90;
-				dy = 1;
-				dz = 1;
-				break;
-			default:
-				break;
+				case EAST:
+					rot = 270;
+					dx = 1;
+					break;
+				case WEST:
+					rot = 90;
+					dz = 1;
+					break;
+				case SOUTH:
+					rot = 180;
+					dx = 1;
+					dz = 1;
+					break;
+				case NORTH:
+					rot = 0;
+					break;
+				case DOWN:
+					rotx = 270;
+					dy = 0;
+					break;
+				case UP:
+					rotx = 90;
+					dy = 1;
+					dz = 1;
+					break;
+				default:
+					break;
 			}
 			GL11.glTranslated(dx, dy, dz);
 			GL11.glRotated(rot, 0, 1, 0);
@@ -85,18 +83,17 @@ public class RenderItemRift extends ChromaRenderBase {
 		//}
 		GL11.glPopMatrix();
 	}
-
+	/*
 	private void renderCenter(TileEntityItemRift te, double par2, double par4, double par6, float par8) {
 		Tessellator v5 = Tessellator.instance;
-		int[] target = te.getTarget();
-		int x = target[0];
-		int y = target[1];
-		int z = target[2];
+		Coordinate c = te.getConnection();
+		if (c == null)
+			return;
 
 		double w = 0.0625;
-		int dx = 1+x-te.xCoord;
-		int dy = 1+y-te.yCoord;
-		int dz = 1+z-te.zCoord;
+		int dx = 1+c.xCoord-te.xCoord;
+		int dy = 1+c.yCoord-te.yCoord;
+		int dz = 1+c.zCoord-te.zCoord;
 
 		ReikaRenderHelper.prepareGeoDraw(true);
 		v5.startDrawingQuads();
@@ -148,5 +145,5 @@ public class RenderItemRift extends ChromaRenderBase {
 		v5.draw();
 		ReikaRenderHelper.exitGeoDraw();
 	}
-
+	 */
 }

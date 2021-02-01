@@ -143,7 +143,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 		}
 		if (t == ChromaTiles.ITEMRIFT) {
 			TileEntityItemRift ir = (TileEntityItemRift)tile;
-			ir.isEmitting = !ir.isEmitting;
+			ir.flip();
 			return true;
 		}
 		if (t == ChromaTiles.CONSOLE) {

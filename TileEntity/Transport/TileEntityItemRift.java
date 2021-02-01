@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Transport;
 
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -24,26 +23,29 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
+import Reika.DragonAPI.Instantiable.RayTracer;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Interfaces.TileEntity.Connectable;
 import Reika.DragonAPI.Interfaces.TileEntity.SidePlacedTile;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.RotaryCraft.API.Interfaces.Screwdriverable;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityItemRift extends TileEntityChromaticBase implements Screwdriverable, SidePlacedTile, Connectable {
+public class TileEntityItemRift extends TileEntityChromaticBase implements SidePlacedTile, Connectable {
 
-	private int[] source = new int[]{Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE};
-	private int[] target = new int[]{Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE};
+	private Coordinate otherEnd;
 	private ForgeDirection facing;
-	public boolean isEmitting;
+	private boolean isEmitting;
+	private boolean isFunctioning;
 
 	@Override
 	public ChromaTiles getTile() {
@@ -52,34 +54,40 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements Screw
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		boolean connected = false;
-		if (!isEmitting) {
-			TileEntity src = this.getAdjacentTileEntity(this.getFacing());
-			if (src instanceof IInventory) {
-				ChromaTiles c = ChromaTiles.getTile(world, target[0], target[1], target[2]);
+		boolean wasFunctioning = isFunctioning;
+		isFunctioning = false;
+		if (!world.isRemote && isEmitting && otherEnd != null) {
+			IInventory src = this.getAttachment();
+			if (src != null) {
+				ChromaTiles c = ChromaTiles.getTile(world, otherEnd.xCoord, otherEnd.yCoord, otherEnd.zCoord);
 				if (c == this.getTile()) {
-					TileEntityItemRift tile = (TileEntityItemRift)world.getTileEntity(target[0], target[1], target[2]);
-					TileEntity tgt = tile.getAdjacentTileEntity(tile.getFacing());
-					if (tgt instanceof IInventory) {
-						if (!world.isRemote)
-							this.transferItems((IInventory)src, this.getFacing(), (IInventory)tgt, tile.getFacing());
-						connected = true;
+					TileEntityItemRift tile = (TileEntityItemRift)otherEnd.getTileEntity(world);
+					IInventory tgt = tile.getAttachment();
+					if (tgt != null) {
+						this.transferItems(src, tgt, this.getFacing().getOpposite());
+						isFunctioning = true;
 					}
 				}
 			}
 		}
-		if (!world.isRemote && connected) {
+		if (isFunctioning != wasFunctioning) {
+			this.syncAllData(false);
+		}
+		if (world.isRemote && isFunctioning) {
 			this.spawnParticles(world, x, y, z);
 		}
+	}
+
+	private IInventory getAttachment() {
+		TileEntity te = this.getAdjacentTileEntity(this.getFacing());
+		return te instanceof IInventory ? (IInventory)te : null;
 	}
 
 	@SideOnly(Side.CLIENT)
 	private void spawnParticles(World world, int x, int y, int z) {
 		ForgeDirection dir = this.getFacing().getOpposite();
 		ForgeDirection left = ReikaDirectionHelper.getLeftBy90(dir);
-		int index = ReikaDirectionHelper.getDirectionIndex(dir);
-		int[] c = new int[]{x, y, z};
-		int len = 1+Math.abs(c[index] - target[index]);
+		int len = 1+otherEnd.getTaxicabDistanceTo(x, y, z);
 		double r = 0.25;
 		int n = Math.max(1, len/2-1);
 		for (int i = 0; i < n; i++) {
@@ -90,7 +98,7 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements Screw
 			double px = x+0.5+dir.offsetX*d+left.offsetX*cos;
 			double py = y+0.5+dir.offsetY*d+sin;
 			double pz = z+0.5+dir.offsetZ*d+left.offsetZ*cos;
-			EntityBlurFX fx = new EntityCCBlurFX(CrystalElement.LIGHTBLUE, world, px, py, pz, 0, 0, 0);
+			EntityBlurFX fx = new EntityCCBlurFX(CrystalElement.LIME, world, px, py, pz, 0, 0, 0);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 
@@ -102,30 +110,24 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements Screw
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
-	private void transferItems(IInventory src, ForgeDirection dir1, IInventory tgt, ForgeDirection dir2) {
+	private static void transferItems(IInventory src, IInventory tgt, ForgeDirection move) {
 		//ReikaJavaLibrary.pConsole(src+" >> "+tgt);
-		int d1 = dir1.getOpposite().ordinal();
-		int d2 = dir2.getOpposite().ordinal();
 		int[] from = ReikaArrayHelper.getLinearArray(src.getSizeInventory());
 		if (src instanceof ISidedInventory) {
-			from = ((ISidedInventory)src).getAccessibleSlotsFromSide(d1);
-		}
-		int[] to = ReikaArrayHelper.getLinearArray(src.getSizeInventory());
-		if (src instanceof ISidedInventory) {
-			to = ((ISidedInventory)src).getAccessibleSlotsFromSide(d2);
+			from = ((ISidedInventory)src).getAccessibleSlotsFromSide(move.ordinal());
 		}
 		for (int i = 0; i < from.length; i++) {
 			int slotfrom = from[i];
-			for (int k = 0; k < to.length; k++) {
-				int slotto = to[k];
-				ItemStack in = src.getStackInSlot(slotfrom);
-				if (in != null) {
-					boolean extract = src instanceof ISidedInventory ? ((ISidedInventory)src).canExtractItem(slotfrom, in, d1) : true;
-					if (extract) {
-						boolean valid  = tgt.isItemValidForSlot(slotto, in);
-						boolean insert = tgt instanceof ISidedInventory ? ((ISidedInventory)src).canInsertItem(slotto, in, d2) : true;
-						if (insert && valid) {
-							this.transferItem(src, slotfrom, tgt, slotto, in);
+			ItemStack in = src.getStackInSlot(slotfrom);
+			if (in != null) {
+				boolean extract = src instanceof ISidedInventory ? ((ISidedInventory)src).canExtractItem(slotfrom, in, move.ordinal()) : true;
+				if (extract) {
+					ItemStack in2 = ReikaItemHelper.getSizedItemStack(in, getMaxTransferRate()); use relay energy to boost
+					int added = ReikaInventoryHelper.addStackAndReturnCount(in2, tgt, move.getOpposite());
+					if (added > 0) {
+						in.stackSize -= added;
+						if (in.stackSize <= 0) {
+							src.setInventorySlotContents(slotfrom, null);
 						}
 					}
 				}
@@ -133,51 +135,19 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements Screw
 		}
 	}
 
-	private void transferItem(IInventory src, int slotfrom, IInventory tgt, int slotto, ItemStack transfer) {
-		ItemStack already = tgt.getStackInSlot(slotto);
-		int maxsize = Math.min(transfer.getMaxStackSize(), tgt.getInventoryStackLimit());
-		int space = already == null ? maxsize : maxsize-already.stackSize;
-		if (space > 0) {
-			int amt = Math.min(space, transfer.stackSize);
-			if (amt > 0) {
-				if (already != null) {
-					already.stackSize += amt;
-				}
-				else {
-					ItemStack put = ReikaItemHelper.getSizedItemStack(transfer, amt);
-					tgt.setInventorySlotContents(slotto, put);
-				}
-				transfer.stackSize -= amt;
-				if (transfer.stackSize == 0) {
-					src.setInventorySlotContents(slotfrom, null);
-				}
-			}
-		}
-	}
-
 	public final void reset() {
-		source = new int[]{Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE};
-		target = new int[]{Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE};
+		otherEnd = null;
 	}
 
 	public final void resetOther() {
-		if (!isEmitting) {
-			ChromaTiles m = ChromaTiles.getTile(worldObj, target[0], target[1], target[2]);
-			if (m == this.getTile()) {
-				TileEntityItemRift te = (TileEntityItemRift)worldObj.getTileEntity(target[0], target[1], target[2]);
-				te.reset();
-			}
-		}
-		else {
-			ChromaTiles m = ChromaTiles.getTile(worldObj, source[0], source[1], source[2]);
-			if (m == this.getTile()) {
-				TileEntityItemRift te = (TileEntityItemRift)worldObj.getTileEntity(source[0], source[1], source[2]);
-				te.reset();
-			}
+		ChromaTiles m = ChromaTiles.getTile(worldObj, otherEnd.xCoord, otherEnd.yCoord, otherEnd.zCoord);
+		if (m == this.getTile()) {
+			TileEntityItemRift te = (TileEntityItemRift)otherEnd.getTileEntity(worldObj);
+			te.reset();
 		}
 	}
 
-	public final boolean canConnect(int x, int y, int z) {
+	public final boolean canConnectTo(World world, int x, int y, int z) {
 		int dx = x-xCoord;
 		int dy = y-yCoord;
 		int dz = z-zCoord;
@@ -187,7 +157,7 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements Screw
 		if (!ReikaMathLibrary.nBoolsAreTrue(1, dx != 0, dy != 0, dz != 0))
 			return false;
 
-		ForgeDirection dir = ForgeDirection.UNKNOWN;
+		ForgeDirection dir = null;
 
 		if (dx > 0)
 			dir = ForgeDirection.EAST;
@@ -207,47 +177,40 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements Screw
 		if (!this.isValidDirection(dir))
 			return false;
 
-		for (int i = 1; i < Math.abs(dx+dy+dz); i++) {
-			int xi = xCoord+dir.offsetX*i;
-			int yi = yCoord+dir.offsetY*i;
-			int zi = zCoord+dir.offsetZ*i;
-			Block id = worldObj.getBlock(xi, yi, zi);
-			//ReikaJavaLibrary.pConsole(xi+", "+yi+", "+zi+" -> "+id, Side.SERVER);
-			if (!ReikaWorldHelper.softBlocks(worldObj, xi, yi, zi)) {
+		TileEntity te = world.getTileEntity(x, y, z);
+		if (te instanceof TileEntityItemRift) {
+			if (((TileEntityItemRift)te).isEmitting == isEmitting)
 				return false;
+			for (int i = 1; i < Math.abs(dx+dy+dz); i++) {
+				int xi = xCoord+dir.offsetX*i;
+				int yi = yCoord+dir.offsetY*i;
+				int zi = zCoord+dir.offsetZ*i;
+				if (!this.isPassableBlock(world, xi, yi, zi)) {
+					return false;
+				}
 			}
+			return true;
 		}
-		return true;
+		return false;
+	}
+
+	private boolean isPassableBlock(World world, int x, int y, int z) {
+		return ReikaWorldHelper.softBlocks(world, x, y, z) || RayTracer.getTransparentBlocks().contains(BlockKey.getAt(world, x, y, z)) || BCPIPE;
 	}
 
 	private boolean isValidDirection(ForgeDirection dir) {
 		return true;
 	}
 
-	public final boolean setTarget(World world, int x, int y, int z) {
-		if (!this.canConnect(x, y, z))
+	public final boolean tryConnect(World world, int x, int y, int z) {
+		if (!this.canConnectTo(world, x, y, z))
 			return false;
-		target[0] = x;
-		target[1] = y;
-		target[2] = z;
-		//ReikaJavaLibrary.pConsole(this, Side.SERVER);
+		otherEnd = new Coordinate(x, y, z);
 		return true;
 	}
 
-	public final boolean setSource(World world, int x, int y, int z) {
-		if (!this.canConnect(x, y, z))
-			return false;
-		source[0] = x;
-		source[1] = y;
-		source[2] = z;
-		//ReikaJavaLibrary.pConsole(this, Side.SERVER);
-		return true;
-	}
-
-	public int[] getTarget() {
-		int[] tg = new int[3];
-		System.arraycopy(target, 0, tg, 0, 3);
-		return tg;
+	public Coordinate getConnection() {
+		return otherEnd;
 	}
 
 	@Override
@@ -256,27 +219,24 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements Screw
 	}
 
 	@Override
-	protected void writeSyncTag(NBTTagCompound NBT)
-	{
+	protected void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
 
 		NBT.setBoolean("emit", isEmitting);
 
-		NBT.setIntArray("tg", target);
-		NBT.setIntArray("src", source);
+		if (otherEnd != null)
+			otherEnd.writeToNBT("endpoint", NBT);
 
 		NBT.setInteger("dir", this.getFacing().ordinal());
 	}
 
 	@Override
-	protected void readSyncTag(NBTTagCompound NBT)
-	{
+	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 
 		isEmitting = NBT.getBoolean("emit");
 
-		source = NBT.getIntArray("src");
-		target = NBT.getIntArray("tg");
+		otherEnd = Coordinate.readFromNBT("endpoint", NBT);
 
 		facing = dirs[NBT.getInteger("dir")];
 	}
@@ -286,25 +246,23 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements Screw
 	}
 
 	@Override
-	public boolean onShiftRightClick(World world, int x, int y, int z, ForgeDirection side) {
-		return false;
-	}
-
-	@Override
-	public boolean onRightClick(World world, int x, int y, int z, ForgeDirection side) {
-		int o = this.getFacing().ordinal();
-		ForgeDirection next = o == 5 ? ForgeDirection.DOWN : ForgeDirection.VALID_DIRECTIONS[o+1];
-		this.setFacing(next);
-		return true;
-	}
-
-	public void setFacing(ForgeDirection next) {
-		facing = next;
-	}
-
-	@Override
 	public void placeOnSide(int s) {
 		facing = ForgeDirection.VALID_DIRECTIONS[s].getOpposite();
+	}
+
+	public void flip() {
+		this.flip(true);
+	}
+
+	private void flip(boolean other) {
+		isEmitting = !isEmitting;
+		this.syncAllData(false);
+		if (other && otherEnd != null) {
+			TileEntity te = otherEnd.getTileEntity(worldObj);
+			if (te instanceof TileEntityItemRift) {
+				((TileEntityItemRift)te).flip(false);
+			}
+		}
 	}
 
 	@Override
