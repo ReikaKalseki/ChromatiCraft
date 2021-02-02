@@ -155,6 +155,7 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidRelay;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityItemRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityLaunchPad;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRFDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRouterHub;
@@ -180,7 +181,6 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.DataPacket;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.PacketObj;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -235,18 +235,11 @@ public class ChromatiPackets implements PacketHandler {
 					pack = ChromaPackets.getPacket(control);
 					len = pack.numInts;
 					if (pack.hasData()) {
-						if (pack.variableData()) {
-							ArrayList<Integer> li = new ArrayList();
-							while (inputStream.available() >= 4+4*3) {
-								li.add(inputStream.readInt());
-							}
-							data = ReikaArrayHelper.intListToArray(li);
-						}
-						else {
-							data = new int[len];
-							for (int i = 0; i < len; i++)
-								data[i] = inputStream.readInt();
-						}
+						if (pack.variableData())
+							len = inputStream.readInt();
+						data = new int[len];
+						for (int i = 0; i < len; i++)
+							data[i] = inputStream.readInt();
 					}
 					break;
 				case POS:
@@ -1171,6 +1164,9 @@ public class ChromatiPackets implements PacketHandler {
 					if (e instanceof EntityItem) {
 						ArtefactWithDataCrystalAlloyingEffect.instance.doBurst((EntityItem)e);
 					}
+					break;
+				case ITEMRIFTMOVE:
+					((TileEntityItemRift)tile).doMoveParticles(data[0], data[1], ForgeDirection.VALID_DIRECTIONS[data[2]], data[3]);
 					break;
 			}
 		}

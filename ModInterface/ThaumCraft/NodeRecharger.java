@@ -222,7 +222,7 @@ public class NodeRecharger implements TickHandler {
 		for (HashMap<WorldLocation, NodeReceiverWrapper> map : nodes.values()) {
 			for (Entry<WorldLocation, NodeReceiverWrapper> e : map.entrySet()) {
 				NBTTagCompound nbt = new NBTTagCompound();
-				e.getKey().writeToNBT(nbt);
+				e.getKey().writeToTag(nbt);
 				NBTTagCompound meta = new NBTTagCompound();
 				e.getValue().write(meta);
 				nbt.setTag(EXTRA_TAG, meta);

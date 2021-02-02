@@ -52,7 +52,7 @@ public enum ChromaPackets {
 	AURAPOUCH(2),
 	FARMERHARVEST(3),
 	PYLONCACHE(-1),
-	PYLONLINKCACHE(-1),
+	PYLONLINKCACHE(0, PacketTypes.NBT),
 	PYLONCACHECLEAR(1),
 	TRANSITIONWAND(1),
 	TELEPORT(),
@@ -215,6 +215,7 @@ public enum ChromaPackets {
 	STRUCTMAPEND(1),
 	ALLOYITEMS(0, PacketTypes.STRING),
 	ARTEALLOYBURST(1),
+	ITEMRIFTMOVE(4),
 	;
 
 	public final int numInts;

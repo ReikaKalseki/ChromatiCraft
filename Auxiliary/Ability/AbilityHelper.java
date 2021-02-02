@@ -649,7 +649,7 @@ public class AbilityHelper {
 	public void saveMESystemLocation(EntityPlayer ep, TileEntity te, int s) {
 		NBTTagCompound NBT = new NBTTagCompound();
 		WorldLocation c = new WorldLocation(te);
-		c.writeToNBT(NBT);
+		c.writeToTag(NBT);
 		NBT.setInteger("dir", s);
 		ReikaPlayerAPI.getDeathPersistentNBT(ep).setTag(AE_LOC_TAG, NBT);
 	}

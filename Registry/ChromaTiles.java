@@ -18,6 +18,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomHitbox;
@@ -620,6 +621,8 @@ public enum ChromaTiles implements TileEnum {
 				return ((TileEntityTransportWindow)te).getFacing().offsetX == 0 ? 0 : 0.4375;
 			case TURRET:
 				return 0.25;
+			case ITEMRIFT:
+				return ((TileEntityItemRift)te).getFacing() == ForgeDirection.EAST ? 0.6875 : 0;
 			default:
 				return 0;
 		}
@@ -627,6 +630,8 @@ public enum ChromaTiles implements TileEnum {
 
 	public double getMinY(TileEntityChromaticBase te) {
 		switch(this) {
+			case ITEMRIFT:
+				return ((TileEntityItemRift)te).getFacing() == ForgeDirection.UP ? 0.6875 : 0;
 			default:
 				return 0;
 		}
@@ -642,6 +647,8 @@ public enum ChromaTiles implements TileEnum {
 				return ((TileEntityTransportWindow)te).getFacing().offsetZ == 0 ? 0 : 0.4375;
 			case TURRET:
 				return 0.25;
+			case ITEMRIFT:
+				return ((TileEntityItemRift)te).getFacing() == ForgeDirection.SOUTH ? 0.6875 : 0;
 			default:
 				return 0;
 		}
@@ -657,6 +664,8 @@ public enum ChromaTiles implements TileEnum {
 				return ((TileEntityTransportWindow)te).getFacing().offsetX == 0 ? 1 : 0.5625;
 			case TURRET:
 				return 0.75;
+			case ITEMRIFT:
+				return ((TileEntityItemRift)te).getFacing() == ForgeDirection.WEST ? 0.3125 : 1;
 			default:
 				return 1;
 		}
@@ -693,6 +702,8 @@ public enum ChromaTiles implements TileEnum {
 				return 0.375;
 			case NETWORKITEM:
 				return 0.875;
+			case ITEMRIFT:
+				return ((TileEntityItemRift)te).getFacing() == ForgeDirection.DOWN ? 0.3125 : 1;
 			default:
 				return 1;
 		}
@@ -708,6 +719,8 @@ public enum ChromaTiles implements TileEnum {
 				return ((TileEntityTransportWindow)te).getFacing().offsetZ == 0 ? 1 : 0.5625;
 			case TURRET:
 				return 0.75;
+			case ITEMRIFT:
+				return ((TileEntityItemRift)te).getFacing() == ForgeDirection.NORTH ? 0.3125 : 1;
 			default:
 				return 1;
 		}

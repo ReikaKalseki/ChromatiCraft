@@ -357,7 +357,7 @@ public class BlockGravityTile extends BlockDimensionStructureTile {
 
 	}
 
-	public static class GravityWarp extends GravityTile implements Linkable {
+	public static class GravityWarp extends GravityTile implements Linkable<Coordinate> {
 
 		private Coordinate otherLocation;
 		public LightningBolt linkRender;
@@ -422,7 +422,7 @@ public class BlockGravityTile extends BlockDimensionStructureTile {
 		}
 
 		@Override
-		public boolean connectTo(World world, int x, int y, int z) {
+		public boolean tryConnect(World world, int x, int y, int z) {
 			TileEntity te = world.getTileEntity(x, y, z);
 			if (te instanceof GravityWarp) {
 				this.linkTo((GravityWarp)te);
@@ -435,6 +435,21 @@ public class BlockGravityTile extends BlockDimensionStructureTile {
 		public void breakBlock() {
 			this.resetOther();
 			this.reset();
+		}
+
+		@Override
+		public boolean isEmitting() {
+			return true;
+		}
+
+		@Override
+		public Coordinate getConnection() {
+			return otherLocation;
+		}
+
+		@Override
+		public boolean hasValidConnection() {
+			return otherLocation != null && otherLocation.getTileEntity(worldObj) instanceof GravityWarp;
 		}
 
 	}

@@ -655,7 +655,7 @@ public class PylonFinder {
 		invalid = true;
 	}
 
-	static boolean isBlockPassable(World world, int x, int y, int z) {
+	public static boolean isBlockPassable(World world, int x, int y, int z) {
 		return tracer.isBlockPassable(world, x, y, z);
 	}
 	/*

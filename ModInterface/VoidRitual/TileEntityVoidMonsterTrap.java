@@ -588,7 +588,7 @@ Linkable, ChunkLoadingTile, BreakAction, InertIInv {
 	}
 
 	@Override
-	public boolean connectTo(World world, int x, int y, int z) {
+	public boolean tryConnect(World world, int x, int y, int z) {
 		if (ChromaTiles.getTile(world, x, y, z) == this.getTile()) {
 			TileEntityVoidMonsterTrap te = (TileEntityVoidMonsterTrap)world.getTileEntity(x, y, z);
 			te.link = new WorldLocation(this);
@@ -596,6 +596,21 @@ Linkable, ChunkLoadingTile, BreakAction, InertIInv {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public boolean isEmitting() {
+		return true;
+	}
+
+	@Override
+	public WorldLocation getConnection() {
+		return link;
+	}
+
+	@Override
+	public boolean hasValidConnection() {
+		return link != null && link.getTileEntity() instanceof TileEntityVoidMonsterTrap;
 	}
 
 	@Override

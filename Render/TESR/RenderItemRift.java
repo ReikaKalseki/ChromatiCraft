@@ -17,6 +17,7 @@ import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Models.ModelItemRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityItemRift;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
+import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
 public class RenderItemRift extends ChromaRenderBase {
 
@@ -24,12 +25,13 @@ public class RenderItemRift extends ChromaRenderBase {
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
-		return ((TileEntityItemRift)te).isEmitting() ? "itemrift.png" : "itemrift2.png";
+		return ((TileEntityItemRift)te).isEmitting() ? "itemrift_emit.png" : "itemrift_receive.png";
 	}
 
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		TileEntityItemRift te = (TileEntityItemRift)tile;
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		GL11.glPushMatrix();
 		GL11.glTranslated(par2, par4, par6);
 
@@ -76,6 +78,12 @@ public class RenderItemRift extends ChromaRenderBase {
 			GL11.glRotated(rotx, 1, 0, 0);
 		}
 		this.renderModel(te, model);
+		if (te.isFunctioning()) {
+			ReikaRenderHelper.disableEntityLighting();
+			GL11.glDisable(GL11.GL_LIGHTING);
+			this.renderModel(te, model, this.getTextureFolder()+"itemrift_overlay.png");
+		}
+		GL11.glPopAttrib();
 		GL11.glPopMatrix();
 
 		//if (MinecraftForgeClient.getRenderPass() == 1 && !te.isEmitting) {

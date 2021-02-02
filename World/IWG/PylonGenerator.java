@@ -194,6 +194,7 @@ public final class PylonGenerator implements RetroactiveGenerator {
 						li.add(c2.yCoord);
 						li.add(c2.zCoord);
 					}
+					li.add(0, li.size());
 					ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.PYLONCACHE.ordinal(), ep, li);
 				}
 			}
@@ -635,6 +636,7 @@ public final class PylonGenerator implements RetroactiveGenerator {
 			li.add(c.yCoord);
 			li.add(c.zCoord);
 		}
+		li.add(0, li.size());
 		ReikaPacketHelper.sendDataPacketToEntireServer(ChromatiCraft.packetChannel, ChromaPackets.PYLONCACHE.ordinal(), li);
 	}
 

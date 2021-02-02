@@ -479,4 +479,14 @@ public final class ElementTagCompound {
 		return tag;
 	}
 
+	public static ElementTagCompound of(CrystalElement e) {
+		return of(e, 1);
+	}
+
+	public static ElementTagCompound of(CrystalElement e, int amt) {
+		ElementTagCompound tag = new ElementTagCompound();
+		tag.addTag(e, amt);
+		return tag;
+	}
+
 }

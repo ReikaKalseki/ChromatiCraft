@@ -9,6 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Transport;
 
+import java.util.ArrayList;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockChest;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -18,29 +22,38 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.Linkable;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityRelayPowered;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.ItemElementCalculator;
+import Reika.ChromatiCraft.Magic.Network.PylonFinder;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
-import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
-import Reika.DragonAPI.Instantiable.RayTracer;
-import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
-import Reika.DragonAPI.Interfaces.TileEntity.Connectable;
 import Reika.DragonAPI.Interfaces.TileEntity.SidePlacedTile;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.BCPipeHandler;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityItemRift extends TileEntityChromaticBase implements SidePlacedTile, Connectable {
+public class TileEntityItemRift extends TileEntityRelayPowered implements SidePlacedTile, Linkable<Coordinate> {
+
+	private static final ElementTagCompound required = ElementTagCompound.of(CrystalElement.LIME);
 
 	private Coordinate otherEnd;
 	private ForgeDirection facing;
@@ -48,15 +61,11 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements SideP
 	private boolean isFunctioning;
 
 	@Override
-	public ChromaTiles getTile() {
-		return ChromaTiles.ITEMRIFT;
-	}
-
-	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		boolean wasFunctioning = isFunctioning;
-		isFunctioning = false;
-		if (!world.isRemote && isEmitting && otherEnd != null) {
+		super.updateEntity(world, x, y, z, meta);
+		if (!world.isRemote && isEmitting && this.hasValidConnection()) {
+			boolean wasFunctioning = isFunctioning;
+			isFunctioning = false;
 			IInventory src = this.getAttachment();
 			if (src != null) {
 				ChromaTiles c = ChromaTiles.getTile(world, otherEnd.xCoord, otherEnd.yCoord, otherEnd.zCoord);
@@ -64,23 +73,85 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements SideP
 					TileEntityItemRift tile = (TileEntityItemRift)otherEnd.getTileEntity(world);
 					IInventory tgt = tile.getAttachment();
 					if (tgt != null) {
-						this.transferItems(src, tgt, this.getFacing().getOpposite());
-						isFunctioning = true;
+						ItemStack moved = this.transferItems(src, tgt, this.getFacing().getOpposite(), Math.min(tgt.getInventoryStackLimit(), this.getMaxTransferRate(energy.getValue(CrystalElement.LIME))));
+						if (moved != null) {
+							energy.subtract(CrystalElement.LIME, this.getConsumedEnergy(moved.stackSize));
+							ElementTagCompound tag = ItemElementCalculator.instance.getValueForItem(moved);
+							int flags = ReikaArrayHelper.booleanToBitflags(tag.flagSet());
+							int dir = this.getFacing().getOpposite().ordinal();
+							int dd = otherEnd.getTaxicabDistanceTo(x, y, z);
+							ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.ITEMRIFTMOVE.ordinal(), this, 64, flags, tag.getTotalEnergy(), dir, dd);
+							isFunctioning = true;
+						}
 					}
 				}
 			}
+			if (isFunctioning != wasFunctioning) {
+				//ReikaJavaLibrary.pConsole(wasFunctioning+" > "+isFunctioning);
+				this.syncAllData(false);
+				if (this.hasValidConnection()) {
+					TileEntityItemRift te = (TileEntityItemRift)this.getConnection().getTileEntity(world);
+					te.isFunctioning = isFunctioning;
+					te.syncAllData(false);
+				}
+			}
 		}
-		if (isFunctioning != wasFunctioning) {
-			this.syncAllData(false);
-		}
-		if (world.isRemote && isFunctioning) {
+		if (world.isRemote && this.hasValidConnection() && isEmitting) {
 			this.spawnParticles(world, x, y, z);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void doMoveParticles(int flags, int total, ForgeDirection dir, int dist) {
+		ArrayList<Integer> li = new ArrayList();
+		if (total == 0) {
+			li.add(0x22aaff);
+		}
+		else {
+			boolean[] arr = ReikaArrayHelper.booleanFromBitflags(flags, 16);
+			for (int i = 0; i < 16; i++) {
+				if (arr[i]) {
+					li.add(CrystalElement.elements[i].getColor());
+				}
+			}
+		}
+		int n = total == 0 ? 2 : total;
+		for (int i = 0; i < n; i++) {
+			int color = ReikaJavaLibrary.getRandomListEntry(rand, li);
+			double px = xCoord+0.5-0.5*dir.offsetX;
+			double py = yCoord+0.5-0.5*dir.offsetY;
+			double pz = zCoord+0.5-0.5*dir.offsetZ;
+			double r = 0.1875;//0.125;
+			if (dir.offsetX == 0)
+				px = ReikaRandomHelper.getRandomPlusMinus(px, r);
+			if (dir.offsetY == 0)
+				py = ReikaRandomHelper.getRandomPlusMinus(py, r);
+			if (dir.offsetZ == 0)
+				pz = ReikaRandomHelper.getRandomPlusMinus(pz, r);
+			double v = 0.075;
+			EntityCCBlurFX fx = new EntityCCBlurFX(worldObj, px, py, pz, dir.offsetX*v, dir.offsetY*v, dir.offsetZ*v);
+			int l = dist*18;
+			fx.setIcon(ChromaIcons.FADE_CLOUD).setAlphaFading().setNoSlowdown().setColor(color).setScale(2.5F).setLife(l);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
 
 	private IInventory getAttachment() {
 		TileEntity te = this.getAdjacentTileEntity(this.getFacing());
 		return te instanceof IInventory ? (IInventory)te : null;
+	}
+
+	private static int getMaxTransferRate(int energy) {
+		return Math.max(1, (int)Math.sqrt(energy/10));
+	}
+
+	private static int getConsumedEnergy(int moved) {
+		return 10*moved*moved;
+	}
+
+	@Override
+	public ChromaTiles getTile() {
+		return ChromaTiles.ITEMRIFT;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -90,49 +161,63 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements SideP
 		int len = 1+otherEnd.getTaxicabDistanceTo(x, y, z);
 		double r = 0.25;
 		int n = Math.max(1, len/2-1);
-		for (int i = 0; i < n; i++) {
-			double d = (this.getTicksExisted()/2D+i*len*16D/n)%(len*16)/16D-0.5;
-			double ang = Math.toRadians((this.getTicksExisted()*16D)%360);
-			double sin = r*Math.sin(ang);
-			double cos = r*Math.cos(ang);
-			double px = x+0.5+dir.offsetX*d+left.offsetX*cos;
-			double py = y+0.5+dir.offsetY*d+sin;
-			double pz = z+0.5+dir.offsetZ*d+left.offsetZ*cos;
-			EntityBlurFX fx = new EntityCCBlurFX(CrystalElement.LIME, world, px, py, pz, 0, 0, 0);
+		int[] c = {CrystalElement.LIME.getColor(), 0x22aaff, CrystalElement.YELLOW.getColor()};
+		for (int f = 0; f < c.length; f++) {
+			for (int i = 0; i < n; i++) {
+				double d = (this.getTicksExisted()/2D+i*len*9D/n)%(len*9)/9D-0.5+f*1.25;
+				if (d >= len-0.5)
+					d -= len;
+				double ang = Math.toRadians((this.getTicksExisted()*12D+f*360D/c.length)%360);
+				double sin = r*Math.sin(ang);
+				double cos = r*Math.cos(ang);
+				double px = x+0.5+dir.offsetX*d+left.offsetX*cos;
+				double py = y+0.5+dir.offsetY*d+sin;
+				double pz = z+0.5+dir.offsetZ*d+left.offsetZ*cos;
+				EntityCCBlurFX fx = new EntityCCBlurFX(world, px, py, pz, 0, 0, 0);
+				fx.setRapidExpand().setColor(c[f]);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
+		}
+
+		for (int i = 0; i <= 1; i++) {
+			double d = (this.getTicksExisted()*4)%(len*16)/32D-0.5+i*2;
+			double px = x+0.5+d*dir.offsetX;
+			double py = y+0.5+d*dir.offsetY;
+			double pz = z+0.5+d*dir.offsetZ;
+			//EntitySparkleFX fx = new EntitySparkleFX(world, px, py, pz, 0, 0, 0).setScale(1).setLife(15);
+			EntityCCBlurFX fx = new EntityCCBlurFX(world, px, py, pz, 0, 0, 0);
+			fx.setIcon(ChromaIcons.FADE_GENTLE).setScale(1.25F).setLife(15).setRapidExpand().setAlphaFading();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
-
-		double d = (this.getTicksExisted()*4)%(len*16)/16D-0.5;
-		double px = x+0.5+d*dir.offsetX;
-		double py = y+0.5+d*dir.offsetY;
-		double pz = z+0.5+d*dir.offsetZ;
-		EntitySparkleFX fx = new EntitySparkleFX(world, px, py, pz, 0, 0, 0).setScale(1).setLife(15);
-		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
-	private static void transferItems(IInventory src, IInventory tgt, ForgeDirection move) {
+	private static ItemStack transferItems(IInventory src, IInventory tgt, ForgeDirection move, int rate) {
 		//ReikaJavaLibrary.pConsole(src+" >> "+tgt);
-		int[] from = ReikaArrayHelper.getLinearArray(src.getSizeInventory());
-		if (src instanceof ISidedInventory) {
-			from = ((ISidedInventory)src).getAccessibleSlotsFromSide(move.ordinal());
-		}
+		ItemStack total = null;
+		int[] from = src instanceof ISidedInventory ? ((ISidedInventory)src).getAccessibleSlotsFromSide(move.ordinal()) :  ReikaArrayHelper.getLinearArray(src.getSizeInventory());
 		for (int i = 0; i < from.length; i++) {
 			int slotfrom = from[i];
 			ItemStack in = src.getStackInSlot(slotfrom);
-			if (in != null) {
+			if (in != null && (total == null || (ReikaItemHelper.matchStacks(total, in, true) && ItemStack.areItemStackTagsEqual(total, in)))) {
 				boolean extract = src instanceof ISidedInventory ? ((ISidedInventory)src).canExtractItem(slotfrom, in, move.ordinal()) : true;
 				if (extract) {
-					ItemStack in2 = ReikaItemHelper.getSizedItemStack(in, getMaxTransferRate()); use relay energy to boost
+					ItemStack in2 = ReikaItemHelper.getSizedItemStack(in, Math.min(in.stackSize, rate));
 					int added = ReikaInventoryHelper.addStackAndReturnCount(in2, tgt, move.getOpposite());
 					if (added > 0) {
 						in.stackSize -= added;
+						if (total == null)
+							total = ReikaItemHelper.getSizedItemStack(in2, added);
+						else
+							total.stackSize += added;
 						if (in.stackSize <= 0) {
 							src.setInventorySlotContents(slotfrom, null);
+							break;
 						}
 					}
 				}
 			}
 		}
+		return total;
 	}
 
 	public final void reset() {
@@ -140,6 +225,8 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements SideP
 	}
 
 	public final void resetOther() {
+		if (otherEnd == null)
+			return;
 		ChromaTiles m = ChromaTiles.getTile(worldObj, otherEnd.xCoord, otherEnd.yCoord, otherEnd.zCoord);
 		if (m == this.getTile()) {
 			TileEntityItemRift te = (TileEntityItemRift)otherEnd.getTileEntity(worldObj);
@@ -147,7 +234,7 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements SideP
 		}
 	}
 
-	public final boolean canConnectTo(World world, int x, int y, int z) {
+	private final boolean canConnectTo(World world, int x, int y, int z) {
 		int dx = x-xCoord;
 		int dy = y-yCoord;
 		int dz = z-zCoord;
@@ -195,7 +282,8 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements SideP
 	}
 
 	private boolean isPassableBlock(World world, int x, int y, int z) {
-		return ReikaWorldHelper.softBlocks(world, x, y, z) || RayTracer.getTransparentBlocks().contains(BlockKey.getAt(world, x, y, z)) || BCPIPE;
+		//return ReikaWorldHelper.softBlocks(world, x, y, z) || RayTracer.getTransparentBlocks().contains(BlockKey.getAt(world, x, y, z)) || (ModList.BCTRANSPORT.isLoaded() && world.getBlock(x, y, z) == BCPipeHandler.getInstance().pipeID);
+		return PylonFinder.isBlockPassable(world, x, y, z) || (ModList.BCTRANSPORT.isLoaded() && world.getBlock(x, y, z) == BCPipeHandler.getInstance().pipeID);
 	}
 
 	private boolean isValidDirection(ForgeDirection dir) {
@@ -203,14 +291,26 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements SideP
 	}
 
 	public final boolean tryConnect(World world, int x, int y, int z) {
+		if (otherEnd != null)
+			return false;
 		if (!this.canConnectTo(world, x, y, z))
+			return false;
+		if (x == xCoord && y == yCoord && z == zCoord)
 			return false;
 		otherEnd = new Coordinate(x, y, z);
 		return true;
 	}
 
+	@Override
 	public Coordinate getConnection() {
 		return otherEnd;
+	}
+
+	public final boolean hasValidConnection() {
+		if (otherEnd == null)
+			return false;
+		ChromaTiles m = ChromaTiles.getTile(worldObj, otherEnd.xCoord, otherEnd.yCoord, otherEnd.zCoord);
+		return m == this.getTile() && this.canConnectTo(worldObj, otherEnd.xCoord, otherEnd.yCoord, otherEnd.zCoord);
 	}
 
 	@Override
@@ -223,6 +323,7 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements SideP
 		super.writeSyncTag(NBT);
 
 		NBT.setBoolean("emit", isEmitting);
+		NBT.setBoolean("func", isFunctioning);
 
 		if (otherEnd != null)
 			otherEnd.writeToNBT("endpoint", NBT);
@@ -235,6 +336,7 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements SideP
 		super.readSyncTag(NBT);
 
 		isEmitting = NBT.getBoolean("emit");
+		isFunctioning = NBT.getBoolean("func");
 
 		otherEnd = Coordinate.readFromNBT("endpoint", NBT);
 
@@ -252,6 +354,7 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements SideP
 
 	public void flip() {
 		this.flip(true);
+		ChromaSounds.BOUNCE.playSoundAtBlock(this);
 	}
 
 	private void flip(boolean other) {
@@ -270,15 +373,48 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements SideP
 		return isEmitting;
 	}
 
+	public boolean isFunctioning() {
+		return isFunctioning;
+	}
+
 	@Override
 	public boolean checkLocationValidity() {
-		WorldLocation loc = this.getAdjacentLocation(this.getFacing());
-		return loc.getBlock().isSideSolid(worldObj, loc.xCoord, loc.yCoord, loc.zCoord, this.getFacing().getOpposite());
+		ForgeDirection dir = this.getFacing();
+		int dx = xCoord+dir.offsetX;
+		int dy = yCoord+dir.offsetY;
+		int dz = zCoord+dir.offsetZ;
+		Block b = worldObj.getBlock(dx, dy, dz);
+		return b instanceof BlockChest || b.isSideSolid(worldObj, dx, dy, dz, dir.getOpposite()) || ReikaBlockHelper.getBlockEdgeGap(b, worldObj, dx, dy, dz, dir.getOpposite()) <= 0.0625;
 	}
 
 	public void drop() {
 		ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, this.getTile().getCraftedProduct());
 		this.delete();
+	}
+
+	@Override
+	protected boolean canReceiveFrom(CrystalElement e, ForgeDirection dir) {
+		return dir != this.getFacing() && dir != this.getFacing().getOpposite() && this.isAcceptingColor(e);
+	}
+
+	@Override
+	public ElementTagCompound getRequiredEnergy() {
+		return required;
+	}
+
+	@Override
+	public boolean isAcceptingColor(CrystalElement e) {
+		return e == CrystalElement.LIME;
+	}
+
+	@Override
+	public int getMaxStorage(CrystalElement e) {
+		return 60000;
+	}
+
+	@Override
+	public void breakBlock() {
+		this.resetOther();
 	}
 
 }

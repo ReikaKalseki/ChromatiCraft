@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.LinkedTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LinkerCallback;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Block.Dimension.Structure.NonEuclid.BlockTeleport.TileEntityTeleport;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
@@ -63,7 +64,7 @@ public class ItemConnector extends ItemChromaTool {
 		else if (te instanceof LinkerCallback) {
 			is.stackTagCompound = new NBTTagCompound();
 			NBTTagCompound tag = new NBTTagCompound();
-			new WorldLocation(te).writeToNBT(tag);
+			new WorldLocation(te).writeToTag(tag);
 			is.stackTagCompound.setTag("callback", tag);
 			return true;
 		}
@@ -122,7 +123,10 @@ public class ItemConnector extends ItemChromaTool {
 				//is.stackTagCompound = null;
 				//return false;
 			}
-			return l.tryLink(is, ep, te);
+			boolean flag = l.tryLink(is, ep, te);
+			ChromaSounds sn = flag ? ChromaSounds.USE : ChromaSounds.ERROR;
+			sn.playSound(ep);
+			return flag;
 		}
 	}
 
@@ -286,76 +290,39 @@ public class ItemConnector extends ItemChromaTool {
 	private static boolean tryConnection(Linkable te, World world, int x, int y, int z, ItemStack is, EntityPlayer ep) {
 		if (is.stackTagCompound == null) {
 			is.stackTagCompound = new NBTTagCompound();
-			is.stackTagCompound.setInteger("x1", Integer.MIN_VALUE);
-			is.stackTagCompound.setInteger("y1", Integer.MIN_VALUE);
-			is.stackTagCompound.setInteger("z1", Integer.MIN_VALUE);
-			is.stackTagCompound.setInteger("x2", Integer.MIN_VALUE);
-			is.stackTagCompound.setInteger("y2", Integer.MIN_VALUE);
-			is.stackTagCompound.setInteger("z2", Integer.MIN_VALUE);
+			new WorldLocation((TileEntity)te).writeToNBT("end1", is.stackTagCompound);
+			return true;
 		}
-		if (is.stackTagCompound.getInteger("x1") == Integer.MIN_VALUE) {
-			is.stackTagCompound.setInteger("x1", x);
-			is.stackTagCompound.setInteger("y1", y);
-			is.stackTagCompound.setInteger("z1", z);
-			is.stackTagCompound.setInteger("w1", world.provider.dimensionId);
+		WorldLocation c1 = WorldLocation.readFromNBT("end1", is.stackTagCompound);
+		if (c1 == null) {
+			ReikaChatHelper.writeString("No valid other end found");
+			return false;
 		}
-		else {
-			is.stackTagCompound.setInteger("x2", x);
-			is.stackTagCompound.setInteger("y2", y);
-			is.stackTagCompound.setInteger("z2", z);
-			is.stackTagCompound.setInteger("w2", world.provider.dimensionId);
+		TileEntity te0 = c1.getTileEntity(world);
+		if (!(te0 instanceof Linkable)) {
+			ReikaChatHelper.writeString("Tile at other end is invalid");
+			return false;
 		}
-		int ex = is.stackTagCompound.getInteger("x1");
-		int ey = is.stackTagCompound.getInteger("y1");
-		int ez = is.stackTagCompound.getInteger("z1");
-		int rx = is.stackTagCompound.getInteger("x2");
-		int ry = is.stackTagCompound.getInteger("y2");
-		int rz = is.stackTagCompound.getInteger("z2");
-		World w1 = DimensionManager.getWorld(is.stackTagCompound.getInteger("w1"));
-		World w2 = DimensionManager.getWorld(is.stackTagCompound.getInteger("w2"));
-
-		int dl = Math.abs(ex-rx+ey-ry+ez-rz)-1;
+		int dl = c1.getTaxicabDistanceTo(x, y, z)-1;
 
 		//ReikaJavaLibrary.pConsole(is.stackTagCompound);
 		//ReikaJavaLibrary.pConsole(dl);
 		//if (is.stackSize >= dl || ep.capabilities.isCreativeMode) {
-		if (rx != Integer.MIN_VALUE && ry != Integer.MIN_VALUE && rz != Integer.MIN_VALUE) {
-			if (ex != Integer.MIN_VALUE && ey != Integer.MIN_VALUE && ez != Integer.MIN_VALUE) {
-				Linkable em = (Linkable)w1.getTileEntity(ex, ey, ez);
-				Linkable rec = (Linkable)w2.getTileEntity(rx, ry, rz);
-
-				//ReikaJavaLibrary.pConsole(rec+"\n"+em);
-				if (em == null) {
-					ReikaChatHelper.writeString("Tile missing at "+ex+", "+ey+", "+ez);
-					is.stackTagCompound = null;
-					return false;
-				}
-				if (rec == null) {
-					ReikaChatHelper.writeString("Tile missing at "+rx+", "+ry+", "+rz);
-					is.stackTagCompound = null;
-					return false;
-				}
-				else if (rec == em) {
-					ReikaChatHelper.writeString("Cannot link a tile to itself!");
-					is.stackTagCompound = null;
-					return false;
-				}
-				rec.resetOther();
-				em.resetOther();
-				em.reset();
-				rec.reset();
-				boolean src = em.connectTo(w2, rx, ry, rz);
-				boolean tg = rec.connectTo(w1, ex, ey, ez);
-				//ReikaJavaLibrary.pConsole(src+":"+tg, Side.SERVER);
-				if (src && tg) {
-					//ReikaJavaLibrary.pConsole("connected", Side.SERVER);
-					ReikaChatHelper.sendChatToPlayer(ep, "Linked "+src+" and "+tg);
-				}
-				else {
-					ReikaChatHelper.sendChatToPlayer(ep, "Link Failed.");
-				}
-				is.stackTagCompound = null;
-			}
+		is.stackTagCompound = null;
+		Linkable bb = (Linkable)te0;
+		bb.resetOther();
+		te.resetOther();
+		bb.reset();
+		te.reset();
+		//ReikaJavaLibrary.pConsole(src+":"+tg, Side.SERVER);
+		if (te.tryConnect(world, te0.xCoord, te0.yCoord, te0.zCoord) && bb.tryConnect(world, x, y, z)) {
+			//ReikaJavaLibrary.pConsole("connected", Side.SERVER);
+			if (!ep.capabilities.isCreativeMode)
+				is.stackSize -= dl;
+			return true;
+		}
+		else {
+			ReikaChatHelper.writeString("Connection is invalid");
 		}
 		//}
 		return false;
