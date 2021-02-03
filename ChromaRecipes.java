@@ -104,7 +104,8 @@ public class ChromaRecipes {
 			ReikaRecipeHelper.addSmelting(is, basic, 0);
 		}
 
-		ReikaRecipeHelper.addSmelting(BlockSparkle.BlockTypes.SAND.getItem(), BlockSparkle.BlockTypes.GLASS.getItem(), 0.2F);
+		ReikaRecipeHelper.addSmelting(BlockSparkle.BlockTypes.CLAY.getItem(), BlockSparkle.BlockTypes.BRICKS.getItem(), 0.2F);
+		ReikaRecipeHelper.addSmelting(BlockSparkle.BlockTypes.COBBLE.getItem(), BlockSparkle.BlockTypes.STONE.getItem(), 0);
 	}
 
 	private static ItemStack getShard(CrystalElement color) {

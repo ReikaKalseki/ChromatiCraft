@@ -82,7 +82,12 @@ public class BlockSparkle extends Block {
 
 	@Override
 	public int damageDropped(int meta) {
-		return meta;
+		switch(BlockTypes.list[meta]) {
+			case STONE:
+				return BlockTypes.COBBLE.ordinal();
+			default:
+				return meta;
+		}
 	}
 
 	@Override
@@ -113,7 +118,8 @@ public class BlockSparkle extends Block {
 		COBBLE(Blocks.cobblestone),
 		STONE(Blocks.stone),
 		CLAY(Blocks.clay),
-		GLASS(Blocks.glass);
+		BRICKS(Blocks.brick_block),
+		OBSIDIAN(Blocks.obsidian);
 
 		private final Block proxy;
 

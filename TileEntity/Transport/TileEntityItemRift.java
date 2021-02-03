@@ -13,10 +13,22 @@ import java.util.ArrayList;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
+import net.minecraft.block.BlockOre;
 import net.minecraft.client.Minecraft;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemEnchantedBook;
+import net.minecraft.item.ItemFlintAndSteel;
+import net.minecraft.item.ItemFood;
+import net.minecraft.item.ItemNameTag;
+import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemTool;
+import net.minecraft.item.ItemWritableBook;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -59,6 +71,8 @@ public class TileEntityItemRift extends TileEntityRelayPowered implements SidePl
 	private ForgeDirection facing;
 	private boolean isEmitting;
 	private boolean isFunctioning;
+
+	private boolean[] filterSet = ReikaArrayHelper.getTrueArray(ItemCategory.values().length);
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -415,6 +429,44 @@ public class TileEntityItemRift extends TileEntityRelayPowered implements SidePl
 	@Override
 	public void breakBlock() {
 		this.resetOther();
+	}
+
+	private static enum ItemCategory {
+		RAW("Raw Materials", Blocks.redstone_ore),
+		TOOLS("Tools", Items.diamond_pickaxe),
+		ARMOR("Armor", Items.leather_helmet),
+		FOOD("Food", Items.apple),
+		MISC("Misc", Blocks.dragon_egg),
+		;
+
+		private final ItemStack displayItem;
+		public final String displayName;
+
+		private ItemCategory(String s, Item i) {
+			this(s, new ItemStack(i));
+		}
+
+		private ItemCategory(String s, Block i) {
+			this(s, new ItemStack(i));
+		}
+
+		private ItemCategory(String s, ItemStack i) {
+			displayItem = i;
+			displayName = s;
+		}
+
+		private static ItemCategory getCategory(ItemStack is) {
+			Item i = is.getItem();
+			if (ReikaBlockHelper.isOre(is) || Block.getBlockFromItem(i) instanceof BlockOre)
+				return RAW;
+			if (i instanceof ItemFood)
+				return FOOD;
+			if (i instanceof ItemArmor)
+				return ARMOR;
+			if (i instanceof ItemTool || i instanceof ItemPotion || i instanceof ItemNameTag || i instanceof ItemFlintAndSteel || i instanceof ItemEnchantedBook || i instanceof ItemWritableBook || i.isItemTool(is) || i.isMap())
+				return TOOLS;
+			return MISC;
+		}
 	}
 
 }

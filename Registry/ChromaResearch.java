@@ -156,7 +156,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	MINER(			ChromaTiles.MINER, 			ResearchLevel.CTM),
 	ITEMSTAND(		ChromaTiles.STAND,			ResearchLevel.RUNECRAFT),
 	LASER(			ChromaTiles.LASER, 			ResearchLevel.PYLONCRAFT),
-	ITEMRIFT(		ChromaTiles.ITEMRIFT, 		ResearchLevel.MULTICRAFT),
+	ITEMRIFT(		ChromaTiles.ITEMRIFT, 		ResearchLevel.ENERGY),
 	CRYSTAL(		ChromaTiles.CRYSTAL, 		ResearchLevel.ENDGAME),
 	INFUSER(		ChromaTiles.INFUSER, 		ResearchLevel.MULTICRAFT),
 	FABRICATOR(		ChromaTiles.FABRICATOR, 	ResearchLevel.PYLONCRAFT),

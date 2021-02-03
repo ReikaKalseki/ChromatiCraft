@@ -104,6 +104,7 @@ import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
+import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
 import Reika.ChromatiCraft.Block.BlockActiveChroma;
@@ -112,6 +113,7 @@ import Reika.ChromatiCraft.Block.BlockFakeSky;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
 import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone.Variants;
+import Reika.ChromatiCraft.Block.Worldgen.BlockSparkle.BlockTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
@@ -177,6 +179,7 @@ import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs.GlowingTreeGen;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionTicker;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.ChromatiCraft.World.Dimension.WorldProviderChroma;
@@ -217,6 +220,7 @@ import Reika.DragonAPI.Instantiable.Event.HarvestLevelEvent;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Instantiable.Event.ItemStackUpdateEvent;
 import Reika.DragonAPI.Instantiable.Event.ItemUpdateEvent;
+import Reika.DragonAPI.Instantiable.Event.LavaFreezeEvent;
 import Reika.DragonAPI.Instantiable.Event.LavaSpawnFireEvent;
 import Reika.DragonAPI.Instantiable.Event.LeafDecayEvent;
 import Reika.DragonAPI.Instantiable.Event.MobTargetingEvent;
@@ -289,6 +293,18 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	public void makeSparkleObsidian(LavaFreezeEvent evt) {
+		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			ChromaDimensionBiome biome = (ChromaDimensionBiome)evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord);
+			if (biome.biomeType == Biomes.SPARKLE) {
+				BlockTypes bs = evt.originalPlacement == Blocks.obsidian ? BlockTypes.OBSIDIAN : BlockTypes.COBBLE;
+				evt.setBlock(ChromaBlocks.SPARKLE.getBlockInstance(), bs.ordinal(), 3);
+				evt.setCanceled(true);
+			}
+		}
 	}
 
 	@SubscribeEvent

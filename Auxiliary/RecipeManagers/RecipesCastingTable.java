@@ -154,6 +154,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.InvTick
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.IridescentCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ItemCollectorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ItemInserterRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ItemRiftRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LampControlRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LampRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LaunchPadRecipe;
@@ -931,6 +932,10 @@ public class RecipesCastingTable {
 		this.addRecipe(new WideCollectorRecipe(ChromaItems.WIDECOLLECTOR.getStackOf(), ChromaTiles.FUNCTIONRELAY.getCraftedProduct()));
 
 		this.addRecipe(new NetworkTransportRecipe(ChromaTiles.NETWORKITEM.getCraftedProduct(), ChromaStacks.transformCore));
+
+		is = ChromaTiles.ITEMRIFT.getCraftedProduct();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "rtr", "tlt", "cqc", 'c', ChromaStacks.chromaDust, 'q', ReikaItemHelper.quartzPillar.asItemStack(), 'r', Items.redstone, 'l', Blocks.redstone_lamp, 't', ChromaStacks.beaconDust);
+		this.addRecipe(new ItemRiftRecipe(is, sr));
 
 		this.addSpecialRecipes();
 	}

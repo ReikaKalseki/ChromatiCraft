@@ -210,10 +210,10 @@
 	</laser>
 	<itemrift>
 		<desc>
-			A classic transport problem involves two inventories within a clear line of sight to each other but separated by several blocks. You once saw a device you can attach to each block and rapidly transport the contents, but it was limited to a single block of space; this, however, is a longer-ranged variant.
+			Sure, whenever items need to be moved, you could just run a line of pipes, but those can become unsightly and hard to navigate. This has been something annoying you for years; long ago, you remember seeing a pair of attachments you could place onto the inventories to "beam" the items between them, but these were limited to a single block of range. At the time, it seemed trivial to replicate them into a longer-distance and more dynamic form, but your skills then proved insufficient. Maybe now is time to try again; maybe this idea can be rescued from its abandonment.
 		</desc>
 		<note>
-
+			Can be accelerated with %d energy
 		</note>
 	</itemrift>
 	<crystal>
@@ -522,7 +522,7 @@
 	</essentiarelay>
 	<glowfire>
 		<desc>
-			Some things you never have enough of, in particular diamonds, shards, and iron (the last of which was not helped by your attempts to build a turbine the size of a small house). Other things you have so much of that your biggest problem is storing it somewhere. What would be most convenient would be to be able to decompose the latter into energy with which you could cast the former. Surely nothing could go wrong with this sort of exchange project...
+			Some things you never have enough of, in particular diamonds, shards, and iron (the last of which was not helped by your attempts to build a turbine the size of a small house). Other things you have so much of that your biggest problem is storing it somewhere. What would be most convenient would be to be able to decompose the latter into energy with which you could cast the former. Surely nothing could go wrong with this sort of exchange project, though early experimentation indicates that the value of what you get and what you fed in may not necessarily be equivalent...
 		</desc>
 		<note>
 
