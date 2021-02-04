@@ -292,9 +292,9 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 
 		double len = vec.lengthVector();
 		for (double i = 0; i < len; i += 0.0625) {
-			double dx = posX-i*vec.xCoord/len;
-			double dy = posY-i*vec.yCoord/len;
-			double dz = posZ-i*vec.zCoord/len;
+			double dx = posX+i*vec.xCoord/len;
+			double dy = posY+i*vec.yCoord/len;
+			double dz = posZ+i*vec.zCoord/len;
 			if (worldObj.isRemote)
 				this.gluonParticles(other, dx, dy, dz, (float)(i/len));
 

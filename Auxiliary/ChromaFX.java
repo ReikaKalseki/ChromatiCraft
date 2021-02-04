@@ -506,9 +506,9 @@ public class ChromaFX {
 		double lenv = vec.lengthVector();
 		for (float i = 0; i <= lenv; i += 0.125) {
 			double f = i/lenv;
-			double ddx = src.posX-vec.xCoord*f;
-			double ddy = src.posY-vec.yCoord*f;
-			double ddz = src.posZ-vec.zCoord*f;
+			double ddx = src.posX+vec.xCoord*f;
+			double ddy = src.posY+vec.yCoord*f;
+			double ddz = src.posZ+vec.zCoord*f;
 			int c = ReikaColorAPI.mixColors(tgt.getRenderColor(), src.getRenderColor(), (float)f);
 			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityCCBlurFX(world, ddx, ddy, ddz).setColor(c).setLife(8));
 		}

@@ -1340,7 +1340,9 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void applyAOE(LivingAttackEvent evt) {
-		if (applyingAOE)
+		if (evt.getClass() != LivingAttackEvent.class)
+			return;
+		if (applyingAOE || applyingPhasing)
 			return;
 		DamageSource src = evt.source;
 		if (src.getEntity() instanceof EntityPlayer) {
