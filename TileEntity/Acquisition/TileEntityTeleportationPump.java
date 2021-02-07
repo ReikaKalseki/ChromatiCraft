@@ -429,7 +429,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 		}
 
 		public boolean matchInWorld(World world) {
-			return FluidRegistry.lookupFluidForBlock(location.getBlock(world)) == fluid.getFluid();
+			return ReikaFluidHelper.lookupFluidForBlock(location.getBlock(world)) == fluid.getFluid();
 		}
 
 	}

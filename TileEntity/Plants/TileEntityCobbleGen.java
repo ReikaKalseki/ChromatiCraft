@@ -51,6 +51,7 @@ import Reika.DragonAPI.Instantiable.Effects.EntityFluidFX;
 import Reika.DragonAPI.Instantiable.ParticleController.AttractiveMotionController;
 import Reika.DragonAPI.Interfaces.MotionController;
 import Reika.DragonAPI.Interfaces.Block.FluidBlockSurrogate;
+import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -382,7 +383,7 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant implements Operati
 	private FluidStack getFluidAtBlock(World world, int dx, int dy, int dz) {
 		Block b = world.getBlock(dx, dy, dz);
 		if (ReikaWorldHelper.isLiquidSourceBlock(world, dx, dy, dz)) {
-			Fluid f = FluidRegistry.lookupFluidForBlock(b);
+			Fluid f = ReikaFluidHelper.lookupFluidForBlock(b);
 			return f != null ? new FluidStack(f, 1000) : null;
 		}
 		else if (b instanceof FluidBlockSurrogate) {

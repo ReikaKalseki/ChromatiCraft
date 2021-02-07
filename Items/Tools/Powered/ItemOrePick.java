@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.Auxiliary.Render.OreOverlayRenderer;
 import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Interfaces.Item.ToolSprite;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
@@ -56,8 +57,8 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite, En
 		OrePingDelegate type = null;
 		float r = 8;//5;
 		for (float i = 0; i <= r; i += 0.2) {
-			int[] xyz = ReikaVectorHelper.getPlayerLookBlockCoords(ep, i);
-			OrePingDelegate at = this.getOreType(world, xyz[0], xyz[1], xyz[2]);
+			DecimalPosition xyz = ReikaVectorHelper.getPlayerLookCoords(ep, i);
+			OrePingDelegate at = this.getOreType(world, MathHelper.floor_double(xyz.xCoord), MathHelper.floor_double(xyz.yCoord), MathHelper.floor_double(xyz.zCoord));
 			if (at != null) {
 				type = at;
 				break;

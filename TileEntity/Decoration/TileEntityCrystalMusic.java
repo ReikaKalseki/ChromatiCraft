@@ -27,8 +27,10 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.TemporaryCrystalReceiver;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Magic.CrystalMusicTemple;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Network.CrystalPath;
 import Reika.ChromatiCraft.Magic.Progression.ResearchLevel;
@@ -36,6 +38,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
@@ -57,7 +60,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class TileEntityCrystalMusic extends TileEntityChromaticBase implements GuiController, TriggerableAction, BreakAction {
+public class TileEntityCrystalMusic extends TileEntityChromaticBase implements MultiBlockChromaTile, GuiController, TriggerableAction, BreakAction {
 
 	private static final int BROADCAST_RANGE = 96;
 
@@ -68,6 +71,8 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 
 	private TemporaryCrystalReceiver receiver;
 	private final CrystalPath[] networkConnections = new CrystalPath[16];
+
+	private CrystalMusicTemple temple = new CrystalMusicTemple();
 
 	private static final MusicScore demoTrack;
 
@@ -169,6 +174,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 		this.calcPaths(worldObj, xCoord, yCoord, zCoord);
 		playTick = 0;
 		isPlaying = true;
+		temple.onMusicStart(worldObj);
 	}
 
 	@Override
@@ -176,6 +182,9 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 		if (!world.isRemote) {
 			//this.loadDemo();
 			this.calcPaths(world, x, y, z);
+
+			temple.setCore(this);
+			temple.checkStructure(world);
 		}
 	}
 
@@ -221,8 +230,10 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 		}
 
 		playTick++;
-		if (playTick > track.getLatestPos())
+		if (playTick > track.getLatestPos()) {
 			isPlaying = false;
+			temple.onMusicEnd(world);
+		}
 	}
 
 	private boolean playNote(World world, int x, int y, int z, Note n) {
@@ -254,6 +265,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 		}
 
 		if (canPlay) {
+			temple.onNote(world, n);
 			if (this.attentuate(world, x, y, z))
 				ChromaSounds.DING.playSoundAtBlock(this, n.volume/100F, (float)CrystalMusicManager.instance.getPitchFactor(n.key));
 			else
@@ -272,6 +284,8 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 	}
 
 	public boolean playCrystal(World world, int x, int y, int z, CrystalElement e, int length) {
+		if (temple.isComplete())
+			return true;
 		Coordinate c = colorPositions.get(e).offset(xCoord, yCoord, zCoord);
 		Block b = c.getBlock(world);
 		if (DragonAPICore.debugtest)
@@ -433,6 +447,20 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 	}
 
 	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		//NBT.setBoolean("pillar", hasPillars);
+	}
+
+	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		//hasPillars = NBT.getBoolean("pillar");
+	}
+
+	@Override
 	public boolean trigger() {
 		if (track == null)
 			return false;
@@ -451,6 +479,26 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements G
 			if (networkConnections[i] != null)
 				networkConnections[i].endBlink();
 		}
+	}
+
+	@Override
+	public void validateStructure() {
+		temple.checkStructure(worldObj);
+	}
+
+	@Override
+	public ChromaStructures getPrimaryStructure() {
+		return null;
+	}
+
+	@Override
+	public Coordinate getStructureOffset() {
+		return null;
+	}
+
+	@Override
+	public boolean canStructureBeInspected() {
+		return false;
 	}
 
 	/*

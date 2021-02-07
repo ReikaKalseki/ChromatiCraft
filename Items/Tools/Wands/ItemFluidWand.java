@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -29,6 +29,7 @@ import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 
 public class ItemFluidWand extends ItemWandBase implements BreakerCallback {
@@ -53,7 +54,7 @@ public class ItemFluidWand extends ItemWandBase implements BreakerCallback {
 			int z = mov.blockZ;
 			Block id = world.getBlock(x, y, z);
 			if (id != Blocks.air) {
-				Fluid f = FluidRegistry.lookupFluidForBlock(id);
+				Fluid f = ReikaFluidHelper.lookupFluidForBlock(id);
 				if (f != null) {
 					ProgressiveBreaker b = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, 900);
 					//b.looseMatches.put(Blocks.redstone_ore, new BlockKey(Blocks.lit_redstone_ore));

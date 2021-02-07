@@ -36,7 +36,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Interfaces.UnCopyableBlock;
@@ -157,7 +156,7 @@ public class ItemDuplicationWand extends ItemWandBase {
 		for (ItemStack is : items.keySet()) {
 			Block b = Block.getBlockFromItem(is.getItem());
 			if (b instanceof BlockFluidBase || b instanceof BlockLiquid) {
-				Fluid f = FluidRegistry.lookupFluidForBlock(b);
+				Fluid f = ReikaFluidHelper.lookupFluidForBlock(b);
 				if (f != null) {
 					fluids.put(new BlockKey(b, 0), f);
 				}
@@ -222,7 +221,7 @@ public class ItemDuplicationWand extends ItemWandBase {
 							else if (!ChromaOptions.COPYTILE.getState() && world.getTileEntity(dx, dy, dz) instanceof TileEntityBase) {
 
 							}
-							else if ((b instanceof BlockFluidBase || b instanceof BlockLiquid) && !ReikaFluidHelper.isInfinite(FluidRegistry.lookupFluidForBlock(b))) {
+							else if ((b instanceof BlockFluidBase || b instanceof BlockLiquid) && !ReikaFluidHelper.isInfinite(ReikaFluidHelper.lookupFluidForBlock(b))) {
 
 							}
 							else {

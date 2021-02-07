@@ -594,8 +594,8 @@ public class AbilityCalls {
 	}
 
 	public static void launchFireball(EntityPlayer ep, int charge) {
-		double[] look = ReikaVectorHelper.getPlayerLookCoords(ep, 2);
-		EntityAbilityFireball ef = new EntityAbilityFireball(ep.worldObj, ep, look[0], look[1]+1, look[2]);
+		DecimalPosition look = ReikaVectorHelper.getPlayerLookCoords(ep, 2);
+		EntityAbilityFireball ef = new EntityAbilityFireball(ep.worldObj, ep, look.xCoord, look.yCoord+1, look.zCoord);
 		Vec3 lookv = ep.getLookVec();
 		ef.motionX = lookv.xCoord/5;
 		ef.motionY = lookv.yCoord/5;

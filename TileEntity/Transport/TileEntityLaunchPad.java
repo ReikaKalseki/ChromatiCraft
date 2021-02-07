@@ -13,7 +13,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
@@ -28,6 +27,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.TimerMap;
+import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
@@ -172,7 +172,7 @@ public class TileEntityLaunchPad extends TileEntityChromaticBase implements Mult
 				if (Math.abs(i) != 2 && Math.abs(k) != 2)
 					continue;
 				Block b = world.getBlock(dx, y, dz);
-				Fluid f = world.getBlockMetadata(dx, y, dz) == 0 ? FluidRegistry.lookupFluidForBlock(b) : null;
+				Fluid f = world.getBlockMetadata(dx, y, dz) == 0 ? ReikaFluidHelper.lookupFluidForBlock(b) : null;
 				if (f == null || !f.getName().equals("ender")) {
 					return false;
 				}

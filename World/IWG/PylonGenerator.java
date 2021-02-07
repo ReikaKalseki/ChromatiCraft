@@ -354,11 +354,6 @@ public final class PylonGenerator implements RetroactiveGenerator {
 	}
 
 	public boolean canGenerateIn(World world) {
-		if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world)) {
-			return MystPages.Pages.PYLONS.existsInWorld(world);
-		}
-		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT && !ChromaOptions.FLATGEN.getState())
-			return false;
 		if (world.provider.dimensionId == 0)
 			return true;
 		if (Math.abs(world.provider.dimensionId) == 1)
@@ -368,6 +363,11 @@ public final class PylonGenerator implements RetroactiveGenerator {
 		if (world.provider.dimensionId == ExtraUtilsHandler.getInstance().darkID)
 			return false;
 		if (world.provider.dimensionId == TwilightForestHandler.getInstance().dimensionID)
+			return false;
+		if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world)) {
+			return MystPages.Pages.PYLONS.existsInWorld(world);
+		}
+		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT && !ChromaOptions.FLATGEN.getState())
 			return false;
 		return ChromaOptions.NONWORLDGEN.getState();
 	}

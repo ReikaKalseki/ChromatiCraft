@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -16,12 +16,12 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidRelay;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Instantiable.GUI.Slot.GhostSlot;
+import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 
 
 public class ContainerFluidRelay extends CoreContainer {
@@ -55,7 +55,7 @@ public class ContainerFluidRelay extends CoreContainer {
 				Fluid f = fs != null ? fs.getFluid() : null;
 				if (held != null && held.getItem() instanceof ItemBlock) {
 					Block b = ((ItemBlock)held.getItem()).field_150939_a;
-					f = FluidRegistry.lookupFluidForBlock(b);
+					f = ReikaFluidHelper.lookupFluidForBlock(b);
 				}
 				relay.setFluid(slot, f);
 			}
