@@ -61,6 +61,7 @@ import Reika.ChromatiCraft.Block.BlockRedstonePod;
 import Reika.ChromatiCraft.Block.BlockRift;
 import Reika.ChromatiCraft.Block.BlockRouterNode;
 import Reika.ChromatiCraft.Block.BlockSelectiveGlass;
+import Reika.ChromatiCraft.Block.BlockTempleLifewater;
 import Reika.ChromatiCraft.Block.BlockTrapFloor;
 import Reika.ChromatiCraft.Block.Crystal.BlockCaveCrystal;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlass;
@@ -279,6 +280,7 @@ public enum ChromaBlocks implements BlockEnum {
 	RAYBLEND(BlockRayblendFloor.class,											"chroma.rayblend"),
 	ENCRUSTED(BlockEncrustedCrystal.class,		ItemBlockDyeTypes.class,		"chroma.encrusted"),
 	INJECTORAUX(BlockCastingInjectorFocus.class,								"chroma.injectorfocus"),
+	LIFEWATER(BlockTempleLifewater.class,		ChromatiCraft.lifewater,		"chroma.lifewater"),
 	;
 
 	private Class blockClass;
@@ -326,6 +328,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case ENDER:
 			case LUMA:
 			case EVERFLUID:
+			case LIFEWATER:
 				return Material.water;
 			case MOLTENLUMEN:
 				return Material.lava;

@@ -10,7 +10,6 @@
 package Reika.ChromatiCraft.TileEntity.Decoration;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
@@ -143,6 +142,15 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 		}
 	}
 
+	public boolean hasTemple() {
+		return temple.isComplete();
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void drawTemple(float ptick) {
+		temple.render(ptick);
+	}
+
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.MUSIC;
@@ -211,22 +219,26 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 	}
 
 	private void play(World world, int x, int y, int z) {
-		ArrayList<Note> li = track.getNotes(playTick);
-		//ReikaJavaLibrary.pConsole(li, !li.isEmpty());
+		for (int i = 0; i < 16; i++) {
+			Collection<Note> li = track.getNotes(i, playTick);
+			if (li == null)
+				continue;
+			//ReikaJavaLibrary.pConsole(li, !li.isEmpty());
 
-		//int maxplay = 3;
-		//HashMap<Note, Integer> plays = new HashMap();
+			//int maxplay = 3;
+			//HashMap<Note, Integer> plays = new HashMap();
 
-		for (Note n : li) {
-			//Integer get = plays.get(n);
-			//int val = get != null ? get.intValue() : 0;
-			//if (val < maxplay) {
-			if (n.voice != -1) { // -1 == rest
-				if (this.playNote(world, x, y, z, n)) {
-					//	plays.put(n, val+1);
+			for (Note n : li) {
+				//Integer get = plays.get(n);
+				//int val = get != null ? get.intValue() : 0;
+				//if (val < maxplay) {
+				if (n.voice != -1) { // -1 == rest
+					if (this.playNote(world, x, y, z, n, i)) {
+						//	plays.put(n, val+1);
+					}
 				}
+				//}
 			}
-			//}
 		}
 
 		playTick++;
@@ -236,7 +248,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 		}
 	}
 
-	private boolean playNote(World world, int x, int y, int z, Note n) {
+	private boolean playNote(World world, int x, int y, int z, Note n, int track) {
 		Set<CrystalElement> set = CrystalMusicManager.instance.getColorsWithKey(n.key);
 		if (set.isEmpty()) {
 			set = CrystalMusicManager.instance.getColorsWithKey(n.key.getOctave());
@@ -265,7 +277,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 		}
 
 		if (canPlay) {
-			temple.onNote(world, n);
+			temple.onNote(world, n, track);
 			if (this.attentuate(world, x, y, z))
 				ChromaSounds.DING.playSoundAtBlock(this, n.volume/100F, (float)CrystalMusicManager.instance.getPitchFactor(n.key));
 			else

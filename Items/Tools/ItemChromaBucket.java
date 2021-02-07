@@ -112,6 +112,8 @@ public class ItemChromaBucket extends ItemChromaTool {
 				return ChromaBlocks.LUMA.getBlockInstance();
 			case 4:
 				return ChromaBlocks.MOLTENLUMEN.getBlockInstance();
+			case 5:
+				return ChromaBlocks.LIFEWATER.getBlockInstance();
 			default:
 				return Blocks.air;
 		}

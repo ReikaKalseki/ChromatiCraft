@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -46,8 +46,11 @@ public class RenderCrystalMusic extends ChromaRenderBase {
 		GL11.glTranslatef((float)par2, (float)par4 + 1.0F, (float)par6 + 1.0F);
 		GL11.glScalef(1.0F, -1.0F, -1.0F);
 
-		if (tile.hasWorldObj())
+		if (tile.hasWorldObj()) {
+			if (te.hasTemple())
+				te.drawTemple(par8);
 			this.drawMiddle(te);
+		}
 		this.drawInner(te);
 		if (!tile.hasWorldObj()) {
 			GL11.glTranslated(0, 0, 1);
