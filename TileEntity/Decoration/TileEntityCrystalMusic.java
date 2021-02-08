@@ -13,6 +13,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import net.minecraft.block.Block;
@@ -45,12 +46,14 @@ import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.MusicScore;
 import Reika.DragonAPI.Instantiable.MusicScore.Note;
+import Reika.DragonAPI.Instantiable.MusicScore.NoteData;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.IO.MIDIInterface;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Interfaces.TileEntity.TriggerableAction;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
@@ -78,7 +81,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 	static {
 		MusicScore mus = null;
 		try {
-			mus = new MIDIInterface(ChromatiCraft.class, "Resources/music-demo.mid").fillToScore(false).scaleSpeed(11);
+			mus = new MIDIInterface(ChromatiCraft.class, "Resources/music-demo.mid").fillToScore(false).scaleSpeed(11, false);
 			ChromatiCraft.logger.log("Loaded demo track "+mus);
 		}
 		catch (Exception e) {
@@ -182,7 +185,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 		this.calcPaths(worldObj, xCoord, yCoord, zCoord);
 		playTick = 0;
 		isPlaying = true;
-		temple.onMusicStart(worldObj);
+		temple.onMusicStart(worldObj, track.getTrack(0));
 	}
 
 	@Override
@@ -223,7 +226,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 			Collection<Note> li = track.getNotes(i, playTick);
 			if (li == null)
 				continue;
-			//ReikaJavaLibrary.pConsole(li, !li.isEmpty());
+			ReikaJavaLibrary.pConsole(li+" @ "+playTick, !li.isEmpty());
 
 			//int maxplay = 3;
 			//HashMap<Note, Integer> plays = new HashMap();
@@ -397,12 +400,14 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 			ChromatiCraft.logger.logError("Could not load local MIDI: file is not a MIDI file!");
 			return false;
 		}
-		if (f.length() > 1024*ChromaOptions.MIDISIZE.getValue()) {
+		if (f.length() > 1024*ChromaOptions.MIDISIZE.getValue() && !DragonAPICore.isSinglePlayerFromClient()) {
 			ChromatiCraft.logger.logError("Could not load local MIDI: file is too large ("+f.length()+" bytes) and cannot be safely used!");
 			return false;
 		}
 		try {
-			MusicScore mus = new MIDIInterface(f).fillToScore(false).scaleSpeed(11);
+			MusicScore mus = new MIDIInterface(f).fillToScore(false).scaleSpeed(12.375F, true); //9 ticks per quarter note at 11, 8 at 12.375
+			mus.normalizeToRange(MusicKey.C4, MusicKey.C6);
+			mus.alignToZero();
 			this.dispatchTrack(mus);
 			return true;
 		}
@@ -421,10 +426,11 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 	private void dispatchTrack(MusicScore mus) {
 		ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.MUSICCLEAR.ordinal(), this);
 		for (int i = 0; i < mus.countTracks(); i++) {
-			Map<Integer, Collection<Note>> track = mus.getTrack(i);
-			for (int time : track.keySet()) {
-				Collection<Note> c = track.get(time);
-				for (Note n : c) {
+			Map<Integer, NoteData> track = mus.getTrack(i);
+			for (Entry<Integer, NoteData> e : track.entrySet()) {
+				int time = e.getKey();
+				NoteData c = e.getValue();
+				for (MusicScore.Note n : c.notes()) {
 					if (n != null && n.key != null)
 						ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.FIXEDMUSICNOTE.ordinal(), this, i, n.key.ordinal(), n.length, n.voice == -1 ? 1 : 0, time);
 				}
