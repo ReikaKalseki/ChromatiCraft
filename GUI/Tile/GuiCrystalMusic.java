@@ -16,6 +16,7 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.MathHelper;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
@@ -32,6 +33,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.Note;
 import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
@@ -50,6 +52,10 @@ public class GuiCrystalMusic extends GuiChromaBase implements PianoGui {
 	private Pages page = Pages.KEYS;
 
 	private GuiTextField input;
+	private GuiTextField ticksPer;
+
+	private int midiTickRate;
+	private int midiBPM;
 
 	private static final HashMap<Note, Integer> colors = new HashMap();
 
@@ -131,10 +137,15 @@ public class GuiCrystalMusic extends GuiChromaBase implements PianoGui {
 		}
 
 		if (page == Pages.MIDI) {
-			input = new GuiTextField(fontRendererObj, j+8, k+100, xSize-16, 16);
+			input = new GuiTextField(fontRendererObj, j+8, k+82, xSize-16, 16);
 			input.setMaxStringLength(128);
 			input.setFocused(false);
 			input.setText("");
+
+			ticksPer = new GuiTextField(fontRendererObj, j+xSize/2+7, k+126, fontRendererObj.getStringWidth("60")*2, 16);
+			ticksPer.setMaxStringLength(2);
+			ticksPer.setFocused(false);
+			ticksPer.setText("9");
 		}
 	}
 
@@ -157,7 +168,7 @@ public class GuiCrystalMusic extends GuiChromaBase implements PianoGui {
 			page = page.otherPage();
 		}
 		else if (b.id == 5) {
-			if (music.loadLocalMIDI(input.getText())) {
+			if (music.loadLocalMIDI(input.getText(), midiTickRate)) {
 				ReikaSoundHelper.playClientSound(ChromaSounds.CAST, player, 1, 1);
 			}
 			else {
@@ -203,8 +214,10 @@ public class GuiCrystalMusic extends GuiChromaBase implements PianoGui {
 
 		if (page == Pages.KEYS)
 			wheel.mouseClicked(b, x, y);
-		else if (page == Pages.MIDI)
+		else if (page == Pages.MIDI) {
 			input.mouseClicked(x, y, b);
+			ticksPer.mouseClicked(x, y, b);
+		}
 	}
 
 	@Override
@@ -212,13 +225,21 @@ public class GuiCrystalMusic extends GuiChromaBase implements PianoGui {
 		if (i != mc.gameSettings.keyBindInventory.getKeyCode() && (input == null || !input.isFocused()))
 			super.keyTyped(c, i);
 
-		if (page == Pages.MIDI)
+		if (page == Pages.MIDI) {
 			input.textboxKeyTyped(c, i);
+			ticksPer.textboxKeyTyped(c, i);
+		}
 	}
 
 	@Override
 	public void updateScreen() {
 		super.updateScreen();
+
+		if (page == Pages.MIDI && ticksPer != null) {
+			midiTickRate = ReikaJavaLibrary.safeIntParse(ticksPer.getText());
+			midiTickRate = MathHelper.clamp_int(midiTickRate, 4, 60);
+			midiBPM = 120*9/midiTickRate; //120 @ 9
+		}
 	}
 
 	@Override
@@ -249,13 +270,17 @@ public class GuiCrystalMusic extends GuiChromaBase implements PianoGui {
 		}
 		else if (page == Pages.MIDI) {
 			input.drawTextBox();
+			ticksPer.drawTextBox();
 
 			if (!input.isFocused()) {
 				int d = input.getCursorPosition();
 				//fontRendererObj.drawStringWithShadow(file.substring(d, Math.min(file.length(), 37+d)), posX+10, posY+ySize-15, 0xaaaaaa);
 			}
-			ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, "Select a MIDI file. Be sure to include the drive", j+xSize/2+1, k+64, 0xffffff);
-			ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, "letter and file extension and use \"/\", not \"\\\".", j+xSize/2+1, k+74, 0xffffff);
+			ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, "Select a MIDI file. Be sure to include the drive", j+xSize/2+1, k+60, 0xffffff);
+			ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, "letter and file extension and use \"/\", not \"\\\".", j+xSize/2+1, k+70, 0xffffff);
+
+			ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, "MC Ticks Per Beat: ", j+xSize/2+1-43, k+130, 0xffffff);
+			fontRendererObj.drawString("("+midiBPM+" bpm)", j+xSize/2+1+37, k+130, 0xffffff);
 		}
 	}
 

@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.TileEntity.Decoration;
 import java.io.File;
 import java.util.Collection;
 import java.util.EnumMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -47,13 +46,13 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.MusicScore;
 import Reika.DragonAPI.Instantiable.MusicScore.Note;
 import Reika.DragonAPI.Instantiable.MusicScore.NoteData;
+import Reika.DragonAPI.Instantiable.MusicScore.ScoreTrack;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.IO.MIDIInterface;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Interfaces.TileEntity.TriggerableAction;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
@@ -226,7 +225,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 			Collection<Note> li = track.getNotes(i, playTick);
 			if (li == null)
 				continue;
-			ReikaJavaLibrary.pConsole(li+" @ "+playTick, !li.isEmpty());
+			//ReikaJavaLibrary.pConsole(li+" @ "+playTick, !li.isEmpty());
 
 			//int maxplay = 3;
 			//HashMap<Note, Integer> plays = new HashMap();
@@ -394,7 +393,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 	}
 
 	@SideOnly(Side.CLIENT)
-	public boolean loadLocalMIDI(String file) {
+	public boolean loadLocalMIDI(String file, int quarterTicks) {
 		File f = new File(file);
 		if (!f.exists() || f.isDirectory()) {
 			ChromatiCraft.logger.logError("Could not load local MIDI: file is not a MIDI file!");
@@ -405,10 +404,11 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 			return false;
 		}
 		try {
-			MusicScore mus = new MIDIInterface(f).fillToScore(false).scaleSpeed(12.375F, true); //9 ticks per quarter note at 11, 8 at 12.375
+			float speed = 99F/quarterTicks; //9 ticks per quarter note at 11, 8 at 12.375
+			MusicScore mus = new MIDIInterface(f).fillToScore(false).scaleSpeed(speed, true);
 			mus.normalizeToRange(MusicKey.C4, MusicKey.C6);
-			mus.alignToZero();
 			this.dispatchTrack(mus);
+			ChromatiCraft.logger.log("Loaded MIDI with "+mus.noteCount()+" notes in "+mus.getActiveTracks().size()+" tracks with a speed of "+quarterTicks+" ticks/beat");
 			return true;
 		}
 		catch (Exception e) {
@@ -426,8 +426,10 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 	private void dispatchTrack(MusicScore mus) {
 		ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.MUSICCLEAR.ordinal(), this);
 		for (int i = 0; i < mus.countTracks(); i++) {
-			Map<Integer, NoteData> track = mus.getTrack(i);
-			for (Entry<Integer, NoteData> e : track.entrySet()) {
+			ScoreTrack track = mus.getTrack(i);
+			if (track == null)
+				continue;
+			for (Entry<Integer, NoteData> e : track.entryView()) {
 				int time = e.getKey();
 				NoteData c = e.getValue();
 				for (MusicScore.Note n : c.notes()) {
@@ -469,12 +471,17 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 		super.writeSyncTag(NBT);
 
 		//NBT.setBoolean("pillar", hasPillars);
+
+		NBTTagCompound tag = new NBTTagCompound();
+		temple.writeSyncTag(tag);
+		NBT.setTag("structure", tag);
 	}
 
 	@Override
 	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 
+		temple.writeSyncTag(NBT.getCompoundTag("structure"));
 		//hasPillars = NBT.getBoolean("pillar");
 	}
 

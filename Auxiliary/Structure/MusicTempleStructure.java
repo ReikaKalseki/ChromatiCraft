@@ -53,6 +53,11 @@ public class MusicTempleStructure extends ChromaStructureBase {
 				array.addBlock(c.xCoord, y, c.zCoord, fluid);
 			}
 		}
+
+		array.addBlock(ctr.xCoord+1, ctr.yCoord, ctr.zCoord, Blocks.lever);
+		array.addBlock(ctr.xCoord-1, ctr.yCoord, ctr.zCoord, Blocks.lever);
+		array.addBlock(ctr.xCoord, ctr.yCoord, ctr.zCoord+1, Blocks.lever);
+		array.addBlock(ctr.xCoord, ctr.yCoord, ctr.zCoord-1, Blocks.lever);
 	}
 
 	public Collection<Coordinate> getLocations(BlockKey bk) {
