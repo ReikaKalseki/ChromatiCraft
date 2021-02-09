@@ -44,13 +44,15 @@ public class RenderCrystalMusic extends ChromaRenderBase {
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glTranslatef((float)par2, (float)par4 + 1.0F, (float)par6 + 1.0F);
-		GL11.glScalef(1.0F, 1.0F, -1.0F);
+		GL11.glScalef(1.0F, -1.0F, -1.0F);
 
 		if (tile.hasWorldObj()) {
 			if (te.hasTemple()) {
-				GL11.glDisable(GL11.GL_DEPTH_TEST);
+				GL11.glPushMatrix();
+				GL11.glScalef(1.0F, -1.0F, 1.0F);
+				GL11.glTranslated(0, -1, 0);
 				te.drawTemple(par8);
-				GL11.glEnable(GL11.GL_DEPTH_TEST);
+				GL11.glPopMatrix();
 			}
 			this.drawMiddle(te);
 		}

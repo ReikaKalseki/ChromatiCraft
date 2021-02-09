@@ -27,6 +27,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -183,7 +184,7 @@ public class CrystalMusicTemple {
 		float[] brightnesses = new float[8];
 		while (it.hasNext()) {
 			ActiveNote a = it.next();
-			a.age += 0;
+			a.age++;
 			float f = a.intensity();
 			if (f > 0) {
 				int p = a.getPillar();
@@ -205,8 +206,8 @@ public class CrystalMusicTemple {
 				float dv = ico.getMaxV();
 				v5.startDrawingQuads();
 				v5.setBrightness(240);
-				v5.setColorOpaque_I(0xffffff);
-				double o = 0.03;
+				v5.setColorOpaque_I(ReikaColorAPI.GStoHex((int)(255*f)));
+				double o = 0.01;
 
 				Map<Coordinate, BlockKey> map = structure.getPillar(i);
 				for (Entry<Coordinate, BlockKey> e : map.entrySet()) {
@@ -214,35 +215,35 @@ public class CrystalMusicTemple {
 					Coordinate c2 = e.getKey();
 					v5.addTranslation(c2.xCoord, c2.yCoord, c2.zCoord);
 
-					v5.addVertexWithUV(0-o, 1+o, 0-o, u, dv);
+					v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
+					v5.addVertexWithUV(1+o, 0-o, 0-o, du, v);
 					v5.addVertexWithUV(1+o, 1+o, 0-o, du, dv);
-					v5.addVertexWithUV(1+o, 0-o, 0-o, du, v);
-					v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
-
-					v5.addVertexWithUV(0-o, 0-o, 1+o, u, v);
-					v5.addVertexWithUV(1+o, 0-o, 1+o, du, v);
-					v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
-					v5.addVertexWithUV(0-o, 1+o, 1+o, u, dv);
-
-					v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
-					v5.addVertexWithUV(0-o, 0-o, 1+o, du, v);
-					v5.addVertexWithUV(0-o, 1+o, 1+o, du, dv);
 					v5.addVertexWithUV(0-o, 1+o, 0-o, u, dv);
 
-					v5.addVertexWithUV(1+o, 1+o, 0-o, u, dv);
-					v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
-					v5.addVertexWithUV(1+o, 0-o, 1+o, du, v);
-					v5.addVertexWithUV(1+o, 0-o, 0-o, u, v);
-
 					v5.addVertexWithUV(0-o, 1+o, 1+o, u, dv);
 					v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
-					v5.addVertexWithUV(1+o, 1+o, 0-o, du, v);
-					v5.addVertexWithUV(0-o, 1+o, 0-o, u, v);
+					v5.addVertexWithUV(1+o, 0-o, 1+o, du, v);
+					v5.addVertexWithUV(0-o, 0-o, 1+o, u, v);
 
+					v5.addVertexWithUV(0-o, 1+o, 0-o, u, dv);
+					v5.addVertexWithUV(0-o, 1+o, 1+o, du, dv);
+					v5.addVertexWithUV(0-o, 0-o, 1+o, du, v);
 					v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
-					v5.addVertexWithUV(1+o, 0-o, 0-o, du, v);
-					v5.addVertexWithUV(1+o, 0-o, 1+o, du, dv);
+
+					v5.addVertexWithUV(1+o, 0-o, 0-o, u, v);
+					v5.addVertexWithUV(1+o, 0-o, 1+o, du, v);
+					v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
+					v5.addVertexWithUV(1+o, 1+o, 0-o, u, dv);
+
+					v5.addVertexWithUV(0-o, 1+o, 0-o, u, v);
+					v5.addVertexWithUV(1+o, 1+o, 0-o, du, v);
+					v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
+					v5.addVertexWithUV(0-o, 1+o, 1+o, u, dv);
+
 					v5.addVertexWithUV(0-o, 0-o, 1+o, u, dv);
+					v5.addVertexWithUV(1+o, 0-o, 1+o, du, dv);
+					v5.addVertexWithUV(1+o, 0-o, 0-o, du, v);
+					v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
 
 					v5.addTranslation(-c2.xCoord, -c2.yCoord, -c2.zCoord);
 				}
