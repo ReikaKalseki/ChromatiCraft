@@ -693,6 +693,9 @@ public class ChromatiPackets implements PacketHandler {
 				case CRYSTALMUS:
 					((TileEntityCrystalMusic)tile).doParticles(world, data[0], data[1], data[2], CrystalElement.elements[data[3]], data[4], MusicKey.getByIndex(data[5]));
 					break;
+				case CRYSTALTEMPLE:
+					((TileEntityCrystalMusic)tile).onTempleNote(MusicKey.getByIndex(data[0]), data[1]);
+					break;
 				case CRYSTALMUSERROR:
 					((TileEntityCrystalMusic)tile).doErrorParticles(world, x, y, z);
 					break;

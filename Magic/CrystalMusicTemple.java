@@ -19,12 +19,14 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Structure.MusicTempleStructure;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.MusicScore.Note;
 import Reika.DragonAPI.Instantiable.MusicScore.ScoreTrack;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
@@ -35,6 +37,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class CrystalMusicTemple {
 
 	private static final ExpectedMelody melody = new ExpectedMelody();
+	private static final Collection<Coordinate> pitLocations = new ArrayList();
 
 	static {
 		try(InputStream in = ChromatiCraft.class.getResourceAsStream("Resources/templesong.dat")) {
@@ -43,16 +46,23 @@ public class CrystalMusicTemple {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		pitLocations.add(new Coordinate(2, -3, 0));
+		pitLocations.add(new Coordinate(-2, -3, 0));
+		pitLocations.add(new Coordinate(0, -3, 2));
+		pitLocations.add(new Coordinate(0, -3, -2));
 	}
 
 	private final LinkedList<MusicKey>[] tracks = new LinkedList[16];
 	private final MusicTempleStructure structure = new MusicTempleStructure();
+	private final float[] renderActivity = new float[8];
 
 	private ArrayList<ActiveNote> playing = new ArrayList();
 
 	private Coordinate tileLocation;
 	private boolean isStructureComplete;
 	private boolean isCorrectMelody;
+	private float renderBrightness;
 
 	public CrystalMusicTemple() {
 
@@ -122,10 +132,9 @@ public class CrystalMusicTemple {
 				e.printStackTrace();
 			}
 			if (isCorrectMelody) {
-				tileLocation.offset(2, -3, 0).setBlock(world, Blocks.stonebrick);
-				tileLocation.offset(-2, -3, 0).setBlock(world, Blocks.stonebrick);
-				tileLocation.offset(0, -3, 2).setBlock(world, Blocks.stonebrick);
-				tileLocation.offset(0, -3, -2).setBlock(world, Blocks.stonebrick);
+				for (Coordinate c : pitLocations) {
+					c.offset(tileLocation).setBlock(world, Blocks.stonebrick);
+				}
 			}
 		}
 	}
@@ -150,8 +159,15 @@ public class CrystalMusicTemple {
 		}
 	}
 
-	public void onNote(World world, Note n, int track) {
-
+	public void onNote(World world, MusicKey m, int track) {
+		if (track == 0 && isStructureComplete && isCorrectMelody) {
+			if (world.isRemote) {
+				this.onNotePlayed(m);
+			}
+			else {
+				ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALTEMPLE.ordinal(), world, tileLocation, 256, m.ordinal(), track);
+			}
+		}
 	}
 
 	public void onMusicEnd(World world) {
@@ -163,6 +179,10 @@ public class CrystalMusicTemple {
 
 	private void onSongComplete(World world) {
 		tileLocation.offset(0, -2, 0).setBlock(world, Blocks.air);
+
+		for (Coordinate c : pitLocations) {
+			c.offset(tileLocation).setBlock(world, Blocks.air);
+		}
 	}
 
 	public void checkStructure(World world) {
@@ -173,22 +193,32 @@ public class CrystalMusicTemple {
 		return isStructureComplete;
 	}
 
+	public boolean isPlayingMelody() {
+		return isCorrectMelody;
+	}
+
 	@SideOnly(Side.CLIENT)
-	public void onNote(MusicKey note) {
+	private void onNotePlayed(MusicKey note) {
 		playing.add(new ActiveNote(note));
+		renderBrightness = 20;
 	}
 
 	@SideOnly(Side.CLIENT)
 	public void render(float ptick) {
+		renderBrightness = Math.max(0, renderBrightness-0.025F);
+		if (renderBrightness <= 0)
+			return;
+		for (int i = 0; i < 8; i++) {
+			renderActivity[i] = 0;
+		}
 		Iterator<ActiveNote> it = playing.iterator();
-		float[] brightnesses = new float[8];
 		while (it.hasNext()) {
 			ActiveNote a = it.next();
 			a.age++;
 			float f = a.intensity();
 			if (f > 0) {
 				int p = a.getPillar();
-				brightnesses[p] = Math.max(brightnesses[p], f);
+				renderActivity[p] = Math.max(renderActivity[p], f);
 			}
 			else {
 				it.remove();
@@ -196,59 +226,58 @@ public class CrystalMusicTemple {
 		}
 
 		for (int i = 0; i < 8; i++) {
-			float f = brightnesses[i];
-			if (f > 0) {
-				Tessellator v5 = Tessellator.instance;
-				IIcon ico = ChromaIcons.LATTICE.getIcon();
-				float u = ico.getMinU();
-				float v = ico.getMinV();
-				float du = ico.getMaxU();
-				float dv = ico.getMaxV();
-				v5.startDrawingQuads();
-				v5.setBrightness(240);
-				v5.setColorOpaque_I(ReikaColorAPI.GStoHex((int)(255*f)));
-				double o = 0.01;
+			float f = renderActivity[i];
+			Tessellator v5 = Tessellator.instance;
+			IIcon ico = ChromaIcons.CAUSTICS_CRYSTAL.getIcon();
+			float u = ico.getMinU();
+			float v = ico.getMinV();
+			float du = ico.getMaxU();
+			float dv = ico.getMaxV();
+			v5.startDrawingQuads();
+			v5.setBrightness(240);
+			int c = ReikaColorAPI.mixColors(0x1ED88B, 0x0096FF, f);
+			v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(c, Math.min(1, renderBrightness)));
+			double o = 0.002;
 
-				Map<Coordinate, BlockKey> map = structure.getPillar(i);
-				for (Entry<Coordinate, BlockKey> e : map.entrySet()) {
-					//Coordinate c2 = e.getKey().offset(tileLocation);
-					Coordinate c2 = e.getKey();
-					v5.addTranslation(c2.xCoord, c2.yCoord, c2.zCoord);
+			Map<Coordinate, BlockKey> map = structure.getPillar(i);
+			for (Entry<Coordinate, BlockKey> e : map.entrySet()) {
+				//Coordinate c2 = e.getKey().offset(tileLocation);
+				Coordinate c2 = e.getKey();
+				v5.addTranslation(c2.xCoord, c2.yCoord, c2.zCoord);
 
-					v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
-					v5.addVertexWithUV(1+o, 0-o, 0-o, du, v);
-					v5.addVertexWithUV(1+o, 1+o, 0-o, du, dv);
-					v5.addVertexWithUV(0-o, 1+o, 0-o, u, dv);
+				v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
+				v5.addVertexWithUV(1+o, 0-o, 0-o, du, v);
+				v5.addVertexWithUV(1+o, 1+o, 0-o, du, dv);
+				v5.addVertexWithUV(0-o, 1+o, 0-o, u, dv);
 
-					v5.addVertexWithUV(0-o, 1+o, 1+o, u, dv);
-					v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
-					v5.addVertexWithUV(1+o, 0-o, 1+o, du, v);
-					v5.addVertexWithUV(0-o, 0-o, 1+o, u, v);
+				v5.addVertexWithUV(0-o, 1+o, 1+o, u, dv);
+				v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
+				v5.addVertexWithUV(1+o, 0-o, 1+o, du, v);
+				v5.addVertexWithUV(0-o, 0-o, 1+o, u, v);
 
-					v5.addVertexWithUV(0-o, 1+o, 0-o, u, dv);
-					v5.addVertexWithUV(0-o, 1+o, 1+o, du, dv);
-					v5.addVertexWithUV(0-o, 0-o, 1+o, du, v);
-					v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
+				v5.addVertexWithUV(0-o, 1+o, 0-o, u, dv);
+				v5.addVertexWithUV(0-o, 1+o, 1+o, du, dv);
+				v5.addVertexWithUV(0-o, 0-o, 1+o, du, v);
+				v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
 
-					v5.addVertexWithUV(1+o, 0-o, 0-o, u, v);
-					v5.addVertexWithUV(1+o, 0-o, 1+o, du, v);
-					v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
-					v5.addVertexWithUV(1+o, 1+o, 0-o, u, dv);
+				v5.addVertexWithUV(1+o, 0-o, 0-o, u, v);
+				v5.addVertexWithUV(1+o, 0-o, 1+o, du, v);
+				v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
+				v5.addVertexWithUV(1+o, 1+o, 0-o, u, dv);
 
-					v5.addVertexWithUV(0-o, 1+o, 0-o, u, v);
-					v5.addVertexWithUV(1+o, 1+o, 0-o, du, v);
-					v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
-					v5.addVertexWithUV(0-o, 1+o, 1+o, u, dv);
+				v5.addVertexWithUV(0-o, 1+o, 0-o, u, v);
+				v5.addVertexWithUV(1+o, 1+o, 0-o, du, v);
+				v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
+				v5.addVertexWithUV(0-o, 1+o, 1+o, u, dv);
 
-					v5.addVertexWithUV(0-o, 0-o, 1+o, u, dv);
-					v5.addVertexWithUV(1+o, 0-o, 1+o, du, dv);
-					v5.addVertexWithUV(1+o, 0-o, 0-o, du, v);
-					v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
+				v5.addVertexWithUV(0-o, 0-o, 1+o, u, dv);
+				v5.addVertexWithUV(1+o, 0-o, 1+o, du, dv);
+				v5.addVertexWithUV(1+o, 0-o, 0-o, du, v);
+				v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
 
-					v5.addTranslation(-c2.xCoord, -c2.yCoord, -c2.zCoord);
-				}
-				v5.draw();
+				v5.addTranslation(-c2.xCoord, -c2.yCoord, -c2.zCoord);
 			}
+			v5.draw();
 		}
 	}
 

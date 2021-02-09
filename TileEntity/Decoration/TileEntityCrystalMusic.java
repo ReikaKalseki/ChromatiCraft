@@ -20,6 +20,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
@@ -52,6 +53,7 @@ import Reika.DragonAPI.Instantiable.IO.MIDIInterface;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Interfaces.TileEntity.TriggerableAction;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -284,11 +286,12 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 		}
 
 		if (canPlay) {
-			temple.onNote(world, n, track);
+			temple.onNote(world, n.key, track);
+			ChromaSounds s = this.getVoice(n.key, track);
 			if (this.attentuate(world, x, y, z))
-				ChromaSounds.DING.playSoundAtBlock(this, n.volume/100F, (float)CrystalMusicManager.instance.getPitchFactor(n.key));
+				s.playSoundAtBlock(this, n.volume/100F, (float)CrystalMusicManager.instance.getPitchFactor(n.key));
 			else
-				ChromaSounds.DING.playSoundAtBlockNoAttenuation(this, n.volume/100F, (float)CrystalMusicManager.instance.getPitchFactor(n.key), BROADCAST_RANGE);
+				s.playSoundAtBlockNoAttenuation(this, n.volume/100F, (float)CrystalMusicManager.instance.getPitchFactor(n.key), BROADCAST_RANGE);
 			return true;
 		}
 		else {
@@ -298,18 +301,29 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 		}
 	}
 
+	private ChromaSounds getVoice(MusicKey key, int channel) {
+		if (temple.isComplete() && temple.isPlayingMelody()) {
+			switch(channel) {
+				case 0:
+					return ChromaSounds.FLUTE;
+				case 2:
+					return ChromaSounds.ORB;
+			}
+		}
+		return ChromaSounds.DING;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void onTempleNote(MusicKey mk, int track) {
+		temple.onNote(worldObj, mk, track);
+	}
+
 	private boolean attentuate(World world, int x, int y, int z) {
-		return world.getBlock(x, y-1, z) != Blocks.quartz_block;//world.getBlock(x, y-1, z) != ChromaBlocks.RUNE.getBlockInstance() || world.getBlockMetadata(x, y-1, z) != CrystalElement.YELLOW.ordinal();
+		return !temple.isComplete() && world.getBlock(x, y-1, z) != Blocks.quartz_block;//world.getBlock(x, y-1, z) != ChromaBlocks.RUNE.getBlockInstance() || world.getBlockMetadata(x, y-1, z) != CrystalElement.YELLOW.ordinal();
 	}
 
 	public boolean playCrystal(World world, int x, int y, int z, CrystalElement e, int length, MusicKey note) {
 		if (temple.isComplete()) {
-			if (world.isRemote) {
-				temple.onNote(note);
-			}
-			else {
-				ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALMUS.ordinal(), this, BROADCAST_RANGE, x, Integer.MIN_VALUE, z, e.ordinal(), length, note.ordinal());
-			}
 			return true;
 		}
 		Coordinate c = colorPositions.get(e).offset(xCoord, yCoord, zCoord);
@@ -360,10 +374,6 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 
 	@SideOnly(Side.CLIENT)
 	public void doParticles(World world, int x, int y, int z, CrystalElement e, int length, MusicKey note) {
-		if (y == Integer.MIN_VALUE) {
-			temple.onNote(note);
-			return;
-		}
 		int n = 3+rand.nextInt(6);
 		for (int i = 0; i < n; i++) {
 			double px = x+rand.nextDouble();
@@ -543,6 +553,11 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 	@Override
 	public boolean canStructureBeInspected() {
 		return false;
+	}
+
+	@Override
+	public AxisAlignedBB getRenderBoundingBox() {
+		return temple.isComplete() ? ReikaAABBHelper.getBlockAABB(this).expand(9, 6, 9) : super.getRenderBoundingBox();
 	}
 
 	/*
