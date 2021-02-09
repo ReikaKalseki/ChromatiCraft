@@ -5,18 +5,25 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Structure.MusicTempleStructure;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.MusicScore.Note;
 import Reika.DragonAPI.Instantiable.MusicScore.ScoreTrack;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
@@ -40,6 +47,8 @@ public class CrystalMusicTemple {
 	private final LinkedList<MusicKey>[] tracks = new LinkedList[16];
 	private final MusicTempleStructure structure = new MusicTempleStructure();
 
+	private ArrayList<ActiveNote> playing = new ArrayList();
+
 	private Coordinate tileLocation;
 	private boolean isStructureComplete;
 	private boolean isCorrectMelody;
@@ -54,7 +63,7 @@ public class CrystalMusicTemple {
 	}
 
 	public void onMusicStart(World world, ScoreTrack track0) {
-		if (track0 == null)
+		if (track0 == null || track0.isEmpty())
 			return;
 		/*
 		int len = track0.getLengthInTicks()/8+1; //8 ticks/beat
@@ -148,10 +157,11 @@ public class CrystalMusicTemple {
 		if (isStructureComplete && isCorrectMelody) {
 			this.onSongComplete(world);
 		}
+		this.checkStructure(world);
 	}
 
 	private void onSongComplete(World world) {
-		tileLocation.offset(0, -3, 0).setBlock(world, Blocks.air);
+		tileLocation.offset(0, -2, 0).setBlock(world, Blocks.air);
 	}
 
 	public void checkStructure(World world) {
@@ -163,16 +173,121 @@ public class CrystalMusicTemple {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void render(float ptick) {
+	public void onNote(MusicKey note) {
+		playing.add(new ActiveNote(note));
+	}
 
+	@SideOnly(Side.CLIENT)
+	public void render(float ptick) {
+		Iterator<ActiveNote> it = playing.iterator();
+		float[] brightnesses = new float[8];
+		while (it.hasNext()) {
+			ActiveNote a = it.next();
+			a.age += 0;
+			float f = a.intensity();
+			if (f > 0) {
+				int p = a.getPillar();
+				brightnesses[p] = Math.max(brightnesses[p], f);
+			}
+			else {
+				it.remove();
+			}
+		}
+
+		for (int i = 0; i < 8; i++) {
+			float f = brightnesses[i];
+			if (f > 0) {
+				Tessellator v5 = Tessellator.instance;
+				IIcon ico = ChromaIcons.LATTICE.getIcon();
+				float u = ico.getMinU();
+				float v = ico.getMinV();
+				float du = ico.getMaxU();
+				float dv = ico.getMaxV();
+				v5.startDrawingQuads();
+				v5.setBrightness(240);
+				v5.setColorOpaque_I(0xffffff);
+				double o = 0.03;
+
+				Map<Coordinate, BlockKey> map = structure.getPillar(i);
+				for (Entry<Coordinate, BlockKey> e : map.entrySet()) {
+					//Coordinate c2 = e.getKey().offset(tileLocation);
+					Coordinate c2 = e.getKey();
+					v5.addTranslation(c2.xCoord, c2.yCoord, c2.zCoord);
+
+					v5.addVertexWithUV(0-o, 1+o, 0-o, u, dv);
+					v5.addVertexWithUV(1+o, 1+o, 0-o, du, dv);
+					v5.addVertexWithUV(1+o, 0-o, 0-o, du, v);
+					v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
+
+					v5.addVertexWithUV(0-o, 0-o, 1+o, u, v);
+					v5.addVertexWithUV(1+o, 0-o, 1+o, du, v);
+					v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
+					v5.addVertexWithUV(0-o, 1+o, 1+o, u, dv);
+
+					v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
+					v5.addVertexWithUV(0-o, 0-o, 1+o, du, v);
+					v5.addVertexWithUV(0-o, 1+o, 1+o, du, dv);
+					v5.addVertexWithUV(0-o, 1+o, 0-o, u, dv);
+
+					v5.addVertexWithUV(1+o, 1+o, 0-o, u, dv);
+					v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
+					v5.addVertexWithUV(1+o, 0-o, 1+o, du, v);
+					v5.addVertexWithUV(1+o, 0-o, 0-o, u, v);
+
+					v5.addVertexWithUV(0-o, 1+o, 1+o, u, dv);
+					v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
+					v5.addVertexWithUV(1+o, 1+o, 0-o, du, v);
+					v5.addVertexWithUV(0-o, 1+o, 0-o, u, v);
+
+					v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
+					v5.addVertexWithUV(1+o, 0-o, 0-o, du, v);
+					v5.addVertexWithUV(1+o, 0-o, 1+o, du, dv);
+					v5.addVertexWithUV(0-o, 0-o, 1+o, u, dv);
+
+					v5.addTranslation(-c2.xCoord, -c2.yCoord, -c2.zCoord);
+				}
+				v5.draw();
+			}
+		}
 	}
 
 	public void writeSyncTag(NBTTagCompound tag) {
-
+		tag.setBoolean("complete", isStructureComplete);
+		tag.setBoolean("song", isCorrectMelody);
+		if (tileLocation != null)
+			tileLocation.writeToNBT("tile", tag);
 	}
 
 	@SideOnly(Side.CLIENT)
 	public void readSyncTag(NBTTagCompound tag) {
+		isCorrectMelody = tag.getBoolean("song");
+		isStructureComplete = tag.getBoolean("complete");
+		tileLocation = Coordinate.readFromNBT("tile", tag);
+	}
+
+	private static class ActiveNote {
+
+		private final MusicKey note;
+
+		private int age;
+
+		private ActiveNote(MusicKey m) {
+			note = m;
+		}
+
+		private int getPillar() {
+			ReikaMusicHelper.Note n = note.getNote();
+			int idx = n.keyIndex+1;
+			if (n == ReikaMusicHelper.Note.FSHARP)
+				idx = ReikaMusicHelper.Note.F.keyIndex+1;
+			if (n == ReikaMusicHelper.Note.B && note.ordinal() >= MusicKey.B7.ordinal())
+				idx = 0;
+			return idx;
+		}
+
+		private float intensity() {
+			return age < 40 ? 1 : 1-(age-40)/60F;
+		}
 
 	}
 

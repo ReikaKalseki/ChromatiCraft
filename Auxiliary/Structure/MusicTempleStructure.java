@@ -3,6 +3,7 @@ package Reika.ChromatiCraft.Auxiliary.Structure;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import net.minecraft.block.Block;
@@ -10,6 +11,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Base.ChromaStructureBase;
+import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone.Variants;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -17,17 +19,41 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Libraries.ReikaDirectionHelper.CubeDirections;
 
 
 public class MusicTempleStructure extends ChromaStructureBase {
 
 	private static final Block fluid = ChromaBlocks.LIFEWATER.getBlockInstance();
 
+	private static final HashMap<Coordinate, BlockKey>[] pillars = new HashMap[8];
+
 	private final HashMap<Coordinate, Integer> footprint = new HashMap();
 	private final MultiMap<BlockKey, Coordinate> types = new MultiMap();
 
 	private Coordinate origin;
 	private FilledBlockArray array;
+
+	static {
+		for (int idx = 0; idx < 8; idx++) {
+			pillars[idx] = new HashMap();
+			Coordinate root = getPillarRoot(idx);
+			for (int i = 0; i <= 6; i++) {
+				StoneTypes s = i == 0 ? StoneTypes.EMBOSSED : (i == 6 ? StoneTypes.ENGRAVED : StoneTypes.COLUMN);
+				pillars[idx].put(root.offset(0, i, 0), new BlockKey(crystalstone, s.ordinal()));
+			}
+			pillars[idx].put(root.offset(1, 6, 0), new BlockKey(crystalstone, StoneTypes.BEAM.ordinal()));
+			pillars[idx].put(root.offset(-1, 6, 0), new BlockKey(crystalstone, StoneTypes.BEAM.ordinal()));
+			pillars[idx].put(root.offset(0, 6, 1), new BlockKey(crystalstone, StoneTypes.BEAM.ordinal()));
+			pillars[idx].put(root.offset(0, 6, -1), new BlockKey(crystalstone, StoneTypes.BEAM.ordinal()));
+		}
+	}
+
+	private static Coordinate getPillarRoot(int idx) {
+		CubeDirections dir = CubeDirections.list[idx];
+		int dd = dir.isCardinal() ? 8 : 6;
+		return new Coordinate(dir.directionX*dd, -3, dir.directionZ*dd);
+	}
 
 	public void setOrigin(World world, Coordinate ctr) {
 		origin = ctr;
@@ -62,6 +88,10 @@ public class MusicTempleStructure extends ChromaStructureBase {
 
 	public Collection<Coordinate> getLocations(BlockKey bk) {
 		return Collections.unmodifiableCollection(types.get(bk));
+	}
+
+	public Map<Coordinate, BlockKey> getPillar(int idx) {
+		return Collections.unmodifiableMap(pillars[idx]);
 	}
 
 	public boolean validate() {

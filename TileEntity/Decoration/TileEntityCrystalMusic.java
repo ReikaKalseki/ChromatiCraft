@@ -53,6 +53,7 @@ import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Interfaces.TileEntity.TriggerableAction;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
@@ -185,6 +186,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 		playTick = 0;
 		isPlaying = true;
 		temple.onMusicStart(worldObj, track.getTrack(0));
+		this.syncAllData(false);
 	}
 
 	@Override
@@ -264,18 +266,21 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 		if (set.isEmpty()) {
 			set = CrystalMusicManager.instance.getColorsWithKey(n.key.getInterval(-36));
 		}
+		if (set.isEmpty()) {
+			set = CrystalMusicManager.instance.getColorsWithKey(n.key.getInterval(24));
+		}
 		boolean canPlay = false;
 
 		if (!set.isEmpty()) {
 			for (CrystalElement e : set) {
-				canPlay |= this.playCrystal(world, x, y, z, e, n.length);
+				canPlay |= this.playCrystal(world, x, y, z, e, n.length, n.key);
 			}
 			if (canPlay)
 				;//this.generateParticles(world, x, y, z, ReikaJavaLibrary.getRandomCollectionEntry(set));
 		}
 		else {
 			canPlay = true;
-			this.generateParticles(world, x, y+2, z, CrystalElement.randomElement(), 20);
+			this.generateParticles(world, x, y+2, z, CrystalElement.randomElement(), 20, n.key);
 		}
 
 		if (canPlay) {
@@ -297,15 +302,22 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 		return world.getBlock(x, y-1, z) != Blocks.quartz_block;//world.getBlock(x, y-1, z) != ChromaBlocks.RUNE.getBlockInstance() || world.getBlockMetadata(x, y-1, z) != CrystalElement.YELLOW.ordinal();
 	}
 
-	public boolean playCrystal(World world, int x, int y, int z, CrystalElement e, int length) {
-		if (temple.isComplete())
+	public boolean playCrystal(World world, int x, int y, int z, CrystalElement e, int length, MusicKey note) {
+		if (temple.isComplete()) {
+			if (world.isRemote) {
+				temple.onNote(note);
+			}
+			else {
+				ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALMUS.ordinal(), this, BROADCAST_RANGE, x, Integer.MIN_VALUE, z, e.ordinal(), length, note.ordinal());
+			}
 			return true;
+		}
 		Coordinate c = colorPositions.get(e).offset(xCoord, yCoord, zCoord);
 		Block b = c.getBlock(world);
 		if (DragonAPICore.debugtest)
 			c.setBlock(world, ChromaBlocks.LAMP.getBlockInstance(), e.ordinal());
 		if (b instanceof CrystalBlock && c.getBlockMetadata(world) == e.ordinal()) {
-			this.generateParticles(world, c.xCoord, c.yCoord, c.zCoord, e, length);
+			this.generateParticles(world, c.xCoord, c.yCoord, c.zCoord, e, length, note);
 			if (networkConnections[e.ordinal()] != null && networkConnections[e.ordinal()].stillValid().canConduct()) {
 				//ReikaJavaLibrary.pConsole(networkConnections[e.ordinal()]);
 				networkConnections[e.ordinal()].blink(MathHelper.clamp_int(length/2, 1, 40), receiver);
@@ -319,12 +331,12 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 		return new TemporaryCrystalReceiver(this, 0, 32, 0.35, ResearchLevel.BASICCRAFT);
 	}
 
-	private void generateParticles(World world, int x, int y, int z, CrystalElement e, int length) {
+	private void generateParticles(World world, int x, int y, int z, CrystalElement e, int length, MusicKey note) {
 		if (world.isRemote) {
-			this.doParticles(world, x, y, z, e, length);
+			this.doParticles(world, x, y, z, e, length, note);
 		}
 		else {
-			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALMUS.ordinal(), this, BROADCAST_RANGE, x, y, z, e.ordinal(), length);
+			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALMUS.ordinal(), this, BROADCAST_RANGE, x, y, z, e.ordinal(), length, note.ordinal());
 		}
 	}
 
@@ -347,7 +359,11 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void doParticles(World world, int x, int y, int z, CrystalElement e, int length) {
+	public void doParticles(World world, int x, int y, int z, CrystalElement e, int length, MusicKey note) {
+		if (y == Integer.MIN_VALUE) {
+			temple.onNote(note);
+			return;
+		}
 		int n = 3+rand.nextInt(6);
 		for (int i = 0; i < n; i++) {
 			double px = x+rand.nextDouble();
@@ -481,7 +497,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 
-		temple.writeSyncTag(NBT.getCompoundTag("structure"));
+		temple.readSyncTag(NBT.getCompoundTag("structure"));
 		//hasPillars = NBT.getBoolean("pillar");
 	}
 
@@ -508,7 +524,10 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 
 	@Override
 	public void validateStructure() {
+		if (isPlaying)
+			return;
 		temple.checkStructure(worldObj);
+		ReikaJavaLibrary.pConsole(temple.isComplete());
 	}
 
 	@Override

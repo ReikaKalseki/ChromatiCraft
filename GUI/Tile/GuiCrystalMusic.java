@@ -293,7 +293,7 @@ public class GuiCrystalMusic extends GuiChromaBase implements PianoGui {
 	public void onKeyPressed(MusicKey key) {
 		ReikaSoundHelper.playClientSound(ChromaSounds.DING, player, 1, (float)CrystalMusicManager.instance.getPitchFactor(key));
 		for (CrystalElement e : CrystalMusicManager.instance.getColorsWithKey(key)) {
-			music.playCrystal(music.worldObj, music.xCoord, music.yCoord, music.zCoord, e, length);
+			music.playCrystal(music.worldObj, music.xCoord, music.yCoord, music.zCoord, e, length, key);
 		}
 		ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.MUSICNOTE.ordinal(), music, channel, key.ordinal(), length, rest ? 1 : 0);
 	}
