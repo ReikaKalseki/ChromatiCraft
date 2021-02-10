@@ -977,10 +977,10 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 				ChromaSound c = (ChromaSound)es.sound;
 				if (c.hasWiderPitchRange()) {
 					if (es.getPitch() > 2) {
-						evt.result = new EnumSound(c.getUpshiftedPitch(), es.posX, es.posY, es.posZ, es.volume, es.pitch/4F, es.attenuate);
+						evt.result = new EnumSound(c.getUpshiftedPitch(), es.posX, es.posY, es.posZ, es.volume, es.pitch/c.getRangeInterval(), es.attenuate);
 					}
 					else if (es.getPitch() < 0.5) {
-						evt.result = new EnumSound(c.getDownshiftedPitch(), es.posX, es.posY, es.posZ, es.volume, es.pitch*4F, es.attenuate);
+						evt.result = new EnumSound(c.getDownshiftedPitch(), es.posX, es.posY, es.posZ, es.volume, es.pitch*c.getRangeInterval(), es.attenuate);
 					}
 				}
 			}

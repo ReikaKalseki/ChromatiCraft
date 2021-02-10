@@ -266,7 +266,7 @@ public enum ChromaSounds implements ChromaSound, DynamicSound, VariableSound {
 		return this != GOTODIM && this != PYLONTURBO && this != PYLONFLASH && this != PYLONBOOSTRITUAL && this != PYLONBOOSTSTART && this != REPEATERSURGE && this != MONUMENT && this != MONUMENTRAY && this != GAINPROGRESS && this != LORECOMPLETE;
 	}
 
-	public boolean hasWiderPitchRange() { // the steps need to be TWO octaves apart!
+	public boolean hasWiderPitchRange() {
 		return widePitch;//return this == DING || this == ORB;// || this == FLUTE;
 	}
 
@@ -314,6 +314,12 @@ public enum ChromaSounds implements ChromaSound, DynamicSound, VariableSound {
 
 	public SoundVariant getVariant(String name) {
 		return variants.get(name);
+	}
+	
+	public float getRangeInterval() { // the steps need to be TWO octaves apart when using the default of 4!
+		if (this == FLUTE)
+			return 2;
+		return 4;
 	}
 
 	static {
@@ -417,6 +423,11 @@ public enum ChromaSounds implements ChromaSound, DynamicSound, VariableSound {
 		@Override
 		public ChromaSound getDownshiftedPitch() {
 			return (ChromaSound)root.getVariant(key+"_LO");
+		}
+
+		@Override
+		public float getRangeInterval() {
+			return root.getRangeInterval();
 		}
 
 	}

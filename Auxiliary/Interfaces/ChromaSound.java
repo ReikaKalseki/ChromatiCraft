@@ -13,5 +13,6 @@ public interface ChromaSound extends DynamicSound {
 	public boolean hasWiderPitchRange();
 	public ChromaSound getUpshiftedPitch();
 	public ChromaSound getDownshiftedPitch();
+	public float getRangeInterval();
 
 }
