@@ -75,7 +75,7 @@ public class BlockTempleLifewater extends BlockFluidClassic {
 
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
-		theIcon = new IIcon[]{ico.registerIcon("chromaticraft:fluid/lifewater"), ico.registerIcon("chromaticraft:fluid/lifewater_flow")};
+		theIcon = new IIcon[]{ico.registerIcon("chromaticraft:fluid/lifewater_still"), ico.registerIcon("chromaticraft:fluid/lifewater_flow")};
 	}
 
 	@Override

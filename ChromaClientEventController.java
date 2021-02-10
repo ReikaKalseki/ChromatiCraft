@@ -77,6 +77,7 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHotkeys;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityXRays;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaSound;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionVoidGaze.VoidGazeLevels;
 import Reika.ChromatiCraft.Auxiliary.Render.BlockChangeCache;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
@@ -972,8 +973,8 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 	public void crystalPitchDing(PlaySoundEvent17 evt) {
 		if (evt.sound instanceof EnumSound) {
 			EnumSound es = (EnumSound)evt.sound;
-			if (es.sound instanceof ChromaSounds) {
-				ChromaSounds c = (ChromaSounds)es.sound;
+			if (es.sound instanceof ChromaSound) {
+				ChromaSound c = (ChromaSound)es.sound;
 				if (c.hasWiderPitchRange()) {
 					if (es.getPitch() > 2) {
 						evt.result = new EnumSound(c.getUpshiftedPitch(), es.posX, es.posY, es.posZ, es.volume, es.pitch/4F, es.attenuate);

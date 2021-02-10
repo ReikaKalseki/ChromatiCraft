@@ -10,11 +10,13 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Structure.MusicTempleStructure;
@@ -27,6 +29,7 @@ import Reika.DragonAPI.Instantiable.MusicScore.ScoreTrack;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
@@ -198,16 +201,22 @@ public class CrystalMusicTemple {
 	}
 
 	@SideOnly(Side.CLIENT)
+	public boolean isRendering() {
+		return renderBrightness > 0;
+	}
+
+	@SideOnly(Side.CLIENT)
 	private void onNotePlayed(MusicKey note) {
 		playing.add(new ActiveNote(note));
-		renderBrightness = 20;
+		renderBrightness = 4;
 	}
 
 	@SideOnly(Side.CLIENT)
 	public void render(float ptick) {
-		renderBrightness = Math.max(0, renderBrightness-0.025F);
+		renderBrightness = Math.max(0, renderBrightness-0.0125F);
 		if (renderBrightness <= 0)
 			return;
+		ReikaTextureHelper.bindTerrainTexture();
 		for (int i = 0; i < 8; i++) {
 			renderActivity[i] = 0;
 		}
@@ -225,55 +234,81 @@ public class CrystalMusicTemple {
 			}
 		}
 
+		World world = Minecraft.getMinecraft().theWorld;
+
 		for (int i = 0; i < 8; i++) {
 			float f = renderActivity[i];
 			Tessellator v5 = Tessellator.instance;
 			IIcon ico = ChromaIcons.CAUSTICS_CRYSTAL.getIcon();
-			float u = ico.getMinU();
-			float v = ico.getMinV();
-			float du = ico.getMaxU();
-			float dv = ico.getMaxV();
 			v5.startDrawingQuads();
 			v5.setBrightness(240);
 			int c = ReikaColorAPI.mixColors(0x1ED88B, 0x0096FF, f);
 			v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(c, Math.min(1, renderBrightness)));
-			double o = 0.002;
+			double o = 0.001;
+
+			int sx = 4;
+			int sy = 4;
 
 			Map<Coordinate, BlockKey> map = structure.getPillar(i);
 			for (Entry<Coordinate, BlockKey> e : map.entrySet()) {
 				//Coordinate c2 = e.getKey().offset(tileLocation);
 				Coordinate c2 = e.getKey();
+				BlockKey bk = e.getValue();
 				v5.addTranslation(c2.xCoord, c2.yCoord, c2.zCoord);
 
-				v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
-				v5.addVertexWithUV(1+o, 0-o, 0-o, du, v);
-				v5.addVertexWithUV(1+o, 1+o, 0-o, du, dv);
-				v5.addVertexWithUV(0-o, 1+o, 0-o, u, dv);
+				int x = c2.xCoord+tileLocation.xCoord;
+				int y = c2.yCoord+tileLocation.yCoord;
+				int z = c2.zCoord+tileLocation.zCoord;
 
-				v5.addVertexWithUV(0-o, 1+o, 1+o, u, dv);
-				v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
-				v5.addVertexWithUV(1+o, 0-o, 1+o, du, v);
-				v5.addVertexWithUV(0-o, 0-o, 1+o, u, v);
+				double ux = ((x%sx)/(float)sx)*16;
+				double uy = (((y+z)%sy)/(float)sy)*16;
 
-				v5.addVertexWithUV(0-o, 1+o, 0-o, u, dv);
-				v5.addVertexWithUV(0-o, 1+o, 1+o, du, dv);
-				v5.addVertexWithUV(0-o, 0-o, 1+o, du, v);
-				v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
+				float u = ico.getInterpolatedU(ux);
+				float v = ico.getInterpolatedV(uy);
+				float du = ico.getInterpolatedU(ux+16D/sx);
+				float dv = ico.getInterpolatedV(uy+16D/sy);
 
-				v5.addVertexWithUV(1+o, 0-o, 0-o, u, v);
-				v5.addVertexWithUV(1+o, 0-o, 1+o, du, v);
-				v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
-				v5.addVertexWithUV(1+o, 1+o, 0-o, u, dv);
+				if (bk.blockID.shouldSideBeRendered(world, x, y, z-1, ForgeDirection.NORTH.ordinal())) {
+					v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
+					v5.addVertexWithUV(1+o, 0-o, 0-o, du, v);
+					v5.addVertexWithUV(1+o, 1+o, 0-o, du, dv);
+					v5.addVertexWithUV(0-o, 1+o, 0-o, u, dv);
+				}
 
-				v5.addVertexWithUV(0-o, 1+o, 0-o, u, v);
-				v5.addVertexWithUV(1+o, 1+o, 0-o, du, v);
-				v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
-				v5.addVertexWithUV(0-o, 1+o, 1+o, u, dv);
+				if (bk.blockID.shouldSideBeRendered(world, x, y, z+1, ForgeDirection.SOUTH.ordinal())) {
+					v5.addVertexWithUV(0-o, 1+o, 1+o, u, dv);
+					v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
+					v5.addVertexWithUV(1+o, 0-o, 1+o, du, v);
+					v5.addVertexWithUV(0-o, 0-o, 1+o, u, v);
+				}
 
-				v5.addVertexWithUV(0-o, 0-o, 1+o, u, dv);
-				v5.addVertexWithUV(1+o, 0-o, 1+o, du, dv);
-				v5.addVertexWithUV(1+o, 0-o, 0-o, du, v);
-				v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
+				if (bk.blockID.shouldSideBeRendered(world, x-1, y, z, ForgeDirection.WEST.ordinal())) {
+					v5.addVertexWithUV(0-o, 1+o, 0-o, u, dv);
+					v5.addVertexWithUV(0-o, 1+o, 1+o, du, dv);
+					v5.addVertexWithUV(0-o, 0-o, 1+o, du, v);
+					v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
+				}
+
+				if (bk.blockID.shouldSideBeRendered(world, x+1, y, z, ForgeDirection.EAST.ordinal())) {
+					v5.addVertexWithUV(1+o, 0-o, 0-o, u, v);
+					v5.addVertexWithUV(1+o, 0-o, 1+o, du, v);
+					v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
+					v5.addVertexWithUV(1+o, 1+o, 0-o, u, dv);
+				}
+
+				if (bk.blockID.shouldSideBeRendered(world, x, y+1, z, ForgeDirection.UP.ordinal())) {
+					v5.addVertexWithUV(0-o, 1+o, 0-o, u, v);
+					v5.addVertexWithUV(1+o, 1+o, 0-o, du, v);
+					v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
+					v5.addVertexWithUV(0-o, 1+o, 1+o, u, dv);
+				}
+
+				if (bk.blockID.shouldSideBeRendered(world, x, y-1, z, ForgeDirection.DOWN.ordinal())) {
+					v5.addVertexWithUV(0-o, 0-o, 1+o, u, dv);
+					v5.addVertexWithUV(1+o, 0-o, 1+o, du, dv);
+					v5.addVertexWithUV(1+o, 0-o, 0-o, du, v);
+					v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
+				}
 
 				v5.addTranslation(-c2.xCoord, -c2.yCoord, -c2.zCoord);
 			}

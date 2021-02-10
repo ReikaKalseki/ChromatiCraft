@@ -87,7 +87,7 @@ public enum ChromaIcons implements IconEnum {
 	CAUSTICS_GENTLE_ALPHA("caustics-g-a"),
 	CAUSTICS_TINY("caustics-tiny"),
 	CAUSTICS_TINY_ALPHA("caustics-tiny-a"),
-	CAUSTICS_CRYSTAL("caustics-crystal2"),
+	CAUSTICS_CRYSTAL("caustics-crystal3"),
 	OVALS("oval-rings"),
 	WEAKREPEATER("weakrepeater"),
 	SMOKE("smoke"),

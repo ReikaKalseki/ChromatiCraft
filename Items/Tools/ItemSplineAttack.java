@@ -172,7 +172,7 @@ public class ItemSplineAttack extends ItemChromaTool {
 				int tick = i*4;
 				maxdur = Math.max(tick, maxdur);
 				TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new DelayedAttack(e.entity, DamageSource.causeIndirectMagicDamage(ep, ep), 6)), tick);
-				ScheduledSoundEvent ev = new ScheduledSoundEvent(ChromaSounds.ORB_LO, ep, 0.5F, f);
+				ScheduledSoundEvent ev = new ScheduledSoundEvent(ChromaSounds.ORB.getDownshiftedPitch(), ep, 0.5F, f);
 				ev.attenuate = false;
 				ev.broadcastRange = 96;
 				TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(ev), tick);

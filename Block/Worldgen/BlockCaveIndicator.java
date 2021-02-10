@@ -23,6 +23,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaSound;
 import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.KeySignature;
@@ -92,7 +93,7 @@ public class BlockCaveIndicator extends Block {
 		if (world.isRemote)
 			return;
 		float f = (float)MusicKey.C5.getInterval(KeySignature.C.getScale().get(world.rand.nextInt(7)).ordinal()).getRatio(MusicKey.C5);
-		ChromaSounds.DING_HI.playSoundAtBlock(world, x, y, z, 0.5F, f);
+		((ChromaSound)ChromaSounds.DING.getUpshiftedPitch()).playSoundAtBlock(world, x, y, z, 0.5F, f);
 		if (world.getBlockMetadata(x, y, z) == 0) {
 			world.setBlockMetadataWithNotify(x, y, z, 1, 3);
 			world.markBlockForUpdate(x, y, z);
