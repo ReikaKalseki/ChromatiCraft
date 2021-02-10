@@ -324,21 +324,27 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 	}
 
 	private SoundEnum getFlute(Note n) {
-		if (n.length >= 38)
-			return ChromaSounds.FLUTE.getVariant("L3"); //1.92s
+		if (n.length >= 34)
+			return ChromaSounds.FLUTE.getVariant("L3"); //1.725
 		else if (n.length >= 26)
-			return ChromaSounds.FLUTE.getVariant("L2"); //1.275s
-		else if (n.length >= 20)
-			return ChromaSounds.FLUTE.getVariant("L1"); //0.985s
+			return ChromaSounds.FLUTE.getVariant("L2"); //1.315
+		else if (n.length >= 22)
+			return ChromaSounds.FLUTE.getVariant("L1"); //1.1
 
 		if (n.length <= 4)
-			return ChromaSounds.FLUTE.getVariant("F3"); //0.22s
-		else if (n.length <= 7)
-			return ChromaSounds.FLUTE.getVariant("F2"); //0.36s
-		else if (n.length <= 9)
-			return ChromaSounds.FLUTE.getVariant("F1"); //0.43s
+			return ChromaSounds.FLUTE.getVariant("F6"); //0.2
+		else if (n.length <= 6)
+			return ChromaSounds.FLUTE.getVariant("F5"); //0.32
+		else if (n.length <= 8)
+			return ChromaSounds.FLUTE.getVariant("F4"); //0.47
+		else if (n.length <= 10)
+			return ChromaSounds.FLUTE.getVariant("F3"); //0.52
+		else if (n.length <= 12)
+			return ChromaSounds.FLUTE.getVariant("F2"); //0.61
+		else if (n.length <= 14)
+			return ChromaSounds.FLUTE.getVariant("F1"); //0.7
 
-		return ChromaSounds.FLUTE; //0.65s = 13t -> 10-19
+		return ChromaSounds.FLUTE; //0.91 = 18
 	}
 
 	@SideOnly(Side.CLIENT)

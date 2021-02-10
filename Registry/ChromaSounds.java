@@ -118,7 +118,7 @@ public enum ChromaSounds implements ChromaSound, DynamicSound, VariableSound {
 	ARTEALLOYHIT("artealloy-hit2"),
 	LOWAMBIENT("lowambient_fade"),
 	LOWAMBIENT_SHORT("lowambient_fade_short"),
-	FLUTE("flute/flute", true),
+	FLUTE("flute/flute", false),
 	;
 
 	public static final ChromaSounds[] soundList = values();
@@ -315,7 +315,7 @@ public enum ChromaSounds implements ChromaSound, DynamicSound, VariableSound {
 	public SoundVariant getVariant(String name) {
 		return variants.get(name);
 	}
-	
+
 	public float getRangeInterval() { // the steps need to be TWO octaves apart when using the default of 4!
 		if (this == FLUTE)
 			return 2;
@@ -326,10 +326,13 @@ public enum ChromaSounds implements ChromaSound, DynamicSound, VariableSound {
 		FLUTE.createVariant("F1");
 		FLUTE.createVariant("F2");
 		FLUTE.createVariant("F3");
+		FLUTE.createVariant("F4");
+		FLUTE.createVariant("F5");
+		FLUTE.createVariant("F6");
 		FLUTE.createVariant("L1");
 		FLUTE.createVariant("L2");
 		FLUTE.createVariant("L3");
-
+		/*
 		FLUTE.createVariant("F1_HI");
 		FLUTE.createVariant("F2_HI");
 		FLUTE.createVariant("F3_HI");
@@ -342,7 +345,7 @@ public enum ChromaSounds implements ChromaSound, DynamicSound, VariableSound {
 		FLUTE.createVariant("F3_LO");
 		FLUTE.createVariant("L1_LO");
 		FLUTE.createVariant("L2_LO");
-		FLUTE.createVariant("L3_LO");
+		FLUTE.createVariant("L3_LO");*/
 
 		ORB.createVariant("PURE");
 		ORB.createVariant("PURE_HI");

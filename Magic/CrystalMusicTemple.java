@@ -208,7 +208,7 @@ public class CrystalMusicTemple {
 	@SideOnly(Side.CLIENT)
 	private void onNotePlayed(MusicKey note) {
 		playing.add(new ActiveNote(note));
-		renderBrightness = 4;
+		renderBrightness = 2;
 	}
 
 	@SideOnly(Side.CLIENT)
