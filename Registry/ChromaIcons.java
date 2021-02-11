@@ -44,6 +44,7 @@ public enum ChromaIcons implements IconEnum {
 	RIFT("rift"),
 	RIFTHALO("rift_halo"),
 	FADE(SpecialDayTracker.instance.loadXmasTextures() ? "fade_snowflake" : "fade"),
+	FADE_SNOW("fade_snowflake"),
 	FADE_BASICBLEND("fade_basic"),
 	FADE_GENTLE("fade_gentle"),
 	FADE_STAR("fade_star"),

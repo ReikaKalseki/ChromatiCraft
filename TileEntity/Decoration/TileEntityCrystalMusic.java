@@ -171,7 +171,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (!world.isRemote && track != null) {
-			if (isPlaying) {
+			if (isPlaying && world.getBlock(x, y+1, z) != Blocks.bedrock) {
 				this.play(world, x, y, z);
 			}
 		}
@@ -293,7 +293,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 		}
 
 		if (canPlay) {
-			temple.onNote(world, n.key, track);
+			temple.onNote(world, n.key, track, playTick);
 			ChromaSound s = this.getVoice(track, n);
 			float f = 1;
 			if (s == ChromaSounds.FLUTE || (s instanceof SoundVariant && ((SoundVariant)s).root == ChromaSounds.FLUTE))
@@ -348,17 +348,12 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 		return ChromaSounds.FLUTE; //0.91 = 18
 	}
 
-	@SideOnly(Side.CLIENT)
-	public void onTempleNote(MusicKey mk, int track) {
-		temple.onNote(worldObj, mk, track);
-	}
-
 	private boolean attentuate(World world, int x, int y, int z) {
 		return !temple.isComplete() && world.getBlock(x, y-1, z) != Blocks.quartz_block;//world.getBlock(x, y-1, z) != ChromaBlocks.RUNE.getBlockInstance() || world.getBlockMetadata(x, y-1, z) != CrystalElement.YELLOW.ordinal();
 	}
 
 	public boolean playCrystal(World world, int x, int y, int z, CrystalElement e, int length, MusicKey note) {
-		if (temple.isComplete()) {
+		if (temple.isComplete() && temple.isPlayingMelody()) {
 			return true;
 		}
 		Coordinate c = colorPositions.get(e).offset(xCoord, yCoord, zCoord);
@@ -440,6 +435,21 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void onTempleStart(NBTTagCompound tag) {
+		temple.onStart(tag);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void onTempleNote(MusicKey mk, int track, int tick) {
+		temple.onNote(worldObj, mk, track, tick);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void onTempleEnd() {
+		temple.onEnd();
 	}
 
 	@Override
@@ -532,17 +542,12 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 		super.writeSyncTag(NBT);
 
 		//NBT.setBoolean("pillar", hasPillars);
-
-		NBTTagCompound tag = new NBTTagCompound();
-		temple.writeSyncTag(tag);
-		NBT.setTag("structure", tag);
 	}
 
 	@Override
 	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 
-		temple.readSyncTag(NBT.getCompoundTag("structure"));
 		//hasPillars = NBT.getBoolean("pillar");
 	}
 
