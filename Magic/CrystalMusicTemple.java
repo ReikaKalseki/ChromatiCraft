@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.MusicScore.Note;
 import Reika.DragonAPI.Instantiable.MusicScore.ScoreTrack;
@@ -43,6 +44,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -187,8 +189,12 @@ public class CrystalMusicTemple {
 				this.onNotePlayed(m, tick);
 			}
 			else {
-				if (SongSections.getSectionAt(tick) == SongSections.TWO) {
+				SongSections sec = SongSections.getSectionAt(tick);
+				if (sec == SongSections.TWO) {
 					this.spillFluid(world);
+				}
+				if (sec.ordinal() >= SongSections.THREE.ordinal()) {
+
 				}
 				ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.MUSICTEMPLE.ordinal(), world, tileLocation, 256, m.ordinal(), track, tick);
 			}
@@ -208,6 +214,14 @@ public class CrystalMusicTemple {
 
 		for (Coordinate c : pitLocations) {
 			c.offset(tileLocation).setBlock(world, Blocks.air);
+		}
+
+		if (Loader.isModLoaded("pixelmon")) {
+
+		}
+
+		if (ModList.MYSTCRAFT.isLoaded()) {
+
 		}
 	}
 
@@ -257,8 +271,11 @@ public class CrystalMusicTemple {
 				}
 				break;
 			case TWO:
-				for (int i = 0; i < 6; i++)
-					particles.add(new Particle(ParticleTypes.PURPLE, i));
+				for (int i = 0; i < 6; i++) {
+					Particle p = new Particle(ParticleTypes.PURPLE, i);
+					particles.add(p);
+					p.angle = i*60;
+				}
 				break;
 			case THREE:
 				Iterator<Particle> it = particles.iterator();
@@ -285,11 +302,11 @@ public class CrystalMusicTemple {
 				double r = 7.5-5*ft;
 				for (Particle p : particles) {
 					if (p.type == ParticleTypes.PURPLE) {
-						double a = (t*dt+p.listIndex*120)%360D;
-						p.setRadialPosition(tileLocation.xCoord+0.5, tileLocation.zCoord+0.5, tileLocation.yCoord-1.75, a, r);
+						p.angleSpeed = dt*0.5;
+						p.setRadialPosition(tileLocation.xCoord+0.5, tileLocation.zCoord+0.5, tileLocation.yCoord-1.75, p.angle, r);
 						p.lscale = 1.5F;
 						p.gscale = 1.5F;
-						p.size = 2F;
+						p.size = 1.75F;
 						p.colorDelay = 6;
 					}
 				}

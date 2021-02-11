@@ -29,7 +29,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockTempleLifewater extends BlockFluidClassic {
 
-	public IIcon[] theIcon = new IIcon[2];
+	private final IIcon[][] theIcon = new IIcon[2][2];
 
 	public BlockTempleLifewater(Fluid fluid, Material material) {
 		super(fluid, material);
@@ -75,7 +75,10 @@ public class BlockTempleLifewater extends BlockFluidClassic {
 
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
-		theIcon = new IIcon[]{ico.registerIcon("chromaticraft:fluid/lifewater_still"), ico.registerIcon("chromaticraft:fluid/lifewater_flow")};
+		theIcon[0][0] = ico.registerIcon("chromaticraft:fluid/lifewater_still");
+		theIcon[0][1] = ico.registerIcon("chromaticraft:fluid/lifewater_flow");
+		theIcon[1][0] = ico.registerIcon("chromaticraft:fluid/lifewater_still_trans");
+		theIcon[1][1] = ico.registerIcon("chromaticraft:fluid/lifewater_flow_trans");
 	}
 
 	@Override
@@ -101,8 +104,16 @@ public class BlockTempleLifewater extends BlockFluidClassic {
 	}
 
 	@Override
+	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int s) {
+		boolean flow = s > 1;
+		Material mat = iba.getBlock(x, y-1, z).getMaterial();
+		boolean trans = mat == Material.ground || mat == Material.grass || mat == Material.clay || mat == Material.sand;
+		return theIcon[trans ? 1 : 0][flow ? 1 : 0];
+	}
+
+	@Override
 	public IIcon getIcon(int s, int meta) {
-		return s <= 1 ? theIcon[0] : theIcon[1];
+		return s <= 1 ? theIcon[0][0] : theIcon[0][1];
 	}
 
 }

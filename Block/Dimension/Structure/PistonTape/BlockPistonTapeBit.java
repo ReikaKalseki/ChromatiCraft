@@ -106,7 +106,10 @@ public class BlockPistonTapeBit extends BlockDimensionStructure implements SemiU
 	}
 
 	public static RGBColorData getColor(IBlockAccess iba, int x, int y, int z) {
-		int meta = iba.getBlockMetadata(x, y, z);
+		return getColor(iba.getBlockMetadata(x, y, z));
+	}
+
+	public static RGBColorData getColor(int meta) {
 		if (meta < 6 && meta%2 == 0)
 			return new RGBColorData(true, true, true);
 		boolean r = true;

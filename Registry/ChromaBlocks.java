@@ -525,6 +525,8 @@ public enum ChromaBlocks implements BlockEnum {
 			case PISTONTARGET:
 			case PISTONCONTROL:
 				return StatCollector.translateToLocal(this.getBasicName()+"."+meta);
+			case PISTONBIT:
+				return this.getBasicName()+" ("+ReikaStringParser.capFirstChar(BlockPistonTapeBit.getColor(meta).getName())+")";
 			default:
 				return "";
 		}
@@ -583,7 +585,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case TRAPFLOOR:
 			case BEDROCKCRACK:
 			case RFPOD:
-			case PISTONBIT:
+				//case PISTONBIT:
 			case RAYBLEND:
 			case INJECTORAUX:
 				return false;
