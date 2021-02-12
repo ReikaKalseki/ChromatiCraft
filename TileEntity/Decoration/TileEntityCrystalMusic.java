@@ -58,7 +58,6 @@ import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Interfaces.TileEntity.TriggerableAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
@@ -577,7 +576,6 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 		if (isPlaying)
 			return;
 		temple.checkStructure(worldObj);
-		ReikaJavaLibrary.pConsole(temple.isComplete());
 	}
 
 	@Override

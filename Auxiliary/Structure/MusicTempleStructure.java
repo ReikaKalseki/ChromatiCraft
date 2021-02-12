@@ -12,8 +12,8 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Base.ChromaStructureBase;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
-import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone.Variants;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
@@ -25,7 +25,7 @@ import Reika.DragonAPI.Libraries.ReikaDirectionHelper.CubeDirections;
 
 public class MusicTempleStructure extends ChromaStructureBase {
 
-	private static final Block fluid = ChromaBlocks.LIFEWATER.getBlockInstance();
+	private static final Block fluid = Blocks.water;//ChromaBlocks.LIFEWATER.getBlockInstance();
 
 	private static final HashMap<Coordinate, BlockKey>[] pillars = new HashMap[8];
 
@@ -50,7 +50,7 @@ public class MusicTempleStructure extends ChromaStructureBase {
 		}
 	}
 
-	private static Coordinate getPillarRoot(int idx) {
+	public static Coordinate getPillarRoot(int idx) {
 		CubeDirections dir = CubeDirections.list[idx];
 		int dd = dir.isCardinal() ? 8 : 6;
 		return new Coordinate(dir.directionX*dd, -3, dir.directionZ*dd);
@@ -112,8 +112,8 @@ public class MusicTempleStructure extends ChromaStructureBase {
 		Block cliff = ChromaBlocks.CLIFFSTONE.getBlockInstance();
 		int cliffm = Variants.STONE.getMeta(false, false);
 
-		Block ringB = ChromaBlocks.DIMGEN.getBlockInstance();
-		int ringM = DimDecoTypes.GLOWCAVE.ordinal();
+		Block ringB = ChromaBlocks.STRUCTSHIELD.getBlockInstance();//Blocks.lapis_block;//ChromaBlocks.DIMGEN.getBlockInstance();
+		int ringM = BlockType.CLOAK.ordinal();//0;//DimDecoTypes.GLOWCAVE.ordinal();
 
 		world.setBlock(x + 0, y + 0, z + 8, cliff, cliffm);
 		world.setBlock(x + 0, y + 0, z + 9, cliff, cliffm);
@@ -670,16 +670,7 @@ public class MusicTempleStructure extends ChromaStructureBase {
 		world.setBlock(x + 22, y + 0, z + 13, cliff, cliffm);
 		world.setBlock(x + 22, y + 0, z + 14, cliff, cliffm);
 
-		world.setBlock(x + 9, y + 1, z + 11, fluid, 1);
-		world.setBlock(x + 11, y + 1, z + 9, fluid, 1);
-		world.setBlock(x + 11, y + 1, z + 13, fluid, 1);
-		world.setBlock(x + 13, y + 1, z + 11, fluid, 1);
-
-		world.addBlock(x + 9, y + 1, z + 11, Blocks.quartz_block);
-		world.addBlock(x + 11, y + 1, z + 9, Blocks.quartz_block);
-		world.addBlock(x + 11, y + 1, z + 13, Blocks.quartz_block);
-		world.addBlock(x + 13, y + 1, z + 11, Blocks.quartz_block);
-
+		/*
 		world.setBlock(x + 11, y + 2, z + 11, fluid);
 		world.setBlock(x + 11, y + 2, z + 10, fluid, 1);
 		world.setBlock(x + 11, y + 2, z + 12, fluid, 1);
@@ -689,6 +680,32 @@ public class MusicTempleStructure extends ChromaStructureBase {
 		world.setBlock(x + 13, y + 2, z + 11, fluid, 2);
 		world.setBlock(x + 9, y + 2, z + 11, fluid, 2);
 		world.setBlock(x + 11, y + 2, z + 9, fluid, 2);
+
+		int mf = fluid == ChromaBlocks.LIFEWATER.getBlockInstance() ? 1 : 10;
+		world.setBlock(x + 9, y + 1, z + 11, fluid, mf);
+		world.setBlock(x + 11, y + 1, z + 9, fluid, mf);
+		world.setBlock(x + 11, y + 1, z + 13, fluid, mf);
+		world.setBlock(x + 13, y + 1, z + 11, fluid, mf);
+		 */
+
+		this.setEmpty(world, x + 11, y + 2, z + 11);
+		this.setEmpty(world, x + 11, y + 2, z + 10);
+		this.setEmpty(world, x + 11, y + 2, z + 12);
+		this.setEmpty(world, x + 12, y + 2, z + 11);
+		this.setEmpty(world, x + 10, y + 2, z + 11);
+		this.setEmpty(world, x + 11, y + 2, z + 13);
+		this.setEmpty(world, x + 13, y + 2, z + 11);
+		this.setEmpty(world, x + 9, y + 2, z + 11);
+		this.setEmpty(world, x + 11, y + 2, z + 9);
+		this.setEmpty(world, x + 9, y + 1, z + 11);
+		this.setEmpty(world, x + 11, y + 1, z + 9);
+		this.setEmpty(world, x + 11, y + 1, z + 13);
+		this.setEmpty(world, x + 13, y + 1, z + 11);
+
+		world.addBlock(x + 9, y + 1, z + 11, Blocks.stonebrick);
+		world.addBlock(x + 11, y + 1, z + 9, Blocks.stonebrick);
+		world.addBlock(x + 11, y + 1, z + 13, Blocks.stonebrick);
+		world.addBlock(x + 13, y + 1, z + 11, Blocks.stonebrick);
 
 		this.setEmpty(world, x + 10, y + 1, z + 2);
 		this.setEmpty(world, x + 10, y + 1, z + 3);

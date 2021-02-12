@@ -37,7 +37,6 @@ import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Interfaces.ColorController;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper;
@@ -51,7 +50,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class CrystalMusicTemple {
 
 	private static final ExpectedMelody melody = new ExpectedMelody();
+	private static final Coordinate fluidSource = new Coordinate(0, -2, 0);
 	private static final Collection<Coordinate> pitLocations = new ArrayList();
+	private static final Collection<Coordinate> fluidStartLocations = new ArrayList();
 
 	static {
 		try(InputStream in = ChromatiCraft.class.getResourceAsStream("Resources/templesong.dat")) {
@@ -61,10 +62,15 @@ public class CrystalMusicTemple {
 			e.printStackTrace();
 		}
 
-		pitLocations.add(new Coordinate(2, -3, 0));
-		pitLocations.add(new Coordinate(-2, -3, 0));
-		pitLocations.add(new Coordinate(0, -3, 2));
-		pitLocations.add(new Coordinate(0, -3, -2));
+		fluidStartLocations.add(fluidSource);
+		for (int i = 2; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			pitLocations.add(new Coordinate(dir.offsetX*2, -3, dir.offsetZ*2));
+
+			fluidStartLocations.add(new Coordinate(dir.offsetX*1, -2, dir.offsetZ*1));
+			fluidStartLocations.add(new Coordinate(dir.offsetX*2, -2, dir.offsetZ*2));
+			fluidStartLocations.add(new Coordinate(dir.offsetX*2, -3, dir.offsetZ*2));
+		}
 	}
 
 	private final LinkedList<MusicKey>[] tracks = new LinkedList[16];
@@ -74,7 +80,8 @@ public class CrystalMusicTemple {
 	private final ArrayList<ActiveNote> playing = new ArrayList();
 	private final ArrayList<Particle> particles = new ArrayList();
 	private SongSections lastSection;
-	private int playTick = -1;
+	private int lastNoteTick = -1;
+	private long musicStartTick;
 
 	private Coordinate tileLocation;
 	private boolean isStructureComplete;
@@ -149,6 +156,11 @@ public class CrystalMusicTemple {
 				e.printStackTrace();
 			}
 			if (isCorrectMelody) {
+				/*
+				for (Coordinate c : fluidStartLocations) {
+					c.offset(tileLocation).setBlock(world, ChromaBlocks.LIFEWATER.getBlockInstance(), c.getBlockMetadata(world));
+				}*/
+				musicStartTick = world.getTotalWorldTime();
 				NBTTagCompound tag = new NBTTagCompound();
 				this.writeStartData(tag);
 				ReikaPacketHelper.sendNBTPacket(ChromatiCraft.packetChannel, ChromaPackets.MUSICTEMPLESTART.ordinal(), tag, new PacketTarget.RadiusTarget(world, tileLocation, 256));
@@ -157,10 +169,40 @@ public class CrystalMusicTemple {
 		}
 	}
 
-	private void spillFluid(World world) {
+	private void spillFluid(World world, SongSections s) {
+		/*
 		for (Coordinate c : pitLocations) {
 			c.offset(tileLocation).setBlock(world, Blocks.stonebrick);
 		}
+		 */
+		/*
+		Coordinate c = fluidSource.offset(tileLocation);
+		//c.setBlock(world, ChromaBlocks.LIFEWATER.getBlockInstance(), 15);
+		for (int idx = 0; idx < 8; idx++) {
+			Coordinate c2 = structure.getPillarRoot(idx).offset(tileLocation);
+			for (int i = -1; i <= 1; i++) {
+				for (int k = -1; k <= 1; k++) {
+					if (i != 0 || k != 0) {
+						Coordinate c3 = c2.offset(i, 0, k);
+						int meta = c3.getBlockMetadata(world);
+						while (meta == 15) {
+							c3 = c3.offset(0, 1, 0);
+							meta = c3.getBlockMetadata(world);
+						}
+						if (c3.isEmpty(world) || c3.getBlock(world) == ChromaBlocks.LIFEWATER.getBlockInstance())
+							c3.setBlock(world, ChromaBlocks.LIFEWATER.getBlockInstance(), 1+meta);
+					}
+				}
+			}
+		}*/
+
+		/*
+		if (s.ordinal() >= SongSections.TWO.ordinal()) {
+			for (int i = 2; i < 6; i++) {
+				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+				c.offset(dir, 1).setBlock(world, ChromaBlocks.LIFEWATER.getBlockInstance(), 15);
+			}
+		}*/
 	}
 
 	private void setMelody(ScoreTrack track) {
@@ -185,13 +227,14 @@ public class CrystalMusicTemple {
 
 	public void onNote(World world, MusicKey m, int track, int tick) {
 		if (track == 0 && isStructureComplete && isCorrectMelody) {
+			lastNoteTick = tick;
 			if (world.isRemote) {
 				this.onNotePlayed(m, tick);
 			}
 			else {
-				SongSections sec = SongSections.getSectionAt(tick);
-				if (sec == SongSections.TWO) {
-					this.spillFluid(world);
+				SongSections sec = SongSections.getSectionAt(this.getTick(world));
+				if (sec.ordinal() >= SongSections.ONE.ordinal()) {
+					//this.spillFluid(world, sec);
 				}
 				if (sec.ordinal() >= SongSections.THREE.ordinal()) {
 
@@ -210,7 +253,7 @@ public class CrystalMusicTemple {
 	}
 
 	private void onSongComplete(World world) {
-		tileLocation.offset(0, -2, 0).setBlock(world, Blocks.air);
+		fluidSource.offset(tileLocation).setBlock(world, Blocks.air);
 
 		for (Coordinate c : pitLocations) {
 			c.offset(tileLocation).setBlock(world, Blocks.air);
@@ -246,12 +289,11 @@ public class CrystalMusicTemple {
 	private void onNotePlayed(MusicKey note, int tick) {
 		playing.add(new ActiveNote(note));
 		renderBrightness = 1.5F;
-		playTick = tick;
+		lastNoteTick = tick;
 	}
 
 	@SideOnly(Side.CLIENT)
 	private void onStartSection(SongSections s) {
-		ReikaJavaLibrary.pConsole("Started "+s);
 		switch(s) {
 			case INTRO:
 				particles.add(new Particle(ParticleTypes.RED, 0));
@@ -291,11 +333,15 @@ public class CrystalMusicTemple {
 	}
 
 	@SideOnly(Side.CLIENT)
-	private void updateParticles(SongSections s, float ptick) {
+	private void updateParticles(SongSections s, int tick, float ptick) {
 		double t = Minecraft.getMinecraft().theWorld.getTotalWorldTime()+ptick;//System.currentTimeMillis()/40D;
-		double ft = (playTick-s.startTick)/(float)(s.endTime()-s.startTick);
+		double ft = (tick-s.startTick)/(float)(s.endTime()-s.startTick);
 		switch(s) {
 			case INTRO:
+				float lf = ft >= 0.5 ? 1 : (float)(ft*2);
+				for (Particle p : particles) {
+					p.lscale = lf;
+				}
 				break;
 			case TWO:
 				double dt = 2+6*ft;
@@ -533,15 +579,16 @@ public class CrystalMusicTemple {
 
 	@SideOnly(Side.CLIENT)
 	public void render(float ptick) {
+		int playTick = this.getTick();
 		if (playTick == -1)
 			renderBrightness = Math.max(0, renderBrightness-0.0125F);
-		if (renderBrightness <= 0 || playTick < 0)
+		if (renderBrightness <= 0)
 			return;
-		SongSections sec = SongSections.getSectionAt(playTick);
+		SongSections sec = playTick < 0 ? SongSections.THREE : SongSections.getSectionAt(playTick);
 		if (sec != lastSection)
 			this.onStartSection(sec);
-		if (!Minecraft.getMinecraft().isGamePaused())
-			this.updateParticles(sec, ptick);
+		if (!Minecraft.getMinecraft().isGamePaused() && playTick >= 0)
+			this.updateParticles(sec, playTick, ptick);
 		lastSection = sec;
 		ReikaTextureHelper.bindTerrainTexture();
 		for (int i = 0; i < 8; i++) {
@@ -571,75 +618,107 @@ public class CrystalMusicTemple {
 			v5.setBrightness(240);
 			int c = ReikaColorAPI.mixColors(0x1ED88B, 0x0096FF, f);
 			v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(c, Math.min(1, renderBrightness)));
-			double o = 0.001;
-
-			int sx = 4;
-			int sy = 4;
 
 			Map<Coordinate, BlockKey> map = structure.getPillar(i);
+			for (int i2 = -r; i2 <= r; i2++) {
+				for (int j = -r; j <= r; j++) {
+					for (int k = -r; k <= r; k++) {
+						Coordinate c2 = new Coordinate(i2, j-2, k);
+						Coordinate c2b = c2.offset(tileLocation);
+						if (c2b.isEmpty(world))
+							continue;
+						if (c2b.getTaxicabDistanceTo(tileLocation) <= r) {
+							BlockKey bk = c2b.getBlockKey(world);
+							if (bk.blockID.getRenderType() == 0 || bk.blockID.renderAsNormalBlock() || bk.blockID.isOpaqueCube())
+								map.put(c2, bk);
+						}
+					}
+				}
+			}
 			for (Entry<Coordinate, BlockKey> e : map.entrySet()) {
 				//Coordinate c2 = e.getKey().offset(tileLocation);
 				Coordinate c2 = e.getKey();
 				BlockKey bk = e.getValue();
 				v5.addTranslation(c2.xCoord, c2.yCoord, c2.zCoord);
 
-				int x = c2.xCoord+tileLocation.xCoord;
-				int y = c2.yCoord+tileLocation.yCoord;
-				int z = c2.zCoord+tileLocation.zCoord;
-
-				double ux = ((x%sx)/(float)sx)*16;
-				double uy = (((y+z)%sy)/(float)sy)*16;
-
-				float u = ico.getInterpolatedU(ux);
-				float v = ico.getInterpolatedV(uy);
-				float du = ico.getInterpolatedU(ux+16D/sx);
-				float dv = ico.getInterpolatedV(uy+16D/sy);
-
-				if (bk.blockID.shouldSideBeRendered(world, x, y, z-1, ForgeDirection.NORTH.ordinal())) {
-					v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
-					v5.addVertexWithUV(1+o, 0-o, 0-o, du, v);
-					v5.addVertexWithUV(1+o, 1+o, 0-o, du, dv);
-					v5.addVertexWithUV(0-o, 1+o, 0-o, u, dv);
-				}
-
-				if (bk.blockID.shouldSideBeRendered(world, x, y, z+1, ForgeDirection.SOUTH.ordinal())) {
-					v5.addVertexWithUV(0-o, 1+o, 1+o, u, dv);
-					v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
-					v5.addVertexWithUV(1+o, 0-o, 1+o, du, v);
-					v5.addVertexWithUV(0-o, 0-o, 1+o, u, v);
-				}
-
-				if (bk.blockID.shouldSideBeRendered(world, x-1, y, z, ForgeDirection.WEST.ordinal())) {
-					v5.addVertexWithUV(0-o, 1+o, 0-o, u, dv);
-					v5.addVertexWithUV(0-o, 1+o, 1+o, du, dv);
-					v5.addVertexWithUV(0-o, 0-o, 1+o, du, v);
-					v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
-				}
-
-				if (bk.blockID.shouldSideBeRendered(world, x+1, y, z, ForgeDirection.EAST.ordinal())) {
-					v5.addVertexWithUV(1+o, 0-o, 0-o, u, v);
-					v5.addVertexWithUV(1+o, 0-o, 1+o, du, v);
-					v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
-					v5.addVertexWithUV(1+o, 1+o, 0-o, u, dv);
-				}
-
-				if (bk.blockID.shouldSideBeRendered(world, x, y+1, z, ForgeDirection.UP.ordinal())) {
-					v5.addVertexWithUV(0-o, 1+o, 0-o, u, v);
-					v5.addVertexWithUV(1+o, 1+o, 0-o, du, v);
-					v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
-					v5.addVertexWithUV(0-o, 1+o, 1+o, u, dv);
-				}
-
-				if (bk.blockID.shouldSideBeRendered(world, x, y-1, z, ForgeDirection.DOWN.ordinal())) {
-					v5.addVertexWithUV(0-o, 0-o, 1+o, u, dv);
-					v5.addVertexWithUV(1+o, 0-o, 1+o, du, dv);
-					v5.addVertexWithUV(1+o, 0-o, 0-o, du, v);
-					v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
-				}
+				this.renderAround(world, c2, bk, ico, v5);
 
 				v5.addTranslation(-c2.xCoord, -c2.yCoord, -c2.zCoord);
 			}
 			v5.draw();
+		}
+	}
+
+	private static class GlowingCoord {
+
+		private final Coordinate location;
+		private final BlockKey block;
+
+		private GlowingCoord(World world, Coordinate c) {
+			location = c;
+			block = c.getBlockKey(world);
+		}
+
+	}
+
+	private void renderAround(World world, Coordinate c2, BlockKey bk, IIcon ico, Tessellator v5) {
+
+		int x = c2.xCoord+tileLocation.xCoord;
+		int y = c2.yCoord+tileLocation.yCoord;
+		int z = c2.zCoord+tileLocation.zCoord;
+
+		double o = 0.001;
+		int sx = 4;
+		int sy = 4;
+
+		double ux = ((x%sx)/(float)sx)*16;
+		double uy = (((y+z)%sy)/(float)sy)*16;
+
+		float u = ico.getInterpolatedU(ux);
+		float v = ico.getInterpolatedV(uy);
+		float du = ico.getInterpolatedU(ux+16D/sx);
+		float dv = ico.getInterpolatedV(uy+16D/sy);
+
+		if (bk.blockID.shouldSideBeRendered(world, x, y, z-1, ForgeDirection.NORTH.ordinal())) {
+			v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
+			v5.addVertexWithUV(1+o, 0-o, 0-o, du, v);
+			v5.addVertexWithUV(1+o, 1+o, 0-o, du, dv);
+			v5.addVertexWithUV(0-o, 1+o, 0-o, u, dv);
+		}
+
+		if (bk.blockID.shouldSideBeRendered(world, x, y, z+1, ForgeDirection.SOUTH.ordinal())) {
+			v5.addVertexWithUV(0-o, 1+o, 1+o, u, dv);
+			v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
+			v5.addVertexWithUV(1+o, 0-o, 1+o, du, v);
+			v5.addVertexWithUV(0-o, 0-o, 1+o, u, v);
+		}
+
+		if (bk.blockID.shouldSideBeRendered(world, x-1, y, z, ForgeDirection.WEST.ordinal())) {
+			v5.addVertexWithUV(0-o, 1+o, 0-o, u, dv);
+			v5.addVertexWithUV(0-o, 1+o, 1+o, du, dv);
+			v5.addVertexWithUV(0-o, 0-o, 1+o, du, v);
+			v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
+		}
+
+		if (bk.blockID.shouldSideBeRendered(world, x+1, y, z, ForgeDirection.EAST.ordinal())) {
+			v5.addVertexWithUV(1+o, 0-o, 0-o, u, v);
+			v5.addVertexWithUV(1+o, 0-o, 1+o, du, v);
+			v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
+			v5.addVertexWithUV(1+o, 1+o, 0-o, u, dv);
+		}
+
+		if (bk.blockID.shouldSideBeRendered(world, x, y+1, z, ForgeDirection.UP.ordinal())) {
+			v5.addVertexWithUV(0-o, 1+o, 0-o, u, v);
+			v5.addVertexWithUV(1+o, 1+o, 0-o, du, v);
+			v5.addVertexWithUV(1+o, 1+o, 1+o, du, dv);
+			v5.addVertexWithUV(0-o, 1+o, 1+o, u, dv);
+		}
+
+		if (bk.blockID.shouldSideBeRendered(world, x, y-1, z, ForgeDirection.DOWN.ordinal())) {
+			v5.addVertexWithUV(0-o, 0-o, 1+o, u, dv);
+			v5.addVertexWithUV(1+o, 0-o, 1+o, du, dv);
+			v5.addVertexWithUV(1+o, 0-o, 0-o, du, v);
+			v5.addVertexWithUV(0-o, 0-o, 0-o, u, v);
 		}
 	}
 
@@ -655,7 +734,7 @@ public class CrystalMusicTemple {
 		particles.clear();
 		playing.clear();
 		lastSection = null;
-		playTick = 0;
+		musicStartTick = Minecraft.getMinecraft().theWorld.getTotalWorldTime();
 		isCorrectMelody = tag.getBoolean("song");
 		isStructureComplete = tag.getBoolean("complete");
 		tileLocation = Coordinate.readFromNBT("tile", tag);
@@ -664,8 +743,18 @@ public class CrystalMusicTemple {
 	@SideOnly(Side.CLIENT)
 	public void onEnd() {
 		particles.clear();
-		playTick = -1;
+		lastNoteTick = -1;
+		musicStartTick = -1;
 		lastSection = null;
+	}
+
+	@SideOnly(Side.CLIENT)
+	private int getTick() {
+		return this.getTick(Minecraft.getMinecraft().theWorld);
+	}
+
+	private int getTick(World world) {
+		return musicStartTick >= 0 ? (int)(world.getTotalWorldTime()-musicStartTick) : -1;
 	}
 
 	private static class ActiveNote {

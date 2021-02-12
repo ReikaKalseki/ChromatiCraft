@@ -258,7 +258,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	public static final Fluid ender = new Fluid("ender").setViscosity(2000).setDensity(1500).setTemperature(270).setUnlocalizedName("endere").setLuminosity(4);
 	public static final Fluid luma = new Fluid("luma").setViscosity(50).setDensity(1).setTemperature(250);
 	public static final Fluid lumen = new Fluid("lumen").setViscosity(500).setDensity(300).setTemperature(300).setLuminosity(15);
-	public static final Fluid lifewater = new Fluid("lifewater").setViscosity(400).setDensity(700).setTemperature(300);
+	//public static final Fluid lifewater = new Fluid("lifewater").setViscosity(400).setDensity(700).setTemperature(300);
 
 	public static final Block[] blocks = new Block[ChromaBlocks.blockList.length];
 	public static final Item[] items = new Item[ChromaItems.itemList.length];
@@ -395,7 +395,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		lumen.setBlock(ChromaBlocks.MOLTENLUMEN.getBlockInstance());
 		ender.setBlock(ChromaBlocks.ENDER.getBlockInstance());
 		luma.setBlock(ChromaBlocks.LUMA.getBlockInstance());
-		lifewater.setBlock(ChromaBlocks.LIFEWATER.getBlockInstance());
+		//lifewater.setBlock(ChromaBlocks.LIFEWATER.getBlockInstance());
 
 		IDCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.RAINBOWFOREST.getValue(), BiomeRainbowForest.class);
 		IDCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.ENDERFOREST.getValue(), BiomeEnderForest.class);
@@ -953,7 +953,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		FluidRegistry.registerFluid(ender);
 		FluidRegistry.registerFluid(luma);
 		FluidRegistry.registerFluid(lumen);
-		FluidRegistry.registerFluid(lifewater);
+		//FluidRegistry.registerFluid(lifewater);
 	}
 
 	private static void setupLiquidContainers() {
@@ -964,7 +964,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			FluidContainerRegistry.registerFluidContainer(new FluidStack(ender, FluidContainerRegistry.BUCKET_VOLUME), ChromaItems.BUCKET.getStackOfMetadata(1), new ItemStack(Items.bucket));
 		FluidContainerRegistry.registerFluidContainer(new FluidStack(crystal, FluidContainerRegistry.BUCKET_VOLUME), ChromaItems.BUCKET.getStackOfMetadata(2), new ItemStack(Items.bucket));
 		FluidContainerRegistry.registerFluidContainer(new FluidStack(lumen, FluidContainerRegistry.BUCKET_VOLUME), ChromaItems.BUCKET.getStackOfMetadata(4), new ItemStack(Items.bucket));
-		FluidContainerRegistry.registerFluidContainer(new FluidStack(lifewater, FluidContainerRegistry.BUCKET_VOLUME), ChromaItems.BUCKET.getStackOfMetadata(5), new ItemStack(Items.bucket));
+		//FluidContainerRegistry.registerFluidContainer(new FluidStack(lifewater, FluidContainerRegistry.BUCKET_VOLUME), ChromaItems.BUCKET.getStackOfMetadata(5), new ItemStack(Items.bucket));
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -991,7 +991,7 @@ public class ChromatiCraft extends DragonAPIMod {
 				luma.setIcons(ico.registerIcon("ChromatiCraft:fluid/aether/aether_full"), ico.registerIcon("ChromatiCraft:fluid/aether/aether_flow2"));
 				//aether.setFlowingIcon(ico.registerIcon("ChromatiCraft:fluid/flowingender"));
 
-				lifewater.setIcons(ico.registerIcon("ChromatiCraft:fluid/lifewater"), ico.registerIcon("ChromatiCraft:fluid/aether/lifewater_flow"));
+				//lifewater.setIcons(ico.registerIcon("ChromatiCraft:fluid/lifewater_still_trans"), ico.registerIcon("ChromatiCraft:fluid/lifewater_flow_trans"));
 
 				for (int i = 0; i < CrystalElement.elements.length; i++) {
 					CrystalElement.elements[i].setIcons(event.map);

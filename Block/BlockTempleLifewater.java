@@ -18,25 +18,24 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fluids.BlockFluidClassic;
+import net.minecraftforge.fluids.BlockFluidFinite;
 import net.minecraftforge.fluids.Fluid;
-
-import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class BlockTempleLifewater extends BlockFluidClassic {
+public class BlockTempleLifewater extends BlockFluidFinite {
 
 	private final IIcon[][] theIcon = new IIcon[2][2];
 
 	public BlockTempleLifewater(Fluid fluid, Material material) {
 		super(fluid, material);
-		this.setQuantaPerBlock(11);
+		//this.setQuantaPerBlock(11);
+		this.setQuantaPerBlock(16);
 	}
 
-	@Override
+	//@Override
 	protected boolean canFlowInto(IBlockAccess world, int x, int y, int z) {
 		Block b = world.getBlock(x, y, z);
 		return b == this || b.isAir(world, x, y, z);
@@ -51,7 +50,7 @@ public class BlockTempleLifewater extends BlockFluidClassic {
 	public boolean displaceIfPossible(World world, int x, int y, int z) {
 		return this.canDisplace(world, x, y, z) ? super.displaceIfPossible(world, x, y, z) : false;
 	}
-
+	/*
 	@Override
 	protected boolean[] getOptimalFlowDirections(World world, int x, int y, int z) {
 		return ReikaArrayHelper.getTrueArray(4);
@@ -67,7 +66,7 @@ public class BlockTempleLifewater extends BlockFluidClassic {
 		//ReikaJavaLibrary.pConsole(b+ " > "+quantaPerBlock);
 		super.flowIntoBlock(world, x, y, z, meta);
 	}
-
+	 */
 	@Override
 	public int getQuantaValue(IBlockAccess world, int x, int y, int z) {
 		return super.getQuantaValue(world, x, y, z);
@@ -107,7 +106,7 @@ public class BlockTempleLifewater extends BlockFluidClassic {
 	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int s) {
 		boolean flow = s > 1;
 		Material mat = iba.getBlock(x, y-1, z).getMaterial();
-		boolean trans = mat == Material.ground || mat == Material.grass || mat == Material.clay || mat == Material.sand;
+		boolean trans = true;//mat == Material.ground || mat == Material.grass || mat == Material.clay || mat == Material.sand;
 		return theIcon[trans ? 1 : 0][flow ? 1 : 0];
 	}
 

@@ -73,6 +73,7 @@ import net.minecraftforge.client.event.sound.PlaySoundEvent17;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.fluids.FluidRegistry;
 
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHotkeys;
@@ -161,6 +162,7 @@ import Reika.DragonAPI.Instantiable.Event.Client.GetMouseoverEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.HotbarKeyEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.ItemEffectRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.LightmapEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.LiquidBlockIconEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.NightVisionBrightnessEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.PlayMusicEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.RenderBlockAtPosEvent;
@@ -256,7 +258,17 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 			}
 		}
 	}
-
+	/*
+	@SubscribeEvent
+	public void retextureMusicTempleWater(LiquidBlockIconEvent evt) {
+		if (true) {
+			if (evt.originalIcon == FluidRegistry.WATER.getFlowingIcon())
+				evt.icon = ChromatiCraft.lifewater.getFlowingIcon();
+			else if (evt.originalIcon == FluidRegistry.WATER.getStillIcon())
+				evt.icon = ChromatiCraft.lifewater.getStillIcon();
+		}
+	}
+	 */
 	@SubscribeEvent
 	public void overenchantedTools(ItemStackUpdateEvent evt) {
 		if (evt.held && evt.holder == Minecraft.getMinecraft().thePlayer && evt.item.stackTagCompound != null && evt.item.stackTagCompound.getBoolean(ChromaEnchants.OVERENCHANT_TAG)) {

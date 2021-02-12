@@ -21,6 +21,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.BlockFluidFinite;
 
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -83,9 +84,11 @@ public class ItemChromaBucket extends ItemChromaTool {
 			if (!ReikaWorldHelper.softBlocks(world, x, y, z) && ReikaWorldHelper.getMaterial(world, x, y, z) != Material.water && ReikaWorldHelper.getMaterial(world, x, y, z) != Material.lava)
 				return false;
 		}
-		if (world.getBlock(x, y, z) == this.getBlock(is) && world.getBlockMetadata(x, y, z) == 0)
+		Block fb = this.getBlock(is);
+		int m = fb instanceof BlockFluidFinite ? /*((BlockFluidFinite)fb).quantaPerBlock-1*/15 : 0;
+		if (world.getBlock(x, y, z) == fb && world.getBlockMetadata(x, y, z) == m)
 			return false;
-		world.setBlock(x, y, z, this.getBlock(is));
+		world.setBlock(x, y, z, fb, m, 3);
 		/*
 		if (is.getItemDamage() >= 2) {
 			TileEntityChroma te = (TileEntityChroma)world.getTileEntity(x, y, z);
@@ -112,8 +115,8 @@ public class ItemChromaBucket extends ItemChromaTool {
 				return ChromaBlocks.LUMA.getBlockInstance();
 			case 4:
 				return ChromaBlocks.MOLTENLUMEN.getBlockInstance();
-			case 5:
-				return ChromaBlocks.LIFEWATER.getBlockInstance();
+				//case 5:
+				//	return ChromaBlocks.LIFEWATER.getBlockInstance();
 			default:
 				return Blocks.air;
 		}
