@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
@@ -79,6 +80,7 @@ public class CrystalMusicTemple {
 
 	private final ArrayList<ActiveNote> playing = new ArrayList();
 	private final ArrayList<Particle> particles = new ArrayList();
+	private final HashSet<GlowingCoord> glowingCoords = new HashSet();
 	private SongSections lastSection;
 	private int lastNoteTick = -1;
 	private long musicStartTick;
@@ -290,6 +292,26 @@ public class CrystalMusicTemple {
 		playing.add(new ActiveNote(note));
 		renderBrightness = 1.5F;
 		lastNoteTick = tick;
+
+		if (!glowingCoords.isEmpty()) {
+			World world = Minecraft.getMinecraft().theWorld;
+			int n = SongSections.getSectionAt(tick).ordinal()-SongSections.TWO.ordinal()+1;
+			for (int i = 0; i < n; i++) {
+				HashSet<GlowingCoord> add = new HashSet();
+				for (GlowingCoord gc : glowingCoords) {
+					for (Coordinate c : gc.location.getAdjacentCoordinates()) {
+						if (c.isEmpty(world) || c.yCoord > gc.location.yCoord || c.yCoord > tileLocation.yCoord || !c.isWithinSquare(tileLocation, 128))
+							continue;
+						require exposed (renderable) side
+						Block b = c.getBlock(world);
+						if (b.getRenderType() == 0 || b.isOpaqueCube() || b.renderAsNormalBlock()) {
+							add.add(new GlowingCoord(world, c, gc.depth+1));
+						}
+					}
+				}
+				glowingCoords.addAll(add);
+			}
+		}
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -313,6 +335,7 @@ public class CrystalMusicTemple {
 				}
 				break;
 			case TWO:
+				glowingCoords.add(new GlowingCoord(Minecraft.getMinecraft().theWorld, tileLocation.offset(0, -1, 0)));
 				for (int i = 0; i < 6; i++) {
 					Particle p = new Particle(ParticleTypes.PURPLE, i);
 					particles.add(p);
@@ -610,31 +633,17 @@ public class CrystalMusicTemple {
 
 		World world = Minecraft.getMinecraft().theWorld;
 
+		Tessellator v5 = Tessellator.instance;
+		IIcon ico = ChromaIcons.CAUSTICS_CRYSTAL.getIcon();
+		v5.startDrawingQuads();
+		v5.setBrightness(240);
+
 		for (int i = 0; i < 8; i++) {
 			float f = renderActivity[i];
-			Tessellator v5 = Tessellator.instance;
-			IIcon ico = ChromaIcons.CAUSTICS_CRYSTAL.getIcon();
-			v5.startDrawingQuads();
-			v5.setBrightness(240);
 			int c = ReikaColorAPI.mixColors(0x1ED88B, 0x0096FF, f);
 			v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(c, Math.min(1, renderBrightness)));
 
 			Map<Coordinate, BlockKey> map = structure.getPillar(i);
-			for (int i2 = -r; i2 <= r; i2++) {
-				for (int j = -r; j <= r; j++) {
-					for (int k = -r; k <= r; k++) {
-						Coordinate c2 = new Coordinate(i2, j-2, k);
-						Coordinate c2b = c2.offset(tileLocation);
-						if (c2b.isEmpty(world))
-							continue;
-						if (c2b.getTaxicabDistanceTo(tileLocation) <= r) {
-							BlockKey bk = c2b.getBlockKey(world);
-							if (bk.blockID.getRenderType() == 0 || bk.blockID.renderAsNormalBlock() || bk.blockID.isOpaqueCube())
-								map.put(c2, bk);
-						}
-					}
-				}
-			}
 			for (Entry<Coordinate, BlockKey> e : map.entrySet()) {
 				//Coordinate c2 = e.getKey().offset(tileLocation);
 				Coordinate c2 = e.getKey();
@@ -645,8 +654,18 @@ public class CrystalMusicTemple {
 
 				v5.addTranslation(-c2.xCoord, -c2.yCoord, -c2.zCoord);
 			}
-			v5.draw();
 		}
+
+		v5.addTranslation(-tileLocation.xCoord, -tileLocation.yCoord, -tileLocation.zCoord);
+		for (GlowingCoord g : glowingCoords) {
+			v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(0x00ff00, Math.min(1, renderBrightness*0.2F*g.getRenderBrightness())));
+			v5.addTranslation(g.location.xCoord, g.location.yCoord, g.location.zCoord);
+			this.renderAround(world, g.location, g.block, ico, v5);
+			v5.addTranslation(-g.location.xCoord, -g.location.yCoord, -g.location.zCoord);
+		}
+		v5.addTranslation(tileLocation.xCoord, tileLocation.yCoord, tileLocation.zCoord);
+
+		v5.draw();
 	}
 
 	private static class GlowingCoord {
@@ -657,6 +676,25 @@ public class CrystalMusicTemple {
 		private GlowingCoord(World world, Coordinate c) {
 			location = c;
 			block = c.getBlockKey(world);
+		}
+
+		@Override
+		public int hashCode() {
+			return location.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o instanceof GlowingCoord && ((GlowingCoord)o).location.equals(location);
+		}
+
+		@Override
+		public String toString() {
+			return block.toString()+" @ "+location.toString();
+		}
+
+		public float getRenderBrightness() {
+			return depth < 32 ? 1 : 1-(depth-32)/64F;
 		}
 
 	}
@@ -733,6 +771,7 @@ public class CrystalMusicTemple {
 	public void onStart(NBTTagCompound tag) {
 		particles.clear();
 		playing.clear();
+		glowingCoords.clear();
 		lastSection = null;
 		musicStartTick = Minecraft.getMinecraft().theWorld.getTotalWorldTime();
 		isCorrectMelody = tag.getBoolean("song");
