@@ -62,6 +62,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -541,6 +542,9 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 		super.writeSyncTag(NBT);
 
 		//NBT.setBoolean("pillar", hasPillars);
+		NBTTagCompound tag = new NBTTagCompound();
+		temple.writeSyncData(tag);
+		NBT.setTag("structure", tag);
 	}
 
 	@Override
@@ -548,6 +552,8 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 		super.readSyncTag(NBT);
 
 		//hasPillars = NBT.getBoolean("pillar");
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+			temple.readSyncData(NBT.getCompoundTag("structure"));
 	}
 
 	@Override
@@ -576,6 +582,8 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 		if (isPlaying)
 			return;
 		temple.checkStructure(worldObj);
+
+		this.syncAllData(false);
 	}
 
 	@Override
