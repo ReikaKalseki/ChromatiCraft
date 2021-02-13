@@ -85,6 +85,27 @@ public class MusicTempleStructure extends ChromaStructureBase {
 		array.addBlock(ctr.xCoord-1, ctr.yCoord, ctr.zCoord, Blocks.lever);
 		array.addBlock(ctr.xCoord, ctr.yCoord, ctr.zCoord+1, Blocks.lever);
 		array.addBlock(ctr.xCoord, ctr.yCoord, ctr.zCoord-1, Blocks.lever);
+
+		int x = ctr.xCoord-11;
+		int y = ctr.yCoord-4;
+		int z = ctr.zCoord-11;
+		array.setBlock(x + 11, y + 2, z + 11, fluid);
+		/*
+		array.setBlock(x + 11, y + 2, z + 10, fluid, 1);
+		array.setBlock(x + 11, y + 2, z + 12, fluid, 1);
+		array.setBlock(x + 12, y + 2, z + 11, fluid, 1);
+		array.setBlock(x + 10, y + 2, z + 11, fluid, 1);
+		array.setBlock(x + 11, y + 2, z + 13, fluid, 2);
+		array.setBlock(x + 13, y + 2, z + 11, fluid, 2);
+		array.setBlock(x + 9, y + 2, z + 11, fluid, 2);
+		array.setBlock(x + 11, y + 2, z + 9, fluid, 2);
+
+		int mf = fluid == ChromaBlocks.LIFEWATER.getBlockInstance() ? 1 : 10;
+		array.setBlock(x + 9, y + 1, z + 11, fluid, mf);
+		array.setBlock(x + 11, y + 1, z + 9, fluid, mf);
+		array.setBlock(x + 11, y + 1, z + 13, fluid, mf);
+		array.setBlock(x + 13, y + 1, z + 11, fluid, mf);
+		 */
 	}
 
 	public Collection<Coordinate> getLocations(BlockKey bk) {
@@ -670,24 +691,6 @@ public class MusicTempleStructure extends ChromaStructureBase {
 		world.setBlock(x + 22, y + 0, z + 13, cliff, cliffm);
 		world.setBlock(x + 22, y + 0, z + 14, cliff, cliffm);
 
-		world.setBlock(x + 11, y + 2, z + 11, fluid);
-		/*
-		world.setBlock(x + 11, y + 2, z + 10, fluid, 1);
-		world.setBlock(x + 11, y + 2, z + 12, fluid, 1);
-		world.setBlock(x + 12, y + 2, z + 11, fluid, 1);
-		world.setBlock(x + 10, y + 2, z + 11, fluid, 1);
-		world.setBlock(x + 11, y + 2, z + 13, fluid, 2);
-		world.setBlock(x + 13, y + 2, z + 11, fluid, 2);
-		world.setBlock(x + 9, y + 2, z + 11, fluid, 2);
-		world.setBlock(x + 11, y + 2, z + 9, fluid, 2);
-
-		int mf = fluid == ChromaBlocks.LIFEWATER.getBlockInstance() ? 1 : 10;
-		world.setBlock(x + 9, y + 1, z + 11, fluid, mf);
-		world.setBlock(x + 11, y + 1, z + 9, fluid, mf);
-		world.setBlock(x + 11, y + 1, z + 13, fluid, mf);
-		world.setBlock(x + 13, y + 1, z + 11, fluid, mf);
-		 */
-
 		this.setEmpty(world, x + 11, y + 2, z + 11);
 		this.setEmpty(world, x + 11, y + 2, z + 10);
 		this.setEmpty(world, x + 11, y + 2, z + 12);
@@ -782,6 +785,7 @@ public class MusicTempleStructure extends ChromaStructureBase {
 
 	private void setPlug(FilledBlockArray world, int x, int y, int z) {
 		this.setEmpty(world, x, y, z);
+		?
 	}
 
 	private void setEmpty(FilledBlockArray world, int x, int y, int z) {
