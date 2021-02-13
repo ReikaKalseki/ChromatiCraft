@@ -38,6 +38,7 @@ import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Interfaces.ColorController;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper;
@@ -294,32 +295,6 @@ public class CrystalMusicTemple {
 		playing.add(new ActiveNote(note));
 		renderBrightness = 1.5F;
 		lastNoteTick = tick;
-
-		if (!glowingCoords.isEmpty()) {
-			World world = Minecraft.getMinecraft().theWorld;
-			int r = SongSections.getSectionAt(tick).ordinal()-SongSections.TWO.ordinal()+1;
-			HashSet<GlowingCoord> add = new HashSet();
-			for (GlowingCoord gc : glowingCoords) {
-				for (int i = -r; i <= r; i++) {
-					for (int j = -r; j <= r; j++) {
-						for (int k = -r; k <= r; k++) {
-							Coordinate c = gc.location.offset(i, j, k);
-							if (c.getTaxicabDistanceTo(gc.location) <= r) {
-								if (c.isEmpty(world) || c.yCoord > gc.location.yCoord || c.yCoord > tileLocation.yCoord || !c.isWithinSquare(tileLocation, 128))
-									continue;
-								if (!ReikaWorldHelper.isExposedToAir(world, c.xCoord, c.yCoord, c.zCoord))
-									continue;
-								Block b = c.getBlock(world);
-								if (b.getRenderType() == 0 || b.isOpaqueCube() || b.renderAsNormalBlock()) {
-									add.add(new GlowingCoord(world, c, gc.depth+1));
-								}
-							}
-						}
-					}
-				}
-			}
-			glowingCoords.addAll(add);
-		}
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -343,7 +318,6 @@ public class CrystalMusicTemple {
 				}
 				break;
 			case TWO:
-				glowingCoords.add(new GlowingCoord(Minecraft.getMinecraft().theWorld, tileLocation.offset(0, -1, 0), 0));
 				for (int i = 0; i < 6; i++) {
 					Particle p = new Particle(ParticleTypes.PURPLE, i);
 					particles.add(p);
@@ -514,10 +488,13 @@ public class CrystalMusicTemple {
 
 		v5.addTranslation(-tileLocation.xCoord, -tileLocation.yCoord, -tileLocation.zCoord);
 		for (GlowingCoord g : glowingCoords) {
-			v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(0x00ff00, Math.min(1, renderBrightness*0.2F*g.getRenderBrightness())));
-			v5.addTranslation(g.location.xCoord, g.location.yCoord, g.location.zCoord);
-			this.renderAround(world, g.location, g.block, ico, v5);
-			v5.addTranslation(-g.location.xCoord, -g.location.yCoord, -g.location.zCoord);
+			float f = renderBrightness*0.2F*g.getRenderBrightness(playTick);
+			if (f > 0) {
+				v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(0x00ff00, Math.min(1, f)));
+				v5.addTranslation(g.location.xCoord, g.location.yCoord, g.location.zCoord);
+				this.renderAround(world, g.location, g.block, ico, v5);
+				v5.addTranslation(-g.location.xCoord, -g.location.yCoord, -g.location.zCoord);
+			}
 		}
 		v5.addTranslation(tileLocation.xCoord, tileLocation.yCoord, tileLocation.zCoord);
 
@@ -597,14 +574,45 @@ public class CrystalMusicTemple {
 		isCorrectMelody = tag.getBoolean("song");
 		isStructureComplete = tag.getBoolean("complete");
 		tileLocation = Coordinate.readFromNBT("tile", tag);
+
+		if (tag.getBoolean("coords")) {
+			glowingCoords.clear();
+			World world = Minecraft.getMinecraft().theWorld;
+			HashSet<GlowingCoord> add = new HashSet();
+			HashSet<GlowingCoord> last = null;
+			add.add(new GlowingCoord(world, tileLocation.offset(0, -1, 0), 0));
+			while (!add.isEmpty()) {
+				for (GlowingCoord gc : add) {
+					if (gc.isValid(world))
+						glowingCoords.add(gc);
+				}
+				last = add;
+				add = new HashSet();
+				for (GlowingCoord gc : last) {
+					if (gc.depth >= 96)
+						continue;
+					for (Coordinate c : gc.location.getAdjacentCoordinates()) {
+						if (c.isEmpty(world) || c.yCoord > gc.location.yCoord || c.yCoord > tileLocation.yCoord || !c.isWithinSquare(tileLocation, 128))
+							continue;
+						Block b = c.getBlock(world);
+						if (b.getRenderType() == 0 || b.isOpaqueCube() || b.renderAsNormalBlock()) {
+							GlowingCoord gc2 = new GlowingCoord(world, c, gc.depth+1);
+							add.add(gc2);
+						}
+					}
+				}
+				ReikaJavaLibrary.pConsole(add.iterator().next());
+			}
+		}
 	}
 
 	@SideOnly(Side.CLIENT)
 	public void onStart(NBTTagCompound tag) {
+		tag.setBoolean("coords", true);
 		this.readSyncData(tag);
 		particles.clear();
 		playing.clear();
-		glowingCoords.clear();
+		//glowingCoords.clear();
 		lastSection = null;
 		musicStartTick = Minecraft.getMinecraft().theWorld.getTotalWorldTime();
 	}
@@ -800,6 +808,10 @@ public class CrystalMusicTemple {
 			depth = d;
 		}
 
+		public boolean isValid(World world) {
+			return ReikaWorldHelper.isExposedToAir(world, location.xCoord, location.yCoord, location.zCoord);
+		}
+
 		@Override
 		public int hashCode() {
 			return location.hashCode();
@@ -815,7 +827,9 @@ public class CrystalMusicTemple {
 			return block.toString()+" @ "+location.toString()+" #"+depth;
 		}
 
-		public float getRenderBrightness() {
+		public float getRenderBrightness(int tick) {
+			if (tick < depth)
+				return 0;
 			return depth < 32 ? 1 : 1-(depth-32)/64F;
 		}
 
