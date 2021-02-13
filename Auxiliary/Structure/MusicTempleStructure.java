@@ -670,8 +670,8 @@ public class MusicTempleStructure extends ChromaStructureBase {
 		world.setBlock(x + 22, y + 0, z + 13, cliff, cliffm);
 		world.setBlock(x + 22, y + 0, z + 14, cliff, cliffm);
 
-		/*
 		world.setBlock(x + 11, y + 2, z + 11, fluid);
+		/*
 		world.setBlock(x + 11, y + 2, z + 10, fluid, 1);
 		world.setBlock(x + 11, y + 2, z + 12, fluid, 1);
 		world.setBlock(x + 12, y + 2, z + 11, fluid, 1);
@@ -715,7 +715,6 @@ public class MusicTempleStructure extends ChromaStructureBase {
 		this.setEmpty(world, x + 6, y + 1, z + 6);
 		this.setEmpty(world, x + 5, y + 1, z + 4);
 		this.setEmpty(world, x + 3, y + 1, z + 10);
-		this.setEmpty(world, x + 1, y + 1, z + 11);
 		this.setEmpty(world, x + 2, y + 1, z + 10);
 		this.setEmpty(world, x + 2, y + 1, z + 11);
 		this.setEmpty(world, x + 2, y + 1, z + 12);
@@ -738,12 +737,10 @@ public class MusicTempleStructure extends ChromaStructureBase {
 		this.setEmpty(world, x + 10, y + 1, z + 18);
 		this.setEmpty(world, x + 10, y + 1, z + 19);
 		this.setEmpty(world, x + 10, y + 1, z + 20);
-		this.setEmpty(world, x + 11, y + 1, z + 1);
 		this.setEmpty(world, x + 11, y + 1, z + 2);
 		this.setEmpty(world, x + 11, y + 1, z + 4);
 		this.setEmpty(world, x + 11, y + 1, z + 18);
 		this.setEmpty(world, x + 11, y + 1, z + 20);
-		this.setEmpty(world, x + 11, y + 1, z + 21);
 		this.setEmpty(world, x + 12, y + 1, z + 2);
 		this.setEmpty(world, x + 12, y + 1, z + 3);
 		this.setEmpty(world, x + 12, y + 1, z + 4);
@@ -771,12 +768,20 @@ public class MusicTempleStructure extends ChromaStructureBase {
 		this.setEmpty(world, x + 18, y + 1, z + 18);
 		this.setEmpty(world, x + 19, y + 1, z + 10);
 		this.setEmpty(world, x + 19, y + 1, z + 12);
-		this.setEmpty(world, x + 21, y + 1, z + 11);
 		this.setEmpty(world, x + 20, y + 1, z + 10);
 		this.setEmpty(world, x + 20, y + 1, z + 11);
 		this.setEmpty(world, x + 20, y + 1, z + 12);
 
+		this.setPlug(world, x + 1, y + 1, z + 11);
+		this.setPlug(world, x + 21, y + 1, z + 11);
+		this.setPlug(world, x + 11, y + 1, z + 1);
+		this.setPlug(world, x + 11, y + 1, z + 21);
+
 		return world;
+	}
+
+	private void setPlug(FilledBlockArray world, int x, int y, int z) {
+		this.setEmpty(world, x, y, z);
 	}
 
 	private void setEmpty(FilledBlockArray world, int x, int y, int z) {

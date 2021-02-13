@@ -49,8 +49,8 @@ public class RenderCrystalMusic extends ChromaRenderBase {
 		if (tile.hasWorldObj()) {
 			if (te.hasTempleRender()) {
 				GL11.glPushMatrix();
-				GL11.glScalef(1.0F, -1.0F, 1.0F);
-				GL11.glTranslated(0, -1, 0);
+				GL11.glScalef(1.0F, -1.0F, -1.0F);
+				GL11.glTranslated(0, -1, -1);
 				te.drawTemple(par8);
 				GL11.glPopMatrix();
 			}
