@@ -89,7 +89,7 @@ public class MusicTempleStructure extends ChromaStructureBase {
 		int x = ctr.xCoord-11;
 		int y = ctr.yCoord-4;
 		int z = ctr.zCoord-11;
-		array.setBlock(x + 11, y + 2, z + 11, fluid);
+		array.setBlock(x + 11, y + 2, z + 11, fluid, 0);
 		/*
 		array.setBlock(x + 11, y + 2, z + 10, fluid, 1);
 		array.setBlock(x + 11, y + 2, z + 12, fluid, 1);
@@ -106,6 +106,17 @@ public class MusicTempleStructure extends ChromaStructureBase {
 		array.setBlock(x + 11, y + 1, z + 13, fluid, mf);
 		array.setBlock(x + 13, y + 1, z + 11, fluid, mf);
 		 */
+
+		for (int n = 0; n < 8; n++) {
+			Coordinate c = this.getPillarRoot(n).offset(ctr);
+			for (int i = -1; i <= 1; i++) {
+				for (int k = -1; k <= 1; k++) {
+					if (i != 0 || k != 0) {
+						array.setBlock(c.xCoord+i, c.yCoord, c.zCoord+k, fluid, 0);
+					}
+				}
+			}
+		}
 	}
 
 	public Collection<Coordinate> getLocations(BlockKey bk) {
@@ -784,8 +795,8 @@ public class MusicTempleStructure extends ChromaStructureBase {
 	}
 
 	private void setPlug(FilledBlockArray world, int x, int y, int z) {
-		this.setEmpty(world, x, y, z);
-		?
+		//this.setEmpty(world, x, y, z);
+		world.setBlock(x, y, z, crystalstone, StoneTypes.MULTICHROMIC.ordinal());
 	}
 
 	private void setEmpty(FilledBlockArray world, int x, int y, int z) {

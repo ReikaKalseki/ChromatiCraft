@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.TreeMap;
 
 import net.minecraft.block.Block;
@@ -21,6 +22,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidRegistry;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Structure.MusicTempleStructure;
@@ -34,7 +36,9 @@ import Reika.DragonAPI.Instantiable.MusicScore.Note;
 import Reika.DragonAPI.Instantiable.MusicScore.ScoreTrack;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Effects.EntityFluidFX;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
+import Reika.DragonAPI.Instantiable.ParticleController.AttractiveMotionController;
 import Reika.DragonAPI.Interfaces.ColorController;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -241,12 +245,35 @@ public class CrystalMusicTemple {
 			}
 			else {
 				SongSections sec = SongSections.getSectionAt(this.getTick(world));
-				if (sec.ordinal() >= SongSections.ONE.ordinal()) {
+				if (sec.ordinal() == SongSections.ONE.ordinal()) {
 					//this.spillFluid(world, sec);
+
+					for (int n = 0; n < 8; n++) {
+						Coordinate c = structure.getPillarRoot(n).offset(tileLocation);
+						for (int i = -1; i <= 1; i++) {
+							for (int k = -1; k <= 1; k++) {
+								if (i != 0 || k != 0) {
+									world.setBlock(c.xCoord+i, c.yCoord, c.zCoord+k, Blocks.air);
+								}
+							}
+						}
+					}
 				}
 				if (sec.ordinal() >= SongSections.THREE.ordinal()) {
 
 				}
+
+				/*
+				Coordinate c = structure.getPillarRoot(this.getPillar(m)).offset(tileLocation);
+				for (int i = -1; i <= 1; i++) {
+					for (int k = -1; k <= 1; k++) {
+						if (i != 0 || k != 0) {
+							world.setBlock(c.xCoord+i, c.yCoord, c.zCoord+k, Blocks.air);
+						}
+					}
+				}
+				 */
+
 				ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.MUSICTEMPLE.ordinal(), world, tileLocation, 256, m.ordinal(), track, tick);
 			}
 		}
@@ -272,6 +299,10 @@ public class CrystalMusicTemple {
 		}
 
 		if (ModList.MYSTCRAFT.isLoaded()) {
+
+		}
+
+		if (ModList.REACTORCRAFT.isLoaded()) {
 
 		}
 	}
@@ -447,7 +478,7 @@ public class CrystalMusicTemple {
 					double a = p.type == ParticleTypes.FINAL ? 120*p.listIndex : p.type.ordinal()*120+60;
 					double r2 = 3.5;
 					p.size = p.type == ParticleTypes.FINAL ? 1.75F : 1F;
-					double h = 0.5*Math.sin(t*0.2+a*2);
+					double h = Math.sin(t*0.2+a*2)*(0.5-dft/4D);
 					if (p.type == ParticleTypes.FINAL) {
 						r2 += 4.5*dft;
 						p.colorDelay = -Particle.fxLife/2;
@@ -485,6 +516,26 @@ public class CrystalMusicTemple {
 
 		World world = Minecraft.getMinecraft().theWorld;
 
+		if (sec == SongSections.INTRO && !Minecraft.getMinecraft().isGamePaused()) {
+			Random rand = new Random(playTick/4);
+			rand.nextBoolean();
+			for (int i = 0; i < 3; i++) {
+				Coordinate c = structure.getPillarRoot(rand.nextInt(8)).offset(tileLocation);
+				double dx = ReikaRandomHelper.getRandomBetween(-1, 2D, rand);
+				double dz = ReikaRandomHelper.getRandomBetween(-1, 2D, rand);
+				double tx = tileLocation.xCoord+0.5+dx;
+				double tz = tileLocation.zCoord+0.5+dz;
+				double vy = ReikaRandomHelper.getRandomPlusMinus(0.155, 0.005, rand);
+				double dmp = ReikaRandomHelper.getRandomPlusMinus(0.99, 0.005, rand);
+
+				EntityFluidFX fx = new EntityFluidFX(world, c.xCoord+dx, c.yCoord+0.85, c.zCoord+dz, FluidRegistry.WATER);
+				fx.setLife(80);
+				fx.noClip = true;
+				fx.setMotionController(new AttractiveMotionController(tx, tileLocation.yCoord-1.5, tz, 0.0625/24D, vy, dmp));
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
+		}
+
 		Tessellator v5 = Tessellator.instance;
 		IIcon ico = ChromaIcons.CAUSTICS_CRYSTAL.getIcon();
 		v5.startDrawingQuads();
@@ -500,6 +551,21 @@ public class CrystalMusicTemple {
 			ft = ft*0.9375+0.01;
 		}
 
+		if (ft > 0) {
+			v5.addTranslation(0, -3, 0);
+			double u = ico.getMinU();
+			double du = ico.getMaxU();
+			double v = ico.getMinV();
+			double dv = ico.getMaxV();
+			v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(c1, Math.min(1, renderBrightness*0.7F)));
+			double ft2 = Math.min(0.9375, ft*2);
+			v5.addVertexWithUV(-2, ft2, 3, u, dv);
+			v5.addVertexWithUV(3, ft2, 3, du, dv);
+			v5.addVertexWithUV(3, ft2, -2, du, v);
+			v5.addVertexWithUV(-2, ft2, -2, u, v);
+			v5.addTranslation(0, 3, 0);
+		}
+
 		for (int i = 0; i < 8; i++) {
 			float f = this.pillarIntensity(playTick+ptick, i);
 			int c = ReikaColorAPI.mixColors(c1, c0, f);
@@ -511,7 +577,7 @@ public class CrystalMusicTemple {
 				double du = ico.getMaxU();
 				double v = ico.getMinV();
 				double dv = ico.getMaxV();
-				v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(c1, Math.min(1, renderBrightness*0.7F)));
+				v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(c0, Math.min(1, renderBrightness*0.7F)));
 				v5.addVertexWithUV(-1, ft, 2, u, dv);
 				v5.addVertexWithUV(2, ft, 2, du, dv);
 				v5.addVertexWithUV(2, ft, -1, du, v);
