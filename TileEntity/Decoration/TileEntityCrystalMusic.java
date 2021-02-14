@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.TileEntity.Decoration;
 import java.io.File;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -295,13 +296,13 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 		if (canPlay) {
 			temple.onNote(world, n.key, track, playTick);
 			ChromaSound s = this.getVoice(track, n);
-			float f = 1;
+			float f = (float)CrystalMusicManager.instance.getPitchFactor(n.key);
 			if (s == ChromaSounds.FLUTE || (s instanceof SoundVariant && ((SoundVariant)s).root == ChromaSounds.FLUTE))
-				f /= 2;
+				f = 1F;
 			if (this.attentuate(world, x, y, z))
-				s.playSoundAtBlock(this, n.volume/100F, (float)CrystalMusicManager.instance.getPitchFactor(n.key)*f);
+				s.playSoundAtBlock(this, n.volume/100F, f);
 			else
-				s.playSoundAtBlockNoAttenuation(this, n.volume/100F, (float)CrystalMusicManager.instance.getPitchFactor(n.key)*f, BROADCAST_RANGE);
+				s.playSoundAtBlockNoAttenuation(this, n.volume/100F, f, BROADCAST_RANGE);
 			return true;
 		}
 		else {
@@ -312,11 +313,11 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 	}
 
 	private ChromaSound getVoice(int channel, Note n) {
-		if (temple.isComplete() && temple.isPlayingMelody() && false) {
+		if (temple.isComplete() && temple.isPlayingMelody()) {
 			switch(channel) {
 				case 0:
 					return (ChromaSound)this.getFlute(n);
-				case 3:
+				case 300:
 					return (ChromaSound)ChromaSounds.ORB.getVariant("PURE");
 			}
 		}
@@ -324,6 +325,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 	}
 
 	private SoundEnum getFlute(Note n) {
+		/*
 		int l = n.length+5;
 		if (l >= 34)
 			return ChromaSounds.FLUTE.getVariant("L3"); //1.725
@@ -346,6 +348,13 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 			return ChromaSounds.FLUTE.getVariant("F1"); //0.7
 
 		return ChromaSounds.FLUTE; //0.91 = 18
+		 */
+		String var = n.key.getInterval(-12).name().toLowerCase(Locale.ENGLISH);
+		if (n.length > 15)
+			var = var+"_l";
+		else if (n.length < 8)
+			var = var+"_s";
+		return ChromaSounds.FLUTE.getVariant(var);
 	}
 
 	private boolean attentuate(World world, int x, int y, int z) {

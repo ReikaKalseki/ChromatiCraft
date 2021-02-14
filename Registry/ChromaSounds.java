@@ -28,6 +28,7 @@ import Reika.DragonAPI.Interfaces.Registry.DynamicSound;
 import Reika.DragonAPI.Interfaces.Registry.VariableSound;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 
 public enum ChromaSounds implements ChromaSound, DynamicSound, VariableSound {
 
@@ -323,6 +324,7 @@ public enum ChromaSounds implements ChromaSound, DynamicSound, VariableSound {
 	}
 
 	static {
+		/*
 		FLUTE.createVariant("F1");
 		FLUTE.createVariant("F2");
 		FLUTE.createVariant("F3");
@@ -332,6 +334,13 @@ public enum ChromaSounds implements ChromaSound, DynamicSound, VariableSound {
 		FLUTE.createVariant("L1");
 		FLUTE.createVariant("L2");
 		FLUTE.createVariant("L3");
+		 */
+		for (int i = MusicKey.G4.ordinal(); i <= MusicKey.G7.ordinal(); i++) {
+			String s = MusicKey.getByIndex(i).name().toLowerCase(Locale.ENGLISH);
+			FLUTE.createVariant(s);
+			FLUTE.createVariant(s+"_l");
+			FLUTE.createVariant(s+"_s");
+		}
 		/*
 		FLUTE.createVariant("F1_HI");
 		FLUTE.createVariant("F2_HI");

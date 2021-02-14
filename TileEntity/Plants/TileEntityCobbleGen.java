@@ -49,7 +49,6 @@ import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Effects.EntityFluidFX;
 import Reika.DragonAPI.Instantiable.ParticleController.AttractiveMotionController;
-import Reika.DragonAPI.Interfaces.MotionController;
 import Reika.DragonAPI.Interfaces.Block.FluidBlockSurrogate;
 import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -82,8 +81,6 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant implements Operati
 	private Coordinate secondaryLocation = null;
 
 	private OutputModifier modifier;
-
-	private MotionController particleMotion;
 
 	@Override
 	public ChromaTiles getTile() {
