@@ -297,12 +297,15 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 			temple.onNote(world, n.key, track, playTick);
 			ChromaSound s = this.getVoice(track, n);
 			float f = (float)CrystalMusicManager.instance.getPitchFactor(n.key);
-			if (s == ChromaSounds.FLUTE || (s instanceof SoundVariant && ((SoundVariant)s).root == ChromaSounds.FLUTE))
+			float v = n.volume/100F;
+			if (s == ChromaSounds.FLUTE || (s instanceof SoundVariant && ((SoundVariant)s).root == ChromaSounds.FLUTE)) {
 				f = 1F;
+				v = 0.5F;
+			}
 			if (this.attentuate(world, x, y, z))
-				s.playSoundAtBlock(this, n.volume/100F, f);
+				s.playSoundAtBlock(this, v, f);
 			else
-				s.playSoundAtBlockNoAttenuation(this, n.volume/100F, f, BROADCAST_RANGE);
+				s.playSoundAtBlockNoAttenuation(this, v, f, BROADCAST_RANGE);
 			return true;
 		}
 		else {
@@ -313,46 +316,22 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 	}
 
 	private ChromaSound getVoice(int channel, Note n) {
-		if (temple.isComplete() && temple.isPlayingMelody()) {
+		if (temple.isComplete() && temple.isPlayingMelody() && false) {
 			switch(channel) {
 				case 0:
 					return (ChromaSound)this.getFlute(n);
-				case 300:
-					return (ChromaSound)ChromaSounds.ORB.getVariant("PURE");
+					//case 3:
+					//	return (ChromaSound)ChromaSounds.ORB.getVariant("PURE");
 			}
 		}
 		return ChromaSounds.DING;
 	}
 
 	private SoundEnum getFlute(Note n) {
-		/*
-		int l = n.length+5;
-		if (l >= 34)
-			return ChromaSounds.FLUTE.getVariant("L3"); //1.725
-		else if (l >= 26)
-			return ChromaSounds.FLUTE.getVariant("L2"); //1.315
-		else if (l >= 22)
-			return ChromaSounds.FLUTE.getVariant("L1"); //1.1
-
-		if (l <= 4)
-			return ChromaSounds.FLUTE.getVariant("F6"); //0.2
-		else if (l <= 6)
-			return ChromaSounds.FLUTE.getVariant("F5"); //0.32
-		else if (l <= 8)
-			return ChromaSounds.FLUTE.getVariant("F4"); //0.47
-		else if (l <= 10)
-			return ChromaSounds.FLUTE.getVariant("F3"); //0.52
-		else if (l <= 12)
-			return ChromaSounds.FLUTE.getVariant("F2"); //0.61
-		else if (l <= 14)
-			return ChromaSounds.FLUTE.getVariant("F1"); //0.7
-
-		return ChromaSounds.FLUTE; //0.91 = 18
-		 */
 		String var = n.key.getInterval(-12).name().toLowerCase(Locale.ENGLISH);
-		if (n.length > 15)
+		if (n.length >= 30)
 			var = var+"_l";
-		else if (n.length < 8)
+		else if (n.length < 10)
 			var = var+"_s";
 		return ChromaSounds.FLUTE.getVariant(var);
 	}

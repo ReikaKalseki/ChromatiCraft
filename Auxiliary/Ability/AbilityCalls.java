@@ -917,7 +917,7 @@ public class AbilityCalls {
 		}
 		else {
 			int power = AbilityHelper.instance.getGrowAuraState(ep);
-			RainbowTreeEffects.doRainbowTreeEffects(ep.worldObj, x, y, z, 4, 0.25, ep.worldObj.rand, false);
+			RainbowTreeEffects.instance.doRainbowTreeEffects(ep.worldObj, x, y, z, 4, 0.25, ep.worldObj.rand, false);
 			if (power >= 1) {
 				for (int i = 0; i < 8; i++) {
 					int dx = ReikaRandomHelper.getRandomPlusMinus(x, 8);

@@ -294,18 +294,7 @@ public class ChromaticEventManager {
 	private ChromaticEventManager() {
 
 	}
-	/*
-	@SubscribeEvent
-	public void placeLifewater(PlaceBucketEvent evt) {
-		ChromaTiles c = ChromaTiles.getTile(evt.world, evt.xCoord, evt.yCoord+2, evt.zCoord);
-		if (c == ChromaTiles.MUSIC) {
-			TileEntityCrystalMusic te = (TileEntityCrystalMusic)evt.world.getTileEntity(evt.xCoord, evt.yCoord+2, evt.zCoord);
-			if (te.hasTemple() || evt.world.isRemote) {
-				evt.fluid = ChromaBlocks.LIFEWATER.getBlockInstance();
-			}
-		}
-	}
-	 */
+
 	@SubscribeEvent
 	public void makeSparkleObsidian(LavaFreezeEvent evt) {
 		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {

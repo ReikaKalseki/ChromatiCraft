@@ -271,13 +271,13 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 	@Override
 	public int getFireSpreadSpeed(IBlockAccess world, int x, int y, int z, ForgeDirection face) {
 		if (world instanceof World)
-			RainbowTreeEffects.addInstability((World)world, x, y, z); //make burning the tree add the instability back
+			RainbowTreeEffects.instance.addInstability((World)world, x, y, z); //make burning the tree add the instability back
 		return 180;
 	}
 
 	@Override
 	public void onBlockDestroyedByExplosion(World world, int x, int y, int z, Explosion e) {
-		RainbowTreeEffects.addInstability(world, x, y, z); //make exploding the tree add the instability back
+		RainbowTreeEffects.instance.addInstability(world, x, y, z); //make exploding the tree add the instability back
 	}
 
 	@Override
@@ -307,7 +307,7 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 			}
 		}*/
 
-		RainbowTreeEffects.doRainbowTreeEffects(world, x, y, z, 1, 1, r, true);
+		RainbowTreeEffects.instance.doRainbowTreeEffects(world, x, y, z, 1, 1, r, true);
 	}
 
 	@Override

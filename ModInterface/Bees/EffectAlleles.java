@@ -369,7 +369,7 @@ public class EffectAlleles {
 				long time = world.getTotalWorldTime();
 				ChunkCoordinates c = ibh.getCoordinates();
 				int[] r = ChromaBeeHelpers.getEffectiveTerritory(ibh, c, ibg, time);
-				RainbowTreeEffects.doRainbowTreeEffects(world, c.posX, c.posY, c.posZ, 1, r[0]/16F, CrystalBees.rand, false);
+				RainbowTreeEffects.instance.doRainbowTreeEffects(world, c.posX, c.posY, c.posZ, 1, r[0]/16F, CrystalBees.rand, false);
 				CrystalElement e = CrystalElement.randomElement();
 				CrystalEffect.spawnBallLightnings = false;
 				CrystalBees.effectMap.get(e).doEffect(ibg, ied, ibh);
@@ -927,7 +927,7 @@ public class EffectAlleles {
 			if (world.rand.nextInt(20) > 0)
 				return storedData;
 			double r = Math.min(4, 0.125*Math.pow(1.25*genome.getHeight()*genome.getGirth(), 2));
-			RainbowTreeEffects.doRainbowTreeEffects(world, x, y, z, 1, r, world.rand, false);
+			RainbowTreeEffects.instance.doRainbowTreeEffects(world, x, y, z, 1, r, world.rand, false);
 			return storedData;
 		}
 

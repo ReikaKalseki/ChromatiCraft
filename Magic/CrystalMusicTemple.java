@@ -1,12 +1,14 @@
 package Reika.ChromatiCraft.Magic;
 
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -18,6 +20,8 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -25,6 +29,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidRegistry;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.RainbowTreeEffects;
 import Reika.ChromatiCraft.Auxiliary.Structure.MusicTempleStructure;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -40,6 +45,7 @@ import Reika.DragonAPI.Instantiable.Effects.EntityFluidFX;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.ParticleController.AttractiveMotionController;
 import Reika.DragonAPI.Interfaces.ColorController;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -49,8 +55,11 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
+import Reika.ReactorCraft.API.RadiationHandler;
 
 import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -294,16 +303,44 @@ public class CrystalMusicTemple {
 			c.offset(tileLocation).setBlock(world, Blocks.air);
 		}
 
-		if (Loader.isModLoaded("pixelmon")) {
+		ReikaWorldHelper.blockRain(world, 24000*16, false);
 
+		if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world)) {
+			ReikaMystcraftHelper.removeInstabilityForAge(world);
+			RainbowTreeEffects.instance.addDecayClearing(world);
 		}
 
-		if (ModList.MYSTCRAFT.isLoaded()) {
+		if (Loader.isModLoaded("pixelmon")) {
+			try {
+				Block b = GameRegistry.findBlock("pixelmon", "tidal_bell");
+				if (b != null) {
+					long time = world.getWorldTime();
+					world.setWorldTime(13000);
+					TileEntity te = b.createTileEntity(world, 0);
 
+					Field f1 = te.getClass().getDeclaredField("spawning");
+					Field f2 = te.getClass().getDeclaredField("owner");
+					f1.setAccessible(true);
+					f2.setAccessible(true);
+					f1.set(te, true);
+					f2.set(te, ((TileEntityCrystalMusic)tileLocation.getTileEntity(world)).getPlacerID());
+
+					te.updateEntity(); //should really be ITickable.update()
+
+					world.setWorldTime(time);
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		if (ModList.REACTORCRAFT.isLoaded()) {
-
+			AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(tileLocation).expand(256, 256, 256);
+			List<Entity> li = world.getEntitiesWithinAABB(RadiationHandler.getRadiationClass(), box);
+			for (Entity e : li) {
+				e.setDead();
+			}
 		}
 	}
 
