@@ -307,7 +307,7 @@ public class CrystalMusicTemple {
 
 		if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world)) {
 			ReikaMystcraftHelper.removeInstabilityForAge(world);
-			RainbowTreeEffects.instance.addDecayClearing(world);
+			RainbowTreeEffects.instance.addDecayClearing(world, -1);
 		}
 
 		if (Loader.isModLoaded("pixelmon")) {

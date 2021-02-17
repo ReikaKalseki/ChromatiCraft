@@ -11,9 +11,9 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -151,22 +151,28 @@ public class RainbowTreeEffects {
 
 	private boolean isCoordinateClearing(World world, int x, int y, int z) {
 		this.loadIfNecessary(world);
+		long time = world.getTotalWorldTime();
 		PersistentRainbowTreeFX fx = persistent.get(world.provider.dimensionId);
-		for (BlockBox b : fx.decayCleaning) {
-			if (b.isBlockInside(x, y, z))
+		Iterator<Entry<BlockBox, Long>> it = fx.decayCleaning.entrySet().iterator();
+		while (it.hasNext()) {
+			Entry<BlockBox, Long> e = it.next();
+			long val = e.getValue();
+			if (val >= 0 && val < time)
+				it.remove();
+			else if (e.getKey().isBlockInside(x, y, z))
 				return true;
 		}
 		return false;
 	}
 
-	public void addDecayClearing(World world) {
-		this.addDecayClearing(world, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
+	public void addDecayClearing(World world, long duration) {
+		this.addDecayClearing(world, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, duration);
 	}
 
-	public void addDecayClearing(World world, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+	public void addDecayClearing(World world, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, long duration) {
 		this.loadIfNecessary(world);
 		PersistentRainbowTreeFX fx = persistent.get(world.provider.dimensionId);
-		fx.decayCleaning.add(new BlockBox(minX, minY, minZ, maxX, maxY, maxZ));
+		fx.decayCleaning.put(new BlockBox(minX, minY, minZ, maxX, maxY, maxZ), duration >= 0 ? world.getTotalWorldTime()+duration : -1);
 		this.save(world);
 	}
 
@@ -314,7 +320,7 @@ public class RainbowTreeEffects {
 
 		private final int dimensionID;
 
-		private final Collection<BlockBox> decayCleaning = new ArrayList();
+		private final HashMap<BlockBox, Long> decayCleaning = new HashMap();
 
 		private PersistentRainbowTreeFX(World world) {
 			this(world.provider.dimensionId);
@@ -326,9 +332,10 @@ public class RainbowTreeEffects {
 
 		private void writeToNBT(NBTTagCompound NBT) {
 			NBTTagList li = new NBTTagList();
-			for (BlockBox b : decayCleaning) {
+			for (Entry<BlockBox, Long> e : decayCleaning.entrySet()) {
 				NBTTagCompound tag = new NBTTagCompound();
-				b.writeToNBT(tag);
+				e.getKey().writeToNBT(tag);
+				tag.setLong("time", e.getValue());
 				li.appendTag(tag);
 			}
 			NBT.setTag("cleaning", li);
@@ -340,7 +347,8 @@ public class RainbowTreeEffects {
 			NBTTagList li = NBT.getTagList("cleaning", NBTTypes.COMPOUND.ID);
 			for (Object o : li.tagList) {
 				NBTTagCompound tag = (NBTTagCompound)o;
-				fx.decayCleaning.add(BlockBox.readFromNBT(tag));
+				BlockBox box = BlockBox.readFromNBT(tag);
+				fx.decayCleaning.put(box, tag.getLong("time"));
 			}
 			return fx;
 		}
