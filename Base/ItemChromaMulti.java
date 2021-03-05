@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -35,8 +35,7 @@ public abstract class ItemChromaMulti extends ItemChromaBasic {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public final void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List)
-	{
+	public final void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
 		for (int i = 0; i < this.getNumberTypes(); i++) {
 			if (this.isMetaInCreative(i)) {
 				ItemStack item = new ItemStack(par1, 1, i);

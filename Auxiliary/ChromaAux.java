@@ -31,6 +31,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
@@ -62,7 +63,9 @@ import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Magic.ToolChargingSystem;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
+import Reika.ChromatiCraft.Magic.Interfaces.PoweredItem;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Network.TargetData;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager.ProgressElement;
@@ -81,6 +84,7 @@ import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.WorldGenInterceptionRegistry.BlockSetData;
 import Reika.DragonAPI.Auxiliary.WorldGenInterceptionRegistry.BlockSetWatcher;
@@ -90,6 +94,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Interfaces.Entity.CustomProjectile;
+import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
@@ -501,7 +506,7 @@ public class ChromaAux {
 		return li.get(ReikaRandomHelper.getSafeRandomInt(li.size()));
 	}
 
-	public static boolean chargePlayerFromPylon(EntityPlayer player, ChargingPoint te, CrystalElement e, int count) {
+	public static boolean chargePlayerFromPylon(EntityPlayer player, ChargingPoint te, CrystalElement e, int tick) {
 		if (te.canConduct() && te.allowCharging(player, e) && allowPlayerChargingAt(player, te, e)) {
 			int add = Math.max(1, (int)(PlayerElementBuffer.instance.getChargeSpeed(player)*te.getChargeRateMultiplier(player, e)));
 			int n = PlayerElementBuffer.instance.getChargeInefficiency(player);
@@ -520,12 +525,43 @@ public class ChromaAux {
 					ProgressionManager.instance.setPlayerDiscoveredColor(player, ((TileEntityCrystalPylon)te).getColor(), true, true);
 				if (player.worldObj.isRemote) {
 					//this.spawnParticles(player, e);
-					ChromaFX.createPylonChargeBeam(te, player, (count%20)/20D, e);
+					ChromaFX.createPylonChargeBeam(te, player, (tick%20)/20D, e);
+				}
+				else {
+					chargePlayerTools(player, te, e);
 				}
 				return true;
 			}
 		}
 		return false;
+	}
+
+	public static void chargePlayerTools(EntityPlayer player, ChargingPoint te, CrystalElement e) {
+		int slot = DragonAPICore.rand.nextInt(player.inventory.mainInventory.length);
+		ItemStack at = player.inventory.mainInventory[slot];
+		if (at != null) {
+			if (at.getItem() instanceof ActivatedInventoryItem) {
+				int size = ((ActivatedInventoryItem)at.getItem()).getInventorySize(at);
+				slot = DragonAPICore.rand.nextInt(size);
+				if (((ActivatedInventoryItem)at.getItem()).isSlotActive(at, slot)) {
+					ItemStack in = ((ActivatedInventoryItem)at.getItem()).getItem(at, slot);
+					if (in != null && in.getItem() instanceof PoweredItem) {
+						PoweredItem pi = (PoweredItem)in.getItem();
+						if (pi.getColor(in) == e && pi.canChargeWhilePlayerCharges()) {
+							int rate = Math.max(1, (int)(te.getToolChargingPower(player, e)*ToolChargingSystem.instance.getChargeRate(in)));
+							ToolChargingSystem.instance.addCharge(in, rate);
+						}
+					}
+				}
+			}
+			else if (at.getItem() instanceof PoweredItem) {
+				PoweredItem pi = (PoweredItem)at.getItem();
+				if (pi.getColor(at) == e && pi.canChargeWhilePlayerCharges()) {
+					int rate = Math.max(1, (int)(te.getToolChargingPower(player, e)*ToolChargingSystem.instance.getChargeRate(at)));
+					ToolChargingSystem.instance.addCharge(at, rate);
+				}
+			}
+		}
 	}
 
 	private static boolean allowPlayerChargingAt(EntityPlayer player, ChargingPoint te, CrystalElement e) {

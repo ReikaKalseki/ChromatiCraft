@@ -321,9 +321,9 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 							int cap = PlayerElementBuffer.instance.getElementCap(ep);
 							int space = cap-PlayerElementBuffer.instance.getPlayerContent(ep, e);
 							if (space > 0) {
-								int amt = Math.min(this.getEnergy(e), Math.min(space, Math.max(cap/24/8, 1+rand.nextInt(Math.max(1, space/4*4)))));
+								//int amt = Math.min(this.getEnergy(e), Math.min(space, Math.max(cap/24/8, 1+rand.nextInt(Math.max(1, space/4*4)))));
 								//ReikaJavaLibrary.pConsole(e+":"+amt);
-								ChromaAux.chargePlayerFromPylon(ep, this, e, amt);
+								ChromaAux.chargePlayerFromPylon(ep, this, e, this.getTicksExisted());
 							}
 						}
 					}
@@ -876,6 +876,11 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	@Override
 	public double getMaximumBeamRadius() {
 		return TileEntityCrystalBase.DEFAULT_BEAM_RADIUS;
+	}
+
+	@Override
+	public float getToolChargingPower(EntityPlayer ep, CrystalElement e) {
+		return this.isEnhanced() ? 2 : 0.75F;
 	}
 
 }

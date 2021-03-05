@@ -74,6 +74,19 @@ public class ItemAuraPouch extends ItemChromaTool implements ActivatedInventoryI
 		return inv;
 	}
 
+	public ItemStack getItem(ItemStack is, int slot) {
+		if (is.getItem() == this && is.stackTagCompound != null) {
+			NBTTagCompound tag = is.stackTagCompound.getCompoundTag("inventory");
+			ItemStack ret = tag.hasKey("slot_"+slot) ? ItemStack.loadItemStackFromNBT(tag.getCompoundTag("slot_"+slot)) : null;
+			return ret;
+		}
+		return null;
+	}
+
+	public int getInventorySize(ItemStack is) {
+		return SIZE;
+	}
+
 	public void setSlotActive(ItemStack is, int slot, boolean active) {
 		if (is.stackTagCompound == null || !is.stackTagCompound.hasKey("inventory") || !is.stackTagCompound.hasKey("active")) {
 			this.initNBT(is);

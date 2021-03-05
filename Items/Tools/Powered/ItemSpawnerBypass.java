@@ -16,7 +16,7 @@ public class ItemSpawnerBypass extends ItemPoweredChromaTool {
 	}
 
 	@Override
-	protected CrystalElement getColor() {
+	public CrystalElement getColor(ItemStack is) {
 		return CrystalElement.LIGHTGRAY;
 	}
 
@@ -36,7 +36,7 @@ public class ItemSpawnerBypass extends ItemPoweredChromaTool {
 	}
 
 	@Override
-	protected int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is) {
+	public int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is) {
 		return world.provider.dimensionId == TwilightForestHandler.getInstance().dimensionID ? 12 : 1;
 	}
 

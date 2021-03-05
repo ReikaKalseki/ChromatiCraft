@@ -113,9 +113,10 @@ public class PlayerElementBuffer {
 		if (ep.capabilities.isCreativeMode)
 			return;
 
-		if (ItemPendant.isEnhancedKuroPendantActive(ep))
+		int lvl = ItemPendant.getActivePendantLevel(ep, CrystalElement.BLACK);
+		if (lvl == 1)
 			amt = Math.max(1, (int)(amt*0.5F));
-		else if (ItemPendant.isKuroPendantActive(ep))
+		else if (lvl == 0)
 			amt = Math.max(1, (int)(amt*0.8F));
 
 		NBTTagCompound tag = this.getTag(ep);

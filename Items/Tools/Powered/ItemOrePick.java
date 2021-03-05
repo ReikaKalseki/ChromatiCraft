@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.API.Interfaces.EnchantableItem;
 import Reika.ChromatiCraft.API.Interfaces.OrePings.OrePingDelegate;
 import Reika.ChromatiCraft.Auxiliary.Render.OreOverlayRenderer;
 import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
+import Reika.ChromatiCraft.Magic.ToolChargingSystem;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
@@ -115,7 +116,7 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite, En
 		count = MathHelper.clamp_int(this.getMaxItemUseDuration(is)-count, 0, CHARGE_TIME);
 		//ReikaChatHelper.write(power+"  ->  "+charge);
 		//ReikaJavaLibrary.pConsole(count);
-		if (count >= CHARGE_TIME && this.getCharge(is) >= SONAR_COST) {
+		if (count >= CHARGE_TIME && ToolChargingSystem.instance.getCharge(is) >= SONAR_COST) {
 			this.fire(is, world, ep);
 		}
 		else if (count > 5) {
@@ -126,7 +127,7 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite, En
 
 	private void fire(ItemStack is, World world, EntityPlayer ep) {
 		if (!world.isRemote) {
-			this.removeCharge(is, (int)(SONAR_COST*this.getMaxCharge()));
+			ToolChargingSystem.instance.removeCharge(is, (int)(SONAR_COST*this.getMaxCharge()));
 			int x = MathHelper.floor_double(ep.posX);
 			int y = MathHelper.floor_double(ep.posY);
 			int z = MathHelper.floor_double(ep.posZ);
@@ -136,12 +137,12 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite, En
 
 	@Override
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float a, float b, float c) {
-		if (this.getCharge(is) < SCAN_COST)
+		if (ToolChargingSystem.instance.getCharge(is) < SCAN_COST)
 			return false;
 		OrePingDelegate ore = this.getOreType(world, x, y, z);
 		if (ore != null) {
 			if (!world.isRemote) {
-				this.removeCharge(is, (int)(SCAN_COST*this.getMaxCharge()));
+				ToolChargingSystem.instance.removeCharge(is, (int)(SCAN_COST*this.getMaxCharge()));
 				OreOverlayRenderer.instance.startScan(world, x, y, z, ep);
 			}
 			return true;
@@ -187,13 +188,13 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite, En
 	public boolean onBlockDestroyed(ItemStack is, World world, Block b, int x, int y, int z, EntityLivingBase elb) {
 		if (b.getBlockHardness(world, x, y, z) > 0) {
 			is.damageItem(1, elb);
-			this.addCharge(is, this.getMaxCharge()*4/this.getMaxDamage()); //so 25% durability for 1 full recharge
+			ToolChargingSystem.instance.addCharge(is, this.getMaxCharge()*4/this.getMaxDamage()); //so 25% durability for 1 full recharge
 		}
 		return true;
 	}
 
 	@Override
-	protected CrystalElement getColor() {
+	public CrystalElement getColor(ItemStack is) {
 		return CrystalElement.BROWN;
 	}
 
@@ -208,7 +209,7 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite, En
 	}
 
 	@Override
-	protected boolean hasChargeStates() {
+	public boolean hasChargeStates() {
 		return false;
 	}
 
@@ -221,12 +222,12 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite, En
 	}
 
 	@Override
-	protected boolean isActivated(EntityPlayer e, ItemStack is, boolean held) {
+	public boolean isActivated(EntityPlayer e, ItemStack is, boolean held) {
 		return held;
 	}
 
 	@Override
-	protected int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is) {
+	public int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is) {
 		return is.stackTagCompound.getBoolean("ore") ? 8 : 1;
 	}
 

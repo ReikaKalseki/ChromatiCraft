@@ -11,7 +11,6 @@ package Reika.ChromatiCraft.Registry;
 
 import net.minecraft.entity.Entity;
 
-import Reika.ChromatiCraft.Base.ItemPoweredChromaTool.EntityChargingTool;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Entity.EntityAurora;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
@@ -37,6 +36,7 @@ import Reika.ChromatiCraft.Entity.EntityThrownGem;
 import Reika.ChromatiCraft.Entity.EntityTunnelNuker;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
 import Reika.ChromatiCraft.Items.Tools.ItemDataCrystal.EntityDataCrystal;
+import Reika.ChromatiCraft.Magic.ToolChargingSystem.EntityChargingTool;
 import Reika.ChromatiCraft.ModInterface.EntityChromaManaBurst;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.Registry.EntityEnum;

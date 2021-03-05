@@ -1425,4 +1425,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		return TileEntityCrystalBase.DEFAULT_BEAM_RADIUS;
 	}
 
+	@Override
+	public float getToolChargingPower(EntityPlayer ep, CrystalElement e) {
+		return 1;
+	}
+
 }

@@ -40,6 +40,11 @@ public class ItemPurifyCrystal extends ItemPoweredChromaTool {
 	}
 
 	@Override
+	public boolean canChargeWhilePlayerCharges() {
+		return false;
+	}
+
+	@Override
 	public boolean doTick(ItemStack is, World world, EntityPlayer e, boolean held) {
 		e.getEntityData().setLong(TAG, world.getTotalWorldTime());
 		if (world.isRemote) {
@@ -70,12 +75,12 @@ public class ItemPurifyCrystal extends ItemPoweredChromaTool {
 	}
 
 	@Override
-	protected boolean isActivated(EntityPlayer e, ItemStack is, boolean held) {
+	public boolean isActivated(EntityPlayer e, ItemStack is, boolean held) {
 		return true;
 	}
 
 	@Override
-	protected CrystalElement getColor() {
+	public CrystalElement getColor(ItemStack is) {
 		return CrystalElement.WHITE;
 	}
 
@@ -90,7 +95,7 @@ public class ItemPurifyCrystal extends ItemPoweredChromaTool {
 	}
 
 	@Override
-	protected int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is) {
+	public int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is) {
 		return CrystalPotionController.isWorldHostile(world) ? 12 : 1;
 	}
 

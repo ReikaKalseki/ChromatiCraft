@@ -1301,7 +1301,7 @@ public class ChromaticEventManager {
 		DamageSource src = evt.source;
 		if (src instanceof LumenTurretDamage)
 			return;
-		if (evt.entity.worldObj.isRemote)
+		if (evt.entityLiving.worldObj.isRemote)
 			return;
 		if (evt.entityLiving.isDead || evt.entityLiving.getHealth() <= 0)
 			return;

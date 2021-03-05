@@ -196,7 +196,7 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 	}
 
 	@Override
-	protected CrystalElement getColor() {
+	public CrystalElement getColor(ItemStack is) {
 		return CrystalElement.BLACK;
 	}
 
@@ -211,12 +211,12 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 	}
 
 	@Override
-	protected int getChargeState(float frac) {
+	public int getChargeState(float frac) {
 		return frac > 0.1 ? 1 : 0;
 	}
 
 	@Override
-	protected int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is) {
+	public int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is) {
 		return 1;
 	}
 

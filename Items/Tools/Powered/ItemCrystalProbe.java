@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Auxiliary.Render.ProbeInfoOverlayRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.StructureErrorOverlays;
 import Reika.ChromatiCraft.Auxiliary.Structure.RitualStructure;
 import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
+import Reika.ChromatiCraft.Magic.ToolChargingSystem;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -66,10 +67,10 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool implements Dynamical
 			int z = mov.blockZ;
 			int s = mov.sideHit;
 			Inspections i = Inspections.list[this.getActionType(is)];
-			if (i != null && i.isValid(world, x, y, z) && this.getCharge(is) >= i.energyCost) {
+			if (i != null && i.isValid(world, x, y, z) && ToolChargingSystem.instance.getCharge(is) >= i.energyCost) {
 				ChromaSounds.LOREHEX.playSound(ep, 1, 1);
 				if (i.doEffect(world, x, y, z, s, ep, is)) {
-					this.removeCharge(is, i.energyCost);
+					ToolChargingSystem.instance.removeCharge(is, i.energyCost);
 				}
 			}
 		}
@@ -124,11 +125,11 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool implements Dynamical
 
 	@Override
 	public boolean hasEffect(ItemStack is) {
-		return this.getCharge(is)/(float)this.getMaxCharge() > 0.8;
+		return ToolChargingSystem.instance.getCharge(is)/(float)this.getMaxCharge() > 0.8;
 	}
 
 	@Override
-	protected CrystalElement getColor() {
+	public CrystalElement getColor(ItemStack is) {
 		return CrystalElement.BLUE;
 	}
 
@@ -143,13 +144,13 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool implements Dynamical
 	}
 
 	@Override
-	protected int getChargeState(float frac) {
+	public int getChargeState(float frac) {
 		return frac >= Inspections.getMostExpensiveOperation().energyCost/(float)this.getMaxCharge() ? Math.max(1, super.getChargeState(frac)) : 0;
 	}
 
 	@Override
-	protected boolean isActivated(EntityPlayer e, ItemStack is, boolean held) {
-		return this.getCharge(is) >= this.getRequiredCharge(is);
+	public boolean isActivated(EntityPlayer e, ItemStack is, boolean held) {
+		return ToolChargingSystem.instance.getCharge(is) >= this.getRequiredCharge(is);
 	}
 
 	private int getRequiredCharge(ItemStack is) {
@@ -157,7 +158,7 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool implements Dynamical
 	}
 
 	@Override
-	protected int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is) {
+	public int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is) {
 		return 0;
 	}
 

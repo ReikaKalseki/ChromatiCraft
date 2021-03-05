@@ -25,6 +25,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidRegistry;
 
@@ -36,6 +37,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.MusicScore.Note;
 import Reika.DragonAPI.Instantiable.MusicScore.ScoreTrack;
@@ -56,6 +58,7 @@ import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
 import Reika.ReactorCraft.API.RadiationHandler;
 
 import cpw.mods.fml.common.Loader;
@@ -310,6 +313,10 @@ public class CrystalMusicTemple {
 			RainbowTreeEffects.instance.addDecayClearing(world, -1);
 		}
 
+		if (ModList.THAUMCRAFT.isLoaded()) {
+			this.clearTaintAndEerie(world);
+		}
+
 		if (Loader.isModLoaded("pixelmon")) {
 			try {
 				Block b = GameRegistry.findBlock("pixelmon", "tidal_bell");
@@ -317,6 +324,9 @@ public class CrystalMusicTemple {
 					long time = world.getWorldTime();
 					world.setWorldTime(13000);
 					TileEntity te = b.createTileEntity(world, 0);
+					te.xCoord = tileLocation.xCoord;
+					te.yCoord = tileLocation.yCoord;
+					te.zCoord = tileLocation.zCoord;
 
 					Field f1 = te.getClass().getDeclaredField("spawning");
 					Field f2 = te.getClass().getDeclaredField("owner");
@@ -340,6 +350,20 @@ public class CrystalMusicTemple {
 			List<Entity> li = world.getEntitiesWithinAABB(RadiationHandler.getRadiationClass(), box);
 			for (Entity e : li) {
 				e.setDead();
+			}
+		}
+	}
+
+	@ModDependent(ModList.THAUMCRAFT)
+	private void clearTaintAndEerie(World world) {
+		for (int i = -128; i <= 128; i++) {
+			for (int k = -128; k <= 128; k++) {
+				int dx = tileLocation.xCoord+i;
+				int dz = tileLocation.zCoord+k;
+				BiomeGenBase b = world.getBiomeGenForCoords(dx, dz);
+				if (b.biomeID == ThaumIDHandler.Biomes.EERIE.getID() || b.biomeID == ThaumIDHandler.Biomes.TAINT.getID()) {
+					ReikaWorldHelper.convertBiomeRegionFrom(world, dx, dz, b, null, BiomeGenBase.forest, 2048);
+				}
 			}
 		}
 	}

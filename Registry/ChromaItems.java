@@ -42,6 +42,7 @@ import Reika.ChromatiCraft.Items.ItemTieredResource;
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemLinkedTilePlacer;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
+import Reika.ChromatiCraft.Items.Tools.ItemBoostedPendant;
 import Reika.ChromatiCraft.Items.Tools.ItemBottleneckFinder;
 import Reika.ChromatiCraft.Items.Tools.ItemBulkMover;
 import Reika.ChromatiCraft.Items.Tools.ItemCaveExitFinder;
@@ -124,7 +125,7 @@ public enum ChromaItems implements ItemEnum {
 	POTION(0, true, 		"crystal.potion", 		ItemCrystalPotion.class),
 	CLUSTER(80, true, 		"crystal.cluster", 		ItemCluster.class),
 	PENDANT(96, true, 		"crystal.pendant", 		ItemPendant.class),
-	PENDANT3(112, true, 	"crystal.pendant3", 	ItemPendant.class),
+	PENDANT3(112, true, 	"crystal.pendant3", 	ItemBoostedPendant.class),
 	SEED(128, true, 		"crystal.seeds", 		ItemCrystalSeeds.class),
 	ENDERCRYSTAL(0, true, 	"chroma.endercrystal", 	ItemEnderCrystal.class),
 	DYE(48, true,			"dye.item", 			ItemCrystalBasic.class),

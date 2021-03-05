@@ -279,10 +279,12 @@ public class CrystalPotionController {
 						if (doFX)
 							ep.worldObj.playSoundAtEntity(ep, "random.orb", 0.2F, rand.nextFloat()*2);
 						int amt = 1;
-						if (ItemPendant.isEnhancedZambarauPendantActive(ep)) {
+
+						int lvl = ItemPendant.getActivePendantLevel(ep, CrystalElement.PURPLE);
+						if (lvl == 1) {
 							amt *= 3;
 						}
-						else if (ItemPendant.isZambarauPendantActive(ep)) {
+						else if (lvl == 0) {
 							amt *= 2;
 						}
 						ep.addExperience(amt);

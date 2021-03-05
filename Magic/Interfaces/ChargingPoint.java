@@ -32,4 +32,6 @@ public interface ChargingPoint extends CrystalNetworkTile, LumenTile {
 
 	public Coordinate getChargeParticleOrigin(EntityPlayer ep, CrystalElement e);
 
+	public float getToolChargingPower(EntityPlayer ep, CrystalElement e);
+
 }

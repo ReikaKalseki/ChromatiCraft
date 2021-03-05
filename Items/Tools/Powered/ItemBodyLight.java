@@ -15,7 +15,12 @@ public class ItemBodyLight extends ItemPoweredChromaTool {
 	}
 
 	@Override
-	protected CrystalElement getColor() {
+	public boolean canChargeWhilePlayerCharges() {
+		return true;
+	}
+
+	@Override
+	public CrystalElement getColor(ItemStack is) {
 		return CrystalElement.BLUE;
 	}
 
@@ -32,13 +37,13 @@ public class ItemBodyLight extends ItemPoweredChromaTool {
 	}
 
 	@Override
-	protected boolean isActivated(EntityPlayer e, ItemStack is, boolean held) {
+	public boolean isActivated(EntityPlayer e, ItemStack is, boolean held) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	protected int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is) {
+	public int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is) {
 		// TODO Auto-generated method stub
 		return 0;
 	}

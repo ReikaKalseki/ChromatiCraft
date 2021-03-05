@@ -13,24 +13,20 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
-import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 
 public class ItemPendant extends ItemCrystalBasic {
 
-	private static final String TAG = "last_kuropend";
-	private static final String TAG2 = "last_kuropend2";
-
-	private static final String TAGb = "last_zambpend";
-	private static final String TAG2b = "last_zambpend2";
+	private static final String ROOT_KEY = "pendant_status";
 
 	public ItemPendant(int tex) {
 		super(tex);
@@ -45,47 +41,57 @@ public class ItemPendant extends ItemCrystalBasic {
 	}
 
 	@Override
-	public void onUpdate(ItemStack is, World world, Entity e, int slot, boolean selected) {
-		int level = this.isEnhanced() ? 2 : 0;
-		if (e instanceof EntityPlayer) {
-			EntityPlayer ep = (EntityPlayer) e;
-			CrystalElement color = CrystalElement.elements[is.getItemDamage()];
-			if (color == CrystalElement.BLACK) {
-				e.getEntityData().setLong(this.isEnhanced() ? TAG2 : TAG, world.getTotalWorldTime());
-			}
-			else if (color == CrystalElement.PURPLE) {
-				e.getEntityData().setLong(this.isEnhanced() ? TAG2b : TAGb, world.getTotalWorldTime());
-			}
-			else {
-				int dura = this.isEnhanced() ? 6000 : color == CrystalElement.BLUE ? 3 : 100;
-				PotionEffect pot = CrystalPotionController.getEffectFromColor(color, dura, level);
-				if (pot == null || color == CrystalElement.BLUE || !ep.isPotionActive(pot.getPotionID())) {
-					CrystalPotionController.applyEffectFromColor(dura, level, ep, color, true);
+	public final void onUpdate(ItemStack is, World world, Entity e, int slot, boolean selected) {
+		if (this.isFunctional(is)) {
+			int level = this.isEnhanced() ? 2 : 0;
+			if (e instanceof EntityPlayer) {
+				EntityPlayer ep = (EntityPlayer) e;
+				CrystalElement color = CrystalElement.elements[is.getItemDamage()];
+				long bits = world.getTotalWorldTime() & (~1);
+				bits |= this.isEnhanced() ? 1 : 0;
+				getRootStorage(e).setLong(color.name(), bits);
+				if (color == CrystalElement.BLACK || color == CrystalElement.PURPLE) {
+
 				}
+				else {
+					int dura = this.isEnhanced() ? 6000 : color == CrystalElement.BLUE ? 3 : 100;
+					PotionEffect pot = CrystalPotionController.getEffectFromColor(color, dura, level);
+					if (pot == null || color == CrystalElement.BLUE || !ep.isPotionActive(pot.getPotionID())) {
+						CrystalPotionController.applyEffectFromColor(dura, level, ep, color, true);
+					}
+				}
+				if (ChromaOptions.NOPARTICLES.getState())
+					ReikaEntityHelper.setNoPotionParticles(ep);
+				if (!world.isRemote)
+					this.onTick(is, world, ep, slot);
 			}
-			if (ChromaOptions.NOPARTICLES.getState())
-				ReikaEntityHelper.setNoPotionParticles(ep);
 		}
 	}
 
-	public static boolean isKuroPendantActive(EntityPlayer ep) {
-		return ep.worldObj.getTotalWorldTime()-ep.getEntityData().getLong(TAG) < 20;
+	protected void onTick(ItemStack is, World world, EntityPlayer ep, int slot) {
+
 	}
 
-	public static boolean isEnhancedKuroPendantActive(EntityPlayer ep) {
-		return ep.worldObj.getTotalWorldTime()-ep.getEntityData().getLong(TAG2) < 20;
+	protected boolean isFunctional(ItemStack is) {
+		return true;
 	}
 
-	public static boolean isZambarauPendantActive(EntityPlayer ep) {
-		return ep.worldObj.getTotalWorldTime()-ep.getEntityData().getLong(TAGb) < 20;
-	}
-
-	public static boolean isEnhancedZambarauPendantActive(EntityPlayer ep) {
-		return ep.worldObj.getTotalWorldTime()-ep.getEntityData().getLong(TAG2b) < 20;
+	private static NBTTagCompound getRootStorage(Entity e) {
+		if (!e.getEntityData().hasKey(ROOT_KEY)) {
+			e.getEntityData().setTag(ROOT_KEY, new NBTTagCompound());
+		}
+		return e.getEntityData().getCompoundTag(ROOT_KEY);
 	}
 
 	public boolean isEnhanced() {
-		return this == ChromaItems.PENDANT3.getItemInstance();
+		return false;
+	}
+
+	/** 0 for basic, 1 for enhanced, -1 for none */
+	public static int getActivePendantLevel(EntityPlayer ep, CrystalElement e) {
+		long val = getRootStorage(ep).getLong(e.name());
+		long dur = ep.worldObj.getTotalWorldTime()-val;
+		return dur <= 20 ? (int)(dur & 1) : -1;
 	}
 
 }

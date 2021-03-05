@@ -275,4 +275,9 @@ public class TileEntityPersonalCharger extends CrystalReceiverBase implements Ch
 		return true;
 	}
 
+	@Override
+	public float getToolChargingPower(EntityPlayer ep, CrystalElement e) {
+		return 0;
+	}
+
 }

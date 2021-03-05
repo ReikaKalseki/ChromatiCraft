@@ -61,6 +61,8 @@ import Reika.ChromatiCraft.Items.ItemMagicBranch;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalColors;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeTypes;
+import Reika.ChromatiCraft.Magic.ToolChargingSystem;
+import Reika.ChromatiCraft.Magic.Interfaces.PoweredItem;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.Magic.Progression.ProgressAccess;
@@ -622,9 +624,9 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 		if (this == ACCEL) {
 			return ChromaItems.ADJACENCY.getStackOfMetadata(CrystalElement.LIGHTBLUE.ordinal());
 		}
-		if (item != null && item.getItemInstance() instanceof ItemPoweredChromaTool) {
-			ItemPoweredChromaTool i = (ItemPoweredChromaTool)item.getItemInstance();
-			return i.getChargedItem(i.getMaxCharge());
+		if (item != null && item.getItemInstance() instanceof PoweredItem) {
+			PoweredItem i = (PoweredItem)item.getItemInstance();
+			return ToolChargingSystem.instance.getChargedItem((Item & PoweredItem)i, i.getMaxCharge());
 		}
 		return iconItem;
 	}

@@ -84,7 +84,7 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	CAVELIGHTERSIZE("Cave Lighter Zone Size", 8),
 	//BIOMEFX("Biome FX", true),
 	CONNECTEDCRYSTALSTONE("Connected Crystalline Stone Textures", false),
-	POWEREDACCEL("Adjacency Upgrades Require Energy", false),
+	POWEREDACCEL("Adjacency Upgrades Require Energy", true),
 	PROGRESSDURATION("Progression Notification Duration", 800),
 	RECEIVEDIMSOUND("Play Dimension Join Sound For Others", true),
 	BIOMEBLEND("Blend CC Biome Edges", true),
@@ -102,6 +102,7 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	FENCEHOPS("Crystal Fence segment count limit", 64),
 	STRUCTTRIES("Structure Generation Attempts Per Flagged Chunk - affects worldgen CPU use and structure rarity", 20),
 	PROGSHADER("Use Alternate Progress Shader", false),
+	POWEREDPENDANTS("Enhanced Pendants Require Charging", false),
 	;
 
 	private String label;
