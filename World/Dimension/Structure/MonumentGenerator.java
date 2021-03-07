@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -35,6 +35,7 @@ public class MonumentGenerator {
 	protected int posX;
 	protected int posY;
 	protected int posZ;
+	protected Coordinate controller;
 
 	public MonumentGenerator() {
 
@@ -50,6 +51,10 @@ public class MonumentGenerator {
 
 	public final int getPosZ() {
 		return posZ;
+	}
+
+	public Coordinate getController() {
+		return controller;
 	}
 
 	public final void startCalculate(int x, int z, Random rand) {
@@ -73,7 +78,7 @@ public class MonumentGenerator {
 
 		new MonumentStructure().generate(world, rand, x-21, posY, z-21);
 		new MonumentMineralBlocks(this).generate(world, rand, x-21, posY, z-21);
-		new MonumentHighlighter().generate(world, rand, x-21, posY, z-21);
+		controller = new MonumentHighlighter().generate(world, rand, x-21, posY, z-21);
 
 		//center.generate(world, rand, x, posY, z, li);
 		/*

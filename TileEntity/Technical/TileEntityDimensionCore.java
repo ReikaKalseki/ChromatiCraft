@@ -58,12 +58,12 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Interfaces.TileEntity.PlayerBreakHook;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
-import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -382,6 +382,7 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements Pla
 	private void spawnConnectFX(World world, int x, int y, int z) {
 		int sp = 8;
 		long tick = world.getTotalWorldTime(); //this.getTicksExisted();
+		//ReikaJavaLibrary.pConsole(tick);
 		if (tick%sp == 0) {
 			ArrayList<ArrayList<ImmutablePair<CrystalElement, Integer>>> song = melody[(ChunkProviderChroma.getMonumentGenerator().hashCode() ^ Minecraft.getMinecraft().hashCode())%melody.length];
 			ArrayList<ImmutablePair<CrystalElement, Integer>> li = song.get((int)((tick/sp)%song.size()));
@@ -680,7 +681,7 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements Pla
 		return locations.get(e);
 	}
 
-	void setColor(CrystalElement e) {
+	public void setColor(CrystalElement e) {
 		color = e;
 	}
 

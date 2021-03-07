@@ -32,7 +32,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.OceanStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.SnowStructure;
 import Reika.ChromatiCraft.Base.GeneratedStructureBase;
@@ -42,6 +41,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.LootChestAccessEvent;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
+import Reika.ChromatiCraft.Magic.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -95,6 +95,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	private boolean isMonument;
 	private boolean triggeredMonument;
 	private MonumentCompletionRitual monument;
+	//private long monumentTime;
 
 	@Override
 	public ChromaTiles getTile() {
@@ -108,6 +109,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 		if (isMonument && triggeredMonument && monument != null) {
 			monument.tick();
+			//monumentTime = monument.tick();
+			//int[] parts = ReikaJavaLibrary.splitLong(monumentTime);
+			//ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.MONUMENTSYNC.ordinal(), this, parts[0], parts[1]);
 		}
 		if (isMonument && DragonAPICore.debugtest) {
 			for (int i = 0; i < 16; i++) {
@@ -148,7 +152,12 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			}
 		}
 	}
-
+	/*
+	public void syncMonument(long time) {
+		monument.setTime(time);
+		monumentTime = time;
+	}
+	 */
 	@Override
 	public void onHit(World world, int x, int y, int z, EntityPlayer ep) {
 		this.trigger(x, y, z, ep);
@@ -912,7 +921,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			return false;
 		triggeredMonument = true;
 		monument = new MonumentCompletionRitual(worldObj, xCoord, yCoord, zCoord, ep);
-		if (monument.doChecks(false)) {
+		if (monument.doChecks()) {
 			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.MONUMENTSTART.ordinal(), this, 128);
 			monument.start();
 			return true;

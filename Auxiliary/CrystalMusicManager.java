@@ -232,6 +232,26 @@ public class CrystalMusicManager {
 		return (Set<CrystalElement>)sourceElements.get(key);
 	}
 
+	public Set<CrystalElement> getColorsWithKeyAnyOctave(MusicKey key) {
+		Set<CrystalElement> set = this.getColorsWithKey(key);
+		if (set.isEmpty()) {
+			set = this.getColorsWithKey(key.getOctave());
+		}
+		if (set.isEmpty()) {
+			set = this.getColorsWithKey(key.getInterval(-12));
+		}
+		if (set.isEmpty()) {
+			set = this.getColorsWithKey(key.getInterval(-24));
+		}
+		if (set.isEmpty()) {
+			set = this.getColorsWithKey(key.getInterval(-36));
+		}
+		if (set.isEmpty()) {
+			set = this.getColorsWithKey(key.getInterval(24));
+		}
+		return set;
+	}
+
 	public boolean canPlayKey(MusicKey key) {
 		return sourceElements.containsKey(key);
 	}

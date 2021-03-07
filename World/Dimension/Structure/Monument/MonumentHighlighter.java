@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -18,13 +18,14 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 
 
 public class MonumentHighlighter {
 
-	public void generate(ChunkSplicedGenerationCache world, Random r, int i, int j, int k) {
+	public Coordinate generate(ChunkSplicedGenerationCache world, Random r, int i, int j, int k) {
 
 		world.setTileEntity(i + 21, j + 5, k + 21, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), new MonumentPlace());
 
@@ -46,6 +47,8 @@ public class MonumentHighlighter {
 		world.setBlock(i + 13, j + 11, k + 35, rn, 13);
 		world.setBlock(i + 7, j + 11, k + 29, rn, 14);
 		world.setBlock(i + 3, j + 11, k + 24, rn, 15);
+
+		return new Coordinate(i + 21, j + 5, k + 21);
 	}
 
 	private static class MonumentPlace implements TileCallback {

@@ -263,22 +263,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 	}
 
 	private boolean playNote(World world, int x, int y, int z, Note n, int track) {
-		Set<CrystalElement> set = CrystalMusicManager.instance.getColorsWithKey(n.key);
-		if (set.isEmpty()) {
-			set = CrystalMusicManager.instance.getColorsWithKey(n.key.getOctave());
-		}
-		if (set.isEmpty()) {
-			set = CrystalMusicManager.instance.getColorsWithKey(n.key.getInterval(-12));
-		}
-		if (set.isEmpty()) {
-			set = CrystalMusicManager.instance.getColorsWithKey(n.key.getInterval(-24));
-		}
-		if (set.isEmpty()) {
-			set = CrystalMusicManager.instance.getColorsWithKey(n.key.getInterval(-36));
-		}
-		if (set.isEmpty()) {
-			set = CrystalMusicManager.instance.getColorsWithKey(n.key.getInterval(24));
-		}
+		Set<CrystalElement> set = CrystalMusicManager.instance.getColorsWithKeyAnyOctave(n.key);
 		boolean canPlay = false;
 
 		if (!set.isEmpty()) {

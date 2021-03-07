@@ -36,7 +36,6 @@ import net.minecraftforge.fluids.FluidRegistry;
 
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
-import Reika.ChromatiCraft.Auxiliary.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Auxiliary.RecursiveCastingAutomationSystem;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityCalls;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
@@ -90,6 +89,7 @@ import Reika.ChromatiCraft.Items.Tools.Powered.ItemStructureFinder;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemFlightWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
+import Reika.ChromatiCraft.Magic.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Artefact.ArtefactWithDataCrystalAlloyingEffect;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
@@ -754,7 +754,10 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case MONUMENTSTART:
 					((TileEntityStructControl)tile).triggerMonumentClient(ep);
-					break;
+					break;/*
+				case MONUMENTSYNC:
+					((TileEntityStructControl)tile).syncMonument(ReikaJavaLibrary.buildLong(data[0], data[1]));
+					break;*/
 				case MONUMENTCOMPLETE:
 					MonumentCompletionRitual.completeMonumentClient(world, data[0], data[1], data[2]);
 					break;
@@ -762,7 +765,7 @@ public class ChromatiPackets implements PacketHandler {
 					MonumentCompletionRitual.resetSettings(world, data[0], data[1], data[2]);
 					break;
 				case MONUMENTEVENT:
-					MonumentCompletionRitual.triggerMonumentEventClient(world, data[0], data[1], data[2], data[3], data[4], data[5]);
+					MonumentCompletionRitual.triggerMonumentEventClient(world, data[0], data[1], data[2], data[3]);
 					break;
 				case MONUMENTEND:
 					((TileEntityStructControl)tile).endMonumentRitual();

@@ -357,7 +357,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 					TileEntityStructControl te = (TileEntityStructControl)tile;
 					if (te.isMonument()) {
 						ChromatiCraft.logger.debug("Tile is a monument. Side="+FMLCommonHandler.instance().getEffectiveSide());
-						if (TuningThresholds.MONUMENT.isSufficientlyTuned(ep)) {
+						if (world.provider.dimensionId == 0 || TuningThresholds.MONUMENT.isSufficientlyTuned(ep)) {
 							ChromatiCraft.logger.debug("Player is tuned. Side="+FMLCommonHandler.instance().getEffectiveSide());
 							if (te.triggerMonument(ep)) {
 								ChromatiCraft.logger.debug("Monument triggered. Side="+FMLCommonHandler.instance().getEffectiveSide());

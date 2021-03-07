@@ -70,9 +70,9 @@ public enum ChromaSounds implements ChromaSound, DynamicSound, VariableSound {
 	REPEATERSURGE_WEAK("repeatersurge_weak"),
 	FIRE("fire"),
 	LASER("laser"),
-	MONUMENT("monument"),
+	MONUMENT("monument2"),
 	MONUMENTRAY("monumentray"),
-	MONUMENTCOMPLETE("monumentcomplete"),
+	//MONUMENTCOMPLETE("monumentcomplete"),
 	BUFFERWARNING("buffer_warning"),
 	BUFFERWARNING_LOW("buffer_warning2"),
 	BUFFERWARNING_EMPTY("buffer_warning3"),
@@ -285,7 +285,7 @@ public enum ChromaSounds implements ChromaSound, DynamicSound, VariableSound {
 	public boolean preload() {
 		switch(this) {
 			case MONUMENT:
-			case MONUMENTCOMPLETE:
+				//case MONUMENTCOMPLETE:
 			case CRAFTING:
 			case CRAFTING_BOOST:
 			case POWERCRAFT:
