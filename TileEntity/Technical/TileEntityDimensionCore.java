@@ -86,6 +86,8 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements Pla
 
 	private boolean primed = false;
 
+	public float shaderScale = 1;
+
 	static {
 		addColor(CrystalElement.BLACK, 5, 11, 18);
 		addColor(CrystalElement.RED, 8, 11, 14);

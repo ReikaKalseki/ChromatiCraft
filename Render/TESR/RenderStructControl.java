@@ -10,7 +10,6 @@
 package Reika.ChromatiCraft.Render.TESR;
 
 import java.util.Collection;
-import java.util.HashSet;
 
 import org.lwjgl.opengl.GL11;
 
@@ -78,14 +77,17 @@ public class RenderStructControl extends ChromaRenderBase {
 						double sz = 16;
 						GL11.glPushMatrix();
 						GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+						//GL11.glDisable(GL11.GL_TEXTURE_2D);
 						GL11.glShadeModel(GL11.GL_SMOOTH);
-						ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/monument_lines.png");
+						ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/monument_lines_big.png");
 						//v5.startDrawingQuads();
 						v5.startDrawing(GL11.GL_TRIANGLE_FAN);
 						v5.setBrightness(240);
 						v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(0xffffff, br));
 						v5.addVertexWithUV(0.5, 0, 0.5, 0.5, 0.5);
 						double r0 = 18.5;
+						double r1 = 12;
+						double dt = r1/r0*0.5;
 						for (int i = 0; i <= 16; i++) {
 							double a0 = (i-8)*22.5+11.25;
 							if (i%4 == 1)
@@ -95,26 +97,56 @@ public class RenderStructControl extends ChromaRenderBase {
 							double d = 6;//4;
 							double min = i == 0 ? a0 : a0-d;
 							double max = i == 16 ? a0 : a0+d;
+							//TODO make the color fade sharper with a triangle strip ring
 							for (double a = min; a <= max; a += d) {
 								double ang = Math.toRadians(a);
-								double r = r0;//Math.min(r0, r0+3*(1-Math.cos(ang*4)));
 								double cs = Math.cos(ang);
 								double ss = Math.sin(ang);
-								double dx = 0.5+r*cs;
-								double dz = 0.5+r*ss;
-								double u = 0.5+0.5*cs;
-								double v = 0.5+0.5*ss;
+								double dx = 0.5+r1*cs;
+								double dz = 0.5+r1*ss;
+								double u = 0.5+dt*cs;
+								double v = 0.5+dt*ss;
 								//v5.setColorOpaque_I(CrystalElement.getBlendedColor((int)((a+180-12.25)*2), 45));
-								HashSet<CrystalElement> mix = new HashSet();
-								mix.add(CrystalElement.elements[i%16]);
-								if (a < max) {
-									mix.add(CrystalElement.elements[((i-1)%16+16)%16]);
-								}
-								if (a > min) {
-									mix.add(CrystalElement.elements[(i+1)%16]);
-								}
-								v5.setColorOpaque_I(mix.isEmpty() ? 0 : this.getColorMix(mix));
+								//v5.setColorOpaque_I(mix.isEmpty() ? 0 : this.getColorMix(mix));
+								CrystalElement e = CrystalElement.elements[i%16];
+								int c = e.getColor();
+								c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, MonumentCompletionRitual.getIntensity(e));
+								v5.setColorOpaque_I(c);
 								v5.addVertexWithUV(dx, 0, dz, u, v);
+							}
+						}
+
+						v5.draw();
+						v5.startDrawing(GL11.GL_TRIANGLE_STRIP);
+						v5.setBrightness(240);
+						for (int i = 0; i <= 16; i++) {
+							double a0 = (i-8)*22.5+11.25;
+							if (i%4 == 1)
+								a0 -= 5;
+							else if (i%4 == 2)
+								a0 += 5;
+							double d = 6;//4;
+							double min = i == 0 ? a0 : a0-d;
+							double max = i == 16 ? a0 : a0+d;
+							//TODO make the color fade sharper with a triangle strip ring
+							for (double a = min; a <= max; a += d) {
+								double ang = Math.toRadians(a);
+								double cs = Math.cos(ang);
+								double ss = Math.sin(ang);
+								double dx1 = 0.5+r1*cs;
+								double dz1 = 0.5+r1*ss;
+								double dx2 = 0.5+r0*cs;
+								double dz2 = 0.5+r0*ss;
+								double u1 = 0.5+dt*cs;
+								double v1 = 0.5+dt*ss;
+								double u2 = 0.5+0.5*cs;
+								double v2 = 0.5+0.5*ss;
+								CrystalElement e = CrystalElement.elements[i%16];
+								int c = e.getColor();
+								c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, MonumentCompletionRitual.getIntensity(e));
+								v5.setColorOpaque_I(c);
+								v5.addVertexWithUV(dx1, 0, dz1, u1, v1);
+								v5.addVertexWithUV(dx2, 0, dz2, u2, v2);
 							}
 						}
 
@@ -143,17 +175,17 @@ public class RenderStructControl extends ChromaRenderBase {
 		int r = 0;
 		int g = 0;
 		int b = 0;
-		int n = 0;
+		float n = 0;
 		for (CrystalElement e : mix) {
 			float f = MonumentCompletionRitual.getIntensity(e);
 			if (f > 0) {
 				r += f*e.getRed();
 				g += f*e.getGreen();
 				b += f*e.getBlue();
-				n++;
+				n += f;
 			}
 		}
-		return n == 0 ? 0 : ReikaColorAPI.RGBtoHex(r/n, g/n, b/n);
+		return n == 0 ? 0 : ReikaColorAPI.RGBtoHex((int)(r/n), (int)(g/n), (int)(b/n));
 	}
 
 	private void activateShaders(TileEntityStructControl te, float par8) {

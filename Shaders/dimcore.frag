@@ -7,12 +7,13 @@ uniform int coreGreen;
 uniform int coreBlue;
 
 uniform float distance;
+uniform float scaleFactor;
 
 void main() {
     vec2 coreXY = getScreenPos(0.5, 0.5, 0.5);
 	
 	float distv = distsq(coreXY, texcoord);
-	float distfac_color = max(0.0, min(1.0, 1.0-0.6*distv*distance)-min(1.0, 0.04/(distv*distance)));
+	float distfac_color = max(0.0, min(1.0, 1.0-0.6*distv*distance/scaleFactor)-min(1.0, 0.04/(distv*distance)));
 	float distfac_vertex = max(0.0, min(1.0, 3.5-40.0*distv*distance));
 	float cf = intensity*distfac_color*0.55;
 	float vf = intensity*distfac_vertex;

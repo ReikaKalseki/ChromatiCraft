@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Magic;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -42,6 +43,7 @@ import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionTicker;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.ChromatiCraft.World.Dimension.Structure.MonumentGenerator;
+import Reika.DragonAPI.IO.Shaders.ShaderProgram.Vec4;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
@@ -105,6 +107,7 @@ public class MonumentCompletionRitual {
 	private final ArrayList<TimedEvent> events;
 	private final ArrayList<RayNote> notes;
 	private static final float[] colorFade = new float[16];
+	private static final HashMap<String, Object> shaderData = new HashMap();
 	private MusicKey activeKey = null;
 
 	private static boolean runningRituals;
@@ -254,10 +257,15 @@ public class MonumentCompletionRitual {
 		runningRituals = false;
 		for (int i = 0; i < 16; i++)
 			colorFade[i] = 0;
+		shaderData.clear();
 	}
 
 	public static float getIntensity(CrystalElement e) {
 		return colorFade[e.ordinal()];
+	}
+
+	public static Map<String, Object> getShaderFields() {
+		return Collections.unmodifiableMap(shaderData);
 	}
 
 	public MonumentCompletionRitual(World world, int x, int y, int z, EntityPlayer ep) {
@@ -406,12 +414,19 @@ public class MonumentCompletionRitual {
 
 		Set<CrystalElement> set = activeKey == null ? null : CrystalMusicManager.instance.getColorsWithKeyAnyOctave(activeKey);
 		for (int i = 0; i < 16; i++) {
-			colorFade[i] = set != null && set.contains(CrystalElement.elements[i]) ? Math.min(1, colorFade[i]+0.05F) : Math.max(0, colorFade[i]-0.025F);
+			colorFade[i] = set != null && set.contains(CrystalElement.elements[i]) ? Math.min(1, colorFade[i]+0.04F) : Math.max(0, colorFade[i]-0.02F);
+			TileEntityDimensionCore te = this.getCore(CrystalElement.elements[i]);
+			shaderData.put("glow"+i, new Vec4(te.xCoord+0.5, y-3.5, te.zCoord+0.5, colorFade[i]));
+			te.shaderScale = 1+colorFade[i]*5;
 		}
 	}
 
-	private void playRayNote(RayNote n) {
+	private TileEntityDimensionCore getCore(CrystalElement e) {
+		return (TileEntityDimensionCore)TileEntityDimensionCore.getLocation(e).offset(x, y, z).getTileEntity(world);
+	}
 
+	private void playRayNote(RayNote n) {
+		//this.doRay(n.key);
 	}
 
 	private void onEvent(EventType type) {
@@ -694,7 +709,7 @@ public class MonumentCompletionRitual {
 			LightningBolt b = new LightningBolt(new DecimalPosition(x+0.5, y+0.5, z+0.5), end, 8);
 			b.setVariance(0.9);
 			b.maximize();
-			int l = 5+rand.nextInt(20);
+			int l = 20+rand.nextInt(40);
 			for (int i = 0; i < b.nsteps; i++) {
 				DecimalPosition pos1 = b.getPosition(i);
 				DecimalPosition pos2 = b.getPosition(i+1);

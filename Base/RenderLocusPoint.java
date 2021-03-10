@@ -24,6 +24,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 
 import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
+import Reika.ChromatiCraft.Magic.MonumentCompletionRitual;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.RayTracer.RayTracerWithCache;
 import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset;
@@ -46,6 +47,8 @@ public abstract class RenderLocusPoint extends ChromaRenderBase {
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glEnable(GL11.GL_BLEND);
+		if (MonumentCompletionRitual.areRitualsRunning())
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glDepthMask(false);
 		GL11.glColor4f(1, 1, 1, 1);
 		GL11.glTranslated(par2, par4, par6);

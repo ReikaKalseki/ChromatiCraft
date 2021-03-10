@@ -17,6 +17,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 
 import Reika.ChromatiCraft.Base.RenderLocusPoint;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
+import Reika.ChromatiCraft.Magic.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
@@ -36,12 +37,13 @@ public class RenderDimensionCore extends RenderLocusPoint {
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 			//LOS.update(te);
 			LOS.setOrigins(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5, ep.posX, ep.posY, ep.posZ);
-			if (LOS.isClearLineOfSight(te)) {
+			if (MonumentCompletionRitual.areRitualsRunning() || LOS.isClearLineOfSight(te)) {
 				ChromaShaders.DIMCORE.setIntensity(1);
 				ChromaShaders.DIMCORE.getShader().addFocus(tile);
 				double dist = ep.getDistance(tile.xCoord+0.5, tile.yCoord+0.5, tile.zCoord+0.5);
 				HashMap<String, Object> map = new HashMap();
 				map.put("distance", dist*dist);
+				map.put("scaleFactor", te.shaderScale);
 				map.put("coreRed", te.getColor().getRed());
 				map.put("coreGreen", te.getColor().getGreen());
 				map.put("coreBlue", te.getColor().getBlue());

@@ -8,12 +8,12 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.WorldRenderer;
 
+import Reika.ChromatiCraft.Magic.MonumentCompletionRitual;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterDestructionRitual;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterRitualClientEffects;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterRitualClientEffects.EffectVisual;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.IO.Shaders.ShaderRegistry;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
@@ -40,7 +40,7 @@ public class WorldRenderIntercept {
 	}
 
 	public static void callGlLists(IntBuffer lists) {
-		if (ModList.VOIDMONSTER.isLoaded()) {
+		if (MonumentCompletionRitual.areRitualsRunning() || ModList.VOIDMONSTER.isLoaded()) {
 			instance.runIntercept(lists);
 		}
 		else {
@@ -48,7 +48,7 @@ public class WorldRenderIntercept {
 		}
 	}
 
-	@ModDependent(ModList.VOIDMONSTER)
+	//@ModDependent(ModList.VOIDMONSTER)
 	private void runIntercept(IntBuffer lists) {
 		float f = 0;
 		if (VoidMonsterDestructionRitual.ritualsActive()) {
@@ -56,6 +56,10 @@ public class WorldRenderIntercept {
 				float f2 = e.getShaderIntensity();
 				f = Math.max(f, f2);
 			}
+		}
+		else if (MonumentCompletionRitual.areRitualsRunning()) {
+			f = 1;
+			ChromaShaders.VOIDRITUAL$WORLD.getShader().setFields(MonumentCompletionRitual.getShaderFields());
 		}
 		while (lists.remaining() > 0) {
 			int id = lists.get();
