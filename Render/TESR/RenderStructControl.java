@@ -18,9 +18,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.client.MinecraftForgeClient;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
+import Reika.ChromatiCraft.Magic.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Magic.Lore.LoreScripts.ScriptLocations;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaShaders;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.InWorldScriptRenderer;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
@@ -54,14 +58,74 @@ public class RenderStructControl extends ChromaRenderBase {
 
 			this.renderFlare(te, v5);
 
-			if (te.isInWorld() && Minecraft.getMinecraft().thePlayer.getDistanceSq(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5) < 576) {
-				this.renderScript(te, par8, v5);
+			double dd = Minecraft.getMinecraft().thePlayer.getDistanceSq(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
+			if (te.isInWorld()) {
+
+				if (dd < 576)
+					this.renderScript(te, par8, v5);
+
+				this.activateShaders(te, par8);
+
+				if (te.isMonument()) {
+					GL11.glTranslated(0, 0.005-4, 0);
+
+					double sz = 16;
+					GL11.glPushMatrix();
+					GL11.glShadeModel(GL11.GL_SMOOTH);
+					ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/monument_lines.png");
+					//v5.startDrawingQuads();
+					v5.startDrawing(GL11.GL_TRIANGLE_FAN);
+					v5.setBrightness(240);
+
+					/*
+					v5.setColorOpaque_I(c);
+					v5.addVertexWithUV(-sz, 0, sz+1, 0, 1);
+					v5.addVertexWithUV(sz+1, 0, sz+1, 1, 1);
+					v5.addVertexWithUV(sz+1, 0, -sz, 1, 0);
+					v5.addVertexWithUV(-sz, 0, -sz, 0, 0);
+					 */
+					v5.setColorOpaque_I(0xffffff);
+					v5.addVertexWithUV(0.5, 0, 0.5, 0.5, 0.5);
+					double r0 = 18.5;
+					for (int i = 0; i <= 16; i++) {
+						int idx = (i+8)%16;
+						CrystalElement e = CrystalElement.elements[idx];
+						double a = (i*22.5+11.25)%360D;
+						double ang = Math.toRadians(a);
+						double r = r0;//Math.min(r0, r0+3*(1-Math.cos(ang*4)));
+						double cs = Math.cos(ang);
+						double ss = Math.sin(ang);
+						double dx = 0.5+r*cs;
+						double dz = 0.5+r*ss;
+						double u = 0.5+0.5*cs;
+						double v = 0.5+0.5*ss;
+						//v5.setColorOpaque_I(CrystalElement.getBlendedColor((int)((a+180-12.25)*2), 45));
+						int c = e.getColor();
+						v5.setColorOpaque_I(c);
+						v5.addVertexWithUV(dx, 0, dz, u, v);
+					}
+
+					v5.draw();
+					GL11.glShadeModel(GL11.GL_FLAT);
+					GL11.glPopMatrix();
+				}
 			}
 
 			GL11.glPopMatrix();
 			GL11.glPopAttrib();
 		}
 		GL11.glPopAttrib();
+	}
+
+	private void activateShaders(TileEntityStructControl te, float par8) {
+		if (te.isMonument() && MonumentCompletionRitual.areRitualsRunning()) {
+			ChromaShaders.MONUMENT$GENERAL.rampUpIntensity(0.05F, 1.1F);
+			ChromaShaders.MONUMENT$GENERAL.refresh();
+			ChromaShaders.MONUMENT$GENERAL.lingerTime = 120;
+			ChromaShaders.MONUMENT$GENERAL.rampDownAmount = 0.0025F;
+			ChromaShaders.MONUMENT$GENERAL.rampDownFactor = 0.995F;
+			ChromaShaders.MONUMENT$GENERAL.getShader().setMatricesToCurrent();
+		}
 	}
 
 	private void renderScript(TileEntityStructControl te, float par8, Tessellator v5) {

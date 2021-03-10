@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -28,6 +28,8 @@ public class MonumentStructure {
 		this.doGenerate(world, i, j, k);
 		this.doGenerate2(world, i, j, k);
 		this.doGenerate3(world, i, j, k);
+
+		this.patch(world, i, j, k);
 	}
 
 	private void doGenerate(ChunkSplicedGenerationCache world, int i, int j, int k) {
@@ -3471,6 +3473,81 @@ public class MonumentStructure {
 		world.setBlock(i + 42, j + 10, k + 25, sh, ms);
 		world.setBlock(i + 42, j + 11, k + 18, sh, ms);
 		world.setBlock(i + 42, j + 11, k + 24, sh, ms);
+	}
+
+	private void patch(ChunkSplicedGenerationCache world, int i, int j, int k) {
+		world.setBlock(i + 22, j + 0, k + 8, sh, ms);
+		world.setBlock(i + 34, j + 0, k + 16, sh, ms);
+		world.setBlock(i + 34, j + 0, k + 17, sh, ms);
+		world.setBlock(i + 34, j + 0, k + 18, sh, ms);
+		world.setBlock(i + 34, j + 0, k + 19, sh, ms);
+		world.setBlock(i + 34, j + 0, k + 20, sh, ms);
+		world.setBlock(i + 34, j + 0, k + 21, sh, ms);
+		world.setBlock(i + 34, j + 0, k + 22, sh, ms);
+		world.setBlock(i + 34, j + 0, k + 23, sh, ms);
+		world.setBlock(i + 34, j + 0, k + 24, sh, ms);
+		world.setBlock(i + 34, j + 0, k + 25, sh, ms);
+		world.setBlock(i + 34, j + 0, k + 26, sh, ms);
+		world.setBlock(i + 33, j + 0, k + 15, sh, ms);
+		world.setBlock(i + 33, j + 0, k + 27, sh, ms);
+		world.setBlock(i + 32, j + 0, k + 14, sh, ms);
+		world.setBlock(i + 32, j + 0, k + 28, sh, ms);
+		world.setBlock(i + 31, j + 0, k + 13, sh, ms);
+		world.setBlock(i + 31, j + 0, k + 29, sh, ms);
+		world.setBlock(i + 30, j + 0, k + 12, sh, ms);
+		world.setBlock(i + 30, j + 0, k + 30, sh, ms);
+		world.setBlock(i + 29, j + 0, k + 31, sh, ms);
+		world.setBlock(i + 29, j + 0, k + 11, sh, ms);
+		world.setBlock(i + 28, j + 0, k + 32, sh, ms);
+		world.setBlock(i + 28, j + 0, k + 10, sh, ms);
+		world.setBlock(i + 27, j + 0, k + 33, sh, ms);
+		world.setBlock(i + 27, j + 0, k + 9, sh, ms);
+		world.setBlock(i + 26, j + 0, k + 34, sh, ms);
+		world.setBlock(i + 26, j + 0, k + 8, sh, ms);
+		world.setBlock(i + 25, j + 0, k + 34, sh, ms);
+		world.setBlock(i + 25, j + 0, k + 8, sh, ms);
+		world.setBlock(i + 24, j + 0, k + 34, sh, ms);
+		world.setBlock(i + 24, j + 0, k + 8, sh, ms);
+		world.setBlock(i + 23, j + 0, k + 34, sh, ms);
+		world.setBlock(i + 23, j + 0, k + 8, sh, ms);
+		world.setBlock(i + 22, j + 0, k + 34, sh, ms);
+		world.setBlock(i + 21, j + 0, k + 34, sh, ms);
+		world.setBlock(i + 21, j + 0, k + 8, sh, ms);
+		world.setBlock(i + 20, j + 0, k + 34, sh, ms);
+		world.setBlock(i + 20, j + 0, k + 8, sh, ms);
+		world.setBlock(i + 19, j + 0, k + 34, sh, ms);
+		world.setBlock(i + 19, j + 0, k + 8, sh, ms);
+		world.setBlock(i + 18, j + 0, k + 34, sh, ms);
+		world.setBlock(i + 18, j + 0, k + 8, sh, ms);
+		world.setBlock(i + 17, j + 0, k + 34, sh, ms);
+		world.setBlock(i + 17, j + 0, k + 8, sh, ms);
+		world.setBlock(i + 16, j + 0, k + 34, sh, ms);
+		world.setBlock(i + 16, j + 0, k + 8, sh, ms);
+		world.setBlock(i + 15, j + 0, k + 33, sh, ms);
+		world.setBlock(i + 15, j + 0, k + 9, sh, ms);
+		world.setBlock(i + 13, j + 0, k + 31, sh, ms);
+		world.setBlock(i + 13, j + 0, k + 11, sh, ms);
+		world.setBlock(i + 11, j + 0, k + 29, sh, ms);
+		world.setBlock(i + 9, j + 0, k + 15, sh, ms);
+		world.setBlock(i + 8, j + 0, k + 16, sh, ms);
+		world.setBlock(i + 8, j + 0, k + 17, sh, ms);
+		world.setBlock(i + 8, j + 0, k + 18, sh, ms);
+		world.setBlock(i + 8, j + 0, k + 19, sh, ms);
+		world.setBlock(i + 8, j + 0, k + 20, sh, ms);
+		world.setBlock(i + 8, j + 0, k + 21, sh, ms);
+		world.setBlock(i + 8, j + 0, k + 22, sh, ms);
+		world.setBlock(i + 8, j + 0, k + 23, sh, ms);
+		world.setBlock(i + 8, j + 0, k + 24, sh, ms);
+		world.setBlock(i + 8, j + 0, k + 25, sh, ms);
+		world.setBlock(i + 8, j + 0, k + 26, sh, ms);
+		world.setBlock(i + 9, j + 0, k + 27, sh, ms);
+		world.setBlock(i + 10, j + 0, k + 14, sh, ms);
+		world.setBlock(i + 10, j + 0, k + 28, sh, ms);
+		world.setBlock(i + 11, j + 0, k + 13, sh, ms);
+		world.setBlock(i + 12, j + 0, k + 12, sh, ms);
+		world.setBlock(i + 12, j + 0, k + 30, sh, ms);
+		world.setBlock(i + 14, j + 0, k + 10, sh, ms);
+		world.setBlock(i + 14, j + 0, k + 32, sh, ms);
 
 	}
 

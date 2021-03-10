@@ -11,8 +11,10 @@ package Reika.ChromatiCraft.Magic;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -65,18 +67,24 @@ public class MonumentCompletionRitual {
 
 	private static final Random rand = new Random();
 
-	private static final int SOUND_LENGTH = 141; //2:21
+	private static final int SOUND_LENGTH_MILLIS = (120+21)*1000; //2:21
+	private static final int SOUND_LENGTH_TICKS = SOUND_LENGTH_MILLIS/50;
 	private static final int COMPLETION_EXTRA = 30;
+
+	private static final int BEAT_LENGTH = 2450; //2.5s / qtr
 
 	private static final int EFFECT_RANGE = 256;
 
-	private static final ArrayList<RayNote>[] melody = new ArrayList[4];
+	private static final ArrayList<RayNote> melody = new ArrayList();
+	private static final ArrayList<TimedEvent> eventSchedule = new ArrayList();
 
 	private long startTime;
 	private long startTick;
 
 	private long runTime = -1;
 	private int tick;
+	private long lastTickTime;
+	private long pauseTotal = 0;
 
 	private boolean running;
 	private boolean complete;
@@ -88,8 +96,16 @@ public class MonumentCompletionRitual {
 	private final EntityPlayer ep;
 
 	private final PacketTarget packetTarget;
+	@SideOnly(Side.CLIENT)
+	private ISound playingSound;
+	private float vortexSize = 0;
+	private boolean vortexGrow = false;
 
 	private final ArrayList<RingParticle> particleRing = new ArrayList();
+	private final ArrayList<TimedEvent> events;
+	private final ArrayList<RayNote> notes;
+	private static final float[] colorFade = new float[16];
+	private MusicKey activeKey = null;
 
 	private static boolean runningRituals;
 
@@ -97,60 +113,101 @@ public class MonumentCompletionRitual {
 	private static boolean reBobView;
 
 	static {
-		melody[0] = new ArrayList();
-		melody[1] = new ArrayList();
-		melody[2] = new ArrayList();
-		melody[3] = new ArrayList();
+		melody.add(new RayNote(MusicKey.A4, 2, true, false, true));
+		melody.add(new RayNote(MusicKey.C5, 2));
+		melody.add(new RayNote(MusicKey.B4, 2));
+		melody.add(new RayNote(MusicKey.G4, 2));
+		melody.add(new RayNote(MusicKey.A4, 2));
+		melody.add(new RayNote(MusicKey.E4, 6, false, true));
 
-		melody[0].add(new RayNote(MusicKey.A4, 8));
-		melody[0].add(new RayNote(MusicKey.C5, 8));
-		melody[0].add(new RayNote(MusicKey.B4, 8));
-		melody[0].add(new RayNote(MusicKey.G4, 8));
-		melody[0].add(new RayNote(MusicKey.A4, 8));
-		melody[0].add(new RayNote(MusicKey.E4, 24));
+		melody.add(new RayNote(MusicKey.A4, 2, true, false, true));
+		melody.add(new RayNote(MusicKey.C5, 2));
+		melody.add(new RayNote(MusicKey.B4, 2));
+		melody.add(new RayNote(MusicKey.G5, 4, false, true));
+		melody.add(new RayNote(MusicKey.E5, 6));
 
-		melody[1].add(new RayNote(MusicKey.A4, 8));
-		melody[1].add(new RayNote(MusicKey.C5, 8));
-		melody[1].add(new RayNote(MusicKey.B4, 8));
-		melody[1].add(new RayNote(MusicKey.G5, 12));
-		melody[1].add(new RayNote(MusicKey.E5, 2));
-		melody[1].add(new RayNote(MusicKey.D5, 2));
-		melody[1].add(new RayNote(MusicKey.E5, 24));
+		melody.add(new RayNote(MusicKey.A5, 2, true, true, true));
+		melody.add(new RayNote(MusicKey.G5, 2));
+		melody.add(new RayNote(MusicKey.E5, 2));
+		melody.add(new RayNote(MusicKey.C5, 2));
+		melody.add(new RayNote(MusicKey.D5, 2));
+		melody.add(new RayNote(MusicKey.A4, 6, false, true));
 
-		melody[2].add(new RayNote(MusicKey.A5, 8));
-		melody[2].add(new RayNote(MusicKey.G5, 6));
-		melody[2].add(new RayNote(MusicKey.A5, 1));
-		melody[2].add(new RayNote(MusicKey.G5, 1));
-		melody[2].add(new RayNote(MusicKey.E5, 8));
-		melody[2].add(new RayNote(MusicKey.C5, 6));
-		melody[2].add(new RayNote(MusicKey.D5, 1));
-		melody[2].add(new RayNote(MusicKey.E5, 1));
-		melody[2].add(new RayNote(MusicKey.D5, 8));
-		melody[2].add(new RayNote(MusicKey.A4, 24));
+		melody.add(new RayNote(MusicKey.A4, 2, true, false, true));
+		melody.add(new RayNote(MusicKey.E5, 2));
+		melody.add(new RayNote(MusicKey.D5, 2));
+		melody.add(new RayNote(MusicKey.G4, 2));
+		melody.add(new RayNote(MusicKey.A4, 8, true, true));
 
-		melody[3].add(new RayNote(MusicKey.A4, 8));
-		melody[3].add(new RayNote(MusicKey.E5, 8));
-		melody[3].add(new RayNote(MusicKey.D5, 8));
-		melody[3].add(new RayNote(MusicKey.G4, 8));
-		melody[3].add(new RayNote(MusicKey.B4, 2));
-		melody[3].add(new RayNote(MusicKey.C5, 1));
-		melody[3].add(new RayNote(MusicKey.B4, 1));
-		melody[3].add(new RayNote(MusicKey.A4, 2));
-		melody[3].add(new RayNote(MusicKey.G4, 2));
-		melody[3].add(new RayNote(MusicKey.A4, 24));
+		/*
+		eventSchedule.add(new TimedEvent(EventType.FLARES, 250));
+		eventSchedule.add(new TimedEvent(EventType.PARTICLERING, 250));
+		eventSchedule.add(new TimedEvent(EventType.PARTICLECLOUD, 25500));
+		eventSchedule.add(new TimedEvent(EventType.PINWHEEL, 36250));
+		eventSchedule.add(new TimedEvent(EventType.FLARES, 40250));
+		 */
+
+		int t = 0;
+		eventSchedule.add(new TimedEvent(EventType.FLARES, 0));
+		for (RayNote n : melody) {
+			EventType e = EventType.FLARES;
+			if (n.length >= 6) {
+				e = EventType.PARTICLECLOUD;
+			}
+			else if (n.length >= 4) {
+				e = EventType.TWIRL;
+			}
+			eventSchedule.add(new TimedEvent(e, t));
+			if (n.percussion)
+				eventSchedule.add(new TimedEvent(EventType.PINWHEEL, t));
+			if (n.bell)
+				eventSchedule.add(new TimedEvent(EventType.TWIRL, t));
+			if (n.isFirstInPhrase) {
+				for (int i = 0; i <= 250; i += 50)
+					eventSchedule.add(new TimedEvent(EventType.PARTICLERING, t+i));
+			}
+			t += n.length*BEAT_LENGTH;
+		}
+
+		addEvent(EventType.VORTEXGROW, 12);
+		addEvent(EventType.VORTEXGROW, 14);
+		addEvent(EventType.VORTEXGROW, 24);
+		addEvent(EventType.VORTEXGROW, 28);
+		addEvent(EventType.VORTEXGROW, 44);
+
+		Collections.sort(eventSchedule);
 	}
 
 	private static class RayNote {
 
 		private final MusicKey key;
-		/** In 16ths */
+		/** In quarters */
 		private final int length;
 
+		private final boolean percussion;
+		private final boolean bell;
+		private final boolean isFirstInPhrase;
+
 		private RayNote(MusicKey k, int dur) {
-			key = k;
-			length = dur;
+			this(k, dur, false, false);
 		}
 
+		private RayNote(MusicKey k, int dur, boolean p, boolean b) {
+			this(k, dur, p, b, false);
+		}
+
+		private RayNote(MusicKey k, int dur, boolean p, boolean b, boolean first) {
+			key = k;
+			length = dur;
+			percussion = p;
+			bell = b;
+			isFirstInPhrase = first;
+		}
+
+	}
+
+	private static void addEvent(EventType e, int beats) {
+		eventSchedule.add(new TimedEvent(e, beats*BEAT_LENGTH));
 	}
 
 	private static class RingParticle {
@@ -170,8 +227,33 @@ public class MonumentCompletionRitual {
 
 	}
 
+	private static class TimedEvent implements Comparable<TimedEvent> {
+
+		private final EventType type;
+		private final long millis;
+
+		private TimedEvent(EventType e, long s) {
+			type = e;
+			millis = s;
+		}
+
+		@Override
+		public int compareTo(TimedEvent o) {
+			return Long.compare(millis, o.millis);
+		}
+
+	}
+
 	public static boolean areRitualsRunning() {
 		return runningRituals;
+	}
+
+	public static void clearRituals() {
+		runningRituals = false;
+	}
+
+	public static float getIntensity(CrystalElement e) {
+		return colorFade[e.ordinal()];
 	}
 
 	public MonumentCompletionRitual(World world, int x, int y, int z, EntityPlayer ep) {
@@ -180,6 +262,9 @@ public class MonumentCompletionRitual {
 		this.y = y;
 		this.z = z;
 		this.ep = ep;
+
+		events = new ArrayList(eventSchedule);
+		notes = new ArrayList(melody);
 
 		packetTarget = new PacketTarget.RadiusTarget(world, x+0.5, y+0.5, z+0.5, EFFECT_RANGE);
 
@@ -218,13 +303,17 @@ public class MonumentCompletionRitual {
 		this.disableCores();
 		running = true;
 		runningRituals = true;
-		tick = 0;
-		startTime = System.currentTimeMillis();
-		startTick = world.getTotalWorldTime();
-		runTime = 0;
+
 		if (world.isRemote) {
 			this.startClient();
 		}
+
+		startTime = System.currentTimeMillis();
+		startTick = world.getTotalWorldTime();
+		runTime = 0;
+		tick = 0;
+		lastTickTime = startTime;
+		pauseTotal = 0;
 	}
 
 	private void disableCores() {
@@ -237,7 +326,7 @@ public class MonumentCompletionRitual {
 
 	@SideOnly(Side.CLIENT)
 	private void startClient() {
-		//	ReikaSoundHelper.playClientSound(ChromaSounds.MONUMENT, x+0.5, y+0.5, z+0.5, 1, 1F, false);
+		playingSound = ReikaSoundHelper.playClientSound(ChromaSounds.MONUMENT, x+0.5, y+0.5, z+0.5, 1, 1F, false);
 		ISound s = ChromaDimensionTicker.instance.getCurrentMusic();
 		if (s != null) {
 			Minecraft.getMinecraft().getSoundHandler().stopSound(s);
@@ -250,7 +339,12 @@ public class MonumentCompletionRitual {
 	public void tick() {
 		if (running) {
 			long time = System.currentTimeMillis();
-			runTime = time-startTime;
+			long step = time-lastTickTime;
+			if (step > 50) { //more than 50ms per tick
+				pauseTotal += step-50;
+			}
+			runTime = time-(startTime+pauseTotal);
+			//ReikaJavaLibrary.pConsole(time+" - "+startTime+" - "+pauseTotal+" = "+runTime+" @ "+FMLCommonHandler.instance().getEffectiveSide());
 			tick++;
 
 			if (world.isRemote) {
@@ -258,10 +352,12 @@ public class MonumentCompletionRitual {
 				this.doScriptedFX();
 			}
 			else {
-				if (runTime >= SOUND_LENGTH*1000) {
-					//this.completeRitual();
+				if (runTime >= SOUND_LENGTH_MILLIS) {
+					this.completeRitual();
 				}
 			}
+
+			lastTickTime = time;
 		}
 	}
 	/*
@@ -272,6 +368,100 @@ public class MonumentCompletionRitual {
 	 */
 	@SideOnly(Side.CLIENT)
 	private void doScriptedFX() {
+		this.doRingFX();
+		this.doVortexFX();
+
+		boolean flag = !events.isEmpty();
+		while (flag) {
+			flag = false;
+			TimedEvent e = events.get(0);
+			if (e.millis <= runTime) {
+				events.remove(0);
+				flag = !events.isEmpty();
+				e.type.doEventClient(this);
+				this.onEvent(e.type);
+				//ReikaJavaLibrary.pConsole("Removing "+e.type+" @ "+e.millis+" at "+runTime);
+			}
+			else {
+				//ReikaJavaLibrary.pConsole(runTime+"/"+e.millis);
+			}
+		}
+
+		if (!notes.isEmpty()) {
+			RayNote e = notes.get(0);
+			long t = BEAT_LENGTH*e.length;
+			if (t <= runTime) {
+				notes.remove(0);
+				activeKey = e.key;
+				this.playRayNote(e);
+			}
+		}
+
+		Set<CrystalElement> set = activeKey == null ? null : CrystalMusicManager.instance.getColorsWithKeyAnyOctave(activeKey);
+		for (int i = 0; i < 16; i++) {
+			colorFade[i] = set != null && set.contains(CrystalElement.elements[i]) ? Math.min(1, colorFade[i]+0.04F) : Math.max(0, colorFade[i]-0.05F);
+		}
+	}
+
+	private void playRayNote(RayNote n) {
+
+	}
+
+	private void onEvent(EventType type) {
+		switch(type) {
+			case FLARES:
+				break;
+			case PARTICLECLOUD:
+				break;
+			case PARTICLERING:
+				break;
+			case PINWHEEL:
+				break;
+			case TWIRL:
+				break;
+			case VORTEXGROW:
+				vortexGrow = true;
+				break;
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void doVortexFX() {
+		double y0 = y+0.5-4.5;
+		double h = 0;
+		double vy = 0.25;
+		//for (double h = 0; h <= 6; h += 0.125) {
+		//vy = 0;
+		double r = 2.25-h/3+0.5*vortexSize;
+		for (double a = 0; a < 360; a += 30) {
+			double ang = a+h*30+(System.currentTimeMillis()/20D)%360D;
+			double dx = x+0.5+r*Math.cos(Math.toRadians(ang));
+			double dz = z+0.5+r*Math.sin(Math.toRadians(ang));
+			double vx = (x+0.5-dx)*0.01875/vortexSize;
+			double vz = (z+0.5-dz)*0.01875/vortexSize;
+			double dy = y0+h;
+			float s = 4;//(float)(7.5-h);
+			int l = a%60 == 0 ? 60 : 40;
+			l *= vortexSize;
+			EntityCCBlurFX fx = new EntityCCBlurFX(world, dx, dy, dz, vx, vy, vz);
+			fx.setIcon(ChromaIcons.CHROMA);
+			fx.setScale(s).setLife(l).setRapidExpand();
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+		if (vortexSize < 1) {
+			vortexSize = Math.min(1, vortexSize+0.02F);
+		}
+		else if (vortexGrow) {
+			vortexSize = Math.min(2, vortexSize+0.05F);
+			vortexGrow = vortexSize < 2;
+		}
+		else if (vortexSize > 1) {
+			vortexSize = Math.max(1, vortexSize*0.998F-0.01F);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void doRingFX() {
 		int n = 3;
 		int di = particleRing.size()/n;
 
@@ -397,7 +587,7 @@ public class MonumentCompletionRitual {
 
 	private void completeRitual() {
 		complete = true;
-		if (runTime-SOUND_LENGTH < COMPLETION_EXTRA) {
+		if (runTime-SOUND_LENGTH_MILLIS < COMPLETION_EXTRA) {
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.MONUMENTCOMPLETE.ordinal(), packetTarget, x, y, z);
 
 			double[] angs = ReikaPhysicsHelper.cartesianToPolar(ep.posX-x-0.5, ep.posY-y-0.5, ep.posZ-z-0.5);
@@ -420,18 +610,22 @@ public class MonumentCompletionRitual {
 		}
 	}
 
-	private void triggerEvent(EventType evt) {
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.MONUMENTEVENT.ordinal(), packetTarget, x, y, z, evt.ordinal());
-	}
-
 	public void endRitual() {
 		running = false;
 		runTime = -1;
 		runningRituals = false;
 		((TileEntityStructControl)world.getTileEntity(x, y, z)).endMonumentRitual();
 		ChromaSounds.ERROR.playSoundNoAttenuation(world, x, y, z, 1, 0.75F, Integer.MAX_VALUE);
-		if (!world.isRemote)
+		if (world.isRemote)
+			this.endSounds();
+		else
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.RESETMONUMENT.ordinal(), packetTarget, x, y, z);
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void endSounds() {
+		if (playingSound != null)
+			Minecraft.getMinecraft().getSoundHandler().stopSound(playingSound);
 	}
 
 	public boolean isRunning() {
@@ -440,11 +634,6 @@ public class MonumentCompletionRitual {
 
 	public boolean isComplete() {
 		return complete;
-	}
-
-	@SideOnly(Side.CLIENT)
-	public static void triggerMonumentEventClient(World world, int x, int y, int z, int type) {
-		EventType.list[type].doEventClient(world, x, y, z);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -515,16 +704,24 @@ public class MonumentCompletionRitual {
 		}
 	}
 
-	private static enum EventType {
+	public static enum EventType {
 		FLARES(),
 		PARTICLECLOUD(),
 		PARTICLERING(),
-		TWIRL();
+		TWIRL(),
+		PINWHEEL(),
+		VORTEXGROW(),
+		;
 
 		private static final EventType[] list = values();
 
 		private EventType() {
 
+		}
+
+		@SideOnly(Side.CLIENT)
+		private void doEventClient(MonumentCompletionRitual m) {
+			this.doEventClient(m.world, m.x, m.y, m.z);
 		}
 
 		@SideOnly(Side.CLIENT)
@@ -546,27 +743,38 @@ public class MonumentCompletionRitual {
 				}
 				case PARTICLECLOUD: {
 					//ReikaSoundHelper.playClientSound(ChromaSounds.CAST, x+0.5, y+0.5, z+0.5, 1, 0.5F, false);
-					int n = 64+rand.nextInt(256);
+					int n = ReikaRandomHelper.getRandomBetween(256, 384);
+					double mr = 25;
 					for (int i = 0; i < n; i++) {
-						double dx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 20);
-						double dz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 20);
-						double dy = 1+world.getTopSolidOrLiquidBlock(MathHelper.floor_double(dx), MathHelper.floor_double(dz))+rand.nextInt(12);
-						int l = 20+rand.nextInt(40);
-						float s = 2+rand.nextFloat()*12;
-						double hue = ReikaPhysicsHelper.cartesianToPolar(dx-x-0.5, dy-y-0.5, dz-z-0.5)[2];
-						int c = ReikaColorAPI.getModifiedHue(0xff0000, (int)(hue));
-						EntityFX fx = new EntityCCBlurFX(world, dx, dy, dz).setIcon(ChromaIcons.BIGFLARE).setScale(s).setColor(c).setLife(l).setRapidExpand();
+						double angd = rand.nextDouble()*360;
+						double ang = Math.toRadians(angd);
+						double fr = rand.nextDouble();
+						double r = fr*mr;
+						double dx = x+0.5+r*Math.cos(ang);//ReikaRandomHelper.getRandomPlusMinus(x+0.5, 20);
+						double dz = z+0.5+r*Math.sin(ang);//ReikaRandomHelper.getRandomPlusMinus(z+0.5, 20);
+						int h = rand.nextInt(rand.nextBoolean() ? 6 : 12);
+						double dy = 1+world.getTopSolidOrLiquidBlock(MathHelper.floor_double(dx), MathHelper.floor_double(dz))+h;
+						int l = ReikaRandomHelper.getRandomBetween(120, 240);//20+rand.nextInt(40);
+						float s = (float)ReikaRandomHelper.getRandomBetween(4, 12D);//2+rand.nextFloat()*12;
+						int c = ReikaColorAPI.getModifiedHue(0xff0000, (int)(angd));
+						c = ReikaColorAPI.mixColors(c, 0xffffff, Math.min(1, (float)(fr*fr*4)));
+						EntityCCFloatingSeedsFX fx = new EntityCCFloatingSeedsFX(world, dx, dy, dz, 0, 90);
+						fx.angleVelocity *= 7;
+						fx.freedom *= 1.5;
+						fx.tolerance *= 0.33;
+						fx.particleVelocity *= 0.5;
+						fx.setIcon(ChromaIcons.BIGFLARE).setScale(s).setColor(c).setLife(l).setRapidExpand();
 						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					}
 					break;
 				}
 				case PARTICLERING: {
 					//ReikaSoundHelper.playClientSound(ChromaSounds.USE, x+0.5, y+0.5, z+0.5, 1, 0.5F, false);
-					double r = 33;
+					double r = 33/2D;
+					double dy = y+0.5+6;
 					for (double a = 0; a < 360; a += 1) {
-						double dx = x+0.5*r*Math.cos(Math.toRadians(a));
-						double dz = z+0.5*r*Math.sin(Math.toRadians(a));
-						double dy = y+0.5+6;
+						double dx = x+0.5+r*Math.cos(Math.toRadians(a));
+						double dz = z+0.5+r*Math.sin(Math.toRadians(a));
 						float s = (1+rand.nextFloat())*4;
 						int c = CrystalElement.getBlendedColor((int)((a+180-12.25)*2), 45);
 						int l = 60+rand.nextInt(40);
@@ -577,22 +785,43 @@ public class MonumentCompletionRitual {
 					break;
 				}
 				case TWIRL: {
+					double dy = y+0.5-4;
 					for (int i = 0; i <= 8; i += 4) {
-						for (double a = 0; a < 360; a += 60/(1+i/4)) {
+						for (double a = 0; a < 360; a += 30/(1+i/4)) {
 							double r = 2+i;
 							double ang = a+i*22.5;
-							double dx = x+0.5*r*Math.cos(Math.toRadians(ang));
-							double dz = z+0.5*r*Math.sin(Math.toRadians(ang));
-							double dy = y+0.5-4;
+							double dx = x+0.5+r*Math.cos(Math.toRadians(ang));
+							double dz = z+0.5+r*Math.sin(Math.toRadians(ang));
 							float s = (float)((1+3-r/8)*2)/2F;
 							int c = ReikaColorAPI.getModifiedHue(0xff0000, (int)(ang));
 							int l = 120+rand.nextInt(120);
-							SpiralMotionController m = new SpiralMotionController(x+0.5, z+0.5, 5-i/4D, (0.25*(1+i/4D))/4D, r, 0.0625, ang);
+							SpiralMotionController m = new SpiralMotionController(x+0.5, z+0.5, 4-i/4D, (0.25*(1+i/4D))/4D, r, 0.0625*2/*+((a/120)%1D)*0.3*/, ang);
 							ColorController clr = new AngleColorController(x+0.5, z+0.5, 5-i/4D, (0.25*(1+i/4D))/4D, r, 0.0625, ang);
 							EntityFX fx = new EntityCCBlurFX(world, dx, dy, dz).setScale(s).setColor(c).setLife(l).setRapidExpand().setMotionController(m).setPositionController(m).setColorController(clr);
 							Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 						}
 					}
+					break;
+				}
+				case PINWHEEL: {
+					double dy = y+0.5-4;
+					for (double a = 0; a < 360; a += 24) {
+						for (double r = 3; r <= 15; r += 0.25) {
+							double ang = a-r*6;
+							double dx = x+0.5+r*Math.cos(Math.toRadians(ang));
+							double dz = z+0.5+r*Math.sin(Math.toRadians(ang));
+							float s = (float)(7.5-r/2.5);
+							int l = 60;
+							SpiralMotionController m = new SpiralMotionController(x+0.5, z+0.5, r/3, 0, r, 0, ang);
+							EntityCCBlurFX fx = new EntityCCBlurFX(world, dx, dy, dz);
+							fx.setScale(s).setLife(l).setAlphaFading();
+							fx.setMotionController(m).setPositionController(m);
+							Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+						}
+					}
+					break;
+				}
+				case VORTEXGROW: {
 					break;
 				}
 			}

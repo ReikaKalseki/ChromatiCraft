@@ -73,6 +73,7 @@ public class MonumentMineralBlocks {
 		this.setBlock(world, i + 24, j + 0, k + 16, Blocks.diamond_block);
 		this.setBlock(world, i + 24, j + 0, k + 26, Blocks.diamond_block);
 
+		/*
 		this.setBlock(world, i + 22, j + 0, k + 8, Blocks.gold_block);
 		this.setBlock(world, i + 34, j + 0, k + 16, Blocks.gold_block);
 		this.setBlock(world, i + 34, j + 0, k + 17, Blocks.gold_block);
@@ -145,6 +146,90 @@ public class MonumentMineralBlocks {
 		this.setBlock(world, i + 12, j + 0, k + 30, Blocks.gold_block);
 		this.setBlock(world, i + 14, j + 0, k + 10, Blocks.gold_block);
 		this.setBlock(world, i + 14, j + 0, k + 32, Blocks.gold_block);
+		 */
+
+		///--- new gold ring
+		i += 5;
+		k += 5;
+		world.setBlock(i + 3, j + 0, k + 11, Blocks.gold_block);
+		world.setBlock(i + 3, j + 0, k + 12, Blocks.gold_block);
+		world.setBlock(i + 3, j + 0, k + 13, Blocks.gold_block);
+		world.setBlock(i + 3, j + 0, k + 14, Blocks.gold_block);
+		world.setBlock(i + 3, j + 0, k + 15, Blocks.gold_block);
+		world.setBlock(i + 3, j + 0, k + 16, Blocks.gold_block);
+		world.setBlock(i + 3, j + 0, k + 17, Blocks.gold_block);
+		world.setBlock(i + 3, j + 0, k + 18, Blocks.gold_block);
+		world.setBlock(i + 3, j + 0, k + 19, Blocks.gold_block);
+		world.setBlock(i + 3, j + 0, k + 20, Blocks.gold_block);
+		world.setBlock(i + 3, j + 0, k + 21, Blocks.gold_block);
+		world.setBlock(i + 4, j + 0, k + 9, Blocks.gold_block);
+		world.setBlock(i + 4, j + 0, k + 10, Blocks.gold_block);
+		world.setBlock(i + 4, j + 0, k + 22, Blocks.gold_block);
+		world.setBlock(i + 4, j + 0, k + 23, Blocks.gold_block);
+		world.setBlock(i + 5, j + 0, k + 8, Blocks.gold_block);
+		world.setBlock(i + 5, j + 0, k + 24, Blocks.gold_block);
+		world.setBlock(i + 11, j + 0, k + 3, Blocks.gold_block);
+		world.setBlock(i + 6, j + 0, k + 7, Blocks.gold_block);
+		world.setBlock(i + 6, j + 0, k + 25, Blocks.gold_block);
+		world.setBlock(i + 7, j + 0, k + 6, Blocks.gold_block);
+		world.setBlock(i + 7, j + 0, k + 26, Blocks.gold_block);
+		world.setBlock(i + 8, j + 0, k + 5, Blocks.gold_block);
+		world.setBlock(i + 8, j + 0, k + 27, Blocks.gold_block);
+		world.setBlock(i + 9, j + 0, k + 4, Blocks.gold_block);
+		world.setBlock(i + 9, j + 0, k + 28, Blocks.gold_block);
+		world.setBlock(i + 10, j + 0, k + 4, Blocks.gold_block);
+		world.setBlock(i + 10, j + 0, k + 28, Blocks.gold_block);
+		world.setBlock(i + 11, j + 0, k + 29, Blocks.gold_block);
+		world.setBlock(i + 12, j + 0, k + 3, Blocks.gold_block);
+		world.setBlock(i + 12, j + 0, k + 29, Blocks.gold_block);
+		world.setBlock(i + 13, j + 0, k + 3, Blocks.gold_block);
+		world.setBlock(i + 13, j + 0, k + 29, Blocks.gold_block);
+		world.setBlock(i + 14, j + 0, k + 3, Blocks.gold_block);
+		world.setBlock(i + 14, j + 0, k + 29, Blocks.gold_block);
+		world.setBlock(i + 15, j + 0, k + 3, Blocks.gold_block);
+		world.setBlock(i + 15, j + 0, k + 29, Blocks.gold_block);
+		world.setBlock(i + 16, j + 0, k + 3, Blocks.gold_block);
+		world.setBlock(i + 16, j + 0, k + 29, Blocks.gold_block);
+		world.setBlock(i + 17, j + 0, k + 3, Blocks.gold_block);
+		world.setBlock(i + 17, j + 0, k + 29, Blocks.gold_block);
+		world.setBlock(i + 18, j + 0, k + 3, Blocks.gold_block);
+		world.setBlock(i + 18, j + 0, k + 29, Blocks.gold_block);
+		world.setBlock(i + 19, j + 0, k + 3, Blocks.gold_block);
+		world.setBlock(i + 19, j + 0, k + 29, Blocks.gold_block);
+		world.setBlock(i + 20, j + 0, k + 3, Blocks.gold_block);
+		world.setBlock(i + 20, j + 0, k + 29, Blocks.gold_block);
+		world.setBlock(i + 21, j + 0, k + 3, Blocks.gold_block);
+		world.setBlock(i + 21, j + 0, k + 29, Blocks.gold_block);
+		world.setBlock(i + 22, j + 0, k + 4, Blocks.gold_block);
+		world.setBlock(i + 22, j + 0, k + 28, Blocks.gold_block);
+		world.setBlock(i + 23, j + 0, k + 4, Blocks.gold_block);
+		world.setBlock(i + 23, j + 0, k + 28, Blocks.gold_block);
+		world.setBlock(i + 24, j + 0, k + 5, Blocks.gold_block);
+		world.setBlock(i + 24, j + 0, k + 27, Blocks.gold_block);
+		world.setBlock(i + 25, j + 0, k + 6, Blocks.gold_block);
+		world.setBlock(i + 25, j + 0, k + 26, Blocks.gold_block);
+		world.setBlock(i + 26, j + 0, k + 7, Blocks.gold_block);
+		world.setBlock(i + 26, j + 0, k + 25, Blocks.gold_block);
+		world.setBlock(i + 27, j + 0, k + 8, Blocks.gold_block);
+		world.setBlock(i + 27, j + 0, k + 24, Blocks.gold_block);
+		world.setBlock(i + 28, j + 0, k + 9, Blocks.gold_block);
+		world.setBlock(i + 28, j + 0, k + 10, Blocks.gold_block);
+		world.setBlock(i + 28, j + 0, k + 22, Blocks.gold_block);
+		world.setBlock(i + 28, j + 0, k + 23, Blocks.gold_block);
+		world.setBlock(i + 29, j + 0, k + 11, Blocks.gold_block);
+		world.setBlock(i + 29, j + 0, k + 12, Blocks.gold_block);
+		world.setBlock(i + 29, j + 0, k + 13, Blocks.gold_block);
+		world.setBlock(i + 29, j + 0, k + 14, Blocks.gold_block);
+		world.setBlock(i + 29, j + 0, k + 15, Blocks.gold_block);
+		world.setBlock(i + 29, j + 0, k + 16, Blocks.gold_block);
+		world.setBlock(i + 29, j + 0, k + 17, Blocks.gold_block);
+		world.setBlock(i + 29, j + 0, k + 18, Blocks.gold_block);
+		world.setBlock(i + 29, j + 0, k + 19, Blocks.gold_block);
+		world.setBlock(i + 29, j + 0, k + 20, Blocks.gold_block);
+		world.setBlock(i + 29, j + 0, k + 21, Blocks.gold_block);
+		i -= 5;
+		k -= 5;
+		///---
 
 		this.setBlock(world, i + 11, j + 12, k + 5, Blocks.quartz_block);
 		this.setBlock(world, i + 6, j + 12, k + 12, Blocks.quartz_block);

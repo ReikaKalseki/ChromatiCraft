@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.TileEntity.Decoration;
 import java.io.File;
 import java.util.Collection;
 import java.util.EnumMap;
-import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -52,8 +51,6 @@ import Reika.DragonAPI.Instantiable.MusicScore.NoteData;
 import Reika.DragonAPI.Instantiable.MusicScore.ScoreTrack;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.IO.MIDIInterface;
-import Reika.DragonAPI.Instantiable.IO.SoundVariant;
-import Reika.DragonAPI.Interfaces.Registry.SoundEnum;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Interfaces.TileEntity.TriggerableAction;
@@ -283,10 +280,11 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 			ChromaSound s = this.getVoice(track, n);
 			float f = (float)CrystalMusicManager.instance.getPitchFactor(n.key);
 			float v = n.volume/100F;
+			/*
 			if (s == ChromaSounds.FLUTE || (s instanceof SoundVariant && ((SoundVariant)s).root == ChromaSounds.FLUTE)) {
 				f = 1F;
 				v = 0.5F;
-			}
+			}*/
 			if (this.attentuate(world, x, y, z))
 				s.playSoundAtBlock(this, v, f);
 			else
@@ -300,18 +298,18 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 		}
 	}
 
-	private ChromaSound getVoice(int channel, Note n) {
-		if (temple.isComplete() && temple.isPlayingMelody() && false) {
+	private ChromaSound getVoice(int channel, Note n) {/*
+		if (temple.isComplete() && temple.isPlayingMelody()) {
 			switch(channel) {
 				case 0:
 					return (ChromaSound)this.getFlute(n);
 					//case 3:
 					//	return (ChromaSound)ChromaSounds.ORB.getVariant("PURE");
 			}
-		}
+		}*/
 		return ChromaSounds.DING;
 	}
-
+	/*
 	private SoundEnum getFlute(Note n) {
 		String var = n.key.getInterval(-12).name().toLowerCase(Locale.ENGLISH);
 		if (n.length >= 30)
@@ -320,7 +318,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 			var = var+"_s";
 		return ChromaSounds.FLUTE.getVariant(var);
 	}
-
+	 */
 	private boolean attentuate(World world, int x, int y, int z) {
 		return !temple.isComplete() && world.getBlock(x, y-1, z) != Blocks.quartz_block;//world.getBlock(x, y-1, z) != ChromaBlocks.RUNE.getBlockInstance() || world.getBlockMetadata(x, y-1, z) != CrystalElement.YELLOW.ordinal();
 	}

@@ -28,7 +28,6 @@ import Reika.DragonAPI.Interfaces.Registry.DynamicSound;
 import Reika.DragonAPI.Interfaces.Registry.VariableSound;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 
 public enum ChromaSounds implements ChromaSound, DynamicSound, VariableSound {
 
@@ -119,7 +118,7 @@ public enum ChromaSounds implements ChromaSound, DynamicSound, VariableSound {
 	ARTEALLOYHIT("artealloy-hit2"),
 	LOWAMBIENT("lowambient_fade"),
 	LOWAMBIENT_SHORT("lowambient_fade_short"),
-	FLUTE("flute/flute", false),
+	//FLUTE("flute/flute", false),
 	;
 
 	public static final ChromaSounds[] soundList = values();
@@ -318,8 +317,8 @@ public enum ChromaSounds implements ChromaSound, DynamicSound, VariableSound {
 	}
 
 	public float getRangeInterval() { // the steps need to be TWO octaves apart when using the default of 4!
-		if (this == FLUTE)
-			return 2;
+		//if (this == FLUTE)
+		//	return 2;
 		return 4;
 	}
 
@@ -335,12 +334,14 @@ public enum ChromaSounds implements ChromaSound, DynamicSound, VariableSound {
 		FLUTE.createVariant("L2");
 		FLUTE.createVariant("L3");
 		 */
+		/*
 		for (int i = MusicKey.G4.ordinal(); i <= MusicKey.G7.ordinal(); i++) {
 			String s = MusicKey.getByIndex(i).name().toLowerCase(Locale.ENGLISH);
 			FLUTE.createVariant(s);
 			FLUTE.createVariant(s+"_l");
 			FLUTE.createVariant(s+"_s");
-		}
+		}*/
+
 		/*
 		FLUTE.createVariant("F1_HI");
 		FLUTE.createVariant("F2_HI");

@@ -127,6 +127,7 @@ import Reika.ChromatiCraft.Items.Tools.Powered.ItemPurifyCrystal;
 import Reika.ChromatiCraft.Items.Tools.Powered.ItemSpawnerBypass;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.WarpNetwork;
 import Reika.ChromatiCraft.Magic.Artefact.UABombingEffects;
@@ -671,6 +672,7 @@ public class ChromaticEventManager {
 		TileEntityVoidMonsterTrap.clearCache();
 		TileEntityAuraInfuser.clearCache();
 		BlockFakeSky.clearCache();
+		MonumentCompletionRitual.clearRituals();
 		LoreManager.instance.clearOnLogout();
 		WarpNetwork.instance.clear();
 	}
@@ -687,6 +689,7 @@ public class ChromaticEventManager {
 		TileEntityExplosionShield.clearCache();
 		TileEntityVoidMonsterTrap.clearCache();
 		TileEntityAuraInfuser.clearCache();
+		MonumentCompletionRitual.clearRituals();
 		BlockFakeSky.clearCache();
 		LoreManager.instance.clearOnLogout();
 		WarpNetwork.instance.clear();
@@ -1833,8 +1836,10 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void resetDimension(WorldEvent.Unload evt) {
-		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue() && !evt.world.isRemote) {
-			ChromaDimensionManager.resetDimension(evt.world);
+		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			MonumentCompletionRitual.clearRituals();
+			if (!evt.world.isRemote)
+				ChromaDimensionManager.resetDimension(evt.world);
 		}
 	}
 

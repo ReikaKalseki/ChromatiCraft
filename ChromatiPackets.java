@@ -764,9 +764,9 @@ public class ChromatiPackets implements PacketHandler {
 				case RESETMONUMENT:
 					MonumentCompletionRitual.resetSettings(world, data[0], data[1], data[2]);
 					break;
-				case MONUMENTEVENT:
-					MonumentCompletionRitual.triggerMonumentEventClient(world, data[0], data[1], data[2], data[3]);
-					break;
+					//case MONUMENTEVENT:
+					//	MonumentCompletionRitual.triggerMonumentEventClient(world, data[0], data[1], data[2], data[3]);
+					//	break;
 				case MONUMENTEND:
 					((TileEntityStructControl)tile).endMonumentRitual();
 					break;
