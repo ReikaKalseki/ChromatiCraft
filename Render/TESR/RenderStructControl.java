@@ -9,6 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
@@ -30,6 +33,7 @@ import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
 public class RenderStructControl extends ChromaRenderBase {
@@ -67,58 +71,57 @@ public class RenderStructControl extends ChromaRenderBase {
 				this.activateShaders(te, par8);
 
 				if (te.isMonument()) {
-					GL11.glTranslated(0, 0.005-4, 0);
+					float br = this.getMonumentBrightness();
+					if (br > 0) {
+						GL11.glTranslated(0, 0.005-4, 0);
 
-					double sz = 16;
-					GL11.glPushMatrix();
-					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-					GL11.glShadeModel(GL11.GL_SMOOTH);
-					ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/monument_lines.png");
-					//v5.startDrawingQuads();
-					v5.startDrawing(GL11.GL_TRIANGLE_FAN);
-					v5.setBrightness(240);
-
-					/*
-					v5.setColorOpaque_I(c);
-					v5.addVertexWithUV(-sz, 0, sz+1, 0, 1);
-					v5.addVertexWithUV(sz+1, 0, sz+1, 1, 1);
-					v5.addVertexWithUV(sz+1, 0, -sz, 1, 0);
-					v5.addVertexWithUV(-sz, 0, -sz, 0, 0);
-					 */
-					v5.setColorOpaque_I(0xffffff);
-					v5.addVertexWithUV(0.5, 0, 0.5, 0.5, 0.5);
-					double r0 = 18.5;
-					for (int i = 0; i <= 16; i++) {
-						CrystalElement e = CrystalElement.elements[i%16];
-						double a0 = (i-8)*22.5+11.25;
-						if (i%4 == 1)
-							a0 -= 5;
-						else if (i%4 == 2)
-							a0 += 5;
-						double d = 6;//4;
-						if (e == CrystalElement.BLACK)
-							;//ReikaJavaLibrary.pConsole(a0+" > "+(a0-d)+" - "+(a0+d));
-						double min = i == 0 ? a0 : a0-d;
-						double max = i == 16 ? a0 : a0+d;
-						for (double a = min; a <= max; a += d) {
-							double ang = Math.toRadians(a);
-							double r = r0;//Math.min(r0, r0+3*(1-Math.cos(ang*4)));
-							double cs = Math.cos(ang);
-							double ss = Math.sin(ang);
-							double dx = 0.5+r*cs;
-							double dz = 0.5+r*ss;
-							double u = 0.5+0.5*cs;
-							double v = 0.5+0.5*ss;
-							//v5.setColorOpaque_I(CrystalElement.getBlendedColor((int)((a+180-12.25)*2), 45));
-							int c = e.getColor();
-							v5.setColorOpaque_I(c);
-							v5.addVertexWithUV(dx, 0, dz, u, v);
+						double sz = 16;
+						GL11.glPushMatrix();
+						GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+						GL11.glShadeModel(GL11.GL_SMOOTH);
+						ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/monument_lines.png");
+						//v5.startDrawingQuads();
+						v5.startDrawing(GL11.GL_TRIANGLE_FAN);
+						v5.setBrightness(240);
+						v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(0xffffff, br));
+						v5.addVertexWithUV(0.5, 0, 0.5, 0.5, 0.5);
+						double r0 = 18.5;
+						for (int i = 0; i <= 16; i++) {
+							double a0 = (i-8)*22.5+11.25;
+							if (i%4 == 1)
+								a0 -= 5;
+							else if (i%4 == 2)
+								a0 += 5;
+							double d = 6;//4;
+							double min = i == 0 ? a0 : a0-d;
+							double max = i == 16 ? a0 : a0+d;
+							for (double a = min; a <= max; a += d) {
+								double ang = Math.toRadians(a);
+								double r = r0;//Math.min(r0, r0+3*(1-Math.cos(ang*4)));
+								double cs = Math.cos(ang);
+								double ss = Math.sin(ang);
+								double dx = 0.5+r*cs;
+								double dz = 0.5+r*ss;
+								double u = 0.5+0.5*cs;
+								double v = 0.5+0.5*ss;
+								//v5.setColorOpaque_I(CrystalElement.getBlendedColor((int)((a+180-12.25)*2), 45));
+								HashSet<CrystalElement> mix = new HashSet();
+								mix.add(CrystalElement.elements[i%16]);
+								if (a < max) {
+									mix.add(CrystalElement.elements[((i-1)%16+16)%16]);
+								}
+								if (a > min) {
+									mix.add(CrystalElement.elements[(i+1)%16]);
+								}
+								v5.setColorOpaque_I(mix.isEmpty() ? 0 : this.getColorMix(mix));
+								v5.addVertexWithUV(dx, 0, dz, u, v);
+							}
 						}
-					}
 
-					v5.draw();
-					GL11.glPopAttrib();
-					GL11.glPopMatrix();
+						v5.draw();
+						GL11.glPopAttrib();
+						GL11.glPopMatrix();
+					}
 				}
 			}
 
@@ -126,6 +129,31 @@ public class RenderStructControl extends ChromaRenderBase {
 			GL11.glPopAttrib();
 		}
 		GL11.glPopAttrib();
+	}
+
+	private float getMonumentBrightness() {
+		float max = 0;
+		for (int i = 0; i < 16; i++) {
+			max = Math.max(max, MonumentCompletionRitual.getIntensity(CrystalElement.elements[i]));
+		}
+		return max;
+	}
+
+	private int getColorMix(Collection<CrystalElement> mix) {
+		int r = 0;
+		int g = 0;
+		int b = 0;
+		int n = 0;
+		for (CrystalElement e : mix) {
+			float f = MonumentCompletionRitual.getIntensity(e);
+			if (f > 0) {
+				r += f*e.getRed();
+				g += f*e.getGreen();
+				b += f*e.getBlue();
+				n++;
+			}
+		}
+		return n == 0 ? 0 : ReikaColorAPI.RGBtoHex(r/n, g/n, b/n);
 	}
 
 	private void activateShaders(TileEntityStructControl te, float par8) {

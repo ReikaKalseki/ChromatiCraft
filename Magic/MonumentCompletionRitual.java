@@ -183,6 +183,7 @@ public class MonumentCompletionRitual {
 		private final MusicKey key;
 		/** In quarters */
 		private final int length;
+		private final int startBeat;
 
 		private final boolean percussion;
 		private final boolean bell;
@@ -198,6 +199,7 @@ public class MonumentCompletionRitual {
 
 		private RayNote(MusicKey k, int dur, boolean p, boolean b, boolean first) {
 			key = k;
+			startBeat = melody.isEmpty() ? 0 : melody.get(melody.size()-1).startBeat+melody.get(melody.size()-1).length;
 			length = dur;
 			percussion = p;
 			bell = b;
@@ -250,6 +252,8 @@ public class MonumentCompletionRitual {
 
 	public static void clearRituals() {
 		runningRituals = false;
+		for (int i = 0; i < 16; i++)
+			colorFade[i] = 0;
 	}
 
 	public static float getIntensity(CrystalElement e) {
@@ -387,9 +391,12 @@ public class MonumentCompletionRitual {
 			}
 		}
 
-		if (!notes.isEmpty()) {
+		if (runTime >= SOUND_LENGTH_MILLIS) {
+			activeKey = null;
+		}
+		else if (!notes.isEmpty()) {
 			RayNote e = notes.get(0);
-			long t = BEAT_LENGTH*e.length;
+			long t = e.startBeat*BEAT_LENGTH;
 			if (t <= runTime) {
 				notes.remove(0);
 				activeKey = e.key;
@@ -399,7 +406,7 @@ public class MonumentCompletionRitual {
 
 		Set<CrystalElement> set = activeKey == null ? null : CrystalMusicManager.instance.getColorsWithKeyAnyOctave(activeKey);
 		for (int i = 0; i < 16; i++) {
-			colorFade[i] = set != null && set.contains(CrystalElement.elements[i]) ? Math.min(1, colorFade[i]+0.04F) : Math.max(0, colorFade[i]-0.05F);
+			colorFade[i] = set != null && set.contains(CrystalElement.elements[i]) ? Math.min(1, colorFade[i]+0.05F) : Math.max(0, colorFade[i]-0.025F);
 		}
 	}
 
