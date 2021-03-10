@@ -71,6 +71,7 @@ public class RenderStructControl extends ChromaRenderBase {
 
 					double sz = 16;
 					GL11.glPushMatrix();
+					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 					GL11.glShadeModel(GL11.GL_SMOOTH);
 					ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/monument_lines.png");
 					//v5.startDrawingQuads();
@@ -88,25 +89,35 @@ public class RenderStructControl extends ChromaRenderBase {
 					v5.addVertexWithUV(0.5, 0, 0.5, 0.5, 0.5);
 					double r0 = 18.5;
 					for (int i = 0; i <= 16; i++) {
-						int idx = (i+8)%16;
-						CrystalElement e = CrystalElement.elements[idx];
-						double a = (i*22.5+11.25)%360D;
-						double ang = Math.toRadians(a);
-						double r = r0;//Math.min(r0, r0+3*(1-Math.cos(ang*4)));
-						double cs = Math.cos(ang);
-						double ss = Math.sin(ang);
-						double dx = 0.5+r*cs;
-						double dz = 0.5+r*ss;
-						double u = 0.5+0.5*cs;
-						double v = 0.5+0.5*ss;
-						//v5.setColorOpaque_I(CrystalElement.getBlendedColor((int)((a+180-12.25)*2), 45));
-						int c = e.getColor();
-						v5.setColorOpaque_I(c);
-						v5.addVertexWithUV(dx, 0, dz, u, v);
+						CrystalElement e = CrystalElement.elements[i%16];
+						double a0 = (i-8)*22.5+11.25;
+						if (i%4 == 1)
+							a0 -= 5;
+						else if (i%4 == 2)
+							a0 += 5;
+						double d = 6;//4;
+						if (e == CrystalElement.BLACK)
+							;//ReikaJavaLibrary.pConsole(a0+" > "+(a0-d)+" - "+(a0+d));
+						double min = i == 0 ? a0 : a0-d;
+						double max = i == 16 ? a0 : a0+d;
+						for (double a = min; a <= max; a += d) {
+							double ang = Math.toRadians(a);
+							double r = r0;//Math.min(r0, r0+3*(1-Math.cos(ang*4)));
+							double cs = Math.cos(ang);
+							double ss = Math.sin(ang);
+							double dx = 0.5+r*cs;
+							double dz = 0.5+r*ss;
+							double u = 0.5+0.5*cs;
+							double v = 0.5+0.5*ss;
+							//v5.setColorOpaque_I(CrystalElement.getBlendedColor((int)((a+180-12.25)*2), 45));
+							int c = e.getColor();
+							v5.setColorOpaque_I(c);
+							v5.addVertexWithUV(dx, 0, dz, u, v);
+						}
 					}
 
 					v5.draw();
-					GL11.glShadeModel(GL11.GL_FLAT);
+					GL11.glPopAttrib();
 					GL11.glPopMatrix();
 				}
 			}
