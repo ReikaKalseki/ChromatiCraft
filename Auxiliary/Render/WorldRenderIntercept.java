@@ -59,7 +59,7 @@ public class WorldRenderIntercept {
 		}
 		else if (MonumentCompletionRitual.areRitualsRunning() | true) {
 			f = 1;
-			ChromaShaders.VOIDRITUAL$WORLD.getShader().setFields(MonumentCompletionRitual.getShaderFields());
+			MonumentCompletionRitual.addShaderData(ChromaShaders.VOIDRITUAL$WORLD.getShader());
 		}
 		while (lists.remaining() > 0) {
 			int id = lists.get();

@@ -69,7 +69,7 @@ public class RenderStructControl extends ChromaRenderBase {
 
 				this.activateShaders(te, par8);
 
-				if (te.isMonument()) {
+				if (te.isMonument() && false) {
 					float br = this.getMonumentBrightness();
 					if (br > 0) {
 						GL11.glTranslated(0, 0.005-4, 0);
