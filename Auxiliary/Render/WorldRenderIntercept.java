@@ -57,7 +57,7 @@ public class WorldRenderIntercept {
 				f = Math.max(f, f2);
 			}
 		}
-		else if (MonumentCompletionRitual.areRitualsRunning()) {
+		else if (MonumentCompletionRitual.areRitualsRunning() | true) {
 			f = 1;
 			ChromaShaders.VOIDRITUAL$WORLD.getShader().setFields(MonumentCompletionRitual.getShaderFields());
 		}

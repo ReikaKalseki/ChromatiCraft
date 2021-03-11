@@ -2,6 +2,7 @@
 #import math
 
 varying vec4 vLightMapColor;
+varying vec3 vLightGlowColor;
 
 uniform sampler2D bgl_LightMapTexture;
 
@@ -15,6 +16,32 @@ uniform float curlMovementY;
 uniform float stretchFactor;
 uniform float stretchRadius;
 uniform float stretchApplication;
+
+uniform vec4 glow1;
+uniform vec4 glow2;
+uniform vec4 glow3;
+uniform vec4 glow4;
+uniform vec4 glow5;
+uniform vec4 glow6;
+uniform vec4 glow7;
+uniform vec4 glow8;
+uniform vec4 glow9;
+uniform vec4 glow10;
+uniform vec4 glow11;
+uniform vec4 glow12;
+uniform vec4 glow13;
+uniform vec4 glow14;
+uniform vec4 glow15;
+
+vec3 addGlow(vec3 color, vec3 pos, vec4 glow) {
+	vec3 diff = pos-glow.xyz;
+	float distxz = getDistanceXZ(diff);
+	float f = max(0.0, glow.w-0.1*distxz);
+	color.r += f*glow.r*0+f;	
+	color.g += f*glow.g*0;
+	color.b += f*glow.b*0;
+	return color;
+}
 
 void main() {
     vec4 vert = gl_Vertex;
@@ -47,5 +74,24 @@ void main() {
 	//lightMapCoords += 1.0/32.0;
 	lightMapCoords /= 256.0;
     vLightMapColor = min(texture2D(bgl_LightMapTexture, lightMapCoords)*2.0, vec4(1.0));
+	
+	vec3 color = vec3(0.0, 0.0, 0.0);
+	color = addGlow(color, real, glow1);
+	color = addGlow(color, real, glow2);
+	color = addGlow(color, real, glow3);
+	color = addGlow(color, real, glow4);
+	color = addGlow(color, real, glow5);
+	color = addGlow(color, real, glow6);
+	color = addGlow(color, real, glow7);
+	color = addGlow(color, real, glow8);
+	color = addGlow(color, real, glow9);
+	color = addGlow(color, real, glow10);
+	color = addGlow(color, real, glow11);
+	color = addGlow(color, real, glow12);
+	color = addGlow(color, real, glow13);
+	color = addGlow(color, real, glow14);
+	color = addGlow(color, real, glow15);
+	vLightGlowColor = color;
+	
 	gl_FrontColor = gl_Color;
 }
