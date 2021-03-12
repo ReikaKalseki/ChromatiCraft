@@ -109,12 +109,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 		if (isMonument && triggeredMonument && monument != null) {
 			monument.tick();
-			//monumentTime = monument.tick();
-			//int[] parts = ReikaJavaLibrary.splitLong(monumentTime);
-			//ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.MONUMENTSYNC.ordinal(), this, parts[0], parts[1]);
 		}
-		if (world.isRemote && this.getTicksExisted()%80 == 0)
-			;//EventType.VORTEX.doEventClient(world, x, y, z);
 		if (isMonument && DragonAPICore.debugtest) {
 			for (int i = 0; i < 16; i++) {
 				Coordinate c = TileEntityDimensionCore.getLocation(CrystalElement.elements[i]);

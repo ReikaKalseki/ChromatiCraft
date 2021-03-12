@@ -48,7 +48,7 @@ void main() {
 	//lightMapCoords *= 15.0/16.0;
 	//lightMapCoords += 1.0/32.0;
 	lightMapCoords /= 256.0;
-    vLightMapColor = min(texture2D(bgl_LightMapTexture, lightMapCoords)*2.0, vec4(1.0));
+    vLightMapColor = min(texture2D(bgl_LightMapTexture, lightMapCoords)*1.5+vec4(0.25), vec4(1.0));
 	
 	gl_FrontColor = gl_Color;
 }

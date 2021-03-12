@@ -72,9 +72,9 @@ public class MonumentCompletionRitual {
 
 	private static final int SOUND_LENGTH_MILLIS = (120+21)*1000; //2:21
 	private static final int SOUND_LENGTH_TICKS = SOUND_LENGTH_MILLIS/50;
-	private static final int COMPLETION_EXTRA = 30;
+	private static final int COMPLETION_EXTRA = 3000;
 
-	private static final int BEAT_LENGTH = 2450; //2.5s / qtr
+	private static final int BEAT_LENGTH = 2430; //2.5s / qtr
 
 	private static final int EFFECT_RANGE = 256;
 
@@ -269,12 +269,6 @@ public class MonumentCompletionRitual {
 	}
 
 	public static void addShaderData(ShaderProgram p) {
-		for (int i = 0; i < 16; i++) {
-			CrystalElement e = CrystalElement.elements[i];
-			Coordinate c = TileEntityDimensionCore.getLocation(e).offset(103, 103, -67);
-			shaderPositions[i] = Vec3.createVectorHelper(c.xCoord+0.5, c.yCoord+0.5, c.zCoord+0.5);
-			shaderColors[i] = new Vec4(e.getRed()/255F, e.getGreen()/255F, e.getBlue()/255F, i == ((System.currentTimeMillis())/1000)%16 ? 1F : 0);
-		}
 		p.setField("glowLocations", shaderPositions);
 		p.setField("glowColor", shaderColors);
 	}
@@ -426,11 +420,11 @@ public class MonumentCompletionRitual {
 		Set<CrystalElement> set = activeKey == null ? null : CrystalMusicManager.instance.getColorsWithKeyAnyOctave(activeKey);
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];
-			colorFade[i] = set != null && set.contains(e) ? Math.min(1, colorFade[i]+0.04F) : Math.max(0, colorFade[i]-0.02F);
+			colorFade[i] = set != null && set.contains(e) ? Math.min(1, colorFade[i]+0.04F) : Math.max(0, colorFade[i]-0.015F);
 			TileEntityDimensionCore te = this.getCore(e);
 
 			shaderPositions[i] = Vec3.createVectorHelper(te.xCoord+0.5, y-3.5, te.zCoord+0.5);
-			shaderColors[i] = new Vec4(e.getRed()/255F, e.getGreen()/255F, e.getBlue()/255F, colorFade[i]);
+			shaderColors[i] = new Vec4(e.getRed()/255F, e.getGreen()/255F, e.getBlue()/255F, colorFade[i]*0.75F);
 
 			te.shaderScale = 1+colorFade[i]*5;
 		}

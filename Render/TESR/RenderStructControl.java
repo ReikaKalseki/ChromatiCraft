@@ -69,7 +69,7 @@ public class RenderStructControl extends ChromaRenderBase {
 
 				this.activateShaders(te, par8);
 
-				if (te.isMonument() && false) {
+				if (te.isMonument()) {
 					float br = this.getMonumentBrightness();
 					if (br > 0) {
 						GL11.glTranslated(0, 0.005-4, 0);
@@ -97,7 +97,6 @@ public class RenderStructControl extends ChromaRenderBase {
 							double d = 6;//4;
 							double min = i == 0 ? a0 : a0-d;
 							double max = i == 16 ? a0 : a0+d;
-							//TODO make the color fade sharper with a triangle strip ring
 							for (double a = min; a <= max; a += d) {
 								double ang = Math.toRadians(a);
 								double cs = Math.cos(ang);
