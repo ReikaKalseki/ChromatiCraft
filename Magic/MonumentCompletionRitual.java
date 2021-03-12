@@ -272,8 +272,8 @@ public class MonumentCompletionRitual {
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];
 			Coordinate c = TileEntityDimensionCore.getLocation(e).offset(103, 103, -67);
-			shaderPositions[i] = Vec3.createVectorHelper(c.xCoord, c.yCoord+0.5, c.zCoord);
-			shaderColors[i] = new Vec4(e.getRed()/255F, e.getGreen()/255F, e.getBlue()/255F, i == ((System.currentTimeMillis())/1000)%16 ? 1F : 1);
+			shaderPositions[i] = Vec3.createVectorHelper(c.xCoord+0.5, c.yCoord+0.5, c.zCoord+0.5);
+			shaderColors[i] = new Vec4(e.getRed()/255F, e.getGreen()/255F, e.getBlue()/255F, i == ((System.currentTimeMillis())/1000)%16 ? 1F : 0);
 		}
 		p.setField("glowLocations", shaderPositions);
 		p.setField("glowColor", shaderColors);
