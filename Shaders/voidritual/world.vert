@@ -17,14 +17,17 @@ uniform float stretchFactor;
 uniform float stretchRadius;
 uniform float stretchApplication;
 
-uniform float glows[112]; //vec3 position, vec3 color, 1f multiplier, x16 colors
+uniform vec3 glowLocations[16];
+uniform vec4 glowColor[16];
 
-vec3 addGlow(vec3 base, vec3 pos, float x, float y, float z, float r, float g, float b, float f0) {
-	vec3 diff = pos-vec3(x, y, z);
+vec3 addGlow(vec3 base, vec3 pos, vec3 loc, vec4 color) {
+	vec3 diff = pos-loc;
 	float distxz = getDistanceXZ(diff);
-	float f = max(0.0, min(1.0, f0-0.1*max(0.0, distxz-2.5*f0)));
-	vec3 mult = vec3(r, g, b);
-	base = min(vec3(1.0), base+f*mult);
+	float f = max(0.0, min(1.0, color.a-0.1*max(0.0, distxz-2.5*color.a)));
+	f = max(0.0, 0.5-(abs(diff.x)+abs(diff.z)));
+	color.rgb = vec3(22.0/255.0, 192.0/255.0, 1.0);
+	base = min(vec3(1.0), base+f*color.rgb);
+	base = max(vec3(0.02), base);
 	return base;
 }
 
@@ -61,10 +64,12 @@ void main() {
     vLightMapColor = min(texture2D(bgl_LightMapTexture, lightMapCoords)*2.0, vec4(1.0));
 	
 	vec3 color = vec3(0.0);
-	for (int i = 0; i < 4; i++) {
-		int idx = i*7;
-		color += addGlow(color, real, glows[idx], glows[idx+1], glows[idx+2], glows[idx+3], glows[idx+4], glows[idx+5], glows[idx+6]);
-	}
+	//for (int i = 9; i < 10; i++) {
+	//	color += addGlow(color, real, glowLocations[i], glowColor[i]);
+	//}
+	color += addGlow(color, real, glowLocations[1], glowColor[1]);
+	color += addGlow(color, real, glowLocations[4], glowColor[4]);
+	color += addGlow(color, real, glowLocations[10], glowColor[10]);
 	vLightGlowColor = color;
 	
 	gl_FrontColor = gl_Color;

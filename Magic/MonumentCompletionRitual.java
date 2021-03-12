@@ -22,6 +22,7 @@ import net.minecraft.client.audio.ISound;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -43,6 +44,7 @@ import Reika.ChromatiCraft.World.Dimension.ChromaDimensionTicker;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.ChromatiCraft.World.Dimension.Structure.MonumentGenerator;
 import Reika.DragonAPI.IO.Shaders.ShaderProgram;
+import Reika.DragonAPI.IO.Shaders.ShaderProgram.Vec4;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
@@ -106,7 +108,8 @@ public class MonumentCompletionRitual {
 	private final ArrayList<TimedEvent> events;
 	private final ArrayList<RayNote> notes;
 	private static final float[] colorFade = new float[16];
-	private static final float[] shaderData = new float[16*(3+1+3)];
+	private static final Vec3[] shaderPositions = new Vec3[16];
+	private static final Vec4[] shaderColors = new Vec4[16];
 	private MusicKey activeKey = null;
 
 	private static boolean runningRituals;
@@ -254,10 +257,11 @@ public class MonumentCompletionRitual {
 
 	public static void clearRituals() {
 		runningRituals = false;
-		for (int i = 0; i < 16; i++)
+		for (int i = 0; i < 16; i++) {
 			colorFade[i] = 0;
-		for (int i = 0; i < shaderData.length; i++)
-			shaderData[i] = 0;
+			shaderColors[i] = null;
+			shaderPositions[i] = null;
+		}
 	}
 
 	public static float getIntensity(CrystalElement e) {
@@ -266,18 +270,13 @@ public class MonumentCompletionRitual {
 
 	public static void addShaderData(ShaderProgram p) {
 		for (int i = 0; i < 16; i++) {
-			int idx = i*7;
 			CrystalElement e = CrystalElement.elements[i];
 			Coordinate c = TileEntityDimensionCore.getLocation(e).offset(103, 103, -67);
-			shaderData[idx] = (float)(c.xCoord+0.5);
-			shaderData[idx+1] = (float)(c.yCoord+0.5);
-			shaderData[idx+2] = (float)(c.zCoord+0.5);
-			shaderData[idx+3] = e.getRed()/255F;
-			shaderData[idx+4] = e.getGreen()/255F;
-			shaderData[idx+5] = e.getBlue()/255F;
-			shaderData[idx+6] = i == 1 ? 1F : 0;
+			shaderPositions[i] = Vec3.createVectorHelper(c.xCoord, c.yCoord+0.5, c.zCoord);
+			shaderColors[i] = new Vec4(e.getRed()/255F, e.getGreen()/255F, e.getBlue()/255F, i == ((System.currentTimeMillis())/1000)%16 ? 1F : 1);
 		}
-		p.setField("glows", shaderData);
+		p.setField("glowLocations", shaderPositions);
+		p.setField("glowColor", shaderColors);
 	}
 
 	public MonumentCompletionRitual(World world, int x, int y, int z, EntityPlayer ep) {
@@ -429,14 +428,10 @@ public class MonumentCompletionRitual {
 			CrystalElement e = CrystalElement.elements[i];
 			colorFade[i] = set != null && set.contains(e) ? Math.min(1, colorFade[i]+0.04F) : Math.max(0, colorFade[i]-0.02F);
 			TileEntityDimensionCore te = this.getCore(e);
-			int idx = i*7;
-			shaderData[idx] = (float)(te.xCoord+0.5);
-			shaderData[idx+1] = (float)(y-3.5);
-			shaderData[idx+2] = (float)(te.zCoord+0.5);
-			shaderData[idx+3] = e.getRed()/255F;
-			shaderData[idx+4] = e.getGreen()/255F;
-			shaderData[idx+5] = e.getBlue()/255F;
-			shaderData[idx+6] = colorFade[i];
+
+			shaderPositions[i] = Vec3.createVectorHelper(te.xCoord+0.5, y-3.5, te.zCoord+0.5);
+			shaderColors[i] = new Vec4(e.getRed()/255F, e.getGreen()/255F, e.getBlue()/255F, colorFade[i]);
+
 			te.shaderScale = 1+colorFade[i]*5;
 		}
 	}
