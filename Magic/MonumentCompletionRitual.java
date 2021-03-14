@@ -74,7 +74,8 @@ public class MonumentCompletionRitual {
 	private static final int SOUND_LENGTH_TICKS = SOUND_LENGTH_MILLIS/50;
 	private static final int COMPLETION_EXTRA = 3000;
 
-	private static final int BEAT_LENGTH = 2430; //2.5s / qtr
+	private static final int BEAT_LENGTH = 2425; //2.5s / qtr
+	is inconsistent due to client thread/sound thread desunc - see if cna sync to sound thread
 
 	private static final int EFFECT_RANGE = 256;
 
@@ -152,7 +153,8 @@ public class MonumentCompletionRitual {
 		eventSchedule.add(new TimedEvent(EventType.FLARES, 40250));
 		 */
 
-		int t = 0;
+		int t0 = -200;
+		long off = 0;
 		eventSchedule.add(new TimedEvent(EventType.FLARES, 0));
 		for (RayNote n : melody) {
 			EventType e = EventType.FLARES;
@@ -162,6 +164,7 @@ public class MonumentCompletionRitual {
 			else if (n.length >= 4) {
 				e = EventType.TWIRL;
 			}
+			long t = t0+off;
 			eventSchedule.add(new TimedEvent(e, t));
 			if (n.percussion)
 				eventSchedule.add(new TimedEvent(EventType.PINWHEEL, t));
@@ -171,7 +174,9 @@ public class MonumentCompletionRitual {
 				for (int i = 0; i <= 250; i += 50)
 					eventSchedule.add(new TimedEvent(EventType.PARTICLERING, t+i));
 			}
-			t += n.length*BEAT_LENGTH;
+			t0 += n.length*BEAT_LENGTH;
+			if (n.isFirstInPhrase && n.startBeat > 0)
+				off -= 250;
 		}
 
 		addEvent(EventType.VORTEXGROW, 12);
@@ -282,6 +287,43 @@ public class MonumentCompletionRitual {
 
 		events = new ArrayList(eventSchedule);
 		notes = new ArrayList(melody);
+
+		events.clear();
+		int t0 = -200;
+		long off = 0;
+		events.add(new TimedEvent(EventType.FLARES, 0));
+		for (RayNote n : melody) {
+			EventType e = EventType.FLARES;
+			if (n.length >= 6) {
+				e = EventType.PARTICLECLOUD;
+			}
+			else if (n.length >= 4) {
+				e = EventType.TWIRL;
+			}
+
+			if (n.isFirstInPhrase && n.startBeat > 0) {
+				if (off == 0)
+					off -= 750; //was 1200
+				else
+					off -= 400;
+			}
+
+			long t = t0+off;
+			if (n.isFirstInPhrase && n.startBeat > 0)
+				;//t -= 1200;
+			events.add(new TimedEvent(e, t));
+			if (n.percussion && n.startBeat > 0)
+				events.add(new TimedEvent(EventType.PINWHEEL, t));
+			if (n.bell && n.startBeat > 0)
+				events.add(new TimedEvent(EventType.TWIRL, t));
+			if (n.isFirstInPhrase) {
+				for (int i = 0; i <= 250; i += 50)
+					events.add(new TimedEvent(EventType.PARTICLERING, t+i));
+			}
+			t0 += n.length*BEAT_LENGTH;
+		}
+
+		Collections.sort(events);
 
 		packetTarget = new PacketTarget.RadiusTarget(world, x+0.5, y+0.5, z+0.5, EFFECT_RANGE);
 
