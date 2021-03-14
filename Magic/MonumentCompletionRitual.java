@@ -75,7 +75,7 @@ public class MonumentCompletionRitual {
 	private final int FINAL_SOUND_COMPLETION_DELAY = 10000; //millis
 	private final int COMPLETION_EXTRA = 5000; //millis
 
-	private final long[] SOUND_TIMINGS = new long[] {0, 28000, 67000, 90000, 110000, 130000}; //in millis
+	private final long[] SOUND_TIMINGS = new long[] {0, 28000, 66500, 87500, 104000, 130000}; //in millis
 
 	private final int BEAT_LENGTH = 2390; //2.5s / qtr
 
@@ -253,7 +253,9 @@ public class MonumentCompletionRitual {
 		int t0 = 100;
 		long off = 0;
 		events.add(new TimedEvent(EventType.FLARES, 0));
-		for (RayNote n : melody) {
+		int nextOff = 0;
+		for (int idx = 0; idx < melody.size(); idx++) {
+			RayNote n = melody.get(idx);
 			EventType e = EventType.FLARES;
 			if (n.length >= 6) {
 				e = EventType.PARTICLECLOUD;
@@ -266,10 +268,16 @@ public class MonumentCompletionRitual {
 				if (off == 0)
 					off -= 250; //was 1200
 				else
-					off += 0;
+					off += 400;
+				if (off == 150)
+					nextOff = 200;
 			}
 
-			long t = t0+off;
+			if (idx == 10) //long non-bell
+				nextOff = 250;
+
+			long t = t0+off+nextOff;
+			nextOff = 0;
 			if (n.isFirstInPhrase && n.startBeat > 0)
 				;//t -= 1200;
 			events.add(new TimedEvent(e, t));
