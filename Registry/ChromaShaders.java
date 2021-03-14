@@ -45,7 +45,9 @@ public enum ChromaShaders implements ShaderHook {
 	ARTEALLOY$SHOCK(),
 	ARTEALLOY$GLOW(),
 
-	MONUMENT$GENERAL();
+	MONUMENT$GENERAL(),
+	MONUMENT$CHORDS(ShaderDomain.WORLD),
+	;
 
 	private final ShaderDomain domain;
 	private ShaderProgram shader;

@@ -4,8 +4,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import Reika.DragonAPI.Interfaces.Registry.DynamicSound;
+import Reika.DragonAPI.Interfaces.Registry.StreamableSound;
 
-public interface ChromaSound extends DynamicSound {
+public interface ChromaSound extends DynamicSound, StreamableSound {
 
 	public void playSoundAtBlock(TileEntity te, float vol, float pitch);
 	public void playSoundAtBlock(World world, int x, int y, int z, float vol, float pitch);

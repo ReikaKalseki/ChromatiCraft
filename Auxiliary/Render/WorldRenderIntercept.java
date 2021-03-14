@@ -51,7 +51,9 @@ public class WorldRenderIntercept {
 	//@ModDependent(ModList.VOIDMONSTER)
 	private void runIntercept(IntBuffer lists) {
 		float f = 0;
+		ChromaShaders s = null;
 		if (VoidMonsterDestructionRitual.ritualsActive()) {
+			s = ChromaShaders.VOIDRITUAL$WORLD;
 			for (EffectVisual e : VoidMonsterRitualClientEffects.EffectVisual.getTerrainShaders()) {
 				float f2 = e.getShaderIntensity();
 				f = Math.max(f, f2);
@@ -59,22 +61,23 @@ public class WorldRenderIntercept {
 		}
 		else if (MonumentCompletionRitual.areRitualsRunning()) {
 			f = 1;
-			MonumentCompletionRitual.addShaderData(ChromaShaders.VOIDRITUAL$WORLD.getShader());
+			s = ChromaShaders.MONUMENT$CHORDS;
+			MonumentCompletionRitual.addShaderData(s.getShader());
 		}
 		while (lists.remaining() > 0) {
 			int id = lists.get();
 			if (f > 0) {
-				ChromaShaders.VOIDRITUAL$WORLD.setIntensity(f);
-				ChromaShaders.VOIDRITUAL$WORLD.getShader().updateEnabled();
+				s.setIntensity(f);
+				s.getShader().updateEnabled();
 				Coordinate c = instance.getRenderChunkForList(id);
 				//ReikaJavaLibrary.pConsole("Running GL list # "+id+" which maps to chunk "+c);
 				if (c != null) {
-					ChromaShaders.VOIDRITUAL$WORLD.getShader().setField("chunkX", c.xCoord);
-					ChromaShaders.VOIDRITUAL$WORLD.getShader().setField("chunkY", c.yCoord);
-					ChromaShaders.VOIDRITUAL$WORLD.getShader().setField("chunkZ", c.zCoord);
+					s.getShader().setField("chunkX", c.xCoord);
+					s.getShader().setField("chunkY", c.yCoord);
+					s.getShader().setField("chunkZ", c.zCoord);
 				}
-				ChromaShaders.VOIDRITUAL$WORLD.getShader().setTextureUnit("bgl_LightMapTexture", OpenGlHelper.lightmapTexUnit);
-				ShaderRegistry.runShader(ChromaShaders.VOIDRITUAL$WORLD.getShader());
+				s.getShader().setTextureUnit("bgl_LightMapTexture", OpenGlHelper.lightmapTexUnit);
+				ShaderRegistry.runShader(s.getShader());
 			}
 			GL11.glCallList(id);
 			if (f > 0)

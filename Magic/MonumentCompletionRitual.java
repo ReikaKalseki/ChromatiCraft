@@ -50,11 +50,13 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
+import Reika.DragonAPI.Instantiable.IO.SoundVariant;
 import Reika.DragonAPI.Instantiable.ParticleController.SpiralMotionController;
 import Reika.DragonAPI.Interfaces.ColorController;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
@@ -70,17 +72,16 @@ public class MonumentCompletionRitual {
 
 	private static final Random rand = new Random();
 
-	private static final int SOUND_LENGTH_MILLIS = (120+21)*1000; //2:21
-	private static final int SOUND_LENGTH_TICKS = SOUND_LENGTH_MILLIS/50;
-	private static final int COMPLETION_EXTRA = 3000;
+	private final int FINAL_SOUND_COMPLETION_DELAY = 10000; //millis
+	private final int COMPLETION_EXTRA = 5000; //millis
 
-	private static final int BEAT_LENGTH = 2425; //2.5s / qtr
-	is inconsistent due to client thread/sound thread desunc - see if cna sync to sound thread
+	private final long[] SOUND_TIMINGS = new long[] {0, 28000, 67000, 90000, 110000, 130000}; //in millis
 
-	private static final int EFFECT_RANGE = 256;
+	private final int BEAT_LENGTH = 2390; //2.5s / qtr
+
+	private final int EFFECT_RANGE = 256;
 
 	private static final ArrayList<RayNote> melody = new ArrayList();
-	private static final ArrayList<TimedEvent> eventSchedule = new ArrayList();
 
 	private long startTime;
 	private long startTick;
@@ -88,7 +89,11 @@ public class MonumentCompletionRitual {
 	private long runTime = -1;
 	private int tick;
 	private long lastTickTime;
+	private long nextSoundTime;
+	private long lastSoundStart;
+	private long completionTime;
 	private long pauseTotal = 0;
+	private int currentSound = -1;
 
 	private boolean running;
 	private boolean complete;
@@ -106,7 +111,7 @@ public class MonumentCompletionRitual {
 	private boolean vortexGrow = false;
 
 	private final ArrayList<RingParticle> particleRing = new ArrayList();
-	private final ArrayList<TimedEvent> events;
+	private final ArrayList<TimedEvent> events = new ArrayList();
 	private final ArrayList<RayNote> notes;
 	private static final float[] colorFade = new float[16];
 	private static final Vec3[] shaderPositions = new Vec3[16];
@@ -144,48 +149,6 @@ public class MonumentCompletionRitual {
 		melody.add(new RayNote(MusicKey.D5, 2));
 		melody.add(new RayNote(MusicKey.G4, 2));
 		melody.add(new RayNote(MusicKey.A4, 8, true, true));
-
-		/*
-		eventSchedule.add(new TimedEvent(EventType.FLARES, 250));
-		eventSchedule.add(new TimedEvent(EventType.PARTICLERING, 250));
-		eventSchedule.add(new TimedEvent(EventType.PARTICLECLOUD, 25500));
-		eventSchedule.add(new TimedEvent(EventType.PINWHEEL, 36250));
-		eventSchedule.add(new TimedEvent(EventType.FLARES, 40250));
-		 */
-
-		int t0 = -200;
-		long off = 0;
-		eventSchedule.add(new TimedEvent(EventType.FLARES, 0));
-		for (RayNote n : melody) {
-			EventType e = EventType.FLARES;
-			if (n.length >= 6) {
-				e = EventType.PARTICLECLOUD;
-			}
-			else if (n.length >= 4) {
-				e = EventType.TWIRL;
-			}
-			long t = t0+off;
-			eventSchedule.add(new TimedEvent(e, t));
-			if (n.percussion)
-				eventSchedule.add(new TimedEvent(EventType.PINWHEEL, t));
-			if (n.bell)
-				eventSchedule.add(new TimedEvent(EventType.TWIRL, t));
-			if (n.isFirstInPhrase) {
-				for (int i = 0; i <= 250; i += 50)
-					eventSchedule.add(new TimedEvent(EventType.PARTICLERING, t+i));
-			}
-			t0 += n.length*BEAT_LENGTH;
-			if (n.isFirstInPhrase && n.startBeat > 0)
-				off -= 250;
-		}
-
-		addEvent(EventType.VORTEXGROW, 12);
-		addEvent(EventType.VORTEXGROW, 14);
-		addEvent(EventType.VORTEXGROW, 24);
-		addEvent(EventType.VORTEXGROW, 28);
-		addEvent(EventType.VORTEXGROW, 44);
-
-		Collections.sort(eventSchedule);
 	}
 
 	private static class RayNote {
@@ -218,8 +181,8 @@ public class MonumentCompletionRitual {
 
 	}
 
-	private static void addEvent(EventType e, int beats) {
-		eventSchedule.add(new TimedEvent(e, beats*BEAT_LENGTH));
+	private void addEvent(EventType e, int beats) {
+		events.add(new TimedEvent(e, beats*BEAT_LENGTH));
 	}
 
 	private static class RingParticle {
@@ -285,11 +248,9 @@ public class MonumentCompletionRitual {
 		this.z = z;
 		this.ep = ep;
 
-		events = new ArrayList(eventSchedule);
 		notes = new ArrayList(melody);
 
-		events.clear();
-		int t0 = -200;
+		int t0 = 100;
 		long off = 0;
 		events.add(new TimedEvent(EventType.FLARES, 0));
 		for (RayNote n : melody) {
@@ -303,9 +264,9 @@ public class MonumentCompletionRitual {
 
 			if (n.isFirstInPhrase && n.startBeat > 0) {
 				if (off == 0)
-					off -= 750; //was 1200
+					off -= 250; //was 1200
 				else
-					off -= 400;
+					off += 0;
 			}
 
 			long t = t0+off;
@@ -322,6 +283,12 @@ public class MonumentCompletionRitual {
 			}
 			t0 += n.length*BEAT_LENGTH;
 		}
+
+		this.addEvent(EventType.VORTEXGROW, 12);
+		this.addEvent(EventType.VORTEXGROW, 14);
+		this.addEvent(EventType.VORTEXGROW, 24);
+		this.addEvent(EventType.VORTEXGROW, 28);
+		this.addEvent(EventType.VORTEXGROW, 44);
 
 		Collections.sort(events);
 
@@ -364,9 +331,11 @@ public class MonumentCompletionRitual {
 		runningRituals = true;
 
 		if (world.isRemote) {
+			currentSound = 0;
 			this.startClient();
 		}
 
+		completionTime = -1;
 		startTime = System.currentTimeMillis();
 		startTick = world.getTotalWorldTime();
 		runTime = 0;
@@ -385,14 +354,26 @@ public class MonumentCompletionRitual {
 
 	@SideOnly(Side.CLIENT)
 	private void startClient() {
-		playingSound = ReikaSoundHelper.playClientSound(ChromaSounds.MONUMENT, x+0.5, y+0.5, z+0.5, 1, 1F, false);
 		ISound s = ChromaDimensionTicker.instance.getCurrentMusic();
 		if (s != null) {
 			Minecraft.getMinecraft().getSoundHandler().stopSound(s);
 		}
 
+		this.stepSound();
+
 		reBobView = Minecraft.getMinecraft().gameSettings.viewBobbing;
 		reShowGui = !Minecraft.getMinecraft().gameSettings.hideGUI;
+	}
+
+	private void stepSound() {
+		ReikaJavaLibrary.pConsole("Stepping sound to "+currentSound+" @ "+runTime+" ("+(runTime-startTime)+")");
+		int idx = currentSound;
+		SoundVariant s = ChromaSounds.MONUMENT.getVariant(String.valueOf(idx+1	));
+		playingSound = ReikaSoundHelper.playClientSound(s, x+0.5, y+0.5, z+0.5, 1, 1F, false);
+		lastSoundStart = runTime;
+		currentSound++;
+		nextSoundTime = currentSound >= SOUND_TIMINGS.length ? Long.MAX_VALUE : runTime+SOUND_TIMINGS[currentSound]-SOUND_TIMINGS[idx];
+		ReikaJavaLibrary.pConsole("Next sound is at "+nextSoundTime);
 	}
 
 	public void tick() {
@@ -411,7 +392,7 @@ public class MonumentCompletionRitual {
 				this.doScriptedFX();
 			}
 			else {
-				if (runTime >= SOUND_LENGTH_MILLIS) {
+				if (this.isReadyToComplete()) {
 					this.completeRitual();
 				}
 			}
@@ -419,6 +400,11 @@ public class MonumentCompletionRitual {
 			lastTickTime = time;
 		}
 	}
+
+	private boolean isReadyToComplete() {
+		return currentSound == SOUND_TIMINGS.length && (runTime-lastSoundStart) >= FINAL_SOUND_COMPLETION_DELAY;//runTime >= SOUND_LENGTH_MILLIS;
+	}
+
 	/*
 	@SideOnly(Side.CLIENT)
 	public void setTime(long time) {
@@ -429,6 +415,10 @@ public class MonumentCompletionRitual {
 	private void doScriptedFX() {
 		this.doRingFX();
 		this.doVortexFX();
+
+		if (runTime >= nextSoundTime) {
+			this.stepSound();
+		}
 
 		boolean flag = !events.isEmpty();
 		while (flag) {
@@ -446,7 +436,7 @@ public class MonumentCompletionRitual {
 			}
 		}
 
-		if (runTime >= SOUND_LENGTH_MILLIS) {
+		if (complete) {
 			activeKey = null;
 		}
 		else if (!notes.isEmpty()) {
@@ -660,7 +650,9 @@ public class MonumentCompletionRitual {
 
 	private void completeRitual() {
 		complete = true;
-		if (runTime-SOUND_LENGTH_MILLIS < COMPLETION_EXTRA) {
+		if (completionTime < 0)
+			completionTime = runTime;
+		if (runTime-completionTime < COMPLETION_EXTRA) {
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.MONUMENTCOMPLETE.ordinal(), packetTarget, x, y, z);
 
 			double[] angs = ReikaPhysicsHelper.cartesianToPolar(ep.posX-x-0.5, ep.posY-y-0.5, ep.posZ-z-0.5);
@@ -686,6 +678,7 @@ public class MonumentCompletionRitual {
 	public void endRitual() {
 		running = false;
 		runTime = -1;
+		currentSound = -1;
 		runningRituals = false;
 		((TileEntityStructControl)world.getTileEntity(x, y, z)).endMonumentRitual();
 		ChromaSounds.ERROR.playSoundNoAttenuation(world, x, y, z, 1, 0.75F, Integer.MAX_VALUE);

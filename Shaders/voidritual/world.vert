@@ -2,7 +2,6 @@
 #import math
 
 varying vec4 vLightMapColor;
-varying vec3 worldCoord;
 
 uniform sampler2D bgl_LightMapTexture;
 
@@ -23,7 +22,6 @@ void main() {
 	//vert.y += 2.5*sin(time*0.02+getX(vert)*0.175);
 	
 	vec3 real = getReal(vert);
-	worldCoord = real;
 	vec3 diff = real-focus;
 	float distxz = getDistanceXZ(diff);
 	float rdist = abs(distxz-waveRadius);

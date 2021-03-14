@@ -24,12 +24,11 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaSound;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.IO.SoundVariant;
-import Reika.DragonAPI.Interfaces.Registry.DynamicSound;
 import Reika.DragonAPI.Interfaces.Registry.VariableSound;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
-public enum ChromaSounds implements ChromaSound, DynamicSound, VariableSound {
+public enum ChromaSounds implements ChromaSound, VariableSound {
 
 	RIFT("rift"),
 	POWERDOWN("powerdown-2"),
@@ -69,7 +68,7 @@ public enum ChromaSounds implements ChromaSound, DynamicSound, VariableSound {
 	REPEATERSURGE_WEAK("repeatersurge_weak"),
 	FIRE("fire"),
 	LASER("laser"),
-	MONUMENT("monument2"),
+	MONUMENT("monument/s"),
 	MONUMENTRAY("monumentray"),
 	//MONUMENTCOMPLETE("monumentcomplete"),
 	BUFFERWARNING("buffer_warning"),
@@ -360,6 +359,15 @@ public enum ChromaSounds implements ChromaSound, DynamicSound, VariableSound {
 		ORB.createVariant("PURE");
 		ORB.createVariant("PURE_HI");
 		ORB.createVariant("PURE_LO");
+
+		for (int i = 1; i <= 6; i++) {
+			MONUMENT.createVariant(String.valueOf(i));
+		}
+	}
+
+	@Override
+	public boolean isStreamed() {
+		return this == MONUMENT;
 	}
 
 	private static class ChromaSoundVariant extends SoundVariant<ChromaSounds> implements ChromaSound {
@@ -441,6 +449,11 @@ public enum ChromaSounds implements ChromaSound, DynamicSound, VariableSound {
 		@Override
 		public float getRangeInterval() {
 			return root.getRangeInterval();
+		}
+
+		@Override
+		public boolean isStreamed() {
+			return root.isStreamed();
 		}
 
 	}
