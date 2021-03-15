@@ -15,8 +15,9 @@ void main() {
 	float distv = distsq(coreXY, texcoord);
 	float distfac_color = max(0.0, min(1.0, 1.0-0.6*distv*distance/scaleFactor)-min(1.0, 0.04/(distv*distance)));
 	float distfac_vertex = max(0.0, min(1.0, 3.5-40.0*distv*distance));
-	float cf = intensity*distfac_color*0.55;
-	float vf = intensity*distfac_vertex;
+	float f0 = max(intensity*0.5, intensity-scaleFactor*0.15);
+	float cf = f0*distfac_color*0.55;
+	float vf = f0*distfac_vertex;
 	
 	vec2 texUV = mix(texcoord, coreXY, vf/7.5);
 	

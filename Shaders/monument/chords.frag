@@ -25,7 +25,7 @@ vec4 getGlow(vec3 real) {
 	return color;
 }
 
-void main() {    
+void main() {
     vec4 tex = texture2D(bgl_RenderedTexture, texcoord);
     //gl_FragColor = gl_Color*tex*vLightMapColor;
 	gl_FragColor = gl_Color*tex*vLightMapColor;

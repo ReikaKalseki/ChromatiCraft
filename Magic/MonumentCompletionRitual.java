@@ -66,6 +66,7 @@ import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import paulscode.sound.SoundSystemConfig;
 
 
 public class MonumentCompletionRitual {
@@ -75,7 +76,7 @@ public class MonumentCompletionRitual {
 	private final int FINAL_SOUND_COMPLETION_DELAY = 10000; //millis
 	private final int COMPLETION_EXTRA = 5000; //millis
 
-	private final long[] SOUND_TIMINGS = new long[] {0, 28000, 66500, 87500, 104000, 130000}; //in millis
+	private final long[] SOUND_TIMINGS = new long[] {0, 28000, 66500, 86700, 102000, 119000}; //in millis
 
 	private final int BEAT_LENGTH = 2390; //2.5s / qtr
 
@@ -131,18 +132,18 @@ public class MonumentCompletionRitual {
 		melody.add(new RayNote(MusicKey.A4, 2));
 		melody.add(new RayNote(MusicKey.E4, 6, false, true));
 
-		melody.add(new RayNote(MusicKey.A4, 2, true, false, true));
+		melody.add(new RayNote(MusicKey.A4, 2, true, false, true)); //6
 		melody.add(new RayNote(MusicKey.C5, 2));
 		melody.add(new RayNote(MusicKey.B4, 2));
 		melody.add(new RayNote(MusicKey.G5, 4, false, true));
-		melody.add(new RayNote(MusicKey.E5, 6));
+		melody.add(new RayNote(MusicKey.E5, 6)); //10
 
 		melody.add(new RayNote(MusicKey.A5, 2, true, true, true));
 		melody.add(new RayNote(MusicKey.G5, 2));
 		melody.add(new RayNote(MusicKey.E5, 2));
 		melody.add(new RayNote(MusicKey.C5, 2));
 		melody.add(new RayNote(MusicKey.D5, 2));
-		melody.add(new RayNote(MusicKey.A4, 6, false, true));
+		melody.add(new RayNote(MusicKey.A4, 6, false, true)); //16
 
 		melody.add(new RayNote(MusicKey.A4, 2, true, false, true));
 		melody.add(new RayNote(MusicKey.E5, 2));
@@ -254,6 +255,8 @@ public class MonumentCompletionRitual {
 		long off = 0;
 		events.add(new TimedEvent(EventType.FLARES, 0));
 		int nextOff = 0;
+		boolean flag = false;
+		boolean flag2 = false;
 		for (int idx = 0; idx < melody.size(); idx++) {
 			RayNote n = melody.get(idx);
 			EventType e = EventType.FLARES;
@@ -267,7 +270,7 @@ public class MonumentCompletionRitual {
 			if (n.isFirstInPhrase && n.startBeat > 0) {
 				if (off == 0)
 					off -= 250; //was 1200
-				else
+				else if (off == -250)
 					off += 400;
 				if (off == 150)
 					nextOff = 200;
@@ -275,6 +278,10 @@ public class MonumentCompletionRitual {
 
 			if (idx == 10) //long non-bell
 				nextOff = 250;
+			if (idx == 16)
+				off = 250;
+			if (idx == 18)
+				off = 0;
 
 			long t = t0+off+nextOff;
 			nextOff = 0;
@@ -290,6 +297,14 @@ public class MonumentCompletionRitual {
 					events.add(new TimedEvent(EventType.PARTICLERING, t+i));
 			}
 			t0 += n.length*BEAT_LENGTH;
+			if (t0 >= 88000 && !flag) {
+				t0 += 500;
+				flag = true;
+			}
+			if (t0 >= 101000 && !flag2) {
+				t0 += 750;
+				flag2 = true;
+			}
 		}
 
 		this.addEvent(EventType.VORTEXGROW, 12);
@@ -386,26 +401,29 @@ public class MonumentCompletionRitual {
 
 	public void tick() {
 		if (running) {
-			long time = System.currentTimeMillis();
-			long step = time-lastTickTime;
-			if (step > 50) { //more than 50ms per tick
-				pauseTotal += step-50;
-			}
-			runTime = time-(startTime+pauseTotal);
-			//ReikaJavaLibrary.pConsole(time+" - "+startTime+" - "+pauseTotal+" = "+runTime+" @ "+FMLCommonHandler.instance().getEffectiveSide());
-			tick++;
-
-			if (world.isRemote) {
-				//this.manipulateCamera();
-				this.doScriptedFX();
-			}
-			else {
-				if (this.isReadyToComplete()) {
-					this.completeRitual();
+			synchronized (SoundSystemConfig.THREAD_SYNC)
+			{
+				long time = System.currentTimeMillis();
+				long step = time-lastTickTime;
+				if (step > 50) { //more than 50ms per tick
+					pauseTotal += step-50;
 				}
-			}
+				runTime = time-(startTime+pauseTotal);
+				//ReikaJavaLibrary.pConsole(time+" - "+startTime+" - "+pauseTotal+" = "+runTime+" @ "+FMLCommonHandler.instance().getEffectiveSide());
+				tick++;
 
-			lastTickTime = time;
+				if (world.isRemote) {
+					//this.manipulateCamera();
+					this.doScriptedFX();
+				}
+				else {
+					if (this.isReadyToComplete()) {
+						this.completeRitual();
+					}
+				}
+
+				lastTickTime = time;
+			}
 		}
 	}
 
@@ -437,7 +455,7 @@ public class MonumentCompletionRitual {
 				flag = !events.isEmpty();
 				e.type.doEventClient(this);
 				this.onEvent(e.type);
-				//ReikaJavaLibrary.pConsole("Removing "+e.type+" @ "+e.millis+" at "+runTime);
+				ReikaJavaLibrary.pConsole("Removing "+e.type+" @ "+e.millis+" at "+runTime);
 			}
 			else {
 				//ReikaJavaLibrary.pConsole(runTime+"/"+e.millis);
@@ -464,7 +482,7 @@ public class MonumentCompletionRitual {
 			TileEntityDimensionCore te = this.getCore(e);
 
 			shaderPositions[i] = Vec3.createVectorHelper(te.xCoord+0.5, y-3.5, te.zCoord+0.5);
-			shaderColors[i] = new Vec4(e.getRed()/255F, e.getGreen()/255F, e.getBlue()/255F, colorFade[i]*0.75F);
+			shaderColors[i] = new Vec4(e.getRed()/255F, e.getGreen()/255F, e.getBlue()/255F, colorFade[i]*0.7F);
 
 			te.shaderScale = 1+colorFade[i]*5;
 		}
