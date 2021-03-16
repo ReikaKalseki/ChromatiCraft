@@ -112,7 +112,6 @@ public class MonumentCompletionRitual {
 
 	private final ArrayList<RingParticle> particleRing = new ArrayList();
 	private final ArrayList<TimedEvent> events = new ArrayList();
-	private final ArrayList<RayNote> notes;
 	private static final float[] colorFade = new float[16];
 	private static final Vec3[] shaderPositions = new Vec3[16];
 	private static final Vec4[] shaderColors = new Vec4[16];
@@ -179,6 +178,11 @@ public class MonumentCompletionRitual {
 			isFirstInPhrase = first;
 		}
 
+		@Override
+		public String toString() {
+			return key.toString()+" @ "+startBeat+"-"+length+" [P="+percussion+"/B="+bell+"/F="+isFirstInPhrase+"]";
+		}
+
 	}
 
 	private void addEvent(EventType e, int beats) {
@@ -207,7 +211,7 @@ public class MonumentCompletionRitual {
 		private final EventType type;
 		private final long millis;
 
-		private MusicKey key;
+		private RayNote key;
 
 		private TimedEvent(EventType e, long s) {
 			type = e;
@@ -250,8 +254,6 @@ public class MonumentCompletionRitual {
 		this.z = z;
 		this.ep = ep;
 
-		notes = new ArrayList(melody);
-
 		int t0 = 100;
 		long off = 0;
 		events.add(new TimedEvent(EventType.FLARES, 0));
@@ -290,7 +292,7 @@ public class MonumentCompletionRitual {
 			if (n.isFirstInPhrase && n.startBeat > 0)
 				;//t -= 1200;
 			TimedEvent te = new TimedEvent(e, t);
-			te.key = n.key;
+			te.key = n; no-add new event 500ms earlier
 			events.add(te);
 			if (n.percussion && n.startBeat > 0)
 				events.add(new TimedEvent(EventType.PINWHEEL, t));
@@ -310,7 +312,7 @@ public class MonumentCompletionRitual {
 				flag2 = true;
 			}
 			if (t0 >= 115000 && !flag3) {
-				t0 += 750;
+				t0 += -750;
 				flag3 = true;
 			}
 		}
@@ -460,7 +462,11 @@ public class MonumentCompletionRitual {
 				flag = !events.isEmpty();
 				e.type.doEventClient(this);
 				this.onEvent(e.type);
-				ReikaJavaLibrary.pConsole("Removing "+e.type+" @ "+e.millis+" at "+runTime);
+				if (e.key != null) {
+					activeKey = e.key.key;
+					this.playRayNote(e.key);
+				}
+				ReikaJavaLibrary.pConsole("Removing "+e.type+" @ "+e.millis+" at "+runTime+" ("+e.key+")");
 			}
 			else {
 				//ReikaJavaLibrary.pConsole(runTime+"/"+e.millis);
@@ -469,15 +475,6 @@ public class MonumentCompletionRitual {
 
 		if (complete) {
 			activeKey = null;
-		}
-		else if (!notes.isEmpty()) {
-			RayNote e = notes.get(0);
-			long t = e.startBeat*BEAT_LENGTH;
-			if (t <= runTime) {
-				notes.remove(0);
-				activeKey = e.key;
-				this.playRayNote(e);
-			}
 		}
 
 		Set<CrystalElement> set = activeKey == null ? null : CrystalMusicManager.instance.getColorsWithKeyAnyOctave(activeKey);
