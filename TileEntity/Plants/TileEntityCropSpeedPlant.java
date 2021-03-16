@@ -35,9 +35,9 @@ public class TileEntityCropSpeedPlant extends TileEntityMagicPlant {
 
 	private static double[][] growthDistrib = {
 			{0, 0, 4, 0, 0},
-			{0, 0, 8, 0, 0},
+			{0, 1, 8, 1, 0},
 			{4, 8, 0, 8, 4},
-			{0, 0, 8, 0, 0},
+			{0, 1, 8, 1, 0},
 			{0, 0, 4, 0, 0},
 	};
 

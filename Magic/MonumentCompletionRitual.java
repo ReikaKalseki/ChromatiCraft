@@ -75,7 +75,7 @@ public class MonumentCompletionRitual {
 	private final int FINAL_SOUND_COMPLETION_DELAY = 10000; //millis
 	private final int COMPLETION_EXTRA = 5000; //millis
 
-	private final long[] SOUND_TIMINGS = new long[] {0, 28000, 66500, 86000, 103500/*, 119000*/}; //in millis
+	private final long[] SOUND_TIMINGS = new long[] {0, 28000, 66500, 86000, 104800, 119000}; //in millis
 
 	private final int BEAT_LENGTH = 2390; //2.5s / qtr
 
@@ -206,12 +206,21 @@ public class MonumentCompletionRitual {
 
 	}
 
+	private static class RayEvent extends TimedEvent {
+
+		private final RayNote ray;
+
+		private RayEvent(RayNote r, long s) {
+			super(null, s);
+			ray = r;
+		}
+
+	}
+
 	private static class TimedEvent implements Comparable<TimedEvent> {
 
 		private final EventType type;
 		private final long millis;
-
-		private RayNote key;
 
 		private TimedEvent(EventType e, long s) {
 			type = e;
@@ -219,7 +228,7 @@ public class MonumentCompletionRitual {
 		}
 
 		@Override
-		public int compareTo(TimedEvent o) {
+		public final int compareTo(TimedEvent o) {
 			return Long.compare(millis, o.millis);
 		}
 
@@ -292,8 +301,8 @@ public class MonumentCompletionRitual {
 			if (n.isFirstInPhrase && n.startBeat > 0)
 				;//t -= 1200;
 			TimedEvent te = new TimedEvent(e, t);
-			te.key = n; no-add new event 500ms earlier
 			events.add(te);
+			events.add(new RayEvent(n, t-250));
 			if (n.percussion && n.startBeat > 0)
 				events.add(new TimedEvent(EventType.PINWHEEL, t));
 			if (n.bell && n.startBeat > 0)
@@ -312,7 +321,7 @@ public class MonumentCompletionRitual {
 				flag2 = true;
 			}
 			if (t0 >= 115000 && !flag3) {
-				t0 += -750;
+				t0 += -1200;
 				flag3 = true;
 			}
 		}
@@ -460,13 +469,16 @@ public class MonumentCompletionRitual {
 			if (e.millis <= runTime) {
 				events.remove(0);
 				flag = !events.isEmpty();
-				e.type.doEventClient(this);
-				this.onEvent(e.type);
-				if (e.key != null) {
-					activeKey = e.key.key;
-					this.playRayNote(e.key);
+				if (e instanceof RayEvent) {
+					RayEvent r = (RayEvent)e;
+					activeKey = r.ray.key;
+					this.playRayNote(r.ray);
 				}
-				ReikaJavaLibrary.pConsole("Removing "+e.type+" @ "+e.millis+" at "+runTime+" ("+e.key+")");
+				else {
+					e.type.doEventClient(this);
+					this.onEvent(e.type);
+					ReikaJavaLibrary.pConsole("Removing "+e.type+" @ "+e.millis+" at "+runTime);
+				}
 			}
 			else {
 				//ReikaJavaLibrary.pConsole(runTime+"/"+e.millis);

@@ -37,6 +37,11 @@ public class TileEntityAccelerationPlant extends TileEntityMagicPlant {
 	}
 
 	@Override
+	public boolean isTickingTE() {
+		return false;
+	}
+
+	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 
 	}
