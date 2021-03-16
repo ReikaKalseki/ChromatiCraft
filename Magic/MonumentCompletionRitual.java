@@ -66,7 +66,6 @@ import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import paulscode.sound.SoundSystemConfig;
 
 
 public class MonumentCompletionRitual {
@@ -76,7 +75,7 @@ public class MonumentCompletionRitual {
 	private final int FINAL_SOUND_COMPLETION_DELAY = 10000; //millis
 	private final int COMPLETION_EXTRA = 5000; //millis
 
-	private final long[] SOUND_TIMINGS = new long[] {0, 28000, 66500, 86700, 102000, 119000}; //in millis
+	private final long[] SOUND_TIMINGS = new long[] {0, 28000, 66500, 86000, 103500/*, 119000*/}; //in millis
 
 	private final int BEAT_LENGTH = 2390; //2.5s / qtr
 
@@ -208,6 +207,8 @@ public class MonumentCompletionRitual {
 		private final EventType type;
 		private final long millis;
 
+		private MusicKey key;
+
 		private TimedEvent(EventType e, long s) {
 			type = e;
 			millis = s;
@@ -257,6 +258,7 @@ public class MonumentCompletionRitual {
 		int nextOff = 0;
 		boolean flag = false;
 		boolean flag2 = false;
+		boolean flag3 = false;
 		for (int idx = 0; idx < melody.size(); idx++) {
 			RayNote n = melody.get(idx);
 			EventType e = EventType.FLARES;
@@ -287,7 +289,9 @@ public class MonumentCompletionRitual {
 			nextOff = 0;
 			if (n.isFirstInPhrase && n.startBeat > 0)
 				;//t -= 1200;
-			events.add(new TimedEvent(e, t));
+			TimedEvent te = new TimedEvent(e, t);
+			te.key = n.key;
+			events.add(te);
 			if (n.percussion && n.startBeat > 0)
 				events.add(new TimedEvent(EventType.PINWHEEL, t));
 			if (n.bell && n.startBeat > 0)
@@ -297,13 +301,17 @@ public class MonumentCompletionRitual {
 					events.add(new TimedEvent(EventType.PARTICLERING, t+i));
 			}
 			t0 += n.length*BEAT_LENGTH;
-			if (t0 >= 88000 && !flag) {
+			if (t0 >= 85000 && !flag) {
 				t0 += 500;
 				flag = true;
 			}
 			if (t0 >= 101000 && !flag2) {
 				t0 += 750;
 				flag2 = true;
+			}
+			if (t0 >= 115000 && !flag3) {
+				t0 += 750;
+				flag3 = true;
 			}
 		}
 
@@ -401,29 +409,26 @@ public class MonumentCompletionRitual {
 
 	public void tick() {
 		if (running) {
-			synchronized (SoundSystemConfig.THREAD_SYNC)
-			{
-				long time = System.currentTimeMillis();
-				long step = time-lastTickTime;
-				if (step > 50) { //more than 50ms per tick
-					pauseTotal += step-50;
-				}
-				runTime = time-(startTime+pauseTotal);
-				//ReikaJavaLibrary.pConsole(time+" - "+startTime+" - "+pauseTotal+" = "+runTime+" @ "+FMLCommonHandler.instance().getEffectiveSide());
-				tick++;
-
-				if (world.isRemote) {
-					//this.manipulateCamera();
-					this.doScriptedFX();
-				}
-				else {
-					if (this.isReadyToComplete()) {
-						this.completeRitual();
-					}
-				}
-
-				lastTickTime = time;
+			long time = System.currentTimeMillis();
+			long step = time-lastTickTime;
+			if (step > 50) { //more than 50ms per tick
+				pauseTotal += step-50;
 			}
+			runTime = time-(startTime+pauseTotal);
+			//ReikaJavaLibrary.pConsole(time+" - "+startTime+" - "+pauseTotal+" = "+runTime+" @ "+FMLCommonHandler.instance().getEffectiveSide());
+			tick++;
+
+			if (world.isRemote) {
+				//this.manipulateCamera();
+				this.doScriptedFX();
+			}
+			else {
+				if (this.isReadyToComplete()) {
+					this.completeRitual();
+				}
+			}
+
+			lastTickTime = time;
 		}
 	}
 
