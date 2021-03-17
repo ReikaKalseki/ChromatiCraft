@@ -73,9 +73,9 @@ public class MonumentCompletionRitual {
 	private static final Random rand = new Random();
 
 	private final int FINAL_SOUND_COMPLETION_DELAY = 10000; //millis
-	private final int COMPLETION_EXTRA = 5000; //millis
+	private final int COMPLETION_EXTRA = 3500; //millis
 
-	private final long[] SOUND_TIMINGS = new long[] {0, 28000, 66500, 86000, 104800, 119000}; //in millis
+	private final long[] SOUND_TIMINGS = new long[] {0, 28000, 66500, 86000, 104800, 123500}; //in millis
 
 	private final int BEAT_LENGTH = 2390; //2.5s / qtr
 
@@ -443,7 +443,7 @@ public class MonumentCompletionRitual {
 		}
 	}
 
-	private boolean isReadyToComplete() {
+	private boolean isReadyToComplete() {current sound is -1 on server!
 		return currentSound == SOUND_TIMINGS.length && (runTime-lastSoundStart) >= FINAL_SOUND_COMPLETION_DELAY;//runTime >= SOUND_LENGTH_MILLIS;
 	}
 
@@ -689,6 +689,7 @@ public class MonumentCompletionRitual {
 	}
 
 	private void completeRitual() {
+		ReikaJavaLibrary.pConsole("$$$$$$$$ COMPLETE @ "+runTime+" $$$$$$$$$$$$$$");
 		complete = true;
 		if (completionTime < 0)
 			completionTime = runTime;
