@@ -65,6 +65,8 @@ public class RenderAuraPoint extends RenderLocusPoint {
 					else if (dist <= 40) {
 						f = 1-(float)((dist-8D)/32D);
 					}
+					if (te.getTileEntityAge() < 50)
+						f *= te.getTileEntityAge()/50F;
 					ChromaShaders.AURALOC.clearOnRender = true;
 					ChromaShaders.AURALOC.setIntensity(f);
 					ChromaShaders.AURALOC.getShader().setFocus(te);

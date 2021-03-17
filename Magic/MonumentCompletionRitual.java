@@ -56,7 +56,6 @@ import Reika.DragonAPI.Interfaces.ColorController;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
@@ -72,8 +71,8 @@ public class MonumentCompletionRitual {
 
 	private static final Random rand = new Random();
 
-	private final int FINAL_SOUND_COMPLETION_DELAY = 10000; //millis
-	private final int COMPLETION_EXTRA = 3500; //millis
+	private final int FINAL_SOUND_COMPLETION_DELAY = 13000; //millis
+	private final int COMPLETION_EXTRA = 2500; //millis
 
 	private final long[] SOUND_TIMINGS = new long[] {0, 28000, 66500, 86000, 104800, 123500}; //in millis
 
@@ -408,14 +407,14 @@ public class MonumentCompletionRitual {
 	}
 
 	private void stepSound() {
-		ReikaJavaLibrary.pConsole("Stepping sound to "+currentSound+" @ "+runTime+" ("+(runTime-startTime)+")");
+		//ReikaJavaLibrary.pConsole("Stepping sound to "+currentSound+" @ "+runTime+" ("+(runTime-startTime)+")");
 		int idx = currentSound;
 		SoundVariant s = ChromaSounds.MONUMENT.getVariant(String.valueOf(idx+1	));
 		playingSound = ReikaSoundHelper.playClientSound(s, x+0.5, y+0.5, z+0.5, 1, 1F, false);
 		lastSoundStart = runTime;
 		currentSound++;
 		nextSoundTime = currentSound >= SOUND_TIMINGS.length ? Long.MAX_VALUE : runTime+SOUND_TIMINGS[currentSound]-SOUND_TIMINGS[idx];
-		ReikaJavaLibrary.pConsole("Next sound is at "+nextSoundTime);
+		//ReikaJavaLibrary.pConsole("Next sound is at "+nextSoundTime);
 	}
 
 	public void tick() {
@@ -430,7 +429,7 @@ public class MonumentCompletionRitual {
 			tick++;
 
 			if (world.isRemote) {
-				//this.manipulateCamera();
+				this.manipulateCamera();
 				this.doScriptedFX();
 			}
 			else {
@@ -443,8 +442,8 @@ public class MonumentCompletionRitual {
 		}
 	}
 
-	private boolean isReadyToComplete() {current sound is -1 on server!
-		return currentSound == SOUND_TIMINGS.length && (runTime-lastSoundStart) >= FINAL_SOUND_COMPLETION_DELAY;//runTime >= SOUND_LENGTH_MILLIS;
+	private boolean isReadyToComplete() {
+		return runTime-SOUND_TIMINGS[SOUND_TIMINGS.length-1] >= FINAL_SOUND_COMPLETION_DELAY;//runTime >= SOUND_LENGTH_MILLIS;
 	}
 
 	/*
@@ -477,7 +476,7 @@ public class MonumentCompletionRitual {
 				else {
 					e.type.doEventClient(this);
 					this.onEvent(e.type);
-					ReikaJavaLibrary.pConsole("Removing "+e.type+" @ "+e.millis+" at "+runTime);
+					//ReikaJavaLibrary.pConsole("Removing "+e.type+" @ "+e.millis+" at "+runTime);
 				}
 			}
 			else {
@@ -507,7 +506,7 @@ public class MonumentCompletionRitual {
 	}
 
 	private void playRayNote(RayNote n) {
-		//this.doRay(n.key);
+		this.doRay(n.key);
 	}
 
 	private void onEvent(EventType type) {
@@ -689,12 +688,12 @@ public class MonumentCompletionRitual {
 	}
 
 	private void completeRitual() {
-		ReikaJavaLibrary.pConsole("$$$$$$$$ COMPLETE @ "+runTime+" $$$$$$$$$$$$$$");
-		complete = true;
+		//ReikaJavaLibrary.pConsole("$$$$$$$$ COMPLETE @ "+runTime+" $$$$$$$$$$$$$$");
 		if (completionTime < 0)
 			completionTime = runTime;
 		if (runTime-completionTime < COMPLETION_EXTRA) {
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.MONUMENTCOMPLETE.ordinal(), packetTarget, x, y, z);
+			if (!complete)
+				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.MONUMENTCOMPLETE.ordinal(), packetTarget, x, y, z);
 
 			double[] angs = ReikaPhysicsHelper.cartesianToPolar(ep.posX-x-0.5, ep.posY-y-0.5, ep.posZ-z-0.5);
 			double pitch = 90-angs[1];
@@ -714,6 +713,7 @@ public class MonumentCompletionRitual {
 				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.RESETMONUMENT.ordinal(), packetTarget, x, y, z);
 			running = false;
 		}
+		complete = true;
 	}
 
 	public void endRitual() {
