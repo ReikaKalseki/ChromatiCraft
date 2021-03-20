@@ -15,6 +15,7 @@ import Reika.ChromatiCraft.Render.ISBRH.CrystallineStoneRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DecoFlowerRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DecoPlantRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DimensionDecoRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.DyeVineRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.EverFluidRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.GlowTreeRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.LampRenderer;
@@ -71,7 +72,10 @@ public enum ChromaISBRH implements ISBRHEnum {
 	everfluid(EverFluidRenderer.class),
 	cliffstone(CliffStoneRenderer.class),
 	caveIndicator(CaveIndicatorRenderer.class),
-	bedrockCrack(BedrockCrackRenderer.class);
+	bedrockCrack(BedrockCrackRenderer.class),
+	dyeVine(DyeVineRenderer.class),
+
+	;
 
 	private final Class<? extends ISBRH> renderClass;
 

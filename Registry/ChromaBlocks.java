@@ -118,6 +118,7 @@ import Reika.ChromatiCraft.Block.Dye.BlockDyeFlower;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeGrass;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
+import Reika.ChromatiCraft.Block.Dye.BlockDyeVine;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
 import Reika.ChromatiCraft.Block.Relay.BlockFloatingRelay;
@@ -280,6 +281,8 @@ public enum ChromaBlocks implements BlockEnum {
 	ENCRUSTED(BlockEncrustedCrystal.class,		ItemBlockDyeTypes.class,		"chroma.encrusted"),
 	INJECTORAUX(BlockCastingInjectorFocus.class,								"chroma.injectorfocus"),
 	//LIFEWATER(BlockTempleLifewater.class,		ChromatiCraft.lifewater,		"chroma.lifewater"),
+	DYEVINE(BlockDyeVine.class,					ItemBlockDyeTypes.class,		"chroma.dyevine"),
+	FERTILEDYEVINE(BlockDyeVine.class,			ItemBlockDyeTypes.class,		"chroma.dyevinefertile"),
 	;
 
 	private Class blockClass;
@@ -321,6 +324,8 @@ public enum ChromaBlocks implements BlockEnum {
 			case DECOFLOWER:
 			case PLANT:
 			case METAALLOYLAMP:
+			case DYEVINE:
+			case FERTILEDYEVINE:
 				return Material.plants;
 			case CHROMA:
 				//case ACTIVECHROMA:
@@ -383,6 +388,8 @@ public enum ChromaBlocks implements BlockEnum {
 			case DYESAPLING:
 			case DYEFLOWER:
 			case DYEGRASS:
+			case DYEVINE:
+			case FERTILEDYEVINE:
 				return true;
 			default:
 				return false;
@@ -394,7 +401,7 @@ public enum ChromaBlocks implements BlockEnum {
 	}
 
 	public boolean isDyePlant() {
-		return this == DYESAPLING || this == DYEGRASS || this == DYEFLOWER;
+		return this == DYESAPLING || this == DYEGRASS || this == DYEFLOWER || this == DYEVINE || this == FERTILEDYEVINE;
 	}
 
 	public boolean isSapling() {
@@ -409,7 +416,7 @@ public enum ChromaBlocks implements BlockEnum {
 	public Class[] getConstructorParamTypes() {
 		if (this.isFluid())
 			return new Class[]{Fluid.class, Material.class};
-		if (this == DECAY || this == DYELEAF)
+		if (this == DECAY || this == DYELEAF || this == DYEVINE || this == FERTILEDYEVINE)
 			return new Class[]{boolean.class};
 		if (this.isLeaf() || this.isDyePlant() || this.isSapling())
 			return new Class[0];
@@ -426,6 +433,8 @@ public enum ChromaBlocks implements BlockEnum {
 			return new Object[]{this.getFluid(), this.getBlockMaterial()};
 		if (this == DECAY || this == DYELEAF)
 			return new Object[]{this == DECAY};
+		if (this == DYEVINE || this == FERTILEDYEVINE)
+			return new Object[]{this == FERTILEDYEVINE};
 		if (this.isLeaf() || this.isDyePlant() || this.isSapling())
 			return new Object[0];
 		if (this == GLOWLOG)

@@ -20,7 +20,9 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.IWG.ColorTreeGenerator;
 import Reika.DragonAPI.Exception.InstallationException;
+import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -28,17 +30,27 @@ import Reika.DragonAPI.ModRegistry.ModWoodList;
 
 public class TreeShaper {
 
-	public static final int LUMPY_CHANCE = 10;
-	public static final int TALL_CHANCE = 30;
-	public static final int NORMAL_CHANCE = 60;
-
 	private static final Block leafID = ChromaBlocks.DECAY.getBlockInstance();
+	private static final float BASE_VINE_CHANCE = 0.2F;
+	private static final float BASE_FERTILE_CHANCE = 0.6F;//0.4F;
+
+	private static enum TreeShape {
+		BASIC(60),
+		TALL(30),
+		LUMPY(10),
+		;
+
+		private final int spawnWeight;
+
+		private TreeShape(int weight) {
+			spawnWeight = weight;
+		}
+	}
 
 	private static final TreeShaper instance = new TreeShaper();
 
-	private final Random rand = new Random();
-
 	private final ArrayList<BlockKey> validLogs = new ArrayList();
+	private final WeightedRandom<TreeShape> treeRand = new WeightedRandom();
 
 	public boolean isLogTypeEverAllowed(ModWoodList wood) {
 		return wood != ModWoodList.BAMBOO && wood != ModWoodList.LIGHTED && wood != ModWoodList.SLIME && wood != ModWoodList.TAINTED;
@@ -54,6 +66,10 @@ public class TreeShaper {
 			else {
 				ChromatiCraft.logger.log("Dye Tree Generation with Log Type "+tree.getName()+" logs: Disabled");
 			}
+		}
+
+		for (TreeShape shape : TreeShape.values()) {
+			treeRand.addEntry(shape, shape.spawnWeight);
 		}
 
 		for (int i = 0; i < ModWoodList.woodList.length; i++) {
@@ -86,29 +102,49 @@ public class TreeShaper {
 		return instance;
 	}
 
-	public void generateRandomWeightedTree(World world, int x, int y, int z, ReikaDyeHelper color, boolean forceGen) {
-		int val = rand.nextInt(100);
-		int chance = LUMPY_CHANCE;
-		if (val < chance) {
-			this.generateLumpyTree(world, x, y, z, color, forceGen);
-			return;
+	public void generateRandomWeightedTree(World world, int x, int y, int z, Random rand, ReikaDyeHelper color, boolean forceGen, float vineChance, float vineFertilityFactor) {
+		treeRand.setRNG(rand);
+		TreeShape shape = treeRand.getRandomEntry();
+		int top = -1;
+		switch(shape) {
+			case BASIC:
+				top = this.generateNormalTree(world, x, y, z, rand, color, forceGen, vineChance, vineFertilityFactor);
+				break;
+			case TALL:
+				top = this.generateTallTree(world, x, y, z, rand, color, forceGen, vineChance, vineFertilityFactor);
+				break;
+			case LUMPY:
+				top = this.generateLumpyTree(world, x, y, z, rand, color, forceGen, vineChance, vineFertilityFactor);
+				break;
 		}
-		chance += TALL_CHANCE;
-		if (val < chance) {
-			this.generateTallTree(world, x, y, z, color, forceGen);
-			return;
-		}
-		this.generateNormalTree(world, x, y, z, color, forceGen);
+		/*
+		if (top >= 0 && vineChance > 0) {
+
+		}*/
 	}
 
-	public BlockKey getLogType() {
+	public BlockKey getLogType(Random rand) {
 		return validLogs.get(rand.nextInt(validLogs.size()));
 	}
 
-	public void generateNormalTree(World world, int x, int y, int z, ReikaDyeHelper color, boolean force) {
+	private void generateVine(float fertileFactor, World world, int x, int y, int z, int meta, Random rand) {
+		boolean below = world.getBlock(x, y-1, z).isAir(world, x, y-1, z);
+		int n = 0;
+		int max = ReikaRandomHelper.getRandomBetween(1, 3, rand);
+		while (n < max && below) {
+			int y0 = y;
+			y--;
+			below = world.getBlock(x, y-1, z).isAir(world, x, y-1, z);
+			Block b = fertileFactor > 0 && !below && ReikaRandomHelper.doWithChance(BASE_FERTILE_CHANCE*fertileFactor) ? ChromaBlocks.FERTILEDYEVINE.getBlockInstance() : ChromaBlocks.DYEVINE.getBlockInstance();
+			world.setBlock(x, y0, z, b, meta, 2);
+			n++;
+		}
+	}
+
+	public int generateNormalTree(World world, int x, int y, int z, Random rand, ReikaDyeHelper color, boolean force, float vineChance, float vineFertility) {
 		if (force || ColorTreeGenerator.canGenerateTree(world, x, z)) {
 			int meta = color.ordinal();
-			BlockKey log = this.getLogType();
+			BlockKey log = this.getLogType(rand);
 			int w = 2;
 			int h = 5+rand.nextInt(3);
 
@@ -119,6 +155,9 @@ public class TreeShaper {
 				for (int j = -w; j <= w; j++) {
 					if (this.canGenerateLeavesAt(world, x+i, y+h-3, z+j)) {
 						world.setBlock(x+i, y+h-3, z+j, leafID, meta, 3);
+						if (vineChance > 0 && ReikaRandomHelper.doWithChance(BASE_VINE_CHANCE*vineChance, rand)) {
+							this.generateVine(vineFertility, world, x+i, y+h-4, z+j, meta, rand);
+						}
 					}
 				}
 			}
@@ -145,13 +184,15 @@ public class TreeShaper {
 					}
 				}
 			}
+			return y+h-4;
 		}
+		return -1;
 	}
 
-	public void generateTallTree(World world, int x, int y, int z, ReikaDyeHelper color, boolean force) {
+	public int generateTallTree(World world, int x, int y, int z, Random rand, ReikaDyeHelper color, boolean force, float vineChance, float vineFertility) {
 		if (force || ColorTreeGenerator.canGenerateTree(world, x, z)) {
 			int h = 10+rand.nextInt(3);
-			BlockKey log = this.getLogType();
+			BlockKey log = this.getLogType(rand);
 			int meta = color.ordinal();
 			int w = 2;
 
@@ -163,6 +204,9 @@ public class TreeShaper {
 					if (i*j == 0)
 						if (this.canGenerateLeavesAt(world, x+i, y+h-8, z+j)) {
 							world.setBlock(x+i, y+h-8, z+j, leafID, meta, 3);
+							if (vineChance > 0 && ReikaRandomHelper.doWithChance(BASE_VINE_CHANCE*vineChance, rand)) {
+								this.generateVine(vineFertility, world, x+i, y+h-9, z+j, meta, rand);
+							}
 						}
 				}
 			}
@@ -170,6 +214,9 @@ public class TreeShaper {
 				for (int j = -1; j <= 1; j++) {
 					if (this.canGenerateLeavesAt(world, x+i, y+h-7, z+j)) {
 						world.setBlock(x+i, y+h-7, z+j, leafID, meta, 3);
+						if (vineChance > 0 && ReikaRandomHelper.doWithChance(BASE_VINE_CHANCE*vineChance, rand)) {
+							this.generateVine(vineFertility, world, x+i, y+h-8, z+j, meta, rand);
+						}
 					}
 				}
 			}
@@ -178,6 +225,9 @@ public class TreeShaper {
 					if (i*j != w*w && i*j != -w*w)
 						if (this.canGenerateLeavesAt(world, x+i, y+h-6, z+j)) {
 							world.setBlock(x+i, y+h-6, z+j, leafID, meta, 3);
+							if (vineChance > 0 && ReikaRandomHelper.doWithChance(BASE_VINE_CHANCE*vineChance, rand)) {
+								this.generateVine(vineFertility, world, x+i, y+h-7, z+j, meta, rand);
+							}
 						}
 				}
 			}
@@ -228,13 +278,15 @@ public class TreeShaper {
 					}
 				}
 			}
+			return y+h-9;
 		}
+		return -1;
 	}
 
-	public void generateLumpyTree(World world, int x, int y, int z, ReikaDyeHelper color, boolean force) {
+	public int generateLumpyTree(World world, int x, int y, int z, Random rand, ReikaDyeHelper color, boolean force, float vineChance, float vineFertility) {
 		if (force || ColorTreeGenerator.canGenerateTree(world, x, z)) {
 			int h = 8+rand.nextInt(4);
-			BlockKey log = this.getLogType();
+			BlockKey log = this.getLogType(rand);
 			int meta = color.ordinal();
 
 			for (int i = 0; i < h; i++) {
@@ -304,6 +356,9 @@ public class TreeShaper {
 						for (int m = -1; m <= 1; m++) {
 							if (j*k*m == 0 && this.canGenerateLeavesAt(world, dx+j, dy+k, dz+m)) {
 								world.setBlock(dx+j, dy+k, dz+m, leafID, meta, 3);
+								if (vineChance > 0 && ReikaRandomHelper.doWithChance(BASE_VINE_CHANCE*vineChance, rand)) {
+									this.generateVine(vineFertility, world, dx+j, dy+k-1, dz+m, meta, rand);
+								}
 							}
 						}
 					}
@@ -317,6 +372,9 @@ public class TreeShaper {
 						for (int m = -1; m <= 1; m++) {
 							if (j*k*m == 0 && this.canGenerateLeavesAt(world, dx+j, dy+k, dz+m)) {
 								world.setBlock(dx+j, dy+k, dz+m, leafID, meta, 3);
+								if (vineChance > 0 && ReikaRandomHelper.doWithChance(BASE_VINE_CHANCE*vineChance, rand)) {
+									this.generateVine(vineFertility, world, dx+j, dy+k-1, dz+m, meta, rand);
+								}
 							}
 						}
 					}
@@ -330,6 +388,9 @@ public class TreeShaper {
 						for (int m = -1; m <= 1; m++) {
 							if (j*k*m == 0 && this.canGenerateLeavesAt(world, dx+j, dy+k, dz+m)) {
 								world.setBlock(dx+j, dy+k, dz+m, leafID, meta, 3);
+								if (vineChance > 0 && ReikaRandomHelper.doWithChance(BASE_VINE_CHANCE*vineChance, rand)) {
+									this.generateVine(vineFertility, world, dx+j, dy+k-1, dz+m, meta, rand);
+								}
 							}
 						}
 					}
@@ -343,6 +404,9 @@ public class TreeShaper {
 						for (int m = -1; m <= 1; m++) {
 							if (j*k*m == 0 && this.canGenerateLeavesAt(world, dx+j, dy+k, dz+m)) {
 								world.setBlock(dx+j, dy+k, dz+m, leafID, meta, 3);
+								if (vineChance > 0 && ReikaRandomHelper.doWithChance(BASE_VINE_CHANCE*vineChance, rand)) {
+									this.generateVine(vineFertility, world, dx+j, dy+k-1, dz+m, meta, rand);
+								}
 							}
 						}
 					}
@@ -373,7 +437,9 @@ public class TreeShaper {
 					}
 				}
 			}
+			return y+h-8;
 		}
+		return -1;
 	}
 
 	public static boolean canGenerateLeavesAt(World world, int x, int y, int z) {

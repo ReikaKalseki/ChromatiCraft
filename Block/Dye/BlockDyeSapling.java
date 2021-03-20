@@ -53,12 +53,11 @@ public class BlockDyeSapling extends BlockSapling {
 		return 5+r.nextInt(3);
 	}
 
-	public void func_149878_d(World world, int x, int y, int z, int h)
-	{
+	public void func_149878_d(World world, int x, int y, int z, int h) {
 		if (world.isRemote)
 			return;
 		int meta = world.getBlockMetadata(x, y, z);
-		TreeShaper.getInstance().generateRandomWeightedTree(world, x, y, z, ReikaDyeHelper.dyes[meta], true);
+		TreeShaper.getInstance().generateRandomWeightedTree(world, x, y, z, world.rand, ReikaDyeHelper.dyes[meta], true, 0);
 	}
 
 	@Override
@@ -121,8 +120,7 @@ public class BlockDyeSapling extends BlockSapling {
 	}
 
 	@Override
-	public void func_149879_c(World par1World, int par2, int par3, int par4, Random par5Random)
-	{
+	public void func_149879_c(World par1World, int par2, int par3, int par4, Random par5Random) {
 		this.func_149878_d(par1World, par2, par3, par4, par5Random);
 	}
 

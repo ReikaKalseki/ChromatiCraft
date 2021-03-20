@@ -43,12 +43,15 @@ import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionTicker;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.ChromatiCraft.World.Dimension.Structure.MonumentGenerator;
+import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.IO.Shaders.ShaderProgram;
 import Reika.DragonAPI.IO.Shaders.ShaderProgram.Vec4;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
+import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
+import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledEvent;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.IO.SoundVariant;
 import Reika.DragonAPI.Instantiable.ParticleController.SpiralMotionController;
@@ -71,8 +74,8 @@ public class MonumentCompletionRitual {
 
 	private static final Random rand = new Random();
 
-	private final int FINAL_SOUND_COMPLETION_DELAY = 13000; //millis
-	private final int COMPLETION_EXTRA = 2500; //millis
+	private final int FINAL_SOUND_COMPLETION_DELAY = 18500; //millis
+	private final int COMPLETION_EXTRA = 3000; //millis
 
 	private final long[] SOUND_TIMINGS = new long[] {0, 28000, 66500, 86000, 104800, 123500}; //in millis
 
@@ -506,7 +509,7 @@ public class MonumentCompletionRitual {
 	}
 
 	private void playRayNote(RayNote n) {
-		this.doRay(n.key);
+		this.doRays(n);
 	}
 
 	private void onEvent(EventType type) {
@@ -784,29 +787,69 @@ public class MonumentCompletionRitual {
 		ReikaRenderHelper.setCameraPosition(ep, ep.posX, ep.posY, ep.posZ, ep.posX, ep.posY, ep.posZ, yaw, yaw, pitch, pitch, false, true);
 	}
 
-	private void doRay(MusicKey key) {
-		float p = (float)CrystalMusicManager.instance.getPitchFactor(key);
-		ReikaSoundHelper.playClientSound(ChromaSounds.MONUMENTRAY, x+0.5, y+0.5, z+0.5, 1, p, false);
-		Collection<CrystalElement> set = CrystalMusicManager.instance.getColorsWithKeyAnyOctave(key);
+	private void doRays(RayNote n) {
+		float p = (float)CrystalMusicManager.instance.getPitchFactor(n.key);
+		//ReikaSoundHelper.playClientSound(ChromaSounds.MONUMENTRAY, x+0.5, y+0.5, z+0.5, 1, p, false);
+		//ScheduledSoundEventClient se = new ScheduledSoundEventClient(ChromaSounds.MONUMENTRAY, world, x+0.5, y+0.5, z+0.5, 1, p);
+		//se.attenuate = false;
+		//TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(se), 8);
+		Collection<CrystalElement> set = CrystalMusicManager.instance.getColorsWithKeyAnyOctave(n.key);
 		for (CrystalElement e : set) {
-			Coordinate c = TileEntityDimensionCore.getLocation(e).offset(x, y, z);
-			DecimalPosition end = new DecimalPosition(c.xCoord+0.5, c.yCoord+0.5, c.zCoord+0.5);
-			LightningBolt b = new LightningBolt(new DecimalPosition(x+0.5, y+0.5, z+0.5), end, 8);
-			b.setVariance(0.9);
-			b.maximize();
-			int l = 20+rand.nextInt(40);
-			for (int i = 0; i < b.nsteps; i++) {
-				DecimalPosition pos1 = b.getPosition(i);
-				DecimalPosition pos2 = b.getPosition(i+1);
-				for (double r = 0; r <= 1; r += 0.03125) {
-					float s = 5F;
-					int clr = e.getColor();
-					DecimalPosition dd = DecimalPosition.interpolate(pos1, pos2, r);
-					EntityFX fx = new EntityCCBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s).setColor(clr).setLife(l).setRapidExpand();
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-					EntityFX fx2 = new EntityCCBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s/2.5F).setColor(0xffffff).setLife(l).setRapidExpand();
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
-				}
+			//doRay(e, world, x, y, z, p);
+			int time = ReikaRandomHelper.getRandomBetween(10, BEAT_LENGTH*n.length/50-15);
+			TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new ScheduledRayEvent(e, world, x, y, z, p)), time);
+		}
+	}
+
+	private static class ScheduledRayEvent implements ScheduledEvent {
+
+		private final CrystalElement color;
+		private final World world;
+		private final int x;
+		private final int y;
+		private final int z;
+		private final float pitch;
+
+		public ScheduledRayEvent(CrystalElement e, World w, int x, int y, int z, float p) {
+			color = e;
+			world = w;
+			this.x = x;
+			this.y = y;
+			this.z = z;
+			pitch = p;
+		}
+
+		@Override
+		public void fire() {
+			doRay(color, world, x, y, z, pitch);
+		}
+
+		@Override
+		public boolean runOnSide(Side s) {
+			return s == Side.CLIENT;
+		}
+
+	}
+
+	private static void doRay(CrystalElement e, World world, int x, int y, int z, float p) {
+		ReikaSoundHelper.playClientSound(ChromaSounds.MONUMENTRAY, x+0.5, y+0.5, z+0.5, (float)ReikaRandomHelper.getRandomBetween(0.4, 0.8), p, false);
+		Coordinate c = TileEntityDimensionCore.getLocation(e).offset(x, y, z);
+		DecimalPosition end = new DecimalPosition(c.xCoord+0.5, c.yCoord+0.5, c.zCoord+0.5);
+		LightningBolt b = new LightningBolt(new DecimalPosition(x+0.5, y+0.5, z+0.5), end, 8);
+		b.scaleVariance(1.25F);
+		b.maximize();
+		int l = 20+rand.nextInt(40);
+		for (int i = 0; i < b.nsteps; i++) {
+			DecimalPosition pos1 = b.getPosition(i);
+			DecimalPosition pos2 = b.getPosition(i+1);
+			for (double r = 0; r <= 1; r += 0.03125) {
+				float s = 5F;
+				int clr = e.getColor();
+				DecimalPosition dd = DecimalPosition.interpolate(pos1, pos2, r);
+				EntityFX fx = new EntityCCBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s).setColor(clr).setLife(l).setRapidExpand();
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				EntityFX fx2 = new EntityCCBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s/2.5F).setColor(0xffffff).setLife(l).setRapidExpand();
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 			}
 		}
 	}

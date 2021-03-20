@@ -62,7 +62,7 @@ public class ColorTreeGenerator implements RetroactiveGenerator, ChromaDecorator
 							RainbowTreeGenerator.getInstance().generateLargeRainbowTree(world, x, y, z, r);
 						}
 						else {
-							TreeShaper.getInstance().generateRandomWeightedTree(world, x, y, z, ReikaDyeHelper.dyes[r.nextInt(16)], false);
+							TreeShaper.getInstance().generateRandomWeightedTree(world, x, y, z, r, ReikaDyeHelper.dyes[r.nextInt(16)], false, 1, 1);
 						}
 					}
 				}

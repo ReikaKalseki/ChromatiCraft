@@ -28,6 +28,8 @@ public class RainbowForestGenerator extends WorldGenerator {
 
 	private static final boolean GENERATE_SMALL_RAINBOW_TREES = true;
 
+	private static final float FERTILE_VINE_CHANCE_FACTOR = 0.12F;//0.1F;
+
 	//private static Simplex3DGenerator colorOffsetNoise;
 
 	@Override
@@ -64,15 +66,19 @@ public class RainbowForestGenerator extends WorldGenerator {
 					generated = RainbowTreeGenerator.getInstance().tryGenerateSmallRainbowTree(world, x, y, z, random);
 				}
 				if (!generated) {
-					TreeShaper.getInstance().generateRandomWeightedTree(world, x, y, z, color, false);
+					TreeShaper.getInstance().generateRandomWeightedTree(world, x, y, z, random, color, false, this.getVineChance(random), FERTILE_VINE_CHANCE_FACTOR);
 				}
 			}
 			else {
-				TreeShaper.getInstance().generateRandomWeightedTree(world, x, y, z, color, false);
+				TreeShaper.getInstance().generateRandomWeightedTree(world, x, y, z, random, color, false, this.getVineChance(random), FERTILE_VINE_CHANCE_FACTOR);
 			}
 			return true;
 		}
 		return false;
+	}
+
+	private float getVineChance(Random rand) {
+		return rand.nextInt(5) <= 1 ? 0.6F+rand.nextFloat()*0.4F : 0;
 	}
 
 	public static ReikaDyeHelper getColor(/*World world, */int x, int y, int z) {

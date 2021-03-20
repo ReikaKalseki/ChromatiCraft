@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.GlowKnot;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.ModList;
@@ -123,19 +124,9 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 	}
 
 	private void playSounds(World world, int x, int y, int z) {
-		double[] arr = {0.5, 1, 2};
-
-		for (int i = 0; i < arr.length; i++) {
-			double d = arr[i];
-			int t = (int)(221/d);
-			if (this.getTicksExisted()%t == 0) {
-				ChromaSounds.DRONE.playSoundAtBlock(world, x, y, z, 0.75F, (float)d);
-			}
-
-			float f = 0.85F;
-			if (this.getTicksExisted()%((int)(72/f)) == 0) {
-				ChromaSounds.POWER.playSoundAtBlock(world, x, y, z, 0.1F, f);
-			}
+		int n = world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue() ? 2 : 1;
+		if (this.getTicksExisted()%(244/n) == 0) {
+			ChromaSounds.AURALOCUS.playSoundAtBlock(world, x, y, z, 2, n);
 		}
 	}
 

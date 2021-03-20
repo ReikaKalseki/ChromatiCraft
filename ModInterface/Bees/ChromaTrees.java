@@ -458,7 +458,7 @@ public class ChromaTrees {
 
 		@Override
 		protected void placeTree(World world, int x, int y, int z, GameProfile owner, ITreeGenData data) {
-			TreeShaper.getInstance().generateRandomWeightedTree(world, x, y, z, ReikaDyeHelper.dyes[color.ordinal()], true);
+			TreeShaper.getInstance().generateRandomWeightedTree(world, x, y, z, rand, ReikaDyeHelper.dyes[color.ordinal()], true, 0);
 		}
 
 		@Override

@@ -118,6 +118,7 @@ public enum ChromaSounds implements ChromaSound, VariableSound {
 	LOWAMBIENT("lowambient_fade"),
 	LOWAMBIENT_SHORT("lowambient_fade_short"),
 	//FLUTE("flute/flute", false),
+	AURALOCUS("auralocus"),
 	;
 
 	public static final ChromaSounds[] soundList = values();
