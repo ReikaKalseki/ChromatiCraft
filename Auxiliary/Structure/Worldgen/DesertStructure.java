@@ -13,24 +13,29 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Base.GeneratedStructureBase;
+import Reika.ChromatiCraft.Base.FragmentStructureBase;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 
-public class DesertStructure extends GeneratedStructureBase {
+public class DesertStructure extends FragmentStructureBase {
 
 	private static final int ms = BlockType.STONE.metadata;
 	private static final int mc = BlockType.COBBLE.metadata;
 
 	private static final int mcrack = ms;
 
-	private static final Block ch = ChromaBlocks.LOOTCHEST.getBlockInstance();
+	@Override
+	public Coordinate getControllerRelativeLocation() {
+		return new Coordinate(7, 3, 7);
+	}
 
 	@Override
 	public FilledBlockArray getArray(World world, int x, int y, int z) {
 		FilledBlockArray array = new FilledBlockArray(world);
+
+		Block ch = getChestGen();
 
 		array.setBlock(x+10, y+6, z+2, ch, 11);
 		array.setBlock(x+10, y+6, z+12, ch, 10);

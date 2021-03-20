@@ -21,6 +21,7 @@ public enum ChromaShaders implements ShaderHook {
 	VOIDTRAP(),
 	WARPNODE(),
 	WARPNODE_OPEN(),
+	STRUCTCONTROL(),
 	DIMGLOWCLOUD(),
 	VACGUN(),
 

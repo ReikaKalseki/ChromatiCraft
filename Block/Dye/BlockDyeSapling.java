@@ -57,7 +57,7 @@ public class BlockDyeSapling extends BlockSapling {
 		if (world.isRemote)
 			return;
 		int meta = world.getBlockMetadata(x, y, z);
-		TreeShaper.getInstance().generateRandomWeightedTree(world, x, y, z, world.rand, ReikaDyeHelper.dyes[meta], true, 0);
+		TreeShaper.getInstance().generateRandomWeightedTree(world, x, y, z, world.rand, ReikaDyeHelper.dyes[meta], true, 0.25F, 0);
 	}
 
 	@Override

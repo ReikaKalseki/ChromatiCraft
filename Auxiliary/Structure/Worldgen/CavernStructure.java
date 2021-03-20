@@ -4,13 +4,19 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.Base.GeneratedStructureBase;
+import Reika.ChromatiCraft.Base.FragmentStructureBase;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 
-public class CavernStructure extends GeneratedStructureBase {
+public class CavernStructure extends FragmentStructureBase {
+
+	@Override
+	public Coordinate getControllerRelativeLocation() {
+		return new Coordinate(0, 0, 0);
+	}
 
 	@Override
 	public FilledBlockArray getArray(World world, int x, int y, int z) {

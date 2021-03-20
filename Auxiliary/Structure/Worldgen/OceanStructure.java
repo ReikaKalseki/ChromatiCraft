@@ -13,11 +13,17 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Base.GeneratedStructureBase;
+import Reika.ChromatiCraft.Base.FragmentStructureBase;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
-public class OceanStructure extends GeneratedStructureBase {
+public class OceanStructure extends FragmentStructureBase {
+
+	@Override
+	public Coordinate getControllerRelativeLocation() {
+		return new Coordinate(0, 0, 0);
+	}
 
 	@Override
 	public FilledBlockArray getArray(World world, int x, int y, int z) {

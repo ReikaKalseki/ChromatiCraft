@@ -4,12 +4,18 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.Base.GeneratedStructureBase;
+import Reika.ChromatiCraft.Base.FragmentStructureBase;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 
-public class BurrowStructure extends GeneratedStructureBase {
+public class BurrowStructure extends FragmentStructureBase {
+
+	@Override
+	public Coordinate getControllerRelativeLocation() {
+		return new Coordinate(-5, -8, -2);
+	}
 
 	@Override
 	public FilledBlockArray getArray(World world, int x, int y, int z) {

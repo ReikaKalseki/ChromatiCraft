@@ -16,6 +16,7 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.client.MinecraftForgeClient;
@@ -29,6 +30,8 @@ import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.InWorldScriptRenderer;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
+import Reika.DragonAPI.Instantiable.RayTracer;
+import Reika.DragonAPI.Instantiable.RayTracer.RayTracerWithCache;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -36,6 +39,8 @@ import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
 public class RenderStructControl extends ChromaRenderBase {
+
+	protected static final RayTracerWithCache LOS = RayTracer.getVisualLOSForRenderCulling();
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
@@ -53,7 +58,10 @@ public class RenderStructControl extends ChromaRenderBase {
 			ReikaRenderHelper.disableEntityLighting();
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glDisable(GL11.GL_CULL_FACE);
-			BlendMode.ADDITIVEDARK.apply();
+			if (te.isInWorld())
+				BlendMode.INVERTEDADD.apply();
+			else
+				BlendMode.ADDITIVEDARK.apply();
 			GL11.glPushMatrix();
 			GL11.glTranslated(par2, par4, par6);
 
@@ -61,8 +69,29 @@ public class RenderStructControl extends ChromaRenderBase {
 
 			this.renderFlare(te, v5);
 
-			double dd = Minecraft.getMinecraft().thePlayer.getDistanceSq(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
+			BlendMode.ADDITIVEDARK.apply();
+
 			if (te.isInWorld()) {
+
+				EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+				double dd = ep.getDistanceSq(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
+				LOS.setOrigins(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5, ep.posX, ep.posY, ep.posZ);
+				if (LOS.isClearLineOfSight(te)) {
+					float f = 0;
+					if (dd <= 16) {
+						f = 1;
+					}
+					else if (dd <= 112) {
+						f = 1-(float)((dd-16D)/96D);
+					}
+					if (f > 0) {
+						ChromaShaders.STRUCTCONTROL.clearOnRender = true;
+						ChromaShaders.STRUCTCONTROL.setIntensity(f);
+						ChromaShaders.STRUCTCONTROL.getShader().setFocus(te);
+						ChromaShaders.STRUCTCONTROL.getShader().setMatricesToCurrent();
+						ChromaShaders.STRUCTCONTROL.getShader().setField("distance", dd);
+					}
+				}
 
 				if (dd < 576)
 					this.renderScript(te, par8, v5);

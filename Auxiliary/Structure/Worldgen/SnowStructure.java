@@ -18,7 +18,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.Base.GeneratedStructureBase;
+import Reika.ChromatiCraft.Base.FragmentStructureBase;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock.Passability;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -31,7 +31,7 @@ import Reika.GeoStrata.Blocks.BlockLavaRock;
 import Reika.GeoStrata.Registry.GeoBlocks;
 
 
-public class SnowStructure extends GeneratedStructureBase {
+public class SnowStructure extends FragmentStructureBase {
 
 	private static final Block b2 = ChromaBlocks.TRAPFLOOR.getBlockInstance();
 	private static final int ms = BlockType.STONE.metadata;
@@ -39,8 +39,6 @@ public class SnowStructure extends GeneratedStructureBase {
 	private static final int mg = BlockType.GLASS.metadata;
 
 	private static final int mcrack = ms;
-
-	private static final Block ch = ChromaBlocks.LOOTCHEST.getBlockInstance();
 
 	public static Collection<Coordinate> getCrackToCenter() {
 		Collection<Coordinate> li = new ArrayList();
@@ -177,6 +175,11 @@ public class SnowStructure extends GeneratedStructureBase {
 	}
 
 	@Override
+	public Coordinate getControllerRelativeLocation() {
+		return new Coordinate(8, 3, 6);
+	}
+
+	@Override
 	public FilledBlockArray getArray(World world, int x, int y, int z) {
 		FilledBlockArray array = new FilledBlockArray(world);
 
@@ -224,6 +227,8 @@ public class SnowStructure extends GeneratedStructureBase {
 	}
 
 	private static void getBaseStructure(FilledBlockArray array, int x, int y, int z) {
+		Block ch = getChestGen();
+
 		array.setBlock(x + 0, y + 5, z + 6, shield, BlockType.MOSS.metadata);
 		array.setBlock(x + 0, y + 5, z + 7, shield, BlockType.MOSS.metadata);
 		array.setBlock(x + 0, y + 5, z + 8, shield, BlockType.MOSS.metadata);

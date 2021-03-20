@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
@@ -155,6 +156,14 @@ public class BlockDyeVine extends BlockTallGrass {
 	@Override
 	public boolean isShearable(ItemStack item, IBlockAccess world, int x, int y, int z) {
 		return false;
+	}
+
+	@Override
+	public void onNeighborBlockChange(World world, int x, int y, int z, Block b) {
+		super.onNeighborBlockChange(world, x, y, z, b);
+		if (world.getBlock(x, y, z) == Blocks.air) {
+			world.getBlock(x, y-1, z).onNeighborBlockChange(world, x, y-1, z, b);
+		}
 	}
 
 }
