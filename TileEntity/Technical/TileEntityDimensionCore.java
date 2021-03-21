@@ -60,6 +60,7 @@ import Reika.DragonAPI.Interfaces.TileEntity.PlayerBreakHook;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
@@ -85,6 +86,8 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements Pla
 	private static final ArrayList<ArrayList<ImmutablePair<CrystalElement, Integer>>>[] melody = new ArrayList[2];
 
 	private boolean primed = false;
+	private long nextConnectTick = -1;
+	private static int nextNoteIndex = -1;
 
 	public float shaderScale = 1;
 
@@ -381,66 +384,76 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements Pla
 	}
 
 	@SideOnly(Side.CLIENT)
+	private void queueConnectFX(int note, long tick) {
+		nextConnectTick = tick;
+	}
+
+	@SideOnly(Side.CLIENT)
 	private void spawnConnectFX(World world, int x, int y, int z) {
-		int sp = 8;
-		long tick = world.getTotalWorldTime(); //this.getTicksExisted();
-		//ReikaJavaLibrary.pConsole(tick);
-		if (tick%sp == 0) {
-			ArrayList<ArrayList<ImmutablePair<CrystalElement, Integer>>> song = melody[(ChunkProviderChroma.getMonumentGenerator().hashCode() ^ Minecraft.getMinecraft().hashCode())%melody.length];
-			ArrayList<ImmutablePair<CrystalElement, Integer>> li = song.get((int)((tick/sp)%song.size()));
+		long tick = world.getTotalWorldTime();
+		if (nextNoteIndex < 0 || (nextConnectTick >= 0 && tick >= nextConnectTick))  {
+			if (nextNoteIndex < 0)
+				nextNoteIndex = 0;
+			nextConnectTick = -1;
+			int midx = (ChunkProviderChroma.getMonumentGenerator().hashCode() ^ Minecraft.getMinecraft().hashCode())%melody.length;
+			ArrayList<ArrayList<ImmutablePair<CrystalElement, Integer>>> song = melody[midx];
+			ArrayList<ImmutablePair<CrystalElement, Integer>> li = song.get(nextNoteIndex);
+			nextNoteIndex = (nextNoteIndex+1)%song.size();
 			ImmutablePair<CrystalElement, Integer> p = li.get(rand.nextInt(li.size()));
-			if (p.left == color) {
-				Coordinate cc = this.getCenter();
-				TileEntity tile = cc.getTileEntity(world);
-				if (tile instanceof TileEntityStructControl) {
-					TileEntityStructControl ts = (TileEntityStructControl)tile;
-					if (ts.isMonument()) {
-						float mult = this.getSoundPitch(p.right);
-						//CrystalMusicManager.instance.getRandomScaledDing(color);
-						Collection<CrystalElement> m = this.getColorBeams();
-						//if (rand.nextInt(m.size() >= 8 ? 1 : 8-m.size()) == 0) {
-						//CrystalElement e = ReikaJavaLibrary.getRandomListEntry(m);
-						boolean flag = false;
+			Coordinate other = this.getOtherColor(p.left);
+			((TileEntityDimensionCore)other.getTileEntity(world)).queueConnectFX(p.right, tick+8);
+			ReikaJavaLibrary.pConsole("playing "+color+" @ "+tick+" ["+(nextNoteIndex-1)+"]");
 
-						for (CrystalElement e : m) {
-							Coordinate c = this.getOtherColor(e);
-							TileEntity te = c.getTileEntity(world);
-							if (te instanceof TileEntityDimensionCore && ((TileEntityDimensionCore)te).getColor() == e) {
-								this.createBeamLine(world, x, y, z, c, e);
-								flag = true;
-							}
-							//}
+			Coordinate cc = this.getCenter();
+			TileEntity tile = cc.getTileEntity(world);
+			if (tile instanceof TileEntityStructControl) {
+				TileEntityStructControl ts = (TileEntityStructControl)tile;
+				if (ts.isMonument()) {
+					float mult = this.getSoundPitch(p.right);
+					//CrystalMusicManager.instance.getRandomScaledDing(color);
+					Collection<CrystalElement> m = this.getColorBeams();
+					//if (rand.nextInt(m.size() >= 8 ? 1 : 8-m.size()) == 0) {
+					//CrystalElement e = ReikaJavaLibrary.getRandomListEntry(m);
+					boolean flag = false;
+
+					for (CrystalElement e : m) {
+						Coordinate c = this.getOtherColor(e);
+						TileEntity te = c.getTileEntity(world);
+						if (te instanceof TileEntityDimensionCore && ((TileEntityDimensionCore)te).getColor() == e) {
+							this.createBeamLine(world, x, y, z, c, e);
+							flag = true;
 						}
-						this.createBeamLine(world, x, y, z, cc, color);
+						//}
+					}
+					this.createBeamLine(world, x, y, z, cc, color);
 
-						ReikaSoundHelper.playClientSound(ChromaSounds.ORB, x, y, z, 1, mult, false);
-						ReikaSoundHelper.playClientSound(ChromaSounds.DING, x, y, z, 0.3F, mult);
+					ReikaSoundHelper.playClientSound(ChromaSounds.ORB, x, y, z, 1, mult, false);
+					ReikaSoundHelper.playClientSound(ChromaSounds.DING, x, y, z, 0.3F, mult);
 
-						int n = 8+rand.nextInt(8);
-						for (int i = 0; i < n; i++) {
-							double px = x+rand.nextDouble();
-							double py = y+rand.nextDouble();
-							double pz = z+rand.nextDouble();
-							int l = 40;
-							float g = (float)ReikaRandomHelper.getRandomPlusMinus(0.03125, 0.0150625);
-							float s = 2*(float)ReikaRandomHelper.getRandomPlusMinus(1.25, 0.5);
-							EntityFX fx = new EntityLaserFX(color, world, px, py, pz, 0, 0, 0).setGravity(g).setScale(s);
-							Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-						}
+					int n = 8+rand.nextInt(8);
+					for (int i = 0; i < n; i++) {
+						double px = x+rand.nextDouble();
+						double py = y+rand.nextDouble();
+						double pz = z+rand.nextDouble();
+						int l = 40;
+						float g = (float)ReikaRandomHelper.getRandomPlusMinus(0.03125, 0.0150625);
+						float s = 2*(float)ReikaRandomHelper.getRandomPlusMinus(1.25, 0.5);
+						EntityFX fx = new EntityLaserFX(color, world, px, py, pz, 0, 0, 0).setGravity(g).setScale(s);
+						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					}
 
-						for (int i = 0; i < n; i++) {
-							double px = x+rand.nextDouble();
-							double py = y+rand.nextDouble();
-							double pz = z+rand.nextDouble();
-							int l = 80;
-							float g = (float)ReikaRandomHelper.getRandomPlusMinus(0.03125, 0.0150625);
-							float s = 2*(float)ReikaRandomHelper.getRandomPlusMinus(1.25, 0.5);
-							EntityFloatingSeedsFX fx = new EntityCCFloatingSeedsFX(world, px, py, pz, 0, -90);
-							fx = (EntityFloatingSeedsFX)fx.setGravity(g).setScale(s).setLife(l).setColor(color.getColor());
-							fx.angleVelocity *= 3;
-							fx.freedom *= 5;
-							Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-						}
+					for (int i = 0; i < n; i++) {
+						double px = x+rand.nextDouble();
+						double py = y+rand.nextDouble();
+						double pz = z+rand.nextDouble();
+						int l = 80;
+						float g = (float)ReikaRandomHelper.getRandomPlusMinus(0.03125, 0.0150625);
+						float s = 2*(float)ReikaRandomHelper.getRandomPlusMinus(1.25, 0.5);
+						EntityFloatingSeedsFX fx = new EntityCCFloatingSeedsFX(world, px, py, pz, 0, -90);
+						fx = (EntityFloatingSeedsFX)fx.setGravity(g).setScale(s).setLife(l).setColor(color.getColor());
+						fx.angleVelocity *= 3;
+						fx.freedom *= 5;
+						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					}
 				}
 			}
@@ -511,6 +524,8 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements Pla
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
+
+		nextNoteIndex = -1;
 
 		if (this.getPlacer() == null && !this.hasStructure() && !world.isRemote) {
 			ChromatiCraft.logger.logError(this+" was never given a structure!? Color = "+color+", UID="+uid);

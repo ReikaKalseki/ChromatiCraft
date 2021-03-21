@@ -58,7 +58,8 @@ public class RenderStructControl extends ChromaRenderBase {
 			ReikaRenderHelper.disableEntityLighting();
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glDisable(GL11.GL_CULL_FACE);
-			if (te.isInWorld())
+			boolean flag = te.isInWorld() && !te.isMonument();
+			if (flag)
 				BlendMode.INVERTEDADD.apply();
 			else
 				BlendMode.ADDITIVEDARK.apply();
@@ -72,29 +73,30 @@ public class RenderStructControl extends ChromaRenderBase {
 			BlendMode.ADDITIVEDARK.apply();
 
 			if (te.isInWorld()) {
+				if (flag) {
+					EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+					double dd = ep.getDistanceSq(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
+					LOS.setOrigins(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5, ep.posX, ep.posY, ep.posZ);
+					if (LOS.isClearLineOfSight(te)) {
+						float f = 0;
+						if (dd <= 16) {
+							f = 1;
+						}
+						else if (dd <= 112) {
+							f = 1-(float)((dd-16D)/96D);
+						}
+						if (f > 0) {
+							ChromaShaders.STRUCTCONTROL.clearOnRender = true;
+							ChromaShaders.STRUCTCONTROL.setIntensity(f);
+							ChromaShaders.STRUCTCONTROL.getShader().setFocus(te);
+							ChromaShaders.STRUCTCONTROL.getShader().setMatricesToCurrent();
+							ChromaShaders.STRUCTCONTROL.getShader().setField("distance", dd);
+						}
+					}
 
-				EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-				double dd = ep.getDistanceSq(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
-				LOS.setOrigins(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5, ep.posX, ep.posY, ep.posZ);
-				if (LOS.isClearLineOfSight(te)) {
-					float f = 0;
-					if (dd <= 16) {
-						f = 1;
-					}
-					else if (dd <= 112) {
-						f = 1-(float)((dd-16D)/96D);
-					}
-					if (f > 0) {
-						ChromaShaders.STRUCTCONTROL.clearOnRender = true;
-						ChromaShaders.STRUCTCONTROL.setIntensity(f);
-						ChromaShaders.STRUCTCONTROL.getShader().setFocus(te);
-						ChromaShaders.STRUCTCONTROL.getShader().setMatricesToCurrent();
-						ChromaShaders.STRUCTCONTROL.getShader().setField("distance", dd);
-					}
+					if (dd < 576)
+						this.renderScript(te, par8, v5);
 				}
-
-				if (dd < 576)
-					this.renderScript(te, par8, v5);
 
 				this.activateShaders(te, par8);
 
