@@ -162,6 +162,8 @@ public class BlockStructureShield extends Block implements SemiUnbreakable, Subm
 		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue() || (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())) {
 			if (b == ChromaBlocks.DOOR.getBlockInstance())
 				return false;
+			if (b == ChromaBlocks.HEATLAMP.getBlockInstance())
+				return false;
 			if (b instanceof BlockStructureShield)
 				return false;
 			if (ChromaBlocks.getEntryByID(b) != null && ChromaBlocks.getEntryByID(b).isDimensionStructureBlock())

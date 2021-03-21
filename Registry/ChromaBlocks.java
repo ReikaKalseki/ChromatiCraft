@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
+import Reika.ChromatiCraft.Base.ItemBlockTileRegistry;
 import Reika.ChromatiCraft.Block.BlockActiveChroma;
 import Reika.ChromatiCraft.Block.BlockAdjacencyUpgrade;
 import Reika.ChromatiCraft.Block.BlockCastingInjectorFocus;
@@ -167,19 +168,19 @@ import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 public enum ChromaBlocks implements BlockEnum {
 
 	TILEPLANT(BlockChromaPlantTile.class, 		ItemBlockChromaFlower.class, 	"Chromatic Plant"),
-	TILEENTITY(BlockChromaTile.class, 											"Chromatic Tile"),
-	TILEMODELLED(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile"),
+	TILEENTITY(BlockChromaTile.class, 			ItemBlockTileRegistry.class,	"Chromatic Tile"),
+	TILEMODELLED(BlockModelledChromaTile.class, ItemBlockTileRegistry.class,	"Modelled Chromatic Tile"),
 	RUNE(BlockCrystalRune.class, 				ItemBlockCrystalColors.class, 	"block.crystalrune"),
 	CHROMA(BlockActiveChroma.class, 			ChromatiCraft.chroma, 			"fluid.chroma"),
-	RIFT(BlockRift.class, 														"Rift"),
+	RIFT(BlockRift.class, 						ItemBlockTileRegistry.class,	"Rift"),
 	CRYSTAL(BlockCaveCrystal.class, 			ItemBlockCrystal.class, 		"crystal.cave"), //Cave Crystal
 	RAINBOWCRYSTAL(BlockRainbowCrystal.class, 									"crystal.rainbow"),
 	LAMP(BlockCrystalLamp.class, 				ItemBlockCrystal.class, 		"crystal.lamp"),
 	SUPER(BlockSuperCrystal.class, 				ItemBlockCrystal.class, 		"crystal.super"),
 	PLANT(BlockCrystalPlant.class, 				ItemBlockCrystalPlant.class, 	"crystal.plant"),
 	HIVE(BlockCrystalHive.class, 				ItemBlockCrystalHive.class, 	"block.crystalhive"),
-	TILECRYSTAL(BlockCrystalTile.class,											"Crystal Tile"),
-	TILECRYSTALNONCUBE(BlockCrystalTileNonCube.class,							"Crystal Tile Non-Cube"),
+	TILECRYSTAL(BlockCrystalTile.class,			ItemBlockTileRegistry.class,	"Crystal Tile"),
+	TILECRYSTALNONCUBE(BlockCrystalTileNonCube.class,ItemBlockTileRegistry.class,"Crystal Tile Non-Cube"),
 	DECAY(BlockDyeLeaf.class, 					ItemBlockDyeTypes.class, 		"dye.leaf"),
 	DYELEAF(BlockDyeLeaf.class, 				ItemBlockDyeTypes.class, 		"dye.leaf"),
 	DYESAPLING(BlockDyeSapling.class, 			ItemBlockDyeTypes.class, 		"dye.sapling"),
@@ -190,7 +191,7 @@ public enum ChromaBlocks implements BlockEnum {
 	ENDER(BlockLiquidEnder.class, 				ChromatiCraft.ender,			"Liquid Ender"),
 	DYEGRASS(BlockDyeGrass.class,				ItemBlockDyeTypes.class,		"dye.grass"),
 	PYLONSTRUCT(BlockPylonStructure.class,		ItemBlockMultiType.class,		"block.pylon"),
-	PYLON(BlockCrystalPylon.class,				ItemBlockMultiType.class,		"crystal.pylon"),
+	PYLON(BlockCrystalPylon.class,				ItemBlockTileRegistry.class,	"crystal.pylon"),
 	TANK(BlockCrystalTank.class,				ItemBlockCrystalTank.class,		"crystal.tank"),
 	FENCE(BlockCrystalFence.class,												"chroma.fencerelay"),
 	TIEREDPLANT(BlockTieredPlant.class,			ItemBlockChromaTiered.class,	"chroma.tieredplant"),

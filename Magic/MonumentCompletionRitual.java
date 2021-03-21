@@ -74,7 +74,7 @@ public class MonumentCompletionRitual {
 
 	private static final Random rand = new Random();
 
-	private final int FINAL_SOUND_COMPLETION_DELAY = 18500; //millis
+	private final int FINAL_SOUND_COMPLETION_DELAY = 20000; //millis
 	private final int COMPLETION_EXTRA = 3000; //millis
 
 	private final long[] SOUND_TIMINGS = new long[] {0, 28000, 66500, 86000, 104800, 123500}; //in millis
