@@ -170,12 +170,17 @@ public class BlockHeatLamp extends BlockAttachableMini {
 			}
 			else if (!this.isCold() && te instanceof TileEntityFurnace) {
 				TileEntityFurnace tf = (TileEntityFurnace)te;
-				double c = Math.min(1, 1.25*temperature/1000D);
-				if (ReikaRandomHelper.doWithChance(c)) {
-					if (tf.furnaceBurnTime == 0 && ReikaRandomHelper.doWithChance(c)) {
-						tf.furnaceBurnTime = 20;
+				if (temperature >= 200) {
+					double c = Math.min(1, 1.25*temperature/1000D);
+					if (ReikaRandomHelper.doWithChance(c)) {
+						if (tf.furnaceBurnTime == 0 && ReikaRandomHelper.doWithChance(c)) {
+							tf.furnaceBurnTime = 20;
+						}
+						te.updateEntity();
 					}
-					te.updateEntity();
+				}
+				else {
+					tf.furnaceCookTime = temperature/10;
 				}
 			}
 			else if (ModList.TINKERER.isLoaded() && !this.isCold() && TinkerSmelteryHandler.isSmelteryController(te)) {

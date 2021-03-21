@@ -500,6 +500,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						te.generate(s, e);
 						this.onGenerateStructure(s, te);
 						this.populateChests(s, arr, r);
+						this.mossify(s, arr, r);
 						flag = true;
 						rx = te.xCoord;
 						rz = te.zCoord;
