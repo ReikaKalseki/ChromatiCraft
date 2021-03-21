@@ -86,6 +86,7 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements Pla
 	private static final ArrayList<ArrayList<ImmutablePair<CrystalElement, Integer>>>[] melody = new ArrayList[2];
 
 	private boolean primed = false;
+	private int nextConnectNote = -1;
 	private long nextConnectTick = -1;
 	private static int nextNoteIndex = -1;
 
@@ -386,30 +387,26 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements Pla
 	@SideOnly(Side.CLIENT)
 	private void queueConnectFX(int note, long tick) {
 		nextConnectTick = tick;
+		nextConnectNote = note;
 	}
 
 	@SideOnly(Side.CLIENT)
 	private void spawnConnectFX(World world, int x, int y, int z) {
 		long tick = world.getTotalWorldTime();
 		if (nextNoteIndex < 0 || (nextConnectTick >= 0 && tick >= nextConnectTick))  {
-			if (nextNoteIndex < 0)
+			//ReikaJavaLibrary.pConsole("Loading "+color+" @ "+tick+" with index of "+nextNoteIndex);
+			if (nextNoteIndex < 0) {
 				nextNoteIndex = 0;
+				//ReikaJavaLibrary.pConsole("Resetting index to zero");
+			}
 			nextConnectTick = -1;
-			int midx = (ChunkProviderChroma.getMonumentGenerator().hashCode() ^ Minecraft.getMinecraft().hashCode())%melody.length;
-			ArrayList<ArrayList<ImmutablePair<CrystalElement, Integer>>> song = melody[midx];
-			ArrayList<ImmutablePair<CrystalElement, Integer>> li = song.get(nextNoteIndex);
-			nextNoteIndex = (nextNoteIndex+1)%song.size();
-			ImmutablePair<CrystalElement, Integer> p = li.get(rand.nextInt(li.size()));
-			Coordinate other = this.getOtherColor(p.left);
-			((TileEntityDimensionCore)other.getTileEntity(world)).queueConnectFX(p.right, tick+8);
-			ReikaJavaLibrary.pConsole("playing "+color+" @ "+tick+" ["+(nextNoteIndex-1)+"]");
 
 			Coordinate cc = this.getCenter();
 			TileEntity tile = cc.getTileEntity(world);
 			if (tile instanceof TileEntityStructControl) {
 				TileEntityStructControl ts = (TileEntityStructControl)tile;
 				if (ts.isMonument()) {
-					float mult = this.getSoundPitch(p.right);
+					float mult = this.getSoundPitch(nextConnectNote);
 					//CrystalMusicManager.instance.getRandomScaledDing(color);
 					Collection<CrystalElement> m = this.getColorBeams();
 					//if (rand.nextInt(m.size() >= 8 ? 1 : 8-m.size()) == 0) {
@@ -457,6 +454,22 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements Pla
 					}
 				}
 			}
+
+			int midx = (ChunkProviderChroma.getMonumentGenerator().hashCode() ^ Minecraft.getMinecraft().hashCode())%melody.length;
+			ArrayList<ArrayList<ImmutablePair<CrystalElement, Integer>>> song = melody[midx];
+
+			nextNoteIndex = (nextNoteIndex+1)%song.size();
+
+			ArrayList<ImmutablePair<CrystalElement, Integer>> li = song.get(nextNoteIndex);
+
+			nextConnectNote = -1;
+			ImmutablePair<CrystalElement, Integer> p = li.get(rand.nextInt(li.size()));
+			Coordinate other = this.getOtherColor(p.left);
+			TileEntity te2 = other.getTileEntity(world);
+			if (te2 instanceof TileEntityDimensionCore) {
+				((TileEntityDimensionCore)te2).queueConnectFX(p.right, tick+8);
+			}
+			ReikaJavaLibrary.pConsole("playing "+color+" @ "+tick+" ["+(nextNoteIndex-1)+"], queued "+p.left+" @ "+(tick+8));
 		}
 	}
 
@@ -525,7 +538,8 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements Pla
 	protected void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
 
-		nextNoteIndex = -1;
+		if (color == CrystalElement.WHITE)
+			nextNoteIndex = -1;
 
 		if (this.getPlacer() == null && !this.hasStructure() && !world.isRemote) {
 			ChromatiCraft.logger.logError(this+" was never given a structure!? Color = "+color+", UID="+uid);
