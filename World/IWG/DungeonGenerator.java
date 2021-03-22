@@ -512,6 +512,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 								}
 							}
 						}
+						te.setBurrowAddons(furn != null, loot != null);
 						((GeneratedStructureBase)s.getStructure()).runCallbacks(world, r);
 						this.modifyBlocks(s, arr, r, Modify.MOSSIFY, Modify.GRASSDIRT);
 						if (furn != null)
@@ -833,6 +834,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		GRASSDIRT,
 		ADJTREES,
 		CLEANENTRANCE,
+		@Deprecated ENCRUSTED,
 		;
 
 		private final int bit;
@@ -915,6 +917,22 @@ public class DungeonGenerator implements RetroactiveGenerator {
 							if (r.nextInt(ct) == 0) {
 								arr.world.setBlockMetadataWithNotify(c.xCoord, c.yCoord, c.zCoord, BlockType.MOSS.metadata, 2);
 								return true;
+							}
+						}
+					}
+					break;
+				}
+				case ENCRUSTED: {
+					int n = s == ChromaStructures.BURROW ? 12 : 20;
+					if (r.nextInt(n) == 0) {
+						Block b = c.getBlock(arr.world);
+						if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance()) {
+							for (int i = 0; i < 6; i++) {
+								Coordinate c2 = c.offset(ForgeDirection.VALID_DIRECTIONS[i], 1);
+								Block b2 = c2.getBlock(arr.world);
+								if (b2 == Blocks.air) {
+
+								}
 							}
 						}
 					}

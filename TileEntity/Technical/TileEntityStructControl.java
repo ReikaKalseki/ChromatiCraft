@@ -32,10 +32,12 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.BurrowStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.OceanStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.SnowStructure;
 import Reika.ChromatiCraft.Base.GeneratedStructureBase;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
+import Reika.ChromatiCraft.Block.BlockChromaDoor;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock.Passability;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.LootChestAccessEvent;
@@ -89,6 +91,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	private boolean regenned = false;
 	private int version;
 	private int trapTick = 0;
+
+	private boolean hasFurnaceRoom;
+	private boolean hasLootRoom;
 
 	private UUID lastTriggerPlayer;
 
@@ -498,6 +503,12 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				break;
 			case BURROW:
 				blocks = ChromaStructures.BURROW.getArray(world, x, y, z, color);
+				if (hasFurnaceRoom) {
+					blocks.addAll(((BurrowStructure)ChromaStructures.BURROW.getStructure()).getFurnaceRoom(world, x, y, z));
+				}
+				if (hasLootRoom) {
+					blocks.addAll(((BurrowStructure)ChromaStructures.BURROW.getStructure()).getLootRoom(world, x, y, z));
+				}
 				break;
 			case OCEAN:
 				blocks = ChromaStructures.OCEAN.getArray(world, x, y, z);
@@ -818,6 +829,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 		NBT.setBoolean("monument", isMonument);
 		NBT.setBoolean("monument_t", triggeredMonument);
+
+		NBT.setBoolean("furn", hasFurnaceRoom);
+		NBT.setBoolean("loot", hasLootRoom);
 	}
 
 	@Override
@@ -841,6 +855,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 		isMonument = NBT.getBoolean("monument");
 		triggeredMonument = NBT.getBoolean("monument_t");
+
+		hasFurnaceRoom = NBT.getBoolean("furn");
+		hasLootRoom = NBT.getBoolean("loot");
 	}
 
 	@Override
@@ -992,7 +1009,17 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		if (struct == ChromaStructures.OCEAN) {
 			return ep != null && ep.getDistance(xCoord+0.5, yCoord+0.5, zCoord+0.5) <= 2.5;
 		}
+		if (struct == ChromaStructures.BURROW) {
+			if (hasLootRoom && !this.isLootDoorOpen())
+				return false;
+			if (hasFurnaceRoom && worldObj.getBlock(xCoord+2, yCoord, zCoord+2) != Blocks.air)
+				return false;
+		}
 		return true;
+	}
+
+	private boolean isLootDoorOpen() {
+		return BlockChromaDoor.isOpen(worldObj, xCoord+5, yCoord-1, zCoord-2);
 	}
 
 	/** Is often null! */
@@ -1008,6 +1035,11 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	@Override
 	public boolean skipPlacement(Coordinate c, BlockCheck bc) {
 		return c.equals(xCoord, yCoord, zCoord) || (c.getBlock(worldObj) == ChromaBlocks.STRUCTSHIELD.getBlockInstance() && c.getBlockMetadata(worldObj) >= 8) || bc.asBlockKey().blockID == ChromaBlocks.LOOTCHEST.getBlockInstance();
+	}
+
+	public void setBurrowAddons(boolean furn, boolean loot) {
+		hasFurnaceRoom = furn;
+		hasLootRoom = loot;
 	}
 
 }

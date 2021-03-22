@@ -62,7 +62,14 @@ public class PlaceStructureCommand extends DragonCommandBase {
 						arr2 = ((BurrowStructure)s.getStructure()).getLootRoom(ep.worldObj, x, y, z);
 						arr2.place();
 						DungeonGenerator.instance.modifyBlocks(s, arr2, ep.getRNG(), Modify.MOSSIFY, Modify.GRASSDIRT);
+						te.setBurrowAddons(true, true);
 					}
+					else {
+						te.setBurrowAddons(true, false);
+					}
+				}
+				else {
+					te.setBurrowAddons(false, false);
 				}
 			}
 		}

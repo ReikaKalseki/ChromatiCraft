@@ -93,6 +93,7 @@ import Reika.ChromatiCraft.Auxiliary.Render.MobSonarRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.OreOverlayRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.PylonFinderOverlay;
 import Reika.ChromatiCraft.Auxiliary.Render.StructureErrorOverlays;
+import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.BurrowStructure;
 import Reika.ChromatiCraft.Auxiliary.Tab.FragmentTab;
 import Reika.ChromatiCraft.Auxiliary.Tab.TabChromatiCraft;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
@@ -756,6 +757,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		TileEntityOreCreator.initOreMap();
 		TileEntityTeleportationPump.buildProgressionMap();
 		ItemDuplicationWand.loadMappings();
+		BurrowStructure.buildLootCache();
 
 		ReikaDispenserHelper.addDispenserAction(ChromaItems.TOOL.getStackOf(), new ManipulatorDispenserAction());
 		ProjectileToolDispenserAction proj = new ProjectileToolDispenserAction();

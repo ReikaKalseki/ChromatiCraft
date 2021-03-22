@@ -16,6 +16,7 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Base.FragmentStructureBase;
 import Reika.ChromatiCraft.Block.BlockChromaDoor;
 import Reika.ChromatiCraft.Block.BlockHeatLamp.TileEntityHeatLamp;
@@ -48,7 +49,7 @@ public class BurrowStructure extends FragmentStructureBase {
 	private static WeightedRandom<OreType> furnaceOres = new WeightedRandom();
 	private static WeightedRandom<ItemDrop> lootItems = new WeightedRandom();
 
-	static {
+	public static void buildLootCache() {
 		furnaceOres.addEntry(ReikaOreHelper.IRON, 40);
 		furnaceOres.addEntry(ReikaOreHelper.GOLD, 15);
 		addOreIf(ModOreList.COPPER, 50);
@@ -113,6 +114,12 @@ public class BurrowStructure extends FragmentStructureBase {
 		lootItems.addEntry(new ItemDrop(Items.chicken, 8, 16), 20);
 
 		lootItems.addEntry(new ItemDrop(Items.reeds, 1, 6), 20);
+
+		for (int i = 0; i < 16; i++) {
+			lootItems.addEntry(new ItemDrop(ChromaItems.SHARD.getStackOfMetadata(i), 2, 8), 5);
+			lootItems.addEntry(new ItemDrop(ChromaBlocks.CRYSTAL.getStackOfMetadata(i), 2, 8), 1);
+		}
+		lootItems.addEntry(new ItemDrop(ChromaStacks.auraDust, 6, 30), 5);
 
 		lootItems.addEntry(new ItemDrop(Items.lava_bucket, 1, 1), 10);
 
