@@ -49,9 +49,11 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fluids.BlockFluidBase;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.BurrowStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.DesertStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.OceanStructure;
 import Reika.ChromatiCraft.Base.ChromaStructureBase;
+import Reika.ChromatiCraft.Base.GeneratedStructureBase;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.ModInterface.MystPages;
@@ -455,7 +457,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					break;
 				case CAVERN: {
 					int y = 10+r.nextInt(40);
-					if (this.isValidCavernLocation(world, x, y, z, ChromaStructures.CAVERN.getArray(world, x, y, z))) {
+					if (this.isValidCavernLocation(world, x, y, z, ChromaStructures.CAVERN.getArray(world, x, y, z, r))) {
 						FilledBlockArray struct = ChromaStructures.CAVERN.getArray(world, x, y, z);
 						if (this.isValidCavernLocation(world, x, y, z, struct)) {
 							struct.place(2);
@@ -479,6 +481,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 							te.generate(s, CrystalElement.WHITE);
 							this.onGenerateStructure(s, te);
 							this.populateChests(s, struct, r);
+							((GeneratedStructureBase)s.getStructure()).runCallbacks(world, r);
 							flag = true;
 							rx = te.xCoord;
 							rz = te.zCoord;
@@ -489,10 +492,9 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				case BURROW: {
 					int y = world.getTopSolidOrLiquidBlock(x, z)-1;
 					CrystalElement e = CrystalElement.randomElement();
-					FilledBlockArray arr = ChromaStructures.BURROW.getArray(world, x, y, z, e);
+					FilledBlockArray arr = ChromaStructures.BURROW.getArray(world, x, y, z, r, e);
 					if (this.isValidBurrowLocation(world, x, y, z, arr)) {
 						arr.place(2);
-						this.convertDirtToGrass(arr);
 						//world.setBlockMetadataWithNotify(x-7, y-5, z-2, 5, 3); //that chest that never points right
 						//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+x+","+y+","+z);
 						world.setBlock(x-5, y-8, z-2, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
@@ -500,7 +502,22 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						te.generate(s, e);
 						this.onGenerateStructure(s, te);
 						this.populateChests(s, arr, r);
-						this.mossify(s, arr, r);
+						FilledBlockArray furn = null;
+						FilledBlockArray loot = null;
+						if (r.nextInt(2) == 0) {
+							furn = this.tryGenerateBurrowFurnaceRoom(world, x, y, z, s, arr, r);
+							if (furn != null) {
+								if (r.nextInt(2) == 0) {
+									loot = this.tryGenerateBurrowLootRoom(world, x, y, z, s, arr, r);
+								}
+							}
+						}
+						((GeneratedStructureBase)s.getStructure()).runCallbacks(world, r);
+						this.modifyBlocks(s, arr, r, Modify.MOSSIFY, Modify.GRASSDIRT);
+						if (furn != null)
+							this.modifyBlocks(s, furn, r, Modify.MOSSIFY, Modify.GRASSDIRT);
+						if (loot != null)
+							this.modifyBlocks(s, loot, r, Modify.MOSSIFY, Modify.GRASSDIRT);
 						flag = true;
 						rx = te.xCoord;
 						rz = te.zCoord;
@@ -517,7 +534,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						//	y--;
 						//	b = world.getBlock(x, y, z);
 						//}
-						FilledBlockArray struct = ChromaStructures.OCEAN.getArray(world, x, y, z);
+						FilledBlockArray struct = ChromaStructures.OCEAN.getArray(world, x, y, z, r);
 						if (y > 0 && this.isValidOceanLocation(world, x, y, z, struct)) {
 							struct.place(2);
 							world.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
@@ -526,7 +543,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 							this.onGenerateStructure(s, te);
 							this.populateChests(s, struct, r);
 							this.programSpawners(s, struct);
-							this.mossify(s, struct, r);
+							((GeneratedStructureBase)s.getStructure()).runCallbacks(world, r);
+							this.modifyBlocks(s, struct, r, Modify.MOSSIFY);
 							this.generatePit(world, x, y, z);
 							flag = true;
 							rx = te.xCoord;
@@ -549,7 +567,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						y -= 3;
 						z -= 7;
 
-						FilledBlockArray struct = ChromaStructures.DESERT.getArray(world, x, y, z);
+						FilledBlockArray struct = ChromaStructures.DESERT.getArray(world, x, y, z, r);
 						DesertStructure.getTerrain(struct, x, y, z);
 						if (this.isValidDesertLocation(world, x, y, z, struct)) {
 							struct.place(2);
@@ -560,6 +578,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 							this.onGenerateStructure(s, te);
 							this.populateChests(s, struct, r);
 							this.programSpawners(s, struct);
+							((GeneratedStructureBase)s.getStructure()).runCallbacks(world, r);
 							for (int k = 0; k < struct.getSize(); k++) {
 								Coordinate c = struct.getNthBlock(k);
 								if (c.yCoord > struct.getMaxY()-2) {
@@ -587,7 +606,6 @@ public class DungeonGenerator implements RetroactiveGenerator {
 									}
 								}
 							}
-							//too dry for moss//this.mossify(s, struct, r);
 							flag = true;
 							rx = te.xCoord;
 							rz = te.zCoord;
@@ -601,18 +619,16 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					if (this.isValidSnowStructLocation(world, x, y, z, arr)) {
 						arr.offset(0, -6, 0);
 						arr.place(2);
-						this.mossify(s, arr, r);
-						this.convertDirtToGrass(arr);
-						this.programSpawners(s, arr);
-						this.removeAdjacentTrees(arr);
-						this.cleanupSnowEntrances(arr);
-						this.addMissingSupport(arr, Blocks.stone, 0, 5);
-						this.addSnowCover(arr, 4);
 						world.setBlock(x+8, y-3, z+6, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
 						TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x+8, y-3, z+6);
 						te.generate(s, CrystalElement.WHITE);
 						this.onGenerateStructure(s, te);
+						this.modifyBlocks(s, arr, r, Modify.MOSSIFY, Modify.GRASSDIRT, Modify.ADJTREES, Modify.CLEANENTRANCE);
+						this.addMissingSupport(arr, Blocks.stone, 0, 5);
+						this.addSnowCover(arr, 4);
+						this.programSpawners(s, arr);
 						this.populateChests(s, arr, r);
+						((GeneratedStructureBase)s.getStructure()).runCallbacks(world, r);
 						flag = true;
 						rx = te.xCoord;
 						rz = te.zCoord;
@@ -687,6 +703,26 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			default:
 				return false;
 		}
+	}
+
+	private FilledBlockArray tryGenerateBurrowFurnaceRoom(World world, int x, int y, int z, ChromaStructures s, FilledBlockArray arr, Random r) {
+		FilledBlockArray arr2 = ((BurrowStructure)s.getStructure()).getFurnaceRoom(world, x, y, z);
+		for (Coordinate c : arr2.keySet()) {
+			if (c.isEmpty(world))
+				return null;
+		}
+		arr2.place();
+		return arr2;
+	}
+
+	private FilledBlockArray tryGenerateBurrowLootRoom(World world, int x, int y, int z, ChromaStructures s, FilledBlockArray arr, Random r) {
+		FilledBlockArray arr2 = ((BurrowStructure)s.getStructure()).getLootRoom(world, x, y, z);
+		for (Coordinate c : arr2.keySet()) {
+			if (c.isEmpty(world))
+				return null;
+		}
+		arr2.place();
+		return arr2;
 	}
 
 	private static FilledBlockArray getPitSlice(World world, int x, int y, int z) {
@@ -792,29 +828,116 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 	}
 
-	private void mossify(ChromaStructures s, FilledBlockArray arr, Random r) {
-		Block b2 = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
+	public static enum Modify {
+		MOSSIFY,
+		GRASSDIRT,
+		ADJTREES,
+		CLEANENTRANCE,
+		;
+
+		private final int bit;
+
+		private Modify() {
+			bit = 1 << this.ordinal();
+		}
+
+		private static int getFlags(Modify... flags) {
+			int ret = 0;
+			for (Modify m : flags) {
+				ret |= m.bit;
+			}
+			return ret;
+		}
+
+		private boolean apply(ChromaStructures s, FilledBlockArray arr, Coordinate c, Random r) {
+			switch(this) {
+				case ADJTREES: {
+					for (int i = 0; i < 6; i++) {
+						Coordinate c2 = c.offset(ForgeDirection.VALID_DIRECTIONS[i], 1);
+						Block b = c2.getBlock(arr.world);
+						if (b != Blocks.air && b != ChromaBlocks.STRUCTSHIELD.getBlockInstance()) {
+							int meta = c2.getBlockMetadata(arr.world);
+							TreeType tree = ReikaTreeHelper.getTree(b, meta);
+							if (tree == null)
+								tree = ModWoodList.getModWood(b, meta);
+							if (tree != null) {
+								BlockArray barr = new BlockArray();
+								barr.recursiveMultiAddWithBounds(arr.world, c2.xCoord, c2.yCoord, c2.zCoord, c2.xCoord-12, c2.yCoord-12, c2.zCoord-12, c2.xCoord+12, c2.yCoord+12, c2.zCoord+12, b, tree.getLeafID());
+								for (Coordinate c3 : barr.keySet()) {
+									c3.setBlock(arr.world, Blocks.air);
+								}
+								return true;
+							}
+						}
+					}
+					break;
+				}
+				case CLEANENTRANCE: {
+					Block b = c.getBlock(arr.world);
+					if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance() && c.getBlockMetadata(arr.world) == BlockType.MOSS.metadata) {
+						Block b3 = c.offset(0, 1, 0).getBlock(arr.world);
+						if (b3 != b) {
+							for (int i = 1; i < 5; i++) {
+								for (int dx = -i; dx <= i; dx++) {
+									for (int dz = -i; dz <= i; dz++) {
+										Coordinate c2 = c.offset(dx, i, dz);
+										Block b2 = c2.getBlock(arr.world);
+										if (b2 == Blocks.grass || b2.getMaterial() == Material.ground || b2.getMaterial() == Material.plants || b2 == Blocks.stone || b2 == Blocks.snow_layer) {
+											c2.setBlock(arr.world, Blocks.air);
+										}
+									}
+								}
+							}
+							return true;
+						}
+					}
+					break;
+				}
+				case GRASSDIRT: {
+					Block b = c.getBlock(arr.world);
+					if (b == Blocks.dirt) {
+						if (arr.world.getBlockLightValue(c.xCoord, c.yCoord+1, c.zCoord) > 8) {
+							c.setBlock(arr.world, Blocks.grass);
+							return true;
+						}
+					}
+					break;
+				}
+				case MOSSIFY: {
+					Block b = c.getBlock(arr.world);
+					if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance()) {
+						int meta = c.getBlockMetadata(arr.world);
+						if (meta == BlockType.STONE.metadata) {
+							int dy = c.yCoord-arr.getMinY();
+							int dh = s == ChromaStructures.BURROW ? 1 : 2;
+							int dc = s == ChromaStructures.BURROW ? 5 : 0;
+							int ct = Math.max(1, dy*dh-2+dc);
+							if (r.nextInt(ct) == 0) {
+								arr.world.setBlockMetadataWithNotify(c.xCoord, c.yCoord, c.zCoord, BlockType.MOSS.metadata, 2);
+								return true;
+							}
+						}
+					}
+					break;
+				}
+			}
+			return false;
+		}
+	}
+
+	public void modifyBlocks(ChromaStructures s, FilledBlockArray arr, Random r, Modify... flags) {
 		for (int k = 0; k < arr.getSize(); k++) {
 			Coordinate c = arr.getNthBlock(k);
-			Block b = c.getBlock(arr.world);
-			if (b == b2) {
-				int meta = c.getBlockMetadata(arr.world);
-				if (meta == BlockType.STONE.metadata) {
-					int dy = c.yCoord-arr.getMinY();
-					int ct = Math.max(1, dy*2-2);
-					if (r.nextInt(ct) == 0) {
-						arr.world.setBlockMetadataWithNotify(c.xCoord, c.yCoord, c.zCoord, BlockType.MOSS.metadata, 2);
-					}
-				}
+			for (Modify m : flags) {
+				m.apply(s, arr, c, r);
 			}
 		}
 	}
 
-	private void programSpawners(ChromaStructures s, FilledBlockArray arr) {
+	public void programSpawners(ChromaStructures s, FilledBlockArray arr) {
 		switch(s) {
 			case OCEAN:
-				for (int k = 0; k < arr.getSize(); k++) {
-					Coordinate c = arr.getNthBlock(k);
+				for (Coordinate c : ((GeneratedStructureBase)s.getStructure()).getCachedBlocks(Blocks.mob_spawner)) {
 					Block b = c.getBlock(arr.world);
 					if (b == Blocks.mob_spawner) {
 						TileEntityMobSpawner te = (TileEntityMobSpawner)arr.world.getTileEntity(c.xCoord, c.yCoord, c.zCoord);
@@ -826,8 +949,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				}
 				break;
 			case DESERT:
-				for (int k = 0; k < arr.getSize(); k++) {
-					Coordinate c = arr.getNthBlock(k);
+				for (Coordinate c : ((GeneratedStructureBase)s.getStructure()).getCachedBlocks(Blocks.mob_spawner)) {
 					Block b = c.getBlock(arr.world);
 					if (b == Blocks.mob_spawner) {
 						TileEntityMobSpawner te = (TileEntityMobSpawner)arr.world.getTileEntity(c.xCoord, c.yCoord, c.zCoord);
@@ -843,8 +965,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				}
 				break;
 			case SNOWSTRUCT:
-				for (int k = 0; k < arr.getSize(); k++) {
-					Coordinate c = arr.getNthBlock(k);
+				for (Coordinate c : ((GeneratedStructureBase)s.getStructure()).getCachedBlocks(Blocks.mob_spawner)) {
 					Block b = c.getBlock(arr.world);
 					if (b == Blocks.mob_spawner) {
 						TileEntityMobSpawner te = (TileEntityMobSpawner)arr.world.getTileEntity(c.xCoord, c.yCoord, c.zCoord);
@@ -861,8 +982,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	}
 
 	public static void populateChests(ChromaStructures struct, FilledBlockArray arr, Random r) {
-		for (int k = 0; k < arr.getSize(); k++) {
-			Coordinate c = arr.getNthBlock(k);
+		for (Coordinate c : ((GeneratedStructureBase)struct.getStructure()).getCachedBlocks(GeneratedStructureBase.getChestGen())) {
 			Block b = c.getBlock(arr.world);
 			if (b == ChromaStructureBase.getChestGen()) {
 				TileEntityLootChest te = (TileEntityLootChest)c.getTileEntity(arr.world);
@@ -906,18 +1026,6 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		te.populateChest(s, struct, bonus, r);
 	}
 
-	private void convertDirtToGrass(FilledBlockArray arr) {
-		for (int k = 0; k < arr.getSize(); k++) {
-			Coordinate c = arr.getNthBlock(k);
-			Block b = c.getBlock(arr.world);
-			if (b == Blocks.dirt) {
-				if (arr.world.getBlockLightValue(c.xCoord, c.yCoord+1, c.zCoord) > 8) {
-					c.setBlock(arr.world, Blocks.grass);
-				}
-			}
-		}
-	}
-
 	private void addMissingSupport(FilledBlockArray arr, Block b, int meta, int d) {
 		for (int x = arr.getMinX(); x <= arr.getMaxX(); x++) {
 			for (int z = arr.getMinZ(); z <= arr.getMaxZ(); z++) {
@@ -949,52 +1057,6 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				int top = arr.world.getTopSolidOrLiquidBlock(x, z)-1;
 				if (arr.world.getBlock(x, top, z) != Blocks.snow_layer && arr.world.getBlock(x, top+1, z) == Blocks.air) {
 					arr.world.setBlock(x, top+1, z, Blocks.snow_layer);
-				}
-			}
-		}
-	}
-
-	private void removeAdjacentTrees(FilledBlockArray arr) {
-		for (int k = 0; k < arr.getSize(); k++) {
-			Coordinate c = arr.getNthBlock(k);
-			for (int i = 0; i < 6; i++) {
-				Coordinate c2 = c.offset(ForgeDirection.VALID_DIRECTIONS[i], 1);
-				Block b = c2.getBlock(arr.world);
-				if (b != Blocks.air && b != ChromaBlocks.STRUCTSHIELD.getBlockInstance()) {
-					int meta = c2.getBlockMetadata(arr.world);
-					TreeType tree = ReikaTreeHelper.getTree(b, meta);
-					if (tree == null)
-						tree = ModWoodList.getModWood(b, meta);
-					if (tree != null) {
-						BlockArray barr = new BlockArray();
-						barr.recursiveMultiAddWithBounds(arr.world, c2.xCoord, c2.yCoord, c2.zCoord, c2.xCoord-12, c2.yCoord-12, c2.zCoord-12, c2.xCoord+12, c2.yCoord+12, c2.zCoord+12, b, tree.getLeafID());
-						for (Coordinate c3 : barr.keySet()) {
-							c3.setBlock(arr.world, Blocks.air);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	private void cleanupSnowEntrances(FilledBlockArray arr) {
-		for (int k = 0; k < arr.getSize(); k++) {
-			Coordinate c = arr.getNthBlock(k);
-			Block b = c.getBlock(arr.world);
-			if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance() && c.getBlockMetadata(arr.world) == BlockType.MOSS.metadata) {
-				Block b3 = c.offset(0, 1, 0).getBlock(arr.world);
-				if (b3 != b) {
-					for (int i = 1; i < 5; i++) {
-						for (int dx = -i; dx <= i; dx++) {
-							for (int dz = -i; dz <= i; dz++) {
-								Coordinate c2 = c.offset(dx, i, dz);
-								Block b2 = c2.getBlock(arr.world);
-								if (b2 == Blocks.grass || b2.getMaterial() == Material.ground || b2.getMaterial() == Material.plants || b2 == Blocks.stone || b2 == Blocks.snow_layer) {
-									c2.setBlock(arr.world, Blocks.air);
-								}
-							}
-						}
-					}
 				}
 			}
 		}

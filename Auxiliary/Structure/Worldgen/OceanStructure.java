@@ -29,16 +29,14 @@ public class OceanStructure extends FragmentStructureBase {
 	public FilledBlockArray getArray(World world, int x, int y, int z) {
 		FilledBlockArray array = new FilledBlockArray(world);
 
-		Block chest = getChestGen();
-
 		x -= 3;
 		y -= 5;
 		z -= 3;
 
-		addChests(array, x, y, z, chest);
-		addPit(array, x, y, z, shield);
-		addCloakTunnel(array, x, y, z, shield);
-		addCovers(array, x, y, z, shield);
+		this.addChests(array, x, y, z);
+		this.addPit(array, x, y, z, shield);
+		this.addCloakTunnel(array, x, y, z, shield);
+		this.addCovers(array, x, y, z, shield);
 
 		array.setBlock(x+0, y+7, z+1, shield, 9);
 		array.setBlock(x+0, y+7, z+2, shield, 9);
@@ -822,7 +820,6 @@ public class OceanStructure extends FragmentStructureBase {
 		array.setBlock(x+8, y+2, z+24, shield, 9);
 		array.setBlock(x+8, y+3, z+10, shield, 9);
 		array.setBlock(x+8, y+3, z+17, shield, 9);
-		array.setBlock(x+8, y+3, z+18, Blocks.mob_spawner);
 		array.setBlock(x+8, y+3, z+19, shield, 9);
 		array.setBlock(x+8, y+3, z+20, shield, 9);
 		array.setBlock(x+8, y+3, z+25, shield, 9);
@@ -1430,7 +1427,6 @@ public class OceanStructure extends FragmentStructureBase {
 		array.setBlock(x+18, y+2, z+14, shield, 9);
 		array.setBlock(x+18, y+2, z+15, shield, 9);
 		array.setBlock(x+18, y+3, z+7, shield, 9);
-		array.setBlock(x+18, y+3, z+8, Blocks.mob_spawner);
 		array.setBlock(x+18, y+3, z+9, shield, 9);
 		array.setBlock(x+18, y+3, z+10, shield, 9);
 		array.setBlock(x+18, y+3, z+16, shield, 9);
@@ -1884,16 +1880,21 @@ public class OceanStructure extends FragmentStructureBase {
 		array.setBlock(x+30, y+11, z+4, shield, 9);
 		array.setBlock(x+30, y+11, z+5, shield, 9);
 
+		array.setBlock(x+18, y+3, z+8, Blocks.mob_spawner);
+		array.setBlock(x+8, y+3, z+18, Blocks.mob_spawner);
+		this.cache(x+18, y+3, z+8, Blocks.mob_spawner);
+		this.cache(x+8, y+3, z+18, Blocks.mob_spawner);
+
 		array.setBlock(x+3, y+8, z+3, Blocks.torch, 5);
 
-		addAir(array, x, y, z);
+		this.addAir(array, x, y, z);
 
-		addEndCaps(array, x, y, z, shield);
+		this.addEndCaps(array, x, y, z, shield);
 
 		return array;
 	}
 
-	private static void addAir(FilledBlockArray array, int x, int y, int z) {
+	private void addAir(FilledBlockArray array, int x, int y, int z) {
 		array.setBlock(x+1, y+3, z+2, Blocks.air);
 		array.setBlock(x+1, y+3, z+4, Blocks.air);
 		array.setBlock(x+1, y+4, z+2, Blocks.air);
@@ -3279,7 +3280,7 @@ public class OceanStructure extends FragmentStructureBase {
 		array.setBlock(x+29, y+10, z+4, Blocks.air);
 	}
 
-	private static void addCovers(FilledBlockArray array, int x, int y, int z, Block b) {
+	private void addCovers(FilledBlockArray array, int x, int y, int z, Block b) {
 
 		int meta = 9; //15
 
@@ -3355,7 +3356,7 @@ public class OceanStructure extends FragmentStructureBase {
 		return array;
 	}
 
-	private static void addEndCaps(FilledBlockArray array, int x, int y, int z, Block b) {
+	private void addEndCaps(FilledBlockArray array, int x, int y, int z, Block b) {
 		array.setBlock(x+30, y+8, z+2, Blocks.air);
 		array.setBlock(x+30, y+8, z+3, Blocks.air);
 		array.setBlock(x+30, y+8, z+4, Blocks.air);
@@ -3377,18 +3378,18 @@ public class OceanStructure extends FragmentStructureBase {
 		array.setBlock(x+4, y+10, z+30, Blocks.air);
 	}
 
-	private static void addChests(FilledBlockArray array, int x, int y, int z, Block chest) {
-		array.setBlock(x+1, y+4, z+3, chest, 8+1);
-		array.setBlock(x+1, y+8, z+3, chest, 8+1);
-		array.setBlock(x+3, y+4, z+1, chest, 8+3);
-		array.setBlock(x+3, y+8, z+1, chest, 8+3);
-		array.setBlock(x+10, y+3, z+14, chest, 8+3);
-		array.setBlock(x+5, y+8, z+15, chest, 8);
-		array.setBlock(x+14, y+3, z+10, chest, 8+1);
-		array.setBlock(x+15, y+8, z+5, chest, 8+2);
+	private void addChests(FilledBlockArray array, int x, int y, int z) {
+		this.addLootChest(array, x+1, y+4, z+3, 8+1);
+		this.addLootChest(array, x+1, y+8, z+3, 8+1);
+		this.addLootChest(array, x+3, y+4, z+1, 8+3);
+		this.addLootChest(array, x+3, y+8, z+1, 8+3);
+		this.addLootChest(array, x+10, y+3, z+14, 8+3);
+		this.addLootChest(array, x+5, y+8, z+15, 8);
+		this.addLootChest(array, x+14, y+3, z+10, 8+1);
+		this.addLootChest(array, x+15, y+8, z+5, 8+2);
 	}
 
-	private static void addCloakTunnel(FilledBlockArray array, int x, int y, int z, Block b) {
+	private void addCloakTunnel(FilledBlockArray array, int x, int y, int z, Block b) {
 		array.setBlock(x+0, y+3, z+2, b, 8);
 		array.setBlock(x+0, y+3, z+3, b, 8);
 		array.setBlock(x+0, y+3, z+4, b, 8);
@@ -3546,7 +3547,7 @@ public class OceanStructure extends FragmentStructureBase {
 		return array;
 	}
 
-	private static void addPit(FilledBlockArray array, int x, int y, int z, Block b) {
+	private void addPit(FilledBlockArray array, int x, int y, int z, Block b) {
 		array.setBlock(x+1, y+0, z+1, b, 8);
 		array.setBlock(x+1, y+0, z+2, b, 8);
 		array.setBlock(x+1, y+0, z+3, b, 8);

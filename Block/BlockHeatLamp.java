@@ -180,7 +180,8 @@ public class BlockHeatLamp extends BlockAttachableMini {
 					}
 				}
 				else {
-					tf.furnaceCookTime = temperature/10;
+					tf.furnaceCookTime = temperature;
+					tf.furnaceBurnTime = 2;
 				}
 			}
 			else if (ModList.TINKERER.isLoaded() && !this.isCold() && TinkerSmelteryHandler.isSmelteryController(te)) {

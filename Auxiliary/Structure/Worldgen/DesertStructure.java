@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.Structure.Worldgen;
 
-import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 
@@ -35,20 +34,18 @@ public class DesertStructure extends FragmentStructureBase {
 	public FilledBlockArray getArray(World world, int x, int y, int z) {
 		FilledBlockArray array = new FilledBlockArray(world);
 
-		Block ch = getChestGen();
-
-		array.setBlock(x+10, y+6, z+2, ch, 11);
-		array.setBlock(x+10, y+6, z+12, ch, 10);
-		array.setBlock(x+6, y+2, z+7, ch, 8);
-		array.setBlock(x+2, y+6, z+4, ch, 9);
-		array.setBlock(x+2, y+6, z+10, ch, 9);
-		array.setBlock(x+4, y+6, z+2, ch, 11);
-		array.setBlock(x+4, y+6, z+12, ch, 10);
-		array.setBlock(x+7, y+2, z+6, ch, 10);
-		array.setBlock(x+7, y+2, z+8, ch, 11);
-		array.setBlock(x+8, y+2, z+7, ch, 9);
-		array.setBlock(x+12, y+6, z+4, ch, 8);
-		array.setBlock(x+12, y+6, z+10, ch, 8);
+		this.addLootChest(array, x+10, y+6, z+2, 11);
+		this.addLootChest(array, x+10, y+6, z+12, 10);
+		this.addLootChest(array, x+6, y+2, z+7, 8);
+		this.addLootChest(array, x+2, y+6, z+4, 9);
+		this.addLootChest(array, x+2, y+6, z+10, 9);
+		this.addLootChest(array, x+4, y+6, z+2, 11);
+		this.addLootChest(array, x+4, y+6, z+12, 10);
+		this.addLootChest(array, x+7, y+2, z+6, 10);
+		this.addLootChest(array, x+7, y+2, z+8, 11);
+		this.addLootChest(array, x+8, y+2, z+7, 9);
+		this.addLootChest(array, x+12, y+6, z+4, 8);
+		this.addLootChest(array, x+12, y+6, z+10, 8);
 
 		array.setBlock(x+1, y+2, z+5, shield, ms);
 		array.setBlock(x+1, y+2, z+6, shield, ms);
@@ -201,13 +198,11 @@ public class DesertStructure extends FragmentStructureBase {
 		array.setBlock(x+4, y+4, z+11, shield, ms);
 		array.setBlock(x+4, y+5, z+2, shield, ms);
 		array.setBlock(x+4, y+5, z+3, shield, ms);
-		array.setBlock(x+4, y+5, z+4, Blocks.mob_spawner);
 		array.setBlock(x+4, y+5, z+5, shield, mc);
 		array.setBlock(x+4, y+5, z+6, shield, mc);
 		array.setBlock(x+4, y+5, z+7, shield, mc);
 		array.setBlock(x+4, y+5, z+8, shield, mc);
 		array.setBlock(x+4, y+5, z+9, shield, mc);
-		array.setBlock(x+4, y+5, z+10, Blocks.mob_spawner);
 		array.setBlock(x+4, y+5, z+11, shield, ms);
 		array.setBlock(x+4, y+5, z+12, shield, ms);
 		array.setBlock(x+4, y+6, z+1, shield, ms);
@@ -361,7 +356,6 @@ public class DesertStructure extends FragmentStructureBase {
 		array.setBlock(x+7, y+1, z+5, shield, ms);
 		array.setBlock(x+7, y+1, z+6, shield, ms);
 		array.setBlock(x+7, y+0, z+7, shield, ms);
-		array.setBlock(x+7, y+1, z+7, Blocks.mob_spawner);
 		array.setBlock(x+7, y+1, z+8, shield, ms);
 		array.setBlock(x+7, y+1, z+9, shield, ms);
 		array.setBlock(x+7, y+1, z+10, shield, ms);
@@ -548,13 +542,11 @@ public class DesertStructure extends FragmentStructureBase {
 		array.setBlock(x+10, y+4, z+11, shield, ms);
 		array.setBlock(x+10, y+5, z+2, shield, ms);
 		array.setBlock(x+10, y+5, z+3, shield, ms);
-		array.setBlock(x+10, y+5, z+4, Blocks.mob_spawner);
 		array.setBlock(x+10, y+5, z+5, shield, mc);
 		array.setBlock(x+10, y+5, z+6, shield, mc);
 		array.setBlock(x+10, y+5, z+7, shield, mc);
 		array.setBlock(x+10, y+5, z+8, shield, mc);
 		array.setBlock(x+10, y+5, z+9, shield, mc);
-		array.setBlock(x+10, y+5, z+10, Blocks.mob_spawner);
 		array.setBlock(x+10, y+5, z+11, shield, ms);
 		array.setBlock(x+10, y+5, z+12, shield, ms);
 		array.setBlock(x+10, y+6, z+1, shield, ms);
@@ -1273,7 +1265,18 @@ public class DesertStructure extends FragmentStructureBase {
 		array.setBlock(x+12, y+8, z+11, Blocks.air);
 		array.setBlock(x+12, y+8, z+12, Blocks.air);
 
+		this.addSpawner(array, x+10, y+5, z+4);
+		this.addSpawner(array, x+4, y+5, z+4);
+		this.addSpawner(array, x+4, y+5, z+10);
+		this.addSpawner(array, x+7, y+1, z+7);
+		this.addSpawner(array, x+10, y+5, z+10);
+
 		return array;
+	}
+
+	private void addSpawner(FilledBlockArray array, int x, int y, int z) {
+		array.setBlock(x, y, z, Blocks.mob_spawner);
+		this.cache(x, y, z, Blocks.mob_spawner);
 	}
 
 	public static void getTerrain(FilledBlockArray array, int x, int y, int z) {

@@ -47,8 +47,8 @@ public class CavernStructure extends FragmentStructureBase {
 		array.setBlock(x+1, y+1, z+5, ChromaBlocks.RUNE.getBlockInstance(), CrystalElement.GREEN.ordinal());
 		array.setBlock(x+1, y+2, z+5, ChromaBlocks.CRYSTAL.getBlockInstance(), CrystalElement.GREEN.ordinal());
 
-		array.setBlock(x+10, y+1, z+3, getChestGen(), getChestMeta(ForgeDirection.WEST));
-		array.setBlock(x+10, y+1, z+7, getChestGen(), getChestMeta(ForgeDirection.WEST));
+		this.addLootChest(array, x+10, y+1, z+3, ForgeDirection.WEST);
+		this.addLootChest(array, x+10, y+1, z+7, ForgeDirection.WEST);
 
 		//Air
 		array.setBlock(x, y, z, Blocks.air);

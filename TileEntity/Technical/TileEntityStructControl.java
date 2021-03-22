@@ -1007,7 +1007,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 	@Override
 	public boolean skipPlacement(Coordinate c, BlockCheck bc) {
-		return c.equals(xCoord, yCoord, zCoord) || bc.asBlockKey().blockID == ChromaBlocks.LOOTCHEST.getBlockInstance();
+		return c.equals(xCoord, yCoord, zCoord) || (c.getBlock(worldObj) == ChromaBlocks.STRUCTSHIELD.getBlockInstance() && c.getBlockMetadata(worldObj) >= 8) || bc.asBlockKey().blockID == ChromaBlocks.LOOTCHEST.getBlockInstance();
 	}
 
 }

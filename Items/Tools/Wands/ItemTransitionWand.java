@@ -80,7 +80,7 @@ public class ItemTransitionWand extends ItemBlockChangingWand {
 					return false;
 				Block id = Block.getBlockFromItem(store.getItem());
 				int meta = store.getItemDamage();
-				if (id == null)
+				if (id == null || id == Blocks.air)
 					return false;
 				TransitionMode mode = this.getMode(is);
 				if (id == world.getBlock(x, y, z) && meta == world.getBlockMetadata(x, y, z) && mode != TransitionMode.VOLUMETRIC)

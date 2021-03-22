@@ -1,37 +1,52 @@
 package Reika.ChromatiCraft.Auxiliary.Structure.Worldgen;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.UUID;
 
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.FragmentStructureBase;
 import Reika.ChromatiCraft.Block.BlockChromaDoor;
 import Reika.ChromatiCraft.Block.BlockHeatLamp.TileEntityHeatLamp;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Items.Tools.ItemDoorKey;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.ItemDrop;
+import Reika.DragonAPI.Instantiable.ItemDrop.OreDrop;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Interfaces.Registry.OreType;
 import Reika.DragonAPI.Interfaces.Registry.OreType.OreRarity;
+import Reika.DragonAPI.Interfaces.Registry.TreeType;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
+import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 import Reika.DragonAPI.ModRegistry.ModOreList;
 
 
 public class BurrowStructure extends FragmentStructureBase {
 
 	private static WeightedRandom<OreType> furnaceOres = new WeightedRandom();
+	private static WeightedRandom<ItemDrop> lootItems = new WeightedRandom();
 
 	static {
 		furnaceOres.addEntry(ReikaOreHelper.IRON, 40);
@@ -43,6 +58,89 @@ public class BurrowStructure extends FragmentStructureBase {
 		addOreIf(ModOreList.SILVER, 15);
 		addOreIf(ModOreList.ALUMINUM, 20);
 		addOreIf(ModOreList.PLATINUM, 2);
+
+		lootItems.addEntry(new ItemDrop(Blocks.iron_ore, 12, 32), 35);
+		lootItems.addEntry(new ItemDrop(Blocks.gold_ore, 8, 24), 15);
+
+		lootItems.addEntry(new OreDrop("oreCopper", 16, 40), 40);
+		lootItems.addEntry(new OreDrop("oreTin", 16, 40), 40);
+		lootItems.addEntry(new OreDrop("oreSilver", 12, 24), 20);
+		lootItems.addEntry(new OreDrop("oreNickel", 12, 24), 15);
+		lootItems.addEntry(new OreDrop("oreLead", 12, 24), 20);
+		//lootItems.addEntry(new OreDrop("oreAluminium", 12, 24), 30);
+
+		lootItems.addEntry(new ItemDrop(Items.diamond, 1, 4), 5);
+		lootItems.addEntry(new ItemDrop(Items.diamond, 3, 12), 2);
+
+		lootItems.addEntry(new ItemDrop(ReikaItemHelper.lapisDye, 2, 6), 20);
+		lootItems.addEntry(new ItemDrop(ReikaItemHelper.lapisDye, 12, 30), 5);
+
+		lootItems.addEntry(new ItemDrop(Items.redstone, 4, 64), 40);
+
+		lootItems.addEntry(new ItemDrop(Items.coal, 16, 64), 40);
+		lootItems.addEntry(new ItemDrop(Items.coal, 4, 24), 60);
+
+		lootItems.addEntry(new ItemDrop(Items.gold_ingot, 4, 16), 25);
+		lootItems.addEntry(new ItemDrop(Items.gold_ingot, 16, 40), 10);
+
+		lootItems.addEntry(new ItemDrop(Items.iron_ingot, 16, 40), 60);
+		lootItems.addEntry(new ItemDrop(Items.iron_ingot, 32, 64), 20);
+
+		lootItems.addEntry(new OreDrop("ingotNickel", 16, 48), 40);
+		lootItems.addEntry(new OreDrop("ingotLead", 16, 48), 40);
+		lootItems.addEntry(new OreDrop("ingotSilver", 16, 48), 50);
+
+		lootItems.addEntry(new ItemDrop(Items.flint, 12, 32), 40);
+		lootItems.addEntry(new ItemDrop(Items.clay_ball, 30, 60), 40);
+
+		lootItems.addEntry(new ItemDrop(Items.slime_ball, 10, 20), 15);
+		lootItems.addEntry(new ItemDrop(Items.bone, 5, 15), 40);
+		lootItems.addEntry(new ItemDrop(Items.rotten_flesh, 5, 15), 50);
+		lootItems.addEntry(new ItemDrop(Items.string, 10, 30), 50);
+		lootItems.addEntry(new ItemDrop(Items.gunpowder, 5, 20), 30);
+		lootItems.addEntry(new ItemDrop(Items.leather, 10, 25), 30);
+		lootItems.addEntry(new ItemDrop(Items.feather, 5, 15), 25);
+		lootItems.addEntry(new ItemDrop(ReikaItemHelper.inksac, 5, 15), 30);
+		lootItems.addEntry(new ItemDrop(Items.ender_pearl, 4, 12), 10);
+
+		lootItems.addEntry(new ItemDrop(Items.wheat, 18, 30), 35);
+		lootItems.addEntry(new ItemDrop(Items.carrot, 18, 30), 35);
+		lootItems.addEntry(new ItemDrop(Items.potato, 18, 30), 35);
+		lootItems.addEntry(new ItemDrop(Items.apple, 18, 30), 35);
+		lootItems.addEntry(new ItemDrop(Items.porkchop, 8, 16), 20);
+		lootItems.addEntry(new ItemDrop(Items.beef, 8, 16), 20);
+		lootItems.addEntry(new ItemDrop(Items.fish, 8, 16), 20);
+		lootItems.addEntry(new ItemDrop(Items.chicken, 8, 16), 20);
+
+		lootItems.addEntry(new ItemDrop(Items.reeds, 1, 6), 20);
+
+		lootItems.addEntry(new ItemDrop(Items.lava_bucket, 1, 1), 10);
+
+		lootItems.addEntry(new ItemDrop(Items.quartz, 12, 32), 15);
+		lootItems.addEntry(new ItemDrop(Items.glowstone_dust, 4, 12), 25);
+		lootItems.addEntry(new ItemDrop(Items.glowstone_dust, 16, 32), 5);
+		lootItems.addEntry(new ItemDrop(Items.blaze_powder, 4, 8), 15);
+		if (ModList.THAUMCRAFT.isLoaded()) {
+			lootItems.addEntry(new ItemDrop(Items.blaze_powder, 12, 24), 10);
+		}
+
+		lootItems.addEntry(new ItemDrop(Blocks.torch, 4, 20), 50);
+		lootItems.addEntry(new ItemDrop(Blocks.planks, 24, 64), 50);
+		lootItems.addEntry(new ItemDrop(Blocks.sand, 24, 64), 50);
+
+		lootItems.addEntry(new ItemDrop(Blocks.obsidian, 4, 8), 10);
+		lootItems.addEntry(new ItemDrop(Blocks.obsidian, 8, 16), 5);
+
+		lootItems.addEntry(new ItemDrop(Blocks.mossy_cobblestone, 16, 32), 15);
+
+		lootItems.addEntry(new ItemDrop(Blocks.cobblestone, 32, 64), 100);
+		lootItems.addEntry(new ItemDrop(Blocks.dirt, 32, 64), 100);
+		lootItems.addEntry(new ItemDrop(Blocks.gravel, 32, 64), 40);
+
+		lootItems.addEntry(new ItemDrop(ReikaItemHelper.redDye, 4, 16), 20);
+		lootItems.addEntry(new ItemDrop(ReikaItemHelper.yellowDye, 4, 16), 20);
+		lootItems.addEntry(new ItemDrop(ReikaItemHelper.cactusDye, 4, 16), 20);
+		lootItems.addEntry(new ItemDrop(Items.paper, 2, 8), 15);
 	}
 
 	private static void addOreIf(ModOreList ore, int wt) {
@@ -67,18 +165,13 @@ public class BurrowStructure extends FragmentStructureBase {
 				max = Math.min(max, 40);
 			is.stackSize = ReikaRandomHelper.getRandomBetween(4, max);
 			tf.setInventorySlotContents(0, is);
+			world.setBlockMetadataWithNotify(x, y, z, 3, 3);
 
 			//tf.furnaceCookTime = ReikaRandomHelper.getRandomBetween(100, 190);
 			//freezeTile(tf);
-		}
 
-	};
-
-	private final TileCallback heatLampCall = new TileCallback() {
-
-		@Override
-		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
-			((TileEntityHeatLamp)te).temperature = ReikaRandomHelper.getRandomBetween(TileEntityHeatLamp.MINTEMP, 199);
+			world.setBlock(x, y+1, z, ChromaBlocks.HEATLAMP.getBlockInstance(), ForgeDirection.UP.ordinal(), 2);
+			((TileEntityHeatLamp)world.getTileEntity(x, y+1, z)).temperature = ReikaRandomHelper.getRandomBetween(50, 160);
 		}
 
 	};
@@ -100,6 +193,62 @@ public class BurrowStructure extends FragmentStructureBase {
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			if (doorID != null) {
 				((TileEntityChest)te).setInventorySlotContents(world.rand.nextInt(27), this.getDoorKey());
+			}
+			else {
+				ChromatiCraft.logger.logError("Burrow had no door ID!");
+			}
+		}
+
+		private ItemStack getDoorKey() {
+			ItemStack ret = ChromaItems.KEY.getStackOf();
+			((ItemDoorKey)ret.getItem()).setID(ret, doorID);
+			return ret;
+		}
+
+	};
+
+	private final TileCallback lootCall = new TileCallback() {
+
+		@Override
+		public void onTilePlaced(World world, int x, int y, int z, TileEntity tile) {
+			TileEntityLootChest te = (TileEntityLootChest)tile;
+			ReikaInventoryHelper.clearInventory(te);
+
+			int filled = ReikaRandomHelper.getRandomBetween(18, 27); //was 9 & 27
+			ArrayList<ItemStack> add = new ArrayList();
+			for (int i = 0; i < filled; i++) {
+				ItemStack is = lootItems.getRandomEntry().getItem();
+				while (is == null) {
+					is = lootItems.getRandomEntry().getItem();
+				}
+				add.add(is);
+			}
+			BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
+			if (ReikaBiomeHelper.isSnowBiome(biome) && world.rand.nextInt(4) == 0) {
+				add.add(new ItemStack(Blocks.ice, ReikaRandomHelper.getRandomBetween(12, 32), 0));
+			}
+			if (world.rand.nextInt(3) == 0) {
+				TreeType tree = ReikaBiomeHelper.getDominantTreeType(biome);
+				if (tree != null) {
+					if (tree.getSaplingID() != null) {
+						ItemStack sapling = new ItemStack(tree.getSaplingID(), ReikaRandomHelper.getRandomBetween(1, 6), tree.getSaplingMeta());
+						add.add(sapling);
+					}
+				}
+			}
+			add = ReikaItemHelper.collateItemList(add);
+			Collections.sort(add, ReikaItemHelper.comparator);
+			int slot = 0;
+			boolean items = false;
+			for (int i = 0; i < add.size(); i++) {
+				ItemStack stack = add.get(i);
+				if (Block.getBlockFromItem(stack.getItem()) == Blocks.air) {
+					if (!items)
+						slot = 27;
+					items = true;
+				}
+				te.setInventorySlotContents(slot, stack);
+				slot++;
 			}
 		}
 
@@ -340,12 +489,12 @@ public class BurrowStructure extends FragmentStructureBase {
 		array.setBlock(x+3, y+5, z+3, Blocks.torch, 5);
 
 		//Chests
-		array.setBlock(x+3, y+6, z+1, getChestGen(), getChestMeta(ForgeDirection.SOUTH));
-		array.setBlock(x+1, y+6, z+3, getChestGen(), getChestMeta(ForgeDirection.EAST));
-		array.setBlock(x+3, y+6, z+5, getChestGen(), getChestMeta(ForgeDirection.NORTH));
-		array.setBlock(x+3, y+2, z+1, getChestGen(), getChestMeta(ForgeDirection.SOUTH));
-		array.setBlock(x+1, y+2, z+3, getChestGen(), getChestMeta(ForgeDirection.EAST));
-		array.setBlock(x+3, y+2, z+5, getChestGen(), getChestMeta(ForgeDirection.NORTH));
+		this.addLootChest(array, x+3, y+6, z+1, ForgeDirection.SOUTH);
+		this.addLootChest(array, x+1, y+6, z+3, ForgeDirection.EAST);
+		this.addLootChest(array, x+3, y+6, z+5, ForgeDirection.NORTH);
+		this.addLootChest(array, x+3, y+2, z+1, ForgeDirection.SOUTH);
+		this.addLootChest(array, x+1, y+2, z+3, ForgeDirection.EAST);
+		this.addLootChest(array, x+3, y+2, z+5, ForgeDirection.NORTH);
 
 		//Air
 		array.setBlock(x+2, y+1, z+2, Blocks.air);
@@ -460,8 +609,9 @@ public class BurrowStructure extends FragmentStructureBase {
 	}
 
 	public FilledBlockArray getFurnaceRoom(World world, int x, int y, int z) {
-		y -= 3;
-		z -= 4;
+		x -= 5;
+		y -= 11;
+		z -= 6;
 
 		FilledBlockArray array = new FilledBlockArray(world);
 
@@ -542,9 +692,6 @@ public class BurrowStructure extends FragmentStructureBase {
 		this.placeFurnace(array, x+4, y+3, z+6);
 		this.placeFurnace(array, x+5, y+3, z+6);
 
-		this.placeHeatLamp(array, x+5, y+4, z+6); //heat lamps
-		this.placeHeatLamp(array, x+4, y+4, z+6);
-
 		array.setBlock(x+2, y+2, z+8, Blocks.torch, 5);
 		array.setBlock(x+5, y+3, z+8, Blocks.torch, 5);
 
@@ -577,8 +724,10 @@ public class BurrowStructure extends FragmentStructureBase {
 	}
 
 	public FilledBlockArray getLootRoom(World world, int x, int y, int z) {
-		y -= 3;
-		z -= 4;
+
+		x -= 5;
+		y -= 11;
+		z -= 6;
 
 		FilledBlockArray array = new FilledBlockArray(world);
 
@@ -673,6 +822,8 @@ public class BurrowStructure extends FragmentStructureBase {
 
 		array.setBlock(x+6, y+1, z+4, getChestGen(), 2); //chests
 		array.setBlock(x+5, y+1, z+4, getChestGen(), 2);
+		this.addCallback(x+6, y+1, z+4, lootCall);
+		this.addCallback(x+5, y+1, z+4, lootCall);
 
 		array.setBlock(x+3, y+2, z+1, Blocks.torch, 5);
 		array.setBlock(x+6, y+1, z+3, Blocks.torch, 5);
@@ -701,11 +852,6 @@ public class BurrowStructure extends FragmentStructureBase {
 	private void placeFurnace(FilledBlockArray array, int x, int y, int z) {
 		array.setBlock(x, y, z, Blocks.furnace, 3);
 		this.addCallback(x, y, z, furnaceCall);
-	}
-
-	private void placeHeatLamp(FilledBlockArray array, int x, int y, int z) {
-		array.setBlock(x, y, z, ChromaBlocks.HEATLAMP.getBlockInstance(), ForgeDirection.UP.ordinal());
-		this.addCallback(x, y, z, heatLampCall);
 	}
 
 	private void placeDoor(FilledBlockArray array, int x, int y, int z) {

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -17,6 +17,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -81,7 +82,7 @@ public class GuardianStoneManager {
 		}
 		else {
 			Block b = Block.getBlockFromItem(is.getItem());
-			if (b != null) {
+			if (b != null && b != Blocks.air) {
 				this.addBlockException(new BlockKey(b, is.getItemDamage()), a);
 			}
 			else {

@@ -86,7 +86,7 @@ public class TileEntityOreCreator extends TileEntityAdjacencyUpgrade {
 		if (ModList.TINKERER.isLoaded() && ReikaItemHelper.matchStackWithBlock(is, TinkerBlockHandler.getInstance().gravelOreID))
 			return false;
 		Block b = Block.getBlockFromItem(is.getItem());
-		if (b == null)
+		if (b == null || b == Blocks.air)
 			return false;
 		if (b.getClass().getName().startsWith("shukaro.artifice")) //artifice ore variants
 			return false;

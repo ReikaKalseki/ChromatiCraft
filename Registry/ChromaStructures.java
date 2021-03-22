@@ -139,16 +139,25 @@ public enum ChromaStructures implements StructureEnum<ChromaStructureBase> {
 
 	public synchronized FilledBlockArray getArray(World world, int x, int y, int z, Random r) {
 		ChromaStructureBase s = this.getStructure();
-		s.setRand(r);
-		FilledBlockArray ret = s.getArray(world, x, y, z);
 		s.resetToDefaults();
+		if (r != null)
+			s.setRand(r);
+		FilledBlockArray ret = s.getArray(world, x, y, z);
 		return ret;
 	}
 
 	public synchronized FilledBlockArray getArray(World world, int x, int y, int z, CrystalElement e) {
+		return this.getArray(world, x, y, z, null, e);
+	}
+
+	public synchronized FilledBlockArray getArray(World world, int x, int y, int z, Random r, CrystalElement e) {
 		if (e == null)
-			return this.getArray(world, x, y, z);
-		return ((ColoredStructureBase)this.getStructure()).getArray(world, x, y, z, e);
+			return this.getArray(world, x, y, z, r);
+		ColoredStructureBase s = (ColoredStructureBase)this.getStructure();
+		s.resetToDefaults();
+		if (r != null)
+			s.setRand(r);
+		return s.getArray(world, x, y, z, e);
 	}
 
 	@SideOnly(Side.CLIENT)

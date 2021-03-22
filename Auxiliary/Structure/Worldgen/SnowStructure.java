@@ -185,26 +185,26 @@ public class SnowStructure extends FragmentStructureBase {
 
 		//array.setBlock(x + 8, y + 3, z + 6, Blocks.blockDiamond);
 
-		getBaseStructure(array, x, y, z);
-		getAirSpaces(array, x, y, z);
+		this.getBaseStructure(array, x, y, z);
+		this.getAirSpaces(array, x, y, z);
 
 		Block spw = ChromaBlocks.STRUCTSHIELD.getBlockInstance();//Blocks.mob_spawner;
 		array.setBlock(x + 14, y + 4, z + 14, spw);
 		array.setBlock(x + 3, y + 4, z + 14, spw);
 		array.setBlock(x + 2, y + 4, z + 4, spw);
 
-		for (Coordinate c : getCrackToCenter()) {
+		for (Coordinate c : this.getCrackToCenter()) {
 			array.setBlock(x + c.xCoord, y + c.yCoord, z + c.zCoord, shield, mcrack);
 		}
 
 		for (int i = 2; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-			for (Coordinate c : getCenterAccess(dir)) {
+			for (Coordinate c : this.getCenterAccess(dir)) {
 				array.setBlock(x + c.xCoord, y + c.yCoord, z + c.zCoord, ChromaBlocks.SHIFTLOCK.getBlockInstance(), Passability.CLOSED_HIDDEN.ordinal());
 			}
 		}
 
-		for (Coordinate c : getRoofCracks(rand)) {
+		for (Coordinate c : this.getRoofCracks(rand)) {
 			array.setBlock(x + c.xCoord, y + c.yCoord, z + c.zCoord, shield, ms);
 		}
 
@@ -226,9 +226,7 @@ public class SnowStructure extends FragmentStructureBase {
 		return array;
 	}
 
-	private static void getBaseStructure(FilledBlockArray array, int x, int y, int z) {
-		Block ch = getChestGen();
-
+	private void getBaseStructure(FilledBlockArray array, int x, int y, int z) {
 		array.setBlock(x + 0, y + 5, z + 6, shield, BlockType.MOSS.metadata);
 		array.setBlock(x + 0, y + 5, z + 7, shield, BlockType.MOSS.metadata);
 		array.setBlock(x + 0, y + 5, z + 8, shield, BlockType.MOSS.metadata);
@@ -497,7 +495,6 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 4, y + 10, z + 5, shield, ms);
 		array.setBlock(x + 4, y + 10, z + 6, shield, ms);
 		array.setBlock(x + 4, y + 10, z + 7, shield, ms);
-		array.setBlock(x + 4, y + 10, z + 8, ch, 1);
 		array.setBlock(x + 4, y + 10, z + 9, shield, ms);
 		array.setBlock(x + 4, y + 10, z + 10, shield, ms);
 		array.setBlock(x + 4, y + 10, z + 11, shield, ms);
@@ -559,7 +556,6 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 5, y + 6, z + 15, shield, mg);
 		array.setBlock(x + 5, y + 7, z + 1, shield, mg);
 		array.setBlock(x + 5, y + 7, z + 5, shield, BlockType.LIGHT.metadata);
-		array.setBlock(x + 5, y + 7, z + 10, ch, 2);
 		array.setBlock(x + 5, y + 7, z + 11, shield, BlockType.LIGHT.metadata);
 		array.setBlock(x + 5, y + 7, z + 15, shield, mg);
 		array.setBlock(x + 5, y + 8, z + 1, shield, mg);
@@ -613,7 +609,6 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 6, y + 1, z + 6, shield, ms);
 		array.setBlock(x + 6, y + 1, z + 7, shield, ms);
 		array.setBlock(x + 6, y + 2, z + 4, shield, ms);
-		array.setBlock(x + 6, y + 2, z + 5, ch, 1);
 		array.setBlock(x + 6, y + 2, z + 6, shield, ms);
 		array.setBlock(x + 6, y + 2, z + 7, shield, ms);
 		array.setBlock(x + 6, y + 2, z + 8, shield, ms);
@@ -668,7 +663,6 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 6, y + 6, z + 15, shield, mg);
 		array.setBlock(x + 6, y + 7, z + 1, shield, mg);
 		array.setBlock(x + 6, y + 7, z + 4, shield, ms);
-		array.setBlock(x + 6, y + 7, z + 5, ch, 1);
 		array.setBlock(x + 6, y + 7, z + 6, shield, ms);
 		array.setBlock(x + 6, y + 7, z + 7, shield, ms);
 		array.setBlock(x + 6, y + 7, z + 8, shield, ms);
@@ -827,7 +821,6 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 8, y + 1, z + 6, shield, ms);
 		array.setBlock(x + 8, y + 1, z + 7, shield, ms);
 		array.setBlock(x + 8, y + 2, z + 3, shield, ms);
-		array.setBlock(x + 8, y + 2, z + 4, ch, 3);
 		array.setBlock(x + 8, y + 2, z + 8, shield, ms);
 		array.setBlock(x + 8, y + 2, z + 9, shield, ms);
 		array.setBlock(x + 8, y + 3, z + 3, shield, ms);
@@ -882,11 +875,9 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 8, y + 9, z + 15, shield, mc);
 		array.setBlock(x + 8, y + 10, z + 2, shield, ms);
 		array.setBlock(x + 8, y + 10, z + 3, shield, ms);
-		array.setBlock(x + 8, y + 10, z + 4, ch, 3);
 		array.setBlock(x + 8, y + 10, z + 7, shield, mg);
 		array.setBlock(x + 8, y + 10, z + 8, shield, mg);
 		array.setBlock(x + 8, y + 10, z + 9, shield, mg);
-		array.setBlock(x + 8, y + 10, z + 12, ch, 2);
 		array.setBlock(x + 8, y + 10, z + 13, shield, ms);
 		array.setBlock(x + 8, y + 10, z + 14, shield, ms);
 		array.setBlock(x + 8, y + 11, z + 3, shield, ms);
@@ -1012,7 +1003,6 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 10, y + 1, z + 6, shield, ms);
 		array.setBlock(x + 10, y + 1, z + 7, shield, ms);
 		array.setBlock(x + 10, y + 2, z + 4, shield, ms);
-		array.setBlock(x + 10, y + 2, z + 5, ch);
 		array.setBlock(x + 10, y + 2, z + 6, shield, ms);
 		array.setBlock(x + 10, y + 2, z + 7, shield, ms);
 		array.setBlock(x + 10, y + 2, z + 8, shield, ms);
@@ -1071,7 +1061,6 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 10, y + 7, z + 8, shield, ms);
 		array.setBlock(x + 10, y + 7, z + 9, shield, ms);
 		array.setBlock(x + 10, y + 7, z + 10, shield, ms);
-		array.setBlock(x + 10, y + 7, z + 11, ch);
 		array.setBlock(x + 10, y + 7, z + 12, shield, ms);
 		array.setBlock(x + 10, y + 7, z + 15, shield, mg);
 		array.setBlock(x + 10, y + 8, z + 1, shield, mg);
@@ -1171,7 +1160,6 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 11, y + 6, z + 15, shield, mg);
 		array.setBlock(x + 11, y + 7, z + 1, shield, mg);
 		array.setBlock(x + 11, y + 7, z + 5, shield, BlockType.LIGHT.metadata);
-		array.setBlock(x + 11, y + 7, z + 6, ch, 3);
 		array.setBlock(x + 11, y + 7, z + 11, shield, BlockType.LIGHT.metadata);
 		array.setBlock(x + 11, y + 7, z + 15, shield, mg);
 		array.setBlock(x + 11, y + 8, z + 1, shield, mg);
@@ -1281,7 +1269,6 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 12, y + 10, z + 5, shield, ms);
 		array.setBlock(x + 12, y + 10, z + 6, shield, ms);
 		array.setBlock(x + 12, y + 10, z + 7, shield, ms);
-		array.setBlock(x + 12, y + 10, z + 8, ch);
 		array.setBlock(x + 12, y + 10, z + 9, shield, ms);
 		array.setBlock(x + 12, y + 10, z + 10, shield, ms);
 		array.setBlock(x + 12, y + 10, z + 11, shield, ms);
@@ -1511,9 +1498,21 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 16, y + 5, z + 8, shield, BlockType.MOSS.metadata);
 		array.setBlock(x + 16, y + 5, z + 9, shield, BlockType.MOSS.metadata);
 		array.setBlock(x + 16, y + 5, z + 10, shield, BlockType.MOSS.metadata);
+
+		this.addLootChest(array, x + 12, y + 10, z + 8, 0);
+		this.addLootChest(array, x + 11, y + 7, z + 6, 3);
+		this.addLootChest(array, x + 10, y + 7, z + 11, 0);
+		this.addLootChest(array, x + 10, y + 2, z + 5, 0);
+		this.addLootChest(array, x + 4, y + 10, z + 8, 1);
+		this.addLootChest(array, x + 5, y + 7, z + 10, 2);
+		this.addLootChest(array, x + 6, y + 2, z + 5, 1);
+		this.addLootChest(array, x + 6, y + 7, z + 5, 1);
+		this.addLootChest(array, x + 8, y + 2, z + 4, 3);
+		this.addLootChest(array, x + 8, y + 10, z + 4, 3);
+		this.addLootChest(array, x + 8, y + 10, z + 12, 2);
 	}
 
-	private static void getAirSpaces(FilledBlockArray array, int x, int y, int z) {
+	private void getAirSpaces(FilledBlockArray array, int x, int y, int z) {
 		array.setBlock(x + 1, y + 6, z + 8, Blocks.air);
 		array.setBlock(x + 1, y + 7, z + 8, Blocks.air);
 		array.setBlock(x + 2, y + 6, z + 3, Blocks.air);
@@ -1546,10 +1545,10 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 2, y + 8, z + 11, Blocks.air);
 		array.setBlock(x + 2, y + 8, z + 12, Blocks.air);
 		array.setBlock(x + 2, y + 8, z + 13, Blocks.air);
-		array.setBlock(x + 3, y + 4, z + 5, getLava());
-		array.setBlock(x + 3, y + 4, z + 6, getLava());
-		array.setBlock(x + 3, y + 4, z + 7, getLava());
-		array.setBlock(x + 3, y + 4, z + 8, getLava());
+		array.setBlock(x + 3, y + 4, z + 5, this.getLava());
+		array.setBlock(x + 3, y + 4, z + 6, this.getLava());
+		array.setBlock(x + 3, y + 4, z + 7, this.getLava());
+		array.setBlock(x + 3, y + 4, z + 8, this.getLava());
 		array.setBlock(x + 3, y + 6, z + 2, Blocks.air);
 		array.setBlock(x + 3, y + 6, z + 3, Blocks.air);
 		array.setBlock(x + 3, y + 6, z + 4, Blocks.air);
@@ -1586,15 +1585,15 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 3, y + 8, z + 12, Blocks.air);
 		array.setBlock(x + 3, y + 8, z + 13, Blocks.air);
 		array.setBlock(x + 3, y + 8, z + 14, Blocks.air);
-		array.setBlock(x + 4, y + 4, z + 5, getLava());
-		array.setBlock(x + 4, y + 4, z + 6, getLava());
-		array.setBlock(x + 4, y + 4, z + 7, getLava());
-		array.setBlock(x + 4, y + 4, z + 8, getLava());
-		array.setBlock(x + 4, y + 4, z + 9, getLava());
-		array.setBlock(x + 4, y + 4, z + 10, getLava());
-		array.setBlock(x + 4, y + 4, z + 11, getLava());
-		array.setBlock(x + 4, y + 4, z + 12, getLava());
-		array.setBlock(x + 4, y + 4, z + 13, getLava());
+		array.setBlock(x + 4, y + 4, z + 5, this.getLava());
+		array.setBlock(x + 4, y + 4, z + 6, this.getLava());
+		array.setBlock(x + 4, y + 4, z + 7, this.getLava());
+		array.setBlock(x + 4, y + 4, z + 8, this.getLava());
+		array.setBlock(x + 4, y + 4, z + 9, this.getLava());
+		array.setBlock(x + 4, y + 4, z + 10, this.getLava());
+		array.setBlock(x + 4, y + 4, z + 11, this.getLava());
+		array.setBlock(x + 4, y + 4, z + 12, this.getLava());
+		array.setBlock(x + 4, y + 4, z + 13, this.getLava());
 		array.setBlock(x + 4, y + 6, z + 2, Blocks.air);
 		array.setBlock(x + 4, y + 6, z + 3, Blocks.air);
 		array.setBlock(x + 4, y + 6, z + 4, Blocks.air);
@@ -1631,13 +1630,13 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 4, y + 8, z + 12, Blocks.air);
 		array.setBlock(x + 4, y + 8, z + 13, Blocks.air);
 		array.setBlock(x + 4, y + 8, z + 14, Blocks.air);
-		array.setBlock(x + 5, y + 4, z + 6, getLava());
-		array.setBlock(x + 5, y + 4, z + 7, getLava());
-		array.setBlock(x + 5, y + 4, z + 8, getLava());
-		array.setBlock(x + 5, y + 4, z + 9, getLava());
-		array.setBlock(x + 5, y + 4, z + 10, getLava());
-		array.setBlock(x + 5, y + 4, z + 12, getLava());
-		array.setBlock(x + 5, y + 4, z + 13, getLava());
+		array.setBlock(x + 5, y + 4, z + 6, this.getLava());
+		array.setBlock(x + 5, y + 4, z + 7, this.getLava());
+		array.setBlock(x + 5, y + 4, z + 8, this.getLava());
+		array.setBlock(x + 5, y + 4, z + 9, this.getLava());
+		array.setBlock(x + 5, y + 4, z + 10, this.getLava());
+		array.setBlock(x + 5, y + 4, z + 12, this.getLava());
+		array.setBlock(x + 5, y + 4, z + 13, this.getLava());
 		array.setBlock(x + 5, y + 6, z + 2, Blocks.air);
 		array.setBlock(x + 5, y + 6, z + 3, Blocks.air);
 		array.setBlock(x + 5, y + 6, z + 4, Blocks.air);
@@ -1678,9 +1677,9 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 5, y + 11, z + 8, Blocks.air);
 		array.setBlock(x + 5, y + 11, z + 9, Blocks.air);
 		array.setBlock(x + 5, y + 11, z + 10, Blocks.air);
-		array.setBlock(x + 6, y + 4, z + 11, getLava());
-		array.setBlock(x + 6, y + 4, z + 12, getLava());
-		array.setBlock(x + 6, y + 4, z + 13, getLava());
+		array.setBlock(x + 6, y + 4, z + 11, this.getLava());
+		array.setBlock(x + 6, y + 4, z + 12, this.getLava());
+		array.setBlock(x + 6, y + 4, z + 13, this.getLava());
 		array.setBlock(x + 6, y + 6, z + 2, Blocks.air);
 		array.setBlock(x + 6, y + 6, z + 3, Blocks.air);
 		array.setBlock(x + 6, y + 6, z + 11, Blocks.air);
@@ -1724,9 +1723,9 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 7, y + 4, z + 7, Blocks.air);
 		array.setBlock(x + 7, y + 4, z + 8, Blocks.air);
 		array.setBlock(x + 7, y + 4, z + 9, Blocks.air);
-		array.setBlock(x + 7, y + 4, z + 11, getLava());
-		array.setBlock(x + 7, y + 4, z + 12, getLava());
-		array.setBlock(x + 7, y + 4, z + 13, getLava());
+		array.setBlock(x + 7, y + 4, z + 11, this.getLava());
+		array.setBlock(x + 7, y + 4, z + 12, this.getLava());
+		array.setBlock(x + 7, y + 4, z + 13, this.getLava());
 		array.setBlock(x + 7, y + 6, z + 4, Blocks.air);
 		array.setBlock(x + 7, y + 6, z + 5, Blocks.air);
 		array.setBlock(x + 7, y + 6, z + 7, Blocks.air);
@@ -1772,9 +1771,9 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 8, y + 4, z + 7, Blocks.air);
 		array.setBlock(x + 8, y + 4, z + 8, Blocks.air);
 		array.setBlock(x + 8, y + 4, z + 9, Blocks.air);
-		array.setBlock(x + 8, y + 4, z + 11, getLava());
-		array.setBlock(x + 8, y + 4, z + 12, getLava());
-		array.setBlock(x + 8, y + 4, z + 13, getLava());
+		array.setBlock(x + 8, y + 4, z + 11, this.getLava());
+		array.setBlock(x + 8, y + 4, z + 12, this.getLava());
+		array.setBlock(x + 8, y + 4, z + 13, this.getLava());
 		array.setBlock(x + 8, y + 6, z + 1, Blocks.air);
 		array.setBlock(x + 8, y + 6, z + 2, Blocks.air);
 		array.setBlock(x + 8, y + 6, z + 3, Blocks.air);
@@ -1831,8 +1830,8 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 9, y + 4, z + 7, Blocks.air);
 		array.setBlock(x + 9, y + 4, z + 8, Blocks.air);
 		array.setBlock(x + 9, y + 4, z + 9, Blocks.air);
-		array.setBlock(x + 9, y + 4, z + 11, getLava());
-		array.setBlock(x + 9, y + 4, z + 12, getLava());
+		array.setBlock(x + 9, y + 4, z + 11, this.getLava());
+		array.setBlock(x + 9, y + 4, z + 12, this.getLava());
 		array.setBlock(x + 9, y + 6, z + 2, Blocks.air);
 		array.setBlock(x + 9, y + 6, z + 3, Blocks.air);
 		array.setBlock(x + 9, y + 6, z + 4, Blocks.air);
@@ -1868,9 +1867,9 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 9, y + 11, z + 6, Blocks.air);
 		array.setBlock(x + 9, y + 11, z + 10, Blocks.air);
 		array.setBlock(x + 9, y + 11, z + 11, Blocks.air);
-		array.setBlock(x + 10, y + 4, z + 11, getLava());
-		array.setBlock(x + 10, y + 4, z + 12, getLava());
-		array.setBlock(x + 10, y + 4, z + 13, getLava());
+		array.setBlock(x + 10, y + 4, z + 11, this.getLava());
+		array.setBlock(x + 10, y + 4, z + 12, this.getLava());
+		array.setBlock(x + 10, y + 4, z + 13, this.getLava());
 		array.setBlock(x + 10, y + 6, z + 2, Blocks.air);
 		array.setBlock(x + 10, y + 6, z + 3, Blocks.air);
 		array.setBlock(x + 10, y + 6, z + 4, Blocks.air);
@@ -1903,12 +1902,12 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 10, y + 11, z + 9, Blocks.air);
 		array.setBlock(x + 10, y + 11, z + 10, Blocks.air);
 		array.setBlock(x + 10, y + 11, z + 11, Blocks.air);
-		array.setBlock(x + 11, y + 4, z + 7, getLava());
-		array.setBlock(x + 11, y + 4, z + 8, getLava());
-		array.setBlock(x + 11, y + 4, z + 9, getLava());
-		array.setBlock(x + 11, y + 4, z + 10, getLava());
-		array.setBlock(x + 11, y + 4, z + 12, getLava());
-		array.setBlock(x + 11, y + 4, z + 13, getLava());
+		array.setBlock(x + 11, y + 4, z + 7, this.getLava());
+		array.setBlock(x + 11, y + 4, z + 8, this.getLava());
+		array.setBlock(x + 11, y + 4, z + 9, this.getLava());
+		array.setBlock(x + 11, y + 4, z + 10, this.getLava());
+		array.setBlock(x + 11, y + 4, z + 12, this.getLava());
+		array.setBlock(x + 11, y + 4, z + 13, this.getLava());
 		array.setBlock(x + 11, y + 6, z + 2, Blocks.air);
 		array.setBlock(x + 11, y + 6, z + 3, Blocks.air);
 		array.setBlock(x + 11, y + 6, z + 4, Blocks.air);
@@ -1949,13 +1948,13 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 11, y + 11, z + 8, Blocks.air);
 		array.setBlock(x + 11, y + 11, z + 9, Blocks.air);
 		array.setBlock(x + 11, y + 11, z + 10, Blocks.air);
-		array.setBlock(x + 12, y + 4, z + 7, getLava());
-		array.setBlock(x + 12, y + 4, z + 8, getLava());
-		array.setBlock(x + 12, y + 4, z + 9, getLava());
-		array.setBlock(x + 12, y + 4, z + 10, getLava());
-		array.setBlock(x + 12, y + 4, z + 11, getLava());
-		array.setBlock(x + 12, y + 4, z + 12, getLava());
-		array.setBlock(x + 12, y + 4, z + 13, getLava());
+		array.setBlock(x + 12, y + 4, z + 7, this.getLava());
+		array.setBlock(x + 12, y + 4, z + 8, this.getLava());
+		array.setBlock(x + 12, y + 4, z + 9, this.getLava());
+		array.setBlock(x + 12, y + 4, z + 10, this.getLava());
+		array.setBlock(x + 12, y + 4, z + 11, this.getLava());
+		array.setBlock(x + 12, y + 4, z + 12, this.getLava());
+		array.setBlock(x + 12, y + 4, z + 13, this.getLava());
 		array.setBlock(x + 12, y + 6, z + 2, Blocks.air);
 		array.setBlock(x + 12, y + 6, z + 3, Blocks.air);
 		array.setBlock(x + 12, y + 6, z + 4, Blocks.air);
@@ -1992,12 +1991,12 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 12, y + 8, z + 12, Blocks.air);
 		array.setBlock(x + 12, y + 8, z + 13, Blocks.air);
 		array.setBlock(x + 12, y + 8, z + 14, Blocks.air);
-		array.setBlock(x + 13, y + 4, z + 8, getLava());
-		array.setBlock(x + 13, y + 4, z + 9, getLava());
-		array.setBlock(x + 13, y + 4, z + 10, getLava());
-		array.setBlock(x + 13, y + 4, z + 11, getLava());
-		array.setBlock(x + 13, y + 4, z + 12, getLava());
-		array.setBlock(x + 13, y + 4, z + 13, getLava());
+		array.setBlock(x + 13, y + 4, z + 8, this.getLava());
+		array.setBlock(x + 13, y + 4, z + 9, this.getLava());
+		array.setBlock(x + 13, y + 4, z + 10, this.getLava());
+		array.setBlock(x + 13, y + 4, z + 11, this.getLava());
+		array.setBlock(x + 13, y + 4, z + 12, this.getLava());
+		array.setBlock(x + 13, y + 4, z + 13, this.getLava());
 		array.setBlock(x + 13, y + 6, z + 2, Blocks.air);
 		array.setBlock(x + 13, y + 6, z + 3, Blocks.air);
 		array.setBlock(x + 13, y + 6, z + 4, Blocks.air);
@@ -2068,14 +2067,14 @@ public class SnowStructure extends FragmentStructureBase {
 		array.setBlock(x + 15, y + 7, z + 8, Blocks.air);
 	}
 
-	private static BlockKey getLava() {
+	private BlockKey getLava() {
 		if (ModList.GEOSTRATA.isLoaded())
-			return getLavaRock();
+			return this.getLavaRock();
 		return new BlockKey(Blocks.lava, 0);
 	}
 
 	@ModDependent(ModList.GEOSTRATA)
-	private static BlockKey getLavaRock() {
+	private BlockKey getLavaRock() {
 		return new BlockKey(GeoBlocks.LAVAROCK.getBlockInstance(), 0 | BlockLavaRock.Flags.NONREPLACEABLE.flag());
 	}
 
