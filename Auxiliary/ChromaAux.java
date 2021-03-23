@@ -22,6 +22,7 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeavesBase;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -62,6 +63,7 @@ import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
+import Reika.ChromatiCraft.Magic.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.ToolChargingSystem;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
@@ -731,5 +733,10 @@ public class ChromaAux {
 		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.FIREDUMPSHOCK.ordinal(), e.worldObj, (int)x, (int)y, (int)z, 64, color.ordinal(), e.getEntityId(), Float.floatToRawIntBits(beamSize));
 		ReikaEntityHelper.knockbackEntityFromPos(x, /*y*/e.posY, z, e, 1.5*Math.min(power*4, 1));
 		e.motionY += 0.125+rand.nextDouble()*0.0625;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static boolean interceptClientChunkUpdates(ChunkProviderClient p) {
+		return MonumentCompletionRitual.areRitualsRunning() ? false : p.unloadQueuedChunks(); //contrary to name all this does is update lighting/sky height
 	}
 }

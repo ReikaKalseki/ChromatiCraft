@@ -952,24 +952,24 @@ public class RecipesCastingTable {
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			ItemStack is = ReikaItemHelper.getSizedItemStack(ThaumItemHelper.BlockEntry.ANCIENTROCK.getItem(), 16);
 			IRecipe sr = new ShapedOreRecipe(is, "SdS", "dOd", "SdS", 'S', "stone", 'd', ChromaStacks.auraDust, 'O', Blocks.obsidian);
-			this.addRecipe(new CastingRecipe(is, sr));
+			this.addModRecipe(new CastingRecipe(is, sr));
 
 			is = ThaumItemHelper.ItemEntry.ZOMBIEBRAIN.getItem();
 			sr = ReikaRecipeHelper.getShapedRecipeFor(is, "lll", "lbl", "lll", 'b', ThaumItemHelper.ItemEntry.DEFUNCTBRAIN.getItem(), 'l', ChromaStacks.lifegel);
-			this.addRecipe(new CastingRecipe(is, sr));
+			this.addModRecipe(new CastingRecipe(is, sr));
 		}
 
 		if (ModList.FORESTRY.isLoaded()) {
 			ItemStack is = new ItemStack(CrystalBackpack.instance.getItem1());
 			if (is != null && is.getItem() != null) { //disabled
 				IRecipe sr = ReikaRecipeHelper.getShapedRecipeFor(is, "SWS", "cCc", "SWS", 'S', Items.string, 'C', Blocks.chest, 'W', Blocks.wool, 'c', ChromaItems.SHARD.getAnyMetaStack());
-				this.addRecipe(new CastingRecipe(is, sr));
+				this.addModRecipe(new CastingRecipe(is, sr));
 			}
 
 			ItemStack is2 = new ItemStack(CrystalBackpack.instance.getItem2());
 			if (is2 != null && is2.getItem() != null) {
 				IRecipe sr = ReikaRecipeHelper.getShapedRecipeFor(is2, "WDW", "WCW", "WWW", 'D', Items.diamond, 'C', is, 'W', ForestryHandler.CraftingMaterials.WOVENSILK.getItem());
-				this.addRecipe(new CastingRecipe(is2, sr));
+				this.addModRecipe(new CastingRecipe(is2, sr));
 			}
 
 			ItemStack frame = ChromaItems.BEEFRAME.getStackOf();
@@ -981,9 +981,7 @@ public class RecipesCastingTable {
 				ctr = GameRegistry.findBlock(ModList.FORESTRY.modLabel, "alveary");
 			this.addRecipe(new LumenAlvearyRecipe(ChromaTiles.ALVEARY.getCraftedProduct(), new ItemStack(ctr)));
 
-			CastingRecipe r = new BeeConversionRecipe();
-			this.addRecipe(r);
-			moddedItemRecipes.add(r);
+			this.addModRecipe(new BeeConversionRecipe());
 
 			is = ChromaTiles.BEESTORAGE.getCraftedProduct();
 			Object g2 = ReikaItemHelper.lookupItem("gendustry:BeeReceptacle");
@@ -999,18 +997,18 @@ public class RecipesCastingTable {
 		if (ModList.TINKERER.isLoaded()) {
 			if (TinkerBlockHandler.Pulses.TOOLS.isLoaded()) {
 				for (int i = 0; i < ToolParts.partList.length; i++) {
-					this.addRecipe(new TinkerToolPartRecipe(ToolParts.partList[i]));
+					this.addModRecipe(new TinkerToolPartRecipe(ToolParts.partList[i]));
 				}
 			}
 			if (TinkerBlockHandler.Pulses.WEAPONS.isLoaded()) {
 				for (int i = 0; i < WeaponParts.partList.length; i++) {
-					this.addRecipe(new TinkerToolPartRecipe(WeaponParts.partList[i]));
+					this.addModRecipe(new TinkerToolPartRecipe(WeaponParts.partList[i]));
 				}
 			}
 		}
 
 		if (ModList.EXTRAUTILS.isLoaded() && DivisionSigilActivationRecipe.isLoadable()) {
-			this.addRecipe(new DivisionSigilActivationRecipe());
+			this.addModRecipe(new DivisionSigilActivationRecipe());
 		}
 
 		if (ModList.BUILDCRAFT.isLoaded()) {
@@ -1035,6 +1033,12 @@ public class RecipesCastingTable {
 		this.addRecipe(new FloatingLandmarkRecipe(is, sr));
 	}
 
+	private CastingRecipe addModRecipe(CastingRecipe r) {
+		this.addRecipe(r);
+		moddedItemRecipes.add(r);
+		return r;
+	}
+
 	private CastingRecipe addRecipe(CastingRecipe r) {
 		r.validate();
 
@@ -1044,9 +1048,6 @@ public class RecipesCastingTable {
 			recipes.put(r.type, li);
 		}
 		li.add(r);
-
-		if (r.isModded())
-			moddedItemRecipes.add(r);
 
 		recipeIDs.put(maxID, r);
 		String id = r.getIDString();

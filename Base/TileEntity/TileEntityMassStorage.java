@@ -28,11 +28,11 @@ import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
-import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.CountMap;
 import Reika.DragonAPI.Instantiable.ModInteract.BasicAEInterface;
 import Reika.DragonAPI.Instantiable.ModInteract.MEWorkTracker;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
+import Reika.DragonAPI.Interfaces.TileEntity.ConditionBreakDropsInventory;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.KeyedItemStackConverter;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
@@ -58,7 +58,7 @@ import cpw.mods.fml.relauncher.Side;
 
 
 @Strippable(value={"appeng.api.networking.security.IActionHost"})
-public abstract class TileEntityMassStorage extends TileEntityChromaticBase implements IInventory, IActionHost, BreakAction {
+public abstract class TileEntityMassStorage extends TileEntityChromaticBase implements IInventory, IActionHost, BreakAction, ConditionBreakDropsInventory {
 
 	private static final HashMap<UUID, ArrayList<ItemStack>> itemData = new HashMap();
 
@@ -218,7 +218,7 @@ public abstract class TileEntityMassStorage extends TileEntityChromaticBase impl
 
 	@Override
 	public final boolean isItemValidForSlot(int slot, ItemStack is) {
-		return slot == 0 && this.isItemValid(is) && this.getItems().size() < this.maxItemCount();
+		return slot == 0 && (pendingInput == null || ReikaItemHelper.areStacksCombinable(pendingInput, is, is.getMaxStackSize())) && this.isItemValid(is) && this.getItems().size() < this.maxItemCount();
 	}
 
 	public abstract InertItem getFilterItemRender();
@@ -232,7 +232,7 @@ public abstract class TileEntityMassStorage extends TileEntityChromaticBase impl
 
 	@Override
 	public final void updateEntity(World world, int x, int y, int z, int meta) {
-		if (pendingInput != null) {
+		if (pendingInput != null && !world.isRemote) {
 			//ReikaJavaLibrary.pConsole(pendingInput+" > "+pendingInput.getDisplayName());
 			this.addItem(pendingInput);
 			pendingInput = null;
@@ -387,6 +387,8 @@ public abstract class TileEntityMassStorage extends TileEntityChromaticBase impl
 	}
 
 	private void addItem(ItemStack is) {
+		if (worldObj.isRemote)
+			return;
 		this.getItems().add(is);
 		if (worldObj != null)
 			WorldToolCrateData.initItemData(worldObj).setDirty(true);
@@ -402,6 +404,8 @@ public abstract class TileEntityMassStorage extends TileEntityChromaticBase impl
 	}
 
 	private void removeItem(int slot) {
+		if (worldObj.isRemote)
+			return;
 		ItemStack is = this.getItems().remove(slot);
 		if (is == null)
 			return;
@@ -507,7 +511,21 @@ public abstract class TileEntityMassStorage extends TileEntityChromaticBase impl
 
 	@Override
 	public final void breakBlock() {
-		itemData.remove(new WorldLocation(this));
+		ReikaItemHelper.dropItems(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, this.getItems());
+		itemData.remove(identifier);
+	}
+
+	public final boolean dropsInventoryOnBroken() {
+		return false;
+	}
+
+	public final ItemStack removeLastItem() {
+		ArrayList<ItemStack> li = this.getItems();
+		if (li.isEmpty())
+			return null;
+		ItemStack is = li.get(li.size()-1);
+		this.removeItem(li.size()-1);
+		return is;
 	}
 
 	public static class WorldToolCrateData extends WorldSavedData {

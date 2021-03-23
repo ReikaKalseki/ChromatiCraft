@@ -132,7 +132,7 @@ public class ProgressModifyCommand extends DragonCommandBase {
 			args = Arrays.copyOf(args, args.length+1);
 		}
 
-		if (args.length < 3 || args.length > 4) {
+		if ((args.length < 3 || args.length > 4) && !(args.length > 0 && args[0].equals("dimtuning"))) {
 			this.sendChatToSender(ics, EnumChatFormatting.RED+"Invalid arguments. Use /"+this.getCommandString()+" <player> [action] [entry] [set].");
 			return;
 		}

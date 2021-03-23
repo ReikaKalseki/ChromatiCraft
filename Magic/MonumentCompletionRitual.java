@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
@@ -75,6 +76,7 @@ public class MonumentCompletionRitual {
 	private static final Random rand = new Random();
 
 	private final int FINAL_SOUND_COMPLETION_DELAY = 20000; //millis
+	private final int FINAL_SOUND_COMPLETION_DELAY_EXTRA = 4000; //millis
 	private final int COMPLETION_EXTRA = 3000; //millis
 
 	private final long[] SOUND_TIMINGS = new long[] {0, 28000, 66500, 86000, 104800, 123500}; //in millis
@@ -302,6 +304,9 @@ public class MonumentCompletionRitual {
 			nextOff = 0;
 			if (n.isFirstInPhrase && n.startBeat > 0)
 				;//t -= 1200;
+			if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+				t -= n.isFirstInPhrase ? 500 : 900;
+			}
 			TimedEvent te = new TimedEvent(e, t);
 			events.add(te);
 			events.add(new RayEvent(n, t-250));
@@ -417,6 +422,9 @@ public class MonumentCompletionRitual {
 		lastSoundStart = runTime;
 		currentSound++;
 		nextSoundTime = currentSound >= SOUND_TIMINGS.length ? Long.MAX_VALUE : runTime+SOUND_TIMINGS[currentSound]-SOUND_TIMINGS[idx];
+		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			//nextSoundTime += 600;
+		}
 		//ReikaJavaLibrary.pConsole("Next sound is at "+nextSoundTime);
 	}
 
@@ -446,7 +454,7 @@ public class MonumentCompletionRitual {
 	}
 
 	private boolean isReadyToComplete() {
-		return runTime-SOUND_TIMINGS[SOUND_TIMINGS.length-1] >= FINAL_SOUND_COMPLETION_DELAY;//runTime >= SOUND_LENGTH_MILLIS;
+		return runTime-SOUND_TIMINGS[SOUND_TIMINGS.length-1] >= FINAL_SOUND_COMPLETION_DELAY-(world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue() ? FINAL_SOUND_COMPLETION_DELAY_EXTRA : 0);//runTime >= SOUND_LENGTH_MILLIS;
 	}
 
 	/*

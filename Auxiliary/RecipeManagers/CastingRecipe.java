@@ -61,7 +61,6 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
-import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
@@ -108,7 +107,7 @@ public class CastingRecipe implements APICastingRecipe {
 			if (fragment == null)
 				fragment = r;
 			else
-				throw new IllegalStateException("Cannot change the research type of a recipe once initialized!");
+				throw new IllegalStateException("Cannot change the research type of a recipe once initialized ("+fragment+" -> "+r+")!");
 		}
 	}
 
@@ -473,10 +472,6 @@ public class CastingRecipe implements APICastingRecipe {
 				ChromatiCraft.logger.log("WARNING! Recipe "+this.toString()+" contains no runes!");
 			}
 		}
-	}
-
-	public boolean isModded() {
-		return !this.getClass().getName().contains("CastingRecipes.Special") && !ReikaItemHelper.getRegistrantMod(this.getOutput()).equals(ModList.CHROMATICRAFT.modLabel);
 	}
 
 	public boolean isShapeless() {

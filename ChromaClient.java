@@ -166,7 +166,7 @@ public class ChromaClient extends ChromaCommon {
 	@Override
 	public void registerSounds() {
 		soundLoader.register();
-		chromaCategory = ReikaRegistryHelper.addSoundCategory("CHROMA", "ChromatiCraft");
+		chromaCategory = ReikaRegistryHelper.addSoundCategory("CHROMA_MUSIC");
 
 		SettingInterferenceTracker.instance.registerSettingHandler(SettingInterferenceTracker.muteInterference);
 	}

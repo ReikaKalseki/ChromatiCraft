@@ -145,11 +145,6 @@ public class BeeConversionRecipe extends PylonCastingRecipe {
 	}
 
 	@Override
-	public boolean isModded() {
-		return true;
-	}
-
-	@Override
 	public boolean canGiveDoubleOutput() {
 		return true;
 	}

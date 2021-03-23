@@ -479,12 +479,18 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			}
 		}
 
-		if (is != null && te instanceof TileEntityMassStorage) {
+		if (te instanceof TileEntityMassStorage) {
 			TileEntityMassStorage ts = (TileEntityMassStorage)te;
-			if (ts.isItemValidForSlot(0, is)) {
+			if (is != null && ts.isItemValidForSlot(0, is)) {
 				ts.setInventorySlotContents(0, is.copy());
 				ep.setCurrentItemOrArmor(0, null);
 				return true;
+			}
+			else if (is == null) {
+				ItemStack take = ts.removeLastItem();
+				if (take != null) {
+					ep.setCurrentItemOrArmor(0, take);
+				}
 			}
 		}
 

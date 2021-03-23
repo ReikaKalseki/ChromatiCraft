@@ -250,7 +250,7 @@ public class ProgressionLinking {
 			if (ico.getIcon() == null && FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
 				throw new IllegalArgumentException("No-data icon!");
 			iconName = ico.name();
-			icon = new TextureSubImage(ico.getIcon());
+			icon = FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? new TextureSubImage(ico.getIcon()) : null;
 		}
 
 		@Override
