@@ -28,6 +28,9 @@ import Reika.DragonAPI.Interfaces.Registry.VariableSound;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public enum ChromaSounds implements ChromaSound, VariableSound {
 
 	RIFT("rift"),
@@ -250,6 +253,7 @@ public enum ChromaSounds implements ChromaSound, VariableSound {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public SoundCategory getCategory() {
 		if (this == GLOWCLOUD || this == BALLLIGHTNING)
 			return SoundCategory.MOBS;
