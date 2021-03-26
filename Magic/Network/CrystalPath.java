@@ -177,7 +177,7 @@ public class CrystalPath implements Comparable<CrystalPath> {
 	}
 
 	public final CachedPathValidity stillValid() {
-		if (transmitter.isInvalid() || (hasRealTarget && PylonFinder.getNetTileAt(origin, false) == null))
+		if (transmitter.isRemoved() || (hasRealTarget && PylonFinder.getNetTileAt(origin, false) == null))
 			return CachedPathValidity.BROKEN;
 		if (!transmitter.canConduct() || !transmitter.isConductingElement(element)) {
 			return CachedPathValidity.DORMANT;

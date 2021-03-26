@@ -1109,7 +1109,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	}
 
 	@Override
-	public boolean isInvalid() {
+	public boolean isRemoved() {
 		return ((TileEntity)node).isInvalid();
 	}
 

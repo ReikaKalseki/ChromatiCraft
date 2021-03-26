@@ -414,7 +414,7 @@ public class GuiStructure extends GuiBookSection {
 	}
 
 	private void drawSlice(int j, int k) {
-		render.drawSlice(j, k);
+		render.drawSlice(j, k, fontRendererObj);
 	}
 
 	private void drawTally(int j, int k) {

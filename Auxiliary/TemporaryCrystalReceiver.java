@@ -194,7 +194,7 @@ public class TemporaryCrystalReceiver implements CrystalReceiver, WrapperTile {
 	}
 
 	@Override
-	public boolean isInvalid() {
+	public boolean isRemoved() {
 		return destroyed;
 	}
 

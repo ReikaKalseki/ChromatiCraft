@@ -116,7 +116,7 @@ public class BlockPistonController extends BlockDimensionStructureTile {
 		@Override
 		public void updateEntity() {
 			//ReikaJavaLibrary.pConsole(this.getStage().doorCount, yCoord == 87);
-			if (isPlaying) {
+			if (isPlaying && !worldObj.isRemote) {
 				if (tickUntilNextDoor > 0) {
 					tickUntilNextDoor--;
 				}
@@ -199,7 +199,8 @@ public class BlockPistonController extends BlockDimensionStructureTile {
 			this.setDoor(currentDoor+1);
 			TilePistonController te = (TilePistonController)worldObj.getTileEntity(xCoord, yCoord+1, zCoord);
 			te.setDoor(currentDoor);
-			this.getStage().cycle(worldObj);
+			if (!worldObj.isRemote)
+				this.getStage().cycle(worldObj);
 		}
 
 	}

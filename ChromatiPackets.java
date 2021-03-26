@@ -1181,7 +1181,14 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case ITEMRIFTMOVE:
 					((TileEntityItemRift)tile).doMoveParticles(data[0], data[1], ForgeDirection.VALID_DIRECTIONS[data[2]], data[3]);
-					break;
+					break;/*
+				case CLEARSTAND:
+					if (world.provider.dimensionId == data[0]) {
+						if (world.checkChunksExist(data[1], data[2], data[3], data[1], data[2], data[3])) {
+							ReikaInventoryHelper.clearInventory((TileEntityItemStand)world.getTileEntity(data[1], data[2], data[3]));
+						}
+					}
+					break;*/
 			}
 		}
 		catch (NullPointerException e) {

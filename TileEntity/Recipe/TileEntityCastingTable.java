@@ -98,15 +98,14 @@ import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
-import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -661,7 +660,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 
 					if (activeRecipe instanceof PylonCastingRecipe) {
 						this.requestEnergyDifference(this.getRequiredEnergy());
-						ReikaJavaLibrary.pConsole("Energy is "+this.getRequiredEnergy()+" from "+((PylonCastingRecipe)activeRecipe).getRequiredAura());
+						//ReikaJavaLibrary.pConsole("Energy is "+this.getRequiredEnergy()+" from "+((PylonCastingRecipe)activeRecipe).getRequiredAura());
 					}
 
 					if (!activeRecipe.canBeStacked()) {
@@ -907,12 +906,6 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 			}
 		}
 		boolean triggerCrafted = true;
-		if (count > 0) {
-			ProgressStage.CASTING.stepPlayerTo(craftingPlayer);
-			if (activeRecipe instanceof PylonCastingRecipe) {
-				ProgressStage.LINK.stepPlayerTo(craftingPlayer);
-			}
-		}
 		int ct = count;
 		ItemStack out = activeRecipe.getOutput();
 		while (count > 0) {
@@ -955,6 +948,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 								flag = true;
 								ReikaInventoryHelper.decrStack(9, this, amt);
 								push -= amt;
+								//ReikaJavaLibrary.pConsole(te);
 							}
 						}
 						while (flag && inv[9] != null);
@@ -964,6 +958,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 				}
 			}
 		}
+
 		this.addXP(xpToAdd);
 		if (inv[9] != null)
 			repeat = false;
@@ -971,19 +966,36 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 			repeat = true;
 			this.setRecipeTickDuration(activeRecipe);
 		}
-		ChromatiCraft.logger.log("Player "+craftingPlayer+" crafted "+cachedRecipe);
-		RecipesCastingTable.setPlayerHasCrafted(craftingPlayer, cachedRecipe.type);
+		EntityPlayer ep = craftingPlayer;
 		if (!repeat) {
 			activeRecipe = null;
 			craftSoundTimer = 20000;
 			craftingTick = 0;
-			craftingPlayer = null;
 		}
+
+		this.onCraftingComplete(cachedRecipe, ct, ep);
+	}
+
+	private void onCraftingComplete(CastingRecipe rec, int ct, EntityPlayer ep) {
+		ChromatiCraft.logger.log("Player "+ep+" crafted "+rec);
+		RecipesCastingTable.setPlayerHasCrafted(ep, rec.type);
+
 		ChromaSounds.CRAFTDONE.playSoundAtBlock(this);
 		if (worldObj.isRemote)
 			this.particleBurst();
 
-		this.setStandLock(false);
+		if (ct > 0) {
+			ProgressStage.CASTING.stepPlayerTo(ep);
+			if (rec instanceof PylonCastingRecipe) {
+				ProgressStage.LINK.stepPlayerTo(ep);
+			}
+		}
+
+		for (TileEntityItemStand te : this.getOtherStands().values()) {
+			te.lock(false);
+			te.syncAfterCraft();
+			//ReikaPacketHelper.sendDataPacketToEntireServer(ChromatiCraft.packetChannel, ChromaPackets.CLEARSTAND.ordinal(), te.worldObj.provider.dimensionId, te.xCoord, te.yCoord, te.zCoord, );
+		}
 	}
 
 	private void setStandLock(boolean lock) {

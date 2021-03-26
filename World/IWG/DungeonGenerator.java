@@ -221,7 +221,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				closest = loc;
 			}
 		}
-		return new StructureSeekData(closest, genned);
+		return closest == null ? null : new StructureSeekData(closest, genned);
 	}
 
 	/** In BLOCK coords */

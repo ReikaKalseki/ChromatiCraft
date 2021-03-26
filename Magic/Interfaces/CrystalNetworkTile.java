@@ -45,7 +45,7 @@ public interface CrystalNetworkTile {
 	public void triggerBottleneckDisplay(int duration);
 
 	/** TileEntity isInvalid, ie has it been removed from the world */
-	public boolean isInvalid();
+	public boolean isRemoved();
 
 	//public ResearchLevel getResearchTier();
 

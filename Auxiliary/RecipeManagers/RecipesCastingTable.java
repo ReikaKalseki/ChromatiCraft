@@ -997,12 +997,12 @@ public class RecipesCastingTable {
 		if (ModList.TINKERER.isLoaded()) {
 			if (TinkerBlockHandler.Pulses.TOOLS.isLoaded()) {
 				for (int i = 0; i < ToolParts.partList.length; i++) {
-					this.addModRecipe(new TinkerToolPartRecipe(ToolParts.partList[i]));
+					this.addRecipe(new TinkerToolPartRecipe(ToolParts.partList[i]));
 				}
 			}
 			if (TinkerBlockHandler.Pulses.WEAPONS.isLoaded()) {
 				for (int i = 0; i < WeaponParts.partList.length; i++) {
-					this.addModRecipe(new TinkerToolPartRecipe(WeaponParts.partList[i]));
+					this.addRecipe(new TinkerToolPartRecipe(WeaponParts.partList[i]));
 				}
 			}
 		}

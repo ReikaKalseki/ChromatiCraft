@@ -220,6 +220,7 @@ public enum ChromaPackets {
 	ALLOYITEMS(0, PacketTypes.STRING),
 	ARTEALLOYBURST(1),
 	ITEMRIFTMOVE(4),
+	//CLEARSTAND(4),
 	;
 
 	public final int numInts;

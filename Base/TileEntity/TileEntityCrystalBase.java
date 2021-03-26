@@ -171,4 +171,8 @@ public abstract class TileEntityCrystalBase extends TileEntityChromaticBase impl
 
 	}
 
+	public final boolean isRemoved() {
+		return this.isInvalid();
+	}
+
 }

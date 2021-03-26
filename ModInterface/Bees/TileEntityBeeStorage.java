@@ -4,10 +4,12 @@ import java.util.Collection;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityMassStorage;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.ModList;
@@ -25,7 +27,7 @@ import forestry.api.genetics.ISpeciesType;
 public class TileEntityBeeStorage extends TileEntityMassStorage {
 
 	@ModDependent(ModList.FORESTRY)
-	private ISpeciesType filter;
+	private GeneticsType filter;
 
 	@SideOnly(Side.CLIENT)
 	private InertItem render;
@@ -43,7 +45,7 @@ public class TileEntityBeeStorage extends TileEntityMassStorage {
 
 	@SideOnly(Side.CLIENT)
 	@ModDependent(ModList.FORESTRY)
-	public void setFilter(ISpeciesType s) {
+	public void setFilter(GeneticsType s) {
 		filter = s;
 	}
 
@@ -51,7 +53,7 @@ public class TileEntityBeeStorage extends TileEntityMassStorage {
 	protected void onAddItem(ItemStack is) {
 		if (ModList.FORESTRY.isLoaded()) {
 			if (filter == null) {
-				filter = ReikaBeeHelper.getSpeciesType(is);
+				filter = this.getGeneItemType(is);
 			}
 		}
 	}
@@ -85,10 +87,23 @@ public class TileEntityBeeStorage extends TileEntityMassStorage {
 
 	@Override
 	public boolean isItemValid(ItemStack is) {
-		ISpeciesType f = ReikaBeeHelper.getSpeciesType(is);
+		GeneticsType f = this.getGeneItemType(is);
 		if (f == null)
 			return false;
-		return filter == null || f == filter;
+		return filter == null || f.comparator == filter.comparator;
+	}
+
+	private GeneticsType getGeneItemType(ItemStack is) {
+		ISpeciesType type = ReikaBeeHelper.getSpeciesType(is);
+		if (type != null) {
+			return new SpeciesType(type);
+		}
+		else if (is.getItem() == ReikaBeeHelper.getGendustrySampleItem() || is.getItem() == ReikaBeeHelper.getBinnieSampleItem()) {
+			return new ItemType(is.getItem());
+		}
+		else {
+			return null;
+		}
 	}
 
 	@Override
@@ -113,7 +128,7 @@ public class TileEntityBeeStorage extends TileEntityMassStorage {
 		if (filter != null) {
 			NBTTagCompound tag = new NBTTagCompound();
 			tag.setString("class", filter.getClass().getName());
-			tag.setString("field", ((Enum)filter).name());
+			tag.setString("field", filter.lookupKey());
 			NBT.setTag("filtertype", tag);
 		}
 	}
@@ -129,32 +144,73 @@ public class TileEntityBeeStorage extends TileEntityMassStorage {
 			Class c = null;
 			try {
 				c = Class.forName(cl);
+				if (c == SpeciesType.class) {
+					filter = SpeciesType.construct(f);
+				}
+				else if (ISpeciesType.class.isAssignableFrom(c)) { //legacy
+					filter = new SpeciesType((ISpeciesType)Enum.valueOf(c, f));
+				}
+				else if (c == ItemType.class) {
+					filter = ItemType.construct(f);
+				}
 			}
-			catch (ClassNotFoundException e) {
+			catch (Exception e) {
+				ChromatiCraft.logger.logError("Failed to load genetics storage data from disk");
 				e.printStackTrace();
 			}
-			if (c != null)
-				filter = (ISpeciesType)Enum.valueOf(c, f);
 		}
 	}
 
-	/*
-	@ModDependent(ModList.FORESTRY)
-	private Module getModule() {
-		ISpeciesType type = filter;
-		if (type instanceof EnumBeeType)
-			return Module.BEES;
-		if (type instanceof EnumGermlingType)
-			return Module.TREES;
-		if (type instanceof EnumFlutterType)
-			return Module.FLIES;
-		return null;
+	private static class SpeciesType extends GeneticsType<ISpeciesType> {
+
+		protected SpeciesType(ISpeciesType obj) {
+			super(obj);
+		}
+
+		@Override
+		protected String lookupKey() {
+			return comparator.getClass().getName()+"#"+((Enum)comparator).name();
+		}
+
+		private static SpeciesType construct(String s) throws Exception {
+			String[] parts = s.split("#");
+			return new SpeciesType((ISpeciesType)Enum.valueOf((Class<Enum>)Class.forName(parts[0]), parts[1]));
+		}
+
+
 	}
 
-	private static enum Module {
-		BEES,
-		TREES,
-		FLIES;
+	private static class ItemType extends GeneticsType<Item> {
+
+		protected ItemType(Item obj) {
+			super(obj);
+		}
+
+		@Override
+		protected String lookupKey() {
+			return Item.itemRegistry.getNameForObject(comparator);
+		}
+
+		private static ItemType construct(String s) {
+			return new ItemType((Item)Item.itemRegistry.getObject(s));
+		}
+
 	}
-	 */
+
+	private static abstract class GeneticsType<T> {
+
+		protected final T comparator;
+
+		protected GeneticsType(T obj) {
+			this.comparator = obj;
+		}
+
+		protected abstract String lookupKey();
+
+		@Override
+		public final boolean equals(Object o) {
+			return o != null && o.getClass() == this.getClass() && this.comparator == ((GeneticsType)o).comparator;
+		}
+
+	}
 }

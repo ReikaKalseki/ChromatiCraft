@@ -58,6 +58,8 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 	private Coordinate tile;
 	private boolean locked;
 
+	private int updateRadius = 96;
+
 	private static final MultiMap<UUID, WorldLocation> spreadSet = new MultiMap(CollectionType.HASHSET);
 
 	@Override
@@ -316,7 +318,7 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 
 	@Override
 	public int getUpdatePacketRadius() {
-		return 96;
+		return updateRadius;
 	}
 
 	@Override
@@ -332,6 +334,12 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
 		this.readOwnerData(is);
+	}
+
+	public void syncAfterCraft() {
+		updateRadius = -1;
+		this.syncAllData(true);
+		updateRadius = 96;
 	}
 
 }

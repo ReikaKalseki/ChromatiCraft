@@ -31,9 +31,11 @@ import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Block.BlockCastingInjectorFocus.CastingInjectorAuxTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 import appeng.api.networking.IGridNode;
 import appeng.api.util.AECableType;
@@ -117,8 +119,13 @@ public class TileEntityCastingInjector extends InventoriedChromaticBase implemen
 					}
 				}
 				if (inv[0] != null) {
-					if (handler.recoverItem(inv[0]))
+					if (DragonAPICore.debugtest) {
+						ReikaItemHelper.dropItem(world, x+0.5, y+2.5, z+0.5, inv[0]);
 						inv[0] = null;
+					}
+					else if (handler.recoverItem(inv[0])) {
+						inv[0] = null;
+					}
 				}
 			}
 		}

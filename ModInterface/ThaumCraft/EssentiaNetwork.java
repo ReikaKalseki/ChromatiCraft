@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -462,10 +463,12 @@ public class EssentiaNetwork {
 	private static class LabelledJarEndpoint extends ActiveEndpoint {
 
 		private final Aspect filter;
+		private final boolean isVoid;
 
 		private LabelledJarEndpoint(Coordinate loc, IEssentiaTransport te, Aspect a) {
 			super(loc, te);
 			filter = a;
+			isVoid = te.getClass().getName().toLowerCase(Locale.ENGLISH).endsWith("void");
 		}
 
 		@Override
@@ -474,7 +477,8 @@ public class EssentiaNetwork {
 			if (tile == null)
 				return null;
 			try {
-				int amt = 64-amountField.getInt(tile);
+				int base = isVoid ? 65 : 64;
+				int amt = base-amountField.getInt(tile);
 				return amt > 0 ? new AspectList().add(filter, amt) : null;
 			}
 			catch (Exception e) {
