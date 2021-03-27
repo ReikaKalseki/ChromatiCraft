@@ -329,6 +329,26 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 			int max = this.getCapacity();
 			if (diff > 0) {
+				if (energy >= max/2) {
+					TileEntityPylonLink te = this.getLinkTile();
+					if (te != null) {
+						Collection<WorldLocation> c = te.getLinkedPylons();
+						for (WorldLocation loc : c) {
+							if (!loc.equals(world, x, y, z)) {
+								TileEntity tile2 = loc.getTileEntity();
+								if (tile2 instanceof TileEntityCrystalPylon) {
+									TileEntityCrystalPylon tp = (TileEntityCrystalPylon)tile2;
+									if (tp.color == color) {
+										int amt = Math.min(this.getDonatedRecharge(), tp.getCapacity()-tp.energy);
+										tp.energy += amt;
+										energy -= amt;
+									}
+								}
+							}
+						}
+					}
+				}
+
 				this.charge(world, x, y, z, max, Math.max(1, (int)diff));
 			}
 
@@ -387,26 +407,6 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 			if (!world.isRemote && ChromaOptions.BALLLIGHTNING.getState() && energy >= this.getCapacity()/2 && rand.nextInt(1000) == 0 && ReikaWorldHelper.isRadiusLoaded(world, x, z, 2) && EntityBallLightning.canSpawnHere(world, x+0.5, y+0.5, z+0.5)) {
 				world.spawnEntityInWorld(new EntityBallLightning(world, color, x+0.5, y+0.5, z+0.5).setPylon().setNoDrops());
-			}
-
-			if (energy >= this.getCapacity()/2) {
-				TileEntityPylonLink te = this.getLinkTile();
-				if (te != null) {
-					Collection<WorldLocation> c = te.getLinkedPylons();
-					for (WorldLocation loc : c) {
-						if (!loc.equals(world, x, y, z)) {
-							TileEntity tile2 = loc.getTileEntity();
-							if (tile2 instanceof TileEntityCrystalPylon) {
-								TileEntityCrystalPylon tp = (TileEntityCrystalPylon)tile2;
-								if (tp.color == color) {
-									int amt = Math.min(this.getDonatedRecharge(), tp.getCapacity()-tp.energy);
-									tp.energy += amt;
-									energy -= amt;
-								}
-							}
-						}
-					}
-				}
 			}
 
 			energy = Math.max(0, Math.min(energy, max));

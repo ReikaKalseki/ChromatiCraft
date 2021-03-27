@@ -9,6 +9,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -55,7 +56,10 @@ public class TileEntityFloatingLandmark extends TileEntityChromaticBase implemen
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (world.isRemote) {
 			this.doBlockParticles(world, x, y, z);
-			if (isPrimary) {
+			if (area == null || area.volume.getVolume() == 1) {
+				this.doAxisParticles(world, x, y, z);
+			}
+			else if (isPrimary) {
 				this.doAreaParticles(world, x, y, z);
 			}
 		}
@@ -73,6 +77,36 @@ public class TileEntityFloatingLandmark extends TileEntityChromaticBase implemen
 					}
 				}*/
 			}
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void doAxisParticles(World world, int x, int y, int z) {
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		ForgeDirection dir = dirs[this.getTicksExisted()%6];
+		for (int d = 1; d < RANGE; d += 4) {
+			int dx = x+dir.offsetX*d;
+			int dy = y+dir.offsetY*d;
+			int dz = z+dir.offsetZ*d;
+			if (dy >= 0 && dy <= 255 && ep.getDistanceSq(dx+0.5, dy+0.5, dz+0.5) <= 256 && world.getBlock(dx, dy, dz).isAir(world, dx, dy, dz)) {
+				double v = 0.25;
+				double vx = dir.offsetX*v;
+				double vy = dir.offsetY*v;
+				double vz = dir.offsetZ*v;
+				EntityCCBlurFX fx = new EntityCCBlurFX(world, dx+0.5, dy+0.5, dz+0.5, vx, vy, vz);
+				int c = ReikaColorAPI.getModifiedHue(0xff0000, d*360/256);
+				fx.setRapidExpand().setAlphaFading().setLife(20).forceIgnoreLimits().setScale(1.4F).setColor(c);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
+		}
+
+		int dx = x+dir.offsetX*RANGE;
+		int dy = MathHelper.clamp_int(y+dir.offsetY*RANGE, 0, 255);
+		int dz = z+dir.offsetZ*RANGE;
+		if (world.getBlock(dx, dy, dz).isAir(world, dx, dy, dz)) {
+			EntityCCBlurFX fx = new EntityCCBlurFX(world, dx+0.5, dy+0.5, dz+0.5);
+			fx.setIcon(ChromaIcons.BIGFLARE).setRapidExpand().setAlphaFading().setLife(20).forceIgnoreLimits().setScale(3);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
 

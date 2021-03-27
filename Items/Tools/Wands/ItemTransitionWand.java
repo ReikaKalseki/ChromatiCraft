@@ -24,11 +24,13 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Base.ItemBlockChangingWand;
 import Reika.ChromatiCraft.Block.BlockCrystalTank.CrystalTankAuxTile;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
 import Reika.DragonAPI.ModList;
@@ -305,6 +307,17 @@ public class ItemTransitionWand extends ItemBlockChangingWand {
 			for (ItemStack is : r.drops) {
 				if (ItemInventoryLinker.tryLinkItem(ep, is)) {
 					continue;
+				}
+				if (Chromabilities.MEINV.enabledOn(ep)) {
+					int added = AbilityHelper.instance.addStackToMESystem(ep, is);
+					if (added > 0) {
+						if (added >= is.stackSize) {
+							continue;
+						}
+						else {
+							is.stackSize -= added;
+						}
+					}
 				}
 				ReikaPlayerAPI.addOrDropItem(is, ep);
 			}

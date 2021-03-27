@@ -684,25 +684,56 @@ public class AbilityHelper {
 		if (evt.entityPlayer.worldObj.isRemote || evt.item.isDead || evt.isCanceled())
 			return;
 		if (Chromabilities.MEINV.enabledOn(evt.entityPlayer)) {
+			MESystemReader me = this.getMESystem(evt.entityPlayer);
+			if (me == null)
+				return;
 			ItemStack is = evt.item.getEntityItem();
 			int n = Loader.isModLoaded("dualhotbar") ? 18 : 9;
 			for (int i = 0; i < n; i++) {
 				ItemStack in = evt.entityPlayer.inventory.mainInventory[i];
-				if (ReikaItemHelper.matchStacks(is, in) && in.stackSize == in.getMaxStackSize()) {
-					MESystemReader me = this.getMESystem(evt.entityPlayer);
-					if (me != null) {
-						int left = (int)me.addItem(is, false);
-						if (left > 0) {
-							is.stackSize = left;
+				if (ReikaItemHelper.areStacksCombinable(is, in, Integer.MAX_VALUE)) {
+					if (in.stackSize < in.getMaxStackSize()) {
+						int diff = in.getMaxStackSize()-in.stackSize;
+						if (diff >= is.stackSize) {
+							in.stackSize += is.stackSize;
+							is = null;
 						}
 						else {
-							evt.item.setDead();
-							evt.setCanceled(true);
+							in.stackSize += diff;
+							is.stackSize -= diff;
 						}
 					}
 				}
+				if (is == null)
+					break;
+			}
+			if (is != null) {
+				int added = this.addStackToMESystem(me, evt.entityPlayer, is);
+				if (added > 0) {
+					if (added < is.stackSize)
+						is.stackSize -= added;
+					else
+						is = null;
+				}
+			}
+			if (is == null) {
+				evt.item.setDead();
+				evt.setCanceled(true);
 			}
 		}
+	}
+
+	public int addStackToMESystem(EntityPlayer ep, ItemStack is) {
+		MESystemReader me = this.getMESystem(ep);
+		if (me == null)
+			return 0;
+		return this.addStackToMESystem(me, ep, is);
+	}
+
+	private int addStackToMESystem(MESystemReader me, EntityPlayer ep, ItemStack is) {
+		int left = (int)me.addItem(is.copy(), false);
+		int added = is.stackSize-left;
+		return added;
 	}
 
 	@SubscribeEvent

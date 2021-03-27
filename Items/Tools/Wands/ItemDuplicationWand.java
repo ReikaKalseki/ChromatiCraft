@@ -101,8 +101,10 @@ public class ItemDuplicationWand extends ItemWandBase {
 		if (this.sufficientEnergy(ep)) {
 			if (ep.isSneaking()) {
 				//ChromaSounds.RIFT.playSound(ep, 0.75F, 1F);
-				ChromaSounds.CAST.playSound(ep, 0.75F, 0.5F);
-				this.addToStructureCache(world, x, y, z, sg);
+				if (this.addToStructureCache(world, x, y, z, sg))
+					ChromaSounds.CAST.playSound(ep, 0.75F, 0.5F);
+				else
+					ChromaSounds.USE.playSound(ep, 0.75F, 0.8F);
 			}
 			else {
 				StructuredBlockArray struct = structures.get(sg);
@@ -189,7 +191,7 @@ public class ItemDuplicationWand extends ItemWandBase {
 		centers.remove(s);
 	}
 
-	private void addToStructureCache(World world, int x, int y, int z, String s) {
+	private boolean addToStructureCache(World world, int x, int y, int z, String s) {
 		StructuredBlockArray all = structures.get(s);
 		Coordinate cx = new Coordinate(x, y, z);
 		boolean second = region.containsKey(s) && region.get(s);
@@ -247,6 +249,7 @@ public class ItemDuplicationWand extends ItemWandBase {
 			lastClick.put(s, cx);
 			region.put(s, true);
 		}
+		return second;
 	}
 
 	private void copyStructure(World world, int x, int y, int z, int s, String sg) {

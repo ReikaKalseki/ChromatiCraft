@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -31,9 +31,11 @@ public class StructureBiome extends ChromaDimensionBiome {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public int getBiomeGrassColor(int x, int y, int z) {
+	public final int getBiomeGrassColor(int x, int y, int z) {
 		World world = Minecraft.getMinecraft().theWorld;
 		int c = this.getBaseColor(x, y, z);
+		if (world == null)
+			return c;
 		for (int i = 2; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 			for (int k = 1; k <= 4; k++) {

@@ -9,12 +9,15 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Processing;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import net.minecraft.block.BlockEnchantmentTable;
 import net.minecraft.enchantment.Enchantment;
@@ -62,6 +65,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	private static final HashMap<Enchantment, EnchantmentTier> tiers = new HashMap();
 	private static final HashMap<Enchantment, Integer> boostedLevels = new HashMap();
 	private static final HashSet<Enchantment> blacklist = new HashSet();
+	private static final HashSet<ImmutablePair<Enchantment, Enchantment>> allowedPairs = new HashSet();
 
 	static {
 		tiers.put(Enchantment.baneOfArthropods, EnchantmentTier.WORTHLESS);
@@ -102,6 +106,10 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		boostedLevels.put(Enchantment.field_151370_z, 5); //luck of sea
 		boostedLevels.put(Enchantment.power, 10);
 		boostedLevels.put(Enchantment.sharpness, 10);
+
+		allowedPairs.add(new ImmutablePair(Enchantment.fortune, Enchantment.silkTouch));
+		allowedPairs.add(new ImmutablePair(Enchantment.sharpness, Enchantment.baneOfArthropods));
+		allowedPairs.add(new ImmutablePair(Enchantment.sharpness, Enchantment.smite));
 	}
 
 	private StepTimer progress = new StepTimer(40);
@@ -197,11 +205,66 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 
 	private boolean areEnchantsValid(ItemStack is) {
 		Item i = is.getItem();
+		Collection<Enchantment> has = ReikaEnchantmentHelper.getEnchantments(is).keySet();
 		for (Enchantment e : selected.keySet()) {
 			if (!this.isEnchantValid(e, is, i, true))
 				return false;
+			if (!this.isCompatible(has, e))
+				return false;
 		}
 		return true;
+	}
+
+	public static enum EnchantValidity {
+		VALID("Valid"),
+		WRONGITEM("Invalid for Item"),
+		INCOMPATIBLEWITHEXISTING("Incompatible with Existing"),
+		INCOMPATIBLEWITHSELF("Incompatible with Selected"),
+		;
+
+		public final String desc;
+
+		private EnchantValidity(String s) {
+			desc = s;
+		}
+
+		public int getTextColor() {
+			switch(this) {
+				case VALID:
+					return 0xffffff;
+				case WRONGITEM:
+					return 0xfff740;
+				case INCOMPATIBLEWITHEXISTING:
+					return 0xffc740;
+				case INCOMPATIBLEWITHSELF:
+					return 0xff9090;
+			}
+			return 0;
+		}
+	}
+
+	public EnchantValidity isCompatible(Enchantment e) {
+		if (!this.isCompatible(selected.keySet(), e))
+			return EnchantValidity.INCOMPATIBLEWITHSELF;
+		if (inv[0] != null) {
+			if (!this.isCompatible(ReikaEnchantmentHelper.getEnchantments(inv[0]).keySet(), e))
+				return EnchantValidity.INCOMPATIBLEWITHEXISTING;
+			if (!this.isEnchantValid(e, inv[0], inv[0].getItem(), true))
+				return EnchantValidity.WRONGITEM;
+		}
+		return EnchantValidity.VALID;
+	}
+
+	private boolean isCompatible(Collection<Enchantment> c, Enchantment e) {
+		for (Enchantment e2 : c) {
+			if (!this.isCompatible(e, e2))
+				return false;
+		}
+		return true;
+	}
+
+	private boolean isCompatible(Enchantment e, Enchantment e2) {
+		return e == e2 || allowedPairs.contains(new ImmutablePair(e, e2)) || allowedPairs.contains(new ImmutablePair(e2, e)) || ReikaEnchantmentHelper.areEnchantsCompatible(e, e2);
 	}
 
 	public boolean isEnchantValid(Enchantment e, ItemStack is, Item i, boolean checkLevels) {
@@ -317,11 +380,6 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			return true;
 		}
 		else {
-			if (this.getEnchantment(e) == 0) {
-				if (!ReikaEnchantmentHelper.isCompatible(selected.keySet(), e)) {
-					return false;
-				}
-			}
 			selected.put(e, level);
 			return true;
 		}
@@ -405,8 +463,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	}
 
 	@Override
-	protected void writeSyncTag(NBTTagCompound NBT)
-	{
+	protected void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
 
 		for (int i = 0; i < Enchantment.enchantmentsList.length; i++) {
@@ -418,8 +475,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	}
 
 	@Override
-	protected void readSyncTag(NBTTagCompound NBT)
-	{
+	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 
 		selected = new HashMap();

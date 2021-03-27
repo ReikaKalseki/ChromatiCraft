@@ -67,6 +67,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -118,7 +119,9 @@ public class MonumentCompletionRitual {
 	private final ArrayList<TimedEvent> events = new ArrayList();
 	private static final float[] colorFade = new float[16];
 	private static final Vec3[] shaderPositions = new Vec3[16];
-	private static final Vec4[] shaderColors = new Vec4[16];
+	@SideOnly(Side.CLIENT)
+	private static Vec4[] shaderColors;
+
 	private MusicKey activeKey = null;
 
 	private static boolean runningRituals;
@@ -127,6 +130,9 @@ public class MonumentCompletionRitual {
 	private static boolean reBobView;
 
 	static {
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+			shaderColors = new Vec4[16];
+
 		melody.add(new RayNote(MusicKey.A4, 2, true, false, true));
 		melody.add(new RayNote(MusicKey.C5, 2));
 		melody.add(new RayNote(MusicKey.B4, 2));
@@ -251,10 +257,12 @@ public class MonumentCompletionRitual {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	public static float getIntensity(CrystalElement e) {
 		return colorFade[e.ordinal()];
 	}
 
+	@SideOnly(Side.CLIENT)
 	public static void addShaderData(ShaderProgram p) {
 		p.setField("glowLocations", shaderPositions);
 		p.setField("glowColor", shaderColors);
@@ -839,6 +847,7 @@ public class MonumentCompletionRitual {
 
 	}
 
+	@SideOnly(Side.CLIENT)
 	private static void doRay(CrystalElement e, World world, int x, int y, int z, float p) {
 		ReikaSoundHelper.playClientSound(ChromaSounds.MONUMENTRAY, x+0.5, y+0.5, z+0.5, (float)ReikaRandomHelper.getRandomBetween(0.4, 0.8), p, false);
 		Coordinate c = TileEntityDimensionCore.getLocation(e).offset(x, y, z);

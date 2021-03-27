@@ -345,6 +345,37 @@ public class ChromaAspectMapper {
 		this.addAspect(ChromaTiles.OPTIMIZER, ChromaAspectManager.instance.SIGNAL, 6);
 		this.addAspect(ChromaTiles.OPTIMIZER, ChromaAspectManager.instance.PUZZLE, 5);
 		this.addAspect(ChromaTiles.OPTIMIZER, Aspect.ORDER, 4);
+
+		this.addAspect(ChromaTiles.LANDMARK, Aspect.MECHANISM, 2);
+
+		this.addAspect(ChromaTiles.PLAYERINFUSER, Aspect.MAN, 8);
+		this.addAspect(ChromaTiles.PLAYERINFUSER, Aspect.MAGIC, 8);
+
+		this.addAspect(ChromaTiles.INJECTOR, Aspect.CRAFT, 6);
+		this.addAspect(ChromaTiles.INJECTOR, Aspect.MECHANISM, 4);
+
+		this.addAspect(ChromaTiles.VOIDTRAP, Aspect.TRAP, 8);
+		this.addAspect(ChromaTiles.VOIDTRAP, Aspect.ELDRITCH, 8);
+		this.addAspect(ChromaTiles.VOIDTRAP, Aspect.DARKNESS, 4);
+		this.addAspect(ChromaTiles.VOIDTRAP, Aspect.WEAPON, 4);
+
+		this.addAspect(ChromaTiles.SMELTERYDISTRIBUTOR, Aspect.TRAVEL, 6);
+		this.addAspect(ChromaTiles.SMELTERYDISTRIBUTOR, Aspect.METAL, 4);
+		this.addAspect(ChromaTiles.SMELTERYDISTRIBUTOR, Aspect.SENSES, 1);
+		this.addAspect(ChromaTiles.SMELTERYDISTRIBUTOR, Aspect.FIRE, 2);
+
+		this.addAspect(ChromaTiles.LAUNCHPAD, Aspect.FLIGHT, 8);
+
+		this.addAspect(ChromaTiles.TOOLSTORAGE, Aspect.VOID, 6);
+		this.addAspect(ChromaTiles.TOOLSTORAGE, Aspect.TOOL, 6);
+
+		this.addAspect(ChromaTiles.BEESTORAGE, Aspect.VOID, 6);
+		this.addAspect(ChromaTiles.BEESTORAGE, Aspect.LIFE, 6);
+		this.addAspect(ChromaTiles.BEESTORAGE, Aspect.BEAST, 4);
+
+		this.addAspect(ChromaTiles.NETWORKITEM, Aspect.TRAVEL, 9);
+		this.addAspect(ChromaTiles.NETWORKITEM, Aspect.LIGHT, 6);
+		this.addAspect(ChromaTiles.NETWORKITEM, Aspect.AURA, 4);
 	}
 
 	private void addAspect(ChromaTiles m, Aspect a, int amt) {

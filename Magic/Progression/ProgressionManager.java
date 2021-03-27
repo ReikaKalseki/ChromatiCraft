@@ -57,11 +57,11 @@ import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap.Topology;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
-import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
-import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 import Reika.DragonAPI.Objects.LineType;
 
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -908,7 +908,7 @@ public class ProgressionManager implements ProgressRegistry {
 	public void giveAuxiliaryResearch(EntityPlayer ep, ProgressStage p) {
 		if (ChromaOptions.EASYFRAG.getState()) {
 			ChromaResearch r = auxiliaryReference.get(p);
-			if (r != null) {
+			if (r != null && !ChromaResearchManager.instance.playerHasFragment(ep, r)) {
 				ChromaResearchManager.instance.givePlayerFragment(ep, r, true);
 				ItemStack is = ItemInfoFragment.getItem(r);
 				ReikaPlayerAPI.addOrDropItem(is, ep);

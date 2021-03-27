@@ -9,13 +9,19 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Container;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ICrafting;
+import net.minecraft.item.ItemStack;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ContainerAutoEnchanter extends CoreContainer {
 
@@ -51,6 +57,20 @@ public class ContainerAutoEnchanter extends CoreContainer {
 		if (par1 == 0) {
 			tile.progressTimer = par2;
 		}
+	}
+
+	@Override
+	public ItemStack slotClick(int ID, int par2, int par3, EntityPlayer ep) {
+		ItemStack is = super.slotClick(ID, par2, par3, ep);
+		if (tile.worldObj.isRemote) {
+			this.updateGui();
+		}
+		return is;
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void updateGui() {
+		((GuiAutoEnchanter)Minecraft.getMinecraft().currentScreen).initGui();
 	}
 
 

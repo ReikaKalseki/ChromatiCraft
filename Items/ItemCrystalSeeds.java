@@ -1,14 +1,16 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Items;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -20,6 +22,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant.Modifier;
 import Reika.DragonAPI.DragonAPICore;
@@ -102,6 +105,14 @@ public class ItemCrystalSeeds extends ItemCrystalBasic {
 		if (is.stackTagCompound != null && is.stackTagCompound.getBoolean("sterile")) {
 			li.add("Will plant a sterile plant, for decoration only");
 		}
+	}
+
+	public static Collection<ItemStack> getAllVariants(CrystalElement e) {
+		Collection<ItemStack> ret = new ArrayList();
+		ret.add(ChromaItems.SEED.getStackOfMetadata(e.ordinal()));
+		for (Modifier m : Modifier.list)
+			ret.add(ChromaItems.SEED.getStackOfMetadata(e.ordinal() | m.flag));
+		return ret;
 	}
 
 }

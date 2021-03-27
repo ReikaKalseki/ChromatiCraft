@@ -30,7 +30,7 @@ public class CrystalCoreRecipe extends MultiBlockCastingRecipe implements ShardG
 	}
 
 	@Override
-	public boolean canBeSimpleAutomated() {
+	public final boolean canBeSimpleAutomated() {
 		return true;
 	}
 

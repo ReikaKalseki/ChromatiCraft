@@ -100,11 +100,14 @@ public class CrystalWand extends WandRod {
 
 				for (Aspect a : Aspect.getPrimalAspects()) {
 					if (al.getAmount(a) > 0) {
-						int sp = ReikaThaumHelper.getWandSpaceFor(is, a);
+						int sp = Math.min(10, ReikaThaumHelper.getWandSpaceFor(is, a));
 						if (sp > 0) {
-							PlayerElementBuffer.instance.removeFromPlayer(player, ChromaAspectManager.instance.getElementCost(a, 1));
-							ReikaThaumHelper.addVisToWand(is, a, Math.min(sp, 10));
-							flag = true;
+							ElementTagCompound cost = ChromaAspectManager.instance.getElementCost(a, 1).scale(sp*4).power(1.25);
+							if (PlayerElementBuffer.instance.playerHas(player, cost)) {
+								PlayerElementBuffer.instance.removeFromPlayer(player, cost);
+								ReikaThaumHelper.addVisToWand(is, a, sp);
+								flag = true;
+							}
 						}
 					}
 				}

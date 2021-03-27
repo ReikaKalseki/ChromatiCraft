@@ -311,7 +311,7 @@ public class VoidMonsterDestructionRitual {
 	}
 
 	private static void runAttack(EntityLiving e, DamageSource src, int amt) {
-		if (e.getHealth() >= e.getHealth()) { //kill
+		if (amt >= e.getHealth()) { //kill
 			e.setHealth(0.1F);
 			e.attackEntityFrom(src, 1F);
 		}

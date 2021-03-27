@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.Base.GuiLetterSearchable;
 import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
+import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter.EnchantValidity;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
@@ -73,7 +74,10 @@ public class GuiAutoEnchanter extends GuiLetterSearchable<Enchantment> {
 		int dy = 33;
 		int w = 4;
 		buttonList.add(new CustomSoundGuiButton(0, j+dx-w, k+dy-13, 20, 20, "-", this));
-		buttonList.add(new CustomSoundGuiButton(1, j+dx+20+w, k+dy-13, 20, 20, "+", this));
+		if (ench.isCompatible(this.getActive()) == EnchantValidity.VALID)
+			buttonList.add(new CustomSoundGuiButton(1, j+dx+20+w, k+dy-13, 20, 20, "+", this));
+		else
+			buttonList.add(new CustomSoundGuiButton(1, j+dx+20+w, k+dy-13, 20, 20, "x", this).disable());
 
 		buttonList.add(new CustomSoundGuiButton(10, j+dx-w, k+dy+20+5-13, 48, 20, "Reset", this));
 
@@ -168,7 +172,11 @@ public class GuiAutoEnchanter extends GuiLetterSearchable<Enchantment> {
 		fontRendererObj.drawString(sg, 32-fontRendererObj.getStringWidth(sg), 38, amt > ench.getCapacity() ? 0xff0000 : amt > ench.getChromaLevel() ? 0xffff00 : 0x00ff00);
 
 		String display = this.getEnchantDisplayString();
-		api.drawCenteredString(fontRendererObj, display, xSize/2, 75, 0xffffff);
+		EnchantValidity e = ench.isCompatible(this.getActive());
+		if (e != EnchantValidity.VALID && api.isMouseInBox(xSize/2-65+j, xSize/2+65+j, 70+k, 85+k)) {
+			api.drawTooltipAt(fontRendererObj, e.desc, par1, par2);
+		}
+		api.drawCenteredString(fontRendererObj, display, xSize/2, 75, e.getTextColor());
 
 		float w = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
 		GL11.glLineWidth(5);

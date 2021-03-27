@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -42,6 +42,7 @@ public class BlockMusicTrigger extends Block implements SemiUnbreakable {
 	public BlockMusicTrigger(Material mat) {
 		super(mat);
 
+		this.setHardness(6);
 		this.setResistance(60000);
 		this.setCreativeTab(ChromatiCraft.tabChromaGen);
 	}

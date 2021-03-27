@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
+import Reika.ChromatiCraft.Items.ItemCrystalSeeds;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -184,7 +185,6 @@ public class ChromaAspectManager {
 			ItemStack pendant3 = ChromaItems.PENDANT3.getStackOf(dye);
 			ItemStack acc = ChromaItems.ADJACENCY.getStackOfMetadata(i);
 			ItemStack stone = ChromaItems.ELEMENTAL.getStackOfMetadata(i);
-			ItemStack seed = ChromaItems.SEED.getStackOfMetadata(i);
 			ItemStack plant = ChromaBlocks.PLANT.getStackOfMetadata(i);
 			List<Aspect> li = new ArrayList();
 			li.addAll(aspectsColor.getForward(dye));
@@ -226,7 +226,6 @@ public class ChromaAspectManager {
 			ReikaThaumHelper.addAspects(stone, Aspect.EARTH, 1);
 			ReikaThaumHelper.addAspects(plant, Aspect.PLANT, 2);
 			ReikaThaumHelper.addAspects(plant, Aspect.CROP, 1);
-			ReikaThaumHelper.addAspects(seed, Aspect.PLANT, 1);
 			for (Aspect a : li) {
 				ReikaThaumHelper.addAspects(shard, a, 2);
 				ReikaThaumHelper.addAspects(bshard, a, 5);
@@ -241,8 +240,14 @@ public class ChromaAspectManager {
 				ReikaThaumHelper.addAspects(pendant3, a, 24);
 				ReikaThaumHelper.addAspects(acc, a, 8);
 				ReikaThaumHelper.addAspects(stone, a, 4);
-				ReikaThaumHelper.addAspects(seed, a, 1);
 				ReikaThaumHelper.addAspects(plant, a, 3);
+			}
+
+			for (ItemStack seed : ItemCrystalSeeds.getAllVariants(dye)) {
+				ReikaThaumHelper.addAspects(seed, Aspect.PLANT, 1);
+				for (Aspect a : li) {
+					ReikaThaumHelper.addAspects(seed, a, 1);
+				}
 			}
 		}
 

@@ -47,8 +47,18 @@ import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.ModRegistry.InterfaceCache;
 
+import buildcraft.api.transport.IPipe;
+import buildcraft.api.transport.IPipeConnection;
+import buildcraft.api.transport.IPipeTile;
+import buildcraft.api.transport.IPipeTile.PipeType;
+import buildcraft.transport.Pipe;
+import buildcraft.transport.PipeTransportPower;
+import cofh.api.energy.IEnergyConnection;
 import cofh.api.energy.IEnergyHandler;
+import cofh.api.energy.IEnergyProvider;
+import cofh.api.energy.IEnergyReceiver;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import dan200.computercraft.api.lua.ILuaContext;
@@ -69,12 +79,12 @@ import vazkii.botania.api.internal.IManaBurst;
 import vazkii.botania.api.mana.IManaCollisionGhost;
 import vazkii.botania.api.mana.IManaReceiver;
 
-@Strippable(value = {"cofh.api.energy.IEnergyHandler", "thaumcraft.api.aspects.IEssentiaTransport",
+@Strippable(value = {"buildcraft.api.transport.IPipeConnection", "cofh.api.energy.IEnergyHandler", "thaumcraft.api.aspects.IEssentiaTransport",
 		"thaumcraft.api.aspects.IAspectContainer", "vazkii.botania.api.mana.IManaCollisionGhost", "vazkii.botania.api.mana.IManaReceiver",
 "mrtjp.projectred.api.IBundledTile"})
 @Injectable(value = {"dan200.computercraft.api.peripheral.IPeripheral", "li.cil.oc.api.network.Environment",
 		"li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.SidedEnvironment"})
-public class TileEntityRift extends LinkedTileBase implements WorldRift, IFluidHandler, IEnergyHandler,
+public class TileEntityRift extends LinkedTileBase implements WorldRift, IPipeConnection, IFluidHandler, IEnergyHandler,
 IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCollisionGhost, IManaReceiver, IBundledTile {
 
 	private int color = 0xffffff;
@@ -430,41 +440,90 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 	}
 
 	@Override
+	@ModDependent(ModList.BCTRANSPORT)
+	public ConnectOverride overridePipeConnection(PipeType type, ForgeDirection with) {
+		return ConnectOverride.CONNECT;
+	}
+
+	@ModDependent(ModList.BCTRANSPORT)
+	private int sendEnergyToBCPipe(TileEntity other, ForgeDirection from, int maxReceive, boolean simulate) {
+		if (simulate)
+			return maxReceive;
+		IPipeTile pipe = (IPipeTile)other;
+		if (pipe.getPipeType() == PipeType.POWER) {
+			IPipe p = pipe.getPipe();
+			if (p instanceof Pipe && ((Pipe)p).transport instanceof PipeTransportPower) {
+				return (int)((PipeTransportPower)((Pipe)p).transport).receiveEnergy(from, maxReceive); //I know it says to never call this, but nothing else works...
+			}
+		}
+		return 0;
+	}
+
+	@ModDependent(ModList.BCTRANSPORT)
+	private int takeEnergyFromBCPipe(TileEntity other, ForgeDirection from, int maxExtract, boolean simulate) {
+		if (simulate)
+			return maxExtract;
+		IPipeTile pipe = (IPipeTile)other;
+		if (pipe.getPipeType() == PipeType.POWER) {
+			IPipe p = pipe.getPipe();
+			if (p instanceof Pipe && ((Pipe)p).transport instanceof PipeTransportPower) {
+				((PipeTransportPower)((Pipe)p).transport).requestEnergy(from, maxExtract);
+				return 0;
+			}
+		}
+		return 0;
+	}
+
+	@Override
 	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
-		if (this.getOther() != null && this.getAdjacentTargetTile(from.getOpposite()) instanceof IEnergyHandler) {
-			return ((IEnergyHandler)this.getAdjacentTargetTile(from.getOpposite())).receiveEnergy(from, maxReceive, simulate);
+		TileEntity other = this.getOther() != null ? this.getAdjacentTargetTile(from.getOpposite()) : null;
+		if (ModList.BCTRANSPORT.isLoaded() && InterfaceCache.BCPIPE.instanceOf(other)) {
+			return this.sendEnergyToBCPipe(other, from, maxReceive, simulate);
+		}
+		else if (other instanceof IEnergyReceiver) {
+			return ((IEnergyReceiver)other).receiveEnergy(from, maxReceive, simulate);
 		}
 		return 0;
 	}
 
 	@Override
 	public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate) {
-		if (this.getOther() != null && this.getAdjacentTargetTile(from.getOpposite()) instanceof IEnergyHandler) {
-			return ((IEnergyHandler)this.getAdjacentTargetTile(from.getOpposite())).extractEnergy(from, maxExtract, simulate);
+		TileEntity other = this.getOther() != null ? this.getAdjacentTargetTile(from.getOpposite()) : null;
+		if (ModList.BCTRANSPORT.isLoaded() && InterfaceCache.BCPIPE.instanceOf(other)) {
+			return this.takeEnergyFromBCPipe(other, from, maxExtract, simulate);
+		}
+		else if (other instanceof IEnergyProvider) {
+			return ((IEnergyProvider)other).extractEnergy(from, maxExtract, simulate);
 		}
 		return 0;
 	}
 
 	@Override
 	public boolean canConnectEnergy(ForgeDirection from) {
-		if (this.getOther() != null && this.getAdjacentTargetTile(from.getOpposite()) instanceof IEnergyHandler) {
-			return ((IEnergyHandler)this.getAdjacentTargetTile(from.getOpposite())).canConnectEnergy(from);
+		TileEntity other = this.getOther() != null ? this.getAdjacentTargetTile(from.getOpposite()) : null;
+		if (ModList.BCTRANSPORT.isLoaded() && InterfaceCache.BCPIPE.instanceOf(other)) {
+			return true;
+		}
+		else if (other instanceof IEnergyConnection) {
+			return ((IEnergyConnection)other).canConnectEnergy(from);
 		}
 		return false;
 	}
 
 	@Override
 	public int getEnergyStored(ForgeDirection from) {
-		if (this.getOther() != null && this.getAdjacentTargetTile(from.getOpposite()) instanceof IEnergyHandler) {
-			return ((IEnergyHandler)this.getAdjacentTargetTile(from.getOpposite())).getEnergyStored(from);
+		TileEntity other = this.getOther() != null ? this.getAdjacentTargetTile(from.getOpposite()) : null;
+		if (other instanceof IEnergyProvider) {
+			return ((IEnergyProvider)other).getEnergyStored(from);
 		}
 		return 0;
 	}
 
 	@Override
 	public int getMaxEnergyStored(ForgeDirection from) {
-		if (this.getOther() != null && this.getAdjacentTargetTile(from.getOpposite()) instanceof IEnergyHandler) {
-			return ((IEnergyHandler)this.getAdjacentTargetTile(from.getOpposite())).getMaxEnergyStored(from);
+		TileEntity other = this.getOther() != null ? this.getAdjacentTargetTile(from.getOpposite()) : null;
+		if (other instanceof IEnergyProvider) {
+			return ((IEnergyProvider)other).getMaxEnergyStored(from);
 		}
 		return 0;
 	}
