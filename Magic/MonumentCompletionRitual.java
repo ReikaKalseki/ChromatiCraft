@@ -250,10 +250,12 @@ public class MonumentCompletionRitual {
 
 	public static void clearRituals() {
 		runningRituals = false;
-		for (int i = 0; i < 16; i++) {
-			colorFade[i] = 0;
-			shaderColors[i] = null;
-			shaderPositions[i] = null;
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+			for (int i = 0; i < 16; i++) {
+				colorFade[i] = 0;
+				shaderColors[i] = null;
+				shaderPositions[i] = null;
+			}
 		}
 	}
 
