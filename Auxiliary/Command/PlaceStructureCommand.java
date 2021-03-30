@@ -42,6 +42,9 @@ public class PlaceStructureCommand extends DragonCommandBase {
 		s.getStructure().resetToDefaults();
 		if (s == ChromaStructures.NETHERTRAP)
 			((VoidMonsterNetherStructure)s.getStructure()).setTNT(args.length == 1 || Boolean.parseBoolean(args[1]));
+		if (s.getStructure() instanceof GeneratedStructureBase) {
+			((GeneratedStructureBase)s.getStructure()).markForWorldgen();
+		}
 		CrystalElement e = s.requiresColor ? CrystalElement.valueOf(args[1].toUpperCase(Locale.ENGLISH)) : null;
 		FilledBlockArray arr = s.getArray(ep.worldObj, x, y, z, e);
 		arr.place();

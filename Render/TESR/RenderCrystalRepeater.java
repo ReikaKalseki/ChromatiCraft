@@ -35,7 +35,6 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
-import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -108,7 +107,6 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 				float f = HoldingChecks.MANIPULATOR.getFade();
 				if (f > 0) {
 					UUID uid = te.getCaster();
-					uid = DragonAPICore.Reika_UUID;
 					if (uid != null) {
 						this.renderCasterHalo(te, f, uid, par8);
 					}

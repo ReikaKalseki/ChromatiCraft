@@ -78,7 +78,7 @@ public class AbilityAPI {
 		/** Called when the ability is removed (deactivated) on a player, either manually, from loss of charge, or from death. */
 		public void onRemoveFromPlayer(EntityPlayer ep);
 
-		/** Whether the player can attempt to obtain this ability yet. Return false if there is some unmet prerequisite. */
+		/** Whether the player can attempt to obtain this ability FRAGMENT yet. Return false if there is some unmet prerequisite. */
 		public boolean isAvailableToPlayer(EntityPlayer ep);
 
 		/** Return true if the player can perform the given action. */

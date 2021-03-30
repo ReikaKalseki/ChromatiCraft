@@ -249,7 +249,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		if (inv[0] != null) {
 			if (!this.isCompatible(ReikaEnchantmentHelper.getEnchantments(inv[0]).keySet(), e))
 				return EnchantValidity.INCOMPATIBLEWITHEXISTING;
-			if (!this.isEnchantValid(e, inv[0], inv[0].getItem(), true))
+			if (!this.isEnchantValid(e, inv[0], inv[0].getItem(), false))
 				return EnchantValidity.WRONGITEM;
 		}
 		return EnchantValidity.VALID;

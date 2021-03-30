@@ -825,12 +825,15 @@ public class BurrowStructure extends FragmentStructureBase {
 		this.placeDoor(array, x+6, y+2, z+2);
 
 		array.setBlock(x+3, y+4, z+5, Blocks.chest, 3); //key holder
-		this.addCallback(x+3, y+4, z+5, keyChestCall);
+		if (this.isWorldgen())
+			this.addCallback(x+3, y+4, z+5, keyChestCall);
 
 		array.setBlock(x+6, y+1, z+4, getChestGen(), 2); //chests
 		array.setBlock(x+5, y+1, z+4, getChestGen(), 2);
-		this.addCallback(x+6, y+1, z+4, lootCall);
-		this.addCallback(x+5, y+1, z+4, lootCall);
+		if (this.isWorldgen()) {
+			this.addCallback(x+6, y+1, z+4, lootCall);
+			this.addCallback(x+5, y+1, z+4, lootCall);
+		}
 
 		array.setBlock(x+3, y+2, z+1, Blocks.torch, 5);
 		array.setBlock(x+6, y+1, z+3, Blocks.torch, 5);
@@ -858,12 +861,14 @@ public class BurrowStructure extends FragmentStructureBase {
 
 	private void placeFurnace(FilledBlockArray array, int x, int y, int z) {
 		array.setBlock(x, y, z, Blocks.furnace, 3);
-		this.addCallback(x, y, z, furnaceCall);
+		if (this.isWorldgen())
+			this.addCallback(x, y, z, furnaceCall);
 	}
 
 	private void placeDoor(FilledBlockArray array, int x, int y, int z) {
 		array.setBlock(x, y, z, ChromaBlocks.DOOR.getBlockInstance(), BlockChromaDoor.getMetadata(false, false, true, true));
-		this.addCallback(x, y, z, doorCall);
+		if (this.isWorldgen())
+			this.addCallback(x, y, z, doorCall);
 	}
 
 	@Override

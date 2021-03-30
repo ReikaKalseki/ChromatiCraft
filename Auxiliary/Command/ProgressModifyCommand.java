@@ -192,10 +192,10 @@ public class ProgressModifyCommand extends DragonCommandBase {
 						Chromabilities.give(ep, a);
 					else
 						Chromabilities.removeFromPlayer(ep, a);
-					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Fragment "+a.getDisplayName()+" set to "+set+" for "+ep.getCommandSenderName());
+					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Ability "+a.getDisplayName()+" set to "+set+" for "+ep.getCommandSenderName());
 				}
 				catch (IllegalArgumentException e) {
-					this.sendChatToSender(ics, EnumChatFormatting.RED+" Invalid fragment '"+args[1]+"'.");
+					this.sendChatToSender(ics, EnumChatFormatting.RED+" Invalid ability '"+args[1]+"'.");
 					return;
 				}
 				break;

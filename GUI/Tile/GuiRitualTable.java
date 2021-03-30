@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
 public class GuiRitualTable extends GuiChromability {
 
@@ -82,12 +83,13 @@ public class GuiRitualTable extends GuiChromability {
 	protected void actionPerformed(GuiButton b) {
 		if (b.id == 2) {
 			Ability a = this.getActiveAbility();
-			if (a.isAvailableToPlayer(player)) {
+			ChromaResearch r = a instanceof Chromabilities ? ChromaResearch.getPageFor((Chromabilities)a) : null;
+			if (r == null || ChromaResearchManager.instance.playerHasFragment(player, r)) {
 				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.ABILITYCHOOSE.ordinal(), tile, Chromabilities.getAbilityInt(a));
 				player.closeScreen();
 			}
 			else {
-				ChromaSounds.ERROR.playSound(player);
+				ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 1, 1);
 			}
 			return;
 		}

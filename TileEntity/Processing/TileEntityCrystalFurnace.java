@@ -204,7 +204,7 @@ VariableTexture {
 			return 1;
 		else if (ModList.GENDUSTRY.isLoaded() && in.getDisplayName() != null && in.getDisplayName().toLowerCase(Locale.ENGLISH).contains("gene"))
 			return 1;
-		else if (ModList.GREGTECH.isLoaded() && ReikaItemHelper.getRegistrantMod(in).toLowerCase(Locale.ENGLISH).contains("gregapi")) {
+		else if (ModList.GREGTECH.isLoaded() && (ReikaItemHelper.getRegistrantMod(in).toLowerCase(Locale.ENGLISH).contains("gregapi") || ReikaItemHelper.getRegistrantMod(in).toLowerCase(Locale.ENGLISH).contains("gregtech"))) {
 			if (in.getItem() instanceof ItemFood)
 				return MULTIPLY;
 			int[] ids = OreDictionary.getOreIDs(in);

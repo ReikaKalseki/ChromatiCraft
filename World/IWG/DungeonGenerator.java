@@ -30,6 +30,7 @@ import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntitySilverfish;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.passive.EntityWolf;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityMobSpawner;
@@ -68,6 +69,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldChunk;
@@ -78,6 +80,8 @@ import Reika.DragonAPI.Instantiable.Math.Noise.VoronoiNoiseGenerator;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Interfaces.Registry.TreeType;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
@@ -449,6 +453,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			int rx = x;
 			int rz = z;
 			s.getStructure().resetToDefaults();
+			((GeneratedStructureBase)s.getStructure()).markForWorldgen();
 			n++;
 			if (!this.isValidBiome(s, world.getBiomeGenForCoords(x, z)))
 				continue;
@@ -457,8 +462,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					break;
 				case CAVERN: {
 					int y = 10+r.nextInt(40);
-					if (this.isValidCavernLocation(world, x, y, z, ChromaStructures.CAVERN.getArray(world, x, y, z, r))) {
-						FilledBlockArray struct = ChromaStructures.CAVERN.getArray(world, x, y, z);
+					FilledBlockArray struct = ChromaStructures.CAVERN.getArray(world, x, y, z, r);
+					if (this.isValidCavernLocation(world, x, y, z, struct)) {
 						if (this.isValidCavernLocation(world, x, y, z, struct)) {
 							struct.place(2);
 							//generate tunnel
@@ -476,17 +481,23 @@ public class DungeonGenerator implements RetroactiveGenerator {
 								}
 							}
 							//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+x+","+y+","+z);
-							world.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
-							TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x, y, z);
-							te.generate(s, CrystalElement.WHITE);
-							this.onGenerateStructure(s, te);
+							try {
+								world.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
+								TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x, y, z);
+								te.generate(s, CrystalElement.WHITE);
+								rx = te.xCoord;
+								rz = te.zCoord;
+								this.onGenerateStructure(s, te);
+							}
+							catch (Exception e) {
+								((GeneratedStructureBase)s.getStructure()).addError(new Exception("Failed to place controller @ "+x+", "+y+", "+z, e));
+							}
 							this.populateChests(s, struct, r);
 							((GeneratedStructureBase)s.getStructure()).runCallbacks(world, r);
 							flag = true;
-							rx = te.xCoord;
-							rz = te.zCoord;
 						}
 					}
+					this.logErrors(world, x, y, z, s);
 					break;
 				}
 				case BURROW: {
@@ -494,13 +505,10 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					CrystalElement e = CrystalElement.randomElement();
 					FilledBlockArray arr = ChromaStructures.BURROW.getArray(world, x, y, z, r, e);
 					if (this.isValidBurrowLocation(world, x, y, z, arr)) {
+						((GeneratedStructureBase)s.getStructure()).markForWorldgen();
 						arr.place(2);
 						//world.setBlockMetadataWithNotify(x-7, y-5, z-2, 5, 3); //that chest that never points right
 						//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+x+","+y+","+z);
-						world.setBlock(x-5, y-8, z-2, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
-						TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x-5, y-8, z-2);
-						te.generate(s, e);
-						this.onGenerateStructure(s, te);
 						this.populateChests(s, arr, r);
 						FilledBlockArray furn = null;
 						FilledBlockArray loot = null;
@@ -512,7 +520,18 @@ public class DungeonGenerator implements RetroactiveGenerator {
 								}
 							}
 						}
-						te.setBurrowAddons(furn != null, loot != null);
+						try {
+							world.setBlock(x-5, y-8, z-2, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
+							TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x-5, y-8, z-2);
+							te.generate(s, e);
+							te.setBurrowAddons(furn != null, loot != null);
+							rx = te.xCoord;
+							rz = te.zCoord;
+							this.onGenerateStructure(s, te);
+						}
+						catch (Exception ex) {
+							((GeneratedStructureBase)s.getStructure()).addError(new Exception("Failed to place controller @ "+(x-5)+", "+(y-8)+", "+(z-2), ex));
+						}
 						((GeneratedStructureBase)s.getStructure()).runCallbacks(world, r);
 						this.modifyBlocks(s, arr, r, Modify.MOSSIFY, Modify.GRASSDIRT);
 						if (furn != null)
@@ -520,9 +539,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						if (loot != null)
 							this.modifyBlocks(s, loot, r, Modify.MOSSIFY, Modify.GRASSDIRT);
 						flag = true;
-						rx = te.xCoord;
-						rz = te.zCoord;
 					}
+					this.logErrors(world, x, y, z, s);
 					break;
 				}
 				case OCEAN: {
@@ -538,20 +556,26 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						FilledBlockArray struct = ChromaStructures.OCEAN.getArray(world, x, y, z, r);
 						if (y > 0 && this.isValidOceanLocation(world, x, y, z, struct)) {
 							struct.place(2);
-							world.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
-							TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x, y, z);
-							te.generate(s, CrystalElement.WHITE);
-							this.onGenerateStructure(s, te);
+							try {
+								world.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
+								TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x, y, z);
+								te.generate(s, CrystalElement.WHITE);
+								rx = te.xCoord;
+								rz = te.zCoord;
+								this.onGenerateStructure(s, te);
+							}
+							catch (Exception e) {
+								((GeneratedStructureBase)s.getStructure()).addError(new Exception("Failed to place controller @ "+x+", "+y+", "+z, e));
+							}
 							this.populateChests(s, struct, r);
 							this.programSpawners(s, struct);
 							((GeneratedStructureBase)s.getStructure()).runCallbacks(world, r);
 							this.modifyBlocks(s, struct, r, Modify.MOSSIFY);
 							this.generatePit(world, x, y, z);
 							flag = true;
-							rx = te.xCoord;
-							rz = te.zCoord;
 						}
 					}
+					this.logErrors(world, x, y, z, s);
 					break;
 				}
 				case DESERT: {
@@ -573,10 +597,17 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						if (this.isValidDesertLocation(world, x, y, z, struct)) {
 							struct.place(2);
 
-							world.setBlock(x+7, y+3, z+7, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
-							TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x+7, y+3, z+7);
-							te.generate(s, CrystalElement.WHITE);
-							this.onGenerateStructure(s, te);
+							try {
+								world.setBlock(x+7, y+3, z+7, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
+								TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x+7, y+3, z+7);
+								te.generate(s, CrystalElement.WHITE);
+								rx = te.xCoord;
+								rz = te.zCoord;
+								this.onGenerateStructure(s, te);
+							}
+							catch (Exception e) {
+								((GeneratedStructureBase)s.getStructure()).addError(new Exception("Failed to place controller @ "+(x+7)+", "+(y+3)+", "+(z+7), e));
+							}
 							this.populateChests(s, struct, r);
 							this.programSpawners(s, struct);
 							((GeneratedStructureBase)s.getStructure()).runCallbacks(world, r);
@@ -608,10 +639,9 @@ public class DungeonGenerator implements RetroactiveGenerator {
 								}
 							}
 							flag = true;
-							rx = te.xCoord;
-							rz = te.zCoord;
 						}
 					}
+					this.logErrors(world, x, y, z, s);
 					break;
 				}
 				case SNOWSTRUCT: {
@@ -620,10 +650,17 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					if (this.isValidSnowStructLocation(world, x, y, z, arr)) {
 						arr.offset(0, -6, 0);
 						arr.place(2);
-						world.setBlock(x+8, y-3, z+6, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
-						TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x+8, y-3, z+6);
-						te.generate(s, CrystalElement.WHITE);
-						this.onGenerateStructure(s, te);
+						try {
+							world.setBlock(x+8, y-3, z+6, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
+							TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x+8, y-3, z+6);
+							te.generate(s, CrystalElement.WHITE);
+							rx = te.xCoord;
+							rz = te.zCoord;
+							this.onGenerateStructure(s, te);
+						}
+						catch (Exception e) {
+							((GeneratedStructureBase)s.getStructure()).addError(new Exception("Failed to place controller @ "+(x+8)+", "+(y-3)+", "+(z+6), e));
+						}
 						this.modifyBlocks(s, arr, r, Modify.MOSSIFY, Modify.GRASSDIRT, Modify.ADJTREES, Modify.CLEANENTRANCE);
 						this.addMissingSupport(arr, Blocks.stone, 0, 5);
 						this.addSnowCover(arr, 4);
@@ -631,11 +668,10 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						this.populateChests(s, arr, r);
 						((GeneratedStructureBase)s.getStructure()).runCallbacks(world, r);
 						flag = true;
-						rx = te.xCoord;
-						rz = te.zCoord;
 					}
+					this.logErrors(world, x, y, z, s);
+					break;
 				}
-				break;
 			}
 			if (flag) {
 				if (rx != cx || rz != cz)
@@ -645,6 +681,25 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 		this.markChunkStatus(world, cx >> 4, cz >> 4, s, StructureGenStatus.INERT_GEN);
 		return null;
+	}
+
+	private void logErrors(World world, int x, int y, int z, ChromaStructures s) {
+		Collection<Exception> errors = ((GeneratedStructureBase)s.getStructure()).getErrors();
+		if (!errors.isEmpty()) {
+			long id = world.rand.nextLong();
+			EntityPlayer ep = world.getClosestPlayer(x, y, z, -1);
+			if (ep != null)
+				ReikaChatHelper.sendChatToPlayer(ep, "Structure "+s+" encountered "+errors.size()+" errors during generation. Check your log for details. Error ID: "+id);
+			ChromatiCraft.logger.logError("Structure "+s+" encountered "+errors.size()+" errors during generation @ "+x+", "+y+", "+z+"; Error ID: "+id);
+			int top = world.getTopSolidOrLiquidBlock(x, z)-1;
+			ReikaJavaLibrary.pConsole("Regional metadata: Biome - "+world.getBiomeGenForCoords(x, z)+"; top block: "+BlockKey.getAt(world, x, top, z)+" @ y="+top+"; block ="+BlockKey.getAt(world, x, y, z));
+			ReikaJavaLibrary.pConsole("Error list:");
+			for (Exception e : errors) {
+				ReikaJavaLibrary.pConsole("=======================");
+				e.printStackTrace();
+				ReikaJavaLibrary.pConsole("=======================");
+			}
+		}
 	}
 
 	private boolean isValidBiomeForDesertStruct(BiomeGenBase biome) {
@@ -947,7 +1002,12 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		for (int k = 0; k < arr.getSize(); k++) {
 			Coordinate c = arr.getNthBlock(k);
 			for (Modify m : flags) {
-				m.apply(s, arr, c, r);
+				try {
+					m.apply(s, arr, c, r);
+				}
+				catch (Exception e) {
+					((GeneratedStructureBase)s.getStructure()).addError(new Exception("Failed to run pass '"+m+"'", e));
+				}
 			}
 		}
 	}
@@ -1000,21 +1060,26 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	}
 
 	public static void populateChests(ChromaStructures struct, FilledBlockArray arr, Random r) {
-		for (Coordinate c : ((GeneratedStructureBase)struct.getStructure()).getCachedBlocks(GeneratedStructureBase.getChestGen())) {
-			Block b = c.getBlock(arr.world);
-			if (b == ChromaStructureBase.getChestGen()) {
-				TileEntityLootChest te = (TileEntityLootChest)c.getTileEntity(arr.world);
-				if (te.isUntouchedWorldgen()) {
-					int bonus = 0;
-					if (struct == ChromaStructures.OCEAN && c.yCoord-arr.getMinY() == 4)
-						bonus = 4;
-					if (struct == ChromaStructures.DESERT && c.yCoord-arr.getMinY() < 4)
-						bonus = 2;
-					if (struct == ChromaStructures.SNOWSTRUCT)
-						bonus = c.yCoord-arr.getMinY() < 4 ? 2 : 1;
-					populateChest(te, struct, bonus, r);
+		try {
+			for (Coordinate c : ((GeneratedStructureBase)struct.getStructure()).getCachedBlocks(GeneratedStructureBase.getChestGen())) {
+				Block b = c.getBlock(arr.world);
+				if (b == ChromaStructureBase.getChestGen()) {
+					TileEntityLootChest te = (TileEntityLootChest)c.getTileEntity(arr.world);
+					if (te.isUntouchedWorldgen()) {
+						int bonus = 0;
+						if (struct == ChromaStructures.OCEAN && c.yCoord-arr.getMinY() == 4)
+							bonus = 4;
+						if (struct == ChromaStructures.DESERT && c.yCoord-arr.getMinY() < 4)
+							bonus = 2;
+						if (struct == ChromaStructures.SNOWSTRUCT)
+							bonus = c.yCoord-arr.getMinY() < 4 ? 2 : 1;
+						populateChest(te, struct, bonus, r);
+					}
 				}
 			}
+		}
+		catch (Exception e) {
+			((GeneratedStructureBase)struct.getStructure()).addError(new Exception("Failed to populate chests", e));
 		}
 	}
 

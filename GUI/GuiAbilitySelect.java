@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.GUI;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -28,7 +29,9 @@ import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHotkeys;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHotkeys.CachedAbilitySelection;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer.FontType;
+import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -51,6 +54,18 @@ public class GuiAbilitySelect extends GuiScreen {
 		player = ep;
 		abilities.addAll(Chromabilities.getAbilitiesAvailableToPlayer(ep));
 		allowUserInput = true;
+
+		Iterator<Ability> it = abilities.iterator();
+		while (it.hasNext()) {
+			Ability a = it.next();
+			if (a instanceof Chromabilities) {
+				ChromaResearch r = ChromaResearch.getPageFor((Chromabilities)a);
+				if (!ChromaResearchManager.instance.playerHasFragment(ep, r)) {
+					it.remove();
+					break;
+				}
+			}
+		}
 	}
 
 	@Override

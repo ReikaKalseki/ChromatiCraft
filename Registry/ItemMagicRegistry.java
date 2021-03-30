@@ -389,6 +389,10 @@ public class ItemMagicRegistry {
 		if (ModList.HEXCRAFT.isLoaded()) {
 			for (BasicHexColors hex : BasicHexColors.values()) {
 				Item i = hex.getCrystal();
+				if (i == null) {
+					ChromatiCraft.logger.logError("Could not find hex crystal item for color "+hex+"!");
+					continue;
+				}
 				this.addElement(i, CrystalElement.BROWN, 1);
 				this.addElement(i, CrystalElement.YELLOW, 4);
 
