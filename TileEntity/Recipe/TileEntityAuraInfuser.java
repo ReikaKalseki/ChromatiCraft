@@ -54,7 +54,7 @@ import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
-import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.ThreadSafeTileCache;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
@@ -92,7 +92,7 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable, Lo
 	protected final HashSet<Coordinate> focusCrystalSpots = new HashSet();
 	private final ArrayList<Coordinate> chromaLocations = new ArrayList();
 
-	private static final ThreadSafeSet<WorldLocation> cache = new ThreadSafeSet();
+	private static final ThreadSafeTileCache cache = new ThreadSafeTileCache();
 
 	static {
 		required.addTag(CrystalElement.PURPLE, 500);

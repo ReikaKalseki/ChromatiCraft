@@ -42,7 +42,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire.WireWatcher;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.ChunkManager;
-import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.ThreadSafeTileCache;
 import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet.DefaultIterationResult;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
@@ -75,7 +75,7 @@ Linkable, ChunkLoadingTile, BreakAction, InertIInv {
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
-	private static final ThreadSafeSet<WorldLocation> cache = new ThreadSafeSet();
+	private static final ThreadSafeTileCache cache = new ThreadSafeTileCache();
 
 	private static final int RING_DURATION = 400;
 

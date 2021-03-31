@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE.Defence;
 
-import java.util.Collection;
-
 import net.machinemuse.api.electricity.MuseElectricItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -26,7 +24,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
-import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.ThreadSafeTileCache;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
@@ -43,7 +41,7 @@ import ic2.api.item.IElectricItem;
 //Some sort of indicator? Cloaking?
 public class TileEntityCloakingTower extends TileEntityChromaticBase implements LocationCached, MultiBlockChromaTile {
 
-	private static final Collection<WorldLocation> cache = new ThreadSafeSet();
+	private static final ThreadSafeTileCache cache = new ThreadSafeTileCache();
 
 	public static final int MAXRANGE = 128;
 
@@ -212,7 +210,7 @@ public class TileEntityCloakingTower extends TileEntityChromaticBase implements 
 	}
 
 	public static boolean isPlayerCloaked(EntityPlayer ep) {
-		for (WorldLocation loc : cache) {
+		return cache.iterateAsSearch((WorldLocation loc) -> {
 			if (loc.dimensionID == ep.worldObj.provider.dimensionId) {
 				if (loc.getCylinderDistanceTo(ep) <= MAXRANGE) {
 					TileEntityCloakingTower te = (TileEntityCloakingTower)loc.getTileEntity(ep.worldObj);
@@ -223,8 +221,8 @@ public class TileEntityCloakingTower extends TileEntityChromaticBase implements 
 					}
 				}
 			}
-		}
-		return false;
+			return false;
+		});
 	}
 
 	public static void clearCache() {

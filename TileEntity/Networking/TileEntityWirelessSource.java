@@ -11,7 +11,6 @@ package Reika.ChromatiCraft.TileEntity.Networking;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Set;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
@@ -30,7 +29,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.GlowTendril;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
-import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.ThreadSafeTileCache;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
@@ -68,7 +67,7 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 		tendril = new GlowTendril(1.25, 6);
 	}
 
-	private static final Set<WorldLocation> cache = new ThreadSafeSet();
+	private static final ThreadSafeTileCache cache = new ThreadSafeTileCache();
 
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {

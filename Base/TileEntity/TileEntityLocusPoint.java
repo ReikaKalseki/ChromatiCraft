@@ -25,7 +25,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
-import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.ThreadSafeTileCache;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.NestedMap;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
@@ -38,11 +38,11 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class TileEntityLocusPoint extends TileEntityChromaticBase implements LocationCached, OwnedTile {
 
-	private static final NestedMap<Class<? extends TileEntityLocusPoint>, UUID, Collection<WorldLocation>> cache = new NestedMap();
+	private static final NestedMap<Class<? extends TileEntityLocusPoint>, UUID, ThreadSafeTileCache> cache = new NestedMap();
 
 	@Override
 	public void breakBlock() {
-		Collection<WorldLocation> c = cache.get(this.getClass(), placerUUID);
+		ThreadSafeTileCache c = cache.get(this.getClass(), placerUUID);
 		if (c != null) {
 			c.remove(new WorldLocation(this));
 		}
@@ -106,9 +106,9 @@ public abstract class TileEntityLocusPoint extends TileEntityChromaticBase imple
 	private static void cacheTile(TileEntityLocusPoint te) {
 		WorldLocation loc = new WorldLocation(te);
 		Class cl = te.getClass();
-		Collection<WorldLocation> c = cache.get(cl, te.placerUUID);
+		ThreadSafeTileCache c = cache.get(cl, te.placerUUID);
 		if (c == null) {
-			c = new ThreadSafeSet();
+			c = new ThreadSafeTileCache();
 			cache.put(cl, te.placerUUID, c);
 		}
 		c.add(loc);
@@ -124,7 +124,7 @@ public abstract class TileEntityLocusPoint extends TileEntityChromaticBase imple
 	}
 
 	public static Collection<WorldLocation> getCaches(Class<? extends TileEntityLocusPoint> cl) {
-		Map<UUID, Collection<WorldLocation>> map = cache.getMap(cl);
+		Map<UUID, ThreadSafeTileCache> map = cache.getMap(cl);
 		Collection<WorldLocation> ret = new ArrayList();
 		if (map != null) {
 			for (Collection<WorldLocation> c : map.values()) {

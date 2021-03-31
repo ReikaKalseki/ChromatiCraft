@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE.Defence;
 
-import java.util.Collection;
 import java.util.Iterator;
 
 import net.minecraft.block.Block;
@@ -28,7 +27,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
-import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.ThreadSafeTileCache;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
@@ -39,7 +38,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityExplosionShield extends CrystalReceiverBase implements LocationCached, RangeUpgradeable {
 
-	private static final Collection<WorldLocation> cache = new ThreadSafeSet();
+	private static final ThreadSafeTileCache cache = new ThreadSafeTileCache();
 
 	public static final int MAXRANGE = 32;
 	//public static final int MAXRANGE_Y = 24;
@@ -218,14 +217,14 @@ public class TileEntityExplosionShield extends CrystalReceiverBase implements Lo
 	}
 
 	public static boolean isLocationProtected(World world, int x, int y, int z, double power) {
-		for (WorldLocation loc : cache) {
+		return cache.iterateAsSearch((WorldLocation loc) -> {
 			if (loc.dimensionID == world.provider.dimensionId) {
 				TileEntityExplosionShield te = (TileEntityExplosionShield)loc.getTileEntity(world);
 				if (te.isLocationProtectedBy(world, x, y, z, power))
 					return true;
 			}
-		}
-		return false;
+			return false;
+		});
 	}
 
 	public boolean isLocationProtectedBy(World world, int x, int y, int z, double power) {
