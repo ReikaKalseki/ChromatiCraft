@@ -15,12 +15,14 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.RangeTracker;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -38,7 +40,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityExplosionShield extends CrystalReceiverBase implements LocationCached, RangeUpgradeable {
 
-	private static final ThreadSafeTileCache cache = new ThreadSafeTileCache();
+	private static final ThreadSafeTileCache cache = new ThreadSafeTileCache().setTileClass(TileEntityExplosionShield.class);
 
 	public static final int MAXRANGE = 32;
 	//public static final int MAXRANGE_Y = 24;
@@ -194,36 +196,28 @@ public class TileEntityExplosionShield extends CrystalReceiverBase implements Lo
 	}
 
 	public static void dampenExplosion(World world, Explosion e) {
-		for (WorldLocation loc : cache) {
-			if (loc.dimensionID == world.provider.dimensionId) {
-				TileEntityExplosionShield te = (TileEntityExplosionShield)loc.getTileEntity(world);
-				if (te == null && world.isRemote)
-					continue;
-				//if (Math.abs(e.explosionY-loc.yCoord-0.5) <= te.rangeY) {
-				//if (ReikaMathLibrary.py3d(e.explosionX-loc.xCoord-0.5, 0, e.explosionZ-loc.zCoord-0.5) <= te.range) {
-				//if (te.canDampen(e)) {
-				Iterator<ChunkPosition> it = e.affectedBlockPositions.iterator();
-				while (it.hasNext()) {
-					ChunkPosition p = it.next();
-					if (te.isLocationProtectedBy(world, p.chunkPosX, p.chunkPosY, p.chunkPosZ, e.explosionSize)) {
-						it.remove();
-					}
+		cache.applyToMatches(world, true, (WorldLocation loc, TileEntity tile) -> {
+			TileEntityExplosionShield te = (TileEntityExplosionShield)tile;
+			//if (Math.abs(e.explosionY-loc.yCoord-0.5) <= te.rangeY) {
+			//if (ReikaMathLibrary.py3d(e.explosionX-loc.xCoord-0.5, 0, e.explosionZ-loc.zCoord-0.5) <= te.range) {
+			//if (te.canDampen(e)) {
+			Iterator<ChunkPosition> it = e.affectedBlockPositions.iterator();
+			while (it.hasNext()) {
+				ChunkPosition p = it.next();
+				if (te.isLocationProtectedBy(world, p.chunkPosX, p.chunkPosY, p.chunkPosZ, e.explosionSize)) {
+					it.remove();
 				}
-				//}
-				//}
-				//}
 			}
-		}
+		}, (WorldLocation loc, TileEntity te) -> {
+			ChromaAux.logTileCacheError(world, loc, te, ChromaTiles.EXPLOSIONSHIELD);
+		});
 	}
 
 	public static boolean isLocationProtected(World world, int x, int y, int z, double power) {
-		return cache.iterateAsSearch((WorldLocation loc) -> {
-			if (loc.dimensionID == world.provider.dimensionId) {
-				TileEntityExplosionShield te = (TileEntityExplosionShield)loc.getTileEntity(world);
-				if (te.isLocationProtectedBy(world, x, y, z, power))
-					return true;
-			}
-			return false;
+		return cache.lookForMatch(world, true, (WorldLocation loc, TileEntity te) -> {
+			return ((TileEntityExplosionShield)te).isLocationProtectedBy(world, x, y, z, power);
+		}, (WorldLocation loc, TileEntity te) -> {
+			ChromaAux.logTileCacheError(world, loc, te, ChromaTiles.EXPLOSIONSHIELD);
 		});
 	}
 

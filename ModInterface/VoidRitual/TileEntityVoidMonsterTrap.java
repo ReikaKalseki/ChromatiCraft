@@ -25,6 +25,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.Linkable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
@@ -43,7 +44,6 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.ChunkManager;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.ThreadSafeTileCache;
-import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet.DefaultIterationResult;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -75,7 +75,7 @@ Linkable, ChunkLoadingTile, BreakAction, InertIInv {
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
-	private static final ThreadSafeTileCache cache = new ThreadSafeTileCache();
+	private static final ThreadSafeTileCache cache = new ThreadSafeTileCache().setTileClass(TileEntityVoidMonsterTrap.class);
 
 	private static final int RING_DURATION = 400;
 
@@ -530,28 +530,11 @@ Linkable, ChunkLoadingTile, BreakAction, InertIInv {
 	}
 
 	public static boolean handleTNTTrigger(World world, Entity e) {
-		Object ret = cache.iterate((WorldLocation loc) -> {
-			if (loc.dimensionID == world.provider.dimensionId) {
-				TileEntity te = loc.getTileEntity(world);
-				if (te instanceof TileEntityVoidMonsterTrap) {
-					if (((TileEntityVoidMonsterTrap)te).handleTNTTrigger(e))
-						return DefaultIterationResult.RETURNTRUE;
-					else
-						return DefaultIterationResult.CONTINUE;
-				}
-				else {
-					ChromatiCraft.logger.logError("Incorrect tile ("+te+") @ "+loc+" (with "+loc.getBlockKey(world)+") in Void Trap cache!?");
-					if (loc.getBlock(world) == ChromaTiles.VOIDTRAP.getBlock() && loc.getBlockMetadata(world) == ChromaTiles.VOIDTRAP.getBlockMetadata()) {
-						ChromatiCraft.logger.logError("Void Trap block and meta but no TileEntity!?!?");
-					}
-					return DefaultIterationResult.REMOVEANDCONTINUE;
-				}
-			}
-			else {
-				return DefaultIterationResult.CONTINUE;
-			}
+		return cache.lookForMatch(world, true, (WorldLocation loc, TileEntity te) -> {
+			return ((TileEntityVoidMonsterTrap)te).handleTNTTrigger(e);
+		}, (WorldLocation loc, TileEntity te) -> {
+			ChromaAux.logTileCacheError(world, loc, te, ChromaTiles.VOIDTRAP);
 		});
-		return ret == Boolean.TRUE;
 	}
 
 	private boolean handleTNTTrigger(Entity e) {

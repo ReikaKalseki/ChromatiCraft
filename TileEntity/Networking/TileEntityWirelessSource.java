@@ -67,7 +67,7 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 		tendril = new GlowTendril(1.25, 6);
 	}
 
-	private static final ThreadSafeTileCache cache = new ThreadSafeTileCache();
+	private static final ThreadSafeTileCache cache = new ThreadSafeTileCache().setTileClass(TileEntityWirelessSource.class);
 
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
@@ -112,7 +112,8 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 	}
 
 	private void broadcastEnergy(World world) {
-		ArrayList<WorldLocation> li = new ArrayList(cache);
+		ArrayList<WorldLocation> li = new ArrayList();
+		cache.copyTo(li);
 		for (int i = 0; i < 16; i++) {
 			Collections.shuffle(li);
 			for (WorldLocation loc : li) {

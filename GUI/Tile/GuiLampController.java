@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -129,9 +129,9 @@ public class GuiLampController extends GuiChromaBase {
 				is = GameRegistry.findItemStack(ModList.THERMALEXPANSION.modLabel, "powerCoilElectrum", 1);
 				break;
 			case SHAFTPOWER:
-				is = GameRegistry.findItemStack(ModList.ROTARYCRAFT.modLabel, "rotarycraft_item_shaftcraft", 1);
+				is = GameRegistry.findItemStack(ModList.ROTARYCRAFT.modLabel, "rotarycraft_item_gearcraft", 1);
 				if (is != null)
-					is.setItemDamage(2);
+					is.setItemDamage(0);
 				break;
 		}
 		if (is != null)

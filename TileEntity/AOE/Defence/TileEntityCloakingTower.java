@@ -16,9 +16,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
@@ -41,7 +43,7 @@ import ic2.api.item.IElectricItem;
 //Some sort of indicator? Cloaking?
 public class TileEntityCloakingTower extends TileEntityChromaticBase implements LocationCached, MultiBlockChromaTile {
 
-	private static final ThreadSafeTileCache cache = new ThreadSafeTileCache();
+	private static final ThreadSafeTileCache cache = new ThreadSafeTileCache().setTileClass(TileEntityCloakingTower.class);
 
 	public static final int MAXRANGE = 128;
 
@@ -210,18 +212,11 @@ public class TileEntityCloakingTower extends TileEntityChromaticBase implements 
 	}
 
 	public static boolean isPlayerCloaked(EntityPlayer ep) {
-		return cache.iterateAsSearch((WorldLocation loc) -> {
-			if (loc.dimensionID == ep.worldObj.provider.dimensionId) {
-				if (loc.getCylinderDistanceTo(ep) <= MAXRANGE) {
-					TileEntityCloakingTower te = (TileEntityCloakingTower)loc.getTileEntity(ep.worldObj);
-					if (te != null) {
-						if (te.isOwnedByPlayer(ep) && te.isActive()) {
-							return true;
-						}
-					}
-				}
-			}
-			return false;
+		return cache.lookForMatch(ep.worldObj, true, (WorldLocation loc, TileEntity tile) -> {
+			TileEntityCloakingTower te = (TileEntityCloakingTower)tile;
+			return te.isOwnedByPlayer(ep) && te.isActive() && loc.getCylinderDistanceTo(ep) <= MAXRANGE;
+		}, (WorldLocation loc, TileEntity te) -> {
+			ChromaAux.logTileCacheError(ep.worldObj, loc, te, ChromaTiles.CLOAKING);
 		});
 	}
 

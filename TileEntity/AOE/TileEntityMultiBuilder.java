@@ -28,7 +28,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -54,7 +54,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityMultiBuilder extends TileEntityChromaticBase implements LocationCached {
 
-	private static final ThreadSafeTileCache cache = new ThreadSafeTileCache();
+	private static final ThreadSafeTileCache cache = new ThreadSafeTileCache().setTileClass(TileEntityMultiBuilder.class);
 
 	private Collection<RenderBeam> renderBeams = new ArrayList();
 
@@ -187,7 +187,7 @@ public class TileEntityMultiBuilder extends TileEntityChromaticBase implements L
 
 	private boolean buildBlock(WorldServer world, int x, int y, int z, Block b, int meta, EntityPlayerMP ep, ItemStack is) {
 		if (ReikaWorldHelper.softBlocks(world, x, y, z) && ReikaPlayerAPI.playerCanBreakAt(world, x, y, z, ep)) {
-			if (is != null && is.stackSize > 1) {
+			if (is != null && (ep.capabilities.isCreativeMode || is.stackSize > 1)) {
 				world.setBlock(x, y, z, b, meta, 3);
 				b.onBlockPlacedBy(world, x, y, z, ep, is);
 				b.onPostBlockPlaced(world, x, y, z, meta);
@@ -251,38 +251,20 @@ public class TileEntityMultiBuilder extends TileEntityChromaticBase implements L
 	}
 
 	public static void placeBlock(World world, int x, int y, int z, Block b, int meta, EntityPlayer ep, ItemStack is) {
-		Iterator<WorldLocation> it = cache.iterator();
-		while (it.hasNext()) {
-			WorldLocation loc = it.next();
-			if (world.provider.dimensionId == loc.dimensionID) {
-				TileEntity te = loc.getTileEntity(world);
-				if (te instanceof TileEntityMultiBuilder) {
-					((TileEntityMultiBuilder)te).checkAndBuild(world, x, y, z, b, meta, ep, is);
-				}
-				else {
-					it.remove();
-					ChromatiCraft.logger.logError("Incorrect tile ("+te+") @ "+loc+" in Multi Builder cache!?");
-				}
-			}
-		}
+		cache.applyToMatches(world, true, (WorldLocation loc, TileEntity te) -> {
+			((TileEntityMultiBuilder)te).checkAndBuild(world, x, y, z, b, meta, ep, is);
+		}, (WorldLocation loc, TileEntity te) -> {
+			ChromaAux.logTileCacheError(world, loc, te, ChromaTiles.MULTIBUILDER);
+		});
 	}
 
 	public static void breakBlock(World world, int x, int y, int z, Block b, int meta, EntityPlayer ep) {
-		Iterator<WorldLocation> it = cache.iterator();
-		while (it.hasNext()) {
-			WorldLocation loc = it.next();
-			if (world.provider.dimensionId == loc.dimensionID) {
-				TileEntity te = loc.getTileEntity(world);
-				if (te instanceof TileEntityMultiBuilder) {
-					if (x != te.xCoord || y != te.yCoord || z != te.zCoord)
-						((TileEntityMultiBuilder)te).checkAndBreak(world, x, y, z, b, meta, ep);
-				}
-				else {
-					it.remove();
-					ChromatiCraft.logger.logError("Incorrect tile ("+te+") @ "+loc+" in Multi Builder cache!?");
-				}
-			}
-		}
+		cache.applyToMatches(world, true, (WorldLocation loc, TileEntity te) -> {
+			if (x != te.xCoord || y != te.yCoord || z != te.zCoord)
+				((TileEntityMultiBuilder)te).checkAndBreak(world, x, y, z, b, meta, ep);
+		}, (WorldLocation loc, TileEntity te) -> {
+			ChromaAux.logTileCacheError(world, loc, te, ChromaTiles.MULTIBUILDER);
+		});
 	}
 
 	public static void clearCache() {

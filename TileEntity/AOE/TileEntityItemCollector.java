@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE;
 
-import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.entity.Entity;
@@ -28,7 +27,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
-import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
 import Reika.ChromatiCraft.Auxiliary.RangeTracker.ConfigurableRangeTracker;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
@@ -61,7 +60,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
-	private static final ThreadSafeTileCache cache = new ThreadSafeTileCache();
+	private static final ThreadSafeTileCache cache = new ThreadSafeTileCache().setTileClass(TileEntityItemCollector.class);
 
 	public static boolean haltCollection = false;
 
@@ -160,25 +159,11 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	public static boolean absorbItem(World world, Entity e) {
 		if (TileEntityItemCollector.haltCollection)
 			return false;
-		Iterator<WorldLocation> it = cache.iterator();
-		while (it.hasNext()) {
-			WorldLocation loc = it.next();
-			if (loc.dimensionID == world.provider.dimensionId) {
-				TileEntity te = loc.getTileEntity(world);
-				if (te instanceof TileEntityItemCollector) {
-					if (((TileEntityItemCollector)te).checkAbsorb(e))
-						return true;
-				}
-				else {
-					it.remove();
-					ChromatiCraft.logger.logError("Incorrect tile ("+te+") @ "+loc+" (with "+loc.getBlockKey(world)+") in Item Collector cache!?");
-					if (loc.getBlock(world) == ChromaTiles.COLLECTOR.getBlock() && loc.getBlockMetadata(world) == ChromaTiles.COLLECTOR.getBlockMetadata()) {
-						ChromatiCraft.logger.logError("Item Collector block and meta but no TileEntity!?!?");
-					}
-				}
-			}
-		}
-		return false;
+		return cache.lookForMatch(world, true, (WorldLocation loc, TileEntity te) -> {
+			return ((TileEntityItemCollector)te).checkAbsorb(e);
+		}, (WorldLocation loc, TileEntity te) -> {
+			ChromaAux.logTileCacheError(world, loc, te, ChromaTiles.ITEMCOLLECTOR);
+		});
 	}
 
 	public boolean checkAbsorb(Entity e) {

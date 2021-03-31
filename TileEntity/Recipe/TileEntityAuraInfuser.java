@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.function.Function;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
@@ -54,7 +54,7 @@ import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
-import Reika.DragonAPI.Instantiable.Data.BlockStruct.ThreadSafeTileCache;
+import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
@@ -92,7 +92,7 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable, Lo
 	protected final HashSet<Coordinate> focusCrystalSpots = new HashSet();
 	private final ArrayList<Coordinate> chromaLocations = new ArrayList();
 
-	private static final ThreadSafeTileCache cache = new ThreadSafeTileCache();
+	private static final ThreadSafeSet<WorldLocation> cache = new ThreadSafeSet();
 
 	static {
 		required.addTag(CrystalElement.PURPLE, 500);
@@ -529,8 +529,8 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable, Lo
 		cache.clear();
 	}
 
-	public static Set<WorldLocation> getCache() {
-		return Collections.unmodifiableSet(cache);
+	public static WorldLocation searchForMatch(Function<WorldLocation, Boolean> check) {
+		return cache.iterateAsSearch(check);
 	}
 
 	@Override

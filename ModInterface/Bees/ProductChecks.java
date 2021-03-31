@@ -89,15 +89,16 @@ public class ProductChecks {
 		}
 
 		private TileEntityAuraInfuser check(World world, int x, int y, int z, int r, int vr, IBeeHousing ibh) {
-			for (WorldLocation loc : TileEntityAuraInfuser.getCache()) {
+			WorldLocation find = TileEntityAuraInfuser.searchForMatch((WorldLocation loc) -> {
 				if (loc.isWithinSquare(world, x, y, z, r, vr, r) || ChromaBeeHelpers.isLumenAlvearyInfSight(ibh)) {
 					if (ChromaTiles.getTile(world, loc.xCoord, loc.yCoord, loc.zCoord) == ChromaTiles.INFUSER) {
 						TileEntity te = loc.getTileEntity(world);
-						return te instanceof TileEntityAuraInfuser ? (TileEntityAuraInfuser)te : null;
+						return te instanceof TileEntityAuraInfuser ? true : false;
 					}
 				}
-			}
-			return null;
+				return false;
+			});
+			return find != null ? (TileEntityAuraInfuser)find.getTileEntity(world) : null;
 		}
 
 		@Override

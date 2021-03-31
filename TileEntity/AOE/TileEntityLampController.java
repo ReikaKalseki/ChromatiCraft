@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE;
 
-import java.util.Collection;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -23,6 +21,8 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityRangeBoost;
+import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
+import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet.DefaultIterationResult;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
@@ -241,11 +241,12 @@ public class TileEntityLampController extends TileEntityChromaticBase implements
 	}
 
 	private static void onLightsChanged(int channel) {
-		Collection<WorldLocation> c = lights.get(channel);
-		for (WorldLocation loc : c) {
+		ThreadSafeSet<WorldLocation> c = (ThreadSafeSet<WorldLocation>)lights.get(channel);
+		c.iterate((WorldLocation loc) -> {
 			TileEntityRangedLamp te = (TileEntityRangedLamp)loc.getTileEntity();
 			te.setLit(activeSourceInRange(te));
-		}
+			return DefaultIterationResult.CONTINUE;
+		});
 	}
 
 	private static void updateLightAt(TileEntityLampController te) {
@@ -256,13 +257,12 @@ public class TileEntityLampController extends TileEntityChromaticBase implements
 	}
 
 	public static boolean activeSourceInRange(TileEntityRangedLamp te) {
-		Collection<LightSource> c = map.get(te.getChannel());
+		ThreadSafeSet<LightSource> c = (ThreadSafeSet<LightSource>)map.get(te.getChannel());
 		WorldLocation loc = new WorldLocation(te);
-		for (LightSource l : c) {
-			if (l.isActive && l.location.getDistanceTo(loc) <= l.range)
-				return true;
-		}
-		return false;
+		Object ret = c.iterate((LightSource l) -> {
+			return (l.isActive && l.location.getDistanceTo(loc) <= l.range) ? DefaultIterationResult.RETURNTRUE : DefaultIterationResult.CONTINUE;
+		});
+		return ret == Boolean.TRUE;
 	}
 
 	private int getRange() {

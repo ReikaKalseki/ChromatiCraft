@@ -94,6 +94,7 @@ import Reika.DragonAPI.Auxiliary.WorldGenInterceptionRegistry.IWGWatcher;
 import Reika.DragonAPI.Auxiliary.WorldGenInterceptionRegistry.InterceptionException;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Interfaces.Entity.CustomProjectile;
 import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
@@ -738,5 +739,12 @@ public class ChromaAux {
 	@SideOnly(Side.CLIENT)
 	public static boolean interceptClientChunkUpdates(ChunkProviderClient p) {
 		return MonumentCompletionRitual.areRitualsRunning() ? false : p.unloadQueuedChunks(); //contrary to name all this does is update lighting/sky height
+	}
+
+	public static void logTileCacheError(World world, WorldLocation loc, TileEntity te, ChromaTiles tile) {
+		ChromatiCraft.logger.logError("Incorrect tile ("+te+") @ "+loc+" (with "+loc.getBlockKey(world)+") in "+tile.getName()+" cache!?");
+		if (loc.getBlock(world) == tile.getBlock() && loc.getBlockMetadata(world) == tile.getBlockMetadata()) {
+			ChromatiCraft.logger.logError("Correct block and meta but no TileEntity!?!?");
+		}
 	}
 }

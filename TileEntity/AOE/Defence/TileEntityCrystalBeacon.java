@@ -18,11 +18,13 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.RangeTracker;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
@@ -49,7 +51,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityCrystalBeacon extends CrystalReceiverBase implements LocationCached, RangeUpgradeable, MultiBlockChromaTile, OwnedTile {
 
-	private static final ThreadSafeTileCache cache = new ThreadSafeTileCache();
+	private static final ThreadSafeTileCache cache = new ThreadSafeTileCache().setTileClass(TileEntityCrystalBeacon.class);
 
 	public static final int RATIO = 100;
 	public static final int POWER = 2;
@@ -234,19 +236,22 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 	public static boolean isPlayerInvincible(EntityPlayer ep, float dmg) {
 		if (updateDamageNBT(ep, dmg))
 			return true;
-		for (WorldLocation loc : cache) {
-			if (loc.dimensionID == ep.worldObj.provider.dimensionId) {
-				TileEntityCrystalBeacon te = (TileEntityCrystalBeacon)loc.getTileEntity(ep.worldObj);
-				int r = te.getRange();
-				if (Math.abs(ep.posY-loc.yCoord) <= r/2) {
-					if (loc.getDistanceTo(ep) <= r) {
-						if (te.isPlacer(ep) && te.prevent(dmg)) {
-							ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
-							return true;
-						}
+		if (cache.lookForMatch(ep.worldObj, true, (WorldLocation loc, TileEntity tile) -> {
+			TileEntityCrystalBeacon te = (TileEntityCrystalBeacon)tile;
+			int r = te.getRange();
+			if (Math.abs(ep.posY-te.yCoord) <= r/2) {
+				if (loc.getDistanceTo(ep) <= r) {
+					if (te.isPlacer(ep) && te.prevent(dmg)) {
+						ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
+						return true;
 					}
 				}
 			}
+			return false;
+		}, (WorldLocation loc, TileEntity te) -> {
+			ChromaAux.logTileCacheError(ep.worldObj, loc, te, ChromaTiles.BEACON);
+		})) {
+			return true;
 		}
 		ep.getEntityData().removeTag(NBT_TAG);
 		return false;
@@ -274,21 +279,22 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 	public static boolean isEntityInvincible(EntityLiving ep, String owner, float dmg) {
 		if (updateDamageNBT(ep, dmg))
 			return true;
-		for (WorldLocation loc : cache) {
-			if (loc.dimensionID == ep.worldObj.provider.dimensionId) {
-				TileEntityCrystalBeacon te = (TileEntityCrystalBeacon)loc.getTileEntity(ep.worldObj);
-				if (te == null && ep.worldObj.isRemote)
-					continue;
-				int r = te.getRange();
-				if (Math.abs(ep.posY-loc.yCoord) <= r/2) {
-					if (loc.getDistanceTo(ep) <= r) {
-						String n = te.getPlacerName();
-						if (n != null && n.equals(owner) && te.prevent(dmg)) {
-							return true;
-						}
+		if (cache.lookForMatch(ep.worldObj, true, (WorldLocation loc, TileEntity tile) -> {
+			TileEntityCrystalBeacon te = (TileEntityCrystalBeacon)tile;
+			int r = te.getRange();
+			if (Math.abs(ep.posY-te.yCoord) <= r/2) {
+				if (loc.getDistanceTo(ep) <= r) {
+					String n = te.getPlacerName();
+					if (n != null && n.equals(owner) && te.prevent(dmg)) {
+						return true;
 					}
 				}
 			}
+			return false;
+		}, (WorldLocation loc, TileEntity te) -> {
+			ChromaAux.logTileCacheError(ep.worldObj, loc, te, ChromaTiles.BEACON);
+		})) {
+			return true;
 		}
 		ep.getEntityData().removeTag(NBT_TAG);
 		return false;
