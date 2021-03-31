@@ -184,25 +184,32 @@ public class PoolRecipes {
 
 	public void loadCustomPoolRecipes() {
 		CustomRecipeList crl = new CustomRecipeList(ChromatiCraft.instance, "alloying");
-		crl.load();
-		for (LuaBlock lb : crl.getEntries()) {
-			Exception e = null;
-			boolean flag = false;
-			try {
-				flag = this.addCustomRecipe(lb, crl);
+		if (crl.load()) {
+			for (LuaBlock lb : crl.getEntries()) {
+				Exception e = null;
+				boolean flag = false;
+				try {
+					flag = this.addCustomRecipe(lb, crl);
+				}
+				catch (Exception ex) {
+					e = ex;
+					flag = false;
+				}
+				if (flag) {
+					ChromatiCraft.logger.log("Loaded custom alloying recipe '"+lb.getString("type")+"'");
+				}
+				else {
+					ChromatiCraft.logger.logError("Could not load custom alloying recipe '"+lb.getString("type")+"'");
+					if (e != null)
+						e.printStackTrace();
+				}
 			}
-			catch (Exception ex) {
-				e = ex;
-				flag = false;
-			}
-			if (flag) {
-				ChromatiCraft.logger.log("Loaded custom alloying recipe '"+lb.getString("type")+"'");
-			}
-			else {
-				ChromatiCraft.logger.logError("Could not load custom alloying recipe '"+lb.getString("type")+"'");
-				if (e != null)
-					e.printStackTrace();
-			}
+		}
+		else {/*
+			crl.createFolders();
+			for (PoolRecipe p : recipesByID.values())
+				crl.addToExample(createLuaBlock(p));
+			crl.createExampleFile();*/
 		}
 	}
 

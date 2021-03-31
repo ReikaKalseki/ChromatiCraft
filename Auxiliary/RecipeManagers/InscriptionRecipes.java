@@ -93,25 +93,31 @@ public class InscriptionRecipes {
 
 	public void loadCustomInscriptionRecipes() {
 		CustomRecipeList crl = new CustomRecipeList(ChromatiCraft.instance, "inscription");
-		crl.load();
-		for (LuaBlock lb : crl.getEntries()) {
-			Exception e = null;
-			boolean flag = false;
-			try {
-				flag = this.addCustomRecipe(lb, crl);
+		if (crl.load()) {
+			for (LuaBlock lb : crl.getEntries()) {
+				Exception e = null;
+				boolean flag = false;
+				try {
+					flag = this.addCustomRecipe(lb, crl);
+				}
+				catch (Exception ex) {
+					e = ex;
+					flag = false;
+				}
+				if (flag) {
+					ChromatiCraft.logger.log("Loaded custom inscription recipe '"+lb.getString("type")+"'");
+				}
+				else {
+					ChromatiCraft.logger.logError("Could not load custom inscription recipe '"+lb.getString("type")+"'");
+					if (e != null)
+						e.printStackTrace();
+				}
 			}
-			catch (Exception ex) {
-				e = ex;
-				flag = false;
-			}
-			if (flag) {
-				ChromatiCraft.logger.log("Loaded custom inscription recipe '"+lb.getString("type")+"'");
-			}
-			else {
-				ChromatiCraft.logger.logError("Could not load custom inscription recipe '"+lb.getString("type")+"'");
-				if (e != null)
-					e.printStackTrace();
-			}
+		}
+		else {/*
+			crl.createFolders();
+			crl.addToExample(createLuaBlock(recipes.values().iterator().next()));
+			crl.createExampleFile();*/
 		}
 	}
 

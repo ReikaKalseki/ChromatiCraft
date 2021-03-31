@@ -46,7 +46,6 @@ import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.ChromatiCraft.World.Dimension.Structure.MonumentGenerator;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.IO.Shaders.ShaderProgram;
-import Reika.DragonAPI.IO.Shaders.ShaderProgram.Vec4;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
@@ -55,6 +54,7 @@ import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledEvent;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.IO.SoundVariant;
+import Reika.DragonAPI.Instantiable.Math.Vec4;
 import Reika.DragonAPI.Instantiable.ParticleController.SpiralMotionController;
 import Reika.DragonAPI.Interfaces.ColorController;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -119,8 +119,7 @@ public class MonumentCompletionRitual {
 	private final ArrayList<TimedEvent> events = new ArrayList();
 	private static final float[] colorFade = new float[16];
 	private static final Vec3[] shaderPositions = new Vec3[16];
-	@SideOnly(Side.CLIENT)
-	private static Vec4[] shaderColors;
+	private static final Vec4[] shaderColors = new Vec4[16];
 
 	private MusicKey activeKey = null;
 
@@ -130,9 +129,6 @@ public class MonumentCompletionRitual {
 	private static boolean reBobView;
 
 	static {
-		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
-			shaderColors = new Vec4[16];
-
 		melody.add(new RayNote(MusicKey.A4, 2, true, false, true));
 		melody.add(new RayNote(MusicKey.C5, 2));
 		melody.add(new RayNote(MusicKey.B4, 2));
