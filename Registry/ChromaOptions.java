@@ -103,6 +103,7 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	STRUCTTRIES("Structure Generation Attempts Per Flagged Chunk - affects worldgen CPU use and structure rarity", 20),
 	PROGSHADER("Use Alternate Progress Shader", false),
 	POWEREDPENDANTS("Enhanced Pendants Require Charging", false),
+	ABILITYSHOWONLY("Ability Selection GUI only shows abilities you have", false),
 	;
 
 	private String label;
@@ -336,6 +337,7 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 			case PROGRESSNOTIFY_SELF:
 			case EPILEPSY:
 			case PROGSHADER:
+			case ABILITYSHOWONLY:
 				return true;
 			default:
 				return false;

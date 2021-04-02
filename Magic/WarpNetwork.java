@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -34,6 +36,10 @@ public class WarpNetwork {
 
 	private WarpNetwork() {
 
+	}
+
+	public Collection<WorldLocation> getAllNodes() {
+		return Collections.unmodifiableCollection(data.keySet());
 	}
 
 	public void addLocation(WorldLocation loc) {

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -16,6 +15,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidHandler;
 
@@ -23,13 +23,17 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Block.BlockCrystalTank.CrystalTankAuxTile;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
 import Reika.DragonAPI.Interfaces.TileEntity.PartialTank;
+import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
+import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
 
@@ -45,16 +49,16 @@ public class ItemEnderBucket extends ItemChromaTool {
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
 		MovingObjectPosition mov = this.getMovingObjectPositionFromPlayer(world, ep, true);
 		if (mov != null && mov.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-			if (this.getMode(is) == BucketMode.PICKUP) {
-				if (BucketMode.PICKUP.process(world, mov.blockX, mov.blockY, mov.blockZ, this.getActiveLink(is, ep))) {
-					ReikaSoundHelper.playSoundFromServerAtBlock(world, mov.blockX, mov.blockY, mov.blockZ, "game.neutral.swim", 0.7F, 0.7F+0.3F*world.rand.nextFloat(), true);
-				}
-			}
+			if (!world.isRemote)
+				this.actAt(world, mov.blockX, mov.blockY, mov.blockZ, mov.sideHit, ep, is);
 			return is;
 		}
 		else {
 			if (ep.isSneaking()) {
-				is.setItemDamage((is.getItemDamage()+1)%BucketMode.list.length);
+				if (!world.isRemote) {
+					this.stepMode(is);
+					ReikaChatHelper.sendChatToPlayer(ep, "Bucket now in "+this.getMode(is).displayName+" mode.");
+				}
 			}
 			else {
 				ep.openGui(ChromatiCraft.instance, ChromaGuis.ENDERBUCKET.ordinal(), world, 0, 0, 0);
@@ -64,49 +68,59 @@ public class ItemEnderBucket extends ItemChromaTool {
 	}
 
 	@Override
-	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float a, float b, float c) {
+	public boolean onItemUseFirst(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float hitX, float hitY, float hitZ) {
 		if (!world.isRemote) {
-			if (ep.isSneaking()) {
-				TileEntity te = world.getTileEntity(x, y, z);
-				if (te instanceof IFluidHandler) {
-					this.addFluidHandler(te, ep, is);
-					return true;
-				}
-			}
-			else if (this.getMode(is) == BucketMode.PLACE) {
-				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[s];
-				x += dir.offsetX;
-				y += dir.offsetY;
-				z += dir.offsetZ;
-				Material material = world.getBlock(x, y, z).getMaterial();
-				boolean flag = !material.isSolid();
+			return this.actAt(world, x, y, z, s, ep, is);
+		}
+		return false;
+	}
 
-				if (!world.isAirBlock(x, y, z) && !flag) {
+	public void stepMode(ItemStack is) {
+		is.setItemDamage((is.getItemDamage()+1)%BucketMode.list.length);
+	}
 
-				}
-				else {
-					if (BucketMode.PLACE.process(world, x, y, z, this.getActiveLink(is, ep))) {
-						ReikaSoundHelper.playSoundFromServerAtBlock(world, x, y, z, "game.neutral.swim", 0.7F, 0.7F+0.3F*world.rand.nextFloat(), true);
-						if (!world.isRemote && flag && !material.isLiquid()) {
-							//world.func_147480_a(x, y, z, true);
-						}
-					}
-				}
+	private boolean actAt(World world, int x, int y, int z, int s, EntityPlayer ep, ItemStack is) {
+		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[s];
+		BucketMode mode = this.getMode(is);
+		Operation o = this.getOperation(world, x, y, z, ep, mode);
+		if (o != null) {
+			if (o.apply(world, x, y, z, dir, ep, is, this.getActiveLink(is, ep))) {
+				if (o == Operation.ADDTANK)
+					ChromaSounds.USE.playSoundAtBlock(world, x, y, z);
+				else
+					ReikaSoundHelper.playSoundFromServerAtBlock(world, x, y, z, "game.neutral.swim", 0.7F, 0.7F+0.3F*world.rand.nextFloat(), true);
 				return true;
 			}
 		}
 		return false;
 	}
 
+	private Operation getOperation(World world, int x, int y, int z, EntityPlayer ep, BucketMode mode) {
+		TileEntity te = world.getTileEntity(x, y, z);
+		if (te instanceof IFluidHandler) {
+			if (ep.isSneaking())
+				return Operation.ADDTANK;
+			return mode == BucketMode.PLACE ? Operation.TANKFILL : Operation.TANKDRAIN;
+		}
+		return mode == BucketMode.PLACE ? Operation.PLACEWORLD : Operation.PICKUPWORLD;
+	}
+
 	public BucketMode getMode(ItemStack is) {
 		return BucketMode.list[is.getItemDamage()];
 	}
 
-	public TankLink getActiveLink(ItemStack is, EntityPlayer ep) {
+	public int getActiveLinkIndex(ItemStack is, EntityPlayer ep) {
 		if (is.stackTagCompound == null)
+			return -1;
+		int idx = is.stackTagCompound.hasKey("selected") ? is.stackTagCompound.getInteger("selected") : -1;
+		return idx;
+	}
+
+	private TankLink getActiveLink(ItemStack is, EntityPlayer ep) {
+		int idx = this.getActiveLinkIndex(is, ep);
+		if (idx < 0)
 			return null;
 		ArrayList<TankLink> li = this.getLinks(is, ep);
-		int idx = is.stackTagCompound.hasKey("selected") ? is.stackTagCompound.getInteger("selected") : -1;
 		return idx >= 0 && idx < li.size() ? li.get(idx) : null;
 	}
 
@@ -127,6 +141,14 @@ public class ItemEnderBucket extends ItemChromaTool {
 			}
 		}
 		return ret;
+	}
+
+	public void removeLinkIndex(ItemStack is, int idx) {
+		if (idx < 0 || is.stackTagCompound == null)
+			return;
+		NBTTagList li = is.stackTagCompound.getTagList("links", NBTTypes.COMPOUND.ID);
+		if (idx < li.tagList.size())
+			li.tagList.remove(idx);
 	}
 
 	private void addFluidHandler(TileEntity te, EntityPlayer ep, ItemStack is) {
@@ -166,6 +188,114 @@ public class ItemEnderBucket extends ItemChromaTool {
 		return super.getItemSpriteIndex(item)+item.getItemDamage();
 	}
 
+	private static enum Operation {
+		PICKUPWORLD,
+		TANKDRAIN,
+		PLACEWORLD,
+		TANKFILL,
+		ADDTANK;
+
+		private boolean apply(World world, int x, int y, int z, ForgeDirection dir, EntityPlayer ep, ItemStack is, TankLink link) {
+			switch(this) {
+				case ADDTANK:
+					((ItemEnderBucket)is.getItem()).addFluidHandler(world.getTileEntity(x, y, z), ep, is);
+					return true;
+				case PICKUPWORLD: {
+					if (link == null)
+						return false;
+					FluidStack fs = ReikaWorldHelper.getDrainableFluid(world, x, y, z);
+					if (fs != null && link.tryAddFluid(fs, false)) {
+						link.tryAddFluid(fs, true);
+						world.setBlock(x, y, z, Blocks.air);
+						return true;
+					}
+					return false;
+				}
+				case PLACEWORLD: {
+					if (link == null)
+						return false;
+					if (ReikaBlockHelper.isLiquid(world.getBlock(x, y, z)))
+						return false;
+					x += dir.offsetX;
+					y += dir.offsetY;
+					z += dir.offsetZ;
+					if (ReikaWorldHelper.softBlocks(world, x, y, z)) {
+						Fluid f = link.getCurrentFluidToDrain(false, false);
+						if (f != null && f.getBlock() != null) {
+							if (ReikaFluidHelper.lookupFluidForBlock(world.getBlock(x, y, z)) == f && ReikaWorldHelper.isLiquidSourceBlock(world, x, y, z))
+								return false;
+							link.getCurrentFluidToDrain(true, false);
+							world.setBlock(x, y, z, f.getBlock(), 0, 3);
+							world.markBlockForUpdate(x, y, z);
+							world.getBlock(x, y, z).onNeighborBlockChange(world, x, y, z, f.getBlock());
+							return true;
+						}
+					}
+					return false;
+				}
+				case TANKDRAIN: {
+					if (link == null)
+						return false;
+					if (link.tank.equals(world, x, y, z))
+						return false;
+					IFluidHandler ifl = (IFluidHandler)world.getTileEntity(x, y, z);
+					if (ifl == null)
+						return false;
+					Fluid f = link.getCurrentFluidToDrain(false, false);
+					FluidStack fs = tryDrainFluid(ifl, f, false);
+					if (fs != null && link.tryAddFluid(fs, false)) {
+						tryDrainFluid(ifl, f, true);
+						link.tryAddFluid(fs, true);
+						return true;
+					}
+					return false;
+				}
+				case TANKFILL: {
+					if (link == null)
+						return false;
+					if (link.tank.equals(world, x, y, z))
+						return false;
+					IFluidHandler ifl = (IFluidHandler)world.getTileEntity(x, y, z);
+					if (ifl == null)
+						return false;
+					Fluid f = link.getCurrentFluidToDrain(false, false);
+					if (f != null) {
+						if (tryAddFluid(ifl, f, false)) {
+							link.getCurrentFluidToDrain(true, false);
+							tryAddFluid(ifl, f, true);
+							return true;
+						}
+					}
+					return false;
+				}
+			}
+			return false;
+		}
+	}
+
+	private static boolean tryAddFluid(IFluidHandler ifl, Fluid f, boolean doAdd) {
+		FluidStack fs = new FluidStack(f, FluidContainerRegistry.BUCKET_VOLUME);
+		for (int i = 0; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			int amt = ifl.fill(dir, fs, doAdd);
+			if (amt >= FluidContainerRegistry.BUCKET_VOLUME) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static FluidStack tryDrainFluid(IFluidHandler ifl, Fluid seek, boolean doDrain) {
+		for (int i = 0; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			FluidStack fs = ifl.drain(dir, FluidContainerRegistry.BUCKET_VOLUME, doDrain);
+			if (fs != null && (seek == null || seek == fs.getFluid()) && fs.amount >= FluidContainerRegistry.BUCKET_VOLUME) {
+				return fs;
+			}
+		}
+		return null;
+	}
+
 	public static enum BucketMode {
 		PICKUP("Pickup"),
 		PLACE("Place");
@@ -177,34 +307,6 @@ public class ItemEnderBucket extends ItemChromaTool {
 		private BucketMode(String s) {
 			displayName = s;
 		}
-
-		public boolean process(World world, int x, int y, int z, TankLink link) {
-			if (link == null)
-				return false;
-			if (world.isRemote)
-				return true;
-			switch(this) {
-				case PICKUP:
-					FluidStack fs = ReikaWorldHelper.getDrainableFluid(world, x, y, z);
-					if (fs != null && link.tryAddFluid(fs, false)) {
-						link.tryAddFluid(fs, true);
-						world.setBlock(x, y, z, Blocks.air);
-						return true;
-					}
-					break;
-				case PLACE:
-					Fluid f = link.getCurrentFluidToDrain(false);
-					if (f != null) {
-						link.getCurrentFluidToDrain(true);
-						world.setBlock(x, y, z, f.getBlock(), 0, 3);
-						world.markBlockForUpdate(x, y, z);
-						world.getBlock(x, y, z).onNeighborBlockChange(world, x, y, z, f.getBlock());
-						return true;
-					}
-					break;
-			}
-			return false;
-		}
 	}
 
 	public static class TankLink {
@@ -212,9 +314,11 @@ public class ItemEnderBucket extends ItemChromaTool {
 		public final WorldLocation tank;
 		private final BlockKey cachedBlock;
 		private ItemStack cachedIcon;
+		private Fluid cachedFluid;
 
 		private TankLink(TileEntity te) {
 			this(new WorldLocation(te), new BlockKey(te.worldObj.getBlock(te.xCoord, te.yCoord, te.zCoord), te.worldObj.getBlockMetadata(te.xCoord, te.yCoord, te.zCoord)));
+			cachedFluid = this.getCurrentFluidToDrain(false, false);
 		}
 
 		private TankLink(WorldLocation loc, BlockKey bk) {
@@ -253,19 +357,21 @@ public class ItemEnderBucket extends ItemChromaTool {
 
 		public String getDisplayName() {
 			ItemStack is = this.getIcon();
-			String s = is != null ? is.getDisplayName() : tank.toString();
+			String s = is != null ? is.getDisplayName() : "";
+			//s = s+" "+new Coordinate(tank).toString();
 			return s;
 		}
 
-		public Fluid getCurrentFluidToDrain(boolean doDrain) {
+		public Fluid getCurrentFluidToDrain(boolean doDrain, boolean render) {
 			IFluidHandler ifl = this.getTank();
 			if (ifl == null)
-				return null;
+				return render ? cachedFluid : null;
 			for (int i = 0; i < 6; i++) {
 				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 				FluidStack fs = ifl.drain(dir, FluidContainerRegistry.BUCKET_VOLUME, doDrain);
 				if (fs != null && fs.amount >= FluidContainerRegistry.BUCKET_VOLUME) {
-					return fs.getFluid();
+					cachedFluid = fs.getFluid();
+					return cachedFluid;
 				}
 			}
 			return null;
@@ -293,6 +399,9 @@ public class ItemEnderBucket extends ItemChromaTool {
 				cachedIcon.writeToNBT(item);
 				tag.setTag("item", item);
 			}
+			if (cachedFluid != null) {
+				tag.setString("fluid", cachedFluid.getName());
+			}
 			return tag;
 		}
 
@@ -304,6 +413,9 @@ public class ItemEnderBucket extends ItemChromaTool {
 				NBTTagCompound item = tag.getCompoundTag("item");
 				ItemStack is = ItemStack.loadItemStackFromNBT(item);
 				lk.cachedIcon = is;
+			}
+			if (tag.hasKey("fluid")) {
+				lk.cachedFluid = FluidRegistry.getFluid(tag.getString("fluid"));
 			}
 			return lk;
 		}

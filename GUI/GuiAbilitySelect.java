@@ -64,6 +64,10 @@ public class GuiAbilitySelect extends GuiScreen {
 					it.remove();
 					break;
 				}
+				if (ChromaOptions.ABILITYSHOWONLY.getState() && !Chromabilities.playerHasAbility(ep, a)) {
+					it.remove();
+					break;
+				}
 			}
 		}
 	}

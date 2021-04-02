@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE;
 
+import java.util.Iterator;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -22,7 +24,6 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityRangeBoost;
 import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
-import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet.DefaultIterationResult;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
@@ -242,10 +243,9 @@ public class TileEntityLampController extends TileEntityChromaticBase implements
 
 	private static void onLightsChanged(int channel) {
 		ThreadSafeSet<WorldLocation> c = (ThreadSafeSet<WorldLocation>)lights.get(channel);
-		c.iterate((WorldLocation loc) -> {
+		c.simpleIterate((WorldLocation loc) -> {
 			TileEntityRangedLamp te = (TileEntityRangedLamp)loc.getTileEntity();
 			te.setLit(activeSourceInRange(te));
-			return DefaultIterationResult.CONTINUE;
 		});
 	}
 
@@ -259,10 +259,15 @@ public class TileEntityLampController extends TileEntityChromaticBase implements
 	public static boolean activeSourceInRange(TileEntityRangedLamp te) {
 		ThreadSafeSet<LightSource> c = (ThreadSafeSet<LightSource>)map.get(te.getChannel());
 		WorldLocation loc = new WorldLocation(te);
-		Object ret = c.iterate((LightSource l) -> {
-			return (l.isActive && l.location.getDistanceTo(loc) <= l.range) ? DefaultIterationResult.RETURNTRUE : DefaultIterationResult.CONTINUE;
+		boolean ret = c.iterate((Iterator<LightSource> it) -> {
+			while (it.hasNext()) {
+				LightSource l = it.next();
+				if (l.isActive && l.location.getDistanceTo(loc) <= l.range)
+					return true;
+			}
+			return false;
 		});
-		return ret == Boolean.TRUE;
+		return ret;
 	}
 
 	private int getRange() {

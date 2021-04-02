@@ -177,6 +177,7 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 			double pt = ReikaRenderHelper.getPartialTickTime();
 			for (EntityPlayer ep : this.getOwners(false)) {
 				long dur = ep.worldObj.getTotalWorldTime()-ep.getEntityData().getCompoundTag(NBT_TAG).getLong("time");
+				//ReikaJavaLibrary.pConsole(dur);
 				if (dur < 60) {
 					float ap = dur < 30 ? 1 : 1-((dur-30)/30F);
 					double dx = ep.posX+(ep.posX-ep.lastTickPosX)*pt-x-0.5;

@@ -57,6 +57,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityChromaCrystal;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.Data.ShuffledGrid;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -87,15 +88,9 @@ public final class PylonGenerator implements RetroactiveGenerator {
 
 	private final ForgeDirection[] dirs = ForgeDirection.values();
 
-	//private final int CHANCE = 40;
-
-	private final int avgDist = 10; //16
-	private final int maxDeviation = 4;
 	private final Random rand = new Random();
-
 	private final int GRIDSIZE = 256;
-
-	private final HashMap<Integer, boolean[][]> data = new HashMap();
+	private final HashMap<Integer, ShuffledGrid> chunkFilter = new HashMap();
 
 	public static final String NBT_TAG = "pylonloc";
 	private final EnumMap<CrystalElement, Collection<PylonEntry>> colorCache = new EnumMap(CrystalElement.class);
@@ -238,7 +233,7 @@ public final class PylonGenerator implements RetroactiveGenerator {
 
 	//@SideOnly(Side.CLIENT)
 	public void clearDimension(int dim) {
-		data.remove(dim);
+		chunkFilter.remove(dim);
 
 		/*
 		for (CrystalElement e : colorCache.keySet()) {
@@ -254,46 +249,21 @@ public final class PylonGenerator implements RetroactiveGenerator {
 		 */
 	}
 
-	private void fillArray(World world) {
-		int id = world.provider.dimensionId;
-		rand.setSeed(world.getSeed() ^ id);
-		boolean[][] grid = this.getGrid(id);
-		for (int x = maxDeviation; x < GRIDSIZE-maxDeviation; x += avgDist) {
-			for (int z = maxDeviation; z < GRIDSIZE-maxDeviation; z += avgDist) {
-				int x2 = ReikaRandomHelper.getRandomPlusMinus(x, maxDeviation);
-				int z2 = ReikaRandomHelper.getRandomPlusMinus(z, maxDeviation);
-				grid[x2][z2] = true;
-				//ChromatiCraft.logger.debug(x + ", " + z + " | " + x2 + ", " + z2);
-			}
-		}
-		//if (ChromatiCraft.logger.shouldDebug())
-		//ChromatiCraft.logger.log("Dimension Pylon Generation Array: \n"+getDimensionString(id));
-	}
-
-	private String getDimensionString(int id) {
-		boolean[][] arr = this.getGrid(id);
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < GRIDSIZE; i++) {
-			for (int j = 0; j < GRIDSIZE; j++) {
-				String c = arr[i][j] ? "[#]" : "[ ]";
-				sb.append(c);
-			}
-			sb.append("\n");
-		}
-		return sb.toString();
-	}
-
-	private boolean[][] getGrid(int dim) {
-		boolean[][] arr = data.get(dim);
+	private ShuffledGrid getGrid(World world) {
+		int dim = world.provider.dimensionId;
+		ShuffledGrid arr = chunkFilter.get(dim);
 		if (arr == null) {
-			arr = new boolean[GRIDSIZE][GRIDSIZE];
-			data.put(dim, arr);
+			arr = new ShuffledGrid(GRIDSIZE, 4, 10);
+			this.populateWorldData(world, arr);
+			chunkFilter.put(dim, arr);
 		}
 		return arr;
 	}
 
-	private boolean filledDim(World world) {
-		return data.containsKey(world.provider.dimensionId);
+	private void populateWorldData(World world, ShuffledGrid grid) {
+		int id = world.provider.dimensionId;
+		rand.setSeed(world.getSeed() ^ id);
+		grid.calculate(rand);
 	}
 
 	public PylonEntry getNearestPylonSpawn(World world, double x, double y, double z, CrystalElement e) {
@@ -314,23 +284,13 @@ public final class PylonGenerator implements RetroactiveGenerator {
 		return close;
 	}
 
-	private boolean isGennableChunk(World world, int chunkX, int chunkZ) {
-		boolean[][] arr = this.getGrid(world.provider.dimensionId);
-		while (chunkX < 0)
-			chunkX += GRIDSIZE;
-		while (chunkZ < 0)
-			chunkZ += GRIDSIZE;
-		return arr[chunkX%GRIDSIZE][chunkZ%GRIDSIZE];
+	public boolean isGennableChunk(World world, int chunkX, int chunkZ) {
+		return this.getGrid(world).isValid(chunkX, chunkZ);
 	}
 
 	@Override
 	public void generate(Random r, int chunkX, int chunkZ, World world, IChunkProvider gen, IChunkProvider p) {
 		if (this.canGenerateIn(world)) {
-
-			if (!this.filledDim(world)) {
-				this.fillArray(world);
-			}
-
 			if (this.isGennableChunk(world, chunkX, chunkZ)) {
 				this.tryForceGenerate(world, chunkX*16, chunkZ*16, r);
 			}

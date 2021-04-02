@@ -174,14 +174,14 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 	}
 
 	protected final void writeOwnerData(NBTTagCompound NBT) {
-		if (this instanceof OwnedTile)
+		if (this instanceof OwnedTile && !owners.isEmpty())
 			ReikaNBTHelper.writeCollectionToNBT(owners, NBT, "owners", ReikaNBTHelper.UUIDConverter.instance);
 	}
 
 	protected final void readOwnerData(ItemStack is) {
 		if (ChromaItems.PLACER.matchWith(is)) {
 			if (is.getItemDamage() == this.getTile().ordinal()) {
-				if (is.stackTagCompound != null) {
+				if (is.stackTagCompound != null && is.stackTagCompound.hasKey("owners")) {
 					if (this instanceof OwnedTile) {
 						ReikaNBTHelper.readCollectionFromNBT(owners, is.stackTagCompound, "owners", ReikaNBTHelper.UUIDConverter.instance);
 					}

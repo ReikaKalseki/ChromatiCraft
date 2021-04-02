@@ -395,6 +395,7 @@ public class CrystalMusicTemple {
 		this.stepGlowCalc(1);
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void stepGlowCalc(int n) {
 		for (int i = 0; i < n; i++) {
 			if (!lastAddedCoords.isEmpty()) {

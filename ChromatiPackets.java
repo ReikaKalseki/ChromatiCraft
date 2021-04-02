@@ -552,11 +552,11 @@ public class ChromatiPackets implements PacketHandler {
 				case PYLONLINKCACHE: {
 					PylonLinkNetwork.instance.load(NBT);
 					break;
-				}
+				}/*
 				case PYLONCACHECLEAR: {
 					PylonGenerator.instance.clearDimension(data[0]);
 					break;
-				}
+				}*/
 				case TRANSITIONWAND: {
 					((ItemTransitionWand)ep.getCurrentEquippedItem().getItem()).setMode(ep.getCurrentEquippedItem(), TransitionMode.list[data[0]]);
 					break;
@@ -1153,6 +1153,12 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case ENDERBUCKETLINK:
 					((ItemEnderBucket)ep.getCurrentEquippedItem().getItem()).setLinkIndex(ep.getCurrentEquippedItem(), data[0]);
+					break;
+				case ENDERBUCKETMODE:
+					((ItemEnderBucket)ep.getCurrentEquippedItem().getItem()).stepMode(ep.getCurrentEquippedItem());
+					break;
+				case ENDERBUCKETREMOVE:
+					((ItemEnderBucket)ep.getCurrentEquippedItem().getItem()).removeLinkIndex(ep.getCurrentEquippedItem(), data[0]);
 					break;
 				case COLLECTORROW:
 					Container c = ep.openContainer;
