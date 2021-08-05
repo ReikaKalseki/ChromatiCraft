@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Magic.Progression.ProgressAccess;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.TileEntity.TileEntityDataNode;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
@@ -90,6 +91,30 @@ public class LoreManager implements ProgressAccess {
 			Towers t = Towers.towerList[i];
 			ChunkCoordIntPair p = t.getRootPosition();
 			Coordinate p2 = t.getGeneratedLocation();
+			double d1 = ReikaMathLibrary.py3d(x-p.chunkXPos, 0, z-p.chunkZPos);
+			double d2 = p2 != null ? p2.getDistanceTo(x, p2.yCoord, z) : Double.POSITIVE_INFINITY;
+			double d = Math.min(d1, d2);
+			if (ret == null || d < mind) {
+				ret = t;
+				mind = d;
+			}
+		}
+		return ret;
+	}
+
+	public Towers getNearestActiveTower(World world, double x, double z, EntityPlayer ep) {
+		this.initTowers(world);
+		Towers ret = null;
+		double mind = Double.POSITIVE_INFINITY;
+		for (int i = 0; i < Towers.towerList.length; i++) {
+			Towers t = Towers.towerList[i];
+			ChunkCoordIntPair p = t.getRootPosition();
+			Coordinate p2 = t.getGeneratedLocation();
+			if (p2 != null) {
+				TileEntityDataNode te = (TileEntityDataNode)p2.getTileEntity(world);
+				if (te.hasBeenScanned(ep))
+					continue;
+			}
 			double d1 = ReikaMathLibrary.py3d(x-p.chunkXPos, 0, z-p.chunkZPos);
 			double d2 = p2 != null ? p2.getDistanceTo(x, p2.yCoord, z) : Double.POSITIVE_INFINITY;
 			double d = Math.min(d1, d2);

@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Acquisition;
 
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -37,6 +35,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.InertItem;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -311,13 +310,13 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 	}
 
 	@Override
-	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
+	public DecimalPosition getTargetRenderOffset(CrystalElement e) {
 		double ang = Math.toRadians(e.ordinal()*22.5D);
 		double r = 1.5;
 		double dx = r*Math.sin(ang);
 		double dy = 0.55;
 		double dz = r*Math.cos(ang);
-		return new ImmutableTriple(dx, dy, dz);
+		return new DecimalPosition(dx, dy, dz);
 	}
 
 	@Override

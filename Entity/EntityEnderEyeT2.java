@@ -124,7 +124,7 @@ public final class EntityEnderEyeT2 extends EntityEnderEye implements IEntityAdd
 	}
 
 	private Coordinate getNearestTower() {
-		Towers t = LoreManager.instance.getNearestTower(worldObj, posX, posZ);
+		Towers t = LoreManager.instance.getNearestActiveTower(worldObj, posX, posZ, this.getOwner(worldObj));
 		if (t != null) {
 			int x;
 			int y;

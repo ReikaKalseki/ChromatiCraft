@@ -68,6 +68,7 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -822,6 +823,8 @@ public class AbilityCalls {
 							Block b = world.getBlock(dpx, dpy, dpz);
 							int meta = world.getBlockMetadata(dpx, dpy, dpz);
 							if (b == Blocks.bedrock && dpy <= 4)
+								continue;
+							if (b == ChromaBlocks.HOVER.getBlockInstance() && world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
 								continue;
 							if (b instanceof SemiUnbreakable && ((SemiUnbreakable)b).isUnbreakable(world, dpx, dpy, dpz, meta))
 								continue;

@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-
 import Reika.ChromatiCraft.Magic.Interfaces.ConnectivityAction;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
@@ -24,6 +22,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.ReactiveRepeater;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldChunk;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 
@@ -215,10 +214,10 @@ public class CrystalPath implements Comparable<CrystalPath> {
 		PathNode locs = nodes.get(nodes.size()-2);
 		if (r == null)
 			r = (CrystalReceiver)locs.getTile(true);
-		ImmutableTriple<Double, Double, Double> offset = r.getTargetRenderOffset(element);
-		double sx = offset != null ? offset.left : 0;
-		double sy = offset != null ? offset.middle : 0;
-		double sz = offset != null ? offset.right : 0;
+		DecimalPosition offset = r.getTargetRenderOffset(element);
+		double sx = offset != null ? offset.xCoord : 0;
+		double sy = offset != null ? offset.yCoord : 0;
+		double sz = offset != null ? offset.zCoord : 0;
 		src.addSelfTickingTarget(locs.location, element, sx, sy, sz, r.getIncomingBeamRadius(), transmitter.getMaximumBeamRadius(), ticks);
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = nodes.get(i).getTile(true);
@@ -226,9 +225,9 @@ public class CrystalPath implements Comparable<CrystalPath> {
 				PathNode tg = nodes.get(i-1);
 				r = (CrystalReceiver)tg.getTile(true);
 				offset = r.getTargetRenderOffset(element);
-				double dx = offset != null ? offset.left : 0;
-				double dy = offset != null ? offset.middle : 0;
-				double dz = offset != null ? offset.right : 0;
+				double dx = offset != null ? offset.xCoord : 0;
+				double dy = offset != null ? offset.yCoord : 0;
+				double dz = offset != null ? offset.zCoord : 0;
 				((CrystalTransmitter)te).addSelfTickingTarget(tg.location, element, dx, dy, dz, r.getIncomingBeamRadius(), transmitter.getMaximumBeamRadius(), ticks);
 			}/*
 			if (te instanceof CrystalReceiver) {

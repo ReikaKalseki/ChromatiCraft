@@ -45,6 +45,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LoadRegistry;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PlantDropManager;
+import Reika.ChromatiCraft.Items.ItemFertilitySeed;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -376,31 +377,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 				case GLOWROOT:
 					if (rand.nextInt(4) == 0) {
 						if (world.checkChunksExist(x-16, y, z-16, x+16, y, z+16)) {
-							int meta = 0;
-							switch(rand.nextInt(20)) {
-								case 20:
-									meta = 5;
-									break;
-								case 19:
-								case 18:
-									meta = 4;
-									break;
-								case 17:
-								case 16:
-								case 15:
-									meta = 3;
-									break;
-								case 14:
-								case 13:
-								case 12:
-									meta = 2;
-									break;
-								case 11:
-								case 10:
-								case 9:
-									meta = 1;
-									break;
-							}
+							int meta = ((ItemFertilitySeed)ChromaItems.FERTILITYSEED.getItemInstance()).getRandomAmbientDropMeta(rand);
 							ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, ChromaItems.FERTILITYSEED.getStackOfMetadata(meta));
 						}
 						break;

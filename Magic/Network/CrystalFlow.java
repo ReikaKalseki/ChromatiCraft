@@ -12,8 +12,6 @@ package Reika.ChromatiCraft.Magic.Network;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.LoggingLevel;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
@@ -25,6 +23,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.DynamicRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.ReactiveRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.WrapperTile;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 
 public final class CrystalFlow extends CrystalPath {
@@ -129,10 +128,10 @@ public final class CrystalFlow extends CrystalPath {
 		//nodes.getFirst().getTileEntity().NOT A TILE
 		PathNode locs = nodes.get(nodes.size()-2);
 		CrystalReceiver r = (CrystalReceiver)locs.getTile(true);
-		ImmutableTriple<Double, Double, Double> offset = r.getTargetRenderOffset(element);
-		double sx = offset != null ? offset.left : 0;
-		double sy = offset != null ? offset.middle : 0;
-		double sz = offset != null ? offset.right : 0;
+		DecimalPosition offset = r.getTargetRenderOffset(element);
+		double sx = offset != null ? offset.xCoord : 0;
+		double sy = offset != null ? offset.yCoord : 0;
+		double sz = offset != null ? offset.zCoord : 0;
 		CrystalSource src = (CrystalSource)nodes.get(nodes.size()-1).getTile(true);
 		src.addTarget(locs.location, element, sx, sy, sz, r.getIncomingBeamRadius(), src.getMaximumBeamRadius());
 		for (int i = 1; i < nodes.size()-1; i++) {
@@ -141,9 +140,9 @@ public final class CrystalFlow extends CrystalPath {
 				PathNode tg = nodes.get(i-1);
 				r = (CrystalReceiver)tg.getTile(true);
 				offset = r.getTargetRenderOffset(element);
-				double dx = offset != null ? offset.left : 0;
-				double dy = offset != null ? offset.middle : 0;
-				double dz = offset != null ? offset.right : 0;
+				double dx = offset != null ? offset.xCoord : 0;
+				double dy = offset != null ? offset.yCoord : 0;
+				double dz = offset != null ? offset.zCoord : 0;
 				((CrystalTransmitter)te).addTarget(tg.location, element, dx, dy, dz, r.getIncomingBeamRadius(), src.getMaximumBeamRadius());
 			}/*
 					if (te instanceof CrystalReceiver) {

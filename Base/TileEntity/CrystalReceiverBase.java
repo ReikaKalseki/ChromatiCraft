@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -27,6 +25,7 @@ import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.StepTimer;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 
 public abstract class CrystalReceiverBase extends TileEntityCrystalBase implements CrystalReceiver, LumenRequestingTile, NBTTile {
 
@@ -179,7 +178,7 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 	}
 
 	@Override
-	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
+	public DecimalPosition getTargetRenderOffset(CrystalElement e) {
 		return null;
 	}
 

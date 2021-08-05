@@ -69,22 +69,21 @@ public class WarpNodeGenerator implements RetroactiveGenerator {
 		ShuffledGrid arr = chunkFilter.get(dim);
 		if (arr == null) {
 			arr = new ShuffledGrid(GRIDSIZE, 20, 55); //avg spacing every 880 blocks, with offsets up to 320m
-			this.populateWorldData(world);
+			this.populateWorldData(world, arr);
 			chunkFilter.put(dim, arr);
 		}
 		return arr;
 	}
 
-	private void populateWorldData(World world) {
+	private void populateWorldData(World world, ShuffledGrid grid) {
 		int id = world.provider.dimensionId;
 		worldRand.setSeed(-(id*11 - world.getSeed()*7));
-		ShuffledGrid grid = this.getGrid(world);
 		grid.calculate(worldRand);
 	}
 
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
-		if (world.provider.dimensionId == 0 && world.getWorldInfo().getTerrainType() != WorldType.FLAT) {
+		if (this.isValidWorld(world)) {
 			if (this.isGennableChunk(world, chunkX, chunkZ)) {
 				chunkX *= 16;
 				chunkZ *= 16;
@@ -105,6 +104,10 @@ public class WarpNodeGenerator implements RetroactiveGenerator {
 				}
 			}
 		}
+	}
+
+	public boolean isValidWorld(World world) {
+		return world.provider.dimensionId == 0 && world.getWorldInfo().getTerrainType() != WorldType.FLAT;
 	}
 
 	public boolean isGennableChunk(World world, int chunkX, int chunkZ) {

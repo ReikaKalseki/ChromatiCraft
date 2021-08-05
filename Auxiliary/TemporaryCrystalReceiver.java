@@ -12,8 +12,6 @@ package Reika.ChromatiCraft.Auxiliary;
 import java.util.HashSet;
 import java.util.UUID;
 
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
@@ -25,6 +23,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.WrapperTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Magic.Progression.ResearchLevel;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 
 
@@ -127,7 +126,7 @@ public class TemporaryCrystalReceiver implements CrystalReceiver, WrapperTile {
 	 */
 
 	@Override
-	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
+	public DecimalPosition getTargetRenderOffset(CrystalElement e) {
 		return null;
 	}
 

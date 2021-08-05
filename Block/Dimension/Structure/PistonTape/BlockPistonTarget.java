@@ -11,12 +11,15 @@ package Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
@@ -36,6 +39,9 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.TapeStage;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.RGBColorData;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
@@ -48,9 +54,13 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mcp.mobius.waila.api.IWailaConfigHandler;
+import mcp.mobius.waila.api.IWailaDataAccessor;
+import mcp.mobius.waila.api.IWailaDataProvider;
 
 
-public class BlockPistonTarget extends BlockDimensionStructureTile implements LaserPulseEffect {
+@Strippable(value = {"mcp.mobius.waila.api.IWailaDataProvider"})
+public class BlockPistonTarget extends BlockDimensionStructureTile implements LaserPulseEffect, IWailaDataProvider {
 
 	private IIcon emitterOverlay;
 	private IIcon doorOverlay;
@@ -139,6 +149,38 @@ public class BlockPistonTarget extends BlockDimensionStructureTile implements La
 	public boolean canRenderInPass(int pass) {
 		ChromaISBRH.piston.setRenderPass(pass);
 		return pass <= 1;
+	}
+
+	@Override
+	@ModDependent(ModList.WAILA)
+	public ItemStack getWailaStack(IWailaDataAccessor acc, IWailaConfigHandler config) {
+		return null;
+	}
+
+	@Override
+	@ModDependent(ModList.WAILA)
+	public final List<String> getWailaHead(ItemStack is, List<String> tip, IWailaDataAccessor acc, IWailaConfigHandler config) {
+		return tip;
+	}
+
+	@Override
+	@ModDependent(ModList.WAILA)
+	public final List<String> getWailaBody(ItemStack is, List<String> tip, IWailaDataAccessor acc, IWailaConfigHandler config) {
+		TileEntity te = acc.getTileEntity();
+		if (te instanceof PistonDoorTile) {
+			tip.add("Color: "+((PistonDoorTile)te).color.getName());
+		}
+		return tip;
+	}
+
+	@ModDependent(ModList.WAILA)
+	public final List<String> getWailaTail(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler config) {
+		return currenttip;
+	}
+
+	@Override
+	public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, int x, int y, int z) {
+		return tag;
 	}
 
 	public static class PistonDoorTile extends PistonTargetTile {

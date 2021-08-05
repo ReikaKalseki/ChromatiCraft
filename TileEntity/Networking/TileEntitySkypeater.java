@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Networking;
 
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-
 import net.minecraft.nbt.NBTTagCompound;
 
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
@@ -21,6 +19,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.NaturalNetworkTile;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 
 
 public class TileEntitySkypeater extends CrystalTransmitterBase implements CrystalRepeater, NaturalNetworkTile {
@@ -63,7 +62,7 @@ public class TileEntitySkypeater extends CrystalTransmitterBase implements Cryst
 	}
 
 	@Override
-	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
+	public DecimalPosition getTargetRenderOffset(CrystalElement e) {
 		return null;
 	}
 

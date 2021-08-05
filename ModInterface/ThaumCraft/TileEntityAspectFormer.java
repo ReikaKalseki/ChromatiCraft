@@ -11,8 +11,6 @@ package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 
 import java.util.ArrayList;
 
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-
 import com.google.common.base.Strings;
 
 import net.minecraft.client.Minecraft;
@@ -31,6 +29,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
@@ -193,12 +192,12 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 	}
 
 	@Override
-	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
+	public DecimalPosition getTargetRenderOffset(CrystalElement e) {
 		double d = 0.21875-0.5;
 		double dx = d+(e.ordinal()/4)*(0.1875);
 		double dz = d+(e.ordinal()%4)*(0.1875);
 		//ReikaJavaLibrary.pConsole(dx+", "+dz);
-		return new ImmutableTriple(dx, 0.4, dz);
+		return new DecimalPosition(dx, 0.4, dz);
 	}
 
 	@Override

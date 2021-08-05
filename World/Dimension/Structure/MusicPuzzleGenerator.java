@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -160,6 +160,8 @@ public class MusicPuzzleGenerator extends DimensionStructureGenerator {
 		addPrefabMelody(MusicKey.Ab5, MusicKey.Eb5, MusicKey.Ab5, MusicKey.Eb6, MusicKey.B5, MusicKey.Ab5, MusicKey.B5, MusicKey.Ab5, MusicKey.B5, MusicKey.Eb5, MusicKey.Eb6, MusicKey.Ab5, MusicKey.Eb5, MusicKey.B5, MusicKey.Eb6, MusicKey.B5, MusicKey.B5, MusicKey.Ab5, MusicKey.B5, MusicKey.E6, MusicKey.Fs5, MusicKey.E6, MusicKey.B5, MusicKey.B5, MusicKey.Fs5, MusicKey.Bb5, MusicKey.Eb5, MusicKey.Cs6, MusicKey.B5);
 
 		addPrefabMelody(MusicKey.G5, MusicKey.D5, MusicKey.G5, MusicKey.D5, MusicKey.G5, MusicKey.Eb5, MusicKey.G5, MusicKey.Eb5, MusicKey.A5, MusicKey.Eb5, MusicKey.Bb5, MusicKey.Eb5, MusicKey.F5, MusicKey.D5, MusicKey.F5, MusicKey.D5, MusicKey.G5, MusicKey.D5, MusicKey.A5, MusicKey.D5, MusicKey.A5, MusicKey.D5, MusicKey.A5, MusicKey.F5, MusicKey.G5);
+
+		addPrefabMelody(MusicKey.E5, MusicKey.E5, MusicKey.F5, MusicKey.G5, MusicKey.G5, MusicKey.F5, MusicKey.E5, MusicKey.D5, MusicKey.C5, MusicKey.C5, MusicKey.D5, MusicKey.E5, MusicKey.E5, MusicKey.D5, MusicKey.D5, MusicKey.D5, MusicKey.E5, MusicKey.E5, MusicKey.F5, MusicKey.G5, MusicKey.G5, MusicKey.F5, MusicKey.E5, MusicKey.D5, MusicKey.C5, MusicKey.C5, MusicKey.D5, MusicKey.E5, MusicKey.D5, MusicKey.C5, MusicKey.C5);
 	}
 
 	private static void addPrefabMelody(MusicKey... notes) {

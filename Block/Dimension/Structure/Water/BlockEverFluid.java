@@ -30,6 +30,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.World.Dimension.Structure.WaterPuzzleGenerator;
@@ -134,7 +135,17 @@ public class BlockEverFluid extends BlockContainer {
 			te.level = placeSource ? src.level+1 : src.level;
 			return true;
 		}
+		else if (this.isBlockingBlock(world, dx, dy, dz)) {
+			return true;
+		}
 		return false;
+	}
+
+	private boolean isBlockingBlock(World world, int x, int y, int z) {
+		Block b = world.getBlock(x, y, z);
+		if (b instanceof BlockStructureShield ||b == ChromaBlocks.WATERLOCK.getBlockInstance())
+			return false;
+		return true;
 	}
 
 	private boolean canFlowInto(IBlockAccess world, int x, int y, int z, TileEntityEverFluid te) {

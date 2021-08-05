@@ -329,7 +329,7 @@
 			The standard method of keeping unwanted creatures away is to light the area, but that is often difficult or ugly to do, and the best designs can be rendered worthless with one block left a bit too dark. With that in mind, you seek to concentrate crystal energy, being luminous itself, in some sort of lamp to keep the mobs at bay.
 		</desc>
 		<note>
-			Range: %d for each element in the lamp, added via shards
+			Range: %d for each element in the lamp, added via boosted shards
 		</note>
 	</lamp>
 	<powertree>

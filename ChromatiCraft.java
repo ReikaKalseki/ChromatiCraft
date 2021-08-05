@@ -1062,6 +1062,11 @@ public class ChromatiCraft extends DragonAPIMod {
 	}
 
 	@Override
+	public URL getBugSite() {
+		return DragonAPICore.getReikaGithubPage();
+	}
+
+	@Override
 	public String getWiki() {
 		return "http://ChromatiCraft.wikia.com/wiki/ChromatiCraft_Wiki";
 	}

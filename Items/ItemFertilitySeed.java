@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
+import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Event.BlockTickEvent;
 import Reika.DragonAPI.Instantiable.Event.BlockTickEvent.UpdateFlags;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -47,13 +48,22 @@ public class ItemFertilitySeed extends ItemChromaBasic implements BreakerCallbac
 
 	public static final int INITIAL_DELAY = 40;
 
-	private static final Random rand = new Random();
+	private static final Random fxRand = new Random();
+	private final WeightedRandom<Integer> dropChances = new WeightedRandom();
+
+	public int getRandomAmbientDropMeta(Random rand) {
+		dropChances.setRNG(rand);
+		return dropChances.getRandomEntry();
+	}
 
 	public ItemFertilitySeed(int tex) {
 		super(tex);
 		this.setMaxStackSize(8);
 		hasSubtypes = true;
 		this.setMaxDamage(0);
+
+		for (int i = 0; i <= 6; i++)
+			dropChances.addEntry(i, 125-i*20);
 	}
 
 	@Override
@@ -112,11 +122,11 @@ public class ItemFertilitySeed extends ItemChromaBasic implements BreakerCallbac
 		Block b = world.getBlock(x, y, z);
 		b.setBlockBoundsBasedOnState(world, x, y, z);
 		for (int i = 0; i < n; i++) {
-			double px = x+b.getBlockBoundsMinX()+(b.getBlockBoundsMaxX()-b.getBlockBoundsMinX())*rand.nextDouble();
-			double py = y+b.getBlockBoundsMinY()+(b.getBlockBoundsMaxY()-b.getBlockBoundsMinY())*rand.nextDouble();
-			double pz = z+b.getBlockBoundsMinZ()+(b.getBlockBoundsMaxZ()-b.getBlockBoundsMinZ())*rand.nextDouble();
+			double px = x+b.getBlockBoundsMinX()+(b.getBlockBoundsMaxX()-b.getBlockBoundsMinX())*fxRand.nextDouble();
+			double py = y+b.getBlockBoundsMinY()+(b.getBlockBoundsMaxY()-b.getBlockBoundsMinY())*fxRand.nextDouble();
+			double pz = z+b.getBlockBoundsMinZ()+(b.getBlockBoundsMaxZ()-b.getBlockBoundsMinZ())*fxRand.nextDouble();
 			int c = ReikaColorAPI.getModifiedHue(0x00ff00, ReikaRandomHelper.getRandomBetween(80, 150));
-			float f = 0.5F+rand.nextFloat();
+			float f = 0.5F+fxRand.nextFloat();
 			int l = ReikaRandomHelper.getRandomBetween(10, maxl);
 			EntityFX fx = new EntityCCBlurFX(world, px, py, pz).setColor(c).setScale(f).setLife(l);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);

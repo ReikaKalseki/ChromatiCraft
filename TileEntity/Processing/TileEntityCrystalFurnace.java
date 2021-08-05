@@ -13,6 +13,7 @@ import java.util.Locale;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
@@ -198,12 +199,15 @@ VariableTexture {
 	}
 
 	public static int getMultiplyRate(ItemStack in, ItemStack out) {
-		if (ChromaBlocks.PYLONSTRUCT.match(out))
+		if (ChromaBlocks.PYLONSTRUCT.match(out)) {
 			return 1;
-		else if (in.getDisplayName() != null && in.getDisplayName().toLowerCase(Locale.ENGLISH).contains("cobblestone"))
+		}
+		else if (in.getDisplayName() != null && in.getDisplayName().toLowerCase(Locale.ENGLISH).contains("cobblestone")) {
 			return 1;
-		else if (ModList.GENDUSTRY.isLoaded() && in.getDisplayName() != null && in.getDisplayName().toLowerCase(Locale.ENGLISH).contains("gene"))
+		}
+		else if (ModList.GENDUSTRY.isLoaded() && in.getDisplayName() != null && in.getDisplayName().toLowerCase(Locale.ENGLISH).contains("gene")) {
 			return 1;
+		}
 		else if (ModList.GREGTECH.isLoaded() && (ReikaItemHelper.getRegistrantMod(in).toLowerCase(Locale.ENGLISH).contains("gregapi") || ReikaItemHelper.getRegistrantMod(in).toLowerCase(Locale.ENGLISH).contains("gregtech"))) {
 			if (in.getItem() instanceof ItemFood)
 				return MULTIPLY;
@@ -224,8 +228,15 @@ VariableTexture {
 		else if (ModList.THAUMCRAFT.isLoaded() && in.getItem() == ThaumItemHelper.ItemEntry.NUGGETCLUSTER.getItem().getItem()) {
 			return 2*MULTIPLY;
 		}
-		else if (ModList.APPENG.isLoaded() && ReikaItemHelper.matchStackWithBlock(in, AppEngHandler.getInstance().chargedCertusOre))
+		else if (ModList.THAUMCRAFT.isLoaded() && in.getItem() == ThaumItemHelper.ItemEntry.COIN.getItem().getItem()) {
+			return 1;
+		}
+		else if (ModList.APPENG.isLoaded() && ReikaItemHelper.matchStackWithBlock(in, AppEngHandler.getInstance().chargedCertusOre)) {
 			return 4*MULTIPLY;
+		}
+		else if (ReikaItemHelper.getRegistrantMod(in).equals("GardenStuff") && Item.itemRegistry.getNameForObject(in.getItem()).equals("wrought_iron_ingot")) {
+			return 1;
+		}
 		else if (ReikaBlockHelper.isOre(in)) {
 			int ret = 2*MULTIPLY;
 			OreType ore = ReikaOreHelper.getEntryByOreDict(in);

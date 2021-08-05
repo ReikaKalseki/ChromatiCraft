@@ -69,7 +69,8 @@ public class TileEntityRFDistributor extends TileEntityAreaDistributor implement
 			if (te instanceof IEnergyReceiver || te instanceof IEnergyHandler) {
 				int give = this.tryGiveEnergy(maxReceive, simulate, (IEnergyReceiver)te);
 				if (give > 0) {
-					this.sendEnergy(give, loc, (IEnergyReceiver)te);
+					if (!simulate)
+						this.sendEnergy(give, loc, (IEnergyReceiver)te);
 					maxReceive -= give;
 					add += give;
 					if (maxReceive <= 0)

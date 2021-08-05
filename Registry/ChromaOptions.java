@@ -90,7 +90,7 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	BIOMEBLEND("Blend CC Biome Edges", true),
 	MIDISIZE("Orchestra MIDI Size Limit (KB)", 80),
 	STRUCTPASSLEVEL("Structure Bypass Usability (0 = None, 1 = Admins Only, 2 = All)", 2),
-	SUPERBUILDKEYBIND("Superbuild Ability Activation", Key.LCTRL.toString()),
+	SUPERBUILDKEYBIND("Superbuild Ability Activation", Key.LCTRL.name()), //TypeHelper to Website Generator: String
 	VILLAGERATE("Village Structure Frequency", 1F),
 	NODECHARGESPEED("Crystal-Network-Integrated ThaumCraft Node Improvement Speed", 1F),
 	METEORFIRE("Meteor Tower Projectiles Start Fires On Impact", true),

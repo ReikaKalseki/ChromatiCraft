@@ -51,6 +51,7 @@ import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.RuneShape;
 import Reika.ChromatiCraft.Magic.RuneShape.RuneViewer;
 import Reika.ChromatiCraft.Magic.CastingTuning.CastingTuningManager;
+import Reika.ChromatiCraft.Magic.CastingTuning.TuningKey;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -545,15 +546,19 @@ public class CastingRecipe implements APICastingRecipe {
 		@Override
 		public boolean canRunRecipe(TileEntity te, EntityPlayer ep) {
 			if (te != null && this.requiresTuningKey()) {
-				if (!this.checkForTuningKey(te, ep)) {
+				if (!this.checkForTuningKey((TileEntityCastingTable)te, ep)) {
 					return false;
 				}
 			}
 			return super.canRunRecipe(te, ep);
 		}
 
-		protected final boolean checkForTuningKey(TileEntity te, EntityPlayer ep) {
-			return CastingTuningManager.instance.getTuningKey(ep).check((TileEntityCastingTable)te);
+		protected final boolean checkForTuningKey(TileEntityCastingTable te, EntityPlayer ep) {
+			TuningKey key = CastingTuningManager.instance.getTuningKey(ep);
+			if (te.isOwnedByPlayer(ep) && te.getPlacerUUID() != null && !te.getPlacerUUID().equals(ep.getUniqueID())) {
+				key = CastingTuningManager.instance.getTuningKey(te.worldObj, te.getPlacerUUID());
+			}
+			return key.check(te);
 		}
 
 		protected TempleCastingRecipe addRuneRingRune(CrystalElement e) {
