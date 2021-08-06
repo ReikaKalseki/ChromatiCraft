@@ -64,7 +64,8 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.API.AbilityAPI.Ability;
+import Reika.ChromatiCraft.API.AbilityAPI;
+import Reika.ChromatiCraft.API.ChromatiAPI;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
 import Reika.ChromatiCraft.Items.Tools.ItemEfficiencyCrystal;
@@ -146,7 +147,7 @@ import forestry.api.apiculture.IBeeGenome;
 
 
 
-public class AbilityHelper {
+public class AbilityHelper implements AbilityAPI {
 
 	public static final int[] REACH_SCALE = {8, 12, 16, 32, 64, 128, 192};
 
@@ -196,6 +197,7 @@ public class AbilityHelper {
 	public static final int LYING_DURATION = 1200;
 
 	private AbilityHelper() {
+		ChromatiAPI.abilities = this;
 		List<Ability> li = Chromabilities.getAbilities();
 		for (Ability c : li) {
 			ElementTagCompound tag = AbilityRituals.instance.getAura(c);
@@ -1767,6 +1769,16 @@ public class AbilityHelper {
 
 	public boolean isPeaceActive(EntityPlayer ep) {
 		return ep.worldObj.getTotalWorldTime()-ep.getEntityData().getLong(LYING_TAG) > AbilityHelper.LYING_DURATION;
+	}
+
+	@Override
+	public void addAbility(Ability a) {
+		Chromabilities.addAbility(a);
+	}
+
+	@Override
+	public boolean playerHasAbility(EntityPlayer ep, Ability a) {
+		return Chromabilities.playerHasAbility(ep, a);
 	}
 
 }

@@ -17,7 +17,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.ChromatiAPI;
 import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
+import Reika.ChromatiCraft.API.PlayerBufferAPI;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Items.Tools.ItemPendant;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
@@ -32,7 +34,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class PlayerElementBuffer {
+public class PlayerElementBuffer implements PlayerBufferAPI {
 
 	public static final PlayerElementBuffer instance = new PlayerElementBuffer();
 
@@ -42,7 +44,7 @@ public class PlayerElementBuffer {
 	private static final int PLAYER_BASE_CAP = 400000;
 
 	private PlayerElementBuffer() {
-
+		ChromatiAPI.buffers = this;
 	}
 
 	public float getAndDecrUpgradeTick(EntityPlayer ep) {

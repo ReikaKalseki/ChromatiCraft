@@ -409,7 +409,7 @@ public class TileEntityPylonTurboCharger extends TileEntityPylonEnhancer {
 				AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-12, y-2, z-12, x+1+12, y+1+24, z+1+12);
 				List<EntityLivingBase> li = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
 				for (EntityLivingBase e : li) {
-					PotionEffect eff = CrystalPotionController.getEffectFromColor(te.getColor(), 200, 4);
+					PotionEffect eff = CrystalPotionController.instance.getEffectFromColor(te.getColor(), 200, 4, false);
 					if (eff != null) {
 						e.addPotionEffect(eff);
 					}

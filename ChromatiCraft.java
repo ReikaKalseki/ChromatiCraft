@@ -45,6 +45,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 
+import Reika.ChromatiCraft.API.ChromatiAPI;
 import Reika.ChromatiCraft.Auxiliary.ChromaASMHandler;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookSpawner;
@@ -62,6 +63,9 @@ import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.ToolDispenserHandlers.ManipulatorDispenserAction;
 import Reika.ChromatiCraft.Auxiliary.ToolDispenserHandlers.ProjectileToolDispenserAction;
 import Reika.ChromatiCraft.Auxiliary.VillageTradeHandler;
+import Reika.ChromatiCraft.Auxiliary.APIImpl.AdjacencyUpgradeAPIImpl;
+import Reika.ChromatiCraft.Auxiliary.APIImpl.AuraLocusAPIImpl;
+import Reika.ChromatiCraft.Auxiliary.APIImpl.DyeTreeAPIImpl;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Ability.ChromabilityHandler;
 import Reika.ChromatiCraft.Auxiliary.Command.CrystalNetCommand;
@@ -368,6 +372,10 @@ public class ChromatiCraft extends DragonAPIMod {
 		}
 
 		this.setupClassFiles();
+
+		ChromatiAPI.trees = new DyeTreeAPIImpl();
+		ChromatiAPI.aura = new AuraLocusAPIImpl();
+		ChromatiAPI.adjacency = new AdjacencyUpgradeAPIImpl();
 
 		int id = ExtraChromaIDs.GROWTHID.getValue();
 		IDCollisionTracker.instance.addPotionID(instance, id, PotionGrowthHormone.class);
@@ -792,7 +800,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		}
 
 		if (ModList.BLOODMAGIC.isLoaded() && BloodMagicHandler.getInstance().soulFrayID != -1) {
-			CrystalPotionController.addIgnoredPotion(Potion.potionTypes[BloodMagicHandler.getInstance().soulFrayID]);
+			CrystalPotionController.instance.addBadPotionForIgnore(Potion.potionTypes[BloodMagicHandler.getInstance().soulFrayID]);
 		}
 
 		if (Loader.isModLoaded("TardisMod")) {

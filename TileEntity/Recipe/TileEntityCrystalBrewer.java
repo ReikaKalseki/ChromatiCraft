@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -61,13 +61,13 @@ public class TileEntityCrystalBrewer extends InventoriedChromaticBase implements
 		if (is == null)
 			return false;
 		if (is.getItem() == Items.potionitem) {
-			if (CrystalPotionController.isPotionModifier(CrystalElement.elements[zd%16]))
+			if (CrystalPotionController.instance.isPotionModifier(CrystalElement.elements[zd%16]))
 				return ReikaPotionHelper.isActualPotion(is.getItemDamage());
 			else
 				return !ReikaPotionHelper.isActualPotion(is.getItemDamage());
 		}
 		else if (is.getItem() == ChromaItems.POTION.getItemInstance()) {
-			return CrystalPotionController.isPotionModifier(CrystalElement.elements[zd%16]);
+			return CrystalPotionController.instance.isPotionModifier(CrystalElement.elements[zd%16]);
 		}
 		return false;
 	}
@@ -87,10 +87,10 @@ public class TileEntityCrystalBrewer extends InventoriedChromaticBase implements
 	public static ItemStack getPotionStackFromColor(int dmg, CrystalElement color, boolean boost) {
 		ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(color.ordinal());
 		String eff = shard.getItem().getPotionEffect(shard);
-		boolean custom = CrystalPotionController.requiresCustomPotion(color);
+		boolean custom = CrystalPotionController.instance.requiresCustomPotion(color);
 		ItemStack is = new ItemStack(Items.potionitem, 1, ReikaPotionHelper.AWKWARD_META);
 
-		if (CrystalPotionController.isPotionModifier(color)) {
+		if (CrystalPotionController.instance.isPotionModifier(color)) {
 			is.setItemDamage(dmg);
 		}
 
@@ -98,7 +98,7 @@ public class TileEntityCrystalBrewer extends InventoriedChromaticBase implements
 			is = new ItemStack(ChromaItems.POTION.getItemInstance(), 1, color.ordinal());
 		}
 		else {
-			if (CrystalPotionController.isCorruptedPotion(color)) {
+			if (CrystalPotionController.instance.isCorruptedPotion(color)) {
 				int newmeta = PotionHelper.applyIngredient(is.getItemDamage(), eff);
 				is = new ItemStack(is.getItem(), 1, newmeta);
 				int cmeta = PotionHelper.applyIngredient(is.getItemDamage(), PotionHelper.fermentedSpiderEyeEffect);

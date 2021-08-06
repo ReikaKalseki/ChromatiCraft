@@ -69,7 +69,7 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 				CrystalBlock c = (CrystalBlock)b;
 				CrystalElement e = CrystalElement.elements[world.getBlockMetadata(dx, dy, dz)];
 				if (e == CrystalElement.PURPLE) {
-					CrystalPotionController.applyEffectFromColor(c.getDuration(e), c.getPotionLevel(e), this.getPlacer(), e, false);
+					CrystalPotionController.instance.applyEffectFromColor(c.getDuration(e), c.getPotionLevel(e), this.getPlacer(), e, false);
 				}
 				else if (c.shouldGiveEffects(e) && c.performEffect(e)) {
 					c.updateEffects(world, dx, dy, dz);

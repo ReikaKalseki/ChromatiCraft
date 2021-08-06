@@ -55,9 +55,9 @@ public class ItemPendant extends ItemCrystalBasic {
 				}
 				else {
 					int dura = this.isEnhanced() ? 6000 : color == CrystalElement.BLUE ? 3 : 100;
-					PotionEffect pot = CrystalPotionController.getEffectFromColor(color, dura, level);
-					if (pot == null || color == CrystalElement.BLUE || !ep.isPotionActive(pot.getPotionID())) {
-						CrystalPotionController.applyEffectFromColor(dura, level, ep, color, true);
+					PotionEffect pot = CrystalPotionController.instance.getEffectFromColor(color, dura, level, false);
+					if (pot == null || color == CrystalElement.BLUE) {
+						CrystalPotionController.instance.applyEffectFromColor(dura, level, ep, color, true);
 					}
 				}
 				if (ChromaOptions.NOPARTICLES.getState())

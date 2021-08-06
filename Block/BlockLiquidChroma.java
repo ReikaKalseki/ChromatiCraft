@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -130,10 +130,10 @@ public class BlockLiquidChroma extends BlockFluidClassic {
 		if (e instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)e;
 			ProgressStage.CHROMA.stepPlayerTo(ep);
-			CrystalPotionController.applyEffectFromColor(201, 0, ep, CrystalElement.BLUE, true);
-			CrystalPotionController.applyEffectFromColor(10, 0, ep, CrystalElement.BROWN, true);
-			CrystalPotionController.applyEffectFromColor(10, 0, ep, CrystalElement.MAGENTA, true);
-			CrystalPotionController.applyEffectFromColor(10, 0, ep, CrystalElement.WHITE, true);
+			CrystalPotionController.instance.applyEffectFromColor(201, 0, ep, CrystalElement.BLUE, true);
+			CrystalPotionController.instance.applyEffectFromColor(10, 0, ep, CrystalElement.BROWN, true);
+			CrystalPotionController.instance.applyEffectFromColor(10, 0, ep, CrystalElement.MAGENTA, true);
+			CrystalPotionController.instance.applyEffectFromColor(10, 0, ep, CrystalElement.WHITE, true);
 		}
 		else if (e instanceof EntityItem) {
 			((EntityItem)e).age = ((EntityItem)e).age%Math.max(40, ((EntityItem)e).lifespan-40);

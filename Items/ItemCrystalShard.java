@@ -224,7 +224,7 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 		StringBuilder sb = new StringBuilder();
 		sb.append("Good for ");
 		CrystalElement color = CrystalElement.elements[is.getItemDamage()%16];
-		sb.append(CrystalPotionController.getPotionName(color));
+		sb.append(CrystalPotionController.instance.getPotionName(color));
 		sb.append(" Potions");
 		li.add(sb.toString());
 		if (is.getItemDamage() >= 16)

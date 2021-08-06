@@ -1,25 +1,26 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.API;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
+import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -44,7 +45,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  * and is the most expensive, technically complex, and time-consuming to set up and perform. Recipes of this type should give appropriate reward.
  * <br><br>
  * Argument Types:<br>
- * <b>{@code IRecipe:}</b> Used for the lower two tiers. This is a recipe object for a 3x3 grid; it can be shaped or shapeless.
+ * <b>{@code IRecipe:}</b> Used for the lower two tiers. This is a recipe object for a 3x3 grid; it can be shaped or shapeless, and may use OreDict.
  * The casting table supports the ore dictionary and metadata wildcards, and your recipe can reflect that, though it is optional.
  *<br><br>
  * <b>{@code Map<List<Integer>, CrystalElementProxy>:}</b> Used in all but the lowest tier. This declares runes at a given location relative to the
@@ -60,149 +61,27 @@ import cpw.mods.fml.relauncher.SideOnly;
  * Note that excessively large values may render the recipe impossible as they exceed the table's energy storage capacity.
  * <br><br>
  *  Any recipes whose output is ChromatiCraft items will be rejected with an error log, as such recipes will damage the progression of the mod. */
-public class CastingAPI {
-
-	private static Class cast;
-	private static Class temple;
-	private static Class multi;
-	private static Class pylon;
-
-	private static Constructor instCast;
-	private static Constructor instTemple;
-	private static Constructor instMulti;
-	private static Constructor instPylon;
-
-	private static Method rune;
-	private static Method aux;
-	private static Method aura;
-
-	private static Class recipes;
-	private static Object instance;
-	private static Method add;
-	private static Field effect;
-
-	private static boolean loaded;
+public interface CastingAPI {
 
 	/** Use this to add a level one "crafting type" casting recipe.
 	 * Args: Recipe object
 	 * Returns the casting recipe object. */
-	public static Object addCastingRecipe(IRecipe ir) {
-		if (!loaded) {
-			System.out.println("Class did not initialize correctly, casting recipes cannot be added!");
-			return null;
-		}
-		ItemStack out = ir.getRecipeOutput();
-		try {
-			Object r = instCast.newInstance(out, ir);
-			add.invoke(instance, r);
-			return r;
-		}
-		catch (RuntimeException e) {
-			throw e;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+	public APICastingRecipe addCastingRecipe(IRecipe ir);
 
 	/** Use this to add a level two "temple/rune type" casting recipe.
 	 * Args: Recipe object, rune map (may NOT be null)
 	 * Returns the casting recipe object. */
-	public static Object addTempleCastingRecipe(IRecipe ir, Map<List<Integer>, CrystalElementProxy> runes) {
-		if (!loaded) {
-			System.out.println("Class did not initialize correctly, casting recipes cannot be added!");
-			return null;
-		}
-		ItemStack out = ir.getRecipeOutput();
-		try {
-			Object r = instTemple.newInstance(out, ir);
-			for (List<Integer> key : runes.keySet()) {
-				rune.invoke(r, runes.get(key), key.get(0).intValue(), key.get(1).intValue(), key.get(2).intValue());
-			}
-			add.invoke(instance, r);
-			return r;
-		}
-		catch (RuntimeException e) {
-			throw e;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+	public RuneTempleRecipe addTempleCastingRecipe(IRecipe ir, Map<List<Integer>, CrystalElementProxy> runes);
 
 	/** Use this to add a level three "multiblock" casting recipe.
 	 * Args: Output item, central item, rune map (may be null), itemstack map (may NOT be null)
 	 * Returns the casting recipe object. */
-	public static Object addMultiBlockCastingRecipe(ItemStack out, ItemStack ctr, Map<List<Integer>, CrystalElementProxy> runes, Map<List<Integer>, ItemStack> items) {
-		if (!loaded) {
-			System.out.println("Class did not initialize correctly, casting recipes cannot be added!");
-			return null;
-		}
-		try {
-			Object r = instMulti.newInstance(out, ctr);
-			if (runes != null) {
-				for (List<Integer> key : runes.keySet()) {
-					rune.invoke(r, runes.get(key), key.get(0).intValue(), key.get(1).intValue(), key.get(2).intValue());
-				}
-			}
-			for (List<Integer> key : items.keySet()) {
-				aux.invoke(r, items.get(key), key.get(0).intValue(), key.get(1).intValue());
-			}
-			add.invoke(instance, r);
-			return r;
-		}
-		catch (RuntimeException e) {
-			throw e;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+	public MultiRecipe addMultiBlockCastingRecipe(ItemStack out, ItemStack ctr, Map<List<Integer>, CrystalElementProxy> runes, Map<List<Integer>, ItemStack> items);
 
 	/** Use this to add a level four "pylon" casting recipe.
 	 * Args: Output item, central item, rune map (may be null), itemstack map (may NOT be null), energy map (may NOT be null)
 	 * Returns the casting recipe object. */
-	public static Object addPylonCastingRecipe(ItemStack out, ItemStack ctr, Map<List<Integer>, CrystalElementProxy> runes, Map<List<Integer>, ItemStack> items, Map<CrystalElementProxy, Integer> energy) {
-		if (!loaded) {
-			System.out.println("Class did not initialize correctly, casting recipes cannot be added!");
-			return null;
-		}
-		try {
-			Object r = instPylon.newInstance(out, ctr);
-			if (runes != null) {
-				for (List<Integer> key : runes.keySet()) {
-					rune.invoke(r, runes.get(key), key.get(0).intValue(), key.get(1).intValue(), key.get(2).intValue());
-				}
-			}
-			for (List<Integer> key : items.keySet()) {
-				aux.invoke(r, items.get(key), key.get(0).intValue(), key.get(1).intValue());
-			}
-			for (CrystalElementProxy e : energy.keySet()) {
-				aura.invoke(r, e, energy.get(e).intValue());
-			}
-			add.invoke(instance, r);
-			return r;
-		}
-		catch (RuntimeException e) {
-			throw e;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	public static void addEffectCallback(Object recipe, FXCallback callback) {
-		try {
-			effect.set(recipe, callback);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	public LumenRecipe addPylonCastingRecipe(ItemStack out, ItemStack ctr, Map<List<Integer>, CrystalElementProxy> runes, Map<List<Integer>, ItemStack> items, Map<CrystalElementProxy, Integer> energy);
 
 	public static interface FXCallback {
 
@@ -212,42 +91,67 @@ public class CastingAPI {
 
 	}
 
-	static {
-		try {
-			loaded = false;
+	/** Implemented by the casting recipes themselves. This interface is implemented by all the recipes. */
+	public static interface APICastingRecipe {
 
-			cast = Class.forName("Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe");
-			instCast = cast.getDeclaredConstructor(ItemStack.class, IRecipe.class);
-			instCast.setAccessible(true);
-			effect = cast.getField("effectCallback");
+		/** Adds an FX callback for your own custom recipes. Will error if a callback is already present, or the recipe is native to the mod. */
+		public void setFXHook(FXCallback call);
 
-			temple = Class.forName("Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe$TempleCastingRecipe");
-			instTemple = temple.getDeclaredConstructor(ItemStack.class, IRecipe.class);
-			instTemple.setAccessible(true);
-			rune = temple.getDeclaredMethod("addRune", CrystalElementProxy.class, int.class, int.class, int.class);
-			rune.setAccessible(true);
+		/** The recipe tier, from 0 to 3. Corresponds to the four tiers described in {@link CastingAPI}. Use this to check before casting to
+		 * higher-level recipe interfaces */
+		public int getTier();
 
-			multi = Class.forName("Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe$MultiBlockCastingRecipe");
-			instMulti = multi.getDeclaredConstructor(ItemStack.class, ItemStack.class);
-			instMulti.setAccessible(true);
-			aux = multi.getDeclaredMethod("addAuxItem", ItemStack.class, int.class, int.class);
-			aux.setAccessible(true);
+		public ItemStack getOutput();
 
-			pylon = Class.forName("Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe$PylonCastingRecipe");
-			instPylon = pylon.getDeclaredConstructor(ItemStack.class, ItemStack.class);
-			instPylon.setAccessible(true);
-			aura = pylon.getDeclaredMethod("addAuraRequirement", CrystalElementProxy.class, int.class);
-			aura.setAccessible(true);
+		/** Whether a player is permitted to perform a given recipe, such as progression and other data. Null or fake players are not permitted. */
+		public boolean canRunRecipe(TileEntity te, EntityPlayer ep);
 
-			recipes = Class.forName("Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable");
-			instance = recipes.getField("instance").get(null);
-			add = recipes.getDeclaredMethod("addModdedRecipe", cast);
-			add.setAccessible(true);
+		/** The typical number of times a player runs this recipe. Some may go as large as Int.MAX (for recipes that have no upper bound), and others
+		 * may be as low as one. */
+		public int getTypicalCraftedAmount();
 
-			loaded = true;
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		/** How many ticks the recipe takes to complete once all its requirements are satisfied. Generally 5-1800 ticks. */
+		public int getDuration();
+
+		/** How much "Casting Experience" is yielded by the recipe. This is NOT normal Minecraft XP. */
+		public int getExperience();
+
+		/** A 3x3 ItemStack grid used for recipe display purposes, like in NEI and the lexicon. */
+		@SideOnly(Side.CLIENT)
+		public ItemStack[] getArrayForDisplay();
+
+		/** Whether a given item is used in the recipe. */
+		public boolean usesItem(ItemStack is);
+
+		/** Some recipes modify NBT on the output item. Use this to determine the output. Null is permitted. The supplied tag is that of the main center item.*/
+		public NBTTagCompound getOutputTag(EntityPlayer ep, NBTTagCompound input);
+
+	}
+
+	/** Rune-level crafting. */
+	public static interface RuneTempleRecipe extends APICastingRecipe {
+
+		/** The rune locations. The list is of relative XYZ coords, with a given color at each position. */
+		public Map<List<Integer>, CrystalElementProxy> getRunePositions();
+
+	}
+
+	/** Multiblock (Item Casting Stand, 5x5 grid) recipes */
+	public static interface MultiRecipe extends RuneTempleRecipe {
+
+		/** The item input locations. The list is of relative XZ coords, with a given itemstack or set thereof (OreDict).  */
+		public Map<List<Integer>, Set<KeyedItemStack>> getInputItems();
+
+		/** The central item. */
+		public ItemStack getMainInput();
+
+	}
+
+	/** Pylon and repeater recipes. */
+	public static interface LumenRecipe extends MultiRecipe {
+
+		/** The lumen cost for a given color. */
+		public int getEnergyCost(CrystalElementProxy e);
+
 	}
 }

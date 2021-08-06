@@ -17,7 +17,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
+import Reika.ChromatiCraft.API.ChromatiAPI;
 import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
+import Reika.ChromatiCraft.API.RitualAPI;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -26,7 +28,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayMap;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 
-public final class AbilityRituals {
+public final class AbilityRituals implements RitualAPI {
 
 	private final OneWayMap<Ability, AbilityRitual> data = new OneWayMap();
 
@@ -38,6 +40,7 @@ public final class AbilityRituals {
 	private int maxTotalCost = 0;
 
 	private AbilityRituals() {
+		ChromatiAPI.rituals = this;
 		this.addRituals();
 	}
 
@@ -327,7 +330,7 @@ public final class AbilityRituals {
 		return this.hasRitual(c) ? data.get(c).duration : 0;
 	}
 
-	public static boolean isPlayerUndergoingRitual(EntityPlayer ep) {
+	public boolean isPlayerUndergoingRitual(EntityPlayer ep) {
 		for (WorldLocation loc : tables) {
 			TileEntity te = loc.getTileEntity(ep.worldObj);
 			if (te instanceof TileEntityRitualTable) {

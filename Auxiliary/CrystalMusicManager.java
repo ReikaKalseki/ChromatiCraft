@@ -169,7 +169,7 @@ public class CrystalMusicManager {
 	public boolean isMinorKey(CrystalElement e) {
 		if (e == CrystalElement.CYAN || e == CrystalElement.ORANGE || e == CrystalElement.GREEN || e == CrystalElement.LIGHTGRAY || e == CrystalElement.GRAY)
 			return true;
-		return CrystalPotionController.isBadPotion(e);
+		return CrystalPotionController.instance.isBadPotion(e);
 	}
 
 	public List<MusicKey> getKeys(CrystalElement e) {

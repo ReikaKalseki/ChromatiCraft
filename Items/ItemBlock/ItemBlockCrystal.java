@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -98,19 +98,19 @@ public class ItemBlockCrystal extends ItemBlock {
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean par4) {
 		CrystalElement color = CrystalElement.elements[is.getItemDamage()];
 		CrystalBlock block = (CrystalBlock)Block.getBlockFromItem(is.getItem());
-		PotionEffect eff = CrystalPotionController.getEffectFromColor(color, 200, 0);
-		PotionEffect neff = CrystalPotionController.getNetherEffectFromColor(color, 200, 0);
+		PotionEffect eff = CrystalPotionController.instance.getEffectFromColor(color, 200, 0, false);
+		PotionEffect neff = CrystalPotionController.instance.getEffectFromColor(color, 200, 0, true);
 		boolean negative = eff != null ? ReikaPotionHelper.isBadEffect(Potion.potionTypes[eff.getPotionID()]) : false;
 		boolean nnegative = neff != null ? ReikaPotionHelper.isBadEffect(Potion.potionTypes[neff.getPotionID()]) || neff.getPotionID() == Potion.nightVision.id : false;
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 			if (block.shouldGiveEffects(color)) {
-				li.add("Effects: "+CrystalPotionController.getEffectName(color));
+				li.add("Effects: "+CrystalPotionController.instance.getEffectName(color));
 				if (negative)
 					li.add("(Mobs only)");
 				String sg = nnegative || neff == null ? "(Players only)" : "(Mobs only)";
-				li.add("Nether Effects: "+CrystalPotionController.getNetherEffectName(color));
+				li.add("Nether Effects: "+CrystalPotionController.instance.getNetherEffectName(color));
 				li.add(sg);
-				if (CrystalPotionController.getEffectFromColor(color, 200, 0) != null) {
+				if (CrystalPotionController.instance.getEffectFromColor(color, 200, 0, false) != null) {
 					li.add("");
 					li.add("Effect Range: "+block.getRange());
 					li.add("Effect Level: "+(block.getPotionLevel(color)+1));

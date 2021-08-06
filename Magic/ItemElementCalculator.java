@@ -41,8 +41,9 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.ChromatiAPI;
 import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
-import Reika.ChromatiCraft.API.ItemElementAPI.ItemInOutHandler;
+import Reika.ChromatiCraft.API.ItemElementAPI;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
@@ -73,7 +74,7 @@ import thaumcraft.api.crafting.InfusionRecipe;
 import thaumcraft.api.crafting.ShapedArcaneRecipe;
 import thaumcraft.api.crafting.ShapelessArcaneRecipe;
 
-public class ItemElementCalculator {
+public class ItemElementCalculator implements ItemElementAPI {
 
 	public static final ItemElementCalculator instance = new ItemElementCalculator();
 
@@ -88,6 +89,8 @@ public class ItemElementCalculator {
 	private List<KeyedItemStack> currentCalculation = new ArrayList();
 
 	private ItemElementCalculator() {
+		ChromatiAPI.items = this;
+
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement e = CrystalElement.elements[i];
 			ElementTagCompound tag1 = new ElementTagCompound();
@@ -199,6 +202,10 @@ public class ItemElementCalculator {
 
 	public ElementTagCompound getValueForItem(ItemStack is) {
 		return this.getValueForItem(is, 0);
+	}
+
+	public int[] getValueForItemAPI(ItemStack is) {
+		return this.getValueForItem(is).toArray();
 	}
 
 	public void setItemValue(ItemStack is, ElementTagCompound tag) {
@@ -670,6 +677,11 @@ public class ItemElementCalculator {
 		}
 		else
 			return null;
+	}
+
+	@Override
+	public void addHandler(ItemInOutHandler handler) {
+		handlers.add(handler);
 	}
 
 	private static Field toolRecipeHeads;

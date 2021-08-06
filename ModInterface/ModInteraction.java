@@ -166,7 +166,7 @@ public class ModInteraction {
 		for (int i = 0; i < ThaumIDHandler.Potions.list.length; i++) {
 			Potions p = ThaumIDHandler.Potions.list[i];
 			if (p.isWarpRelated() && p.getID() != -1)
-				CrystalPotionController.addIgnoredPotion(Potion.potionTypes[p.getID()]);
+				CrystalPotionController.instance.addBadPotionForIgnore(Potion.potionTypes[p.getID()]);
 		}
 	}
 

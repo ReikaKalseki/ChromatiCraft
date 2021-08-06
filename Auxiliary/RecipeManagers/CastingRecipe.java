@@ -36,12 +36,12 @@ import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.CastingAPI.APICastingRecipe;
 import Reika.ChromatiCraft.API.CastingAPI.FXCallback;
+import Reika.ChromatiCraft.API.CastingAPI.LumenRecipe;
+import Reika.ChromatiCraft.API.CastingAPI.MultiRecipe;
+import Reika.ChromatiCraft.API.CastingAPI.RuneTempleRecipe;
 import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
-import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.APICastingRecipe;
-import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.LumenRecipe;
-import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.MultiRecipe;
-import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.RuneRecipe;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.ConfigRecipe;
@@ -93,14 +93,22 @@ public class CastingRecipe implements APICastingRecipe {
 		this(out, RecipeType.CRAFTING, recipe);
 	}
 
-	public final int getTier() {
-		return type.ordinal();
-	}
-
 	private CastingRecipe(ItemStack out, RecipeType type, IRecipe recipe) {
 		this.out = out;
 		this.type = type;
 		this.recipe = recipe;
+	}
+
+	public final void setFXHook(FXCallback call) {
+		if (effectCallback != null)
+			throw new IllegalStateException("This recipe already has an effect callback!");
+		if (!this.isModded())
+			throw new IllegalStateException("This recipe cannot accept an effect callback!");
+		effectCallback = call;
+	}
+
+	public final boolean isModded() {
+		return RecipesCastingTable.instance.getAllAPIRecipes().contains(this);
 	}
 
 	public final void setFragment(ChromaResearch r) {
@@ -110,6 +118,10 @@ public class CastingRecipe implements APICastingRecipe {
 			else
 				throw new IllegalStateException("Cannot change the research type of a recipe once initialized ("+fragment+" -> "+r+")!");
 		}
+	}
+
+	public final int getTier() {
+		return type.ordinal();
 	}
 
 	public final ChromaResearch getFragment() {
@@ -495,7 +507,7 @@ public class CastingRecipe implements APICastingRecipe {
 		return normal;
 	}
 
-	public static class TempleCastingRecipe extends CastingRecipe implements RuneRecipe {
+	public static class TempleCastingRecipe extends CastingRecipe implements RuneTempleRecipe {
 
 		private static final ArrayList<Coordinate> runeRing = new ArrayList();
 		private static final HashMap<Coordinate, CrystalElement> allRunes = new HashMap();

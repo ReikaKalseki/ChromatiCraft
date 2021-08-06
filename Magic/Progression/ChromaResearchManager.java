@@ -33,8 +33,8 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraftforge.common.MinecraftForge;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.API.ResearchFetcher;
-import Reika.ChromatiCraft.API.ResearchFetcher.ResearchRegistry;
+import Reika.ChromatiCraft.API.ChromatiAPI;
+import Reika.ChromatiCraft.API.ProgressionAPI.ResearchRegistry;
 import Reika.ChromatiCraft.API.Event.ProgressionEvent;
 import Reika.ChromatiCraft.API.Event.ProgressionEvent.ResearchType;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
@@ -75,7 +75,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	private final HashBiMap<Integer, ProgressElement> progressIDs = HashBiMap.create();
 
 	private ChromaResearchManager() {
-		ResearchFetcher.researchManager = this;
+		ChromatiAPI.research.researchManager = this;
 
 		priority.addValue(ResearchLevel.ENTRY, new ChromaResearchTarget(ChromaResearch.FRAGMENT, -1)); //get fragment first, always
 

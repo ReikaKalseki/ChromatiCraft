@@ -226,7 +226,7 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 			switch(this) {
 				case CAVE:
 				case LILY:
-					return !CrystalPotionController.isWorldHostile(world);
+					return !CrystalPotionController.instance.isWorldHostile(world);
 				default:
 					return true;
 			}

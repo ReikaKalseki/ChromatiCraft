@@ -180,7 +180,7 @@ public class EffectAlleles {
 							if (ticked.contains(e.getEntityId()))
 								continue;
 							ticked.add(e.getEntityId());
-							CrystalPotionController.applyEffectFromColor(dur, boost ? 1 : 0, e, color, CrystalBees.rand.nextInt(240) == 0 && e.getDistanceSq(c.posX+0.5, c.posY+0.5, c.posZ+0.5) < 256);
+							CrystalPotionController.instance.applyEffectFromColor(dur, boost ? 1 : 0, e, color, CrystalBees.rand.nextInt(240) == 0 && e.getDistanceSq(c.posX+0.5, c.posY+0.5, c.posZ+0.5) < 256);
 						}
 					}
 				}

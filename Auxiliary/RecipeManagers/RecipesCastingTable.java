@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.google.common.collect.HashBiMap;
 
@@ -35,10 +37,15 @@ import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.CastingAPI;
+import Reika.ChromatiCraft.API.ChromatiAPI;
+import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Event.CastingRecipesReloadEvent;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.AvoLampRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CastingInjectorFocusRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.ChromaFlowerRecipe;
@@ -280,7 +287,7 @@ import Reika.RotaryCraft.Registry.ItemRegistry;
 import buildcraft.BuildCraftCore;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class RecipesCastingTable {
+public class RecipesCastingTable implements CastingAPI {
 
 	public static final RecipesCastingTable instance = new RecipesCastingTable();
 
@@ -296,6 +303,8 @@ public class RecipesCastingTable {
 	private int maxTotalEnergyCost = 0;
 
 	private RecipesCastingTable() {
+		ChromatiAPI.recipes = this;
+
 		recipeIDs = HashBiMap.create();
 		recipeStringIDs = HashBiMap.create();
 		this.loadRecipes();
@@ -1341,6 +1350,57 @@ public class RecipesCastingTable {
 		else {
 			throw new IllegalArgumentException("Invalid recipe tier '"+lvl+"'!");
 		}
+	}
+
+	@Override
+	public APICastingRecipe addCastingRecipe(IRecipe ir) {
+		CastingRecipe cr = new CastingRecipe(ir.getRecipeOutput(), ir);
+		this.addModdedRecipe(cr);
+		return cr;
+	}
+
+	@Override
+	public RuneTempleRecipe addTempleCastingRecipe(IRecipe ir, Map<List<Integer>, CrystalElementProxy> runes) {
+		TempleCastingRecipe cr = new TempleCastingRecipe(ir.getRecipeOutput(), ir);
+		for (Entry<List<Integer>, CrystalElementProxy> e : runes.entrySet()) {
+			List<Integer> li = e.getKey();
+			cr.addRune(e.getValue(), li.get(0), li.get(1), li.get(2));
+		}
+		this.addModdedRecipe(cr);
+		return cr;
+	}
+
+	@Override
+	public MultiRecipe addMultiBlockCastingRecipe(ItemStack out, ItemStack ctr, Map<List<Integer>, CrystalElementProxy> runes, Map<List<Integer>, ItemStack> items) {
+		MultiBlockCastingRecipe cr = new MultiBlockCastingRecipe(out, ctr);
+		for (Entry<List<Integer>, CrystalElementProxy> e : runes.entrySet()) {
+			List<Integer> li = e.getKey();
+			cr.addRune(e.getValue(), li.get(0), li.get(1), li.get(2));
+		}
+		for (Entry<List<Integer>, ItemStack> e : items.entrySet()) {
+			List<Integer> li = e.getKey();
+			cr.addAuxItem(e.getValue(), li.get(0), li.get(1));
+		}
+		this.addModdedRecipe(cr);
+		return cr;
+	}
+
+	@Override
+	public LumenRecipe addPylonCastingRecipe(ItemStack out, ItemStack ctr, Map<List<Integer>, CrystalElementProxy> runes, Map<List<Integer>, ItemStack> items, Map<CrystalElementProxy, Integer> energy) {
+		PylonCastingRecipe cr = new PylonCastingRecipe(out, ctr);
+		for (Entry<List<Integer>, CrystalElementProxy> e : runes.entrySet()) {
+			List<Integer> li = e.getKey();
+			cr.addRune(e.getValue(), li.get(0), li.get(1), li.get(2));
+		}
+		for (Entry<List<Integer>, ItemStack> e : items.entrySet()) {
+			List<Integer> li = e.getKey();
+			cr.addAuxItem(e.getValue(), li.get(0), li.get(1));
+		}
+		for (Entry<CrystalElementProxy, Integer> e : energy.entrySet()) {
+			cr.addAuraRequirement(e.getKey(), e.getValue());
+		}
+		this.addModdedRecipe(cr);
+		return cr;
 	}
 
 }

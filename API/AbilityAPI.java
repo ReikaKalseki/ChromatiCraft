@@ -9,41 +9,19 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.API;
 
-import java.lang.reflect.Method;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class AbilityAPI {
-
-	private static Class abilities;
-	private static Method add;
-	private static Method completed;
+public interface AbilityAPI {
 
 	/** Call this to add abilities to the game. */
-	public static void addAbility(Ability a) {
-		try {
-			add.invoke(null, a);
-		}
-		catch (Exception e) {
-			System.out.println("Could not add ability "+a+"!");
-			e.printStackTrace();
-		}
-	}
+	public void addAbility(Ability a);
 
-	public static boolean hasPlayerCompletedRitual(EntityPlayer ep, String id) {
-		try {
-			return (boolean)completed.invoke(null, ep, id);
-		}
-		catch (Exception e) {
-			System.out.println("Could not check ability status for "+ep+"!");
-			e.printStackTrace();
-			return false;
-		}
-	}
+	/** Returns whether the player has completed the ritual to grant the power to use this. */
+	public boolean playerHasAbility(EntityPlayer ep, Ability a);
 
 	/** Implement this on your class to make it a custom ability. All instances of this class are expected to be singletons; enums are suggested. */
 	public static interface Ability {
@@ -103,17 +81,6 @@ public class AbilityAPI {
 		/** Whether the ability is currently doing anything, irrespective of being enabled/disabled. Controls energy consumption and function. */
 		public boolean isFunctioningOn(EntityPlayer ep);
 
-	}
-
-	static {
-		try {
-			abilities = Class.forName("Reika.ChromatiCraft.Registry.Chromabilities");
-			add = abilities.getMethod("addAbility", Ability.class);
-			completed = abilities.getMethod("playerHasAbility", String.class);
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 }

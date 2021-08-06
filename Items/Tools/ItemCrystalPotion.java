@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -45,9 +45,8 @@ public class ItemCrystalPotion extends ItemPotion {
 	}
 
 	@Override
-	public List getEffects(ItemStack is)
-	{
-		PotionEffect pot = CrystalPotionController.getEffectFromColor(CrystalElement.elements[this.getUsableDamage(is)], 3600, 0);
+	public List getEffects(ItemStack is) {
+		PotionEffect pot = CrystalPotionController.instance.getEffectFromColor(CrystalElement.elements[this.getUsableDamage(is)], 3600, 0, false);
 		if (pot == null)
 			return new ArrayList();
 		if (ReikaPotionHelper.isSplashPotion(is.getItemDamage()))
@@ -64,7 +63,7 @@ public class ItemCrystalPotion extends ItemPotion {
 	{
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement color = CrystalElement.elements[i];
-			if (CrystalPotionController.requiresCustomPotion(color)) {
+			if (CrystalPotionController.instance.requiresCustomPotion(color)) {
 
 				li.add(new ItemStack(ID, 1, i));
 				li.add(new ItemStack(ID, 1, ReikaPotionHelper.EXTENDED_BIT+i));
@@ -85,7 +84,7 @@ public class ItemCrystalPotion extends ItemPotion {
 		int dmg = this.getUsableDamage(is);
 		CrystalElement color = CrystalElement.elements[this.getUsableDamage(is)];
 		StringBuilder name = new StringBuilder();
-		name.append(CrystalPotionController.getPotionName(color));
+		name.append(CrystalPotionController.instance.getPotionName(color));
 		if (ReikaPotionHelper.isBoosted(is.getItemDamage()))
 			name.append(" II");
 		if (ReikaPotionHelper.isExtended(is.getItemDamage()))

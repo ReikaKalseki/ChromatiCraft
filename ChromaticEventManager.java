@@ -2302,10 +2302,10 @@ public class ChromaticEventManager {
 				ItemStack is = inv[i];
 				if (is != null) {
 					if (is.getItem() == ChromaItems.PENDANT3.getItemInstance()) {
-						CrystalPotionController.applyEffectFromColor(100, 1, elb, CrystalElement.elements[is.getItemDamage()], true);
+						CrystalPotionController.instance.applyEffectFromColor(100, 1, elb, CrystalElement.elements[is.getItemDamage()], true);
 					}
 					else if (is.getItem() == ChromaItems.PENDANT.getItemInstance()) {
-						CrystalPotionController.applyEffectFromColor(100, 0, elb, CrystalElement.elements[is.getItemDamage()], true);
+						CrystalPotionController.instance.applyEffectFromColor(100, 0, elb, CrystalElement.elements[is.getItemDamage()], true);
 					}
 					else if (is.getItem() instanceof ActivatedInventoryItem) {
 						this.parseInventoryForPendantCarry(ev, elb, ((ActivatedInventoryItem)is.getItem()).getInventory(is), is);
@@ -2346,7 +2346,7 @@ public class ChromaticEventManager {
 				val = 5;
 			if (e instanceof EntityDragon)
 				val = 10000;
-			if (CrystalPotionController.shouldBeHostile(e, e.worldObj)) {
+			if (CrystalPotionController.instance.shouldBeHostile(e, e.worldObj)) {
 				if (e instanceof EntityLiving)
 					((EntityLiving)e).experienceValue = 0;
 				else if (e instanceof EntityPlayer) {

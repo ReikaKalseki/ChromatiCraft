@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -56,14 +56,14 @@ public class CrystalBrewerHandler extends TemplateRecipeHandler {
 		}
 
 		public Potion getOutputPotion() {
-			return Potion.potionTypes[CrystalPotionController.getEffectFromColor(color, 20, 0).getPotionID()];
+			return Potion.potionTypes[CrystalPotionController.instance.getEffectFromColor(color, 20, 0, false).getPotionID()];
 		}
 
 		@Override
 		public List<PositionedStack> getOtherStacks()
 		{
 			ItemStack in = new ItemStack(Items.potionitem); //water bottle
-			if (CrystalPotionController.isPotionModifier(color)) {
+			if (CrystalPotionController.instance.isPotionModifier(color)) {
 				ArrayList<ItemStack> li = ReikaPotionHelper.getBasePotionItems();
 				int tick = (int)((System.currentTimeMillis()/1000)%li.size());
 				in = li.get(tick);
@@ -114,14 +114,14 @@ public class CrystalBrewerHandler extends TemplateRecipeHandler {
 			if (dmg == 0) {
 				for (int i = 0; i < 32; i++) {
 					CrystalElement color = CrystalElement.elements[i%16];
-					if (!CrystalPotionController.isPotionModifier(color))
+					if (!CrystalPotionController.instance.isPotionModifier(color))
 						arecipes.add(new CrystalRecipe(i));
 				}
 			}
 			else if (ReikaPotionHelper.getPotionValues().values().contains(dmg)) {
 				for (int i = 0; i < 32; i++) {
 					CrystalElement color = CrystalElement.elements[i%16];
-					if (CrystalPotionController.isPotionModifier(color))
+					if (CrystalPotionController.instance.isPotionModifier(color))
 						arecipes.add(new CrystalRecipe(i));
 				}
 			}

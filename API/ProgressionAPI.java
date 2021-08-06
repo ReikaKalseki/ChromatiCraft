@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -16,10 +16,16 @@ import net.minecraft.item.ItemStack;
 
 import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
 
-public class ResearchFetcher {
+public class ProgressionAPI {
 
-	public static ResearchRegistry researchManager;
-	public static ProgressRegistry progressManager;
+	public static final ProgressionAPI instance = new ProgressionAPI();
+
+	public ResearchRegistry researchManager;
+	public ProgressRegistry progressManager;
+
+	private ProgressionAPI() {
+		ChromatiAPI.research = this;
+	}
 
 	public static interface ResearchRegistry extends ProgressManager {
 

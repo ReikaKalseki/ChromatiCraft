@@ -96,7 +96,7 @@ public class ItemPurifyCrystal extends ItemPoweredChromaTool {
 
 	@Override
 	public int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is) {
-		return CrystalPotionController.isWorldHostile(world) ? 12 : 1;
+		return CrystalPotionController.instance.isWorldHostile(world) ? 12 : 1;
 	}
 
 }
