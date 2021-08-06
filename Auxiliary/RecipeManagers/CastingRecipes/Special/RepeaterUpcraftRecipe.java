@@ -9,9 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special;
 
+import java.util.Collection;
+
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RepeaterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.RecipeCrystalRepeater;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 
@@ -55,6 +59,13 @@ public class RepeaterUpcraftRecipe extends RepeaterRecipe {
 	@Override
 	public int getDuration() {
 		return super.getDuration()*3;
+	}
+
+	@Override
+	public void getRequiredProgress(Collection<ProgressStage> c) {
+		super.getRequiredProgress(c);
+
+		c.addAll(ProgressionManager.instance.getPrereqs(ProgressStage.REPEATER));
 	}
 
 }

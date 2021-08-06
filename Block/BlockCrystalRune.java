@@ -22,7 +22,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.BlockDyeTypes;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaISBRH;
@@ -31,7 +34,6 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
-import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -87,12 +89,18 @@ public class BlockCrystalRune extends BlockDyeTypes implements SemiUnbreakable {
 	public float getPlayerRelativeBlockHardness(EntityPlayer ep, World world, int x, int y, int z) {
 		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
 			return -1;
-		TileEntity te = world.getTileEntity(x, y+1, z);
-		if (!(te instanceof TileEntityBase))
-			return super.getPlayerRelativeBlockHardness(ep, world, x, y, z);
-		if (te instanceof CrystalSource)
-			return -1;
-		return ((TileEntityBase)te).isPlacer(ep) ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z) : -1;
+		for (int i = 0; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			TileEntity te = world.getTileEntity(x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ);
+			if (te instanceof CrystalSource) {
+				return -1;
+			}
+			else if (te instanceof CrystalNetworkTile || te instanceof MultiBlockChromaTile) {
+				if (te instanceof OwnedTile && !((OwnedTile)te).isOwnedByPlayer(ep))
+					return -1;
+			}
+		}
+		return super.getPlayerRelativeBlockHardness(ep, world, x, y, z);
 	}
 
 	@Override

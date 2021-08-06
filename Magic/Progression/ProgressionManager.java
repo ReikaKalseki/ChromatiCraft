@@ -31,8 +31,8 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraftforge.common.MinecraftForge;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.API.ChromatiAPI;
 import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
+import Reika.ChromatiCraft.API.ProgressionAPI;
 import Reika.ChromatiCraft.API.ProgressionAPI.ProgressRegistry;
 import Reika.ChromatiCraft.API.Event.ProgressionEvent;
 import Reika.ChromatiCraft.API.Event.ProgressionEvent.ResearchType;
@@ -91,7 +91,7 @@ public class ProgressionManager implements ProgressRegistry {
 	//private final Comparator<EntityPlayer> playerProgressionComparator = new PlayerProgressionComparator();
 
 	private ProgressionManager() {
-		ChromatiAPI.research.progressManager = this;
+		ProgressionAPI.instance.progressManager = this;
 
 		this.load();
 

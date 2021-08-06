@@ -35,10 +35,12 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
+import Reika.GeoStrata.Registry.GeoBlocks;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -276,6 +278,21 @@ public class FabricationRecipes {
 			}
 		}
 
+		if (ModList.GEOSTRATA.isLoaded()) {
+			this.addGlowCrystal();
+		}
+
+	}
+
+	@ModDependent(ModList.GEOSTRATA)
+	private void addGlowCrystal() {
+		for (int i = 0; i < 4; i++) {
+			ElementTagCompound tag = new ElementTagCompound();
+			tag.addValueToColor(CrystalElement.BROWN, 2500);
+			tag.addValueToColor(CrystalElement.BLUE, 1000);
+			tag.addValueToColor(CrystalElement.WHITE, 250);
+			this.addRecipe(GeoBlocks.GLOWCRYS.getStackOfMetadata(i), false, tag);
+		}
 	}
 
 	private void addOreDictRecipe(String ore, ElementTagCompound tag) {

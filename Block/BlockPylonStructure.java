@@ -17,7 +17,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
@@ -28,8 +27,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
-import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
-import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
+import Reika.ChromatiCraft.Base.BlockProtectedByStructure;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -40,7 +38,6 @@ import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityPowerTree;
 import Reika.DragonAPI.Auxiliary.Trackers.SpecialDayTracker;
-import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
@@ -51,7 +48,7 @@ import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockPylonStructure extends Block implements ConnectedTextureGlass {
+public class BlockPylonStructure extends BlockProtectedByStructure implements ConnectedTextureGlass {
 
 	private final ArrayList<Integer> allDirs = new ArrayList();
 
@@ -440,21 +437,6 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 		this.triggerBreakCheck(world, x, y, z);
 
 		super.breakBlock(world, x, y, z, oldB, oldM);
-	}
-
-	@Override
-	public float getPlayerRelativeBlockHardness(EntityPlayer ep, World world, int x, int y, int z) {
-		int dy = y;
-		TileEntity te = world.getTileEntity(x, dy, z);
-		while (dy-y < 5 && !(te instanceof CrystalNetworkTile)) {
-			dy++;
-			te = world.getTileEntity(x, dy, z);
-		}
-		if (!(te instanceof TileEntityBase))
-			return super.getPlayerRelativeBlockHardness(ep, world, x, y, z);
-		if (te instanceof CrystalSource)
-			return -1;
-		return ((TileEntityBase)te).isPlacer(ep) ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z) : -1;
 	}
 
 	void triggerBreakCheck(World world, int x, int y, int z) {
