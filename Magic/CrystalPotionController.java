@@ -16,6 +16,7 @@ import java.util.Random;
 import java.util.Set;
 
 import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.monster.EntityMob;
@@ -237,14 +238,21 @@ public class CrystalPotionController implements CrystalPotionAPI {
 					e.attackEntityFrom(DamageSource.magic, 1);
 					break;
 				case PURPLE:
-					if (!e.worldObj.isRemote && rand.nextInt(5) == 0 && e instanceof EntityPlayer) {
-						EntityPlayer ep = (EntityPlayer)e;
-						if (ep.experienceLevel > 0) {
-							ep.addExperienceLevel(-1);
+					if (!e.worldObj.isRemote) {
+						if (e instanceof EntityPlayer) {
+							if (rand.nextInt(5) == 0) {
+								EntityPlayer ep = (EntityPlayer)e;
+								if (ep.experienceLevel > 0) {
+									ep.addExperienceLevel(-1);
+								}
+								else {
+									ep.experienceTotal = 0;
+									ep.experience = 0;
+								}
+							}
 						}
-						else {
-							ep.experienceTotal = 0;
-							ep.experience = 0;
+						else if (e instanceof EntityLiving) {
+							((EntityLiving)e).experienceValue++;
 						}
 					}
 					break;

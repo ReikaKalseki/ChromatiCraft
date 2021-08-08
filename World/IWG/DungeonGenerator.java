@@ -1071,6 +1071,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 							bonus = 4;
 						if (struct == ChromaStructures.DESERT && c.yCoord-arr.getMinY() < 4)
 							bonus = 2;
+						if (struct == ChromaStructures.CAVERN)
+							bonus = 1;
 						if (struct == ChromaStructures.SNOWSTRUCT)
 							bonus = c.yCoord-arr.getMinY() < 4 ? 2 : 1;
 						populateChest(te, struct, bonus, r);

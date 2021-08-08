@@ -317,8 +317,6 @@ public class ItemConnector extends ItemChromaTool {
 		//ReikaJavaLibrary.pConsole(src+":"+tg, Side.SERVER);
 		if (te.tryConnect(world, te0.xCoord, te0.yCoord, te0.zCoord) && bb.tryConnect(world, x, y, z)) {
 			//ReikaJavaLibrary.pConsole("connected", Side.SERVER);
-			if (!ep.capabilities.isCreativeMode)
-				is.stackSize -= dl;
 			return true;
 		}
 		else {

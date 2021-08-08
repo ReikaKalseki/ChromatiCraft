@@ -95,6 +95,7 @@ public class VoidMonsterDestructionRitual {
 		return (EntityLiving)world.getEntityByID(monsterID);
 	}
 
+	@ModDependent(ModList.VOIDMONSTER)
 	public boolean tick() {
 		if (world.getTotalWorldTime() <= lastWorldTick)
 			return false;

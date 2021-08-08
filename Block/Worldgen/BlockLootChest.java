@@ -517,6 +517,8 @@ public class BlockLootChest extends BlockContainer {
 			ReikaInventoryHelper.clearInventory(this);
 
 			WeightedRandomChestContent[] loot = ChestGenHooks.getItems(s, r);
+			if (struct != null)
+				loot = struct.getModifiedLootSet(loot);
 			int count = 1+ChestGenHooks.getCount(s, r);
 			if (struct == ChromaStructures.BURROW)
 				count /= 2;

@@ -213,7 +213,7 @@
 			Sure, whenever items need to be moved, you could just run a line of pipes, but those can become unsightly and hard to navigate. This has been something annoying you for years; long ago, you remember seeing a pair of attachments you could place onto the inventories to "beam" the items between them, but these were limited to a single block of range. At the time, it seemed trivial to replicate them into a longer-distance and more dynamic form, but your skills then proved insufficient. Maybe now is time to try again; maybe this idea can be rescued from its abandonment.
 		</desc>
 		<note>
-			Can be accelerated with %d energy
+			Can be accelerated with %s energy
 		</note>
 	</itemrift>
 	<crystal>

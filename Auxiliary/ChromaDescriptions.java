@@ -466,6 +466,7 @@ public final class ChromaDescriptions {
 		if (ModList.FORESTRY.isLoaded())
 			addNotes(ChromaTiles.ALVEARY, TileEntityLumenAlveary.getEffectsAsString());
 		addNotes(ChromaTiles.TOOLSTORAGE, TileEntityToolStorage.ToolType.getTypesAsString());
+		addNotes(ChromaTiles.ITEMRIFT, CrystalElement.LIME.displayName);
 
 		addData(ChromaBlocks.RELAY, RelayNetworker.instance.maxRange);
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -20,6 +20,7 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.Block.Worldgen.BlockNetherBypassGate.GateLevels;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -103,8 +104,32 @@ public class NetherStructureGenerator implements RetroactiveGenerator {
 				if (ReikaMathLibrary.py3d(i, 0, k) <= r+0.5) {
 					int dy = 127;
 					while (!this.isCountedAsAir(world, dx, dy, dz)) {
+						int dd = 127-dy;
 						if (ReikaMathLibrary.py3d(i, 0, k) < r-0.5) {
-							world.setBlock(dx, dy, dz, Blocks.air);
+							Block air = Blocks.air;
+							int m = 0;
+							if (dd <= 16) {
+								air = ChromaBlocks.NETHERGATE.getBlockInstance();
+								if (dd == 0) {
+									m = GateLevels.KILL.ordinal();
+								}
+								else if (dd <= 2) {
+									m = GateLevels.HURT2.ordinal();
+								}
+								else if (dd <= 5) {
+									m = GateLevels.HURT1.ordinal();
+								}
+								else if (dd <= 8) {
+									m = GateLevels.PUSH3.ordinal();
+								}
+								else if (dd <= 12) {
+									m = GateLevels.PUSH2.ordinal();
+								}
+								else if (dd <= 16) {
+									m = GateLevels.PUSH1.ordinal();
+								}
+							}
+							world.setBlock(dx, dy, dz, air, m, 3);
 						}
 						else {
 							world.setBlock(dx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata, 3);

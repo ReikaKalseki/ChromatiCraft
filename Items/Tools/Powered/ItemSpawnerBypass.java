@@ -22,7 +22,7 @@ public class ItemSpawnerBypass extends ItemPoweredChromaTool {
 
 	@Override
 	public int getMaxCharge() {
-		return 72000*1; //1h, 5 min in TF
+		return 72000*1; //1h base ; 5 min in TF
 	}
 
 	@Override

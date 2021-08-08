@@ -77,6 +77,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemVacuumGun;
 import Reika.ChromatiCraft.Items.Tools.ItemWarpCapsule;
 import Reika.ChromatiCraft.Items.Tools.ItemWideCollector;
 import Reika.ChromatiCraft.Items.Tools.Powered.ItemCrystalProbe;
+import Reika.ChromatiCraft.Items.Tools.Powered.ItemNetherKey;
 import Reika.ChromatiCraft.Items.Tools.Powered.ItemOrePick;
 import Reika.ChromatiCraft.Items.Tools.Powered.ItemPurifyCrystal;
 import Reika.ChromatiCraft.Items.Tools.Powered.ItemSpawnerBypass;
@@ -197,6 +198,7 @@ public enum ChromaItems implements ItemEnum {
 	ENDERBUCKET(64, true,	"chroma.enderbucket",	ItemEnderBucket.class),
 	WIDECOLLECTOR(66, false, "chroma.widecollector",ItemWideCollector.class),
 	MANIPFOCUS(0, false,	"chroma.manipfocus",	ItemManipulatorFocus.class, ModList.THAUMCRAFT),
+	NETHERKEY(67, false,	"chroma.netherkey",		ItemNetherKey.class),
 	;
 
 	private final int index;
@@ -469,6 +471,8 @@ public enum ChromaItems implements ItemEnum {
 	}
 
 	public ItemStack getCraftedMetadataProduct(int amt, int meta) {
+		if (this.getItemInstance() == null)
+			throw new IllegalStateException(this+" item is null!");
 		return new ItemStack(this.getItemInstance(), amt, meta);
 	}
 

@@ -131,6 +131,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone.Variants;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower;
 import Reika.ChromatiCraft.Block.Worldgen.BlockEtherealLuma;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
+import Reika.ChromatiCraft.Block.Worldgen.BlockNetherBypassGate;
 import Reika.ChromatiCraft.Block.Worldgen.BlockSparkle;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
@@ -284,6 +285,7 @@ public enum ChromaBlocks implements BlockEnum {
 	//LIFEWATER(BlockTempleLifewater.class,		ChromatiCraft.lifewater,		"chroma.lifewater"),
 	DYEVINE(BlockDyeVine.class,					ItemBlockDyeTypes.class,		"chroma.dyevine"),
 	FERTILEDYEVINE(BlockDyeVine.class,			ItemBlockDyeTypes.class,		"chroma.dyevinefertile"),
+	NETHERGATE(BlockNetherBypassGate.class,										"chroma.nethergate"),
 	;
 
 	private Class blockClass;
@@ -425,6 +427,8 @@ public enum ChromaBlocks implements BlockEnum {
 			return new Class[0];
 		if (this == DECOFLOWER)
 			return new Class[0];
+		if (this == NETHERGATE)
+			return new Class[0];
 		return new Class[]{Material.class};
 	}
 
@@ -441,6 +445,8 @@ public enum ChromaBlocks implements BlockEnum {
 		if (this == GLOWLOG)
 			return new Object[0];
 		if (this == DECOFLOWER)
+			return new Object[0];
+		if (this == NETHERGATE)
 			return new Object[0];
 		return new Object[]{this.getBlockMaterial()};
 	}

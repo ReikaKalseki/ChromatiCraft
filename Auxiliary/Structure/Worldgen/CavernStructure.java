@@ -1,9 +1,15 @@
 package Reika.ChromatiCraft.Auxiliary.Structure.Worldgen;
 
+import java.util.ArrayList;
+
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Base.FragmentStructureBase;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -12,6 +18,29 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 
 public class CavernStructure extends FragmentStructureBase {
+
+	private final ArrayList<WeightedRandomChestContent> bonusItems = new ArrayList();
+
+	public CavernStructure() {
+		this.addBonusItem(ChromaStacks.purpleShard, 2, 8, 10);
+		this.addBonusItem(ChromaStacks.magentaShard, 2, 8, 5);
+		this.addBonusItem(ChromaStacks.limeShard, 2, 8, 10);
+		this.addBonusItem(new ItemStack(Items.ender_pearl), 1, 4, 20);
+		this.addBonusItem(new ItemStack(Items.redstone), 4, 24, 25);
+		this.addBonusItem(new ItemStack(Items.diamond), 1, 3, 5);
+		this.addBonusItem(new ItemStack(Items.gold_ingot), 1, 8, 10);
+		this.addBonusItem(new ItemStack(Items.iron_ingot), 1, 16, 20);
+		this.addBonusItem(new ItemStack(Items.quartz), 1, 8, 10);
+	}
+
+	private void addBonusItem(ItemStack is, int min, int max, int wt) {
+		bonusItems.add(new WeightedRandomChestContent(is, min, max, wt));
+	}
+
+	@Override
+	public void modifyLootSet(ArrayList<WeightedRandomChestContent> li) {
+		li.addAll(bonusItems);
+	}
 
 	@Override
 	public Coordinate getControllerRelativeLocation() {

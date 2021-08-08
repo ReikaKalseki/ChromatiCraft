@@ -199,13 +199,15 @@ public class VoidMonsterRitualClientEffects implements TickHandler {
 			float r = (float)shaderData.get("waveRadius");
 			float t = (float)shaderData.get("waveThickness");
 			float a = (float)shaderData.get("waveAmplitude");
-			r = r+1.25F;
-			r *= 1.01F;
-			t = MathHelper.clamp_float(r/6, 2, 15F);
+			float s = (float)shaderData.get("waveSpeed");
+			r += 1.25F*s;
+			r *= 1+0.01F*s;
+			t = MathHelper.clamp_float(r/3, 4, 35F);
 			a = MathHelper.clamp_float(r/24, 1, 4F);
 			shaderData.put("waveRadius", r);
 			shaderData.put("waveThickness", t);
 			shaderData.put("waveAmplitude", a);
+			shaderData.put("waveSpeed", Math.max(0.25F, s*0.99F));
 			if (r > 200) {
 				shaderIntensity *= 0.95F;
 			}
@@ -215,8 +217,9 @@ public class VoidMonsterRitualClientEffects implements TickHandler {
 		@Override
 		protected void initShaderData(EntityLiving e) {
 			shaderData.put("waveRadius", 0F);
-			shaderData.put("waveThickness", 2F);
+			shaderData.put("waveThickness", 4F);
 			shaderData.put("waveAmplitude", 1F);
+			shaderData.put("waveSpeed", 1F);
 		}
 
 		@Override

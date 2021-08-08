@@ -501,7 +501,8 @@ public class MouseoverOverlayRenderer {
 					flag = true;
 					b.drawIcon(Tessellator.instance, dx+3, y-4, 16);
 					if (b.playerHas(ep)) {
-						ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(dx+3+6, y+8, ChromaIcons.CHECK.getIcon(), 8, 8);
+						ReikaTextureHelper.bindTerrainTexture();
+						ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(dx+3+8, y+4, ChromaIcons.CHECK.getIcon(), 8, 8);
 					}
 					else {
 						ItemStack out = b.getIngredient();

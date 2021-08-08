@@ -8,6 +8,7 @@ uniform sampler2D bgl_LightMapTexture;
 uniform float waveRadius;
 uniform float waveThickness;
 uniform float waveAmplitude;
+uniform float waveSpeed;
 
 uniform float curlMovementXZ;
 uniform float curlMovementY;

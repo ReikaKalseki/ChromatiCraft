@@ -1,5 +1,8 @@
 package Reika.ChromatiCraft.Base;
 
+import java.util.ArrayList;
+
+import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
@@ -16,6 +19,10 @@ public abstract class FragmentStructureBase extends GeneratedStructureBase {
 	protected final void addLootChest(FilledBlockArray array, int x, int y, int z, int meta) {
 		array.setBlock(x, y, z, getChestGen(), meta);
 		this.cache(x, y, z, getChestGen());
+	}
+
+	public void modifyLootSet(ArrayList<WeightedRandomChestContent> li) {
+
 	}
 
 }

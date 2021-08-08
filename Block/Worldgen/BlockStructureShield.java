@@ -159,13 +159,13 @@ public class BlockStructureShield extends Block implements SemiUnbreakable, Subm
 	private boolean canBreakLitBlock(World world, int x, int y, int z, Block b) {
 		if (ReikaBlockHelper.isLiquid(b))
 			return false;
+		if (b == ChromaBlocks.DOOR.getBlockInstance())
+			return false;
+		if (b instanceof BlockStructureShield)
+			return false;
+		if (b == ChromaBlocks.HEATLAMP.getBlockInstance())
+			return false;
 		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue() || (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())) {
-			if (b == ChromaBlocks.DOOR.getBlockInstance())
-				return false;
-			if (b == ChromaBlocks.HEATLAMP.getBlockInstance())
-				return false;
-			if (b instanceof BlockStructureShield)
-				return false;
 			if (ChromaBlocks.getEntryByID(b) != null && ChromaBlocks.getEntryByID(b).isDimensionStructureBlock())
 				return false;
 			if (b == ChromaBlocks.CRYSTAL.getBlockInstance())

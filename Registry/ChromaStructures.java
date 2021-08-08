@@ -10,10 +10,12 @@
 package Reika.ChromatiCraft.Registry;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Random;
 
 import net.minecraft.util.StatCollector;
+import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -52,12 +54,14 @@ import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.PylonStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.SnowStructure;
 import Reika.ChromatiCraft.Base.ChromaStructureBase;
 import Reika.ChromatiCraft.Base.ColoredStructureBase;
+import Reika.ChromatiCraft.Base.FragmentStructureBase;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterNetherStructure;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterRitualStructure;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Interfaces.Registry.StructureEnum;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -106,15 +110,27 @@ public enum ChromaStructures implements StructureEnum<ChromaStructureBase> {
 
 	public final boolean requiresColor;
 	private final Class<? extends ChromaStructureBase> structureClass;
-	private final ChromaStructureBase structureInstance;
+	private final Object[] constructorData;
+
+	private ChromaStructureBase structureInstance;
 
 	public static final ChromaStructures[] structureList = values();
 
 	private ChromaStructures(Class<? extends ChromaStructureBase> type, Object... data) {
 		structureClass = type;
 		requiresColor = ColoredStructureBase.class.isAssignableFrom(structureClass);
+		constructorData = data;
+	}
+
+	public static void buildStructures() {
+		for (int i = 0; i < structureList.length; i++) {
+			structureList[i].construct();
+		}
+	}
+
+	private void construct() {
 		try {
-			structureInstance = this.instantiate(data);
+			structureInstance = this.instantiate(constructorData);
 		}
 		catch (Exception e) {
 			throw new RegistrationException(ChromatiCraft.instance, "Could not instantiate structure type "+this+"!", e);
@@ -188,6 +204,15 @@ public enum ChromaStructures implements StructureEnum<ChromaStructureBase> {
 	@Override
 	public ChromaStructureBase getStructure() {
 		return structureInstance;
+	}
+
+	public WeightedRandomChestContent[] getModifiedLootSet(WeightedRandomChestContent[] items) {
+		if (structureInstance instanceof FragmentStructureBase) {
+			ArrayList<WeightedRandomChestContent> li = ReikaJavaLibrary.makeListFromArray(items);
+			((FragmentStructureBase)structureInstance).modifyLootSet(li);
+			items = li.toArray(new WeightedRandomChestContent[li.size()]);
+		}
+		return items;
 	}
 
 }
