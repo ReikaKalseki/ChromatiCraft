@@ -6,6 +6,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Items.Tools.Powered.ItemNetherKey;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -21,21 +22,24 @@ public class BlockNetherBypassGate extends BlockAir {
 		HURT2,
 		KILL;
 
-		private static final GateLevels[] list = values();
+		public static final GateLevels[] list = values();
 
 		public void doEffect(EntityPlayer ep) {
 			ReikaJavaLibrary.pConsole(this);
 			switch(this) {
 				case PUSH1:
+					ep.motionY = Math.min(ep.motionY, 1.5);
 					ep.motionY -= 0.1F;
 					ep.velocityChanged = true;
 					break;
 				case PUSH2:
-					ep.motionY -= 0.3F;
+					ep.motionY = Math.min(ep.motionY, 0.75F);
+					ep.motionY -= 0.1F;
 					ep.velocityChanged = true;
 					break;
 				case PUSH3:
-					ep.motionY -= 0.75F;
+					ep.motionY = Math.min(ep.motionY, 0.25F);
+					ep.motionY -= 0.25F;
 					ep.velocityChanged = true;
 					break;
 				case HURT1:
@@ -55,6 +59,10 @@ public class BlockNetherBypassGate extends BlockAir {
 
 	public BlockNetherBypassGate() {
 		super();
+
+		this.setCreativeTab(ChromatiCraft.tabChromaGen);
+		this.setResistance(6000000);
+		this.setBlockUnbreakable();
 	}
 
 	@Override

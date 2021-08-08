@@ -603,6 +603,7 @@ public enum ChromaBlocks implements BlockEnum {
 				//case PISTONBIT:
 			case RAYBLEND:
 			case INJECTORAUX:
+			case NETHERGATE:
 				return false;
 			default:
 				return true;
@@ -666,6 +667,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return Passability.list.length;
 			case PAD:
 				return 2;
+			case NETHERGATE:
+				return BlockNetherBypassGate.GateLevels.list.length;
 			default:
 				return 1;
 		}
