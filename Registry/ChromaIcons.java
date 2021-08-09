@@ -50,6 +50,7 @@ public enum ChromaIcons implements IconEnum {
 	FADE_STAR("fade_star"),
 	FADE_RAY("fade_ray"),
 	FADE_CLOUD("fade_cloud"),
+	FADE_LIQUID("fade_liquid"),
 	CLOUDGROUP("cloudgroup"),
 	CLOUDGROUP_TRANS("cloudgroup_trans"),
 	CLOUDGROUP_TRANS_BLUR("cloudgroup_trans_blur"),

@@ -86,6 +86,7 @@ import Reika.ChromatiCraft.Block.Dimension.BlockLightedLeaf;
 import Reika.ChromatiCraft.Block.Dimension.BlockLightedLog;
 import Reika.ChromatiCraft.Block.Dimension.BlockLightedSapling;
 import Reika.ChromatiCraft.Block.Dimension.BlockLiquidLumen;
+import Reika.ChromatiCraft.Block.Dimension.BlockVoidCave;
 import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockRayblendFloor;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockSpecialShield;
@@ -286,6 +287,7 @@ public enum ChromaBlocks implements BlockEnum {
 	DYEVINE(BlockDyeVine.class,					ItemBlockDyeTypes.class,		"chroma.dyevine"),
 	FERTILEDYEVINE(BlockDyeVine.class,			ItemBlockDyeTypes.class,		"chroma.dyevinefertile"),
 	NETHERGATE(BlockNetherBypassGate.class,										"chroma.nethergate"),
+	VOIDCAVE(BlockVoidCave.class,				ItemBlockMultiType.class,		"chroma.voidcave"),
 	;
 
 	private Class blockClass;
@@ -604,6 +606,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case RAYBLEND:
 			case INJECTORAUX:
 			case NETHERGATE:
+			case VOIDCAVE:
 				return false;
 			default:
 				return true;

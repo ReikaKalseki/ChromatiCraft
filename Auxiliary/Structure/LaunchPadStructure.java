@@ -2,14 +2,14 @@ package Reika.ChromatiCraft.Auxiliary.Structure;
 
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Base.ColoredStructureBase;
+import Reika.ChromatiCraft.Base.ChromaStructureBase;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 
 
-public class LaunchPadStructure extends ColoredStructureBase {
+public class LaunchPadStructure extends ChromaStructureBase {
 
 	private static final StoneTypes[][] structureMetas = {
 			{StoneTypes.CORNER, StoneTypes.GROOVE2, StoneTypes.CORNER},

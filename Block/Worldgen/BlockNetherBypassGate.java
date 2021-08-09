@@ -4,12 +4,12 @@ import net.minecraft.block.BlockAir;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Items.Tools.Powered.ItemNetherKey;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 
 public class BlockNetherBypassGate extends BlockAir {
@@ -25,28 +25,33 @@ public class BlockNetherBypassGate extends BlockAir {
 		public static final GateLevels[] list = values();
 
 		public void doEffect(EntityPlayer ep) {
-			ReikaJavaLibrary.pConsole(this);
+			//ReikaJavaLibrary.pConsole(this);
 			switch(this) {
 				case PUSH1:
-					ep.motionY = Math.min(ep.motionY, 1.5);
-					ep.motionY -= 0.1F;
+					if (ep.motionY > 0)
+						ep.motionY *= 0.95;
+					ep.motionY -= 0.125F;
 					ep.velocityChanged = true;
 					break;
 				case PUSH2:
-					ep.motionY = Math.min(ep.motionY, 0.75F);
-					ep.motionY -= 0.1F;
+					if (ep.motionY > 0)
+						ep.motionY *= 0.9;
+					ep.motionY -= 0.25F;
 					ep.velocityChanged = true;
 					break;
 				case PUSH3:
-					ep.motionY = Math.min(ep.motionY, 0.25F);
-					ep.motionY -= 0.25F;
+					if (ep.motionY > 0)
+						ep.motionY *= 0.8;
+					ep.motionY -= 0.5F;
 					ep.velocityChanged = true;
 					break;
 				case HURT1:
 					ReikaEntityHelper.doSetHealthDamage(ep, DamageSource.outOfWorld, 0.25F);
+					PUSH3.doEffect(ep);
 					break;
 				case HURT2:
 					ReikaEntityHelper.doSetHealthDamage(ep, DamageSource.outOfWorld, 1F);
+					PUSH3.doEffect(ep);
 					break;
 				case KILL:
 					ReikaEntityHelper.doSetHealthDamage(ep, DamageSource.outOfWorld, Integer.MAX_VALUE);
@@ -74,6 +79,11 @@ public class BlockNetherBypassGate extends BlockAir {
 				ep.getEntityData().setLong("lastGateEffect", world.getTotalWorldTime());
 			}
 		}
+	}
+
+	@Override
+	public boolean isReplaceable(IBlockAccess world, int x, int y, int z) {
+		return false;
 	}
 
 }

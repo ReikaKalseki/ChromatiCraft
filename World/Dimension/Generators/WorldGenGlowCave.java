@@ -20,6 +20,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
@@ -69,7 +70,6 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 
 	@Override
 	public boolean generate(World world, Random rand, int x, int y, int z) {
-
 		int oy = ReikaWorldHelper.findTopBlockBelowY(world, x, 255, z);
 		Block bk = world.getBlock(x, oy, z);
 		if (bk == Blocks.grass || bk == Blocks.sand) {
@@ -185,6 +185,8 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 	}
 
 	private void generate(World world, Random rand, HashSet<Coordinate> set, int upper) {
+		HashSet<Coordinate> falls = new HashSet();
+		HashSet<Coordinate> air = new HashSet();
 		for (Coordinate c : set) {
 			if (c.yCoord < 0)
 				continue;
@@ -250,7 +252,27 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 					}
 				}
 			}
+			if (b == Blocks.bedrock && c.yCoord == 2) {
+				falls.add(c);
+			}
 			c.setBlock(world, b, meta);
+			if (b == Blocks.air) {
+				air.add(c);
+			}
+		}
+		for (Coordinate c : falls) {
+			if (air.contains(c.offset(0, 1, 0)))
+				continue;
+			int meta = 0;
+			for (int i = 2; i < 6; i++) {
+				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+				Coordinate c2 = c.offset(dir, 1);
+				if (air.contains(c2) && air.contains(c2.offset(0, -1, 0))) {
+					meta |= 1 << (i-2);
+				}
+			}
+			if (meta > 0)
+				c.setBlock(world, ChromaBlocks.VOIDCAVE.getBlockInstance(), meta);
 		}
 	}
 

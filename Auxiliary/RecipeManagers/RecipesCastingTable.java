@@ -224,6 +224,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.LightGu
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.LinkToolRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.MobSonarRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.MultiToolRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.NetherKeyRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.OrePickRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.OreSilkerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.OwnerKeyRecipe;
@@ -945,6 +946,10 @@ public class RecipesCastingTable implements CastingAPI {
 		is = ChromaTiles.ITEMRIFT.getCraftedProduct();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "rtr", "tlt", "cqc", 'c', ChromaStacks.chromaDust, 'q', ReikaItemHelper.quartzPillar.asItemStack(), 'r', Items.redstone, 'l', Blocks.redstone_lamp, 't', ChromaStacks.beaconDust);
 		this.addRecipe(new ItemRiftRecipe(is, sr));
+
+		is = ChromaItems.NETHERKEY.getStackOf();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "bab", "aca", "bab", 'c', ReikaItemHelper.quartz.asItemStack(), 'a', Blocks.obsidian, 'b', ChromaStacks.auraDust);
+		this.addRecipe(new NetherKeyRecipe(is, sr));
 
 		this.addSpecialRecipes();
 	}

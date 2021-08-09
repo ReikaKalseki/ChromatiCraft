@@ -31,6 +31,11 @@ public class ItemNetherKey extends ItemPoweredChromaTool {
 	}
 
 	@Override
+	public int getChargeState(float frac) {
+		return frac > 0 ? 1 : 0;
+	}
+
+	@Override
 	protected boolean isActivated(EntityPlayer e, ItemStack is, boolean held) {
 		return e.worldObj.provider.dimensionId == -1;
 	}
