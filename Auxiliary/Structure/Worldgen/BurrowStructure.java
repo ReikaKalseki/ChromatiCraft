@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockFurnace;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -159,7 +160,14 @@ public class BurrowStructure extends FragmentStructureBase {
 
 		@Override
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
+			world.setBlock(x, y+1, z, ChromaBlocks.HEATLAMP.getBlockInstance(), ForgeDirection.UP.ordinal(), 2);
+			((TileEntityHeatLamp)world.getTileEntity(x, y+1, z)).temperature = ReikaRandomHelper.getRandomBetween(50, 160);
+			BlockFurnace.updateFurnaceBlockState(true, world, x, y, z);
 			TileEntityFurnace tf = (TileEntityFurnace)te;
+			if (tf == null) {
+				tf = new TileEntityFurnace();
+				world.setTileEntity(x, y, z, tf);
+			}
 			OreType ore = furnaceOres.getRandomEntry();
 			ItemStack is = ReikaJavaLibrary.getRandomCollectionEntry(world.rand, ore.getAllOreBlocks());
 			is = is.copy();
@@ -176,9 +184,6 @@ public class BurrowStructure extends FragmentStructureBase {
 
 			//tf.furnaceCookTime = ReikaRandomHelper.getRandomBetween(100, 190);
 			//freezeTile(tf);
-
-			world.setBlock(x, y+1, z, ChromaBlocks.HEATLAMP.getBlockInstance(), ForgeDirection.UP.ordinal(), 2);
-			((TileEntityHeatLamp)world.getTileEntity(x, y+1, z)).temperature = ReikaRandomHelper.getRandomBetween(50, 160);
 		}
 
 	};

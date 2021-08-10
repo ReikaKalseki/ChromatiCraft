@@ -95,6 +95,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	private boolean hasFurnaceRoom;
 	private boolean hasLootRoom;
 
+	private boolean generationErrored = false;
+
 	private UUID lastTriggerPlayer;
 
 	private boolean isMonument;
@@ -832,6 +834,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 		NBT.setBoolean("furn", hasFurnaceRoom);
 		NBT.setBoolean("loot", hasLootRoom);
+
+		NBT.setBoolean("generror", generationErrored);
 	}
 
 	@Override
@@ -858,6 +862,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 		hasFurnaceRoom = NBT.getBoolean("furn");
 		hasLootRoom = NBT.getBoolean("loot");
+
+		generationErrored = NBT.getBoolean("generror");
 	}
 
 	@Override
@@ -1040,6 +1046,10 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	public void setBurrowAddons(boolean furn, boolean loot) {
 		hasFurnaceRoom = furn;
 		hasLootRoom = loot;
+	}
+
+	public void markErroredForRegen() {
+		generationErrored = true;
 	}
 
 }

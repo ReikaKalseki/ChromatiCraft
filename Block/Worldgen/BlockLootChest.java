@@ -514,6 +514,10 @@ public class BlockLootChest extends BlockContainer {
 		}
 
 		public void populateChest(String s, ChromaStructures struct, int bonus, Random r) {
+			this.populateChest(s, struct, bonus, r, true);
+		}
+
+		public void populateChest(String s, ChromaStructures struct, int bonus, Random r, boolean allowFragments) {
 			ReikaInventoryHelper.clearInventory(this);
 
 			WeightedRandomChestContent[] loot = ChestGenHooks.getItems(s, r);
@@ -530,7 +534,7 @@ public class BlockLootChest extends BlockContainer {
 
 			//ReikaJavaLibrary.pConsole("CC DEBUG: Generating loot chest @ "+xCoord+", "+yCoord+", "+zCoord+", inv="+Arrays.toString(inv));
 
-			if (r.nextInt(n1) > 0) {
+			if (allowFragments && r.nextInt(n1) > 0) {
 				ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), this);
 				if (r.nextInt(n2) == 0)
 					ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), this);

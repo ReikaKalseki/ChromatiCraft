@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -90,7 +90,7 @@ public enum NetherStructures {
 				world.setBlock(x, y, z-1, Blocks.tnt);
 				world.setBlock(x, y, z, ChromaBlocks.LOOTCHEST.getBlockInstance());
 				TileEntityLootChest te = (TileEntityLootChest)world.getTileEntity(x, y, z);
-				te.populateChest(ChestGenHooks.DUNGEON_CHEST, null, 0, world.rand);
+				te.populateChest(ChestGenHooks.DUNGEON_CHEST, null, 0, world.rand, false);
 				world.setBlock(x, y+1, z, Blocks.lava);
 				break;
 			case TEMPLE:

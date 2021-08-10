@@ -169,7 +169,9 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (!world.isRemote && track != null) {
-			if (isPlaying && world.getBlock(x, y+1, z) != Blocks.bedrock) {
+			if (world.getBlock(x, y+1, z) == Blocks.bedrock)
+				isPlaying = false;
+			if (isPlaying) {
 				this.play(world, x, y, z);
 			}
 		}

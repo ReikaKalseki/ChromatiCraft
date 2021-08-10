@@ -460,7 +460,7 @@ public class CrystalMusicTemple {
 					if (p.type == ParticleTypes.PURPLE)
 						it.remove();
 				}
-				for (int i = 0; i < 3; i++)
+				for (int i = 0; i < 3*0+1; i++)
 					particles.add(new Particle(ParticleTypes.FINAL, i));
 				break;
 		}
@@ -539,11 +539,12 @@ public class CrystalMusicTemple {
 				for (Particle p : particles) {
 					double a = p.type == ParticleTypes.FINAL ? 120*p.listIndex : p.type.ordinal()*120+60;
 					double r2 = 3.5;
-					p.size = p.type == ParticleTypes.FINAL ? 1.75F : 1F;
+					p.size = p.type == ParticleTypes.FINAL ? 2.25F : 1F;
 					double h = Math.sin(t*0.2+a*2)*(0.5-dft/4D);
 					if (p.type == ParticleTypes.FINAL) {
-						r2 += 4.5*dft;
+						r2 += 4.5*dft+1;
 						p.colorDelay = -Particle.fxLife/2;
+						t *= -3;
 					}
 					else {
 						r2 += (2+3.5*Math.cos(t*0.3+a*3.5))*dft;
