@@ -99,6 +99,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 			ROSETTAHANDLER("Reika.ChromatiCraft.Magic.Lore.RosettaStone"),
 			SPLITWORLDLISTS("net.minecraft.client.renderer.RenderList", "bmd"),
 			STOPLIGHTUPDATES("net.minecraft.client.multiplayer.WorldClient", "bjf"),
+			F3COORDS("net.minecraft.client.gui.GuiIngame", "bbv"),
 			;
 
 			private final String obfName;
@@ -475,6 +476,25 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						min.name = "interceptClientChunkUpdates";
 						min.desc = "(Lnet/minecraft/client/multiplayer/ChunkProviderClient;)Z";
 						min.setOpcode(Opcodes.INVOKESTATIC);
+						break;
+					}
+					case F3COORDS: {
+						MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_73830_a", "renderGameOverlay", "(FZII)V");
+						String floor = FMLForgePlugin.RUNTIME_DEOBF ? "func_76128_c" : "floor_double";
+						AbstractInsnNode start = ReikaASMHelper.getFirstInsnAfter(m.instructions, 0, Opcodes.LDC, "x: %.5f (%d) // c: %d (%d)");
+						for (int i = m.instructions.indexOf(start); i < m.instructions.size(); i++) {
+							AbstractInsnNode ain = m.instructions.get(i);
+							if (ain.getOpcode() == Opcodes.AASTORE) {
+								m.instructions.insertBefore(ain, new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/ChromatiCraft/Auxiliary/ChromaAux", "getPlayerCoordForF3", "(Ljava/lang/Object;)Ljava/lang/Object;", false));
+								i += 2;
+							}
+							else if (ain instanceof MethodInsnNode) {
+								String call = ((MethodInsnNode)ain).name;
+								if (call.equals(floor))
+									break;
+							}
+						}
+						ReikaASMHelper.log(ReikaASMHelper.clearString(m.instructions));
 						break;
 					}
 				}

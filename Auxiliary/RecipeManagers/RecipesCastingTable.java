@@ -1088,9 +1088,9 @@ public class RecipesCastingTable implements CastingAPI {
 			this.addCustomRecipe(r);
 	}
 
-	private void addCustomRecipe(CastingRecipe r) {
+	private CastingRecipe addCustomRecipe(CastingRecipe r) {
 		APIrecipes.add(r);
-		this.addRecipe(r);
+		return this.addRecipe(r);
 	}
 
 	public List<CastingRecipe> getAllAPIRecipes() {
@@ -1242,7 +1242,14 @@ public class RecipesCastingTable implements CastingAPI {
 				Exception e = null;
 				boolean flag = false;
 				try {
-					flag = this.addCustomRecipe(lb, crl);
+					CastingRecipe cr = this.addCustomRecipe(lb, crl);
+					flag = cr != null;
+					if (flag) {
+						LuaBlock c = lb.getChild("effectHook");
+						if (c != null) {
+							cr.effectCallback = ConfigRecipe.constructFXFromLuaBlock(c);
+						}
+					}
 				}
 				catch (Exception ex) {
 					e = ex;
@@ -1280,7 +1287,7 @@ public class RecipesCastingTable implements CastingAPI {
 		}
 	}
 
-	private boolean addCustomRecipe(LuaBlock lb, CustomRecipeList crl) throws Exception {
+	private CastingRecipe addCustomRecipe(LuaBlock lb, CustomRecipeList crl) throws Exception {
 		ItemStack out = crl.parseItemString(lb.getString("output"), lb.getChild("output_nbt"), false);
 		this.verifyOutputItem(out, true);
 		String lvl = lb.getString("level");
@@ -1323,12 +1330,10 @@ public class RecipesCastingTable implements CastingAPI {
 		if (lvl.equals("basic") || lvl.equals("rune")) {
 			IRecipe ir = crl.parseCraftingRecipe(lb.getChild("recipe"), out);
 			if (lvl.equals("rune")) {
-				this.addCustomRecipe(new ConfigRecipe.Rune(ir, duration, typical, leftover, autocost, xp, runes, progress));
-				return true;
+				return this.addCustomRecipe(new ConfigRecipe.Rune(ir, duration, typical, leftover, autocost, xp, runes, progress));
 			}
 			else {
-				this.addCustomRecipe(new ConfigRecipe.Basic(ir, duration, typical, leftover, autocost, xp, progress));
-				return true;
+				return this.addCustomRecipe(new ConfigRecipe.Basic(ir, duration, typical, leftover, autocost, xp, progress));
 			}
 		}
 		else if (lvl.equals("multi") || lvl.equals("pylon")) {
@@ -1344,12 +1349,10 @@ public class RecipesCastingTable implements CastingAPI {
 			if (lvl.equals("pylon")) {
 				if (!setStack)
 					stack = false;
-				this.addCustomRecipe(new ConfigRecipe.Pylon(out, center, duration, typical, leftover, autocost, xp, runes, items, energy, progress));
-				return true;
+				return this.addCustomRecipe(new ConfigRecipe.Pylon(out, center, duration, typical, leftover, autocost, xp, runes, items, energy, progress));
 			}
 			else {
-				this.addCustomRecipe(new ConfigRecipe.Multi(out, center, duration, typical, leftover, autocost, xp, runes, items, progress));
-				return true;
+				return this.addCustomRecipe(new ConfigRecipe.Multi(out, center, duration, typical, leftover, autocost, xp, runes, items, progress));
 			}
 		}
 		else {

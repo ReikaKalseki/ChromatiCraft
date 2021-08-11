@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.TileEntity.Decoration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -25,6 +26,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Auxiliary.IconLookupRegistry;
 import Reika.DragonAPI.Instantiable.BoundedValue;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.IO.LuaBlock;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Interfaces.IconEnum;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
@@ -133,7 +135,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 
 		public BoundedValue<Integer> particleRate = new BoundedValue(1, 300, 10).setStep(1);
 
-		private ParticleDefinition() {
+		public ParticleDefinition() {
 
 		}
 
@@ -266,6 +268,45 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 			location = Coordinate.readFromNBT("loc", NBT);
 		}
 
+		public void readLuaBlock(LuaBlock lb) {
+			particleColor = lb.getInt("color");
+
+			particleCollision = lb.getBoolean("collide");
+			rapidExpand = lb.getBoolean("rapid_expand");
+			noSlowdown = lb.getBoolean("no_slowdown");
+			alphaFade = lb.getBoolean("alpha_fade");
+			cyclingColor = lb.getBoolean("cycle_color");
+
+			particleIcon = IconLookupRegistry.instance.getIcon(lb.getString("icon"));
+			if (particleIcon == null) {
+				ChromatiCraft.logger.logError("Tried to load invalid particle type '"+lb.getString("icon")+"' from NBT.");
+			}
+
+			particleRate = new BoundedValue(1, 1);
+
+			particleLife.readFromLuaBlock("life", lb);
+
+			particleSize.readFromLuaBlock("size", lb);
+
+			particleGravity.readFromLuaBlock("gravity", lb);
+
+			particlePositionX.readFromLuaBlock("spawn_x", lb);
+
+			particlePositionY.readFromLuaBlock("spawn_y", lb);
+
+			particlePositionZ.readFromLuaBlock("spawn_z", lb);
+
+			particleVelocityX.readFromLuaBlock("speed_x", lb);
+
+			particleVelocityY.readFromLuaBlock("speed_y", lb);
+
+			particleVelocityZ.readFromLuaBlock("speed_z", lb);
+		}
+
+		public void setLocation(TileEntity te) {
+			location = new Coordinate(te);
+		}
+
 	}
 
 	public static class VariableValue<N extends Number> {
@@ -358,6 +399,15 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 			NBTTagCompound tag2 = tag.getCompoundTag("vary");
 			bounds = BoundedValue.readFromNBT(tag1);
 			variation = BoundedValue.readFromNBT(tag2);
+			//ReikaJavaLibrary.pConsole("Reading vary "+variation);
+		}
+
+		public void readFromLuaBlock(String s, LuaBlock lb) {
+			LuaBlock lb2 = lb.getChild(s);
+			double val = lb2.getDouble("base_value");
+			double var = lb2.getDouble("variation");
+			bounds = new BoundedValue(val, val);
+			variation = new BoundedValue(var, var);
 			//ReikaJavaLibrary.pConsole("Reading vary "+variation);
 		}
 

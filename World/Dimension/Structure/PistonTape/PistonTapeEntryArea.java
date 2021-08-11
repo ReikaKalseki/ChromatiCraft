@@ -90,7 +90,20 @@ public class PistonTapeEntryArea extends StructurePiece<PistonTapeGenerator> {
 						}
 					}
 
-					world.setBlock(dx, dy, dz, b, m);
+					if (level.index == 0 && j == 3) {
+						if (i == 2 && k == w-1) {
+							b = ChromaBlocks.DIMDATA.getBlockInstance();
+						}
+						else if (i == 0 && k == w-3) {
+							b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
+							m = BlockType.LIGHT.metadata;
+						}
+					}
+
+					if (b == ChromaBlocks.DIMDATA.getBlockInstance())
+						parent.generatePasswordTile(dx, dy, dz);
+					else
+						world.setBlock(dx, dy, dz, b, m);
 				}
 			}
 		}

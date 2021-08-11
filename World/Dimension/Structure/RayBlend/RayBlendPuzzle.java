@@ -62,6 +62,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 
+	public final int roomIndex;
 	private final int gridSize;
 	private final float initialFillFraction;
 
@@ -93,9 +94,11 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 	public static final int PADDING_UPPER = 4;
 
 	private BlockBox generationBounds = BlockBox.nothing();
+	private Coordinate bypassCoord;
 
-	public RayBlendPuzzle(RayBlendGenerator s, int sz, float f, Random rand) {
+	public RayBlendPuzzle(RayBlendGenerator s, int i, int sz, float f, Random rand) {
 		super(s);
+		roomIndex = i;
 		gridSize = sz;
 		initialFillFraction = f;
 		edgeLength = gridSize*gridSize;
@@ -792,6 +795,42 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 
 		generationBounds = generationBounds.addCoordinate(x+min2, y-1, z+min2);
 		generationBounds = generationBounds.addCoordinate(x+max2, y+h, z+max2);
+
+		if (roomIndex == 0) {
+			int dx = generationBounds.minX+1;
+			int dz = z+2;
+			int dy = y+2;
+			bypassCoord = new Coordinate(dx, dy, dz);
+		}
+	}
+
+	public void generateBypass(ChunkSplicedGenerationCache world) {
+		if (bypassCoord != null) {
+			for (int i = 1; i <= 4; i++) {
+				world.setBlock(bypassCoord.xCoord, bypassCoord.yCoord+i, bypassCoord.zCoord-1, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+				world.setBlock(bypassCoord.xCoord, bypassCoord.yCoord+i, bypassCoord.zCoord+1, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+				Block bc = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
+				int mc = BlockType.STONE.metadata;
+				if (i == 1) {
+					mc = BlockType.LIGHT.metadata;
+				}
+				else if (i == 2) {
+					bc = ChromaBlocks.DIMDATA.getBlockInstance();
+					mc = 1;
+				}
+				if (bc == ChromaBlocks.DIMDATA.getBlockInstance())
+					parent.generatePasswordTile(bypassCoord.xCoord, bypassCoord.yCoord+i, bypassCoord.zCoord);
+				else
+					world.setBlock(bypassCoord.xCoord, bypassCoord.yCoord+i, bypassCoord.zCoord, bc, mc);
+			}
+			for (int i = 1; i <= 4; i++) {
+				Block b = i == 4 ? ChromaBlocks.STRUCTSHIELD.getBlockInstance() : Blocks.air;
+				int m = i == 4 ? BlockType.STONE.metadata : 0;
+				for (int d = -3; d <= 3; d++) {
+					world.setBlock(bypassCoord.xCoord-1, bypassCoord.yCoord+i, bypassCoord.zCoord+d, b, m);
+				}
+			}
+		}
 	}
 
 	public BlockBox getGenerationBounds() {

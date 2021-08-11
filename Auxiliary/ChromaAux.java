@@ -747,4 +747,8 @@ public class ChromaAux {
 			ChromatiCraft.logger.logError("Correct block and meta but no TileEntity!?!?");
 		}
 	}
+
+	public static Object getPlayerCoordForF3(Object val) {
+		return 3;
+	}
 }

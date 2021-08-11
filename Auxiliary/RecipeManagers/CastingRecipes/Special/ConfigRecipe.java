@@ -1,29 +1,41 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Random;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.tileentity.TileEntity;
 
+import Reika.ChromatiCraft.API.CastingAPI.FXCallback;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityParticleSpawner.ParticleDefinition;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.IO.LuaBlock;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 
@@ -273,6 +285,69 @@ public class ConfigRecipe {
 		@Override
 		public int getExperience() {
 			return (int)(super.getExperience()*experienceFactor);
+		}
+
+	}
+
+	public static FXCallback constructFXFromLuaBlock(LuaBlock c) {
+		ConfigFX ret = new ConfigFX();
+		for (LuaBlock lb : c.getChildren()) {
+			ConfigParticle fx = new ConfigParticle(lb);
+			ret.particles.add(fx);
+		}
+		return ret;
+	}
+
+	private static class ConfigFX implements FXCallback {
+
+		private final ArrayList<ConfigParticle> particles = new ArrayList();
+
+		@Override
+		public void onEffectTick(TileEntity te, Object recipe, ItemStack output) {
+			for (ConfigParticle fx : particles) {
+				if (fx.canSpawn(DragonAPICore.rand)) {
+					fx.spawn((TileEntityCastingTable)te);
+				}
+				fx.ticksSinceSpawned++;
+			}
+		}
+
+	}
+
+	private static class ConfigParticle {
+		/*
+		private final ChromaIcons icon;
+		private final int color;
+		private final int lifespanMin;
+		private final int lifespanMax;
+		private final float sizeMin;
+		private final float sizeMax;*/
+
+		private final ParticleDefinition particle;
+		private final float chancePerTick;
+		private final int minTickDelay;
+
+		private int ticksSinceSpawned;
+
+		private ConfigParticle(LuaBlock lb) {
+			chancePerTick = (float)lb.getDouble("chance_per_tick");
+			minTickDelay = lb.getInt("min_interval");
+			particle = new ParticleDefinition();
+			particle.readLuaBlock(lb.getChild("particle_data"));
+		}
+
+		private boolean canSpawn(Random rand) {
+			return ticksSinceSpawned >= minTickDelay && rand.nextFloat() <= chancePerTick;
+		}
+
+		@SideOnly(Side.CLIENT)
+		private void spawn(TileEntityCastingTable te) {
+			particle.setLocation(te);
+			EntityFX fx = particle.getFX(te.getTicksExisted());
+			if (fx != null) {
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
+			ticksSinceSpawned = 0;
 		}
 
 	}

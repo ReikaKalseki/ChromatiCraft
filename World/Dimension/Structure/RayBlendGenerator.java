@@ -60,7 +60,7 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 		int dx = x;
 		for (int i = 0; i < sz.length; i++) {
 			PuzzleProfile p = sz[i];
-			RayBlendPuzzle rb = this.createPuzzle(rand, p);
+			RayBlendPuzzle rb = this.createPuzzle(rand, p, i);
 			if (rb == null)
 				continue;
 			int sizePre = i == 0 ? 0 : sz[i-1].gridSize;
@@ -103,16 +103,20 @@ public class RayBlendGenerator extends DimensionStructureGenerator {
 			}
 		}
 
+		for (RayBlendPuzzle rp : puzzles.values()) {
+			rp.generateBypass(world);
+		}
+
 		new RayBlendLoot(this).generate(world, x+len+3, y+2, z-7);
 		this.addDynamicStructure(new RayBlendEntrance(this), x-4, z);
 	}
 
-	private RayBlendPuzzle createPuzzle(Random rand, PuzzleProfile p) {
+	private RayBlendPuzzle createPuzzle(Random rand, PuzzleProfile p, int idx) {
 		int attempts = 1;
-		RayBlendPuzzle ret = new RayBlendPuzzle(this, p.gridSize, p.initialFill, rand);
+		RayBlendPuzzle ret = new RayBlendPuzzle(this, idx, p.gridSize, p.initialFill, rand);
 		while (!ret.prepare(p, rand)) {
 			//ChromatiCraft.logger.log("Puzzle population failed; generating a new rayblend puzzle");
-			ret = new RayBlendPuzzle(this, p.gridSize, p.initialFill, rand);
+			ret = new RayBlendPuzzle(this, idx, p.gridSize, p.initialFill, rand);
 			attempts++;
 			if (attempts > 40) {
 				ChromatiCraft.logger.logError("Failed to generate a "+p+" puzzle in a reasonable time!");

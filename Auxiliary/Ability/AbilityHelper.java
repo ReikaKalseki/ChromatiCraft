@@ -68,6 +68,8 @@ import Reika.ChromatiCraft.API.AbilityAPI;
 import Reika.ChromatiCraft.API.ChromatiAPI;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Items.Tools.ItemEfficiencyCrystal;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
@@ -83,6 +85,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher;
@@ -547,6 +550,9 @@ public class AbilityHelper implements AbilityAPI {
 	}
 
 	public void renderPath(EntityPlayer ep) {
+		DimensionStructureGenerator struct = ChromaDimensionManager.getStructurePlayerIsIn(ep);
+		if (struct != null && struct.getType() == DimensionStructureType.NONEUCLID)
+			return;
 		PlayerPath path = playerPaths.get(ep);
 		if (path != null) {
 			path.render();
