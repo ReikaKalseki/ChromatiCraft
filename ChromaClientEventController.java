@@ -227,6 +227,10 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 
 	private final ArrayList<Integer> snowColors = new ArrayList();
 
+	private double playerOverlayPosX;
+	private double playerOverlayPosY;
+	private double playerOverlayPosZ;
+
 	private ChromaClientEventController() {
 		/*
 		if (ChromaOptions.BIOMEFX.getState()) {
@@ -256,6 +260,26 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 			}
 		}
 	}
+	/*
+	@SubscribeEvent
+	public void scramblePlayerPos(RenderGameOverlayEvent.Pre evt) {
+		if (evt.type == ElementType.ALL) {
+			EntityLivingBase ep = Minecraft.getMinecraft().thePlayer;
+			playerOverlayPosX = ep.posX;
+			playerOverlayPosY = ep.posY;
+			playerOverlayPosZ = ep.posZ;
+		}
+	}
+
+	@SubscribeEvent
+	public void scramblePlayerPos(RenderGameOverlayEvent.Post evt) {
+		if (evt.type == ElementType.ALL) {
+			EntityLivingBase ep = Minecraft.getMinecraft().thePlayer;
+			ep.posX = playerOverlayPosX;
+			ep.posY = playerOverlayPosY;
+			ep.posZ = playerOverlayPosZ;
+		}
+	}*/
 	/*
 	@SubscribeEvent
 	public void retextureMusicTempleWater(LiquidBlockIconEvent evt) {

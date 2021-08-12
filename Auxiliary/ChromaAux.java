@@ -747,8 +747,14 @@ public class ChromaAux {
 			ChromatiCraft.logger.logError("Correct block and meta but no TileEntity!?!?");
 		}
 	}
-
+	/*
+	@SideOnly(Side.CLIENT)
 	public static Object getPlayerCoordForF3(Object val) {
-		return 3;
-	}
+		if (val instanceof Number && Minecraft.getMinecraft().theWorld.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			DimensionStructureGenerator struct = ChromaDimensionManager.getStructurePlayerIsIn(Minecraft.getMinecraft().thePlayer);
+			if (struct != null && struct.getType() == DimensionStructureType.NONEUCLID)
+				val = Minecraft.getMinecraft().theWorld.rand.nextDouble()*10000;
+		}
+		return val instanceof Number ? ((Number)val).doubleValue() : val;
+	}*/
 }

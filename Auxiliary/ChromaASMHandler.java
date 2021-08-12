@@ -99,7 +99,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 			ROSETTAHANDLER("Reika.ChromatiCraft.Magic.Lore.RosettaStone"),
 			SPLITWORLDLISTS("net.minecraft.client.renderer.RenderList", "bmd"),
 			STOPLIGHTUPDATES("net.minecraft.client.multiplayer.WorldClient", "bjf"),
-			F3COORDS("net.minecraft.client.gui.GuiIngame", "bbv"),
+			//F3COORDS("net.minecraftforge.client.GuiIngameForge"),
 			;
 
 			private final String obfName;
@@ -477,26 +477,38 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						min.desc = "(Lnet/minecraft/client/multiplayer/ChunkProviderClient;)Z";
 						min.setOpcode(Opcodes.INVOKESTATIC);
 						break;
-					}
+					}/*
 					case F3COORDS: {
-						MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_73830_a", "renderGameOverlay", "(FZII)V");
-						String floor = FMLForgePlugin.RUNTIME_DEOBF ? "func_76128_c" : "floor_double";
+						MethodNode m = ReikaASMHelper.getMethodByName(cn, "renderHUDText", "(II)V");
+						String floor = FMLForgePlugin.RUNTIME_DEOBF ? "func_76142_g" : "wrapAngleTo180_float";
 						AbstractInsnNode start = ReikaASMHelper.getFirstInsnAfter(m.instructions, 0, Opcodes.LDC, "x: %.5f (%d) // c: %d (%d)");
+						int left = 3;
+						int decr = 0;
 						for (int i = m.instructions.indexOf(start); i < m.instructions.size(); i++) {
 							AbstractInsnNode ain = m.instructions.get(i);
 							if (ain.getOpcode() == Opcodes.AASTORE) {
 								m.instructions.insertBefore(ain, new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/ChromatiCraft/Auxiliary/ChromaAux", "getPlayerCoordForF3", "(Ljava/lang/Object;)Ljava/lang/Object;", false));
 								i += 2;
 							}
+							else if (ain.getOpcode() == Opcodes.LDC) {
+								LdcInsnNode ldc = (LdcInsnNode)ain;
+								if (ldc.cst instanceof String) {
+									ldc.cst = ((String)ldc.cst).replaceAll("%d", "%.0f");
+								}
+							}
 							else if (ain instanceof MethodInsnNode) {
 								String call = ((MethodInsnNode)ain).name;
-								if (call.equals(floor))
-									break;
+								if (call.equals(floor)) {
+									decr = 1;
+								}
 							}
+							left -= decr;
+							if (left <= 0)
+								break;
 						}
 						ReikaASMHelper.log(ReikaASMHelper.clearString(m.instructions));
 						break;
-					}
+					}*/
 				}
 
 			}
