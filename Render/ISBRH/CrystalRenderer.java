@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Render.ISBRH;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
@@ -17,7 +18,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidRegistry;
 
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
 import Reika.DragonAPI.Base.ISBRH;
@@ -180,7 +180,7 @@ public class CrystalRenderer extends ISBRH {
 	private void renderWater(IBlockAccess world, int x, int y, int z, Block block, int meta, Tessellator v5) {
 		Block above = world.getBlock(x, y+1, z);
 		if (above != Blocks.water && above != Blocks.flowing_water && (above != block || world.getBlockMetadata(x, y+1, z) != meta)) {
-			boolean flag = ReikaWorldHelper.hasAdjacentWater(world, x, y, z, false, true);
+			boolean flag = ReikaWorldHelper.hasAdjacentWater(world, x, y, z, false, false);
 			if (!flag) {
 				for (int i = 2; i < 6 && !flag; i++) {
 					ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
@@ -191,16 +191,22 @@ public class CrystalRenderer extends ISBRH {
 				}
 			}
 			if (flag) {
-				IIcon ico = FluidRegistry.WATER.getIcon();
+				IIcon ico = Blocks.water.getIcon(world, x, y, z, 1);
 				float u = ico.getMinU();
 				float v = ico.getMinV();
 				float du = ico.getMaxU();
 				float dv = ico.getMaxV();
-				double h = 0.888;
-				v5.addVertexWithUV(0, h, 1, u, dv);
-				v5.addVertexWithUV(1, h, 1, du, dv);
-				v5.addVertexWithUV(1, h, 0, du, v);
-				v5.addVertexWithUV(0, h, 0, u, v);
+				//double h = 0.888;
+				RenderBlocks.getInstance().blockAccess = world;
+				double d2 = RenderBlocks.getInstance().getLiquidHeight(x, y, z, Material.water);
+				double d3 = RenderBlocks.getInstance().getLiquidHeight(x, y, z + 1, Material.water);
+				double d4 = RenderBlocks.getInstance().getLiquidHeight(x + 1, y, z + 1, Material.water);
+				double d5 = RenderBlocks.getInstance().getLiquidHeight(x + 1, y, z, Material.water);
+				v5.setColorOpaque_I(Blocks.water.colorMultiplier(world, x, y, z));
+				v5.addVertexWithUV(0, d3, 1, u, dv);
+				v5.addVertexWithUV(1, d4, 1, du, dv);
+				v5.addVertexWithUV(1, d5, 0, du, v);
+				v5.addVertexWithUV(0, d2, 0, u, v);
 			}
 		}
 	}

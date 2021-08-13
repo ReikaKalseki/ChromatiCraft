@@ -163,6 +163,7 @@ public class ProgressionManager implements ProgressRegistry {
 
 		this.addProgressPrereq(ProgressStage.NETHER, 	ProgressStage.BEDROCK);
 		this.addProgressPrereq(ProgressStage.NETHERROOF, ProgressStage.NETHER);
+		this.addProgressPrereq(ProgressStage.NETHERROOF, ProgressStage.ANYSTRUCT);
 		this.addProgressPrereq(ProgressStage.NETHERSTRUCT, ProgressStage.NETHERROOF);
 
 		this.addProgressPrereq(ProgressStage.END, 		ProgressStage.NETHER);
