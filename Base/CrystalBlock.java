@@ -277,4 +277,9 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 	public final boolean isSubmergeable(IBlockAccess iba, int x, int y, int z) {
 		return true;
 	}
+
+	@Override
+	public final boolean renderLiquid(int meta) {
+		return true;
+	}
 }

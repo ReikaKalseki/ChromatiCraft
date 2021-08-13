@@ -279,6 +279,11 @@ public class BlockStructureShield extends Block implements SemiUnbreakable, Subm
 	}
 
 	@Override
+	public final boolean renderLiquid(int meta) {
+		return false;
+	}
+
+	@Override
 	public boolean canSnowAccumulate(World world, int x, int y, int z) {
 		int meta = world.getBlockMetadata(x, y, z);
 		if (BlockType.list[meta%8] == BlockType.GLASS)
