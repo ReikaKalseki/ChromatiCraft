@@ -97,7 +97,6 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 			TEXTURELOAD("net.minecraft.client.renderer.texture.TextureAtlasSprite", "bqd"),
 			LOREHANDLER("Reika.ChromatiCraft.Magic.Lore.LoreScripts"),
 			ROSETTAHANDLER("Reika.ChromatiCraft.Magic.Lore.RosettaStone"),
-			SPLITWORLDLISTS("net.minecraft.client.renderer.RenderList", "bmd"),
 			STOPLIGHTUPDATES("net.minecraft.client.multiplayer.WorldClient", "bjf"),
 			//F3COORDS("net.minecraftforge.client.GuiIngameForge"),
 			;
@@ -458,14 +457,6 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						m.instructions.add(new InsnNode(Opcodes.ICONST_1));
 						m.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/DragonAPI/IO/ReikaFileReader", "getFileAsLines", "(Ljava/io/InputStream;Z)Ljava/util/ArrayList;", false));
 						m.instructions.add(new InsnNode(Opcodes.ARETURN));
-						break;
-					}
-					case SPLITWORLDLISTS: {
-						MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_78419_a", "callLists", "()V");
-						MethodInsnNode min = ReikaASMHelper.getFirstMethodCallByName(cn, m, "glCallLists");
-						min.owner = "Reika/ChromatiCraft/Auxiliary/Render/WorldRenderIntercept";
-						min.name = "callGlLists";
-						min.setOpcode(Opcodes.INVOKESTATIC);
 						break;
 					}
 					case STOPLIGHTUPDATES: {

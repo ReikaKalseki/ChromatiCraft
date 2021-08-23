@@ -17,18 +17,18 @@ import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.DragonAPIMod;
 import Reika.DragonAPI.IO.Shaders.ShaderRegistry;
-import Reika.DragonAPI.IO.Shaders.ShaderRegistry.WorldShaderHandler;
+import Reika.DragonAPI.IO.Shaders.ShaderRegistry.WorldShaderSystem;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class WorldRenderIntercept implements WorldShaderHandler {
+public class WorldRenderIntercept implements WorldShaderSystem {
 
 	public static final WorldRenderIntercept instance = new WorldRenderIntercept();
 
-	private HashMap<Integer, Coordinate> listMap = new HashMap();
+	private final HashMap<Integer, Coordinate> listMap = new HashMap();
 
 	private WorldRenderIntercept() {
 		ShaderRegistry.registerWorldShaderSystem(this);
@@ -46,13 +46,12 @@ public class WorldRenderIntercept implements WorldShaderHandler {
 		return listMap.get(id);
 	}
 
-	public static void callGlLists(IntBuffer lists) {
+	public boolean apply(IntBuffer lists) {
 		if (MonumentCompletionRitual.areRitualsRunning() || ModList.VOIDMONSTER.isLoaded()) {
 			instance.runIntercept(lists);
+			return true;
 		}
-		else {
-			GL11.glCallLists(lists);
-		}
+		return false;
 	}
 
 	public void onPreWorldRender() {
