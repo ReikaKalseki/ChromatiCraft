@@ -8,27 +8,34 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.WorldRenderer;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.MonumentCompletionRitual;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterDestructionRitual;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterRitualClientEffects;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterRitualClientEffects.EffectVisual;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Base.DragonAPIMod;
 import Reika.DragonAPI.IO.Shaders.ShaderRegistry;
+import Reika.DragonAPI.IO.Shaders.ShaderRegistry.WorldShaderHandler;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class WorldRenderIntercept {
+public class WorldRenderIntercept implements WorldShaderHandler {
 
 	public static final WorldRenderIntercept instance = new WorldRenderIntercept();
 
 	private HashMap<Integer, Coordinate> listMap = new HashMap();
 
 	private WorldRenderIntercept() {
+		ShaderRegistry.registerWorldShaderSystem(this);
+	}
 
+	public DragonAPIMod getMod() {
+		return ChromatiCraft.instance;
 	}
 
 	public void mapChunkRenderList(int id, WorldRenderer wr) {
@@ -46,6 +53,14 @@ public class WorldRenderIntercept {
 		else {
 			GL11.glCallLists(lists);
 		}
+	}
+
+	public void onPreWorldRender() {
+
+	}
+
+	public void onPostWorldRender() {
+		listMap.clear();
 	}
 
 	//@ModDependent(ModList.VOIDMONSTER)

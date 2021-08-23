@@ -397,8 +397,9 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 	}
 
 	//@ModDependent(ModList.VOIDMONSTER)
-	public void interceptChunkRender(WorldRenderer wr, int renderPass, int GLListID) {
+	public boolean interceptChunkRender(WorldRenderer wr, int renderPass, int GLListID) {
 		WorldRenderIntercept.instance.mapChunkRenderList(GLListID, wr);
+		return false;
 	}
 
 	public int chunkRenderSortIndex() {
@@ -430,7 +431,7 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 		}
 	}
 
-	@SubscribeEvent
+	//@SubscribeEvent
 	public void handleUntunedDimension(RenderBlockAtPosEvent evt) {
 		if (true)
 			return;
