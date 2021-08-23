@@ -22,6 +22,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
@@ -29,6 +30,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.Interfaces.CrystalEffectBoostArmor;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
@@ -237,9 +239,27 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 					player = true;
 			}
 			if (ReikaMathLibrary.py3d(e.posX-x-0.5, e.posY+e.getEyeHeight()/2F-y-0.5, e.posZ-z-0.5) <= r) {
-				CrystalPotionController.instance.applyEffectFromColor(dura, level, e, color, true);
+				int dura2 = dura;
+				int level2 = level;
+				float slug = this.getSlugPower(e);
+				if (slug > 0) {
+					dura2 *= 1-0.2*slug;
+					level2 += slug;
+				}
+				CrystalPotionController.instance.applyEffectFromColor(dura2, level2, e, color, true);
 			}
 		}
+	}
+
+	private float getSlugPower(EntityLivingBase e) {
+		float ret = 0;
+		for (int i = 1; i < 4; i++) {
+			ItemStack is = e.getEquipmentInSlot(i); //helm is 4
+			if (is != null && is.getItem() instanceof CrystalEffectBoostArmor) {
+				ret += ((CrystalEffectBoostArmor)is.getItem()).getPower(is);
+			}
+		}
+		return ret;
 	}
 
 	public abstract boolean shouldMakeNoise();

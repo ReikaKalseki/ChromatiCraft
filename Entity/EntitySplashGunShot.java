@@ -154,7 +154,7 @@ public class EntitySplashGunShot extends EntityFireball {
 			dmg *= 1.2F;
 		if (e == firingPlayer)
 			dmg = 0.25F;
-		e.attackEntityFrom(DamageSource.magic, dmg);
+		e.attackEntityFrom(DamageSource.causePlayerDamage(firingPlayer).setProjectile(), dmg);
 		e.hurtResistantTime = 0;
 		PacketTarget pt = new PacketTarget.RadiusTarget(this, 48);
 		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.SPLASHGUNATTACK.ordinal(), pt, this.getEntityId(), e.getEntityId());

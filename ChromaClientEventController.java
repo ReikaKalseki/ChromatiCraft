@@ -31,6 +31,7 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -150,6 +151,7 @@ import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
 import Reika.DragonAPI.Instantiable.Event.ProfileEvent;
 import Reika.DragonAPI.Instantiable.Event.ProfileEvent.ProfileEventWatcher;
 import Reika.DragonAPI.Instantiable.Event.Client.ChunkWorldRenderEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.ChunkWorldRenderEvent.ChunkWorldRenderWatcher;
 import Reika.DragonAPI.Instantiable.Event.Client.ClientLoginEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.ClientLogoutEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.CloudRenderEvent;
@@ -210,7 +212,7 @@ import pneumaticCraft.api.client.pneumaticHelmet.InventoryTrackEvent;
 import thaumcraft.api.research.ResearchItem;
 
 @SideOnly(Side.CLIENT)
-public class ChromaClientEventController implements ProfileEventWatcher {
+public class ChromaClientEventController implements ProfileEventWatcher, ChunkWorldRenderWatcher {
 
 	public static final ChromaClientEventController instance = new ChromaClientEventController();
 
@@ -241,6 +243,7 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 		}
 		 */
 		ProfileEvent.registerHandler("gui", this);
+		ChunkWorldRenderEvent.addHandler(this);
 
 		snowColors.add(0xffffff);
 		snowColors.add(0xFFD800);
@@ -393,10 +396,13 @@ public class ChromaClientEventController implements ProfileEventWatcher {
 		}
 	}
 
-	@ModDependent(ModList.VOIDMONSTER)
-	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void mapChunkRenderToCallList(ChunkWorldRenderEvent evt) {
-		WorldRenderIntercept.instance.mapChunkRenderList(evt.defaultGLListID, evt.renderer);
+	//@ModDependent(ModList.VOIDMONSTER)
+	public void interceptChunkRender(WorldRenderer wr, int renderPass, int GLListID) {
+		WorldRenderIntercept.instance.mapChunkRenderList(GLListID, wr);
+	}
+
+	public int chunkRenderSortIndex() {
+		return Integer.MAX_VALUE;
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
