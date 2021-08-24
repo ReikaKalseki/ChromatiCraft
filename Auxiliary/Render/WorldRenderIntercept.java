@@ -1,7 +1,6 @@
 package Reika.ChromatiCraft.Auxiliary.Render;
 
 import java.nio.IntBuffer;
-import java.util.HashMap;
 
 import org.lwjgl.opengl.GL11;
 
@@ -18,17 +17,20 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.DragonAPIMod;
 import Reika.DragonAPI.IO.Shaders.ShaderRegistry;
 import Reika.DragonAPI.IO.Shaders.ShaderRegistry.WorldShaderSystem;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import gnu.trove.map.hash.THashMap;
 
 @SideOnly(Side.CLIENT)
 public class WorldRenderIntercept implements WorldShaderSystem {
 
 	public static final WorldRenderIntercept instance = new WorldRenderIntercept();
 
-	private final HashMap<Integer, Coordinate> listMap = new HashMap();
+	private static final int DEFAULT_RADIUS = 10;
+	private static final int DEFAULT_CAPACITY_COMPONENT = 2*DEFAULT_RADIUS+1;
+
+	private final THashMap<Integer, WorldRenderer> listMap = new THashMap(16*DEFAULT_CAPACITY_COMPONENT*DEFAULT_CAPACITY_COMPONENT, 0.98F);
 
 	private WorldRenderIntercept() {
 		ShaderRegistry.registerWorldShaderSystem(this);
@@ -39,11 +41,7 @@ public class WorldRenderIntercept implements WorldShaderSystem {
 	}
 
 	public void mapChunkRenderList(int id, WorldRenderer wr) {
-		listMap.put(id, new Coordinate(wr));
-	}
-
-	public Coordinate getRenderChunkForList(int id) {
-		return listMap.get(id);
+		listMap.put(id, wr);
 	}
 
 	public boolean apply(IntBuffer lists) {
@@ -83,12 +81,12 @@ public class WorldRenderIntercept implements WorldShaderSystem {
 			if (f > 0) {
 				s.setIntensity(f);
 				s.getShader().updateEnabled();
-				Coordinate c = instance.getRenderChunkForList(id);
+				WorldRenderer c = listMap.get(id);
 				//ReikaJavaLibrary.pConsole("Running GL list # "+id+" which maps to chunk "+c);
 				if (c != null) {
-					s.getShader().setField("chunkX", c.xCoord);
-					s.getShader().setField("chunkY", c.yCoord);
-					s.getShader().setField("chunkZ", c.zCoord);
+					s.getShader().setField("chunkX", c.posX);
+					s.getShader().setField("chunkY", c.posY);
+					s.getShader().setField("chunkZ", c.posZ);
 				}
 				s.getShader().setTextureUnit("bgl_LightMapTexture", OpenGlHelper.lightmapTexUnit);
 				ShaderRegistry.runShader(s.getShader());
