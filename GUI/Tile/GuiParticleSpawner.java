@@ -58,6 +58,8 @@ public class GuiParticleSpawner extends GuiChromaBase {
 
 	private GuiTextField filename;
 
+	private int selectedIcon = -1;
+
 	private static ArrayList<IconEnum> permittedIcons = new ArrayList();
 
 	public static final int MAX_ICON_ROWS = 6;
@@ -88,7 +90,7 @@ public class GuiParticleSpawner extends GuiChromaBase {
 
 	private static void buildIconList() {
 		permittedIcons.clear();
-		iconButtons.reset();
+		iconButtons.clear();
 		for (int i = 0; i < 16; i++) {
 			permittedIcons.add(CrystalElement.elements[i]);
 			iconButtons.addButton();
@@ -214,6 +216,8 @@ public class GuiParticleSpawner extends GuiChromaBase {
 						b.icon = ico.getIcon();
 						b.iconHeight = b.iconWidth = 16;
 						buttonList.add(b);
+						if (ico == tile.particles.particleIcon)
+							selectedIcon = b.id-100;
 					}
 					i++;
 				}
@@ -316,6 +320,7 @@ public class GuiParticleSpawner extends GuiChromaBase {
 						else if (b.id >= 100) {
 							int idx = b.id-100;
 							tile.particles.particleIcon = permittedIcons.get(idx);
+							selectedIcon = idx;
 						}
 						break;
 					case TIMING:
@@ -635,6 +640,20 @@ public class GuiParticleSpawner extends GuiChromaBase {
 
 		if (page == GuiPage.SAVELOAD)
 			filename.textboxKeyTyped(c, i);
+	}
+
+	@Override
+	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
+		super.drawGuiContainerForegroundLayer(par1, par2);
+
+		if (page == GuiPage.ICON) {
+			int[] pos = iconButtons.getPositionOf(selectedIcon);
+			if (pos != null) {
+				int s = 18;
+				int s2 = s+3;
+				api.drawRectFrame(28+pos[0]*s2, 19+pos[1]*s2, s, s, ReikaColorAPI.mixColors(0xff00ff, 0x22aaff, 0.5F+0.5F*(float)Math.sin(System.currentTimeMillis()/300D)));
+			}
+		}
 	}
 
 	@Override

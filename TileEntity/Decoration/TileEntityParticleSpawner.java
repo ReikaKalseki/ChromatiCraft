@@ -42,6 +42,8 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 
 	public ParticleDefinition particles = new ParticleDefinition();
 
+	public float renderOpacity = 1F;
+
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.PARTICLES;
@@ -49,8 +51,9 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (world.isRemote && !this.hasRedstoneSignal()) {
-			this.spawnParticles(world, x, y, z);
+		if (world.isRemote) {
+			if (!this.hasRedstoneSignal())
+				this.spawnParticles(world, x, y, z);
 		}
 	}
 

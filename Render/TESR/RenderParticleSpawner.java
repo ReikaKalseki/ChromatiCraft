@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -11,17 +11,22 @@ package Reika.ChromatiCraft.Render.TESR;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.client.MinecraftForgeClient;
 
+import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityParticleSpawner;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
 public class RenderParticleSpawner extends ChromaRenderBase {
@@ -35,7 +40,28 @@ public class RenderParticleSpawner extends ChromaRenderBase {
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		TileEntityParticleSpawner te = (TileEntityParticleSpawner)tile;
 
-		if (te.isInWorld() && MinecraftForgeClient.getRenderPass() != 1)
+		if (te.isInWorld()) {
+			if (MinecraftForgeClient.getRenderPass() != 1)
+				return;
+			boolean flag = false;
+			if (HoldingChecks.MANIPULATOR.isClientHolding()) {
+				flag = true;
+			}
+			else if (Minecraft.getMinecraft().thePlayer.getDistanceSq(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5) <= 21) {
+				MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlockClient(4.5, false);
+				if (mov != null && mov.blockX == te.xCoord && mov.blockY == te.yCoord && mov.blockZ == te.zCoord) {
+					flag = true;
+				}
+			}
+			if (flag) {
+				te.renderOpacity = Math.min(1, te.renderOpacity+0.125F);
+			}
+			else {
+				te.renderOpacity = Math.max(0, te.renderOpacity-0.025F);
+			}
+		}
+
+		if (te.renderOpacity <= 0)
 			return;
 
 		GL11.glPushMatrix();
@@ -88,9 +114,9 @@ public class RenderParticleSpawner extends ChromaRenderBase {
 			v5.setBrightness(240);
 
 			if (n >= 1)
-				v5.setColorRGBA_I(0x3f3f3f, 128);
+				v5.setColorRGBA_I(ReikaColorAPI.getColorWithBrightnessMultiplier(0x3f3f3f, te.renderOpacity), 128);
 			else
-				v5.setColorOpaque_I(0xffffff);
+				v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(0xffffff, te.renderOpacity));
 
 			double o = 0.4375;
 			double i = 0.3125;
