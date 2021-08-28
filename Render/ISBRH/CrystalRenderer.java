@@ -18,6 +18,8 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
+import Reika.ChromatiCraft.Base.CrystalBlock;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Base.ISBRH;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
@@ -51,25 +53,25 @@ public class CrystalRenderer extends ISBRH {
 		v5.startDrawingQuads();
 		v5.setNormal(0, 0.8F, 0);
 		v5.setColorRGBA_I(color, alpha);
-		this.renderSpike(v5, u, v, xu, xv, w);
+		this.renderSpike(v5, u, v, xu, xv, w, false);
 		v5.draw();
 
 		v5.startDrawingQuads();
 		//v5.setBrightness(240);
 		v5.setNormal(0, 0.5F, 0);
 		v5.setColorRGBA_I(color, alpha);
-		this.renderXAngledSpike(u, v, xu, xv, 0.1875, w);
+		this.renderXAngledSpike(u, v, xu, xv, 0.1875, w, false);
 		if (renderAllArmsInInventory)
-			this.renderXAngledSpike(u, v, xu, xv, -0.1875, w);
+			this.renderXAngledSpike(u, v, xu, xv, -0.1875, w, false);
 		v5.draw();
 
 		v5.startDrawingQuads();
 		//v5.setBrightness(240);
 		v5.setNormal(0, 0.5F, 0);
 		v5.setColorRGBA_I(color, alpha);
-		this.renderZAngledSpike(u, v, xu, xv, 0.1875, w);
+		this.renderZAngledSpike(u, v, xu, xv, 0.1875, w, false);
 		if (renderAllArmsInInventory)
-			this.renderZAngledSpike(u, v, xu, xv, -0.1875, w);
+			this.renderZAngledSpike(u, v, xu, xv, -0.1875, w, false);
 		v5.draw();
 		//GL11.glEnable(GL11.GL_LIGHTING);
 
@@ -127,6 +129,9 @@ public class CrystalRenderer extends ISBRH {
 
 		int l = b.getMixedBrightnessForBlock(world, x, y, z);
 
+		boolean above = world.getBlock(x, y+1, z) == ChromaBlocks.CRYSTAL.getBlockInstance();
+		boolean below = !((CrystalRenderedBlock)b).renderBase() && world.getBlock(x, y-1, z) instanceof CrystalBlock;
+
 		//v5.setBrightness(rb.renderMaxY < 1.0D ? l : b.getMixedBrightnessForBlock(world, x, y+1, z));
 		v5.setBrightness(240);
 		v5.addTranslation(x, y, z);
@@ -135,18 +140,18 @@ public class CrystalRenderer extends ISBRH {
 		int w = ico.getIconWidth();
 
 		if (renderPass == 1) {
-			this.renderSpike(v5, u, v, xu, xv, w);
+			this.renderSpike(v5, u, v, xu, xv, w, above);
 			int val = Math.abs(x)%9+Math.abs(z)%9; //16 combos -> binary selector
 			if (val > 15 || ((CrystalRenderedBlock)b).renderAllArms())
 				val = 15;
 			if ((val & 8) == 8)
-				this.renderXAngledSpike(u, v, xu, xv, 0.1875, w); //8,9,10,11,12,13,14,15
+				this.renderXAngledSpike(u, v, xu, xv, 0.1875, w, below); //8,9,10,11,12,13,14,15
 			if ((val & 4) == 4)
-				this.renderXAngledSpike(u, v, xu, xv, -0.1875, w); //4,5,6,7,12,13,14,15
+				this.renderXAngledSpike(u, v, xu, xv, -0.1875, w, below); //4,5,6,7,12,13,14,15
 			if ((val & 2) == 2)
-				this.renderZAngledSpike(u, v, xu, xv, 0.1875, w); //2,3,6,7,10,11,14,15
+				this.renderZAngledSpike(u, v, xu, xv, 0.1875, w, below); //2,3,6,7,10,11,14,15
 			if ((val & 1) == 1)
-				this.renderZAngledSpike(u, v, xu, xv, -0.1875, w); //1,3,5,7,9,11,13,15
+				this.renderZAngledSpike(u, v, xu, xv, -0.1875, w, below); //1,3,5,7,9,11,13,15
 
 			v5.setColorOpaque_I(0xffffff);
 			//this.renderWater(world, x, y, z, b, meta, v5);
@@ -321,30 +326,32 @@ public class CrystalRenderer extends ISBRH {
 		v5.addVertexWithUV(0.5+dd, tip+dd, 0.5, 0, 0);
 	}
 
-	private void renderSpike(Tessellator v5, double u, double v, double xu, double xv, int w) {
+	private void renderSpike(Tessellator v5, double u, double v, double xu, double xv, int w, boolean above) {
 		double core = 0.15;
-		double vl = 0.8;
+		double vl = above ? 1 : 0.8;
 
-		// Top point
-		v5.addVertexWithUV(0.5-core, vl, 0.5-core, u, v);
-		v5.addVertexWithUV(0.5-core, vl, 0.5+core, xu, v);
-		v5.addVertexWithUV(0.5, 1, 0.5, xu, xv);
-		v5.addVertexWithUV(0.5, 1, 0.5, xu, xv);
+		if (!above) {
+			// Top point
+			v5.addVertexWithUV(0.5-core, vl, 0.5-core, u, v);
+			v5.addVertexWithUV(0.5-core, vl, 0.5+core, xu, v);
+			v5.addVertexWithUV(0.5, 1, 0.5, xu, xv);
+			v5.addVertexWithUV(0.5, 1, 0.5, xu, xv);
 
-		v5.addVertexWithUV(0.5-core, vl, 0.5+core, u, v);
-		v5.addVertexWithUV(0.5+core, vl, 0.5+core, xu, v);
-		v5.addVertexWithUV(0.5, 1, 0.5, xu, xv);
-		v5.addVertexWithUV(0.5, 1, 0.5, xu, xv);
+			v5.addVertexWithUV(0.5-core, vl, 0.5+core, u, v);
+			v5.addVertexWithUV(0.5+core, vl, 0.5+core, xu, v);
+			v5.addVertexWithUV(0.5, 1, 0.5, xu, xv);
+			v5.addVertexWithUV(0.5, 1, 0.5, xu, xv);
 
-		v5.addVertexWithUV(0.5, 1, 0.5, u, xv);
-		v5.addVertexWithUV(0.5, 1, 0.5, xu, xv);
-		v5.addVertexWithUV(0.5+core, vl, 0.5+core, xu, v);
-		v5.addVertexWithUV(0.5+core, vl, 0.5-core, u, v);
+			v5.addVertexWithUV(0.5, 1, 0.5, u, xv);
+			v5.addVertexWithUV(0.5, 1, 0.5, xu, xv);
+			v5.addVertexWithUV(0.5+core, vl, 0.5+core, xu, v);
+			v5.addVertexWithUV(0.5+core, vl, 0.5-core, u, v);
 
-		v5.addVertexWithUV(0.5, 1, 0.5, u, xv);
-		v5.addVertexWithUV(0.5, 1, 0.5, xu, xv);
-		v5.addVertexWithUV(0.5+core, vl, 0.5-core, xu, v);
-		v5.addVertexWithUV(0.5-core, vl, 0.5-core, u, v);
+			v5.addVertexWithUV(0.5, 1, 0.5, u, xv);
+			v5.addVertexWithUV(0.5, 1, 0.5, xu, xv);
+			v5.addVertexWithUV(0.5+core, vl, 0.5-core, xu, v);
+			v5.addVertexWithUV(0.5-core, vl, 0.5-core, u, v);
+		}
 
 		xv -= (xv-v)/w;
 		v += (xv-v)/(w*1.2);
@@ -379,7 +386,7 @@ public class CrystalRenderer extends ISBRH {
 		v5.addVertexWithUV(0.5-core, 0, 0.5-core, u, v);
 	}
 
-	private void renderXAngledSpike(double u, double v, double xu, double xv, double out, int w) {
+	private void renderXAngledSpike(double u, double v, double xu, double xv, double out, int w, boolean below) {
 		double core = 0.12;
 		double vl = 0.55;
 		double dvl = vl/6D;
@@ -447,11 +454,11 @@ public class CrystalRenderer extends ISBRH {
 		v5.render();
 	}
 
-	private void renderZAngledSpike(double u, double v, double xu, double xv, double out, int w) {
+	private void renderZAngledSpike(double u, double v, double xu, double xv, double out, int w, boolean below) {
 		double core = 0.12;
 		double vl = 0.55;
 		double dvl = vl/6D;
-		double dy = -0.1;
+		double dy = below ? 0.1 : -0.1;
 		double tout = out;//0.1875;
 		double htip = 0.1;
 		int dir = out > 0 ? 1 : -1;
@@ -483,32 +490,44 @@ public class CrystalRenderer extends ISBRH {
 		u += (xu-u)/(w*2);
 		xu -= (xu-u)/(w*2);
 
+		double ds = 3;
+		double ds2 = ds;
+		double dvl2 = dvl;
+		double dvl3 = dvl;
+		if (below) {
+			ds2 = 1;
+			dvl2 *= 5;
+			dvl3 *= 1.5;
+		}
+
 		//panels
-		v5.addVertexWithUV(0.5-core, dy+dvl, 0.5+core*dir, u, v);
-		v5.addVertexWithUV(0.5-core, dy+0, 0.5+core*dir*3, xu, v);
-		v5.addVertexWithUV(0.5-core, dy+vl, 0.5+core*dir*3+out, xu, xv);
-		v5.addVertexWithUV(0.5-core, dy+vl+dvl, 0.5+core*dir+out, u, xv);
+		v5.addVertexWithUV(0.5-core, dy+dvl2, 0.5+core*dir, u, v);
+		v5.addVertexWithUV(0.5-core, dy+0, 0.5+core*dir*ds2, xu, v);
+		v5.addVertexWithUV(0.5-core, dy+vl, 0.5+core*dir*ds+out, xu, xv);
+		v5.addVertexWithUV(0.5-core, dy+vl+dvl3, 0.5+core*dir+out, u, xv);
 
-		v5.addVertexWithUV(0.5+core, dy+vl+dvl, 0.5+core*dir+out, u, xv);
-		v5.addVertexWithUV(0.5+core, dy+vl, 0.5+core*dir*3+out, xu, xv);
-		v5.addVertexWithUV(0.5+core, dy+0, 0.5+core*dir*3, xu, v);
-		v5.addVertexWithUV(0.5+core, dy+dvl, 0.5+core*dir, u, v);
+		v5.addVertexWithUV(0.5+core, dy+vl+dvl3, 0.5+core*dir+out, u, xv);
+		v5.addVertexWithUV(0.5+core, dy+vl, 0.5+core*dir*ds+out, xu, xv);
+		v5.addVertexWithUV(0.5+core, dy+0, 0.5+core*dir*ds2, xu, v);
+		v5.addVertexWithUV(0.5+core, dy+dvl2, 0.5+core*dir, u, v);
 
-		v5.addVertexWithUV(0.5-core, dy+vl+dvl, 0.5+core*dir+out, u, xv);
-		v5.addVertexWithUV(0.5+core, dy+vl+dvl, 0.5+core*dir+out, xu, xv);
-		v5.addVertexWithUV(0.5+core, dy+dvl, 0.5+core*dir, xu, v);
-		v5.addVertexWithUV(0.5-core, dy+dvl, 0.5+core*dir, u, v);
+		v5.addVertexWithUV(0.5-core, dy+vl+dvl3, 0.5+core*dir+out, u, xv);
+		v5.addVertexWithUV(0.5+core, dy+vl+dvl3, 0.5+core*dir+out, xu, xv);
+		v5.addVertexWithUV(0.5+core, dy+dvl2, 0.5+core*dir, xu, v);
+		v5.addVertexWithUV(0.5-core, dy+dvl2, 0.5+core*dir, u, v);
 
-		v5.addVertexWithUV(0.5-core, dy, 0.5+core*dir*3, u, v);
-		v5.addVertexWithUV(0.5+core, dy, 0.5+core*dir*3, xu, v);
-		v5.addVertexWithUV(0.5+core, dy+vl, 0.5+core*dir*3+out, xu, xv);
-		v5.addVertexWithUV(0.5-core, dy+vl, 0.5+core*dir*3+out, u, xv);
+		v5.addVertexWithUV(0.5-core, dy, 0.5+core*dir*ds2, u, v);
+		v5.addVertexWithUV(0.5+core, dy, 0.5+core*dir*ds2, xu, v);
+		v5.addVertexWithUV(0.5+core, dy+vl, 0.5+core*dir*ds+out, xu, xv);
+		v5.addVertexWithUV(0.5-core, dy+vl, 0.5+core*dir*ds+out, u, xv);
 
-		//base
-		v5.addVertexWithUV(0.5-core, dy+dvl+0.0025, 0.5-core*dir*3+out*2.56, u, xv);
-		v5.addVertexWithUV(0.5+core, dy+dvl+0.0025, 0.5-core*dir*3+out*2.56, xu, xv);
-		v5.addVertexWithUV(0.5+core, dy, 0.5+core*dir*3, xu, v);
-		v5.addVertexWithUV(0.5-core, dy, 0.5+core*dir*3, u, v);
+		if (!below) {
+			//base
+			v5.addVertexWithUV(0.5-core, dy+dvl+0.0025, 0.5-core*dir*3+out*2.56, u, xv);
+			v5.addVertexWithUV(0.5+core, dy+dvl+0.0025, 0.5-core*dir*3+out*2.56, xu, xv);
+			v5.addVertexWithUV(0.5+core, dy, 0.5+core*dir*ds, xu, v);
+			v5.addVertexWithUV(0.5-core, dy, 0.5+core*dir*ds, u, v);
+		}
 
 		if (out < 0)
 			v5.reverse();
