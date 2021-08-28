@@ -139,9 +139,13 @@ public class CrystalRenderer extends ISBRH {
 
 		int w = ico.getIconWidth();
 
+		rand.setSeed(this.calcSeed(x, y, z));
+		rand.nextBoolean();
+		rand.nextBoolean();
+
 		if (renderPass == 1) {
 			this.renderSpike(v5, u, v, xu, xv, w, above);
-			int val = Math.abs(x)%9+Math.abs(z)%9; //16 combos -> binary selector
+			int val = rand.nextInt(16);//((x*3+y+z*7)%16+16)%16; //16 combos -> binary selector
 			if (val > 15 || ((CrystalRenderedBlock)b).renderAllArms())
 				val = 15;
 			if ((val & 8) == 8)
@@ -390,7 +394,7 @@ public class CrystalRenderer extends ISBRH {
 		double core = 0.12;
 		double vl = 0.55;
 		double dvl = vl/6D;
-		double dy = -0.05;
+		double dy = below ? 0.15 : -0.05;
 		double tout = out;
 		double htip = 0.1;
 		int dir = out > 0 ? 1 : -1;
@@ -422,32 +426,46 @@ public class CrystalRenderer extends ISBRH {
 		u += (xu-u)/(w*2);
 		xu -= (xu-u)/(w*2);
 
+		double ds = 3;
+		double ds2 = ds;
+		double ddy = 0;
+		double dvl2 = dvl;
+		double dvl3 = dvl;
+		if (below) {
+			ds2 = 1;
+			ddy = Math.abs(core*dir);
+			dvl2 *= 4;
+			//dvl3 *= 1.5;
+		}
+
 		//panels
-		v5.addVertexWithUV(0.5+core*dir, dy+dvl, 0.5-core, u, v);
-		v5.addVertexWithUV(0.5+core*dir*3, dy+0, 0.5-core, xu, v);
-		v5.addVertexWithUV(0.5+core*dir*3+out, dy+vl, 0.5-core, xu, xv);
-		v5.addVertexWithUV(0.5+core*dir+out, dy+vl+dvl, 0.5-core, u, xv);
+		v5.addVertexWithUV(0.5+core*dir, dy+dvl2, 0.5-core, u, v);
+		v5.addVertexWithUV(0.5+core*dir*ds2, dy-ddy, 0.5-core, xu, v);
+		v5.addVertexWithUV(0.5+core*dir*ds+out, dy+vl, 0.5-core, xu, xv);
+		v5.addVertexWithUV(0.5+core*dir+out, dy+vl+dvl3, 0.5-core, u, xv);
 
-		v5.addVertexWithUV(0.5+core*dir+out, dy+vl+dvl, 0.5+core, u, xv);
-		v5.addVertexWithUV(0.5+core*dir*3+out, dy+vl, 0.5+core, xu, xv);
-		v5.addVertexWithUV(0.5+core*dir*3, dy+0, 0.5+core, xu, v);
-		v5.addVertexWithUV(0.5+core*dir, dy+dvl, 0.5+core, u, v);
+		v5.addVertexWithUV(0.5+core*dir+out, dy+vl+dvl3, 0.5+core, u, xv);
+		v5.addVertexWithUV(0.5+core*dir*ds+out, dy+vl, 0.5+core, xu, xv);
+		v5.addVertexWithUV(0.5+core*dir*ds2, dy-ddy, 0.5+core, xu, v);
+		v5.addVertexWithUV(0.5+core*dir, dy+dvl2, 0.5+core, u, v);
 
-		v5.addVertexWithUV(0.5+core*dir+out, dy+vl+dvl, 0.5-core, u, xv);
-		v5.addVertexWithUV(0.5+core*dir+out, dy+vl+dvl, 0.5+core, xu, xv);
-		v5.addVertexWithUV(0.5+core*dir, dy+dvl, 0.5+core, xu, v);
-		v5.addVertexWithUV(0.5+core*dir, dy+dvl, 0.5-core, u, v);
+		v5.addVertexWithUV(0.5+core*dir+out, dy+vl+dvl3, 0.5-core, u, xv);
+		v5.addVertexWithUV(0.5+core*dir+out, dy+vl+dvl3, 0.5+core, xu, xv);
+		v5.addVertexWithUV(0.5+core*dir, dy+dvl2, 0.5+core, xu, v);
+		v5.addVertexWithUV(0.5+core*dir, dy+dvl2, 0.5-core, u, v);
 
-		v5.addVertexWithUV(0.5+core*dir*3, dy, 0.5-core, u, v);
-		v5.addVertexWithUV(0.5+core*dir*3, dy, 0.5+core, xu, v);
-		v5.addVertexWithUV(0.5+core*dir*3+out, dy+vl, 0.5+core, xu, xv);
-		v5.addVertexWithUV(0.5+core*dir*3+out, dy+vl, 0.5-core, u, xv);
+		v5.addVertexWithUV(0.5+core*dir*ds2, dy-ddy, 0.5-core, u, v);
+		v5.addVertexWithUV(0.5+core*dir*ds2, dy-ddy, 0.5+core, xu, v);
+		v5.addVertexWithUV(0.5+core*dir*ds+out, dy+vl, 0.5+core, xu, xv);
+		v5.addVertexWithUV(0.5+core*dir*ds+out, dy+vl, 0.5-core, u, xv);
 
-		//base
-		v5.addVertexWithUV(0.5-core*dir*3+out*2.56, dy+dvl, 0.5-core, u, xv);
-		v5.addVertexWithUV(0.5-core*dir*3+out*2.56, dy+dvl, 0.5+core, xu, xv);
-		v5.addVertexWithUV(0.5+core*dir*3, dy, 0.5+core, xu, v);
-		v5.addVertexWithUV(0.5+core*dir*3, dy, 0.5-core, u, v);
+		if (!below) {
+			//base
+			v5.addVertexWithUV(0.5-core*dir*ds+out*2.56, dy+dvl, 0.5-core, u, xv);
+			v5.addVertexWithUV(0.5-core*dir*ds+out*2.56, dy+dvl, 0.5+core, xu, xv);
+			v5.addVertexWithUV(0.5+core*dir*ds, dy, 0.5+core, xu, v);
+			v5.addVertexWithUV(0.5+core*dir*ds, dy, 0.5-core, u, v);
+		}
 
 		if (out > 0)
 			v5.reverse();
@@ -492,23 +510,25 @@ public class CrystalRenderer extends ISBRH {
 
 		double ds = 3;
 		double ds2 = ds;
+		double ddy = 0;
 		double dvl2 = dvl;
 		double dvl3 = dvl;
 		if (below) {
 			ds2 = 1;
-			dvl2 *= 5;
-			dvl3 *= 1.5;
+			ddy = Math.abs(core*dir);
+			dvl2 *= 4;
+			//dvl3 *= 1.5;
 		}
 
 		//panels
 		v5.addVertexWithUV(0.5-core, dy+dvl2, 0.5+core*dir, u, v);
-		v5.addVertexWithUV(0.5-core, dy+0, 0.5+core*dir*ds2, xu, v);
+		v5.addVertexWithUV(0.5-core, dy-ddy, 0.5+core*dir*ds2, xu, v);
 		v5.addVertexWithUV(0.5-core, dy+vl, 0.5+core*dir*ds+out, xu, xv);
 		v5.addVertexWithUV(0.5-core, dy+vl+dvl3, 0.5+core*dir+out, u, xv);
 
 		v5.addVertexWithUV(0.5+core, dy+vl+dvl3, 0.5+core*dir+out, u, xv);
 		v5.addVertexWithUV(0.5+core, dy+vl, 0.5+core*dir*ds+out, xu, xv);
-		v5.addVertexWithUV(0.5+core, dy+0, 0.5+core*dir*ds2, xu, v);
+		v5.addVertexWithUV(0.5+core, dy-ddy, 0.5+core*dir*ds2, xu, v);
 		v5.addVertexWithUV(0.5+core, dy+dvl2, 0.5+core*dir, u, v);
 
 		v5.addVertexWithUV(0.5-core, dy+vl+dvl3, 0.5+core*dir+out, u, xv);
@@ -516,15 +536,15 @@ public class CrystalRenderer extends ISBRH {
 		v5.addVertexWithUV(0.5+core, dy+dvl2, 0.5+core*dir, xu, v);
 		v5.addVertexWithUV(0.5-core, dy+dvl2, 0.5+core*dir, u, v);
 
-		v5.addVertexWithUV(0.5-core, dy, 0.5+core*dir*ds2, u, v);
-		v5.addVertexWithUV(0.5+core, dy, 0.5+core*dir*ds2, xu, v);
+		v5.addVertexWithUV(0.5-core, dy-ddy, 0.5+core*dir*ds2, u, v);
+		v5.addVertexWithUV(0.5+core, dy-ddy, 0.5+core*dir*ds2, xu, v);
 		v5.addVertexWithUV(0.5+core, dy+vl, 0.5+core*dir*ds+out, xu, xv);
 		v5.addVertexWithUV(0.5-core, dy+vl, 0.5+core*dir*ds+out, u, xv);
 
 		if (!below) {
 			//base
-			v5.addVertexWithUV(0.5-core, dy+dvl+0.0025, 0.5-core*dir*3+out*2.56, u, xv);
-			v5.addVertexWithUV(0.5+core, dy+dvl+0.0025, 0.5-core*dir*3+out*2.56, xu, xv);
+			v5.addVertexWithUV(0.5-core, dy+dvl+0.0025, 0.5-core*dir*ds+out*2.56, u, xv);
+			v5.addVertexWithUV(0.5+core, dy+dvl+0.0025, 0.5-core*dir*ds+out*2.56, xu, xv);
 			v5.addVertexWithUV(0.5+core, dy, 0.5+core*dir*ds, xu, v);
 			v5.addVertexWithUV(0.5-core, dy, 0.5+core*dir*ds, u, v);
 		}
