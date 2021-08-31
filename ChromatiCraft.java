@@ -659,6 +659,9 @@ public class ChromatiCraft extends DragonAPIMod {
 		FMLInterModComms.sendMessage("aura", "lootblacklist", ChromaItems.FRAGMENT.getStackOf());
 		FMLInterModComms.sendMessage("aura", "lootblacklist", ChromaItems.SHARD.getStackOf());
 
+		FMLInterModComms.sendMessage(ModList.ARSMAGICA.modLabel, "dsb", "EntityDryad|"+ExtraChromaIDs.DIMID.getValue());
+		FMLInterModComms.sendMessage(ModList.ARSMAGICA.modLabel, "dwg", String.valueOf(ExtraChromaIDs.DIMID.getValue()));
+
 		FMLInterModComms.sendMessage("Randomod", "blacklist", this.getModContainer().getModId());
 
 		ModInteraction.addMicroblocks();

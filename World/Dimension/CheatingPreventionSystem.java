@@ -143,7 +143,6 @@ public class CheatingPreventionSystem {
 			BanReaction r = this.getReaction(held);
 			if (r != null && r.reactsToTick()) {
 				r.perform(ep, held, -1);
-				this.punishCheatingPlayer(ep);
 			}
 		}
 	}

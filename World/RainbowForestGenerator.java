@@ -19,6 +19,8 @@ import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.World.IWG.ColorTreeGenerator;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.Math.Noise.Simplex3DGenerator;
+import Reika.DragonAPI.Instantiable.Math.Noise.VoronoiNoiseGenerator;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -31,6 +33,11 @@ public class RainbowForestGenerator extends WorldGenerator {
 	private static final float FERTILE_VINE_CHANCE_FACTOR = 0.12F;//0.1F;
 
 	//private static Simplex3DGenerator colorOffsetNoise;
+	private static final long root = 34897534781342377L;
+	private static final Simplex3DGenerator extraX = (Simplex3DGenerator)new Simplex3DGenerator(4587 ^ root).setFrequency(1/8D);
+	private static final Simplex3DGenerator extraY = (Simplex3DGenerator)new Simplex3DGenerator(-3735 ^ root).setFrequency(1/8D);
+	private static final Simplex3DGenerator extraZ = (Simplex3DGenerator)new Simplex3DGenerator(823741 ^ root).setFrequency(1/8D);
+	private static final VoronoiNoiseGenerator colorNoise = (VoronoiNoiseGenerator)new VoronoiNoiseGenerator(83745 ^ root).setFrequency(1/20D).setDisplacement(extraX, extraY, extraZ, 6);
 
 	@Override
 	public boolean generate(World world, Random random, int x, int y, int z) {
@@ -86,9 +93,11 @@ public class RainbowForestGenerator extends WorldGenerator {
 		if (colorOffsetNoise == null || colorOffsetNoise.seed != world.getSeed()) {
 			colorOffsetNoise = (Simplex3DGenerator)new Simplex3DGenerator(world.getSeed()).setFrequency(1/60D);
 		}*/
-		int idx = (Math.abs(x/16)+y+Math.abs(z/16));
+		//int idx = (Math.abs(x/16)+y+Math.abs(z/16));
 		//idx += ReikaMathLibrary.normalizeToBounds(colorOffsetNoise.getValue(idx, y, z), 0, 16);
-		return ReikaDyeHelper.dyes[(idx+16)%16];
+		//return ReikaDyeHelper.dyes[(idx+16)%16];
+		colorNoise.randomFactor = 0.45;
+		return ReikaDyeHelper.dyes[(colorNoise.getClosestRoot(x, y, z).hashCode()%16+16)%16];
 	}
 
 }

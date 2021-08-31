@@ -260,6 +260,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ArsMagicaHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.IC2RubberLogHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler;
@@ -270,6 +271,8 @@ import Reika.VoidMonster.API.VoidMonsterEatLightEvent;
 import Reika.VoidMonster.Entity.EntityVoidMonster;
 
 import WayofTime.alchemicalWizardry.api.event.TeleposeEvent;
+import am2.api.events.SpellCastingEvent;
+import am2.api.spell.component.interfaces.ISpellComponent;
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -2062,6 +2065,28 @@ public class ChromaticEventManager {
 			List<Entity> li2 = evt.finalWorld.getEntitiesWithinAABB(Entity.class, box2);
 			if (!li.isEmpty() || !li2.isEmpty())
 				evt.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	@ModDependent(ModList.ARSMAGICA)
+	public void filterSpells(SpellCastingEvent.Pre evt) {
+		if (evt.caster.worldObj.provider.dimensionId != ExtraChromaIDs.DIMID.getValue())
+			return;
+		ISpellComponent[] components = ArsMagicaHandler.getInstance().getSpellComponents(evt.stack);
+		if (components == null)
+			return;
+		boolean flag = false;
+		for (ISpellComponent c : components) {
+			String n = c.getClass().getName();
+			if (n.endsWith("Recall") || n.contains("Teleport") || n.endsWith("EnderIntervention")) {
+				flag = true;
+				break;
+			}
+		}
+		if (flag) {
+			ChromaSounds.ERROR.playSound(evt.caster);
+			evt.setCanceled(true);
 		}
 	}
 

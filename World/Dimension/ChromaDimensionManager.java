@@ -532,6 +532,8 @@ public class ChromaDimensionManager {
 	public static boolean isDisallowedEntity(Entity e) {
 		if (ModList.THAUMCRAFT.isLoaded() && isThaumEvilMob(e))
 			return true;
+		if (ModList.ARSMAGICA.isLoaded() && e.getClass().getName().endsWith("EntityDryad"))
+			return true;
 		return false;
 	}
 

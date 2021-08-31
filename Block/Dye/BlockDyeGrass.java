@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.World.RainbowForestGenerator;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 
+@Deprecated
 public class BlockDyeGrass extends BlockGrass {
 
 	public BlockDyeGrass() {
