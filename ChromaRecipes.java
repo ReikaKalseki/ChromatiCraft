@@ -59,7 +59,7 @@ public class ChromaRecipes {
 
 		for (int i = 0; i < ReikaDyeHelper.dyes.length; i++) {
 			ItemStack berry = ChromaItems.BERRY.getStackOfMetadata(i);
-			ItemStack dye = ChromaOptions.isVanillaDyeMoreCommon() ? new ItemStack(Items.dye, 2, i) : ChromaItems.DYE.getCraftedMetadataProduct(2, i);
+			ItemStack dye = ChromaOptions.isVanillaDyeMoreCommon(i) ? new ItemStack(Items.dye, 2, i) : ChromaItems.DYE.getCraftedMetadataProduct(2, i);
 			GameRegistry.addShapelessRecipe(dye, berry);
 		}
 

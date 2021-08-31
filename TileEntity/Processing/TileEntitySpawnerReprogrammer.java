@@ -9,7 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Processing;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
@@ -40,7 +40,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered implements OperationInterval {
 
 	private String selectedMob;
-	private static final ArrayList<String> disallowedMobs = new ArrayList();
+	private static final HashSet<String> disallowedMobs = new HashSet();
 
 	private StepTimer progress = new StepTimer(180);
 	public int progressTimer;
@@ -161,6 +161,31 @@ public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered imple
 		addDisallowedMob("witchery.corpse");
 		addDisallowedMob("witchery.eye");
 		addDisallowedMob("witchery.attackbat");
+		addDisallowedMob("DraconicEvolution.ChaosGuardian");
+		addDisallowedMob("customnpcs.npchumanmale");
+		addDisallowedMob("customnpcs.npcvillager");
+		addDisallowedMob("customnpcs.npcpony");
+		addDisallowedMob("customnpcs.npchumanfemale");
+		addDisallowedMob("customnpcs.npcdwarfmale");
+		addDisallowedMob("customnpcs.npcfurrymale");
+		addDisallowedMob("customnpcs.npczombiemale");
+		addDisallowedMob("customnpcs.npczombiefemale");
+		addDisallowedMob("customnpcs.npcskeleton");
+		addDisallowedMob("customnpcs.npcdwarffemale");
+		addDisallowedMob("customnpcs.npcfurryfemale");
+		addDisallowedMob("customnpcs.npcorcfmale");
+		addDisallowedMob("customnpcs.npcorcfemale");
+		addDisallowedMob("customnpcs.npcelfmale");
+		addDisallowedMob("customnpcs.npcelffemale");
+		addDisallowedMob("customnpcs.npccrystal");
+		addDisallowedMob("customnpcs.npcenderchibi");
+		addDisallowedMob("customnpcs.npcnagamale");
+		addDisallowedMob("customnpcs.npcnagafemale");
+		addDisallowedMob("customnpcs.NpcSlime");
+		addDisallowedMob("customnpcs.NpcDragon");
+		addDisallowedMob("customnpcs.npcEnderman");
+		addDisallowedMob("customnpcs.npcGolem");
+		addDisallowedMob("customnpcs.CustomNpc");
 	}
 
 	@Override
@@ -172,7 +197,7 @@ public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered imple
 		disallowedMobs.add(name);
 	}
 
-	private static void addDisallowedMob(Class <?extends EntityLiving> name) {
+	private static void addDisallowedMob(Class <? extends EntityLiving> name) {
 		addDisallowedMob((String)EntityList.classToStringMapping.get(name));
 	}
 

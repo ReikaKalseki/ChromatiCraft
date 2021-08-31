@@ -42,7 +42,7 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	GUARDCHUNK("Guardian Stone is Full Chunk Height", false),
 	BLOCKPARTICLES("Dye Block Particles", true),
 	ETHEREAL("Generate Anti-Taint plants in Rainbow Forest", true),
-	DYEFRAC("Vanilla Dye Drop Percentage", 100),
+	//DYEFRAC("Vanilla Dye Drop Percentage", 100),
 	ANIMALSPAWN("Rainbow Forest Animal Density", 6),
 	RAINBOWSPREAD("Rainbow Trees Spread Rainbow Forests", true),
 	ENDERCOLORING("Ender Forest Coloring", false),
@@ -227,16 +227,20 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 		return Math.max(minValue, (int)(defaultValue/f));
 	}
 
-	public static boolean doesVanillaDyeDrop() {
-		return DYEFRAC.getValue() > 0;
+	public static boolean doesVanillaDyeDrop(CrystalElement e) {
+		return ChromatiCraft.config.getVanillaDyeChance(e) > 0;
 	}
 
-	public static boolean doesTreeDyeDrop() {
-		return DYEFRAC.getValue() < 100;
+	public static boolean doesTreeDyeDrop(CrystalElement e) {
+		return ChromatiCraft.config.getVanillaDyeChance(e) < 100;
 	}
 
-	public static boolean isVanillaDyeMoreCommon() {
-		return DYEFRAC.getValue() > 50;
+	public static boolean isVanillaDyeMoreCommon(int i) {
+		return ChromatiCraft.config.getVanillaDyeChance(i) > 50;
+	}
+
+	public static boolean isVanillaDyeMoreCommon(CrystalElement e) {
+		return ChromatiCraft.config.getVanillaDyeChance(e) > 50;
 	}
 
 	public static float getRainbowLeafGoldAppleDropChance() {

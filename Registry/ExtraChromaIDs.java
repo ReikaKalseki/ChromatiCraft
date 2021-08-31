@@ -89,11 +89,6 @@ public enum ExtraChromaIDs implements IDRegistry {
 		return ChromatiCraft.config.getOtherID(this.ordinal());
 	}
 
-	@Override
-	public String getConfigName() {
-		return this.getName();
-	}
-
 	public boolean isDummiedOut() {
 		return type == null;
 	}

@@ -15,6 +15,7 @@ import java.util.HashSet;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
 import Reika.DragonAPI.Base.DragonAPIMod;
@@ -33,6 +34,7 @@ public class ChromaConfig extends ControlledConfig {
 	private static final int treeLength = modTrees.size();
 	private static final int vanillaTreeCount = ReikaTreeHelper.treeList.length;
 	private final DataElement<Boolean>[] trees = new DataElement[treeLength+vanillaTreeCount];
+	private final DataElement<Float>[] dyeChances = new DataElement[ReikaJavaLibrary.getEnumLengthWithoutInitializing(CrystalElement.class)];
 	private DataElement<String[]> guardianExceptions;
 	private Key superbuildKey;
 
@@ -49,6 +51,11 @@ public class ChromaConfig extends ControlledConfig {
 		for (int i = 0; i < treeLength; i++) {
 			String name = modTrees.get(i);
 			trees[i+vanillaTreeCount] = this.registerAdditionalOption("Generate Mod Logs", name, true);
+		}
+
+		ArrayList<String> elements = ReikaJavaLibrary.getEnumEntriesWithoutInitializing(CrystalElement.class);
+		for (int i = 0; i < dyeChances.length; i++) {
+			dyeChances[i] = this.registerAdditionalOption("Vanilla Dye Drop Chances", elements.get(i), 100F);
 		}
 
 		this.registerProperty("t2ConfigModel", ReikaJVMParser.isArgumentPresent("-ChromaTrustingConfigModel"));
@@ -124,6 +131,14 @@ public class ChromaConfig extends ControlledConfig {
 
 	public boolean shouldGenerateLogType(ReikaTreeHelper tree) {
 		return trees[tree.ordinal()].getData();
+	}
+
+	public float getVanillaDyeChance(CrystalElement e) {
+		return this.getVanillaDyeChance(e.ordinal());
+	}
+
+	public float getVanillaDyeChance(int idx) {
+		return dyeChances[idx%16].getData();
 	}
 
 	public boolean isDimensionBlacklistedForStructures(int dim) {

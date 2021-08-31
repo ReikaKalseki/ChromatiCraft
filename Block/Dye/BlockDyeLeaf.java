@@ -141,7 +141,8 @@ public class BlockDyeLeaf extends BlockCustomLeaf {
 	}
 
 	private final ItemStack getDye(World world, int x, int y, int z, int metadata) {
-		if (ReikaRandomHelper.doWithChance(ChromaOptions.DYEFRAC.getValue())) {
+		float c = ChromatiCraft.config.getVanillaDyeChance(metadata);
+		if (ReikaRandomHelper.doWithChance(c)) {
 			return new ItemStack(Items.dye, 1, metadata);
 		}
 		else {

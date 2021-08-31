@@ -917,7 +917,7 @@ public class CrystalBees {
 			this.addConditionalProduct(ChromaItems.BERRY.getStackOf(color), 25, true, new LeafCheck(color));
 			this.addConditionalProduct(ItemColoredModInteract.ColoredModItems.COMB.getItem(color), 8, true, new CrystalPlantCheck(color));
 			this.addProduct(ForestryHandler.Combs.HONEY.getItem(), 15);
-			this.addConditionalProduct(ChromaOptions.isVanillaDyeMoreCommon() ? new ItemStack(Items.dye, 1, color.ordinal()) : ChromaItems.DYE.getStackOf(color), 20, false, new FlowerCheck(color));
+			this.addConditionalProduct(ChromaOptions.isVanillaDyeMoreCommon(color) ? new ItemStack(Items.dye, 1, color.ordinal()) : ChromaItems.DYE.getStackOf(color), 20, false, new FlowerCheck(color));
 			switch(color) {
 				case BLACK:
 					this.addConditionalProduct(ChromaStacks.auraDust, 5, true, new ProgressionCheck(TieredPlants.FLOWER.level));

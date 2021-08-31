@@ -159,11 +159,12 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 		int drop = this.getDyeDropCount(fortune, small);
 		ArrayList<ItemStack> li = new ArrayList();
 		for (int i = 0; i < drop; i++) {
-			if (ReikaRandomHelper.doWithChance(ChromaOptions.DYEFRAC.getValue())) {
-				li.add(new ItemStack(Items.dye, 1, rand.nextInt(16)));
+			CrystalElement e = CrystalElement.randomElement();
+			if (ReikaRandomHelper.doWithChance(ChromatiCraft.config.getVanillaDyeChance(e))) {
+				li.add(new ItemStack(Items.dye, 1, e.ordinal()));
 			}
 			else {
-				li.add(new ItemStack(ChromaItems.DYE.getItemInstance(), 1, rand.nextInt(16)));
+				li.add(ChromaItems.DYE.getStackOf(e));
 			}
 		}
 		return li;

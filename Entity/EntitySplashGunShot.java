@@ -108,7 +108,8 @@ public class EntitySplashGunShot extends EntityFireball {
 		}
 
 		if (!worldObj.isRemote && (firingPlayer == null || ticksExisted >= 100)) {
-			this.doAttack();
+			if (firingPlayer != null)
+				this.doAttack();
 			this.destroy();
 		}
 	}

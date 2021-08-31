@@ -27,10 +27,6 @@ import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -45,7 +41,6 @@ import Reika.ChromatiCraft.Base.ChromaDimensionBiome.ChromaDimensionSubBiome;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Entity.EntityAurora;
-import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -73,27 +68,18 @@ import Reika.DragonAPI.Auxiliary.Trackers.IDCollisionTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.RetroGenController;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.IO.ReikaFileReader;
-import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
-import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
-import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
-import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumcraft.api.entities.IEldritchMob;
 import thaumcraft.api.entities.ITaintedMob;
 
 public class ChromaDimensionManager {
-
-	private static final HashSet<BlockKey> bannedBlocks = new HashSet();
-	private static final HashSet<KeyedItemStack> bannedItems = new HashSet();
 
 	private static final PlayerMap<DimensionStructureGenerator> playersInStructures = new PlayerMap();
 	private static final HashMap<Integer, ChromaDimensionBiomeType> IDMap = new HashMap();
@@ -367,55 +353,14 @@ public class ChromaDimensionManager {
 		return ((WorldProviderChroma)world.provider).getChunkGenerator();
 	}
 
-	public static boolean isBannedDimensionBlock(Block b, int meta) {
-		return bannedBlocks.contains(new BlockKey(b, meta));
-	}
-
 	public static void tickPlayersInStructures(World world) {
 		for (UUID id : playersInStructures.keySet()) {
 			EntityPlayer ep = world.func_152378_a(id);
 			if (ep != null) {
 				playersInStructures.directGet(id).tickPlayer(ep);
-				disallowBannedItems(ep);
+				CheatingPreventionSystem.instance.tick(ep);
 			}
 		}
-	}
-
-	private static void disallowBannedItems(EntityPlayer ep) {
-		ItemStack held = ep.getCurrentEquippedItem();
-		if (held != null && bannedItems.contains(new KeyedItemStack(held).setSimpleHash(true))) {
-			/*
-			boolean flag = false;
-			for (int i = 0; i < ep.inventory.getSizeInventory(); i++) {
-				if (ep.inventory.getStackInSlot(i) == null) {
-					ep.inventory.setInventorySlotContents(i, held);
-					flag = true;
-					break;
-				}
-			}
-			if (!flag) {
-			 */
-
-			//ReikaItemHelper.dropItem(ep, held);
-
-			punishCheatingPlayer(ep);
-		}
-	}
-
-	//Make this HURT
-	public static void punishCheatingPlayer(EntityPlayer ep) {
-		ReikaSoundHelper.playSoundAtEntity(ep.worldObj, ep, "random.explode", 1, 1);
-		ReikaSoundHelper.playSoundAtEntity(ep.worldObj, ep, "random.explode", 1, 0.5F);
-		ReikaParticleHelper.EXPLODE.spawnAt(ep);
-		ep.attackEntityFrom(DamageSource.generic, ReikaRandomHelper.getRandomBetween(5, 10));
-		Vec3 v = ep.getLookVec();
-		ReikaEntityHelper.knockbackEntityFromPos(ep.posX+v.xCoord, ep.posY+v.yCoord-1.5, ep.posZ+v.zCoord, ep, 2.5);
-		ep.velocityChanged = true;
-		ep.fallDistance += 10;
-		//}
-		ep.setCurrentItemOrArmor(0, null); //destroy item
-
-		ProgressStage.STRUCTCHEAT.stepPlayerTo(ep);
 	}
 
 	public static DimensionStructureGenerator getStructurePlayerIsIn(EntityPlayer ep) {
@@ -442,46 +387,6 @@ public class ChromaDimensionManager {
 
 	public static void removePlayerFromStructure(EntityPlayer ep) {
 		playersInStructures.remove(ep);
-	}
-
-	private static void banBlock(Block b) {
-		if (b == null)
-			return;
-		BlockKey bk = new BlockKey(b);
-		bannedBlocks.add(bk);
-		Item i = Item.getItemFromBlock(b);
-		if (i != null)
-			bannedItems.add(new KeyedItemStack(i).setIgnoreMetadata(!bk.hasMetadata()).setSimpleHash(true));
-	}
-
-	static {
-		if (ModList.ENDERIO.isLoaded()) {
-			Block b = GameRegistry.findBlock(ModList.ENDERIO.modLabel, "blockTravelAnchor");
-			banBlock(b);
-
-			b = GameRegistry.findBlock(ModList.ENDERIO.modLabel, "blockTelePad");
-			banBlock(b);
-
-			Item i = GameRegistry.findItem(ModList.ENDERIO.modLabel, "itemTravelStaff");
-			if (i != null)
-				bannedItems.add(new KeyedItemStack(i).setIgnoreNBT(true).setSimpleHash(true));
-		}
-
-		Item i = GameRegistry.findItem("GraviSuite", "vajra");
-		if (i != null)
-			bannedItems.add(new KeyedItemStack(i).setIgnoreNBT(true).setSimpleHash(true));
-
-		if (ModList.THAUMICTINKER.isLoaded()) {
-			Block b = GameRegistry.findBlock(ModList.THAUMICTINKER.modLabel, "warpGate");
-			banBlock(b);
-		}
-
-		i = GameRegistry.findItem(ModList.DRACONICEVO.modLabel, "teleporterMKI");
-		if (i != null)
-			bannedItems.add(new KeyedItemStack(i).setIgnoreNBT(true).setSimpleHash(true));
-		i = GameRegistry.findItem(ModList.DRACONICEVO.modLabel, "teleporterMKII");
-		if (i != null)
-			bannedItems.add(new KeyedItemStack(i).setIgnoreNBT(true).setSimpleHash(true));
 	}
 
 	@SideOnly(Side.CLIENT)

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -37,39 +37,33 @@ public class BlockDye extends Block {
 	}
 
 	@Override
-	public int getRenderColor(int dmg)
-	{
+	public int getRenderColor(int dmg) {
 		return ReikaDyeHelper.dyes[dmg].getColor();
 	}
 
 	@Override
-	public int colorMultiplier(IBlockAccess iba, int x, int y, int z)
-	{
+	public int colorMultiplier(IBlockAccess iba, int x, int y, int z) {
 		int dmg = iba.getBlockMetadata(x, y, z);
 		return ReikaDyeHelper.dyes[dmg].getJavaColor().brighter().getRGB();
 	}
 
 	@Override
-	public Item getItemDropped(int id, Random r, int fortune)
-	{
-		return ChromaOptions.isVanillaDyeMoreCommon() ? Items.dye : ChromaItems.DYE.getItemInstance();
+	public Item getItemDropped(int meta, Random r, int fortune) {
+		return ChromaOptions.isVanillaDyeMoreCommon(meta) ? Items.dye : ChromaItems.DYE.getItemInstance();
 	}
 
 	@Override
-	public int quantityDropped(Random par1Random)
-	{
+	public int quantityDropped(Random par1Random) {
 		return 9;
 	}
 
 	@Override
-	public int damageDropped(int dmg)
-	{
+	public int damageDropped(int dmg) {
 		return dmg;
 	}
 
 	@Override
-	public IIcon getIcon(int par1, int par2)
-	{
+	public IIcon getIcon(int par1, int par2) {
 		return blockIcon;
 	}
 

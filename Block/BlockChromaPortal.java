@@ -48,6 +48,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBallLightningFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.ChromatiCraft.World.Dimension.CheatingPreventionSystem;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.DragonAPI.DragonAPICore;
@@ -255,6 +256,7 @@ public class BlockChromaPortal extends Block {
 		}
 
 		private void teleportPlayer(EntityPlayer ep) {
+			CheatingPreventionSystem.instance.preJoin(ep);
 			int dim = this.getTargetDimension();
 			DimensionTuningManager.instance.tunePlayer(ep, tuning);
 			ReikaEntityHelper.transferEntityToDimension(ep, dim, new ChromaTeleporter(dim));

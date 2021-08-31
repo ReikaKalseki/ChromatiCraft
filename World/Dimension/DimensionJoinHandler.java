@@ -63,6 +63,9 @@ public class DimensionJoinHandler implements PlayerTracker {
 			if (!ProgressStage.DIMENSION.playerHasPrerequisites(player)) {
 				this.rejectPlayer(player);
 			}
+			else {
+				CheatingPreventionSystem.instance.postJoin(player);
+			}
 		}/*
 		else if (dimFrom == ExtraChromaIDs.DIMID.getValue()) {
 			if (player instanceof EntityPlayerMP)

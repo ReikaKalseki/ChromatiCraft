@@ -144,6 +144,7 @@ import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.GlowingCliffsEdge;
 import Reika.ChromatiCraft.World.VillagersFailChromatiCraft;
+import Reika.ChromatiCraft.World.Dimension.CheatingPreventionSystem;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionTicker;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
@@ -614,7 +615,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		for (int i = 0; i < 16; i++) {
 			ReikaDyeHelper dye = ReikaDyeHelper.dyes[i];
-			ItemStack used = ChromaOptions.isVanillaDyeMoreCommon() ? dye.getStackOf() : ChromaItems.DYE.getStackOfMetadata(i);
+			ItemStack used = ChromaOptions.isVanillaDyeMoreCommon(i) ? dye.getStackOf() : ChromaItems.DYE.getStackOfMetadata(i);
 			ItemStack sapling = new ItemStack(ChromaBlocks.DYESAPLING.getBlockInstance(), 1, i);
 			ItemStack flower = new ItemStack(ChromaBlocks.DYEFLOWER.getBlockInstance(), 1, i);
 			ItemStack leaf = new ItemStack(ChromaBlocks.DYELEAF.getBlockInstance(), 1, i);
@@ -775,6 +776,9 @@ public class ChromatiCraft extends DragonAPIMod {
 		ReikaDispenserHelper.addDispenserAction(ChromaItems.SPLASHGUN.getStackOf(), proj);
 		ReikaDispenserHelper.addDispenserAction(ChromaItems.VACUUMGUN.getStackOf(), proj);
 		ReikaDispenserHelper.addDispenserAction(ChromaItems.CHAINGUN.getStackOf(), proj);
+
+		MinecraftForge.EVENT_BUS.register(CheatingPreventionSystem.instance);
+		FMLCommonHandler.instance().bus().register(CheatingPreventionSystem.instance);
 
 		for (int i = 0; i < blocks.length; i++) {
 			if (blocks[i] instanceof LoadRegistry) {
