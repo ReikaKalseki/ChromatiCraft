@@ -60,6 +60,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
+import Reika.DragonAPI.Instantiable.IO.CustomRecipeList;
 import Reika.DragonAPI.Interfaces.Registry.OreType;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -226,7 +227,14 @@ public class ItemElementCalculator implements ItemElementAPI {
 		if (tag == null) {
 			if (step > MAX_DEPTH)
 				return empty.copy();
-			tag = this.calculateTag(is, step);
+			try {
+				tag = this.calculateTag(is, step);
+			}
+			catch (Exception e) {
+				ChromatiCraft.logger.logError("Threw exception computing item ("+CustomRecipeList.fullID(is)+") element value: ");
+				e.printStackTrace();
+				tag = empty.copy();
+			}
 			cache.put(is, tag);
 		}
 		tag = tag.copy();

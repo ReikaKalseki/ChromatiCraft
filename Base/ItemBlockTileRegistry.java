@@ -18,7 +18,7 @@ public class ItemBlockTileRegistry extends ItemBlockMultiType {
 		ChromaTiles c = ChromaTiles.getTileByCraftedItem(is);
 		if (c == null)
 			c = ChromaTiles.getTileFromIDandMetadata(field_150939_a, is.getItemDamage());
-		return c.getName();
+		return c != null ? c.getName() : super.getItemStackDisplayName(is);
 	}
 
 }

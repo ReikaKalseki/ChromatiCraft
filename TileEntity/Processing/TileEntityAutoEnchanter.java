@@ -106,6 +106,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		boostedLevels.put(Enchantment.field_151370_z, 5); //luck of sea
 		boostedLevels.put(Enchantment.power, 10);
 		boostedLevels.put(Enchantment.sharpness, 10);
+		boostedLevels.put(Enchantment.protection, 5);
 
 		allowedPairs.add(new ImmutablePair(Enchantment.fortune, Enchantment.silkTouch));
 		allowedPairs.add(new ImmutablePair(Enchantment.sharpness, Enchantment.baneOfArthropods));
