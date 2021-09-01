@@ -61,7 +61,7 @@ public class NetherStructureGenerator implements RetroactiveGenerator {
 			NetherStructures s = NetherStructures.getRandomStructure();
 			int x = chunkX*16+rand.nextInt(16);
 			int z = chunkZ*16+rand.nextInt(16);
-			s.generate(world, x, z);
+			s.generate(world, x, z, rand);
 		}
 	}
 

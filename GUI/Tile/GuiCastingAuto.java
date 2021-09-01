@@ -63,6 +63,8 @@ public class GuiCastingAuto extends GuiChromaBase {
 		}
 	}
 
+	private int pgCooldown;
+
 	private int index = 0;
 	//private int subindex = 0;
 
@@ -137,6 +139,9 @@ public class GuiCastingAuto extends GuiChromaBase {
 
 		if (Minecraft.getMinecraft().theWorld.getTotalWorldTime()%5 == 0)
 			this.filterRecipes();
+
+		if (pgCooldown > 0)
+			pgCooldown--;
 	}
 
 	private void filterRecipes() {
@@ -227,36 +232,61 @@ public class GuiCastingAuto extends GuiChromaBase {
 		}
 	}
 
-	private void prevRecipe(boolean newItem, boolean newType) {
+	@Override
+	public void handleKeyboardInput()  {
+		super.handleKeyboardInput();
+		int key = Keyboard.getEventKey();
+		if ((key == Keyboard.KEY_PRIOR || key == Keyboard.KEY_NEXT) && pgCooldown == 0) {
+			ChromaResearch r = this.getRecipe().getFragment();
+			ChromaResearch par = r.getParent();
+			boolean next = key == Keyboard.KEY_NEXT;
+			while (par == r.getParent()) {
+				boolean flag = (next ? this.nextRecipe(true, true) : this.prevRecipe(true, true)) > 0;
+				r = this.getRecipe().getFragment();
+				if (!flag)
+					break;
+			}
+			pgCooldown = 4;
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 1);
+		}
+	}
+
+	private int prevRecipe(boolean newItem, boolean newType) {
 		CastingRecipe cr = this.getRecipe();
 		ItemStack cur = null;
 		if (cr != null) {
 			cur = cr.getOutput();
 		}
+		int amt = 0;
 		if (index > 0) {
 			do {
 				//subindex = 0;
+				amt++;
 				index--;
 				number = 1;
 				cr = this.getRecipe();
 			} while(index > 0 && (newItem || newType) && this.getRecipe() != null && this.matchRecipe(cur, cr, newType));
 		}
+		return amt;
 	}
 
-	private void nextRecipe(boolean newItem, boolean newType) {
+	private int nextRecipe(boolean newItem, boolean newType) {
 		CastingRecipe cr = this.getRecipe();
 		ItemStack cur = null;
 		if (cr != null) {
 			cur = cr.getOutput();
 		}
+		int amt = 0;
 		if (index < visible.size()-1) {
 			//subindex = 0;
 			do {
+				amt++;
 				index++;
 				number = 1;
 				cr = this.getRecipe();
 			} while(index < visible.size()-1 && (newItem || newType) && this.getRecipe() != null && this.matchRecipe(cur, cr, newType));
 		}
+		return amt;
 	}
 
 	private boolean matchRecipe(ItemStack cur, CastingRecipe r, boolean newType) {

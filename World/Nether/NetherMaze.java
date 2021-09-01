@@ -1,13 +1,15 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Nether;
+
+import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.monster.EntityBlaze;
@@ -25,7 +27,7 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public class NetherMaze {
 
-	static void generateAt(World world, int i, int j, int k) {
+	static void generateAt(World world, int i, int j, int k, Random rand) {
 		Block bd = Blocks.bedrock;
 		world.setBlock(i + 0, j + 0, k + 0, bd);
 		world.setBlock(i + 0, j + 0, k + 1, bd);
@@ -1306,7 +1308,7 @@ public class NetherMaze {
 		world.setBlock(i + 10, j + 1, k + 3, Blocks.stone_pressure_plate);
 		world.setBlock(i + 11, j + 1, k + 3, Blocks.stone_pressure_plate);
 
-		boolean flag = world.rand.nextBoolean();
+		boolean flag = rand.nextBoolean();
 		Class c1 = flag ? EntityBlaze.class : EntityPigZombie.class;
 		Class c2 = !flag ? EntityBlaze.class : EntityPigZombie.class;
 
@@ -1324,7 +1326,7 @@ public class NetherMaze {
 		lgc.maxNearbyEntities = c2 == EntityPigZombie.class ? 24 : 8;
 		lgc.activatingRangeFromPlayer = 12;
 
-		ChromaAux.generateLootChest(world, i + 11, j + 1, k + 14, BlockLootChest.getMeta(ForgeDirection.WEST), ChestGenHooks.PYRAMID_JUNGLE_CHEST, 1);
+		ChromaAux.generateLootChest(world, i + 11, j + 1, k + 14, BlockLootChest.getMeta(ForgeDirection.WEST), rand, ChestGenHooks.PYRAMID_JUNGLE_CHEST, 1);
 	}
 
 }

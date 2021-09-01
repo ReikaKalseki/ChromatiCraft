@@ -689,14 +689,14 @@ public class ChromaAux {
 		return def;
 	}
 
-	public static TileEntityLootChest generateLootChest(World world, int x, int y, int z, int m, String s, int bonus) {
+	public static TileEntityLootChest generateLootChest(World world, int x, int y, int z, int m, Random rand, String s, int bonus) {
 		if (y < 0 || y > 256) {
 			ChromatiCraft.logger.logError("Tried to generate a loot chest outside the map!");
 			return null;
 		}
 		world.setBlock(x, y, z, ChromaBlocks.LOOTCHEST.getBlockInstance(), m, 3);
 		TileEntityLootChest te = (TileEntityLootChest)world.getTileEntity(x, y, z);
-		te.populateChest(s, null, bonus, world.rand);
+		te.populateChest(s, null, bonus, rand);
 		return te;
 	}
 

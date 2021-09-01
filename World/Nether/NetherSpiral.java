@@ -1,13 +1,15 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Nether;
+
+import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -25,7 +27,7 @@ public class NetherSpiral {
 	private static int ms = BlockType.STONE.metadata;
 	private static int mc = BlockType.CRACKS.metadata;
 
-	static void generateAt(World world, int x, int y, int z) {
+	static void generateAt(World world, int x, int y, int z, Random rand) {
 		for (int i = 0; i <= 18; i++) {
 			for (int k = 0; k <= 18; k++) {
 				world.setBlock(x+i, y, z+k, b, ms, 3);
@@ -33,7 +35,7 @@ public class NetherSpiral {
 		}
 
 		for (int i = 1; i <= 4; i++) {
-			generateLayer(world, x, y, z, i);
+			generateLayer(world, x, y, z, i, rand);
 		}
 
 		for (int i = 1; i <= 17; i++) {
@@ -76,7 +78,7 @@ public class NetherSpiral {
 		}
 	}
 
-	private static void generateLayer(World world, int i, int y, int k, int j) {
+	private static void generateLayer(World world, int i, int y, int k, int j, Random rand) {
 		world.setBlock(i + 0, j+y, k + 0, Blocks.air);
 		world.setBlock(i + 0, j+y, k + 1, Blocks.air);
 		world.setBlock(i + 0, j+y, k + 2, Blocks.air);
@@ -436,12 +438,12 @@ public class NetherSpiral {
 		world.setBlock(i + 5, j+y, k + 8, Blocks.tnt, 0, 2);
 
 		if (j == 1) {
-			ChromaAux.generateLootChest(world, i + 9, j+y, k + 9, 3, ChestGenHooks.PYRAMID_JUNGLE_DISPENSER, 0);
+			ChromaAux.generateLootChest(world, i + 9, j+y, k + 9, 3, rand, ChestGenHooks.PYRAMID_JUNGLE_DISPENSER, 0);
 
-			ChromaAux.generateLootChest(world, i + 1, j+y, k + 5, 3, ChestGenHooks.PYRAMID_JUNGLE_CHEST, 2);
-			ChromaAux.generateLootChest(world, i + 5, j+y, k + 17, 1, ChestGenHooks.PYRAMID_JUNGLE_CHEST, 2);
-			ChromaAux.generateLootChest(world, i + 13, j+y, k + 1, 0, ChestGenHooks.PYRAMID_JUNGLE_CHEST, 2);
-			ChromaAux.generateLootChest(world, i + 17, j+y, k + 13, 2, ChestGenHooks.PYRAMID_JUNGLE_CHEST, 2);
+			ChromaAux.generateLootChest(world, i + 1, j+y, k + 5, 3, rand, ChestGenHooks.PYRAMID_JUNGLE_CHEST, 2);
+			ChromaAux.generateLootChest(world, i + 5, j+y, k + 17, 1, rand, ChestGenHooks.PYRAMID_JUNGLE_CHEST, 2);
+			ChromaAux.generateLootChest(world, i + 13, j+y, k + 1, 0, rand, ChestGenHooks.PYRAMID_JUNGLE_CHEST, 2);
+			ChromaAux.generateLootChest(world, i + 17, j+y, k + 13, 2, rand, ChestGenHooks.PYRAMID_JUNGLE_CHEST, 2);
 		}
 	}
 

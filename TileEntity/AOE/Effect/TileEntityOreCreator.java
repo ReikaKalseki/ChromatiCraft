@@ -92,6 +92,9 @@ public class TileEntityOreCreator extends TileEntityAdjacencyUpgrade {
 			return false;
 		if (ModList.RAILCRAFT.isLoaded() && RailcraftHandler.getInstance().isDarkOre(b, is.getItemDamage()))
 			return false;
+		String mod = ReikaItemHelper.getRegistrantMod(is);
+		if (mod == null || mod.equalsIgnoreCase("gregtech") || mod.equalsIgnoreCase("gt"))
+			return false;
 		return true;
 	}
 

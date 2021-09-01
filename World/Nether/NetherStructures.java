@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Nether;
 
+import java.util.Random;
+
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
@@ -47,7 +49,7 @@ public enum NetherStructures {
 		return structureRand.getRandomEntry();
 	}
 
-	public void generate(World world, int x, int z) {
+	public void generate(World world, int x, int z, Random rand) {
 		int y = 127+1; //top solid layer+1
 		switch(this) {
 			case HUT:
@@ -90,20 +92,20 @@ public enum NetherStructures {
 				world.setBlock(x, y, z-1, Blocks.tnt);
 				world.setBlock(x, y, z, ChromaBlocks.LOOTCHEST.getBlockInstance());
 				TileEntityLootChest te = (TileEntityLootChest)world.getTileEntity(x, y, z);
-				te.populateChest(ChestGenHooks.DUNGEON_CHEST, null, 0, world.rand, false);
+				te.populateChest(ChestGenHooks.DUNGEON_CHEST, null, 0, rand, false);
 				world.setBlock(x, y+1, z, Blocks.lava);
 				break;
 			case TEMPLE:
-				NetherTemple.generateAt(world, x, y, z);
+				NetherTemple.generateAt(world, x, y, z, rand);
 				break;
 			case MAZE:
-				NetherMaze.generateAt(world, x, y, z);
+				NetherMaze.generateAt(world, x, y, z, rand);
 				break;
 			case DIORAMA:
-				NetherDiorama.generateAt(world, x, y, z);
+				NetherDiorama.generateAt(world, x, y, z, rand);
 				break;
 			case SPIRAL:
-				NetherSpiral.generateAt(world, x, y, z);
+				NetherSpiral.generateAt(world, x, y, z, rand);
 				break;
 		}
 	}

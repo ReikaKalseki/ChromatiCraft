@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Nether;
 
+import java.util.Random;
+
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
@@ -30,7 +32,7 @@ public class NetherTemple {
 	private static Block ch = ChromaBlocks.LOOTCHEST.getBlockInstance();
 	private static int mc = BlockLootChest.getMeta(ForgeDirection.NORTH);
 
-	static void generateAt(World world, int i, int j, int k) {
+	static void generateAt(World world, int i, int j, int k, Random rand) {
 		//door
 		world.setBlock(i + 13, j + 2, k + 9, Blocks.sticky_piston, 11, 2);
 		world.setBlock(i + 13, j + 2, k + 10, Blocks.piston_head, 11, 2);
@@ -1541,10 +1543,10 @@ public class NetherTemple {
 		world.setBlock(i + 5, j + 4, k + 16, Blocks.air);
 		world.setBlock(i + 5, j + 4, k + 17, Blocks.air);
 
-		generate2(world, i, j, k);
+		generate2(world, i, j, k, rand);
 	}
 
-	private static void generate2(World world, int i, int j, int k) {
+	private static void generate2(World world, int i, int j, int k, Random rand) {
 		world.setBlock(i + 5, j + 4, k + 18, Blocks.air);
 		world.setBlock(i + 5, j + 4, k + 19, Blocks.air);
 		world.setBlock(i + 5, j + 4, k + 20, Blocks.air);
@@ -3046,10 +3048,10 @@ public class NetherTemple {
 		world.setBlock(i + 10, j + 8, k + 6, b, ms, 3);
 		world.setBlock(i + 10, j + 8, k + 7, Blocks.air);
 
-		generate3(world, i, j, k);
+		generate3(world, i, j, k, rand);
 	}
 
-	private static void generate3(World world, int i, int j, int k) {
+	private static void generate3(World world, int i, int j, int k, Random rand) {
 		world.setBlock(i + 10, j + 8, k + 8, Blocks.air);
 		world.setBlock(i + 10, j + 8, k + 9, Blocks.air);
 		world.setBlock(i + 10, j + 8, k + 10, Blocks.air);
@@ -4537,10 +4539,10 @@ public class NetherTemple {
 		world.setBlock(i + 16, j + 0, k + 9, Blocks.air);
 		world.setBlock(i + 16, j + 0, k + 10, Blocks.air);
 
-		generate4(world, i, j, k);
+		generate4(world, i, j, k, rand);
 	}
 
-	private static void generate4(World world, int i, int j, int k) {
+	private static void generate4(World world, int i, int j, int k, Random rand) {
 		world.setBlock(i + 16, j + 0, k + 11, Blocks.bedrock);
 		world.setBlock(i + 16, j + 0, k + 12, Blocks.bedrock);
 		world.setBlock(i + 16, j + 0, k + 13, Blocks.bedrock);
@@ -6042,10 +6044,10 @@ public class NetherTemple {
 		world.setBlock(i + 21, j + 3, k + 25, Blocks.air);
 		world.setBlock(i + 21, j + 4, k + 0, Blocks.air);
 
-		generate5(world, i, j, k);
+		generate5(world, i, j, k, rand);
 	}
 
-	private static void generate5(World world, int i, int j, int k) {
+	private static void generate5(World world, int i, int j, int k, Random rand) {
 		world.setBlock(i + 21, j + 4, k + 1, Blocks.air);
 		world.setBlock(i + 21, j + 4, k + 2, Blocks.air);
 		world.setBlock(i + 21, j + 4, k + 3, Blocks.nether_brick);
@@ -7489,10 +7491,10 @@ public class NetherTemple {
 		world.setBlock(i + 12, j + 6, k + 6, Blocks.portal, 1, 2);
 		world.setBlock(i + 13, j + 4, k + 6, Blocks.portal, 1, 2);
 
-		TileEntityLootChest te = ChromaAux.generateLootChest(world, i + 12, j + 0, k + 14, mc, ChestGenHooks.PYRAMID_DESERT_CHEST, 2);
+		TileEntityLootChest te = ChromaAux.generateLootChest(world, i + 12, j + 0, k + 14, mc, rand, ChestGenHooks.PYRAMID_DESERT_CHEST, 2);
 		te.addProgress(ProgressStage.NETHERSTRUCT);
 
-		te = ChromaAux.generateLootChest(world, i + 13, j + 0, k + 14, mc, ChestGenHooks.PYRAMID_DESERT_CHEST, 2);
+		te = ChromaAux.generateLootChest(world, i + 13, j + 0, k + 14, mc, rand, ChestGenHooks.PYRAMID_DESERT_CHEST, 2);
 		te.addProgress(ProgressStage.NETHERSTRUCT);
 	}
 

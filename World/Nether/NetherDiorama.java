@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Nether;
 
+import java.util.Random;
+
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityGhast;
 import net.minecraft.entity.monster.EntityMagmaCube;
@@ -25,7 +27,7 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public class NetherDiorama {
 
-	static void generateAt(World world, int i, int j, int k) {
+	static void generateAt(World world, int i, int j, int k, Random rand) {
 		world.setBlock(i + 0, j + 0, k + 0, Blocks.air);
 		world.setBlock(i + 0, j + 0, k + 1, Blocks.bedrock);
 		world.setBlock(i + 0, j + 0, k + 2, Blocks.bedrock);
@@ -1527,11 +1529,11 @@ public class NetherDiorama {
 		world.setBlock(i + 5, j + 4, k + 3, Blocks.air);
 		world.setBlock(i + 5, j + 4, k + 4, Blocks.air);
 
-		generate2(world, i, j, k);
+		generate2(world, i, j, k, rand);
 
 	}
 
-	private static void generate2(World world, int i, int j, int k) {
+	private static void generate2(World world, int i, int j, int k, Random rand) {
 		world.setBlock(i + 5, j + 4, k + 5, Blocks.air);
 		world.setBlock(i + 5, j + 4, k + 6, Blocks.air);
 		world.setBlock(i + 5, j + 4, k + 7, Blocks.air);
@@ -3033,11 +3035,11 @@ public class NetherDiorama {
 		world.setBlock(i + 10, j + 8, k + 13, Blocks.air);
 		world.setBlock(i + 10, j + 8, k + 14, Blocks.air);
 
-		generate3(world, i, j, k);
+		generate3(world, i, j, k, rand);
 
 	}
 
-	private static void generate3(World world, int i, int j, int k) {
+	private static void generate3(World world, int i, int j, int k, Random rand) {
 		world.setBlock(i + 10, j + 8, k + 15, Blocks.air);
 		world.setBlock(i + 10, j + 8, k + 16, Blocks.air);
 		world.setBlock(i + 10, j + 8, k + 17, Blocks.air);
@@ -4537,11 +4539,11 @@ public class NetherDiorama {
 		world.setBlock(i + 16, j + 1, k + 14, Blocks.netherrack);
 		world.setBlock(i + 16, j + 1, k + 15, Blocks.netherrack);
 
-		generate4(world, i, j, k);
+		generate4(world, i, j, k, rand);
 
 	}
 
-	private static void generate4(World world, int i, int j, int k) {
+	private static void generate4(World world, int i, int j, int k, Random rand) {
 		world.setBlock(i + 16, j + 1, k + 16, Blocks.netherrack);
 		world.setBlock(i + 16, j + 1, k + 17, Blocks.netherrack);
 		world.setBlock(i + 16, j + 1, k + 18, Blocks.netherrack);
@@ -6043,11 +6045,11 @@ public class NetherDiorama {
 		world.setBlock(i + 21, j + 5, k + 3, Blocks.nether_brick);
 		world.setBlock(i + 21, j + 5, k + 4, Blocks.air);
 
-		generate5(world, i, j, k);
+		generate5(world, i, j, k, rand);
 
 	}
 
-	private static void generate5(World world, int i, int j, int k) {
+	private static void generate5(World world, int i, int j, int k, Random rand) {
 		world.setBlock(i + 21, j + 5, k + 5, Blocks.air);
 		world.setBlock(i + 21, j + 5, k + 6, Blocks.air);
 		world.setBlock(i + 21, j + 5, k + 7, Blocks.nether_brick);
@@ -7549,11 +7551,11 @@ public class NetherDiorama {
 		world.setBlock(i + 26, j + 8, k + 7, Blocks.air);
 		world.setBlock(i + 26, j + 8, k + 8, Blocks.air);
 
-		generate6(world, i, j, k);
+		generate6(world, i, j, k, rand);
 
 	}
 
-	private static void generate6(World world, int i, int j, int k) {
+	private static void generate6(World world, int i, int j, int k, Random rand) {
 		world.setBlock(i + 26, j + 8, k + 9, Blocks.air);
 		world.setBlock(i + 26, j + 8, k + 10, Blocks.air);
 		world.setBlock(i + 26, j + 8, k + 11, Blocks.air);
@@ -9052,11 +9054,11 @@ public class NetherDiorama {
 		world.setBlock(i + 31, j + 11, k + 11, Blocks.bedrock);
 		world.setBlock(i + 31, j + 11, k + 12, Blocks.bedrock);
 
-		generate7(world, i, j, k);
+		generate7(world, i, j, k, rand);
 
 	}
 
-	private static void generate7(World world, int i, int j, int k) {
+	private static void generate7(World world, int i, int j, int k, Random rand) {
 		world.setBlock(i + 31, j + 11, k + 13, Blocks.bedrock);
 		world.setBlock(i + 31, j + 11, k + 14, Blocks.bedrock);
 		world.setBlock(i + 31, j + 11, k + 15, Blocks.bedrock);
@@ -9220,7 +9222,7 @@ public class NetherDiorama {
 
 		generateSpawner(world, i + 12, j + 1, k + 17, EntityMagmaCube.class);
 
-		TileEntityLootChest te = ChromaAux.generateLootChest(world, i + 27, j + 5, k + 19, 2, ChestGenHooks.PYRAMID_DESERT_CHEST, 4);
+		TileEntityLootChest te = ChromaAux.generateLootChest(world, i + 27, j + 5, k + 19, 2, rand, ChestGenHooks.PYRAMID_DESERT_CHEST, 4);
 		te.addProgress(ProgressStage.NETHERSTRUCT);
 	}
 

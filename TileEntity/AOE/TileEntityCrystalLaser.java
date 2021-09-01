@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -51,6 +51,7 @@ public class TileEntityCrystalLaser extends InventoriedRelayPowered {
 	static {
 		localEffects.add(CrystalElement.GREEN);
 		localEffects.add(CrystalElement.ORANGE);
+		localEffects.add(CrystalElement.BLUE);
 
 		aabbEffects.add(CrystalElement.RED);
 		aabbEffects.add(CrystalElement.BLACK);

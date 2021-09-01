@@ -315,48 +315,46 @@ public class CastingAutomationSystem {
 
 		TileEntityCastingTable te = tile.getTable();
 		if (te != null && recipe != null && recipesToGo > 0 && tile.isAbleToRun(te)) {
-			if (te != null) {
-				int x = this.getX();
-				int y = this.getY();
-				int z = this.getZ();
-				if (tile.canCraft(world, x, y, z, te)) {
-					if (this.isRecipeReady(world, x, y, z, te)) {
-						if (tile.canTriggerCrafting()) {
-							if (this.triggerCrafting(world, x, y, z, te)) {
-								this.onTriggerCrafting(recipe, recipeCycles);
-								te.syncAllData(true);
-								tile.consumeEnergy(recipe, te, null);
-								recipesToGo -= recipeCycles;
-								recipeCycles = 0;
-							}
-						}
-						else {
+			int x = this.getX();
+			int y = this.getY();
+			int z = this.getZ();
+			if (tile.canCraft(world, x, y, z, te)) {
+				if (this.isRecipeReady(world, x, y, z, te)) {
+					if (tile.canTriggerCrafting()) {
+						if (this.triggerCrafting(world, x, y, z, te)) {
+							this.onTriggerCrafting(recipe, recipeCycles);
+							te.syncAllData(true);
+							tile.consumeEnergy(recipe, te, null);
 							recipesToGo -= recipeCycles;
 							recipeCycles = 0;
 						}
 					}
 					else {
-						int amt = Math.min(recipesToGo, recipe.getOutput().getMaxStackSize()/recipe.getOutput().stackSize);
-						if (recipe instanceof MultiBlockCastingRecipe) {
-							MultiBlockCastingRecipe mr = (MultiBlockCastingRecipe)recipe;
-							amt = Math.min(amt, mr.getMainInput().getMaxStackSize()/mr.getRequiredCentralItemCount());
-						}
-						//ReikaJavaLibrary.pConsole("Preparing step for recipe "+recipe);
-						UpdateStep c = this.prepareRecipeStep(world, x, y, z, te, amt);
-						//ReikaJavaLibrary.pConsole("Obtained "+c);
-						if (c != null) {
-							recipeCycles = recipeCycles > 0 ? Math.min(recipeCycles, c.getItem().stackSize) : c.getItem().stackSize;
-							ChromaSounds.CAST.playSoundAtBlock(world, c.loc.xCoord, c.loc.yCoord, c.loc.zCoord);
-							int[] dat = new int[]{c.loc.xCoord, c.loc.yCoord, c.loc.zCoord, 0, Item.getIdFromItem(c.getItem().getItem()), c.getItem().getItemDamage(), c.getItem().stackTagCompound != null ? 1 : 0};
-							ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.CASTAUTOUPDATE.ordinal(), (TileEntity)tile, 48, dat);
-							tile.consumeEnergy(recipe, te, c.getItem());
-							te.markDirty();
-							TileEntity tile = c.loc.getTileEntity(world);
-							if (tile != null) {
-								tile.markDirty();
-								if (tile instanceof TileEntityBase) {
-									((TileEntityBase)tile).syncAllData(true);
-								}
+						recipesToGo -= recipeCycles;
+						recipeCycles = 0;
+					}
+				}
+				else {
+					int amt = Math.min(recipesToGo, recipe.getOutput().getMaxStackSize()/recipe.getOutput().stackSize);
+					if (recipe instanceof MultiBlockCastingRecipe) {
+						MultiBlockCastingRecipe mr = (MultiBlockCastingRecipe)recipe;
+						amt = Math.min(amt, mr.getMainInput().getMaxStackSize()/mr.getRequiredCentralItemCount());
+					}
+					//ReikaJavaLibrary.pConsole("Preparing step for recipe "+recipe);
+					UpdateStep c = this.prepareRecipeStep(world, x, y, z, te, amt);
+					//ReikaJavaLibrary.pConsole("Obtained "+c);
+					if (c != null) {
+						recipeCycles = recipeCycles > 0 ? Math.min(recipeCycles, c.getItem().stackSize) : c.getItem().stackSize;
+						ChromaSounds.CAST.playSoundAtBlock(world, c.loc.xCoord, c.loc.yCoord, c.loc.zCoord);
+						int[] dat = new int[]{c.loc.xCoord, c.loc.yCoord, c.loc.zCoord, 0, Item.getIdFromItem(c.getItem().getItem()), c.getItem().getItemDamage(), c.getItem().stackTagCompound != null ? 1 : 0};
+						ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.CASTAUTOUPDATE.ordinal(), (TileEntity)tile, 48, dat);
+						tile.consumeEnergy(recipe, te, c.getItem());
+						te.markDirty();
+						TileEntity tile = c.loc.getTileEntity(world);
+						if (tile != null) {
+							tile.markDirty();
+							if (tile instanceof TileEntityBase) {
+								((TileEntityBase)tile).syncAllData(true);
 							}
 						}
 					}

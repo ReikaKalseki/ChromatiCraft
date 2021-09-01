@@ -915,7 +915,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 			count--;
 
 			ItemStack toadd = ReikaItemHelper.getSizedItemStack(out, activeRecipe.getOutput().stackSize);
-			if  (Chromabilities.DOUBLECRAFT.enabledOn(craftingPlayer))
+			if  (Chromabilities.DOUBLECRAFT.enabledOn(craftingPlayer))// && toadd.getMaxStackSize() > 1)
 				toadd.stackSize *= 2;
 			NBTTagCompound NBTout = NBTin != null ? (NBTTagCompound)NBTin.copy() : null;
 			if (NBTout != null) {
@@ -944,6 +944,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 						int amt = Math.min(inv[9].getMaxStackSize(), push);
 						boolean flag = false;
 						do {
+							flag = false;
 							if (ReikaInventoryHelper.addToIInv(ReikaItemHelper.getSizedItemStack(inv[9], amt), (IInventory)te)) {
 								flag = true;
 								ReikaInventoryHelper.decrStack(9, this, amt);

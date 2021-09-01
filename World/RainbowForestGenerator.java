@@ -19,6 +19,7 @@ import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.World.IWG.ColorTreeGenerator;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.Math.Noise.NoiseGeneratorBase;
 import Reika.DragonAPI.Instantiable.Math.Noise.Simplex3DGenerator;
 import Reika.DragonAPI.Instantiable.Math.Noise.VoronoiNoiseGenerator;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -34,9 +35,9 @@ public class RainbowForestGenerator extends WorldGenerator {
 
 	//private static Simplex3DGenerator colorOffsetNoise;
 	private static final long root = 34897534781342377L;
-	private static final Simplex3DGenerator extraX = (Simplex3DGenerator)new Simplex3DGenerator(4587 ^ root).setFrequency(1/8D);
-	private static final Simplex3DGenerator extraY = (Simplex3DGenerator)new Simplex3DGenerator(-3735 ^ root).setFrequency(1/8D);
-	private static final Simplex3DGenerator extraZ = (Simplex3DGenerator)new Simplex3DGenerator(823741 ^ root).setFrequency(1/8D);
+	private static final NoiseGeneratorBase extraX = new Simplex3DGenerator(4587 ^ root).setFrequency(1/8D);
+	private static final NoiseGeneratorBase extraY = new Simplex3DGenerator(-3735 ^ root).setFrequency(1/8D);
+	private static final NoiseGeneratorBase extraZ = new Simplex3DGenerator(823741 ^ root).setFrequency(1/8D);
 	private static final VoronoiNoiseGenerator colorNoise = (VoronoiNoiseGenerator)new VoronoiNoiseGenerator(83745 ^ root).setFrequency(1/20D).setDisplacement(extraX, extraY, extraZ, 6);
 
 	@Override
