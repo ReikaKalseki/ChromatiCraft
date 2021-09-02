@@ -16,10 +16,10 @@ import java.io.IOException;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import org.apache.commons.codec.Charsets;
@@ -38,11 +38,13 @@ import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.VillageTradeHandler;
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact.ArtefactTypes;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.ASM.ASMCalls;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.IO.ReikaFileReader.ConnectionErrorHandler;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
@@ -59,7 +61,7 @@ public class UATrades implements ConnectionErrorHandler {
 	private final HashMap<String, Integer> prices = new HashMap();
 	private int MAX_PRICE = -1;
 
-	private final ArrayList<Class<? extends UATypeTrade>> tradeList = new ArrayList();
+	private final HashMap<Class<? extends UATypeTrade>, Double> tradeList = new HashMap();
 	private final MultiMap<String, EDCommodityHook> externalHooks = new MultiMap().setNullEmpty();
 
 	private UATrades() {
@@ -69,11 +71,8 @@ public class UATrades implements ConnectionErrorHandler {
 	public void loadData() {
 		this.loadDefaults();
 
-		for (Class c : this.getClass().getDeclaredClasses()) {
-			if (c.getSuperclass() == UATypeTrade.class) {
-				tradeList.add(c);
-			}
-		}
+		tradeList.put(UATrade.class, 0.2);
+		tradeList.put(MetaAlloyTrade.class, 0.1);
 
 		boolean jvm = ReikaJVMParser.isArgumentPresent("useCachedEDDBForCC");
 		if (jvm) {
@@ -169,26 +168,29 @@ public class UATrades implements ConnectionErrorHandler {
 	}
 
 	public void addTradesToVillager(EntityVillager ev, MerchantRecipeList li, Random rand) {
-		for (Class<? extends UATypeTrade> trade : tradeList) {
-			if (!this.hasTrade(ev.buyingList, trade)) {
+		for (Entry<Class<? extends UATypeTrade>, Double> e : tradeList.entrySet()) {
+			Class<? extends UATypeTrade> trade = e.getKey();
+			if (VillageTradeHandler.instance.withRandomChance(ev, e.getValue(), trade.getSimpleName()) && !this.hasTrade(ev.buyingList, trade)) {
 				try {
 					ev.buyingList.add(trade.newInstance()); //add an unlocked trade
 				}
-				catch (Exception e) {
+				catch (Exception ex) {
 					ChromatiCraft.logger.logError("Could not add trade type "+trade+" to villager!");
-					e.printStackTrace();
+					ex.printStackTrace();
 				}
 			}
 		}
 		for (EDCommodityHook eh : externalHooks.allValues(false)) {
-			MerchantRecipe trade = eh.createTrade();
-			if (!this.hasTrade(ev.buyingList, trade)) {
-				try {
-					ev.buyingList.add(trade);
-				}
-				catch (Exception e) {
-					ChromatiCraft.logger.logError("Could not add delegated trade "+trade+" to villager!");
-					e.printStackTrace();
+			if (VillageTradeHandler.instance.withRandomChance(ev, eh.getChancePerVillager(), eh.getCommodityID())) {
+				MerchantRecipe trade = eh.createTrade();
+				if (!this.hasTrade(ev.buyingList, trade)) {
+					try {
+						ev.buyingList.add(trade);
+					}
+					catch (Exception e) {
+						ChromatiCraft.logger.logError("Could not add delegated trade "+trade+" to villager!");
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -196,8 +198,10 @@ public class UATrades implements ConnectionErrorHandler {
 
 	private boolean hasTrade(MerchantRecipeList li, MerchantRecipe tr) {
 		for (Object r : li) {
-			if (r.getClass() == tr.getClass())
-				return true;
+			if (r.getClass() == tr.getClass()) {
+				if (ASMCalls.matchTrades((MerchantRecipe)r, tr))
+					return true;
+			}
 		}
 		return false;
 	}
@@ -292,7 +296,10 @@ public class UATrades implements ConnectionErrorHandler {
 
 	public static interface EDCommodityHook {
 
+		/** EDDB id */
 		String getCommodityID();
+		/** Out of 1 */
+		double getChancePerVillager();
 		MerchantRecipe createTrade();
 		void onPriceReceived(int average, int upper, int max);
 

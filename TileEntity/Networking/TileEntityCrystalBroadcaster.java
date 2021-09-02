@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.TileEntity.Networking;
 
 import java.util.Collection;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -20,6 +21,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
+import Reika.ChromatiCraft.Auxiliary.Structure.BroadcasterStructure;
+import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Magic.Interfaces.ConnectivityAction;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
@@ -28,6 +31,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.NotifiedNetworkTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalLink;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Network.CrystalPath;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -36,6 +40,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -53,11 +58,17 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 	public static final int MIN_RANGE = 512;
 	public static final int BROADCAST_RANGE = 4096;
 
+	public static final int GLASS_RANGE_H = 4;
+	public static final int GLASS_RANGE_V = 2;
+
 	private static final int AIR_SEARCH = 24;
 	private static final int AIR_SEARCH_Y = 4;
 
 	private WorldLocation interference;
+	private FilledBlockArray structure;
 	private boolean clearAir;
+	private int glassPotential;
+	private int glassBlocks;
 
 	@Override
 	public ChromaTiles getTile() {
@@ -104,7 +115,9 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 	@Override
 	protected boolean checkForStructure() {
 		ChromaStructures.BROADCAST.getStructure().resetToDefaults();
-		return ChromaStructures.BROADCAST.getArray(worldObj, xCoord, yCoord, zCoord).matchInWorld();
+		structure = ChromaStructures.BROADCAST.getArray(worldObj, xCoord, yCoord, zCoord);
+		glassPotential = ((BroadcasterStructure)ChromaStructures.BROADCAST.getStructure()).getGlassCount();
+		return structure.matchInWorld();
 	}
 
 	@Override
@@ -115,6 +128,7 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 	}
 
 	private boolean testAirClear() {
+
 		int r = 8;
 		int dd = 1;
 		int c = 4;
@@ -123,7 +137,7 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 			for (int d = 1; d <= r; d += dd) {
 				int dx = xCoord+d*dir.offsetX;
 				int dz = zCoord+d*dir.offsetZ;
-				if (!worldObj.getBlock(dx, yCoord, dz).isAir(worldObj, dx, yCoord, dz)) {
+				if (!this.isAir(worldObj, dx, yCoord, dz)) {
 					c--;
 					break;
 				}
@@ -131,6 +145,8 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 		}
 		if (c < 2)
 			return false;
+
+		glassBlocks = 0;
 
 		r = AIR_SEARCH;
 		int ry = AIR_SEARCH_Y;
@@ -143,8 +159,12 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 						int dx = xCoord+i;
 						int dy = yCoord+j;
 						int dz = zCoord+k;
+						//BlockKey str = structure.getBlockKeyAt(dx, dy, dz);
+						//if (str != null && !str.blockID.isAir(worldObj, dx, dy, dz))
+						if (structure.hasBlock(dx, dy, dz))
+							continue;
 						c2++;
-						if (worldObj.getBlock(dx, dy, dz).isAir(worldObj, dx, dy, dz))
+						if (this.isAir(worldObj, dx, dy, dz))
 							c1++;
 					}
 				}
@@ -152,6 +172,19 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 		}
 		//ReikaJavaLibrary.pConsole(c1+"/"+c2);
 		return (float)c1/c2 > 0.8;
+	}
+
+	private boolean isAir(World world, int x, int y, int z) {
+		Block b = world.getBlock(x, y, z);
+		if (b.isAir(world, x, y, z))
+			return true;
+		if (b == ChromaBlocks.DIMGEN.getBlockInstance() && world.getBlockMetadata(x, y, z) == DimDecoTypes.CLIFFGLASS.ordinal()) {
+			if (Math.abs(x-xCoord) <= GLASS_RANGE_H && Math.abs(y-yCoord) <= GLASS_RANGE_V && Math.abs(z-zCoord) <= GLASS_RANGE_H) {
+				glassBlocks++;
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void checkInterfere() {
@@ -223,6 +256,7 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 
 		interference = WorldLocation.readFromNBT("interfere", NBT);
 		clearAir = NBT.getBoolean("air");
+		glassBlocks = NBT.getInteger("glass");
 	}
 
 	@Override
@@ -232,6 +266,7 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 		if (interference != null)
 			interference.writeToNBT("interfere", NBT);
 		NBT.setBoolean("air", clearAir);
+		NBT.setInteger("glass", glassBlocks);
 	}
 
 	@Override
@@ -284,7 +319,14 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 
 	@SideOnly(Side.CLIENT)
 	public void onConnectedParticles(CrystalElement e) {
-		ReikaSoundHelper.playClientSound(ChromaSounds.REPEATERRING, xCoord+0.5, yCoord+0.5, zCoord+0.5, 1, (float)CrystalMusicManager.instance.getDingPitchScale(e), false);
+		double soundDist = 512/Math.pow(1.04, glassBlocks);
+		double dd = Minecraft.getMinecraft().thePlayer.getDistanceSq(xCoord+0.5, yCoord+0.5, zCoord+0.5);
+		if (dd <= soundDist*soundDist) {
+			double d = Math.sqrt(dd);
+			float f = d < soundDist*0.5 ? 1F : (float)(2F*(1-d/soundDist));
+			ReikaSoundHelper.playClientSound(ChromaSounds.REPEATERRING, xCoord+0.5, yCoord+0.5, zCoord+0.5, f, (float)CrystalMusicManager.instance.getDingPitchScale(e), false);
+		}
+
 		for (int i = 0; i < 128; i++) {
 			double r = ReikaRandomHelper.getRandomBetween(4D, 8D);
 			double v = ReikaRandomHelper.getRandomBetween(0.03125, 0.75);

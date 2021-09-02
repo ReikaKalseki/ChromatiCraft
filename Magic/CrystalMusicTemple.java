@@ -696,6 +696,7 @@ public class CrystalMusicTemple {
 		return age < 40 ? 1 : (age > 100 ? 0 : 1-(age-40)/60F);
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void renderAround(World world, Coordinate c2, BlockKey bk, IIcon ico, Tessellator v5, boolean liq, double minY) {
 
 		int x = c2.xCoord+tileLocation.xCoord;

@@ -152,6 +152,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 		return temple.isComplete();
 	}
 
+	@SideOnly(Side.CLIENT)
 	public boolean hasTempleRender() {
 		return temple.isRendering();
 	}
@@ -575,6 +576,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public AxisAlignedBB getRenderBoundingBox() {
 		return temple.isRendering() ? ReikaAABBHelper.getBlockAABB(this).expand(9, 6, 9) : super.getRenderBoundingBox();
 	}

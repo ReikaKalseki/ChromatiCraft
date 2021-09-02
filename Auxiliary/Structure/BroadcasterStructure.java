@@ -5,11 +5,26 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Base.ChromaStructureBase;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
+import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalBroadcaster;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 
 
 public class BroadcasterStructure extends ChromaStructureBase {
+
+	private static final int x0 = 6;
+	private static final int y0 = 23;
+	private static final int z0 = 6;
+
+	private int potentialGlass;
+
+	@Override
+	public void resetToDefaults() {
+		super.resetToDefaults();
+		potentialGlass = 0;
+	}
 
 	@Override
 	public FilledBlockArray getArray(World world, int x, int y, int z) {
@@ -669,7 +684,7 @@ public class BroadcasterStructure extends ChromaStructureBase {
 		array.setBlock(x+12, y+3, z+7, crystalstone, 10);
 
 		this.setTile(array, x+6, y+6, z+6, ChromaTiles.COMPOUND);
-		this.setTile(array, x+6, y+23, z+6, ChromaTiles.BROADCAST);
+		this.setTile(array, x+x0, y+y0, z+z0, ChromaTiles.BROADCAST);
 
 		array.setBlock(x+6, y+0, z+6, crystalstone, 0);
 
@@ -684,90 +699,122 @@ public class BroadcasterStructure extends ChromaStructureBase {
 		array.setBlock(x+6, y+24, z+6, crystalstone, 0);
 		array.setBlock(x+6, y+25, z+6, crystalstone, 0);
 
-		array.setBlock(x+6, y+20, z+6, Blocks.air);
+		this.setAir(array, x, 6, y, 20, z, 6);
 
-		array.setBlock(x+3, y+4, z+5, Blocks.air);
-		array.setBlock(x+3, y+4, z+6, Blocks.air);
-		array.setBlock(x+3, y+4, z+7, Blocks.air);
-		array.setBlock(x+3, y+5, z+5, Blocks.air);
-		array.setBlock(x+3, y+5, z+6, Blocks.air);
-		array.setBlock(x+3, y+5, z+7, Blocks.air);
-		array.setBlock(x+3, y+6, z+5, Blocks.air);
-		array.setBlock(x+3, y+6, z+6, Blocks.air);
-		array.setBlock(x+3, y+6, z+7, Blocks.air);
-		array.setBlock(x+3, y+7, z+5, Blocks.air);
-		array.setBlock(x+3, y+7, z+6, Blocks.air);
-		array.setBlock(x+3, y+7, z+7, Blocks.air);
-		array.setBlock(x+4, y+5, z+5, Blocks.air);
-		array.setBlock(x+4, y+5, z+6, Blocks.air);
-		array.setBlock(x+4, y+5, z+7, Blocks.air);
-		array.setBlock(x+4, y+6, z+5, Blocks.air);
-		array.setBlock(x+4, y+6, z+6, Blocks.air);
-		array.setBlock(x+4, y+6, z+7, Blocks.air);
-		array.setBlock(x+5, y+4, z+3, Blocks.air);
-		array.setBlock(x+5, y+4, z+9, Blocks.air);
-		array.setBlock(x+5, y+5, z+3, Blocks.air);
-		array.setBlock(x+5, y+5, z+4, Blocks.air);
-		array.setBlock(x+5, y+5, z+8, Blocks.air);
-		array.setBlock(x+5, y+5, z+9, Blocks.air);
-		array.setBlock(x+5, y+6, z+3, Blocks.air);
-		array.setBlock(x+5, y+6, z+4, Blocks.air);
-		array.setBlock(x+5, y+6, z+6, Blocks.air);
-		array.setBlock(x+5, y+6, z+8, Blocks.air);
-		array.setBlock(x+5, y+6, z+9, Blocks.air);
-		array.setBlock(x+5, y+7, z+3, Blocks.air);
-		array.setBlock(x+5, y+7, z+9, Blocks.air);
-		array.setBlock(x+5, y+23, z+6, Blocks.air);
-		array.setBlock(x+6, y+4, z+3, Blocks.air);
-		array.setBlock(x+6, y+4, z+9, Blocks.air);
-		array.setBlock(x+6, y+5, z+3, Blocks.air);
-		array.setBlock(x+6, y+5, z+4, Blocks.air);
-		array.setBlock(x+6, y+5, z+8, Blocks.air);
-		array.setBlock(x+6, y+5, z+9, Blocks.air);
-		array.setBlock(x+6, y+6, z+3, Blocks.air);
-		array.setBlock(x+6, y+6, z+4, Blocks.air);
-		array.setBlock(x+6, y+6, z+5, Blocks.air);
-		array.setBlock(x+6, y+6, z+7, Blocks.air);
-		array.setBlock(x+6, y+6, z+8, Blocks.air);
-		array.setBlock(x+6, y+6, z+9, Blocks.air);
-		array.setBlock(x+6, y+7, z+3, Blocks.air);
-		array.setBlock(x+6, y+7, z+9, Blocks.air);
-		array.setBlock(x+6, y+23, z+5, Blocks.air);
-		array.setBlock(x+6, y+23, z+7, Blocks.air);
-		array.setBlock(x+7, y+4, z+3, Blocks.air);
-		array.setBlock(x+7, y+4, z+9, Blocks.air);
-		array.setBlock(x+7, y+5, z+3, Blocks.air);
-		array.setBlock(x+7, y+5, z+4, Blocks.air);
-		array.setBlock(x+7, y+5, z+8, Blocks.air);
-		array.setBlock(x+7, y+5, z+9, Blocks.air);
-		array.setBlock(x+7, y+6, z+3, Blocks.air);
-		array.setBlock(x+7, y+6, z+4, Blocks.air);
-		array.setBlock(x+7, y+6, z+6, Blocks.air);
-		array.setBlock(x+7, y+6, z+8, Blocks.air);
-		array.setBlock(x+7, y+6, z+9, Blocks.air);
-		array.setBlock(x+7, y+7, z+3, Blocks.air);
-		array.setBlock(x+7, y+7, z+9, Blocks.air);
-		array.setBlock(x+7, y+23, z+6, Blocks.air);
-		array.setBlock(x+8, y+5, z+5, Blocks.air);
-		array.setBlock(x+8, y+5, z+6, Blocks.air);
-		array.setBlock(x+8, y+5, z+7, Blocks.air);
-		array.setBlock(x+8, y+6, z+5, Blocks.air);
-		array.setBlock(x+8, y+6, z+6, Blocks.air);
-		array.setBlock(x+8, y+6, z+7, Blocks.air);
-		array.setBlock(x+9, y+4, z+5, Blocks.air);
-		array.setBlock(x+9, y+4, z+6, Blocks.air);
-		array.setBlock(x+9, y+4, z+7, Blocks.air);
-		array.setBlock(x+9, y+5, z+5, Blocks.air);
-		array.setBlock(x+9, y+5, z+6, Blocks.air);
-		array.setBlock(x+9, y+5, z+7, Blocks.air);
-		array.setBlock(x+9, y+6, z+5, Blocks.air);
-		array.setBlock(x+9, y+6, z+6, Blocks.air);
-		array.setBlock(x+9, y+6, z+7, Blocks.air);
-		array.setBlock(x+9, y+7, z+5, Blocks.air);
-		array.setBlock(x+9, y+7, z+6, Blocks.air);
-		array.setBlock(x+9, y+7, z+7, Blocks.air);
+		this.setAir(array, x, 3, y, 4, z, 5);
+		this.setAir(array, x, 3, y, 4, z, 6);
+		this.setAir(array, x, 3, y, 4, z, 7);
+		this.setAir(array, x, 3, y, 5, z, 5);
+		this.setAir(array, x, 3, y, 5, z, 6);
+		this.setAir(array, x, 3, y, 5, z, 7);
+		this.setAir(array, x, 3, y, 6, z, 5);
+		this.setAir(array, x, 3, y, 6, z, 6);
+		this.setAir(array, x, 3, y, 6, z, 7);
+		this.setAir(array, x, 3, y, 7, z, 5);
+		this.setAir(array, x, 3, y, 7, z, 6);
+		this.setAir(array, x, 3, y, 7, z, 7);
+		this.setAir(array, x, 4, y, 5, z, 5);
+		this.setAir(array, x, 4, y, 5, z, 6);
+		this.setAir(array, x, 4, y, 5, z, 7);
+		this.setAir(array, x, 4, y, 6, z, 5);
+		this.setAir(array, x, 4, y, 6, z, 6);
+		this.setAir(array, x, 4, y, 6, z, 7);
+		this.setAir(array, x, 5, y, 4, z, 3);
+		this.setAir(array, x, 5, y, 4, z, 9);
+		this.setAir(array, x, 5, y, 5, z, 3);
+		this.setAir(array, x, 5, y, 5, z, 4);
+		this.setAir(array, x, 5, y, 5, z, 8);
+		this.setAir(array, x, 5, y, 5, z, 9);
+		this.setAir(array, x, 5, y, 6, z, 3);
+		this.setAir(array, x, 5, y, 6, z, 4);
+		this.setAir(array, x, 5, y, 6, z, 6);
+		this.setAir(array, x, 5, y, 6, z, 8);
+		this.setAir(array, x, 5, y, 6, z, 9);
+		this.setAir(array, x, 5, y, 7, z, 3);
+		this.setAir(array, x, 5, y, 7, z, 9);
+		this.setAir(array, x, 5, y, 23, z, 6);
+		this.setAir(array, x, 6, y, 4, z, 3);
+		this.setAir(array, x, 6, y, 4, z, 9);
+		this.setAir(array, x, 6, y, 5, z, 3);
+		this.setAir(array, x, 6, y, 5, z, 4);
+		this.setAir(array, x, 6, y, 5, z, 8);
+		this.setAir(array, x, 6, y, 5, z, 9);
+		this.setAir(array, x, 6, y, 6, z, 3);
+		this.setAir(array, x, 6, y, 6, z, 4);
+		this.setAir(array, x, 6, y, 6, z, 5);
+		this.setAir(array, x, 6, y, 6, z, 7);
+		this.setAir(array, x, 6, y, 6, z, 8);
+		this.setAir(array, x, 6, y, 6, z, 9);
+		this.setAir(array, x, 6, y, 7, z, 3);
+		this.setAir(array, x, 6, y, 7, z, 9);
+		this.setAir(array, x, 6, y, 23, z, 5);
+		this.setAir(array, x, 6, y, 23, z, 7);
+		this.setAir(array, x, 7, y, 4, z, 3);
+		this.setAir(array, x, 7, y, 4, z, 9);
+		this.setAir(array, x, 7, y, 5, z, 3);
+		this.setAir(array, x, 7, y, 5, z, 4);
+		this.setAir(array, x, 7, y, 5, z, 8);
+		this.setAir(array, x, 7, y, 5, z, 9);
+		this.setAir(array, x, 7, y, 6, z, 3);
+		this.setAir(array, x, 7, y, 6, z, 4);
+		this.setAir(array, x, 7, y, 6, z, 6);
+		this.setAir(array, x, 7, y, 6, z, 8);
+		this.setAir(array, x, 7, y, 6, z, 9);
+		this.setAir(array, x, 7, y, 7, z, 3);
+		this.setAir(array, x, 7, y, 7, z, 9);
+		this.setAir(array, x, 7, y, 23, z, 6);
+		this.setAir(array, x, 8, y, 5, z, 5);
+		this.setAir(array, x, 8, y, 5, z, 6);
+		this.setAir(array, x, 8, y, 5, z, 7);
+		this.setAir(array, x, 8, y, 6, z, 5);
+		this.setAir(array, x, 8, y, 6, z, 6);
+		this.setAir(array, x, 8, y, 6, z, 7);
+		this.setAir(array, x, 9, y, 4, z, 5);
+		this.setAir(array, x, 9, y, 4, z, 6);
+		this.setAir(array, x, 9, y, 4, z, 7);
+		this.setAir(array, x, 9, y, 5, z, 5);
+		this.setAir(array, x, 9, y, 5, z, 6);
+		this.setAir(array, x, 9, y, 5, z, 7);
+		this.setAir(array, x, 9, y, 6, z, 5);
+		this.setAir(array, x, 9, y, 6, z, 6);
+		this.setAir(array, x, 9, y, 6, z, 7);
+		this.setAir(array, x, 9, y, 7, z, 5);
+		this.setAir(array, x, 9, y, 7, z, 6);
+		this.setAir(array, x, 9, y, 7, z, 7);
+		/*
+		int rh = TileEntityCrystalBroadcaster.GLASS_RANGE_H;
+		int rv = TileEntityCrystalBroadcaster.GLASS_RANGE_V;
+		for (int i = -rh; i <= rh; i++) {
+			for (int k = -rh; k <= rh; k++) {
+				for (int j = -rv; j <= rv; j++) {
+					int dx = x+x0+i;
+					int dy = y+y0+j;
+					int dz = z+z0+k;
+					BlockKey bk = array.getBlockKeyAt(dx, dy, dz);
+					if (bk != null && !bk.blockID.isAir(world, dx, dy, dz))
+						continue;
+					this.setAir(array, dx, 0, dy, 0, dz, 0);
+					array.addBlock(dx, dy, dz, ChromaBlocks.DIMGEN.getBlockInstance(), DimDecoTypes.CLIFFGLASS.ordinal());
+					potentialGlass++;
+				}
+			}
+		}*/
 
 		return array;
+	}
+
+	private void setAir(FilledBlockArray array, int x, int dx, int y, int dy, int z, int dz) {
+		array.setBlock(x+dx, y+dy, z+dz, Blocks.air);
+		int rh = TileEntityCrystalBroadcaster.GLASS_RANGE_H;
+		int rv = TileEntityCrystalBroadcaster.GLASS_RANGE_V;
+		if (dy >= y0-rv && dy <= y0+rv && dx >= x0-rh && dx <= x0+rh && dz >= z0-rh && dz <= z0+rh) {
+			array.addBlock(x+dx, y+dy, z+dz, ChromaBlocks.DIMGEN.getBlockInstance(), DimDecoTypes.CLIFFGLASS.ordinal());
+			//potentialGlass++;
+		}
+	}
+
+	public int getGlassCount() {
+		return potentialGlass;
 	}
 
 }

@@ -938,10 +938,13 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void autoCollectDirect(EntityJoinWorldEvent evt) {
-		if (collectItemPlayer != null && evt.entity instanceof EntityItem && !ReikaInventoryHelper.isFull(collectItemPlayer.inventory)) {
-			EntityItem ei = (EntityItem)evt.entity;
-			if (!MinecraftForge.EVENT_BUS.post(new EntityItemPickupEvent(collectItemPlayer, ei)))
-				ReikaPlayerAPI.addOrDropItem(ei.getEntityItem(), collectItemPlayer);
+		if (collectItemPlayer != null && evt.entity instanceof EntityItem) {
+			if (!ReikaInventoryHelper.isFull(collectItemPlayer.inventory)) {
+				EntityItem ei = (EntityItem)evt.entity;
+				boolean cancel = MinecraftForge.EVENT_BUS.post(new EntityItemPickupEvent(collectItemPlayer, ei));
+				if (cancel || ei.isDead || ei.getEntityItem().stackSize <= 0)
+					evt.setCanceled(true);
+			}
 			collectItemPlayer = null;
 		}
 	}
