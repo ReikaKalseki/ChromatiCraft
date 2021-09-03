@@ -16,6 +16,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.InfinityRaider.AgriCraft.api.API;
+import com.InfinityRaider.AgriCraft.api.v1.BlockWithMeta;
+import com.InfinityRaider.AgriCraft.api.v2.APIv2;
 import com.chocolate.chocolateQuest.API.RegisterChestItem;
 import com.google.common.base.Throwables;
 
@@ -32,6 +35,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
+import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone.Variants;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
@@ -622,5 +626,9 @@ public class ModInteraction {
 		else {
 			ChromatiCraft.logger.logError("Entry for biome "+biome.biomeName+" was null.");
 		}
+	}
+
+	public static void registerCliffSoil() {
+		((APIv2)API.getAPI(2)).registerDefaultSoil(new BlockWithMeta(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.FARMLAND.getMeta(false, false)));
 	}
 }

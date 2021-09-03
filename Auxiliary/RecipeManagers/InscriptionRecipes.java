@@ -132,7 +132,7 @@ public class InscriptionRecipes {
 		ItemStack in = crl.parseItemString(lb.getString("input"), null, false);
 		int time = lb.getInt("duration");
 		try {
-			InscriptionRecipe r = this.addCustomRecipe(new BlockKey(in), new BlockKey(out), time);
+			InscriptionRecipe r = this.addCustomRecipe(BlockKey.fromItem(in), BlockKey.fromItem(out), time);
 		}
 		catch (Exception e) {
 			throw new IllegalArgumentException("The specified item is not a block!");

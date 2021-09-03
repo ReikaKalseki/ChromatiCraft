@@ -82,7 +82,7 @@ public class OreOverlayRenderer {
 		for (ModOreList ore : ModOreList.oreList) {
 			OreBlock ob = new OreBlock(ore);
 			for (ItemStack is : ore.getAllOreBlocks())
-				blocks.put(new BlockKey(is), ob);
+				blocks.put(BlockKey.fromItem(is), ob);
 		}
 		ChromatiCraft.logger.log("Initialized ore map with "+blocks.size()+" entries: "+blocks.keySet());
 	}
@@ -97,7 +97,7 @@ public class OreOverlayRenderer {
 		ItemStack ore = ItemStack.loadItemStackFromNBT(is.stackTagCompound.getCompoundTag("oreType"));
 		if (ore == null)
 			return null;
-		return blocks.get(new BlockKey(ore));
+		return blocks.get(BlockKey.fromItem(ore));
 	}
 
 	public static void addBlockDelegate(Block b, int meta, OrePingDelegate delegate) {

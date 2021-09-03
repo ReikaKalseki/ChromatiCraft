@@ -37,6 +37,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
+import Reika.DragonAPI.Exception.UnreachableCodeException;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -460,7 +461,7 @@ public class EssentiaNetwork {
 
 	}
 
-	private static class LabelledJarEndpoint extends ActiveEndpoint {
+	private static class LabelledJarEndpoint extends ActiveEndpoint implements Comparable<LabelledJarEndpoint> {
 
 		private final Aspect filter;
 		private final boolean isVoid;
@@ -477,8 +478,12 @@ public class EssentiaNetwork {
 			if (tile == null)
 				return null;
 			try {
+				int has = amountField.getInt(tile);
+				/*
 				int base = isVoid ? 65 : 64;
-				int amt = base-amountField.getInt(tile);
+				int amt = base-has;
+				 */
+				int amt = isVoid && has >= 64 ? 0 : 1+has;
 				return amt > 0 ? new AspectList().add(filter, amt) : null;
 			}
 			catch (Exception e) {
@@ -509,6 +514,22 @@ public class EssentiaNetwork {
 				return 0;
 			}
 			return super.addAspect(world, a, amount);
+		}
+
+		@Override
+		public int compareTo(LabelledJarEndpoint o) {
+			if (o.isVoid == isVoid) {
+				return 0;
+			}
+			else if (isVoid) {
+				return 1;
+			}
+			else if (o.isVoid) {
+				return -1;
+			}
+			else {
+				throw new UnreachableCodeException("Two booleans were neither equal nor was either true. Get a new JVM, because yours is broken.");
+			}
 		}
 
 	}
@@ -831,13 +852,16 @@ public class EssentiaNetwork {
 		}
 
 		public int compare(NetworkEndpoint o1, NetworkEndpoint o2) {
-			if (o1 instanceof ActiveEndpoint && o2 instanceof ActiveEndpoint) {
+			if (o1.getClass() == o2.getClass() && o1 instanceof LabelledJarEndpoint) {
+				return ((LabelledJarEndpoint)o1).compareTo((LabelledJarEndpoint)o2);
+			}
+			else if (o1 instanceof ActiveEndpoint && o2 instanceof ActiveEndpoint) {
 				ActiveEndpoint a1 = (ActiveEndpoint)o1;
 				ActiveEndpoint a2 = (ActiveEndpoint)o2;
 				AspectList p1 = suction ? a1.getPull(referenceWorld) : a1.getPush(referenceWorld);
 				AspectList p2 = suction ? a2.getPull(referenceWorld) : a2.getPush(referenceWorld);
 				if (p1 == null && p2 == null) {
-					return 0;
+					return this.compareTiles(a1, a2);
 				}
 				else if (p1 == null) {
 					return 1;
@@ -846,7 +870,9 @@ public class EssentiaNetwork {
 					return -1;
 				}
 				else {
-					return 0;
+					int amt1 = p1.visSize();
+					int amt2 = p2.visSize();
+					return amt1 == amt2 ? this.compareTiles(a1, a2) : -Integer.compare(amt1, amt2);
 				}
 			}
 			if (o1 instanceof ActiveEndpoint) {
@@ -861,6 +887,16 @@ public class EssentiaNetwork {
 					ret = -ret;
 				return ret;
 			}
+		}
+
+		private int compareTiles(ActiveEndpoint o1, ActiveEndpoint o2) {
+			if (o1.getClass() == o2.getClass())
+				return 0;
+			if (o1 instanceof LabelledJarEndpoint)
+				return 1;
+			if (o2 instanceof LabelledJarEndpoint)
+				return -1;
+			return 0;
 		}
 	}
 

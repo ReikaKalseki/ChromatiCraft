@@ -723,6 +723,10 @@ public class ChromatiCraft extends DragonAPIMod {
 			MESystemReader.registerMESystemEffect(UABombingEffects.instance.createMESystemEffect());
 		}
 
+		if (ModList.AGRICRAFT.isLoaded()) {
+			ModInteraction.registerCliffSoil();
+		}
+
 		ChunkProviderChroma.regenerateGenerators();
 		RosettaStone.init.test();
 

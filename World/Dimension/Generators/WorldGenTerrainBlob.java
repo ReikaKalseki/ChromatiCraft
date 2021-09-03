@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -88,11 +88,11 @@ public class WorldGenTerrainBlob extends ChromaWorldGenerator {
 				break;
 			case 4:
 				if (ModOreList.PLATINUM.existsInGame())
-					b.centerBlock = new BlockKey(ModOreList.PLATINUM.getRandomOreBlock());
+					b.centerBlock = BlockKey.fromItem(ModOreList.PLATINUM.getRandomOreBlock());
 				break;
 			case 5:
 				if (ModOreList.IRIDIUM.existsInGame())
-					b.centerBlock = new BlockKey(ModOreList.IRIDIUM.getRandomOreBlock());
+					b.centerBlock = BlockKey.fromItem(ModOreList.IRIDIUM.getRandomOreBlock());
 				break;
 			case 10:
 				b.centerBlock = new BlockKey(ChromaBlocks.DIMGEN.getBlockInstance(), DimDecoTypes.OCEANSTONE.ordinal());

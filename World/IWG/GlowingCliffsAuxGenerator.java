@@ -128,7 +128,7 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 		if (contours == null || noiseSeed != seed) {
 			contours = new SimplexNoiseGenerator(seed >> 1).setFrequency(1/16D).addOctave(2, 0.5, 1000);
 			islandFrequency = new SimplexNoiseGenerator(seed << 1).setFrequency(1/32D);
-			crystalNoise = (Simplex3DGenerator)new Simplex3DGenerator(-seed).setFrequency(1/24D);
+			crystalNoise = new Simplex3DGenerator(-seed).setFrequency(1/24D);
 			noiseSeed = seed;
 			treeRand.setSeed(seed);
 		}
@@ -325,7 +325,7 @@ public class GlowingCliffsAuxGenerator implements RetroactiveGenerator {
 			int n = 2+rand.nextInt(7);
 			for (int i = 0; i < n; i++) {
 				OreType ore = oreRand.getRandomEntry();
-				BlockKey bk = new BlockKey(ore.getFirstOreBlock());
+				BlockKey bk = BlockKey.fromItem(ore.getFirstOreBlock());
 				int dx = is.getRandomX(rand);
 				int dy = is.getRandomY(rand);
 				int dz = is.getRandomZ(rand);
