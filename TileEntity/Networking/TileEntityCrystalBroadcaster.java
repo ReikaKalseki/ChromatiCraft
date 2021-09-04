@@ -319,8 +319,8 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 
 	@SideOnly(Side.CLIENT)
 	public void onConnectedParticles(CrystalElement e) {
-		double soundDist = 512/Math.pow(1.04, glassBlocks);
-		double dd = Minecraft.getMinecraft().thePlayer.getDistanceSq(xCoord+0.5, yCoord+0.5, zCoord+0.5);
+		double soundDist = Math.max(8, 512/Math.pow(1.05, glassBlocks));
+		double dd = Minecraft.getMinecraft().thePlayer.getDistanceSq(xCoord+0.5, Minecraft.getMinecraft().thePlayer.posY, zCoord+0.5);
 		if (dd <= soundDist*soundDist) {
 			double d = Math.sqrt(dd);
 			float f = d < soundDist*0.5 ? 1F : (float)(2F*(1-d/soundDist));

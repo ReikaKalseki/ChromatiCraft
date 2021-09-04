@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -214,9 +216,9 @@ public class ProgressionLinking {
 	public static class LinkFailure {
 
 		private static final LinkFailure INVALID = new LinkFailure("Invalid Players", ChromaIcons.NOENTER);
-		private static final LinkFailure REGIONS = new LinkFailure("Progression Too Different", getInfoIconSlot(0, 4));
+		private static final LinkFailure REGIONS = new LinkFailure("Progression Too Different", getInfoIconSlot(1, 3));
 		private static final LinkFailure LEVELS = new LinkFailure("Mismatched Levels", getInfoIconSlot(0, 3));
-		private static final LinkFailure TOO_LATE = new LinkFailure("Too Late", getInfoIconSlot(0, 5));
+		private static final LinkFailure TOO_LATE = new LinkFailure("Too Late", getInfoIconSlot(2, 3));
 
 		public final String text;
 		private final String iconName;
@@ -259,15 +261,16 @@ public class ProgressionLinking {
 		}
 
 		@SideOnly(Side.CLIENT)
-		public void render(Tessellator v5, double s) {
+		public void render(Tessellator v5, double s, float f) {
+			BlendMode.DEFAULT.apply();
 			if (progress != null) {
-				progress.renderIconInWorld(v5, s, 0, 0);
+				progress.renderIconInWorld(v5, s, 0, 0, f);
 			}
 			else {
-				BlendMode.DEFAULT.apply();
+				GL11.glRotated(180, 0, 0, 1);
 				this.bindTexture();
 				v5.startDrawingQuads();
-				int a = 220+(int)(32*Math.sin(System.currentTimeMillis()/250D));
+				int a = (int)Math.min(255, f*(255-35*f+32*f*Math.sin(System.currentTimeMillis()/250D)));
 				v5.setColorRGBA_I(0xffffff, a);
 				TextureSubImage ico = icon != null ? icon : new TextureSubImage(ChromaIcons.X.getIcon());
 				v5.addVertexWithUV(-s, s, 0, ico.minU, ico.maxV);
@@ -275,6 +278,7 @@ public class ProgressionLinking {
 				v5.addVertexWithUV(s, -s, 0, ico.maxU, ico.minV);
 				v5.addVertexWithUV(-s, -s, 0, ico.minU, ico.minV);
 				v5.draw();
+				GL11.glPopMatrix();
 			}
 		}
 

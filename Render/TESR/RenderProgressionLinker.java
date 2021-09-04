@@ -110,8 +110,11 @@ public class RenderProgressionLinker extends ChromaRenderBase implements Multipo
 
 				if (te.failure != null) {
 					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+					//v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(0xffffff, te.getFailFade()));
 					GL11.glTranslated(0, 2.25+0.125*Math.sin(te.getTicksExisted()/15D), 0);
-					te.failure.render(v5, 0.33);
+					GL11.glPushMatrix();
+					GL11.glRotated(RenderManager.instance.playerViewX, 1, 0, 0);
+					te.failure.render(v5, 0.33, te.getFailFade());
 					GL11.glPopAttrib();
 				}
 

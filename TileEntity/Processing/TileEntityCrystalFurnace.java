@@ -46,12 +46,13 @@ import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
+import Reika.DragonAPI.ModInteract.ItemStackRepository;
 import Reika.DragonAPI.ModInteract.ItemHandlers.AppEngHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.HardOresHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.DragonAPI.ModRegistry.ModOreList;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 import Reika.GeoStrata.Registry.RockTypes;
-import Reika.RotaryCraft.Auxiliary.ItemStacks;
 import Reika.RotaryCraft.Auxiliary.RecipeManagers.ExtractorModOres;
 
 import buildcraft.api.transport.IPipeConnection;
@@ -179,6 +180,8 @@ VariableTexture {
 		ElementTagCompound tag = smelt.copy();
 		if (ReikaBlockHelper.isOre(in))
 			tag.scale(1.5F);
+		else if (HardOresHandler.instance.isLoaded() && HardOresHandler.instance.getRootOre(in) != null)
+			tag.scale(4);
 		else if (ModList.ROTARYCRAFT.isLoaded() && ExtractorModOres.isOreFlake(in)) {
 			tag.scale(2F);
 			OreType ore = ExtractorModOres.getOreFromExtract(in);
@@ -223,7 +226,7 @@ VariableTexture {
 			//ReikaItemHelper.matchStacks(out, RockTypes.getTypeFromID(Block.getBlockFromItem(in.getItem())).getItem(RockShapes.SMOOTH)))
 			return 1;
 		}
-		else if (ModList.ROTARYCRAFT.isLoaded() && ReikaItemHelper.matchStacks(in, ItemStacks.ironscrap))
+		else if (ModList.ROTARYCRAFT.isLoaded() && ReikaItemHelper.matchStacks(in, ItemStackRepository.instance.getItem(ModList.ROTARYCRAFT, "ironscrap")))
 			return 1;
 		else if (ModList.THAUMCRAFT.isLoaded() && in.getItem() == ThaumItemHelper.ItemEntry.NUGGETCLUSTER.getItem().getItem()) {
 			return 2*MULTIPLY;
@@ -249,6 +252,12 @@ VariableTexture {
 				ret *= ore.getDropCount();
 			}
 			return ret;
+		}
+		else if (HardOresHandler.instance.isLoaded() && HardOresHandler.instance.getRootOre(in) != null) {
+			in = HardOresHandler.instance.getRootOre(in);
+			out = FurnaceRecipes.smelting().getSmeltingResult(in);
+			if (out != null && !ReikaItemHelper.matchStacks(in, out))
+				return HardOresHandler.BLOCK_YIELD*getMultiplyRate(in, out);
 		}
 		int[] ids = OreDictionary.getOreIDs(in);
 		for (int i = 0; i < ids.length; i++) {
