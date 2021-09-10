@@ -23,8 +23,6 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Instantiable.Event.BlockTickEvent;
-import Reika.DragonAPI.Instantiable.Event.BlockTickEvent.UpdateFlags;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaCropHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -94,7 +92,6 @@ public class TileEntityCropSpeedPlant extends TileEntityMagicPlant {
 		flag |= ModCropList.getModCrop(b, meta) != null;
 		if (flag) {
 			c.updateTick(world);
-			BlockTickEvent.fire(world, x, y, z, b, UpdateFlags.FORCED.flag);
 		}
 	}
 

@@ -257,7 +257,7 @@ VariableTexture {
 			in = HardOresHandler.instance.getRootOre(in);
 			out = FurnaceRecipes.smelting().getSmeltingResult(in);
 			if (out != null && !ReikaItemHelper.matchStacks(in, out))
-				return HardOresHandler.BLOCK_YIELD*getMultiplyRate(in, out);
+				return HardOresHandler.instance.getYield(in)*getMultiplyRate(in, out);
 		}
 		int[] ids = OreDictionary.getOreIDs(in);
 		for (int i = 0; i < ids.length; i++) {

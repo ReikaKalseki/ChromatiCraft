@@ -294,7 +294,8 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 	}
 
 	private TileEntity getAdjacentTargetTile(ForgeDirection dir) {
-		return this.isLinked() && this.getOther() != null ? this.getOther().getAdjacentTileEntity(dir) : null;
+		TileEntity te = this.isLinked() && this.getOther() != null ? this.getOther().getAdjacentTileEntity(dir) : null;
+		return te != null && !te.isInvalid() && te.worldObj != null ? te : null;
 	}
 
 	private TileEntity getSingleDirTile() {

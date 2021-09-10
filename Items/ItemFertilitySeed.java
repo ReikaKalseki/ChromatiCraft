@@ -22,7 +22,6 @@ import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemChromaBasic;
@@ -92,18 +91,22 @@ public class ItemFertilitySeed extends ItemChromaBasic implements BreakerCallbac
 		if (ei.age < INITIAL_DELAY) {
 			//vanilla code
 		}
-		else if (ei.age < INITIAL_DELAY+10 && !ei.worldObj.isRemote) {
-			ItemStack is = ei.getEntityItem();
-			int ticks = (2+2*is.getItemDamage())*is.stackSize;
-			for (int i = 0; i < ticks; i++) {
-				int x = MathHelper.floor_double(ReikaRandomHelper.getRandomPlusMinus(ei.posX, 2));
-				int y = MathHelper.floor_double(ReikaRandomHelper.getRandomPlusMinus(ei.posY, 1));
-				int z = MathHelper.floor_double(ReikaRandomHelper.getRandomPlusMinus(ei.posZ, 2));
-				Block b = ei.worldObj.getBlock(x, y, z);
-				if (this.canTickBlock(b, ei.worldObj.getBlockMetadata(x, y, z))) {
-					b.updateTick(ei.worldObj, x, y, z, ei.worldObj.rand);
-					MinecraftForge.EVENT_BUS.post(new BlockTickEvent(ei.worldObj, x, y, z, b, UpdateFlags.FORCED.flag));
-					ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.FERTILITYSEED.ordinal(), ei.worldObj, x, y, z, 96);
+		else if (!ei.worldObj.isRemote && ei.age < INITIAL_DELAY+10) {
+			int x0 = MathHelper.floor_double(ei.posX);
+			int y0 = MathHelper.floor_double(ei.posY);
+			int z0 = MathHelper.floor_double(ei.posZ);
+			if (ei.worldObj.checkChunksExist(x0-3, y0-3, z0-3, x0+3, y0+3, z0+3)) {
+				ItemStack is = ei.getEntityItem();
+				int ticks = (2+2*is.getItemDamage())*is.stackSize;
+				for (int i = 0; i < ticks; i++) {
+					int x = ReikaRandomHelper.getRandomPlusMinus(x0, 2);
+					int y = ReikaRandomHelper.getRandomPlusMinus(y0, 1);
+					int z = ReikaRandomHelper.getRandomPlusMinus(z0, 2);
+					Block b = ei.worldObj.getBlock(x, y, z);
+					if (this.canTickBlock(b, ei.worldObj.getBlockMetadata(x, y, z))) {
+						BlockTickEvent.fire(b, ei.worldObj, x, y, z, UpdateFlags.FORCED);
+						ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.FERTILITYSEED.ordinal(), ei.worldObj, x, y, z, 96);
+					}
 				}
 			}
 		}

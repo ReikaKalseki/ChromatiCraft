@@ -83,6 +83,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityFireFX;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
@@ -99,6 +100,8 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
+import Reika.DragonAPI.Instantiable.Event.BlockTickEvent;
+import Reika.DragonAPI.Instantiable.Event.BlockTickEvent.UpdateFlags;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledBlockPlace;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledPacket;
@@ -920,7 +923,7 @@ public class AbilityCalls {
 		}
 		else {
 			int power = AbilityHelper.instance.getGrowAuraState(ep);
-			RainbowTreeEffects.instance.doRainbowTreeEffects(ep.worldObj, x, y, z, 4, 0.25, ep.worldObj.rand, false);
+			RainbowTreeEffects.instance.doRainbowTreeEffects(ep.worldObj, x, y, z, 4, 0.25, DragonAPICore.rand, false);
 			if (power >= 1) {
 				for (int i = 0; i < 8; i++) {
 					int dx = ReikaRandomHelper.getRandomPlusMinus(x, 8);
@@ -939,12 +942,12 @@ public class AbilityCalls {
 							ItemDye.applyBonemeal(fake.getCurrentEquippedItem().copy(), ep.worldObj, dx, dy, dz, fake);
 						}
 						else {
-							b.updateTick(ep.worldObj, dx, dy, dz, ep.worldObj.rand);
+							BlockTickEvent.fire(b, ep.worldObj, dx, dy, dz, DragonAPICore.rand, UpdateFlags.getForcedUnstoppableTick());
 						}
 					}
 				}
 			}
-			if (ModList.REACTORCRAFT.isLoaded() && ep.worldObj.rand.nextInt(40) == 0) {
+			if (ModList.REACTORCRAFT.isLoaded() && DragonAPICore.rand.nextInt(40) == 0) {
 				cleanRadiation(ep);
 			}
 			if (ModList.FORESTRY.isLoaded()) {

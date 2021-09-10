@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRedstoneDiode;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
@@ -37,8 +36,7 @@ public class TileEntityBlockTicker extends TileEntityAdjacencyUpgrade {
 			Block b = world.getBlock(dx, dy, dz);
 			if (this.canTickBlock(b)) {
 				if (!world.isRemote) {
-					b.updateTick(world, dx, dy, dz, rand);
-					MinecraftForge.EVENT_BUS.post(new BlockTickEvent(world, dx, dy, dz, b, UpdateFlags.FORCED.flag));
+					BlockTickEvent.fire(b, world, dx, dy, dz, rand, UpdateFlags.getForcedUnstoppableTick());
 				}
 				ret = EffectResult.ACTION;
 			}

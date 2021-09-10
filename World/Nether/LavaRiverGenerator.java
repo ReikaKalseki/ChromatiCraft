@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -25,6 +25,7 @@ import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Auxiliary.WorldGenInterceptionRegistry;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Maps.ThresholdMapping;
+import Reika.DragonAPI.Instantiable.Event.BlockTickEvent;
 import Reika.DragonAPI.Instantiable.Event.SetBlockEvent;
 import Reika.DragonAPI.Instantiable.Math.Noise.SimplexNoiseGenerator;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -92,6 +93,7 @@ public class LavaRiverGenerator implements IPopulate {
 		WorldGenInterceptionRegistry.skipLighting = true;
 		SetBlockEvent.eventEnabledPre = false;
 		SetBlockEvent.eventEnabledPost = false;
+		BlockTickEvent.disallowAllUpdates = true;
 
 		for (int i = 0; i < 16; i++) {
 			for (int k = 0; k < 16; k++) {
@@ -123,6 +125,7 @@ public class LavaRiverGenerator implements IPopulate {
 			}
 		}
 
+		BlockTickEvent.disallowAllUpdates = false;
 		WorldGenInterceptionRegistry.skipLighting = false;
 		SetBlockEvent.eventEnabledPre = true;
 		SetBlockEvent.eventEnabledPost = true;

@@ -164,9 +164,7 @@ public class TileEntityCrystalLaser extends InventoriedRelayPowered {
 						}
 						break;
 					case GREEN:
-						Block b = world.getBlock(dx, dy, dz);
-						b.updateTick(world, dx, dy, dz, rand);
-						BlockTickEvent.fire(world, dx, dy, dz, b, UpdateFlags.FORCED.flag);
+						BlockTickEvent.fire(world, dx, dy, dz, rand, UpdateFlags.getForcedUnstoppableTick());
 						break;
 					case ORANGE:
 						ReikaWorldHelper.temperatureEnvironment(world, dx, dy, dz, 400);
