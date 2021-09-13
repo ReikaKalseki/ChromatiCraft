@@ -6,12 +6,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Random;
-import java.util.Set;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Block.BlockChromaDoor;
 import Reika.ChromatiCraft.Block.Dimension.Structure.LightPanel.BlockLightSwitch;
@@ -57,6 +57,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			doorKeys[i] = key;
 			usedKeys.add(key);
 		}
+
 		for (int i = 0; i < colors.length; i++) {
 			ColorPair key = ColorPair.random(rand);
 			while (usedColors.contains(key))
@@ -64,6 +65,16 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			colors[i] = key;
 			usedColors.add(key);
 		}
+
+		runes.put(new Coordinate(5, 8, 6), colors[0].color1);
+		runes.put(new Coordinate(6, 8, 5), colors[0].color2);
+		runes.put(new Coordinate(-5, 8, 6), colors[1].color1);
+		runes.put(new Coordinate(-6, 8, 5), colors[1].color2);
+		runes.put(new Coordinate(5, 8, -6), colors[2].color1);
+		runes.put(new Coordinate(6, 8, -5), colors[2].color2);
+		runes.put(new Coordinate(-5, 8, -6), colors[3].color1);
+		runes.put(new Coordinate(-6, 8, -5), colors[3].color2);
+
 		melody.addAll(MusicPuzzleGenerator.getRandomPrefab(rand, Integer.MAX_VALUE, null).getNotes());
 		this.calculateCrystals(rand);
 	}
@@ -292,8 +303,8 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 
 	private void updateColorDoors(World world, TileEntityStructControl root) {
 		HashSet<CrystalElement> opened = new HashSet();
-		for (Entry<Coordinate, CrystalElement> e : this.getRuneLocations(root)) {
-			Coordinate c = e.getKey().offset(0, 1, 0);
+		for (Entry<Coordinate, CrystalElement> e : runes.entrySet()) {
+			Coordinate c = e.getKey().offset(root.xCoord, root.yCoord+1, root.zCoord);
 			if (c.getBlock(world) == ChromaBlocks.LOCKKEY.getBlockInstance()) {
 				opened.add(e.getValue());
 			}
@@ -306,7 +317,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 
 	private void updateSwitchDoors(World world, TileEntityStructControl root) {
 		for (int i = 0; i < 4; i++) {
-			boolean flag = doorKeys[i].validate(world, this.switchNW(root), this.switchSW(root), this.switchNE(root), this.switchSE(root));
+			boolean flag = doorKeys[i].validate(world, this.switchLoc(root, ForgeDirection.NORTH, ForgeDirection.WEST), this.switchLoc(root, ForgeDirection.SOUTH, ForgeDirection.WEST), this.switchLoc(root, ForgeDirection.NORTH, ForgeDirection.EAST), this.switchLoc(root, ForgeDirection.SOUTH, ForgeDirection.EAST));
 			for (Coordinate c : this.getSwitchDoorLocations(root, i)) {
 				BlockShiftLock.setOpen(world, c.xCoord, c.yCoord, c.zCoord, flag);
 			}
@@ -319,36 +330,74 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		}
 	}
 
-	private Coordinate switchNW(TileEntityStructControl root) {
-
-	}
-
-	private Coordinate switchSW(TileEntityStructControl root) {
-
-	}
-
-	private Coordinate switchNE(TileEntityStructControl root) {
-
-	}
-
-	private Coordinate switchSE(TileEntityStructControl root) {
-
-	}
-
-	private Set<Entry<Coordinate, CrystalElement>> getRuneLocations(TileEntityStructControl root) {
-
+	private Coordinate switchLoc(TileEntityStructControl root, ForgeDirection ns, ForgeDirection ew) {
+		return new Coordinate(root).offset(ns.offsetZ*3, 11, ew.offsetX*3);
 	}
 
 	private Collection<Coordinate> getColorDoorLocations(TileEntityStructControl root) {
-
+		ArrayList<Coordinate> ret = new ArrayList();
+		for (int y = 5; y <= 7; y++) {
+			for (int i = 1; i <= 2; i++) {
+				ret.add(new Coordinate(root).offset(i, y, -3));
+				ret.add(new Coordinate(root).offset(3, y, i));
+				ret.add(new Coordinate(root).offset(-i, y, 3));
+				ret.add(new Coordinate(root).offset(-3, y, -i));
+			}
+		}
+		return ret;
 	}
 
 	private Collection<Coordinate> getSwitchDoorLocations(TileEntityStructControl root, int i) {
-
+		ArrayList<Coordinate> ret = new ArrayList();
+		for (int y = 9; y <= 11; y++) {
+			for (int d = 5; d <= 6; d++) {
+				switch(i) {
+					case 0:
+						ret.add(new Coordinate(root).offset(2, y, -d));
+						ret.add(new Coordinate(root).offset(2, y, -d));
+						ret.add(new Coordinate(root).offset(d, y, -2));
+						ret.add(new Coordinate(root).offset(d, y, -2));
+						break;
+					case 1:
+						ret.add(new Coordinate(root).offset(2, y, d));
+						ret.add(new Coordinate(root).offset(2, y, d));
+						ret.add(new Coordinate(root).offset(d, y, 2));
+						ret.add(new Coordinate(root).offset(d, y, 2));
+						break;
+					case 2:
+						ret.add(new Coordinate(root).offset(-2, y, -d));
+						ret.add(new Coordinate(root).offset(-2, y, -d));
+						ret.add(new Coordinate(root).offset(-d, y, -2));
+						ret.add(new Coordinate(root).offset(-d, y, -2));
+						break;
+					case 3:
+						ret.add(new Coordinate(root).offset(-2, y, d));
+						ret.add(new Coordinate(root).offset(-2, y, d));
+						ret.add(new Coordinate(root).offset(-d, y, 2));
+						ret.add(new Coordinate(root).offset(-d, y, 2));
+						break;
+				}
+			}
+		}
+		return ret;
 	}
 
 	private Collection<Coordinate> getBarrierLocations(TileEntityStructControl root) {
-
+		ArrayList<Coordinate> ret = new ArrayList();
+		for (int x = -1; x <= 1; x++) {
+			for (int z = -1; z <= 1; z++) {
+				ret.add(new Coordinate(root).offset(x, 1, z));
+			}
+		}
+		for (int y = 5; y <= 7; y++) {
+			for (int d = 4; d <= 5; d++) {
+				ret.add(new Coordinate(root).offset(d, y, 3));
+				ret.add(new Coordinate(root).offset(-3, y, d));
+				ret.add(new Coordinate(root).offset(-d, y, -3));
+				ret.add(new Coordinate(root).offset(3, y, -d));
+			}
+		}
+		return ret;
 	}
 
 }
