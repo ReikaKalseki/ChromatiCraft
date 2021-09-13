@@ -97,6 +97,20 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		}
 	}
 
+	public void placeData(World world, TileEntityStructControl root) {
+		for (Entry<Coordinate, CrystalElement> e : runes.entrySet()) {
+			Coordinate c = e.getKey().offset(root.xCoord, root.yCoord, root.zCoord);
+			c.setBlock(world, ChromaBlocks.RUNE.getBlockInstance(), e.getValue().ordinal());
+		}
+
+		for (int i = 0; i < 4; i++) {
+			for (Coordinate c : this.getColorDoorLocations(root, i)) {
+				TileEntityColorLock te = (TileEntityColorLock)c.getTileEntity(world);
+				te.setColors(colors[i].color1, colors[i].color2);
+			}
+		}
+	}
+
 	private CrystalElement findMostEffective(HashSet<MusicKey> needed) {
 		CrystalElement best = null;
 		int bestAmt = 0;
@@ -309,9 +323,11 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 				opened.add(e.getValue());
 			}
 		}
-		for (Coordinate c : this.getColorDoorLocations(root)) {
-			TileEntityColorLock te = (TileEntityColorLock)c.getTileEntity(world);
-			te.setOpenColors(opened);
+		for (int i = 0; i < 4; i++) {
+			for (Coordinate c : this.getColorDoorLocations(root, i)) {
+				TileEntityColorLock te = (TileEntityColorLock)c.getTileEntity(world);
+				te.setOpenColors(opened);
+			}
 		}
 	}
 
@@ -334,14 +350,24 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		return new Coordinate(root).offset(ns.offsetZ*3, 11, ew.offsetX*3);
 	}
 
-	private Collection<Coordinate> getColorDoorLocations(TileEntityStructControl root) {
+	private Collection<Coordinate> getColorDoorLocations(TileEntityStructControl root, int i) {
 		ArrayList<Coordinate> ret = new ArrayList();
 		for (int y = 5; y <= 7; y++) {
-			for (int i = 1; i <= 2; i++) {
-				ret.add(new Coordinate(root).offset(i, y, -3));
-				ret.add(new Coordinate(root).offset(3, y, i));
-				ret.add(new Coordinate(root).offset(-i, y, 3));
-				ret.add(new Coordinate(root).offset(-3, y, -i));
+			for (int d = 1; d <= 2; d++) {
+				switch(i) {
+					case 0:
+						ret.add(new Coordinate(root).offset(d, y, -3));
+						break;
+					case 1:
+						ret.add(new Coordinate(root).offset(3, y, d));
+						break;
+					case 2:
+						ret.add(new Coordinate(root).offset(-d, y, 3));
+						break;
+					case 3:
+						ret.add(new Coordinate(root).offset(-3, y, -d));
+						break;
+				}
 			}
 		}
 		return ret;
@@ -354,26 +380,18 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 				switch(i) {
 					case 0:
 						ret.add(new Coordinate(root).offset(2, y, -d));
-						ret.add(new Coordinate(root).offset(2, y, -d));
-						ret.add(new Coordinate(root).offset(d, y, -2));
 						ret.add(new Coordinate(root).offset(d, y, -2));
 						break;
 					case 1:
 						ret.add(new Coordinate(root).offset(2, y, d));
-						ret.add(new Coordinate(root).offset(2, y, d));
-						ret.add(new Coordinate(root).offset(d, y, 2));
 						ret.add(new Coordinate(root).offset(d, y, 2));
 						break;
 					case 2:
 						ret.add(new Coordinate(root).offset(-2, y, -d));
-						ret.add(new Coordinate(root).offset(-2, y, -d));
-						ret.add(new Coordinate(root).offset(-d, y, -2));
 						ret.add(new Coordinate(root).offset(-d, y, -2));
 						break;
 					case 3:
 						ret.add(new Coordinate(root).offset(-2, y, d));
-						ret.add(new Coordinate(root).offset(-2, y, d));
-						ret.add(new Coordinate(root).offset(-d, y, 2));
 						ret.add(new Coordinate(root).offset(-d, y, 2));
 						break;
 				}

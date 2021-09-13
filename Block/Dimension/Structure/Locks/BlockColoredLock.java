@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block.Dimension.Structure.Locks;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -171,6 +172,14 @@ public class BlockColoredLock extends BlockDimensionStructureTile {
 			closedColors.add(e);
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 			return this;
+		}
+
+		public void setColors(CrystalElement... e) {
+			colors.clear();
+			closedColors.clear();
+			colors.addAll(Arrays.asList(e));
+			closedColors.addAll(colors);
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
 		private void open() {
