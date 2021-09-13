@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -34,6 +35,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 import mcp.mobius.waila.api.IWailaConfigHandler;
@@ -263,6 +265,11 @@ public class BlockShiftLock extends BlockDimensionStructure implements IWailaDat
 	}
 
 	@Override
+	public int damageDropped(int meta) { //for pick block
+		return meta;
+	}
+
+	@Override
 	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
 		Passability p = Passability.list[world.getBlockMetadata(x, y, z)];
 		return !p.isPassable(side) && p.isDisguised(side.ordinal());
@@ -281,6 +288,50 @@ public class BlockShiftLock extends BlockDimensionStructure implements IWailaDat
 	@Override
 	public boolean shouldSideBeRendered(IBlockAccess iba, int dx, int dy, int dz, int s) {
 		return super.shouldSideBeRendered(iba, dx, dy, dz, s) && iba.getBlock(dx, dy, dz) != this;
+	}
+
+	public static void setOpen(World world, int x, int y, int z, boolean open) {
+		Passability p = Passability.list[world.getBlockMetadata(x, y, z)];
+		Passability put = p;
+		switch(p) {
+			case CLOSED:
+				put = Passability.OPEN;
+				break;
+			case OPEN:
+				put = Passability.CLOSED;
+				break;
+			case EAST_CLOSED:
+				put = Passability.EAST_OPEN;
+				break;
+			case EAST_OPEN:
+				put = Passability.EAST_CLOSED;
+				break;
+			case NORTH_CLOSED:
+				put = Passability.NORTH_OPEN;
+				break;
+			case NORTH_OPEN:
+				put = Passability.NORTH_CLOSED;
+				break;
+			case SOUTH_CLOSED:
+				put = Passability.SOUTH_OPEN;
+				break;
+			case SOUTH_OPEN:
+				put = Passability.SOUTH_CLOSED;
+				break;
+			case WEST_CLOSED:
+				put = Passability.WEST_OPEN;
+				break;
+			case WEST_OPEN:
+				put = Passability.WEST_CLOSED;
+				break;
+			default:
+				break;
+		}
+		if (put != p) {
+			world.setBlockMetadataWithNotify(x, y, z, put.ordinal(), 3);
+			world.markBlockForUpdate(x, y, z);
+			ReikaSoundHelper.playBreakSound(world, x, y, z, Blocks.stone);
+		}
 	}
 
 	@Override

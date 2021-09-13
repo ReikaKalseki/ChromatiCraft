@@ -74,7 +74,7 @@ public class MusicPuzzleGenerator extends DimensionStructureGenerator {
 			MusicPuzzle m = new MusicPuzzle(this, len, i);
 			MelodyPrefab p = null;
 			if (usedPrefabs.size() < prefabs.size() && rand.nextInt(5) == 0) {
-				p = this.getRandomPrefab(rand, len*5/2);
+				p = getRandomPrefab(rand, len*5/2, usedPrefabs);
 			}
 			if (p != null) {
 				m.loadPrefab(p);
@@ -91,9 +91,10 @@ public class MusicPuzzleGenerator extends DimensionStructureGenerator {
 		return Math.max(6, (2*ChromaOptions.getStructureDifficulty())+(step-9+ChromaOptions.getStructureDifficulty()));
 	}
 
-	private MelodyPrefab getRandomPrefab(Random rand, int maxlen) {
+	public static MelodyPrefab getRandomPrefab(Random rand, int maxlen, HashSet<MelodyPrefab> exclusions) {
 		HashSet<MelodyPrefab> validPrefabs = new HashSet(prefabs);
-		validPrefabs.removeAll(usedPrefabs);
+		if (exclusions != null)
+			validPrefabs.removeAll(exclusions);
 		Iterator<MelodyPrefab> it = validPrefabs.iterator();
 		while (it.hasNext()) {
 			MelodyPrefab pre = it.next();

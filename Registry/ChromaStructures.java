@@ -45,6 +45,7 @@ import Reika.ChromatiCraft.Auxiliary.Structure.TreeSendFocusStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.WeakRepeaterStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.WirelessPedestalL2Structure;
 import Reika.ChromatiCraft.Auxiliary.Structure.WirelessPedestalStructure;
+import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.BiomeStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.BurrowStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.CavernStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.DataTowerStructure;
@@ -86,6 +87,7 @@ public enum ChromaStructures implements StructureEnum<ChromaStructureBase> {
 	OCEAN(OceanStructure.class),
 	DESERT(DesertStructure.class),
 	SNOWSTRUCT(SnowStructure.class),
+	BIOMEFRAG(BiomeStructure.class),
 	PORTAL(PortalStructure.class),
 	PERSONAL(PersonalChargerStructure.class),
 	BROADCAST(BroadcasterStructure.class),

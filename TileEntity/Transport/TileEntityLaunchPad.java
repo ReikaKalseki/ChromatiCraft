@@ -43,6 +43,8 @@ public class TileEntityLaunchPad extends TileEntityChromaticBase implements Mult
 	private boolean structure;
 	private boolean enhanced;
 
+	private boolean needsBigUpdate;
+
 	private TimerMap<Entity> currentLaunches = new TimerMap();
 
 	public float getChargeFraction() {
@@ -88,6 +90,7 @@ public class TileEntityLaunchPad extends TileEntityChromaticBase implements Mult
 					for (Entity e : li) {
 						this.flingEntity(e, true);
 					}
+					needsBigUpdate = true;
 					ChromaSounds.KILLAURA.playSoundAtBlockNoAttenuation(this, 1, 0.5F, 90);
 					ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.LAUNCHFIRE.ordinal(), this, 90);
 				}
@@ -98,6 +101,10 @@ public class TileEntityLaunchPad extends TileEntityChromaticBase implements Mult
 			}
 			else if (charge > 0) {
 				charge = Math.max(0, charge-2);
+				if (charge == 0) {
+					needsBigUpdate = true;
+					this.scheduleBlockUpdate(2);
+				}
 			}
 			if (flag || charge > 0) {
 				this.syncAllData(false);
@@ -202,6 +209,16 @@ public class TileEntityLaunchPad extends TileEntityChromaticBase implements Mult
 		structure = NBT.getBoolean("struct");
 		enhanced = NBT.getBoolean("enhanced");
 		charge = NBT.getInteger("charge");
+	}
+
+	@Override
+	public int getUpdatePacketRadius() {
+		return needsBigUpdate ? 128 : 32;
+	}
+
+	@Override
+	protected void onSync() {
+		needsBigUpdate = false;
 	}
 
 	@Override

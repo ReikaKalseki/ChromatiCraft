@@ -36,6 +36,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.ModList;
@@ -163,6 +164,8 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 		Block b = world.getBlock(x, y, z);
 		if (b == this)
 			return true;
+		if (b == ChromaBlocks.PYLON.getBlockInstance() || b == ChromaBlocks.HOVER.getBlockInstance())
+			return false;
 		if (b.isOpaqueCube() || b.getRenderType() == 0)
 			return true;
 		if (b instanceof BlockStructureShield)

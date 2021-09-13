@@ -169,6 +169,7 @@ public class BlockColoredLock extends BlockDimensionStructureTile {
 		public TileEntityColorLock addColor(CrystalElement e) {
 			colors.add(e);
 			closedColors.add(e);
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 			return this;
 		}
 
@@ -253,9 +254,11 @@ public class BlockColoredLock extends BlockDimensionStructureTile {
 		}
 
 		private void recalcColors() {
+			LocksGenerator g = this.getGenerator();
+			if (g == null)
+				return;
 			boolean flag = true;
 			closedColors.clear();
-			LocksGenerator g = this.getGenerator();
 			if (g.getWhiteLock(channel) <= 0) {
 				for (CrystalElement e : colors) {
 					if (g.getColorCode(channel, e) <= 0) {
@@ -265,6 +268,13 @@ public class BlockColoredLock extends BlockDimensionStructureTile {
 				}
 			}
 			this.updateState(flag);
+		}
+
+		public void setOpenColors(Collection<CrystalElement> c) {
+			closedColors.clear();
+			closedColors.addAll(colors);
+			closedColors.removeAll(c);
+			this.recalcColors();
 		}
 
 		private void updateState(boolean flag) {

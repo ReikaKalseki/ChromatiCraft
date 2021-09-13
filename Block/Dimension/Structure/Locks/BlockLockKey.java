@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -35,6 +35,8 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
+import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
+import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl.InteractionDelegateTile;
 import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomBig;
 import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomEntry;
@@ -45,6 +47,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomSpiral;
 import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomTriple;
 import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomWhite;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
@@ -207,6 +210,13 @@ public class BlockLockKey extends Block {
 	public void breakBlock(World world, int x, int y, int z, Block b2, int meta2) {
 		if (!world.isRemote) {
 			this.closeLocks(world, x, y, z, meta2);
+			TileEntityLockKey te = (TileEntityLockKey)world.getTileEntity(x, y, z);
+			if (te.delegate != null) {
+				TileEntity te2 = te.delegate.getTileEntity(world);
+				if (te2 instanceof TileEntityStructControl) {
+					((TileEntityStructControl)te2).onDelegatedTileRemoved(world, x, y, z, te);
+				}
+			}
 		}
 		super.breakBlock(world, x, y, z, b2, meta2);
 	}
@@ -241,6 +251,8 @@ public class BlockLockKey extends Block {
 		ItemStack is = new ItemStack(this, 1, meta);
 		is.stackTagCompound = new NBTTagCompound();
 		is.stackTagCompound.setString("uid", te.uid.toString());
+		if (te.delegate != null)
+			te.delegate.writeToNBT("delegate", is.stackTagCompound);
 		ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, is);
 	}
 
@@ -250,9 +262,17 @@ public class BlockLockKey extends Block {
 			return;
 		if (is.stackTagCompound == null)
 			return;
-		((TileEntityLockKey)world.getTileEntity(x, y, z)).uid = UUID.fromString(is.stackTagCompound.getString("uid"));
+		TileEntityLockKey te = (TileEntityLockKey)world.getTileEntity(x, y, z);
+		te.uid = UUID.fromString(is.stackTagCompound.getString("uid"));
+		te.delegate = Coordinate.readFromNBT("delegate", is.stackTagCompound);
 
 		this.openLocks(world, x, y, z);
+		if (te.delegate != null) {
+			TileEntity te2 = te.delegate.getTileEntity(world);
+			if (te2 instanceof TileEntityStructControl) {
+				((TileEntityStructControl)te2).onDelegatedTileAdded(world, x, y, z, te);
+			}
+		}
 	}
 
 	/*
@@ -272,11 +292,34 @@ public class BlockLockKey extends Block {
 	}
 	 */
 
-	public static class TileEntityLockKey extends StructureBlockTile<LocksGenerator> {
+	public static class TileEntityLockKey extends StructureBlockTile<LocksGenerator> implements InteractionDelegateTile {
+
+		private Coordinate delegate;
 
 		@Override
 		public DimensionStructureType getType() {
 			return DimensionStructureType.LOCKS;
+		}
+
+		@Override
+		public void setDelegate(Coordinate c) {
+			delegate = c;
+		}
+
+		@Override
+		public void writeToNBT(NBTTagCompound NBT) {
+			super.writeToNBT(NBT);
+
+			if (delegate != null) {
+				delegate.writeToNBT("delegate", NBT);
+			}
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound NBT) {
+			super.readFromNBT(NBT);
+
+			delegate = Coordinate.readFromNBT("delegate", NBT);
 		}
 
 	}

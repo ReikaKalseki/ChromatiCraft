@@ -104,6 +104,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	private MonumentCompletionRitual monument;
 	//private long monumentTime;
 
+	private FragmentStructureData auxData;
+
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.STRUCTCONTROL;
@@ -836,6 +838,13 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		NBT.setBoolean("loot", hasLootRoom);
 
 		NBT.setBoolean("generror", generationErrored);
+
+		if (auxData != null) {
+			NBTTagCompound tag = new NBTTagCompound();
+			auxData.writeToNBT(tag);
+			NBT.setString("auxDataType", auxData.getClass().getName());
+			NBT.setTag("auxData", tag);
+		}
 	}
 
 	@Override
@@ -864,6 +873,19 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		hasLootRoom = NBT.getBoolean("loot");
 
 		generationErrored = NBT.getBoolean("generror");
+
+		if (NBT.hasKey("auxDataType")) {
+			try {
+				NBTTagCompound tag = NBT.getCompoundTag("auxData");
+				Class c = Class.forName(NBT.getString("auxDataType"));
+				auxData = (FragmentStructureData)c.newInstance();
+				auxData.readFromNBT(tag);
+			}
+			catch (Exception e) {
+				ChromatiCraft.logger.logError("Could not reload aux struture data: "+e.toString());
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -1050,6 +1072,39 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 	public void markErroredForRegen() {
 		generationErrored = true;
+	}
+
+	public void setStructureData(FragmentStructureData data) {
+		auxData = data;
+	}
+
+	public void onDelegatedTileAdded(World world, int x, int y, int z, InteractionDelegateTile te) {
+		auxData.handleTileAdd(world, x, y, z, te, this);
+	}
+
+	public void onDelegatedTileRemoved(World world, int x, int y, int z, InteractionDelegateTile te) {
+		auxData.handleTileRemove(world, x, y, z, te, this);
+	}
+
+	public void onDelegatedTileInteract(World world, int x, int y, int z, InteractionDelegateTile te) {
+		auxData.handleTileInteract(world, x, y, z, te, this);
+	}
+
+	public static interface FragmentStructureData {
+
+		void writeToNBT(NBTTagCompound tag);
+		void readFromNBT(NBTTagCompound tag);
+
+		void handleTileAdd(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root);
+		void handleTileRemove(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root);
+		void handleTileInteract(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root);
+
+	}
+
+	public static interface InteractionDelegateTile {
+
+		void setDelegate(Coordinate c);
+
 	}
 
 }
