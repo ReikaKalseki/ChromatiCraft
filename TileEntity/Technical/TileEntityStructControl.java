@@ -187,6 +187,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 					break;
 				case SNOWSTRUCT:
 					break;
+				case BIOMEFRAG:
+					break;
 				default:
 					break;
 			}
@@ -526,6 +528,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			case SNOWSTRUCT:
 				blocks = ChromaStructures.SNOWSTRUCT.getArray(world, x, y, z);
 				break;
+			case BIOMEFRAG:
+				blocks = ChromaStructures.BIOMEFRAG.getArray(world, x, y, z);
+				break;
 			default:
 				break;
 		}
@@ -566,7 +571,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	}*/
 
 	private void regenerate() {
-		int ver = ((GeneratedStructureBase)this.getStructureType().getStructure()).getStructureVersion();
+		if (struct == ChromaStructures.BIOMEFRAG)
+			return;
+		int ver = ((GeneratedStructureBase)struct.getStructure()).getStructureVersion();
 		if (version < ver) {
 			regenned = false;
 			version = ver;
@@ -936,6 +943,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				return ProgressStage.DESERTSTRUCT;
 			case SNOWSTRUCT:
 				return ProgressStage.SNOWSTRUCT;
+			case BIOMEFRAG:
+				return true ? ProgressStage.NEVER : null;
 			default:
 				return null;
 		}

@@ -291,6 +291,8 @@ public class BlockShiftLock extends BlockDimensionStructure implements IWailaDat
 	}
 
 	public static void setOpen(World world, int x, int y, int z, boolean open) {
+		if (world.getBlock(x, y, z) != ChromaBlocks.SHIFTLOCK.getBlockInstance())
+			return;
 		Passability p = Passability.list[world.getBlockMetadata(x, y, z)];
 		Passability put = p;
 		switch(p) {

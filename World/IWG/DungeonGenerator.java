@@ -108,7 +108,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	private EnumMap<ChromaStructures, TileEntityCache<StructureGenData>> structureMap = new EnumMap(ChromaStructures.class);
 
 	private DungeonGenerator() {
-		ChromaStructures[] li = {ChromaStructures.CAVERN, ChromaStructures.BURROW, ChromaStructures.OCEAN, ChromaStructures.DESERT, ChromaStructures.SNOWSTRUCT};
+		ChromaStructures[] li = {ChromaStructures.CAVERN, ChromaStructures.BURROW, ChromaStructures.OCEAN, ChromaStructures.DESERT, ChromaStructures.SNOWSTRUCT, ChromaStructures.BIOMEFRAG};
 		for (ChromaStructures s : li) {
 			structs.put(s, null);
 			structureMap.put(s, new TileEntityCache());
@@ -366,6 +366,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				return 256;
 			case SNOWSTRUCT:
 				return 768;
+			case BIOMEFRAG:
+				return 844;
 			default:
 				return 1;
 		}
@@ -383,6 +385,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				return 64;
 			case SNOWSTRUCT:
 				return 256;
+			case BIOMEFRAG:
+				return 384;
 			default:
 				return 1;
 		}
@@ -760,11 +764,13 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			case CAVERN:
 				return true;
 			case BURROW:
-				return !ocean && b.topBlock == Blocks.grass && !this.isValidBiome(ChromaStructures.SNOWSTRUCT, b);
+				return !ocean && b.topBlock == Blocks.grass && !this.isValidBiome(ChromaStructures.SNOWSTRUCT, b) && !ChromatiCraft.isCCBiome(b);
 			case DESERT:
 				return !ocean && this.isValidBiomeForDesertStruct(b);
 			case SNOWSTRUCT:
 				return !ocean && b.topBlock == Blocks.grass && b.getEnableSnow() && ReikaBiomeHelper.getBiomeDecorator(b).treesPerChunk < 1 && !b.biomeName.toLowerCase(Locale.ENGLISH).contains("forest");
+			case BIOMEFRAG:
+				return ChromatiCraft.isCCBiome(b);
 			default:
 				return false;
 		}

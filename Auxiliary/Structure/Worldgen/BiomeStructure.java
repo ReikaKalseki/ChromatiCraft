@@ -27,7 +27,7 @@ public class BiomeStructure extends FragmentStructureBase {
 	@Override
 	public void resetToDefaults() {
 		super.resetToDefaults();
-		puzzle = null;
+		//puzzle = null;
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class BiomeStructure extends FragmentStructureBase {
 						b = ChromaBlocks.HOVER.getBlockInstance();
 						m = HoverType.ELEVATE.getPermanentMeta();
 					}
-					else {
+					else if (j > 0) {
 						if (j == 6 && d > 1) {
 							m = BlockType.COBBLE.metadata;
 						}
@@ -103,7 +103,7 @@ public class BiomeStructure extends FragmentStructureBase {
 				}
 			}
 		}
-		for (int j = 1; j <= 6; j++) {
+		for (int j = 1; j <= 9; j++) {
 			for (int i = -3; i <= 3; i++) {
 				for (int k = -3; k <= 3; k++) {
 					if (j > 6 || Math.abs(i) == 3 || Math.abs(k) == 3) {
@@ -120,12 +120,54 @@ public class BiomeStructure extends FragmentStructureBase {
 							else if (j == 6 && (Math.abs(i) == 2 || Math.abs(k) == 2)) {
 								m = BlockType.COBBLE.metadata;
 							}
-							else if (j == 2 && (Math.abs(i) == 1 || Math.abs(k) == 1)) {
+							else if (j == 3 && (Math.abs(i) == 1 || Math.abs(k) == 1)) {
 								m = BlockType.GLASS.metadata;
 							}
 						}
 						array.setBlock(x+i, y+j, z+k, b, m);
 					}
+				}
+			}
+		}
+		for (int j = 6; j <= 9; j++) {
+			for (int d = -4; d <= 4; d++) {
+				Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
+				int m = BlockType.COBBLE.metadata;
+				if (Math.abs(d) <= 1) {
+					b = j == 6 || j == 9 ? Blocks.stone_brick_stairs : Blocks.air;
+					m = 0;
+				}
+				array.setBlock(x+d, y+j, z+4, b, m);
+				array.setBlock(x+d, y+j, z-4, b, m);
+				array.setBlock(x+4, y+j, z+d, b, m);
+				array.setBlock(x-4, y+j, z+d, b, m);
+			}
+		}
+		for (int j = 5; j <= 8; j++) {
+			for (int d = -6; d <= 6; d++) {
+				Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
+				int m = BlockType.STONE.metadata;
+				if (Math.abs(d) <= 1) {
+					b = j == 5 ? Blocks.stone_brick_stairs : Blocks.air;
+					m = 0;
+				}
+				else if (Math.abs(d) == 2) {
+					m = BlockType.COBBLE.metadata;
+				}
+				else if ((j == 7 || j == 8) && Math.abs(d) >= 3 && Math.abs(d) <= 5) {
+					m = BlockType.GLASS.metadata;
+				}
+				array.setBlock(x+d, y+j, z+7, b, m);
+				array.setBlock(x+d, y+j, z-7, b, m);
+				array.setBlock(x+7, y+j, z+d, b, m);
+				array.setBlock(x-7, y+j, z+d, b, m);
+			}
+		}
+		for (int i = -6; i <= 6; i++) {
+			for (int k = -6; k <= 6; k++) {
+				int d = Math.max(Math.abs(i), Math.abs(k));
+				if (d >= 4 && d <= 6) {
+					array.setBlock(x+i, y+5, z+k, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
 				}
 			}
 		}

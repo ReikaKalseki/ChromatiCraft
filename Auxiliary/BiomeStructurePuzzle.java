@@ -19,6 +19,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.LightPanel.BlockLightSwitch
 import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockColoredLock.TileEntityColorLock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockLockKey.TileEntityLockKey;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock;
+import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock.Passability;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
@@ -55,9 +56,11 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		keyIndex = rand.nextInt(8);
 
 		for (int i = 0; i < doorKeys.length; i++) {
-			SwitchGroup key = SwitchGroup.random(rand);
+			ForgeDirection ns = i <= 1 ? ForgeDirection.NORTH : ForgeDirection.SOUTH;
+			ForgeDirection ew = i%2 == 0 ? ForgeDirection.WEST : ForgeDirection.EAST;
+			SwitchGroup key = SwitchGroup.random(ns, ew, rand);
 			while (usedKeys.contains(key))
-				key = SwitchGroup.random(rand);
+				key = SwitchGroup.random(ns, ew, rand);
 			doorKeys[i] = key;
 			usedKeys.add(key);
 		}
@@ -70,14 +73,14 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			usedColors.add(key);
 		}
 
-		runes.put(new Coordinate(5, 8, 6), colors[0].color1);
-		runes.put(new Coordinate(6, 8, 5), colors[0].color2);
-		runes.put(new Coordinate(-5, 8, 6), colors[1].color1);
-		runes.put(new Coordinate(-6, 8, 5), colors[1].color2);
-		runes.put(new Coordinate(5, 8, -6), colors[2].color1);
-		runes.put(new Coordinate(6, 8, -5), colors[2].color2);
-		runes.put(new Coordinate(-5, 8, -6), colors[3].color1);
-		runes.put(new Coordinate(-6, 8, -5), colors[3].color2);
+		runes.put(new Coordinate(5, 5, 6), colors[0].color1);
+		runes.put(new Coordinate(6, 5, 5), colors[0].color2);
+		runes.put(new Coordinate(-5, 5, 6), colors[1].color1);
+		runes.put(new Coordinate(-6, 5, 5), colors[1].color2);
+		runes.put(new Coordinate(5, 5, -6), colors[2].color1);
+		runes.put(new Coordinate(6, 5, -5), colors[2].color2);
+		runes.put(new Coordinate(-5, 5, -6), colors[3].color1);
+		runes.put(new Coordinate(-6, 5, -5), colors[3].color2);
 
 		melody.addAll(MusicPuzzleGenerator.getRandomPrefab(rand, Integer.MAX_VALUE, null).getNotes());
 		this.calculateCrystals(rand);
@@ -117,14 +120,20 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			}
 		}
 
+		for (int i = 0; i < 4; i++) {
+			for (Entry<Coordinate, ForgeDirection> e : this.getSwitchDoorLocations(root, i).entrySet()) {
+				SwitchGroup gr = doorKeys[i];
+				e.getKey().setBlock(world, ChromaBlocks.SHIFTLOCK.getBlockInstance(), Passability.getDirectionalPassability(e.getValue(), false).ordinal());
+			}
+		}
+
 		for (Coordinate c : this.getSwitchLocations(root)) {
 			c.setBlock(world, ChromaBlocks.PANELSWITCH.getBlockInstance());
 			LightSwitchTile te = (LightSwitchTile)c.getTileEntity(world);
 			te.setDelegate(ref);
 			Coordinate red = c.offset(0, 1, 0);
 			Coordinate green = c.offset(0, -1, 0);
-			switchCache
-			red.setBlock(world, ChromaBlocks.LIGHTPANEL.getBlockInstance(), 2);
+			red.setBlock(world, ChromaBlocks.LIGHTPANEL.getBlockInstance(), 3);
 			green.setBlock(world, ChromaBlocks.LIGHTPANEL.getBlockInstance(), 0);
 		}
 
@@ -207,20 +216,26 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 
 	private static class SwitchGroup {
 
+		private final ForgeDirection areaNS;
+		private final ForgeDirection areaEW;
+
 		private final boolean NW;
 		private final boolean SW;
 		private final boolean NE;
 		private final boolean SE;
 
-		private SwitchGroup(boolean nw, boolean sw, boolean ne, boolean se) {
+		private SwitchGroup(ForgeDirection ns, ForgeDirection ew, boolean nw, boolean sw, boolean ne, boolean se) {
+			areaNS = ns;
+			areaEW = ew;
+
 			NW = nw;
 			SW = sw;
 			NE = ne;
 			SE = se;
 		}
 
-		private static SwitchGroup random(Random rand) {
-			return new SwitchGroup(rand.nextBoolean(), rand.nextBoolean(), rand.nextBoolean(), rand.nextBoolean());
+		private static SwitchGroup random(ForgeDirection ns, ForgeDirection ew, Random rand) {
+			return new SwitchGroup(ns, ew, rand.nextBoolean(), rand.nextBoolean(), rand.nextBoolean(), rand.nextBoolean());
 		}
 
 		@Override
@@ -243,11 +258,16 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			tag.setBoolean("ne", NE);
 			tag.setBoolean("sw", SW);
 			tag.setBoolean("se", SE);
+
+			tag.setInteger("ew", areaEW.ordinal());
+			tag.setInteger("ns", areaNS.ordinal());
 			return tag;
 		}
 
 		private static SwitchGroup readTag(NBTTagCompound tag) {
-			return new SwitchGroup(tag.getBoolean("nw"), tag.getBoolean("sw"), tag.getBoolean("ne"), tag.getBoolean("se"));
+			ForgeDirection ns = ForgeDirection.VALID_DIRECTIONS[tag.getInteger("ns")];
+			ForgeDirection ew = ForgeDirection.VALID_DIRECTIONS[tag.getInteger("ew")];
+			return new SwitchGroup(ns, ew, tag.getBoolean("nw"), tag.getBoolean("sw"), tag.getBoolean("ne"), tag.getBoolean("se"));
 		}
 
 		public boolean validate(World world, Coordinate switchNW, Coordinate switchSW, Coordinate switchNE, Coordinate switchSE) {
@@ -354,6 +374,8 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		for (int i = 0; i < 4; i++) {
 			for (Coordinate c : this.getColorDoorLocations(root, i)) {
 				TileEntityColorLock te = (TileEntityColorLock)c.getTileEntity(world);
+				if (te == null)
+					continue;
 				te.setOpenColors(opened);
 			}
 		}
@@ -362,7 +384,10 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 	private void updateSwitchDoors(World world, TileEntityStructControl root) {
 		for (int i = 0; i < 4; i++) {
 			boolean flag = doorKeys[i].validate(world, this.switchLoc(root, ForgeDirection.NORTH, ForgeDirection.WEST), this.switchLoc(root, ForgeDirection.SOUTH, ForgeDirection.WEST), this.switchLoc(root, ForgeDirection.NORTH, ForgeDirection.EAST), this.switchLoc(root, ForgeDirection.SOUTH, ForgeDirection.EAST));
-			for (Coordinate c : this.getSwitchDoorLocations(root, i)) {
+			Coordinate sw = this.switchLoc(root, doorKeys[i].areaNS, doorKeys[i].areaEW);
+			sw.offset(0, 1, 0).setBlockMetadata(world, flag ? 2 : 3);
+			sw.offset(0, -1, 0).setBlockMetadata(world, flag ? 1 : 0);
+			for (Coordinate c : this.getSwitchDoorLocations(root, i).keySet()) {
 				BlockShiftLock.setOpen(world, c.xCoord, c.yCoord, c.zCoord, flag);
 			}
 		}
@@ -410,26 +435,26 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		return ret;
 	}
 
-	private Collection<Coordinate> getSwitchDoorLocations(TileEntityStructControl root, int i) {
-		ArrayList<Coordinate> ret = new ArrayList();
+	private HashMap<Coordinate, ForgeDirection> getSwitchDoorLocations(TileEntityStructControl root, int i) {
+		HashMap<Coordinate, ForgeDirection> ret = new HashMap();
 		for (int y = 6; y <= 8; y++) {
 			for (int d = 5; d <= 6; d++) {
 				switch(i) {
-					case 0:
-						ret.add(new Coordinate(root).offset(2, y, -d));
-						ret.add(new Coordinate(root).offset(d, y, -2));
+					case 0: //nw
+						ret.put(new Coordinate(root).offset(-2, y, -d), ForgeDirection.EAST);
+						ret.put(new Coordinate(root).offset(-d, y, -2), ForgeDirection.SOUTH);
 						break;
-					case 1:
-						ret.add(new Coordinate(root).offset(2, y, d));
-						ret.add(new Coordinate(root).offset(d, y, 2));
+					case 1: //ne
+						ret.put(new Coordinate(root).offset(2, y, -d), ForgeDirection.WEST);
+						ret.put(new Coordinate(root).offset(d, y, -2), ForgeDirection.SOUTH);
 						break;
-					case 2:
-						ret.add(new Coordinate(root).offset(-2, y, -d));
-						ret.add(new Coordinate(root).offset(-d, y, -2));
+					case 2: //sw
+						ret.put(new Coordinate(root).offset(-2, y, d), ForgeDirection.EAST);
+						ret.put(new Coordinate(root).offset(-d, y, 2), ForgeDirection.NORTH);
 						break;
-					case 3:
-						ret.add(new Coordinate(root).offset(-2, y, d));
-						ret.add(new Coordinate(root).offset(-d, y, 2));
+					case 3: //se
+						ret.put(new Coordinate(root).offset(2, y, d), ForgeDirection.WEST);
+						ret.put(new Coordinate(root).offset(d, y, 2), ForgeDirection.NORTH);
 						break;
 				}
 			}

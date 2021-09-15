@@ -46,6 +46,9 @@ public class PlaceStructureCommand extends DragonCommandBase {
 			((GeneratedStructureBase)s.getStructure()).markForWorldgen();
 		}
 		CrystalElement e = s.requiresColor ? CrystalElement.valueOf(args[1].toUpperCase(Locale.ENGLISH)) : null;
+		if (s.getStructure() instanceof FragmentStructureBase) {
+			((FragmentStructureBase)s.getStructure()).setRNG(ep.getRNG());
+		}
 		FilledBlockArray arr = s.getArray(ep.worldObj, x, y, z, e);
 		arr.place();
 		if (s.getStructure() instanceof FragmentStructureBase) {

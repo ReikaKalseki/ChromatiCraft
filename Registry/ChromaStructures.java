@@ -197,6 +197,7 @@ public enum ChromaStructures implements StructureEnum<ChromaStructureBase> {
 			case OCEAN:
 			case DESERT:
 			case SNOWSTRUCT:
+			case BIOMEFRAG:
 				return true;
 			default:
 				return false;
