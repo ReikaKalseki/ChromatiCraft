@@ -297,34 +297,24 @@ public class BlockShiftLock extends BlockDimensionStructure implements IWailaDat
 		Passability put = p;
 		switch(p) {
 			case CLOSED:
-				put = Passability.OPEN;
-				break;
 			case OPEN:
-				put = Passability.CLOSED;
+				put = open ? Passability.OPEN : Passability.CLOSED;
 				break;
 			case EAST_CLOSED:
-				put = Passability.EAST_OPEN;
-				break;
 			case EAST_OPEN:
-				put = Passability.EAST_CLOSED;
+				put = open ? Passability.EAST_OPEN : Passability.EAST_CLOSED;
 				break;
 			case NORTH_CLOSED:
-				put = Passability.NORTH_OPEN;
-				break;
 			case NORTH_OPEN:
-				put = Passability.NORTH_CLOSED;
+				put = open ? Passability.NORTH_OPEN : Passability.NORTH_CLOSED;
 				break;
 			case SOUTH_CLOSED:
-				put = Passability.SOUTH_OPEN;
-				break;
 			case SOUTH_OPEN:
-				put = Passability.SOUTH_CLOSED;
+				put = open ? Passability.SOUTH_OPEN : Passability.SOUTH_CLOSED;
 				break;
 			case WEST_CLOSED:
-				put = Passability.WEST_OPEN;
-				break;
 			case WEST_OPEN:
-				put = Passability.WEST_CLOSED;
+				put = open ? Passability.WEST_OPEN : Passability.WEST_CLOSED;
 				break;
 			default:
 				break;

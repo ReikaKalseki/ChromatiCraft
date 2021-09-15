@@ -7,12 +7,17 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidRegistry;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.BlockChromaDoor;
 import Reika.ChromatiCraft.Block.Dimension.Structure.LightPanel.BlockLightSwitch;
 import Reika.ChromatiCraft.Block.Dimension.Structure.LightPanel.BlockLightSwitch.LightSwitchTile;
@@ -25,10 +30,13 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl.FragmentStructureData;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl.InteractionDelegateTile;
+import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public class BiomeStructurePuzzle implements FragmentStructureData {
 
@@ -123,7 +131,9 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		for (int i = 0; i < 4; i++) {
 			for (Entry<Coordinate, ForgeDirection> e : this.getSwitchDoorLocations(root, i).entrySet()) {
 				SwitchGroup gr = doorKeys[i];
-				e.getKey().setBlock(world, ChromaBlocks.SHIFTLOCK.getBlockInstance(), Passability.getDirectionalPassability(e.getValue(), false).ordinal());
+				Passability p = Passability.getDirectionalPassability(e.getValue(), false);
+				p = Passability.CLOSED;
+				e.getKey().setBlock(world, ChromaBlocks.SHIFTLOCK.getBlockInstance(), p.ordinal());
 			}
 		}
 
@@ -137,7 +147,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			green.setBlock(world, ChromaBlocks.LIGHTPANEL.getBlockInstance(), 0);
 		}
 
-		for (int i = 2; i < 6; i++) {
+		for (int i = 2; i < 4/*6*/; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 			int dx = root.xCoord+dir.offsetX*2;
 			int dy = root.yCoord+5;
@@ -146,6 +156,32 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			TileEntityLockKey te = (TileEntityLockKey)world.getTileEntity(dx, dy, dz);
 			te.setDelegate(ref);
 		}
+
+		for (Coordinate c : this.getBarrierLocations(root)) {
+			c.setBlock(world, ChromaBlocks.DOOR.getBlockInstance());
+		}
+
+		for (int i = 0; i < 4; i++) {
+			for (Entry<Coordinate, CrystalElement> e : this.getCrystalLocations(root).entrySet()) {
+				e.getKey().setBlock(world, ChromaBlocks.LAMP.getBlockInstance(), e.getValue().ordinal());
+			}
+		}
+
+		Block b = this.getLiquid(world, root);
+		for (Coordinate c : this.getLiquidLocations(root)) {
+			c.setBlock(world, b);
+		}
+	}
+
+	private Block getLiquid(World world, TileEntityStructControl root) {
+		BiomeGenBase b = ReikaWorldHelper.getNaturalGennedBiomeAt(world, root.xCoord, root.zCoord);
+		if (ChromatiCraft.isRainbowForest(b))
+			return ChromaBlocks.CHROMA.getBlockInstance();
+		if (ChromatiCraft.isEnderForest(b))
+			return FluidRegistry.getFluid("ender").getBlock();
+		if (BiomeGlowingCliffs.isGlowingCliffs(b))
+			return ChromaBlocks.LUMA.getBlockInstance();
+		return Blocks.lava;
 	}
 
 	private CrystalElement findMostEffective(HashSet<MusicKey> needed) {
@@ -445,17 +481,61 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 						ret.put(new Coordinate(root).offset(-d, y, -2), ForgeDirection.SOUTH);
 						break;
 					case 1: //ne
-						ret.put(new Coordinate(root).offset(2, y, -d), ForgeDirection.WEST);
-						ret.put(new Coordinate(root).offset(d, y, -2), ForgeDirection.SOUTH);
+						ret.put(new Coordinate(root).offset(-2, y, d), ForgeDirection.SOUTH);
+						ret.put(new Coordinate(root).offset(-d, y, 2), ForgeDirection.WEST);
 						break;
 					case 2: //sw
-						ret.put(new Coordinate(root).offset(-2, y, d), ForgeDirection.EAST);
-						ret.put(new Coordinate(root).offset(-d, y, 2), ForgeDirection.NORTH);
+						ret.put(new Coordinate(root).offset(2, y, -d), ForgeDirection.EAST);
+						ret.put(new Coordinate(root).offset(d, y, -2), ForgeDirection.NORTH);
 						break;
 					case 3: //se
 						ret.put(new Coordinate(root).offset(2, y, d), ForgeDirection.WEST);
 						ret.put(new Coordinate(root).offset(d, y, 2), ForgeDirection.NORTH);
 						break;
+				}
+			}
+		}
+		return ret;
+	}
+
+	private HashMap<Coordinate, CrystalElement> getCrystalLocations(TileEntityStructControl root/*, int i*/) {
+		HashMap<Coordinate, CrystalElement> ret = new HashMap();
+		//switch(i) {
+		//	case 0: //W
+		ret.put(new Coordinate(root).offset(-4, 3, 1), crystalColors.get(ret.size()));
+		ret.put(new Coordinate(root).offset(-5, 3, 1), crystalColors.get(ret.size()));
+		//		break;
+		//	case 1: //N
+		ret.put(new Coordinate(root).offset(-1, 3, -4), crystalColors.get(ret.size()));
+		ret.put(new Coordinate(root).offset(-1, 3, -5), crystalColors.get(ret.size()));
+		//		break;
+		//	case 2: //E
+		ret.put(new Coordinate(root).offset(4, 3, -1), crystalColors.get(ret.size()));
+		ret.put(new Coordinate(root).offset(5, 3, -1), crystalColors.get(ret.size()));
+		//		break;
+		//	case 3: //S
+		ret.put(new Coordinate(root).offset(1, 3, 4), crystalColors.get(ret.size()));
+		ret.put(new Coordinate(root).offset(1, 3, 5), crystalColors.get(ret.size()));
+		//		break;
+		//}
+		return ret;
+	}
+
+	private Collection<Coordinate> getLiquidLocations(TileEntityStructControl root) {
+		ArrayList<Coordinate> ret = new ArrayList();
+		for (int a = -1; a <= 1; a++) {
+			for (int b = -1; b <= 1; b++) {
+				ret.add(new Coordinate(root).offset(a, -1, b));
+			}
+		}
+		for (int i = 2; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			ForgeDirection left = ReikaDirectionHelper.getLeftBy90(dir);
+			for (int a = 3; a <= 5; a++) {
+				for (int b = 4; b <= 5; b++) {
+					if (b == 5 && a == 4)
+						continue;
+					ret.add(new Coordinate(root).offset(dir.offsetX*b+left.offsetX*a, 1, left.offsetZ*a+dir.offsetZ*b));
 				}
 			}
 		}
