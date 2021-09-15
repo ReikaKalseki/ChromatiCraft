@@ -28,7 +28,6 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.API.ChromatiAPI;
 import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
 import Reika.ChromatiCraft.API.CrystalPotionAPI;
 import Reika.ChromatiCraft.Items.Tools.ItemPendant;
@@ -52,8 +51,6 @@ public class CrystalPotionController implements CrystalPotionAPI {
 	private final Random rand = new Random();
 
 	private CrystalPotionController() {
-		ChromatiAPI.potions = this;
-
 		this.addColorPotion(CrystalElement.BLUE, Potion.nightVision);
 		this.addColorPotion(CrystalElement.CYAN, Potion.waterBreathing);
 		this.addColorPotion(CrystalElement.GRAY, Potion.moveSlowdown);

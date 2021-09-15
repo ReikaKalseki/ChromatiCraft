@@ -35,6 +35,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.BurrowStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.OceanStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.SnowStructure;
+import Reika.ChromatiCraft.Base.FragmentStructureBase;
 import Reika.ChromatiCraft.Base.GeneratedStructureBase;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Block.BlockChromaDoor;
@@ -137,6 +138,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 		if (struct != null && !world.isRemote) {
 			DungeonGenerator.instance.recacheStructureTile(this);
+			if (auxData != null)
+				auxData.onTick(this);
 		}
 
 		if (!triggered && struct != null && this.getTicksExisted()%4 == 0) {
@@ -493,7 +496,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			//	return;
 			this.calcCrystals(world, x, y, z);
 			this.regenerate();
-			DungeonGenerator.instance.onGenerateStructure(struct, this);
+			DungeonGenerator.instance.onGenerateStructure(struct, (FragmentStructureBase)struct.getStructure(), world, this);
 		}
 		LootChestWatcher.instance.cache(this);
 		this.syncAllData(true);
@@ -1095,6 +1098,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		void writeToNBT(NBTTagCompound tag);
 		void readFromNBT(NBTTagCompound tag);
 
+		void onTick(TileEntityStructControl te);
 		void handleTileAdd(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root);
 		void handleTileRemove(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root);
 		void handleTileInteract(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root);

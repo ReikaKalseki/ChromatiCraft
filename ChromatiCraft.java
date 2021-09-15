@@ -45,7 +45,6 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 
-import Reika.ChromatiCraft.API.ChromatiAPI;
 import Reika.ChromatiCraft.Auxiliary.ChromaASMHandler;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookSpawner;
@@ -60,12 +59,11 @@ import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Auxiliary.MusicLoader;
 import Reika.ChromatiCraft.Auxiliary.PylonCacheLoader;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
+import Reika.ChromatiCraft.Auxiliary.ToolDispenserHandlers.BucketDispenserAction;
 import Reika.ChromatiCraft.Auxiliary.ToolDispenserHandlers.ManipulatorDispenserAction;
 import Reika.ChromatiCraft.Auxiliary.ToolDispenserHandlers.ProjectileToolDispenserAction;
 import Reika.ChromatiCraft.Auxiliary.VillageTradeHandler;
-import Reika.ChromatiCraft.Auxiliary.APIImpl.AdjacencyUpgradeAPIImpl;
-import Reika.ChromatiCraft.Auxiliary.APIImpl.AuraLocusAPIImpl;
-import Reika.ChromatiCraft.Auxiliary.APIImpl.DyeTreeAPIImpl;
+import Reika.ChromatiCraft.Auxiliary.APIImpl.CCAPICore;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Ability.ChromabilityHandler;
 import Reika.ChromatiCraft.Auxiliary.Command.CrystalNetCommand;
@@ -375,10 +373,6 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		this.setupClassFiles();
 
-		ChromatiAPI.trees = new DyeTreeAPIImpl();
-		ChromatiAPI.aura = new AuraLocusAPIImpl();
-		ChromatiAPI.adjacency = new AdjacencyUpgradeAPIImpl();
-
 		int id = ExtraChromaIDs.GROWTHID.getValue();
 		IDCollisionTracker.instance.addPotionID(instance, id, PotionGrowthHormone.class);
 		growth = new PotionGrowthHormone(id);
@@ -480,6 +474,8 @@ public class ChromatiCraft extends DragonAPIMod {
 			ReikaJavaLibrary.pConsole("\t=====================================================================================================");
 			ReikaJavaLibrary.pConsole("");
 		}
+
+		CCAPICore.load();
 
 		ChromaRecipes.loadDictionary();
 		if (this.isLocked())
@@ -778,11 +774,13 @@ public class ChromatiCraft extends DragonAPIMod {
 		ItemDuplicationWand.loadMappings();
 		BurrowStructure.buildLootCache();
 
-		ReikaDispenserHelper.addDispenserAction(ChromaItems.TOOL.getStackOf(), new ManipulatorDispenserAction());
+		ReikaDispenserHelper.addDispenserAction(ChromaItems.TOOL, new ManipulatorDispenserAction());
+		ReikaDispenserHelper.addDispenserAction(ChromaItems.BUCKET, new BucketDispenserAction());
 		ProjectileToolDispenserAction proj = new ProjectileToolDispenserAction();
-		ReikaDispenserHelper.addDispenserAction(ChromaItems.SPLASHGUN.getStackOf(), proj);
-		ReikaDispenserHelper.addDispenserAction(ChromaItems.VACUUMGUN.getStackOf(), proj);
-		ReikaDispenserHelper.addDispenserAction(ChromaItems.CHAINGUN.getStackOf(), proj);
+		ReikaDispenserHelper.addDispenserAction(ChromaItems.SPLASHGUN, proj);
+		ReikaDispenserHelper.addDispenserAction(ChromaItems.VACUUMGUN, proj);
+		ReikaDispenserHelper.addDispenserAction(ChromaItems.CHAINGUN, proj);
+		ReikaDispenserHelper.addDispenserAction(ChromaItems.LIGHTGUN, proj);
 
 		MinecraftForge.EVENT_BUS.register(CheatingPreventionSystem.instance);
 		FMLCommonHandler.instance().bus().register(CheatingPreventionSystem.instance);
@@ -901,6 +899,10 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	public static boolean isEnderForest(BiomeGenBase b) {
 		return b instanceof BiomeEnderForest || (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.getMystParentBiome(b) instanceof BiomeEnderForest);
+	}
+
+	public static boolean isCCBiome(BiomeGenBase b) {
+		return isRainbowForest(b) || isEnderForest(b) || BiomeGlowingCliffs.isGlowingCliffs(b);
 	}
 
 	@EventHandler

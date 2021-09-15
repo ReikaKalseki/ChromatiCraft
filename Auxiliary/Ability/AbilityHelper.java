@@ -65,7 +65,6 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI;
-import Reika.ChromatiCraft.API.ChromatiAPI;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
@@ -200,7 +199,6 @@ public class AbilityHelper implements AbilityAPI {
 	public static final int LYING_DURATION = 1200;
 
 	private AbilityHelper() {
-		ChromatiAPI.abilities = this;
 		List<Ability> li = Chromabilities.getAbilities();
 		for (Ability c : li) {
 			ElementTagCompound tag = AbilityRituals.instance.getAura(c);

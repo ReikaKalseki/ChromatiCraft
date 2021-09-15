@@ -54,6 +54,7 @@ import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.BurrowStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.DesertStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.OceanStructure;
 import Reika.ChromatiCraft.Base.ChromaStructureBase;
+import Reika.ChromatiCraft.Base.FragmentStructureBase;
 import Reika.ChromatiCraft.Base.GeneratedStructureBase;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
@@ -387,8 +388,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 	}
 
-	public void onGenerateStructure(ChromaStructures s, TileEntityStructControl te) {
-
+	public void onGenerateStructure(ChromaStructures s, FragmentStructureBase s2, World world, TileEntityStructControl te) {
+		s2.onPlace(world, te);
 	}
 
 	@Override
@@ -452,8 +453,10 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			int z = cz + r.nextInt(16);
 			int rx = x;
 			int rz = z;
-			s.getStructure().resetToDefaults();
-			((GeneratedStructureBase)s.getStructure()).markForWorldgen();
+			FragmentStructureBase s2 = (FragmentStructureBase)s.getStructure();
+			s2.resetToDefaults();
+			s2.markForWorldgen();
+			s2.setRNG(r);
 			n++;
 			if (!this.isValidBiome(s, world.getBiomeGenForCoords(x, z)))
 				continue;
@@ -487,7 +490,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 							te.generate(s, CrystalElement.WHITE);
 							rx = te.xCoord;
 							rz = te.zCoord;
-							this.onGenerateStructure(s, te);
+							this.onGenerateStructure(s, s2, world, te);
 						}
 						catch (Exception e) {
 							((GeneratedStructureBase)s.getStructure()).addError(new Exception("Failed to place controller @ "+x+", "+y+", "+z, e));
@@ -527,7 +530,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 							te.setBurrowAddons(furn != null, loot != null);
 							rx = te.xCoord;
 							rz = te.zCoord;
-							this.onGenerateStructure(s, te);
+							this.onGenerateStructure(s, s2, world, te);
 						}
 						catch (Exception ex) {
 							((GeneratedStructureBase)s.getStructure()).addError(new Exception("Failed to place controller @ "+(x-5)+", "+(y-8)+", "+(z-2), ex));
@@ -563,7 +566,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 								te.generate(s, CrystalElement.WHITE);
 								rx = te.xCoord;
 								rz = te.zCoord;
-								this.onGenerateStructure(s, te);
+								this.onGenerateStructure(s, s2, world, te);
 							}
 							catch (Exception e) {
 								((GeneratedStructureBase)s.getStructure()).addError(new Exception("Failed to place controller @ "+x+", "+y+", "+z, e));
@@ -604,7 +607,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 								te.generate(s, CrystalElement.WHITE);
 								rx = te.xCoord;
 								rz = te.zCoord;
-								this.onGenerateStructure(s, te);
+								this.onGenerateStructure(s, s2, world, te);
 							}
 							catch (Exception e) {
 								((GeneratedStructureBase)s.getStructure()).addError(new Exception("Failed to place controller @ "+(x+7)+", "+(y+3)+", "+(z+7), e));
@@ -658,7 +661,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 							te.generate(s, CrystalElement.WHITE);
 							rx = te.xCoord;
 							rz = te.zCoord;
-							this.onGenerateStructure(s, te);
+							this.onGenerateStructure(s, s2, world, te);
 						}
 						catch (Exception e) {
 							((GeneratedStructureBase)s.getStructure()).addError(new Exception("Failed to place controller @ "+(x+8)+", "+(y-3)+", "+(z+6), e));

@@ -38,7 +38,6 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.CastingAPI;
-import Reika.ChromatiCraft.API.ChromatiAPI;
 import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Event.CastingRecipesReloadEvent;
@@ -304,8 +303,6 @@ public class RecipesCastingTable implements CastingAPI {
 	private int maxTotalEnergyCost = 0;
 
 	private RecipesCastingTable() {
-		ChromatiAPI.recipes = this;
-
 		recipeIDs = HashBiMap.create();
 		recipeStringIDs = HashBiMap.create();
 		this.loadRecipes();

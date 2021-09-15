@@ -24,7 +24,7 @@ public class ProgressionAPI {
 	public ProgressRegistry progressManager;
 
 	private ProgressionAPI() {
-		ChromatiAPI.research = this;
+
 	}
 
 	public static interface ResearchRegistry extends ProgressManager {

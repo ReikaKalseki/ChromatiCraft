@@ -1,22 +1,50 @@
 package Reika.ChromatiCraft.API;
 
 
-public class ChromatiAPI {
+public abstract class ChromatiAPI {
 
-	public static AbilityAPI abilities;
-	public static CastingAPI recipes;
-	public static RitualAPI rituals;
+	protected AbilityAPI abilities;
+	protected CastingAPI recipes;
+	protected RitualAPI rituals;
 
-	public static ProgressionAPI research;
-	public static PlayerBufferAPI buffers;
+	protected ProgressionAPI research;
+	protected PlayerBufferAPI buffers;
 
-	public static AuraLocusAPI aura;
-	public static AdjacencyUpgradeAPI adjacency;
+	protected AuraLocusAPI aura;
+	protected AdjacencyUpgradeAPI adjacency;
 
-	public static ItemElementAPI items;
-	public static CrystalPotionAPI potions;
+	protected ItemElementAPI items;
+	protected CrystalPotionAPI potions;
 
-	public static RuneAPI runes;
-	public static DyeTreeAPI trees;
+	protected RuneAPI runes;
+	protected DyeTreeAPI trees;
+
+	private static ChromatiAPI core;
+
+	public static ChromatiAPI getAPI() {
+		if (!core.initialized())
+			core.initalize();
+		return core;
+	}
+
+	public final AbilityAPI abilities() {return abilities;}
+	public final CastingAPI recipes() {return recipes;}
+	public final RitualAPI rituals() {return rituals;}
+
+	public final ProgressionAPI research() {return research;}
+	public final PlayerBufferAPI buffers() {return buffers;}
+
+	public final AuraLocusAPI aura() {return aura;}
+	public final AdjacencyUpgradeAPI adjacency() {return adjacency;}
+
+	public final ItemElementAPI items() {return items;}
+	public final CrystalPotionAPI potions() {return potions;}
+
+	public final RuneAPI runes() {return runes;}
+	public final DyeTreeAPI trees() {return trees;}
+
+	protected abstract void initalize();
+	protected abstract boolean initialized();
+
 
 }

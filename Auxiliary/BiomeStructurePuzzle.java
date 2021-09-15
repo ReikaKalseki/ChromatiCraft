@@ -36,6 +36,8 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 	private final ColorPair[] colors = new ColorPair[4];
 	private final ArrayList<CrystalElement> crystalColors = new ArrayList();
 
+	private int keyIndex;
+
 	private final HashSet<SwitchGroup> usedKeys = new HashSet();
 	private final HashSet<ColorPair> usedColors = new HashSet();
 
@@ -50,6 +52,8 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 	}
 
 	public void generate(Random rand) {
+		keyIndex = rand.nextInt(8);
+
 		for (int i = 0; i < doorKeys.length; i++) {
 			SwitchGroup key = SwitchGroup.random(rand);
 			while (usedKeys.contains(key))
@@ -98,6 +102,8 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 	}
 
 	public void placeData(World world, TileEntityStructControl root) {
+		Coordinate ref = new Coordinate(root);
+
 		for (Entry<Coordinate, CrystalElement> e : runes.entrySet()) {
 			Coordinate c = e.getKey().offset(root.xCoord, root.yCoord, root.zCoord);
 			c.setBlock(world, ChromaBlocks.RUNE.getBlockInstance(), e.getValue().ordinal());
@@ -105,9 +111,31 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 
 		for (int i = 0; i < 4; i++) {
 			for (Coordinate c : this.getColorDoorLocations(root, i)) {
+				c.setBlock(world, ChromaBlocks.COLORLOCK.getBlockInstance());
 				TileEntityColorLock te = (TileEntityColorLock)c.getTileEntity(world);
 				te.setColors(colors[i].color1, colors[i].color2);
 			}
+		}
+
+		for (Coordinate c : this.getSwitchLocations(root)) {
+			c.setBlock(world, ChromaBlocks.PANELSWITCH.getBlockInstance());
+			LightSwitchTile te = (LightSwitchTile)c.getTileEntity(world);
+			te.setDelegate(ref);
+			Coordinate red = c.offset(0, 1, 0);
+			Coordinate green = c.offset(0, -1, 0);
+			switchCache
+			red.setBlock(world, ChromaBlocks.LIGHTPANEL.getBlockInstance(), 2);
+			green.setBlock(world, ChromaBlocks.LIGHTPANEL.getBlockInstance(), 0);
+		}
+
+		for (int i = 2; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			int dx = root.xCoord+dir.offsetX*2;
+			int dy = root.yCoord+5;
+			int dz = root.zCoord+dir.offsetZ*2;
+			world.setBlock(dx, dy, dz, ChromaBlocks.LOCKKEY.getBlockInstance(), keyIndex, 3);
+			TileEntityLockKey te = (TileEntityLockKey)world.getTileEntity(dx, dy, dz);
+			te.setDelegate(ref);
 		}
 	}
 
@@ -346,13 +374,22 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		}
 	}
 
+	private Collection<Coordinate> getSwitchLocations(TileEntityStructControl root) {
+		ArrayList<Coordinate> ret = new ArrayList();
+		ret.add(this.switchLoc(root, ForgeDirection.NORTH, ForgeDirection.EAST));
+		ret.add(this.switchLoc(root, ForgeDirection.NORTH, ForgeDirection.WEST));
+		ret.add(this.switchLoc(root, ForgeDirection.SOUTH, ForgeDirection.EAST));
+		ret.add(this.switchLoc(root, ForgeDirection.SOUTH, ForgeDirection.WEST));
+		return ret;
+	}
+
 	private Coordinate switchLoc(TileEntityStructControl root, ForgeDirection ns, ForgeDirection ew) {
-		return new Coordinate(root).offset(ns.offsetZ*3, 11, ew.offsetX*3);
+		return new Coordinate(root).offset(ns.offsetZ*3, 8, ew.offsetX*3);
 	}
 
 	private Collection<Coordinate> getColorDoorLocations(TileEntityStructControl root, int i) {
 		ArrayList<Coordinate> ret = new ArrayList();
-		for (int y = 5; y <= 7; y++) {
+		for (int y = 2; y <= 4; y++) {
 			for (int d = 1; d <= 2; d++) {
 				switch(i) {
 					case 0:
@@ -375,7 +412,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 
 	private Collection<Coordinate> getSwitchDoorLocations(TileEntityStructControl root, int i) {
 		ArrayList<Coordinate> ret = new ArrayList();
-		for (int y = 9; y <= 11; y++) {
+		for (int y = 6; y <= 8; y++) {
 			for (int d = 5; d <= 6; d++) {
 				switch(i) {
 					case 0:
@@ -407,7 +444,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 				ret.add(new Coordinate(root).offset(x, 1, z));
 			}
 		}
-		for (int y = 5; y <= 7; y++) {
+		for (int y = 2; y <= 4; y++) {
 			for (int d = 4; d <= 5; d++) {
 				ret.add(new Coordinate(root).offset(d, y, 3));
 				ret.add(new Coordinate(root).offset(-3, y, d));
@@ -416,6 +453,11 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			}
 		}
 		return ret;
+	}
+
+	@Override
+	public void onTick(TileEntityStructControl te) {
+
 	}
 
 }

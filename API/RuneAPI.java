@@ -18,7 +18,7 @@ public class RuneAPI {
 	public static final RuneAPI instance = new RuneAPI();
 
 	private RuneAPI() {
-		ChromatiAPI.runes = this;
+
 	}
 
 	public boolean isRune(World world, int x, int y, int z, CrystalElementProxy e) {

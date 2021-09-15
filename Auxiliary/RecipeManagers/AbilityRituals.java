@@ -17,7 +17,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
-import Reika.ChromatiCraft.API.ChromatiAPI;
 import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
 import Reika.ChromatiCraft.API.RitualAPI;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -40,7 +39,6 @@ public final class AbilityRituals implements RitualAPI {
 	private int maxTotalCost = 0;
 
 	private AbilityRituals() {
-		ChromatiAPI.rituals = this;
 		this.addRituals();
 	}
 

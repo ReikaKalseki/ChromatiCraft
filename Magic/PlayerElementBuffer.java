@@ -17,7 +17,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.API.ChromatiAPI;
 import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
 import Reika.ChromatiCraft.API.PlayerBufferAPI;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
@@ -44,7 +43,7 @@ public class PlayerElementBuffer implements PlayerBufferAPI {
 	private static final int PLAYER_BASE_CAP = 400000;
 
 	private PlayerElementBuffer() {
-		ChromatiAPI.buffers = this;
+
 	}
 
 	public float getAndDecrUpgradeTick(EntityPlayer ep) {

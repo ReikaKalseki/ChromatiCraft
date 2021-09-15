@@ -41,7 +41,6 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.API.ChromatiAPI;
 import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
 import Reika.ChromatiCraft.API.ItemElementAPI;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
@@ -90,8 +89,6 @@ public class ItemElementCalculator implements ItemElementAPI {
 	private List<KeyedItemStack> currentCalculation = new ArrayList();
 
 	private ItemElementCalculator() {
-		ChromatiAPI.items = this;
-
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement e = CrystalElement.elements[i];
 			ElementTagCompound tag1 = new ElementTagCompound();

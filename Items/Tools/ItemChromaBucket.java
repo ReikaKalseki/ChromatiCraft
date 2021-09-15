@@ -84,7 +84,18 @@ public class ItemChromaBucket extends ItemChromaTool {
 			if (!ReikaWorldHelper.softBlocks(world, x, y, z) && ReikaWorldHelper.getMaterial(world, x, y, z) != Material.water && ReikaWorldHelper.getMaterial(world, x, y, z) != Material.lava)
 				return false;
 		}
-		Block fb = this.getBlock(is);
+		if (this.operateAt(world, x, y, z, is)) {
+			if (!ep.capabilities.isCreativeMode)
+				ep.setCurrentItemOrArmor(0, new ItemStack(Items.bucket));
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean operateAt(World world, int x, int y, int z, ItemStack is) {
+		Block fb = getBlock(is);
+		if (fb == Blocks.air)
+			return false;
 		int m = fb instanceof BlockFluidFinite ? /*((BlockFluidFinite)fb).quantaPerBlock-1*/15 : 0;
 		if (world.getBlock(x, y, z) == fb && world.getBlockMetadata(x, y, z) == m)
 			return false;
@@ -98,12 +109,10 @@ public class ItemChromaBucket extends ItemChromaTool {
 			}
 		}
 		 */
-		if (!ep.capabilities.isCreativeMode)
-			ep.setCurrentItemOrArmor(0, new ItemStack(Items.bucket));
 		return true;
 	}
 
-	private Block getBlock(ItemStack is) {
+	private static Block getBlock(ItemStack is) {
 		//if (is.getItemDamage() >= 2)
 		//	return ChromaBlocks.ACTIVECHROMA.getBlockInstance();
 		switch(is.getItemDamage()) {
