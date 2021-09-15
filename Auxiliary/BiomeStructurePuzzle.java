@@ -2,6 +2,7 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
@@ -35,6 +36,8 @@ import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
+import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
@@ -42,21 +45,20 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 
 	private final ArrayList<MusicKey> melody = new ArrayList();
 	private final SwitchGroup[] doorKeys = new SwitchGroup[4];
-	private final ColorPair[] colors = new ColorPair[4];
 	private final ArrayList<CrystalElement> crystalColors = new ArrayList();
+	private final ArrayList<CrystalElement> doorColors = new ArrayList();
 
 	private int keyIndex;
 
 	private final HashSet<SwitchGroup> usedKeys = new HashSet();
-	private final HashSet<ColorPair> usedColors = new HashSet();
 
 	private final HashMap<Coordinate, CrystalElement> runes = new HashMap();
 
 	public void clear() {
 		melody.clear();
 		crystalColors.clear();
+		doorColors.clear();
 		runes.clear();
-		usedColors.clear();
 		usedKeys.clear();
 	}
 
@@ -73,22 +75,22 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			usedKeys.add(key);
 		}
 
-		for (int i = 0; i < colors.length; i++) {
-			ColorPair key = ColorPair.random(rand);
-			while (usedColors.contains(key))
-				key = ColorPair.random(rand);
-			colors[i] = key;
-			usedColors.add(key);
+		ArrayList<CrystalElement> li = ReikaJavaLibrary.makeListFromArray(CrystalElement.elements);
+		for (int i = 0; i < 8; i++) {
+			doorColors.add(li.remove(rand.nextInt(li.size())));
 		}
 
-		runes.put(new Coordinate(5, 5, 6), colors[0].color1);
-		runes.put(new Coordinate(6, 5, 5), colors[0].color2);
-		runes.put(new Coordinate(-5, 5, 6), colors[1].color1);
-		runes.put(new Coordinate(-6, 5, 5), colors[1].color2);
-		runes.put(new Coordinate(5, 5, -6), colors[2].color1);
-		runes.put(new Coordinate(6, 5, -5), colors[2].color2);
-		runes.put(new Coordinate(-5, 5, -6), colors[3].color1);
-		runes.put(new Coordinate(-6, 5, -5), colors[3].color2);
+		ArrayList<Integer> idx = ReikaJavaLibrary.makeIntListFromArray(ReikaArrayHelper.getLinearArray(8));
+		Collections.shuffle(idx);
+
+		runes.put(new Coordinate(5, 5, 6), doorColors.get(idx.remove(0)));
+		runes.put(new Coordinate(6, 5, 5), doorColors.get(idx.remove(0)));
+		runes.put(new Coordinate(-5, 5, 6), doorColors.get(idx.remove(0)));
+		runes.put(new Coordinate(-6, 5, 5), doorColors.get(idx.remove(0)));
+		runes.put(new Coordinate(5, 5, -6), doorColors.get(idx.remove(0)));
+		runes.put(new Coordinate(6, 5, -5), doorColors.get(idx.remove(0)));
+		runes.put(new Coordinate(-5, 5, -6), doorColors.get(idx.remove(0)));
+		runes.put(new Coordinate(-6, 5, -5), doorColors.get(idx.remove(0)));
 
 		melody.addAll(MusicPuzzleGenerator.getRandomPrefab(rand, Integer.MAX_VALUE, null).getNotes());
 		this.calculateCrystals(rand);
@@ -124,7 +126,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			for (Coordinate c : this.getColorDoorLocations(root, i)) {
 				c.setBlock(world, ChromaBlocks.COLORLOCK.getBlockInstance());
 				TileEntityColorLock te = (TileEntityColorLock)c.getTileEntity(world);
-				te.setColors(colors[i].color1, colors[i].color2);
+				te.setColors(doorColors.get(i*2), doorColors.get(i*2+1));
 			}
 		}
 
@@ -199,55 +201,6 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			}
 		}
 		return best;
-	}
-
-	private static class ColorPair {
-
-		private final CrystalElement color1;
-		private final CrystalElement color2;
-
-		private ColorPair(int c1, int c2) {
-			this(CrystalElement.elements[c1], CrystalElement.elements[c2]);
-		}
-
-		private ColorPair(CrystalElement e1, CrystalElement e2) {
-			color1 = e1;
-			color2 = e2;
-		}
-
-		private static ColorPair random(Random rand) {
-			CrystalElement e1 = CrystalElement.elements[rand.nextInt(16)];
-			CrystalElement e2 = CrystalElement.elements[rand.nextInt(16)];
-			while (e1 == e2)
-				e2 = CrystalElement.elements[rand.nextInt(16)];
-			return new ColorPair(e1, e2);
-		}
-
-		@Override
-		public int hashCode() {
-			return color1.ordinal() | (color2.ordinal() << 8);
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			return o instanceof ColorPair && this.matchKeys((ColorPair)o);
-		}
-
-		private boolean matchKeys(ColorPair o) {
-			return o.color1 == color1 && o.color2 == color2;
-		}
-
-		private NBTTagCompound writeToTag() {
-			NBTTagCompound tag = new NBTTagCompound();
-			tag.setInteger("c1", color1.ordinal());
-			tag.setInteger("c2", color2.ordinal());
-			return tag;
-		}
-
-		private static ColorPair readTag(NBTTagCompound tag) {
-			return new ColorPair(tag.getInteger("c1"), tag.getInteger("c2"));
-		}
-
 	}
 
 	private static class SwitchGroup {
@@ -331,6 +284,12 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		NBT.setTag("crystals", li);
 
 		li = new NBTTagList();
+		for (CrystalElement e : doorColors) {
+			li.appendTag(new NBTTagInt(e.ordinal()));
+		}
+		NBT.setTag("doorColors", li);
+
+		li = new NBTTagList();
 		for (Entry<Coordinate, CrystalElement> e : runes.entrySet()) {
 			NBTTagCompound tag = e.getKey().writeToTag();
 			tag.setInteger("color", e.getValue().ordinal());
@@ -340,9 +299,6 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 
 		for (int i = 0; i < doorKeys.length; i++) {
 			NBT.setTag("door"+i, doorKeys[i].writeToTag());
-		}
-		for (int i = 0; i < colors.length; i++) {
-			NBT.setTag("color"+i, colors[i].writeToTag());
 		}
 	}
 
@@ -362,6 +318,12 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			crystalColors.add(CrystalElement.elements[i.func_150287_d()]);
 		}
 
+		li = NBT.getTagList("doorColors", NBTTypes.INT.ID);
+		for (Object o : li.tagList) {
+			NBTTagInt i = (NBTTagInt)o;
+			doorColors.add(CrystalElement.elements[i.func_150287_d()]);
+		}
+
 		li = NBT.getTagList("runes", NBTTypes.INT.ID);
 		for (Object o : li.tagList) {
 			NBTTagCompound tag = (NBTTagCompound)o;
@@ -372,9 +334,6 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 
 		for (int i = 0; i < doorKeys.length; i++) {
 			doorKeys[i] = SwitchGroup.readTag(NBT.getCompoundTag("door"+i));
-		}
-		for (int i = 0; i < colors.length; i++) {
-			colors[i] = ColorPair.readTag(NBT.getCompoundTag("color"+i));
 		}
 	}
 

@@ -31,7 +31,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.BurrowStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.OceanStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.SnowStructure;
@@ -677,25 +676,6 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		//ReikaJavaLibrary.pConsole("genning "+n+" fragments @ "+xCoord+", "+zCoord);
 		for (int i = 0; i < n; i++) {
 			ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), this);
-		}
-		switch(struct) {
-			case CAVERN:
-				ReikaInventoryHelper.addToIInv(ChromaStacks.cavernLoot, this, true);
-				break;
-			case BURROW:
-				ReikaInventoryHelper.addToIInv(ChromaStacks.burrowLoot, this, true);
-				break;
-			case OCEAN:
-				ReikaInventoryHelper.addToIInv(ChromaStacks.oceanLoot, this, true);
-				break;
-			case DESERT:
-				ReikaInventoryHelper.addToIInv(ChromaStacks.desertLoot, this, true);
-				break;
-			case SNOWSTRUCT:
-				ReikaInventoryHelper.addToIInv(ChromaStacks.snowLoot, this, true);
-				break;
-			default:
-				break;
 		}
 	}
 

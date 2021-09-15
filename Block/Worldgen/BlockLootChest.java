@@ -46,6 +46,8 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Event.StructureChestPopulationEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
+import Reika.ChromatiCraft.Base.ChromaStructureBase;
+import Reika.ChromatiCraft.Base.FragmentStructureBase;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager.ProgressElement;
@@ -523,21 +525,22 @@ public class BlockLootChest extends BlockContainer {
 			WeightedRandomChestContent[] loot = ChestGenHooks.getItems(s, r);
 			if (struct != null)
 				loot = struct.getModifiedLootSet(loot);
+			ChromaStructureBase str = struct != null ? struct.getStructure() : null;
+			FragmentStructureBase frag = str instanceof FragmentStructureBase ? (FragmentStructureBase)str : null;
 			int count = 1+ChestGenHooks.getCount(s, r);
-			if (struct == ChromaStructures.BURROW)
-				count /= 2;
+			if (frag != null)
+				count = frag.modifyLootCount(this, s, bonus, r, count);
 			WeightedRandomChestContent.generateChestContents(r, loot, this, count);
 			if (bonus > 0)
 				ReikaInventoryHelper.generateMultipliedLoot(bonus, r, s, this);
-			int n1 = struct == ChromaStructures.BURROW ? 3 : 5;//struct == Structures.OCEAN ? r.nextInt(5) == 0 ? 3 : 1 : 3;
-			int n2 = 2;//struct == Structures.OCEAN ? 8 : 3;
 
-			//ReikaJavaLibrary.pConsole("CC DEBUG: Generating loot chest @ "+xCoord+", "+yCoord+", "+zCoord+", inv="+Arrays.toString(inv));
-
-			if (allowFragments && r.nextInt(n1) > 0) {
-				ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), this);
-				if (r.nextInt(n2) == 0)
-					ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), this);
+			if (allowFragments) {
+				float ch = frag != null ? frag.getFragmentChance(this, s, bonus, r) : 0.5F;
+				if (r.nextFloat() < ch) {
+					int n = frag != null ? frag.getFragmentCount(this, s, bonus, r) : 1;
+					for (int i = 0; i < n; i++)
+						ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), this);
+				}
 			}
 
 			//ReikaJavaLibrary.pConsole("CC DEBUG: Generated loot chest @ "+xCoord+", "+yCoord+", "+zCoord+", inv="+Arrays.toString(inv));

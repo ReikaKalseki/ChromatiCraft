@@ -1,25 +1,24 @@
 package Reika.ChromatiCraft.Auxiliary.Structure.Worldgen;
 
-import java.util.ArrayList;
+import java.util.Random;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Base.FragmentStructureBase;
+import Reika.ChromatiCraft.Base.FragmentStructureWithBonusLoot;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 
-public class CavernStructure extends FragmentStructureBase {
-
-	private final ArrayList<WeightedRandomChestContent> bonusItems = new ArrayList();
+public class CavernStructure extends FragmentStructureWithBonusLoot {
 
 	public CavernStructure() {
 		this.addBonusItem(ChromaStacks.purpleShard, 2, 8, 10);
@@ -31,15 +30,6 @@ public class CavernStructure extends FragmentStructureBase {
 		this.addBonusItem(new ItemStack(Items.gold_ingot), 1, 8, 10);
 		this.addBonusItem(new ItemStack(Items.iron_ingot), 1, 16, 20);
 		this.addBonusItem(new ItemStack(Items.quartz), 1, 8, 10);
-	}
-
-	private void addBonusItem(ItemStack is, int min, int max, int wt) {
-		bonusItems.add(new WeightedRandomChestContent(is, min, max, wt));
-	}
-
-	@Override
-	public void modifyLootSet(ArrayList<WeightedRandomChestContent> li) {
-		li.addAll(bonusItems);
 	}
 
 	@Override
@@ -460,6 +450,21 @@ public class CavernStructure extends FragmentStructureBase {
 	@Override
 	public int getStructureVersion() {
 		return 0;
+	}
+
+	@Override
+	public int getChestYield(Coordinate c, TileEntityLootChest te, FilledBlockArray arr, Random r) {
+		return 1;
+	}
+
+	@Override
+	public String getChestLootTable(Coordinate c, TileEntityLootChest te, FilledBlockArray arr, Random r) {
+		return ChestGenHooks.DUNGEON_CHEST;
+	}
+
+	@Override
+	public int getFragmentCount(TileEntityLootChest te, String s, int bonus, Random r) {
+		return r.nextInt(5) > 0 ? 2 : 1;
 	}
 
 }

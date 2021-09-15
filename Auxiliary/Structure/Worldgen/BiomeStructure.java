@@ -4,15 +4,21 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Auxiliary.BiomeStructurePuzzle;
-import Reika.ChromatiCraft.Base.FragmentStructureBase;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Base.FragmentStructureWithBonusLoot;
 import Reika.ChromatiCraft.Block.BlockHoverBlock.HoverType;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl.InteractionDelegateTile;
@@ -22,9 +28,37 @@ import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCal
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 
 
-public class BiomeStructure extends FragmentStructureBase {
+public class BiomeStructure extends FragmentStructureWithBonusLoot {
 
 	private BiomeStructurePuzzle puzzle;
+
+	public BiomeStructure() {
+		this.addBonusItem(new ItemStack(Items.ender_pearl), 2, 8, 25);
+		this.addBonusItem(new ItemStack(Items.redstone), 12, 24, 20);
+		this.addBonusItem(new ItemStack(Items.diamond), 1, 5, 10);
+		this.addBonusItem(new ItemStack(Items.gold_ingot), 4, 18, 10);
+		this.addBonusItem(new ItemStack(Items.iron_ingot), 12, 32, 20);
+		this.addBonusItem(new ItemStack(Items.quartz), 2, 16, 10);
+		this.addBonusItem(new ItemStack(Items.emerald), 1, 4, 5);
+		this.addBonusItem(new ItemStack(Items.blaze_powder), 2, 8, 10);
+		this.addBonusItem(new ItemStack(Items.gunpowder), 4, 12, 15);
+		this.addBonusItem(new ItemStack(Items.slime_ball), 1, 4, 5);
+		this.addBonusItem(new ItemStack(Items.glowstone_dust), 4, 32, 15);
+
+		for (int i = 0; i < 32; i++) {
+			boolean charge = i >= 16;
+			int min = charge ? 1 : 4;
+			int max = charge ? 6 : 24;
+			this.addBonusItem(ChromaItems.SHARD.getStackOfMetadata(i), min, max, charge ? 2 : 6);
+		}
+
+		this.addBonusItem(ChromaStacks.chromaDust, 16, 48, 30);
+		this.addBonusItem(ChromaStacks.auraDust, 8, 32, 25);
+		this.addBonusItem(ChromaStacks.bindingCrystal, 4, 20, 18);
+		this.addBonusItem(ChromaStacks.focusDust, 4, 16, 10);
+		this.addBonusItem(ChromaStacks.purityDust, 12, 16, 10);
+		this.addBonusItem(ChromaStacks.beaconDust, 16, 32, 25);
+	}
 
 	@Override
 	public void resetToDefaults() {
@@ -286,6 +320,44 @@ public class BiomeStructure extends FragmentStructureBase {
 	@Override
 	public void onPlace(World world, TileEntityStructControl te) {
 		puzzle.placeData(world, te);
+	}
+
+	@Override
+	public String getChestLootTable(Coordinate c, TileEntityLootChest te, FilledBlockArray arr, Random r) {
+		return ChestGenHooks.VILLAGE_BLACKSMITH;
+	}
+
+	@Override
+	public int getChestYield(Coordinate c, TileEntityLootChest te, FilledBlockArray arr, Random r) {
+		return te.yCoord-arr.getMinY() <= 4 ? 3 : 1;
+	}
+
+	@Override
+	public int modifyLootCount(TileEntityLootChest tileEntityLootChest, String s, int bonus, Random r, int count) {
+		return count*3/2;
+	}
+
+	@Override
+	public float getFragmentChance(TileEntityLootChest te, String s, int bonus, Random r) {
+		return 1F;
+	}
+
+	@Override
+	public int getFragmentCount(TileEntityLootChest te, String s, int bonus, Random r) {
+		if (bonus == 3) {
+			int n = r.nextInt(12);
+			if (n == 11)
+				return 4;
+			else if (n > 7)
+				return 3;
+			else if (n > 2)
+				return 2;
+			else
+				return 1;
+		}
+		else {
+			return r.nextInt(3) > 0 ? 2 : 1;
+		}
 	}
 
 	private static class PuzzleCacheCallback implements TileCallback {

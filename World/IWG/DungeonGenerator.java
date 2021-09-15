@@ -42,7 +42,6 @@ import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.BiomeDictionary;
-import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -1074,23 +1073,15 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 	}
 
-	public static void populateChests(ChromaStructures struct, FilledBlockArray arr, Random r) {
+	public void populateChests(ChromaStructures struct, FilledBlockArray arr, Random r) {
 		try {
 			for (Coordinate c : ((GeneratedStructureBase)struct.getStructure()).getCachedBlocks(GeneratedStructureBase.getChestGen())) {
 				Block b = c.getBlock(arr.world);
 				if (b == ChromaStructureBase.getChestGen()) {
 					TileEntityLootChest te = (TileEntityLootChest)c.getTileEntity(arr.world);
 					if (te.isUntouchedWorldgen()) {
-						int bonus = 0;
-						if (struct == ChromaStructures.OCEAN && c.yCoord-arr.getMinY() == 4)
-							bonus = 4;
-						if (struct == ChromaStructures.DESERT && c.yCoord-arr.getMinY() < 4)
-							bonus = 2;
-						if (struct == ChromaStructures.CAVERN)
-							bonus = 1;
-						if (struct == ChromaStructures.SNOWSTRUCT)
-							bonus = c.yCoord-arr.getMinY() < 4 ? 2 : 1;
-						populateChest(te, struct, bonus, r);
+						int bonus = ((FragmentStructureBase)struct.getStructure()).getChestYield(c, te, arr, r);
+						populateChest(c, te, struct, arr, bonus, r);
 					}
 				}
 			}
@@ -1100,29 +1091,11 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 	}
 
-	public static void populateChest(TileEntityLootChest te, ChromaStructures struct, int bonus, Random r) {
-		String s = null;
-		switch (struct) {
-			case CAVERN:
-				s = ChestGenHooks.DUNGEON_CHEST;
-				break;
-			case BURROW:
-				s = ChestGenHooks.BONUS_CHEST;
-				break;
-			case OCEAN:
-				s = ChestGenHooks.PYRAMID_JUNGLE_CHEST;
-				break;
-			case DESERT:
-				s = ChestGenHooks.PYRAMID_DESERT_CHEST;
-				break;
-			case SNOWSTRUCT:
-				s = ChestGenHooks.STRONGHOLD_CORRIDOR;
-				break;
-			default:
-				break;
-		}
-		if (s == null)
+	public static void populateChest(Coordinate c, TileEntityLootChest te, ChromaStructures struct, FilledBlockArray arr, int bonus, Random r) {
+		String s = ((FragmentStructureBase)struct.getStructure()).getChestLootTable(c, te, arr, r);
+		if (s == null) {
 			return;
+		}
 		te.populateChest(s, struct, bonus, r);
 	}
 

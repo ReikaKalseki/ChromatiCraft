@@ -9,10 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.Structure.Worldgen;
 
+import java.util.Random;
+
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ChestGenHooks;
 
 import Reika.ChromatiCraft.Base.FragmentStructureBase;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -1922,6 +1926,21 @@ public class DesertStructure extends FragmentStructureBase {
 	@Override
 	public int getStructureVersion() {
 		return 1;
+	}
+
+	@Override
+	public int getChestYield(Coordinate c, TileEntityLootChest te, FilledBlockArray arr, Random r) {
+		return c.yCoord-arr.getMinY() < 4 ? 2 : 0;
+	}
+
+	@Override
+	public String getChestLootTable(Coordinate c, TileEntityLootChest te, FilledBlockArray arr, Random r) {
+		return ChestGenHooks.PYRAMID_DESERT_CHEST;
+	}
+
+	@Override
+	public int getFragmentCount(TileEntityLootChest te, String s, int bonus, Random r) {
+		return bonus > 0 ? (r.nextInt(4) == 0 ? 1 : 2) : r.nextInt(3) == 0 ? 2 : 1;
 	}
 
 }

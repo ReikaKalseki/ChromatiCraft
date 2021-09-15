@@ -2,6 +2,7 @@ package Reika.ChromatiCraft.Auxiliary.Structure.Worldgen;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
@@ -14,6 +15,7 @@ import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -885,6 +887,31 @@ public class BurrowStructure extends FragmentStructureBase {
 	public void resetToDefaults() {
 		super.resetToDefaults();
 		doorID = null;
+	}
+
+	@Override
+	public int getChestYield(Coordinate c, TileEntityLootChest te, FilledBlockArray arr, Random r) {
+		return 0;
+	}
+
+	@Override
+	public String getChestLootTable(Coordinate c, TileEntityLootChest te, FilledBlockArray arr, Random r) {
+		return ChestGenHooks.BONUS_CHEST;
+	}
+
+	@Override
+	public int modifyLootCount(TileEntityLootChest tileEntityLootChest, String s, int bonus, Random r, int count) {
+		return count/2;
+	}
+
+	@Override
+	public float getFragmentChance(TileEntityLootChest te, String s, int bonus, Random r) {
+		return 0.6F;
+	}
+
+	@Override
+	public int getFragmentCount(TileEntityLootChest te, String s, int bonus, Random r) {
+		return r.nextInt(3) == 0 ? 2 : 1;
 	}
 
 }

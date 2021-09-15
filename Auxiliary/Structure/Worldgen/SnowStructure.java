@@ -16,10 +16,12 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.FragmentStructureBase;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock.Passability;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.ModList;
@@ -2081,5 +2083,20 @@ public class SnowStructure extends FragmentStructureBase {
 	@Override
 	public int getStructureVersion() {
 		return 0;
+	}
+
+	@Override
+	public int getChestYield(Coordinate c, TileEntityLootChest te, FilledBlockArray arr, Random r) {
+		return c.yCoord-arr.getMinY() < 4 ? 2 : 1;
+	}
+
+	@Override
+	public String getChestLootTable(Coordinate c, TileEntityLootChest te, FilledBlockArray arr, Random r) {
+		return ChestGenHooks.STRONGHOLD_CORRIDOR;
+	}
+
+	@Override
+	public float getFragmentChance(TileEntityLootChest te, String s, int bonus, Random r) {
+		return 0.7F;
 	}
 }

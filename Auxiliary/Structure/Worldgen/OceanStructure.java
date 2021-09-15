@@ -9,11 +9,15 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.Structure.Worldgen;
 
+import java.util.Random;
+
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ChestGenHooks;
 
 import Reika.ChromatiCraft.Base.FragmentStructureBase;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -3579,6 +3583,16 @@ public class OceanStructure extends FragmentStructureBase {
 	@Override
 	public int getStructureVersion() {
 		return 0;
+	}
+
+	@Override
+	public int getChestYield(Coordinate c, TileEntityLootChest te, FilledBlockArray arr, Random r) {
+		return c.yCoord-arr.getMinY() == 4 ? 4 : 0;
+	}
+
+	@Override
+	public String getChestLootTable(Coordinate c, TileEntityLootChest te, FilledBlockArray arr, Random r) {
+		return ChestGenHooks.PYRAMID_JUNGLE_CHEST;
 	}
 
 }
