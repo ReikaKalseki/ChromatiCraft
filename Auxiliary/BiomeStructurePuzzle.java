@@ -8,7 +8,12 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
@@ -26,7 +31,10 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockColoredLock.Tile
 import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockLockKey.TileEntityLockKey;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock.Passability;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl.FragmentStructureData;
@@ -36,10 +44,17 @@ import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BiomeStructurePuzzle implements FragmentStructureData {
 
@@ -69,7 +84,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			ForgeDirection ns = i <= 1 ? ForgeDirection.NORTH : ForgeDirection.SOUTH;
 			ForgeDirection ew = i%2 == 0 ? ForgeDirection.WEST : ForgeDirection.EAST;
 			SwitchGroup key = SwitchGroup.random(ns, ew, rand);
-			while (usedKeys.contains(key))
+			while (usedKeys.contains(key) || key.isSameCorner())
 				key = SwitchGroup.random(ns, ew, rand);
 			doorKeys[i] = key;
 			usedKeys.add(key);
@@ -93,18 +108,23 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		runes.put(new Coordinate(-6, 5, -5), doorColors.get(idx.remove(0)));
 
 		melody.addAll(MusicPuzzleGenerator.getRandomPrefab(rand, Integer.MAX_VALUE, null).getNotes());
-		this.calculateCrystals(rand);
+		while (!this.calculateCrystals(rand)) {
+			crystalColors.clear();
+		}
 	}
 
-	private void calculateCrystals(Random rand) {
+	private boolean calculateCrystals(Random rand) {
 		HashSet<MusicKey> needed = new HashSet(melody);
 		while (!needed.isEmpty()) {
 			CrystalElement e = this.findMostEffective(needed);
+			if (e == null)
+				return false;
 			crystalColors.add(e);
 			needed.removeAll(CrystalMusicManager.instance.getKeys(e));
 		}
 		if (crystalColors.size() > 8) {
-			throw new RuntimeException(melody+" > "+crystalColors);
+			;//throw new RuntimeException(melody+" > "+crystalColors);
+			return false;
 		}
 		while (crystalColors.size() < 8) {
 			CrystalElement e = CrystalElement.elements[rand.nextInt(16)];
@@ -112,6 +132,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 				e = CrystalElement.elements[rand.nextInt(16)];
 			crystalColors.add(e);
 		}
+		return true;
 	}
 
 	public void placeData(World world, TileEntityStructControl root) {
@@ -221,6 +242,14 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			SW = sw;
 			NE = ne;
 			SE = se;
+		}
+
+		public boolean isSameCorner() {
+			boolean c1 = areaNS == ForgeDirection.NORTH && areaEW == ForgeDirection.WEST && NW && !SW && !NE && !SE;
+			boolean c2 = areaNS == ForgeDirection.SOUTH && areaEW == ForgeDirection.WEST && !NW && SW && !NE && !SE;
+			boolean c3 = areaNS == ForgeDirection.NORTH && areaEW == ForgeDirection.EAST && !NW && !SW && NE && !SE;
+			boolean c4 = areaNS == ForgeDirection.SOUTH && areaEW == ForgeDirection.EAST && !NW && !SW && !NE && SE;
+			return c1 || c2 || c3 || c4;
 		}
 
 		private static SwitchGroup random(ForgeDirection ns, ForgeDirection ew, Random rand) {
@@ -352,8 +381,13 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 	}
 
 	@Override
-	public void handleTileInteract(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root) {
+	public void handleTileInteract(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root, EntityPlayer ep) {
 		if (te instanceof LightSwitchTile) {
+			if (!ProgressionManager.instance.playerHasPrerequisites(ep, ProgressStage.BIOMESTRUCT)) {
+				world.setBlockMetadataWithNotify(x, y, z, 0, 2);
+				ChromaSounds.ERROR.playSoundAtBlock(world, x, y, z);
+				return;
+			}
 			this.updateSwitchDoors(world, root);
 		}
 	}
@@ -522,6 +556,60 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 	@Override
 	public void onTick(TileEntityStructControl te) {
 
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void render() {
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		if (!ProgressionManager.instance.playerHasPrerequisites(ep, ProgressStage.BIOMESTRUCT)) {
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			GL11.glDisable(GL11.GL_CULL_FACE);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_BLEND);
+			ReikaRenderHelper.disableEntityLighting();
+			BlendMode.ADDITIVEDARK.apply();
+			GL11.glDepthMask(false);
+
+			ReikaTextureHelper.bindEnchantmentTexture();
+			Tessellator var5 = Tessellator.instance;
+			double r = 12;
+			int color = ReikaColorAPI.mixColors(0xff0000, 0x700000, (float)(0.5+0.5*Math.sin(System.currentTimeMillis()/100D)));
+			var5.startDrawingQuads();
+			var5.setColorOpaque_I(color);
+			double dx = 0.5;
+			double dy = 5.5;
+			double dz = 0.5;
+			double dk = 0.5*r/16;
+			double di = 10;
+			for (double k = -r; k <= r-dk; k += dk) {
+				double dr = r*(1-0.75*Math.pow(k/r, 2));
+				double dr2 = r*(1-0.75*Math.pow((k+dk)/r, 2));
+				double r2 = Math.abs(k) >= r ? 0 : Math.sqrt(Math.max(0, dr*dr-k*k));
+				double r3 = Math.abs(k) >= r ? 0 : Math.sqrt(Math.max(0, dr2*dr2-(k+dk)*(k+dk)));
+				if (Double.isNaN(r2) || Double.isNaN(r3))
+					continue;
+				for (int i = 0; i < 360; i += di) {
+					double a = Math.toRadians(i);
+					double a2 = Math.toRadians(i+di);
+					double ti = i+(System.currentTimeMillis()/50D%360);
+					double tk = k+(System.currentTimeMillis()/220D%360);
+					double u = ti/360D*3;
+					double du = (ti+di)/360D*3;
+					double v = tk*r/1024D;
+					double dv = (tk+dk)*r/1024D;
+					double s1 = Math.sin(a);
+					double s2 = Math.sin(a2);
+					double c1 = Math.cos(a);
+					double c2 = Math.cos(a2);
+					var5.addVertexWithUV(dx+r2*c1, dy+k, dz+r2*s1, u, v);
+					var5.addVertexWithUV(dx+r2*c2, dy+k, dz+r2*s2, du, v);
+					var5.addVertexWithUV(dx+r3*c2, dy+k+dk, dz+r3*s2, du, dv);
+					var5.addVertexWithUV(dx+r3*c1, dy+k+dk, dz+r3*s1, u, dv);
+				}
+			}
+			var5.draw();
+		}
 	}
 
 }

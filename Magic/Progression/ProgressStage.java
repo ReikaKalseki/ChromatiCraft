@@ -78,6 +78,7 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 	OCEAN(			Shareability.ALWAYS,	Reloadability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.GLASS.metadata)), //Ocean floor structure
 	DESERTSTRUCT(	Shareability.ALWAYS,	Reloadability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.COBBLE.metadata)),
 	SNOWSTRUCT(		Shareability.ALWAYS,	Reloadability.ALWAYS,	ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.LIGHT.metadata)),
+	BIOMESTRUCT(	Shareability.ALWAYS,	Reloadability.ALWAYS,	ChromaBlocks.COLORLOCK.getStackOf()),
 	DIE(			Shareability.SELFONLY,	Reloadability.NEVER,	Items.skull), //die and lose energy
 	ALLCOLORS(		Shareability.SELFONLY,	Reloadability.NEVER,	ChromaItems.ELEMENTAL.getStackOf(CrystalElement.CYAN)), //find all colors
 	REPEATER(		Shareability.ALWAYS,	Reloadability.TRIGGER,	ChromaTiles.REPEATER), //craft any repeater type

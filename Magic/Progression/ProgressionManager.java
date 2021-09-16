@@ -150,6 +150,11 @@ public class ProgressionManager implements ProgressRegistry {
 		//addProgressPrereq(ProgressStage.CHROMA, 	ProgressStage.RUNEUSE);
 		//addProgressPrereq(ProgressStage.CHROMA, 	ProgressStage.MULTIBLOCK);
 
+		this.addProgressPrereq(ProgressStage.BIOMESTRUCT, ProgressStage.SHARDCHARGE);
+		this.addProgressPrereq(ProgressStage.BIOMESTRUCT, ProgressStage.MULTIBLOCK);
+		this.addProgressPrereq(ProgressStage.BIOMESTRUCT, ProgressStage.CHROMA);
+		this.addProgressPrereq(ProgressStage.BIOMESTRUCT, ProgressStage.ENERGYIDEA);
+
 		this.addProgressPrereq(ProgressStage.ALLOY, 		ProgressStage.SHARDCHARGE);
 		this.addProgressPrereq(ProgressStage.ALLOY, 		ProgressStage.MULTIBLOCK);
 		this.addProgressPrereq(ProgressStage.ALLOY, 		ProgressStage.CHROMA);

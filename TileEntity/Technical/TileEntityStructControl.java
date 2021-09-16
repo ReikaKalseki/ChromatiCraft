@@ -31,6 +31,8 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.BiomeStructurePuzzle;
+import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.BiomeStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.BurrowStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.OceanStructure;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.SnowStructure;
@@ -240,6 +242,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				return aabb.expand(5, 2, 5).offset(0, 1, 0);
 			case SNOWSTRUCT:
 				return aabb.offset(0, 4, 2).expand(6, 1, 6);
+			case BIOMEFRAG:
+				return aabb.offset(0, 4, 0).expand(7, 6, 7);
 			default:
 				return aabb;
 		}
@@ -484,6 +488,20 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 					}
 				}
 				break;
+			case BIOMEFRAG:
+				if (blocks != null) {
+					for (int i = 0; i < blocks.getSize(); i++) {
+						Coordinate c = blocks.getNthBlock(i);
+						int x = c.xCoord;
+						int y = c.yCoord;
+						int z = c.zCoord;
+						if (y >= yCoord+4 && worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
+							worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+							ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
+						}
+					}
+				}
+				break;
 			default:
 				break;
 		}
@@ -496,8 +514,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			//if (this.checkExclusionZone(world, x, y, z))
 			//	return;
 			this.calcCrystals(world, x, y, z);
-			this.regenerate();
-			DungeonGenerator.instance.onGenerateStructure(struct, (FragmentStructureBase)struct.getStructure(), world, this);
+			if (this.regenerate())
+				DungeonGenerator.instance.onGenerateStructure(struct, (FragmentStructureBase)struct.getStructure(), world, this);
 		}
 		LootChestWatcher.instance.cache(this);
 		this.syncAllData(true);
@@ -528,6 +546,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				blocks = ChromaStructures.SNOWSTRUCT.getArray(world, x, y, z);
 				break;
 			case BIOMEFRAG:
+				((BiomeStructure)struct.getStructure()).setPuzzle((BiomeStructurePuzzle)auxData);
 				blocks = ChromaStructures.BIOMEFRAG.getArray(world, x, y, z);
 				break;
 			default:
@@ -569,16 +588,16 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		return false;
 	}*/
 
-	private void regenerate() {
+	private boolean regenerate() {
 		if (struct == ChromaStructures.BIOMEFRAG)
-			return;
+			return false;
 		int ver = ((GeneratedStructureBase)struct.getStructure()).getStructureVersion();
 		if (version < ver) {
 			regenned = false;
 			version = ver;
 		}
 		if (regenned)
-			return;
+			return false;
 		if (struct != null) {
 			FilledBlockArray copy = (FilledBlockArray)blocks.copy();
 			if (struct == ChromaStructures.BURROW) {
@@ -600,6 +619,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		}
 		regenned = true;
 		triggered = false;
+		return true;
 	}
 
 	@Override
@@ -786,6 +806,32 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 							}
 						}
 						break;
+					case BIOMEFRAG:
+						if (blocks != null) {
+							for (int i = 0; i < blocks.getSize(); i++) {
+								Coordinate c = blocks.getNthBlock(i);
+								int x = c.xCoord;
+								int y = c.yCoord;
+								int z = c.zCoord;
+								Block b = worldObj.getBlock(x, y, z);
+								if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
+									worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+								else if (b == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
+									worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+									ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
+								}
+								else if (b == ChromaBlocks.SHIFTLOCK.getBlockInstance()) {
+									worldObj.setBlockMetadataWithNotify(x, y, z, Passability.BREAKABLE.ordinal(), 3);
+								}
+								else if (b == ChromaBlocks.LIGHTPANEL.getBlockInstance() || b == ChromaBlocks.PANELSWITCH.getBlockInstance()) {
+									worldObj.setBlock(x, y, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CRACK.ordinal(), 3);
+								}
+								else if (b == ChromaBlocks.COLORLOCK.getBlockInstance()) {
+									worldObj.setBlock(x, y, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CRACKS.ordinal(), 3);
+								}
+							}
+						}
+						break;
 					default:
 						break;
 				}
@@ -924,7 +970,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			case SNOWSTRUCT:
 				return ProgressStage.SNOWSTRUCT;
 			case BIOMEFRAG:
-				return true ? ProgressStage.NEVER : null;
+				return ProgressStage.BIOMESTRUCT;
 			default:
 				return null;
 		}
@@ -1071,15 +1117,24 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	}
 
 	public void onDelegatedTileAdded(World world, int x, int y, int z, InteractionDelegateTile te) {
-		auxData.handleTileAdd(world, x, y, z, te, this);
+		if (auxData != null)
+			auxData.handleTileAdd(world, x, y, z, te, this);
 	}
 
 	public void onDelegatedTileRemoved(World world, int x, int y, int z, InteractionDelegateTile te) {
-		auxData.handleTileRemove(world, x, y, z, te, this);
+		if (auxData != null)
+			auxData.handleTileRemove(world, x, y, z, te, this);
 	}
 
-	public void onDelegatedTileInteract(World world, int x, int y, int z, InteractionDelegateTile te) {
-		auxData.handleTileInteract(world, x, y, z, te, this);
+	public void onDelegatedTileInteract(World world, int x, int y, int z, InteractionDelegateTile te, EntityPlayer ep) {
+		if (auxData != null)
+			auxData.handleTileInteract(world, x, y, z, te, this, ep);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void renderDelegate() {
+		if (auxData != null)
+			auxData.render();
 	}
 
 	public static interface FragmentStructureData {
@@ -1090,7 +1145,10 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		void onTick(TileEntityStructControl te);
 		void handleTileAdd(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root);
 		void handleTileRemove(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root);
-		void handleTileInteract(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root);
+		void handleTileInteract(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root, EntityPlayer ep);
+
+		@SideOnly(Side.CLIENT)
+		void render();
 
 	}
 

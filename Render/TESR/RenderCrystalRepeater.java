@@ -261,6 +261,8 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 		for (double k = -r; k <= r; k += dk) {
 			double r2 = f+Math.sqrt(r*r-k*k);
 			double r3 = f+Math.sqrt(r*r-(k+dk)*(k+dk));
+			if (Double.isNaN(r2) || Double.isNaN(r3))
+				continue;
 			for (int i = 0; i < 360; i += di) {
 				double a = Math.toRadians(i);
 				double a2 = Math.toRadians(i+di);

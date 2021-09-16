@@ -169,16 +169,18 @@ public class BiomeStructure extends FragmentStructureWithBonusLoot {
 			for (int d = -4; d <= 4; d++) {
 				Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 				int m = BlockType.COBBLE.metadata;
+				if (j != 9 && Math.abs(d) == 4)
+					continue;
 				if (Math.abs(d) <= 1) {
 					b = j == 6 || j == 9 ? Blocks.stone_brick_stairs : Blocks.air;
 					m = 0;
 				}
-				if (j == 9 && m == BlockType.COBBLE.metadata)
+				if (m == BlockType.COBBLE.metadata && (j == 9 || Math.abs(d) > 2))
 					m = BlockType.STONE.metadata;
-				array.setBlock(x+d, y+j, z+4, b, m);
-				array.setBlock(x+d, y+j, z-4, b, m);
-				array.setBlock(x+4, y+j, z+d, b, m);
-				array.setBlock(x-4, y+j, z+d, b, m);
+				array.setBlock(x+d, y+j, z+4, b, b == Blocks.stone_brick_stairs ? this.getStairMeta(d, j, 4) : m);
+				array.setBlock(x+d, y+j, z-4, b, b == Blocks.stone_brick_stairs ? this.getStairMeta(d, j, -4) : m);
+				array.setBlock(x+4, y+j, z+d, b, b == Blocks.stone_brick_stairs ? this.getStairMeta(4, j, d) : m);
+				array.setBlock(x-4, y+j, z+d, b, b == Blocks.stone_brick_stairs ? this.getStairMeta(-4, j, d) : m);
 			}
 		}
 		for (int j = 5; j <= 8; j++) {
@@ -195,10 +197,10 @@ public class BiomeStructure extends FragmentStructureWithBonusLoot {
 				else if ((j == 7 || j == 8) && Math.abs(d) >= 3 && Math.abs(d) <= 5) {
 					m = BlockType.GLASS.metadata;
 				}
-				array.setBlock(x+d, y+j, z+7, b, m);
-				array.setBlock(x+d, y+j, z-7, b, m);
-				array.setBlock(x+7, y+j, z+d, b, m);
-				array.setBlock(x-7, y+j, z+d, b, m);
+				array.setBlock(x+d, y+j, z+7, b, b == Blocks.stone_brick_stairs ? this.getStairMeta(d, j, 7) : m);
+				array.setBlock(x+d, y+j, z-7, b, b == Blocks.stone_brick_stairs ? this.getStairMeta(d, j, -7) : m);
+				array.setBlock(x+7, y+j, z+d, b, b == Blocks.stone_brick_stairs ? this.getStairMeta(7, j, d) : m);
+				array.setBlock(x-7, y+j, z+d, b, b == Blocks.stone_brick_stairs ? this.getStairMeta(-7, j, d) : m);
 			}
 		}
 		for (int i = -6; i <= 6; i++) {
@@ -304,6 +306,12 @@ public class BiomeStructure extends FragmentStructureWithBonusLoot {
 		this.addLootChest(array, x+4, y+2, z+5, ForgeDirection.NORTH);
 		this.addLootChest(array, x+5, y+2, z-4, ForgeDirection.WEST);
 		this.addLootChest(array, x-4, y+2, z-5, ForgeDirection.SOUTH);
+
+		this.addLootChest(array, x-4, y+6, z+4, ForgeDirection.WEST);
+		this.addLootChest(array, x+4, y+6, z+4, ForgeDirection.SOUTH);
+		this.addLootChest(array, x+4, y+6, z-4, ForgeDirection.EAST);
+		this.addLootChest(array, x-4, y+6, z-4, ForgeDirection.NORTH);
+
 		for (int i = 2; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 			ForgeDirection left = ReikaDirectionHelper.getLeftBy90(dir);
@@ -315,6 +323,27 @@ public class BiomeStructure extends FragmentStructureWithBonusLoot {
 		}
 		//this.addCallback(?, del);
 		return array;
+	}
+
+	private int getStairMeta(int dx, int dy, int dz) {
+		boolean invert = dy == 9;
+		boolean x = Math.abs(dx) > Math.abs(dz);
+		if (x) {
+			if (dx > 0) {
+				return invert ? 4 : 1;
+			}
+			else {
+				return invert ? 5 : 0;
+			}
+		}
+		else {
+			if (dz > 0) {
+				return invert ? 6 : 3;
+			}
+			else {
+				return invert ? 7 : 2;
+			}
+		}
 	}
 
 	@Override
@@ -358,6 +387,10 @@ public class BiomeStructure extends FragmentStructureWithBonusLoot {
 		else {
 			return r.nextInt(3) > 0 ? 2 : 1;
 		}
+	}
+
+	public void setPuzzle(BiomeStructurePuzzle data) {
+		puzzle = data;
 	}
 
 	private static class PuzzleCacheCallback implements TileCallback {

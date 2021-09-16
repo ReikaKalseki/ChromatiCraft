@@ -70,6 +70,12 @@ public class RenderStructControl extends ChromaRenderBase {
 
 			this.renderFlare(te, v5);
 
+			GL11.glPushMatrix();
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			te.renderDelegate();
+			GL11.glPopAttrib();
+			GL11.glPopMatrix();
+
 			BlendMode.ADDITIVEDARK.apply();
 
 			if (te.isInWorld()) {

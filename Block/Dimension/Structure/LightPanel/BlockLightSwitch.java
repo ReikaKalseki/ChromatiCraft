@@ -63,7 +63,7 @@ public class BlockLightSwitch extends BlockDimensionStructureTile {
 			if (te.delegate != null) {
 				TileEntity te2 = te.delegate.getTileEntity(world);
 				if (te2 instanceof TileEntityStructControl) {
-					((TileEntityStructControl)te2).onDelegatedTileInteract(world, x, y, z, te);
+					((TileEntityStructControl)te2).onDelegatedTileInteract(world, x, y, z, te, ep);
 				}
 			}
 		}
