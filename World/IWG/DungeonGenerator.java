@@ -680,6 +680,31 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					}
 					break;
 				}
+				case BIOMEFRAG: {
+					int y = world.getTopSolidOrLiquidBlock(x, z)-5;
+					FilledBlockArray arr = ChromaStructures.BIOMEFRAG.getArray(world, x, y, z, r);
+					if (this.isValidBiomeStructLocation(world, x, y, z, arr)) {
+						arr.place(2);
+						TileEntityStructControl te = null;
+						try {
+							world.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
+							te = (TileEntityStructControl)world.getTileEntity(x, y, z);
+							te.generate(s, CrystalElement.WHITE);
+							rx = te.xCoord;
+							rz = te.zCoord;
+							this.onGenerateStructure(s, s2, world, te);
+						}
+						catch (Exception e) {
+							((GeneratedStructureBase)s.getStructure()).addError(new Exception("Failed to place controller @ "+x+", "+y+", "+z, e));
+						}
+						this.modifyBlocks(s, arr, r, Modify.MOSSIFY, Modify.GRASSDIRT, Modify.ADJTREES2);
+						this.populateChests(s, arr, r);
+						((GeneratedStructureBase)s.getStructure()).runCallbacks(world, r);
+						flag = true;
+						this.logErrors(world, x, y, z, s, te);
+					}
+					break;
+				}
 			}
 			if (flag) {
 				if (rx != cx || rz != cz)
@@ -902,6 +927,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		MOSSIFY,
 		GRASSDIRT,
 		ADJTREES,
+		ADJTREES2,
 		CLEANENTRANCE,
 		@Deprecated ENCRUSTED,
 		;
@@ -920,7 +946,34 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			return ret;
 		}
 
-		private boolean apply(ChromaStructures s, FilledBlockArray arr, Coordinate c, Random r) {
+		private void apply(ChromaStructures s, FilledBlockArray arr, Random r) {
+			switch(this) {
+				case ADJTREES:
+					break;
+				case ADJTREES2:
+					for (int x = arr.getMinX()-1; x <= arr.getMaxX()+1; x++) {
+						for (int z = arr.getMinZ()-1; z <= arr.getMaxZ()+1; z++) {
+							boolean walls = x >= arr.getMinX() && x <= arr.getMaxX() && z >= arr.getMinZ() && z <= arr.getMaxZ();
+							for (int y = arr.getMinY(); y <= arr.getMaxY()+2; y++) {
+								if (ReikaBlockHelper.isWood(arr.world, x, y, z) || (walls && ReikaBlockHelper.isLeaf(arr.world, x, y, z))) {
+									arr.world.setBlockToAir(x, y, z);
+								}
+							}
+						}
+					}
+					break;
+				case CLEANENTRANCE:
+					break;
+				case ENCRUSTED:
+					break;
+				case GRASSDIRT:
+					break;
+				case MOSSIFY:
+					break;
+			}
+		}
+
+		private boolean applyEach(ChromaStructures s, FilledBlockArray arr, Coordinate c, Random r) {
 			switch(this) {
 				case ADJTREES: {
 					for (int i = 0; i < 6; i++) {
@@ -941,6 +994,9 @@ public class DungeonGenerator implements RetroactiveGenerator {
 							}
 						}
 					}
+					break;
+				}
+				case ADJTREES2: {
 					break;
 				}
 				case CLEANENTRANCE: {
@@ -1013,14 +1069,22 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	}
 
 	public void modifyBlocks(ChromaStructures s, FilledBlockArray arr, Random r, Modify... flags) {
+		for (Modify m : flags) {
+			try {
+				m.apply(s, arr, r);
+			}
+			catch (Exception e) {
+				((GeneratedStructureBase)s.getStructure()).addError(new Exception("Failed to run pass '"+m+"'", e));
+			}
+		}
 		for (int k = 0; k < arr.getSize(); k++) {
 			Coordinate c = arr.getNthBlock(k);
 			for (Modify m : flags) {
 				try {
-					m.apply(s, arr, c, r);
+					m.applyEach(s, arr, c, r);
 				}
 				catch (Exception e) {
-					((GeneratedStructureBase)s.getStructure()).addError(new Exception("Failed to run pass '"+m+"'", e));
+					((GeneratedStructureBase)s.getStructure()).addError(new Exception("Failed to run localized pass '"+m+"' @ "+c, e));
 				}
 			}
 		}
@@ -1285,6 +1349,34 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	}
 
 	private boolean isValidSnowStructLocation(World world, int x, int y, int z, FilledBlockArray arr) {
+		int h1 = world.getTopSolidOrLiquidBlock(arr.getMinX(), arr.getMinZ());
+		int h2 = world.getTopSolidOrLiquidBlock(arr.getMaxX(), arr.getMinZ());
+		int h3 = world.getTopSolidOrLiquidBlock(arr.getMinX(), arr.getMaxZ());
+		int h4 = world.getTopSolidOrLiquidBlock(arr.getMaxX(), arr.getMaxZ());
+		int max = ReikaMathLibrary.multiMax(h1, h2, h3, h4);
+		int min = ReikaMathLibrary.multiMin(h1, h2, h3, h4);
+		if (Math.abs(max-min) > 2)
+			return false;
+		BiomeGenBase b1 = world.getBiomeGenForCoords(arr.getMinX(), arr.getMinZ());
+		BiomeGenBase b2 = world.getBiomeGenForCoords(arr.getMaxX(), arr.getMinZ());
+		BiomeGenBase b3 = world.getBiomeGenForCoords(arr.getMinX(), arr.getMaxZ());
+		BiomeGenBase b4 = world.getBiomeGenForCoords(arr.getMaxX(), arr.getMaxZ());
+		if (b1 != b2 || b1 != b3 || b1 != b4)
+			return false;
+		for (int d = 1; d <= 5; d++) { //starts at the top non-air
+			Block id1 = world.getBlock(arr.getMinX(), h1-d, arr.getMinZ());
+			Block id2 = world.getBlock(arr.getMaxX(), h2-d, arr.getMinZ());
+			Block id3 = world.getBlock(arr.getMinX(), h3-d, arr.getMaxZ());
+			Block id4 = world.getBlock(arr.getMaxX(), h4-d, arr.getMaxZ());
+			if (id1 == Blocks.air || id2 == Blocks.air || id3 == Blocks.air || id4 == Blocks.air)
+				return false;
+			if (ReikaBlockHelper.isLiquid(id1) || ReikaBlockHelper.isLiquid(id2) || ReikaBlockHelper.isLiquid(id3) || ReikaBlockHelper.isLiquid(id4))
+				return false;
+		}
+		return true;
+	}
+
+	private boolean isValidBiomeStructLocation(World world, int x, int y, int z, FilledBlockArray arr) {
 		int h1 = world.getTopSolidOrLiquidBlock(arr.getMinX(), arr.getMinZ());
 		int h2 = world.getTopSolidOrLiquidBlock(arr.getMaxX(), arr.getMinZ());
 		int h3 = world.getTopSolidOrLiquidBlock(arr.getMinX(), arr.getMaxZ());

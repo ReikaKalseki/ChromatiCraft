@@ -1378,9 +1378,11 @@ public class RecipesCastingTable implements CastingAPI {
 	@Override
 	public MultiRecipe addMultiBlockCastingRecipe(ItemStack out, ItemStack ctr, Map<List<Integer>, CrystalElementProxy> runes, Map<List<Integer>, ItemStack> items) {
 		MultiBlockCastingRecipe cr = new MultiBlockCastingRecipe(out, ctr);
-		for (Entry<List<Integer>, CrystalElementProxy> e : runes.entrySet()) {
-			List<Integer> li = e.getKey();
-			cr.addRune(e.getValue(), li.get(0), li.get(1), li.get(2));
+		if (runes != null) {
+			for (Entry<List<Integer>, CrystalElementProxy> e : runes.entrySet()) {
+				List<Integer> li = e.getKey();
+				cr.addRune(e.getValue(), li.get(0), li.get(1), li.get(2));
+			}
 		}
 		for (Entry<List<Integer>, ItemStack> e : items.entrySet()) {
 			List<Integer> li = e.getKey();
@@ -1393,9 +1395,11 @@ public class RecipesCastingTable implements CastingAPI {
 	@Override
 	public LumenRecipe addPylonCastingRecipe(ItemStack out, ItemStack ctr, Map<List<Integer>, CrystalElementProxy> runes, Map<List<Integer>, ItemStack> items, Map<CrystalElementProxy, Integer> energy) {
 		PylonCastingRecipe cr = new PylonCastingRecipe(out, ctr);
-		for (Entry<List<Integer>, CrystalElementProxy> e : runes.entrySet()) {
-			List<Integer> li = e.getKey();
-			cr.addRune(e.getValue(), li.get(0), li.get(1), li.get(2));
+		if (runes != null) {
+			for (Entry<List<Integer>, CrystalElementProxy> e : runes.entrySet()) {
+				List<Integer> li = e.getKey();
+				cr.addRune(e.getValue(), li.get(0), li.get(1), li.get(2));
+			}
 		}
 		for (Entry<List<Integer>, ItemStack> e : items.entrySet()) {
 			List<Integer> li = e.getKey();
