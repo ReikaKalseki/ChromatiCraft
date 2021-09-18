@@ -17,15 +17,20 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Music.BlockMusicMemory;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
+import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
@@ -58,7 +63,7 @@ public class BlockMusicTrigger extends Block implements SemiUnbreakable {
 	@Override
 	public final void onNeighborBlockChange(World world, int x, int y, int z, Block b) {
 		if (world.isBlockIndirectlyGettingPowered(x, y, z)) {
-			this.ping(world, x, y, z, world.getBlockPowerInput(x, y, z)/4);
+			this.ping(world, x, y, z, world.getBlockPowerInput(x, y, z)/4, null);
 		}
 	}
 
@@ -73,13 +78,13 @@ public class BlockMusicTrigger extends Block implements SemiUnbreakable {
 		if (s > 1) {
 			int idx = this.getIndex(s, a, b, c);
 			if (idx >= 0) {
-				this.ping(world, x, y, z, idx);
+				this.ping(world, x, y, z, idx, ep);
 			}
 		}
 		return true;
 	}
 
-	private void ping(World world, int x, int y, int z, int idx) {
+	private void ping(World world, int x, int y, int z, int idx, EntityPlayer ep) {
 		Block bk = world.getBlock(x, y+1, z);
 		if (bk instanceof CrystalTypeBlock) {
 			int meta = world.getBlockMetadata(x, y+1, z);
@@ -88,10 +93,33 @@ public class BlockMusicTrigger extends Block implements SemiUnbreakable {
 			CrystalTypeBlock.ding(world, x, y, z, e, p);
 			if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
 				BlockMusicMemory.ping(world, x, y, z, e, idx);
+			else if (world.getBlock(x, y-1, z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance() && world.getBlockMetadata(x, y-1, z) >= 8)
+				this.pingCallback(world, x, y, z, e, idx, ep);
 			if (world.isRemote) {
 				this.createParticle(world, x, y+1, z, e);
 			}
 
+		}
+	}
+
+	private void pingCallback(World world, int x, int y, int z, CrystalElement e, int idx, EntityPlayer ep) {
+		TileEntityStructControl te = null;
+		for (int i = 2; i < 6 && te == null; i++) {
+			for (int d = 4; d <= 5; d++) {
+				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+				ForgeDirection left = ReikaDirectionHelper.getLeftBy90(dir);
+				int dx = x+dir.offsetX*d+left.offsetX;
+				int dy = y-2;
+				int dz = z+dir.offsetZ*d+left.offsetZ;
+				//ReikaJavaLibrary.pConsole(BlockKey.getAt(world, dx, dy, dz)+" @ "+dir+"x"+d+" @ "+new Coordinate(dx, dy, dz));
+				if (ChromaTiles.getTile(world, dx, dy, dz) == ChromaTiles.STRUCTCONTROL) {
+					te = (TileEntityStructControl)world.getTileEntity(dx, dy, dz);
+					break;
+				}
+			}
+		}
+		if (te != null) {
+			te.onMusicTrigger(world, x, y, z, e, CrystalMusicManager.instance.getKeys(e).get(idx), ep);
 		}
 	}
 

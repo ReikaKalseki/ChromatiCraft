@@ -77,6 +77,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -1131,6 +1132,11 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			auxData.handleTileInteract(world, x, y, z, te, this, ep);
 	}
 
+	public void onMusicTrigger(World world, int x, int y, int z, CrystalElement e, MusicKey mk, EntityPlayer ep) {
+		if (auxData != null)
+			auxData.handleMusicTrigger(world, x, y, z, e, mk, this, ep);
+	}
+
 	@SideOnly(Side.CLIENT)
 	public void renderDelegate() {
 		if (auxData != null)
@@ -1146,6 +1152,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		void handleTileAdd(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root);
 		void handleTileRemove(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root);
 		void handleTileInteract(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root, EntityPlayer ep);
+		void handleMusicTrigger(World world, int x, int y, int z, CrystalElement e, MusicKey mk, TileEntityStructControl root, EntityPlayer ep);
 
 		@SideOnly(Side.CLIENT)
 		void render();

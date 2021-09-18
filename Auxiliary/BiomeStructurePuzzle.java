@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock.Pa
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -76,9 +77,14 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 
 	private final HashMap<Coordinate, CrystalElement> runes = new HashMap();
 
-	private long tick;
+	//private boolean isPlayingMelody;
+	private long musicTick;
 	private long nextNoteTick = 10;
 	private int melodyIndex;
+
+	private boolean complete;
+
+	private final ArrayList<MusicKey> remainingGuess = new ArrayList();
 
 	public void clear() {
 		melody.clear();
@@ -86,6 +92,8 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		doorColors.clear();
 		runes.clear();
 		usedKeys.clear();
+
+		remainingGuess.clear();
 	}
 
 	public void generate(Random rand) {
@@ -134,6 +142,9 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 				ChromatiCraft.logger.log("Failed to perform "+pre+" with only eight colors");
 			}
 		}
+
+
+		remainingGuess.addAll(melody);
 	}
 
 	private boolean calculateCrystals(Random rand) {
@@ -354,6 +365,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		}
 
 		NBT.setInteger("key", keyIndex);
+		NBT.setBoolean("complete", complete);
 	}
 
 	@Override
@@ -391,6 +403,9 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		}
 
 		keyIndex = NBT.getInteger("key");
+		complete = NBT.getBoolean("complete");
+
+		remainingGuess.addAll(melody);
 	}
 
 	@Override
@@ -416,6 +431,36 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 				return;
 			}
 			this.updateSwitchDoors(world, root);
+		}
+	}
+
+	@Override
+	public void handleMusicTrigger(World world, int x, int y, int z, CrystalElement e, MusicKey mk, TileEntityStructControl root, EntityPlayer ep) {
+		if (complete)
+			return;
+		if (mk == remainingGuess.get(0)) {
+			remainingGuess.remove(0);
+			if (remainingGuess.isEmpty()) {
+				this.complete(world, root, ep);
+			}
+		}
+		else {
+			remainingGuess.clear();
+			remainingGuess.addAll(melody);
+			ChromaSounds.ERROR.playSoundAtBlock(root);
+		}
+	}
+
+	private void complete(World world, TileEntityStructControl root, EntityPlayer ep) {
+		complete = true;
+		ChromaSounds.CAST.playSoundAtBlock(root);
+		for (Coordinate c : this.getBarrierLocations(root)) {
+			BlockChromaDoor.setOpen(world, c.xCoord, c.yCoord, c.zCoord, true);
+		}
+		for (Coordinate c : this.getLowerChestLocations(root)) {
+			if (c.getBlock(world) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
+				c.setBlockMetadata(world, c.getBlockMetadata(world)%8);
+			}
 		}
 	}
 
@@ -446,12 +491,6 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			for (Coordinate c : this.getSwitchDoorLocations(root, i).keySet()) {
 				BlockShiftLock.setOpen(world, c.xCoord, c.yCoord, c.zCoord, flag);
 			}
-		}
-	}
-
-	private void openBarriers(World world, TileEntityStructControl root) {
-		for (Coordinate c : this.getBarrierLocations(root)) {
-			BlockChromaDoor.setOpen(world, c.xCoord, c.yCoord, c.zCoord, true);
 		}
 	}
 
@@ -562,6 +601,16 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		return ret;
 	}
 
+	private Collection<Coordinate> getLowerChestLocations(TileEntityStructControl root) {
+		ArrayList<Coordinate> ret = new ArrayList();
+		for (int i = 2; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			ForgeDirection left = ReikaDirectionHelper.getLeftBy90(dir);
+			ret.add(new Coordinate(root).offset(dir.offsetX*3+left.offsetX*4, 1, left.offsetZ*4+dir.offsetZ*3));
+		}
+		return ret;
+	}
+
 	private Collection<Coordinate> getBarrierLocations(TileEntityStructControl root) {
 		ArrayList<Coordinate> ret = new ArrayList();
 		for (int x = -1; x <= 1; x++) {
@@ -591,10 +640,16 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			if (!ProgressionManager.instance.playerHasPrerequisites(ep2, ProgressStage.BIOMESTRUCT))
 				this.pushPlayer(ep2, te);
 		}
-		tick++;
-		if (tick >= nextNoteTick) {
-			this.playNextNote(te);
+		if (this.isPlayingMelody(ep)) {
+			musicTick++;
+			if (musicTick >= nextNoteTick) {
+				this.playNextNote(te);
+			}
 		}
+	}
+
+	private boolean isPlayingMelody(EntityPlayer ep) {
+		return ChromaItems.PROBE.matchWith(ep.getCurrentEquippedItem());//isPlayingMelody;
 	}
 
 	private void pushPlayer(EntityPlayer ep, TileEntityStructControl te) {
@@ -629,7 +684,10 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		melodyIndex++;
 		if (melodyIndex >= melody.size()) {
 			melodyIndex = 0;
-			nextNoteTick = tick+100;
+			//nextNoteTick = 0;
+			//isPlayingMelody = false;
+
+			nextNoteTick += 16;
 		}
 	}
 
