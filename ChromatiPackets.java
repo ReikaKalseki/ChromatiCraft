@@ -1031,7 +1031,7 @@ public class ChromatiPackets implements PacketHandler {
 						AbilityCalls.doNukerFX(world, data[0], data[1], data[2], (EntityPlayer)e);
 					break;
 				}
-				case BURNERINV:
+				case BURNERINV: {
 					if (data[0] > 0) {
 						ep.closeScreen();
 						ep.openGui(ChromatiCraft.instance, ChromaGuis.BURNERINV.ordinal(), world, x, y, z);
@@ -1041,6 +1041,7 @@ public class ChromatiPackets implements PacketHandler {
 						ep.openContainer = ep.inventoryContainer;
 					}
 					break;
+				}
 				case BROADCASTLINK:
 					((TileEntityCrystalBroadcaster)tile).onConnectedParticles(CrystalElement.elements[data[0]]);
 					break;
@@ -1089,8 +1090,7 @@ public class ChromatiPackets implements PacketHandler {
 					RFWeb.doSendParticle(world, x, y, z, data[0], data[1], data[2], data[3]);
 					break;
 				case STRUCTSEED:
-					long s = ReikaJavaLibrary.buildLong(data[0], data[1]);
-					StructureCalculator.assignSeed(s);
+					StructureCalculator.assignSeed(ReikaJavaLibrary.buildLong(data[0], data[1]));
 					break;
 				case RAYBLENDPING:
 					RayBlendPuzzle.spawnPingParticle(world, CrystalElement.elements[data[0]], x, y, z);
@@ -1139,7 +1139,7 @@ public class ChromatiPackets implements PacketHandler {
 					}
 					break;
 				}
-				case ALLOYITEMS:
+				case ALLOYITEMS: {
 					PoolRecipe pr = PoolRecipes.instance.getByID(stringdata);
 					if (pr != null) {
 						ReikaPlayerAPI.addOrDropItem(pr.getMainInput(), ep);
@@ -1148,6 +1148,7 @@ public class ChromatiPackets implements PacketHandler {
 						}
 					}
 					break;
+				}
 				case LAUNCHFIRE:
 					((TileEntityLaunchPad)tile).doFX(world, x, y, z);
 					break;
@@ -1169,13 +1170,14 @@ public class ChromatiPackets implements PacketHandler {
 				case STRUCTMAPSTART:
 					StructureMapCommand.startCollecting(ChromaStructures.values()[data[5]], data[0], stringdata, data[1], data[2], data[3], data[4]);
 					break;
-				case STRUCTMAPDAT:
+				case STRUCTMAPDAT: {
 					int hash = data[0];
 					for (int i = 0; i < StructureMapCommand.PACKET_COMPILE; i++) {
 						int a = 1+i*3;
 						StructureMapCommand.addDataPoint(hash, data[a], data[a+1], StructureGenStatus.list[data[a+2]]);
 					}
 					break;
+				}
 				case STRUCTMAPEND:
 					StructureMapCommand.finishCollectingAndMakeImage(data[0]);
 					break;
@@ -1195,6 +1197,12 @@ public class ChromatiPackets implements PacketHandler {
 						}
 					}
 					break;*/
+				case RUNEPARTICLE: {
+					double s = ReikaJavaLibrary.buildDoubleFromInts(data[1], data[2]);
+					double v = ReikaJavaLibrary.buildDoubleFromInts(data[3], data[4]);
+					ChromaFX.doElementalParticle(world, dx, dy, dz, CrystalElement.elements[data[0]], s, v, data[5]);
+					break;
+				}
 			}
 		}
 		catch (NullPointerException e) {

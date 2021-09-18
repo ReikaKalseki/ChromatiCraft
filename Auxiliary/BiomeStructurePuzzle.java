@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
 
@@ -18,6 +19,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -34,6 +36,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock.Pa
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
@@ -41,13 +44,17 @@ import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl.Fragment
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl.InteractionDelegateTile;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator;
+import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator.MelodyPrefab;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
@@ -68,6 +75,10 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 	private final HashSet<SwitchGroup> usedKeys = new HashSet();
 
 	private final HashMap<Coordinate, CrystalElement> runes = new HashMap();
+
+	private long tick;
+	private long nextNoteTick = 10;
+	private int melodyIndex;
 
 	public void clear() {
 		melody.clear();
@@ -107,9 +118,21 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		runes.put(new Coordinate(-5, 5, -6), doorColors.get(idx.remove(0)));
 		runes.put(new Coordinate(-6, 5, -5), doorColors.get(idx.remove(0)));
 
-		melody.addAll(MusicPuzzleGenerator.getRandomPrefab(rand, Integer.MAX_VALUE, null).getNotes());
-		while (!this.calculateCrystals(rand)) {
-			crystalColors.clear();
+		HashSet<MelodyPrefab> excl = new HashSet();
+		while (melody.isEmpty()) {
+			int attempts = 0;
+			MelodyPrefab pre = MusicPuzzleGenerator.getRandomPrefab(rand, Integer.MAX_VALUE, excl);
+			melody.addAll(pre.getNotes());
+			while (attempts < 10 && !this.calculateCrystals(rand)) {
+				crystalColors.clear();
+				attempts++;
+			}
+			if (attempts >= 10) {
+				crystalColors.clear();
+				melody.clear();
+				excl.add(pre);
+				ChromatiCraft.logger.log("Failed to perform "+pre+" with only eight colors");
+			}
 		}
 	}
 
@@ -329,6 +352,8 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		for (int i = 0; i < doorKeys.length; i++) {
 			NBT.setTag("door"+i, doorKeys[i].writeToTag());
 		}
+
+		NBT.setInteger("key", keyIndex);
 	}
 
 	@Override
@@ -364,6 +389,8 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		for (int i = 0; i < doorKeys.length; i++) {
 			doorKeys[i] = SwitchGroup.readTag(NBT.getCompoundTag("door"+i));
 		}
+
+		keyIndex = NBT.getInteger("key");
 	}
 
 	@Override
@@ -555,7 +582,55 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 
 	@Override
 	public void onTick(TileEntityStructControl te) {
+		EntityPlayer ep = te.worldObj.getClosestPlayer(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5, 20);
+		if (ep == null)
+			return;
+		AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(te).expand(1, 0, 1).offset(0, 6, 0);
+		List<EntityPlayer> li = te.worldObj.getEntitiesWithinAABB(EntityPlayer.class, box);
+		for (EntityPlayer ep2 : li) {
+			if (!ProgressionManager.instance.playerHasPrerequisites(ep2, ProgressStage.BIOMESTRUCT))
+				this.pushPlayer(ep2, te);
+		}
+		tick++;
+		if (tick >= nextNoteTick) {
+			this.playNextNote(te);
+		}
+	}
 
+	private void pushPlayer(EntityPlayer ep, TileEntityStructControl te) {
+		/*
+		double dx = ep.posX-te.xCoord-0.5;
+		double dz = ep.posZ-te.zCoord-0.5;
+		double v = 4.5;
+		double dd = ReikaMathLibrary.py3d(dx, 0, dz);
+		ep.addVelocity(v*dx/dd, 0, v*dz/dd);
+		 */
+		ep.motionY = Math.max(0, ep.motionY);
+		ep.velocityChanged = true;
+	}
+
+	private void playNextNote(TileEntityStructControl te) {
+		MusicKey key = melody.get(melodyIndex);
+		ChromaSounds.DING.playSoundAtBlock(te, 1, (float)CrystalMusicManager.instance.getPitchFactor(key));
+
+		ArrayList<CrystalElement> c = new ArrayList(CrystalMusicManager.instance.getColorsWithKey(key));
+		for (CrystalElement e : c) {
+			double s = 4.5-0.5*(c.size()-1);
+			int[] d1 = ReikaJavaLibrary.splitDoubleToInts(s);
+			int[] d2 = ReikaJavaLibrary.splitDoubleToInts(0);
+			double dd = s/6D;
+			double dx = ReikaRandomHelper.getRandomPlusMinus(te.xCoord+0.5, dd);
+			double dy = ReikaRandomHelper.getRandomPlusMinus(te.yCoord+3.5, dd);
+			double dz = ReikaRandomHelper.getRandomPlusMinus(te.zCoord+0.5, dd);
+			ReikaPacketHelper.sendPositionPacket(ChromatiCraft.packetChannel, ChromaPackets.RUNEPARTICLE.ordinal(), te.worldObj, dx, dy, dz, 32, e.ordinal(), d1[0], d1[1], d2[0], d2[1], 6);
+		}
+
+		nextNoteTick += 8;
+		melodyIndex++;
+		if (melodyIndex >= melody.size()) {
+			melodyIndex = 0;
+			nextNoteTick = tick+100;
+		}
 	}
 
 	@Override

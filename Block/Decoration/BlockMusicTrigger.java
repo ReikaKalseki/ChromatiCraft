@@ -13,19 +13,18 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Music.BlockMusicMemory;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
-import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -99,8 +98,7 @@ public class BlockMusicTrigger extends Block implements SemiUnbreakable {
 	@SideOnly(Side.CLIENT)
 	public static void createParticle(World world, int x, int y, int z, CrystalElement e) {
 		double v = ReikaRandomHelper.getRandomPlusMinus(0.125, 0.0625);
-		EntityRuneFX fx = new EntityRuneFX(world, x+0.5, y+0.5, z+0.5, 0, v, 0, e).setGravity(0).setScale(4).setLife(20);
-		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		ChromaFX.doElementalParticle(world, x+0.5, y+0.5, z+0.5, e, 4, v, 20);
 
 		for (int i = 0; i < 12; i++) {
 			world.getBlock(x, y, z).randomDisplayTick(world, x, y, z, rand);

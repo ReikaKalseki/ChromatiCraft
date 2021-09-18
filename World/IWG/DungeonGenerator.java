@@ -1145,7 +1145,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					TileEntityLootChest te = (TileEntityLootChest)c.getTileEntity(arr.world);
 					if (te.isUntouchedWorldgen()) {
 						int bonus = ((FragmentStructureBase)struct.getStructure()).getChestYield(c, te, arr, r);
-						populateChest(c, te, struct, arr, bonus, r);
+						this.populateChest(c, te, struct, arr, bonus, r);
 					}
 				}
 			}
@@ -1155,7 +1155,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 	}
 
-	public static void populateChest(Coordinate c, TileEntityLootChest te, ChromaStructures struct, FilledBlockArray arr, int bonus, Random r) {
+	public void populateChest(Coordinate c, TileEntityLootChest te, ChromaStructures struct, FilledBlockArray arr, int bonus, Random r) {
 		String s = ((FragmentStructureBase)struct.getStructure()).getChestLootTable(c, te, arr, r);
 		if (s == null) {
 			return;

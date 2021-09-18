@@ -825,4 +825,10 @@ public class ChromaFX {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
+	public static void doElementalParticle(World world, double x, double y, double z, CrystalElement e, double s, double vy, int l) {
+		EntityRuneFX fx = new EntityRuneFX(world, x, y, z, 0, vy, 0, e).setGravity(0).setScale((float)s).setLife(l);
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+	}
+
 }

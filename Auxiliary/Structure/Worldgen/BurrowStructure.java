@@ -891,7 +891,7 @@ public class BurrowStructure extends FragmentStructureBase {
 
 	@Override
 	public int getChestYield(Coordinate c, TileEntityLootChest te, FilledBlockArray arr, Random r) {
-		return 0;
+		return c.yCoord <= arr.getMinY()+4 ? 0 : -1;
 	}
 
 	@Override
@@ -901,12 +901,12 @@ public class BurrowStructure extends FragmentStructureBase {
 
 	@Override
 	public int modifyLootCount(TileEntityLootChest tileEntityLootChest, String s, int bonus, Random r, int count) {
-		return count/2;
+		return (int)(count*(0.4+bonus*0.1F));
 	}
 
 	@Override
 	public float getFragmentChance(TileEntityLootChest te, String s, int bonus, Random r) {
-		return 0.6F;
+		return 0.6F+bonus*0.1F;
 	}
 
 	@Override

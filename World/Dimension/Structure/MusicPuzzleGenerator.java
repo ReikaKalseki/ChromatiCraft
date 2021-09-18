@@ -219,6 +219,11 @@ public class MusicPuzzleGenerator extends DimensionStructureGenerator {
 		}
 
 		@Override
+		public String toString() {
+			return key+" @ "+center+" $ "+notes.toString();
+		}
+
+		@Override
 		public int hashCode() {
 			return notes.hashCode();
 		}

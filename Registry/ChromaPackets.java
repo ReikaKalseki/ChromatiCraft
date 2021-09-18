@@ -223,6 +223,7 @@ public enum ChromaPackets {
 	ARTEALLOYBURST(1),
 	ITEMRIFTMOVE(4),
 	//CLEARSTAND(4),
+	RUNEPARTICLE(6, PacketTypes.POS),
 	;
 
 	public final int numInts;
