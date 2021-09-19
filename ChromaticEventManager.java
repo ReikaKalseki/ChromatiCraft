@@ -200,6 +200,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.BreadthFirstSearch;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Event.ApplyPotionEvent;
 import Reika.DragonAPI.Instantiable.Event.AttackAggroEvent;
 import Reika.DragonAPI.Instantiable.Event.BlockConsumedByFireEvent;
 import Reika.DragonAPI.Instantiable.Event.BlockSpreadEvent;
@@ -298,6 +299,13 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	public void addPotionProgress(ApplyPotionEvent evt) {
+		if (evt.entityLiving instanceof EntityPlayer) {
+			ProgressStage.POTION.stepPlayerTo((EntityPlayer)evt.entityLiving);
+		}
 	}
 
 	@SubscribeEvent

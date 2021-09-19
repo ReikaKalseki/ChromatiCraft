@@ -17,7 +17,6 @@ import java.util.Map.Entry;
 
 import org.lwjgl.opengl.GL11;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
@@ -48,13 +47,12 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.Item.SpriteRenderCallback;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
-import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaReflectionHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -85,7 +83,11 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 				is.stackTagCompound.setTag(TAG_NAME, data.writeToNBT());
 			}
 			else {
-				is.setItemDamage((is.getItemDamage()+1)%StructureSearch.list.length);
+				boolean flag = true;
+				while (flag) {
+					is.setItemDamage((is.getItemDamage()+1)%StructureSearch.list.length);
+					flag = StructureSearch.list[is.getItemDamage()].skip();
+				}
 			}
 		}
 		return is;
@@ -164,11 +166,6 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 		v5.addVertexWithUV(128 + b0, 0 - b0, rz, ou+0.25, ov);
 		v5.addVertexWithUV(0 - b0, 0 - b0, rz, ou, ov);
 		v5.draw();
-		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-		RenderItem ri = new RenderItem();
-		ri.zLevel = -150;
-		ri.renderItemIntoGUI(Minecraft.getMinecraft().fontRenderer, Minecraft.getMinecraft().renderEngine, ReikaItemHelper.stoneBricks.asItemStack(), 0, 0);
-		GL11.glPopAttrib();
 		//GL11.glDisable(GL11.GL_TEXTURE_2D);
 		int d = 12;
 		//GL11.glPointSize(2);
@@ -201,7 +198,10 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 		BURROW(ChromaStructures.BURROW),
 		OCEAN(ChromaStructures.OCEAN),
 		DESERT(ChromaStructures.DESERT),
-		SNOWSTRUCT(ChromaStructures.SNOWSTRUCT);
+		SNOWSTRUCT(ChromaStructures.SNOWSTRUCT),
+		MINESHAFT(),
+		BIOME(ChromaStructures.BIOMEFRAG),
+		;
 
 		private static final StructureSearch[] list = values();
 
@@ -209,6 +209,10 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 
 		private StructureSearch() {
 			this(null);
+		}
+
+		private boolean skip() {
+			return this == MINESHAFT;
 		}
 
 		public int getSearchRange() {

@@ -18,6 +18,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
@@ -39,11 +40,13 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 
 import cpw.mods.fml.relauncher.Side;
@@ -117,6 +120,8 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 	PYLONLINK(		Shareability.SELFONLY,	Reloadability.TRIGGER,	ChromaTiles.PYLONLINK.getCraftedProduct()),
 	RELAYS(			Shareability.PROXIMITY, Reloadability.TRIGGER,	ChromaTiles.RELAYSOURCE.getCraftedProduct()),
 	ENERGYIDEA(		Shareability.SELFONLY,	Reloadability.NEVER,	(ItemStack)null),
+	NODE(			Shareability.PROXIMITY,	Reloadability.NEVER,	ModList.THAUMCRAFT.isLoaded() ? ThaumItemHelper.BlockEntry.NODE.getItem() : null, ModList.THAUMCRAFT.isLoaded()),
+	POTION(			Shareability.SELFONLY,	Reloadability.NEVER,	ReikaPotionHelper.getPotionItem(Potion.regeneration, true, true, false)),
 	NEVER(			Shareability.SELFONLY,	Reloadability.NEVER,	(ItemStack)null, false), //used as a no-trigger placeholder
 	;
 
@@ -434,10 +439,6 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 
 	public Shareability getShareability() {
 		return shareLevel;
-	}
-
-	public Reloadability getReloadability() {
-		return reloadLevel;
 	}
 
 	public boolean isGating(ResearchLevel level) {

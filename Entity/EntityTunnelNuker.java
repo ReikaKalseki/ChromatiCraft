@@ -27,6 +27,7 @@ import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -55,7 +56,7 @@ public class EntityTunnelNuker extends EntityLiving implements DestroyOnUnload {
 		onGround = false;
 		isAirBorne = true;
 
-		int top = worldObj.getTopSolidOrLiquidBlock(x, z);
+		int top = ReikaWorldHelper.getTopNonAirBlock(worldObj, x, z, true);
 
 		double vy = motionY;
 

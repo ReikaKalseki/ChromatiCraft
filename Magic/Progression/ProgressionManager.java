@@ -166,6 +166,10 @@ public class ProgressionManager implements ProgressRegistry {
 			this.addProgressPrereq(ProgressStage.VOIDMONSTERDIE,	ProgressStage.VOIDMONSTER);
 		}
 
+		if (ProgressStage.NODE.active) {
+
+		}
+
 		this.addProgressPrereq(ProgressStage.NETHER, 	ProgressStage.BEDROCK);
 		this.addProgressPrereq(ProgressStage.NETHERROOF, ProgressStage.NETHER);
 		this.addProgressPrereq(ProgressStage.NETHERROOF, ProgressStage.ANYSTRUCT);
@@ -269,6 +273,7 @@ public class ProgressionManager implements ProgressRegistry {
 		nonGatingProgress.put(ProgressStage.LUMA, ResearchLevel.ENDGAME);
 		nonGatingProgress.put(ProgressStage.NETHER, ResearchLevel.RUNECRAFT);
 		nonGatingProgress.put(ProgressStage.END, ResearchLevel.MULTICRAFT);
+		nonGatingProgress.put(ProgressStage.NODE, ResearchLevel.CTM);
 
 		this.addChainedProgression(ProgressStage.BYPASSWEAK, ProgressStage.BLOWREPEATER, false, false);
 		this.addChainedProgression(ProgressStage.TUNECAST, ProgressStage.BYPASSWEAK, true, false, ProgressStage.BLOWREPEATER);

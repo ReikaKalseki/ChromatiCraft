@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -22,9 +22,11 @@ import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
@@ -69,6 +71,9 @@ public class ExplorationMonitor implements TickHandler {
 				}
 				else if (b == Blocks.mob_spawner) {
 					ProgressStage.FINDSPAWNER.stepPlayerTo(ep);
+				}
+				else if (ModList.THAUMCRAFT.isLoaded() && b == ThaumItemHelper.BlockEntry.NODE.getBlock()) {
+					ProgressStage.NODE.stepPlayerTo(ep);
 				}
 			}
 

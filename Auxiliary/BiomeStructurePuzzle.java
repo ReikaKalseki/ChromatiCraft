@@ -606,7 +606,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		for (int i = 2; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 			ForgeDirection left = ReikaDirectionHelper.getLeftBy90(dir);
-			ret.add(new Coordinate(root).offset(dir.offsetX*3+left.offsetX*4, 1, left.offsetZ*4+dir.offsetZ*3));
+			ret.add(new Coordinate(root).offset(dir.offsetX*5+left.offsetX*4, 2, left.offsetZ*4+dir.offsetZ*5));
 		}
 		return ret;
 	}

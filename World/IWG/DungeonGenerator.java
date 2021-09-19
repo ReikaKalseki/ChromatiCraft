@@ -366,7 +366,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			case SNOWSTRUCT:
 				return 768;
 			case BIOMEFRAG:
-				return 844;
+				return 440;
 			default:
 				return 1;
 		}
@@ -681,7 +681,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					break;
 				}
 				case BIOMEFRAG: {
-					int y = world.getTopSolidOrLiquidBlock(x, z)-5;
+					int y = world.getTopSolidOrLiquidBlock(x, z)-4;
 					FilledBlockArray arr = ChromaStructures.BIOMEFRAG.getArray(world, x, y, z, r);
 					if (this.isValidBiomeStructLocation(world, x, y, z, arr)) {
 						arr.place(2);
