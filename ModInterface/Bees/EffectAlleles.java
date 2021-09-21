@@ -32,12 +32,12 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
-import Reika.ChromatiCraft.Auxiliary.RainbowTreeEffects;
 import Reika.ChromatiCraft.Block.Worldgen.BlockSparkle;
 import Reika.ChromatiCraft.Block.Worldgen.BlockSparkle.BlockTypes;
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Magic.RainbowTreeEffects;
 import Reika.ChromatiCraft.Magic.Artefact.ArtefactSpawner;
 import Reika.ChromatiCraft.Magic.Artefact.UABombingEffects;
 import Reika.ChromatiCraft.Magic.Lore.Towers;

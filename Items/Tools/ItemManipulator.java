@@ -434,7 +434,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 
 		if (!world.isRemote) {
 			if (ModList.THAUMCRAFT.isLoaded() && InterfaceCache.NODE.instanceOf(tile)) {
-				if (ProgressStage.CTM.isPlayerAtStage(ep) && ReikaThaumHelper.isResearchComplete(ep, "NODESTABILIZERADV")) { //CC and TC progression
+				if (ProgressStage.CTM.isPlayerAtStage(ep) && ProgressStage.NODE.isPlayerAtStage(ep) && ReikaThaumHelper.isResearchComplete(ep, "NODESTABILIZERADV")) { //CC and TC progression
 					if (NodeRecharger.instance.isValidNode((INode)tile)) {
 						ReikaSoundHelper.playSoundFromServer(world, x+0.5, y+0.5, z+0.5, "thaumcraft:runicShieldEffect", 1, 1, false);
 						Collection<Aspect> li = new ArrayList(((INode)tile).getAspects().aspects.keySet());

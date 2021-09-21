@@ -296,6 +296,24 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		return Collections.unmodifiableCollection(ChromaResearch.getPagesFor(rl));
 	}
 
+	public Collection<ChromaResearch> getMissingResearch(EntityPlayer ep) {
+		return this.getMissingResearch(ep, null);
+	}
+
+	public Collection<ChromaResearch> getMissingResearch(EntityPlayer ep, ProgressStage req) {
+		Collection<ChromaResearch> ret = new ArrayList();
+		for (ChromaResearch r : ChromaResearch.getPagesFor(this.getPlayerResearchLevel(ep))) {
+			if (!r.isGating())
+				continue;
+			if (this.playerHasFragment(ep, r))
+				continue;
+			if (req != null && !r.requiresProgress(req))
+				continue;
+			ret.add(r);
+		}
+		return ret;
+	}
+
 	private boolean playerHasAllFragmentsThatMatter(EntityPlayer ep, Collection<ChromaResearch> li) {
 		for (ChromaResearch r : li)
 			if (r.isGating() && !this.playerHasFragment(ep, r))

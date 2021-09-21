@@ -170,6 +170,10 @@ public class ProgressionManager implements ProgressRegistry {
 
 		}
 
+		this.addProgressPrereq(ProgressStage.DEEPCAVE, 	ProgressStage.MINE);
+
+		this.addProgressPrereq(ProgressStage.BEDROCK, 	ProgressStage.DEEPCAVE);
+
 		this.addProgressPrereq(ProgressStage.NETHER, 	ProgressStage.BEDROCK);
 		this.addProgressPrereq(ProgressStage.NETHERROOF, ProgressStage.NETHER);
 		this.addProgressPrereq(ProgressStage.NETHERROOF, ProgressStage.ANYSTRUCT);
@@ -467,8 +471,11 @@ public class ProgressionManager implements ProgressRegistry {
 	 */
 	public Collection<ProgressStage> getPrereqs(ProgressStage s) {
 		ArrayList<ProgressStage> li = new ArrayList();
-		for (ProgressLink l : progressMap.getParents(new ProgressLink(s))) {
-			li.add(l.parent);
+		Collection<ProgressLink> c = progressMap.getParents(new ProgressLink(s));
+		if (c != null) {
+			for (ProgressLink l : c) {
+				li.add(l.parent);
+			}
 		}
 		return li;
 	}

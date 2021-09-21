@@ -46,6 +46,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.MystCraftHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 
@@ -122,6 +123,10 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 	ENERGYIDEA(		Shareability.SELFONLY,	Reloadability.NEVER,	(ItemStack)null),
 	NODE(			Shareability.PROXIMITY,	Reloadability.NEVER,	ModList.THAUMCRAFT.isLoaded() ? ThaumItemHelper.BlockEntry.NODE.getItem() : null, ModList.THAUMCRAFT.isLoaded()),
 	POTION(			Shareability.SELFONLY,	Reloadability.NEVER,	ReikaPotionHelper.getPotionItem(Potion.regeneration, true, true, false)),
+	MINE(			Shareability.PROXIMITY,	Reloadability.NEVER,	Blocks.iron_ore),
+	DEEPCAVE(		Shareability.PROXIMITY,	Reloadability.NEVER,	Blocks.lava),
+	HARVEST(		Shareability.PROXIMITY,	Reloadability.NEVER,	Items.wheat),
+	MYST(			Shareability.PROXIMITY,	Reloadability.NEVER,	ModList.MYSTCRAFT.isLoaded() ? MystCraftHandler.getInstance().bookID : null, ModList.MYSTCRAFT.isLoaded()),
 	NEVER(			Shareability.SELFONLY,	Reloadability.NEVER,	(ItemStack)null, false), //used as a no-trigger placeholder
 	;
 
@@ -460,7 +465,7 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 				case ALWAYS:
 					return true;
 				case PROXIMITY:
-					return to.getDistanceSqToEntity(from) <= 576;
+					return from.worldObj.provider.dimensionId == to.worldObj.provider.dimensionId && to.getDistanceSqToEntity(from) <= 576;
 				case SELFONLY:
 					return false;
 			}

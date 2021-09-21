@@ -17,20 +17,22 @@ import net.minecraft.util.IIcon;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
+import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager.ProgressLink;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
-import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 
 public abstract class GuiProgressStages extends GuiScrollingPage {
 
@@ -178,6 +180,21 @@ public abstract class GuiProgressStages extends GuiScrollingPage {
 		double t = (System.currentTimeMillis()/5D+p.hashCode()*23)%360;
 		border = ReikaColorAPI.mixColors(border, 0xffffff, 0.5F+0.25F*(float)Math.sin(Math.toRadians(t)));
 		api.drawRectFrame(x, y, elementWidth, elementHeight, border); //temp
+		if (!has) {
+			Collection<ChromaResearch> li = ChromaResearchManager.instance.getMissingResearch(player, p);
+			if (!li.isEmpty()) {
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				ReikaTextureHelper.bindTerrainTexture();
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glDepthMask(false);
+				float s = (float)(0.55+0.15*Math.sin(Math.toRadians(-t)));
+				GL11.glColor4f(s, s, s, 1);
+				GL11.glDisable(GL11.GL_LIGHTING);
+				BlendMode.ADDITIVEDARK.apply();
+				api.drawTexturedModelRectFromIcon(x-10, y-10, ChromaIcons.ECLIPSEFLARE.getIcon(), elementWidth+20, elementHeight+20);
+				GL11.glPopAttrib();
+			}
+		}
 		if (guiType == ChromaGuis.PROGRESSBYTIER) {
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			ReikaTextureHelper.bindTerrainTexture();
@@ -189,11 +206,12 @@ public abstract class GuiProgressStages extends GuiScrollingPage {
 			Collection<ProgressStage> par = ProgressionManager.instance.getPrereqs(p);
 			if (par.isEmpty()) {
 				GL11.glColor4f(0.1F, 0.5F, 1, 1);
-				api.drawTexturedModelRectFromIcon(x, y, ChromaIcons.RIFTHALO.getIcon(), elementWidth, elementHeight);
+				for (int i = 0; i < 3; i++)
+					api.drawTexturedModelRectFromIcon(x-i*0, y-i*0, ChromaIcons.RIFTHALO.getIcon(), elementWidth+i*0, elementHeight+i*0);
 			}
 			else {
 				int cl = 0xff0000;
-				if (p.isPlayerAtStage(player)) {
+				if (has) {
 					cl = 0x00ff00;
 				}
 				else {

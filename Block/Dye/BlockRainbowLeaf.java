@@ -29,8 +29,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.RainbowTreeEffects;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
+import Reika.ChromatiCraft.Magic.RainbowTreeEffects;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;

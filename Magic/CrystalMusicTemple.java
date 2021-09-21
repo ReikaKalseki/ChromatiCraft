@@ -30,7 +30,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidRegistry;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.RainbowTreeEffects;
 import Reika.ChromatiCraft.Auxiliary.Structure.MusicTempleStructure;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;

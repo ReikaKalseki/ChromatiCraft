@@ -132,7 +132,7 @@ public class WarpNodeGenerator implements RetroactiveGenerator {
 		if (BiomeGlowingCliffs.isGlowingCliffs(b)) {
 			min = Math.max(min, GlowingCliffsColumnShaper.MAX_MIDDLE_TOP_Y+16);
 		}
-		else if (SFAPI.biomeHandler.isPinkForest(b)) {
+		else if (ModList.SATISFORESTRY.isLoaded() && SFAPI.biomeHandler.isPinkForest(b)) {
 			min = SFAPI.biomeHandler.getTrueTopAt(world, x, z)+40;//SFAPI.biomeHandler.getBaseTerrainHeight(b);
 		}
 		return min;
@@ -140,7 +140,7 @@ public class WarpNodeGenerator implements RetroactiveGenerator {
 
 	private int getMaxY(World world, int x, int z, BiomeGenBase b) {
 		int max = Math.min(255, (int)(192*Math.max(1, b.rootHeight)));
-		if (BiomeGlowingCliffs.isGlowingCliffs(b) || SFAPI.biomeHandler.isPinkForest(b)) {
+		if (BiomeGlowingCliffs.isGlowingCliffs(b) || (ModList.SATISFORESTRY.isLoaded() && SFAPI.biomeHandler.isPinkForest(b))) {
 			max = 255;
 		}
 		return Math.max(128, max);

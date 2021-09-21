@@ -20,6 +20,7 @@ import java.util.UUID;
 import com.xcompwiz.mystcraft.api.event.LinkEvent;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.IGrowable;
 import net.minecraft.block.material.Material;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
@@ -258,6 +259,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
@@ -299,6 +301,17 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	public void addBlockBreakProgress(BlockEvent.BreakEvent evt) {
+		EntityPlayer ep = evt.getPlayer();
+		if (ep != null && !ReikaPlayerAPI.isFake(ep)) {
+			if (ReikaBlockHelper.isOre(evt.block, evt.blockMetadata))
+				ProgressStage.MINE.stepPlayerTo(ep);
+			if (evt.block instanceof IGrowable)
+				ProgressStage.HARVEST.stepPlayerTo(ep);
+		}
 	}
 
 	@SubscribeEvent

@@ -193,10 +193,10 @@
 		The machinery of your tree farm is a maze of piping and wiring, and every time you want to upgrade or refine it you find drops trapped behind multiple layers of other piping, completely inaccessible unless you feel like tearing a big hole to reach it, and then spending the next 20 minutes figuring out what went where or connects to what. You could apply some sort of magnetisation, but then you collect everything spilled from the farm and your inventory fills with sawdust, charcoal, and apples. What you really need is something which can simply increase your collection range, ideally tuned to specific items.
 	</widecollector>
 	<enderbucket>
-		You have a building full of storage tanks of vairous liquids, but that does you little good when you need to place a few buckets of lava across your base, 200 blocks away, or find some liquid ender you want to collect while out exploring. Besides the obvious(ly stupid) option of just running back and forth a dozen times, you could just cart drums around with you, but that is still a massive pain, and a lot of the time you find out you need the liquid when already far from the tanks. Something like a bucket which can be innately linked to one or more tanks would be a much more convenient solution.
+		You have a building full of storage tanks of various liquids, but that does you little good when you need to place a few buckets of lava across your base, 200 blocks away, or find some liquid ender you want to collect while out exploring. Besides the obvious(ly stupid) option of just running back and forth a dozen times, you could just cart drums around with you, but that is still a massive pain, and a lot of the time you find out you need the liquid when already far from the tanks. Something like a bucket which can be innately linked to one or more tanks would be a much more convenient solution.
 	</enderbucket>
 	<netherkey>
-		
+		You have heard stories of a second layer to the nether, filled with several types of structures, many of which contain significant wealth and information and which largely satiate your need for such things. However, something appears to have changed since the stories originated; Much as you may want to do so, you are unable to even access that region, being catapulted backwards when you try (or worse, given what happened that time you tried something rather more outlandish to bypass it). You will need to find another mechanism to nullify this effect.
 	</netherkey>
 	<name>
 		

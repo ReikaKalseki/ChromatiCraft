@@ -55,7 +55,6 @@ import net.minecraftforge.fluids.BlockFluidBase;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
-import Reika.ChromatiCraft.Auxiliary.RainbowTreeEffects;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
@@ -67,6 +66,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Magic.RainbowTreeEffects;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;

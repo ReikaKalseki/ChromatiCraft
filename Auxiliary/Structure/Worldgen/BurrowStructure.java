@@ -228,7 +228,7 @@ public class BurrowStructure extends FragmentStructureBase {
 			TileEntityLootChest te = (TileEntityLootChest)tile;
 			ReikaInventoryHelper.clearInventory(te);
 
-			int filled = ReikaRandomHelper.getRandomBetween(18, 27); //was 9 & 27
+			int filled = ReikaRandomHelper.getRandomBetween(8, 16); //was 9 & 27, then 18 & 27
 			ArrayList<ItemStack> add = new ArrayList();
 			for (int i = 0; i < filled; i++) {
 				ItemStack is = lootItems.getRandomEntry().getItem();

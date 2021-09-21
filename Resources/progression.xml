@@ -919,6 +919,118 @@
 			Insight into lumen transmission
 		</desc>
 	</energyidea>
+	<node>
+		<title>
+			Energy Inlet
+		</title>
+		<hint>
+			Where does this aspect-based energy originate?
+		</hint>
+		<reveal>
+			That remains unknown, but it leaks in via tiny holes.
+		</reveal>
+		<desc>
+			A source of unusual energy
+		</desc>
+	</node>
+	<potion>
+		<title>
+			Ambient Effects
+		</title>
+		<hint>
+			Can I improve my various powers, without tools?
+		</hint>
+		<reveal>
+			Yes, and this may only be the start.
+		</reveal>
+		<desc>
+			Augmenting personal capabilities
+		</desc>
+	</potion>
+	<mine>
+		<title>
+			Resource Acquisition
+		</title>
+		<hint>
+			
+		</hint>
+		<reveal>
+			
+		</reveal>
+		<desc>
+			
+		</desc>
+	</mine>
+	<deepcave>
+		<title>
+			Lower Layers
+		</title>
+		<hint>
+			Cave systems seem to extend far below the surface.
+		</hint>
+		<reveal>
+			The deeper I go, the more exotic the things I find.
+		</reveal>
+		<desc>
+			Venturing ever deeper
+		</desc>
+	</deepcave>
+	<harvest>
+		<title>
+			Crop Collection
+		</title>
+		<hint>
+			Some materials are mined, and others grown.
+		</hint>
+		<reveal>
+			The latter includes a wide variety.
+		</reveal>
+		<desc>
+			Producing resources on demand
+		</desc>
+	</harvest>
+	<myst>
+		<title>
+			A Scripted World
+		</title>
+		<hint>
+			I can create worlds out of words.
+		</hint>
+		<reveal>
+			And these words describe novel features and resources.
+		</reveal>
+		<desc>
+			Constructed by a story
+		</desc>
+	</myst>
+	<name>
+		<title>
+			
+		</title>
+		<hint>
+			
+		</hint>
+		<reveal>
+			
+		</reveal>
+		<desc>
+			
+		</desc>
+	</name>
+	<name>
+		<title>
+			
+		</title>
+		<hint>
+			
+		</hint>
+		<reveal>
+			
+		</reveal>
+		<desc>
+			
+		</desc>
+	</name>
 	<name>
 		<title>
 			

@@ -15,6 +15,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
@@ -26,6 +27,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
@@ -43,12 +45,19 @@ public class ExplorationMonitor implements TickHandler {
 		EntityPlayer ep = (EntityPlayer)tickData[0];
 		World world = ep.worldObj;
 		if (!world.isRemote) {
+			if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world)) {
+				ProgressStage.MYST.stepPlayerTo(ep);
+			}
 			//ProgressionManager.instance.setPlayerDiscoveredColor(ep, CrystalElement.RED, true);
 			MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlock(ep, 4, true);
 			if (mov != null) {
 				int x = mov.blockX;
 				int y = mov.blockY;
 				int z = mov.blockZ;
+
+				if (world.provider.dimensionId == 0 && y < 18 && world.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) == 0) {
+					ProgressStage.DEEPCAVE.stepPlayerTo(ep);
+				}
 
 				if (ChromaTiles.getTile(world, x, y, z) == ChromaTiles.PYLON) {
 					TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y, z);
