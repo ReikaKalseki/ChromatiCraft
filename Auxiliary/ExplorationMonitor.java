@@ -14,6 +14,7 @@ import java.util.EnumSet;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
@@ -23,6 +24,7 @@ import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
@@ -49,15 +51,14 @@ public class ExplorationMonitor implements TickHandler {
 				ProgressStage.MYST.stepPlayerTo(ep);
 			}
 			//ProgressionManager.instance.setPlayerDiscoveredColor(ep, CrystalElement.RED, true);
+			int x0 = MathHelper.floor_double(ep.posX);
+			int y0 = MathHelper.floor_double(ep.posY)+1;
+			int z0 = MathHelper.floor_double(ep.posZ);
 			MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlock(ep, 4, true);
 			if (mov != null) {
 				int x = mov.blockX;
 				int y = mov.blockY;
 				int z = mov.blockZ;
-
-				if (world.provider.dimensionId == 0 && y < 18 && world.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) == 0) {
-					ProgressStage.DEEPCAVE.stepPlayerTo(ep);
-				}
 
 				if (ChromaTiles.getTile(world, x, y, z) == ChromaTiles.PYLON) {
 					TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y, z);
@@ -86,8 +87,16 @@ public class ExplorationMonitor implements TickHandler {
 				}
 			}
 
-			if (ep.worldObj.provider.dimensionId == -1 && ep.posY > 128) {
+			if (world.provider.dimensionId == -1 && ep.posY > 128) {
 				ProgressStage.NETHERROOF.stepPlayerTo(ep);
+			}
+
+			if (world.provider.dimensionId == 0 && ep.posY < 18 && world.getSavedLightValue(EnumSkyBlock.Sky, x0, y0, z0) == 0) {
+				ProgressStage.DEEPCAVE.stepPlayerTo(ep);
+			}
+
+			if (world.provider.dimensionId == 0 && world.getBiomeGenForCoords(x0, z0) instanceof BiomeRainbowForest) {
+				ProgressStage.RAINBOWFOREST.stepPlayerTo(ep);
 			}
 		}
 	}

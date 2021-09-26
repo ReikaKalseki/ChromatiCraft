@@ -47,7 +47,7 @@ public class ItemNetherKey extends ItemPoweredChromaTool {
 
 	@Override
 	protected boolean doTick(ItemStack is, World world, EntityPlayer e, boolean held) {
-		e.getEntityData().setLong(NBT_TAG, 20);
+		e.getEntityData().setLong(NBT_TAG, world.getTotalWorldTime());
 		return true;
 	}
 

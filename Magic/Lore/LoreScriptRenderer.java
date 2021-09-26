@@ -144,8 +144,8 @@ public class LoreScriptRenderer {
 						ReikaGuiAPI.instance.drawLine(dx2+dw, dy2, dx2+dw, dy2+h, 0xff000000);
 					}
 					 */
-					ReikaGuiAPI.instance.drawLine_Double(dx2, dy2-1, dx2+sp-2, dy2-1, spaceColor);
-					ReikaGuiAPI.instance.drawLine_Double(dx2, dy2+h/2+1+0.225, dx2+sp-2, dy2+h/2+1+0.225, spaceColor);
+					ReikaGuiAPI.instance.drawLine(dx2, dy2-1, dx2+sp-2, dy2-1, spaceColor);
+					ReikaGuiAPI.instance.drawLine(dx2, dy2+h/2+1+0.225, dx2+sp-2, dy2+h/2+1+0.225, spaceColor);
 					//ReikaGuiAPI.instance.drawLine_Double(dx2, dy2+h/4+0.5, dx2+sp-2, dy2+h/4+0.5, c);
 					GL11.glPopAttrib();
 					GL11.glLineWidth(f);
@@ -154,8 +154,8 @@ public class LoreScriptRenderer {
 		}
 		float f = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
 		GL11.glLineWidth(2);
-		ReikaGuiAPI.instance.drawLine_Double(x+CHAR_WIDTH, y+1.5, x-width+CHAR_WIDTH-0.5, y+1.5, lineColor);
-		ReikaGuiAPI.instance.drawLine_Double(x+CHAR_WIDTH, y-0.5+CHAR_WIDTH, x-width+CHAR_WIDTH-0.5, y-0.5+CHAR_WIDTH, lineColor);
+		ReikaGuiAPI.instance.drawLine(x+CHAR_WIDTH, y+1.5, x-width+CHAR_WIDTH-0.5, y+1.5, lineColor);
+		ReikaGuiAPI.instance.drawLine(x+CHAR_WIDTH, y-0.5+CHAR_WIDTH, x-width+CHAR_WIDTH-0.5, y-0.5+CHAR_WIDTH, lineColor);
 		GL11.glLineWidth(f);
 	}
 

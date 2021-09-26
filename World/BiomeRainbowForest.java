@@ -66,7 +66,7 @@ public class BiomeRainbowForest extends BiomeGenBase implements CustomMapColorBi
 		//topBlock = (byte)ChromaBlocks.GRASS.getBlock();
 	}
 
-	private void initSpawnRules() {
+	protected void initSpawnRules() {
 		spawnableMonsterList.clear();
 		spawnableCreatureList.clear();
 		spawnableCaveCreatureList.clear();
@@ -129,15 +129,13 @@ public class BiomeRainbowForest extends BiomeGenBase implements CustomMapColorBi
 	}
 
 	@Override
-	public BiomeDecorator createBiomeDecorator()
-	{
+	public BiomeDecorator createBiomeDecorator() {
 		return new RainbowForestDecorator();
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public int getModdedBiomeGrassColor(int original)
-	{
+	public int getModdedBiomeGrassColor(int original) {
 		Color c = ReikaDyeHelper.dyes[rand.nextInt(16)].getJavaColor();
 		double bias = 0.0005;
 		double d = 1D-bias;
@@ -151,8 +149,7 @@ public class BiomeRainbowForest extends BiomeGenBase implements CustomMapColorBi
 	}
 
 	@Override
-	public int getBiomeGrassColor(int x, int y, int z) //use dyeGrass block, with metadata
-	{
+	public int getBiomeGrassColor(int x, int y, int z) { //use dyeGrass block, with metadata
 		int original = BiomeGenBase.forest.getBiomeGrassColor(x, y, z);
 		Color c = ReikaDyeHelper.dyes[(Math.abs(x/16)+y+Math.abs(z/16))%16].getJavaColor().brighter();
 		double bias = this.isDamaged(null, x, z) ? 0.5 : 0.00095;
@@ -167,14 +164,12 @@ public class BiomeRainbowForest extends BiomeGenBase implements CustomMapColorBi
 	}
 
 	@Override
-	public float getSpawningChance()
-	{
+	public float getSpawningChance() {
 		return 0.1F*(Math.max(1, ChromaOptions.ANIMALSPAWN.getValue()));
 	}
 
 	@Override
-	public int getSkyColorByTemp(float par1)
-	{
+	public int getSkyColorByTemp(float par1) {
 		//return new Color(130, 170, 255).getRGB(); //original
 		//return new Color(160, 130, 205).getRGB();
 		//return new Color(0, 0, 0).getRGB();
@@ -182,9 +177,12 @@ public class BiomeRainbowForest extends BiomeGenBase implements CustomMapColorBi
 	}
 
 	@Override
-	public int getWaterColorMultiplier()
-	{
+	public int getWaterColorMultiplier() {
 		return isDamaged(null, 0, 0) ? waterColorDamaged : waterColor;
+	}
+
+	public int getWaterColor(IBlockAccess world, int x, int y, int z, int l) {
+		return this.getWaterColorMultiplier();
 	}
 
 	@Override

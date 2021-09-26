@@ -53,6 +53,7 @@ public class PlaceStructureCommand extends DragonCommandBase {
 		arr.place();
 		if (s.getStructure() instanceof FragmentStructureBase) {
 			FragmentStructureBase fs = (FragmentStructureBase)s.getStructure();
+			//fs.markForWorldgen();
 			Coordinate c = fs.getControllerRelativeLocation().offset(x, y, z);
 			c.setBlock(ep.worldObj, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata());
 			TileEntityStructControl te = (TileEntityStructControl)c.getTileEntity(ep.worldObj);

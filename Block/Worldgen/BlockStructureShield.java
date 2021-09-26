@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Block.Worldgen;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockFurnace;
 import net.minecraft.block.BlockTNT;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -164,6 +165,8 @@ public class BlockStructureShield extends Block implements SemiUnbreakable, Subm
 		if (b instanceof BlockStructureShield)
 			return false;
 		if (b == ChromaBlocks.HEATLAMP.getBlockInstance())
+			return false;
+		if (b instanceof BlockFurnace)
 			return false;
 		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue() || (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())) {
 			if (ChromaBlocks.getEntryByID(b) != null && ChromaBlocks.getEntryByID(b).isDimensionStructureBlock())

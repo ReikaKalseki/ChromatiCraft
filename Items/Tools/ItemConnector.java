@@ -31,6 +31,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.CopyableSettings;
 import Reika.DragonAPI.Interfaces.TileEntity.NBTCopyable;
+import Reika.DragonAPI.Interfaces.TileEntity.SimpleConnection;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
@@ -287,6 +288,20 @@ public class ItemConnector extends ItemChromaTool {
 		return false;
 	}
 
+	private static boolean trySimpleConnection(SimpleConnection te, World world, int x, int y, int z, ItemStack is, EntityPlayer ep) {
+		if (is.stackTagCompound == null) {
+			is.stackTagCompound = new NBTTagCompound();
+			new WorldLocation((TileEntity)te).writeToNBT("end1", is.stackTagCompound);
+			return true;
+		}
+		WorldLocation c1 = WorldLocation.readFromNBT("end1", is.stackTagCompound);
+		if (c1 == null) {
+			ReikaChatHelper.writeString("No valid other end found");
+			return false;
+		}
+		return te.tryConnect(c1.getWorld(), c1.xCoord, c1.yCoord, c1.zCoord);
+	}
+
 	private static boolean tryConnection(Linkable te, World world, int x, int y, int z, ItemStack is, EntityPlayer ep) {
 		if (is.stackTagCompound == null) {
 			is.stackTagCompound = new NBTTagCompound();
@@ -432,6 +447,7 @@ public class ItemConnector extends ItemChromaTool {
 		RIFT,
 		WINDOW,
 		LINKABLE,
+		SIMPLE,
 		SETTINGS;
 
 		private Linkage() {
@@ -450,6 +466,9 @@ public class ItemConnector extends ItemChromaTool {
 			else if (te instanceof Linkable) {
 				return LINKABLE;
 			}
+			else if (te instanceof SimpleConnection) {
+				return SIMPLE;
+			}
 			else if (te instanceof CopyableSettings) {
 				return SETTINGS;
 			}
@@ -466,6 +485,9 @@ public class ItemConnector extends ItemChromaTool {
 				}
 				case LINKABLE: {
 					return tryConnection((Linkable)te, te.worldObj, te.xCoord, te.yCoord, te.zCoord, is, ep);
+				}
+				case SIMPLE: {
+					return trySimpleConnection((SimpleConnection)te, te.worldObj, te.xCoord, te.yCoord, te.zCoord, is, ep);
 				}
 				case SETTINGS: {
 					return tryCopySettings((CopyableSettings)te, te.worldObj, te.xCoord, te.yCoord, te.zCoord, is, ep);

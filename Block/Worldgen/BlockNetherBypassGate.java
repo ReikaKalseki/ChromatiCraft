@@ -74,7 +74,7 @@ public class BlockNetherBypassGate extends BlockAir {
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity e) {
 		if (e instanceof EntityPlayer && e.isEntityAlive() && e.getEntityData().getLong("lastGateEffect") < world.getTotalWorldTime()) {
 			EntityPlayer ep = (EntityPlayer)e;
-			if (!ItemNetherKey.isPlayerTagged(ep)) {
+			if (!ep.capabilities.isCreativeMode && !ItemNetherKey.isPlayerTagged(ep)) {
 				GateLevels.list[world.getBlockMetadata(x, y, z)].doEffect(ep);
 				ep.getEntityData().setLong("lastGateEffect", world.getTotalWorldTime());
 			}

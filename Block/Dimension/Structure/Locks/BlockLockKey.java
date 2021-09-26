@@ -111,8 +111,20 @@ public class BlockLockKey extends Block {
 	}
 
 	@Override
-	public boolean canHarvestBlock(EntityPlayer player, int meta)
-	{
+	public float getPlayerRelativeBlockHardness(EntityPlayer ep, World world, int x, int y, int z) {
+		TileEntityLockKey te = (TileEntityLockKey)world.getTileEntity(x, y, z);
+		if (te.delegate != null) {
+			TileEntity te2 = te.delegate.getTileEntity(world);
+			if (te2 instanceof TileEntityStructControl) {
+				if (((TileEntityStructControl)te2).isInaccessible(world, x, y, z, te, ep))
+					return -1;
+			}
+		}
+		return super.getPlayerRelativeBlockHardness(ep, world, x, y, z);
+	}
+
+	@Override
+	public boolean canHarvestBlock(EntityPlayer player, int meta) {
 		return true;
 	}
 
@@ -246,11 +258,12 @@ public class BlockLockKey extends Block {
 		if (world.isRemote)
 			return;
 		TileEntityLockKey te = (TileEntityLockKey)world.getTileEntity(x, y, z);
-		if (te == null || te.uid == null)
+		if (te == null || (te.uid == null && te.delegate == null))
 			return;
 		ItemStack is = new ItemStack(this, 1, meta);
 		is.stackTagCompound = new NBTTagCompound();
-		is.stackTagCompound.setString("uid", te.uid.toString());
+		if (te.uid != null)
+			is.stackTagCompound.setString("uid", te.uid.toString());
 		if (te.delegate != null)
 			te.delegate.writeToNBT("delegate", is.stackTagCompound);
 		ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, is);
@@ -263,7 +276,8 @@ public class BlockLockKey extends Block {
 		if (is.stackTagCompound == null)
 			return;
 		TileEntityLockKey te = (TileEntityLockKey)world.getTileEntity(x, y, z);
-		te.uid = UUID.fromString(is.stackTagCompound.getString("uid"));
+		if (is.stackTagCompound.hasKey("uid"))
+			te.uid = UUID.fromString(is.stackTagCompound.getString("uid"));
 		te.delegate = Coordinate.readFromNBT("delegate", is.stackTagCompound);
 
 		this.openLocks(world, x, y, z);

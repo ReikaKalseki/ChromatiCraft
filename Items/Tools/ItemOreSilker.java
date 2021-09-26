@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRedstoneOre;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -90,7 +91,7 @@ public class ItemOreSilker extends ItemChromaTool implements ToolSprite, Enchant
 
 	@Override
 	public float getDigSpeed(ItemStack stack, Block block, int meta) {
-		return ForgeHooks.isToolEffective(stack, block, meta) ? 4 : super.getDigSpeed(stack, block, meta);
+		return ForgeHooks.isToolEffective(stack, block, meta) || block instanceof BlockRedstoneOre ? 4 : super.getDigSpeed(stack, block, meta);
 	}
 
 	@Override

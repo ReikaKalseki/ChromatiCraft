@@ -83,6 +83,19 @@ public class BiomeStructure extends FragmentStructureWithBonusLoot {
 	}
 
 	@Override
+	protected void initDisplayData() {
+		Random r = new Random(0);
+		r.nextBoolean();
+		r.nextBoolean();
+		this.setRNG(r);
+	}
+
+	@Override
+	protected void finishDisplayCall() {
+		puzzle = null;
+	}
+
+	@Override
 	public FilledBlockArray getArray(World world, int x, int y, int z) {
 		if (puzzle == null)
 			throw new RuntimeException("Puzzle not set!");
@@ -201,6 +214,13 @@ public class BiomeStructure extends FragmentStructureWithBonusLoot {
 				array.setBlock(x+d, y+j, z-7, b, b == Blocks.stone_brick_stairs ? this.getStairMeta(d, j, -7) : m);
 				array.setBlock(x+7, y+j, z+d, b, b == Blocks.stone_brick_stairs ? this.getStairMeta(7, j, d) : m);
 				array.setBlock(x-7, y+j, z+d, b, b == Blocks.stone_brick_stairs ? this.getStairMeta(-7, j, d) : m);
+
+				if (j == 4) {
+					array.setBlock(x+d, y+j, z+7, Blocks.dirt);
+					array.setBlock(x+d, y+j, z-7, Blocks.dirt);
+					array.setBlock(x+7, y+j, z+d, Blocks.dirt);
+					array.setBlock(x-7, y+j, z+d, Blocks.dirt);
+				}
 			}
 		}
 		for (int i = -6; i <= 6; i++) {
@@ -322,6 +342,11 @@ public class BiomeStructure extends FragmentStructureWithBonusLoot {
 			}
 		}
 		//this.addCallback(?, del);
+
+		if (this.isDisplay()) {
+			puzzle.addToArray(array, x, y, z);
+		}
+
 		return array;
 	}
 

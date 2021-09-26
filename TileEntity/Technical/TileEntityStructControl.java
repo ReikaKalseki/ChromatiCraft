@@ -1132,6 +1132,10 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			auxData.handleTileInteract(world, x, y, z, te, this, ep);
 	}
 
+	public boolean isInaccessible(World world, int x, int y, int z, InteractionDelegateTile te, EntityPlayer ep) {
+		return auxData != null && auxData.isInaccessible(world, x, y, z, te, this, ep);
+	}
+
 	public void onMusicTrigger(World world, int x, int y, int z, CrystalElement e, MusicKey mk, EntityPlayer ep) {
 		if (auxData != null)
 			auxData.handleMusicTrigger(world, x, y, z, e, mk, this, ep);
@@ -1152,6 +1156,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		void handleTileAdd(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root);
 		void handleTileRemove(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root);
 		void handleTileInteract(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root, EntityPlayer ep);
+		boolean isInaccessible(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root, EntityPlayer ep);
 		void handleMusicTrigger(World world, int x, int y, int z, CrystalElement e, MusicKey mk, TileEntityStructControl root, EntityPlayer ep);
 
 		@SideOnly(Side.CLIENT)

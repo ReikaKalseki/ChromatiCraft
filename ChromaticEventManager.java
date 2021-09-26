@@ -20,7 +20,7 @@ import java.util.UUID;
 import com.xcompwiz.mystcraft.api.event.LinkEvent;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.IGrowable;
+import net.minecraft.block.BlockCrops;
 import net.minecraft.block.material.Material;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
@@ -65,8 +65,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.feature.WorldGenAbstractTree;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.EnumPlantType;
 import net.minecraftforge.common.ForgeChunkManager.ForceChunkEvent;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
+import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -309,7 +311,7 @@ public class ChromaticEventManager {
 		if (ep != null && !ReikaPlayerAPI.isFake(ep)) {
 			if (ReikaBlockHelper.isOre(evt.block, evt.blockMetadata))
 				ProgressStage.MINE.stepPlayerTo(ep);
-			if (evt.block instanceof IGrowable)
+			if (evt.block instanceof BlockCrops || (evt.block instanceof IPlantable && ((IPlantable)evt.block).getPlantType(evt.world, evt.x, evt.y, evt.z) == EnumPlantType.Crop))
 				ProgressStage.HARVEST.stepPlayerTo(ep);
 		}
 	}
@@ -818,9 +820,12 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
-	public void preventCliffRivers(GenLayerRiverEvent evt) {
+	public void biomeSpecificRivers(GenLayerRiverEvent evt) {
 		if (evt.originalBiomeID == ExtraChromaIDs.LUMINOUSCLIFFS.getValue() || evt.originalBiomeID == ExtraChromaIDs.LUMINOUSEDGE.getValue()) {
 			evt.setResult(Result.DENY);
+		}
+		else if (evt.originalBiomeID == ExtraChromaIDs.RAINBOWFOREST.getValue()) {
+			evt.riverBiomeID = ExtraChromaIDs.RAINBOWRIVER.getValue();
 		}
 	}
 
@@ -1440,8 +1445,8 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	@ModDependent(ModList.VOIDMONSTER)
-	public void voidMonsterSeeProgress(LivingHurtEvent evt) {
-		if (evt.entityLiving instanceof EntityPlayer) {
+	public void voidMonsterHurtProgress(LivingHurtEvent evt) {
+		if (evt.entityLiving instanceof EntityPlayer && evt.ammount >= 1) {
 			if (evt.source.getEntity() instanceof EntityVoidMonster) {
 				ProgressStage.VOIDMONSTER.stepPlayerTo((EntityPlayer)evt.entityLiving);
 			}
@@ -2199,17 +2204,6 @@ public class ChromaticEventManager {
 		if (ReikaEntityHelper.isHostile(evt.entityLiving)) {
 			if (TileEntityChromaLamp.findLampFromXYZ(evt.world, evt.x, evt.z)) {
 				evt.setResult(Result.DENY);
-			}
-		}
-	}
-
-	@SubscribeEvent
-	public void checkRainbowForest(LivingUpdateEvent evt) {
-		if (evt.entityLiving.ticksExisted > 600 && evt.entityLiving.ticksExisted%32 == 0 && evt.entityLiving instanceof EntityPlayer) {
-			int x = MathHelper.floor_double(evt.entityLiving.posX);
-			int z = MathHelper.floor_double(evt.entityLiving.posZ);
-			if (evt.entityLiving.worldObj.getBiomeGenForCoords(x, z) instanceof BiomeRainbowForest) {
-				ProgressStage.RAINBOWFOREST.stepPlayerTo((EntityPlayer)evt.entityLiving);
 			}
 		}
 	}

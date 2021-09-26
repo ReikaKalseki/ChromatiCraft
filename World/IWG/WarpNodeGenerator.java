@@ -20,6 +20,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.Event.NexusGenEvent;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.GlowingCliffsColumnShaper;
@@ -100,6 +101,7 @@ public class WarpNodeGenerator implements RetroactiveGenerator {
 					int posY = miny+random.nextInt(maxy-miny+1);
 					if (this.canGenerateAt(world, posX, posY, posZ)) {
 						world.setBlock(posX, posY, posZ, ChromaBlocks.WARPNODE.getBlockInstance());
+						MinecraftForge.EVENT_BUS.post(new NexusGenEvent(world, posX, posY, posZ, random));
 					}
 				}
 			}

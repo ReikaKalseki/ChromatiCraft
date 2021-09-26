@@ -93,6 +93,8 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		priority.addValue(ResearchLevel.ENERGY, new ChromaResearchTarget(ChromaResearch.SELFCHARGE, 50));
 		priority.addValue(ResearchLevel.ENERGY, new ChromaResearchTarget(ChromaResearch.TRANSMISSION, 20));
 
+		priority.addValue(ResearchLevel.RUNECRAFT, new ChromaResearchTarget(ChromaResearch.NETHERKEY, 20));
+
 		priority.shuffleValues();
 
 		/*

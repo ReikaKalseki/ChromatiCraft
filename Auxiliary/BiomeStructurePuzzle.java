@@ -20,6 +20,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -36,6 +37,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock.Pa
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -46,6 +48,7 @@ import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl.Interact
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator.MelodyPrefab;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
@@ -169,6 +172,58 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		return true;
 	}
 
+	public void addToArray(FilledBlockArray array, int x0, int y0, int z0) {
+		Coordinate root = new Coordinate(x0, y0, z0);
+		for (Entry<Coordinate, CrystalElement> e : runes.entrySet()) {
+			Coordinate c = e.getKey().offset(x0, y0, z0);
+			array.setBlock(c.xCoord, c.yCoord, c.zCoord, ChromaBlocks.RUNE.getBlockInstance(), e.getValue().ordinal());
+		}
+
+		for (int i = 0; i < 4; i++) {
+			for (Coordinate c : this.getColorDoorLocations(root, i)) {
+				array.setBlock(c.xCoord, c.yCoord, c.zCoord, ChromaBlocks.COLORLOCK.getBlockInstance());
+			}
+		}
+
+		for (int i = 0; i < 4; i++) {
+			for (Entry<Coordinate, ForgeDirection> e : this.getSwitchDoorLocations(root, i).entrySet()) {
+				Coordinate c = e.getKey();
+				array.setBlock(c.xCoord, c.yCoord, c.zCoord, ChromaBlocks.SHIFTLOCK.getBlockInstance(), Passability.CLOSED.ordinal());
+			}
+		}
+
+		for (Coordinate c : this.getSwitchLocations(root)) {
+			array.setBlock(c.xCoord, c.yCoord, c.zCoord, ChromaBlocks.PANELSWITCH.getBlockInstance());
+			Coordinate red = c.offset(0, 1, 0);
+			Coordinate green = c.offset(0, -1, 0);
+			array.setBlock(red.xCoord, red.yCoord, red.zCoord, ChromaBlocks.LIGHTPANEL.getBlockInstance(), 3);
+			array.setBlock(green.xCoord, green.yCoord, green.zCoord, ChromaBlocks.LIGHTPANEL.getBlockInstance(), 0);
+		}
+
+		for (int i = 2; i < 4/*6*/; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			int dx = x0+dir.offsetX*2;
+			int dy = y0+5;
+			int dz = z0+dir.offsetZ*2;
+			array.setBlock(dx, dy, dz, ChromaBlocks.LOCKKEY.getBlockInstance(), keyIndex);
+		}
+
+		for (Coordinate c : this.getBarrierLocations(root)) {
+			array.setBlock(c.xCoord, c.yCoord, c.zCoord, ChromaBlocks.DOOR.getBlockInstance());
+		}
+
+		for (int i = 0; i < 4; i++) {
+			for (Entry<Coordinate, CrystalElement> e : this.getCrystalLocations(root).entrySet()) {
+				Coordinate c = e.getKey();
+				array.setBlock(c.xCoord, c.yCoord, c.zCoord, ChromaBlocks.LAMP.getBlockInstance(), e.getValue().ordinal());
+			}
+		}
+
+		for (Coordinate c : this.getLiquidLocations(root)) {
+			array.setBlock(c.xCoord, c.yCoord, c.zCoord, Blocks.water);
+		}
+	}
+
 	public void placeData(World world, TileEntityStructControl root) {
 		Coordinate ref = new Coordinate(root);
 
@@ -178,7 +233,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		}
 
 		for (int i = 0; i < 4; i++) {
-			for (Coordinate c : this.getColorDoorLocations(root, i)) {
+			for (Coordinate c : this.getColorDoorLocations(ref, i)) {
 				c.setBlock(world, ChromaBlocks.COLORLOCK.getBlockInstance());
 				TileEntityColorLock te = (TileEntityColorLock)c.getTileEntity(world);
 				te.setColors(doorColors.get(i*2), doorColors.get(i*2+1));
@@ -186,7 +241,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		}
 
 		for (int i = 0; i < 4; i++) {
-			for (Entry<Coordinate, ForgeDirection> e : this.getSwitchDoorLocations(root, i).entrySet()) {
+			for (Entry<Coordinate, ForgeDirection> e : this.getSwitchDoorLocations(ref, i).entrySet()) {
 				SwitchGroup gr = doorKeys[i];
 				Passability p = Passability.getDirectionalPassability(e.getValue(), false);
 				p = Passability.CLOSED;
@@ -194,7 +249,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			}
 		}
 
-		for (Coordinate c : this.getSwitchLocations(root)) {
+		for (Coordinate c : this.getSwitchLocations(ref)) {
 			c.setBlock(world, ChromaBlocks.PANELSWITCH.getBlockInstance());
 			LightSwitchTile te = (LightSwitchTile)c.getTileEntity(world);
 			te.setDelegate(ref);
@@ -214,23 +269,23 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			te.setDelegate(ref);
 		}
 
-		for (Coordinate c : this.getBarrierLocations(root)) {
+		for (Coordinate c : this.getBarrierLocations(ref)) {
 			c.setBlock(world, ChromaBlocks.DOOR.getBlockInstance());
 		}
 
 		for (int i = 0; i < 4; i++) {
-			for (Entry<Coordinate, CrystalElement> e : this.getCrystalLocations(root).entrySet()) {
+			for (Entry<Coordinate, CrystalElement> e : this.getCrystalLocations(ref).entrySet()) {
 				e.getKey().setBlock(world, ChromaBlocks.LAMP.getBlockInstance(), e.getValue().ordinal());
 			}
 		}
 
-		Block b = this.getLiquid(world, root);
-		for (Coordinate c : this.getLiquidLocations(root)) {
+		Block b = this.getLiquid(world, ref);
+		for (Coordinate c : this.getLiquidLocations(ref)) {
 			c.setBlock(world, b);
 		}
 	}
 
-	private Block getLiquid(World world, TileEntityStructControl root) {
+	private Block getLiquid(World world, Coordinate root) {
 		BiomeGenBase b = ReikaWorldHelper.getNaturalGennedBiomeAt(world, root.xCoord, root.zCoord);
 		if (ChromatiCraft.isRainbowForest(b))
 			return ChromaBlocks.CHROMA.getBlockInstance();
@@ -411,14 +466,14 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 	@Override
 	public void handleTileAdd(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root) {
 		if (te instanceof TileEntityLockKey) {
-			this.updateColorDoors(world, root);
+			this.updateColorDoors(world, new Coordinate(root));
 		}
 	}
 
 	@Override
 	public void handleTileRemove(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root) {
 		if (te instanceof TileEntityLockKey) {
-			this.updateColorDoors(world, root);
+			this.updateColorDoors(world, new Coordinate(root));
 		}
 	}
 
@@ -430,8 +485,13 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 				ChromaSounds.ERROR.playSoundAtBlock(world, x, y, z);
 				return;
 			}
-			this.updateSwitchDoors(world, root);
+			this.updateSwitchDoors(world, new Coordinate(root));
 		}
+	}
+
+	@Override
+	public boolean isInaccessible(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root, EntityPlayer ep) {
+		return !ProgressionManager.instance.playerHasPrerequisites(ep, ProgressStage.BIOMESTRUCT);
 	}
 
 	@Override
@@ -454,17 +514,18 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 	private void complete(World world, TileEntityStructControl root, EntityPlayer ep) {
 		complete = true;
 		ChromaSounds.CAST.playSoundAtBlock(root);
-		for (Coordinate c : this.getBarrierLocations(root)) {
+		Coordinate ref = new Coordinate(root);
+		for (Coordinate c : this.getBarrierLocations(ref)) {
 			BlockChromaDoor.setOpen(world, c.xCoord, c.yCoord, c.zCoord, true);
 		}
-		for (Coordinate c : this.getLowerChestLocations(root)) {
+		for (Coordinate c : this.getLowerChestLocations(ref)) {
 			if (c.getBlock(world) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
 				c.setBlockMetadata(world, c.getBlockMetadata(world)%8);
 			}
 		}
 	}
 
-	private void updateColorDoors(World world, TileEntityStructControl root) {
+	private void updateColorDoors(World world, Coordinate root) {
 		HashSet<CrystalElement> opened = new HashSet();
 		for (Entry<Coordinate, CrystalElement> e : runes.entrySet()) {
 			Coordinate c = e.getKey().offset(root.xCoord, root.yCoord+1, root.zCoord);
@@ -482,7 +543,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		}
 	}
 
-	private void updateSwitchDoors(World world, TileEntityStructControl root) {
+	private void updateSwitchDoors(World world, Coordinate root) {
 		for (int i = 0; i < 4; i++) {
 			boolean flag = doorKeys[i].validate(world, this.switchLoc(root, ForgeDirection.NORTH, ForgeDirection.WEST), this.switchLoc(root, ForgeDirection.SOUTH, ForgeDirection.WEST), this.switchLoc(root, ForgeDirection.NORTH, ForgeDirection.EAST), this.switchLoc(root, ForgeDirection.SOUTH, ForgeDirection.EAST));
 			Coordinate sw = this.switchLoc(root, doorKeys[i].areaNS, doorKeys[i].areaEW);
@@ -494,7 +555,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		}
 	}
 
-	private Collection<Coordinate> getSwitchLocations(TileEntityStructControl root) {
+	private Collection<Coordinate> getSwitchLocations(Coordinate root) {
 		ArrayList<Coordinate> ret = new ArrayList();
 		ret.add(this.switchLoc(root, ForgeDirection.NORTH, ForgeDirection.EAST));
 		ret.add(this.switchLoc(root, ForgeDirection.NORTH, ForgeDirection.WEST));
@@ -503,26 +564,26 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		return ret;
 	}
 
-	private Coordinate switchLoc(TileEntityStructControl root, ForgeDirection ns, ForgeDirection ew) {
-		return new Coordinate(root).offset(ns.offsetZ*3, 8, ew.offsetX*3);
+	private Coordinate switchLoc(Coordinate root, ForgeDirection ns, ForgeDirection ew) {
+		return root.offset(ns.offsetZ*3, 8, ew.offsetX*3);
 	}
 
-	private Collection<Coordinate> getColorDoorLocations(TileEntityStructControl root, int i) {
+	private Collection<Coordinate> getColorDoorLocations(Coordinate root, int i) {
 		ArrayList<Coordinate> ret = new ArrayList();
 		for (int y = 2; y <= 4; y++) {
 			for (int d = 1; d <= 2; d++) {
 				switch(i) {
 					case 0:
-						ret.add(new Coordinate(root).offset(d, y, -3));
+						ret.add(root.offset(d, y, -3));
 						break;
 					case 1:
-						ret.add(new Coordinate(root).offset(3, y, d));
+						ret.add(root.offset(3, y, d));
 						break;
 					case 2:
-						ret.add(new Coordinate(root).offset(-d, y, 3));
+						ret.add(root.offset(-d, y, 3));
 						break;
 					case 3:
-						ret.add(new Coordinate(root).offset(-3, y, -d));
+						ret.add(root.offset(-3, y, -d));
 						break;
 				}
 			}
@@ -530,26 +591,26 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		return ret;
 	}
 
-	private HashMap<Coordinate, ForgeDirection> getSwitchDoorLocations(TileEntityStructControl root, int i) {
+	private HashMap<Coordinate, ForgeDirection> getSwitchDoorLocations(Coordinate root, int i) {
 		HashMap<Coordinate, ForgeDirection> ret = new HashMap();
 		for (int y = 6; y <= 8; y++) {
 			for (int d = 5; d <= 6; d++) {
 				switch(i) {
 					case 0: //nw
-						ret.put(new Coordinate(root).offset(-2, y, -d), ForgeDirection.EAST);
-						ret.put(new Coordinate(root).offset(-d, y, -2), ForgeDirection.SOUTH);
+						ret.put(root.offset(-2, y, -d), ForgeDirection.EAST);
+						ret.put(root.offset(-d, y, -2), ForgeDirection.SOUTH);
 						break;
 					case 1: //ne
-						ret.put(new Coordinate(root).offset(-2, y, d), ForgeDirection.SOUTH);
-						ret.put(new Coordinate(root).offset(-d, y, 2), ForgeDirection.WEST);
+						ret.put(root.offset(-2, y, d), ForgeDirection.SOUTH);
+						ret.put(root.offset(-d, y, 2), ForgeDirection.WEST);
 						break;
 					case 2: //sw
-						ret.put(new Coordinate(root).offset(2, y, -d), ForgeDirection.EAST);
-						ret.put(new Coordinate(root).offset(d, y, -2), ForgeDirection.NORTH);
+						ret.put(root.offset(2, y, -d), ForgeDirection.EAST);
+						ret.put(root.offset(d, y, -2), ForgeDirection.NORTH);
 						break;
 					case 3: //se
-						ret.put(new Coordinate(root).offset(2, y, d), ForgeDirection.WEST);
-						ret.put(new Coordinate(root).offset(d, y, 2), ForgeDirection.NORTH);
+						ret.put(root.offset(2, y, d), ForgeDirection.WEST);
+						ret.put(root.offset(d, y, 2), ForgeDirection.NORTH);
 						break;
 				}
 			}
@@ -557,34 +618,34 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		return ret;
 	}
 
-	private HashMap<Coordinate, CrystalElement> getCrystalLocations(TileEntityStructControl root/*, int i*/) {
+	private HashMap<Coordinate, CrystalElement> getCrystalLocations(Coordinate root/*, int i*/) {
 		HashMap<Coordinate, CrystalElement> ret = new HashMap();
 		//switch(i) {
 		//	case 0: //W
-		ret.put(new Coordinate(root).offset(-4, 3, 1), crystalColors.get(ret.size()));
-		ret.put(new Coordinate(root).offset(-5, 3, 1), crystalColors.get(ret.size()));
+		ret.put(root.offset(-4, 3, 1), crystalColors.get(ret.size()));
+		ret.put(root.offset(-5, 3, 1), crystalColors.get(ret.size()));
 		//		break;
 		//	case 1: //N
-		ret.put(new Coordinate(root).offset(-1, 3, -4), crystalColors.get(ret.size()));
-		ret.put(new Coordinate(root).offset(-1, 3, -5), crystalColors.get(ret.size()));
+		ret.put(root.offset(-1, 3, -4), crystalColors.get(ret.size()));
+		ret.put(root.offset(-1, 3, -5), crystalColors.get(ret.size()));
 		//		break;
 		//	case 2: //E
-		ret.put(new Coordinate(root).offset(4, 3, -1), crystalColors.get(ret.size()));
-		ret.put(new Coordinate(root).offset(5, 3, -1), crystalColors.get(ret.size()));
+		ret.put(root.offset(4, 3, -1), crystalColors.get(ret.size()));
+		ret.put(root.offset(5, 3, -1), crystalColors.get(ret.size()));
 		//		break;
 		//	case 3: //S
-		ret.put(new Coordinate(root).offset(1, 3, 4), crystalColors.get(ret.size()));
-		ret.put(new Coordinate(root).offset(1, 3, 5), crystalColors.get(ret.size()));
+		ret.put(root.offset(1, 3, 4), crystalColors.get(ret.size()));
+		ret.put(root.offset(1, 3, 5), crystalColors.get(ret.size()));
 		//		break;
 		//}
 		return ret;
 	}
 
-	private Collection<Coordinate> getLiquidLocations(TileEntityStructControl root) {
+	private Collection<Coordinate> getLiquidLocations(Coordinate root) {
 		ArrayList<Coordinate> ret = new ArrayList();
 		for (int a = -1; a <= 1; a++) {
 			for (int b = -1; b <= 1; b++) {
-				ret.add(new Coordinate(root).offset(a, -1, b));
+				ret.add(root.offset(a, -1, b));
 			}
 		}
 		for (int i = 2; i < 6; i++) {
@@ -594,36 +655,36 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 				for (int b = 4; b <= 5; b++) {
 					if (b == 5 && a == 4)
 						continue;
-					ret.add(new Coordinate(root).offset(dir.offsetX*b+left.offsetX*a, 1, left.offsetZ*a+dir.offsetZ*b));
+					ret.add(root.offset(dir.offsetX*b+left.offsetX*a, 1, left.offsetZ*a+dir.offsetZ*b));
 				}
 			}
 		}
 		return ret;
 	}
 
-	private Collection<Coordinate> getLowerChestLocations(TileEntityStructControl root) {
+	private Collection<Coordinate> getLowerChestLocations(Coordinate root) {
 		ArrayList<Coordinate> ret = new ArrayList();
 		for (int i = 2; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 			ForgeDirection left = ReikaDirectionHelper.getLeftBy90(dir);
-			ret.add(new Coordinate(root).offset(dir.offsetX*5+left.offsetX*4, 2, left.offsetZ*4+dir.offsetZ*5));
+			ret.add(root.offset(dir.offsetX*5+left.offsetX*4, 2, left.offsetZ*4+dir.offsetZ*5));
 		}
 		return ret;
 	}
 
-	private Collection<Coordinate> getBarrierLocations(TileEntityStructControl root) {
+	private Collection<Coordinate> getBarrierLocations(Coordinate root) {
 		ArrayList<Coordinate> ret = new ArrayList();
 		for (int x = -1; x <= 1; x++) {
 			for (int z = -1; z <= 1; z++) {
-				ret.add(new Coordinate(root).offset(x, 1, z));
+				ret.add(root.offset(x, 1, z));
 			}
 		}
 		for (int y = 2; y <= 4; y++) {
 			for (int d = 4; d <= 5; d++) {
-				ret.add(new Coordinate(root).offset(d, y, 3));
-				ret.add(new Coordinate(root).offset(-3, y, d));
-				ret.add(new Coordinate(root).offset(-d, y, -3));
-				ret.add(new Coordinate(root).offset(3, y, -d));
+				ret.add(root.offset(d, y, 3));
+				ret.add(root.offset(-3, y, d));
+				ret.add(root.offset(-d, y, -3));
+				ret.add(root.offset(3, y, -d));
 			}
 		}
 		return ret;
@@ -701,14 +762,87 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glEnable(GL11.GL_BLEND);
 			ReikaRenderHelper.disableEntityLighting();
-			BlendMode.ADDITIVEDARK.apply();
 			GL11.glDepthMask(false);
 
-			ReikaTextureHelper.bindEnchantmentTexture();
+			BlendMode.MULTIPLY.apply();
+
 			Tessellator var5 = Tessellator.instance;
+			var5.startDrawingQuads();
+			var5.setBrightness(240);
+			var5.setColorOpaque_I(0xffffff);
+
+			ReikaTextureHelper.bindTerrainTexture();
+			IIcon ico = ChromaIcons.X.getIcon();
+			float u1 = ico.getMinU();
+			float v1 = ico.getMinV();
+			float du1 = ico.getMaxU();
+			float dv1 = ico.getMaxV();
+
+			var5.addVertexWithUV(-1, 6.75, -1, u1, v1);
+			var5.addVertexWithUV(2, 6.75, -1, du1, v1);
+			var5.addVertexWithUV(2, 6.75, 2, du1, dv1);
+			var5.addVertexWithUV(-1, 6.75, 2, u1, dv1);
+
+			var5.draw();
+
+			BlendMode.DEFAULT.apply();
+
+			var5.startDrawingQuads();
+			var5.setBrightness(240);
+			var5.setColorRGBA_I(0xffffff, 64);
+
+			u1 = ico.getMinU();
+			v1 = ico.getMinV();
+			du1 = ico.getMaxU();
+			dv1 = ico.getMaxV();
+
+			var5.addVertexWithUV(-1, 6.75, -1, u1, v1);
+			var5.addVertexWithUV(2, 6.75, -1, du1, v1);
+			var5.addVertexWithUV(2, 6.75, 2, du1, dv1);
+			var5.addVertexWithUV(-1, 6.75, 2, u1, dv1);
+
+			var5.draw();
+
+			BlendMode.ADDITIVEDARK.apply();
+
+			var5.startDrawingQuads();
+			var5.setBrightness(240);
+			var5.setColorOpaque_I(0x300000);
+
+			ico = ChromaIcons.HIVE.getIcon();
+			u1 = ico.getMinU();
+			v1 = ico.getMinV();
+			du1 = ico.getMaxU();
+			dv1 = ico.getMaxV();
+
+			var5.addVertexWithUV(-1, 6, -1, u1, v1);
+			var5.addVertexWithUV(2, 6, -1, du1, v1);
+			var5.addVertexWithUV(2, 6, 2, du1, dv1);
+			var5.addVertexWithUV(-1, 6, 2, u1, dv1);
+			var5.addVertexWithUV(-1, 7, -1, u1, v1);
+			var5.addVertexWithUV(2, 7, -1, du1, v1);
+			var5.addVertexWithUV(2, 7, 2, du1, dv1);
+			var5.addVertexWithUV(-1, 7, 2, u1, dv1);
+
+			var5.setColorOpaque_I(0xff0000);
+			ico = ChromaIcons.RIFT.getIcon();
+			u1 = ico.getMinU();
+			v1 = ico.getMinV();
+			du1 = ico.getMaxU();
+			dv1 = ico.getMaxV();
+
+			var5.addVertexWithUV(-1, 6.5, -1, u1, v1);
+			var5.addVertexWithUV(2, 6.5, -1, du1, v1);
+			var5.addVertexWithUV(2, 6.5, 2, du1, dv1);
+			var5.addVertexWithUV(-1, 6.5, 2, u1, dv1);
+
+			var5.draw();
+
+			ReikaTextureHelper.bindEnchantmentTexture();
 			double r = 12;
 			int color = ReikaColorAPI.mixColors(0xff0000, 0x700000, (float)(0.5+0.5*Math.sin(System.currentTimeMillis()/100D)));
 			var5.startDrawingQuads();
+			var5.setBrightness(240);
 			var5.setColorOpaque_I(color);
 			double dx = 0.5;
 			double dy = 5.5;

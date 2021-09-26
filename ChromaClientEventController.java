@@ -58,6 +58,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
@@ -130,6 +131,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityShaderFX;
 import Reika.ChromatiCraft.Render.TESR.RenderAlveary;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
+import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverManagerClient;
@@ -658,9 +660,13 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 	}
 	 */
 	@SubscribeEvent
-	public void cliffWaterColor(WaterColorEvent evt) {
-		if (BiomeGlowingCliffs.isGlowingCliffs(evt.getBiome())) {
+	public void biomeWaterColor(WaterColorEvent evt) {
+		BiomeGenBase b = evt.getBiome();
+		if (BiomeGlowingCliffs.isGlowingCliffs(b)) {
 			evt.color = ChromatiCraft.glowingcliffs.getWaterColor(evt.access, evt.xCoord, evt.yCoord, evt.zCoord, evt.getLightLevel());
+		}
+		else if (b instanceof BiomeRainbowForest) {
+			evt.color = ((BiomeRainbowForest)b).getWaterColor(evt.access, evt.xCoord, evt.yCoord, evt.zCoord, evt.getLightLevel());
 		}
 	}
 

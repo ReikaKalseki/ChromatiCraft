@@ -24,6 +24,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.Interfaces.ManipulatorInteraction;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
@@ -461,6 +462,11 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 		if (!world.isRemote && ModList.FORESTRY.isLoaded() && InterfaceCache.BEEHOUSE.instanceOf(tile)) {
 			IBeeHousing ibh = (IBeeHousing)tile;
 			CrystalBees.showConditionalStatuses(world, x, y, z, ep, ibh);
+		}
+
+		if (!world.isRemote && tile instanceof ManipulatorInteraction) {
+			if (((ManipulatorInteraction)tile).onManipulatorInteract(ep, s))
+				return true;
 		}
 
 		return false;

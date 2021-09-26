@@ -6,7 +6,6 @@ import java.util.Random;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockFurnace;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -164,7 +163,7 @@ public class BurrowStructure extends FragmentStructureBase {
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			world.setBlock(x, y+1, z, ChromaBlocks.HEATLAMP.getBlockInstance(), ForgeDirection.UP.ordinal(), 2);
 			((TileEntityHeatLamp)world.getTileEntity(x, y+1, z)).temperature = ReikaRandomHelper.getRandomBetween(50, 160);
-			BlockFurnace.updateFurnaceBlockState(true, world, x, y, z);
+			//BlockFurnace.updateFurnaceBlockState(true, world, x, y, z);
 			TileEntityFurnace tf = (TileEntityFurnace)te;
 			if (tf == null) {
 				tf = new TileEntityFurnace();
@@ -183,9 +182,6 @@ public class BurrowStructure extends FragmentStructureBase {
 			is.stackSize = ReikaRandomHelper.getRandomBetween(4, max);
 			tf.setInventorySlotContents(0, is);
 			world.setBlockMetadataWithNotify(x, y, z, 3, 3);
-
-			//tf.furnaceCookTime = ReikaRandomHelper.getRandomBetween(100, 190);
-			//freezeTile(tf);
 		}
 
 	};
@@ -867,7 +863,7 @@ public class BurrowStructure extends FragmentStructureBase {
 	}
 
 	private void placeFurnace(FilledBlockArray array, int x, int y, int z) {
-		array.setBlock(x, y, z, Blocks.furnace, 3);
+		array.setBlock(x, y, z, Blocks.lit_furnace, 3);
 		if (this.isWorldgen())
 			this.addCallback(x, y, z, furnaceCall);
 	}

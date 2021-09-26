@@ -424,6 +424,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	VOIDTRAPSTRUCT(	ChromaStructures.VOIDRITUAL,	Blocks.redstone_torch, 5,				ResearchLevel.PYLONCRAFT,		ProgressStage.VOIDMONSTERDIE, ProgressStage.CHARGECRYSTAL),
 	VOIDTRAPSTRUCTN(ChromaStructures.NETHERTRAP,	Blocks.tnt, 0,							ResearchLevel.PYLONCRAFT,		ProgressStage.VOIDMONSTERDIE, ProgressStage.CHARGECRYSTAL),
 	LAUNCHPADSTRUCT(ChromaStructures.LAUNCHPAD,		StoneTypes.ENGRAVED.ordinal(), 			ResearchLevel.BASICCRAFT),
+	BIOMESTRUCT(	ChromaStructures.BIOMEFRAG,		ChromaBlocks.COLORLOCK.getBlockInstance(), 0, ResearchLevel.MULTICRAFT,	ProgressStage.BIOMESTRUCT),
 	;
 
 	private final ItemStack iconItem;

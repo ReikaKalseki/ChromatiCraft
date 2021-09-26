@@ -31,6 +31,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidRegistry;
 
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
+import Reika.ChromatiCraft.Base.FragmentStructureBase;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
@@ -322,6 +323,20 @@ public class GuiStructure extends GuiBookSection {
 			render.addOverride(new ItemStack(ChromaTiles.STAND.getBlock(), ChromaTiles.STAND.getBlockMetadata()), ChromaTiles.STAND.getCraftedProduct());
 		}
 
+		if (page == ChromaResearch.BIOMESTRUCT) {
+			//render.addOverride(ChromaBlocks.HOVER.getStackOfMetadata(HoverType.ELEVATE.getPermanentMeta()), new ItemStack(Blocks.air));
+
+			//render.addOverride(ChromaBlocks.CHROMA.getStackOf(), ChromaItems.BUCKET.getStackOfMetadata(0));
+			//render.addOverride(new ItemStack(FluidRegistry.getFluid("ender").getBlock()), ChromaItems.BUCKET.getStackOfMetadata(1));
+
+			//render.addOverride(ChromaBlocks.LUMA.getStackOf(), ChromaItems.BUCKET.getStackOfMetadata(3));
+			render.addBlockHook(Blocks.water, new CCFluidHook());
+			render.addBlockHook(ChromaBlocks.LAMP.getBlockInstance(), new BiomeCrystalHook());
+			render.addBlockHook(ChromaBlocks.RUNE.getBlockInstance(), new BiomeRuneHook());
+			render.addOverride(ChromaBlocks.LIGHTPANEL.getStackOfMetadata(0), ChromaBlocks.LIGHTPANEL.getStackOfMetadata(1));
+			render.addOverride(ChromaBlocks.LIGHTPANEL.getStackOfMetadata(2), ChromaBlocks.LIGHTPANEL.getStackOfMetadata(3));
+		}
+
 		render.addRenderHook(ChromaTiles.PYLON.getCraftedProduct(), new PylonRenderHook());
 	}
 
@@ -338,7 +353,8 @@ public class GuiStructure extends GuiBookSection {
 
 		buttonList.add(new CustomSoundGuiButton(0, j+185, k-2, 20, 20, "3D", this));
 		buttonList.add(new CustomSoundGuiButton(1, j+205, k-2, 20, 20, "2D", this));
-		buttonList.add(new CustomSoundGuiButton(4, mode == 1 ? j+125 : j+165, k-2, 20, 20, "N#", this));
+		if (!(page.getStructure().getStructure() instanceof FragmentStructureBase))
+			buttonList.add(new CustomSoundGuiButton(4, mode == 1 ? j+125 : j+165, k-2, 20, 20, "N#", this));
 
 
 		if (mode == 1) {
@@ -485,21 +501,23 @@ public class GuiStructure extends GuiBookSection {
 			if (ChromaBlocks.PYLON.match(is2)) {
 				is2 = ChromaTiles.getTileFromIDandMetadata(Block.getBlockFromItem(is2.getItem()), is2.getItemDamage()).getCraftedProduct();
 			}
-			if (Block.getBlockFromItem(is2.getItem()) instanceof BlockModelledChromaTile) {
+			if (is2 != null && Block.getBlockFromItem(is2.getItem()) instanceof BlockModelledChromaTile) {
 				is2 = ChromaTiles.getTileFromIDandMetadata(Block.getBlockFromItem(is2.getItem()), is2.getItemDamage()).getCraftedProduct();
 			}
-			api.drawItemStackWithTooltip(itemRender, fontRendererObj, is2, dx, dy);
-			String s = String.valueOf(map.get(is));
-			fontRendererObj.drawString(s, dx+20, dy+5, 0xffffff);
-			if (map2 != null) {
-				int dx2 = dx+20+fontRendererObj.getStringWidth(s)+fontRendererObj.getCharWidth(' ');
-				Integer get = map2.get(is);
-				if (get == null)
-					get = 0;
-				s = "("+get+")";
-				fontRendererObj.drawString(s, dx2, dy+5, 0x22ff22);
+			if (is2 != null) {
+				api.drawItemStackWithTooltip(itemRender, fontRendererObj, is2, dx, dy);
+				String s = String.valueOf(map.get(is));
+				fontRendererObj.drawString(s, dx+20, dy+5, 0xffffff);
+				if (map2 != null) {
+					int dx2 = dx+20+fontRendererObj.getStringWidth(s)+fontRendererObj.getCharWidth(' ');
+					Integer get = map2.get(is);
+					if (get == null)
+						get = 0;
+					s = "("+get+")";
+					fontRendererObj.drawString(s, dx2, dy+5, 0x22ff22);
+				}
+				i++;
 			}
-			i++;
 		}
 	}
 
@@ -603,6 +621,56 @@ public class GuiStructure extends GuiBookSection {
 		@Override
 		public ItemStack getBlock(Coordinate pos) {
 			return new BlockKey(ChromaBlocks.RUNE.getBlockInstance(), getElementByTick()).asItemStack();
+		}
+
+	}
+
+	private static abstract class BiomeRandomColorHook implements BlockChoiceHook {
+
+		private final ChromaBlocks block;
+		private final ArrayList<CrystalElement> colors = ReikaJavaLibrary.makeListFromArray(CrystalElement.elements);
+
+		protected BiomeRandomColorHook(ChromaBlocks b) {
+			block = b;
+			Collections.shuffle(colors);
+		}
+
+		@Override
+		public final ItemStack getBlock(Coordinate pos) {
+			return block.getStackOfMetadata(this.getRandomColor(pos));
+		}
+
+		private int getRandomColor(Coordinate pos) {
+			return colors.get((int)((pos.xCoord+237*pos.zCoord+System.currentTimeMillis()/1000)%16)).ordinal();
+		}
+
+	}
+
+	private static class BiomeRuneHook extends BiomeRandomColorHook {
+
+		protected BiomeRuneHook() {
+			super(ChromaBlocks.RUNE);
+		}
+
+	}
+
+	private static class BiomeCrystalHook extends BiomeRandomColorHook {
+
+		protected BiomeCrystalHook() {
+			super(ChromaBlocks.LAMP);
+		}
+
+	}
+
+	private static class CCFluidHook implements BlockChoiceHook {
+
+		private final ArrayList<String> fluids = ReikaJavaLibrary.makeListFrom("chroma", "ender", "luma");
+
+		@Override
+		public ItemStack getBlock(Coordinate pos) {
+			int i = (int)((System.currentTimeMillis()/1000)%fluids.size());
+			Block b = FluidRegistry.getFluid(fluids.get(i)).getBlock();
+			return new BlockKey(b).asItemStack();
 		}
 
 	}

@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
-import java.awt.Color;
 import java.util.Random;
 
 import net.minecraft.entity.monster.EntityCreeper;
@@ -26,12 +25,23 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
+import Reika.DragonAPI.Instantiable.Math.Noise.NoiseGeneratorBase;
+import Reika.DragonAPI.Instantiable.Math.Noise.Simplex3DGenerator;
+import Reika.DragonAPI.Instantiable.Math.Noise.VoronoiNoiseGenerator;
 import Reika.DragonAPI.Interfaces.CustomMapColorBiome;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class BiomeEnderForest extends BiomeGenForest implements CustomMapColorBiome {
+
+	private static final long root = 127645902378217L;
+	private final NoiseGeneratorBase extraX = new Simplex3DGenerator(3571 ^ root).setFrequency(1/4D);
+	private final NoiseGeneratorBase extraY = new Simplex3DGenerator(-8247 ^ root).setFrequency(1/4D);
+	private final NoiseGeneratorBase extraZ = new Simplex3DGenerator(5648723 ^ root).setFrequency(1/4D);
+	private final VoronoiNoiseGenerator colorNoise = (VoronoiNoiseGenerator)new VoronoiNoiseGenerator(23657 ^ root).setFrequency(1/12D).setDisplacement(extraX, extraY, extraZ, 6);
 
 	private final WorldGenAbstractTree enderOakLarge = new EnderOakGenerator(3, 7, 5, 12, 3, 5, 0.15F, 6, 0.15F);
 	private final WorldGenAbstractTree enderOakSmall = new EnderOakGenerator(2, 4, 3, 5, 2, 3, 0, 0, 0.1F);
@@ -45,6 +55,8 @@ public class BiomeEnderForest extends BiomeGenForest implements CustomMapColorBi
 		theBiomeDecorator.treesPerChunk *= 0.7;
 
 		this.setDisableRain();
+
+		colorNoise.randomFactor = 0.55;
 
 		biomeName = "Ender Forest";
 
@@ -78,39 +90,39 @@ public class BiomeEnderForest extends BiomeGenForest implements CustomMapColorBi
 	@Override
 	public int getBiomeGrassColor(int x, int y, int z)
 	{
-		if (!ChromaOptions.ENDERCOLORING.getState())
-			return BiomeGenBase.forest.getBiomeGrassColor(x, y, z);
-		int r = 255;
-		int g = 200;
-		int b = 255;
-		return new Color(r, g, b).getRGB();
+		if (ChromaOptions.ENDERCOLORING.getState()) {
+			return ReikaColorAPI.RGBtoHex(255, 200, 255);
+		}
+		else {
+			return ReikaColorAPI.mixColors(BiomeGenBase.forest.getBiomeGrassColor(x, y, z), BiomeGenBase.icePlains.getBiomeGrassColor(x, y, z), this.getMix(x, y, z));
+		}
 	}
 
 	@Override
-	public int getBiomeFoliageColor(int x, int y, int z)
-	{
-		if (!ChromaOptions.ENDERCOLORING.getState())
-			return BiomeGenBase.forest.getBiomeFoliageColor(x, y, z);
-		int r = 255;
-		int g = 150;
-		int b = 255;
-		return new Color(r, g, b).getRGB();
+	public int getBiomeFoliageColor(int x, int y, int z) {
+		if (ChromaOptions.ENDERCOLORING.getState()) {
+			return ReikaColorAPI.RGBtoHex(255, 150, 255);
+		}
+		else {
+			return ReikaColorAPI.mixColors(BiomeGenBase.forest.getBiomeFoliageColor(x, y, z), BiomeGenBase.icePlains.getBiomeFoliageColor(x, y, z), this.getMix(x, y, z));
+		}
+	}
+
+	private float getMix(int x, int y, int z) {
+		DecimalPosition root = colorNoise.getClosestRoot(x, y, z);
+		int hash = root.hashCode();
+		return ((hash%10+10)%10)/10F;
 	}
 
 	@Override
-	public int getWaterColorMultiplier()
-	{
+	public int getWaterColorMultiplier() {
 		if (!ChromaOptions.ENDERCOLORING.getState())
 			return BiomeGenBase.forest.getWaterColorMultiplier();
-		int r = 195;
-		int g = 0;
-		int b = 105;
-		return new Color(r, g, b).getRGB();
+		return ReikaColorAPI.RGBtoHex(195, 0, 105);
 	}
 
 	@Override
-	public BiomeDecorator createBiomeDecorator()
-	{
+	public BiomeDecorator createBiomeDecorator() {
 		return new DecoratorEnderForest();
 	}
 

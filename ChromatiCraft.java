@@ -141,6 +141,7 @@ import Reika.ChromatiCraft.World.BiomeEnderForest;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.GlowingCliffsEdge;
+import Reika.ChromatiCraft.World.RainbowRiver;
 import Reika.ChromatiCraft.World.VillagersFailChromatiCraft;
 import Reika.ChromatiCraft.World.Dimension.CheatingPreventionSystem;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
@@ -293,6 +294,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	public static ModLogger logger;
 
 	public static BiomeRainbowForest rainbowforest;
+	public static RainbowRiver rainbowRiver;
 	public static BiomeEnderForest enderforest;
 	public static BiomeGlowingCliffs glowingcliffs;
 	public static GlowingCliffsEdge glowingcliffsEdge;
@@ -447,6 +449,8 @@ public class ChromatiCraft extends DragonAPIMod {
 		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.PYLON.getBlockInstance());
 		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.ordinal());
 		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.metadata);
+		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.SPECIALSHIELD.getBlockInstance(), BlockType.GLASS.ordinal());
+		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.SPECIALSHIELD.getBlockInstance(), BlockType.GLASS.metadata);
 
 		this.basicSetup(evt);
 		this.finishTiming();
@@ -507,6 +511,9 @@ public class ChromatiCraft extends DragonAPIMod {
 		BiomeManager.addStrongholdBiome(rainbowforest);
 		BiomeManager.addVillageBiome(rainbowforest, true);
 		BiomeDictionary.registerBiomeType(rainbowforest, BiomeDictionary.Type.FOREST, BiomeDictionary.Type.MAGICAL, BiomeDictionary.Type.HILLS);
+
+		rainbowRiver = new RainbowRiver(ExtraChromaIDs.RAINBOWRIVER.getValue());
+		BiomeDictionary.registerBiomeType(rainbowRiver, BiomeDictionary.Type.FOREST, BiomeDictionary.Type.MAGICAL, BiomeDictionary.Type.RIVER);
 
 		enderforest = new BiomeEnderForest(ExtraChromaIDs.ENDERFOREST.getValue());
 		BiomeManager.addBiome(BiomeType.COOL, new BiomeEntry(enderforest, ChromaOptions.getEnderForestWeight()));

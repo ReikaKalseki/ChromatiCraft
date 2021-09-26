@@ -21,6 +21,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.gen.feature.WorldGenFlowers;
 import net.minecraft.world.gen.feature.WorldGenLiquids;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.common.MinecraftForge;
@@ -44,6 +45,8 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 public class RainbowForestDecorator extends StackableBiomeDecorator {
 
 	private RainbowForestGenerator gen = new RainbowForestGenerator();
+
+	private final WorldGenFlowers roseGen = new WorldGenFlowers(Blocks.red_flower);
 
 	public RainbowForestDecorator() {
 		super();
@@ -200,12 +203,12 @@ public class RainbowForestDecorator extends StackableBiomeDecorator {
 			i1 = chunk_Z + randomGenerator.nextInt(16) + 8;
 			yellowFlowerGen.generate(currentWorld, randomGenerator, k, l, i1);
 
-			if (randomGenerator.nextInt(4) == 0)
+			if (this.genRoses() && randomGenerator.nextInt(4) == 0)
 			{
 				k = chunk_X + randomGenerator.nextInt(16) + 8;
 				l = randomGenerator.nextInt(128);
 				i1 = chunk_Z + randomGenerator.nextInt(16) + 8;
-				//roseGen.generate(currentWorld, randomGenerator, k, l, i1);
+				roseGen.generate(currentWorld, randomGenerator, k, l, i1);
 			}
 		}
 
@@ -247,16 +250,25 @@ public class RainbowForestDecorator extends StackableBiomeDecorator {
 				(new WorldGenLiquids(Blocks.flowing_water)).generate(currentWorld, randomGenerator, k, l, i1);
 			}
 
-			for (j = 0; j < 20; ++j)
-			{
-				k = chunk_X + randomGenerator.nextInt(16) + 8;
-				l = randomGenerator.nextInt(randomGenerator.nextInt(randomGenerator.nextInt(112) + 8) + 8);
-				i1 = chunk_Z + randomGenerator.nextInt(16) + 8;
-				(new WorldGenLiquids(Blocks.flowing_lava)).generate(currentWorld, randomGenerator, k, l, i1);
+			if (this.generateLavaLakes()) {
+				for (j = 0; j < 20; ++j) {
+					k = chunk_X + randomGenerator.nextInt(16) + 8;
+					l = randomGenerator.nextInt(randomGenerator.nextInt(randomGenerator.nextInt(112) + 8) + 8);
+					i1 = chunk_Z + randomGenerator.nextInt(16) + 8;
+					(new WorldGenLiquids(Blocks.flowing_lava)).generate(currentWorld, randomGenerator, k, l, i1);
+				}
 			}
 		}
 
 		MinecraftForge.EVENT_BUS.post(new DecorateBiomeEvent.Post(currentWorld, randomGenerator, chunk_X, chunk_Z));
+	}
+
+	protected boolean genRoses() {
+		return false;
+	}
+
+	protected boolean generateLavaLakes() {
+		return true;
 	}
 
 	@Override
