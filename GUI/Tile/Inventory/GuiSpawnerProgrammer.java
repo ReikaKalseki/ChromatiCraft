@@ -12,6 +12,8 @@ package Reika.ChromatiCraft.GUI.Tile.Inventory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.lwjgl.input.Keyboard;
 
@@ -27,6 +29,7 @@ import net.minecraft.util.EnumChatFormatting;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiLetterSearchable;
 import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
+import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
@@ -52,10 +55,9 @@ public class GuiSpawnerProgrammer extends GuiLetterSearchable<String> {
 	private Setting activationRange = new Setting(16);
 
 	static {
-		for (Object key : EntityList.stringToClassMapping.keySet()) {
-			String name = (String)key;
-			if (TileEntitySpawnerReprogrammer.isMobAllowed(name)) {
-				validMobs.add(name);
+		for (Entry<String, Class> e : ((Map<String, Class>)EntityList.stringToClassMapping).entrySet()) {
+			if (TileEntitySpawnerReprogrammer.isMobAllowed(e.getValue())) {
+				validMobs.add(e.getKey());
 			}
 		}
 		Collections.sort(validMobs);
@@ -191,7 +193,11 @@ public class GuiSpawnerProgrammer extends GuiLetterSearchable<String> {
 		else if (EntityAnimal.class.isAssignableFrom(c)) {
 			f = EnumChatFormatting.GREEN.toString();
 		}
-		return f+ReikaEntityHelper.getEntityDisplayName(label);
+		String disp = ReikaEntityHelper.getEntityDisplayName(label);
+		if (c == EntityGlowCloud.class) {
+			disp = "Luma Fog";
+		}
+		return f+disp;
 	}
 
 	@Override
@@ -214,7 +220,8 @@ public class GuiSpawnerProgrammer extends GuiLetterSearchable<String> {
 		if (page == Pages.MOBTYPE) {
 			boolean debug = Keyboard.isKeyDown(DragonOptions.DEBUGKEY.getValue());
 			String display = debug ? this.getActive() : this.getMobDisplayName();
-			ReikaGuiAPI.instance.drawCenteredString(fontRendererObj, display, xSize/2, 47, debug ? 0xffff00 : 0xffffff);
+			int c = 0xffffff;
+			ReikaGuiAPI.instance.drawCenteredString(fontRendererObj, display, xSize/2, 47, debug ? 0xffff00 : c);
 		}
 	}
 

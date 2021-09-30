@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Processing;
 
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import net.minecraft.entity.EntityList;
@@ -23,24 +25,39 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Interfaces.ProgrammableSpawner;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
+import Reika.ChromatiCraft.Entity.EntityTunnelNuker;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Extras.ItemSpawner;
 import Reika.DragonAPI.Instantiable.StepTimer;
+import Reika.DragonAPI.Interfaces.Entity.TameHostile;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.Satisforestry.Entity.EntityFlyingManta;
+import Reika.Satisforestry.Entity.EntityLizardDoggo;
+import Reika.VoidMonster.Entity.EntityVoidMonster;
 
 //Can change both the mob type and the params in MobSpawnerBaseLogic
 public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered implements OperationInterval {
 
 	private String selectedMob;
-	private static final HashSet<String> disallowedMobs = new HashSet();
+
+	private static final HashSet<Class> disallowedMobClasses = new HashSet();
+	private static final HashSet<Class> disallowedMobParents = new HashSet();
+	private static final HashSet<String> disallowedMobNames = new HashSet();
+	private static final HashSet<String> disallowedMobNamePrefixes = new HashSet();
+	private static final HashSet<String> inheritOverrides = new HashSet();
+
+	private static final HashMap<Class, Boolean> mobRules = new HashMap();
 
 	private StepTimer progress = new StepTimer(180);
 	public int progressTimer;
@@ -67,41 +84,42 @@ public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered imple
 		addDisallowedMob(EntityMob.class);
 		//addDisallowedMob(EntityIronGolem.class);
 
-		addDisallowedMob("Void Monster");
+		addDisallowedMob(EntityTunnelNuker.class);
+		if (ModList.VOIDMONSTER.isLoaded()) {
+			loadVM();
+		}
+		if (ModList.SATISFORESTRY.isLoaded()) {
+			loadSF();
+		}
 
-		addDisallowedMob("TaintedCow");
-		addDisallowedMob("TaintedSheep");
-		addDisallowedMob("TaintedCreeper");
-		addDisallowedMob("TaintSpider");
-		addDisallowedMob("TaintedChicken");
-		addDisallowedMob("TaintedPig");
-		addDisallowedMob("TaintedVillager");
-		addDisallowedMob("TaintVillager");
-		addDisallowedMob("Thaumcraft.TaintacleTiny");
-		//addDisallowedMob("Thaumcraft.TaintSpore");
+		disallowedMobNamePrefixes.add("Taint");
+		disallowedMobNamePrefixes.add("Thaumcraft.Taint");
+
+		inheritOverrides.add("Thaumcraft.TaintSpore");
+		inheritOverrides.add("Thaumcraft.TaintSwarmer");
+
 		addDisallowedMob("Thaumcraft.Golem");
-		//addDisallowedMob("Thaumcraft.TaintSwarmer");
 		addDisallowedMob("Thaumcraft.TravelingTrunk");
-		addDisallowedMob("Thaumcraft.TaintedVillager");
-		addDisallowedMob("Thaumcraft.TaintSpider");
-		addDisallowedMob("Thaumcraft.TaintedChicken");
-		addDisallowedMob("Thaumcraft.TaintedSheep");
-		addDisallowedMob("Thaumcraft.TaintedCow");
-		addDisallowedMob("Thaumcraft.TaintedPig");
-		addDisallowedMob("Thaumcraft.TaintedCreeper");
 		addDisallowedMob("Thaumcraft.CultistPortal");
+		addDisallowedMob("Thaumcraft.EldritchGolem");
+		addDisallowedMob("Thaumcraft.EldritchWarden");
+		addDisallowedMob("Thaumcraft.CultistLeader");
 
 		addDisallowedMob("TwilightForest.Hydra");
 		addDisallowedMob("TwilightForest.Naga");
 		addDisallowedMob("TwilightForest.HydraHead");
 		addDisallowedMob("TwilightForest.Lich Minion");
-		//addDisallowedMob("TwilightForest.Questing Ram");
+		addDisallowedMob("TwilightForest.Questing Ram");
 		addDisallowedMob("TwilightForest.Knight Phantom");
 		addDisallowedMob("TwilightForest.Twilight Lich");
 		addDisallowedMob("TwilightForest.Tower Boss");
 		addDisallowedMob("TwilightForest.Loyal Zombie");
 		addDisallowedMob("TwilightForest.Minoshroom");
 		addDisallowedMob("TwilightForest.Boggard");
+		addDisallowedMob("TwilightForest.Yeti Boss");
+		addDisallowedMob("TwilightForest.Snow Queen");
+		addDisallowedMob("TwilightForest.Apocalypse Cube");
+		addDisallowedMob("TwilightForest.Adherent");
 
 		addDisallowedMob("OpenBlocks.Luggage");
 
@@ -113,42 +131,28 @@ public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered imple
 
 		addDisallowedMob("DraconicEvolution.EnderDragon");
 
-		addDisallowedMob("Thaumcraft.EldritchGolem");
-		addDisallowedMob("Thaumcraft.EldritchWarden");
-		addDisallowedMob("Thaumcraft.CultistPortal");
-		addDisallowedMob("Thaumcraft.CultistLeader");
+		disallowedMobNamePrefixes.add("arsmagica2.Boss");
+
 		addDisallowedMob("arsmagica2.ShadowHelper");
-		addDisallowedMob("arsmagica2.BossEnderGuardian");
-		addDisallowedMob("arsmagica2.BossLightningGuardian");
-		addDisallowedMob("arsmagica2.BossLifeGuardian");
 		addDisallowedMob("arsmagica2.AirSled");
 		addDisallowedMob("arsmagica2.DaBroom");
-		addDisallowedMob("arsmagica2.BossFireGuardian");
 		addDisallowedMob("arsmagica2.Shockwave");
 		addDisallowedMob("arsmagica2.Whirlwind");
-		addDisallowedMob("arsmagica2.BossAirGuardian");
 		addDisallowedMob("arsmagica2.ThrownArm");
-		addDisallowedMob("arsmagica2.BossWinterGuardian");
-		addDisallowedMob("arsmagica2.BossWaterGuardian");
 		addDisallowedMob("arsmagica2.ThrownRock");
-		addDisallowedMob("arsmagica2.BossEarthGuardian");
-		addDisallowedMob("arsmagica2.BossArcaneGuardian");
 		addDisallowedMob("arsmagica2.ThrownSickle");
-		addDisallowedMob("arsmagica2.BossNatureGuardian");
 		addDisallowedMob("arsmagica2.RiftStorage");
 		addDisallowedMob("arsmagica2.ZoneSpell");
 		addDisallowedMob("arsmagica2.ManaVortex");
 		addDisallowedMob("arsmagica2.SpellProjectile");
-		addDisallowedMob("TwilightForest.Yeti Boss");
-		addDisallowedMob("TwilightForest.Snow Queen");
-		addDisallowedMob("TwilightForest.Apocalypse Cube");
-		addDisallowedMob("TwilightForest.Adherent");
-		addDisallowedMob("TwilightForest.Questing Ram");
+
 		addDisallowedMob("HardcoreEnderExpansion.FireFiend");
 		addDisallowedMob("HardcoreEnderExpansion.EnderDemon");
 		addDisallowedMob("HardcoreEnderExpansion.EnderEye");
 		addDisallowedMob("HardcoreEnderExpansion.Dragon");
+
 		addDisallowedMob("TConstruct.Crystal");
+
 		addDisallowedMob("witchery.hornedHuntsman");
 		addDisallowedMob("witchery.babayaga");
 		addDisallowedMob("witchery.death");
@@ -161,7 +165,10 @@ public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered imple
 		addDisallowedMob("witchery.corpse");
 		addDisallowedMob("witchery.eye");
 		addDisallowedMob("witchery.attackbat");
+
 		addDisallowedMob("DraconicEvolution.ChaosGuardian");
+
+		/*
 		addDisallowedMob("customnpcs.npchumanmale");
 		addDisallowedMob("customnpcs.npcvillager");
 		addDisallowedMob("customnpcs.npcpony");
@@ -186,6 +193,14 @@ public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered imple
 		addDisallowedMob("customnpcs.npcEnderman");
 		addDisallowedMob("customnpcs.npcGolem");
 		addDisallowedMob("customnpcs.CustomNpc");
+		 */
+		try {
+			disallowedMobParents.add(Class.forName("noppes.npcs.entity.EntityNPCInterface"));
+		}
+		catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			//ReflectiveFailureTracker.instance.lo
+		}
 	}
 
 	@Override
@@ -193,20 +208,57 @@ public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered imple
 		return required.copy();
 	}
 
-	private static void addDisallowedMob(String name) {
-		disallowedMobs.add(name);
+	@ModDependent(ModList.VOIDMONSTER)
+	private static void loadVM() {
+		addDisallowedMob(EntityVoidMonster.class);
+	}
+
+	@ModDependent(ModList.SATISFORESTRY)
+	private static void loadSF() {
+		addDisallowedMob(EntityLizardDoggo.class);
+		addDisallowedMob(EntityFlyingManta.class);
 	}
 
 	private static void addDisallowedMob(Class <? extends EntityLiving> name) {
-		addDisallowedMob((String)EntityList.classToStringMapping.get(name));
+		disallowedMobClasses.add(name);
 	}
 
-	public static boolean isMobAllowed(String mob) {
-		return !ReikaEntityHelper.isTameHostile(mob) && ReikaEntityHelper.isLivingMob(mob, false) && !disallowedMobs.contains(mob);
+	private static void addDisallowedMob(String name) {
+		//addDisallowedMob((Class<? extends EntityLiving>)EntityList.stringToClassMapping.get(name));
+		disallowedMobNames.add(name);
 	}
 
-	public static boolean isMobAllowed(Class<? extends EntityLiving> mob) {
-		return isMobAllowed((String)EntityList.classToStringMapping.get(mob));
+	public static boolean isMobAllowed(Class mob) {
+		return !mob.isInterface() && (mob.getModifiers()&Modifier.ABSTRACT) == 0 && !TameHostile.class.isAssignableFrom(mob) && EntityLiving.class.isAssignableFrom(mob) && !isBlacklisted(mob);
+	}
+
+	private static boolean isBlacklisted(Class<? extends EntityLiving> mob) {
+		Boolean allowance = mobRules.get(mob);
+		if (allowance == null) {
+			allowance = computeAllowance(mob);
+			ChromatiCraft.logger.log("Computed spawner controller rule for "+mob+": "+allowance);
+			mobRules.put(mob, allowance);
+		}
+		return !allowance.booleanValue();
+	}
+
+	private static boolean computeAllowance(Class<? extends EntityLiving> mob) {
+		if (disallowedMobClasses.contains(mob))
+			return false;
+		String s = (String)EntityList.classToStringMapping.get(mob);
+		if (disallowedMobNames.contains(s))
+			return false;
+		if (inheritOverrides.contains(s))
+			return true;
+		for (String s2 : disallowedMobNamePrefixes) {
+			if (s.startsWith(s2))
+				return false;
+		}
+		for (Class c : disallowedMobParents) {
+			if (c.isAssignableFrom(mob))
+				return false;
+		}
+		return true;
 	}
 
 	public String getSelectedMob() {

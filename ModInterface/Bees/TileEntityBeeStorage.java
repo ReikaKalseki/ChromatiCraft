@@ -59,6 +59,13 @@ public class TileEntityBeeStorage extends TileEntityMassStorage {
 	}
 
 	@Override
+	protected void onRemoveItem(ItemStack is) {
+		if (isEmpty()) {
+			filter = null;
+		}
+	}
+
+	@Override
 	protected void onTick(World world, int x, int y, int z) {
 		if (world.isRemote && this.getTicksExisted()%20 == Math.abs(System.identityHashCode(this))%20) {
 			Collection<KeyedItemStack> li = this.getItemTypes().keySet();

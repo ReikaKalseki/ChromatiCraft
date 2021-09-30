@@ -251,10 +251,7 @@ public class CastingRecipe implements APICastingRecipe {
 	public boolean match(TileEntityCastingTable table) {
 		if (recipe == null)
 			return true;
-		ItemStack[] items = new ItemStack[9];
-		for (int i = 0; i < 9; i++)
-			items[i] = table.getStackInSlot(i);
-		RecipePattern ic = new RecipePattern(items);
+		RecipePattern ic = new RecipePattern(table, 0);
 		return recipe.matches(ic, null);
 	}
 

@@ -308,30 +308,29 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			if (e != Enchantment.unbreaking)
 				return false;
 
-		if (ChromaItems.HELP.matchWith(is))
-			if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
-				return false;
+		boolean soulbound = e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound");
 
-		if (Loader.isModLoaded("Backpack") && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("backpack"))
-			if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
-				return false;
-
-		if (Loader.isModLoaded("EnderStorage") && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("enderpouch"))
-			if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
-				return false;
-
-		if (ModList.THAUMCRAFT.isLoaded() && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("focuspouch"))
-			if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
-				return false;
-
-		if (ModList.THAUMICTINKER.isLoaded() && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("ichorpouch"))
-			if (!e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound"))
-				return false;
+		if (soulbound && this.isSoulboundable(is, i))
+			return true;
 
 		if (i instanceof ItemShears)
 			return e.type == EnumEnchantmentType.digger || e.type == EnumEnchantmentType.breakable || e.type == EnumEnchantmentType.all;
 
 		return i == Items.book || i == Items.enchanted_book ? true : e.canApply(is);
+	}
+
+	private boolean isSoulboundable(ItemStack is, Item i) {
+		if (ChromaItems.HELP.matchWith(is))
+			return true;
+		if (Loader.isModLoaded("Backpack") && i.getClass().getName().toLowerCase(Locale.ENGLISH).contains("backpack"))
+			return true;
+		if (Loader.isModLoaded("EnderStorage") && i.getClass().getName().toLowerCase(Locale.ENGLISH).contains("enderpouch"))
+			return true;
+		if (ModList.THAUMCRAFT.isLoaded() && i.getClass().getName().toLowerCase(Locale.ENGLISH).contains("focuspouch"))
+			return true;
+		if (ModList.THAUMICTINKER.isLoaded() && i.getClass().getName().toLowerCase(Locale.ENGLISH).contains("ichorpouch"))
+			return true;
+		return false;
 	}
 
 	private void applyEnchants() {

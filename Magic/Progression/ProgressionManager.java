@@ -278,6 +278,7 @@ public class ProgressionManager implements ProgressRegistry {
 		nonGatingProgress.put(ProgressStage.NETHER, ResearchLevel.RUNECRAFT);
 		nonGatingProgress.put(ProgressStage.END, ResearchLevel.MULTICRAFT);
 		nonGatingProgress.put(ProgressStage.NODE, ResearchLevel.CTM);
+		nonGatingProgress.put(ProgressStage.MYST, ResearchLevel.CTM);
 
 		this.addChainedProgression(ProgressStage.BYPASSWEAK, ProgressStage.BLOWREPEATER, false, false);
 		this.addChainedProgression(ProgressStage.TUNECAST, ProgressStage.BYPASSWEAK, true, false, ProgressStage.BLOWREPEATER);

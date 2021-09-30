@@ -104,6 +104,13 @@ public class BiomeStructure extends FragmentStructureWithBonusLoot {
 		array.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata());
 		//ControllerDelegateCallback del = new ControllerDelegateCallback(c);
 		this.addCallback(c, new PuzzleCacheCallback(puzzle));
+		for (int j = 5; j <= 9; j++) {
+			for (int i = -6; i <= 6; i++) {
+				for (int k = -6; k <= 6; k++) {
+					array.setBlock(x+i, y+j, z+k, Blocks.air);
+				}
+			}
+		}
 		for (int j = -2; j <= 6; j++) {
 			int r = j == -2 ? 1 : 2;
 			for (int i = -r; i <= r; i++) {

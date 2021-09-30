@@ -57,7 +57,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 
 
-@Strippable(value={"appeng.api.networking.security.IActionHost"})
+@Strippable(value={"appeng.api.networking.security.IActionHost"}) //implement IMEInventoryHandler ?
 public abstract class TileEntityMassStorage extends TileEntityChromaticBase implements IInventory, IActionHost, BreakAction, ConditionBreakDropsInventory {
 
 	private static final HashMap<UUID, ArrayList<ItemStack>> itemData = new HashMap();
@@ -403,6 +403,10 @@ public abstract class TileEntityMassStorage extends TileEntityChromaticBase impl
 
 	}
 
+	protected void onRemoveItem(ItemStack is) {
+
+	}
+
 	private void removeItem(int slot) {
 		if (worldObj.isRemote)
 			return;
@@ -413,8 +417,13 @@ public abstract class TileEntityMassStorage extends TileEntityChromaticBase impl
 			WorldToolCrateData.initItemData(worldObj).setDirty(true);
 		KeyedItemStack ks = this.key(is);
 		types.subtract(ks, is.stackSize);
+		this.onRemoveItem(is);
 		if (worldObj != null)
 			this.syncAllData(false);
+	}
+
+	public final boolean isEmpty() {
+		return this.getItems().isEmpty();
 	}
 
 	protected abstract KeyedItemStack key(ItemStack is);

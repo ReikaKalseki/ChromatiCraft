@@ -1001,6 +1001,10 @@ public class RecipesCastingTable implements CastingAPI {
 				g = ForestryHandler.CraftingMaterials.WOVENSILK.getItem();
 			if (g2 == null)
 				g2 = ChromaStacks.bindingCrystal;
+			if (g instanceof Item)
+				g = new ItemStack((Item)g, 1, OreDictionary.WILDCARD_VALUE);
+			if (g2 instanceof Item)
+				g2 = new ItemStack((Item)g2, 1, OreDictionary.WILDCARD_VALUE);
 			sr = new ShapedOreRecipe(is, "aga", "pcp", "qwq", 'q', new ItemStack(Blocks.quartz_block), 'p', ModList.APPENG.isLoaded() ? AppEngHandler.getInstance().get64KStorage() : "ingotBronze", 'a', g2, 'g', g, 'c', ChromaTiles.TOOLSTORAGE.getCraftedProduct(), 'w', "ingotBronze");
 			this.addRecipe(new BeeStorageRecipe(is, sr));
 		}
@@ -1100,14 +1104,16 @@ public class RecipesCastingTable implements CastingAPI {
 
 	public CastingRecipe getRecipe(TileEntityCastingTable table, ArrayList<RecipeType> type) {
 		ArrayList<CastingRecipe> li = new ArrayList();
-		for (int i = 0; i < type.size(); i++) {
-			ArrayList<CastingRecipe> list = recipes.get(type.get(i));
-			if (list != null)
-				li.addAll(list);
-		}
-		for (CastingRecipe r : li) {
-			if (r.match(table))
-				return r;
+		Collections.sort(type);
+		Collections.reverse(type);
+		for (RecipeType rt : type) {
+			ArrayList<CastingRecipe> list = recipes.get(rt);
+			if (list == null)
+				continue;
+			for (CastingRecipe r : list) {
+				if (r.match(table))
+					return r;
+			}
 		}
 		return null;
 	}
