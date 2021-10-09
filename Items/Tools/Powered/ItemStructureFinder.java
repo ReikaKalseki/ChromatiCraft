@@ -88,10 +88,11 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 				return false;
 			}
 
-			StructureSeekData loc = DungeonGenerator.instance.getNearestRealStructure(TYPES[type], (WorldServer)world, e.posX, e.posZ, RANGE, false);
+			boolean debug = ReikaObfuscationHelper.isDeObfEnvironment() && KeyWatcher.instance.isKeyDown(e, Key.LCTRL) && ReikaPlayerAPI.isReika(e);
+			StructureSeekData loc = DungeonGenerator.instance.getNearestRealStructure(TYPES[type], (WorldServer)world, e.posX, e.posZ, debug ? 5000 : RANGE, false);
 			if (loc != null) {
 				double dist = loc.location.getDistanceTo(e);
-				double fz = ReikaObfuscationHelper.isDeObfEnvironment() && KeyWatcher.instance.isKeyDown(e, Key.LCTRL) && ReikaPlayerAPI.isReika(e) ? 0 : FUZZ;
+				double fz = debug ? 0 : FUZZ;
 				if (dist <= fz) {
 					double px = ReikaRandomHelper.getRandomPlusMinus(e.posX, fz);
 					double py = ReikaRandomHelper.getRandomPlusMinus(e.posY, fz);
@@ -153,7 +154,7 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 			fx.motionY *= 0.375;
 			fx.motionZ *= 0.375;
 		}
-		if (!genned)
+		if (!genned && !close)
 			fx.setIcon(ChromaIcons.FADE_GENTLE);
 		fx.setLife(l).setScale(sc).setColor(c);
 		if (sy == -50) {

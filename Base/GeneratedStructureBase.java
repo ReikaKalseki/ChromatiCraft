@@ -10,6 +10,7 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
 
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
@@ -89,6 +90,23 @@ public abstract class GeneratedStructureBase extends ColoredStructureBase {
 
 	public final Collection<Coordinate> getCachedBlocks(Block b) {
 		return Collections.unmodifiableCollection(cache.get(b));
+	}
+
+	public final void offset(int x, int y, int z, FilledBlockArray arr) {
+		arr.offset(x, y, z);
+		HashMap<Coordinate, TileCallback> map = new HashMap(callbacks);
+		callbacks.clear();
+		for (Entry<Coordinate, TileCallback> e : map.entrySet()) {
+			callbacks.put(e.getKey().offset(x, y, z), e.getValue());
+		}
+		for (Block b : cache.keySet()) {
+			Collection<Coordinate> li = cache.get(b);
+			Collection<Coordinate> li2 = new ArrayList(li);
+			li.clear();
+			for (Coordinate c : li2) {
+				li.add(c.offset(x, y, z));
+			}
+		}
 	}
 
 }
