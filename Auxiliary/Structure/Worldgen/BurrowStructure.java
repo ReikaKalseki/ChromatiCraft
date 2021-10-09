@@ -17,7 +17,6 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Base.FragmentStructureBase;
 import Reika.ChromatiCraft.Block.BlockChromaDoor;
@@ -192,6 +191,10 @@ public class BurrowStructure extends FragmentStructureBase {
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			if (doorID == null)
 				doorID = UUID.randomUUID();
+			if (te == null) {
+				te = new BlockChromaDoor.TileEntityChromaDoor();
+				world.setTileEntity(x, y, z, te);
+			}
 			((BlockChromaDoor.TileEntityChromaDoor)te).bindUUID(null, doorID, 0);
 		}
 
@@ -202,10 +205,14 @@ public class BurrowStructure extends FragmentStructureBase {
 		@Override
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			if (doorID != null) {
+				if (te == null) {
+					te = new TileEntityChest();
+					world.setTileEntity(x, y, z, te);
+				}
 				((TileEntityChest)te).setInventorySlotContents(world.rand.nextInt(27), this.getDoorKey());
 			}
 			else {
-				ChromatiCraft.logger.logError("Burrow had no door ID!");
+				throw new IllegalStateException("Burrow has no chest ID!");
 			}
 		}
 
@@ -224,7 +231,7 @@ public class BurrowStructure extends FragmentStructureBase {
 			TileEntityLootChest te = (TileEntityLootChest)tile;
 			ReikaInventoryHelper.clearInventory(te);
 
-			int filled = ReikaRandomHelper.getRandomBetween(8, 16); //was 9 & 27, then 18 & 27
+			int filled = ReikaRandomHelper.getRandomBetween(13, 20); //was 9 & 27, then 18 & 27, then 8 & 16, then 12 & 18
 			ArrayList<ItemStack> add = new ArrayList();
 			for (int i = 0; i < filled; i++) {
 				ItemStack is = lootItems.getRandomEntry().getItem();
