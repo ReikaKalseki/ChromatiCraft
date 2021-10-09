@@ -2097,6 +2097,6 @@ public class SnowStructure extends FragmentStructureBase {
 
 	@Override
 	public float getFragmentChance(TileEntityLootChest te, String s, int bonus, Random r) {
-		return 0.7F;
+		return bonus > 1 ? 0.875F : 0.7F;
 	}
 }

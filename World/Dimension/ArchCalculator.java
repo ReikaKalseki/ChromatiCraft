@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2018
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -81,7 +81,7 @@ public class ArchCalculator extends ThreadedGenerator {
 		private final HashSet<Coordinate> coords = new HashSet();
 
 		private Arch(int x, int z, double ca, double ia, double da, double r, double rv, double d) {
-			this(x, TerrainGenChromaIslands.MIN_FLOOR_OCEAN ,z, ca, ia, da, r, rv, d);
+			this(x, TerrainGenChromaIslands.MIN_FLOOR_OCEAN, z, ca, ia, da, r, rv, d);
 		}
 
 		public Arch(int x, int y, int z, double ca, double ia, double da, double r, double rv, double d) {

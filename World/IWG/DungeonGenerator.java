@@ -88,11 +88,13 @@ import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper.WorldID;
 import Reika.DragonAPI.ModInteract.DeepInteract.PlanetDimensionHandler;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
+import Reika.Satisforestry.API.SFAPI;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
@@ -120,7 +122,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		for (Entry<ChromaStructures, VoronoiNoiseGenerator> e : structs.entrySet()) {
 			VoronoiNoiseGenerator v = e.getValue();
 			ChromaStructures s = e.getKey();
-			long sd = world.getSeed() ^ (s.ordinal()*41381);
+			WorldID id = ReikaWorldHelper.getCurrentWorldID(world);
+			long sd = world.getSeed() ^ (s.ordinal()*41381) ^ ~id.worldCreationTime;
 			if (v == null || v.seed != sd) {
 				v = (VoronoiNoiseGenerator)new VoronoiNoiseGenerator(sd ^ (ReikaFileReader.getRealPath(world.getSaveHandler().getWorldDirectory()).hashCode() + s.ordinal())).setFrequency(0.75D/this.getNoiseScale(s));
 				v.randomFactor = 0.55;
@@ -506,7 +509,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					break;
 				}
 				case BURROW: {
-					int y = world.getTopSolidOrLiquidBlock(x, z)-1;
+					int y = this.getTop(world, x, z)-1;
 					CrystalElement e = CrystalElement.randomElement();
 					FilledBlockArray arr = ChromaStructures.BURROW.getArray(world, x, y, z, r, e);
 					if (this.isValidBurrowLocation(world, x, y, z, arr)) {
@@ -551,7 +554,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				}
 				case OCEAN: {
 					int d = 3;
-					int y = world.getTopSolidOrLiquidBlock(x, z)-d;
+					int y = this.getTop(world, x, z)-d;
 					Block b = world.getBlock(x, y+d, z);
 					if (b == Blocks.water || b == Blocks.flowing_water) {
 						//ReikaJavaLibrary.pConsole("Attempting gen @ "+x+", "+y+", "+z);
@@ -586,7 +589,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					break;
 				}
 				case DESERT: {
-					int y = world.getTopSolidOrLiquidBlock(x, z);
+					int y = this.getTop(world, x, z);
 					if (world.getBlock(x, y-1, z) != Blocks.sand)
 						continue;
 
@@ -630,7 +633,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 							}
 							for (int k1 = struct.getMinX(); k1 <= struct.getMaxX(); k1++) {
 								for (int k2 = struct.getMinZ(); k2 <= struct.getMaxZ(); k2++) {
-									Coordinate c = new Coordinate(k1, world.getTopSolidOrLiquidBlock(k1, k2), k2);
+									Coordinate c = new Coordinate(k1, this.getTop(world, k1, k2), k2);
 									if (c.getBlock(world) == Blocks.air && c.offset(0, -1, 0).getBlock(world) == Blocks.sand && ReikaRandomHelper.doWithChance(2)) {
 										if (c.offset(1, 0, 0).getBlock(world) == Blocks.air && c.offset(-1, 0, 0).getBlock(world) == Blocks.air) {
 											if (c.offset(0, 0, 1).getBlock(world) == Blocks.air && c.offset(0, 0, -1).getBlock(world) == Blocks.air) {
@@ -652,10 +655,10 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					break;
 				}
 				case SNOWSTRUCT: {
-					int y = world.getTopSolidOrLiquidBlock(x, z)-1;
+					int y = this.getTop(world, x, z)-1;
 					FilledBlockArray arr = ChromaStructures.SNOWSTRUCT.getArray(world, x, y, z, r);
 					if (this.isValidSnowStructLocation(world, x, y, z, arr)) {
-						arr.offset(0, -6, 0);
+						((GeneratedStructureBase)s.getStructure()).offset(0, -6, 0, arr);
 						arr.place(2);
 						TileEntityStructControl te = null;
 						try {
@@ -681,8 +684,9 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					break;
 				}
 				case BIOMEFRAG: {
-					int y = world.getTopSolidOrLiquidBlock(x, z)-5;
+					int y = this.getTop(world, x, z)-5;
 					FilledBlockArray arr = ChromaStructures.BIOMEFRAG.getArray(world, x, y, z, r);
+					arr.sink(world, Material.wood, Material.leaves, Material.plants, Material.gourd, Material.water, Material.lava);
 					if (this.isValidBiomeStructLocation(world, x, y, z, arr)) {
 						arr.place(2);
 						TileEntityStructControl te = null;
@@ -697,7 +701,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						catch (Exception e) {
 							((GeneratedStructureBase)s.getStructure()).addError(new Exception("Failed to place controller @ "+x+", "+y+", "+z, e));
 						}
-						this.modifyBlocks(s, arr, r, Modify.MOSSIFY, Modify.GRASSDIRT, Modify.ADJTREES2);
+						this.modifyBlocks(s, arr, r, Modify.MOSSIFY, Modify.GRASSDIRT, Modify.ADJTREES2, Modify.CLEANENTRANCE);
 						this.populateChests(s, arr, r);
 						((GeneratedStructureBase)s.getStructure()).runCallbacks(world, r);
 						flag = true;
@@ -716,6 +720,18 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		return null;
 	}
 
+	private int getTop(World world, int x, int z) {
+		int y = world.getTopSolidOrLiquidBlock(x, z);
+		if (ModList.SATISFORESTRY.isLoaded())
+			y = Math.min(y, SFAPI.biomeHandler.getTrueTopAt(world, x, z));
+		Block b = world.getBlock(x, y, z);
+		while (b.isAir(world, x, y, z) || b.isWood(world, x, y, z) || b.isLeaves(world, x, y, z)) {
+			y--;
+			b = world.getBlock(x, y, z);
+		}
+		return y+1;
+	}
+
 	private void logErrors(World world, int x, int y, int z, ChromaStructures s, TileEntityStructControl te) {
 		Collection<Exception> errors = ((GeneratedStructureBase)s.getStructure()).getErrors();
 		if (!errors.isEmpty()) {/*
@@ -728,7 +744,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			if (ep != null)
 				ReikaChatHelper.sendChatToPlayer(ep, "Structure "+s+" encountered "+errors.size()+" errors during generation. Check your log for details. Error ID: "+id);
 			ChromatiCraft.logger.logError("Structure "+s+" encountered "+errors.size()+" errors during generation @ "+x+", "+y+", "+z+"; Error ID: "+id);
-			int top = world.getTopSolidOrLiquidBlock(x, z)-1;
+			int top = this.getTop(world, x, z)-1;
 			ReikaJavaLibrary.pConsole("Regional metadata: Biome - "+world.getBiomeGenForCoords(x, z)+"; top block: "+BlockKey.getAt(world, x, top, z)+" @ y="+top+"; block ="+BlockKey.getAt(world, x, y, z));
 			ReikaJavaLibrary.pConsole("Error list:");
 			for (Exception e : errors) {
@@ -963,6 +979,34 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					}
 					break;
 				case CLEANENTRANCE:
+					if (s == ChromaStructures.BIOMEFRAG) {
+						for (int dx = arr.getMinX()-2; dx <= arr.getMaxX()+2; dx++) {
+							for (int dz = arr.getMinZ()-2; dz <= arr.getMaxZ()+2; dz++) {
+								if (dx < arr.getMinX() || dx > arr.getMaxX() || dz < arr.getMinZ() || dz > arr.getMaxZ()) {
+									int ymin = arr.getMaxY()-3;
+									if (dx >= arr.getMinX()-1 && dx <= arr.getMaxX()+1 && dz >= arr.getMinZ()-1 && dz <= arr.getMaxZ()+1) {
+										ymin -= 2;
+									}
+									int y0 = arr.getMaxY();
+									Block b0 = arr.world.getBlock(dx, y0, dz);
+									Block b = arr.world.getBlock(dx, y0+1, dz);
+									if (b.isWood(arr.world, dx, y0+1, dz) || b.isLeaves(arr.world, dx, y0+1, dz) || b0.isWood(arr.world, dx, y0, dz) || b0.isLeaves(arr.world, dx, y0, dz)) {
+										continue;
+									}
+									for (int dy = y0; dy >= ymin; dy--) {
+										b = arr.world.getBlock(dx, dy, dz);
+										if (ReikaWorldHelper.softBlocks(arr.world, dx, dy, dz) || b == Blocks.dirt || b == Blocks.grass || b.getMaterial() == Material.ground) {
+											arr.world.setBlock(dx, dy, dz, Blocks.air);
+											if (!ReikaWorldHelper.softBlocks(arr.world, dx, dy-1, dz))
+												arr.world.setBlock(dx, dy-1, dz, Blocks.grass);
+										}
+										else
+											break;
+									}
+								}
+							}
+						}
+					}
 					break;
 				case ENCRUSTED:
 					break;
@@ -1000,22 +1044,24 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					break;
 				}
 				case CLEANENTRANCE: {
-					Block b = c.getBlock(arr.world);
-					if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance() && c.getBlockMetadata(arr.world) == BlockType.MOSS.metadata) {
-						Block b3 = c.offset(0, 1, 0).getBlock(arr.world);
-						if (b3 != b) {
-							for (int i = 1; i < 5; i++) {
-								for (int dx = -i; dx <= i; dx++) {
-									for (int dz = -i; dz <= i; dz++) {
-										Coordinate c2 = c.offset(dx, i, dz);
-										Block b2 = c2.getBlock(arr.world);
-										if (b2 == Blocks.grass || b2.getMaterial() == Material.ground || b2.getMaterial() == Material.plants || b2 == Blocks.stone || b2 == Blocks.snow_layer) {
-											c2.setBlock(arr.world, Blocks.air);
+					if (s == ChromaStructures.SNOWSTRUCT) {
+						Block b = c.getBlock(arr.world);
+						if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance() && c.getBlockMetadata(arr.world) == BlockType.MOSS.metadata) {
+							Block b3 = c.offset(0, 1, 0).getBlock(arr.world);
+							if (b3 != b) {
+								for (int i = 1; i < 5; i++) {
+									for (int dx = -i; dx <= i; dx++) {
+										for (int dz = -i; dz <= i; dz++) {
+											Coordinate c2 = c.offset(dx, i, dz);
+											Block b2 = c2.getBlock(arr.world);
+											if (b2 == Blocks.grass || b2.getMaterial() == Material.ground || b2.getMaterial() == Material.plants || b2 == Blocks.stone || b2 == Blocks.snow_layer) {
+												c2.setBlock(arr.world, Blocks.air);
+											}
 										}
 									}
 								}
+								return true;
 							}
-							return true;
 						}
 					}
 					break;
@@ -1147,6 +1193,9 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						int bonus = ((FragmentStructureBase)struct.getStructure()).getChestYield(c, te, arr, r);
 						this.populateChest(c, te, struct, arr, bonus, r);
 					}
+					else {
+						ChromatiCraft.logger.logError("Structure "+struct+" gen in chest "+te+" @ "+c+" failed because is not untouched worldgen.");
+					}
 				}
 			}
 		}
@@ -1191,7 +1240,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		 */
 		for (int x = arr.getMinX()-r; x <= arr.getMaxX()+r; x++) {
 			for (int z = arr.getMinZ()-r; z <= arr.getMaxZ()+r; z++) {
-				int top = arr.world.getTopSolidOrLiquidBlock(x, z)-1;
+				int top = this.getTop(arr.world, x, z)-1;
 				if (arr.world.getBlock(x, top, z) != Blocks.snow_layer && arr.world.getBlock(x, top+1, z) == Blocks.air) {
 					arr.world.setBlock(x, top+1, z, Blocks.snow_layer);
 				}
@@ -1263,7 +1312,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			Block b = world.getBlock(dx, dy, dz);
 			if (b == ChromaBlocks.CLIFFSTONE.getBlockInstance())
 				return false;
-			if (world.getTopSolidOrLiquidBlock(dx, dz) < y-2)
+			if (this.getTop(world, dx, dz) < y-2)
 				return false;
 			if (arr.hasBlockAt(dx, dy, dz, Blocks.stone) || arr.hasBlockAt(dx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance())) {
 				if (b.isAir(world, dx, dy, dz) || ReikaWorldHelper.checkForAdjMaterial(world, dx, dy, dz, Material.air) != null) {
@@ -1313,7 +1362,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				ChromatiCraft.logger.debug("Ocean Temple generation @ "+x+", "+y+", "+z+" failed: Intersects other structure");
 				return false;
 			}
-			if (world.getTopSolidOrLiquidBlock(c.xCoord, c.zCoord) <= y) {
+			if (this.getTop(world, c.xCoord, c.zCoord) <= y) {
 				ChromatiCraft.logger.debug("Ocean Temple generation @ "+x+", "+y+", "+z+" failed: Extends out of water");
 				return false;
 			}
@@ -1349,10 +1398,10 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	}
 
 	private boolean isValidSnowStructLocation(World world, int x, int y, int z, FilledBlockArray arr) {
-		int h1 = world.getTopSolidOrLiquidBlock(arr.getMinX(), arr.getMinZ());
-		int h2 = world.getTopSolidOrLiquidBlock(arr.getMaxX(), arr.getMinZ());
-		int h3 = world.getTopSolidOrLiquidBlock(arr.getMinX(), arr.getMaxZ());
-		int h4 = world.getTopSolidOrLiquidBlock(arr.getMaxX(), arr.getMaxZ());
+		int h1 = this.getTop(world, arr.getMinX(), arr.getMinZ());
+		int h2 = this.getTop(world, arr.getMaxX(), arr.getMinZ());
+		int h3 = this.getTop(world, arr.getMinX(), arr.getMaxZ());
+		int h4 = this.getTop(world, arr.getMaxX(), arr.getMaxZ());
 		int max = ReikaMathLibrary.multiMax(h1, h2, h3, h4);
 		int min = ReikaMathLibrary.multiMin(h1, h2, h3, h4);
 		if (Math.abs(max-min) > 2)
@@ -1377,10 +1426,10 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	}
 
 	private boolean isValidBiomeStructLocation(World world, int x, int y, int z, FilledBlockArray arr) {
-		int h1 = world.getTopSolidOrLiquidBlock(arr.getMinX(), arr.getMinZ());
-		int h2 = world.getTopSolidOrLiquidBlock(arr.getMaxX(), arr.getMinZ());
-		int h3 = world.getTopSolidOrLiquidBlock(arr.getMinX(), arr.getMaxZ());
-		int h4 = world.getTopSolidOrLiquidBlock(arr.getMaxX(), arr.getMaxZ());
+		int h1 = this.getTop(world, arr.getMinX(), arr.getMinZ());
+		int h2 = this.getTop(world, arr.getMaxX(), arr.getMinZ());
+		int h3 = this.getTop(world, arr.getMinX(), arr.getMaxZ());
+		int h4 = this.getTop(world, arr.getMaxX(), arr.getMaxZ());
 		int max = ReikaMathLibrary.multiMax(h1, h2, h3, h4);
 		int min = ReikaMathLibrary.multiMin(h1, h2, h3, h4);
 		if (Math.abs(max-min) > 2)
