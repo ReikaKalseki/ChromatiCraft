@@ -92,7 +92,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 			TRANSPARENCY2("net.minecraft.block.BlockGrass", "alh"),
 			TRANSPARENCY3("net.minecraft.block.BlockLiquid", "alw"),
 			TRANSPARENCY4("net.minecraftforge.fluids.BlockFluidBase"),
-			UPDATEDCLIMATE("climateControl.biomeSettings.ReikasPackage"),
+			//---UPDATEDCLIMATE("climateControl.biomeSettings.ReikasPackage"),
 			//FLOWERCACHE("Reika.ChromatiCraft.ModInterface.Bees.EfficientFlowerCache"),
 			TEXTURELOAD("net.minecraft.client.renderer.texture.TextureAtlasSprite", "bqd"),
 			LOREHANDLER("Reika.ChromatiCraft.Magic.Lore.LoreScripts"),
@@ -359,23 +359,11 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 
 						break;
 					}
-					case UPDATEDCLIMATE: {
-						MethodNode m = ReikaASMHelper.getMethodByName(cn, "freshBiomeSetting", "()LclimateControl/api/BiomeSettings;");
-						for (int i = 0; i < m.instructions.size(); i++) {
-							AbstractInsnNode ain = m.instructions.get(i);
-							if (ain.getOpcode() == Opcodes.NEW) {
-								TypeInsnNode tin = (TypeInsnNode)ain;
-								tin.desc = "Reika/ChromatiCraft/ModInterface/ChromaClimateControl";
-								ReikaASMHelper.log("Successfully applied "+this+" ASM handler 1!");
-							}
-							else if (ain.getOpcode() == Opcodes.INVOKESPECIAL) {
-								MethodInsnNode min = (MethodInsnNode)ain;
-								min.owner = "Reika/ChromatiCraft/ModInterface/ChromaClimateControl";
-								ReikaASMHelper.log("Successfully applied "+this+" ASM handler 2!");
-							}
-						}
-						break;
-					}/*
+					//case UPDATEDCLIMATE: {
+					//
+					//	break;
+					//}
+					/*
 					case FLOWERCACHE: {
 						cn.superName = "forestry/apiculture/HasFlowersCache";
 

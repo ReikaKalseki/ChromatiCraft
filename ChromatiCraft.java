@@ -200,6 +200,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 import Reika.DragonAPI.ModInteract.BannedItemReader;
 import Reika.DragonAPI.ModInteract.ItemStackRepository;
+import Reika.DragonAPI.ModInteract.ReikaClimateControl;
 import Reika.DragonAPI.ModInteract.ReikaEEHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
 import Reika.DragonAPI.ModInteract.DeepInteract.MTInteractionManager;
@@ -240,7 +241,7 @@ import ttftcuts.atg.api.ATGBiomes;
 
 
 
-@Mod( modid = "ChromatiCraft", name="ChromatiCraft", version = "v@MAJOR_VERSION@@MINOR_VERSION@", certificateFingerprint = "@GET_FINGERPRINT@", dependencies="required-after:DragonAPI")
+@Mod( modid = "ChromatiCraft", name="ChromatiCraft", version = "v@MAJOR_VERSION@@MINOR_VERSION@", certificateFingerprint = "@GET_FINGERPRINT@", dependencies="required-after:DragonAPI;before:climatecontrol")
 
 public class ChromatiCraft extends DragonAPIMod {
 	public static final String packetChannel = "ChromaData";
@@ -541,6 +542,10 @@ public class ChromatiCraft extends DragonAPIMod {
 		//SpecialBiomePlacementRegistry.instance.registerID(this, Category.COOL, 3, glowingcliffs.biomeID);
 		BiomeDictionary.registerBiomeType(glowingcliffs, BiomeDictionary.Type.MOUNTAIN, BiomeDictionary.Type.LUSH, BiomeDictionary.Type.MAGICAL, BiomeDictionary.Type.BEACH, BiomeDictionary.Type.WET);
 		BiomeDictionary.registerBiomeType(glowingcliffsEdge, BiomeDictionary.Type.MOUNTAIN, BiomeDictionary.Type.LUSH, BiomeDictionary.Type.MAGICAL, BiomeDictionary.Type.BEACH, BiomeDictionary.Type.WET);
+
+		ReikaClimateControl.registerBiome(rainbowforest, 4, true, "MEDIUM");
+		ReikaClimateControl.registerBiome(enderforest, 5, true, "MEDIUM");
+		ReikaClimateControl.registerBiome(glowingcliffs, 1, false, "MEDIUM");
 
 		ChromaDimensionManager.initialize();
 
