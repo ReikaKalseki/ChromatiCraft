@@ -75,6 +75,7 @@ public abstract class GeneratedStructureBase extends ColoredStructureBase {
 	}
 
 	public final void runCallbacks(World world, Random rand) {
+		this.preCallbacks(world, rand);
 		for (Entry<Coordinate, TileCallback> e : callbacks.entrySet()) {
 			Coordinate c = e.getKey();
 			try {
@@ -84,6 +85,10 @@ public abstract class GeneratedStructureBase extends ColoredStructureBase {
 				failures.add(new Exception("Threw exception running tile callback @ "+e, ex));
 			}
 		}
+	}
+
+	protected void preCallbacks(World world, Random rand) {
+
 	}
 
 	public abstract int getStructureVersion();

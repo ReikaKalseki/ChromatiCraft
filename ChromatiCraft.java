@@ -228,6 +228,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
 import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
@@ -915,6 +916,11 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	public static boolean isCCBiome(BiomeGenBase b) {
 		return isRainbowForest(b) || isEnderForest(b) || BiomeGlowingCliffs.isGlowingCliffs(b);
+	}
+
+	@EventHandler
+	public void preServer(FMLServerAboutToStartEvent evt) {
+		DungeonGenerator.instance.updateStatusCacheFile();
 	}
 
 	@EventHandler

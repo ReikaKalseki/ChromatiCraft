@@ -414,6 +414,10 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 		public void bindUUID(EntityPlayer ep, UUID id, int flags) {
 			for (Coordinate c : this.getDoorBlocks()) {
 				TileEntityChromaDoor te = (TileEntityChromaDoor)c.getTileEntity(worldObj);
+				if (te == null) {
+					te = new TileEntityChromaDoor();
+					worldObj.setTileEntity(c.xCoord, c.yCoord, c.zCoord, te);
+				}
 				if (ep == null || te.isOwner(ep)) {
 					te.uid = id;
 					te.autoOpen = (flags & 1) > 0;

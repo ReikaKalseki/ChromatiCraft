@@ -104,6 +104,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 
 	private final ForgeDirection[] dirs = ForgeDirection.values();
 
+	private File statusCacheFile;
+
 	private EnumMap<ChromaStructures, VoronoiNoiseGenerator> structs = new EnumMap(ChromaStructures.class);
 	private EnumMap<ChromaStructures, HashMap<WorldChunk, StructureGenStatus>> statusMap = new EnumMap(ChromaStructures.class);
 	private EnumMap<ChromaStructures, TileEntityCache<StructureGenData>> structureMap = new EnumMap(ChromaStructures.class);
@@ -299,7 +301,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 
 	private void loadStatusCache() throws IOException {
 		HashMap<WorldChunk, StructureGenStatus> ret = new HashMap();
-		SimpleNBTFile nf = new SimpleNBTFile(this.getStatusCacheFile());
+		SimpleNBTFile nf = new SimpleNBTFile(statusCacheFile);
 		nf.load();
 		if (nf.data != null) {
 			this.loadStatusCacheFromNBT(nf.data);
@@ -311,7 +313,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		if (evt.world.provider.dimensionId == 0) {
 			NBTTagCompound tag = new NBTTagCompound();
 			this.writeStatusCacheToNBT(tag);
-			SimpleNBTFile nf = new SimpleNBTFile(this.getStatusCacheFile());
+			SimpleNBTFile nf = new SimpleNBTFile(statusCacheFile);
 			nf.data = tag;
 			nf.save();
 		}
@@ -352,8 +354,11 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 	}
 
-	private File getStatusCacheFile() {
-		return new File(DimensionManager.getCurrentSaveRootDirectory(), "ChromatiCraft_Data/StructureStatus.dat");
+	public void updateStatusCacheFile() {
+		File f = DimensionManager.getCurrentSaveRootDirectory();
+		if (f == null)
+			throw new IllegalStateException("Could not find a world to define structure status cache!");
+		statusCacheFile = new File(f, "ChromatiCraft_Data/StructureStatus.dat");
 	}
 
 	private int getNoiseScale(ChromaStructures s) {

@@ -607,7 +607,7 @@ public class ChromaAux {
 						}
 
 						boolean flag = true;
-						if (ChromaDimensionManager.isBlockedAir(world, x, y, z, block, ep)) {
+						if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue() && ChromaDimensionManager.isBlockedAir(world, x, y, z, block, ep)) {
 							Blocks.stone.addCollisionBoxesToList(world, x, y, z, box, li, ep);
 							ChromaDimensionManager.onPlayerBlockedFromBiome(world, x, y, z, ep);
 							flag = false;

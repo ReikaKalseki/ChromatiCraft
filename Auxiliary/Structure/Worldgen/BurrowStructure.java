@@ -50,6 +50,8 @@ public class BurrowStructure extends FragmentStructureBase {
 	private static WeightedRandom<OreType> furnaceOres = new WeightedRandom();
 	private static WeightedRandom<ItemDrop> lootItems = new WeightedRandom();
 
+	private UUID doorID;
+
 	public static void buildLootCache() {
 		furnaceOres.addEntry(ReikaOreHelper.IRON, 40);
 		furnaceOres.addEntry(ReikaOreHelper.GOLD, 15);
@@ -189,13 +191,16 @@ public class BurrowStructure extends FragmentStructureBase {
 
 		@Override
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
-			if (doorID == null)
-				doorID = UUID.randomUUID();
-			if (te == null) {
-				te = new BlockChromaDoor.TileEntityChromaDoor();
-				world.setTileEntity(x, y, z, te);
+			if (doorID != null) {
+				if (te == null) {
+					te = new BlockChromaDoor.TileEntityChromaDoor();
+					world.setTileEntity(x, y, z, te);
+				}
+				((BlockChromaDoor.TileEntityChromaDoor)te).bindUUID(null, doorID, 0);
 			}
-			((BlockChromaDoor.TileEntityChromaDoor)te).bindUUID(null, doorID, 0);
+			else {
+				throw new IllegalStateException("Burrow has no chest ID!");
+			}
 		}
 
 	};
@@ -229,6 +234,10 @@ public class BurrowStructure extends FragmentStructureBase {
 		@Override
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity tile) {
 			TileEntityLootChest te = (TileEntityLootChest)tile;
+			if (te == null) {
+				te = new TileEntityLootChest();
+				world.setTileEntity(x, y, z, te);
+			}
 			ReikaInventoryHelper.clearInventory(te);
 
 			int filled = ReikaRandomHelper.getRandomBetween(13, 20); //was 9 & 27, then 18 & 27, then 8 & 16, then 12 & 18
@@ -277,7 +286,10 @@ public class BurrowStructure extends FragmentStructureBase {
 
 	};
 
-	private UUID doorID;
+	@Override
+	protected void preCallbacks(World world, Random rand) {
+		doorID = UUID.randomUUID();
+	}
 
 	@Override
 	public Coordinate getControllerRelativeLocation() {
@@ -904,12 +916,12 @@ public class BurrowStructure extends FragmentStructureBase {
 
 	@Override
 	public int modifyLootCount(TileEntityLootChest tileEntityLootChest, String s, int bonus, Random r, int count) {
-		return (int)(count*(0.4+bonus*0.1F));
+		return (int)(count*(0.4+bonus*0.2F));
 	}
 
 	@Override
 	public float getFragmentChance(TileEntityLootChest te, String s, int bonus, Random r) {
-		return 0.6F+bonus*0.1F;
+		return 0.667F+bonus*0.208F;
 	}
 
 	@Override

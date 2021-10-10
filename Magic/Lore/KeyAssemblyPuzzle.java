@@ -45,7 +45,6 @@ import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -111,7 +110,7 @@ public class KeyAssemblyPuzzle {
 		long seed1 = ep.worldObj.getSeed();
 		UUID seed0 = ep.getPersistentID();
 		long seed2 = ReikaMathLibrary.cantorCombine(seed1, seed0.getMostSignificantBits(), seed0.getLeastSignificantBits());
-		long seed3 = seed2 ^ ReikaWorldHelper.getCurrentWorldID(ep.worldObj).worldCreationTime;
+		long seed3 = seed2;//CANNOT DO ON CLIENT// ^ ReikaWorldHelper.getCurrentWorldID(ep.worldObj).worldCreationTime;
 		return seed3;
 	}
 

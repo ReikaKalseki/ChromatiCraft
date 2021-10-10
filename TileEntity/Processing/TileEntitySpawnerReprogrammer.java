@@ -198,7 +198,7 @@ public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered imple
 			disallowedMobParents.add(Class.forName("noppes.npcs.entity.EntityNPCInterface"));
 		}
 		catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			//ReflectiveFailureTracker.instance.lo
 		}
 	}
