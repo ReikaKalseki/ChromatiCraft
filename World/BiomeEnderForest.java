@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Math.Noise.NoiseGeneratorBase;
 import Reika.DragonAPI.Instantiable.Math.Noise.Simplex3DGenerator;
@@ -48,6 +49,8 @@ public class BiomeEnderForest extends BiomeGenForest implements CustomMapColorBi
 	private final WorldGenAbstractTree enderOakNarrow = new EnderOakGenerator(6, 12, 6, 15, 1, 2, 0.35F, 4, 0F);
 
 	private final WeightedRandom<WorldGenAbstractTree> treeTypes = new WeightedRandom();
+
+	private final int[][] colorMap = new int[512][512];
 
 	public BiomeEnderForest(int id) {
 		super(id, 0);
@@ -88,8 +91,7 @@ public class BiomeEnderForest extends BiomeGenForest implements CustomMapColorBi
 	}
 
 	@Override
-	public int getBiomeGrassColor(int x, int y, int z)
-	{
+	public int getBiomeGrassColor(int x, int y, int z) 	{
 		if (ChromaOptions.ENDERCOLORING.getState()) {
 			return ReikaColorAPI.RGBtoHex(255, 200, 255);
 		}
@@ -104,7 +106,13 @@ public class BiomeEnderForest extends BiomeGenForest implements CustomMapColorBi
 			return ReikaColorAPI.RGBtoHex(255, 150, 255);
 		}
 		else {
-			return ReikaColorAPI.mixColors(BiomeGenBase.forest.getBiomeFoliageColor(x, y, z), BiomeGenBase.icePlains.getBiomeFoliageColor(x, y, z), this.getMix(x, y, z));
+			Coordinate loc = new Coordinate(x, y, z);
+			Integer c = colorMap.get(c);
+			if (c == null) {
+				c = ReikaColorAPI.mixColors(BiomeGenBase.forest.getBiomeFoliageColor(x, y, z), BiomeGenBase.icePlains.getBiomeFoliageColor(x, y, z), this.getMix(x, y, z));
+				colorMap.put(loc, c);
+			}
+			return c;
 		}
 	}
 

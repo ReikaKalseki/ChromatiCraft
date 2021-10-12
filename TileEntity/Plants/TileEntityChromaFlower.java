@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -30,6 +30,11 @@ public class TileEntityChromaFlower extends TileEntityChromaticBase {
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 
+	}
+
+	@Override
+	protected boolean isTickingTE() {
+		return false;
 	}
 
 	@Override

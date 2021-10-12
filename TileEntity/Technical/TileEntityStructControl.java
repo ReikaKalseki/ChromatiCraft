@@ -157,9 +157,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		if (struct == ChromaStructures.OCEAN) {
 			if (trapTick > 0) {
 				trapTick--;
-			}
-			else {
-				this.resetOceanTrap();
+				if (trapTick == 0)
+					this.resetOceanTrap();
 			}
 		}
 	}

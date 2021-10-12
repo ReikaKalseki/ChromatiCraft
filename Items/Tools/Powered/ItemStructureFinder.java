@@ -88,8 +88,12 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 				return false;
 			}
 
+			ChromaStructures s = TYPES[type];
+			double r = RANGE*this.getSightRangeModifier(s);
 			boolean debug = ReikaObfuscationHelper.isDeObfEnvironment() && KeyWatcher.instance.isKeyDown(e, Key.LCTRL) && ReikaPlayerAPI.isReika(e);
-			StructureSeekData loc = DungeonGenerator.instance.getNearestRealStructure(TYPES[type], (WorldServer)world, e.posX, e.posZ, debug ? 5000 : RANGE, false);
+			if (debug)
+				r = 5000;
+			StructureSeekData loc = DungeonGenerator.instance.getNearestRealStructure(s, (WorldServer)world, e.posX, e.posZ, r, false);
 			if (loc != null) {
 				double dist = loc.location.getDistanceTo(e);
 				double fz = debug ? 0 : FUZZ;
@@ -108,6 +112,16 @@ public class ItemStructureFinder extends ItemPoweredChromaTool {
 			}
 		}
 		return true;
+	}
+
+	private double getSightRangeModifier(ChromaStructures s) {
+		switch(s) {
+			case OCEAN:
+			case BIOMEFRAG:
+				return 2;
+			default:
+				return 1;
+		}
 	}
 
 	private void sendParticle(EntityPlayer ep, double sx, double sy, double sz, ChromaStructures s, boolean close, boolean genned) {

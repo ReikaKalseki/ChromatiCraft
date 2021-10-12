@@ -364,15 +364,15 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	private int getNoiseScale(ChromaStructures s) {
 		switch(s) {
 			case DESERT:
-				return 512;
+				return 440; //was 512, but this causes too-rare due to cave req in new voronoi system
 			case OCEAN:
-				return 1024;
+				return 640; //was 1024, but this causes too-rare due to cave req in new voronoi system
 			case CAVERN:
 				return 144;
 			case BURROW:
-				return 256;
+				return 240; //was 256, but this causes too-rare due to cave req in new voronoi system
 			case SNOWSTRUCT:
-				return 768;
+				return 480;  //was 768, but this causes too-rare due to cave req in new voronoi system
 			case BIOMEFRAG:
 				return 440;
 			default:
@@ -438,7 +438,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 
 	private ChunkCoordIntPair tryGenerateInChunksAround(World world, int cx, int cz, Random rnd, ChromaStructures s, int tries) {
 		int r = 16;
-		while (r <= 48) {
+		while (r <= this.getChunkKeepTryingRange(s)) {
 			for (int i = -r; i <= r; i += 16) {
 				for (int k = -r; k <= r; k += 16) {
 					if (i == 0 && k == 0)
@@ -453,6 +453,19 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			r += 16;
 		}
 		return null;
+	}
+
+	private int getChunkKeepTryingRange(ChromaStructures s) {
+		switch(s) {
+			case OCEAN:
+			case SNOWSTRUCT:
+				return 96;
+			case DESERT:
+			case BIOMEFRAG:
+				return 64;
+			default:
+				return 48;
+		}
 	}
 
 	private ChunkCoordIntPair tryGenerateInChunk(World world, int cx, int cz, Random r, ChromaStructures s, int tries) {
@@ -813,7 +826,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			case DESERT:
 				return !ocean && this.isValidBiomeForDesertStruct(b);
 			case SNOWSTRUCT:
-				return !ocean && b.topBlock == Blocks.grass && b.getEnableSnow() && ReikaBiomeHelper.getBiomeDecorator(b).treesPerChunk < 1 && !b.biomeName.toLowerCase(Locale.ENGLISH).contains("forest");
+				return b != BiomeGenBase.biomeList[BiomeGenBase.icePlains.biomeID+128] && !ocean && b.topBlock == Blocks.grass && b.getEnableSnow() && ReikaBiomeHelper.getBiomeDecorator(b).treesPerChunk < 1 && !b.biomeName.toLowerCase(Locale.ENGLISH).contains("forest");
 			case BIOMEFRAG:
 				return ChromatiCraft.isCCBiome(b);
 			default:
@@ -1367,11 +1380,11 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				ChromatiCraft.logger.debug("Ocean Temple generation @ "+x+", "+y+", "+z+" failed: Intersects other structure");
 				return false;
 			}
-			if (this.getTop(world, c.xCoord, c.zCoord) <= y) {
+			if (c.yCoord >= 55 && c.getBlock(world).isAir(world, x, y, z)) {
 				ChromatiCraft.logger.debug("Ocean Temple generation @ "+x+", "+y+", "+z+" failed: Extends out of water");
 				return false;
 			}
-			if (!ReikaBiomeHelper.isOcean(world.getBiomeGenForCoords(c.xCoord, c.zCoord))) {
+			if (!ReikaBiomeHelper.isOcean(c.getBiome(world))) {
 				ChromatiCraft.logger.debug("Ocean Temple generation @ "+x+", "+y+", "+z+" failed: Bounds outside ocean");
 				return false;
 			}
@@ -1487,7 +1500,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		else {
 			usable = this.getBestFromCluster(c);
 			for (WorldLocation loc : c) {
-				if (loc != usable) {
+				if (!usable.equals(loc)) {
 					this.markChunkStatus(world, loc.xCoord >> 4, loc.zCoord >> 4, s, StructureGenStatus.CLUSTERED);
 				}
 			}
