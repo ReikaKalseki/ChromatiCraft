@@ -734,6 +734,7 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 	@SubscribeEvent
 	public void clearOnLogout(ClientDisconnectionFromServerEvent evt) {
 		SkyRiverManagerClient.handleRayClearPacket();
+		ChromatiCraft.enderforest.clearColorCache();
 		if (ModList.VOIDMONSTER.isLoaded())
 			this.clearVoidRituals();
 	}
@@ -741,6 +742,7 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 	@SubscribeEvent
 	public void clearOnLogout(ClientLogoutEvent evt) {
 		SkyRiverManagerClient.handleRayClearPacket();
+		ChromatiCraft.enderforest.clearColorCache();
 		if (ModList.VOIDMONSTER.isLoaded())
 			this.clearVoidRituals();
 	}
@@ -748,6 +750,7 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 	@SubscribeEvent
 	public void clearOnLogout(SinglePlayerLogoutEvent evt) {
 		SkyRiverManagerClient.handleRayClearPacket();
+		ChromatiCraft.enderforest.clearColorCache();
 		if (ModList.VOIDMONSTER.isLoaded())
 			this.clearVoidRituals();
 	}

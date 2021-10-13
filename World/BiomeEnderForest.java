@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
+import java.util.HashMap;
 import java.util.Random;
 
 import net.minecraft.entity.monster.EntityCreeper;
@@ -50,7 +51,7 @@ public class BiomeEnderForest extends BiomeGenForest implements CustomMapColorBi
 
 	private final WeightedRandom<WorldGenAbstractTree> treeTypes = new WeightedRandom();
 
-	private final int[][] colorMap = new int[512][512];
+	private HashMap<Coordinate, Integer> colorMap = new HashMap();
 
 	public BiomeEnderForest(int id) {
 		super(id, 0);
@@ -107,13 +108,17 @@ public class BiomeEnderForest extends BiomeGenForest implements CustomMapColorBi
 		}
 		else {
 			Coordinate loc = new Coordinate(x, y, z);
-			Integer c = colorMap.get(c);
+			Integer c = colorMap.get(loc);
 			if (c == null) {
 				c = ReikaColorAPI.mixColors(BiomeGenBase.forest.getBiomeFoliageColor(x, y, z), BiomeGenBase.icePlains.getBiomeFoliageColor(x, y, z), this.getMix(x, y, z));
 				colorMap.put(loc, c);
 			}
 			return c;
 		}
+	}
+
+	public void clearColorCache() {
+		colorMap.clear();
 	}
 
 	private float getMix(int x, int y, int z) {
