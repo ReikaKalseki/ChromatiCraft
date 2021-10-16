@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
-import java.util.HashMap;
 import java.util.Random;
 
 import net.minecraft.entity.monster.EntityCreeper;
@@ -25,9 +24,8 @@ import net.minecraft.world.gen.feature.WorldGenAbstractTree;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Math.Noise.NoiseGeneratorBase;
 import Reika.DragonAPI.Instantiable.Math.Noise.Simplex3DGenerator;
 import Reika.DragonAPI.Instantiable.Math.Noise.VoronoiNoiseGenerator;
@@ -51,7 +49,7 @@ public class BiomeEnderForest extends BiomeGenForest implements CustomMapColorBi
 
 	private final WeightedRandom<WorldGenAbstractTree> treeTypes = new WeightedRandom();
 
-	private HashMap<Coordinate, Integer> colorMap = new HashMap();
+	//private HashMap<Coordinate, Integer> colorMap = new HashMap();
 
 	public BiomeEnderForest(int id) {
 		super(id, 0);
@@ -97,7 +95,8 @@ public class BiomeEnderForest extends BiomeGenForest implements CustomMapColorBi
 			return ReikaColorAPI.RGBtoHex(255, 200, 255);
 		}
 		else {
-			return ReikaColorAPI.mixColors(BiomeGenBase.forest.getBiomeGrassColor(x, y, z), BiomeGenBase.icePlains.getBiomeGrassColor(x, y, z), this.getMix(x, y, z));
+			//return ReikaColorAPI.mixColors(BiomeGenBase.forest.getBiomeGrassColor(x, y, z), BiomeGenBase.icePlains.getBiomeGrassColor(x, y, z), this.getMix(x, y, z));
+			return ReikaColorAPI.mixColors(BiomeGenBase.forest.getBiomeGrassColor(x, y, z), BiomeGenBase.icePlains.getBiomeGrassColor(x, y, z), DragonAPICore.rand.nextFloat());
 		}
 	}
 
@@ -107,6 +106,7 @@ public class BiomeEnderForest extends BiomeGenForest implements CustomMapColorBi
 			return ReikaColorAPI.RGBtoHex(255, 150, 255);
 		}
 		else {
+			/*
 			Coordinate loc = new Coordinate(x, y, z);
 			Integer c = colorMap.get(loc);
 			if (c == null) {
@@ -114,18 +114,20 @@ public class BiomeEnderForest extends BiomeGenForest implements CustomMapColorBi
 				colorMap.put(loc, c);
 			}
 			return c;
+			 */
+			return ReikaColorAPI.mixColors(BiomeGenBase.forest.getBiomeFoliageColor(x, y, z), BiomeGenBase.icePlains.getBiomeFoliageColor(x, y, z), DragonAPICore.rand.nextFloat());
 		}
 	}
 
 	public void clearColorCache() {
-		colorMap.clear();
+		//colorMap.clear();
 	}
-
+	/*
 	private float getMix(int x, int y, int z) {
 		DecimalPosition root = colorNoise.getClosestRoot(x, y, z);
 		int hash = root.hashCode();
 		return ((hash%10+10)%10)/10F;
-	}
+	}*/
 
 	@Override
 	public int getWaterColorMultiplier() {

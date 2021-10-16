@@ -72,7 +72,6 @@ public class ChromaAspectManager {
 		this.addAspect(CrystalElement.WHITE, Aspect.VOID, Aspect.AIR, Aspect.ORDER);
 		 */
 
-
 		this.addAspectColor(CrystalElement.BLACK, Aspect.DARKNESS);
 		this.addAspectColor(CrystalElement.RED, Aspect.LIFE, Aspect.HUNGER, Aspect.HEAL);
 		this.addAspectColor(CrystalElement.GREEN, Aspect.PLANT, Aspect.POISON, Aspect.EARTH);
