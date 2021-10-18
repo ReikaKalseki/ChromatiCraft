@@ -24,8 +24,8 @@ import net.minecraft.world.gen.feature.WorldGenAbstractTree;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Math.Noise.NoiseGeneratorBase;
 import Reika.DragonAPI.Instantiable.Math.Noise.Simplex3DGenerator;
 import Reika.DragonAPI.Instantiable.Math.Noise.VoronoiNoiseGenerator;
@@ -48,6 +48,7 @@ public class BiomeEnderForest extends BiomeGenForest implements CustomMapColorBi
 	private final WorldGenAbstractTree enderOakNarrow = new EnderOakGenerator(6, 12, 6, 15, 1, 2, 0.35F, 4, 0F);
 
 	private final WeightedRandom<WorldGenAbstractTree> treeTypes = new WeightedRandom();
+	private static final Random colorRand = new Random();
 
 	//private HashMap<Coordinate, Integer> colorMap = new HashMap();
 
@@ -95,8 +96,7 @@ public class BiomeEnderForest extends BiomeGenForest implements CustomMapColorBi
 			return ReikaColorAPI.RGBtoHex(255, 200, 255);
 		}
 		else {
-			//return ReikaColorAPI.mixColors(BiomeGenBase.forest.getBiomeGrassColor(x, y, z), BiomeGenBase.icePlains.getBiomeGrassColor(x, y, z), this.getMix(x, y, z));
-			return ReikaColorAPI.mixColors(BiomeGenBase.forest.getBiomeGrassColor(x, y, z), BiomeGenBase.icePlains.getBiomeGrassColor(x, y, z), DragonAPICore.rand.nextFloat());
+			return ReikaColorAPI.mixColors(BiomeGenBase.forest.getBiomeGrassColor(x, y, z), BiomeGenBase.icePlains.getBiomeGrassColor(x, y, z), this.getMix(x, y, z));
 		}
 	}
 
@@ -115,19 +115,25 @@ public class BiomeEnderForest extends BiomeGenForest implements CustomMapColorBi
 			}
 			return c;
 			 */
-			return ReikaColorAPI.mixColors(BiomeGenBase.forest.getBiomeFoliageColor(x, y, z), BiomeGenBase.icePlains.getBiomeFoliageColor(x, y, z), DragonAPICore.rand.nextFloat());
+			return ReikaColorAPI.mixColors(BiomeGenBase.forest.getBiomeFoliageColor(x, y, z), BiomeGenBase.icePlains.getBiomeFoliageColor(x, y, z), this.getMix(x, y, z));
 		}
 	}
 
 	public void clearColorCache() {
 		//colorMap.clear();
 	}
-	/*
+
 	private float getMix(int x, int y, int z) {
+		colorRand.setSeed(new Coordinate(x/6, y/4, z/6).hashCode());
+		colorRand.nextBoolean();
+		colorRand .nextBoolean();
+		return colorRand.nextFloat();
+		/*
 		DecimalPosition root = colorNoise.getClosestRoot(x, y, z);
 		int hash = root.hashCode();
 		return ((hash%10+10)%10)/10F;
-	}*/
+		 */
+	}
 
 	@Override
 	public int getWaterColorMultiplier() {

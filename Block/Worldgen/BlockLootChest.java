@@ -105,14 +105,12 @@ public class BlockLootChest extends BlockContainer {
 	}
 
 	@Override
-	public void setBlockBoundsBasedOnState(IBlockAccess iba, int x, int y, int z)
-	{
+	public void setBlockBoundsBasedOnState(IBlockAccess iba, int x, int y, int z) {
 		this.setBlockBounds(0.0625F, 0, 0.0625F, 0.9375F, 0.875F, 0.9375F);
 	}
 
 	@Override
-	public void breakBlock(World world, int x, int y, int z, Block b, int meta)
-	{
+	public void breakBlock(World world, int x, int y, int z, Block b, int meta) {
 		ReikaItemHelper.dropInventory(world, x, y, z);
 		super.breakBlock(world, x, y, z, b, meta);
 	}
@@ -135,8 +133,7 @@ public class BlockLootChest extends BlockContainer {
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c)
-	{
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
 		if (world.isRemote)
 			return true;
 		else {
@@ -216,10 +213,15 @@ public class BlockLootChest extends BlockContainer {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase e, ItemStack is)
-	{
+	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase e, ItemStack is) {
 		world.setBlockMetadataWithNotify(x, y, z, ChromaAux.get4SidedMetadataFromPlayerLook(e), 3);
-		((TileEntityLootChest)world.getTileEntity(x, y, z)).placer = e.getUniqueID();
+		if (!world.isRemote) {
+			TileEntityLootChest te = (TileEntityLootChest)world.getTileEntity(x, y, z);
+			if (is.stackTagCompound != null && is.stackTagCompound.hasKey("cached")) {
+				te.readItems(is.stackTagCompound.getTagList("cached", NBTTypes.COMPOUND.ID));
+			}
+			te.placer = e.getUniqueID();
+		}
 	}
 
 	public static void setMaxReach(World world, int x, int y, int z, double max) {
@@ -433,15 +435,7 @@ public class BlockLootChest extends BlockContainer {
 			super.writeToNBT(NBT);
 
 			NBTTagList li = new NBTTagList();
-
-			for (int i = 0; i < inv.length; i++) {
-				if (inv[i] != null) {
-					NBTTagCompound nbttagcompound = new NBTTagCompound();
-					nbttagcompound.setByte("Slot", (byte)i);
-					inv[i].writeToNBT(nbttagcompound);
-					li.appendTag(nbttagcompound);
-				}
-			}
+			this.writeItems(li);
 
 			NBT.setTag("Items", li);
 
@@ -463,23 +457,24 @@ public class BlockLootChest extends BlockContainer {
 			NBT.setBoolean("marker", hasMarker);
 		}
 
+		public void writeItems(NBTTagList li) {
+			for (int i = 0; i < inv.length; i++) {
+				if (inv[i] != null) {
+					NBTTagCompound nbttagcompound = new NBTTagCompound();
+					nbttagcompound.setByte("Slot", (byte)i);
+					inv[i].writeToNBT(nbttagcompound);
+					li.appendTag(nbttagcompound);
+				}
+			}
+		}
+
 		@Override
 		public void readFromNBT(NBTTagCompound NBT)
 		{
 			super.readFromNBT(NBT);
 
 			NBTTagList li = NBT.getTagList("Items", NBTTypes.COMPOUND.ID);
-			inv = new ItemStack[this.getSizeInventory()];
-
-			for (int i = 0; i < li.tagCount(); i++)
-			{
-				NBTTagCompound nbttagcompound = li.getCompoundTagAt(i);
-				byte byte0 = nbttagcompound.getByte("Slot");
-
-				if (byte0 >= 0 && byte0 < inv.length) {
-					inv[byte0] = ItemStack.loadItemStackFromNBT(nbttagcompound);
-				}
-			}
+			this.readItems(li);
 
 			//numPlayersUsing = NBT.getInteger("using");
 
@@ -497,6 +492,20 @@ public class BlockLootChest extends BlockContainer {
 			opened = NBT.getBoolean("opened");
 
 			hasMarker = NBT.getBoolean("marker");
+		}
+
+		public void readItems(NBTTagList li) {
+			inv = new ItemStack[this.getSizeInventory()];
+
+			for (int i = 0; i < li.tagCount(); i++)
+			{
+				NBTTagCompound nbttagcompound = li.getCompoundTagAt(i);
+				byte byte0 = nbttagcompound.getByte("Slot");
+
+				if (byte0 >= 0 && byte0 < inv.length) {
+					inv[byte0] = ItemStack.loadItemStackFromNBT(nbttagcompound);
+				}
+			}
 		}
 
 		public boolean isUntouchedWorldgen() {

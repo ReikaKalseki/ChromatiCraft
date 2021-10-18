@@ -51,6 +51,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
@@ -116,6 +117,7 @@ import Reika.ChromatiCraft.Block.BlockFakeSky;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
 import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone.Variants;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockSparkle.BlockTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
@@ -303,6 +305,34 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	public void fakeJABBACompat(PlayerInteractEvent evt) {
+		if (evt.action == Action.RIGHT_CLICK_BLOCK && !evt.world.isRemote) {
+			if (evt.world.getBlock(evt.x, evt.y, evt.z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
+				TileEntityLootChest te = (TileEntityLootChest)evt.world.getTileEntity(evt.x, evt.y, evt.z);
+				EntityPlayer ep = evt.entityPlayer;
+				if (te.isOwnedBy(ep)) {
+					ItemStack held = ep.getCurrentEquippedItem();
+					ItemStack dolly = ReikaItemHelper.lookupItem("JABBA:mover");
+					if (dolly != null && ReikaItemHelper.matchStacks(held, dolly)) {
+						ItemStack chest = ChromaBlocks.LOOTCHEST.getStackOf();
+						if (chest.stackTagCompound == null)
+							chest.stackTagCompound = new NBTTagCompound();
+						NBTTagList tag = new NBTTagList();
+						te.writeItems(tag);
+						ReikaInventoryHelper.clearInventory(te);
+						te.worldObj.setBlockToAir(te.xCoord, te.yCoord, te.zCoord);
+						chest.stackTagCompound.setTag("cached", tag);
+						ReikaPlayerAPI.addOrDropItem(chest, ep);
+						//ReikaItemHelper.dropItem(te.worldObj, te.xCoord, te.yCoord+1, te.zCoord, chest);
+						ReikaSoundHelper.playSoundFromServerAtBlock(te.worldObj, te.xCoord, te.yCoord, te.zCoord, "random.pop", 1, 1, true);
+						evt.setCanceled(true);
+					}
+				}
+			}
+		}
 	}
 
 	@SubscribeEvent

@@ -41,8 +41,9 @@ import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
+import Reika.RotaryCraft.API.Interfaces.LeafBlockWithExtras;
 
-public class BlockDyeLeaf extends BlockCustomLeaf {
+public class BlockDyeLeaf extends BlockCustomLeaf implements LeafBlockWithExtras {
 
 	private final boolean decay;
 
@@ -252,6 +253,16 @@ public class BlockDyeLeaf extends BlockCustomLeaf {
 	@Override
 	protected int getMetaLimit() {
 		return 16;
+	}
+
+	@Override
+	public void onPreWoodcutterBreak(World world, int x, int y, int z) {
+		LeafBlockWithExtras.breakHangingVines(world, x, y, z, b -> b.blockID instanceof BlockDyeVine);
+	}
+
+	@Override
+	public ArrayList<ItemStack> getExtraDrops(World world, int x, int y, int z, int fortune) {
+		return LeafBlockWithExtras.getExtraDropsForHangingVines(world, x, y, z, fortune, b -> b.blockID instanceof BlockDyeVine);
 	}
 
 }
