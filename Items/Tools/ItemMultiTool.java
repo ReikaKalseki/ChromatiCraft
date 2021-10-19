@@ -13,6 +13,7 @@ import java.util.Locale;
 
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -70,6 +71,11 @@ public class ItemMultiTool extends ItemChromaTool implements ToolSprite, Enchant
 	@Override
 	public Result getEnchantValidity(Enchantment e, ItemStack is) {
 		return e == Enchantment.unbreaking || e == Enchantment.efficiency || e == Enchantment.silkTouch || e == Enchantment.fortune || e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound") ? Result.ALLOW : Result.DENY;
+	}
+
+	@Override
+	public EnumEnchantmentType getEnchantingCategory() {
+		return EnumEnchantmentType.digger;
 	}
 
 }

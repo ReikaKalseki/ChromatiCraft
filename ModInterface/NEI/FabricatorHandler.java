@@ -13,7 +13,6 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
@@ -29,10 +28,11 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes.FabricationRecipe;
 import Reika.ChromatiCraft.Container.ContainerItemFabricator;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.ModInterface.NEI.NEIChromaConfig.ElementTagRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
 
@@ -43,7 +43,7 @@ public class FabricatorHandler extends TemplateRecipeHandler {
 
 	private static final RenderItem itemRender = new RenderItem();
 
-	private class FabricationRecipeDisplay extends CachedRecipe {
+	private class FabricationRecipeDisplay extends CachedRecipe implements ElementTagRecipe {
 
 		private final FabricationRecipe recipe;
 
@@ -57,16 +57,24 @@ public class FabricatorHandler extends TemplateRecipeHandler {
 		}
 
 		@Override
-		public PositionedStack getIngredient()
-		{
+		public PositionedStack getIngredient() {
 			return null;
 		}
 
 		@Override
-		public List<PositionedStack> getOtherStacks()
-		{
+		public List<PositionedStack> getOtherStacks() {
 			ArrayList<PositionedStack> stacks = new ArrayList<PositionedStack>();
 			return stacks;
+		}
+
+		@Override
+		public ItemStack getItem() {
+			return recipe.getItem();
+		}
+
+		@Override
+		public ElementTagCompound getTag() {
+			return recipe.getCost();
 		}
 	}
 
@@ -115,7 +123,7 @@ public class FabricatorHandler extends TemplateRecipeHandler {
 			}
 		}
 		super.loadCraftingRecipes(outputId, results);
-		Collections.sort(arecipes, new FabricatorRecipeComparator());
+		Collections.sort(arecipes, NEIChromaConfig.elementRecipeSorter);
 	}
 
 	@Override
@@ -174,17 +182,6 @@ public class FabricatorHandler extends TemplateRecipeHandler {
 			dy += 30;
 			p.renderIcon(itemRender, Minecraft.getMinecraft().fontRenderer, -25, dy);
 		}*/
-
-	}
-
-	private static class FabricatorRecipeComparator implements Comparator<CachedRecipe> {
-
-		@Override
-		public int compare(CachedRecipe o1, CachedRecipe o2) {
-			FabricationRecipeDisplay r1 = (FabricationRecipeDisplay)o1;
-			FabricationRecipeDisplay r2 = (FabricationRecipeDisplay)o2;
-			return ReikaItemHelper.comparator.compare(r1.recipe.getItem(), r2.recipe.getItem());
-		}
 
 	}
 

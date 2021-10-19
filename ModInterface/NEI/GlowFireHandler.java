@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.ModInterface.NEI;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
@@ -26,6 +27,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.ModInterface.NEI.NEIChromaConfig.ElementTagRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityGlowFire;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
@@ -39,7 +41,7 @@ import codechicken.nei.recipe.TemplateRecipeHandler;
 
 public class GlowFireHandler extends TemplateRecipeHandler {
 
-	private class GlowFireRecipe extends CachedRecipe {
+	private class GlowFireRecipe extends CachedRecipe implements ElementTagRecipe {
 
 		private final ItemStack item;
 		private final ElementTagCompound cost;
@@ -57,16 +59,24 @@ public class GlowFireHandler extends TemplateRecipeHandler {
 		}
 
 		@Override
-		public PositionedStack getIngredient()
-		{
+		public PositionedStack getIngredient() {
 			return null;//new PositionedStack(this.getInputShard(), 74, 6);
 		}
 
 		@Override
-		public List<PositionedStack> getOtherStacks()
-		{
+		public List<PositionedStack> getOtherStacks() {
 			ArrayList<PositionedStack> stacks = new ArrayList<PositionedStack>();
 			return stacks;
+		}
+
+		@Override
+		public ItemStack getItem() {
+			return item.copy();
+		}
+
+		@Override
+		public ElementTagCompound getTag() {
+			return cost.copy();
 		}
 	}
 
@@ -81,8 +91,7 @@ public class GlowFireHandler extends TemplateRecipeHandler {
 	}
 
 	@Override
-	public void drawBackground(int recipe)
-	{
+	public void drawBackground(int recipe) {
 		GL11.glColor4f(1, 1, 1, 1);
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, this.getGuiTexture());
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -91,8 +100,7 @@ public class GlowFireHandler extends TemplateRecipeHandler {
 	}
 
 	@Override
-	public void drawForeground(int recipe)
-	{
+	public void drawForeground(int recipe) {
 		GL11.glColor4f(1, 1, 1, 1);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, this.getGuiTexture());
@@ -103,15 +111,20 @@ public class GlowFireHandler extends TemplateRecipeHandler {
 		transferRects.add(new RecipeTransferRect(new Rectangle(32, -12, 105, 10), "ccglowfire"));
 	}
 
+	private void loadAllRecipes(boolean costs) {
+		Collection<KeyedItemStack> li = costs ? FabricationRecipes.recipes().getFabricableItems() : FabricationRecipes.recipes().getConsumableItems();
+		for (KeyedItemStack is : li) {
+			ElementTagCompound tag = costs ? TileEntityGlowFire.getCost(is.getItemStack()) : TileEntityGlowFire.getDecompositionValue(is.getItemStack());
+			if (tag != null)
+				arecipes.add(new GlowFireRecipe(is.getItemStack(), tag, true));
+		}
+		Collections.sort(arecipes, NEIChromaConfig.elementRecipeSorter);
+	}
+
 	@Override
 	public void loadCraftingRecipes(String outputId, Object... results) {
 		if (outputId != null && outputId.equals("ccglowfire")) {
-			Collection<KeyedItemStack> li = FabricationRecipes.recipes().getFabricableItems();
-			for (KeyedItemStack is : li) {
-				ElementTagCompound tag = TileEntityGlowFire.getCost(is.getItemStack());
-				if (tag != null)
-					arecipes.add(new GlowFireRecipe(is.getItemStack(), tag, true));
-			}
+			this.loadAllRecipes(true);
 		}
 		super.loadCraftingRecipes(outputId, results);
 	}
@@ -119,7 +132,7 @@ public class GlowFireHandler extends TemplateRecipeHandler {
 	@Override
 	public void loadUsageRecipes(String inputId, Object... ingredients) {
 		if (inputId != null && inputId.equals("ccglowfire")) {
-			this.loadCraftingRecipes(inputId, ingredients);
+			this.loadAllRecipes(false);
 		}
 		super.loadUsageRecipes(inputId, ingredients);
 	}

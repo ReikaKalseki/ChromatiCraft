@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
+import Reika.ChromatiCraft.TileEntity.Processing.TileEntityGlowFire;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
@@ -373,6 +374,21 @@ public class FabricationRecipes {
 
 	public Collection<KeyedItemStack> getFabricableItems() {
 		return Collections.unmodifiableCollection(data.keySet());
+	}
+
+	public Collection<KeyedItemStack> getConsumableItems() {
+		HashSet<KeyedItemStack> ret = new HashSet(data.keySet());
+		for (Object o : Item.itemRegistry.getKeys()) {
+			String s = (String)o;
+			Item i = (Item)Item.itemRegistry.getObject(s);
+			for (ItemStack is : ReikaItemHelper.getAllMetadataPermutations(i)) {
+				ElementTagCompound val = TileEntityGlowFire.getDecompositionValue(is);
+				if (val != null && !val.isEmpty()) {
+					ret.add(new KeyedItemStack(is));
+				}
+			}
+		}
+		return ret;
 	}
 
 	public static class FabricationRecipe {

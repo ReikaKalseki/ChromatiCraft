@@ -16,6 +16,7 @@ import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRedstoneOre;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -113,6 +114,11 @@ public class ItemOreSilker extends ItemChromaTool implements ToolSprite, Enchant
 	@Override
 	public Result getEnchantValidity(Enchantment e, ItemStack is) {
 		return e == Enchantment.unbreaking || e == Enchantment.efficiency || e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound") ? Result.ALLOW : Result.DENY;
+	}
+
+	@Override
+	public EnumEnchantmentType getEnchantingCategory() {
+		return EnumEnchantmentType.digger;
 	}
 
 }

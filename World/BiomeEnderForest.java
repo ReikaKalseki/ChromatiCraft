@@ -124,9 +124,9 @@ public class BiomeEnderForest extends BiomeGenForest implements CustomMapColorBi
 	}
 
 	private float getMix(int x, int y, int z) {
-		colorRand.setSeed(new Coordinate(x/6, y/4, z/6).hashCode());
+		colorRand.setSeed(new Coordinate(x/6+extraX.getValue(x, z)*4, y/4+extraY.getValue(x, z)*2, z/6+extraZ.getValue(x, z)*4).hashCode());
 		colorRand.nextBoolean();
-		colorRand .nextBoolean();
+		colorRand.nextBoolean();
 		return colorRand.nextFloat();
 		/*
 		DecimalPosition root = colorNoise.getClosestRoot(x, y, z);

@@ -119,7 +119,7 @@ public class ItemElementCalculator implements ItemElementAPI {
 		cache.put(ChromaStacks.chromaDust, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		cache.put(ChromaStacks.auraDust, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1));
 		cache.put(ChromaStacks.beaconDust, new ElementTagCompound(1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0));
-		cache.put(ChromaStacks.bindingCrystal, new ElementTagCompound(1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+		cache.put(ChromaStacks.bindingCrystal, new ElementTagCompound(1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0));
 		cache.put(ChromaStacks.focusDust, new ElementTagCompound(1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1));
 		cache.put(ChromaStacks.enderDust, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0));
 		cache.put(ChromaStacks.waterDust, new ElementTagCompound(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));

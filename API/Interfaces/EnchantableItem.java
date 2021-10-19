@@ -12,10 +12,12 @@ package Reika.ChromatiCraft.API.Interfaces;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 
+import Reika.DragonAPI.Interfaces.Item.CustomEnchantingCategory;
+
 import cpw.mods.fml.common.eventhandler.Event.Result;
 
 
-public interface EnchantableItem {
+public interface EnchantableItem extends CustomEnchantingCategory {
 
 	public Result getEnchantValidity(Enchantment e, ItemStack is);
 

@@ -15,6 +15,7 @@ import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -234,6 +235,11 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite, En
 	@Override
 	public Result getEnchantValidity(Enchantment e, ItemStack is) {
 		return e == Enchantment.unbreaking || e == Enchantment.efficiency || e == Enchantment.fortune || e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound") ? Result.ALLOW : Result.DENY;
+	}
+
+	@Override
+	public EnumEnchantmentType getEnchantingCategory() {
+		return EnumEnchantmentType.digger;
 	}
 
 }
