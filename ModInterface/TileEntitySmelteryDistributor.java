@@ -169,13 +169,22 @@ public class TileEntitySmelteryDistributor extends TileEntityChromaticBase {
 						if (te.getClass() == TinkerSmelteryHandler.drainClass()) {
 							drains.add(new SmelteryDrain(te));
 						}
-						else if (te.getClass() == TinkerSmelteryHandler.basinClass() || te.getClass() == TinkerSmelteryHandler.tableClass()) {
+						else if (te.getClass() == TinkerSmelteryHandler.basinClass() || (te.getClass() == TinkerSmelteryHandler.tableClass() && !this.isPartmaker(te))) {
 							targets.add(new CastingBlock(te));
 						}
 					}
 				}
 			}
 		}
+	}
+
+	private boolean isPartmaker(TileEntity te) {
+		for (int y = te.yCoord+1; y <= te.yCoord+4; y++) {
+			TileEntity at = te.worldObj.getTileEntity(te.xCoord, y, te.zCoord);
+			if (at != null && at.getClass() == TinkerSmelteryHandler.faucetClass())
+				return true;
+		}
+		return false;
 	}
 
 	private FluidStack getTransferrableFluid(World world, SmelteryDrain sd) {

@@ -65,6 +65,8 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
+import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
+import Reika.ChromatiCraft.World.GlowingCliffsColumnShaper;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
@@ -364,17 +366,17 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	private int getNoiseScale(ChromaStructures s) {
 		switch(s) {
 			case DESERT:
-				return 440; //was 512, but this causes too-rare due to cave req in new voronoi system
+				return 440; //was 512, but this causes too-rare in new voronoi system
 			case OCEAN:
 				return 640; //was 1024, but this causes too-rare due to cave req in new voronoi system
 			case CAVERN:
 				return 144;
 			case BURROW:
-				return 240; //was 256, but this causes too-rare due to cave req in new voronoi system
+				return 240; //was 256, but this causes too-rare in new voronoi system
 			case SNOWSTRUCT:
-				return 480;  //was 768, but this causes too-rare due to cave req in new voronoi system
+				return 480;  //was 768, but this causes too-rare in new voronoi system
 			case BIOMEFRAG:
-				return 440;
+				return 640; //was 440
 			default:
 				return 1;
 		}
@@ -393,7 +395,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			case SNOWSTRUCT:
 				return 256;
 			case BIOMEFRAG:
-				return 384;
+				return 440; //was 384
 			default:
 				return 1;
 		}
@@ -1444,6 +1446,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	}
 
 	private boolean isValidBiomeStructLocation(World world, int x, int y, int z, FilledBlockArray arr) {
+		if (BiomeGlowingCliffs.isGlowingCliffs(world.getBiomeGenForCoords(x, z)) && y > GlowingCliffsColumnShaper.MAX_MIDDLE_TOP_Y+2)
+			return false;
 		int h1 = this.getTop(world, arr.getMinX(), arr.getMinZ());
 		int h2 = this.getTop(world, arr.getMaxX(), arr.getMinZ());
 		int h3 = this.getTop(world, arr.getMinX(), arr.getMaxZ());
@@ -1458,7 +1462,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		BiomeGenBase b4 = world.getBiomeGenForCoords(arr.getMaxX(), arr.getMaxZ());
 		if (b1 != b2 || b1 != b3 || b1 != b4)
 			return false;
-		for (int d = 1; d <= 5; d++) { //starts at the top non-air
+		for (int d = 1; d <= 4; d++) { //starts at the top non-air
 			Block id1 = world.getBlock(arr.getMinX(), h1-d, arr.getMinZ());
 			Block id2 = world.getBlock(arr.getMaxX(), h2-d, arr.getMinZ());
 			Block id3 = world.getBlock(arr.getMinX(), h3-d, arr.getMaxZ());

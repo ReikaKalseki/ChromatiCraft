@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
+import Reika.DragonAPI.Instantiable.Data.WeightedRandom.DynamicWeight;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Math.Noise.NoiseGeneratorBase;
 import Reika.DragonAPI.Instantiable.Math.Noise.Simplex3DGenerator;
@@ -47,7 +48,7 @@ public class BiomeEnderForest extends BiomeGenForest implements CustomMapColorBi
 	private final WorldGenAbstractTree enderOakSmall = new EnderOakGenerator(2, 4, 3, 5, 2, 3, 0, 0, 0.1F);
 	private final WorldGenAbstractTree enderOakNarrow = new EnderOakGenerator(6, 12, 6, 15, 1, 2, 0.35F, 4, 0F);
 
-	private final WeightedRandom<WorldGenAbstractTree> treeTypes = new WeightedRandom();
+	private final WeightedRandom<TreeEntry> treeTypes = new WeightedRandom();
 	private static final Random colorRand = new Random();
 
 	//private HashMap<Coordinate, Integer> colorMap = new HashMap();
@@ -71,11 +72,59 @@ public class BiomeEnderForest extends BiomeGenForest implements CustomMapColorBi
 		spawnableMonsterList.add(new SpawnListEntry(EntitySpider.class, 1, 1, 4));
 		spawnableMonsterList.add(new SpawnListEntry(EntitySkeleton.class, 1, 1, 4));
 
-		treeTypes.addEntry(worldGeneratorTrees, 20);
-		treeTypes.addEntry(worldGeneratorBigTree, 4);
-		treeTypes.addEntry(enderOakSmall, 50);
-		treeTypes.addEntry(enderOakLarge, 10);
-		treeTypes.addEntry(enderOakNarrow, 6);
+		treeTypes.addDynamicEntry(new TreeEntry(worldGeneratorTrees, 25, 10));
+		treeTypes.addDynamicEntry(new TreeEntry(worldGeneratorBigTree, 5, -2));
+		treeTypes.addDynamicEntry(new TreeEntry(enderOakSmall, 50, 20));
+		treeTypes.addDynamicEntry(new TreeEntry(enderOakLarge, 10, -5));
+		treeTypes.addDynamicEntry(new TreeEntry(enderOakNarrow, 6, -1));
+		treeTypes.addDynamicEntry(new TreeEntry(null, 0, 6));
+	}
+
+	private final WorldGenAbstractTree treeSelector = new WorldGenAbstractTree(false) {
+
+		private NoiseGeneratorBase treeScaling;
+
+		@Override
+		public boolean generate(World world, Random rand, int x, int y, int z) {
+			long seed = (world.getSeed() << 17) + (world.getSeed() >> 43);
+			if (treeScaling == null || treeScaling.seed != seed) {
+				treeScaling = new Simplex3DGenerator(seed).setFrequency(1/30D);
+			}
+			treeTypes.setRNG(rand);
+			double val = treeScaling.getValue(x, y, z);
+			for (TreeEntry e : treeTypes.getValues()) {
+				e.calculate(val);
+			}
+			WorldGenAbstractTree gen = treeTypes.getRandomEntry().tree;
+			return gen != null && gen.generate(world, rand, x, y, z);
+		}
+
+	};
+
+	private static class TreeEntry implements DynamicWeight {
+
+		private final WorldGenAbstractTree tree;
+
+		private final double baseWeight;
+		private final double weightCoefficient;
+
+		private double weight;
+
+		private TreeEntry(WorldGenAbstractTree t, double w, double c) {
+			tree = t;
+			weightCoefficient = c;
+			baseWeight = w;
+		}
+
+		private void calculate(double noiseVal) {
+			weight = Math.max(0, baseWeight+weightCoefficient*noiseVal);
+		}
+
+		@Override
+		public double getWeight() {
+			return weight;
+		}
+
 	}
 
 	@Override
@@ -124,7 +173,7 @@ public class BiomeEnderForest extends BiomeGenForest implements CustomMapColorBi
 	}
 
 	private float getMix(int x, int y, int z) {
-		colorRand.setSeed(new Coordinate(x/6+extraX.getValue(x, z)*4, y/4+extraY.getValue(x, z)*2, z/6+extraZ.getValue(x, z)*4).hashCode());
+		colorRand.setSeed(new Coordinate(x/6+extraX.getValue(x, z)*8, y/4+extraY.getValue(x, z)*3, z/6+extraZ.getValue(x, z)*8).hashCode());
 		colorRand.nextBoolean();
 		colorRand.nextBoolean();
 		return colorRand.nextFloat();
@@ -170,8 +219,7 @@ public class BiomeEnderForest extends BiomeGenForest implements CustomMapColorBi
 
 	@Override
 	public WorldGenAbstractTree func_150567_a(Random rand) {
-		treeTypes.setRNG(rand);
-		return treeTypes.getRandomEntry();
+		return treeSelector;
 	}
 
 	@Override

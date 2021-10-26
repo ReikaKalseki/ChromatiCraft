@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockSpiral;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -38,6 +39,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
+import Reika.Satisforestry.API.SFAPI;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -185,7 +187,7 @@ public class TileEntityCaveLighter extends TileEntityChromaticBase implements Ra
 		}
 	}
 
-	@Override
+	@Override	
 	protected void onFirstTick(World world, int x, int y, int z) {
 		range.initialize(this);
 		//if (!complete)
@@ -205,7 +207,13 @@ public class TileEntityCaveLighter extends TileEntityChromaticBase implements Ra
 	}
 
 	private boolean placeBlockAt(World world, int x, int y, int z) {
-		return world.getBlock(x, y, z).isAir(world, x, y, z) && y < this.getMaxY(world, x, z) && this.isDark(world, x, y, z);
+		return world.getBlock(x, y, z).isAir(world, x, y, z) && y < this.getMaxY(world, x, z) && this.isDark(world, x, y, z) && this.isLightable(world, x, y, z);
+	}
+
+	public static boolean isLightable(World world, int x, int y, int z) {
+		if (ModList.SATISFORESTRY.isLoaded() && SFAPI.biomeHandler.isPinkForest(world.getBiomeGenForCoords(x, z)) && SFAPI.caveHandler.isInCave(world, x+0.5, y+0.5, z+0.5))
+			return false;
+		return true;
 	}
 
 	private int getMaxY(World world, int x, int z) {

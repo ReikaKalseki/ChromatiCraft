@@ -141,6 +141,9 @@ public class ItemMagicRegistry {
 		this.addElement(Items.ghast_tear, CrystalElement.BLACK, 1);
 		this.addElement(Items.ghast_tear, CrystalElement.GREEN, 1);
 
+		this.addElement(ReikaItemHelper.charcoal, CrystalElement.GREEN, 1);
+		this.addElement(ReikaItemHelper.charcoal, CrystalElement.ORANGE, 2);
+
 		this.addElement(Items.saddle, CrystalElement.PURPLE, 2);
 		this.addElement(Items.saddle, CrystalElement.GREEN, 3);
 		this.addElement(Items.saddle, CrystalElement.LIME, 5);
@@ -257,8 +260,9 @@ public class ItemMagicRegistry {
 		this.addOreElement(ReikaOreHelper.IRON, CrystalElement.BROWN, 3);
 		this.addOreElement(ReikaOreHelper.GOLD, CrystalElement.BROWN, 4);
 		this.addOreElement(ReikaOreHelper.GOLD, CrystalElement.PURPLE, 2);
-		this.addOreElement(ReikaOreHelper.COAL, CrystalElement.YELLOW, 3);
+		this.addOreElement(ReikaOreHelper.COAL, CrystalElement.YELLOW, 2);
 		this.addOreElement(ReikaOreHelper.COAL, CrystalElement.ORANGE, 3);
+		this.addOreElement(ReikaOreHelper.COAL, CrystalElement.BROWN, 1);
 		this.addOreElement(ReikaOreHelper.REDSTONE, CrystalElement.YELLOW, 2);
 		this.addOreElement(ReikaOreHelper.REDSTONE, CrystalElement.LIME, 2);
 		this.addOreElement(ModOreList.CERTUSQUARTZ, CrystalElement.BROWN, 3);

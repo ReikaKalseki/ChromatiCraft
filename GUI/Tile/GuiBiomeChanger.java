@@ -23,59 +23,41 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraftforge.common.BiomeDictionary;
+import net.minecraftforge.fluids.FluidRegistry;
 
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.DragonAPI.Base.CoreContainer;
+import Reika.DragonAPI.Command.BiomeMapCommand;
 import Reika.DragonAPI.Instantiable.Data.Maps.RegionMap;
-import Reika.DragonAPI.Instantiable.GUI.ColorDistributor;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter.Brush;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter.PaintElement;
-import Reika.DragonAPI.Interfaces.CustomMapColorBiome;
+import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
-import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public class GuiBiomeChanger extends GuiChromaBase {
 
-	private static final ColorDistributor biomeColors = new ColorDistributor(); //static to make consistent across GUI openings
+	//private static final ColorDistributor biomeColors = new ColorDistributor(); //static to make consistent across GUI openings
 	private static final HashMap<BiomeGenBase, BiomePaint> biomeEntries = new HashMap();
 
 	private int refreshPosition;
 
-	static {
+	static {/*
 		for (int i = 0; i <= 39; i++) { //Vanilla biomes
 			BiomeGenBase b = BiomeGenBase.biomeList[i];
 			biomeColors.forceColor(ReikaBiomeHelper.getBiomeUniqueColor(b));
-		}
+		}*/
 
 		for (int i = 0; i < BiomeGenBase.biomeList.length; i++) {
 			BiomeGenBase b = BiomeGenBase.biomeList[i];
 			if (b != null) {
-				int color = -1;
-				if (i >= 40) {
-					if (BiomeDictionary.isBiomeOfType(b, BiomeDictionary.Type.DESERT) || BiomeDictionary.isBiomeOfType(b, BiomeDictionary.Type.HOT)) {
-						color = biomeColors.generateRedColor();
-					}
-					else if (BiomeDictionary.isBiomeOfType(b, BiomeDictionary.Type.FROZEN) || BiomeDictionary.isBiomeOfType(b, BiomeDictionary.Type.COLD)) {
-						color = biomeColors.generateBlueColor();
-					}
-					else if (BiomeDictionary.isBiomeOfType(b, BiomeDictionary.Type.WATER)) {
-						color = biomeColors.generateBlueColor();
-					}
-					else {
-						color = biomeColors.generateGreenColor();
-					}
-				}
-				else {
-					color = i;
-				}
-				int rgb = biomeColors.getColor(color);
+				int rgb = BiomeMapCommand.getBiomeColor(0, 0, b);//biomeColors.getColor(color);
 				biomeEntries.put(b, new BiomePaint(b, rgb));
 			}
 		}
@@ -342,7 +324,7 @@ public class GuiBiomeChanger extends GuiChromaBase {
 	private static final PaintElement fallback = new PaintElement() {
 
 		@Override
-		public void draw(int x, int y, int s) {
+		public void draw(int i, int k, int x, int y, int s, boolean legend) {
 			//api.drawRect(x, y, s, s, 0, true); //transparent
 		}
 
@@ -380,17 +362,24 @@ public class GuiBiomeChanger extends GuiChromaBase {
 		}
 
 		@Override
-		public void draw(int x, int y, int s) {
+		public void draw(int i, int k, int x, int y, int s, boolean legend) {
 			int c = color;
-			int dx = staticTileRef.xCoord+x-TileEntityBiomePainter.RANGE;
-			int dz = staticTileRef.zCoord+y-TileEntityBiomePainter.RANGE;
+			int dx = staticTileRef.xCoord+i-TileEntityBiomePainter.RANGE;
+			int dz = staticTileRef.zCoord+k-TileEntityBiomePainter.RANGE;
+			if (!legend && GuiScreen.isCtrlKeyDown()) {
+				int old = c;
+				int dy = ReikaWorldHelper.getTopNonAirBlock(Minecraft.getMinecraft().theWorld, dx, dz, true);
+				if (ReikaFluidHelper.lookupFluidForBlock(Minecraft.getMinecraft().theWorld.getBlock(dx, dy, dz)) == FluidRegistry.WATER) {
+					c = 0xff3050ff;
+				}
+				c = Minecraft.getMinecraft().theWorld.getBlock(dx, dy, dz).getMapColor(0).colorValue;
+				c = ReikaColorAPI.mixColors(0xffffff, c, (dy-60)/140F);
+				c = ReikaColorAPI.mixColors(c, old, 0.25F) | 0xff000000;
+			}
 			if (!staticTileRef.canChangeBiomeAt(dx, dz, biome)) {
 				int n = 10;
 				c = ((dx+dz)%n+n)%n >= n/2 ? ReikaColorAPI.getColorWithBrightnessMultiplier(color, 0.5F) : ReikaColorAPI.getColorWithBrightnessMultiplier(color, 0.25F);
 				c = 0xff000000 | c;
-			}
-			if (biome instanceof CustomMapColorBiome) {
-				c = ((CustomMapColorBiome)biome).getMapColor(Minecraft.getMinecraft().theWorld, x*2, y*2);
 			}
 			api.drawRect(x, y, s, s, c, true);
 		}
