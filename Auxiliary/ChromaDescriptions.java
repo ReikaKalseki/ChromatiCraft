@@ -40,7 +40,6 @@ import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectJar;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaEnchants;
 import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -312,7 +311,7 @@ public final class ChromaDescriptions {
 			String key = "tools:"+h.name().toLowerCase(Locale.ENGLISH);
 			String desc = tools.getValueAtNode(key);
 			desc = String.format(desc, itemData.get(h.getItem()));
-			if (h.getItem().getItemInstance() instanceof DynamicallyGeneratedSubpage) {
+			if (h.getItem().getItemInstance() instanceof DynamicallyGeneratedSubpage && ((DynamicallyGeneratedSubpage)h.getItem().getItemInstance()).replaceOriginal()) {
 				DynamicallyGeneratedSubpage iw = (DynamicallyGeneratedSubpage)h.getItem().getItemInstance();
 				for (int p = 0; p < iw.getMaxSubpage(); p++)
 					notes.put(iw.getNotes(p), h, p);
@@ -479,8 +478,6 @@ public final class ChromaDescriptions {
 		}
 
 		addData(ChromaItems.SHARE, ChromaTiles.TABLE.getName(), ChromaTiles.RITUAL.getName());
-
-		addData(ChromaItems.PENDANT, ChromaOptions.POWEREDPENDANTS.getState() ? "Enhanced versions require charging" : "");
 
 		addData(Chromabilities.REACH, new Object[]{Chromabilities.MAX_REACH});
 		addData(Chromabilities.LIFEPOINT, new Object[]{CrystalElement.MAGENTA.displayName});

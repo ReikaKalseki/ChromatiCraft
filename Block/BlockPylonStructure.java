@@ -42,13 +42,14 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
+import Reika.DragonAPI.Interfaces.Block.CraftableStone;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockPylonStructure extends BlockProtectedByStructure implements ConnectedTextureGlass {
+public class BlockPylonStructure extends BlockProtectedByStructure implements ConnectedTextureGlass, CraftableStone {
 
 	private final ArrayList<Integer> allDirs = new ArrayList();
 

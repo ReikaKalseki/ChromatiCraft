@@ -18,7 +18,6 @@ import net.minecraftforge.client.IItemRenderer.ItemRenderType;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ColoredMultiBlockChromaTile;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.DynamicallyGeneratedSubpage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Render.ProbeInfoOverlayRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.StructureErrorOverlays;
@@ -39,7 +38,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemCrystalProbe extends ItemPoweredChromaTool implements DynamicallyGeneratedSubpage {
+public class ItemCrystalProbe extends ItemPoweredChromaTool {
 
 	public static final int CHARGE_TIME = 50;
 
@@ -219,12 +218,9 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool implements Dynamical
 			sb.append(i.displayName());
 			sb.append("\n");
 		}
+		sb.append("\n");
+		sb.append(super.getNotes(subpage));
 		return sb.toString();
-	}
-
-	@Override
-	public int getMaxSubpage() {
-		return 1;
 	}
 
 	private static enum Inspections {

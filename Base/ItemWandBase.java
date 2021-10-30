@@ -76,4 +76,8 @@ public abstract class ItemWandBase extends ItemChromaTool implements Dynamically
 		return 1;
 	}
 
+	public boolean replaceOriginal() {
+		return true;
+	}
+
 }

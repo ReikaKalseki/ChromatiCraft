@@ -39,6 +39,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.HybridTank;
+import Reika.DragonAPI.Interfaces.Block.CraftableStone;
 import Reika.DragonAPI.Interfaces.Registry.OreType;
 import Reika.DragonAPI.Interfaces.Registry.OreType.OreRarity;
 import Reika.DragonAPI.Libraries.ReikaFluidHelper;
@@ -209,6 +210,9 @@ VariableTexture {
 			return 1;
 		}
 		else if (ModList.GENDUSTRY.isLoaded() && in.getDisplayName() != null && in.getDisplayName().toLowerCase(Locale.ENGLISH).contains("gene")) {
+			return 1;
+		}
+		else if (Block.getBlockFromItem(in.getItem()) instanceof CraftableStone) {
 			return 1;
 		}
 		else if (ModList.GREGTECH.isLoaded() && (ReikaItemHelper.getRegistrantMod(in).toLowerCase(Locale.ENGLISH).contains("gregapi") || ReikaItemHelper.getRegistrantMod(in).toLowerCase(Locale.ENGLISH).contains("gregtech"))) {

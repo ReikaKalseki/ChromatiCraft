@@ -25,8 +25,11 @@ import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemShears;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSword;
+import net.minecraft.item.ItemTool;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
@@ -41,6 +44,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaPowered;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
 import Reika.ChromatiCraft.Base.ChromaticEnchantment;
+import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverInventoryBase;
 import Reika.ChromatiCraft.Registry.ChromaEnchants;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -329,6 +333,8 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		if (ModList.THAUMCRAFT.isLoaded() && i.getClass().getName().toLowerCase(Locale.ENGLISH).contains("focuspouch"))
 			return true;
 		if (ModList.THAUMICTINKER.isLoaded() && i.getClass().getName().toLowerCase(Locale.ENGLISH).contains("ichorpouch"))
+			return true;
+		if (i instanceof ItemChromaTool || i instanceof ItemTool || i instanceof ItemSword || i instanceof ItemShears || i instanceof ItemArmor)
 			return true;
 		return false;
 	}

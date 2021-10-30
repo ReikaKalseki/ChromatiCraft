@@ -5,13 +5,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.DynamicallyGeneratedSubpage;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Interfaces.Item.SpriteRenderCallback;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public interface PoweredItem extends SpriteRenderCallback {
+public interface PoweredItem extends SpriteRenderCallback, DynamicallyGeneratedSubpage {
 
 	public abstract CrystalElement getColor(ItemStack is);
 	public abstract int getMaxCharge();

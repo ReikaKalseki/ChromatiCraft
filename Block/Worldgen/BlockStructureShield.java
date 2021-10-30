@@ -24,6 +24,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.BlockDimensionStructure;
+import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -162,15 +164,15 @@ public class BlockStructureShield extends Block implements SemiUnbreakable, Subm
 			return false;
 		if (b == ChromaBlocks.DOOR.getBlockInstance())
 			return false;
-		if (b instanceof BlockStructureShield)
+		if (b instanceof BlockStructureShield || b instanceof BlockDimensionStructure || b instanceof BlockDimensionStructureTile)
+			return false;
+		if (ChromaBlocks.getEntryByID(b) != null && ChromaBlocks.getEntryByID(b).isDimensionStructureBlock())
 			return false;
 		if (b == ChromaBlocks.HEATLAMP.getBlockInstance())
 			return false;
 		if (b instanceof BlockFurnace)
 			return false;
 		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue() || (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())) {
-			if (ChromaBlocks.getEntryByID(b) != null && ChromaBlocks.getEntryByID(b).isDimensionStructureBlock())
-				return false;
 			if (b == ChromaBlocks.CRYSTAL.getBlockInstance())
 				return false;
 			if (b == ChromaBlocks.CHUNKLOADER.getBlockInstance())

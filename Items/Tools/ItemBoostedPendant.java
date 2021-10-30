@@ -143,4 +143,18 @@ public class ItemBoostedPendant extends ItemPendant implements PoweredItem {
 		return true;
 	}
 
+	@Override
+	public String getNotes(int subpage) {
+		return ChromaOptions.POWEREDPENDANTS.getState() ? "Enhanced pendants require charging with the corresponding crystal element" : "";
+	}
+
+	@Override
+	public int getMaxSubpage() {
+		return 1;
+	}
+
+	public boolean replaceOriginal() {
+		return false;
+	}
+
 }

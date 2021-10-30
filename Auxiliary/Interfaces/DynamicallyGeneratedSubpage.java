@@ -7,4 +7,6 @@ public interface DynamicallyGeneratedSubpage {
 
 	public int getMaxSubpage();
 
+	public boolean replaceOriginal();
+
 }

@@ -165,4 +165,18 @@ public abstract class ItemPoweredChromaTool extends ItemChromaTool implements Po
 		return true;
 	}
 
+	@Override
+	public String getNotes(int subpage) {
+		return "Requires charging with "+this.getColor(new ItemStack(this)).displayName+" ambient energy to be used";
+	}
+
+	@Override
+	public int getMaxSubpage() {
+		return 1;
+	}
+
+	public boolean replaceOriginal() {
+		return false;
+	}
+
 }

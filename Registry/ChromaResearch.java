@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.DynamicallyGeneratedSubpage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
@@ -325,7 +326,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
 	SHARDS("Shards",				ChromaStacks.redShard, 									ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),
-	DUSTS("Plant Dusts",			ChromaStacks.auraDust, 									ResearchLevel.ENERGY),
+	DUSTS("Plants",					ChromaStacks.auraDust, 									ResearchLevel.ENERGY),
 	GROUPS("Groups",				ChromaStacks.crystalCore, 								ResearchLevel.RUNECRAFT),
 	CORES("Cores",					ChromaStacks.energyCore,								ResearchLevel.ENERGY),
 	HICORES("Energized Cores",		ChromaStacks.energyCoreHigh,							ResearchLevel.PYLONCRAFT),
@@ -925,7 +926,14 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 		}
 		if (this == ACCEL)
 			return ChromaDescriptions.getNotes(this, subpage-1);
-		return ChromaDescriptions.getNotes(this, 0);
+		String ret = ChromaDescriptions.getNotes(this, 0);
+		if (this.getItem().getItemInstance() instanceof DynamicallyGeneratedSubpage) {
+			DynamicallyGeneratedSubpage iw = (DynamicallyGeneratedSubpage)this.getItem().getItemInstance();
+			if (!iw.replaceOriginal()) {
+				ret += (ret.isEmpty() ? "" : "\n")+iw.getNotes(subpage);
+			}
+		}
+		return ret;
 	}
 
 	public boolean sameTextAllSubpages() {
