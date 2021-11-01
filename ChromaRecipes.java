@@ -139,6 +139,10 @@ public class ChromaRecipes {
 			}
 		}
 
+		if (ModList.THERMALEXPANSION.isLoaded()) {
+			ThermalRecipeHelper.addSawmillRecipe(ChromaBlocks.GLOWLOG.getStackOfMetadata(OreDictionary.WILDCARD_VALUE), ReikaItemHelper.oakWood.asItemStack(), new ItemStack(Items.glowstone_dust), 40, 800);
+		}
+
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			ModInteraction.addThaumRecipes();
 		}

@@ -179,6 +179,9 @@ public class BlockLockKey extends Block {
 			return;
 		lastPlace = world.getTotalWorldTime();
 
+		LocksGenerator gen = this.getGenerator(world, x, y, z);
+		if (gen == null)
+			return;
 		for (int i = 0; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 			int dx = x+dir.offsetX;
@@ -188,17 +191,20 @@ public class BlockLockKey extends Block {
 			int m = world.getBlockMetadata(dx, dy, dz);
 			int ch = world.getBlockMetadata(x, y, z);
 			if (b == ChromaBlocks.RUNE.getBlockInstance()) {
-				this.getGenerator(world, x, y, z).openColor(CrystalElement.elements[m], world, ch);
+				gen.openColor(CrystalElement.elements[m], world, ch);
 				break;
 			}
 			else if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance() && m%8 == BlockType.CLOAK.metadata%8) {
-				this.getGenerator(world, x, y, z).markOpenGate(world, ch);
+				gen.markOpenGate(world, ch);
 				break;
 			}
 		}
 	}
 
 	private void closeLocks(World world, int x, int y, int z, int meta2) {
+		LocksGenerator gen = this.getGenerator(world, x, y, z);
+		if (gen == null)
+			return;
 		for (int i = 0; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 			int dx = x+dir.offsetX;
@@ -208,11 +214,11 @@ public class BlockLockKey extends Block {
 			int m = world.getBlockMetadata(dx, dy, dz);
 			int ch = meta2;
 			if (b == ChromaBlocks.RUNE.getBlockInstance()) {
-				this.getGenerator(world, x, y, z).closeColor(CrystalElement.elements[m], world, ch);
+				gen.closeColor(CrystalElement.elements[m], world, ch);
 				break;
 			}
 			else if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance() && m%8 == BlockType.CLOAK.metadata%8) {
-				this.getGenerator(world, x, y, z).markClosedGate(world, ch);
+				gen.markClosedGate(world, ch);
 				break;
 			}
 		}
