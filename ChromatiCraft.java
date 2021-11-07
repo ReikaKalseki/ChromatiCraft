@@ -641,6 +641,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		}
 
 		FurnaceFuelRegistry.instance.registerItemSimple(ChromaStacks.firaxite, 24);
+		FurnaceFuelRegistry.instance.registerItemSimple(ChromaStacks.thermiticCrystal, 32);
 
 		this.addDyeCompat();
 

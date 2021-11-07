@@ -1003,20 +1003,20 @@
 			Constructed by a story
 		</desc>
 	</myst>
-	<name>
+	<biomefrag>
 		<title>
-			
+			An Abandoned Puzzle
 		</title>
 		<hint>
-			
+			What might be found in the more magically-attuned biomes?
 		</hint>
 		<reveal>
-			
+			A structure that once completed, contains far more riches than any other so far.
 		</reveal>
 		<desc>
-			
+			A structure in a magic forest, locked down behind tests of skill
 		</desc>
-	</name>
+	</biomefrag>
 	<name>
 		<title>
 			

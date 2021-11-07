@@ -379,7 +379,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	MOBSEEK(		Chromabilities.MOBSEEK,						ResearchLevel.ENDGAME),
 	BEEALYZE(		Chromabilities.BEEALYZE),
 	NUKER(			Chromabilities.NUKER,						ResearchLevel.ENDGAME),
-	LIGHTCAST(		Chromabilities.LIGHTCAST),
+	LIGHTCAST(		Chromabilities.LIGHTCAST, 					ResearchLevel.ENERGY),
 	JUMPABILITY(	Chromabilities.JUMP, 						ResearchLevel.ENERGY),
 	SUPERBUILD(		Chromabilities.SUPERBUILD, 					ResearchLevel.ENERGY),
 	CHESTCLEAR(		Chromabilities.CHESTCLEAR, 					ResearchLevel.ENERGY),
@@ -927,7 +927,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 		if (this == ACCEL)
 			return ChromaDescriptions.getNotes(this, subpage-1);
 		String ret = ChromaDescriptions.getNotes(this, 0);
-		if (this.getItem().getItemInstance() instanceof DynamicallyGeneratedSubpage) {
+		if (item != null && item.getItemInstance() instanceof DynamicallyGeneratedSubpage) {
 			DynamicallyGeneratedSubpage iw = (DynamicallyGeneratedSubpage)this.getItem().getItemInstance();
 			if (!iw.replaceOriginal()) {
 				ret += (ret.isEmpty() ? "" : "\n")+iw.getNotes(subpage);

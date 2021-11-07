@@ -35,4 +35,6 @@ public interface DyeTreeAPI {
 
 	public Block getRainbowSapling();
 
+	public Block getDecoFlower();
+
 }

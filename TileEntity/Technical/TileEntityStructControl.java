@@ -517,6 +517,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			if (this.regenerate())
 				DungeonGenerator.instance.onGenerateStructure(struct, (FragmentStructureBase)struct.getStructure(), world, this);
 		}
+		if (auxData != null)
+			auxData.onTileLoaded(this);
 		LootChestWatcher.instance.cache(this);
 		this.syncAllData(true);
 	}
@@ -821,13 +823,18 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 									ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
 								}
 								else if (b == ChromaBlocks.SHIFTLOCK.getBlockInstance()) {
-									worldObj.setBlockMetadataWithNotify(x, y, z, Passability.BREAKABLE.ordinal(), 3);
+									//worldObj.setBlockMetadataWithNotify(x, y, z, Passability.BREAKABLE.ordinal(), 3);
+									worldObj.setBlockToAir(x, y, z);
 								}
 								else if (b == ChromaBlocks.LIGHTPANEL.getBlockInstance() || b == ChromaBlocks.PANELSWITCH.getBlockInstance()) {
 									worldObj.setBlock(x, y, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CRACK.ordinal(), 3);
 								}
 								else if (b == ChromaBlocks.COLORLOCK.getBlockInstance()) {
 									worldObj.setBlock(x, y, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CRACKS.ordinal(), 3);
+								}
+								else if (b == ChromaBlocks.HOVER.getBlockInstance() || b == ChromaBlocks.DOOR.getBlockInstance()) {
+									//worldObj.setBlockMetadataWithNotify(x, y, z, Passability.BREAKABLE.ordinal(), 3);
+									worldObj.setBlockToAir(x, y, z);
 								}
 							}
 						}
@@ -1157,6 +1164,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		void handleTileInteract(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root, EntityPlayer ep);
 		boolean isInaccessible(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root, EntityPlayer ep);
 		void handleMusicTrigger(World world, int x, int y, int z, CrystalElement e, MusicKey mk, TileEntityStructControl root, EntityPlayer ep);
+		void onTileLoaded(TileEntityStructControl root);
 
 		@SideOnly(Side.CLIENT)
 		void render();

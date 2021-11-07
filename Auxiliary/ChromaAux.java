@@ -62,6 +62,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
+import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
@@ -734,6 +735,7 @@ public class ChromaAux {
 		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.FIREDUMPSHOCK.ordinal(), e.worldObj, (int)x, (int)y, (int)z, 64, color.ordinal(), e.getEntityId(), Float.floatToRawIntBits(beamSize));
 		ReikaEntityHelper.knockbackEntityFromPos(x, /*y*/e.posY, z, e, 1.5*Math.min(power*4, 1));
 		e.motionY += 0.125+rand.nextDouble()*0.0625;
+		CrystalPotionController.instance.applyEffectFromColor((int)(100*MathHelper.clamp_float(power, 0.5F, 18)), (int)(power/2), e, color, false, false, true);
 	}
 
 	@SideOnly(Side.CLIENT)

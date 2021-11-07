@@ -69,6 +69,19 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class BiomeStructurePuzzle implements FragmentStructureData {
 
+	private static final ArrayList<Coordinate> runeLocations = new ArrayList();
+
+	static {
+		runeLocations.add(new Coordinate(5, 5, 6));
+		runeLocations.add(new Coordinate(6, 5, 5));
+		runeLocations.add(new Coordinate(-5, 5, 6));
+		runeLocations.add(new Coordinate(-6, 5, 5));
+		runeLocations.add(new Coordinate(5, 5, -6));
+		runeLocations.add(new Coordinate(6, 5, -5));
+		runeLocations.add(new Coordinate(-5, 5, -6));
+		runeLocations.add(new Coordinate(-6, 5, -5));
+	}
+
 	private final ArrayList<MusicKey> melody = new ArrayList();
 	private final SwitchGroup[] doorKeys = new SwitchGroup[4];
 	private final ArrayList<CrystalElement> crystalColors = new ArrayList();
@@ -120,14 +133,9 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		ArrayList<Integer> idx = ReikaJavaLibrary.makeIntListFromArray(ReikaArrayHelper.getLinearArray(8));
 		Collections.shuffle(idx);
 
-		runes.put(new Coordinate(5, 5, 6), doorColors.get(idx.remove(0)));
-		runes.put(new Coordinate(6, 5, 5), doorColors.get(idx.remove(0)));
-		runes.put(new Coordinate(-5, 5, 6), doorColors.get(idx.remove(0)));
-		runes.put(new Coordinate(-6, 5, 5), doorColors.get(idx.remove(0)));
-		runes.put(new Coordinate(5, 5, -6), doorColors.get(idx.remove(0)));
-		runes.put(new Coordinate(6, 5, -5), doorColors.get(idx.remove(0)));
-		runes.put(new Coordinate(-5, 5, -6), doorColors.get(idx.remove(0)));
-		runes.put(new Coordinate(-6, 5, -5), doorColors.get(idx.remove(0)));
+		for (Coordinate c : runeLocations) {
+			runes.put(c, doorColors.get(idx.remove(0)));
+		}
 
 		HashSet<MelodyPrefab> excl = new HashSet();
 		while (melody.isEmpty()) {
@@ -445,7 +453,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			doorColors.add(CrystalElement.elements[i.func_150287_d()]);
 		}
 
-		li = NBT.getTagList("runes", NBTTypes.INT.ID);
+		li = NBT.getTagList("runes", NBTTypes.COMPOUND.ID);
 		for (Object o : li.tagList) {
 			NBTTagCompound tag = (NBTTagCompound)o;
 			Coordinate c = Coordinate.readTag(tag);
@@ -511,6 +519,11 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		}
 	}
 
+	@Override
+	public void onTileLoaded(TileEntityStructControl root) {
+		this.updateColorDoors(root.worldObj, new Coordinate(root));
+	}
+
 	private void complete(World world, TileEntityStructControl root, EntityPlayer ep) {
 		complete = true;
 		ChromaSounds.CAST.playSoundAtBlock(root);
@@ -527,6 +540,9 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 
 	private void updateColorDoors(World world, Coordinate root) {
 		HashSet<CrystalElement> opened = new HashSet();
+		if (runes.isEmpty()) {
+			this.reconstructRunes(world, root);
+		}
 		for (Entry<Coordinate, CrystalElement> e : runes.entrySet()) {
 			Coordinate c = e.getKey().offset(root.xCoord, root.yCoord+1, root.zCoord);
 			if (c.getBlock(world) == ChromaBlocks.LOCKKEY.getBlockInstance()) {
@@ -540,6 +556,12 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 					continue;
 				te.setOpenColors(opened);
 			}
+		}
+	}
+
+	private void reconstructRunes(World world, Coordinate root) {
+		for (Coordinate c : runeLocations) {
+			runes.put(c, CrystalElement.elements[c.offset(root).getBlockMetadata(world)]);
 		}
 	}
 

@@ -611,8 +611,9 @@ public class RecipesCastingTable implements CastingAPI {
 			if (metal[i] instanceof String && !ReikaItemHelper.oreItemExists((String)metal[i]))
 				continue;
 			int n = (int)metal[i+1];
-			this.addRecipe(new HeatLampRecipe(metal[i], n, hr, false));
-			this.addRecipe(new HeatLampRecipe(metal[i], n, hr, true));
+			this.addRecipe(new HeatLampRecipe(metal[i], n, hr, false, false));
+			this.addRecipe(new HeatLampRecipe(metal[i], n*2, hr, false, true));
+			this.addRecipe(new HeatLampRecipe(metal[i], n, hr, true, false));
 		}
 
 		metal = new Object[]{Items.iron_ingot, 1, Items.gold_ingot, 4, "ingotCopper", 1, "ingotSilver", 2, ChromaStacks.conductiveIngot, 6, "ingotRedAlloy", 4};

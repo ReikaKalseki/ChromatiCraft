@@ -75,7 +75,7 @@ public class ItemThrowableGem extends ItemCrystalBasic implements AnimatedSprite
 	}
 
 	@Override
-	public int getFrameSpeed() {
+	public int getFrameSpeed(ItemStack is) {
 		return 2;
 	}
 

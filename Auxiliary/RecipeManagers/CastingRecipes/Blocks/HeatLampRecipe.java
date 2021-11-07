@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -23,8 +23,8 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class HeatLampRecipe extends TempleCastingRecipe {
 
-	public HeatLampRecipe(Object ingot, int n, HeatLilyRecipe r, boolean isColdLamp) {
-		super(calcOutput(n, isColdLamp), getRecipe(ingot, n, isColdLamp));
+	public HeatLampRecipe(Object ingot, int n, HeatLilyRecipe r, boolean isColdLamp, boolean isT2) {
+		super(calcOutput(n, isColdLamp), getRecipe(ingot, n, isColdLamp, isT2));
 
 		this.addRunes(r.getRunes());
 		if (isColdLamp) {
@@ -33,8 +33,8 @@ public class HeatLampRecipe extends TempleCastingRecipe {
 		}
 	}
 
-	private static IRecipe getRecipe(Object ingot, int n, boolean isColdLamp) {
-		return new ShapedOreRecipe(calcOutput(n, isColdLamp), "fgf", "gag", "fgf", 'g', isColdLamp ? new ItemStack(Items.snowball) : ChromaStacks.firaxite, 'f', isColdLamp ? ChromaStacks.icyDust : ChromaStacks.firaxite, 'a', ingot);
+	private static IRecipe getRecipe(Object ingot, int n, boolean isColdLamp, boolean isT2) {
+		return new ShapedOreRecipe(calcOutput(n, isColdLamp), "fgf", "gag", "fgf", 'g', isColdLamp ? new ItemStack(Items.snowball) : (isT2 ? ChromaStacks.thermiticCrystal : ChromaStacks.firaxite), 'f', isColdLamp ? ChromaStacks.icyDust : ChromaStacks.firaxite, 'a', ingot);
 	}
 
 	private static ItemStack calcOutput(int n, boolean isColdLamp) {

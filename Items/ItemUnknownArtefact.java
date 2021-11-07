@@ -339,7 +339,7 @@ public class ItemUnknownArtefact extends ItemChromaMulti implements AnimatedSpri
 	}
 
 	@Override
-	public int getFrameSpeed() {
+	public int getFrameSpeed(ItemStack is) {
 		return 4;
 	}
 

@@ -264,8 +264,9 @@ public class BlockColoredLock extends BlockDimensionStructureTile {
 
 		private void recalcColors() {
 			LocksGenerator g = this.getGenerator();
-			if (g == null)
+			if (g == null) {
 				return;
+			}
 			boolean flag = true;
 			closedColors.clear();
 			if (g.getWhiteLock(channel) <= 0) {
@@ -284,6 +285,7 @@ public class BlockColoredLock extends BlockDimensionStructureTile {
 			closedColors.addAll(colors);
 			closedColors.removeAll(c);
 			this.recalcColors();
+			this.updateState(closedColors.isEmpty());
 		}
 
 		private void updateState(boolean flag) {

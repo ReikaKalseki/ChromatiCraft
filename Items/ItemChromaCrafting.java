@@ -128,7 +128,7 @@ public class ItemChromaCrafting extends ItemChromaMulti implements ResearchDepen
 	}
 
 	@Override
-	public int getFrameSpeed() {
+	public int getFrameSpeed(ItemStack is) {
 		return 4;
 	}
 

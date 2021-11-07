@@ -81,7 +81,7 @@ public class ItemT2EnderEye extends ItemChromaBasic implements AnimatedSpriteshe
 	}
 
 	@Override
-	public int getFrameSpeed() {
+	public int getFrameSpeed(ItemStack is) {
 		return 2;
 	}
 

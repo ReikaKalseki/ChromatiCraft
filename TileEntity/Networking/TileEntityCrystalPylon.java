@@ -366,24 +366,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 					if (canAttack) {
 						int r = this.getAttackRange();
 						AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).expand(r, r, r);
-						List<EntityLivingBase> li = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
-						for (EntityLivingBase e : li) {
-							boolean attack = !e.isDead && e.getHealth() > 0;
-							if (e instanceof EntityPlayer) {
-								EntityPlayer ep = (EntityPlayer)e;
-								attack = attack && !ep.capabilities.isCreativeMode && !Chromabilities.PYLON.enabledOn(ep);
-							}
-							else if (e instanceof EntityBallLightning) {
-								attack = ((EntityBallLightning)e).getElement() != color;
-							}
-							else if (e.getClass().getName().equals("openblocks.common.entity.EntityLuggage")) {
-								attack = false;
-							}
-							if (attack) {
-								this.attackEntity(e);
-								this.sendClientAttack(this, e);
-							}
-						}
+						this.attackEntitiesInBox(world, x, y, z, box);
+						box = ReikaAABBHelper.getBlockAABB(x, y, z).expand(1, 6, 1);
+						box = box.addCoord(0, 32, 0);
+						this.attackEntitiesInBox(world, x, y, z, box);
 					}
 				}
 
@@ -425,6 +411,27 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 					Coordinate c2 = c.offset(ReikaDirectionHelper.getRandomDirection(true, rand), 1);
 					this.tryGrowEncrustedAt(world, c, c2, false);
 				}
+			}
+		}
+	}
+
+	private void attackEntitiesInBox(World world, int x, int y, int z, AxisAlignedBB box) {
+		List<EntityLivingBase> li = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
+		for (EntityLivingBase e : li) {
+			boolean attack = !e.isDead && e.getHealth() > 0;
+			if (e instanceof EntityPlayer) {
+				EntityPlayer ep = (EntityPlayer)e;
+				attack = attack && !ep.capabilities.isCreativeMode && !Chromabilities.PYLON.enabledOn(ep);
+			}
+			else if (e instanceof EntityBallLightning) {
+				attack = ((EntityBallLightning)e).getElement() != color;
+			}
+			else if (e.getClass().getName().equals("openblocks.common.entity.EntityLuggage")) {
+				attack = false;
+			}
+			if (attack) {
+				this.attackEntity(e);
+				this.sendClientAttack(this, e);
 			}
 		}
 	}

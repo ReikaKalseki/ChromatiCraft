@@ -65,7 +65,7 @@ public class ItemMagicBranch extends ItemChromaMulti implements AnimatedSpritesh
 	}
 
 	@Override
-	public int getFrameSpeed() {
+	public int getFrameSpeed(ItemStack is) {
 		return 4;
 	}
 

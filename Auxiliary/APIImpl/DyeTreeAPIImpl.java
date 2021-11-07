@@ -53,4 +53,9 @@ public class DyeTreeAPIImpl implements DyeTreeAPI {
 		return b.getBlockInstance();
 	}
 
+	@Override
+	public Block getDecoFlower() {
+		return ChromaBlocks.DECOFLOWER.getBlockInstance();
+	}
+
 }
