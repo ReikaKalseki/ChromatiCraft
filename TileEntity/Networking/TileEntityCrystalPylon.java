@@ -58,7 +58,6 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
-import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.NaturalCrystalSource;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
@@ -118,6 +117,8 @@ import thaumcraft.api.nodes.INode;
 import thaumcraft.api.nodes.NodeModifier;
 import thaumcraft.api.nodes.NodeType;
 import thaumcraft.api.wands.IWandable;
+import thaumcraft.api.wands.WandCap;
+import thaumcraft.api.wands.WandRod;
 
 @Strippable(value = {"thaumcraft.api.nodes.INode", "thaumcraft.api.wands.IWandable"})
 public class TileEntityCrystalPylon extends CrystalTransmitterBase implements NaturalCrystalSource, ChargingPoint, ChunkLoadingTile, INode, IWandable {
@@ -367,9 +368,19 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 						int r = this.getAttackRange();
 						AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).expand(r, r, r);
 						this.attackEntitiesInBox(world, x, y, z, box);
-						box = ReikaAABBHelper.getBlockAABB(x, y, z).expand(1, 6, 1);
-						box = box.addCoord(0, 32, 0);
-						this.attackEntitiesInBox(world, x, y, z, box);
+					}
+				}
+				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).expand(1, 6, 1);
+				box = box.addCoord(0, 32, 0);
+				for (EntityPlayer ep : ((List<EntityPlayer>)world.playerEntities)) {
+					if (ep.capabilities.isCreativeMode || Chromabilities.PYLON.enabledOn(ep))
+						continue;
+					int d = (int)MathHelper.clamp_double(Math.abs(ep.posY-y-0.5)/6D, 1, 10);
+					if (ep.hurtResistantTime <= rand.nextInt(11-d) && ep.boundingBox.intersectsWith(box) && PylonFinder.lineOfSight(world, x, y, z, ep).hasLineOfSight) {
+						this.attackEntity(ep, false);
+						ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.FIREDUMPSHOCK.ordinal(), world, x, y, z, 64, color.ordinal(), ep.getEntityId(), Float.floatToRawIntBits(1.5F));
+						if (ep instanceof EntityPlayerMP)
+							ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.PYLONATTACKRECEIVE.ordinal(), this, (EntityPlayerMP)ep, this.getColor().ordinal());
 					}
 				}
 
@@ -430,7 +441,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				attack = false;
 			}
 			if (attack) {
-				this.attackEntity(e);
+				this.attackEntity(e, true);
 				this.sendClientAttack(this, e);
 			}
 		}
@@ -797,7 +808,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				}
 				else {
 					float amt = Math.max(5, Math.min(e.getHealth()-4, e.getMaxHealth()*0.75F));
-					ChromaAux.doPylonAttack(color, e, amt, false);
+					ChromaAux.doPylonAttack(color, e, amt);
 					ChromaSounds.DISCHARGE.playSound(e.worldObj, e.posX, e.posY, e.posZ, 1, 1);
 				}
 			}
@@ -839,17 +850,19 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			Minecraft.getMinecraft().effectRenderer.addEffect(f);
 		}
 	}
-
+	/*
 	void attackEntityByProxy(EntityPlayer player, CrystalRepeater te) {
 		this.attackEntity(player);
 		this.sendClientAttack(te, player);
 	}
+	 */
+	void attackEntity(EntityLivingBase e, boolean sound) {
+		if (sound) {
+			ChromaSounds.DISCHARGE.playSoundAtBlock(this);
+			ChromaSounds.DISCHARGE.playSound(e);
+		}
 
-	void attackEntity(EntityLivingBase e) {
-		ChromaSounds.DISCHARGE.playSoundAtBlock(this);
-
-		ChromaAux.doPylonAttack(color, e, Math.max(this.isEnhanced() ? 10 : 5, e.getHealth()/4F), true);
-		ChromaSounds.DISCHARGE.playSound(e.worldObj, e.posX, e.posY, e.posZ, 1, 1);
+		ChromaAux.doPylonAttack(color, e, Math.max(this.isEnhanced() ? 10 : 5, e.getHealth()/4F), true, 0, true);
 
 		PotionEffect eff = CrystalPotionController.instance.getEffectFromColor(color, 200, 2, false);
 		if (eff != null) {
@@ -1230,7 +1243,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	@ModDependent(ModList.THAUMCRAFT)
 	public void onUsingWandTick(ItemStack wandstack, EntityPlayer player, int count) {
 		if (!worldObj.isRemote && this.canConduct() && player.ticksExisted%5 == 0) {
-			if (!ChromaOptions.HARDTHAUM.getState() || (ReikaThaumHelper.isResearchComplete(player, "WANDPEDFOC") && ProgressStage.ALLCOLORS.isPlayerAtStage(player))) {
+			if (this.canPlayerWandPylon(wandstack, player)) {
 				AspectList al = ReikaThaumHelper.decompose(this.getAspects());
 				for (Aspect a : al.aspects.keySet()) {
 					int amt = 1;
@@ -1291,6 +1304,20 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				}
 			}
 		}
+	}
+
+	private boolean canPlayerWandPylon(ItemStack wandstack, EntityPlayer player) {
+		if (!ReikaThaumHelper.isResearchComplete(player, "PYLONWANDING"))
+			return false;
+		if (ChromaOptions.HARDTHAUM.getState()) {
+			WandCap cap = ReikaThaumHelper.getWandCap(wandstack);
+			WandRod rod = ReikaThaumHelper.getWandRod(wandstack);
+			WandCap gold = WandCap.caps.get("gold");
+			WandRod great = WandRod.rods.get("greatwood");
+			if (cap.getBaseCostModifier() > gold.getBaseCostModifier() || rod.getCapacity() < great.getCapacity())
+				return false;
+		}
+		return (ChromaOptions.HARDTHAUM.getState() ? ProgressStage.ALLCOLORS : ProgressStage.PYLON).isPlayerAtStage(player);
 	}
 
 	@Override

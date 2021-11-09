@@ -1415,27 +1415,29 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 	}
 
 	@SubscribeEvent
-	public void addAuraCleanerScribbles(DrawScreenEvent.Post evt) {
+	public void addCustomThaumGraphics(DrawScreenEvent.Post evt) {
 		if (evt.gui != null && evt.gui.getClass().getSimpleName().equals("GuiResearchRecipe")) {
 			try {
 				Class c = evt.gui.getClass();
 				Field res = c.getDeclaredField("research");
 				res.setAccessible(true);
+				Field pg = c.getDeclaredField("page");
+				pg.setAccessible(true);
 				ResearchItem item = (ResearchItem)res.get(evt.gui);
-				if (item.key.equals("WARPPROOF")) {
-					int j = (evt.gui.width - 256) / 2;
-					int k = (evt.gui.height - 181) / 2;
-
-					ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/eldritch_s.png");
+				int page = pg.getInt(evt.gui);
+				int j = (evt.gui.width - 256) / 2;
+				int k = (evt.gui.height - 181) / 2;
+				if (item.key.equals("WARPPROOF")) { //Aura cleaner scribbles
+					ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/eldritch_s.png");
 					//Tessellator v5 = Tessellator.instance;
 					//v5.startDrawingQuads();
-					int x = j-20;
-					int x2 = j+133;
+					int x2 = j-20;
+					int x = j+133;
 					int y = k-20;
-					int y2 = k+140;
+					int y2 = k+165;
 					int w = 146;
 					int h = 212;
-					int h2 = 65;
+					int h2 = 35;
 					int u = 0;
 					int v = 0;
 					GL11.glAlphaFunc(GL11.GL_GREATER, 1/255F);
@@ -1447,10 +1449,13 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 					evt.gui.drawTexturedModalRect(x, y, u, v, w, h);
 					GL11.glColor4f(1, 1, 1, 0.4F);
 					evt.gui.drawTexturedModalRect(x2, y, u+64, v, w, h);
-					ResourceLocation loc = new ResourceLocation("thaumcraft:textures/misc/eldritchajor2.png");
+					ResourceLocation loc = new ResourceLocation("thaumcraft:textures/misc/eldritchajor2.png"); //yes, eldritchajor
 					Minecraft.getMinecraft().renderEngine.bindTexture(loc);
 					GL11.glColor4f(1, 1, 1, 0.95F);
 					evt.gui.drawTexturedModalRect(x2, y2, u, 146, w, h2);
+					y2 = k-25;
+					h2 = 65;
+					evt.gui.drawTexturedModalRect(x, y2, u, 146, w, h2);
 					GL11.glColor4f(1, 1, 1, 0.6F);
 					loc = new ResourceLocation("thaumcraft:textures/misc/eldritchajor1.png");
 					Minecraft.getMinecraft().renderEngine.bindTexture(loc);
@@ -1462,12 +1467,24 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 					//v5.addVertexWithUV(x, y, 0, 0, 0);
 					//v5.draw();
 				}
+				else if (item.key.endsWith("PYLONWANDING") && page == 2) { //"Very technical diagram"
+					ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/pylon_wanding.png");
+					int tick = (int)(System.currentTimeMillis()/20);
+					if (tick%(pylonWandRand ? 20 : 100) == 0)
+						pylonWandRand = rand.nextInt(5) == 0;
+					int x = j+140;
+					int y = k-7;
+					int u = pylonWandRand ? 128 : 0;
+					evt.gui.drawTexturedModalRect(x, y, u, 0, 128, 192);
+				}
 			}
 			catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
+
+	private boolean pylonWandRand = false;
 
 	@SubscribeEvent
 	@ModDependent(ModList.NEI)

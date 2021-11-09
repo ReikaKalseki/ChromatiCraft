@@ -99,6 +99,7 @@ import Reika.ChromatiCraft.ModInterface.AE.ItemCrystalCell;
 import Reika.ChromatiCraft.ModInterface.AE.ItemShieldedCell;
 import Reika.ChromatiCraft.ModInterface.AE.ItemVoidStorage;
 import Reika.ChromatiCraft.ModInterface.Bees.ItemChromaBeeFrame;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.ItemAbilityFocus;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.ItemManipulatorFocus;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.ItemWarpProofer;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant.Modifier;
@@ -199,6 +200,7 @@ public enum ChromaItems implements ItemEnum {
 	WIDECOLLECTOR(66, false, "chroma.widecollector",ItemWideCollector.class),
 	MANIPFOCUS(0, false,	"chroma.manipfocus",	ItemManipulatorFocus.class, ModList.THAUMCRAFT),
 	NETHERKEY(67, false,	"chroma.netherkey",		ItemNetherKey.class),
+	ABILITYFOCUS(0, false,	"chroma.abilityfocus",	ItemAbilityFocus.class, ModList.THAUMCRAFT),
 	;
 
 	private final int index;

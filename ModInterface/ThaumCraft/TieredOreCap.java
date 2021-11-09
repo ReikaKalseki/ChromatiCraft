@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.IO.DirectResourceManager;
 import Reika.DragonAPI.Instantiable.Formula.MathExpression;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -95,6 +96,7 @@ public class TieredOreCap extends WandCap {
 		String ref = ChromaDescriptions.getParentPage()+"thaum.xml";
 		ArrayList<ShapedArcaneRecipe> li = new ArrayList();
 		AspectList total = new AspectList();
+		String desc = "The more expensive the material, the better the cap...right?";
 		for (TieredOres t : items.keySet()) {
 			WandType wt = items.get(t);
 			AspectList al = new AspectList();
@@ -108,7 +110,6 @@ public class TieredOreCap extends WandCap {
 			total.add(al);
 			ShapedArcaneRecipe ir = ThaumcraftApi.addArcaneCraftingRecipe("", wt.item, al, recipe);
 			String id = "CAP_TIEREDCAP_"+t.name();
-			String desc = "Novel caps";
 
 			MathExpression cost = new MathExpression() {
 				@Override
@@ -133,8 +134,8 @@ public class TieredOreCap extends WandCap {
 		}
 		Collections.sort(li, new RecipeComparator());
 		ShapedArcaneRecipe[] recipes = li.toArray(new ShapedArcaneRecipe[li.size()]);
-		ReikaThaumHelper.addResearchForMultipleRecipesViaXML("Elemental Caps", ChromaStacks.chromaCap, RESEARCH_ID, "Novel Caps", "chromaticraft", ChromatiCraft.class, ref, 0, 0, recipes, 1, 2, total).setParents("ROD_silverwood", "CAP_thaumium", "SCEPTRE");
-		ThaumcraftApi.addWarpToResearch(RESEARCH_ID, 3);
+		ReikaThaumHelper.addResearchForMultipleRecipesViaXML(ChromatiCraft.instance, "Elemental Caps", ChromaStacks.chromaCap, RESEARCH_ID, desc, "chromaticraft", ChromatiCraft.class, ref, 0, 0, recipes, total).setParents("ROD_silverwood", "CAP_thaumium", "SCEPTRE", "PYLONWANDING");
+		ThaumcraftApi.addWarpToResearch(RESEARCH_ID, ChromaOptions.HARDTHAUM.getState() ? 4 : 2);
 	}
 
 	private static class RecipeComparator implements Comparator<ShapedArcaneRecipe> {

@@ -344,17 +344,17 @@ public class ChromaAux {
 		return name.contains("lycanite");
 	}
 
-	public static void doPylonAttack(CrystalElement color, EntityLivingBase e, float amt, boolean taperNew) {
-		doPylonAttack(color, e, amt, taperNew, 0);
+	public static void doPylonAttack(CrystalElement color, EntityLivingBase e, float amt) {
+		doPylonAttack(color, e, amt, false, 0, false);
 	}
 
-	public static void doPylonAttack(CrystalElement color, EntityLivingBase e, float amt, boolean taperNew, int looting) {
-
+	public static void doPylonAttack(CrystalElement color, EntityLivingBase e, float amt, boolean taperNew, int looting, boolean progress) {
 		final float originalAmt = amt;
 
 		if (e instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)e;
-			ProgressStage.SHOCK.stepPlayerTo(ep);
+			if (progress)
+				ProgressStage.SHOCK.stepPlayerTo(ep);
 			//DO NOT UNCOMMENT, AS ALLOWS DISCOVERY OF ALL COLORS BEFORE PREREQ//ProgressionManager.instance.setPlayerDiscoveredColor(ep, color, true);
 			if (ModList.BLOODMAGIC.isLoaded()) {
 				int drain = 5000;
@@ -731,7 +731,7 @@ public class ChromaAux {
 	public static void dischargeIntoPlayer(double x, double y, double z, Random rand, EntityLivingBase e, CrystalElement color, float power, float beamSize) {
 		if (e.worldObj.isRemote)
 			return;
-		ChromaAux.doPylonAttack(color, e, e.getHealth()/4F*Math.min(1, 2*power), false);
+		ChromaAux.doPylonAttack(color, e, e.getHealth()/4F*Math.min(1, 2*power));
 		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.FIREDUMPSHOCK.ordinal(), e.worldObj, (int)x, (int)y, (int)z, 64, color.ordinal(), e.getEntityId(), Float.floatToRawIntBits(beamSize));
 		ReikaEntityHelper.knockbackEntityFromPos(x, /*y*/e.posY, z, e, 1.5*Math.min(power*4, 1));
 		e.motionY += 0.125+rand.nextDouble()*0.0625;

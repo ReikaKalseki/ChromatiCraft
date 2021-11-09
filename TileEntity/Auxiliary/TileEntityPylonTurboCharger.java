@@ -355,7 +355,7 @@ public class TileEntityPylonTurboCharger extends TileEntityPylonEnhancer {
 				}
 				else {
 					float amt = Math.max(5, Math.min(e.getHealth()-4, e.getMaxHealth()*0.75F));
-					ChromaAux.doPylonAttack(te.getColor(), e, amt, false);
+					ChromaAux.doPylonAttack(te.getColor(), e, amt);
 					ChromaSounds.DISCHARGE.playSound(e.worldObj, e.posX, e.posY, e.posZ, 1, 1);
 				}
 			}

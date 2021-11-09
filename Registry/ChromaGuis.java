@@ -44,6 +44,7 @@ public enum ChromaGuis {
 	//LORE();
 	STRUCTUREPASS(),
 	ENDERBUCKET(),
+	ABILITYFOCUS(),
 	;
 
 	public static final ChromaGuis[] guiList = values();

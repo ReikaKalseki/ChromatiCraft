@@ -1203,6 +1203,18 @@ public class ChromatiPackets implements PacketHandler {
 					ChromaFX.doElementalParticle(world, dx, dy, dz, CrystalElement.elements[data[0]], s, v, data[5]);
 					break;
 				}
+				case ABILITYFOCUS: {
+					Ability a = Chromabilities.getAbility(stringdata);
+					if (a != null) {
+						ItemStack focus = ep.getCurrentEquippedItem();
+						if (focus != null && ChromaItems.ABILITYFOCUS.matchWith(focus)) {
+							focus.stackTagCompound = new NBTTagCompound();
+							focus.stackTagCompound.setString("ability", stringdata);
+							focus.stackTagCompound.setInteger("power", data[0]);
+						}
+					}
+					break;
+				}
 			}
 		}
 		catch (NullPointerException e) {

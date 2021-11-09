@@ -45,8 +45,8 @@ public class GuiAbilitySelect extends GuiScreen {
 
 	private int dx = 0;
 	private double offset = 0;
-	private Ability ability;
-	private int data = 0;
+	protected Ability ability;
+	protected int data = 0;
 
 	private final ArrayList<Ability> abilities = new ArrayList();
 
@@ -284,7 +284,7 @@ public class GuiAbilitySelect extends GuiScreen {
 		}
 	}
 
-	private void selectAbility() {
+	protected void selectAbility() {
 		if (selectAbility(player, ability, data)) {
 			if (mc.currentScreen.getClass() == this.getClass())
 				player.closeScreen();

@@ -107,7 +107,7 @@ public class CastingTuningMismatchReaction {
 			e.velocityChanged = true;
 			e.fallDistance = 20;
 			if (e instanceof EntityLivingBase)
-				ChromaAux.doPylonAttack(null, (EntityLivingBase)e, 3, false);
+				ChromaAux.doPylonAttack(null, (EntityLivingBase)e, 3);
 			else
 				e.attackEntityFrom(DamageSource.magic, 3);
 			if (e instanceof EntityPlayer) {

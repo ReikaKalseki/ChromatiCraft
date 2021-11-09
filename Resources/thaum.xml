@@ -10,9 +10,9 @@
 <?xml version="1.0"?>
 <researches>
 	<warpproof>
-		<page1>
+		<page0>
 			You are starting to lose your mind. Between nightmares of eldritch creatures that prove too real for comfort to the fact your very presence brings an evil aura, the consequences of dabbling in the darker aspects of magic have driven you to the edge. In a last-ditch effort to regain your sanity, you hope to harness another, brighter and altogether more benevolent set of magic forces to drive away your demons. However, the final step will still need to use that infernal altar that gave you these problems in the first place. One can only hope this works, as it is your last chance...
-		</page1>
+		</page0>
 	</warpproof>
 	<tieredorecap>
 		<page0>
@@ -23,13 +23,44 @@
 		</page1>
 	</tieredorecap>
 	<rod_crystalwand>
-		<page1>
+		<page0>
 			Be it your material reserves, your power storage, your food supply, or, as now, your wand capacity, it is never enough. The once-seemingly-vast hundred or two vis you managed to pack into a white wooden stick now show how small they truly are. Recalling your experiences with iridescent crystal and its amplification power on the Crystal Pylons, you wonder if you can find another use. It might even gain other special powers from doing so. Besides, what is the worst that could happen?
-		</page1>
+		</page0>
 	</rod_crystalwand>
 	<manipfocus>
-		<page1>
-			Near every kind of construct you deal with has its own kind of tool to tune it; the machinery in your base alone has mandated four kinds of wrenches, two hammers, and a screwdriver. Magical constructs are no exception, with one set requiring what amounts to crystals on a stick, another being petals on a stick, and another...metals on a stick. Either way, the last of these can accept upgrades that add some kind of function, from digging to throwing fire to making your friend unable to remove random blocks from their base. Given this, as well as the fact that you have found out a way to imprint one such upgrade with one of your wrench variants, you might be able to replicate at least one of your other magical manipulation tools.
-		</page1>
+		<page0>
+			Near every kind of construct you deal with has its own kind of tool to tune it; the machinery in your base alone has mandated four kinds of wrenches, two hammers, and a screwdriver. Magical constructs are no exception, with one set requiring what amounts to crystals on a stick, another being petals on a stick, and another...metals on a stick. The last of these can accept upgrades that add some kind of function, from throwing fire to making your friend unable to remove random blocks from their base. Given this, as well as the fact that you have found out a way to imprint one such upgrade with one of your wrench variants, you might be able to replicate that with at least one of your other magical manipulation tools.
+		</page0>
 	</manipfocus>
+	<pylonwanding>
+		<page0>
+			One thing that has become [i]painfully[/i] obvious to you is how much of a hassle it can be to recharge your wand. Sure, the process sounds simple enough - find a node, stick your wand in it, and wait a few seconds - but that simplicity belies some very real headaches. First and foremost, nodes are rare and their locations are generally unpredictable (though you have noticed some patterns in that forest with giant pink trees and fire-spitting quadrupeds); this means that finding more than a handful is a tedious undertaking, and even when you do find one, making use of it involves a long walk to the middle of nowhere. Then you have the fact that while your wand capacities are ever 
+		</page0>
+		<page1>
+			increasing, that of your nodes is not. Even the unusually large nodes in a few magical biomes are quickly emptied by even casual use of your vis (to say nothing of mass-crafting or that time you had to move your infusion altar three times), and - problem number three - they take literal hours to recharge, if they even do at all (for some reason, ones sufficiently far away seem to go inert until revisited). While you could just stick the node in a jar and carry it back home, that only solves a couple of these problems, introduces new ones, and besides, you really do not like the idea of having a room with the walls coated in nodes (not that the nodes seem to like being crammed together in that manner, either). Besides, jarring nodes [i]also[/i] costs a ton of vis, and usually damages them, too.
+		</page1>
+		<page2>
+			After hours of frustration, it hits you - the land is already dotted with very visible and highly energetic structures, and you have already learned how to glean thaumaturgic insights from their energies. If you could tap into these - though you need to find a way to not make that a suicide run - you would have more vis than you could ever need. Of course, your efforts at the beginning will be clumsy and slow, spilling most of the energy into the air where it cannot be used, but as you learn and refine your strategies, that is sure to improve. Similarly, just like how the crappy wands prevent you from being careful when drawing from nodes, they will probably not work for drawing from a pylon at all.
+		</page2>
+		<page3>
+			
+		</page3>
+	</pylonwanding>
+	<abilityfocus>
+		<page0>
+			A pyramid of crystal stone topped with a ring of chroma has allowed you to imbue yourself with the power to cast a wide variety of spell-like actions (that one to fire a giant blue beam from the sky is particularly fun), and better yet, this can be done without the need for any kind of tool. Except, of course, when that is not actually better; you still needed some way to select or activate these powers, and the method you chose has grown somewhat irksome, as it conflicts with a similar action used to select blocks around you. Perhaps you could bind a focus to an ability - one at a time, though able to be changed - so that you can trigger
+		</page0>
+		<page1>
+			 that specific one at will with the wand you always have on you anyways. In fact, that is probably a lot easier than it looks or sounds, though you [i]are[/i] going to have a fun time trying to cram that many items into the altar...
+			 
+			 When bound to an ability, the wand will simply fire that ability at the charge level it was "programmed" to; targeted abilities will simply inherit the aiming of the wand at the time of activation. To bind (or change) the ability, you will probably need to do nothing more than to select it in the same general manner as you always do, just via the focus instead of the usual initial action.
+			 
+			 You cannot help but be nagged by a thought - in unifying these two systems, you almost feel like you have opened the gateway to something far deeper...
+		</page1>
+	</abilityfocus>
+	<ccintro>
+		<page0>
+			
+		</page0>
+	</ccintro>
 </researches>

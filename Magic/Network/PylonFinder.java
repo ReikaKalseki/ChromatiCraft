@@ -20,9 +20,11 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.BiomeGenDesert;
@@ -543,6 +545,10 @@ public class PylonFinder {
 	//private boolean lineOfSight(World world, int x, int y, int z, CrystalNetworkTile te) {
 	//	return lineOfSight(world, x, y, z, te.getX(), te.getY(), te.getZ());
 	//}
+
+	public static LOSData lineOfSight(World world, int x, int y, int z, Entity e, Block... extra) {
+		return lineOfSight(world, x, y, z, MathHelper.floor_double(e.posX), (int)e.posY, MathHelper.floor_double(e.posZ), extra);
+	}
 
 	public static LOSData lineOfSight(World world, int x1, int y1, int z1, int x2, int y2, int z2, Block... extra) {
 		tracer.setOrigins(x1, y1, z1, x2, y2, z2);

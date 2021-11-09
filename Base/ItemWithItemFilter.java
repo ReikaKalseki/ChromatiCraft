@@ -218,7 +218,11 @@ public abstract class ItemWithItemFilter extends ItemChromaTool {
 				case BLACKLIST:
 					return !WHITELIST.matchesItem(tool, is);
 				case WHITELIST:
-					return ((ItemWithItemFilter)tool.getItem()).getItemList(tool).contains(new KeyedItemStack(is).setSimpleHash(true));
+					ItemWithItemFilter bag = ((ItemWithItemFilter)tool.getItem());
+					KeyedItemStack ks = new KeyedItemStack(is).setSimpleHash(true).setSized(false);
+					if (!bag.checkNBT(tool, is))
+						ks.setIgnoreNBT(true);
+					return bag.getItemList(tool).contains(ks);
 				case EVERYTHING:
 					return true;
 				case NOTHING:
@@ -278,6 +282,10 @@ public abstract class ItemWithItemFilter extends ItemChromaTool {
 			return new KeyedItemStack(item).setIgnoreMetadata(false).setSized(false).setIgnoreNBT(false).setSimpleHash(true);
 		}
 
+	}
+
+	public boolean checkNBT(ItemStack tool, ItemStack is) {
+		return true;
 	}
 
 }

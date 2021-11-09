@@ -117,6 +117,7 @@ import Reika.ChromatiCraft.ModInterface.AE.TileEntityMEDistributor;
 import Reika.ChromatiCraft.ModInterface.AE.TileEntityPatternCache;
 import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.ContainerFluxMaker;
+import Reika.ChromatiCraft.ModInterface.ThaumCraft.GuiAbilityFocus;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.GuiAspectFormer;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.GuiFluxMaker;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectFormer;
@@ -343,6 +344,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				break;
 			case ABILITY:
 				return new GuiAbilitySelect(player);
+			case ABILITYFOCUS:
+				return new GuiAbilityFocus(player);
 			case BOOKNAV:
 				return new GuiNavigation(player);
 			case BOOKPAGES:

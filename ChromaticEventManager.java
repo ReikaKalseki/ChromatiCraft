@@ -1390,7 +1390,7 @@ public class ChromaticEventManager {
 							mob.onDeath(src);
 						}
 						else {
-							ChromaAux.doPylonAttack(null, mob, dmg, false);
+							ChromaAux.doPylonAttack(null, mob, dmg);
 						}
 					}
 					else {
@@ -1983,7 +1983,7 @@ public class ChromaticEventManager {
 					src2.setDamageIsAbsolute().setDamageBypassesArmor();
 					evt.entityLiving.attackEntityFrom(src2, pierce);
 					 */
-					ChromaAux.doPylonAttack(null, evt.entityLiving, pierce, false);
+					ChromaAux.doPylonAttack(null, evt.entityLiving, pierce);
 					applyingPhasing = false;
 				}
 			}

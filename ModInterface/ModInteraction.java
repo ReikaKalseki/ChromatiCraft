@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import com.InfinityRaider.AgriCraft.api.API;
@@ -51,6 +52,7 @@ import Reika.ChromatiCraft.ModInterface.ThaumCraft.CrystalWand;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TieredOreCap;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
@@ -83,6 +85,7 @@ import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.crafting.InfusionRecipe;
+import thaumcraft.api.research.ResearchItem;
 import vazkii.botania.api.BotaniaAPI;
 
 
@@ -505,7 +508,7 @@ public class ModInteraction {
 					new ItemStack(ThaumItemHelper.BlockEntry.CRYSTAL.getBlock(), 1, 6),
 			};
 			InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("WARPPROOF", out, 24, al, in, recipe);
-			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("WARPPROOF", desc, "chromaticraft", ir, costFactor, -2, 0, root, ref).setParents("ELDRITCHMAJOR").setSpecial();
+			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML(ChromatiCraft.instance, "WARPPROOF", desc, "chromaticraft", ir, costFactor, -2, 0, root, ref).setParents("ELDRITCHMAJOR").setSpecial();
 			ThaumcraftApi.addWarpToResearch("WARPPROOF", 6); //Taboo is 5
 		}
 
@@ -527,14 +530,14 @@ public class ModInteraction {
 					ThaumItemHelper.ItemEntry.VISFITLER.getItem(),
 			};
 			InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("ROD_CRYSTALWAND", ChromaStacks.crystalWand, 18, al, ChromaStacks.iridChunk, recipe);
-			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("ROD_CRYSTALWAND", "Fashioning a wand from crystals", "chromaticraft", ir, costFactor, 2, 0, root, ref).setSpecial().setParents("ROD_silverwood", "CAP_thaumium", "SCEPTRE");
+			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML(ChromatiCraft.instance, "ROD_CRYSTALWAND", "Fashioning a wand from crystals", "chromaticraft", ir, costFactor, 2, 0, root, ref).setSpecial().setParents("ROD_silverwood", "CAP_thaumium", "SCEPTRE", "PYLONWANDING");
 		}
 
 		{
 			AspectList al = new AspectList();
 			al.add(Aspect.MAGIC, 10);
 			al.add(Aspect.CRYSTAL, 10);
-			al.add(ChromaAspectManager.instance.SIGNAL, 10);
+			al.add(ChromaAspectManager.instance.PUZZLE, 10);
 			ItemStack[] recipe = {
 					ThaumItemHelper.ItemEntry.BALANCED.getItem(),
 					new ItemStack(Items.quartz),
@@ -544,12 +547,64 @@ public class ModInteraction {
 					ChromaStacks.rawCrystal,
 			};
 			InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("MANIPFOCUS", ChromaItems.MANIPFOCUS.getStackOf(), 0, al, ChromaItems.TOOL.getStackOf(), recipe);
-			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("MANIPFOCUS", "Why have two wands when you can have one?", "chromaticraft", ir, costFactor, 2, -2, root, ref).setParents("BASICTHAUMATURGY", "INFUSION");
+			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML(ChromatiCraft.instance, "MANIPFOCUS", "Why have two wands when you can have one?", "chromaticraft", ir, costFactor, 2, -4, root, ref).setParents("BASICTHAUMATURGY", "INFUSION", "CCINTRO");
+		}
+
+		{
+			String desc = "Big energy for even bigger ambitions";
+			AspectList al = new AspectList();
+			al.add(Aspect.MAGIC, 5);
+			al.add(ChromaAspectManager.instance.SIGNAL, 8);
+			al.add(Aspect.EXCHANGE, 3);
+			al.add(Aspect.HARVEST, 2);
+			if (ChromaOptions.HARDTHAUM.getState()) {
+				for (Entry<Aspect, Integer> e : al.aspects.entrySet()) {
+					e.setValue(e.getValue()*5);
+				}
+			}
+			ResourceLocation ico = new ResourceLocation("chromaticraft", "textures/aspects/pylonwanding.png");
+			ResearchItem ri = ReikaThaumHelper.addBasicBookEntryViaXML(ChromatiCraft.instance, "PYLONWANDING", "Pylon-Sourced Vis", desc, "chromaticraft", al, 2, -2, root, ref, ico);
+			ri.setRound().setSpecial();
+			if (ChromaOptions.HARDTHAUM.getState())
+				ri.setParents("NODETAPPER2", "RESEARCHER2", "WANDPEDFOC", "CCINTRO", "CAP_gold", "ROD_greatwood");
+			else
+				ri.setParents("BASICTHAUMATURGY", "WANDPED", "CCINTRO");
+		}
+
+		{
+			AspectList al = new AspectList();
+			al.add(Aspect.MAGIC, 20);
+			al.add(Aspect.TOOL, 10);
+			al.add(ChromaAspectManager.instance.PRECURSOR, 20);
+			ItemStack in = ThaumItemHelper.ItemEntry.PRIMALFOCUS.getItem();
+			ArrayList<ItemStack> items = new ArrayList();
+			for (int i = 0; i < 16; i++) {
+				//items.add(new ItemStack(ThaumOreHandler.getInstance().shardID, 1, i));
+				items.add(ChromaStacks.getChargedShard(CrystalElement.elements[i]));
+				items.add(ThaumItemHelper.ItemEntry.BALANCED.getItem());
+				if (i%4 == 0) {
+					items.add(ChromaStacks.elementDust);
+				}
+				if (i%8 == 0) {
+					items.add(new ItemStack(Blocks.glowstone));
+				}
+			}
+			InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("ABILITYFOCUS", ChromaItems.ABILITYFOCUS.getStackOf(), 5, al, in, items.toArray(new ItemStack[items.size()]));
+			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML(ChromatiCraft.instance, "ABILITYFOCUS", "For when convenience becomes inconvenient", "chromaticraft", ir, costFactor, 0, -2, root, ref).setParents("FOCALMANIPULATION", "INFUSION", "MANIPFOCUS", "FOCUSPRIMAL");
+		}
+
+		{
+			String desc = "Making parallel lines cross";
+			ResourceLocation ico = new ResourceLocation("chromaticraft", "textures/aspects/intro.png");
+			ResearchItem ri = ReikaThaumHelper.addBasicBookEntryViaXML(ChromatiCraft.instance, "CCINTRO", "Two kinds of magic", desc, "chromaticraft", null, 2, -2, root, ref, ico);
+			ri.setRound().setAutoUnlock();
 		}
 
 		TieredOreCap.addRecipes();
 
-		ThaumcraftApi.addWarpToResearch("ROD_CRYSTALWAND", 2);
+		ThaumcraftApi.addWarpToResearch("ROD_CRYSTALWAND", ChromaOptions.HARDTHAUM.getState() ? 5 : 2);
+
+		ThaumcraftApi.addWarpToResearch("PYLONWANDING", ChromaOptions.HARDTHAUM.getState() ? 4 : 2);
 	}
 
 	public static void modifyRFToolsPages() {

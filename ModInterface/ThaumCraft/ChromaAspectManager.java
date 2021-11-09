@@ -77,13 +77,13 @@ public class ChromaAspectManager {
 		this.addAspectColor(CrystalElement.GREEN, Aspect.PLANT, Aspect.POISON, Aspect.EARTH);
 		this.addAspectColor(CrystalElement.BROWN, Aspect.BEAST, Aspect.TREE);
 		this.addAspectColor(CrystalElement.BLUE, Aspect.WATER, Aspect.TOOL);
-		this.addAspectColor(CrystalElement.PURPLE, Aspect.MAGIC, Aspect.TAINT, Aspect.ELDRITCH, PUZZLE);
+		this.addAspectColor(CrystalElement.PURPLE, Aspect.MAGIC, Aspect.TAINT, Aspect.ELDRITCH);
 		this.addAspectColor(CrystalElement.CYAN, Aspect.ARMOR, Aspect.SENSES);
 		this.addAspectColor(CrystalElement.LIGHTGRAY, Aspect.VOID, Aspect.SOUL, Aspect.METAL);
 		this.addAspectColor(CrystalElement.GRAY, Aspect.ENTROPY);
 		this.addAspectColor(CrystalElement.PINK, Aspect.MIND);
 		this.addAspectColor(CrystalElement.LIME, Aspect.SLIME);
-		this.addAspectColor(CrystalElement.YELLOW, Aspect.CROP, Aspect.LIGHT, Aspect.AIR, Aspect.GREED, SIGNAL);
+		this.addAspectColor(CrystalElement.YELLOW, Aspect.LIGHT, Aspect.AIR, Aspect.GREED, SIGNAL);
 		this.addAspectColor(CrystalElement.LIGHTBLUE, Aspect.CRYSTAL, Aspect.MECHANISM, Aspect.MOTION);
 		this.addAspectColor(CrystalElement.MAGENTA, Aspect.FLESH);
 		this.addAspectColor(CrystalElement.ORANGE, Aspect.FIRE);
@@ -91,18 +91,23 @@ public class ChromaAspectManager {
 
 		this.addAspectTheme(CrystalElement.BLACK, Aspect.MAGIC);
 		this.addAspectTheme(CrystalElement.RED, Aspect.ARMOR);
-		this.addAspectTheme(CrystalElement.GREEN, Aspect.EARTH);
+		this.addAspectTheme(CrystalElement.GREEN, Aspect.EARTH, Aspect.PLANT);
 		this.addAspectTheme(CrystalElement.BROWN, Aspect.METAL, Aspect.MINE);
 		this.addAspectTheme(CrystalElement.BLUE, Aspect.LIGHT);
-		this.addAspectTheme(CrystalElement.PURPLE, Aspect.AURA);
+		this.addAspectTheme(CrystalElement.PURPLE, Aspect.AURA, PUZZLE);
+		if (Aspect.getAspect("superbia") != null) {
+			this.addAspectColor(CrystalElement.PURPLE, Aspect.getAspect("superbia"));
+			this.addAspectTheme(CrystalElement.PURPLE, Aspect.getAspect("superbia"));
+		}
 		this.addAspectTheme(CrystalElement.CYAN, Aspect.WATER);
 		this.addAspectTheme(CrystalElement.LIGHTGRAY, Aspect.ENTROPY, Aspect.TRAP);
 		this.addAspectTheme(CrystalElement.GRAY, Aspect.EXCHANGE);
 		this.addAspectTheme(CrystalElement.PINK, Aspect.WEAPON);
 		this.addAspectTheme(CrystalElement.LIME, Aspect.MOTION, Aspect.TRAVEL, Aspect.FLIGHT);
 		this.addAspectTheme(CrystalElement.YELLOW, Aspect.ENERGY, SIGNAL);
-		if (Aspect.getAspect("tempus") != null)
+		if (Aspect.getAspect("tempus") != null) {
 			this.addAspectTheme(CrystalElement.LIGHTBLUE, Aspect.getAspect("tempus"));
+		}
 		this.addAspectTheme(CrystalElement.MAGENTA, Aspect.LIFE, Aspect.HEAL);
 		this.addAspectTheme(CrystalElement.ORANGE, Aspect.FIRE);
 		this.addAspectTheme(CrystalElement.WHITE, Aspect.ORDER, Aspect.AIR);
@@ -437,8 +442,8 @@ public class ChromaAspectManager {
 			ReikaThaumHelper.addAspects(is2, Aspect.PLANT, 1, Aspect.MAGIC, 2);
 			switch(Flowers.list[i]) {
 				case ENDERFLOWER:
-					ReikaThaumHelper.addAspects(is, Aspect.AURA, 4, Aspect.ELDRITCH, 1);
-					ReikaThaumHelper.addAspects(is2, Aspect.AURA, 1, Aspect.ELDRITCH, 1);
+					ReikaThaumHelper.addAspects(is, Aspect.ELDRITCH, 4, Aspect.MOTION, 4);
+					ReikaThaumHelper.addAspects(is2,Aspect.ELDRITCH, 1, Aspect.MOTION, 1);
 					break;
 				case FLOWIVY:
 					ReikaThaumHelper.addAspects(is, Aspect.LIFE, 4, Aspect.EARTH, 1);
@@ -449,8 +454,8 @@ public class ChromaAspectManager {
 					ReikaThaumHelper.addAspects(is2, Aspect.COLD, 1, Aspect.CRYSTAL, 1);
 					break;
 				case RESOCLOVER:
-					ReikaThaumHelper.addAspects(is, Aspect.ENERGY, 4, Aspect.MOTION, 1);
-					ReikaThaumHelper.addAspects(is2, Aspect.ENERGY, 1, Aspect.MOTION, 1);
+					ReikaThaumHelper.addAspects(is, Aspect.ENERGY, 4, Aspect.AURA, 4);
+					ReikaThaumHelper.addAspects(is2, Aspect.ENERGY, 1, Aspect.AURA, 1);
 					break;
 				case SANOBLOOM:
 					ReikaThaumHelper.addAspects(is, Aspect.HEAL, 4, Aspect.TRAVEL, 1);

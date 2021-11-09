@@ -494,7 +494,7 @@ public class AbilityHelper implements AbilityAPI {
 			ret.scale(5);
 		else if (this.getProgressFor(c).contains(ProgressStage.DIMENSION))
 			ret.scale(2.5F);
-		if (ItemEfficiencyCrystal.isActive(ep))
+		if (ep != null && ItemEfficiencyCrystal.isActive(ep))
 			ret.power(0.75);
 		return ret;
 	}

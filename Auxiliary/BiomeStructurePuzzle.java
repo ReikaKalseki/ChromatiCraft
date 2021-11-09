@@ -521,7 +521,8 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 
 	@Override
 	public void onTileLoaded(TileEntityStructControl root) {
-		this.updateColorDoors(root.worldObj, new Coordinate(root));
+		if (!root.worldObj.isRemote)
+			this.updateColorDoors(root.worldObj, new Coordinate(root));
 	}
 
 	private void complete(World world, TileEntityStructControl root, EntityPlayer ep) {
@@ -714,6 +715,9 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 
 	@Override
 	public void onTick(TileEntityStructControl te) {
+		if (te.getTicksExisted() == 5 || te.getTicksExisted()%200 == 0) {
+			this.updateColorDoors(te.worldObj, new Coordinate(te));
+		}
 		EntityPlayer ep = te.worldObj.getClosestPlayer(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5, 20);
 		if (ep == null)
 			return;

@@ -194,7 +194,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 
 	private void attack(World world, int x, int y, int z, EntityLivingBase e) {
 		float dmg = this.getAttackDamage(e);
-		ChromaAux.doPylonAttack(null, e, dmg, false, this.getLootingLevel());
+		ChromaAux.doPylonAttack(null, e, dmg, false, this.getLootingLevel(), false);
 		ChromaSounds.DISCHARGE.playSound(e.worldObj, e.posX, e.posY, e.posZ, 1, 1);
 		ChromaSounds.DISCHARGE.playSound(e, 0.5F, 1);
 

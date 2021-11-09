@@ -87,7 +87,7 @@ public class OuterRegionsEvents {
 			}
 			else {
 				if (!ep.capabilities.isCreativeMode)
-					ChromaAux.doPylonAttack(null, ep, dmg, false);
+					ChromaAux.doPylonAttack(null, ep, dmg);
 				ReikaEntityHelper.knockbackEntity(e, ep, ep.worldObj.rand.nextDouble());
 				return false;
 			}
