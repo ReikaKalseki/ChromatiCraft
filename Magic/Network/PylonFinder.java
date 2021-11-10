@@ -173,7 +173,7 @@ public class PylonFinder {
 	}
 
 	private void optimizeSkypeaterRoute(ArrayList<WorldLocation> path) {
-		this.optimizeRoute(net, path, Integer.MAX_VALUE, new JumpOptimizationCheck() {
+		this.optimizeRoute(net, CrystalPath.createNodeList(path), Integer.MAX_VALUE, new JumpOptimizationCheck() {
 
 			@Override
 			public boolean canDirectLink(CrystalNetworkTile t1, CrystalNetworkTile t2) {
@@ -181,8 +181,8 @@ public class PylonFinder {
 			}});
 	}
 
-	static boolean optimizeRoute(CrystalNetworker net, ArrayList<WorldLocation> path, int nsteps, JumpOptimizationCheck joc) {
-		ArrayList<WorldLocation> li = new ArrayList(path);
+	static boolean optimizeRoute(CrystalNetworker net, ArrayList<PathNode> path, int nsteps, JumpOptimizationCheck joc) {
+		ArrayList<PathNode> li = new ArrayList(path);
 		boolean flag = true;
 		int cycles = 0;
 		boolean limit = false;
@@ -191,10 +191,10 @@ public class PylonFinder {
 			for (int i = 0; i < li.size() && !flag; i++) {
 				for (int k = i; k < li.size() && !flag; k++) {
 					if (i < k && Math.abs(i-k) > 1) {
-						WorldLocation loc = li.get(i);
-						WorldLocation loc2 = li.get(k);
-						CrystalNetworkTile te1 = getNetTileAt(loc, true);
-						CrystalNetworkTile te2 = getNetTileAt(loc2, true);
+						PathNode loc = li.get(i);
+						PathNode loc2 = li.get(k);
+						CrystalNetworkTile te1 = getNetTileAt(loc.location, true);
+						CrystalNetworkTile te2 = getNetTileAt(loc2.location, true);
 						if (te1 instanceof CrystalReceiver && te2 instanceof CrystalTransmitter && joc.canDirectLink(te1, te2)) {
 							double d = Math.min(((CrystalReceiver)te1).getReceiveRange(), ((CrystalTransmitter)te2).getSendRange());
 							if (te1.getDistanceSqTo(te2.getX(), te2.getY(), te2.getZ()) <= d*d && net.checkLOS((CrystalTransmitter)te2, (CrystalReceiver)te1)) {

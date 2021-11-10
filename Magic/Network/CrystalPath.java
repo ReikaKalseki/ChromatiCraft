@@ -70,7 +70,7 @@ public class CrystalPath implements Comparable<CrystalPath> {
 		}
 	}
 
-	private static ArrayList<PathNode> createNodeList(List<WorldLocation> li) {
+	static ArrayList<PathNode> createNodeList(List<WorldLocation> li) {
 		ArrayList<PathNode> ret = new ArrayList();
 		for (int i = 0; i < li.size(); i++) {
 			ret.add(new PathNode(li.get(i), i, i == 0));
@@ -300,7 +300,7 @@ public class CrystalPath implements Comparable<CrystalPath> {
 	}
 
 	public final CrystalPath optimize(int nsteps) {
-		ArrayList<WorldLocation> li = new ArrayList(nodes);
+		ArrayList<PathNode> li = new ArrayList(nodes);
 		boolean complete = PylonFinder.optimizeRoute(network, li, nsteps, JumpOptimizationCheck.always);
 		CrystalPath p = new CrystalPath(network, hasRealTarget, element, li);
 		if (complete) {

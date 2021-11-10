@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -119,9 +120,21 @@ public abstract class TileEntityLocusPoint extends TileEntityChromaticBase imple
 		return getCache(cl, ep.getUniqueID());
 	}
 
+	public static boolean hasLoci(Class<? extends TileEntityLocusPoint> cl, UUID uid) {
+		ThreadSafeTileCache c = cache.get(cl, uid);
+		return c != null && !c.isEmpty();
+	}
+
 	public static Collection<WorldLocation> getCache(Class<? extends TileEntityLocusPoint> cl, UUID uid) {
 		Collection<WorldLocation> c = cache.get(cl, uid);
 		return c != null ? Collections.unmodifiableCollection(c) : null;
+	}
+
+	public static WorldLocation getMatchFromCache(Class<? extends TileEntityLocusPoint> cl, UUID uid, Function<WorldLocation, Boolean> check) {
+		ThreadSafeTileCache c = cache.get(cl, uid);
+		if (c == null || c.isEmpty())
+			return null;
+		return c.iterateAsSearch(check);
 	}
 
 	public static Collection<WorldLocation> getCaches(Class<? extends TileEntityLocusPoint> cl) {

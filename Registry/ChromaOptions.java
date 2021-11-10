@@ -58,7 +58,7 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	ENDERTNT("Enable Ender TNT", true),
 	KEYBINDABILITY("Use vanilla keybind system for ability selection GUI", false),
 	COPYTILE("Allow duplication wand to copy TileEntities", false),
-	HARDTHAUM("More difficult ThaumCraft integration", false),
+	HARDTHAUM("More difficult ThaumCraft integration", true),
 	PIELOC("Energy Buffer Overlay Location", 0),
 	RETROGEN("Retrogeneration", false),
 	BIOMEPAINTER("Enable Biome Painter", true),

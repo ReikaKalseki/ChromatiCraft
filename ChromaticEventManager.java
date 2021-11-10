@@ -306,7 +306,21 @@ public class ChromaticEventManager {
 	private ChromaticEventManager() {
 
 	}
-
+	/*
+	@ModDependent(ModList.THAUMCRAFT)
+	public void scanTCPylons(PlayerUseItemEvent.Tick evt) {
+		EntityPlayer ep = evt.entityPlayer;
+		if (ep.worldObj.isRemote) {
+			MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlockClient(4.5, false);//is.getItem().getMovingObjectPositionFromPlayer(world, ep, false);
+			if (mov != null) {
+				if (ChromaTiles.getTile(ep.worldObj, mov.blockX, mov.blockY, mov.blockZ) == ChromaTiles.PYLON) {
+					TileEntityCrystalPylon te = (TileEntityCrystalPylon)ep.worldObj.getTileEntity(mov.blockX, mov.blockY, mov.blockZ);
+					ModInteraction.triggerPylonScanProgress(ep, te);
+				}
+			}
+		}
+	}
+	 */
 	@SubscribeEvent
 	public void fakeJABBACompat(PlayerInteractEvent evt) {
 		if (evt.action == Action.RIGHT_CLICK_BLOCK && !evt.world.isRemote) {

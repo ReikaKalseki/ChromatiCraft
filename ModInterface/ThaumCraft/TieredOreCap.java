@@ -134,7 +134,7 @@ public class TieredOreCap extends WandCap {
 		}
 		Collections.sort(li, new RecipeComparator());
 		ShapedArcaneRecipe[] recipes = li.toArray(new ShapedArcaneRecipe[li.size()]);
-		ReikaThaumHelper.addResearchForMultipleRecipesViaXML(ChromatiCraft.instance, "Elemental Caps", ChromaStacks.chromaCap, RESEARCH_ID, desc, "chromaticraft", ChromatiCraft.class, ref, 0, 0, recipes, total).setParents("ROD_silverwood", "CAP_thaumium", "SCEPTRE", "PYLONWANDING");
+		ReikaThaumHelper.addResearchForMultipleRecipesViaXML(ChromatiCraft.instance, "Elemental Caps", ChromaStacks.chromaCap, RESEARCH_ID, desc, "chromaticraft", ChromatiCraft.class, ref, -3, 5, recipes, total).setParents("ROD_silverwood", "CAP_thaumium", "SCEPTRE", "CCCONVERT").setConcealed();
 		ThaumcraftApi.addWarpToResearch(RESEARCH_ID, ChromaOptions.HARDTHAUM.getState() ? 4 : 2);
 	}
 

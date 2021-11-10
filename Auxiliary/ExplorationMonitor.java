@@ -22,6 +22,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
+import Reika.ChromatiCraft.ModInterface.ModInteraction;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
@@ -29,6 +30,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 
@@ -62,8 +64,13 @@ public class ExplorationMonitor implements TickHandler {
 
 				if (ChromaTiles.getTile(world, x, y, z) == ChromaTiles.PYLON) {
 					TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y, z);
-					if (te.hasStructure())
+					if (te.hasStructure() && te.getEnergy(te.getColor()) >= te.getMaxStorage(te.getColor())/10) {
 						ProgressionManager.instance.setPlayerDiscoveredColor(ep, te.getColor(), true, true);
+						if (ModList.THAUMCRAFT.isLoaded() && ReikaItemHelper.matchStacks(ep.getCurrentEquippedItem(), ThaumItemHelper.ItemEntry.THAUMOMETER.getItem())) {
+							if (ep.isUsingItem() && ep.itemInUseCount <= 5)
+								ModInteraction.triggerPylonScanProgress(ep, te);
+						}
+					}
 				}
 
 				Block b = world.getBlock(x, y, z);

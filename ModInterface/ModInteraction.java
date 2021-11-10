@@ -24,6 +24,7 @@ import com.chocolate.chocolateQuest.API.RegisterChestItem;
 import com.google.common.base.Throwables;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -43,6 +44,8 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.ModInterface.Bees.ApiaryAcceleration;
 import Reika.ChromatiCraft.ModInterface.Bees.ChromaTrees;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
@@ -56,11 +59,13 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.SubBiomes;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
+import Reika.DragonAPI.IO.DirectResourceManager;
 import Reika.DragonAPI.Instantiable.BasicModEntry;
 import Reika.DragonAPI.Instantiable.Formula.MathExpression;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
@@ -459,12 +464,15 @@ public class ModInteraction {
 		CrystalBackpack.instance.register();
 	}
 
+	/**
+	 *
+	 */
 	@ModDependent(ModList.THAUMCRAFT)
 	public static void addThaumRecipes() {
 		Class root = ChromatiCraft.class;
 		String ref = ChromaDescriptions.getParentPage()+"thaum.xml";
 
-		ReikaThaumHelper.addBookCategory(new ResourceLocation("chromaticraft", "textures/blocks/tile/table_top.png"), "chromaticraft");
+		ReikaThaumHelper.addBookCategory(new ResourceLocation("chromaticraft", "textures/blocks/tile/table_top.png"), "chromaticraft", "Reika/ChromatiCraft/Textures/thaumonomicon/bcg.png");
 
 		MathExpression costFactor = new MathExpression() {
 			@Override
@@ -508,7 +516,7 @@ public class ModInteraction {
 					new ItemStack(ThaumItemHelper.BlockEntry.CRYSTAL.getBlock(), 1, 6),
 			};
 			InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("WARPPROOF", out, 24, al, in, recipe);
-			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML(ChromatiCraft.instance, "WARPPROOF", desc, "chromaticraft", ir, costFactor, -2, 0, root, ref).setParents("ELDRITCHMAJOR").setSpecial();
+			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML(ChromatiCraft.instance, "WARPPROOF", desc, "chromaticraft", ir, costFactor, 1, 4, root, ref).setParents("ELDRITCHMAJOR", "CCCONVERT").setSpecial().setConcealed();
 			ThaumcraftApi.addWarpToResearch("WARPPROOF", 6); //Taboo is 5
 		}
 
@@ -530,7 +538,7 @@ public class ModInteraction {
 					ThaumItemHelper.ItemEntry.VISFITLER.getItem(),
 			};
 			InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("ROD_CRYSTALWAND", ChromaStacks.crystalWand, 18, al, ChromaStacks.iridChunk, recipe);
-			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML(ChromatiCraft.instance, "ROD_CRYSTALWAND", "Fashioning a wand from crystals", "chromaticraft", ir, costFactor, 2, 0, root, ref).setSpecial().setParents("ROD_silverwood", "CAP_thaumium", "SCEPTRE", "PYLONWANDING");
+			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML(ChromatiCraft.instance, "ROD_CRYSTALWAND", "Fashioning a wand from crystals", "chromaticraft", ir, costFactor, -3, 1, root, ref).setSpecial().setParents("ROD_silverwood", "CAP_thaumium", "SCEPTRE", "CCCONVERT").setConcealed();
 		}
 
 		{
@@ -547,7 +555,7 @@ public class ModInteraction {
 					ChromaStacks.rawCrystal,
 			};
 			InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("MANIPFOCUS", ChromaItems.MANIPFOCUS.getStackOf(), 0, al, ChromaItems.TOOL.getStackOf(), recipe);
-			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML(ChromatiCraft.instance, "MANIPFOCUS", "Why have two wands when you can have one?", "chromaticraft", ir, costFactor, 2, -4, root, ref).setParents("BASICTHAUMATURGY", "INFUSION", "CCINTRO");
+			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML(ChromatiCraft.instance, "MANIPFOCUS", "Why have two wands when you can have one?", "chromaticraft", ir, costFactor, -2, -1, root, ref).setParents("BASICTHAUMATURGY", "INFUSION", "CCINTRO");
 		}
 
 		{
@@ -562,13 +570,13 @@ public class ModInteraction {
 					e.setValue(e.getValue()*5);
 				}
 			}
-			ResourceLocation ico = new ResourceLocation("chromaticraft", "textures/aspects/pylonwanding.png");
-			ResearchItem ri = ReikaThaumHelper.addBasicBookEntryViaXML(ChromatiCraft.instance, "PYLONWANDING", "Pylon-Sourced Vis", desc, "chromaticraft", al, 2, -2, root, ref, ico);
+			ResourceLocation ico = DirectResourceManager.getResource("Reika/ChromatiCraft/Textures/thaumonomicon/pylonwanding.png");
+			ResearchItem ri = ReikaThaumHelper.addBasicBookEntryViaXML(ChromatiCraft.instance, "PYLONWANDING", "Pylon-Sourced Vis", desc, "chromaticraft", al, -4, 3, root, ref, ico);
 			ri.setRound().setSpecial();
 			if (ChromaOptions.HARDTHAUM.getState())
-				ri.setParents("NODETAPPER2", "RESEARCHER2", "WANDPEDFOC", "CCINTRO", "CAP_gold", "ROD_greatwood");
+				ri.setParents("NODETAPPER2", "WANDPEDFOC", "CCCONVERT", "CAP_gold", "ROD_greatwood");
 			else
-				ri.setParents("BASICTHAUMATURGY", "WANDPED", "CCINTRO");
+				ri.setParents("BASICTHAUMATURGY", "NODETAPPER1", "RESEARCHER1", "WANDPED", "CCCONVERT");
 		}
 
 		{
@@ -590,14 +598,25 @@ public class ModInteraction {
 				}
 			}
 			InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("ABILITYFOCUS", ChromaItems.ABILITYFOCUS.getStackOf(), 5, al, in, items.toArray(new ItemStack[items.size()]));
-			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML(ChromatiCraft.instance, "ABILITYFOCUS", "For when convenience becomes inconvenient", "chromaticraft", ir, costFactor, 0, -2, root, ref).setParents("FOCALMANIPULATION", "INFUSION", "MANIPFOCUS", "FOCUSPRIMAL");
+			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML(ChromatiCraft.instance, "ABILITYFOCUS", "For when convenience becomes inconvenient", "chromaticraft", ir, costFactor, -1, -3, root, ref).setParents("FOCALMANIPULATION", "INFUSION", "MANIPFOCUS", "FOCUSPRIMAL");
+		}
+
+		{
+			String desc = "Independent streams of magic";
+			ResourceLocation ico = DirectResourceManager.getResource("Reika/ChromatiCraft/Textures/thaumonomicon/intro.png");
+			ResearchItem ri = ReikaThaumHelper.addBasicBookEntryViaXML(ChromatiCraft.instance, "CCINTRO", "Thaumaturgic vs Elemental Energy", desc, "chromaticraft", null, 0, 0, root, ref, ico);
+			ri.setRound().setAutoUnlock();
 		}
 
 		{
 			String desc = "Making parallel lines cross";
-			ResourceLocation ico = new ResourceLocation("chromaticraft", "textures/aspects/intro.png");
-			ResearchItem ri = ReikaThaumHelper.addBasicBookEntryViaXML(ChromatiCraft.instance, "CCINTRO", "Two kinds of magic", desc, "chromaticraft", null, 2, -2, root, ref, ico);
-			ri.setRound().setAutoUnlock();
+			ResourceLocation ico = DirectResourceManager.getResource("Reika/ChromatiCraft/Textures/thaumonomicon/convert.png");
+			ResearchItem ri = ReikaThaumHelper.addBasicBookEntryViaXML(ChromatiCraft.instance, "CCCONVERT", "Energy Interconnection", desc, "chromaticraft", null, -1, 2, root, ref, ico);
+			if (ChromaOptions.HARDTHAUM.getState())
+				ri.setParents("CCINTRO", "NODETAPPER1", "RESEARCHER2");
+			else
+				ri.setParents("CCINTRO");
+			ri.setRound().setHidden().setLost();
 		}
 
 		TieredOreCap.addRecipes();
@@ -685,5 +704,14 @@ public class ModInteraction {
 
 	public static void registerCliffSoil() {
 		((APIv2)API.getAPI(2)).registerDefaultSoil(new BlockWithMeta(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.FARMLAND.getMeta(false, false)));
+	}
+
+	public static void triggerPylonScanProgress(EntityPlayer ep, TileEntityCrystalPylon te) {
+		boolean color = ChromaOptions.HARDTHAUM.getState() ? ProgressStage.ALLCOLORS.isPlayerAtStage(ep) : ProgressionManager.instance.hasPlayerDiscoveredColor(ep, te.getColor());
+		if (color && ProgressStage.PYLON.isPlayerAtStage(ep) && (ChromaOptions.HARDTHAUM.getState() ? ProgressStage.USEENERGY : ProgressStage.CHARGE).isPlayerAtStage(ep)) {
+			if (!ReikaThaumHelper.isResearchComplete(ep, "CCCONVERT") && ReikaThaumHelper.hasResearchPrereqs(ep, "CCCONVERT")) {
+				ReikaThaumHelper.completeResearch(ep, "CCCONVERT");
+			}
+		}
 	}
 }

@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface.Bees;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
@@ -120,18 +119,14 @@ public class ProductChecks {
 			UUID ep = ChromaBeeHelpers.getOwner(ibh);
 			if (ep == null)
 				return false;
-			Collection<WorldLocation> c = TileEntityLocusPoint.getCache(TileEntityAuraPoint.class, ep);
-			if (c == null || c.isEmpty())
+			if (!TileEntityLocusPoint.hasLoci(TileEntityAuraPoint.class, ep))
 				return false;
 			TileEntityLumenAlveary tel = ChromaBeeHelpers.getLumenAlvearyController(ibh, world, ibh.getCoordinates());
 			if (tel != null && tel.hasInfiniteAwareness())
 				return true;
 			int[] r = ChromaBeeHelpers.getSearchRange(ibg, ibh);
-			for (WorldLocation te : c) {
-				if (Math.abs(te.xCoord-x) <= r[0] && Math.abs(te.zCoord-z) <= r[0] && Math.abs(te.yCoord-y) <= r[1])
-					return true;
-			}
-			return false;
+			WorldLocation loc = TileEntityAuraPoint.getMatchFromCache(TileEntityAuraPoint.class, ep, (te -> Math.abs(te.xCoord-x) <= r[0] && Math.abs(te.zCoord-z) <= r[0] && Math.abs(te.yCoord-y) <= r[1]));
+			return loc != null;
 		}
 
 		@Override

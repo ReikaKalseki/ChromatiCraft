@@ -15,6 +15,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
@@ -103,11 +104,13 @@ public class CheatingPreventionSystem {
 	@SubscribeEvent
 	public void handleRightClicks(PlayerInteractEvent evt) {
 		if (evt.action == Action.RIGHT_CLICK_AIR || evt.action == Action.RIGHT_CLICK_BLOCK) {
-			ItemStack is = evt.entityPlayer.getCurrentEquippedItem();
-			BanReaction r = this.getReaction(is);
-			if (r != null && r.reactsToUse()) {
-				r.perform(evt.entityPlayer, is, -1);
-				evt.setCanceled(true);
+			if (evt.entityPlayer.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+				ItemStack is = evt.entityPlayer.getCurrentEquippedItem();
+				BanReaction r = this.getReaction(is);
+				if (r != null && r.reactsToUse()) {
+					r.perform(evt.entityPlayer, is, -1);
+					evt.setCanceled(true);
+				}
 			}
 		}
 	}
@@ -138,11 +141,13 @@ public class CheatingPreventionSystem {
 	}
 
 	public void tick(EntityPlayer ep) {
-		ItemStack held = ep.getCurrentEquippedItem();
-		if (held != null) {
-			BanReaction r = this.getReaction(held);
-			if (r != null && r.reactsToTick()) {
-				r.perform(ep, held, -1);
+		if (ep.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			ItemStack held = ep.getCurrentEquippedItem();
+			if (held != null) {
+				BanReaction r = this.getReaction(held);
+				if (r != null && r.reactsToTick()) {
+					r.perform(ep, held, -1);
+				}
 			}
 		}
 	}

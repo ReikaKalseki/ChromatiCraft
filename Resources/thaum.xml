@@ -60,7 +60,26 @@
 	</abilityfocus>
 	<ccintro>
 		<page0>
-			
+			The fabric of reality, at its most fundamental level, seems to consist or contain several different and largely independent forms of magical energy. Sure, they have their similarities: every block or item or creature has some set of properties in each domain, and these properties's natures and interactions can be leveraged to fabricate devices and tools to perform countless tasks. However, their differences are not purely cosmetic, either. One seems to be an faint echo of some other realm, and feels vaguely foreboding; Another is highly naturalistic and generally confined to plants; Yet another appears to be a manifestation of the
 		</page0>
+		<page1>
+			foundational laws of reality, and things which produce, manipulate, or harness it seem to have the marks of some long-forgotten architects.
+			
+			Whatever their natures, their differences remain irreconcilable, at least for now; while you might be able to learn small amounts about one domain from studying another, it will be quite some time before you can think about making them interact on a more meaningful level and utilize their powers in combination or transferring abilities in one domain to another.
+			
+			In all likelihood, you will need to have a flash of insight, though where that might be found as yet eludes you...
+		</page1>
 	</ccintro>
+	<ccconvert>
+		<page0>
+			Perhaps you should rethink that rather unflattering message you left someone offering guidance that at the time seemed too incomplete to be useful, as it really [i]was[/i] obvious, and not just in hindsight. Where else to try and find clues into using vis and lumens in tandem than in the brightest, loudest, and most generally conspicuous source of either?
+			
+			Now that you have done this, you are met with a very unexpected finding. You already knew that pylons
+		</page0>
+		<page1>
+			were effectively fountains of crystal energy (seemingly inexhaustible, too, though that bears further research), but nothing could have prepared you for the fact that they are basically overflowing with [i]vis[/i] as well! Something about their nature seems to grant them the ability to freely exchange between energies, almost as if they were giant nodes.
+			
+			If you figure out how to make use of that power, there will be no barriers to your power; You will become the god those lunatics dancing around that dark floating crystal are always chanting about.
+		</page1>
+	</ccconvert>
 </researches>
