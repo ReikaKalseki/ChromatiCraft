@@ -16,6 +16,7 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 
@@ -32,7 +33,7 @@ import Reika.DragonAPI.IO.DirectResourceManager;
 import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
@@ -113,12 +114,9 @@ public class CrystalWand extends WandRod {
 				}
 
 				if (flag && player instanceof EntityPlayerMP) {
-					int[] data = new int[16];
-					for (int i = 0; i < CrystalElement.elements.length; i++) {
-						CrystalElement e = CrystalElement.elements[i];
-						data[i] = tag.getValue(e);
-					}
-					ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.WANDCHARGE.ordinal(), (EntityPlayerMP)player, data);
+					int[] arr = ReikaArrayHelper.getLinearArray(16);//tag.toArray();
+					ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.WANDCHARGE.ordinal(), (EntityPlayerMP)player, arr);
+					ChromaSounds.CAST.playSound(player, 1, 1);
 				}
 
 			}
@@ -127,23 +125,27 @@ public class CrystalWand extends WandRod {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void updateWandClient(EntityPlayer player, int[] data) {
-
+	public static void updateWandClient(EntityPlayer player, int[] data) {/*
 		ElementTagCompound tag = new ElementTagCompound();
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement e = CrystalElement.elements[i];
 			tag.addValueToColor(e, data[i]);
-		}
+		}*/
 
 		Vec3 vec = player.getLookVec();
 		for (CrystalElement e : CrystalElement.elements) {
-			double px = ReikaRandomHelper.getRandomPlusMinus(player.posX+vec.xCoord, 1);
-			double py = ReikaRandomHelper.getRandomPlusMinus(player.posY+vec.yCoord, 0.5);
-			double pz = ReikaRandomHelper.getRandomPlusMinus(player.posZ+vec.zCoord, 1);
-			EntityFX fx = new EntityRuneFX(player.worldObj, px, py, pz, e).setLife(40).setScale(2).setGravity(0.1F);
-			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			if (data[e.ordinal()] > 0) {
+				int amt = MathHelper.clamp_int(data[e.ordinal()]/2000, 1, 20);
+				for (int i = 0; i < amt; i++) {
+					double px = ReikaRandomHelper.getRandomPlusMinus(player.posX+vec.xCoord, 1);
+					double py = ReikaRandomHelper.getRandomPlusMinus(player.posY+vec.yCoord, 0.5);
+					double pz = ReikaRandomHelper.getRandomPlusMinus(player.posZ+vec.zCoord, 1);
+					EntityFX fx = new EntityRuneFX(player.worldObj, px, py, pz, e).setLife(40).setScale(2).setGravity(0.1F);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				}
+			}
 		}
-		ReikaSoundHelper.playClientSound(ChromaSounds.CAST, player, 1, 1);
+		//ReikaSoundHelper.playClientSound(ChromaSounds.CAST, player, 1, 1);
 	}
 
 }

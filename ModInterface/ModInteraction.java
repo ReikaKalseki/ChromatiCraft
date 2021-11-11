@@ -25,6 +25,7 @@ import com.google.common.base.Throwables;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -44,6 +45,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.ModInterface.Bees.ApiaryAcceleration;
@@ -56,6 +58,8 @@ import Reika.ChromatiCraft.ModInterface.ThaumCraft.TieredOreCap;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
@@ -69,6 +73,8 @@ import Reika.DragonAPI.IO.DirectResourceManager;
 import Reika.DragonAPI.Instantiable.BasicModEntry;
 import Reika.DragonAPI.Instantiable.Formula.MathExpression;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
@@ -706,12 +712,17 @@ public class ModInteraction {
 		((APIv2)API.getAPI(2)).registerDefaultSoil(new BlockWithMeta(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.FARMLAND.getMeta(false, false)));
 	}
 
-	public static void triggerPylonScanProgress(EntityPlayer ep, TileEntityCrystalPylon te) {
+	public static boolean triggerPylonScanProgress(EntityPlayer ep, TileEntityCrystalPylon te) {
 		boolean color = ChromaOptions.HARDTHAUM.getState() ? ProgressStage.ALLCOLORS.isPlayerAtStage(ep) : ProgressionManager.instance.hasPlayerDiscoveredColor(ep, te.getColor());
 		if (color && ProgressStage.PYLON.isPlayerAtStage(ep) && (ChromaOptions.HARDTHAUM.getState() ? ProgressStage.USEENERGY : ProgressStage.CHARGE).isPlayerAtStage(ep)) {
 			if (!ReikaThaumHelper.isResearchComplete(ep, "CCCONVERT") && ReikaThaumHelper.hasResearchPrereqs(ep, "CCCONVERT")) {
 				ReikaThaumHelper.completeResearch(ep, "CCCONVERT");
+				ChromaSounds.CAST.playSoundAtBlock(te, 0.6F, 1F);
+				ReikaSoundHelper.playSoundFromServer(te.worldObj, te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5, "thaumcraft:learn", 1, 1, true);
+				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.WANDCHARGE.ordinal(), (EntityPlayerMP)ep, ElementTagCompound.of(te.getColor(), 200000).toArray());
+				return true;
 			}
 		}
+		return false;
 	}
 }

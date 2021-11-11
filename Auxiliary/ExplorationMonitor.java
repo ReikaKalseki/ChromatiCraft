@@ -68,7 +68,8 @@ public class ExplorationMonitor implements TickHandler {
 						ProgressionManager.instance.setPlayerDiscoveredColor(ep, te.getColor(), true, true);
 						if (ModList.THAUMCRAFT.isLoaded() && ReikaItemHelper.matchStacks(ep.getCurrentEquippedItem(), ThaumItemHelper.ItemEntry.THAUMOMETER.getItem())) {
 							if (ep.isUsingItem() && ep.itemInUseCount <= 5)
-								ModInteraction.triggerPylonScanProgress(ep, te);
+								if (!ModInteraction.triggerPylonScanProgress(ep, te))
+									ep.clearItemInUse();
 						}
 					}
 				}
