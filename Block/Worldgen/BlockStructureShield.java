@@ -138,28 +138,26 @@ public class BlockStructureShield extends Block implements SemiUnbreakable, Subm
 
 	@Override
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block b) {
-		if (this.canBreakLitBlock(world, x, y, z, b)) {
-			for (int i = 0; i < 6; i++) {
-				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-				if (!this.isSideSolid(world, x, y, z, dir)) {
-					int dx = x+dir.offsetX;
-					int dy = y+dir.offsetY;
-					int dz = z+dir.offsetZ;
-					Block b2 = world.getBlock(dx, dy, dz);
-					if (b == b2) {
-						if (b.getLightValue(world, dx, dy, dz) > 3) {
-							ReikaSoundHelper.playBreakSound(world, dx, dy, dz, b2);
-							ReikaWorldHelper.dropBlockAt(world, dx, dy, dz, null);
-							world.setBlock(dx, dy, dz, Blocks.air);
-							ReikaSoundHelper.playSoundAtBlock(world, dx, dy, dz, "random.fizz");
-						}
+		for (int i = 0; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			if (!this.isSideSolid(world, x, y, z, dir)) {
+				int dx = x+dir.offsetX;
+				int dy = y+dir.offsetY;
+				int dz = z+dir.offsetZ;
+				Block b2 = world.getBlock(dx, dy, dz);
+				if (b == b2 && this.canBreakLitBlockAt(world, dx, dy, dz, b2, world.getBlockMetadata(dx, dy, dz))) {
+					if (b.getLightValue(world, dx, dy, dz) > 3) {
+						ReikaSoundHelper.playBreakSound(world, dx, dy, dz, b2);
+						ReikaWorldHelper.dropBlockAt(world, dx, dy, dz, null);
+						world.setBlock(dx, dy, dz, Blocks.air);
+						ReikaSoundHelper.playSoundAtBlock(world, dx, dy, dz, "random.fizz");
 					}
 				}
 			}
 		}
 	}
 
-	private boolean canBreakLitBlock(World world, int x, int y, int z, Block b) {
+	private boolean canBreakLitBlockAt(World world, int x, int y, int z, Block b, int meta) {
 		if (ReikaBlockHelper.isLiquid(b))
 			return false;
 		if (b == ChromaBlocks.DOOR.getBlockInstance())
@@ -171,6 +169,8 @@ public class BlockStructureShield extends Block implements SemiUnbreakable, Subm
 		if (b == ChromaBlocks.HEATLAMP.getBlockInstance())
 			return false;
 		if (b instanceof BlockFurnace)
+			return false;
+		if (ChromaTiles.getTileFromIDandMetadata(b, meta) == ChromaTiles.STRUCTCONTROL)
 			return false;
 		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue() || (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())) {
 			if (b == ChromaBlocks.CRYSTAL.getBlockInstance())

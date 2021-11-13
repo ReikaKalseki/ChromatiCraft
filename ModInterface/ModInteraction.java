@@ -66,10 +66,10 @@ import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.SubBiomes;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
-import Reika.DragonAPI.IO.DirectResourceManager;
 import Reika.DragonAPI.Instantiable.BasicModEntry;
 import Reika.DragonAPI.Instantiable.Formula.MathExpression;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
@@ -470,15 +470,12 @@ public class ModInteraction {
 		CrystalBackpack.instance.register();
 	}
 
-	/**
-	 *
-	 */
 	@ModDependent(ModList.THAUMCRAFT)
 	public static void addThaumRecipes() {
 		Class root = ChromatiCraft.class;
 		String ref = ChromaDescriptions.getParentPage()+"thaum.xml";
 
-		ReikaThaumHelper.addBookCategory(new ResourceLocation("chromaticraft", "textures/blocks/tile/table_top.png"), "chromaticraft", "Reika/ChromatiCraft/Textures/thaumonomicon/bcg.png");
+		ReikaThaumHelper.addBookCategory(new ResourceLocation("chromaticraft", "textures/blocks/tile/table_top.png"), "chromaticraft", "Reika/ChromatiCraft/Textures/Thaumonomicon/bcg.png");
 
 		MathExpression costFactor = new MathExpression() {
 			@Override
@@ -544,7 +541,7 @@ public class ModInteraction {
 					ThaumItemHelper.ItemEntry.VISFITLER.getItem(),
 			};
 			InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("ROD_CRYSTALWAND", ChromaStacks.crystalWand, 18, al, ChromaStacks.iridChunk, recipe);
-			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML(ChromatiCraft.instance, "ROD_CRYSTALWAND", "Fashioning a wand from crystals", "chromaticraft", ir, costFactor, -3, 1, root, ref).setSpecial().setParents("ROD_silverwood", "CAP_thaumium", "SCEPTRE", "CCCONVERT").setConcealed();
+			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML(ChromatiCraft.instance, "ROD_CRYSTALWAND", "Fashioning a wand from crystals", "chromaticraft", ir, costFactor, -3, 1, root, ref).setSpecial().setParents("ROD_silverwood", "CAP_thaumium", "SCEPTRE", "PYLONWANDING").setConcealed();
 		}
 
 		{
@@ -561,7 +558,7 @@ public class ModInteraction {
 					ChromaStacks.rawCrystal,
 			};
 			InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("MANIPFOCUS", ChromaItems.MANIPFOCUS.getStackOf(), 0, al, ChromaItems.TOOL.getStackOf(), recipe);
-			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML(ChromatiCraft.instance, "MANIPFOCUS", "Why have two wands when you can have one?", "chromaticraft", ir, costFactor, -2, -1, root, ref).setParents("BASICTHAUMATURGY", "INFUSION", "CCINTRO");
+			ReikaThaumHelper.addInfusionRecipeBookEntryViaXML(ChromatiCraft.instance, "MANIPFOCUS", "Why have two wands when you can have one?", "chromaticraft", ir, costFactor, -2, -1, root, ref).setParents("FOCUSFIRE", "INFUSION", "CCINTRO").setConcealed();
 		}
 
 		{
@@ -576,7 +573,7 @@ public class ModInteraction {
 					e.setValue(e.getValue()*5);
 				}
 			}
-			ResourceLocation ico = DirectResourceManager.getResource("Reika/ChromatiCraft/Textures/thaumonomicon/pylonwanding.png");
+			ResourceLocation ico = DragonAPICore.getDirectResource("Reika/ChromatiCraft/Textures/Thaumonomicon/pylonwanding.png");
 			ResearchItem ri = ReikaThaumHelper.addBasicBookEntryViaXML(ChromatiCraft.instance, "PYLONWANDING", "Pylon-Sourced Vis", desc, "chromaticraft", al, -4, 3, root, ref, ico);
 			ri.setRound().setSpecial();
 			if (ChromaOptions.HARDTHAUM.getState())
@@ -609,14 +606,14 @@ public class ModInteraction {
 
 		{
 			String desc = "Independent streams of magic";
-			ResourceLocation ico = DirectResourceManager.getResource("Reika/ChromatiCraft/Textures/thaumonomicon/intro.png");
+			ResourceLocation ico = DragonAPICore.getDirectResource("Reika/ChromatiCraft/Textures/Thaumonomicon/intro.png");
 			ResearchItem ri = ReikaThaumHelper.addBasicBookEntryViaXML(ChromatiCraft.instance, "CCINTRO", "Thaumaturgic vs Elemental Energy", desc, "chromaticraft", null, 0, 0, root, ref, ico);
 			ri.setRound().setAutoUnlock();
 		}
 
 		{
 			String desc = "Making parallel lines cross";
-			ResourceLocation ico = DirectResourceManager.getResource("Reika/ChromatiCraft/Textures/thaumonomicon/convert.png");
+			ResourceLocation ico = DragonAPICore.getDirectResource("Reika/ChromatiCraft/Textures/Thaumonomicon/convert.png");
 			ResearchItem ri = ReikaThaumHelper.addBasicBookEntryViaXML(ChromatiCraft.instance, "CCCONVERT", "Energy Interconnection", desc, "chromaticraft", null, -1, 2, root, ref, ico);
 			if (ChromaOptions.HARDTHAUM.getState())
 				ri.setParents("CCINTRO", "NODETAPPER1", "RESEARCHER2");

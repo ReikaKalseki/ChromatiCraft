@@ -144,17 +144,17 @@ public class RuneRenderer extends ISBRH {
 		v5.setBrightness(240);
 		v5.setColorOpaque_F(255, 255, 255);
 		if (b.shouldSideBeRendered(world, x, y-1, z, ForgeDirection.DOWN.ordinal()))
-			rb.renderFaceYNeg(b, x, y, z, ico);
+			rb.renderFaceYNeg(b, x, y-0.001, z, ico);
 		if (b.shouldSideBeRendered(world, x, y+1, z, ForgeDirection.UP.ordinal()))
-			rb.renderFaceYPos(b, x, y, z, ico);
+			rb.renderFaceYPos(b, x, y+0.001, z, ico);
 		if (b.shouldSideBeRendered(world, x, y, z-1, ForgeDirection.NORTH.ordinal()))
-			rb.renderFaceZNeg(b, x, y, z, ico);
+			rb.renderFaceZNeg(b, x, y, z-0.001, ico);
 		if (b.shouldSideBeRendered(world, x, y, z+1, ForgeDirection.SOUTH.ordinal()))
-			rb.renderFaceZPos(b, x, y, z, ico);
+			rb.renderFaceZPos(b, x, y, z+0.001, ico);
 		if (b.shouldSideBeRendered(world, x-1, y, z, ForgeDirection.WEST.ordinal()))
-			rb.renderFaceXNeg(b, x, y, z, ico);
+			rb.renderFaceXNeg(b, x-0.001, y, z, ico);
 		if (b.shouldSideBeRendered(world, x+1, y, z, ForgeDirection.EAST.ordinal()))
-			rb.renderFaceXPos(b, x, y, z, ico);
+			rb.renderFaceXPos(b, x+0.001, y, z, ico);
 		return true;
 	}
 
