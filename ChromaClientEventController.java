@@ -1217,7 +1217,7 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 	@SubscribeEvent
 	public void renderSpawners(EntityRenderEvent evt) {
 		if (evt.entity.worldObj != null && Chromabilities.SPAWNERSEE.enabledOn(Minecraft.getMinecraft().thePlayer)) {
-			AbilityXRays tx = AbilityHelper.instance.getAbilityXRay(evt.entity);
+			AbilityXRays tx = AbilityHelper.instance.getAbilityXRay(evt.entity); //minecarts
 			if (tx != null) {
 				Entity te = evt.entity;
 				GL11.glPushMatrix();

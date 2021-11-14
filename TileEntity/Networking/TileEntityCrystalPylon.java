@@ -275,6 +275,16 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		}
 	}
 
+	private void updateLinkColor(World world, int x, int y, int z) {
+		if (linkTile != null) {
+			TileEntityPylonLink te = (TileEntityPylonLink)linkTile.getTileEntity(world);
+			if (te == null)
+				world.setBlock(linkTile.xCoord, linkTile.yCoord, linkTile.zCoord, ChromaTiles.PYLONLINK.getBlock(), ChromaTiles.PYLONLINK.getBlockMetadata(), 2);
+			te = (TileEntityPylonLink)linkTile.getTileEntity(world);
+			te.link();
+		}
+	}
+
 	private void forceLoading() {
 		if (!forceLoad) {
 			if (ChromaOptions.PYLONLOAD.getState()) {
@@ -292,8 +302,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			structure = ChromaStructures.PYLON.getArray(world, x, y, z, this.getColor());
 		}
 
-		if (structure != null && this.getTicksExisted() == 0)
+		if (structure != null && this.getTicksExisted() == 0) {
 			this.reloadEncrusted(world, x, y, z);
+			this.updateLinkColor(world, x, y, z);
+		}
 
 		if (DragonAPICore.debugtest) {
 			if (!hasMultiblock) {

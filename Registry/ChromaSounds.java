@@ -304,6 +304,16 @@ public enum ChromaSounds implements ChromaSound, VariableSound {
 	}
 
 	@Override
+	public float getAudibleDistance() {
+		switch(this) {
+			case POWER:
+				return 27;
+			default:
+				return -1;
+		}
+	}
+
+	@Override
 	public String getRelativePath() {
 		return SOUND_FOLDER+relative+SOUND_EXT;
 	}
@@ -459,6 +469,11 @@ public enum ChromaSounds implements ChromaSound, VariableSound {
 		@Override
 		public boolean isStreamed() {
 			return root.isStreamed();
+		}
+
+		@Override
+		public float getAudibleDistance() {
+			return root.getAudibleDistance();
 		}
 
 	}
