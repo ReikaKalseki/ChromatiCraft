@@ -72,7 +72,7 @@ public class LightCast implements BreakerCallback {
 
 	@Override
 	public void onPostBreak(ProgressiveBreaker b, World world, int x, int y, int z, Block id, int meta) {
-		if (world.getBlockLightValue(x, y, z) < 2 && TileEntityCaveLighter.isLightable(world, x, y, z)) {
+		if (world.getBlockLightValue(x, y, z) <= 2 && TileEntityCaveLighter.isLightable(world, x, y, z)) {
 			world.setBlock(x, y, z, ChromaBlocks.LIGHT.getBlockInstance(), 0, 3);
 			world.updateLightByType(EnumSkyBlock.Block, x, y, z);
 		}

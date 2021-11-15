@@ -187,7 +187,7 @@ public class TileEntityCaveLighter extends TileEntityChromaticBase implements Ra
 		}
 	}
 
-	@Override	
+	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		range.initialize(this);
 		//if (!complete)
@@ -211,8 +211,9 @@ public class TileEntityCaveLighter extends TileEntityChromaticBase implements Ra
 	}
 
 	public static boolean isLightable(World world, int x, int y, int z) {
-		if (ModList.SATISFORESTRY.isLoaded() && SFAPI.biomeHandler.isPinkForest(world.getBiomeGenForCoords(x, z)) && SFAPI.caveHandler.isInCave(world, x+0.5, y+0.5, z+0.5))
-			return false;
+		if (ModList.SATISFORESTRY.isLoaded() && SFAPI.biomeHandler.isPinkForest(world.getBiomeGenForCoords(x, z)) && SFAPI.caveHandler.isInCave(world, x+0.5, y+0.5, z+0.5)) {
+			return world.getBlockLightValue(x, y, z) == 0 && (x+y+z)%48 == 0 && SFAPI.caveHandler.getDistanceToCaveCenter(world, x, y, z) >= 64;
+		}
 		return true;
 	}
 

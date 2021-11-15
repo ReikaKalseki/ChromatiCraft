@@ -31,6 +31,7 @@ import net.minecraft.item.ItemTool;
 import net.minecraft.item.ItemWritableBook;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -49,6 +50,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.TileEntity.SidePlacedTile;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -146,6 +148,11 @@ public class TileEntityItemRift extends TileEntityRelayPowered implements SidePl
 			EntityCCBlurFX fx = new EntityCCBlurFX(worldObj, px, py, pz, dir.offsetX*v, dir.offsetY*v, dir.offsetZ*v);
 			int l = dist*18;
 			fx.setIcon(ChromaIcons.FADE_CLOUD).setAlphaFading().setNoSlowdown().setColor(color).setScale(2.5F).setLife(l);
+			if (otherEnd != null) {
+				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(this);
+				box = box.addCoord(otherEnd.xCoord-xCoord, otherEnd.yCoord-yCoord, otherEnd.zCoord-zCoord);
+				fx.bound(box);
+			}
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

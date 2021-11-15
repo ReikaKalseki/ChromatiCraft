@@ -244,6 +244,10 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			for (Coordinate c : this.getColorDoorLocations(ref, i)) {
 				c.setBlock(world, ChromaBlocks.COLORLOCK.getBlockInstance());
 				TileEntityColorLock te = (TileEntityColorLock)c.getTileEntity(world);
+				if (te == null) {
+					te = new TileEntityColorLock();
+					world.setTileEntity(c.xCoord, c.yCoord, c.zCoord, te);
+				}
 				te.setColors(doorColors.get(i*2), doorColors.get(i*2+1));
 			}
 		}
