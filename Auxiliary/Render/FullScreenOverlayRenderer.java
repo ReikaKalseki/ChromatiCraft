@@ -17,6 +17,7 @@ import java.util.Iterator;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -132,6 +133,7 @@ public class FullScreenOverlayRenderer {
 		double z = -1000;
 		 */
 		float maxIntensity = -1;
+		double cdd = -1;
 
 		CrystalElement glowColor = null;
 		Coordinate glowCenter = null;
@@ -141,13 +143,17 @@ public class FullScreenOverlayRenderer {
 		int hazeGreen = 0;
 		int hazeBlue = 0;
 
+		boolean ability = Chromabilities.PYLON.enabledOn(ep) | GuiScreen.isCtrlKeyDown();
+
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];
 			boolean containsColor = factors.containsKey(e);
 			PylonEntry c = containsColor ? null : PylonGenerator.instance.getNearestPylonSpawn(ep.worldObj, ep.posX, ep.posY, ep.posZ, e);
-			double dd = containsColor ? 0 : c != null ? c.location.getDistanceTo(ep.posX, ep.posY, ep.posZ) : Double.POSITIVE_INFINITY;
+			double dd = containsColor ? 0 : c != null ? c.location.getDistanceTo(ep.posX, (ep.posY+c.location.yCoord+0.5)*0.5, ep.posZ) : Double.POSITIVE_INFINITY;
 			if (containsColor || dd < 36) {
-				/*
+				if (ability)
+					dd = dd > 2 ? Math.max(4, dd*1.6) : dd*2;
+					/*
 				int step = 40;
 				int frame = (int)((System.currentTimeMillis()/step)%20+e.ordinal()*1.25F)%20;
 				int imgw = 4;//20;
@@ -156,30 +162,31 @@ public class FullScreenOverlayRenderer {
 				double du = u+1D/imgw;
 				double v = frame/imgw/(double)imgh;
 				double dv = v+1D/imgh;
-				 */
-				int alpha = 255;
-				float cache = containsColor ? factors.get(e) : 0;
-				float bright = Math.min(1, (float)(1.75-dd/24));
-				float res = Math.max(cache, bright);
-				if (containsColor) {
-					if (cache > 0.01)
-						factors.put(e, cache*0.975F);
-					else
-						factors.remove(e);
-				}
-				if (res > 0) {
-					if (!Chromabilities.PYLON.enabledOn(ep) && res > maxIntensity) {
-						maxIntensity = res;
-						glowColor = e;
-						float f = Math.min(1, (float)(1.5-dd/20));
-						glowIntensity = ((f*f)-0.75F)*2;
-						if (dd < 6) {
-							glowIntensity = Math.min(1, glowIntensity+(float)(6-dd)/12F);
-						}
-						glowCenter = c != null ? new Coordinate(c.location) : null;
+					 */
+					int alpha = 255;
+					float cache = containsColor ? factors.get(e) : 0;
+					float bright = Math.min(1, (float)(1.75-dd/24));
+					float res = Math.max(cache, bright);
+					if (containsColor) {
+						if (cache > 0.01)
+							factors.put(e, cache*0.975F);
+						else
+							factors.remove(e);
 					}
-					float mult = Math.min(1, res);
-					/*
+					if (res > 0) {
+						if (res > maxIntensity) {
+							maxIntensity = res;
+							cdd = dd;
+							glowColor = e;
+							float f = Math.min(1, (float)(1.5-dd/20));
+							glowIntensity = ((f*f)-0.75F)*2;
+							if (dd < 6) {
+								glowIntensity = Math.min(1, glowIntensity+(float)(6-dd)/12F);
+							}
+							glowCenter = c != null ? new Coordinate(c.location) : null;
+						}
+						float mult = Math.min(1, res);
+						/*
 					//int color = ReikaColorAPI.getColorWithBrightnessMultiplier(e.getColor(), mult);
 					v5.startDrawingQuads();
 					v5.setBrightness(240);
@@ -189,13 +196,13 @@ public class FullScreenOverlayRenderer {
 					v5.addVertexWithUV(w, 0, z, du, v);
 					v5.addVertexWithUV(0, 0, z, u, v);
 					v5.draw();*/
-					int red = (int)(mult*e.getRed());
-					int green = (int)(mult*e.getGreen());
-					int blue = (int)(mult*e.getBlue());
-					hazeRed = Math.min(255, hazeRed+red);
-					hazeGreen = Math.min(255, hazeGreen+green);
-					hazeBlue = Math.min(255, hazeBlue+blue);
-				}
+						int red = (int)(mult*e.getRed());
+						int green = (int)(mult*e.getGreen());
+						int blue = (int)(mult*e.getBlue());
+						hazeRed = Math.min(255, hazeRed+red);
+						hazeGreen = Math.min(255, hazeGreen+green);
+						hazeBlue = Math.min(255, hazeBlue+blue);
+					}
 			}
 		}
 		/*
@@ -205,6 +212,8 @@ public class FullScreenOverlayRenderer {
 			GL11.glPopAttrib();
 		 */
 
+		if (ability)
+			maxIntensity *= 1-Math.min(0.25, cdd*0.03125);
 		ChromaShaders.PYLONAURA.setIntensity(maxIntensity);
 		if (maxIntensity > 0) {
 			ChromaShaders.PYLONAURA.getShader().setField("hazeRed", hazeRed);
