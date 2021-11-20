@@ -338,4 +338,9 @@ public class TileEntityFluxMaker extends InventoriedRelayPowered implements Oper
 		fluxCache.putAll(map);
 	}
 
+	@Override
+	public boolean hasWork() {
+		return this.getState() == OperationState.RUNNING;
+	}
+
 }

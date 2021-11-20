@@ -218,8 +218,8 @@ public class TileEntityFluidDistributor extends TileEntityAreaDistributor implem
 			int l = 20+rand.nextInt(60);
 			float s = 1.5F;
 			AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z);
-			EntityFX fx = new EntityCCBlurFX(world, px, py, pz, vx, vy, vz).setIcon(ChromaIcons.BLURFLARE).setColor(0x2255ff).setLife(l).setScale(s).setRapidExpand().bound(box);
-			EntityFX fx2 = new EntityCCBlurFX(world, px, py, pz, vx, vy, vz).setColor(0xffffff).setLife(l).setScale(s/2.5F).setRapidExpand().bound(box);
+			EntityFX fx = new EntityCCBlurFX(world, px, py, pz, vx, vy, vz).setIcon(ChromaIcons.BLURFLARE).setColor(0x2255ff).setLife(l).setScale(s).setRapidExpand().bound(box, true, false);
+			EntityFX fx2 = new EntityCCBlurFX(world, px, py, pz, vx, vy, vz).setColor(0xffffff).setLife(l).setScale(s/2.5F).setRapidExpand().bound(box, true, false);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 		}

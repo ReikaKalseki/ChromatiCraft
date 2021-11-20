@@ -398,4 +398,9 @@ VariableTexture {
 		return inv[0] != null && FurnaceRecipes.smelting().getSmeltingResult(inv[0]) != null ? (energy.containsAtLeast(smelt) ? OperationState.RUNNING : OperationState.PENDING) : OperationState.INVALID;
 	}
 
+	@Override
+	public boolean hasWork() {
+		return this.getState() == OperationState.RUNNING;
+	}
+
 }

@@ -152,4 +152,9 @@ public class TileEntityPlayerInfuser extends TileEntityAuraInfuser {
 		//ep.velocityChanged = true;
 	}
 
+	@Override
+	public boolean hasWork() {
+		return this.getState() == OperationState.RUNNING;
+	}
+
 }

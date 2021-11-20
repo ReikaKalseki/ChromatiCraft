@@ -494,6 +494,11 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 		return tower;
 	}
 
+	@Override
+	public boolean hasWork() {
+		return false;
+	}
+
 	public static void removeMetaAlloy(World world, int x, int y, int z) {
 		LoreManager.instance.initTowers(world);
 		Coordinate c = new Coordinate(x, y, z);

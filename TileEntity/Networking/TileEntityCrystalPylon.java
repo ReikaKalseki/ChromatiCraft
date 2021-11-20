@@ -469,11 +469,15 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	private void tryGrowEncrustedAt(World world, Coordinate from, Coordinate c, boolean addToCount) {
 		if (!structure.hasBlock(c)) {
 			Block b = c.getBlock(world);
-			if (b.isAir(world, c.xCoord, c.yCoord, c.zCoord) && (!addToCount || encrustedBlocks.size() < 4))
+			if (this.isEncrustedGrowable(world, c, b) && (!addToCount || encrustedBlocks.size() < 6))
 				this.growEncrustedAt(world, from, c.xCoord, c.yCoord, c.zCoord, true, addToCount);
 			else if (b == ChromaBlocks.ENCRUSTED.getBlockInstance() && c.getBlockMetadata(world) == this.getColor().ordinal())
 				this.growEncrustedAt(world, from, c.xCoord, c.yCoord, c.zCoord, false, addToCount);
 		}
+	}
+
+	private boolean isEncrustedGrowable(World world, Coordinate c, Block b) {
+		return b.isAir(world, c.xCoord, c.yCoord, c.zCoord) || b == Blocks.snow_layer;
 	}
 
 	private void growEncrustedAt(World world, Coordinate from, int x, int y, int z, boolean place, boolean addToCount) {

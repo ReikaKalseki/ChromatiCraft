@@ -426,4 +426,9 @@ BreakAction, FocusAcceleratable {
 		return c;
 	}
 
+	@Override
+	public boolean hasWork() {
+		return this.getState() == OperationState.RUNNING;
+	}
+
 }

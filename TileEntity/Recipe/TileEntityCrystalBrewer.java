@@ -225,4 +225,9 @@ public class TileEntityCrystalBrewer extends InventoriedChromaticBase implements
 		return this.canBrew() ? OperationState.RUNNING : OperationState.INVALID;
 	}
 
+	@Override
+	public boolean hasWork() {
+		return this.getState() == OperationState.RUNNING;
+	}
+
 }

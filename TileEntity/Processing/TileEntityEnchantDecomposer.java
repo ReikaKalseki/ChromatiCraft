@@ -305,4 +305,9 @@ VariableTexture, ChromaExtractable {
 		return inv[0] != null && isItemValid(inv[0]) ? (energy.containsAtLeast(required) ? OperationState.RUNNING : OperationState.PENDING) : OperationState.INVALID;
 	}
 
+	@Override
+	public boolean hasWork() {
+		return this.getState() == OperationState.RUNNING;
+	}
+
 }

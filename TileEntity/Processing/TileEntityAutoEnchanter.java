@@ -597,4 +597,9 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		tank.removeLiquid(amt);
 	}
 
+	@Override
+	public boolean hasWork() {
+		return this.getState() == OperationState.RUNNING;
+	}
+
 }

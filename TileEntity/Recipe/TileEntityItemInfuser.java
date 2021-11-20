@@ -94,4 +94,9 @@ public class TileEntityItemInfuser extends TileEntityAuraInfuser {
 		}
 	}
 
+	@Override
+	public boolean hasWork() {
+		return this.getState() == OperationState.RUNNING;
+	}
+
 }

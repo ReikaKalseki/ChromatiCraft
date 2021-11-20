@@ -349,4 +349,9 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 		return recipe == null ? OperationState.INVALID : (energy.containsAtLeast(recipe.energy) ? OperationState.RUNNING : OperationState.PENDING);
 	}
 
+	@Override
+	public boolean hasWork() {
+		return this.getState() == OperationState.RUNNING;
+	}
+
 }

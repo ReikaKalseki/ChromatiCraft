@@ -211,4 +211,9 @@ public class TileEntityPageExtractor extends InventoriedRelayPowered implements 
 		return 2000;
 	}
 
+	@Override
+	public boolean hasWork() {
+		return this.getState() == OperationState.RUNNING;
+	}
+
 }

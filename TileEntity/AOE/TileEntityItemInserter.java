@@ -107,7 +107,7 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 			fx.freedom = 10;
 			int c = tag == null || tag.isEmpty() ? 0x22aaff : ReikaJavaLibrary.getRandomCollectionEntry(rand, tag.elementSet()).getColor();
 			AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).expand(dx, dy, dz);
-			fx.setColor(c).setLife(100).setScale(2.5F).markDestination(x, y, z).setNoSlowdown().bound(box);
+			fx.setColor(c).setLife(100).setScale(2.5F).markDestination(x, y, z).setNoSlowdown().bound(box, false, false);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

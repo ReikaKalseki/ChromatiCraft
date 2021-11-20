@@ -1438,6 +1438,11 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		return hasRunes;
 	}
 
+	@Override
+	public boolean hasWork() {
+		return this.getState() == OperationState.RUNNING;
+	}
+
 	public static enum CastingFocusLocation implements FocusLocation {
 
 		N1(-1, 1, -3),

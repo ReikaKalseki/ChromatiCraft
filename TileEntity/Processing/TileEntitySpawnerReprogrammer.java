@@ -425,4 +425,9 @@ public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered imple
 		return this.isValidSpawner(inv[0]) ? (energy.containsAtLeast(required) ? OperationState.RUNNING : OperationState.PENDING) : OperationState.INVALID;
 	}
 
+	@Override
+	public boolean hasWork() {
+		return this.getState() == OperationState.RUNNING;
+	}
+
 }

@@ -151,7 +151,7 @@ public class TileEntityItemRift extends TileEntityRelayPowered implements SidePl
 			if (otherEnd != null) {
 				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(this);
 				box = box.addCoord(otherEnd.xCoord-xCoord, otherEnd.yCoord-yCoord, otherEnd.zCoord-zCoord);
-				fx.bound(box);
+				fx.bound(box, false, true);
 			}
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
