@@ -128,7 +128,7 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite, En
 
 	private void fire(ItemStack is, World world, EntityPlayer ep) {
 		if (!world.isRemote) {
-			ToolChargingSystem.instance.removeCharge(is, (int)(SONAR_COST*this.getMaxCharge()));
+			ToolChargingSystem.instance.removeCharge(is, (int)(SONAR_COST*this.getMaxCharge()), ep);
 			int x = MathHelper.floor_double(ep.posX);
 			int y = MathHelper.floor_double(ep.posY);
 			int z = MathHelper.floor_double(ep.posZ);
@@ -143,7 +143,7 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite, En
 		OrePingDelegate ore = this.getOreType(world, x, y, z);
 		if (ore != null) {
 			if (!world.isRemote) {
-				ToolChargingSystem.instance.removeCharge(is, (int)(SCAN_COST*this.getMaxCharge()));
+				ToolChargingSystem.instance.removeCharge(is, (int)(SCAN_COST*this.getMaxCharge()), ep);
 				OreOverlayRenderer.instance.startScan(world, x, y, z, ep);
 			}
 			return true;

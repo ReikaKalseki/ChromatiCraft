@@ -231,6 +231,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.Pendant
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.ProbeRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.PurifyCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.PylonFinderRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.RecipeCacheRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.RecipeHoverWand;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.RecipeItemMover;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.SpawnerBypassRecipe;
@@ -948,6 +949,8 @@ public class RecipesCastingTable implements CastingAPI {
 		is = ChromaItems.NETHERKEY.getStackOf();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "bab", "aca", "bab", 'c', ReikaItemHelper.quartz.asItemStack(), 'a', Blocks.obsidian, 'b', ChromaStacks.auraDust);
 		this.addRecipe(new NetherKeyRecipe(is, sr));
+
+		this.addRecipe(new RecipeCacheRecipe(ChromaItems.RECIPECACHE.getStackOf(), new ItemStack(Blocks.obsidian)));
 
 		this.addSpecialRecipes();
 	}

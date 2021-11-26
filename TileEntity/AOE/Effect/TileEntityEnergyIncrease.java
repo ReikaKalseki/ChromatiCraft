@@ -27,8 +27,8 @@ import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 
 import buildcraft.core.lib.engines.TileEngineBase;
 import cofh.api.energy.EnergyStorage;
-import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
 import ic2.api.reactor.IReactor;
 import ic2.api.reactor.IReactorChamber;
 
@@ -57,9 +57,10 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 		new ForestryEngineInterface();
 		new IC2GeneratorInterface();
 		new IC2ReactorInterface();
+		//new HexGeneratorInterface();
 	}
 
-	protected double cachedValue = Double.NaN;
+	protected Object cachedValue = null;
 
 	@Override
 	protected EffectResult tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime) {
@@ -133,8 +134,13 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 				try {
 					String[] cs = this.getClasses();
 					for (int i = 0; i < cs.length; i++) {
-						Class c = Class.forName(cs[i]);
-						interactions.put(c, this);
+						try {
+							Class c = Class.forName(cs[i]);
+							interactions.put(c, this);
+						}
+						catch (Exception e) {
+							ChromatiCraft.logger.logError("Could not find class "+cs[i]+" for "+this.getMod());
+						}
 					}
 					this.init();
 					ChromatiCraft.logger.log("Loaded "+this+" for "+this.getMod());
@@ -169,6 +175,32 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 		protected void onBoosterBroken(TileEntity te) {
 
 		}
+
+		protected final void scaleNumberInField(TileEntity te, Field f, double boost) throws Exception {
+			Number get = (Number)f.get(te);
+			double val = (1+boost)*get.doubleValue();
+			this.setNumberToField(te, f, get, val);
+		}
+
+		protected final void setNumberToField(TileEntity te, Field f, Number prev, double val) throws Exception {
+			Object set = null;
+			if (prev instanceof Integer || prev.getClass() == int.class) {
+				set = (int)val;
+			}
+			else if (prev instanceof Double || prev.getClass() == double.class) {
+				set = (double)val;
+			}
+			else if (prev instanceof Float || prev.getClass() == float.class) {
+				set = (float)val;
+			}
+			else if (prev instanceof Short || prev.getClass() == short.class) {
+				set = (short)val;
+			}
+			else if (prev instanceof Byte || prev.getClass() == byte.class) {
+				set = (byte)val;
+			}
+			f.set(te, set);
+		}
 	}
 
 	private static abstract class BasicEnergyInterface extends EnergyInterface {
@@ -195,25 +227,7 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 		protected final void tick(TileEntityEnergyIncrease booster, TileEntity te, double boost) throws Exception {
 			te = this.getActingTileEntity(te);
 			Field f = this.getOutputField(te);
-			Number get = (Number)f.get(te);
-			double val = (1+boost)*get.doubleValue();
-			Object set = null;
-			if (get instanceof Integer || get.getClass() == int.class) {
-				set = (int)val;
-			}
-			else if (get instanceof Double || get.getClass() == double.class) {
-				set = (double)val;
-			}
-			else if (get instanceof Float || get.getClass() == float.class) {
-				set = (float)val;
-			}
-			else if (get instanceof Short || get.getClass() == short.class) {
-				set = (short)val;
-			}
-			else if (get instanceof Byte || get.getClass() == byte.class) {
-				set = (byte)val;
-			}
-			f.set(te, set);
+			this.scaleNumberInField(te, f, boost);
 		}
 
 		protected abstract Field getOutputField(TileEntity te);
@@ -667,7 +681,57 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 		}
 
 	}
+	/*
+	private static class HexGeneratorInterface extends EnergyInterface {
 
+		private Field perTick;
+		private Field producibleAmount;
+		private Field producibleAmount2;
+
+		private static final HexGeneratorInterface instance = new HexGeneratorInterface();
+
+		@Override
+		protected void init() throws Exception {
+			for (String n : this.getClasses()) {
+				try {
+					Class c = Class.forName(n);
+					perTick = c.getDeclaredField("energyPerTick");
+					perTick.setAccessible(true);
+					producibleAmount = c.getDeclaredField("energyTotal");
+					producibleAmount.setAccessible(true);
+					producibleAmount2 = c.getDeclaredField("energyTotalLeft");
+					producibleAmount2.setAccessible(true);
+					break;
+				}
+				catch (Exception e) {
+					if (n == this.getClasses()[this.getClasses().length-1])
+						Throwables.propagate(e);
+				}
+			}
+		}
+
+		@Override
+		protected ModList getMod() {
+			return ModList.HEXCRAFT;
+		}
+
+		@Override
+		protected String[] getClasses() {
+			return new String[]{"com.celestek.hexcraft.tileentity.TileHexoriumGenerator", "com.celestek.hexcraft.tileentity.HexEnergySource"};
+		}
+
+		@Override
+		protected final void tick(TileEntityEnergyIncrease booster, TileEntity te, double boost) throws Exception {
+			te = this.getActingTileEntity(te);
+			if (booster.cachedValue != null)
+			booster.cachedValue = new ImmutableTriple();
+			this.scaleNumberInField(te, perTick, boost);
+			this.scaleNumberInField(te, producibleAmount, boost);
+			this.scaleNumberInField(te, producibleAmount2, boost);
+		}
+
+	}
+	 */
 	public static double getFactor(int tier) {
 		return factors[tier];
 	}

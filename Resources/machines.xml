@@ -111,7 +111,7 @@
 	</reprogrammer>
 	<repeater>
 		<desc>
-			Your initial foray into transmitting lumen energy was a disaster. The basic wooden repeaters you created only marginally served their purpose, proved vulnerable to violent failure. In hindsight, wood was a monumentally foolish material to choose. Perhaps the crystal you have used so much of would be a better choice, being able to better focus and relay the energy rather than leaking and absorbing it. A rune to focus a specific color would improve them even better, though that would mean restricting it to only that color of transmission. You may find a way around that too...later.
+			Your initial foray into transmitting lumen energy was a disaster. The basic wooden repeaters you created only marginally served their purpose, proving vulnerable to violent failure. In hindsight, wood was a monumentally foolish material to choose. Perhaps the crystal you have used so much of would be a better choice, being able to better focus and relay the energy rather than leaking and absorbing it. A rune to focus a specific color would improve them even better, though that would mean restricting it to only that color of transmission. You may find a way around that too...later.
 		</desc>
 		<note>
 			
@@ -182,7 +182,7 @@
 	</ticker>
 	<fence>
 		<desc>
-			You need some way of protecting your base from the hordes of mobs outside, and fences are rather boring. You already tried using moats (how does a spider the size of a cow swim!?) to no effect, and you tried using unshielding wires as an impromptu electric fence, an experiment that ended after you had the misfortune of touching it yourself. However, with (a large amount of) energy associated with protection and shielding, you can make a barrier that will stop creatures of all types while letting you pass unharmed, and can be built into any shape between connected nodes.
+			You need some way of protecting your base from the hordes of mobs outside, and fences are rather boring. You already tried using moats (how does a spider the size of a cow swim!?) to no effect, and you tried using unshielded wires as an impromptu electric fence, an experiment that ended after you had the misfortune of touching it yourself. However, with (a large amount of) energy associated with protection and shielding, you can make a barrier that will stop creatures of all types while letting you pass unharmed, and can be built into any shape between connected nodes.
 		</desc>
 		<note>
 			Requires a perimeter with vertices marked by either fence emitters or relays. Right click with manipulator to calculate perimeter, shift-right-click to set output side
@@ -530,7 +530,7 @@
 	</glowfire>
 	<broadcast>
 		<desc>
-			You now regret living in a mountain archipelago. For one, most of the pylons to which you wish to connect are thousands of meters away. Worse, though, are that many are across vast stretches of ocean. Yes, you could build cobblestone pillars to raise repeaters from the ocean floor, but you want a solution that is both convenient and does not look ridiculous. To that end, you designed high-power broadcasters, which can send energy over thousands of blocks. However, such power requires a large structure, and that they would interfere if too close to each other.
+			You now regret living in a mountain archipelago. For one, most of the pylons to which you wish to connect are thousands of meters away. Worse, though, are that many are across vast stretches of ocean. Yes, you could build cobblestone pillars to raise repeaters from the ocean floor, but you want a solution that is both convenient and does not look ridiculous. To that end, you designed high-power broadcasters, which can send energy over thousands of blocks. However, such power requires a large structure, and means that they would interfere if too close to each other.
 		</desc>
 		<note>
 
@@ -620,7 +620,7 @@
 	</harvestplant>
 	<alveary>
 		<desc>
-			Untold piles of wax, jelly, and pollen later, and now poorer some 27 drums of honey, you finally have it: The pinnacle of your apiculture abilities, large structures to keep your bees as happy as possible and to maximize their productivity (wooden boxes, treated or not, proved lacking in that regard). And they help, but you still want MORE. More speed, more products, more capabilities. So an idea occurs to you: Lumen-powered bees! Well, more accurately, using the lumen energy to enhance their capabilities, or of the housing itself. You might even be able to plug it into those crystal relays from that glowy sparky thing you made as well.
+			Untold piles of wax, jelly, and pollen later, and now poorer some 27 drums of honey, you finally have it: The pinnacle of your apiculture abilities, large structures to keep your bees as happy as possible and to maximize their productivity (wooden boxes, treated or not, proved lacking in that regard). And they help, but you still want MORE. More speed, more products, more everything. So an idea occurs to you: Lumen-powered bees! Well, more accurately, using the lumen energy to enhance them, or of the housing itself. You might even be able to plug it into those crystal relays from that glowy sparky thing you made as well.
 		</desc>
 		<note>
 			%s

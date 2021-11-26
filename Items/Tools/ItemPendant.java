@@ -42,38 +42,33 @@ public class ItemPendant extends ItemCrystalBasic {
 
 	@Override
 	public final void onUpdate(ItemStack is, World world, Entity e, int slot, boolean selected) {
-		if (this.isFunctional(is)) {
-			int level = this.isEnhanced() ? 2 : 0;
-			if (e instanceof EntityPlayer) {
-				EntityPlayer ep = (EntityPlayer) e;
-				CrystalElement color = CrystalElement.elements[is.getItemDamage()];
-				long bits = world.getTotalWorldTime() & (~1);
-				bits |= this.isEnhanced() ? 1 : 0;
-				getRootStorage(e).setLong(color.name(), bits);
-				if (color == CrystalElement.BLACK || color == CrystalElement.PURPLE) {
+		boolean en = this.isEnhanced(is);
+		int level = en ? 2 : 0;
+		if (e instanceof EntityPlayer) {
+			EntityPlayer ep = (EntityPlayer) e;
+			CrystalElement color = CrystalElement.elements[is.getItemDamage()];
+			long bits = world.getTotalWorldTime() & (~1);
+			bits |= en ? 1 : 0;
+			getRootStorage(e).setLong(color.name(), bits);
+			if (color == CrystalElement.BLACK || color == CrystalElement.PURPLE) {
 
-				}
-				else {
-					int dura = this.isEnhanced() ? 6000 : color == CrystalElement.BLUE ? 3 : 100;
-					PotionEffect pot = CrystalPotionController.instance.getEffectFromColor(color, dura, level, false);
-					if (pot == null || color == CrystalElement.BLUE || !ep.isPotionActive(pot.getPotionID())) {
-						CrystalPotionController.instance.applyEffectFromColor(dura, level, ep, color, true);
-					}
-				}
-				if (ChromaOptions.NOPARTICLES.getState())
-					ReikaEntityHelper.setNoPotionParticles(ep);
-				if (!world.isRemote)
-					this.onTick(is, world, ep, slot);
 			}
+			else {
+				int dura = en ? 6000 : color == CrystalElement.BLUE ? 3 : 100;
+				PotionEffect pot = CrystalPotionController.instance.getEffectFromColor(color, dura, level, false);
+				if (pot == null || color == CrystalElement.BLUE || !ep.isPotionActive(pot.getPotionID())) {
+					CrystalPotionController.instance.applyEffectFromColor(dura, level, ep, color, true);
+				}
+			}
+			if (ChromaOptions.NOPARTICLES.getState())
+				ReikaEntityHelper.setNoPotionParticles(ep);
+			if (!world.isRemote)
+				this.onTick(is, world, ep, slot);
 		}
 	}
 
 	protected void onTick(ItemStack is, World world, EntityPlayer ep, int slot) {
 
-	}
-
-	protected boolean isFunctional(ItemStack is) {
-		return true;
 	}
 
 	private static NBTTagCompound getRootStorage(Entity e) {
@@ -83,7 +78,8 @@ public class ItemPendant extends ItemCrystalBasic {
 		return e.getEntityData().getCompoundTag(ROOT_KEY);
 	}
 
-	public boolean isEnhanced() {
+	/** Whether the enhanced effect is active */
+	protected boolean isEnhanced(ItemStack is) {
 		return false;
 	}
 

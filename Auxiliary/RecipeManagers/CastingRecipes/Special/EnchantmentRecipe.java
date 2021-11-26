@@ -28,6 +28,9 @@ import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 
 public final class EnchantmentRecipe extends MultiBlockCastingRecipe {
 
@@ -82,6 +85,12 @@ public final class EnchantmentRecipe extends MultiBlockCastingRecipe {
 	@Override
 	public int getDuration() {
 		return 12*super.getDuration();
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public String getDisplayName() {
+		return "Star Enchanting: "+enchantment.getTranslatedName(level);
 	}
 
 	public static Map<Coordinate, CrystalElement> getEnchantingRunes() {

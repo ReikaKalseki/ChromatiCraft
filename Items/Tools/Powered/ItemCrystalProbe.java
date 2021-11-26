@@ -3,6 +3,7 @@ package Reika.ChromatiCraft.Items.Tools.Powered;
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
@@ -15,6 +16,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.client.IItemRenderer.ItemRenderType;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ColoredMultiBlockChromaTile;
@@ -29,6 +31,7 @@ import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Base.BlockMultiBlock;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -69,7 +72,7 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 			if (i != null && i.isValid(world, x, y, z) && ToolChargingSystem.instance.getCharge(is) >= i.energyCost) {
 				ChromaSounds.LOREHEX.playSound(ep, 1, 1);
 				if (i.doEffect(world, x, y, z, s, ep, is)) {
-					ToolChargingSystem.instance.removeCharge(is, i.energyCost);
+					ToolChargingSystem.instance.removeCharge(is, i.energyCost, ep);
 				}
 			}
 		}
@@ -225,7 +228,10 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 
 	private static enum Inspections {
 		REPEATER_CONNECTIVITY(60, CrystalReceiver.class),
-		STRUCTURE_CHECK(1000, MultiBlockChromaTile.class);
+		STRUCTURE_CHECK(1000, MultiBlockChromaTile.class),
+		MULTIBLOCK(1500, BlockMultiBlock.class),
+		//IMMERSIVE(1500, ImmersiveEng.class),
+		;
 
 		public final int energyCost;
 		private final Class trigger;
@@ -247,7 +253,7 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 						ProbeInfoOverlayRenderer.instance.markConnectivity(ep, e, flag, can);
 					}
 					return true;
-				case STRUCTURE_CHECK:
+				case STRUCTURE_CHECK: {
 					MultiBlockChromaTile te = (MultiBlockChromaTile)world.getTileEntity(x, y, z);
 					if (te.canStructureBeInspected()) {
 						ChromaStructures str = te.getPrimaryStructure();
@@ -272,6 +278,17 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 						}
 					}
 					return false;
+				}
+				case MULTIBLOCK: {
+					BlockMultiBlock b = (BlockMultiBlock)world.getBlock(x, y, z);
+					b.checkForFullMultiBlock(world, x, y, z, ForgeDirection.VALID_DIRECTIONS[s].getOpposite(), StructureErrorOverlays.instance);
+					return true;
+				}/*
+				case IMMERSIVE: {
+
+					b.checkForFullMultiBlock(world, x, y, z, ForgeDirection.VALID_DIRECTIONS[s].getOpposite(), StructureErrorOverlays.instance);
+					return true;
+				}*/
 				default:
 					return false;
 			}
@@ -282,6 +299,9 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 		}
 
 		private boolean isValid(World world, int x, int y, int z) {
+			Block b = world.getBlock(x, y, z);
+			if (trigger.isAssignableFrom(b.getClass()))
+				return true;
 			TileEntity te = world.getTileEntity(x, y, z);
 			return te != null && trigger.isAssignableFrom(te.getClass());
 		}

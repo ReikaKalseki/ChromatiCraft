@@ -24,7 +24,7 @@ import net.minecraftforge.fluids.Fluid;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-
+@Deprecated
 public class BlockTempleLifewater extends BlockFluidFinite {
 
 	private final IIcon[][] theIcon = new IIcon[2][2];

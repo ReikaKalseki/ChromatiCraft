@@ -37,7 +37,7 @@ public class BeeConversionRecipe extends PylonCastingRecipe {
 	public BeeConversionRecipe() {
 		super(new ItemStack(ForestryHandler.ItemEntry.PRINCESS.getItem()), new ItemStack(ForestryHandler.ItemEntry.DRONE.getItem()));
 
-		for (int i = -4; i <= 4; i++) {
+		for (int i = -4; i <= 4; i += 2) {
 			if (i != 0) {
 				this.addAuxItem(ChromaStacks.livingEssence, i, i);
 				this.addAuxItem(ChromaStacks.livingEssence, i, -i);
@@ -147,6 +147,12 @@ public class BeeConversionRecipe extends PylonCastingRecipe {
 	@Override
 	public boolean canGiveDoubleOutput() {
 		return true;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public String getDisplayName() {
+		return "Drone to Princess Conversion";
 	}
 
 }

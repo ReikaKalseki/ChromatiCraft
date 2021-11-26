@@ -11,6 +11,8 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCast
 import Reika.DragonAPI.ModList;
 
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class DivisionSigilActivationRecipe extends MultiBlockCastingRecipe {
 
@@ -50,6 +52,12 @@ public class DivisionSigilActivationRecipe extends MultiBlockCastingRecipe {
 
 	public static boolean isLoadable() {
 		return sigil != null;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public String getDisplayName() {
+		return "Division Sigil Activation";
 	}
 
 }

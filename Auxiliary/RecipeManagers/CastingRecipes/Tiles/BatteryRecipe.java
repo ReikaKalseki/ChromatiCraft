@@ -147,4 +147,9 @@ public class BatteryRecipe extends PylonCastingRecipe {
 		}
 	}
 
+	@Override
+	public boolean requiresTuningKey() {
+		return true;
+	}
+
 }

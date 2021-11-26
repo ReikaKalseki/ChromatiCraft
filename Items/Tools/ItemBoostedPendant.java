@@ -41,19 +41,14 @@ public class ItemBoostedPendant extends ItemPendant implements PoweredItem {
 	}
 
 	@Override
-	public boolean isEnhanced() {
-		return true;
-	}
-
-	@Override
-	protected boolean isFunctional(ItemStack is) {
+	protected boolean isEnhanced(ItemStack is) {
 		return !ChromaOptions.POWEREDPENDANTS.getState() || ToolChargingSystem.instance.getCharge(is) > 0;
 	}
 
 	@Override
 	protected void onTick(ItemStack is, World world, EntityPlayer ep, int slot) {
 		if (ChromaOptions.POWEREDPENDANTS.getState())
-			ToolChargingSystem.instance.removeCharge(is, this.getChargeConsumptionRate(ep, world, is));
+			ToolChargingSystem.instance.removeCharge(is, this.getChargeConsumptionRate(ep, world, is), ep);
 	}
 
 	@Override

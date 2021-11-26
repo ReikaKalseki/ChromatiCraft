@@ -24,6 +24,8 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class DoubleJumpRecipe extends TempleCastingRecipe {
@@ -66,6 +68,12 @@ public class DoubleJumpRecipe extends TempleCastingRecipe {
 	@Override
 	public int getDuration() {
 		return 20*super.getDuration();
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public String getDisplayName() {
+		return "Double Jump Application";
 	}
 
 }

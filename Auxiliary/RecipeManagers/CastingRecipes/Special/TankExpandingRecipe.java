@@ -11,6 +11,9 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class TankExpandingRecipe extends PylonCastingRecipe {
 
 	public static final int PARALLEL = 8;
@@ -63,6 +66,12 @@ public class TankExpandingRecipe extends PylonCastingRecipe {
 	@Override
 	protected float getConsecutiveStackingTimeFactor(TileEntityCastingTable te) {
 		return 0.5F;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public String getDisplayName() {
+		return "Crystal Tank Expansion";
 	}
 
 }

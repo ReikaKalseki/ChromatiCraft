@@ -185,4 +185,10 @@ public class RepeaterTurboRecipe extends PylonCastingRecipe implements EnergyLin
 		return 0.75F;
 	}
 
+	@Override
+	@SideOnly(Side.CLIENT)
+	public String getDisplayName() {
+		return "Repeater Turbocharging - "+this.getOutput().getDisplayName();
+	}
+
 }

@@ -108,6 +108,8 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 	private final HashSet<String> scannedPlayers = new HashSet(); //not uuid since written to NBT
 	private final ProximityMap metaAlloyPlants = new ProximityMap(64, 1);
 
+	private int plantRand = 800;
+
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.DATANODE;
@@ -201,11 +203,16 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 		}
 
 		if (tower != null && !world.isRemote) {
-			if (rand.nextInt(800) == 0) {
-				if (!this.spawnMetaAlloy(world, x, y, z)) {
+			if (rand.nextInt(plantRand) == 0) {
+				if (this.spawnMetaAlloy(world, x, y, z)) {
+					plantRand = 800; //reset random rate;
+				}
+				else {
+					plantRand = Math.max(300, plantRand-50);
 					for (Coordinate c : metaAlloyPlants.getLocations()) { //verify all flowers
-						if (c.getBlock(world) != ChromaBlocks.METAALLOYLAMP.getBlockInstance())
+						if (c.getBlock(world) != ChromaBlocks.METAALLOYLAMP.getBlockInstance()) {
 							metaAlloyPlants.remove(c);
+						}
 					}
 				}
 			}

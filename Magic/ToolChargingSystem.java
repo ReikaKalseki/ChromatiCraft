@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -19,6 +20,7 @@ import net.minecraftforge.client.IItemRenderer.ItemRenderType;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.TemporaryCrystalReceiver;
+import Reika.ChromatiCraft.Items.Tools.ItemEfficiencyCrystal;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.PoweredItem;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
@@ -70,7 +72,9 @@ public class ToolChargingSystem {
 		return amt;
 	}
 
-	public int removeCharge(ItemStack is, int amt) {
+	public int removeCharge(ItemStack is, int amt, EntityPlayer ep) {
+		if (ItemEfficiencyCrystal.isActive(ep))
+			amt = Math.max(1, amt/3);
 		int get = this.getCharge(is);
 		amt = Math.min(get, amt);
 		this.setCharge(is, get-amt);

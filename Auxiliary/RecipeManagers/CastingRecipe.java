@@ -504,6 +504,11 @@ public class CastingRecipe implements APICastingRecipe {
 		return normal;
 	}
 
+	@SideOnly(Side.CLIENT)
+	public String getDisplayName() {
+		return this.getOutputForDisplay().getDisplayName();
+	}
+
 	public static class TempleCastingRecipe extends CastingRecipe implements RuneTempleRecipe {
 
 		private static final ArrayList<Coordinate> runeRing = new ArrayList();
@@ -732,6 +737,10 @@ public class CastingRecipe implements APICastingRecipe {
 		private MultiBlockCastingRecipe addAuxItem(ItemMatch is, int dx, int dz) {
 			if (dx == 0 && dz == 0)
 				throw new RegistrationException(ChromatiCraft.instance, "Tried adding an item to the center of a recipe "+this+": "+is);
+			if (Math.abs(dx) != 0 && Math.abs(dx) != 2 && Math.abs(dx) != 4)
+				throw new RegistrationException(ChromatiCraft.instance, "Tried adding an item to invalid x="+dx+" in a recipe "+this+": "+is);
+			if (Math.abs(dz) != 0 && Math.abs(dz) != 2 && Math.abs(dz) != 4)
+				throw new RegistrationException(ChromatiCraft.instance, "Tried adding an item to invalid z="+dz+" in a recipe "+this+": "+is);
 			inputs.put(Arrays.asList(dx, dz), is);
 			return this;
 		}
@@ -740,8 +749,12 @@ public class CastingRecipe implements APICastingRecipe {
 			return Collections.unmodifiableMap(inputs);
 		}
 
+		public ItemMatch getAuxItem(List<Integer> li) {
+			return li.size() == 2 ? inputs.get(li) : null;
+		}
+
 		public ItemMatch getAuxItem(int x, int z) {
-			return inputs.get(Arrays.asList(x, z));
+			return this.getAuxItem(Arrays.asList(x, z));
 		}
 
 		public final Map<List<Integer>, Set<KeyedItemStack>> getInputItems() {

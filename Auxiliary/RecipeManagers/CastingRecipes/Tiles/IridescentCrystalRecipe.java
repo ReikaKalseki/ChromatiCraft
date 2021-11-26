@@ -124,4 +124,9 @@ public class IridescentCrystalRecipe extends PylonCastingRecipe {
 		}
 	}
 
+	@Override
+	public boolean requiresTuningKey() {
+		return true;
+	}
+
 }

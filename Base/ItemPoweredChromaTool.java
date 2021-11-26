@@ -79,8 +79,9 @@ public abstract class ItemPoweredChromaTool extends ItemChromaTool implements Po
 		if (e instanceof EntityPlayer) {
 			if (this.isActivated((EntityPlayer)e, is, held)) {
 				if (ToolChargingSystem.instance.getCharge(is) > 0) {
-					if (this.doTick(is, world, (EntityPlayer)e, held) && !((EntityPlayer)e).capabilities.isCreativeMode)
-						ToolChargingSystem.instance.removeCharge(is, this.getChargeConsumptionRate((EntityPlayer)e, world, is));
+					if (this.doTick(is, world, (EntityPlayer)e, held) && !((EntityPlayer)e).capabilities.isCreativeMode) {
+						ToolChargingSystem.instance.removeCharge(is, this.getChargeConsumptionRate((EntityPlayer)e, world, is), (EntityPlayer)e);
+					}
 				}
 			}
 		}

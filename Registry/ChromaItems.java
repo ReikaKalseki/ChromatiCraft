@@ -68,6 +68,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemOreSilker;
 import Reika.ChromatiCraft.Items.Tools.ItemOwnerKey;
 import Reika.ChromatiCraft.Items.Tools.ItemPendant;
 import Reika.ChromatiCraft.Items.Tools.ItemPylonFinder;
+import Reika.ChromatiCraft.Items.Tools.ItemRecipeCacheCapsule;
 import Reika.ChromatiCraft.Items.Tools.ItemSplashGun;
 import Reika.ChromatiCraft.Items.Tools.ItemSplineAttack;
 import Reika.ChromatiCraft.Items.Tools.ItemStructureMap;
@@ -201,6 +202,7 @@ public enum ChromaItems implements ItemEnum {
 	MANIPFOCUS(0, false,	"chroma.manipfocus",	ItemManipulatorFocus.class, ModList.THAUMCRAFT),
 	NETHERKEY(67, false,	"chroma.netherkey",		ItemNetherKey.class),
 	ABILITYFOCUS(0, false,	"chroma.abilityfocus",	ItemAbilityFocus.class, ModList.THAUMCRAFT),
+	RECIPECACHE(69, false,	"chroma.recipecapsule",	ItemRecipeCacheCapsule.class),
 	;
 
 	private final int index;
