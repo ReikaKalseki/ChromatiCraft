@@ -965,8 +965,11 @@ public class RecipesCastingTable implements CastingAPI {
 
 	public void addPostLoadRecipes() {
 		if (ModList.THAUMCRAFT.isLoaded()) {
-			ItemStack is = ReikaItemHelper.getSizedItemStack(ThaumItemHelper.BlockEntry.ANCIENTROCK.getItem(), 16);
+			ItemStack is = ReikaItemHelper.getSizedItemStack(ThaumItemHelper.BlockEntry.ANCIENTROCK.getItem(), 32);
 			IRecipe sr = new ShapedOreRecipe(is, "SdS", "dOd", "SdS", 'S', "stone", 'd', ChromaStacks.auraDust, 'O', Blocks.obsidian);
+			this.addModRecipe(new CastingRecipe(is, sr));
+			is = ReikaItemHelper.getSizedItemStack(ThaumItemHelper.BlockEntry.ANCIENTROCK.getItem(), 32);
+			sr = new ShapedOreRecipe(is, "SvS", "dOd", "SvS", 'S', "stone", 'v', ChromaStacks.voidDust, 'd', ChromaStacks.spaceDust, 'O', Blocks.obsidian);
 			this.addModRecipe(new CastingRecipe(is, sr));
 
 			is = ThaumItemHelper.ItemEntry.ZOMBIEBRAIN.getItem();

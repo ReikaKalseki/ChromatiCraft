@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.Items.ItemElementalStone;
 import Reika.ChromatiCraft.Items.ItemFertilitySeed;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.ItemMagicBranch;
+import Reika.ChromatiCraft.Items.ItemPatternCrystal;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Items.ItemT2EnderEye;
 import Reika.ChromatiCraft.Items.ItemTieredResource;
@@ -203,6 +204,7 @@ public enum ChromaItems implements ItemEnum {
 	NETHERKEY(67, false,	"chroma.netherkey",		ItemNetherKey.class),
 	ABILITYFOCUS(0, false,	"chroma.abilityfocus",	ItemAbilityFocus.class, ModList.THAUMCRAFT),
 	RECIPECACHE(69, false,	"chroma.recipecapsule",	ItemRecipeCacheCapsule.class),
+	MULTIPATTERN(71, false,	"chroma.patterncrystal",ItemPatternCrystal.class, ModList.APPENG),
 	;
 
 	private final int index;

@@ -108,7 +108,7 @@ public class TieredOreCap extends WandCap {
 					"AAA", "A A", 'A', wt.raw
 			};
 			total.add(al);
-			ShapedArcaneRecipe ir = ThaumcraftApi.addArcaneCraftingRecipe("", wt.item, al, recipe);
+			ShapedArcaneRecipe ir = ThaumcraftApi.addArcaneCraftingRecipe("", ReikaItemHelper.getSizedItemStack(wt.item, 2), al, recipe);
 			String id = "CAP_TIEREDCAP_"+t.name();
 
 			MathExpression cost = new MathExpression() {

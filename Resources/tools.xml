@@ -196,9 +196,9 @@
 	<netherkey>
 		You have heard stories of a second layer to the nether, filled with several types of structures, many of which contain significant wealth and information and which largely satiate your need for such things. However, something appears to have changed since the stories originated; Much as you may want to do so, you are unable to even access that region, being catapulted backwards when you try (or worse, given what happened that time you tried something rather more outlandish to bypass it). You will need to find another mechanism to nullify this effect.
 	</netherkey>
-	<name>
-		
-	</name>
+	<recipecache>
+		More times than you can count, you have prepared your table for a complicated recipe, filling every stand and using a dozen different item types in a difficult pattern, only to realize that you were missing one of the components. Worse, half the time that item - often being the central item of the recipe - requires the stands to craft [i]it[/i], meaning that you now need to undo all your work so you can prepare to craft that intermediate instead. What you need is something that can collect and remember the recipe pattern, so that you can restore it once you are ready again.
+	</recipecache>
 	<name>
 		
 	</name>

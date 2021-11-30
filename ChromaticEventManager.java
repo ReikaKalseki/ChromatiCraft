@@ -280,6 +280,9 @@ import Reika.VoidMonster.Entity.EntityVoidMonster;
 import WayofTime.alchemicalWizardry.api.event.TeleposeEvent;
 import am2.api.events.SpellCastingEvent;
 import am2.api.spell.component.interfaces.ISpellComponent;
+import appeng.api.networking.IGrid;
+import appeng.api.networking.IGridHost;
+import appeng.api.networking.IGridNode;
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -321,6 +324,22 @@ public class ChromaticEventManager {
 		}
 	}
 	 */
+	@SubscribeEvent
+	@ModDependent(ModList.APPENG)
+	public void registerPatternHandler(PlayerInteractEvent evt) {
+		if (evt.action == Action.RIGHT_CLICK_BLOCK && !evt.world.isRemote) {
+			TileEntity te = evt.world.getTileEntity(evt.x, evt.y, evt.z);
+			if (te instanceof IGridHost) {
+				IGridNode node = ((IGridHost)te).getGridNode(ForgeDirection.VALID_DIRECTIONS[evt.face]);
+				if (node != null) {
+					IGrid grid = node.getGrid();
+					//NetworkEventBus bus = ((Grid)grid).eventBus;
+					//bus.readClass();
+				}
+			}
+		}
+	}
+
 	@SubscribeEvent
 	public void fakeJABBACompat(PlayerInteractEvent evt) {
 		if (evt.action == Action.RIGHT_CLICK_BLOCK && !evt.world.isRemote) {

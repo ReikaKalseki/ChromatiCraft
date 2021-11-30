@@ -532,6 +532,7 @@ public class ModInteraction {
 			al.add(Aspect.EXCHANGE, 50);
 			al.add(ChromaAspectManager.instance.SIGNAL, 360);
 			al.add(Aspect.CRYSTAL, 200);
+			al.add(Aspect.GREED, 150);
 			ItemStack[] recipe = {
 					ThaumItemHelper.ItemEntry.BALANCED.getItem(),
 					ThaumItemHelper.ItemEntry.THAUMIUM.getItem(),
@@ -568,6 +569,7 @@ public class ModInteraction {
 			al.add(ChromaAspectManager.instance.SIGNAL, 8);
 			al.add(Aspect.EXCHANGE, 3);
 			al.add(Aspect.HARVEST, 2);
+			al.add(Aspect.GREED, 5);
 			if (ChromaOptions.HARDTHAUM.getState()) {
 				for (Entry<Aspect, Integer> e : al.aspects.entrySet()) {
 					e.setValue(e.getValue()*5);
