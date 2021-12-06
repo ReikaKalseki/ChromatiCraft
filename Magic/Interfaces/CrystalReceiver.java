@@ -15,8 +15,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public interface CrystalReceiver extends CrystalNetworkTile, EnergyBeamReceiver {
 
-	/** Returns the amount successfully added.
-	 * @param src TODO*/
+	/** Returns the amount successfully added. */
 	public int receiveElement(CrystalSource src, CrystalElement e, int amt);
 
 	public void onPathBroken(CrystalFlow p, FlowFail f);

@@ -23,7 +23,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Interfaces.Item.AnimatedSpritesheet;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 
-
+//TODO Incomplete item
 public class ItemThrowableGem extends ItemCrystalBasic implements AnimatedSpritesheet, TieredItem {
 
 	private static final int[] offsets;

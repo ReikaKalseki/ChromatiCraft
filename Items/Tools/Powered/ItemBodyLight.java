@@ -7,7 +7,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-
+//TODO Incomplete item
 public class ItemBodyLight extends ItemPoweredChromaTool {
 
 	public ItemBodyLight(int index) {
@@ -15,8 +15,8 @@ public class ItemBodyLight extends ItemPoweredChromaTool {
 	}
 
 	@Override
-	public boolean canChargeWhilePlayerCharges() {
-		return true;
+	public float getPlayerChargeCoefficient(ItemStack is) {
+		return 1;
 	}
 
 	@Override
@@ -26,31 +26,26 @@ public class ItemBodyLight extends ItemPoweredChromaTool {
 
 	@Override
 	public int getMaxCharge() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public int getChargeStates() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public boolean isActivated(EntityPlayer e, ItemStack is, boolean held) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	protected boolean doTick(ItemStack is, World world, EntityPlayer e, boolean held) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

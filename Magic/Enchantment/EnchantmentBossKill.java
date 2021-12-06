@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -21,10 +21,10 @@ import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 public class EnchantmentBossKill extends ChromaticEnchantment {
 
 	private static DamageProfile[] damageFraction = {
-		new DamageProfile(16, 50, 500),
-		new DamageProfile(4, 80, 300),
-		new DamageProfile(2, 100, 200),
-		new DamageProfile(2, 250, 100),
+			new DamageProfile(16, 50, 500),
+			new DamageProfile(4, 80, 300),
+			new DamageProfile(2, 100, 200),
+			new DamageProfile(2, 250, 100),
 	};
 
 	public EnchantmentBossKill(int id) {
@@ -42,7 +42,7 @@ public class EnchantmentBossKill extends ChromaticEnchantment {
 	}
 
 	@Override
-	public boolean isVisibleToPlayer(EntityPlayer ep) {
+	public boolean isVisibleToPlayer(EntityPlayer ep, int level) {
 		return ProgressStage.KILLDRAGON.isPlayerAtStage(ep) || ProgressStage.KILLWITHER.isPlayerAtStage(ep);
 	}
 

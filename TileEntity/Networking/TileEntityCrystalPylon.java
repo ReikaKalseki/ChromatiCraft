@@ -1476,8 +1476,13 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	}
 
 	@Override
-	public float getToolChargingPower(EntityPlayer ep, CrystalElement e) {
-		return 1;
+	public float getHeldToolChargingPower(EntityPlayer ep, CrystalElement e, ItemStack is) {
+		return this.isEnhanced() ? 3 : 1.5F;
+	}
+
+	@Override
+	public float getDroppedItemChargeRate(ItemStack is) {
+		return this.isEnhanced() ? 2 : 1;
 	}
 
 }

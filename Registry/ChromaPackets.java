@@ -225,6 +225,7 @@ public enum ChromaPackets {
 	//CLEARSTAND(4),
 	RUNEPARTICLE(6, PacketTypes.POS),
 	ABILITYFOCUS(1, PacketTypes.STRINGINT),
+	DOGGOSONAR(3),
 	;
 
 	public final int numInts;

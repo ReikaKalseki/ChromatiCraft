@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Magic.Interfaces;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -32,6 +33,6 @@ public interface ChargingPoint extends CrystalNetworkTile, LumenTile {
 
 	public Coordinate getChargeParticleOrigin(EntityPlayer ep, CrystalElement e);
 
-	public float getToolChargingPower(EntityPlayer ep, CrystalElement e);
+	public float getHeldToolChargingPower(EntityPlayer ep, CrystalElement e, ItemStack is);
 
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -34,8 +34,17 @@ public class EnchantmentRareLoot extends ChromaticEnchantment {
 	}
 
 	@Override
-	public boolean isVisibleToPlayer(EntityPlayer ep) {
-		return ProgressStage.KILLMOB.isPlayerAtStage(ep);
+	public boolean isVisibleToPlayer(EntityPlayer ep, int level) {
+		switch(level) {
+			case 1:
+			case 2:
+			default:
+				return ProgressStage.KILLMOB.isPlayerAtStage(ep);
+			case 3:
+				return ProgressStage.CHROMA.isPlayerAtStage(ep);
+			case 4:
+				return ProgressStage.ALLOY.isPlayerAtStage(ep);
+		}
 	}
 
 }

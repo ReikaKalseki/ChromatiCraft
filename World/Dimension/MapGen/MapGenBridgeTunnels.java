@@ -17,19 +17,16 @@ public class MapGenBridgeTunnels extends MapGenStructure {
 
 	@Override
 	protected boolean canSpawnStructureAtCoords(int x, int z) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	protected StructureStart getStructureStart(int x, int z) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String func_143025_a() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

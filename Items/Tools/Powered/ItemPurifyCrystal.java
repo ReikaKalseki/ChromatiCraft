@@ -40,11 +40,6 @@ public class ItemPurifyCrystal extends ItemPoweredChromaTool {
 	}
 
 	@Override
-	public boolean canChargeWhilePlayerCharges() {
-		return false;
-	}
-
-	@Override
 	public boolean doTick(ItemStack is, World world, EntityPlayer e, boolean held) {
 		e.getEntityData().setLong(TAG, world.getTotalWorldTime());
 		if (world.isRemote) {

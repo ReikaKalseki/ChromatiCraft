@@ -155,11 +155,12 @@ public class ChromaOverlays {
 
 		int gsc = evt.resolution.getScaleFactor();
 		if (evt.type == ElementType.HELMET) {
-			if (HoldingChecks.MANIPULATOR.isClientHolding()) {
+			boolean manip = HoldingChecks.MANIPULATOR.isClientHolding();
+			if (manip) {
 				MouseoverOverlayRenderer.instance.renderTileOverlays(ep, gsc);
 			}
 
-			if (this.isEnergyDisplayTool(is)) {
+			if (manip || this.isEnergyDisplayTool(is)) {
 				if (!holding)
 					this.syncBuffer(ep);
 				holding = true;
@@ -654,6 +655,7 @@ public class ChromaOverlays {
 	private void renderAbilityStatus(EntityPlayer ep, int gsc) {
 		ArrayList<Ability> li = Chromabilities.getFrom(ep);
 		GL11.glColor4f(1, 1, 1, 1);
+		GL11.glEnable(GL11.GL_BLEND);
 		int i = 0;
 		for (Ability c : li) {
 			boolean flag = c.isFunctioningOn(ep);
@@ -800,6 +802,8 @@ public class ChromaOverlays {
 		int sp = 4;
 		int ox = this.getPieX(r, sp, gsc);
 		int oy = this.getPieY(r, sp, gsc);
+		if (!this.isEnergyDisplayTool(ep.getCurrentEquippedItem()))
+			ox += 40;
 
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/wheelback_2.png");
 		v5.startDrawingQuads();

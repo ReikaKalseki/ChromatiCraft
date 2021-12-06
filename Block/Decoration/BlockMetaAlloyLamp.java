@@ -76,7 +76,7 @@ public class BlockMetaAlloyLamp extends Block implements SidedBlock {
 
 	@Override
 	public void updateTick(World world, int x, int y, int z, Random rand) {
-		if (!this.hasPod(world, x, y, z) && rand.nextInt(4) == 0 && !world.isRemote) {
+		if (!this.hasPod(world, x, y, z) && rand.nextInt(100) == 0 && !world.isRemote) {
 			this.setPod(world, x, y, z, true);
 		}
 	}

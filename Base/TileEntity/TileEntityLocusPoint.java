@@ -39,7 +39,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class TileEntityLocusPoint extends TileEntityChromaticBase implements LocationCached, OwnedTile {
 
-	//TODO this is not properly thread safe yet, but I have never seen it break, so maybe it is not a high priority...
+	//FIXME this is not properly thread safe yet, but I have never seen it break, so maybe it is not a high priority...
 	private static final NestedMap<Class<? extends TileEntityLocusPoint>, UUID, ThreadSafeTileCache> cache = new NestedMap();
 
 	@Override

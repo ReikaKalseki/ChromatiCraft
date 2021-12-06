@@ -70,20 +70,14 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 
 	private static final HashMap<Fluid, ProgressStage> liquidProgress = new HashMap();
 
-	private static final Comparator comparator = new PosComparator();
-
-	private static class PosComparator implements Comparator<FluidSource> {
-
-		private PosComparator() {
-
-		}
+	private static final Comparator<FluidSource> comparator = new Comparator<FluidSource>() {
 
 		@Override
 		public int compare(FluidSource o1, FluidSource o2) {
 			return o2.location.yCoord-o1.location.yCoord; //higher first
 		}
 
-	}
+	};
 
 	static {
 		required.addTag(CrystalElement.CYAN, 250);
@@ -215,8 +209,8 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 						int dy = scanY;
 						int dz = z+k;
 						Block b = world.getBlock(dx, dy, dz);
-						FluidStack fs = ReikaWorldHelper.getDrainableFluid(world, dx, dy, dz);
-						if (fs != null && fs.amount >= FluidContainerRegistry.BUCKET_VOLUME) {
+						FluidStack fs = this.getDrainableFluid(world, dx, dy, dz);
+						if (fs != null) {
 							this.addFluidBlock(dx, dy, dz, fs);
 							//ReikaJavaLibrary.pConsole(f.getName()+" @ "+dx+","+dy+","+dz, Side.SERVER, f.getName().startsWith("o"));
 						}
@@ -274,6 +268,16 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 				}
 			}
 		}
+	}
+
+	private FluidStack getDrainableFluid(World world, int x, int y, int z) {
+		FluidStack ret = ReikaWorldHelper.getDrainableFluid(world, x, y, z);
+		if (ret == null)
+			return null;
+		ret = ret.copy();
+		if (ret.getFluid() == FluidRegistry.WATER)
+			ret.amount /= 10;
+		return ret.amount > 0 ? ret : null;
 	}
 
 	private void fillBucket(Fluid f) {

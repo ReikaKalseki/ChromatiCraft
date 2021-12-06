@@ -112,19 +112,15 @@ public class ToolChargingSystem {
 				//CrystalSource s = CrystalNetworker.instance.findSourceWithX(r, e, amt, range, true);
 				CrystalSource s = CrystalNetworker.instance.getNearestTileOfType(r, CrystalSource.class, CHARGE_RANGE);
 				if (s != null && s.isConductingElement(e)) {
-					s.drain(e, amt*4);
-					if (s instanceof TileEntityCrystalPylon) {
-						amt *= 1.25; //25% boost
-						if (((TileEntityCrystalPylon)s).isEnhanced())
-							amt *= 1.6; //net 2x
+					float rate = s.getDroppedItemChargeRate(is);
+					if (rate > 0) {
+						amt *= rate;
+						s.drain(e, amt*4);
+						amt = this.scaleChargeRate(amt, ei, is, s, loc);
+						this.addCharge(is, amt);
+						ReikaPacketHelper.sendEntitySyncPacket(DragonAPIInit.packetChannel, ei, 32);
+						//ReikaJavaLibrary.pConsole(this.getCharge(is)+" (+"+this.getChargeRate(is)+", f="+(this.getCharge(is)/(float)MAX_CHARGE));
 					}
-					if (loc.getBlock() == ChromaBlocks.CHROMA.getBlockInstance() && loc.getBlockMetadata() == 0)
-						amt *= 1.25;
-					if (TileEntityAuraPoint.isPointWithin(loc.getWorld(), loc.xCoord, loc.yCoord, loc.zCoord, 256))
-						amt *= 2;
-					this.addCharge(is, amt);
-					ReikaPacketHelper.sendEntitySyncPacket(DragonAPIInit.packetChannel, ei, 32);
-					//ReikaJavaLibrary.pConsole(this.getCharge(is)+" (+"+this.getChargeRate(is)+", f="+(this.getCharge(is)/(float)MAX_CHARGE));
 				}
 				r.destroy();
 			}
@@ -135,6 +131,19 @@ public class ToolChargingSystem {
 			}
 		}
 		return false;
+	}
+
+	private int scaleChargeRate(int amt, EntityItem ei, ItemStack is, CrystalSource s, WorldLocation loc) {
+		if (s instanceof TileEntityCrystalPylon) {
+			amt *= 1.25; //25% boost
+			if (((TileEntityCrystalPylon)s).isEnhanced())
+				amt *= 1.6; //net 2x
+		}
+		if (loc.getBlock() == ChromaBlocks.CHROMA.getBlockInstance() && loc.getBlockMetadata() == 0)
+			amt *= 1.25;
+		if (TileEntityAuraPoint.isPointWithin(loc.getWorld(), loc.xCoord, loc.yCoord, loc.zCoord, 256))
+			amt *= 2;
+		return amt;
 	}
 
 	@SideOnly(Side.CLIENT)

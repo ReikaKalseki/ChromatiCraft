@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -59,7 +59,8 @@ public class MobSonarRenderer {
 
 	}
 
-	private void addCoordinate(Entity e) {
+	@SideOnly(Side.CLIENT)
+	public void addCoordinate(Entity e) {
 		EntityEntry ee = new EntityEntry(e);
 		coords.put(ee, DURATION);
 		ReikaSoundHelper.playClientSound(ChromaSounds.DING, e, 1, ee.soundPitch);
@@ -270,6 +271,7 @@ public class MobSonarRenderer {
 			return radius >= maxRadius;
 		}
 
+		@SideOnly(Side.CLIENT)
 		private List<Entity> getEntities(World world) {
 			ArrayList<Entity> li = new ArrayList();
 			AxisAlignedBB box = center.getAABB(radius);

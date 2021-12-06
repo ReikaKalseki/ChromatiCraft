@@ -43,10 +43,18 @@ public class ItemManipulatorFocus extends ItemFocusBasic {
 
 	@Override
 	public ItemStack onFocusRightClick(ItemStack wand, World world, EntityPlayer player, MovingObjectPosition mov) {
-		if (mov == null)
-			return null;
-		ChromaItems.TOOL.getItemInstance().onItemUse(ChromaItems.TOOL.getStackOf(), player, world, mov.blockX, mov.blockY, mov.blockZ, mov.sideHit, (float)mov.hitVec.xCoord, (float)mov.hitVec.yCoord, (float)mov.hitVec.zCoord);
+		if (mov == null) {
+			player.setItemInUse(wand, wand.getItem().getMaxItemUseDuration(wand));
+		}
+		else {
+			ChromaItems.TOOL.getItemInstance().onItemUse(ChromaItems.TOOL.getStackOf(), player, world, mov.blockX, mov.blockY, mov.blockZ, mov.sideHit, (float)mov.hitVec.xCoord, (float)mov.hitVec.yCoord, (float)mov.hitVec.zCoord);
+		}
 		return null;
+	}
+
+	@Override
+	public void onUsingFocusTick(ItemStack wandstack, EntityPlayer player, int count) {
+		ChromaItems.TOOL.getItemInstance().onUsingTick(ChromaItems.TOOL.getStackOf(), player, count);
 	}
 
 	@Override

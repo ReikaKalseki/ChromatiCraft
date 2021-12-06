@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.TileEntity.Networking;
 import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
@@ -121,6 +122,11 @@ public class TileEntityCreativeSource extends CrystalTransmitterBase implements 
 	@Override
 	public double getMaximumBeamRadius() {
 		return TileEntityCrystalBase.DEFAULT_BEAM_RADIUS;
+	}
+
+	@Override
+	public float getDroppedItemChargeRate(ItemStack is) {
+		return 50;
 	}
 
 }

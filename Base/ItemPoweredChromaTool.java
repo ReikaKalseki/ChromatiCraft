@@ -51,8 +51,8 @@ public abstract class ItemPoweredChromaTool extends ItemChromaTool implements Po
 	public abstract int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is);
 	protected abstract boolean doTick(ItemStack is, World world, EntityPlayer e, boolean held);
 
-	public boolean canChargeWhilePlayerCharges() {
-		return false;
+	public float getPlayerChargeCoefficient(ItemStack is) {
+		return 0;
 	}
 
 	public int getChargeRate(ItemStack is, int base) {

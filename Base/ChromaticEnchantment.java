@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -26,6 +26,6 @@ public abstract class ChromaticEnchantment extends Enchantment {
 		return false;
 	}
 
-	public abstract boolean isVisibleToPlayer(EntityPlayer ep);
+	public abstract boolean isVisibleToPlayer(EntityPlayer ep, int level);
 
 }

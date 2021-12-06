@@ -879,8 +879,13 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	}
 
 	@Override
-	public float getToolChargingPower(EntityPlayer ep, CrystalElement e) {
+	public float getHeldToolChargingPower(EntityPlayer ep, CrystalElement e, ItemStack is) {
 		return this.isEnhanced() ? 2 : 0.75F;
+	}
+
+	@Override
+	public float getDroppedItemChargeRate(ItemStack is) {
+		return this.isEnhanced() ? 1.5F : 0.8F;
 	}
 
 }

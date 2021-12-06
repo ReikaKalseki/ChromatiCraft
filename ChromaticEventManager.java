@@ -34,7 +34,9 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityGhast;
+import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.monster.EntitySpider;
@@ -1079,6 +1081,12 @@ public class ChromaticEventManager {
 						if (rand.nextBoolean()) {
 							ReikaEntityHelper.dropHead(e);
 						}
+					}
+					if (ModList.THAUMICTINKER.isLoaded() && ReikaRandomHelper.doWithChance(level*5)/* && isKamiEnabled()*/) { //FIXME check kami enable
+						if (ev.entityLiving.worldObj.provider.dimensionId == -1 && ev.entityLiving instanceof EntityPigZombie)
+							ReikaItemHelper.dropItem(ev.entityLiving, ReikaItemHelper.lookupItem(ModList.THAUMICTINKER, "kamiResource", 6));
+						else if (ev.entityLiving.worldObj.provider.dimensionId == 1 && ev.entityLiving instanceof EntityEnderman)
+							ReikaItemHelper.dropItem(ev.entityLiving, ReikaItemHelper.lookupItem(ModList.THAUMICTINKER, "kamiResource", 7));
 					}
 					e.captureDrops = false;
 				}

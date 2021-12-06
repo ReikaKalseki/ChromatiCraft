@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -14,6 +14,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
 import Reika.ChromatiCraft.Base.ChromaticEnchantment;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 
 
 public class EnchantmentUseRepair extends ChromaticEnchantment {
@@ -33,8 +34,8 @@ public class EnchantmentUseRepair extends ChromaticEnchantment {
 	}
 
 	@Override
-	public boolean isVisibleToPlayer(EntityPlayer ep) {
-		return true;
+	public boolean isVisibleToPlayer(EntityPlayer ep, int level) {
+		return level < 3 || ProgressStage.MAKECHROMA.isPlayerAtStage(ep);
 	}
 
 	public static int getRepairedDurability(ItemStack item, int level, float damage/*, UseType type*/) {

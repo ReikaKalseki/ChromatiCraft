@@ -22,6 +22,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -51,6 +52,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.Portal
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.RepeaterTurboRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.PylonTurboRecipe;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
+import Reika.ChromatiCraft.Auxiliary.Render.MobSonarRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.OreOverlayRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.ProbeInfoOverlayRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.StructureErrorOverlays;
@@ -333,7 +335,7 @@ public class ChromatiPackets implements PacketHandler {
 					boolean incr = data[1] > 0;
 					TileEntityAutoEnchanter ench = (TileEntityAutoEnchanter)tile;
 					if (incr) {
-						ench.incrementEnchantment(e, data[2] > 0);
+						ench.incrementEnchantment(e, data[2] > 0, ep);
 					}
 					else {
 						ench.decrementEnchantment(e, data[2] > 0);
@@ -1213,6 +1215,12 @@ public class ChromatiPackets implements PacketHandler {
 							focus.stackTagCompound.setInteger("power", data[0]);
 						}
 					}
+					break;
+				}
+				case DOGGOSONAR: {
+					Entity hit = new EntityWolf(world); //dummy
+					hit.setLocationAndAngles(data[0]+0.5, data[1]+0.5, data[2]+0.5, 0, 0);
+					MobSonarRenderer.instance.addCoordinate(hit);
 					break;
 				}
 			}

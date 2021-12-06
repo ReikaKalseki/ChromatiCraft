@@ -421,6 +421,11 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 		return this.getOutgoingBeamRadius();
 	}
 
+	@Override
+	public float getDroppedItemChargeRate(ItemStack is) {
+		return 0;
+	}
+
 	@SideOnly(Side.CLIENT)
 	public EntityItem getEntityItem() {
 		return entity;

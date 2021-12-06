@@ -71,7 +71,10 @@ public class ChromaConfig extends ControlledConfig {
 	}
 
 	public Key getSuperbuildKey() {
-		return superbuildKey;
+		Key k = superbuildKey;
+		if (k == null)
+			k = Key.LCTRL;
+		return k;
 	}
 
 	private String[] getDefaultGuardstoneExceptions() {

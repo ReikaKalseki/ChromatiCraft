@@ -190,7 +190,7 @@ public class ArtefactSpawner implements TickHandler {
 		private boolean tick(EntityPlayerMP ep) {
 			ReikaPacketHelper.sendPositionPacket(ChromatiCraft.packetChannel, ChromaPackets.UAFX.ordinal(), ep.worldObj, position.xCoord, position.yCoord, position.zCoord, new PacketTarget.PlayerTarget(ep));
 			age++;
-			return age >= maxLife || ep.getUniqueID().equals(spawnedByPlayer) && ep.getDistanceSq(position.xCoord, position.yCoord, position.zCoord) >= DESPAWN_DISTANCE*DESPAWN_DISTANCE;
+			return age >= maxLife || (ep.getUniqueID().equals(spawnedByPlayer) && ep.getDistanceSq(position.xCoord, position.yCoord, position.zCoord) >= DESPAWN_DISTANCE*DESPAWN_DISTANCE);
 		}
 
 	}

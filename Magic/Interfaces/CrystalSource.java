@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Magic.Interfaces;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
@@ -29,5 +30,7 @@ public interface CrystalSource extends CrystalTransmitter, LumenTile {
 	public boolean playerCanUse(EntityPlayer ep);
 
 	public double getMaximumBeamRadius();
+
+	public float getDroppedItemChargeRate(ItemStack is);
 
 }

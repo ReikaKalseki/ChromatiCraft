@@ -396,7 +396,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		progressTimer = 0;
 	}
 
-	public int getMaxEnchantmentLevel(Enchantment e) {
+	public static int getMaxEnchantmentLevel(Enchantment e) {
 		if (e == Enchantment.fortune)
 			return 5;
 		if (e == Enchantment.looting)
@@ -419,9 +419,10 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		this.onEnchantChanged(e);
 	}
 
-	public boolean incrementEnchantment(Enchantment e, boolean toMax) {
+	public boolean incrementEnchantment(Enchantment e, boolean toMax, EntityPlayer ep) {
 		int level = this.getEnchantment(e);
-		int newlevel = toMax ? this.getMaxEnchantmentLevel(e) : level+1;
+		int max = this.getAvailableEnchantmentLevel(e, ep);
+		int newlevel = Math.min(max, toMax ? this.getMaxEnchantmentLevel(e) : level+1);
 		return this.setEnchantment(e, newlevel);
 	}
 
@@ -554,8 +555,17 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		}
 	}
 
-	public static boolean canPlayerGetEnchantment(Enchantment e, EntityPlayer ep) {
-		return e instanceof ChromaticEnchantment ? ((ChromaticEnchantment)e).isVisibleToPlayer(ep) : true;
+	public static int getAvailableEnchantmentLevel(Enchantment e, EntityPlayer ep) {
+		return e instanceof ChromaticEnchantment ? getMaxEnchantment(ep, (ChromaticEnchantment)e) : getMaxEnchantmentLevel(e);
+	}
+
+	private static int getMaxEnchantment(EntityPlayer ep, ChromaticEnchantment e) {
+		for (int i = 1; i <= e.getMaxLevel(); i++) {
+			if (!e.isVisibleToPlayer(ep, i)) {
+				return i-1;
+			}
+		}
+		return e.getMaxLevel();
 	}
 
 	public boolean isAssisted() {

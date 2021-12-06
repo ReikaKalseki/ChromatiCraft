@@ -40,6 +40,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemTool;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
@@ -72,10 +73,12 @@ import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureTy
 import Reika.ChromatiCraft.Items.Tools.ItemEfficiencyCrystal;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAggroMask;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaEnchants;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -1607,8 +1610,21 @@ public class AbilityHelper implements AbilityAPI {
 	@SubscribeEvent
 	public void applyLyingCancel(LivingAttackEvent evt) {
 		DamageSource src = evt.source;
+		if (evt.entityLiving.worldObj.isRemote)
+			return;
+		if (evt.entityLiving.hurtResistantTime > 0)
+			;//return;
 		if (src.getEntity() instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)src.getEntity();
+			ItemStack weapon = ep.getCurrentEquippedItem();
+			if (weapon != null) {
+				int level = ChromaEnchants.AGGROMASK.getLevel(weapon);
+				if (level > 0 && EnchantmentAggroMask.preservePeace(level)) {
+					return;
+				}
+			}//FIXME nonfunctional since this event fires more than once per hit
+			if ((weapon == null || !(weapon.getItem() instanceof ItemTool)) && evt.entityLiving.func_94060_bK() != ep)
+				return;
 			if (Chromabilities.COMMUNICATE.enabledOn(ep)) {
 				EntityLivingBase mob = evt.entityLiving;
 				if (ReikaEntityHelper.isHostile(mob) && !ReikaEntityHelper.isBossMob(mob)) {
@@ -1617,6 +1633,8 @@ public class AbilityHelper implements AbilityAPI {
 						flag = ((EntityCreature)mob).getEntityToAttack() != ep;
 					if (flag) {
 						ep.getEntityData().setLong(LYING_TAG, ep.worldObj.getTotalWorldTime());
+						ReikaPlayerAPI.syncAttributes((EntityPlayerMP)ep);
+						ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 						AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(ep, 16).expand(16, 0, 16);
 						List<EntityLivingBase> li = ep.worldObj.selectEntitiesWithinAABB(EntityLivingBase.class, box, ReikaEntityHelper.hostileSelector);
 						HashSet<Class> played = new HashSet();

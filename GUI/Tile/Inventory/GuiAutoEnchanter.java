@@ -221,7 +221,7 @@ public class GuiAutoEnchanter extends GuiLetterSearchable<Enchantment> {
 	protected Collection<Enchantment> getAllEntries(EntityPlayer ep) {
 		Collection<Enchantment> c = new ArrayList();
 		for (Enchantment e : validEnchants) {
-			if (TileEntityAutoEnchanter.canPlayerGetEnchantment(e, ep))
+			if (TileEntityAutoEnchanter.getAvailableEnchantmentLevel(e, ep) > 0)
 				c.add(e);
 		}
 		return c;

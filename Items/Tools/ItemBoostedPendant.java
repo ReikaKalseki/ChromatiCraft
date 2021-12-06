@@ -134,8 +134,8 @@ public class ItemBoostedPendant extends ItemPendant implements PoweredItem {
 	}
 
 	@Override
-	public boolean canChargeWhilePlayerCharges() {
-		return true;
+	public float getPlayerChargeCoefficient(ItemStack is) {
+		return 3.6F;
 	}
 
 	@Override

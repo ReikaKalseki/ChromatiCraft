@@ -544,26 +544,31 @@ public class ChromaAux {
 		int slot = DragonAPICore.rand.nextInt(player.inventory.mainInventory.length);
 		ItemStack at = player.inventory.mainInventory[slot];
 		if (at != null) {
+			//ReikaJavaLibrary.pConsole(at);
 			if (at.getItem() instanceof ActivatedInventoryItem) {
 				int size = ((ActivatedInventoryItem)at.getItem()).getInventorySize(at);
 				slot = DragonAPICore.rand.nextInt(size);
 				if (((ActivatedInventoryItem)at.getItem()).isSlotActive(at, slot)) {
 					ItemStack in = ((ActivatedInventoryItem)at.getItem()).getItem(at, slot);
 					if (in != null && in.getItem() instanceof PoweredItem) {
-						PoweredItem pi = (PoweredItem)in.getItem();
-						if (pi.getColor(in) == e && pi.canChargeWhilePlayerCharges()) {
-							int rate = Math.max(1, (int)(te.getToolChargingPower(player, e)*ToolChargingSystem.instance.getChargeRate(in)));
-							ToolChargingSystem.instance.addCharge(in, rate);
-						}
+						tryChargePoweredItem(in, player, te, e);
 					}
 				}
 			}
 			else if (at.getItem() instanceof PoweredItem) {
-				PoweredItem pi = (PoweredItem)at.getItem();
-				if (pi.getColor(at) == e && pi.canChargeWhilePlayerCharges()) {
-					int rate = Math.max(1, (int)(te.getToolChargingPower(player, e)*ToolChargingSystem.instance.getChargeRate(at)));
-					ToolChargingSystem.instance.addCharge(at, rate);
-				}
+				tryChargePoweredItem(at, player, te, e);
+			}
+		}
+	}
+
+	private static void tryChargePoweredItem(ItemStack in, EntityPlayer player, ChargingPoint te, CrystalElement e) {
+		PoweredItem pi = (PoweredItem)in.getItem();
+		if (pi.getColor(in) == e) {
+			float sc = pi.getPlayerChargeCoefficient(in);
+			if (sc > 0) {
+				int rate = Math.max(0, (int)(te.getHeldToolChargingPower(player, e, in)*sc*ToolChargingSystem.instance.getChargeRate(in)));
+				if (rate > 0)
+					ToolChargingSystem.instance.addCharge(in, rate);
 			}
 		}
 	}

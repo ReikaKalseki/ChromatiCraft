@@ -45,7 +45,7 @@ public class EnchantmentDataKeeper extends ChromaticEnchantment {
 	}
 
 	@Override
-	public boolean isVisibleToPlayer(EntityPlayer ep) {
+	public boolean isVisibleToPlayer(EntityPlayer ep, int level) {
 		return true;
 	}
 

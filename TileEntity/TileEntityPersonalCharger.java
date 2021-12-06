@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.TileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
@@ -276,7 +277,7 @@ public class TileEntityPersonalCharger extends CrystalReceiverBase implements Ch
 	}
 
 	@Override
-	public float getToolChargingPower(EntityPlayer ep, CrystalElement e) {
+	public float getHeldToolChargingPower(EntityPlayer ep, CrystalElement e, ItemStack is) {
 		return 0;
 	}
 

@@ -367,8 +367,7 @@ public class RecursiveCastingAutomationSystem extends CastingAutomationSystem {
 				}
 			}
 
-			//Trim surplus
-			//TODO?
+			//TODO trim surplus?
 		}
 
 		public void craft(CastingRecipe r, int cycles) {
