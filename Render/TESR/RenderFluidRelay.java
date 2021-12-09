@@ -14,14 +14,13 @@ import java.util.Collection;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
+import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Models.ModelFluidRelay;
-import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidRelay;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -131,9 +130,8 @@ public class RenderFluidRelay extends ChromaRenderBase {
 
 			Collection<Coordinate> set = te.getConnections();
 			if (!set.isEmpty()) {
-				ItemStack is = Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem();
 				if (connectionAlphaTick != te.getWorldObj().getTotalWorldTime() || connectionAlphaPTick != par8) {
-					if (ChromaItems.TOOL.matchWith(is) || ReikaItemHelper.matchStacks(is, ChromaTiles.FLUIDRELAY.getCraftedProduct())) {
+					if (HoldingChecks.MANIPULATOR.isClientHolding() || ReikaItemHelper.matchStacks(Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem(), ChromaTiles.FLUIDRELAY.getCraftedProduct())) {
 						if (connectionAlphaOverride < 255) {
 							connectionAlphaOverride = Math.min(255, connectionAlphaOverride+3);
 						}

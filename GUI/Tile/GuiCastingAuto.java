@@ -238,6 +238,8 @@ public class GuiCastingAuto extends GuiChromaBase {
 		int key = Keyboard.getEventKey();
 		if ((key == Keyboard.KEY_PRIOR || key == Keyboard.KEY_NEXT) && pgCooldown == 0) {
 			ChromaResearch r = this.getRecipe().getFragment();
+			if (r == null) //happens when you mash keys
+				return;
 			ChromaResearch par = r.getParent();
 			boolean next = key == Keyboard.KEY_NEXT;
 			while (par == r.getParent()) {

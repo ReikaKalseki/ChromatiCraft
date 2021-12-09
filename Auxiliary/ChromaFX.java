@@ -806,9 +806,13 @@ public class ChromaFX {
 	@SideOnly(Side.CLIENT)
 	public static void dischargeIntoPlayerFX(World world, int x, int y, int z, CrystalElement e, EntityLivingBase ep, float beamSize) {
 		ReikaSoundHelper.playClientSound(ChromaSounds.MONUMENTRAY, ep, 1, (float)CrystalMusicManager.instance.getDingPitchScale(e), false);
+		doBoltFX(world, x, y, z, new DecimalPosition(ep).offset(0, -0.25, 0), e.getColor(), beamSize, 1);
+	}
+
+	public static void doBoltFX(World world, int x, int y, int z, DecimalPosition p2, int color, float beamSize, double varScale) {
 		int n = 4+world.rand.nextInt(4);
-		LightningBolt b = new LightningBolt(new DecimalPosition(x+0.5, y+0.5, z+0.5), new DecimalPosition(ep).offset(0, -0.25, 0), n);
-		b.scaleVariance(0.5);
+		LightningBolt b = new LightningBolt(new DecimalPosition(x+0.5, y+0.5, z+0.5), p2, n);
+		b.scaleVariance(0.5*varScale);
 		b.maximize();
 		for (int i = 0; i < b.nsteps; i++) {
 			DecimalPosition pos1 = b.getPosition(i);
@@ -819,7 +823,7 @@ public class ChromaFX {
 				int l = 20;
 				int a = (int)(2*f);
 				DecimalPosition dd = DecimalPosition.interpolate(pos1, pos2, r);
-				EntityFX fx = new EntityCCBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s).setColor(e.getColor()).setLife(l).setRapidExpand().freezeLife(a);
+				EntityFX fx = new EntityCCBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s).setColor(color).setLife(l).setRapidExpand().freezeLife(a);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}

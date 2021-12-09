@@ -19,12 +19,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
 import Reika.ChromatiCraft.Base.BlockAttachableMini;
 import Reika.ChromatiCraft.ModInterface.RFWeb;
 
+import cofh.api.energy.IEnergyReceiver;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -75,7 +77,7 @@ public class BlockRFNode extends BlockAttachableMini {
 		RFWeb.getWeb(world).removeNode(world, x, y, z);
 	}
 
-	public static class TileEntityRFNode extends TileEntity {
+	public static class TileEntityRFNode extends TileEntity implements IEnergyReceiver {
 
 		@Override
 		public void updateEntity() {
@@ -87,6 +89,26 @@ public class BlockRFNode extends BlockAttachableMini {
 				if (world.getTotalWorldTime()%8 == 0)
 					RFWeb.getWeb(world).addNode(world, xCoord, yCoord, zCoord, ((BlockRFNode)this.getBlockType()).getSide(world, xCoord, yCoord, zCoord).getOpposite());
 			}
+		}
+
+		@Override
+		public boolean canConnectEnergy(ForgeDirection from) {
+			return from == ((BlockRFNode)this.getBlockType()).getSide(worldObj, xCoord, yCoord, zCoord).getOpposite();
+		}
+
+		@Override
+		public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
+			return RFWeb.getWeb(worldObj).tryDistributeEnergy(worldObj, xCoord, yCoord, zCoord, maxReceive);
+		}
+
+		@Override
+		public int getEnergyStored(ForgeDirection from) {
+			return 0;
+		}
+
+		@Override
+		public int getMaxEnergyStored(ForgeDirection from) {
+			return RFWeb.THROUGHPUT;
 		}
 
 	}

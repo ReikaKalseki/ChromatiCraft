@@ -56,6 +56,28 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade implements I
 			1,
 	};
 
+	private static final int[] ic2HeatMax = {
+			2,
+			5,
+			10,
+			20,
+			50,
+			100,
+			250,
+			1000,
+	};
+
+	private static final double[] ic2HeatEff = {
+			0.1,
+			0.25,
+			0.5,
+			1,
+			1.5,
+			2.5,
+			5,
+			10,
+	};
+
 	static {
 		blockTemps.put(Blocks.ice, 0);
 		blockTemps.put(Blocks.water, 15);
@@ -155,13 +177,52 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade implements I
 	}
 
 	@Override
+	@ModDependent(ModList.IC2)
 	public int maxrequestHeatTick(ForgeDirection dir) {
-		return this.hasSufficientEnergy() ? (1+this.getTier())*20 : 0;
+		return this.hasSufficientEnergy() ? ic2HeatMax[this.getTier()] : 0;
 	}
 
 	@Override
+	@ModDependent(ModList.IC2)
 	public int requestHeat(ForgeDirection dir, int amt) {
-		return Math.min(amt, this.maxrequestHeatTick(dir));
+		return this.collectHeat(dir, Math.min(this.maxrequestHeatTick(dir), amt));
+	}
+
+	@ModDependent(ModList.IC2)
+	private int collectHeat(ForgeDirection skip, int seek) {
+		if (seek <= 0)
+			return 0;
+		//ReikaJavaLibrary.pConsole(this.getWorldObj().getTotalWorldTime()+": "+seek+" from "+skip+" = "+this.getAdjacentTileEntity(skip));
+		int has = 0;
+		for (int i = 0; i < 6; i++) {
+			ForgeDirection dir = dirs[i];
+			if (dir == skip)
+				continue;
+			TileEntity te = this.getAdjacentTileEntity(dir);
+			if (te instanceof IHeatSource) {
+				ForgeDirection opp = dir.getOpposite();
+				IHeatSource hs = (IHeatSource)te;
+				int max = hs.maxrequestHeatTick(opp);
+				int take = hs.requestHeat(opp, Math.min(max, seek));
+				if (take > 0) {
+					//ReikaJavaLibrary.pConsole("Took "+take+" from "+dir+" = "+te);
+					seek -= take;
+					has += take;
+					if (seek == 0)
+						break;
+				}
+			}
+		}
+		//ReikaJavaLibrary.pConsole(this.getWorldObj().getTotalWorldTime()+": got "+(int)(has*ic2HeatEff[this.getTier()]));
+		return (int)(has*ic2HeatEff[this.getTier()]);
+	}
+
+	public static int getIc2Max(int tier) {
+		return ic2HeatMax[tier];
+	}
+
+	public static double getIc2Eff(int tier) {
+		return ic2HeatEff[tier];
 	}
 
 }

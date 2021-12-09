@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -37,6 +37,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityHeatRelay;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
@@ -137,10 +138,15 @@ public class ItemAdjacencyPlacer extends Item implements ISize {
 	@Override
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
 		if (is.stackTagCompound != null) {
-			li.add(AdjacencyUpgrades.upgrades[is.getItemDamage()].getDesc(is.stackTagCompound.getInteger("tier")));
+			int tier = is.stackTagCompound.getInteger("tier");
+			li.add(AdjacencyUpgrades.upgrades[is.getItemDamage()].getDesc(tier));
 			if (is.getItemDamage() == CrystalElement.LIGHTBLUE.ordinal()) {
 				long max = TileEntityAccelerator.MAX_LAG/1000000;
 				li.add(EnumChatFormatting.GOLD+"Admin Note:"+EnumChatFormatting.WHITE+" Will not cause more than "+max+"ms lag.");
+			}
+			else if (ModList.IC2.isLoaded() && is.getItemDamage() == CrystalElement.ORANGE.ordinal()) {
+				li.add("Can move HU between adjacent blocks, up");
+				li.add(String.format("to %d per tick, with %.2f%% efficiency", TileEntityHeatRelay.getIc2Max(tier), TileEntityHeatRelay.getIc2Eff(tier)*100));
 			}
 		}
 	}

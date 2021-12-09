@@ -225,6 +225,15 @@ public class RFWeb {
 		}
 	}
 
+	public int tryDistributeEnergy(World world, int x, int y, int z, int amt) {
+		amt = Math.min(amt, RFWeb.THROUGHPUT);
+		Coordinate c = new Coordinate(x, y, z);
+		RFConnection rf = data.get(c);
+		if (rf == null)
+			return 0;
+		return rf.tryDistribute(this, world, amt);
+	}
+
 	@SideOnly(Side.CLIENT)
 	private static boolean shouldAcceptParticle(World world) {
 		return HoldingChecks.MANIPULATOR.isClientHolding() ? true : world.rand.nextInt(4) == 0;
@@ -295,15 +304,33 @@ public class RFWeb {
 				RFConnection r = web.data.get(c);
 				if (r != null) {
 					if (currentFraction > r.currentFraction) {
-						this.moveEnergyTo(world, r);
+						this.moveEnergyTo(world, r, THROUGHPUT, false);
 					}
 				}
 			}
 		}
 
-		private void moveEnergyTo(World world, RFConnection r) {
-			int mov = r.addEnergy(world, THROUGHPUT, false);
-			mov = this.takeEnergy(world, mov, true);
+		private int tryDistribute(RFWeb web, World world, int amt) {
+			int total = 0;
+			for (Coordinate c : branches) {
+				RFConnection r = web.data.get(c);
+				if (r != null && r != this) {
+					int moved = this.moveEnergyTo(world, r, amt, true);
+					if (moved > 0) {
+						amt -= moved;
+						total += moved;
+						if (amt <= 0)
+							break;
+					}
+				}
+			}
+			return total;
+		}
+
+		private int moveEnergyTo(World world, RFConnection r, int amt, boolean forceAllow) {
+			int mov = r.addEnergy(world, amt, false);
+			if (!forceAllow)
+				mov = this.takeEnergy(world, mov, true);
 			mov *= ChromaAux.getRFTransferEfficiency(world, location.xCoord, location.yCoord, location.zCoord);
 			if (mov > 0)
 				mov = r.addEnergy(world, mov, true);
@@ -311,19 +338,20 @@ public class RFWeb {
 				int range = world.rand.nextInt(3) == 0 ? 60 : 30;
 				ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.RFWEBSEND.ordinal(), world, location.xCoord, location.yCoord, location.zCoord, range, r.location.xCoord, r.location.yCoord, r.location.zCoord, mov);
 			}
+			return mov;
 		}
 
 		private boolean shouldCreateParticle(World world) {
 			return world.rand.nextInt(2) == 0;
 		}
 
-		private int addEnergy(World world, int amt, boolean doTake) {
+		private int addEnergy(World world, int amt, boolean doAdd) {
 			IEnergyConnection con = this.getConnection(world);
 			if (con instanceof IEnergyHandler) {
-				return ((IEnergyHandler)con).receiveEnergy(connection.getOpposite(), amt, !doTake);
+				return ((IEnergyHandler)con).receiveEnergy(connection.getOpposite(), amt, !doAdd);
 			}
 			else if (con instanceof IEnergyReceiver) {
-				return ((IEnergyReceiver)con).receiveEnergy(connection.getOpposite(), amt, !doTake);
+				return ((IEnergyReceiver)con).receiveEnergy(connection.getOpposite(), amt, !doAdd);
 			}
 			return 0;
 		}

@@ -594,12 +594,11 @@ public class ModInteraction {
 			for (int i = 0; i < 16; i++) {
 				//items.add(new ItemStack(ThaumOreHandler.getInstance().shardID, 1, i));
 				items.add(ChromaStacks.getChargedShard(CrystalElement.elements[i]));
-				items.add(ThaumItemHelper.ItemEntry.BALANCED.getItem());
 				if (i%4 == 0) {
 					items.add(ChromaStacks.elementDust);
 				}
 				if (i%8 == 0) {
-					items.add(new ItemStack(Blocks.glowstone));
+					//items.add(new ItemStack(Blocks.glowstone));
 				}
 			}
 			InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("ABILITYFOCUS", ChromaItems.ABILITYFOCUS.getStackOf(), 5, al, in, items.toArray(new ItemStack[items.size()]));

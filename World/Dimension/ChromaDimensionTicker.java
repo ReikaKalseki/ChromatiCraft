@@ -148,20 +148,22 @@ public class ChromaDimensionTicker implements TickHandler {
 					sp.generator.updateTick(world);
 			}
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-			double my = WorldGenGlowCave.MAX_BEDROCK_Y+4;
-			int n = ep.posY <= 0 ? 6 : 18;
-			if (ep.posY <= my && ep.ticksExisted%n == 0) {
-				float mf = 0.66F;
-				double denom = my-WorldGenGlowCave.FULL_BEDROCK_Y;
-				double num = ep.posY-WorldGenGlowCave.FULL_BEDROCK_Y;
-				float f = ep.posY <= WorldGenGlowCave.FULL_BEDROCK_Y ? mf : mf*(float)Math.pow(1D-num/denom, 1.25);
-				float p = 1;
-				if (ep.posY <= 0) {
-					f = Math.max(0.25F, (float)Math.max(0, 1D+ep.posY/64D));
-					f *= 0.5;
-					p += ep.posY*0.002;
+			if (ChromaDimensionManager.getStructurePlayerIsIn(ep) == null) {
+				double my = WorldGenGlowCave.MAX_BEDROCK_Y+4;
+				int n = ep.posY <= 0 ? 6 : 18;
+				if (ep.posY <= my && ep.ticksExisted%n == 0) {
+					float mf = 0.66F;
+					double denom = my-WorldGenGlowCave.FULL_BEDROCK_Y;
+					double num = ep.posY-WorldGenGlowCave.FULL_BEDROCK_Y;
+					float f = ep.posY <= WorldGenGlowCave.FULL_BEDROCK_Y ? mf : mf*(float)Math.pow(1D-num/denom, 1.25);
+					float p = 1;
+					if (ep.posY <= 0) {
+						f = Math.max(0.25F, (float)Math.max(0, 1D+ep.posY/64D));
+						f *= 0.5;
+						p += ep.posY*0.002;
+					}
+					ReikaSoundHelper.playClientSound(ChromaSounds.LOWAMBIENT_SHORT, ep, f, p, false);
 				}
-				ReikaSoundHelper.playClientSound(ChromaSounds.LOWAMBIENT_SHORT, ep, f, p, false);
 			}
 		}
 	}
