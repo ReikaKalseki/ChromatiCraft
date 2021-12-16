@@ -236,6 +236,8 @@ public enum ChromaItems implements ItemEnum {
 		if (this.isArmor()) {
 			return new Class[]{int.class, int.class}; // ID, Sprite index, Armor render
 		}
+		else if (this == MANIPFOCUS || this == ABILITYFOCUS)
+			return new Class[] {};
 
 		return new Class[]{int.class}; // ID, Sprite index
 	}
@@ -245,6 +247,8 @@ public enum ChromaItems implements ItemEnum {
 		if (this.isArmor()) {
 			return new Object[]{this.getTextureIndex(), this.getArmorRender()};
 		}
+		else if (this == MANIPFOCUS || this == ABILITYFOCUS)
+			return new Object[0];
 		else
 			return new Object[]{this.getTextureIndex()};
 	}

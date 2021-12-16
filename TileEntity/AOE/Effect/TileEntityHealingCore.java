@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
+import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MultiblockControllerFinder;
 
@@ -35,6 +36,8 @@ import cpw.mods.fml.common.registry.GameRegistry;
 public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 
 	private static final HashMap<Class, RepairInterface> interactions = new HashMap();
+
+	private boolean[] warnedSides = new boolean[6];
 
 	static {
 		new DecalcificationInterface();
@@ -61,10 +64,10 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 			ret = EffectResult.ACTION;
 		}
 
-		TileEntity te = this.getAdjacentTileEntity(dir);
+		TileEntity te = this.getEffectiveTileOnSide(dir);
 		if (te != null) {
 			RepairInterface s = this.getInterface(te);
-			if (s != NoInterface.instance) {
+			if (s != NoInterface.instance && (s.runOnClient() || !world.isRemote)) {
 				try {
 					int r = s.getTickRand(this.getTier());
 					if (r <= 1 || rand.nextInt(r) == 0)
@@ -85,7 +88,15 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 		else if (te instanceof IInventory) {
 			IInventory ii = (IInventory)te;
 			if (ii.getSizeInventory() == 0) {
-				ChromatiCraft.logger.log("Found an inventory '"+te+"' with zero size!?");
+				if (warnedSides[dir.ordinal()]) {
+
+				}
+				else {
+					String sg = "Found an inventory '"+te+"' with zero size!?";
+					ChromatiCraft.logger.log(sg);
+					ReikaChatHelper.sendChatToPlayer(this.getPlacer(), sg);
+					warnedSides[dir.ordinal()] = true;
+				}
 			}
 			else {
 				int slot = rand.nextInt(ii.getSizeInventory());
@@ -97,6 +108,11 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 			}
 		}
 		return ret;
+	}
+
+	@Override
+	protected void onAdjacentBlockUpdate() {
+		warnedSides = new boolean[6];
 	}
 
 	private RepairInterface getInterface(TileEntity te) {
@@ -161,6 +177,8 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 
 		protected abstract void tick(TileEntity te, int tier) throws Exception;
 
+		protected abstract boolean runOnClient();
+
 		protected abstract void init() throws Exception;
 
 		protected abstract ModList getMod();
@@ -198,6 +216,11 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 		@Override
 		protected String[] getClasses() {
 			return new String[0];
+		}
+
+		@Override
+		protected boolean runOnClient() {
+			return false;
 		}
 
 	}
@@ -316,6 +339,11 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 			return MultiblockControllerFinder.instance.getController(te);
 		}
 
+		@Override
+		protected boolean runOnClient() {
+			return false;
+		}
+
 	}
 
 	private static class DecalcificationInterface extends FieldSetRepairInterface {
@@ -348,6 +376,7 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 		protected double getReplacedValue(TileEntity te, int tier, Number original) throws Exception {
 			int current = calcification.getInt(te);
 			double rem = current*this.getReductionFactor(tier);
+			//ReikaJavaLibrary.pConsole(rem, Side.SERVER);
 			if (rem >= 1 || ReikaRandomHelper.doWithChance(rem)) {
 				int rem2 = (int)Math.max(1, rem);
 				return Math.max(0, current-rem2);
@@ -358,7 +387,12 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 		}
 
 		private double getReductionFactor(int tier) {
-			return 1D-Math.pow(0.999997, 1+tier); //was 0.98, then 0.999
+			return 1D-Math.pow(0.99997, 1+tier); //was 0.98, then 0.999, then 0.999997
+		}
+
+		@Override
+		protected boolean runOnClient() {
+			return false;
 		}
 
 	}

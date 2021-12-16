@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -19,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.DragonAPI.Instantiable.BasicInventory;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -100,7 +101,7 @@ public class ContainerAuraPouch extends Container {
 		}
 		else if (slot >= ItemAuraPouch.SIZE+27) {
 			ItemStack in = ep.inventory.getStackInSlot(slot-ItemAuraPouch.SIZE-27);
-			if (ChromaItems.AURAPOUCH.matchWith(in)) {
+			if (ChromaItems.AURAPOUCH.matchWith(in) && !ChromaOptions.RECURSIVEPOUCH.getState()) {
 				return ep.inventory.getItemStack();
 			}
 		}

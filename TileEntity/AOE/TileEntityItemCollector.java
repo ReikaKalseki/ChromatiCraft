@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.RangeTracker.ConfigurableRangeTracker;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
+import Reika.ChromatiCraft.Base.ItemWithItemFilter.Filter;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -55,7 +56,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 
 	private final ConfigurableRangeTracker range = new ConfigurableRangeTracker(MAXRANGE, 24, 1);
 
-	private ItemStack[] filter = new ItemStack[5*9];
+	private Filter[] filter = new Filter[5*9];
 	private final StepTimer scanTimer = new StepTimer(200);
 
 	private static final ElementTagCompound required = new ElementTagCompound();
@@ -205,13 +206,8 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 			return false;
 		ItemStack is = ei.getEntityItem();
 		for (int i = 0; i < this.getMaxFilterCount(); i++) {
-			if (filter[i] != null) {
-				if (this.match(is, filter[i])) {
-					return true;
-				}
-				else {
-
-				}
+			if (filter[i] != null && filter[i].match(is)) {
+				return true;
 			}
 		}
 		return false;
@@ -330,7 +326,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	private void saveFilters(NBTTagCompound NBT) {
 		NBTTagCompound fil = new NBTTagCompound();
 		for (int i = 0; i < filter.length; i++) {
-			ItemStack is = filter[i];
+			Filter is = filter[i];
 			if (is != null) {
 				NBTTagCompound tag = new NBTTagCompound();
 				is.writeToNBT(tag);
@@ -341,14 +337,20 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	}
 
 	private void readFilters(NBTTagCompound NBT) {
-		filter = new ItemStack[filter.length];
+		filter = new Filter[filter.length];
 		NBTTagCompound fil = NBT.getCompoundTag("filter");
 		for (int i = 0; i < filter.length; i++) {
 			String name = "filter_"+i;
 			if (fil.hasKey(name)) {
 				NBTTagCompound tag = fil.getCompoundTag(name);
-				ItemStack is = ItemStack.loadItemStackFromNBT(tag);
-				filter[i] = is;
+				if (tag.hasKey("filterType")) {
+					filter[i] = new Filter();
+					filter[i].readFromNBT(tag);
+				}
+				else {
+					ItemStack is = ItemStack.loadItemStackFromNBT(tag);
+					filter[i] = is != null ? new Filter(is) : null;
+				}
 			}
 		}
 	}
@@ -383,12 +385,23 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	public void setMapping(int slot, ItemStack is) {
 		if (slot >= this.getMaxFilterCount())
 			return;
-		filter[slot] = is;
+		filter[slot] = is == null ? null : new Filter(is);
+		this.syncAllData(true);
+	}
+
+	public void toggleNBT(int slot) {
+		if (slot >= this.getMaxFilterCount() || filter[slot] == null)
+			return;
+		filter[slot].toggleNBT();
 		this.syncAllData(true);
 	}
 
 	public ItemStack getMapping(int slot) {
-		return filter[slot] != null ? filter[slot].copy() : null;
+		return filter[slot] != null ? filter[slot].getDisplay() : null;
+	}
+
+	public boolean hasNBT(int slot) {
+		return filter[slot] != null && filter[slot].hasNBT();
 	}
 
 	@Override

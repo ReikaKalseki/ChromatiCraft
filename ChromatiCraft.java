@@ -110,7 +110,6 @@ import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionLoadHandler;
 import Reika.ChromatiCraft.ModInterface.IC2ReactorAcceleration;
 import Reika.ChromatiCraft.ModInterface.ModInteraction;
-import Reika.ChromatiCraft.ModInterface.MultiblockAcceleration;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.ChromaPrepHandler;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.PoolRecipeHandler;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.ShardBoostingHandler;
@@ -848,7 +847,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (ModList.IC2.isLoaded()) {
 			IC2ReactorAcceleration.instance.register();
 		}
-		MultiblockAcceleration.instance.register();
+		//MultiblockAcceleration.instance.register();
 
 		if (ModList.TWILIGHT.isLoaded()) {
 			ModInteraction.addTFLoot();

@@ -28,11 +28,14 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.MultiblockControllerFinder;
+import Reika.DragonAPI.ModInteract.DeepInteract.TransvectorHandler;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -119,6 +122,15 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 		else {
 			this.doCollectiveTick(world, x, y, z);
 		}
+	}
+
+	protected final TileEntity getEffectiveTileOnSide(ForgeDirection dir) {
+		TileEntity te = this.getAdjacentTileEntity(dir);
+		if (ModList.THAUMICTINKER.isLoaded())
+			te = TransvectorHandler.getRelayedTile(te);
+		if (te != null && MultiblockControllerFinder.instance.isMultiblockTile(te))
+			return MultiblockControllerFinder.instance.getController(te);
+		return te;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -255,6 +267,8 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 		HashMap<CrystalElement, Integer> set = new HashMap();
 		for (int i = 0; i < 6; i++) {
 			TileEntity te = core.getAdjacentTileEntity(ForgeDirection.VALID_DIRECTIONS[i]);
+			if (te != null && ModList.THAUMICTINKER.isLoaded())
+				te = TransvectorHandler.getRelayedTile(te);
 			if (te instanceof TileEntityAdjacencyUpgrade) {
 				TileEntityAdjacencyUpgrade ta = (TileEntityAdjacencyUpgrade)te;
 				if (ta.canRun(ta.worldObj, ta.xCoord, ta.yCoord, ta.zCoord) && (!ChromaOptions.POWEREDACCEL.getState() || ta.energy.containsAtLeast(ta.getColor(), 100))) {
@@ -275,6 +289,8 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 			int dy = y+dir.offsetY;
 			int dz = z+dir.offsetZ;
 			TileEntity te = world.getTileEntity(dx, dy, dz);
+			if (te != null && ModList.THAUMICTINKER.isLoaded())
+				te = TransvectorHandler.getRelayedTile(te);
 			if (te instanceof TileEntityAdjacencyUpgrade) {
 				TileEntityAdjacencyUpgrade ta = (TileEntityAdjacencyUpgrade)te;
 				if (ta.canRun(ta.worldObj, ta.xCoord, ta.yCoord, ta.zCoord) && (!ChromaOptions.POWEREDACCEL.getState() || ta.energy.containsAtLeast(ta.getColor(), 100))) {

@@ -64,7 +64,7 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 
 	@Override
 	protected EffectResult tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime) {
-		TileEntity te = this.getAdjacentTileEntity(dir);
+		TileEntity te = this.getEffectiveTileOnSide(dir);
 		if (te != null) {
 			EnergyInterface e = this.getInterface(te);
 			if (e != NoInterface.instance) {

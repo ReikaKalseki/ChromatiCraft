@@ -189,21 +189,9 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			return true;
 		if (is.getItem() instanceof EnchantableItem)
 			return true;
-		if (is.getItem() instanceof ItemShears)
-			return true;
 		if (ChromaItems.BEEFRAME.matchWith(is))
 			return true;
-		if (ChromaItems.HELP.matchWith(is))
-			return true;
-		if (ModList.TINKERER.isLoaded() && (TinkerToolHandler.getInstance().isTool(is) || TinkerToolHandler.getInstance().isWeapon(is)))
-			return true;
-		if (Loader.isModLoaded("Backpack") && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("backpack"))
-			return true;
-		if (Loader.isModLoaded("EnderStorage") && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("enderpouch"))
-			return true;
-		if (ModList.THAUMICTINKER.isLoaded() && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("ichorpouch"))
-			return true;
-		if (ModList.THAUMCRAFT.isLoaded() && is.getItem().getClass().getName().toLowerCase(Locale.ENGLISH).contains("focuspouch"))
+		if (this.isSoulboundable(is, is.getItem()))
 			return true;
 		return is.getItem().getItemEnchantability(is) > 0;
 	}
@@ -335,6 +323,8 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		if (ModList.THAUMICTINKER.isLoaded() && i.getClass().getName().toLowerCase(Locale.ENGLISH).contains("ichorpouch"))
 			return true;
 		if (i instanceof ItemChromaTool || i instanceof ItemTool || i instanceof ItemSword || i instanceof ItemShears || i instanceof ItemArmor)
+			return true;
+		if (ModList.TINKERER.isLoaded() && (TinkerToolHandler.getInstance().isTool(is) || TinkerToolHandler.getInstance().isWeapon(is)))
 			return true;
 		return false;
 	}

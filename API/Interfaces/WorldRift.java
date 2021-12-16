@@ -23,8 +23,11 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
  *  Rifts are two-directional. */
 public interface WorldRift {
 
+	/** Direction is the side it is relative to you, NOT the side of it you are asking! */
 	public Block getBlockIDFrom(ForgeDirection dir);
+	/** Direction is the side it is relative to you, NOT the side of it you are asking! */
 	public int getBlockMetadataFrom(ForgeDirection dir);
+	/** Direction is the side it is relative to you, NOT the side of it you are asking! */
 	public TileEntity getTileEntityFrom(ForgeDirection dir);
 
 	/** Returns the location of the other rift. */

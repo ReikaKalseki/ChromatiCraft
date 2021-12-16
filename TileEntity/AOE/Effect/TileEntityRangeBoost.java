@@ -37,7 +37,7 @@ public class TileEntityRangeBoost extends TileEntityAdjacencyUpgrade {
 
 	@Override
 	protected EffectResult tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime) {
-		TileEntity te = this.getAdjacentTileEntity(dir);
+		TileEntity te = this.getEffectiveTileOnSide(dir);
 		if (te instanceof RangeUpgradeable) {
 			double r = this.getRangeFactor();
 			((RangeUpgradeable)te).upgradeRange(r);

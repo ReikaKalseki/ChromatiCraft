@@ -1085,7 +1085,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		if (struct == ChromaStructures.BURROW) {
 			if (hasLootRoom && !this.isLootDoorOpen())
 				return false;
-			if (hasFurnaceRoom && worldObj.getBlock(xCoord+2, yCoord, zCoord+2) != Blocks.air)
+			if (hasFurnaceRoom && worldObj.getBlock(xCoord+2, yCoord, zCoord+2) == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
 				return false;
 		}
 		return true;

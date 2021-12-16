@@ -145,6 +145,13 @@ public class GuiItemCollector extends GuiChromaBase {
 				if (idx >= slots) {
 					drawRect(dx, dy, dx+16, dy+16, 0xa0b06060);
 				}
+				else if (is != null) {
+					int a = 96+(int)(48*Math.sin(System.currentTimeMillis()/400D+System.identityHashCode(inventorySlots.getSlot(i))));
+					int c = (a << 24) | (vac.hasNBT(idx) ? 0x00ff00 : 0xffff00);
+					int x = 8+(i%9)*18;
+					int y = 17+(i/9)*18;
+					drawRect(dx, dy, dx+16, dy+16, c);
+				}
 				GL11.glPopAttrib();
 			}
 		}

@@ -1,23 +1,29 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI;
 
+import java.util.ArrayList;
+
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.ItemWithItemFilter;
+import Reika.ChromatiCraft.Base.ItemWithItemFilter.Filter;
 import Reika.ChromatiCraft.Container.ContainerItemWithFilter;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
 
@@ -27,9 +33,12 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiItemWithFilter extends GuiContainer
 {
+	private final EntityPlayer player;
+
 	public GuiItemWithFilter(EntityPlayer p5ep, World par2World)
 	{
 		super(new ContainerItemWithFilter(p5ep, par2World));
+		player = p5ep;
 	}
 
 	/**
@@ -40,6 +49,19 @@ public class GuiItemWithFilter extends GuiContainer
 	{
 		ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, "Item Filter", xSize/2, 6, 0xffffff);
 		fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, ySize - 96 + 2, 0xffffff);
+
+		ItemStack held = player.getCurrentEquippedItem();
+		if (ChromaItems.LINK.matchWith(held)) {
+			ItemWithItemFilter iap = (ItemWithItemFilter)held.getItem();
+			ArrayList<Filter> li = iap.getItemList(held);
+			for (int i = 0; i < 27; i++) {
+				int a = 96+(int)(48*Math.sin(System.currentTimeMillis()/400D+System.identityHashCode(inventorySlots.getSlot(i))));
+				int c = (a << 24) | (i >= li.size() ? 0xff0000 : (li.get(i).hasNBT() ? 0x00ff00 : 0xffff00));
+				int x = 8+(i%9)*18;
+				int y = 17+(i/9)*18;
+				this.drawRect(x, y, x+16, y+16, c);
+			}
+		}
 	}
 
 	/**

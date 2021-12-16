@@ -17,6 +17,7 @@ import net.minecraft.village.MerchantRecipe;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.CrystalTier;
 import Reika.DragonAPI.Interfaces.PlayerSpecificTrade;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 
 public class FocusCrystalTrade extends MerchantRecipe implements PlayerSpecificTrade {
@@ -28,6 +29,7 @@ public class FocusCrystalTrade extends MerchantRecipe implements PlayerSpecificT
 	@Override
 	public void incrementToolUses() {
 		//No-op to prevent expiry
+		ReikaJavaLibrary.pConsole("Player purchased focus crystals");
 	}
 
 	@Override

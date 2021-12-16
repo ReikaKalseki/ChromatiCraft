@@ -196,20 +196,27 @@ public class TileEntityRFDistributor extends TileEntityAreaDistributor implement
 			return false;
 		if (te instanceof TileEntityRFDistributor)
 			return te.yCoord < yCoord;
+		if (isValidRFReceiver(te)) {
+			return true;
+		}
+		else {
+			blacklist.add(c);
+			return false;
+		}
+	}
+
+	public static boolean isValidRFReceiver(TileEntity te) {
 		if (te instanceof IEnergyReceiver || te instanceof IEnergyHandler) {
 			if (ModList.BCTRANSPORT.isLoaded() && InterfaceCache.BCPIPE.instanceOf(te))
 				return false;
 			if (ModList.IMMERSIVEENG.isLoaded() && InterfaceCache.IMMERSIVEWIRE.instanceOf(te)) {
-				blacklist.add(c);
 				return false;
 			}
-			String s = c.getName().toLowerCase(Locale.ENGLISH);
+			String s = te.getClass().getName().toLowerCase(Locale.ENGLISH);
 			if (s.contains("conduit") || ReikaStringParser.containsWord(s, "duct") || s.contains("cable") || s.contains("pipepower") || ReikaStringParser.containsWord(s, "wire")) {
-				blacklist.add(c);
 				return false;
 			}
 			if (s.contains("tesseract") || s.contains("hypercube")) { //SOE
-				blacklist.add(c);
 				return false;
 			}
 			return true;

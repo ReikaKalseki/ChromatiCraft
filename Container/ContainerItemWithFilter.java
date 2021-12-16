@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Container;
 
-import java.util.ArrayList;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.InventoryCrafting;
@@ -19,8 +17,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Base.ItemWithItemFilter;
+import Reika.ChromatiCraft.Base.ItemWithItemFilter.Filter;
 import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class ContainerItemWithFilter extends Container {
@@ -28,7 +26,8 @@ public class ContainerItemWithFilter extends Container {
 	private static final int width = 9;
 	private static final int height = 3;
 
-	public InventoryCrafting inventory = new InventoryCrafting(this, width, height);
+	private final InventoryCrafting inventory = new InventoryCrafting(this, width, height);
+	private final Filter[] filters = new Filter[width*height];
 	private World worldObj;
 
 	public ContainerItemWithFilter(EntityPlayer player, World par2World)
@@ -51,21 +50,32 @@ public class ContainerItemWithFilter extends Container {
 
 		ItemStack tool = player.getCurrentEquippedItem();
 		int i = 0;
-		for (KeyedItemStack is : ((ItemWithItemFilter)tool.getItem()).getItemList(tool)) {
-			inventory.setInventorySlotContents(i, is.getItemStack());
+		for (Filter f : ((ItemWithItemFilter)tool.getItem()).getItemList(tool)) {
+			filters[i] = f;
 			i++;
+		}
+		for (i = 0; i < filters.length; i++) {
+			inventory.setInventorySlotContents(i, filters[i] == null ? null : filters[i].getDisplay());
 		}
 
 		this.onCraftMatrixChanged(inventory);
 	}
 
 	@Override
-	public ItemStack slotClick(int slot, int par2, int par3, EntityPlayer ep) {
+	public ItemStack slotClick(int slot, int button, int par3, EntityPlayer ep) {
 		boolean inGUI = slot < width*height && slot >= 0;
 		if (inGUI) {
 			ItemStack held = ep.inventory.getItemStack();
-			ItemStack is = held != null ? ReikaItemHelper.getSizedItemStack(held, 1) : null;
-			inventory.setInventorySlotContents(slot, is);
+			if (button == 1 && filters[slot] != null) { //right click
+				filters[slot].toggleNBT();
+			}
+			else {
+				ItemStack is = held != null ? ReikaItemHelper.getSizedItemStack(held, 1) : null;
+				inventory.setInventorySlotContents(slot, is);
+				filters[slot] = is == null ? null : new Filter(is);
+			}
+			this.detectAndSendChanges();
+			this.save(ep);
 			return held;
 		}
 		else if (slot >= width*height+27) {
@@ -74,24 +84,39 @@ public class ContainerItemWithFilter extends Container {
 				return ep.inventory.getItemStack();
 			}
 		}
-		return super.slotClick(slot, par2, par3, ep);
+		return super.slotClick(slot, button, par3, ep);
+	}
+
+	@Override
+	public void detectAndSendChanges()
+	{
+		super.detectAndSendChanges();
+
+		int flags = 0;
+
+		for (int i = 0; i < filters.length; i++) {
+			if (filters[i] != null && filters[i].hasNBT()) {
+				flags |= (1 << i);
+			}
+		}
+
+		for (int j = 0; j < crafters.size(); ++j)
+		{
+
+		}
 	}
 
 	@Override
 	public void onContainerClosed(EntityPlayer ep) {
 		super.onContainerClosed(ep);
 
-		ArrayList<ItemStack> li = new ArrayList();
-		for (int i = 0; i < inventory.getSizeInventory(); i++) {
-			ItemStack in = inventory.getStackInSlot(i);
-			if (in != null) {
-				li.add(in);
-			}
-		}
+		this.save(ep);
+	}
 
+	private void save(EntityPlayer ep) {
 		ItemStack is = ep.getCurrentEquippedItem();
 		if (is != null && is.getItem() instanceof ItemWithItemFilter) {
-			((ItemWithItemFilter)ChromaItems.LINK.getItemInstance()).setItems(is, li);
+			((ItemWithItemFilter)ChromaItems.LINK.getItemInstance()).setItems(is, filters);
 		}
 	}
 
@@ -100,12 +125,8 @@ public class ContainerItemWithFilter extends Container {
 		return true;
 	}
 
-	/**
-	 * Called when a player shift-clicks on a slot. You must override this or you will crash when someone does that.
-	 */
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int par2)
-	{
+	public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int par2) {
 		return null;
 	}
 

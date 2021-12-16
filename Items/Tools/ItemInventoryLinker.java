@@ -25,12 +25,9 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemWithItemFilter;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 
 public class ItemInventoryLinker extends ItemWithItemFilter {
 
@@ -180,15 +177,6 @@ public class ItemInventoryLinker extends ItemWithItemFilter {
 	@Override
 	public String getActionName(EntityPlayer ep, ItemStack tool) {
 		return this.getMode(tool) == Mode.REVERSED ? "Reversed flow direction" : "Sending";
-	}
-
-	@Override
-	public boolean checkNBT(ItemStack tool, ItemStack is) {
-		if (ModList.THAUMCRAFT.isLoaded() && ThaumItemHelper.ItemEntry.RESEARCH.getItem().getItem() == is.getItem())
-			return false;
-		if (ModList.EXTRAUTILS.isLoaded() && ReikaItemHelper.matchStacks(is, ReikaItemHelper.lookupItem("ExtraUtilities:drum")))
-			return false;
-		return super.checkNBT(tool, is);
 	}
 
 }

@@ -1,8 +1,6 @@
 package Reika.ChromatiCraft.Base;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
@@ -69,8 +67,8 @@ public abstract class ItemWithItemFilter extends ItemChromaTool {
 			}
 			if (m.usesInventory() && is.stackTagCompound.hasKey("items")) {
 				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-					for (KeyedItemStack in : this.getItemList(is)) {
-						li.add(">>"+in.getCriteriaAsChatFormatting()+in.getItemStack().getDisplayName());
+					for (Filter in : this.getItemList(is)) {
+						li.add(">>"+in.item.getCriteriaAsChatFormatting()+in.item.getItemStack().getDisplayName());
 					}
 				}
 				else {
@@ -102,53 +100,30 @@ public abstract class ItemWithItemFilter extends ItemChromaTool {
 		tool.stackTagCompound.setInteger("mode", mode.ordinal());
 	}
 
-	public final ArrayList<Filter> getFilters(ItemStack is) {
-		ArrayList<Filter> li = new ArrayList();
-		if (is.stackTagCompound != null && is.stackTagCompound.hasKey("filter")) {
-			NBTTagList items = is.stackTagCompound.getTagList("filter", NBTTypes.COMPOUND.ID);
-			for (NBTTagCompound nbt : ((List<NBTTagCompound>)items.tagList)) {
-				String s = nbt.getString("filterType");
-				Filter f = this.constructFilter(s);
-				if (f == null) {
-					ChromatiCraft.logger.logError("Error reading item filter for "+is.getDisplayName()+"; unrecognized type "+s);
-					continue;
-				}
-				f.readFromNBT(nbt);
-				li.add(f);
-			}
-		}
-		return li;
-	}
-
-	public final HashSet<KeyedItemStack> getItemList(ItemStack tool) {
+	public final ArrayList<Filter> getItemList(ItemStack tool) {
 		if (tool.stackTagCompound == null)
 			tool.stackTagCompound = new NBTTagCompound();
 		if (tool.stackTagCompound.hasKey("items")) {
 			return this.loadItemList(tool.stackTagCompound.getTagList("items", NBTTypes.COMPOUND.ID));
 		}
-		ArrayList<Filter> li = this.getFilters(tool);
-		HashSet<KeyedItemStack> set = new HashSet();
-		for (Filter f : li) {
-			KeyedItemStack ks = f.getKey();
-			if (!set.contains(ks))
-				set.add(ks);
-		}
-		return set;
+		return new ArrayList();
 	}
 
-	private final HashSet<KeyedItemStack> loadItemList(NBTTagList tag) {
-		HashSet<KeyedItemStack> set = new HashSet();
+	private final ArrayList<Filter> loadItemList(NBTTagList tag) {
+		ArrayList<Filter> li = new ArrayList();
 		for (NBTTagCompound nbt : ((List<NBTTagCompound>)tag.tagList)) {
-			KeyedItemStack item = KeyedItemStack.readFromNBT(nbt);
-			if (!set.contains(item))
-				set.add(item);
+			Filter f = new Filter();
+			f.readFromNBT(nbt);
+			li.add(f);
 		}
-		return set;
+		return li;
 	}
 
-	private final void saveItemList(NBTTagCompound tag, HashSet<KeyedItemStack> set) {
+	private final void saveItemList(NBTTagCompound tag, Filter[] set) {
 		NBTTagList li = new NBTTagList();
-		for (KeyedItemStack is : set) {
+		for (Filter is : set) {
+			if (is == null)
+				continue;
 			NBTTagCompound nbt = new NBTTagCompound();
 			is.writeToNBT(nbt);
 			li.appendTag(nbt);
@@ -156,52 +131,10 @@ public abstract class ItemWithItemFilter extends ItemChromaTool {
 		tag.setTag("items", li);
 	}
 
-	private final Filter constructFilter(String s) {
-		try {
-			Class c = Class.forName(s);
-			Constructor<Filter> con = c.getDeclaredConstructor();
-			con.setAccessible(true);
-			return con.newInstance();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	private final void setFilters(ItemStack is, ArrayList<Filter> li) {
+	public final void setItems(ItemStack is, Filter[] filters) {
 		if (is.stackTagCompound == null)
 			is.stackTagCompound = new NBTTagCompound();
-		is.stackTagCompound.removeTag("items");
-		NBTTagList items = new NBTTagList();
-		for (Filter f : li) {
-			NBTTagCompound nbt = new NBTTagCompound();
-			f.writeToNBT(nbt);
-			nbt.setString("filterType", f.getClass().getName());
-			items.appendTag(nbt);
-		}
-		is.stackTagCompound.setTag("filter", items);
-	}
-
-	public final void setItems(ItemStack is, ArrayList<ItemStack> li) {
-		if (is.stackTagCompound == null)
-			is.stackTagCompound = new NBTTagCompound();
-		ArrayList<Filter> li2 = new ArrayList();
-		for (ItemStack in : li) {
-			Filter f = this.constructFilter(in);
-			if (f != null)
-				li2.add(f);
-		}
-		this.setFilters(is, li2);
-		this.saveItemList(is.stackTagCompound, this.getItemList(is));
-	}
-
-	private final Filter constructFilter(ItemStack in) {
-		if (in == null)
-			return null;
-		//		if (in.getItem() == ChromaItems.INVFILTER.getItemInstance())
-		//			return ?;
-		return new ItemFilter(in);
+		this.saveItemList(is.stackTagCompound, filters);
 	}
 
 	public static enum Mode {
@@ -219,10 +152,10 @@ public abstract class ItemWithItemFilter extends ItemChromaTool {
 					return !WHITELIST.matchesItem(tool, is);
 				case WHITELIST:
 					ItemWithItemFilter bag = ((ItemWithItemFilter)tool.getItem());
-					KeyedItemStack ks = new KeyedItemStack(is).setSimpleHash(true).setSized(false);
-					if (!bag.checkNBT(tool, is))
-						ks.setIgnoreNBT(true);
-					return bag.getItemList(tool).contains(ks);
+					for (Filter f : bag.getItemList(tool))
+						if (f.match(is))
+							return true;
+					return false;
 				case EVERYTHING:
 					return true;
 				case NOTHING:
@@ -242,50 +175,49 @@ public abstract class ItemWithItemFilter extends ItemChromaTool {
 		}
 	}
 
-	public static abstract class Filter {
+	public static final class Filter {
 
-		protected Filter() {
+		private KeyedItemStack item;
+
+		public Filter() {
 
 		}
 
-		protected abstract void writeToNBT(NBTTagCompound tag);
-		protected abstract void readFromNBT(NBTTagCompound tag);
-
-		protected abstract KeyedItemStack getKey();
-
-	}
-
-	public static final class ItemFilter extends Filter {
-
-		private ItemStack item;
-
-		private ItemFilter() {
-			super();
+		public Filter(ItemStack is) {
+			item = key(is);
 		}
 
-		public ItemFilter(ItemStack is) {
-			item = is.copy();
+		private static KeyedItemStack key(ItemStack is) {
+			return new KeyedItemStack(is).setIgnoreMetadata(false).setSized(false).setIgnoreNBT(false).setSimpleHash(true);
 		}
 
-		@Override
-		protected void writeToNBT(NBTTagCompound tag) {
-			item.writeToNBT(tag);
+		public void writeToNBT(NBTTagCompound tag) {
+			if (item != null)
+				item.writeToNBT(tag);
+			tag.setString("filterType", this.getClass().getName());
 		}
 
-		@Override
-		protected void readFromNBT(NBTTagCompound tag) {
-			item = ItemStack.loadItemStackFromNBT(tag);
+		public void readFromNBT(NBTTagCompound tag) {
+			item = KeyedItemStack.readFromNBT(tag);
 		}
 
-		@Override
-		protected KeyedItemStack getKey() {
-			return new KeyedItemStack(item).setIgnoreMetadata(false).setSized(false).setIgnoreNBT(false).setSimpleHash(true);
+		public void toggleNBT() {
+			if (item != null)
+				item.setIgnoreNBT(item.hasNBT());
 		}
 
-	}
+		public boolean hasNBT() {
+			return item != null && item.hasNBT();
+		}
 
-	public boolean checkNBT(ItemStack tool, ItemStack is) {
-		return true;
+		public ItemStack getDisplay() {
+			return item == null ? null : item.getItemStack();
+		}
+
+		public boolean match(ItemStack is) {
+			return item != null && item.match(is);
+		}
+
 	}
 
 }

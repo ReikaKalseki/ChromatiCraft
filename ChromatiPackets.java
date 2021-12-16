@@ -1210,7 +1210,8 @@ public class ChromatiPackets implements PacketHandler {
 					if (a != null) {
 						ItemStack focus = ep.getCurrentEquippedItem();
 						if (focus != null && ChromaItems.ABILITYFOCUS.matchWith(focus)) {
-							focus.stackTagCompound = new NBTTagCompound();
+							if (focus.stackTagCompound == null)
+								focus.stackTagCompound = new NBTTagCompound();
 							focus.stackTagCompound.setString("ability", stringdata);
 							focus.stackTagCompound.setInteger("power", data[0]);
 						}

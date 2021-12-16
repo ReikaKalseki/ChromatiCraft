@@ -357,8 +357,13 @@ public class ChromaDimensionManager {
 		for (UUID id : playersInStructures.keySet()) {
 			EntityPlayer ep = world.func_152378_a(id);
 			if (ep != null) {
-				playersInStructures.directGet(id).tickPlayer(ep);
-				CheatingPreventionSystem.instance.tick(ep);
+				if (ep.posY >= 64+ChunkProviderChroma.VERTICAL_OFFSET+2) {
+					removePlayerFromStructure(ep);
+				}
+				else {
+					playersInStructures.directGet(id).tickPlayer(ep);
+					CheatingPreventionSystem.instance.tick(ep);
+				}
 			}
 		}
 	}

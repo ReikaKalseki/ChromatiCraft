@@ -127,7 +127,7 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade implements I
 		double f = this.getEqualizationFactor();
 		for (int i = 0; i < 6; i++) {
 			BlockKey bk = BlockKey.getAt(world, x+dirs[i].offsetX, y+dirs[i].offsetY, z+dirs[i].offsetZ);
-			TileEntity te = this.getAdjacentTileEntity(dirs[i]);
+			TileEntity te = this.getEffectiveTileOnSide(dirs[i]);
 			if (te instanceof ThermalTile && tileList.containsKey(te.getClass().getName())) {
 				n++;
 				int tier = tileList.get(te.getClass().getName());
@@ -179,7 +179,7 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade implements I
 	@Override
 	@ModDependent(ModList.IC2)
 	public int maxrequestHeatTick(ForgeDirection dir) {
-		return this.hasSufficientEnergy() ? ic2HeatMax[this.getTier()] : 0;
+		return !this.hasRedstoneSignal() && this.hasSufficientEnergy() ? ic2HeatMax[this.getTier()] : 0;
 	}
 
 	@Override
@@ -198,7 +198,7 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade implements I
 			ForgeDirection dir = dirs[i];
 			if (dir == skip)
 				continue;
-			TileEntity te = this.getAdjacentTileEntity(dir);
+			TileEntity te = this.getEffectiveTileOnSide(dir);
 			if (te instanceof IHeatSource) {
 				ForgeDirection opp = dir.getOpposite();
 				IHeatSource hs = (IHeatSource)te;

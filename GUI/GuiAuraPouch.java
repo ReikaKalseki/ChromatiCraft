@@ -38,7 +38,7 @@ public class GuiAuraPouch extends GuiContainer {
 			ItemAuraPouch iap = (ItemAuraPouch)player.getCurrentEquippedItem().getItem();
 			boolean[] active = iap.getActiveSlots(player.getCurrentEquippedItem());
 			for (int i = 0; i < iap.SIZE; i++) {
-				int a = 96+(int)(48*Math.sin(System.currentTimeMillis()/400D));
+				int a = 96+(int)(48*Math.sin(System.currentTimeMillis()/400D+System.identityHashCode(inventorySlots.getSlot(i))));
 				int c = (a << 24) | (active[i] ? 0x00ff00 : 0xff0000);
 				int x = 8+(i%9)*18;
 				int y = 17+(i/9)*18;

@@ -14,6 +14,7 @@ import net.minecraft.tileentity.TileEntity;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator.Acceleration;
 import Reika.DragonAPI.ModInteract.DeepInteract.MultiblockControllerFinder;
 
+@Deprecated
 public class MultiblockAcceleration extends Acceleration {
 
 	public static final MultiblockAcceleration instance = new MultiblockAcceleration();

@@ -64,6 +64,8 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import ic2.api.energy.tile.IHeatSource;
+import ic2.api.reactor.IReactor;
+import ic2.api.reactor.IReactorChamber;
 import tuhljin.automagy.api.essentia.IEssentiaDistillery;
 
 public class BlockHeatLamp extends BlockAttachableMini {
@@ -218,6 +220,17 @@ public class BlockHeatLamp extends BlockAttachableMini {
 			else if (Loader.isModLoaded("Automagy") && !this.isCold() && temperature >= 200 && InterfaceCache.ESSENTIADISTILL.instanceOf(te)) {
 				this.setEssentiaDistillery(te);
 			}
+			else if (this.isCold() && ModList.IC2.isLoaded() && (InterfaceCache.IC2NUKE.instanceOf(te) || InterfaceCache.IC2NUKECHAMBER.instanceOf(te))) {
+				this.setIC2Reactor(te);
+			}
+		}
+
+		@ModDependent(ModList.IC2)
+		private void setIC2Reactor(TileEntity te) {
+			if (te instanceof IReactorChamber)
+				te = (TileEntity)((IReactorChamber)te).getReactor();
+			int rem = Math.max(0, -temperature/10);
+			((IReactor)te).addHeat(-rem); //5 == 1 reactor heat vent);
 		}
 
 		@ClassDependent("tuhljin.automagy.api.essentia.IEssentiaDistillery")
@@ -238,7 +251,7 @@ public class BlockHeatLamp extends BlockAttachableMini {
 
 		@ModDependent(ModList.ROTARYCRAFT)
 		private boolean isRotaryHeatTile(ThermalTile tl) {
-			return tl instanceof TemperatureTE && !((TemperatureTE)tl).allowExternalHeating();
+			return tl instanceof TemperatureTE && !(this.isCold() ? ((TemperatureTE)tl).canBeCooledWithFins() : ((TemperatureTE)tl).allowExternalHeating());
 		}
 
 		@ModDependent(ModList.REACTORCRAFT)

@@ -82,7 +82,7 @@ public class ContainerItemCollector extends CoreContainer {
 	}
 
 	@Override
-	public ItemStack slotClick(int slot, int par2, int action, EntityPlayer ep) {
+	public ItemStack slotClick(int slot, int button, int action, EntityPlayer ep) {
 		/*
 		if (slot >= 18 && slot < tile.getSizeInventory()) {
 			ItemStack held = ep.inventory.getItemStack();
@@ -95,12 +95,17 @@ public class ContainerItemCollector extends CoreContainer {
 			action = 0;
 			int off = rowOffset*9;
 			ItemStack held = ep.inventory.getItemStack();
-			tile.setMapping(slot+off-tile.getSizeInventory(), ReikaItemHelper.getSizedItemStack(held, 1));
+			if (button == 1) { //right click
+				tile.toggleNBT(slot+off-tile.getSizeInventory());
+			}
+			else {
+				tile.setMapping(slot+off-tile.getSizeInventory(), ReikaItemHelper.getSizedItemStack(held, 1));
+			}
 			//this.detectAndSendChanges();
 			return held;
 		}
 
-		ItemStack is = super.slotClick(slot, par2, action, ep);
+		ItemStack is = super.slotClick(slot, button, action, ep);
 		InventoryPlayer ip = ep.inventory;
 		return is;
 		//ReikaJavaLibrary.pConsole(ip.getItemStack());

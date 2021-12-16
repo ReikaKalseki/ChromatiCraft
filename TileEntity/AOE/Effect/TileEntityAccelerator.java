@@ -131,7 +131,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 			ReikaParticleHelper.CLOUD.spawnAroundBlock(world, x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ, 4);
 			lagTimer[dir.ordinal()]--;
 		}
-		TileEntity te = this.getAdjacentTileEntity(dir);
+		TileEntity te = this.getEffectiveTileOnSide(dir);
 		Acceleration a = this.getAccelerate(te);
 		if (debugLevel > 0) {
 			ReikaJavaLibrary.pConsole(te+": "+(a != null ? a.getClass() : null));

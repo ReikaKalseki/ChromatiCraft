@@ -13,20 +13,19 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.ASM.ClassReparenter.Reparent;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.ModInteract.DeepInteract.ItemCustomFocus;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
-import thaumcraft.api.wands.ItemFocusBasic;
+import thaumcraft.api.wands.FocusUpgradeType;
 
-@Reparent(value = {"thaumcraft.api.wands.ItemFocusBasic", "net.minecraft.item.Item"})
-public class ItemManipulatorFocus extends ItemFocusBasic {
+public class ItemManipulatorFocus extends ItemCustomFocus {
 
-	public ItemManipulatorFocus(int idx) {
-		this.setCreativeTab(ChromatiCraft.tabChromaTools);
+	public ItemManipulatorFocus() {
+		super(ChromatiCraft.tabChromaTools);
 	}
 
 	@Override
@@ -93,6 +92,21 @@ public class ItemManipulatorFocus extends ItemFocusBasic {
 	@SideOnly(Side.CLIENT)
 	public IIcon getFocusDepthLayerIcon(ItemStack focusstack) {
 		return ChromaIcons.LATTICEITEM.getIcon();
+	}
+
+	@Override
+	public int getActivationCooldown(ItemStack focusstack) {
+		return 50;
+	}
+
+	@Override
+	protected String getID() {
+		return "manipulator";
+	}
+
+	@Override
+	public FocusUpgradeType[] getPossibleUpgradesByRank(ItemStack focusstack, int rank) {
+		return null;
 	}
 
 }

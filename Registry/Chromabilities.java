@@ -347,6 +347,10 @@ public enum Chromabilities implements Ability {
 	}
 
 	public static void triggerAbility(EntityPlayer ep, Ability a, int data) {
+		triggerAbility(ep, a, data, 1);
+	}
+
+	public static void triggerAbility(EntityPlayer ep, Ability a, int data, float costScale) {
 		if (ep.worldObj.isRemote) {
 			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.ABILITY.ordinal(), getAbilityInt(a), data);
 
@@ -359,6 +363,7 @@ public enum Chromabilities implements Ability {
 
 		ProgressStage.ABILITY.stepPlayerTo(ep);
 		ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(a, ep);
+		use.scale(costScale);
 		if (a == HEALTH)
 			use.scale(10*(1+data));
 		if (a == SHIFT)
